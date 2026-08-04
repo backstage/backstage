@@ -12,20 +12,27 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:41.257Z'
+    lastAttemptAt: '2026-08-04T22:12:28.644Z'
     reason: github-invalid-response
   packages:
     - npmPackageName: '@aws-forge/backstage-plugin-aws-controller'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:40.878Z'
-        checkedAt: '2026-08-04T05:02:40.878Z'
+        lastAttemptAt: '2026-08-04T22:12:28.205Z'
+        checkedAt: '2026-08-04T22:12:28.205Z'
         latestVersion: 0.1.0
         lastPublishedAt: '2026-05-24T09:31:47.834Z'
         repository:
           url: https://github.com/refaelb/backstage-plugin-aws-control
           directory: aws
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - axios
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:41.412Z'
+        lastAttemptAt: '2026-08-04T22:12:28.789Z'
         reason: config-schema-not-declared

@@ -13,8 +13,8 @@ staleSince: '2026-08-04'
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:47.850Z'
-    checkedAt: '2026-08-04T05:02:47.850Z'
+    lastAttemptAt: '2026-08-04T22:12:35.646Z'
+    checkedAt: '2026-08-04T22:12:35.646Z'
     version: 1.17.0
     sourceUrl: https://github.com/CircleCI-Public/backstage-plugin/blob/main/backstage.json
     sourcePath: backstage.json
@@ -22,14 +22,30 @@ snapshot:
     - npmPackageName: '@circleci/backstage-plugin'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:47.437Z'
-        checkedAt: '2026-08-04T05:02:47.437Z'
+        lastAttemptAt: '2026-08-04T22:12:35.267Z'
+        checkedAt: '2026-08-04T22:12:35.267Z'
         latestVersion: 0.1.1
         lastPublishedAt: '2023-09-21T22:57:57.424Z'
         repository:
           url: https://github.com/CircleCI-Public/backstage-plugin
           directory: plugins/circleci
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - luxon
+          - lodash
+          - react-use
+          - '@types/react'
+          - circleci-api
+          - '@backstage/theme'
+          - '@material-ui/lab'
+          - '@material-ui/core'
+          - humanize-duration
+          - '@material-ui/icons'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:48.580Z'
+        lastAttemptAt: '2026-08-04T22:12:36.344Z'
         reason: config-schema-not-declared

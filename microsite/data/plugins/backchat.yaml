@@ -13,19 +13,24 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:42.658Z'
+    lastAttemptAt: '2026-08-04T22:12:29.973Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@benbravo73/backstage-plugin-backchat'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:42.315Z'
-        checkedAt: '2026-08-04T05:02:42.315Z'
+        lastAttemptAt: '2026-08-04T22:12:29.614Z'
+        checkedAt: '2026-08-04T22:12:29.614Z'
         latestVersion: 0.0.5
         lastPublishedAt: '2024-01-08T13:39:26.948Z'
         repository:
           url: https://github.com/benwilcock/backstage-plugin-backchat
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:43.040Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - react-use

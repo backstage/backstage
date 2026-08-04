@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:42.878Z'
-    checkedAt: '2026-08-04T05:02:42.878Z'
+    lastAttemptAt: '2026-08-04T22:12:30.276Z'
+    checkedAt: '2026-08-04T22:12:30.276Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/badges/backstage.json
     sourcePath: workspaces/badges/backstage.json
@@ -21,14 +21,25 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-badges'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:42.527Z'
-        checkedAt: '2026-08-04T05:02:42.527Z'
+        lastAttemptAt: '2026-08-04T22:12:29.955Z'
+        checkedAt: '2026-08-04T22:12:29.955Z'
         latestVersion: 0.23.0
         lastPublishedAt: '2026-07-21T22:58:10.514Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/badges/plugins/badges
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@material-ui/core'
+          - '@types/react'
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:42.980Z'
+        lastAttemptAt: '2026-08-04T22:12:30.447Z'
         reason: config-schema-not-declared

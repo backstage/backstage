@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:15.393Z'
-    checkedAt: '2026-08-04T05:03:15.393Z'
+    lastAttemptAt: '2026-08-04T22:13:05.073Z'
+    checkedAt: '2026-08-04T22:13:05.073Z'
     version: 1.52.0
     sourceUrl: https://github.com/kissmikijr/scaffolder-studio/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,14 +21,67 @@ snapshot:
     - npmPackageName: '@kissmiklosjr/plugin-scaffolder-studio'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:15.013Z'
-        checkedAt: '2026-08-04T05:03:15.013Z'
+        lastAttemptAt: '2026-08-04T22:13:04.749Z'
+        checkedAt: '2026-08-04T22:13:04.749Z'
         latestVersion: 1.7.0
         lastPublishedAt: '2026-07-04T13:50:48.853Z'
         repository:
           url: https://github.com/kissmikijr/scaffolder-studio
           directory: plugins/scaffolder-studio
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@ai-sdk/react'
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-permission-react'
+          - '@backstage/plugin-scaffolder'
+          - '@backstage/plugin-scaffolder-common'
+          - '@backstage/plugin-scaffolder-react'
+          - '@backstage/theme'
+          - '@codemirror/lang-javascript'
+          - '@codemirror/lang-yaml'
+          - '@codemirror/language'
+          - '@codemirror/state'
+          - '@codemirror/view'
+          - '@kissmiklosjr/plugin-scaffolder-studio-common'
+          - '@kissmiklosjr/scaffolder-studio-linter'
+          - '@lexical/react'
+          - '@lezer/highlight'
+          - '@material-ui/icons'
+          - '@mui/icons-material'
+          - '@mui/material'
+          - '@rjsf/core'
+          - '@rjsf/utils'
+          - '@rjsf/validator-ajv8'
+          - '@roadiehq/plugin-scaffolder-frontend-module-http-request-field'
+          - '@tanstack/react-query'
+          - '@types/html2canvas'
+          - '@types/js-yaml'
+          - '@uiw/codemirror-theme-dracula'
+          - '@uiw/codemirror-theme-github'
+          - '@uiw/codemirror-themes'
+          - '@uiw/react-codemirror'
+          - '@xyflow/react'
+          - add
+          - ai
+          - html2canvas
+          - humanize-duration
+          - js-yaml
+          - lexical
+          - lodash.debounce
+          - luxon
+          - react-markdown
+          - react-use
+          - remark-gfm
+          - streamdown
+          - uuid
+          - yaml
+          - zod
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:15.966Z'
+        lastAttemptAt: '2026-08-04T22:13:06.163Z'
         reason: config-schema-not-declared

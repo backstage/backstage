@@ -13,8 +13,8 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:13.141Z'
-    checkedAt: '2026-08-04T05:03:13.141Z'
+    lastAttemptAt: '2026-08-04T22:13:02.642Z'
+    checkedAt: '2026-08-04T22:13:02.642Z'
     version: 1.12.1
     sourceUrl: https://github.com/alefcarlos/plusultra-dotnet-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
@@ -22,14 +22,18 @@ snapshot:
     - npmPackageName: '@plusultra/plugin-scaffolder-dotnet-backend'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:12.738Z'
-        checkedAt: '2026-08-04T05:03:12.738Z'
+        lastAttemptAt: '2026-08-04T22:13:02.279Z'
+        checkedAt: '2026-08-04T22:13:02.279Z'
         latestVersion: 1.1.2
         lastPublishedAt: '2023-03-26T02:01:02.971Z'
         repository:
           url: https://github.com/alefcarlos/plusultra-dotnet-backstage-plugins
           directory: plugins/scaffolder-dotnet-backend
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/plugin-scaffolder-backend'
+          - '@backstage/plugin-scaffolder-node'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:13.659Z'
+        lastAttemptAt: '2026-08-04T22:13:03.184Z'
         reason: config-schema-not-declared

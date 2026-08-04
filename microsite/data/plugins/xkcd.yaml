@@ -12,19 +12,30 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:22.290Z'
+    lastAttemptAt: '2026-08-04T22:13:12.196Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: backstage-plugin-xkcd
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:22.134Z'
-        checkedAt: '2026-08-04T05:03:22.134Z'
+        lastAttemptAt: '2026-08-04T22:13:12.098Z'
+        checkedAt: '2026-08-04T22:13:12.098Z'
         latestVersion: 1.1.7
         lastPublishedAt: '2026-02-05T17:31:39.987Z'
         repository:
           url: https://github.com/Vity01/backstage-xkcd
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-home'
+          - '@backstage/plugin-home-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:22.649Z'
+        lastAttemptAt: '2026-08-04T22:13:12.511Z'
         reason: config-schema-not-declared

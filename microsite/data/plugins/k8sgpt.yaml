@@ -13,17 +13,27 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:04.503Z'
+    lastAttemptAt: '2026-08-04T22:12:53.090Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@suxess-it/backstage-plugin-k8sgpt'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:04.503Z'
-        checkedAt: '2026-08-04T05:03:04.503Z'
+        lastAttemptAt: '2026-08-04T22:12:53.091Z'
+        checkedAt: '2026-08-04T22:12:53.091Z'
         latestVersion: 0.2.2
         lastPublishedAt: '2023-10-05T11:53:41.973Z'
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-kubernetes'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:04.850Z'
+        lastAttemptAt: '2026-08-04T22:12:53.575Z'
         reason: config-schema-not-declared

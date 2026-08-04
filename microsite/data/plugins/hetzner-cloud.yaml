@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:02.301Z'
-    checkedAt: '2026-08-04T05:03:02.301Z'
+    lastAttemptAt: '2026-08-04T22:12:50.862Z'
+    checkedAt: '2026-08-04T22:12:50.862Z'
     version: 1.52.1
     sourceUrl: https://github.com/gluobe/hetzner-backstage-plugin/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,13 +21,30 @@ snapshot:
     - npmPackageName: '@gluo-nv/backstage-plugin-hetzner'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:01.931Z'
-        checkedAt: '2026-08-04T05:03:01.931Z'
+        lastAttemptAt: '2026-08-04T22:12:50.478Z'
+        checkedAt: '2026-08-04T22:12:50.478Z'
         latestVersion: 0.1.19
         lastPublishedAt: '2026-07-01T12:24:27.913Z'
         repository:
           url: https://github.com/gluobe/hetzner-backstage-plugin
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@emotion/react'
+          - '@emotion/styled'
+          - '@material-ui/core'
+          - '@mui/icons-material'
+          - '@mui/lab'
+          - '@mui/material'
+          - '@mui/styles'
+          - react-dom
+          - react-markdown
+          - react-router-dom
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:02.895Z'
+        lastAttemptAt: '2026-08-04T22:12:51.573Z'
         reason: config-schema-not-declared

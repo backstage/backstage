@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:00.131Z'
-    checkedAt: '2026-08-04T05:03:00.131Z'
+    lastAttemptAt: '2026-08-04T22:12:48.418Z'
+    checkedAt: '2026-08-04T22:12:48.418Z'
     version: 1.48.3
     sourceUrl: https://github.com/immobiliare/backstage-plugin-gitlab/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,13 +21,20 @@ snapshot:
     - npmPackageName: '@immobiliarelabs/backstage-plugin-gitlab'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:59.906Z'
-        checkedAt: '2026-08-04T05:02:59.906Z'
+        lastAttemptAt: '2026-08-04T22:12:48.080Z'
+        checkedAt: '2026-08-04T22:12:48.080Z'
         latestVersion: 2.1.3
         lastPublishedAt: '2026-06-26T17:38:32.875Z'
         repository:
           url: https://github.com/immobiliare/backstage-plugin-gitlab
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:00.652Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - dayjs
+          - react-use
+          - '@backstage/theme'
+          - '@material-ui/lab'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'

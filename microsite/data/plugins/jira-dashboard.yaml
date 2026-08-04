@@ -12,17 +12,33 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:04.178Z'
+    lastAttemptAt: '2026-08-04T22:12:52.842Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@axis-backstage/plugin-jira-dashboard'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:04.178Z'
-        checkedAt: '2026-08-04T05:03:04.178Z'
+        lastAttemptAt: '2026-08-04T22:12:52.842Z'
+        checkedAt: '2026-08-04T22:12:52.842Z'
         latestVersion: 2.3.6
         lastPublishedAt: '2026-07-13T07:55:45.496Z'
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@axis-backstage/plugin-jira-dashboard-common'
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@mui/material'
+          - '@mui/styles'
+          - lodash
+          - luxon
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:04.452Z'
+        lastAttemptAt: '2026-08-04T22:12:53.146Z'
         reason: config-schema-not-declared

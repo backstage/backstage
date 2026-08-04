@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:50.067Z'
-    checkedAt: '2026-08-04T05:02:50.067Z'
+    lastAttemptAt: '2026-08-04T22:12:37.909Z'
+    checkedAt: '2026-08-04T22:12:37.909Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/codescene/backstage.json
     sourcePath: workspaces/codescene/backstage.json
@@ -21,17 +21,33 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-codescene'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:49.711Z'
-        checkedAt: '2026-08-04T05:02:49.711Z'
+        lastAttemptAt: '2026-08-04T22:12:37.495Z'
+        checkedAt: '2026-08-04T22:12:37.495Z'
         latestVersion: 0.20.0
         lastPublishedAt: '2026-07-21T22:57:38.172Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/codescene/plugins/codescene
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/config'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/lab'
+          - '@types/react'
+          - luxon
+          - rc-progress
+          - react-use
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:50.216Z'
-        checkedAt: '2026-08-04T05:02:50.216Z'
+        lastAttemptAt: '2026-08-04T22:12:38.027Z'
+        checkedAt: '2026-08-04T22:12:38.027Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object

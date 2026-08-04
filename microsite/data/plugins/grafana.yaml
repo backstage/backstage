@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:00.454Z'
-    checkedAt: '2026-08-04T05:03:00.454Z'
+    lastAttemptAt: '2026-08-04T22:12:48.973Z'
+    checkedAt: '2026-08-04T22:12:48.973Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/grafana/backstage.json
     sourcePath: workspaces/grafana/backstage.json
@@ -21,17 +21,29 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-grafana'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:00.153Z'
-        checkedAt: '2026-08-04T05:03:00.153Z'
+        lastAttemptAt: '2026-08-04T22:12:48.686Z'
+        checkedAt: '2026-08-04T22:12:48.686Z'
         latestVersion: 0.22.0
         lastPublishedAt: '2026-07-21T23:05:07.671Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/grafana/plugins/grafana
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@material-ui/core'
+          - '@material-ui/lab'
+          - cross-fetch
+          - jsep
+          - react-use
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:00.570Z'
-        checkedAt: '2026-08-04T05:03:00.570Z'
+        lastAttemptAt: '2026-08-04T22:12:49.084Z'
+        checkedAt: '2026-08-04T22:12:49.084Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object

@@ -13,19 +13,32 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:17.897Z'
+    lastAttemptAt: '2026-08-04T22:13:07.887Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@solo.io/dev-portal-backstage-plugin'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:17.556Z'
-        checkedAt: '2026-08-04T05:03:17.556Z'
+        lastAttemptAt: '2026-08-04T22:13:07.474Z'
+        checkedAt: '2026-08-04T22:13:07.474Z'
         latestVersion: 0.2.7
         lastPublishedAt: '2023-07-20T14:58:14.164Z'
         repository:
           url: https://github.com/solo-io/dev-portal-backstage-public
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:18.712Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - swr
+          - mobx
+          - redoc
+          - react-use
+          - swagger-ui
+          - react-hot-toast
+          - '@backstage/theme'
+          - '@material-ui/lab'
+          - '@material-ui/core'
+          - '@types/swagger-ui'
+          - styled-components
+          - '@material-ui/icons'
+          - '@backstage/plugin-home'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'

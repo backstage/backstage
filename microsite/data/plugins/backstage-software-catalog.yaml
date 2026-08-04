@@ -13,28 +13,65 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:42.746Z'
-    checkedAt: '2026-08-04T05:02:42.746Z'
+    lastAttemptAt: '2026-08-04T22:12:30.438Z'
+    checkedAt: '2026-08-04T22:12:30.438Z'
     version: 1.53.1
     sourceUrl: https://github.com/backstage/backstage/releases/tag/v1.53.1
     sourcePath: plugins/catalog/package.json
   packages:
-    - functionality: frontend
-      npmPackageName: '@backstage/plugin-catalog'
+    - npmPackageName: '@backstage/plugin-catalog'
       sourcePath: plugins/catalog/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-react'
+        - '@backstage/plugin-catalog-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:42.415Z'
-        checkedAt: '2026-08-04T05:02:42.415Z'
+        lastAttemptAt: '2026-08-04T22:12:29.623Z'
+        checkedAt: '2026-08-04T22:12:29.623Z'
         latestVersion: 2.0.7
         lastPublishedAt: '2026-07-14T12:01:20.831Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - zod
+          - lodash
+          - pluralize
+          - react-use
+          - '@mui/utils'
+          - classnames
+          - dataloader
+          - react-helmet
+          - '@backstage/ui'
+          - csv-stringify
+          - zen-observable
+          - '@backstage/types'
+          - '@material-ui/lab'
+          - '@remixicon/react'
+          - '@backstage/errors'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/catalog-model'
+          - '@backstage/catalog-client'
+          - '@backstage/version-bridge'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/integration-react'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-search-react'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-search-common'
+          - '@backstage/plugin-catalog-common'
+          - '@backstage/plugin-techdocs-react'
+          - '@backstage/plugin-techdocs-common'
+          - '@backstage/plugin-permission-react'
+          - '@backstage/plugin-scaffolder-common'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:42.747Z'
-        checkedAt: '2026-08-04T05:02:42.747Z'
+        lastAttemptAt: '2026-08-04T22:12:30.442Z'
+        checkedAt: '2026-08-04T22:12:30.442Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -50,38 +87,64 @@ snapshot:
                         limit:
                           type: number
                   deepVisibility: frontend
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-catalog-backend-module-ai-model'
+    - npmPackageName: '@backstage/plugin-catalog-backend-module-ai-model'
       sourcePath: plugins/catalog-backend-module-ai-model/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-node'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:43.098Z'
-        checkedAt: '2026-08-04T05:02:43.098Z'
+        lastAttemptAt: '2026-08-04T22:12:31.099Z'
+        checkedAt: '2026-08-04T22:12:31.099Z'
         latestVersion: 0.1.2
         lastPublishedAt: '2026-07-14T12:01:40.604Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-backend-module-ai-model
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-catalog-node'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:43.398Z'
+        lastAttemptAt: '2026-08-04T22:12:31.321Z'
         reason: config-schema-not-declared
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-catalog-backend-module-aws'
+    - npmPackageName: '@backstage/plugin-catalog-backend-module-aws'
       sourcePath: plugins/catalog-backend-module-aws/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-node'
+        - '@backstage/plugin-catalog-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:43.683Z'
-        checkedAt: '2026-08-04T05:02:43.683Z'
+        lastAttemptAt: '2026-08-04T22:12:31.634Z'
+        checkedAt: '2026-08-04T22:12:31.634Z'
         latestVersion: 0.4.25
         lastPublishedAt: '2026-07-14T12:01:51.563Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-backend-module-aws
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - p-limit
+          - '@aws-sdk/types'
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@aws-sdk/client-s3'
+          - '@aws-sdk/client-eks'
+          - '@backstage/integration'
+          - '@backstage/catalog-model'
+          - '@backstage/backend-defaults'
+          - '@aws-sdk/middleware-endpoint'
+          - '@aws-sdk/client-organizations'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/integration-aws-node'
+          - '@backstage/plugin-catalog-common'
+          - '@backstage/plugin-kubernetes-common'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:44.092Z'
-        checkedAt: '2026-08-04T05:02:44.092Z'
+        lastAttemptAt: '2026-08-04T22:12:32.179Z'
+        checkedAt: '2026-08-04T22:12:32.179Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -343,22 +406,35 @@ snapshot:
                         AwsS3EntityProvider configuration
 
                         Uses "default" as default id for the single config variant.
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-catalog-backend-module-azure'
+    - npmPackageName: '@backstage/plugin-catalog-backend-module-azure'
       sourcePath: plugins/catalog-backend-module-azure/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-node'
+        - '@backstage/plugin-catalog-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:44.458Z'
-        checkedAt: '2026-08-04T05:02:44.458Z'
+        lastAttemptAt: '2026-08-04T22:12:32.485Z'
+        checkedAt: '2026-08-04T22:12:32.485Z'
         latestVersion: 0.3.19
         lastPublishedAt: '2026-07-14T12:02:04.165Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-backend-module-azure
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@azure/identity'
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@azure/storage-blob'
+          - '@backstage/integration'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-events-node'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-catalog-common'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:44.774Z'
-        checkedAt: '2026-08-04T05:02:44.774Z'
+        lastAttemptAt: '2026-08-04T22:12:32.973Z'
+        checkedAt: '2026-08-04T22:12:32.973Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -712,22 +788,35 @@ snapshot:
                             - accountName
                       description: AzureBlobEntityProvider configuration
                   description: List of provider-specific options and attributes
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-catalog-backend-module-backstage-openapi'
+    - npmPackageName: '@backstage/plugin-catalog-backend-module-backstage-openapi'
       sourcePath: plugins/catalog-backend-module-backstage-openapi/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-node'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:45.036Z'
-        checkedAt: '2026-08-04T05:02:45.036Z'
+        lastAttemptAt: '2026-08-04T22:12:33.235Z'
+        checkedAt: '2026-08-04T22:12:33.235Z'
         latestVersion: 0.5.16
         lastPublishedAt: '2026-07-14T12:02:12.823Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-backend-module-backstage-openapi
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - yaml
+          - lodash
+          - cross-fetch
+          - openapi-merge
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@backstage/catalog-model'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/backend-openapi-utils'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:45.294Z'
-        checkedAt: '2026-08-04T05:02:45.294Z'
+        lastAttemptAt: '2026-08-04T22:12:33.660Z'
+        checkedAt: '2026-08-04T22:12:33.660Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -758,22 +847,35 @@ snapshot:
                       required:
                         - plugins
                       description: BackstageOpenApiEntityProvider configuration
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-catalog-backend-module-bitbucket-cloud'
+    - npmPackageName: '@backstage/plugin-catalog-backend-module-bitbucket-cloud'
       sourcePath: plugins/catalog-backend-module-bitbucket-cloud/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-node'
+        - '@backstage/plugin-catalog-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:45.615Z'
-        checkedAt: '2026-08-04T05:02:45.615Z'
+        lastAttemptAt: '2026-08-04T22:12:34.160Z'
+        checkedAt: '2026-08-04T22:12:34.160Z'
         latestVersion: 0.5.13
         lastPublishedAt: '2026-07-14T12:02:25.436Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-backend-module-bitbucket-cloud
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@backstage/integration'
+          - '@backstage/catalog-model'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-events-node'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-catalog-common'
+          - '@backstage/plugin-bitbucket-cloud-common'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:46.064Z'
-        checkedAt: '2026-08-04T05:02:46.064Z'
+        lastAttemptAt: '2026-08-04T22:12:34.654Z'
+        checkedAt: '2026-08-04T22:12:34.654Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -1043,22 +1145,34 @@ snapshot:
 
                         Uses "default" as default id for the single config variant.
                   description: List of provider-specific options and attributes
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-catalog-backend-module-bitbucket-server'
+    - npmPackageName: '@backstage/plugin-catalog-backend-module-bitbucket-server'
       sourcePath: plugins/catalog-backend-module-bitbucket-server/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-node'
+        - '@backstage/plugin-catalog-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:46.405Z'
-        checkedAt: '2026-08-04T05:02:46.405Z'
+        lastAttemptAt: '2026-08-04T22:12:34.920Z'
+        checkedAt: '2026-08-04T22:12:34.920Z'
         latestVersion: 0.5.13
         lastPublishedAt: '2026-07-14T12:02:37.954Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-backend-module-bitbucket-server
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@backstage/integration'
+          - '@backstage/catalog-model'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-events-node'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-catalog-common'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:46.818Z'
-        checkedAt: '2026-08-04T05:02:46.818Z'
+        lastAttemptAt: '2026-08-04T22:12:35.442Z'
+        checkedAt: '2026-08-04T22:12:35.442Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -1319,22 +1433,31 @@ snapshot:
                         BitbucketServerEntityProvider configuration
 
                         Uses "default" as default id for the single config variant.
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-catalog-backend-module-gcp'
+    - npmPackageName: '@backstage/plugin-catalog-backend-module-gcp'
       sourcePath: plugins/catalog-backend-module-gcp/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-node'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:47.237Z'
-        checkedAt: '2026-08-04T05:02:47.237Z'
+        lastAttemptAt: '2026-08-04T22:12:35.761Z'
+        checkedAt: '2026-08-04T22:12:35.761Z'
         latestVersion: 0.3.21
         lastPublishedAt: '2026-07-14T12:02:49.818Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-backend-module-gcp
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/config'
+          - '@google-cloud/container'
+          - '@backstage/catalog-model'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-kubernetes-common'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:47.690Z'
-        checkedAt: '2026-08-04T05:02:47.690Z'
+        lastAttemptAt: '2026-08-04T22:12:36.216Z'
+        checkedAt: '2026-08-04T22:12:36.216Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -1468,22 +1591,34 @@ snapshot:
                           description: Config for GKE clusters
                       description: GCPCatalogModuleConfig configuration
                   description: List of provider-specific options and attributes
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-catalog-backend-module-gerrit'
+    - npmPackageName: '@backstage/plugin-catalog-backend-module-gerrit'
       sourcePath: plugins/catalog-backend-module-gerrit/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-node'
+        - '@backstage/plugin-catalog-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:48.040Z'
-        checkedAt: '2026-08-04T05:02:48.040Z'
+        lastAttemptAt: '2026-08-04T22:12:36.586Z'
+        checkedAt: '2026-08-04T22:12:36.586Z'
         latestVersion: 0.3.16
         lastPublishedAt: '2026-07-14T12:03:01.426Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-backend-module-gerrit
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - p-limit
+          - fs-extra
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@backstage/integration'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-catalog-common'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:48.375Z'
-        checkedAt: '2026-08-04T05:02:48.375Z'
+        lastAttemptAt: '2026-08-04T22:12:37.171Z'
+        checkedAt: '2026-08-04T22:12:37.171Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -1657,54 +1792,98 @@ snapshot:
 
                         Maps provider id with configuration.
                   description: List of provider-specific options and attributes
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-catalog-backend-module-gitea'
+    - npmPackageName: '@backstage/plugin-catalog-backend-module-gitea'
       sourcePath: plugins/catalog-backend-module-gitea/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-node'
+        - '@backstage/plugin-catalog-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:48.672Z'
-        checkedAt: '2026-08-04T05:02:48.672Z'
+        lastAttemptAt: '2026-08-04T22:12:37.580Z'
+        checkedAt: '2026-08-04T22:12:37.580Z'
         latestVersion: 0.1.14
         lastPublishedAt: '2026-07-14T12:03:09.443Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-backend-module-gitea
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - p-limit
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@backstage/integration'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-catalog-common'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:48.913Z'
+        lastAttemptAt: '2026-08-04T22:12:37.930Z'
         reason: config-schema-not-declared
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-catalog-backend-module-github-org'
+    - npmPackageName: '@backstage/plugin-catalog-backend-module-github-org'
       sourcePath: plugins/catalog-backend-module-github-org/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-node'
+        - '@backstage/plugin-catalog-backend-module-github'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:49.267Z'
-        checkedAt: '2026-08-04T05:02:49.267Z'
+        lastAttemptAt: '2026-08-04T22:12:38.259Z'
+        checkedAt: '2026-08-04T22:12:38.259Z'
         latestVersion: 0.3.24
         lastPublishedAt: '2026-07-14T12:03:34.087Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-backend-module-github-org
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/config'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-events-node'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-catalog-backend-module-github'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:49.523Z'
+        lastAttemptAt: '2026-08-04T22:12:38.587Z'
         reason: config-schema-not-declared
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-catalog-backend-module-github'
+    - npmPackageName: '@backstage/plugin-catalog-backend-module-github'
       sourcePath: plugins/catalog-backend-module-github/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-node'
+        - '@backstage/plugin-catalog-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:49.878Z'
-        checkedAt: '2026-08-04T05:02:49.878Z'
+        lastAttemptAt: '2026-08-04T22:12:38.986Z'
+        checkedAt: '2026-08-04T22:12:38.986Z'
         latestVersion: 0.13.4
         lastPublishedAt: '2026-07-14T12:03:22.795Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-backend-module-github
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - lodash
+          - octokit
+          - minimatch
+          - '@octokit/core'
+          - '@octokit/rest'
+          - git-url-parse
+          - '@backstage/types'
+          - '@octokit/graphql'
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@octokit/plugin-retry'
+          - '@backstage/integration'
+          - '@octokit/auth-callback'
+          - '@octokit/webhooks-types'
+          - '@backstage/catalog-model'
+          - '@octokit/plugin-throttling'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-events-node'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-catalog-common'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:50.361Z'
-        checkedAt: '2026-08-04T05:02:50.361Z'
+        lastAttemptAt: '2026-08-04T22:12:39.349Z'
+        checkedAt: '2026-08-04T22:12:39.349Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -2376,38 +2555,61 @@ snapshot:
                               - githubUrl
                               - schedule
                       description: Configuration for catalogModuleGithubOrgEntityProvider
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-catalog-backend-module-gitlab-org'
+    - npmPackageName: '@backstage/plugin-catalog-backend-module-gitlab-org'
       sourcePath: plugins/catalog-backend-module-gitlab-org/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-node'
+        - '@backstage/plugin-catalog-backend-module-gitlab'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:50.627Z'
-        checkedAt: '2026-08-04T05:02:50.627Z'
+        lastAttemptAt: '2026-08-04T22:12:39.662Z'
+        checkedAt: '2026-08-04T22:12:39.662Z'
         latestVersion: 0.2.23
         lastPublishedAt: '2026-07-14T12:03:56.165Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-backend-module-gitlab-org
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-events-node'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-catalog-backend-module-gitlab'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:50.904Z'
+        lastAttemptAt: '2026-08-04T22:12:39.989Z'
         reason: config-schema-not-declared
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-catalog-backend-module-gitlab'
+    - npmPackageName: '@backstage/plugin-catalog-backend-module-gitlab'
       sourcePath: plugins/catalog-backend-module-gitlab/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-node'
+        - '@backstage/plugin-catalog-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:51.249Z'
-        checkedAt: '2026-08-04T05:02:51.249Z'
+        lastAttemptAt: '2026-08-04T22:12:40.276Z'
+        checkedAt: '2026-08-04T22:12:40.276Z'
         latestVersion: 0.8.5
         lastPublishedAt: '2026-07-14T12:03:46.499Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-backend-module-gitlab
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - lodash
+          - '@gitbeaker/rest'
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@backstage/integration'
+          - '@backstage/catalog-model'
+          - '@backstage/backend-defaults'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-events-node'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-catalog-common'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:51.567Z'
-        checkedAt: '2026-08-04T05:02:51.567Z'
+        lastAttemptAt: '2026-08-04T22:12:40.806Z'
+        checkedAt: '2026-08-04T22:12:40.806Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -2595,38 +2797,68 @@ snapshot:
                         required:
                           - host
                       description: GitlabDiscoveryEntityProvider configuration
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-catalog-backend-module-incremental-ingestion'
+    - npmPackageName: '@backstage/plugin-catalog-backend-module-incremental-ingestion'
       sourcePath: plugins/catalog-backend-module-incremental-ingestion/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-node'
+        - '@backstage/plugin-catalog-backend'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:51.825Z'
-        checkedAt: '2026-08-04T05:02:51.825Z'
+        lastAttemptAt: '2026-08-04T22:12:41.004Z'
+        checkedAt: '2026-08-04T22:12:41.004Z'
         latestVersion: 0.7.14
         lastPublishedAt: '2026-07-14T12:04:04.006Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-backend-module-incremental-ingestion
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - knex
+          - luxon
+          - express
+          - '@backstage/types'
+          - '@backstage/config'
+          - '@backstage/errors'
+          - express-promise-router
+          - '@backstage/catalog-model'
+          - '@backstage/backend-defaults'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-events-node'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-catalog-backend'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:52.169Z'
+        lastAttemptAt: '2026-08-04T22:12:41.327Z'
         reason: config-schema-not-declared
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-catalog-backend-module-ldap'
+    - npmPackageName: '@backstage/plugin-catalog-backend-module-ldap'
       sourcePath: plugins/catalog-backend-module-ldap/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-node'
+        - '@backstage/plugin-catalog-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:52.558Z'
-        checkedAt: '2026-08-04T05:02:52.558Z'
+        lastAttemptAt: '2026-08-04T22:12:41.539Z'
+        checkedAt: '2026-08-04T22:12:41.539Z'
         latestVersion: 0.12.7
         lastPublishedAt: '2026-07-14T12:04:13.468Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-backend-module-ldap
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - ldapts
+          - lodash
+          - '@backstage/types'
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@backstage/catalog-model'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-catalog-common'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:52.991Z'
-        checkedAt: '2026-08-04T05:02:52.991Z'
+        lastAttemptAt: '2026-08-04T22:12:41.981Z'
+        checkedAt: '2026-08-04T22:12:41.981Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -3900,54 +4132,88 @@ snapshot:
                     - 'null'
                   description: A type representing all allowed JSON primitive values.
               description: A type representing all allowed JSON values.
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-catalog-backend-module-logs'
+    - npmPackageName: '@backstage/plugin-catalog-backend-module-logs'
       sourcePath: plugins/catalog-backend-module-logs/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-backend'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:53.416Z'
-        checkedAt: '2026-08-04T05:02:53.416Z'
+        lastAttemptAt: '2026-08-04T22:12:42.400Z'
+        checkedAt: '2026-08-04T22:12:42.400Z'
         latestVersion: 0.1.24
         lastPublishedAt: '2026-07-14T12:04:20.224Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-backend-module-logs
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-events-node'
+          - '@backstage/plugin-catalog-backend'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:53.623Z'
+        lastAttemptAt: '2026-08-04T22:12:42.680Z'
         reason: config-schema-not-declared
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-catalog-backend-module-msgraph-incremental'
+    - npmPackageName: '@backstage/plugin-catalog-backend-module-msgraph-incremental'
       sourcePath: plugins/catalog-backend-module-msgraph-incremental/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-node'
+        - '@backstage/plugin-catalog-backend-module-msgraph'
+        - '@backstage/plugin-catalog-backend-module-incremental-ingestion'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:53.839Z'
-        checkedAt: '2026-08-04T05:02:53.839Z'
+        lastAttemptAt: '2026-08-04T22:12:42.894Z'
+        checkedAt: '2026-08-04T22:12:42.894Z'
         latestVersion: 0.1.2
         lastPublishedAt: '2026-07-14T12:04:39.528Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-backend-module-msgraph-incremental
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - p-limit
+          - '@backstage/types'
+          - '@backstage/config'
+          - '@backstage/catalog-model'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-catalog-node'
+          - '@microsoft/microsoft-graph-types'
+          - '@backstage/plugin-catalog-backend-module-msgraph'
+          - '@backstage/plugin-catalog-backend-module-incremental-ingestion'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:54.103Z'
+        lastAttemptAt: '2026-08-04T22:12:43.215Z'
         reason: config-schema-not-declared
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-catalog-backend-module-msgraph'
+    - npmPackageName: '@backstage/plugin-catalog-backend-module-msgraph'
       sourcePath: plugins/catalog-backend-module-msgraph/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-node'
+        - '@backstage/plugin-catalog-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:54.456Z'
-        checkedAt: '2026-08-04T05:02:54.456Z'
+        lastAttemptAt: '2026-08-04T22:12:43.543Z'
+        checkedAt: '2026-08-04T22:12:43.543Z'
         latestVersion: 0.10.4
         lastPublishedAt: '2026-07-14T12:04:30.801Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-backend-module-msgraph
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - qs
+          - lodash
+          - p-limit
+          - '@azure/identity'
+          - '@backstage/config'
+          - '@backstage/catalog-model'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-catalog-common'
+          - '@microsoft/microsoft-graph-types'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:54.807Z'
-        checkedAt: '2026-08-04T05:02:54.807Z'
+        lastAttemptAt: '2026-08-04T22:12:43.970Z'
+        checkedAt: '2026-08-04T22:12:43.970Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -4481,38 +4747,60 @@ snapshot:
                               - clientId
                               - clientSecret
                       description: MicrosoftGraphOrgEntityProvider configuration.
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-catalog-backend-module-openapi'
+    - npmPackageName: '@backstage/plugin-catalog-backend-module-openapi'
       sourcePath: plugins/catalog-backend-module-openapi/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-node'
+        - '@backstage/plugin-catalog-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:55.065Z'
-        checkedAt: '2026-08-04T05:02:55.065Z'
+        lastAttemptAt: '2026-08-04T22:12:44.250Z'
+        checkedAt: '2026-08-04T22:12:44.250Z'
         latestVersion: 0.2.24
         lastPublishedAt: '2026-07-14T12:04:48.584Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-backend-module-openapi
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - yaml
+          - '@backstage/types'
+          - '@backstage/integration'
+          - '@backstage/catalog-model'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-catalog-common'
+          - '@apidevtools/json-schema-ref-parser'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:55.346Z'
+        lastAttemptAt: '2026-08-04T22:12:44.718Z'
         reason: config-schema-not-declared
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-catalog-backend-module-puppetdb'
+    - npmPackageName: '@backstage/plugin-catalog-backend-module-puppetdb'
       sourcePath: plugins/catalog-backend-module-puppetdb/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-node'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:55.600Z'
-        checkedAt: '2026-08-04T05:02:55.600Z'
+        lastAttemptAt: '2026-08-04T22:12:44.992Z'
+        checkedAt: '2026-08-04T22:12:44.992Z'
         latestVersion: 0.2.24
         lastPublishedAt: '2026-07-14T12:04:58.488Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-backend-module-puppetdb
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - lodash
+          - '@backstage/types'
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@backstage/catalog-model'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-catalog-node'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:55.722Z'
-        checkedAt: '2026-08-04T05:02:55.722Z'
+        lastAttemptAt: '2026-08-04T22:12:45.160Z'
+        checkedAt: '2026-08-04T22:12:45.160Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -4827,54 +5115,113 @@ snapshot:
                   description: Configuration for the providers.
               description: Configuration for the catalog.
           description: Represents the configuration for the Backstage.
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-catalog-backend-module-scaffolder-entity-model'
+    - npmPackageName: '@backstage/plugin-catalog-backend-module-scaffolder-entity-model'
       sourcePath: plugins/catalog-backend-module-scaffolder-entity-model/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-node'
+        - '@backstage/plugin-catalog-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:55.910Z'
-        checkedAt: '2026-08-04T05:02:55.910Z'
+        lastAttemptAt: '2026-08-04T22:12:45.342Z'
+        checkedAt: '2026-08-04T22:12:45.342Z'
         latestVersion: 0.2.22
         lastPublishedAt: '2026-07-14T12:05:06.138Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-backend-module-scaffolder-entity-model
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-catalog-common'
+          - '@backstage/plugin-scaffolder-common'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:56.227Z'
+        lastAttemptAt: '2026-08-04T22:12:45.582Z'
         reason: config-schema-not-declared
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-catalog-backend-module-unprocessed'
+    - npmPackageName: '@backstage/plugin-catalog-backend-module-unprocessed'
       sourcePath: plugins/catalog-backend-module-unprocessed/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-node'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:56.516Z'
-        checkedAt: '2026-08-04T05:02:56.516Z'
+        lastAttemptAt: '2026-08-04T22:12:45.842Z'
+        checkedAt: '2026-08-04T22:12:45.842Z'
         latestVersion: 0.6.14
         lastPublishedAt: '2026-07-14T12:05:12.464Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-backend-module-unprocessed
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - knex
+          - '@backstage/errors'
+          - express-promise-router
+          - '@backstage/catalog-model'
+          - '@backstage/plugin-auth-node'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-permission-common'
+          - '@backstage/plugin-catalog-unprocessed-entities-common'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:56.832Z'
+        lastAttemptAt: '2026-08-04T22:12:46.236Z'
         reason: config-schema-not-declared
-    - functionality: backend
-      npmPackageName: '@backstage/plugin-catalog-backend'
+    - npmPackageName: '@backstage/plugin-catalog-backend'
       sourcePath: plugins/catalog-backend/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-node'
+        - '@backstage/plugin-catalog-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:57.093Z'
-        checkedAt: '2026-08-04T05:02:57.093Z'
+        lastAttemptAt: '2026-08-04T22:12:46.542Z'
+        checkedAt: '2026-08-04T22:12:46.542Z'
         latestVersion: 3.8.1
         lastPublishedAt: '2026-07-14T12:01:33.745Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-backend
+        backstageRole: backend-plugin
+        dependencyNames:
+          - yn
+          - ajv
+          - zod
+          - glob
+          - knex
+          - yaml
+          - luxon
+          - lodash
+          - core-js
+          - express
+          - p-limit
+          - fs-extra
+          - minimatch
+          - ajv-errors
+          - prom-client
+          - git-url-parse
+          - '@backstage/types'
+          - codeowners-utils
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@opentelemetry/api'
+          - zod-validation-error
+          - '@backstage/integration'
+          - '@backstage/catalog-model'
+          - '@backstage/catalog-client'
+          - fast-json-stable-stringify
+          - '@backstage/filter-predicates'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-events-node'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/backend-openapi-utils'
+          - '@backstage/plugin-catalog-common'
+          - '@backstage/plugin-permission-node'
+          - '@backstage/plugin-permission-common'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:57.503Z'
-        checkedAt: '2026-08-04T05:02:57.503Z'
+        lastAttemptAt: '2026-08-04T22:12:47.098Z'
+        checkedAt: '2026-08-04T22:12:47.098Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -5141,51 +5488,97 @@ snapshot:
                           description: Move entities that are moved as a result of an SCM event.
                   description: Settings that control what to do when receiving messages from the SCM events service.
               description: Configuration options for the catalog plugin.
-    - functionality: common
-      npmPackageName: '@backstage/plugin-catalog-common'
+    - npmPackageName: '@backstage/plugin-catalog-common'
       sourcePath: plugins/catalog-common/package.json
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:57.872Z'
-        checkedAt: '2026-08-04T05:02:57.872Z'
+        lastAttemptAt: '2026-08-04T22:12:47.430Z'
+        checkedAt: '2026-08-04T22:12:47.430Z'
         latestVersion: 1.1.10
         lastPublishedAt: '2026-05-19T21:00:29.341Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-common
+        backstageRole: common-library
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/plugin-permission-common'
+          - '@backstage/plugin-search-common'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:58.129Z'
+        lastAttemptAt: '2026-08-04T22:12:47.794Z'
         reason: config-schema-not-declared
-    - functionality: node
-      npmPackageName: '@backstage/plugin-catalog-node'
+    - npmPackageName: '@backstage/plugin-catalog-node'
       sourcePath: plugins/catalog-node/package.json
+      internalDependencies:
+        - '@backstage/plugin-catalog-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:58.369Z'
-        checkedAt: '2026-08-04T05:02:58.369Z'
+        lastAttemptAt: '2026-08-04T22:12:48.090Z'
+        checkedAt: '2026-08-04T22:12:48.090Z'
         latestVersion: 2.2.3
         lastPublishedAt: '2026-07-14T12:05:54.726Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-node
+        backstageRole: node-library
+        dependencyNames:
+          - yaml
+          - lodash
+          - '@backstage/types'
+          - '@backstage/errors'
+          - '@opentelemetry/api'
+          - '@backstage/catalog-model'
+          - '@backstage/catalog-client'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-catalog-common'
+          - '@backstage/plugin-permission-node'
+          - '@backstage/plugin-permission-common'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:58.680Z'
+        lastAttemptAt: '2026-08-04T22:12:48.624Z'
         reason: config-schema-not-declared
-    - functionality: react
-      npmPackageName: '@backstage/plugin-catalog-react'
+    - npmPackageName: '@backstage/plugin-catalog-react'
       sourcePath: plugins/catalog-react/package.json
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:58.924Z'
-        checkedAt: '2026-08-04T05:02:58.924Z'
+        lastAttemptAt: '2026-08-04T22:12:48.812Z'
+        checkedAt: '2026-08-04T22:12:48.812Z'
         latestVersion: 3.2.0
         lastPublishedAt: '2026-07-14T12:06:12.768Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-react
+        backstageRole: web-library
+        dependencyNames:
+          - qs
+          - zod
+          - yaml
+          - lodash
+          - react-use
+          - classnames
+          - '@backstage/ui'
+          - zen-observable
+          - '@backstage/types'
+          - '@material-ui/lab'
+          - '@react-hookz/web'
+          - '@remixicon/react'
+          - '@backstage/errors'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - material-ui-popup-state
+          - '@backstage/catalog-model'
+          - '@backstage/catalog-client'
+          - '@backstage/version-bridge'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/filter-predicates'
+          - '@backstage/integration-react'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-permission-react'
+          - '@backstage/plugin-permission-common'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:59.264Z'
+        lastAttemptAt: '2026-08-04T22:12:49.131Z'
         reason: config-schema-not-declared

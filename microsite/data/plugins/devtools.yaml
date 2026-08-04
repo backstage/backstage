@@ -12,28 +12,45 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:54.191Z'
-    checkedAt: '2026-08-04T05:02:54.191Z'
+    lastAttemptAt: '2026-08-04T22:12:41.803Z'
+    checkedAt: '2026-08-04T22:12:41.803Z'
     version: 1.53.1
     sourceUrl: https://github.com/backstage/backstage/releases/tag/v1.53.1
     sourcePath: plugins/devtools/package.json
   packages:
-    - functionality: frontend
-      npmPackageName: '@backstage/plugin-devtools'
+    - npmPackageName: '@backstage/plugin-devtools'
       sourcePath: plugins/devtools/package.json
+      internalDependencies:
+        - '@backstage/plugin-devtools-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:53.646Z'
-        checkedAt: '2026-08-04T05:02:53.646Z'
+        lastAttemptAt: '2026-08-04T22:12:41.395Z'
+        checkedAt: '2026-08-04T22:12:41.395Z'
         latestVersion: 0.1.41
         lastPublishedAt: '2026-07-14T12:06:39.464Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/devtools
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - lodash
+          - react-use
+          - '@backstage/ui'
+          - react-json-view
+          - '@material-ui/lab'
+          - '@backstage/errors'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-devtools-common'
+          - '@backstage/plugin-permission-react'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:54.191Z'
-        checkedAt: '2026-08-04T05:02:54.191Z'
+        lastAttemptAt: '2026-08-04T22:12:41.804Z'
+        checkedAt: '2026-08-04T22:12:41.804Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -54,22 +71,42 @@ snapshot:
                     - plugins
                   description: Scheduled tasks configuration
                   visibility: frontend
-    - functionality: backend
-      npmPackageName: '@backstage/plugin-devtools-backend'
+    - npmPackageName: '@backstage/plugin-devtools-backend'
       sourcePath: plugins/devtools-backend/package.json
+      internalDependencies:
+        - '@backstage/plugin-devtools-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:54.565Z'
-        checkedAt: '2026-08-04T05:02:54.565Z'
+        lastAttemptAt: '2026-08-04T22:12:42.082Z'
+        checkedAt: '2026-08-04T22:12:42.082Z'
         latestVersion: 0.5.19
         lastPublishedAt: '2026-07-14T12:06:47.958Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/devtools-backend
+        backstageRole: backend-plugin
+        dependencyNames:
+          - ping
+          - lodash
+          - express
+          - fs-extra
+          - '@backstage/types'
+          - '@yarnpkg/parsers'
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@yarnpkg/lockfile'
+          - '@backstage/cli-common'
+          - '@manypkg/get-packages'
+          - express-promise-router
+          - '@backstage/config-loader'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-devtools-common'
+          - '@backstage/plugin-permission-node'
+          - '@backstage/plugin-permission-common'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:54.976Z'
-        checkedAt: '2026-08-04T05:02:54.976Z'
+        lastAttemptAt: '2026-08-04T22:12:42.425Z'
+        checkedAt: '2026-08-04T22:12:42.425Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -110,35 +147,42 @@ snapshot:
                       description: A list of package prefixes that DevTools will use for filtering all available dependencies (default is ["@backstage"])
                   description: Info configuration
               description: DevTools configuration.
-    - functionality: common
-      npmPackageName: '@backstage/plugin-devtools-common'
+    - npmPackageName: '@backstage/plugin-devtools-common'
       sourcePath: plugins/devtools-common/package.json
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:55.229Z'
-        checkedAt: '2026-08-04T05:02:55.229Z'
+        lastAttemptAt: '2026-08-04T22:12:42.673Z'
+        checkedAt: '2026-08-04T22:12:42.673Z'
         latestVersion: 0.1.25
         lastPublishedAt: '2026-05-19T21:01:57.247Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/devtools-common
+        backstageRole: common-library
+        dependencyNames:
+          - '@backstage/plugin-permission-common'
+          - '@backstage/types'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:55.577Z'
+        lastAttemptAt: '2026-08-04T22:12:43.011Z'
         reason: config-schema-not-declared
-    - functionality: react
-      npmPackageName: '@backstage/plugin-devtools-react'
+    - npmPackageName: '@backstage/plugin-devtools-react'
       sourcePath: plugins/devtools-react/package.json
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:55.869Z'
-        checkedAt: '2026-08-04T05:02:55.869Z'
+        lastAttemptAt: '2026-08-04T22:12:43.263Z'
+        checkedAt: '2026-08-04T22:12:43.263Z'
         latestVersion: 0.2.4
         lastPublishedAt: '2026-07-14T12:06:54.539Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/devtools-react
+        backstageRole: web-library
+        dependencyNames:
+          - '@material-ui/core'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:56.103Z'
+        lastAttemptAt: '2026-08-04T22:12:43.658Z'
         reason: config-schema-not-declared

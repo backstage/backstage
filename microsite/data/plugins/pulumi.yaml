@@ -13,17 +13,31 @@ staleSince: '2026-08-04'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:10.777Z'
+    lastAttemptAt: '2026-08-04T22:13:00.101Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@pulumi/backstage-plugin-pulumi'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:10.777Z'
-        checkedAt: '2026-08-04T05:03:10.777Z'
+        lastAttemptAt: '2026-08-04T22:13:00.101Z'
+        checkedAt: '2026-08-04T22:13:00.101Z'
         latestVersion: 0.18.0
         lastPublishedAt: '2025-05-24T16:27:08.670Z'
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-kubernetes'
+          - '@backstage/plugin-kubernetes-common'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:11.142Z'
+        lastAttemptAt: '2026-08-04T22:13:00.403Z'
         reason: config-schema-not-declared

@@ -12,20 +12,44 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:43.397Z'
+    lastAttemptAt: '2026-08-04T22:12:30.841Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@balajisiva/backstage-plugin-template-builder'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:43.035Z'
-        checkedAt: '2026-08-04T05:02:43.035Z'
+        lastAttemptAt: '2026-08-04T22:12:30.485Z'
+        checkedAt: '2026-08-04T22:12:30.485Z'
         latestVersion: 0.1.0
         lastPublishedAt: '2026-02-16T18:53:34.092Z'
         repository:
           url: https://github.com/balajisiva/backstage-template-builder
           directory: plugins/backstage-template-builder
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-permission-common'
+          - '@backstage/plugin-permission-react'
+          - '@backstage/theme'
+          - '@dnd-kit/core'
+          - '@dnd-kit/sortable'
+          - '@dnd-kit/utilities'
+          - '@material-ui/icons'
+          - '@radix-ui/react-accordion'
+          - '@radix-ui/react-dialog'
+          - '@radix-ui/react-dropdown-menu'
+          - '@radix-ui/react-select'
+          - '@radix-ui/react-switch'
+          - '@radix-ui/react-tabs'
+          - '@radix-ui/react-tooltip'
+          - js-yaml
+          - lucide-react
+          - react-use
+          - uuid
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:43.766Z'
+        lastAttemptAt: '2026-08-04T22:12:31.336Z'
         reason: config-schema-not-declared

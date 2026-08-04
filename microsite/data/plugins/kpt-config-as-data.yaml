@@ -13,8 +13,8 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:05.217Z'
-    checkedAt: '2026-08-04T05:03:05.217Z'
+    lastAttemptAt: '2026-08-04T22:12:54.051Z'
+    checkedAt: '2026-08-04T22:12:54.051Z'
     version: 1.12.1
     sourceUrl: https://github.com/GoogleContainerTools/kpt-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
@@ -22,14 +22,27 @@ snapshot:
     - npmPackageName: '@kpt/backstage-plugin-cad'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:04.861Z'
-        checkedAt: '2026-08-04T05:03:04.861Z'
+        lastAttemptAt: '2026-08-04T22:12:53.686Z'
+        checkedAt: '2026-08-04T22:12:53.686Z'
         latestVersion: 0.4.0
         lastPublishedAt: '2022-12-08T03:38:48.123Z'
         repository:
           url: https://github.com/GoogleContainerTools/kpt-backstage-plugins
           directory: plugins/cad
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:06.192Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@monaco-editor/loader'
+          - '@monaco-editor/react'
+          - diff
+          - js-yaml
+          - lodash
+          - moment
+          - monaco-editor
+          - react-router-dom
+          - react-use

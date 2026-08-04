@@ -13,8 +13,8 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:48.616Z'
-    checkedAt: '2026-08-04T05:02:48.616Z'
+    lastAttemptAt: '2026-08-04T22:12:36.153Z'
+    checkedAt: '2026-08-04T22:12:36.153Z'
     version: 1.15.0
     sourceUrl: https://github.com/cloud-carbon-footprint/ccf-backstage-plugin/blob/trunk/backstage.json
     sourcePath: backstage.json
@@ -22,14 +22,23 @@ snapshot:
     - npmPackageName: '@cloud-carbon-footprint/backstage-plugin-frontend'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:48.255Z'
-        checkedAt: '2026-08-04T05:02:48.255Z'
+        lastAttemptAt: '2026-08-04T22:12:35.734Z'
+        checkedAt: '2026-08-04T22:12:35.734Z'
         latestVersion: 0.1.1
         lastPublishedAt: '2023-06-30T21:18:22.382Z'
         repository:
           url: https://github.com/cloud-carbon-footprint/ccf-backstage-plugin
           directory: plugins/frontend
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:49.291Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - moment
+          - react-use
+          - '@backstage/config'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/core-app-api'
+          - '@backstage/backend-common'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@cloud-carbon-footprint/client'
+          - '@cloud-carbon-footprint/common'

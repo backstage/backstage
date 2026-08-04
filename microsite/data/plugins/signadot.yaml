@@ -13,19 +13,26 @@ staleSince: '2026-08-04'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:17.526Z'
+    lastAttemptAt: '2026-08-04T22:13:07.415Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@signadot-lib/backstage-plugin'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:17.193Z'
-        checkedAt: '2026-08-04T05:03:17.193Z'
+        lastAttemptAt: '2026-08-04T22:13:07.077Z'
+        checkedAt: '2026-08-04T22:13:07.077Z'
         latestVersion: 0.1.10-xrc.7
         lastPublishedAt: '2025-07-15T14:54:42.064Z'
         repository:
           url: https://github.com/signadot/backstage-plugin
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:17.961Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - namespaces
+          - react-use
+          - semver

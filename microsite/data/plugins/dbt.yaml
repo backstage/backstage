@@ -13,19 +13,28 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:52.997Z'
+    lastAttemptAt: '2026-08-04T22:12:40.770Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@iiben_orgii/backstage-plugin-dbt'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:52.630Z'
-        checkedAt: '2026-08-04T05:02:52.630Z'
+        lastAttemptAt: '2026-08-04T22:12:40.394Z'
+        checkedAt: '2026-08-04T22:12:40.394Z'
         latestVersion: 2.1.0
         lastPublishedAt: '2024-05-17T13:30:57.556Z'
         repository:
           url: https://github.com/IIBenII/backstage-plugin-dbt
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:53.345Z'
+        lastAttemptAt: '2026-08-04T22:12:41.100Z'
         reason: config-schema-not-declared

@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:56.624Z'
-    checkedAt: '2026-08-04T05:02:56.624Z'
+    lastAttemptAt: '2026-08-04T22:12:44.364Z'
+    checkedAt: '2026-08-04T22:12:44.364Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/entity-validation/backstage.json
     sourcePath: workspaces/entity-validation/backstage.json
@@ -21,14 +21,37 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-entity-validation'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:56.436Z'
-        checkedAt: '2026-08-04T05:02:56.436Z'
+        lastAttemptAt: '2026-08-04T22:12:44.138Z'
+        checkedAt: '2026-08-04T22:12:44.138Z'
         latestVersion: 0.22.0
         lastPublishedAt: '2026-07-21T23:04:13.561Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/entity-validation/plugins/entity-validation
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-client'
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-common'
+          - '@backstage/plugin-catalog-react'
+          - '@codemirror/language'
+          - '@codemirror/legacy-modes'
+          - '@codemirror/view'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@react-hookz/web'
+          - '@types/react'
+          - '@uiw/react-codemirror'
+          - lodash
+          - react-use
+          - yaml
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:56.764Z'
+        lastAttemptAt: '2026-08-04T22:12:44.477Z'
         reason: config-schema-not-declared

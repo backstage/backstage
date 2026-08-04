@@ -12,23 +12,40 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:40.547Z'
-    checkedAt: '2026-08-04T05:02:40.547Z'
-    version: 1.43.1
+    lastAttemptAt: '2026-08-04T22:12:28.044Z'
+    checkedAt: '2026-08-04T22:12:28.044Z'
+    version: 1.52.1
     sourceUrl: https://github.com/awslabs/backstage-plugins-for-aws/blob/main/backstage.json
     sourcePath: backstage.json
   packages:
     - npmPackageName: '@aws/amazon-ecs-plugin-for-backstage'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:40.264Z'
-        checkedAt: '2026-08-04T05:02:40.264Z'
+        lastAttemptAt: '2026-08-04T22:12:27.430Z'
+        checkedAt: '2026-08-04T22:12:27.430Z'
         latestVersion: 0.6.3
         lastPublishedAt: '2026-04-23T15:04:15.202Z'
         repository:
           url: https://github.com/awslabs/backstage-plugins-for-aws
           directory: plugins/ecs/frontend
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@aws-sdk/client-ecs'
+          - '@aws-sdk/util-arn-parser'
+          - '@aws/amazon-ecs-plugin-for-backstage-common'
+          - '@aws/aws-core-plugin-for-backstage-common'
+          - '@aws/aws-core-plugin-for-backstage-react'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - humanize-duration
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:41.304Z'
+        lastAttemptAt: '2026-08-04T22:12:28.478Z'
         reason: config-schema-not-declared

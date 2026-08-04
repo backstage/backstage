@@ -12,20 +12,29 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:14.322Z'
+    lastAttemptAt: '2026-08-04T22:13:03.934Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@grvpandey11/backstage-plugin-scaffolder-backend-module-ms-teams'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:13.978Z'
-        checkedAt: '2026-08-04T05:03:13.978Z'
+        lastAttemptAt: '2026-08-04T22:13:03.603Z'
+        checkedAt: '2026-08-04T22:13:03.603Z'
         latestVersion: 3.1.0
         lastPublishedAt: '2026-07-04T07:55:56.814Z'
         repository:
           url: https://github.com/grvpandey11/backstage-plugin-scaffolder-backend-module-ms-teams
           directory: .
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/backend-plugin-api'
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@backstage/plugin-scaffolder-node'
+          - axios
+          - yaml
+          - zod
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:14.749Z'
+        lastAttemptAt: '2026-08-04T22:13:04.334Z'
         reason: config-schema-not-declared

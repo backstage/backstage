@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:17.976Z'
-    checkedAt: '2026-08-04T05:03:17.976Z'
+    lastAttemptAt: '2026-08-04T22:13:07.860Z'
+    checkedAt: '2026-08-04T22:13:07.860Z'
     version: 1.50.2
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/sonarqube/backstage.json
     sourcePath: workspaces/sonarqube/backstage.json
@@ -21,14 +21,29 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-sonarqube'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:17.719Z'
-        checkedAt: '2026-08-04T05:03:17.719Z'
+        lastAttemptAt: '2026-08-04T22:13:07.610Z'
+        checkedAt: '2026-08-04T22:13:07.610Z'
         latestVersion: 1.1.0
         lastPublishedAt: '2026-04-17T18:46:55.953Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/sonarqube/plugins/sonarqube
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:18.094Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage-community/plugin-sonarqube-react'
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/frontend-app-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/styles'
+          - '@types/react'
+          - cross-fetch
+          - luxon
+          - rc-progress
+          - react-use

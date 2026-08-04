@@ -12,17 +12,34 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:04.812Z'
+    lastAttemptAt: '2026-08-04T22:12:53.596Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@knative-extensions/plugin-knative-event-mesh-backend'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:04.812Z'
-        checkedAt: '2026-08-04T05:03:04.812Z'
+        lastAttemptAt: '2026-08-04T22:12:53.596Z'
+        checkedAt: '2026-08-04T22:12:53.596Z'
         latestVersion: 1.21.0
         lastPublishedAt: '2026-01-28T16:19:22.757Z'
+        backstageRole: backend-plugin
+        dependencyNames:
+          - yn
+          - express
+          - winston
+          - node-fetch
+          - '@types/express'
+          - '@backstage/config'
+          - express-promise-router
+          - '@backstage/backend-tasks'
+          - '@backstage/catalog-model'
+          - '@backstage/backend-common'
+          - '@backstage/catalog-client'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-catalog-common'
+          - '@backstage/backend-dynamic-feature-service'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:05.213Z'
+        lastAttemptAt: '2026-08-04T22:12:54.029Z'
         reason: config-schema-not-declared

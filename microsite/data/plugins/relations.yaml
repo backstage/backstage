@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:11.846Z'
-    checkedAt: '2026-08-04T05:03:11.846Z'
+    lastAttemptAt: '2026-08-04T22:13:01.151Z'
+    checkedAt: '2026-08-04T22:13:01.151Z'
     version: 1.46.1
     sourceUrl: https://github.com/dweber019/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,14 +21,20 @@ snapshot:
     - npmPackageName: '@dweber019/backstage-plugin-relations'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:11.512Z'
-        checkedAt: '2026-08-04T05:03:11.512Z'
+        lastAttemptAt: '2026-08-04T22:13:00.900Z'
+        checkedAt: '2026-08-04T22:13:00.900Z'
         latestVersion: 0.1.2
         lastPublishedAt: '2025-12-19T07:45:30.540Z'
         repository:
           url: https://github.com/dweber019/backstage-plugins
           directory: plugins/relations
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:11.949Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/config'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-graph'
+          - '@backstage/plugin-catalog-react'
+          - '@material-ui/core'
+          - react-use

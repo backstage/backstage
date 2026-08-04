@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:04.878Z'
-    checkedAt: '2026-08-04T05:03:04.878Z'
+    lastAttemptAt: '2026-08-04T22:12:53.622Z'
+    checkedAt: '2026-08-04T22:12:53.622Z'
     version: 1.49.2
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/kafka/backstage.json
     sourcePath: workspaces/kafka/backstage.json
@@ -21,14 +21,22 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-kafka'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:04.581Z'
-        checkedAt: '2026-08-04T05:03:04.581Z'
+        lastAttemptAt: '2026-08-04T22:12:53.123Z'
+        checkedAt: '2026-08-04T22:12:53.123Z'
         latestVersion: 0.12.0
         lastPublishedAt: '2026-04-17T18:32:16.632Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/kafka/plugins/kafka
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:05.006Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@types/react'
+          - react-use

@@ -13,17 +13,35 @@ staleSince: '2026-08-04'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:59.815Z'
+    lastAttemptAt: '2026-08-04T22:12:48.056Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@veecode-platform/backstage-plugin-gitlab-pipelines'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:59.815Z'
-        checkedAt: '2026-08-04T05:02:59.815Z'
+        lastAttemptAt: '2026-08-04T22:12:48.056Z'
+        checkedAt: '2026-08-04T22:12:48.056Z'
         latestVersion: 0.7.0
         lastPublishedAt: '2025-06-27T14:49:41.654Z'
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - dayjs
+          - react-use
+          - react-icons
+          - git-url-parse
+          - '@backstage/theme'
+          - '@material-ui/lab'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/integration'
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/integration-react'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:00.174Z'
+        lastAttemptAt: '2026-08-04T22:12:48.424Z'
         reason: config-schema-not-declared

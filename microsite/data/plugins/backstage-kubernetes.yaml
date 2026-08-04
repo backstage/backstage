@@ -13,44 +13,88 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:42.674Z'
-    checkedAt: '2026-08-04T05:02:42.674Z'
+    lastAttemptAt: '2026-08-04T22:12:30.349Z'
+    checkedAt: '2026-08-04T22:12:30.349Z'
     version: 1.53.1
     sourceUrl: https://github.com/backstage/backstage/releases/tag/v1.53.1
     sourcePath: plugins/kubernetes/package.json
   packages:
-    - functionality: frontend
-      npmPackageName: '@backstage/plugin-kubernetes'
+    - npmPackageName: '@backstage/plugin-kubernetes'
       sourcePath: plugins/kubernetes/package.json
+      internalDependencies:
+        - '@backstage/plugin-kubernetes-react'
+        - '@backstage/plugin-kubernetes-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:42.316Z'
-        checkedAt: '2026-08-04T05:02:42.316Z'
+        lastAttemptAt: '2026-08-04T22:12:29.615Z'
+        checkedAt: '2026-08-04T22:12:29.615Z'
         latestVersion: 0.12.21
         lastPublishedAt: '2026-07-14T12:09:13.207Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/kubernetes
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@material-ui/core'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-kubernetes-react'
+          - '@backstage/plugin-permission-react'
+          - '@backstage/plugin-kubernetes-common'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:42.676Z'
+        lastAttemptAt: '2026-08-04T22:12:30.350Z'
         reason: config-schema-not-declared
-    - functionality: backend
-      npmPackageName: '@backstage/plugin-kubernetes-backend'
+    - npmPackageName: '@backstage/plugin-kubernetes-backend'
       sourcePath: plugins/kubernetes-backend/package.json
+      internalDependencies:
+        - '@backstage/plugin-kubernetes-node'
+        - '@backstage/plugin-kubernetes-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:42.926Z'
-        checkedAt: '2026-08-04T05:02:42.926Z'
+        lastAttemptAt: '2026-08-04T22:12:30.682Z'
+        checkedAt: '2026-08-04T22:12:30.682Z'
         latestVersion: 0.21.6
         lastPublishedAt: '2026-07-14T12:09:23.900Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/kubernetes-backend
+        backstageRole: backend-plugin
+        dependencyNames:
+          - luxon
+          - lodash
+          - express
+          - fs-extra
+          - node-fetch
+          - '@azure/identity'
+          - '@backstage/types'
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@jest-mock/express'
+          - '@smithy/signature-v4'
+          - '@aws-crypto/sha256-js'
+          - http-proxy-middleware
+          - express-promise-router
+          - '@google-cloud/container'
+          - '@kubernetes/client-node'
+          - '@backstage/catalog-model'
+          - '@backstage/catalog-client'
+          - '@types/http-proxy-middleware'
+          - '@aws-sdk/credential-providers'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/integration-aws-node'
+          - '@backstage/plugin-kubernetes-node'
+          - '@backstage/plugin-permission-node'
+          - '@backstage/plugin-kubernetes-common'
+          - '@backstage/plugin-permission-common'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:43.258Z'
-        checkedAt: '2026-08-04T05:02:43.258Z'
+        lastAttemptAt: '2026-08-04T22:12:31.081Z'
+        checkedAt: '2026-08-04T22:12:31.081Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -258,54 +302,96 @@ snapshot:
               required:
                 - serviceLocatorMethod
                 - clusterLocatorMethods
-    - functionality: common
-      npmPackageName: '@backstage/plugin-kubernetes-common'
+    - npmPackageName: '@backstage/plugin-kubernetes-common'
       sourcePath: plugins/kubernetes-common/package.json
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:43.606Z'
-        checkedAt: '2026-08-04T05:02:43.606Z'
+        lastAttemptAt: '2026-08-04T22:12:31.487Z'
+        checkedAt: '2026-08-04T22:12:31.487Z'
         latestVersion: 0.9.12
         lastPublishedAt: '2026-05-19T21:04:26.294Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/kubernetes-common
+        backstageRole: common-library
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/plugin-permission-common'
+          - '@backstage/types'
+          - '@kubernetes/client-node'
+          - kubernetes-models
+          - lodash
+          - luxon
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:43.884Z'
+        lastAttemptAt: '2026-08-04T22:12:31.889Z'
         reason: config-schema-not-declared
-    - functionality: node
-      npmPackageName: '@backstage/plugin-kubernetes-node'
+    - npmPackageName: '@backstage/plugin-kubernetes-node'
       sourcePath: plugins/kubernetes-node/package.json
+      internalDependencies:
+        - '@backstage/plugin-kubernetes-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:44.156Z'
-        checkedAt: '2026-08-04T05:02:44.156Z'
+        lastAttemptAt: '2026-08-04T22:12:32.203Z'
+        checkedAt: '2026-08-04T22:12:32.203Z'
         latestVersion: 0.4.6
         lastPublishedAt: '2026-07-14T12:09:40.808Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/kubernetes-node
+        backstageRole: node-library
+        dependencyNames:
+          - node-fetch
+          - '@types/express'
+          - '@backstage/types'
+          - '@kubernetes/client-node'
+          - '@backstage/catalog-model'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-kubernetes-common'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:44.423Z'
+        lastAttemptAt: '2026-08-04T22:12:32.491Z'
         reason: config-schema-not-declared
-    - functionality: react
-      npmPackageName: '@backstage/plugin-kubernetes-react'
+    - npmPackageName: '@backstage/plugin-kubernetes-react'
       sourcePath: plugins/kubernetes-react/package.json
+      internalDependencies:
+        - '@backstage/plugin-kubernetes-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:44.668Z'
-        checkedAt: '2026-08-04T05:02:44.668Z'
+        lastAttemptAt: '2026-08-04T22:12:32.748Z'
+        checkedAt: '2026-08-04T22:12:32.748Z'
         latestVersion: 0.5.22
         lastPublishedAt: '2026-07-14T12:09:51.903Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/kubernetes-react
+        backstageRole: web-library
+        dependencyNames:
+          - luxon
+          - lodash
+          - js-yaml
+          - cronstrue
+          - react-use
+          - '@xterm/xterm'
+          - '@backstage/types'
+          - '@material-ui/lab'
+          - '@xterm/addon-fit'
+          - '@backstage/errors'
+          - '@material-ui/core'
+          - kubernetes-models
+          - '@material-ui/icons'
+          - '@xterm/addon-attach'
+          - '@kubernetes-models/base'
+          - '@kubernetes/client-node'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@kubernetes-models/apimachinery'
+          - '@backstage/plugin-kubernetes-common'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:44.976Z'
-        checkedAt: '2026-08-04T05:02:44.976Z'
+        lastAttemptAt: '2026-08-04T22:12:33.031Z'
+        checkedAt: '2026-08-04T22:12:33.031Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object

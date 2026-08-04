@@ -12,17 +12,27 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:52.132Z'
+    lastAttemptAt: '2026-08-04T22:12:39.566Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@datadog/backstage-plugin-datadog-entity-sync-backend'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:52.132Z'
-        checkedAt: '2026-08-04T05:02:52.132Z'
+        lastAttemptAt: '2026-08-04T22:12:39.566Z'
+        checkedAt: '2026-08-04T22:12:39.566Z'
         latestVersion: 1.1.5
         lastPublishedAt: '2026-02-03T17:29:14.559Z'
+        backstageRole: backend-plugin
+        dependencyNames:
+          - '@backstage/backend-defaults'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-events-node'
+          - '@datadog/backstage-plugin-datadog-entity-sync-node'
+          - express
+          - express-promise-router
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:52.518Z'
+        lastAttemptAt: '2026-08-04T22:12:39.842Z'
         reason: config-schema-not-declared

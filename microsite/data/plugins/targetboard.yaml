@@ -12,19 +12,20 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:19.377Z'
+    lastAttemptAt: '2026-08-04T22:13:09.361Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@targetboard/backstage-plugin'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:19.002Z'
-        checkedAt: '2026-08-04T05:03:19.002Z'
+        lastAttemptAt: '2026-08-04T22:13:08.993Z'
+        checkedAt: '2026-08-04T22:13:08.993Z'
         latestVersion: 0.1.14
         lastPublishedAt: '2026-01-27T10:39:06.542Z'
         repository:
           url: https://github.com/targetboard/backstage-plugin
+        backstageRole: frontend-plugin
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:19.859Z'
+        lastAttemptAt: '2026-08-04T22:13:09.760Z'
         reason: config-schema-not-declared

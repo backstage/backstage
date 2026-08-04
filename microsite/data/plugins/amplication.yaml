@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:38.623Z'
-    checkedAt: '2026-08-04T05:02:38.623Z'
+    lastAttemptAt: '2026-08-04T22:12:25.441Z'
+    checkedAt: '2026-08-04T22:12:25.441Z'
     version: 1.41.1
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/amplication/backstage.json
     sourcePath: workspaces/amplication/backstage.json
@@ -21,14 +21,19 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-scaffolder-backend-module-amplication'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:38.254Z'
-        checkedAt: '2026-08-04T05:02:38.254Z'
+        lastAttemptAt: '2026-08-04T22:12:25.018Z'
+        checkedAt: '2026-08-04T22:12:25.018Z'
         latestVersion: 0.4.1
         lastPublishedAt: '2026-04-02T23:31:46.510Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/amplication/plugins/scaffolder-backend-module-amplication
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/backend-plugin-api'
+          - '@backstage/config'
+          - '@backstage/plugin-scaffolder-node'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:38.738Z'
+        lastAttemptAt: '2026-08-04T22:12:25.567Z'
         reason: config-schema-not-declared

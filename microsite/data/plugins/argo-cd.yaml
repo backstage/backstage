@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:39.797Z'
-    checkedAt: '2026-08-04T05:02:39.797Z'
+    lastAttemptAt: '2026-08-04T22:12:27.042Z'
+    checkedAt: '2026-08-04T22:12:27.042Z'
     version: 1.44.2
     sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,14 +21,27 @@ snapshot:
     - npmPackageName: '@roadiehq/backstage-plugin-argo-cd'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:39.549Z'
-        checkedAt: '2026-08-04T05:02:39.549Z'
+        lastAttemptAt: '2026-08-04T22:12:26.781Z'
+        checkedAt: '2026-08-04T22:12:26.781Z'
         latestVersion: 2.12.5
         lastPublishedAt: '2026-04-06T08:55:55.061Z'
         repository:
           url: https://github.com/RoadieHQ/roadie-backstage-plugins
           directory: plugins/frontend/backstage-plugin-argo-cd
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:40.453Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - fp-ts
+          - io-ts
+          - luxon
+          - react-use
+          - cross-fetch
+          - io-ts-promise
+          - io-ts-reporters
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'

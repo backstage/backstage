@@ -20,12 +20,48 @@ import styles from './pluginDirectory.module.scss';
 export interface PackageSelectOption {
   value: string;
   label: string;
+  group?: string;
 }
 
 interface PackageSelectProps {
   value: string;
   options: readonly PackageSelectOption[];
   onChange: (value: string) => void;
+}
+
+function renderOption(option: PackageSelectOption) {
+  return (
+    <option key={option.value} value={option.value}>
+      {option.label}
+    </option>
+  );
+}
+
+// Consecutive options sharing the same `group` collapse into one <optgroup>,
+// so callers can group by role without needing to pre-partition the list
+// themselves; ungrouped options render as direct children of the <select>.
+function renderOptions(options: readonly PackageSelectOption[]) {
+  const nodes: React.ReactNode[] = [];
+  let index = 0;
+  while (index < options.length) {
+    const group = options[index].group;
+    if (!group) {
+      nodes.push(renderOption(options[index]));
+      index += 1;
+      continue;
+    }
+    const groupOptions: PackageSelectOption[] = [];
+    while (index < options.length && options[index].group === group) {
+      groupOptions.push(options[index]);
+      index += 1;
+    }
+    nodes.push(
+      <optgroup key={group} label={group}>
+        {groupOptions.map(renderOption)}
+      </optgroup>,
+    );
+  }
+  return nodes;
 }
 
 export function PackageSelect({ value, options, onChange }: PackageSelectProps) {
@@ -37,11 +73,7 @@ export function PackageSelect({ value, options, onChange }: PackageSelectProps) 
         value={value}
         onChange={event => onChange(event.target.value)}
       >
-        {options.map(option => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
+        {renderOptions(options)}
       </select>
     </label>
   );

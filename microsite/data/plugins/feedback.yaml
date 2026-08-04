@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:56.981Z'
-    checkedAt: '2026-08-04T05:02:56.981Z'
+    lastAttemptAt: '2026-08-04T22:12:45.058Z'
+    checkedAt: '2026-08-04T22:12:45.058Z'
     version: 1.51.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/feedback/backstage.json
     sourcePath: workspaces/feedback/backstage.json
@@ -21,17 +21,32 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-feedback'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:56.709Z'
-        checkedAt: '2026-08-04T05:02:56.709Z'
+        lastAttemptAt: '2026-08-04T22:12:44.826Z'
+        checkedAt: '2026-08-04T22:12:44.826Z'
         latestVersion: 1.8.8
         lastPublishedAt: '2026-07-29T06:42:21.546Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/feedback/plugins/feedback
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage-community/plugin-feedback-common'
+          - '@backstage/catalog-model'
+          - '@backstage/config'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@mui/icons-material'
+          - '@mui/material'
+          - '@one-platform/opc-feedback'
+          - axios
+          - luxon
+          - react-use
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:57.083Z'
-        checkedAt: '2026-08-04T05:02:57.083Z'
+        lastAttemptAt: '2026-08-04T22:12:45.232Z'
+        checkedAt: '2026-08-04T22:12:45.232Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object

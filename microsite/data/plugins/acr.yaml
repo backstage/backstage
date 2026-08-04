@@ -11,8 +11,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:36.992Z'
-    checkedAt: '2026-08-04T05:02:36.992Z'
+    lastAttemptAt: '2026-08-04T22:12:23.920Z'
+    checkedAt: '2026-08-04T22:12:23.920Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/acr/backstage.json
     sourcePath: workspaces/acr/backstage.json
@@ -20,14 +20,25 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-acr'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:36.553Z'
-        checkedAt: '2026-08-04T05:02:36.553Z'
-        latestVersion: 1.26.0
-        lastPublishedAt: '2026-07-03T11:43:03.531Z'
+        lastAttemptAt: '2026-08-04T22:12:23.477Z'
+        checkedAt: '2026-08-04T22:12:23.477Z'
+        latestVersion: 1.27.0
+        lastPublishedAt: '2026-08-04T12:49:49.094Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/acr/plugins/acr
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-app-react'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/ui'
+          - luxon
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:38.036Z'
+        lastAttemptAt: '2026-08-04T22:12:24.797Z'
         reason: config-schema-not-declared

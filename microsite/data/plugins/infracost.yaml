@@ -13,17 +13,38 @@ staleSince: '2026-08-04'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:03.342Z'
+    lastAttemptAt: '2026-08-04T22:12:51.926Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@veecode-platform/backstage-plugin-infracost'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:03.342Z'
-        checkedAt: '2026-08-04T05:03:03.342Z'
+        lastAttemptAt: '2026-08-04T22:12:51.926Z'
+        checkedAt: '2026-08-04T22:12:51.926Z'
         latestVersion: 0.4.0
         lastPublishedAt: '2025-06-27T14:49:40.947Z'
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - dayjs
+          - lodash
+          - react-use
+          - '@mui/x-charts'
+          - '@backstage/theme'
+          - '@material-ui/lab'
+          - '@backstage/errors'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@mui/icons-material'
+          - '@backstage/integration'
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/integration-react'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@veecode-platform/backstage-plugin-infracost-common'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:03.722Z'
+        lastAttemptAt: '2026-08-04T22:12:52.330Z'
         reason: config-schema-not-declared

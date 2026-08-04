@@ -12,19 +12,34 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:45.691Z'
+    lastAttemptAt: '2026-08-04T22:12:33.514Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@buildkite/backstage-plugin-buildkite'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:45.322Z'
-        checkedAt: '2026-08-04T05:02:45.322Z'
+        lastAttemptAt: '2026-08-04T22:12:33.274Z'
+        checkedAt: '2026-08-04T22:12:33.274Z'
         latestVersion: 1.4.0
         lastPublishedAt: '2026-03-10T02:29:08.006Z'
         repository:
           url: https://github.com/buildkite/backstage-plugin
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:46.255Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/config'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-defaults'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@date-io/date-fns'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@material-ui/pickers'
+          - date-fns
+          - dotenv
+          - react-use

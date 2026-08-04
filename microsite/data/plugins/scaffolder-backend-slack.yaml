@@ -13,8 +13,8 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:15.001Z'
-    checkedAt: '2026-08-04T05:03:15.001Z'
+    lastAttemptAt: '2026-08-04T22:13:04.638Z'
+    checkedAt: '2026-08-04T22:13:04.638Z'
     version: 1.27.5
     sourceUrl: https://github.com/arhill05/backstage-plugin-scaffolder-backend-module-slack/blob/main/backstage.json
     sourcePath: backstage.json
@@ -22,13 +22,19 @@ snapshot:
     - npmPackageName: '@mdude2314/backstage-plugin-scaffolder-backend-module-slack'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:14.730Z'
-        checkedAt: '2026-08-04T05:03:14.730Z'
+        lastAttemptAt: '2026-08-04T22:13:04.277Z'
+        checkedAt: '2026-08-04T22:13:04.277Z'
         latestVersion: 3.0.2
         lastPublishedAt: '2024-08-27T17:54:02.737Z'
         repository:
           url: https://github.com/arhill05/backstage-plugin-scaffolder-backend-module-slack
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:15.563Z'
-        reason: config-schema-not-json
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/backend-plugin-api'
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@backstage/integration'
+          - '@backstage/plugin-scaffolder-backend'
+          - '@backstage/plugin-scaffolder-node'
+          - '@slack/web-api'
+          - axios

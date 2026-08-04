@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:39.047Z'
-    checkedAt: '2026-08-04T05:02:39.047Z'
+    lastAttemptAt: '2026-08-04T22:12:26.109Z'
+    checkedAt: '2026-08-04T22:12:26.109Z'
     version: 1.40.0
     sourceUrl: https://github.com/zalando/backstage-plugin-api-linter/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,14 +21,21 @@ snapshot:
     - npmPackageName: backstage-plugin-api-linter
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:38.910Z'
-        checkedAt: '2026-08-04T05:02:38.910Z'
+        lastAttemptAt: '2026-08-04T22:12:25.964Z'
+        checkedAt: '2026-08-04T22:12:25.964Z'
         latestVersion: 1.1.2
         lastPublishedAt: '2026-01-22T09:41:09.066Z'
         repository:
           url: https://github.com/zalando/backstage-plugin-api-linter
           directory: .
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - ace-builds
+          - brace
+          - react-ace
+          - react-use
+          - swagger-ui-react
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:39.633Z'
+        lastAttemptAt: '2026-08-04T22:12:26.771Z'
         reason: config-schema-not-declared

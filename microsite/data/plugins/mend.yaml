@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:07.919Z'
-    checkedAt: '2026-08-04T05:03:07.919Z'
+    lastAttemptAt: '2026-08-04T22:12:56.782Z'
+    checkedAt: '2026-08-04T22:12:56.782Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/mend/backstage.json
     sourcePath: workspaces/mend/backstage.json
@@ -21,14 +21,28 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-mend'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:07.555Z'
-        checkedAt: '2026-08-04T05:03:07.555Z'
+        lastAttemptAt: '2026-08-04T22:12:56.380Z'
+        checkedAt: '2026-08-04T22:12:56.380Z'
         latestVersion: 2.1.0
         lastPublishedAt: '2026-06-25T06:30:12.679Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/mend/plugins/mend
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@material-table/core'
+          - '@mui/icons-material'
+          - '@mui/material'
+          - '@tanstack/react-query'
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:08.052Z'
+        lastAttemptAt: '2026-08-04T22:12:56.913Z'
         reason: config-schema-not-declared

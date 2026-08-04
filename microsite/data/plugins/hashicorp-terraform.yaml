@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:02.102Z'
-    checkedAt: '2026-08-04T05:03:02.102Z'
+    lastAttemptAt: '2026-08-04T22:12:50.667Z'
+    checkedAt: '2026-08-04T22:12:50.667Z'
     version: 1.47.0
     sourceUrl: https://github.com/globallogicuki/globallogic-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,14 +21,25 @@ snapshot:
     - npmPackageName: '@globallogicuki/backstage-plugin-terraform'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:01.738Z'
-        checkedAt: '2026-08-04T05:03:01.738Z'
+        lastAttemptAt: '2026-08-04T22:12:50.275Z'
+        checkedAt: '2026-08-04T22:12:50.275Z'
         latestVersion: 0.11.6
         lastPublishedAt: '2026-06-23T07:38:54.182Z'
         repository:
           url: https://github.com/globallogicuki/globallogic-backstage-plugins
           directory: plugins/terraform
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:02.750Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@mui/x-charts'
+          - date-fns
+          - react-use

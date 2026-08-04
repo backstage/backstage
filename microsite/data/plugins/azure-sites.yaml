@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:42.117Z'
-    checkedAt: '2026-08-04T05:02:42.117Z'
+    lastAttemptAt: '2026-08-04T22:12:29.085Z'
+    checkedAt: '2026-08-04T22:12:29.085Z'
     version: 1.47.2
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/azure-sites/backstage.json
     sourcePath: workspaces/azure-sites/backstage.json
@@ -21,14 +21,30 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-azure-sites'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:41.788Z'
-        checkedAt: '2026-08-04T05:02:41.788Z'
+        lastAttemptAt: '2026-08-04T22:12:28.870Z'
+        checkedAt: '2026-08-04T22:12:28.870Z'
         latestVersion: 0.13.0
         lastPublishedAt: '2026-04-24T20:29:01.275Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/azure-sites/plugins/azure-sites
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage-community/plugin-azure-sites-common'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-permission-common'
+          - '@backstage/plugin-permission-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@types/react'
+          - luxon
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:42.233Z'
+        lastAttemptAt: '2026-08-04T22:12:29.232Z'
         reason: config-schema-not-declared

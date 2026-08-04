@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:01.234Z'
-    checkedAt: '2026-08-04T05:03:01.234Z'
+    lastAttemptAt: '2026-08-04T22:12:49.815Z'
+    checkedAt: '2026-08-04T22:12:49.815Z'
     version: 1.44.2
     sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,14 +21,14 @@ snapshot:
     - npmPackageName: '@roadiehq/catalog-backend-module-gravatar'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:00.833Z'
-        checkedAt: '2026-08-04T05:03:00.833Z'
+        lastAttemptAt: '2026-08-04T22:12:49.451Z'
+        checkedAt: '2026-08-04T22:12:49.451Z'
         latestVersion: 1.2.1
         lastPublishedAt: '2025-12-08T09:17:02.285Z'
         repository:
           url: https://github.com/RoadieHQ/roadie-backstage-plugins
           directory: plugins/catalog-backend-module-gravatar
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:01.421Z'
-        reason: config-schema-not-json
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/plugin-catalog-node'

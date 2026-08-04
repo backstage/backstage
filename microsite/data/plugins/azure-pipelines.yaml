@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:41.990Z'
-    checkedAt: '2026-08-04T05:02:41.990Z'
+    lastAttemptAt: '2026-08-04T22:12:29.012Z'
+    checkedAt: '2026-08-04T22:12:29.012Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/azure-devops/backstage.json
     sourcePath: workspaces/azure-devops/backstage.json
@@ -21,17 +21,37 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-azure-devops'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:41.769Z'
-        checkedAt: '2026-08-04T05:02:41.769Z'
+        lastAttemptAt: '2026-08-04T22:12:28.782Z'
+        checkedAt: '2026-08-04T22:12:28.782Z'
         latestVersion: 0.33.0
         lastPublishedAt: '2026-07-21T22:58:03.011Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/azure-devops/plugins/azure-devops
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage-community/plugin-azure-devops-common'
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-permission-react'
+          - '@backstage/plugin-search-common'
+          - '@backstage/plugin-search-react'
+          - '@backstage/ui'
+          - '@material-ui/core'
+          - '@remixicon/react'
+          - '@types/react'
+          - humanize-duration
+          - luxon
+          - react-use
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:42.108Z'
-        checkedAt: '2026-08-04T05:02:42.108Z'
+        lastAttemptAt: '2026-08-04T22:12:29.154Z'
+        checkedAt: '2026-08-04T22:12:29.154Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object

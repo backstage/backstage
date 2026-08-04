@@ -11,17 +11,38 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:12.034Z'
+    lastAttemptAt: '2026-08-04T22:13:01.522Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@rothenbergt/backstage-plugin-roadmap'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:12.034Z'
-        checkedAt: '2026-08-04T05:03:12.034Z'
+        lastAttemptAt: '2026-08-04T22:13:01.522Z'
+        checkedAt: '2026-08-04T22:13:01.522Z'
         latestVersion: 2.3.0
         lastPublishedAt: '2026-07-11T22:35:42.218Z'
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-permission-react'
+          - '@backstage/plugin-search-common'
+          - '@backstage/plugin-search-react'
+          - '@backstage/plugin-signals-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@rothenbergt/backstage-plugin-roadmap-common'
+          - '@tanstack/react-query'
+          - date-fns
+          - fuse.js
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:12.291Z'
+        lastAttemptAt: '2026-08-04T22:13:01.853Z'
         reason: config-schema-not-declared

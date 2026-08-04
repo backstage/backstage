@@ -12,19 +12,31 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:48.834Z'
+    lastAttemptAt: '2026-08-04T22:12:36.264Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@infosys_ltd/resource-actionhub'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:48.456Z'
-        checkedAt: '2026-08-04T05:02:48.456Z'
+        lastAttemptAt: '2026-08-04T22:12:35.845Z'
+        checkedAt: '2026-08-04T22:12:35.845Z'
         latestVersion: 0.1.3
         lastPublishedAt: '2026-06-02T11:11:27.328Z'
         repository:
           url: https://github.com/Infosys/CloudServiceActionHub
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:49.273Z'
+        lastAttemptAt: '2026-08-04T22:12:36.697Z'
         reason: config-schema-not-declared

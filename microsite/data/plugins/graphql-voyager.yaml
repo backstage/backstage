@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:01.008Z'
-    checkedAt: '2026-08-04T05:03:01.008Z'
+    lastAttemptAt: '2026-08-04T22:12:49.478Z'
+    checkedAt: '2026-08-04T22:12:49.478Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/graphql-voyager/backstage.json
     sourcePath: workspaces/graphql-voyager/backstage.json
@@ -21,14 +21,22 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-graphql-voyager'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:00.669Z'
-        checkedAt: '2026-08-04T05:03:00.669Z'
+        lastAttemptAt: '2026-08-04T22:12:49.142Z'
+        checkedAt: '2026-08-04T22:12:49.142Z'
         latestVersion: 0.20.0
         lastPublishedAt: '2026-07-21T23:04:50.110Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/graphql-voyager/plugins/graphql-voyager
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@material-ui/core'
+          - '@types/react'
+          - graphql-voyager
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:01.113Z'
+        lastAttemptAt: '2026-08-04T22:12:49.605Z'
         reason: config-schema-not-declared

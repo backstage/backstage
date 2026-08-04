@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:43.703Z'
-    checkedAt: '2026-08-04T05:02:43.703Z'
+    lastAttemptAt: '2026-08-04T22:12:31.098Z'
+    checkedAt: '2026-08-04T22:12:31.098Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/bazaar/backstage.json
     sourcePath: workspaces/bazaar/backstage.json
@@ -21,14 +21,34 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-bazaar'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:43.336Z'
-        checkedAt: '2026-08-04T05:02:43.336Z'
+        lastAttemptAt: '2026-08-04T22:12:30.735Z'
+        checkedAt: '2026-08-04T22:12:30.735Z'
         latestVersion: 0.25.0
         lastPublishedAt: '2026-07-21T22:57:48.788Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/bazaar/plugins/bazaar
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@date-io/luxon'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@material-ui/pickers'
+          - '@testing-library/jest-dom'
+          - '@types/react'
+          - luxon
+          - material-ui-search-bar
+          - react-hook-form
+          - react-use
+          - react-window
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:43.819Z'
+        lastAttemptAt: '2026-08-04T22:12:31.218Z'
         reason: config-schema-not-declared

@@ -14,8 +14,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:08.065Z'
-    checkedAt: '2026-08-04T05:03:08.065Z'
+    lastAttemptAt: '2026-08-04T22:12:57.031Z'
+    checkedAt: '2026-08-04T22:12:57.031Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/microsoft-calendar/backstage.json
     sourcePath: workspaces/microsoft-calendar/backstage.json
@@ -23,14 +23,30 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-microsoft-calendar'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:07.696Z'
-        checkedAt: '2026-08-04T05:03:07.696Z'
+        lastAttemptAt: '2026-08-04T22:12:56.683Z'
+        checkedAt: '2026-08-04T22:12:56.683Z'
         latestVersion: 0.21.0
         lastPublishedAt: '2026-07-22T00:17:22.188Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/microsoft-calendar/plugins/microsoft-calendar
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@microsoft/microsoft-graph-types'
+          - '@tanstack/react-query'
+          - '@types/react'
+          - classnames
+          - dompurify
+          - lodash
+          - luxon
+          - material-ui-popup-state
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:08.190Z'
+        lastAttemptAt: '2026-08-04T22:12:57.155Z'
         reason: config-schema-not-declared

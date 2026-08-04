@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:16.912Z'
-    checkedAt: '2026-08-04T05:03:16.912Z'
+    lastAttemptAt: '2026-08-04T22:13:06.813Z'
+    checkedAt: '2026-08-04T22:13:06.813Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/sentry/backstage.json
     sourcePath: workspaces/sentry/backstage.json
@@ -21,17 +21,32 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-sentry'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:16.655Z'
-        checkedAt: '2026-08-04T05:03:16.655Z'
+        lastAttemptAt: '2026-08-04T22:13:06.542Z'
+        checkedAt: '2026-08-04T22:13:06.542Z'
         latestVersion: 1.20.0
         lastPublishedAt: '2026-07-22T00:24:04.985Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/sentry/plugins/sentry
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@material-table/core'
+          - '@material-ui/core'
+          - '@types/react'
+          - luxon
+          - react-sparklines
+          - react-use
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:17.063Z'
-        checkedAt: '2026-08-04T05:03:17.063Z'
+        lastAttemptAt: '2026-08-04T22:13:06.927Z'
+        checkedAt: '2026-08-04T22:13:06.927Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object

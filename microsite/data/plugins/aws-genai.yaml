@@ -12,23 +12,28 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:41.738Z'
-    checkedAt: '2026-08-04T05:02:41.738Z'
-    version: 1.43.1
+    lastAttemptAt: '2026-08-04T22:12:29.109Z'
+    checkedAt: '2026-08-04T22:12:29.109Z'
+    version: 1.52.1
     sourceUrl: https://github.com/awslabs/backstage-plugins-for-aws/blob/main/backstage.json
     sourcePath: backstage.json
   packages:
     - npmPackageName: '@aws/genai-plugin-for-backstage'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:41.398Z'
-        checkedAt: '2026-08-04T05:02:41.398Z'
+        lastAttemptAt: '2026-08-04T22:12:28.755Z'
+        checkedAt: '2026-08-04T22:12:28.755Z'
         latestVersion: 0.5.0
         lastPublishedAt: '2025-11-14T05:54:35.509Z'
         repository:
           url: https://github.com/awslabs/backstage-plugins-for-aws
           directory: plugins/genai/frontend
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:41.860Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@aws/genai-plugin-for-backstage-common'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - eventsource-parser
+          - ts-pattern

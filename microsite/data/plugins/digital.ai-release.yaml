@@ -13,20 +13,45 @@ staleSince: '2026-08-04'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:54.280Z'
+    lastAttemptAt: '2026-08-04T22:12:42.100Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@digital-ai/plugin-dai-release'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:53.880Z'
-        checkedAt: '2026-08-04T05:02:53.880Z'
+        lastAttemptAt: '2026-08-04T22:12:41.760Z'
+        checkedAt: '2026-08-04T22:12:41.760Z'
         latestVersion: 0.1.4
         lastPublishedAt: '2025-03-27T05:19:14.230Z'
         repository:
           url: https://github.com/digital-ai/backstage-release
           directory: .
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/plugin-permission-react'
+          - '@backstage/theme'
+          - '@digital-ai/dot-components'
+          - '@digital-ai/plugin-dai-release-common'
+          - '@emotion/react'
+          - '@emotion/styled'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@mui/icons-material'
+          - '@mui/material'
+          - '@mui/styled-engine-sc'
+          - '@mui/x-date-pickers'
+          - '@mui/x-tree-view'
+          - '@types/lodash'
+          - dayjs
+          - lodash
+          - moment
+          - react-use
+          - styled-components
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:54.774Z'
+        lastAttemptAt: '2026-08-04T22:12:42.638Z'
         reason: config-schema-not-declared

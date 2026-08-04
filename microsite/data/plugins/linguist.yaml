@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:07.154Z'
-    checkedAt: '2026-08-04T05:03:07.154Z'
+    lastAttemptAt: '2026-08-04T22:12:55.974Z'
+    checkedAt: '2026-08-04T22:12:55.974Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/linguist/backstage.json
     sourcePath: workspaces/linguist/backstage.json
@@ -21,14 +21,28 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-linguist'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:06.869Z'
-        checkedAt: '2026-08-04T05:03:06.869Z'
+        lastAttemptAt: '2026-08-04T22:12:55.747Z'
+        checkedAt: '2026-08-04T22:12:55.747Z'
         latestVersion: 0.23.0
         lastPublishedAt: '2026-07-22T00:17:21.363Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/linguist/plugins/linguist
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage-community/plugin-linguist-common'
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/ui'
+          - '@types/react'
+          - luxon
+          - react-use
+          - slugify
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:07.262Z'
+        lastAttemptAt: '2026-08-04T22:12:56.090Z'
         reason: config-schema-not-declared

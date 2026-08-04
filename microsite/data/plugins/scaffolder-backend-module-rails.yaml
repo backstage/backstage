@@ -12,92 +12,189 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:13.753Z'
-    checkedAt: '2026-08-04T05:03:13.753Z'
+    lastAttemptAt: '2026-08-04T22:13:03.233Z'
+    checkedAt: '2026-08-04T22:13:03.233Z'
     version: 1.53.1
     sourceUrl: https://github.com/backstage/backstage/releases/tag/v1.53.1
     sourcePath: plugins/scaffolder-backend-module-rails/package.json
   packages:
-    - functionality: frontend
-      npmPackageName: '@backstage/plugin-scaffolder'
+    - npmPackageName: '@backstage/plugin-scaffolder'
       sourcePath: plugins/scaffolder/package.json
+      internalDependencies:
+        - '@backstage/plugin-scaffolder-react'
+        - '@backstage/plugin-scaffolder-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:13.753Z'
-        checkedAt: '2026-08-04T05:03:13.753Z'
+        lastAttemptAt: '2026-08-04T22:13:03.234Z'
+        checkedAt: '2026-08-04T22:13:03.234Z'
         latestVersion: 1.38.1
         lastPublishedAt: '2026-07-14T12:12:12.436Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/scaffolder
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - qs
+          - zod
+          - yaml
+          - jszip
+          - luxon
+          - lodash
+          - react-use
+          - '@rjsf/core'
+          - classnames
+          - idb-keyval
+          - '@rjsf/utils'
+          - react-window
+          - '@backstage/ui'
+          - git-url-parse
+          - react-resizable
+          - '@backstage/types'
+          - '@codemirror/view'
+          - '@material-ui/lab'
+          - '@react-hookz/web'
+          - '@remixicon/react'
+          - '@backstage/errors'
+          - '@material-ui/core'
+          - '@rjsf/material-ui'
+          - humanize-duration
+          - '@material-ui/icons'
+          - zod-to-json-schema
+          - json-schema-library
+          - '@codemirror/language'
+          - '@rjsf/validator-ajv8'
+          - '@uiw/react-codemirror'
+          - react-aria-components
+          - '@backstage/integration'
+          - react-resizable-panels
+          - '@backstage/catalog-model'
+          - '@codemirror/legacy-modes'
+          - '@backstage/catalog-client'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/filter-predicates'
+          - '@backstage/integration-react'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-catalog-common'
+          - '@backstage/plugin-techdocs-react'
+          - '@backstage/plugin-techdocs-common'
+          - '@backstage/plugin-permission-react'
+          - '@backstage/plugin-scaffolder-react'
+          - '@backstage/plugin-scaffolder-common'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:14.110Z'
+        lastAttemptAt: '2026-08-04T22:13:03.696Z'
         reason: config-schema-not-declared
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-scaffolder-backend-module-azure'
+    - npmPackageName: '@backstage/plugin-scaffolder-backend-module-azure'
       sourcePath: plugins/scaffolder-backend-module-azure/package.json
+      internalDependencies:
+        - '@backstage/plugin-scaffolder-node'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:14.375Z'
-        checkedAt: '2026-08-04T05:03:14.375Z'
+        lastAttemptAt: '2026-08-04T22:13:04.254Z'
+        checkedAt: '2026-08-04T22:13:04.254Z'
         latestVersion: 0.2.23
         lastPublishedAt: '2026-07-14T12:12:34.728Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/scaffolder-backend-module-azure
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - yaml
+          - '@backstage/config'
+          - '@backstage/errors'
+          - azure-devops-node-api
+          - '@backstage/integration'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-scaffolder-node'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:14.499Z'
+        lastAttemptAt: '2026-08-04T22:13:04.433Z'
         reason: config-schema-not-declared
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-scaffolder-backend-module-bitbucket-cloud'
+    - npmPackageName: '@backstage/plugin-scaffolder-backend-module-bitbucket-cloud'
       sourcePath: plugins/scaffolder-backend-module-bitbucket-cloud/package.json
+      internalDependencies:
+        - '@backstage/plugin-scaffolder-node'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:14.826Z'
-        checkedAt: '2026-08-04T05:03:14.826Z'
+        lastAttemptAt: '2026-08-04T22:13:04.695Z'
+        checkedAt: '2026-08-04T22:13:04.695Z'
         latestVersion: 0.3.8
         lastPublishedAt: '2026-07-14T12:12:43.512Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/scaffolder-backend-module-bitbucket-cloud
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - zod
+          - yaml
+          - fs-extra
+          - bitbucket
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@backstage/integration'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-scaffolder-node'
+          - '@backstage/plugin-bitbucket-cloud-common'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:14.975Z'
+        lastAttemptAt: '2026-08-04T22:13:04.927Z'
         reason: config-schema-not-declared
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-scaffolder-backend-module-bitbucket-server'
+    - npmPackageName: '@backstage/plugin-scaffolder-backend-module-bitbucket-server'
       sourcePath: plugins/scaffolder-backend-module-bitbucket-server/package.json
+      internalDependencies:
+        - '@backstage/plugin-scaffolder-node'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:15.182Z'
-        checkedAt: '2026-08-04T05:03:15.182Z'
+        lastAttemptAt: '2026-08-04T22:13:05.113Z'
+        checkedAt: '2026-08-04T22:13:05.113Z'
         latestVersion: 0.2.23
         lastPublishedAt: '2026-07-14T12:12:52.700Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/scaffolder-backend-module-bitbucket-server
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - yaml
+          - fs-extra
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@backstage/integration'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-scaffolder-node'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:15.354Z'
+        lastAttemptAt: '2026-08-04T22:13:05.319Z'
         reason: config-schema-not-declared
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-scaffolder-backend-module-confluence-to-markdown'
+    - npmPackageName: '@backstage/plugin-scaffolder-backend-module-confluence-to-markdown'
       sourcePath: plugins/scaffolder-backend-module-confluence-to-markdown/package.json
+      internalDependencies:
+        - '@backstage/plugin-scaffolder-node'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:15.530Z'
-        checkedAt: '2026-08-04T05:03:15.530Z'
+        lastAttemptAt: '2026-08-04T22:13:05.598Z'
+        checkedAt: '2026-08-04T22:13:05.598Z'
         latestVersion: 0.3.23
         lastPublishedAt: '2026-07-14T12:13:03.354Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/scaffolder-backend-module-confluence-to-markdown
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - yaml
+          - fs-extra
+          - git-url-parse
+          - '@backstage/config'
+          - '@backstage/errors'
+          - node-html-markdown
+          - '@backstage/integration'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-scaffolder-node'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:15.713Z'
-        checkedAt: '2026-08-04T05:03:15.713Z'
+        lastAttemptAt: '2026-08-04T22:13:05.850Z'
+        checkedAt: '2026-08-04T22:13:05.850Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -140,38 +237,59 @@ snapshot:
                 - baseUrl
                 - auth
               description: Configuration options for the Confluence to Markdown action
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-scaffolder-backend-module-cookiecutter'
+    - npmPackageName: '@backstage/plugin-scaffolder-backend-module-cookiecutter'
       sourcePath: plugins/scaffolder-backend-module-cookiecutter/package.json
+      internalDependencies:
+        - '@backstage/plugin-scaffolder-node'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:15.902Z'
-        checkedAt: '2026-08-04T05:03:15.902Z'
+        lastAttemptAt: '2026-08-04T22:13:06.042Z'
+        checkedAt: '2026-08-04T22:13:06.042Z'
         latestVersion: 0.3.25
         lastPublishedAt: '2026-07-14T12:13:12.349Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/scaffolder-backend-module-cookiecutter
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - yaml
+          - fs-extra
+          - command-exists
+          - '@backstage/types'
+          - '@backstage/errors'
+          - '@backstage/integration'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-scaffolder-node'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:16.106Z'
+        lastAttemptAt: '2026-08-04T22:13:06.184Z'
         reason: config-schema-not-declared
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-scaffolder-backend-module-gcp'
+    - npmPackageName: '@backstage/plugin-scaffolder-backend-module-gcp'
       sourcePath: plugins/scaffolder-backend-module-gcp/package.json
+      internalDependencies:
+        - '@backstage/plugin-scaffolder-node'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:16.281Z'
-        checkedAt: '2026-08-04T05:03:16.281Z'
+        lastAttemptAt: '2026-08-04T22:13:06.383Z'
+        checkedAt: '2026-08-04T22:13:06.383Z'
         latestVersion: 0.2.23
         lastPublishedAt: '2026-07-14T12:13:20.496Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/scaffolder-backend-module-gcp
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - raw-body
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@google-cloud/storage'
+          - '@backstage/integration'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-scaffolder-node'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:16.465Z'
-        checkedAt: '2026-08-04T05:03:16.465Z'
+        lastAttemptAt: '2026-08-04T22:13:06.497Z'
+        checkedAt: '2026-08-04T22:13:06.497Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -183,118 +301,197 @@ snapshot:
                   type: string
                   description: Sets GCP bucket name to store serialized workspace for scaffolder tasks.
               description: Configuration options for the scaffolder plugin
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-scaffolder-backend-module-gerrit'
+    - npmPackageName: '@backstage/plugin-scaffolder-backend-module-gerrit'
       sourcePath: plugins/scaffolder-backend-module-gerrit/package.json
+      internalDependencies:
+        - '@backstage/plugin-scaffolder-node'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:16.652Z'
-        checkedAt: '2026-08-04T05:03:16.652Z'
+        lastAttemptAt: '2026-08-04T22:13:06.690Z'
+        checkedAt: '2026-08-04T22:13:06.690Z'
         latestVersion: 0.2.23
         lastPublishedAt: '2026-07-14T12:13:30.718Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/scaffolder-backend-module-gerrit
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - yaml
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@backstage/integration'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-scaffolder-node'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:16.751Z'
+        lastAttemptAt: '2026-08-04T22:13:06.927Z'
         reason: config-schema-not-declared
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-scaffolder-backend-module-gitea'
+    - npmPackageName: '@backstage/plugin-scaffolder-backend-module-gitea'
       sourcePath: plugins/scaffolder-backend-module-gitea/package.json
+      internalDependencies:
+        - '@backstage/plugin-scaffolder-node'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:16.916Z'
-        checkedAt: '2026-08-04T05:03:16.916Z'
+        lastAttemptAt: '2026-08-04T22:13:07.120Z'
+        checkedAt: '2026-08-04T22:13:07.120Z'
         latestVersion: 0.2.23
         lastPublishedAt: '2026-07-14T12:13:39.411Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/scaffolder-backend-module-gitea
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - yaml
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@backstage/integration'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-scaffolder-node'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:17.007Z'
+        lastAttemptAt: '2026-08-04T22:13:07.319Z'
         reason: config-schema-not-declared
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-scaffolder-backend-module-github'
+    - npmPackageName: '@backstage/plugin-scaffolder-backend-module-github'
       sourcePath: plugins/scaffolder-backend-module-github/package.json
+      internalDependencies:
+        - '@backstage/plugin-scaffolder-node'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:17.193Z'
-        checkedAt: '2026-08-04T05:03:17.193Z'
+        lastAttemptAt: '2026-08-04T22:13:07.549Z'
+        checkedAt: '2026-08-04T22:13:07.549Z'
         latestVersion: 0.9.11
         lastPublishedAt: '2026-07-14T12:13:50.817Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/scaffolder-backend-module-github
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - zod
+          - yaml
+          - octokit
+          - '@octokit/core'
+          - '@backstage/types'
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@octokit/webhooks'
+          - libsodium-wrappers
+          - '@octokit/plugin-retry'
+          - '@backstage/integration'
+          - '@backstage/catalog-model'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-scaffolder-node'
+          - octokit-plugin-create-pull-request
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:17.335Z'
+        lastAttemptAt: '2026-08-04T22:13:07.805Z'
         reason: config-schema-not-declared
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-scaffolder-backend-module-gitlab'
+    - npmPackageName: '@backstage/plugin-scaffolder-backend-module-gitlab'
       sourcePath: plugins/scaffolder-backend-module-gitlab/package.json
+      internalDependencies:
+        - '@backstage/plugin-scaffolder-node'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:17.757Z'
-        checkedAt: '2026-08-04T05:03:17.757Z'
+        lastAttemptAt: '2026-08-04T22:13:08.182Z'
+        checkedAt: '2026-08-04T22:13:08.182Z'
         latestVersion: 0.11.8
         lastPublishedAt: '2026-07-14T12:14:00.633Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/scaffolder-backend-module-gitlab
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - zod
+          - yaml
+          - luxon
+          - '@gitbeaker/core'
+          - '@gitbeaker/rest'
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@backstage/integration'
+          - '@gitbeaker/requester-utils'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-scaffolder-node'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:17.895Z'
+        lastAttemptAt: '2026-08-04T22:13:08.346Z'
         reason: config-schema-not-declared
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-scaffolder-backend-module-notifications'
+    - npmPackageName: '@backstage/plugin-scaffolder-backend-module-notifications'
       sourcePath: plugins/scaffolder-backend-module-notifications/package.json
+      internalDependencies:
+        - '@backstage/plugin-scaffolder-node'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:18.086Z'
-        checkedAt: '2026-08-04T05:03:18.086Z'
+        lastAttemptAt: '2026-08-04T22:13:08.549Z'
+        checkedAt: '2026-08-04T22:13:08.549Z'
         latestVersion: 0.1.24
         lastPublishedAt: '2026-07-14T12:14:09.550Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/scaffolder-backend-module-notifications
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - yaml
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-scaffolder-node'
+          - '@backstage/plugin-notifications-node'
+          - '@backstage/plugin-notifications-common'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:18.187Z'
+        lastAttemptAt: '2026-08-04T22:13:08.726Z'
         reason: config-schema-not-declared
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-scaffolder-backend-module-rails'
+    - npmPackageName: '@backstage/plugin-scaffolder-backend-module-rails'
       sourcePath: plugins/scaffolder-backend-module-rails/package.json
+      internalDependencies:
+        - '@backstage/plugin-scaffolder-node'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:13.404Z'
-        checkedAt: '2026-08-04T05:03:13.404Z'
+        lastAttemptAt: '2026-08-04T22:13:02.882Z'
+        checkedAt: '2026-08-04T22:13:02.882Z'
         latestVersion: 0.5.23
         lastPublishedAt: '2026-07-14T12:14:18.438Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/scaffolder-backend-module-rails
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - yaml
+          - fs-extra
+          - command-exists
+          - '@backstage/types'
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@backstage/integration'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-scaffolder-node'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:18.513Z'
+        lastAttemptAt: '2026-08-04T22:13:08.915Z'
         reason: config-schema-not-declared
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-scaffolder-backend-module-sentry'
+    - npmPackageName: '@backstage/plugin-scaffolder-backend-module-sentry'
       sourcePath: plugins/scaffolder-backend-module-sentry/package.json
+      internalDependencies:
+        - '@backstage/plugin-scaffolder-node'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:18.713Z'
-        checkedAt: '2026-08-04T05:03:18.713Z'
+        lastAttemptAt: '2026-08-04T22:13:09.151Z'
+        checkedAt: '2026-08-04T22:13:09.151Z'
         latestVersion: 0.3.6
         lastPublishedAt: '2026-07-14T12:14:28.973Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/scaffolder-backend-module-sentry
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - yaml
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-scaffolder-node'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:18.898Z'
-        checkedAt: '2026-08-04T05:03:18.898Z'
+        lastAttemptAt: '2026-08-04T22:13:09.324Z'
+        checkedAt: '2026-08-04T22:13:09.324Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -309,38 +506,85 @@ snapshot:
                       type: string
                     token:
                       type: string
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-scaffolder-backend-module-yeoman'
+    - npmPackageName: '@backstage/plugin-scaffolder-backend-module-yeoman'
       sourcePath: plugins/scaffolder-backend-module-yeoman/package.json
+      internalDependencies:
+        - '@backstage/plugin-scaffolder-node'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:19.068Z'
-        checkedAt: '2026-08-04T05:03:19.068Z'
+        lastAttemptAt: '2026-08-04T22:13:09.529Z'
+        checkedAt: '2026-08-04T22:13:09.529Z'
         latestVersion: 0.4.24
         lastPublishedAt: '2026-07-14T12:14:38.217Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/scaffolder-backend-module-yeoman
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - yaml
+          - '@backstage/types'
+          - yeoman-environment
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-scaffolder-node'
+          - '@backstage/plugin-scaffolder-node-test-utils'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:19.252Z'
+        lastAttemptAt: '2026-08-04T22:13:09.735Z'
         reason: config-schema-not-declared
-    - functionality: backend
-      npmPackageName: '@backstage/plugin-scaffolder-backend'
+    - npmPackageName: '@backstage/plugin-scaffolder-backend'
       sourcePath: plugins/scaffolder-backend/package.json
+      internalDependencies:
+        - '@backstage/plugin-scaffolder-node'
+        - '@backstage/plugin-scaffolder-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:19.520Z'
-        checkedAt: '2026-08-04T05:03:19.520Z'
+        lastAttemptAt: '2026-08-04T22:13:09.954Z'
+        checkedAt: '2026-08-04T22:13:09.954Z'
         latestVersion: 4.0.2
         lastPublishedAt: '2026-07-14T12:12:25.587Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/scaffolder-backend
+        backstageRole: backend-plugin
+        dependencyNames:
+          - zod
+          - knex
+          - yaml
+          - luxon
+          - globby
+          - lodash
+          - express
+          - logform
+          - p-queue
+          - winston
+          - fs-extra
+          - nunjucks
+          - jsonschema
+          - isolated-vm
+          - prom-client
+          - triple-beam
+          - '@types/luxon'
+          - isbinaryfile
+          - zen-observable
+          - '@backstage/types'
+          - '@backstage/config'
+          - '@backstage/errors'
+          - winston-transport
+          - zod-to-json-schema
+          - '@backstage/integration'
+          - '@backstage/catalog-model'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-events-node'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/backend-openapi-utils'
+          - '@backstage/plugin-permission-node'
+          - '@backstage/plugin-scaffolder-node'
+          - '@backstage/plugin-permission-common'
+          - '@backstage/plugin-scaffolder-common'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:19.991Z'
-        checkedAt: '2026-08-04T05:03:19.991Z'
+        lastAttemptAt: '2026-08-04T22:13:10.358Z'
+        checkedAt: '2026-08-04T22:13:10.358Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -494,51 +738,127 @@ snapshot:
                       visibility: secret
                   description: Default environment variables and secrets available to all templates.
               description: Configuration options for the scaffolder plugin
-    - functionality: common
-      npmPackageName: '@backstage/plugin-scaffolder-common'
+    - npmPackageName: '@backstage/plugin-scaffolder-common'
       sourcePath: plugins/scaffolder-common/package.json
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:20.413Z'
-        checkedAt: '2026-08-04T05:03:20.413Z'
+        lastAttemptAt: '2026-08-04T22:13:10.599Z'
+        checkedAt: '2026-08-04T22:13:10.599Z'
         latestVersion: 2.2.1
         lastPublishedAt: '2026-06-16T18:13:00.606Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/scaffolder-common
+        backstageRole: common-library
+        dependencyNames:
+          - cross-fetch
+          - uri-template
+          - zen-observable
+          - '@backstage/types'
+          - '@backstage/errors'
+          - '@types/json-schema'
+          - '@backstage/integration'
+          - '@backstage/catalog-model'
+          - '@microsoft/fetch-event-source'
+          - '@backstage/plugin-permission-common'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:20.698Z'
+        lastAttemptAt: '2026-08-04T22:13:10.831Z'
         reason: config-schema-not-declared
-    - functionality: node
-      npmPackageName: '@backstage/plugin-scaffolder-node'
+    - npmPackageName: '@backstage/plugin-scaffolder-node'
       sourcePath: plugins/scaffolder-node/package.json
+      internalDependencies:
+        - '@backstage/plugin-scaffolder-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:20.882Z'
-        checkedAt: '2026-08-04T05:03:20.882Z'
+        lastAttemptAt: '2026-08-04T22:13:11.084Z'
+        checkedAt: '2026-08-04T22:13:11.084Z'
         latestVersion: 0.13.5
         lastPublishedAt: '2026-07-14T12:14:51.739Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/scaffolder-node
+        backstageRole: node-library
+        dependencyNames:
+          - tar
+          - zod
+          - globby
+          - lodash
+          - p-limit
+          - winston
+          - fs-extra
+          - jsonschema
+          - concat-stream
+          - isomorphic-git
+          - '@backstage/types'
+          - '@backstage/errors'
+          - winston-transport
+          - zod-to-json-schema
+          - '@backstage/integration'
+          - '@backstage/catalog-model'
+          - '@isomorphic-git/pgp-plugin'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-permission-node'
+          - '@backstage/plugin-permission-common'
+          - '@backstage/plugin-scaffolder-common'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:21.056Z'
+        lastAttemptAt: '2026-08-04T22:13:11.413Z'
         reason: config-schema-not-declared
-    - functionality: react
-      npmPackageName: '@backstage/plugin-scaffolder-react'
+    - npmPackageName: '@backstage/plugin-scaffolder-react'
       sourcePath: plugins/scaffolder-react/package.json
+      internalDependencies:
+        - '@backstage/plugin-scaffolder-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:21.280Z'
-        checkedAt: '2026-08-04T05:03:21.280Z'
+        lastAttemptAt: '2026-08-04T22:13:11.607Z'
+        checkedAt: '2026-08-04T22:13:11.607Z'
         latestVersion: 2.0.2
         lastPublishedAt: '2026-07-14T12:15:14.573Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/scaffolder-react
+        backstageRole: web-library
+        dependencyNames:
+          - qs
+          - ajv
+          - zod
+          - immer
+          - luxon
+          - lodash
+          - flatted
+          - react-use
+          - use-immer
+          - '@rjsf/core'
+          - ajv-errors
+          - classnames
+          - '@rjsf/utils'
+          - '@backstage/ui'
+          - zen-observable
+          - '@backstage/theme'
+          - '@backstage/types'
+          - '@material-ui/lab'
+          - '@react-hookz/web'
+          - '@remixicon/react'
+          - '@material-ui/core'
+          - '@rjsf/material-ui'
+          - humanize-duration
+          - '@material-ui/icons'
+          - '@types/json-schema'
+          - zod-to-json-schema
+          - json-schema-library
+          - '@rjsf/validator-ajv8'
+          - react-aria-components
+          - '@backstage/catalog-model'
+          - '@backstage/catalog-client'
+          - '@backstage/version-bridge'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-permission-react'
+          - '@backstage/plugin-scaffolder-common'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:21.422Z'
+        lastAttemptAt: '2026-08-04T22:13:11.902Z'
         reason: config-schema-not-declared

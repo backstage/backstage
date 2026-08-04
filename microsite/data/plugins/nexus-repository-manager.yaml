@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:08.920Z'
-    checkedAt: '2026-08-04T05:03:08.920Z'
+    lastAttemptAt: '2026-08-04T22:12:58.162Z'
+    checkedAt: '2026-08-04T22:12:58.162Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/nexus-repository-manager/backstage.json
     sourcePath: workspaces/nexus-repository-manager/backstage.json
@@ -21,14 +21,25 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-nexus-repository-manager'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:08.608Z'
-        checkedAt: '2026-08-04T05:03:08.608Z'
-        latestVersion: 1.25.1
-        lastPublishedAt: '2026-07-21T20:32:30.872Z'
+        lastAttemptAt: '2026-08-04T22:12:57.778Z'
+        checkedAt: '2026-08-04T22:12:57.778Z'
+        latestVersion: 1.26.0
+        lastPublishedAt: '2026-08-04T12:51:55.230Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/nexus-repository-manager/plugins/nexus-repository-manager
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:09.037Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/filter-predicates'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-app-react'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@backstage/ui'
+          - filesize
+          - luxon
+          - react-use

@@ -12,19 +12,33 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:06.412Z'
+    lastAttemptAt: '2026-08-04T22:12:55.084Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@jfvilas/plugin-kwirth-metrics'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:06.054Z'
-        checkedAt: '2026-08-04T05:03:06.054Z'
+        lastAttemptAt: '2026-08-04T22:12:54.734Z'
+        checkedAt: '2026-08-04T22:12:54.734Z'
         latestVersion: 0.14.2
         lastPublishedAt: '2026-03-27T15:37:17.935Z'
         repository:
           url: https://github.com/jfvilas/plugin-kwirth-metrics
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/integration-react'
+          - '@backstage/plugin-auth-react'
+          - '@backstage/plugin-catalog-react'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@types/react'
+          - react-use
+          - recharts
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:06.825Z'
+        lastAttemptAt: '2026-08-04T22:12:55.635Z'
         reason: config-schema-not-declared

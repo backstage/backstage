@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:08.867Z'
-    checkedAt: '2026-08-04T05:03:08.867Z'
+    lastAttemptAt: '2026-08-04T22:12:57.845Z'
+    checkedAt: '2026-08-04T22:12:57.845Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/newrelic/backstage.json
     sourcePath: workspaces/newrelic/backstage.json
@@ -21,14 +21,27 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-newrelic-dashboard'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:08.545Z'
-        checkedAt: '2026-08-04T05:03:08.545Z'
+        lastAttemptAt: '2026-08-04T22:12:57.537Z'
+        checkedAt: '2026-08-04T22:12:57.537Z'
         latestVersion: 0.26.0
         lastPublishedAt: '2026-07-22T00:17:23.411Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/newrelic/plugins/newrelic-dashboard
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@types/react'
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:08.959Z'
+        lastAttemptAt: '2026-08-04T22:12:57.958Z'
         reason: config-schema-not-declared

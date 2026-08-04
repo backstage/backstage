@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:15.455Z'
-    checkedAt: '2026-08-04T05:03:15.455Z'
+    lastAttemptAt: '2026-08-04T22:13:05.126Z'
+    checkedAt: '2026-08-04T22:13:05.126Z'
     version: 1.52.1
     sourceUrl: https://github.com/TeraSky-OSS/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,14 +21,22 @@ snapshot:
     - npmPackageName: '@terasky/backstage-plugin-scaleops-frontend'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:15.122Z'
-        checkedAt: '2026-08-04T05:03:15.122Z'
+        lastAttemptAt: '2026-08-04T22:13:04.751Z'
+        checkedAt: '2026-08-04T22:13:04.751Z'
         latestVersion: 2.7.0
         lastPublishedAt: '2026-06-30T17:21:15.936Z'
         repository:
           url: https://github.com/TeraSky-OSS/backstage-plugins
           directory: plugins/scaleops-frontend
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:15.558Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - react-use

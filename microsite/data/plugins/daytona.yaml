@@ -13,20 +13,31 @@ staleSince: '2026-08-04'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:52.788Z'
+    lastAttemptAt: '2026-08-04T22:12:40.557Z'
     reason: github-invalid-response
   packages:
     - npmPackageName: '@daytonaio/backstage-plugin-daytona'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:52.519Z'
-        checkedAt: '2026-08-04T05:02:52.519Z'
+        lastAttemptAt: '2026-08-04T22:12:40.145Z'
+        checkedAt: '2026-08-04T22:12:40.145Z'
         latestVersion: 0.2.10
         lastPublishedAt: '2024-10-18T10:19:39.760Z'
         repository:
           url: https://github.com/daytonaio/backstage-plugins
           directory: plugins/daytona
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:52.909Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - react-use
+          - git-url-parse
+          - '@backstage/theme'
+          - '@material-ui/lab'
+          - '@backstage/errors'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/core-app-api'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/integration-react'
+          - '@backstage/plugin-catalog-react'

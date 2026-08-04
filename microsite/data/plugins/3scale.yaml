@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:36.987Z'
-    checkedAt: '2026-08-04T05:02:36.987Z'
+    lastAttemptAt: '2026-08-04T22:12:23.932Z'
+    checkedAt: '2026-08-04T22:12:23.932Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/3scale/backstage.json
     sourcePath: workspaces/3scale/backstage.json
@@ -21,17 +21,27 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-3scale-backend'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:36.536Z'
-        checkedAt: '2026-08-04T05:02:36.536Z'
+        lastAttemptAt: '2026-08-04T22:12:23.462Z'
+        checkedAt: '2026-08-04T22:12:23.462Z'
         latestVersion: 3.16.0
         lastPublishedAt: '2026-07-30T12:22:21.508Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/3scale/plugins/3scale-backend
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/backend-plugin-api'
+          - '@backstage/catalog-model'
+          - '@backstage/errors'
+          - '@backstage/plugin-catalog-node'
+          - atlassian-openapi
+          - openapi-merge
+          - swagger-converter
+          - swagger2openapi
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:38.030Z'
-        checkedAt: '2026-08-04T05:02:38.030Z'
+        lastAttemptAt: '2026-08-04T22:12:24.810Z'
+        checkedAt: '2026-08-04T22:12:24.810Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object

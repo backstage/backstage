@@ -11,8 +11,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:58.275Z'
-    checkedAt: '2026-08-04T05:02:58.275Z'
+    lastAttemptAt: '2026-08-04T22:12:46.239Z'
+    checkedAt: '2026-08-04T22:12:46.239Z'
     version: 1.49.1
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/flux/backstage.json
     sourcePath: workspaces/flux/backstage.json
@@ -20,14 +20,34 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-flux'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:57.950Z'
-        checkedAt: '2026-08-04T05:02:57.950Z'
+        lastAttemptAt: '2026-08-04T22:12:45.855Z'
+        checkedAt: '2026-08-04T22:12:45.855Z'
         latestVersion: 0.3.3
         lastPublishedAt: '2026-07-22T13:52:13.581Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/flux/plugins/flux
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:58.383Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-kubernetes'
+          - '@backstage/plugin-kubernetes-common'
+          - '@backstage/plugin-permission-react'
+          - '@backstage/theme'
+          - '@backstage/ui'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@remixicon/react'
+          - '@tanstack/query-sync-storage-persister'
+          - '@tanstack/react-query'
+          - '@tanstack/react-query-persist-client'
+          - classnames
+          - compare-versions
+          - lodash
+          - luxon
+          - react-use
+          - use-deep-compare
+          - yaml

@@ -19,6 +19,17 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ConfigureGuide } from './ConfigureGuide';
 
+function npmSnapshot(backstageRole?: string) {
+  return {
+    status: 'fresh' as const,
+    lastAttemptAt: '2026-01-01T00:00:00.000Z',
+    checkedAt: '2026-01-01T00:00:00.000Z',
+    latestVersion: '1.0.0',
+    lastPublishedAt: '2026-01-01T00:00:00.000Z',
+    ...(backstageRole ? { backstageRole } : {}),
+  };
+}
+
 const plugin: PluginData = {
   title: 'Example Plugin',
   author: 'Example Maintainers',
@@ -245,6 +256,48 @@ describe('ConfigureGuide', () => {
     ).toBeInTheDocument();
   });
 
+  it('still lists a package with no config schema of its own, showing an explicit message when selected', async () => {
+    const user = userEvent.setup();
+    const unavailableConfigSchemaSnapshot = {
+      status: 'unavailable' as const,
+      lastAttemptAt: '2026-01-01T00:00:00.000Z',
+      reason: 'config-schema-not-declared' as const,
+    };
+    render(
+      <ConfigureGuide
+        plugin={{
+          ...plugin,
+          snapshot: {
+            ...plugin.snapshot!,
+            packages: [
+              plugin.snapshot!.packages[0],
+              {
+                npmPackageName: '@example/plugin-example-common',
+                npm: npmSnapshot(),
+                configSchema: unavailableConfigSchemaSnapshot,
+              },
+            ],
+          },
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByRole('option', {
+        name: '@example/plugin-example-common (common)',
+      }),
+    ).toBeInTheDocument();
+
+    await user.selectOptions(
+      screen.getByRole('combobox', { name: 'Package' }),
+      '@example/plugin-example-common',
+    );
+
+    expect(
+      screen.getByText('No configuration schema provided.'),
+    ).toBeInTheDocument();
+  });
+
   it("merges a frontend package with no schema of its own into its dependency's schema", async () => {
     render(
       <ConfigureGuide
@@ -255,9 +308,8 @@ describe('ConfigureGuide', () => {
             packages: [
               {
                 npmPackageName: '@example/plugin-frontend',
-                functionality: 'frontend',
                 internalDependencies: ['@example/plugin-react'],
-                npm: plugin.snapshot!.packages[0].npm,
+                npm: npmSnapshot('frontend-plugin'),
                 configSchema: {
                   status: 'unavailable',
                   lastAttemptAt: '2026-01-01T00:00:00.000Z',
@@ -266,8 +318,7 @@ describe('ConfigureGuide', () => {
               },
               {
                 npmPackageName: '@example/plugin-react',
-                functionality: 'react',
-                npm: plugin.snapshot!.packages[0].npm,
+                npm: npmSnapshot(),
                 configSchema: {
                   status: 'fresh',
                   lastAttemptAt: '2026-01-01T00:00:00.000Z',
@@ -283,8 +334,7 @@ describe('ConfigureGuide', () => {
               },
               {
                 npmPackageName: '@example/plugin-extra-module',
-                functionality: 'module',
-                npm: plugin.snapshot!.packages[0].npm,
+                npm: npmSnapshot('module'),
                 configSchema: {
                   status: 'fresh',
                   lastAttemptAt: '2026-01-01T00:00:00.000Z',
@@ -323,7 +373,6 @@ describe('ConfigureGuide', () => {
 
   it("merges a shared dependency's schema into both Frontend and Backend sections", async () => {
     const user = userEvent.setup();
-    const npm = plugin.snapshot!.packages[0].npm;
     render(
       <ConfigureGuide
         plugin={{
@@ -333,9 +382,8 @@ describe('ConfigureGuide', () => {
             packages: [
               {
                 npmPackageName: '@example/plugin-frontend',
-                functionality: 'frontend',
                 internalDependencies: ['@example/plugin-common'],
-                npm,
+                npm: npmSnapshot('frontend-plugin'),
                 configSchema: {
                   status: 'fresh',
                   lastAttemptAt: '2026-01-01T00:00:00.000Z',
@@ -349,9 +397,8 @@ describe('ConfigureGuide', () => {
               },
               {
                 npmPackageName: '@example/plugin-backend',
-                functionality: 'backend',
                 internalDependencies: ['@example/plugin-common'],
-                npm,
+                npm: npmSnapshot('backend-plugin'),
                 configSchema: {
                   status: 'fresh',
                   lastAttemptAt: '2026-01-01T00:00:00.000Z',
@@ -365,8 +412,7 @@ describe('ConfigureGuide', () => {
               },
               {
                 npmPackageName: '@example/plugin-common',
-                functionality: 'common',
-                npm,
+                npm: npmSnapshot('common'),
                 configSchema: {
                   status: 'fresh',
                   lastAttemptAt: '2026-01-01T00:00:00.000Z',
@@ -398,7 +444,7 @@ describe('ConfigureGuide', () => {
     expect(screen.queryByLabelText(/^frontendField/)).not.toBeInTheDocument();
   });
 
-  it('merges a package whose functionality is a raw backstage.role string (e.g. "frontend-plugin") with its dependency\'s schema into a Frontend section', async () => {
+  it('merges a package whose backstage.role is "frontend-plugin" with its dependency\'s schema into a Frontend section', async () => {
     render(
       <ConfigureGuide
         plugin={{
@@ -408,9 +454,8 @@ describe('ConfigureGuide', () => {
             packages: [
               {
                 npmPackageName: '@example/plugin-frontend',
-                functionality: 'frontend-plugin',
                 internalDependencies: ['@example/plugin-react'],
-                npm: plugin.snapshot!.packages[0].npm,
+                npm: npmSnapshot('frontend-plugin'),
                 configSchema: {
                   status: 'unavailable',
                   lastAttemptAt: '2026-01-01T00:00:00.000Z',
@@ -419,8 +464,7 @@ describe('ConfigureGuide', () => {
               },
               {
                 npmPackageName: '@example/plugin-react',
-                functionality: 'react',
-                npm: plugin.snapshot!.packages[0].npm,
+                npm: npmSnapshot(),
                 configSchema: {
                   status: 'fresh',
                   lastAttemptAt: '2026-01-01T00:00:00.000Z',
@@ -448,9 +492,8 @@ describe('ConfigureGuide', () => {
       'checkbox',
     );
     // Confirms the merge actually happened under the frontend-role package's
-    // own identity (i.e. `matchesRole` recognized `'frontend-plugin'`),
-    // rather than the dependency's schema merely surviving on its own as an
-    // unmerged fallback entry keyed by `@example/plugin-react`.
+    // own identity, rather than the dependency's schema merely surviving on
+    // its own as an unmerged fallback entry keyed by `@example/plugin-react`.
     expect(
       screen.getByRole('button', {
         name: 'Copy @example/plugin-frontend generated YAML',
@@ -459,7 +502,6 @@ describe('ConfigureGuide', () => {
   });
 
   it('merges two schemas that share the same top-level object property key with disjoint sub-properties', async () => {
-    const npm = plugin.snapshot!.packages[0].npm;
     render(
       <ConfigureGuide
         plugin={{
@@ -469,9 +511,8 @@ describe('ConfigureGuide', () => {
             packages: [
               {
                 npmPackageName: '@example/kubernetes-backend',
-                functionality: 'backend',
                 internalDependencies: ['@example/kubernetes-react'],
-                npm,
+                npm: npmSnapshot('backend-plugin'),
                 configSchema: {
                   status: 'fresh',
                   lastAttemptAt: '2026-01-01T00:00:00.000Z',
@@ -493,8 +534,7 @@ describe('ConfigureGuide', () => {
               },
               {
                 npmPackageName: '@example/kubernetes-react',
-                functionality: 'module',
-                npm,
+                npm: npmSnapshot('module'),
                 configSchema: {
                   status: 'fresh',
                   lastAttemptAt: '2026-01-01T00:00:00.000Z',

@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:04.394Z'
-    checkedAt: '2026-08-04T05:03:04.394Z'
+    lastAttemptAt: '2026-08-04T22:12:53.032Z'
+    checkedAt: '2026-08-04T22:12:53.032Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/jfrog-artifactory/backstage.json
     sourcePath: workspaces/jfrog-artifactory/backstage.json
@@ -21,14 +21,20 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-jfrog-artifactory'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:04.025Z'
-        checkedAt: '2026-08-04T05:03:04.025Z'
+        lastAttemptAt: '2026-08-04T22:12:52.813Z'
+        checkedAt: '2026-08-04T22:12:52.813Z'
         latestVersion: 1.30.2
         lastPublishedAt: '2026-07-22T11:28:08.208Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/jfrog-artifactory/plugins/jfrog-artifactory
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:04.510Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/ui'
+          - filesize
+          - luxon
+          - react-use

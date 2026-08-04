@@ -15,11 +15,14 @@
  */
 import type {
   ArrayFieldTemplateProps,
+  DescriptionFieldProps,
   FieldErrorProps,
   FieldTemplateProps,
+  MultiSchemaFieldTemplateProps,
   ObjectFieldTemplateProps,
   RegistryWidgetsType,
   TemplatesType,
+  UiSchema,
   WidgetProps,
 } from '@rjsf/utils';
 import React from 'react';
@@ -47,6 +50,7 @@ function ConfigFieldTemplate(props: FieldTemplateProps) {
     children,
     schema,
     hidden,
+    uiSchema,
   } = props;
 
   if (hidden) {
@@ -66,7 +70,12 @@ function ConfigFieldTemplate(props: FieldTemplateProps) {
   }
 
   const isCheckbox = schema.type === 'boolean';
-  const fieldLabel = (
+  // A field nested as the selected branch of an anyOf/oneOf (see
+  // ConfigMultiSchemaFieldTemplate below) shares its label with the parent
+  // selector field, so it opts out of rendering its own label here to avoid
+  // showing the same label twice.
+  const showLabel = uiSchema?.['ui:options']?.label !== false;
+  const fieldLabel = showLabel && (
     <label htmlFor={id} className={styles.fieldLabel}>
       {label}
       {required && <span aria-hidden="true"> *</span>}
@@ -116,6 +125,46 @@ function ConfigFieldErrorTemplate({ errors }: FieldErrorProps) {
 
 function ConfigErrorListTemplate() {
   return null;
+}
+
+function ConfigDescriptionFieldTemplate({ id, description }: DescriptionFieldProps) {
+  if (!description) {
+    return null;
+  }
+  return (
+    <p id={id} className={styles.fieldHelp}>
+      {description}
+    </p>
+  );
+}
+
+// RJSF renders the selected branch of an anyOf/oneOf field through the same
+// SchemaField (and thus the same FieldTemplate) machinery as any other
+// field, which would otherwise show its label a second time right under the
+// label the selector already rendered for this field. Suppress that inner
+// label via the `ui:options.label` flag that ConfigFieldTemplate checks.
+function withHiddenLabel(node: React.ReactNode): React.ReactNode {
+  if (!React.isValidElement<{ uiSchema?: UiSchema }>(node)) {
+    return node;
+  }
+  return React.cloneElement(node, {
+    uiSchema: {
+      ...node.props.uiSchema,
+      'ui:options': { ...node.props.uiSchema?.['ui:options'], label: false },
+    },
+  });
+}
+
+function ConfigMultiSchemaFieldTemplate({
+  selector,
+  optionSchemaField,
+}: MultiSchemaFieldTemplateProps) {
+  return (
+    <div className={styles.fieldStack}>
+      <div className={styles.formField}>{selector}</div>
+      {withHiddenLabel(optionSchemaField)}
+    </div>
+  );
 }
 
 function ConfigObjectFieldTemplate(props: ObjectFieldTemplateProps) {
@@ -168,6 +217,8 @@ export const configFormTemplates: Partial<TemplatesType> = {
   FieldTemplate: ConfigFieldTemplate,
   FieldErrorTemplate: ConfigFieldErrorTemplate,
   ErrorListTemplate: ConfigErrorListTemplate,
+  DescriptionFieldTemplate: ConfigDescriptionFieldTemplate,
+  MultiSchemaFieldTemplate: ConfigMultiSchemaFieldTemplate,
   ObjectFieldTemplate: ConfigObjectFieldTemplate,
   ArrayFieldTemplate: ConfigArrayFieldTemplate,
 };

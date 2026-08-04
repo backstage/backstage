@@ -13,8 +13,8 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:00.977Z'
-    checkedAt: '2026-08-04T05:03:00.977Z'
+    lastAttemptAt: '2026-08-04T22:12:49.686Z'
+    checkedAt: '2026-08-04T22:12:49.686Z'
     version: 1.1.0
     sourceUrl: https://github.com/zalopay-oss/backstage-grpc-playground/blob/main/backstage.json
     sourcePath: backstage.json
@@ -22,13 +22,32 @@ snapshot:
     - npmPackageName: backstage-grpc-playground
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:00.835Z'
-        checkedAt: '2026-08-04T05:03:00.835Z'
+        lastAttemptAt: '2026-08-04T22:12:49.526Z'
+        checkedAt: '2026-08-04T22:12:49.526Z'
         latestVersion: 0.3.0
         lastPublishedAt: '2022-08-29T08:15:05.214Z'
         repository:
           url: https://github.com/zalopay-oss/backstage-grpc-playground
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:01.580Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@ant-design/icons'
+          - '@backstage/core-plugin-api'
+          - '@backstage/integration-react'
+          - '@backstage/plugin-catalog-react'
+          - '@microsoft/fetch-event-source'
+          - antd
+          - brace
+          - browser-fs-access
+          - github-markdown-css
+          - lodash.get
+          - mousetrap
+          - path-parse
+          - protobufjs
+          - re-resizable
+          - react-ace
+          - react-markdown
+          - react-sortable-hoc
+          - react-use
+          - rehype-raw
+          - remark-gfm
+          - uuid

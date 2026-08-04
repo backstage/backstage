@@ -11,8 +11,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:19.642Z'
-    checkedAt: '2026-08-04T05:03:19.642Z'
+    lastAttemptAt: '2026-08-04T22:13:09.548Z'
+    checkedAt: '2026-08-04T22:13:09.548Z'
     version: 1.53.0
     sourceUrl: https://github.com/CodeVerse-GP/leave-tracker/blob/main/backstage.json
     sourcePath: backstage.json
@@ -20,14 +20,25 @@ snapshot:
     - npmPackageName: '@codeverse-gp/plugin-team-leave-tracker'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:19.310Z'
-        checkedAt: '2026-08-04T05:03:19.310Z'
+        lastAttemptAt: '2026-08-04T22:13:09.209Z'
+        checkedAt: '2026-08-04T22:13:09.209Z'
         latestVersion: 1.1.0
         lastPublishedAt: '2026-07-25T15:43:02.267Z'
         repository:
           url: https://github.com/CodeVerse-GP/leave-tracker
           directory: plugins/team-leave-tracker
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@mui/icons-material'
+          - '@mui/material'
+          - tss-react
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:20.261Z'
+        lastAttemptAt: '2026-08-04T22:13:10.222Z'
         reason: config-schema-not-declared

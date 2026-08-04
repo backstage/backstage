@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:11.060Z'
-    checkedAt: '2026-08-04T05:03:11.060Z'
+    lastAttemptAt: '2026-08-04T22:13:00.396Z'
+    checkedAt: '2026-08-04T22:13:00.396Z'
     version: 1.44.2
     sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,14 +21,26 @@ snapshot:
     - npmPackageName: '@roadiehq/backstage-plugin-prometheus'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:10.688Z'
-        checkedAt: '2026-08-04T05:03:10.688Z'
+        lastAttemptAt: '2026-08-04T22:13:00.005Z'
+        checkedAt: '2026-08-04T22:13:00.005Z'
         latestVersion: 3.3.1
         lastPublishedAt: '2026-04-23T09:32:31.243Z'
         repository:
           url: https://github.com/RoadieHQ/roadie-backstage-plugins
           directory: plugins/backstage-plugin-prometheus
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:11.171Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/lab'
+          - '@types/recharts'
+          - lodash
+          - luxon
+          - nunjucks
+          - react-use
+          - react-use-dimensions
+          - recharts

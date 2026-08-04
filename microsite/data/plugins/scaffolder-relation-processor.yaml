@@ -11,8 +11,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:15.263Z'
-    checkedAt: '2026-08-04T05:03:15.263Z'
+    lastAttemptAt: '2026-08-04T22:13:04.933Z'
+    checkedAt: '2026-08-04T22:13:04.933Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/scaffolder-relation-processor/backstage.json
     sourcePath: workspaces/scaffolder-relation-processor/backstage.json
@@ -20,14 +20,24 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-catalog-backend-module-scaffolder-relation-processor'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:14.900Z'
-        checkedAt: '2026-08-04T05:03:14.900Z'
+        lastAttemptAt: '2026-08-04T22:13:04.515Z'
+        checkedAt: '2026-08-04T22:13:04.515Z'
         latestVersion: 2.15.0
         lastPublishedAt: '2026-07-08T08:07:05.421Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/scaffolder-relation-processor/plugins/catalog-backend-module-scaffolder-relation-processor
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:15.411Z'
-        reason: config-schema-not-json
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/backend-plugin-api'
+          - '@backstage/catalog-client'
+          - '@backstage/catalog-model'
+          - '@backstage/integration'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-events-node'
+          - '@backstage/plugin-notifications-common'
+          - '@backstage/plugin-notifications-node'
+          - '@gitbeaker/rest'
+          - '@octokit/core'
+          - git-url-parse
+          - octokit-plugin-create-pull-request

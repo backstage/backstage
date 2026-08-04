@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:37.665Z'
-    checkedAt: '2026-08-04T05:02:37.665Z'
+    lastAttemptAt: '2026-08-04T22:12:24.635Z'
+    checkedAt: '2026-08-04T22:12:24.635Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/allure/backstage.json
     sourcePath: workspaces/allure/backstage.json
@@ -21,14 +21,23 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-allure'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:37.296Z'
-        checkedAt: '2026-08-04T05:02:37.296Z'
+        lastAttemptAt: '2026-08-04T22:12:24.245Z'
+        checkedAt: '2026-08-04T22:12:24.245Z'
         latestVersion: 0.21.0
         lastPublishedAt: '2026-07-21T23:00:06.892Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/allure/plugins/allure
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@types/react'
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:38.018Z'
+        lastAttemptAt: '2026-08-04T22:12:24.811Z'
         reason: config-schema-not-declared

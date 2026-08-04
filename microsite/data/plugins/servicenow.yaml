@@ -11,8 +11,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:17.101Z'
-    checkedAt: '2026-08-04T05:03:17.101Z'
+    lastAttemptAt: '2026-08-04T22:13:07.142Z'
+    checkedAt: '2026-08-04T22:13:07.142Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/servicenow/backstage.json
     sourcePath: workspaces/servicenow/backstage.json
@@ -20,14 +20,31 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-servicenow'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:16.765Z'
-        checkedAt: '2026-08-04T05:03:16.765Z'
-        latestVersion: 1.13.2
-        lastPublishedAt: '2026-07-22T21:54:36.667Z'
+        lastAttemptAt: '2026-08-04T22:13:06.816Z'
+        checkedAt: '2026-08-04T22:13:06.816Z'
+        latestVersion: 1.14.0
+        lastPublishedAt: '2026-08-04T12:52:04.399Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/servicenow/plugins/servicenow
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage-community/plugin-servicenow-common'
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-app-react'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@mui/icons-material'
+          - '@mui/lab'
+          - '@mui/material'
+          - react-dom
+          - react-router-dom
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:17.216Z'
+        lastAttemptAt: '2026-08-04T22:13:07.277Z'
         reason: config-schema-not-declared

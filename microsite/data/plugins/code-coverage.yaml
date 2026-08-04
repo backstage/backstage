@@ -11,8 +11,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:49.944Z'
-    checkedAt: '2026-08-04T05:02:49.944Z'
+    lastAttemptAt: '2026-08-04T22:12:37.401Z'
+    checkedAt: '2026-08-04T22:12:37.401Z'
     version: 1.49.2
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/code-coverage/backstage.json
     sourcePath: workspaces/code-coverage/backstage.json
@@ -20,14 +20,30 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-code-coverage'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:49.585Z'
-        checkedAt: '2026-08-04T05:02:49.585Z'
+        lastAttemptAt: '2026-08-04T22:12:37.046Z'
+        checkedAt: '2026-08-04T22:12:37.046Z'
         latestVersion: 0.14.1
         lastPublishedAt: '2026-07-03T17:37:49.158Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/code-coverage/plugins/code-coverage
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@material-ui/styles'
+          - highlight.js
+          - luxon
+          - react-use
+          - recharts
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:50.074Z'
+        lastAttemptAt: '2026-08-04T22:12:37.557Z'
         reason: config-schema-not-declared

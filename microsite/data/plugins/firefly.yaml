@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:57.749Z'
-    checkedAt: '2026-08-04T05:02:57.749Z'
+    lastAttemptAt: '2026-08-04T22:12:45.443Z'
+    checkedAt: '2026-08-04T22:12:45.443Z'
     version: 1.36.0
     sourceUrl: https://github.com/gofireflyio/firefly-backstage-plugin/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,13 +21,26 @@ snapshot:
     - npmPackageName: '@fireflyai/backstage-plugin-firefly'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:57.347Z'
-        checkedAt: '2026-08-04T05:02:57.347Z'
+        lastAttemptAt: '2026-08-04T22:12:45.105Z'
+        checkedAt: '2026-08-04T22:12:45.105Z'
         latestVersion: 1.0.3
         lastPublishedAt: '2025-10-09T19:27:44.368Z'
         repository:
           url: https://github.com/gofireflyio/firefly-backstage-plugin
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@ant-design/plots'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@mui/icons-material'
+          - '@mui/material'
+          - lodash
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:58.277Z'
+        lastAttemptAt: '2026-08-04T22:12:46.113Z'
         reason: config-schema-not-declared

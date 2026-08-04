@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:20.704Z'
-    checkedAt: '2026-08-04T05:03:20.704Z'
+    lastAttemptAt: '2026-08-04T22:13:10.480Z'
+    checkedAt: '2026-08-04T22:13:10.480Z'
     version: 1.45.2
     sourceUrl: https://github.com/tduniec/template-designer-plugin/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,14 +21,32 @@ snapshot:
     - npmPackageName: '@tduniec/plugin-template-designer'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:20.381Z'
-        checkedAt: '2026-08-04T05:03:20.381Z'
+        lastAttemptAt: '2026-08-04T22:13:10.136Z'
+        checkedAt: '2026-08-04T22:13:10.136Z'
         latestVersion: 0.4.8
         lastPublishedAt: '2026-02-16T22:21:35.567Z'
         repository:
           url: https://github.com/tduniec/template-designer-plugin
           directory: ./plugins/temlplate-designer
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-scaffolder-common'
+          - '@backstage/plugin-scaffolder-react'
+          - '@backstage/theme'
+          - '@codemirror/lang-yaml'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@tduniec/plugin-template-designer-foundation'
+          - '@xyflow/react'
+          - react-router-dom
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:21.309Z'
+        lastAttemptAt: '2026-08-04T22:13:11.059Z'
         reason: config-schema-not-declared

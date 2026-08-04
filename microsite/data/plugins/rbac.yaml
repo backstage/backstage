@@ -11,8 +11,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:11.775Z'
-    checkedAt: '2026-08-04T05:03:11.775Z'
+    lastAttemptAt: '2026-08-04T22:13:00.920Z'
+    checkedAt: '2026-08-04T22:13:00.920Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/rbac/backstage.json
     sourcePath: workspaces/rbac/backstage.json
@@ -20,14 +20,37 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-rbac'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:11.434Z'
-        checkedAt: '2026-08-04T05:03:11.434Z'
-        latestVersion: 2.0.0
-        lastPublishedAt: '2026-07-28T21:04:53.432Z'
+        lastAttemptAt: '2026-08-04T22:13:00.670Z'
+        checkedAt: '2026-08-04T22:13:00.670Z'
+        latestVersion: 2.1.0
+        lastPublishedAt: '2026-08-04T13:00:12.796Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/rbac/plugins/rbac
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage-community/plugin-rbac-common'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-app-react'
+          - '@backstage/plugin-catalog'
+          - '@backstage/plugin-catalog-common'
+          - '@backstage/plugin-permission-common'
+          - '@backstage/plugin-permission-react'
+          - '@backstage/theme'
+          - '@mui/icons-material'
+          - '@mui/material'
+          - '@rjsf/core'
+          - '@rjsf/mui'
+          - '@rjsf/utils'
+          - '@rjsf/validator-ajv8'
+          - autosuggest-highlight
+          - formik
+          - react-use
+          - yup
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:11.908Z'
+        lastAttemptAt: '2026-08-04T22:13:01.057Z'
         reason: config-schema-not-declared

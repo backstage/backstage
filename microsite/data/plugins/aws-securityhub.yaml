@@ -12,23 +12,41 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:42.084Z'
-    checkedAt: '2026-08-04T05:02:42.084Z'
-    version: 1.43.1
+    lastAttemptAt: '2026-08-04T22:12:29.085Z'
+    checkedAt: '2026-08-04T22:12:29.085Z'
+    version: 1.52.1
     sourceUrl: https://github.com/awslabs/backstage-plugins-for-aws/blob/main/backstage.json
     sourcePath: backstage.json
   packages:
     - npmPackageName: '@aws/aws-securityhub-plugin-for-backstage'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:41.733Z'
-        checkedAt: '2026-08-04T05:02:41.733Z'
+        lastAttemptAt: '2026-08-04T22:12:28.774Z'
+        checkedAt: '2026-08-04T22:12:28.774Z'
         latestVersion: 0.1.0
         lastPublishedAt: '2026-02-04T17:48:21.231Z'
         repository:
           url: https://github.com/awslabs/backstage-plugins-for-aws
           directory: plugins/securityhub/frontend
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - recharts
+          - react-use
+          - '@backstage/theme'
+          - '@material-ui/lab'
+          - '@material-ui/core'
+          - humanize-duration
+          - '@material-ui/icons'
+          - '@aws-sdk/util-arn-parser'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@aws-sdk/client-securityhub'
+          - '@backstage/plugin-catalog-react'
+          - '@aws/aws-core-plugin-for-backstage-react'
+          - '@aws/aws-core-plugin-for-backstage-common'
+          - '@aws/aws-securityhub-plugin-for-backstage-common'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:42.215Z'
+        lastAttemptAt: '2026-08-04T22:12:29.237Z'
         reason: config-schema-not-declared

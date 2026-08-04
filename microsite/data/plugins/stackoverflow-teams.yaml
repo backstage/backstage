@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:18.647Z'
-    checkedAt: '2026-08-04T05:03:18.647Z'
+    lastAttemptAt: '2026-08-04T22:13:08.555Z'
+    checkedAt: '2026-08-04T22:13:08.555Z'
     version: 1.46.0
     sourceUrl: https://github.com/StackExchange/backstage-stackoverflow/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,13 +21,35 @@ snapshot:
     - npmPackageName: '@stackoverflow/backstage-plugin-stack-overflow-teams'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:18.312Z'
-        checkedAt: '2026-08-04T05:03:18.312Z'
+        lastAttemptAt: '2026-08-04T22:13:08.234Z'
+        checkedAt: '2026-08-04T22:13:08.234Z'
         latestVersion: 1.6.3
         lastPublishedAt: '2026-01-19T16:42:13.842Z'
         repository:
           url: https://github.com/StackExchange/backstage-stackoverflow
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-search-react'
+          - '@backstage/theme'
+          - '@emotion/react'
+          - '@emotion/styled'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@mui/icons-material'
+          - '@mui/material'
+          - '@tiptap/core'
+          - '@tiptap/extension-heading'
+          - '@tiptap/extension-image'
+          - '@tiptap/extension-table'
+          - '@tiptap/extensions'
+          - '@tiptap/pm'
+          - '@tiptap/react'
+          - '@tiptap/starter-kit'
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:19.354Z'
+        lastAttemptAt: '2026-08-04T22:13:09.328Z'
         reason: config-schema-not-declared

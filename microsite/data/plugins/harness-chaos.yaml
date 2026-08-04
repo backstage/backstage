@@ -13,17 +13,35 @@ staleSince: '2026-08-04'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:01.205Z'
+    lastAttemptAt: '2026-08-04T22:12:49.639Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@harnessio/backstage-plugin-harness-chaos'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:01.205Z'
-        checkedAt: '2026-08-04T05:03:01.205Z'
+        lastAttemptAt: '2026-08-04T22:12:49.639Z'
+        checkedAt: '2026-08-04T22:12:49.639Z'
         latestVersion: 0.2.0
         lastPublishedAt: '2024-09-05T06:27:35.761Z'
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - lodash-es
+          - react-use
+          - '@mui/styles'
+          - cron-parser
+          - sweetalert2
+          - '@mui/material'
+          - path-to-regexp
+          - '@backstage/theme'
+          - '@material-ui/lab'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@mui/icons-material'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:01.617Z'
+        lastAttemptAt: '2026-08-04T22:12:50.043Z'
         reason: config-schema-not-declared

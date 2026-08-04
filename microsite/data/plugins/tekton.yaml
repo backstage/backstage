@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:20.581Z'
-    checkedAt: '2026-08-04T05:03:20.581Z'
+    lastAttemptAt: '2026-08-04T22:13:10.438Z'
+    checkedAt: '2026-08-04T22:13:10.438Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/tekton/backstage.json
     sourcePath: workspaces/tekton/backstage.json
@@ -21,14 +21,45 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-tekton'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:20.331Z'
-        checkedAt: '2026-08-04T05:03:20.331Z'
-        latestVersion: 3.40.1
-        lastPublishedAt: '2026-07-28T20:50:55.105Z'
+        lastAttemptAt: '2026-08-04T22:13:10.066Z'
+        checkedAt: '2026-08-04T22:13:10.066Z'
+        latestVersion: 3.41.0
+        lastPublishedAt: '2026-08-04T12:49:14.724Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/tekton/plugins/tekton
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@aonic-ui/pipelines'
+          - '@backstage-community/plugin-tekton-common'
+          - '@backstage-community/plugin-tekton-react'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-app-react'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-kubernetes-common'
+          - '@backstage/plugin-kubernetes-react'
+          - '@backstage/plugin-permission-react'
+          - '@backstage/theme'
+          - '@emotion/cache'
+          - '@emotion/react'
+          - '@kubernetes/client-node'
+          - '@mui/icons-material'
+          - '@mui/material'
+          - '@patternfly/patternfly'
+          - '@patternfly/react-core'
+          - '@patternfly/react-table'
+          - '@patternfly/react-tokens'
+          - '@patternfly/react-topology'
+          - '@tanstack/react-query'
+          - classnames
+          - dagre
+          - lodash
+          - mobx-react
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:20.703Z'
+        lastAttemptAt: '2026-08-04T22:13:10.552Z'
         reason: config-schema-not-declared

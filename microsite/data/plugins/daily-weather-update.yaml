@@ -13,8 +13,8 @@ staleSince: '2026-08-04'
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:51.589Z'
-    checkedAt: '2026-08-04T05:02:51.589Z'
+    lastAttemptAt: '2026-08-04T22:12:39.420Z'
+    checkedAt: '2026-08-04T22:12:39.420Z'
     version: 1.36.0
     sourceUrl: https://github.com/Infosys/daily-weather-plugin/blob/main/backstage.json
     sourcePath: backstage.json
@@ -22,13 +22,22 @@ snapshot:
     - npmPackageName: '@infosys_ltd/daily-weather-plugin'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:51.246Z'
-        checkedAt: '2026-08-04T05:02:51.246Z'
+        lastAttemptAt: '2026-08-04T22:12:39.047Z'
+        checkedAt: '2026-08-04T22:12:39.047Z'
         latestVersion: 1.1.1
         lastPublishedAt: '2025-05-08T11:46:08.207Z'
         repository:
           url: https://github.com/Infosys/daily-weather-plugin
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - react-use
+          - '@backstage/theme'
+          - '@material-ui/lab'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:52.199Z'
+        lastAttemptAt: '2026-08-04T22:12:40.004Z'
         reason: config-schema-not-declared

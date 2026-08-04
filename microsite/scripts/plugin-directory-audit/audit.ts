@@ -182,7 +182,7 @@ async function resolvePackageConfigSchema(
   lastAttemptAt: string,
   warnings: string[],
   title: string,
-): Promise<ConfigSchemaSnapshot> {
+): Promise<ConfigSchemaSnapshot | undefined> {
   if (npm.status === 'unavailable') {
     return (
       previousPackage?.configSchema ?? {
@@ -212,6 +212,11 @@ async function resolvePackageConfigSchema(
       warnings.push(
         `${title}: config schema unavailable for ${npmPackageName} (${fetchedConfigSchema.reason})`,
       );
+    }
+    // Unsupported declaration format, not a transient failure: drop the
+    // snapshot entirely rather than persisting an unavailable/stale record.
+    if (fetchedConfigSchema.reason === 'config-schema-not-json') {
+      return undefined;
     }
     return staleConfigSchemaSnapshot(
       previousPackage?.configSchema,
@@ -297,10 +302,6 @@ async function collectPackageSnapshots(
       manifest.title,
     );
 
-    const functionality =
-      (npm.status !== 'unavailable' ? npm.backstageRole : undefined) ??
-      member.functionality;
-
     const internalDependencies =
       npm.status !== 'unavailable' && npm.dependencyNames
         ? npm.dependencyNames.filter(
@@ -309,14 +310,13 @@ async function collectPackageSnapshots(
         : undefined;
 
     packageSnapshots.push({
-      ...(functionality ? { functionality } : {}),
       npmPackageName: member.npmPackageName,
       ...(member.sourcePath ? { sourcePath: member.sourcePath } : {}),
       ...(internalDependencies && internalDependencies.length > 0
         ? { internalDependencies }
         : {}),
       npm,
-      configSchema,
+      ...(configSchema ? { configSchema } : {}),
     });
   }
 

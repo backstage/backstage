@@ -12,20 +12,30 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:41.586Z'
+    lastAttemptAt: '2026-08-04T22:12:28.757Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@letthem/backstage-plugin-aws-cost-insights'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:41.126Z'
-        checkedAt: '2026-08-04T05:02:41.126Z'
+        lastAttemptAt: '2026-08-04T22:12:28.337Z'
+        checkedAt: '2026-08-04T22:12:28.337Z'
         latestVersion: 1.0.1
         lastPublishedAt: '2026-03-05T07:40:55.762Z'
         repository:
           url: https://github.com/letthem/backstage-plugin-cost-insights
           directory: plugins/cost-insights
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@mui/icons-material'
+          - '@mui/material'
+          - '@mui/x-date-pickers'
+          - luxon
+          - react-use
+          - recharts
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:42.006Z'
+        lastAttemptAt: '2026-08-04T22:12:29.123Z'
         reason: config-schema-not-declared

@@ -13,8 +13,8 @@ staleSince: '2026-08-04'
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:45.296Z'
-    checkedAt: '2026-08-04T05:02:45.296Z'
+    lastAttemptAt: '2026-08-04T22:12:32.703Z'
+    checkedAt: '2026-08-04T22:12:32.703Z'
     version: 1.16.0
     sourceUrl: https://github.com/aurora-is-near/backstage-plugin-blockchainradar/blob/main/backstage.json
     sourcePath: backstage.json
@@ -22,13 +22,41 @@ snapshot:
     - npmPackageName: '@aurora-is-near/backstage-plugin-blockchainradar-backend'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:44.923Z'
-        checkedAt: '2026-08-04T05:02:44.923Z'
+        lastAttemptAt: '2026-08-04T22:12:32.310Z'
+        checkedAt: '2026-08-04T22:12:32.310Z'
         latestVersion: 1.0.39
         lastPublishedAt: '2025-08-01T05:05:40.874Z'
         repository:
           url: https://github.com/aurora-is-near/backstage-plugin-blockchainradar
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:45.817Z'
-        reason: config-schema-not-json
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - msw
+          - bs58
+          - web3
+          - axios
+          - ethers
+          - lodash
+          - graphql
+          - winston
+          - react-use
+          - node-fetch
+          - web3-utils
+          - async-mutex
+          - async-retry
+          - near-api-js
+          - '@apollo/client'
+          - react-json-view
+          - '@backstage/types'
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@types/async-retry'
+          - near-contract-parser
+          - '@backstage/integration'
+          - '@backstage/catalog-model'
+          - '@ethersproject/providers'
+          - '@backstage/backend-common'
+          - '@backstage/catalog-client'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-catalog-common'
+          - '@backstage/plugin-catalog-backend'

@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:38.566Z'
-    checkedAt: '2026-08-04T05:02:38.566Z'
+    lastAttemptAt: '2026-08-04T22:12:25.373Z'
+    checkedAt: '2026-08-04T22:12:25.373Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/analytics/backstage.json
     sourcePath: workspaces/analytics/backstage.json
@@ -21,14 +21,18 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-analytics-module-ga4'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:38.317Z'
-        checkedAt: '2026-08-04T05:02:38.317Z'
+        lastAttemptAt: '2026-08-04T22:12:25.089Z'
+        checkedAt: '2026-08-04T22:12:25.089Z'
         latestVersion: 0.21.0
         lastPublishedAt: '2026-07-21T17:22:38.480Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/analytics/plugins/analytics-module-ga4
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:38.676Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin-module
+        dependencyNames:
+          - '@backstage/config'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-app-react'
+          - react-ga4

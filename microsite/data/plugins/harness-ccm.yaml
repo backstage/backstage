@@ -12,17 +12,32 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:01.006Z'
+    lastAttemptAt: '2026-08-04T22:12:49.581Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@harnessio/backstage-plugin-harness-ccm'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:01.006Z'
-        checkedAt: '2026-08-04T05:03:01.006Z'
+        lastAttemptAt: '2026-08-04T22:12:49.581Z'
+        checkedAt: '2026-08-04T22:12:49.581Z'
         latestVersion: 0.1.4
         lastPublishedAt: '2026-01-15T13:58:16.391Z'
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - dayjs
+          - recharts
+          - react-use
+          - path-to-regexp
+          - '@backstage/theme'
+          - '@material-ui/lab'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@mui/icons-material'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:01.327Z'
+        lastAttemptAt: '2026-08-04T22:12:49.927Z'
         reason: config-schema-not-declared

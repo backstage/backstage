@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:56.173Z'
-    checkedAt: '2026-08-04T05:02:56.173Z'
+    lastAttemptAt: '2026-08-04T22:12:43.980Z'
+    checkedAt: '2026-08-04T22:12:43.980Z'
     version: 1.46.1
     sourceUrl: https://github.com/dweber019/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,14 +21,29 @@ snapshot:
     - npmPackageName: '@dweber019/backstage-plugin-endoflife'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:55.746Z'
-        checkedAt: '2026-08-04T05:02:55.746Z'
+        lastAttemptAt: '2026-08-04T22:12:43.759Z'
+        checkedAt: '2026-08-04T22:12:43.759Z'
         latestVersion: 0.1.2
         lastPublishedAt: '2025-12-19T07:45:21.568Z'
         repository:
           url: https://github.com/dweber019/backstage-plugins
           directory: plugins/endoflife
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:56.284Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/integration-react'
+          - '@backstage/plugin-catalog-react'
+          - '@egjs/hammerjs'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - keycharm
+          - luxon
+          - moment
+          - react-use
+          - vis-data
+          - vis-timeline
+          - vis-util
+          - xss

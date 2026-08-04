@@ -11,8 +11,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:08.194Z'
-    checkedAt: '2026-08-04T05:03:08.194Z'
+    lastAttemptAt: '2026-08-04T22:12:57.222Z'
+    checkedAt: '2026-08-04T22:12:57.222Z'
     version: 1.51.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/multi-source-security-viewer/backstage.json
     sourcePath: workspaces/multi-source-security-viewer/backstage.json
@@ -20,14 +20,41 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-multi-source-security-viewer'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:07.849Z'
-        checkedAt: '2026-08-04T05:03:07.849Z'
+        lastAttemptAt: '2026-08-04T22:12:56.900Z'
+        checkedAt: '2026-08-04T22:12:56.900Z'
         latestVersion: 0.17.3
         lastPublishedAt: '2026-07-21T20:28:09.414Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/multi-source-security-viewer/plugins/multi-source-security-viewer
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@aonic-ui/pipelines'
+          - '@backstage-community/plugin-azure-devops'
+          - '@backstage-community/plugin-azure-devops-common'
+          - '@backstage-community/plugin-github-actions'
+          - '@backstage-community/plugin-jenkins'
+          - '@backstage-community/plugin-multi-source-security-viewer-common'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/integration-react'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-permission-react'
+          - '@backstage/theme'
+          - '@backstage/ui'
+          - '@immobiliarelabs/backstage-plugin-gitlab'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@mui/icons-material'
+          - '@mui/material'
+          - '@patternfly/patternfly'
+          - '@patternfly/react-core'
+          - '@patternfly/react-tokens'
+          - '@tanstack/react-query'
+          - lodash
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:08.323Z'
+        lastAttemptAt: '2026-08-04T22:12:57.345Z'
         reason: config-schema-not-declared

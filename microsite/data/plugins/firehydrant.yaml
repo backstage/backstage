@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:57.745Z'
-    checkedAt: '2026-08-04T05:02:57.745Z'
+    lastAttemptAt: '2026-08-04T22:12:45.896Z'
+    checkedAt: '2026-08-04T22:12:45.896Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/firehydrant/backstage.json
     sourcePath: workspaces/firehydrant/backstage.json
@@ -21,14 +21,26 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-firehydrant'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:57.370Z'
-        checkedAt: '2026-08-04T05:02:57.370Z'
+        lastAttemptAt: '2026-08-04T22:12:45.549Z'
+        checkedAt: '2026-08-04T22:12:45.549Z'
         latestVersion: 0.22.1
         lastPublishedAt: '2026-07-28T04:25:14.282Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/firehydrant/plugins/firehydrant
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@types/react'
+          - luxon
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:57.876Z'
+        lastAttemptAt: '2026-08-04T22:12:46.041Z'
         reason: config-schema-not-declared

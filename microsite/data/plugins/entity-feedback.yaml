@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:56.179Z'
-    checkedAt: '2026-08-04T05:02:56.179Z'
+    lastAttemptAt: '2026-08-04T22:12:44.335Z'
+    checkedAt: '2026-08-04T22:12:44.335Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/entity-feedback/backstage.json
     sourcePath: workspaces/entity-feedback/backstage.json
@@ -21,14 +21,29 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-entity-feedback'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:55.874Z'
-        checkedAt: '2026-08-04T05:02:55.874Z'
+        lastAttemptAt: '2026-08-04T22:12:43.950Z'
+        checkedAt: '2026-08-04T22:12:43.950Z'
         latestVersion: 0.21.1
         lastPublishedAt: '2026-07-28T19:02:16.661Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/entity-feedback/plugins/entity-feedback
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage-community/plugin-entity-feedback-common'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/filter-predicates'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@types/react'
+          - react-use
+          - zod
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:56.362Z'
+        lastAttemptAt: '2026-08-04T22:12:44.444Z'
         reason: config-schema-not-declared

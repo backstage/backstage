@@ -193,7 +193,6 @@ describe('pluginManifestSchema', () => {
         packages: [
           {
             npmPackageName: '@example/plugin-example-backend',
-            functionality: 'backend',
             internalDependencies: ['@example/plugin-example-common'],
             npm: {
               status: 'fresh',

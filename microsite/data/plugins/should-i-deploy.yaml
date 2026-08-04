@@ -13,19 +13,32 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:17.289Z'
+    lastAttemptAt: '2026-08-04T22:13:07.209Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: backstage-plugin-should-i-deploy
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:17.136Z'
-        checkedAt: '2026-08-04T05:03:17.136Z'
+        lastAttemptAt: '2026-08-04T22:13:07.065Z'
+        checkedAt: '2026-08-04T22:13:07.065Z'
         latestVersion: 0.1.6
         lastPublishedAt: '2023-11-08T00:07:46.018Z'
         repository:
           url: https://github.com/NandoRFS/backstage-plugin-should-i-deploy
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-home-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@testing-library/jest-dom'
+          - '@types/react'
+          - cross-fetch
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:17.681Z'
+        lastAttemptAt: '2026-08-04T22:13:07.585Z'
         reason: config-schema-not-declared

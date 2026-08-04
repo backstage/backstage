@@ -13,19 +13,54 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:10.017Z'
+    lastAttemptAt: '2026-08-04T22:12:59.219Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: backstage-plugin-opslevel-maturity
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:09.863Z'
-        checkedAt: '2026-08-04T05:03:09.863Z'
+        lastAttemptAt: '2026-08-04T22:12:59.057Z'
+        checkedAt: '2026-08-04T22:12:59.057Z'
         latestVersion: 1.1.2
         lastPublishedAt: '2023-10-25T18:37:06.496Z'
         repository:
           url: https://github.com/OpsLevel/backstage-plugin
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/config'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@emotion/react'
+          - '@emotion/styled'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@mui/material'
+          - '@ts-stack/markdown'
+          - '@types/dompurify'
+          - '@types/enzyme'
+          - '@types/react'
+          - '@types/react-dom'
+          - antd
+          - apexcharts
+          - dompurify
+          - enzyme
+          - graphql
+          - graphql-request
+          - lodash
+          - moment
+          - react
+          - react-apexcharts
+          - react-dom
+          - react-js-cron
+          - react-router
+          - react-router-dom
+          - react-use
+          - typescript
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:10.520Z'
+        lastAttemptAt: '2026-08-04T22:12:59.658Z'
         reason: config-schema-not-declared

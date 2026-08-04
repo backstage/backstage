@@ -12,23 +12,45 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:40.576Z'
-    checkedAt: '2026-08-04T05:02:40.576Z'
-    version: 1.43.1
+    lastAttemptAt: '2026-08-04T22:12:27.719Z'
+    checkedAt: '2026-08-04T22:12:27.719Z'
+    version: 1.52.1
     sourceUrl: https://github.com/awslabs/backstage-plugins-for-aws/blob/main/backstage.json
     sourcePath: backstage.json
   packages:
     - npmPackageName: '@aws/amazon-ecr-plugin-for-backstage'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:40.235Z'
-        checkedAt: '2026-08-04T05:02:40.235Z'
+        lastAttemptAt: '2026-08-04T22:12:27.429Z'
+        checkedAt: '2026-08-04T22:12:27.429Z'
         latestVersion: 0.2.2
         lastPublishedAt: '2026-04-23T15:04:21.977Z'
         repository:
           url: https://github.com/awslabs/backstage-plugins-for-aws
           directory: plugins/ecr/frontend
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@aws-sdk/client-ecr'
+          - '@aws-sdk/util-arn-parser'
+          - '@aws/amazon-ecr-plugin-for-backstage-backend'
+          - '@aws/amazon-ecr-plugin-for-backstage-common'
+          - '@aws/aws-core-plugin-for-backstage-common'
+          - '@aws/aws-core-plugin-for-backstage-react'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - dateformat
+          - humanize-duration
+          - pretty-bytes
+          - react-use
+          - recharts
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:41.287Z'
+        lastAttemptAt: '2026-08-04T22:12:28.480Z'
         reason: config-schema-not-declared

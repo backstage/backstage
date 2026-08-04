@@ -13,17 +13,26 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:46.003Z'
+    lastAttemptAt: '2026-08-04T22:12:33.309Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: backstage-plugin-bulletin-board
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:46.003Z'
-        checkedAt: '2026-08-04T05:02:46.003Z'
+        lastAttemptAt: '2026-08-04T22:12:33.309Z'
+        checkedAt: '2026-08-04T22:12:33.309Z'
         latestVersion: 0.4.1
         lastPublishedAt: '2023-05-17T11:43:08.204Z'
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:46.148Z'
+        lastAttemptAt: '2026-08-04T22:12:33.443Z'
         reason: config-schema-not-declared

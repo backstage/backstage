@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:39.878Z'
-    checkedAt: '2026-08-04T05:02:39.878Z'
+    lastAttemptAt: '2026-08-04T22:12:26.942Z'
+    checkedAt: '2026-08-04T22:12:26.942Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/apollo-explorer/backstage.json
     sourcePath: workspaces/apollo-explorer/backstage.json
@@ -21,14 +21,22 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-apollo-explorer'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:39.542Z'
-        checkedAt: '2026-08-04T05:02:39.542Z'
+        lastAttemptAt: '2026-08-04T22:12:26.614Z'
+        checkedAt: '2026-08-04T22:12:26.614Z'
         latestVersion: 0.23.0
         lastPublishedAt: '2026-07-28T04:25:40.121Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/apollo-explorer/plugins/apollo-explorer
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@apollo/explorer'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/ui'
+          - '@types/react'
+          - use-deep-compare-effect
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:39.991Z'
+        lastAttemptAt: '2026-08-04T22:12:27.073Z'
         reason: config-schema-not-declared

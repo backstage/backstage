@@ -13,8 +13,8 @@ staleSince: '2026-08-04'
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:19.299Z'
-    checkedAt: '2026-08-04T05:03:19.299Z'
+    lastAttemptAt: '2026-08-04T22:13:09.215Z'
+    checkedAt: '2026-08-04T22:13:09.215Z'
     version: 1.50.0
     sourceUrl: https://github.com/jiteshy/backstage-plugin-synergy/blob/main/backstage.json
     sourcePath: backstage.json
@@ -22,13 +22,21 @@ snapshot:
     - npmPackageName: '@jiteshy/backstage-plugin-synergy'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:18.932Z'
-        checkedAt: '2026-08-04T05:03:18.932Z'
+        lastAttemptAt: '2026-08-04T22:13:08.866Z'
+        checkedAt: '2026-08-04T22:13:08.866Z'
         latestVersion: 1.5.2
         lastPublishedAt: '2025-06-01T00:45:01.435Z'
         repository:
           url: https://github.com/jiteshy/backstage-plugin-synergy
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:19.860Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-app-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/theme'
+          - '@jiteshy/backstage-plugin-synergy-common'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - react-use

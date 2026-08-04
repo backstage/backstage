@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:59.557Z'
-    checkedAt: '2026-08-04T05:02:59.557Z'
+    lastAttemptAt: '2026-08-04T22:12:47.462Z'
+    checkedAt: '2026-08-04T22:12:47.462Z'
     version: 1.44.2
     sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,14 +21,35 @@ snapshot:
     - npmPackageName: '@roadiehq/backstage-plugin-github-insights'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:59.120Z'
-        checkedAt: '2026-08-04T05:02:59.120Z'
+        lastAttemptAt: '2026-08-04T22:12:47.226Z'
+        checkedAt: '2026-08-04T22:12:47.226Z'
         latestVersion: 3.5.0
         lastPublishedAt: '2026-04-01T07:11:02.198Z'
         repository:
           url: https://github.com/RoadieHQ/roadie-backstage-plugins
           directory: plugins/frontend/backstage-plugin-github-insights
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - immer
+          - zustand
+          - react-use
+          - '@octokit/rest'
+          - git-url-parse
+          - '@octokit/types'
+          - '@backstage/theme'
+          - '@material-ui/lab'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/integration'
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/integration-react'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@roadiehq/github-auth-utils-react'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:59.689Z'
+        lastAttemptAt: '2026-08-04T22:12:47.573Z'
         reason: config-schema-not-declared

@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:49.968Z'
-    checkedAt: '2026-08-04T05:02:49.968Z'
+    lastAttemptAt: '2026-08-04T22:12:37.805Z'
+    checkedAt: '2026-08-04T22:12:37.805Z'
     version: 1.44.2
     sourceUrl: https://github.com/coder/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,13 +21,26 @@ snapshot:
     - npmPackageName: '@coder/backstage-plugin-coder'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:49.591Z'
-        checkedAt: '2026-08-04T05:02:49.591Z'
+        lastAttemptAt: '2026-08-04T22:12:37.419Z'
+        checkedAt: '2026-08-04T22:12:37.419Z'
         latestVersion: 0.5.0-alpha.0
         lastPublishedAt: '2025-10-31T20:04:56.746Z'
         repository:
           url: https://github.com/coder/backstage-plugins
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:50.558Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - axios
+          - dayjs
+          - valibot
+          - ua-parser-js
+          - '@backstage/theme'
+          - '@material-ui/lab'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@tanstack/react-query'
+          - use-sync-external-store
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/integration-react'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-user-settings'

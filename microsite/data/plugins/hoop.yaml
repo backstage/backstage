@@ -13,17 +13,22 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:02.425Z'
+    lastAttemptAt: '2026-08-04T22:12:50.919Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@hoophq/backstage-plugin'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:02.425Z'
-        checkedAt: '2026-08-04T05:03:02.425Z'
+        lastAttemptAt: '2026-08-04T22:12:50.919Z'
+        checkedAt: '2026-08-04T22:12:50.919Z'
         latestVersion: 0.1.4
         lastPublishedAt: '2022-12-21T15:17:08.989Z'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:02.773Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - react-use
+          - '@backstage/theme'
+          - '@material-ui/lab'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'

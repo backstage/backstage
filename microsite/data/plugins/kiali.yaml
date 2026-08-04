@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:04.963Z'
-    checkedAt: '2026-08-04T05:03:04.963Z'
+    lastAttemptAt: '2026-08-04T22:12:53.842Z'
+    checkedAt: '2026-08-04T22:12:53.842Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/kiali/backstage.json
     sourcePath: workspaces/kiali/backstage.json
@@ -21,14 +21,56 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-kiali'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:04.728Z'
-        checkedAt: '2026-08-04T05:03:04.728Z'
+        lastAttemptAt: '2026-08-04T22:12:53.492Z'
+        checkedAt: '2026-08-04T22:12:53.492Z'
         latestVersion: 1.51.2
         lastPublishedAt: '2026-07-31T10:50:02.735Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/kiali/plugins/kiali
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage-community/plugin-kiali-common'
+          - '@backstage-community/plugin-kiali-react'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@mui/icons-material'
+          - '@mui/material'
+          - '@mui/system'
+          - '@mui/x-charts'
+          - '@patternfly/patternfly'
+          - '@patternfly/react-core'
+          - '@patternfly/react-icons'
+          - '@patternfly/react-tokens'
+          - '@patternfly/react-topology'
+          - ace-builds
+          - axios
+          - cytoscape
+          - d3-format
+          - d3-transition
+          - deep-freeze
+          - history
+          - js-yaml
+          - json-beautify
+          - lodash
+          - micro-memoize
+          - moment
+          - prop-types
+          - react-ace
+          - react-copy-to-clipboard
+          - react-use
+          - screenfull
+          - typesafe-actions
+          - typestyle
+          - victory-box-plot
+          - victory-core
+          - victory-voronoi-container
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:05.102Z'
+        lastAttemptAt: '2026-08-04T22:12:53.980Z'
         reason: config-schema-not-declared

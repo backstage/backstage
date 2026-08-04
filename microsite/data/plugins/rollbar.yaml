@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:12.531Z'
-    checkedAt: '2026-08-04T05:03:12.531Z'
+    lastAttemptAt: '2026-08-04T22:13:01.951Z'
+    checkedAt: '2026-08-04T22:13:01.951Z'
     version: 1.49.2
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/rollbar/backstage.json
     sourcePath: workspaces/rollbar/backstage.json
@@ -21,14 +21,22 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-rollbar'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:12.137Z'
-        checkedAt: '2026-08-04T05:03:12.137Z'
+        lastAttemptAt: '2026-08-04T22:13:01.560Z'
+        checkedAt: '2026-08-04T22:13:01.560Z'
         latestVersion: 0.13.0
         lastPublishedAt: '2026-04-17T18:31:57.574Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/rollbar/plugins/rollbar
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:12.663Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@material-ui/core'
+          - '@material-ui/lab'
+          - '@types/react'
+          - lodash
+          - react-sparklines
+          - react-use

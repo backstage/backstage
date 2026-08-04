@@ -12,17 +12,31 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:36.556Z'
+    lastAttemptAt: '2026-08-04T22:12:23.479Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@roadiehq/rag-ai'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:36.556Z'
-        checkedAt: '2026-08-04T05:02:36.556Z'
+        lastAttemptAt: '2026-08-04T22:12:23.479Z'
+        checkedAt: '2026-08-04T22:12:23.479Z'
         latestVersion: 1.3.0
         lastPublishedAt: '2025-10-31T09:33:49.394Z'
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - lodash
+          - react-markdown
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - eventsource-parser
+          - react-hotkeys-hook
+          - react-type-animation
+          - '@backstage/catalog-model'
+          - react-syntax-highlighter
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:36.965Z'
+        lastAttemptAt: '2026-08-04T22:12:23.926Z'
         reason: config-schema-not-declared

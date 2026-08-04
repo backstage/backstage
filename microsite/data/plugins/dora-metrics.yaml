@@ -13,19 +13,31 @@ staleSince: '2026-08-04'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:54.428Z'
+    lastAttemptAt: '2026-08-04T22:12:42.178Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@liatrio/backstage-dora-plugin'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:54.072Z'
-        checkedAt: '2026-08-04T05:02:54.072Z'
+        lastAttemptAt: '2026-08-04T22:12:41.814Z'
+        checkedAt: '2026-08-04T22:12:41.814Z'
         latestVersion: 1.1.4
         lastPublishedAt: '2025-05-29T20:15:40.612Z'
         repository:
           url: https://github.com/liatrio/backstage-dora-plugin
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:54.977Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@liatrio/react-dora-charts'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@mui/material'
+          - react-datepicker
+          - react-dropdown
+          - react-tooltip
+          - react-use
+          - recharts

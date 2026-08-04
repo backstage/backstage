@@ -12,17 +12,26 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:52.677Z'
+    lastAttemptAt: '2026-08-04T22:12:40.432Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@trimm/plugin-dependencytrack'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:52.677Z'
-        checkedAt: '2026-08-04T05:02:52.677Z'
+        lastAttemptAt: '2026-08-04T22:12:40.432Z'
+        checkedAt: '2026-08-04T22:12:40.432Z'
         latestVersion: 0.4.0
         lastPublishedAt: '2026-06-25T06:45:27.503Z'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:52.870Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@backstage/ui'
+          - '@emotion/react'
+          - '@emotion/styled'
+          - '@material-table/core'
+          - react-use

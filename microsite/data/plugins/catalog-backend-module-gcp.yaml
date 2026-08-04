@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:46.502Z'
-    checkedAt: '2026-08-04T05:02:46.502Z'
+    lastAttemptAt: '2026-08-04T22:12:33.984Z'
+    checkedAt: '2026-08-04T22:12:33.984Z'
     version: 1.42.4
     sourceUrl: https://github.com/backtostage/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,14 +21,28 @@ snapshot:
     - npmPackageName: '@backtostage/plugin-catalog-backend-module-gcp'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:46.261Z'
-        checkedAt: '2026-08-04T05:02:46.261Z'
+        lastAttemptAt: '2026-08-04T22:12:33.638Z'
+        checkedAt: '2026-08-04T22:12:33.638Z'
         latestVersion: 0.3.1
         lastPublishedAt: '2025-08-11T02:40:11.735Z'
         repository:
           url: https://github.com/backtostage/backstage-plugins
           directory: plugins/catalog-backend-module-gcp
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:47.062Z'
-        reason: config-schema-not-json
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/backend-common'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/backend-tasks'
+          - '@backstage/catalog-model'
+          - '@backstage/config'
+          - '@backstage/plugin-catalog-node'
+          - '@google-cloud/resource-manager'
+          - '@types/express'
+          - '@types/uuid'
+          - express
+          - express-promise-router
+          - googleapis
+          - node-fetch
+          - uuid
+          - winston
+          - yn

@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:50.894Z'
-    checkedAt: '2026-08-04T05:02:50.894Z'
+    lastAttemptAt: '2026-08-04T22:12:38.731Z'
+    checkedAt: '2026-08-04T22:12:38.731Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/cost-insights/backstage.json
     sourcePath: workspaces/cost-insights/backstage.json
@@ -21,14 +21,38 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-cost-insights'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:50.508Z'
-        checkedAt: '2026-08-04T05:02:50.508Z'
+        lastAttemptAt: '2026-08-04T22:12:38.357Z'
+        checkedAt: '2026-08-04T22:12:38.357Z'
         latestVersion: 0.29.1
         lastPublishedAt: '2026-07-03T17:38:23.939Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/cost-insights/plugins/cost-insights
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:51.016Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage-community/plugin-cost-insights-common'
+          - '@backstage/catalog-model'
+          - '@backstage/config'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@date-io/luxon'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@material-ui/pickers'
+          - '@material-ui/styles'
+          - '@types/react'
+          - '@types/recharts'
+          - classnames
+          - history
+          - luxon
+          - pluralize
+          - qs
+          - react-use
+          - recharts
+          - regression
+          - yup

@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:58.553Z'
-    checkedAt: '2026-08-04T05:02:58.553Z'
+    lastAttemptAt: '2026-08-04T22:12:46.494Z'
+    checkedAt: '2026-08-04T22:12:46.494Z'
     version: 1.49.2
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/fossa/backstage.json
     sourcePath: workspaces/fossa/backstage.json
@@ -21,14 +21,24 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-fossa'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:58.194Z'
-        checkedAt: '2026-08-04T05:02:58.194Z'
+        lastAttemptAt: '2026-08-04T22:12:46.077Z'
+        checkedAt: '2026-08-04T22:12:46.077Z'
         latestVersion: 0.12.0
         lastPublishedAt: '2026-04-17T18:34:23.973Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/fossa/plugins/fossa
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:58.649Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/plugin-catalog-react'
+          - '@material-ui/core'
+          - '@material-ui/lab'
+          - '@types/react'
+          - cross-fetch
+          - luxon
+          - p-limit
+          - react-use

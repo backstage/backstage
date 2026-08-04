@@ -13,17 +13,26 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:54.026Z'
+    lastAttemptAt: '2026-08-04T22:12:41.785Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@workm8/backstage-docker-tags'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:54.026Z'
-        checkedAt: '2026-08-04T05:02:54.026Z'
+        lastAttemptAt: '2026-08-04T22:12:41.785Z'
+        checkedAt: '2026-08-04T22:12:41.785Z'
         latestVersion: 1.1.0-alpha
         lastPublishedAt: '2024-07-22T18:42:39.136Z'
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:54.361Z'
+        lastAttemptAt: '2026-08-04T22:12:42.128Z'
         reason: config-schema-not-declared

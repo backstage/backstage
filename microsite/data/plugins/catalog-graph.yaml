@@ -12,25 +12,43 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:47.096Z'
-    checkedAt: '2026-08-04T05:02:47.096Z'
+    lastAttemptAt: '2026-08-04T22:12:35.004Z'
+    checkedAt: '2026-08-04T22:12:35.004Z'
     version: 1.53.1
     sourceUrl: https://github.com/backstage/backstage/releases/tag/v1.53.1
     sourcePath: plugins/catalog-graph/package.json
   packages:
-    - functionality: frontend
-      npmPackageName: '@backstage/plugin-catalog-graph'
+    - npmPackageName: '@backstage/plugin-catalog-graph'
       sourcePath: plugins/catalog-graph/package.json
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:46.775Z'
-        checkedAt: '2026-08-04T05:02:46.775Z'
+        lastAttemptAt: '2026-08-04T22:12:34.516Z'
+        checkedAt: '2026-08-04T22:12:34.516Z'
         latestVersion: 0.6.6
         lastPublishedAt: '2026-07-14T12:05:26.521Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/catalog-graph
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - qs
+          - zod
+          - lodash
+          - react-use
+          - classnames
+          - '@backstage/ui'
+          - '@backstage/types'
+          - '@material-ui/lab'
+          - '@remixicon/react'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/catalog-model'
+          - '@backstage/catalog-client'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:47.096Z'
+        lastAttemptAt: '2026-08-04T22:12:35.005Z'
         reason: config-schema-not-declared

@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:44.579Z'
-    checkedAt: '2026-08-04T05:02:44.579Z'
+    lastAttemptAt: '2026-08-04T22:12:32.290Z'
+    checkedAt: '2026-08-04T22:12:32.290Z'
     version: 1.48.4
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/blackduck/backstage.json
     sourcePath: workspaces/blackduck/backstage.json
@@ -21,14 +21,34 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-blackduck'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:44.244Z'
-        checkedAt: '2026-08-04T05:02:44.244Z'
+        lastAttemptAt: '2026-08-04T22:12:31.917Z'
+        checkedAt: '2026-08-04T22:12:31.917Z'
         latestVersion: 0.13.0
         lastPublishedAt: '2026-03-07T13:39:31.042Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/blackduck/plugins/blackduck
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage-community/plugin-blackduck-common'
+          - '@backstage-community/plugin-blackduck-node'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/catalog-model'
+          - '@backstage/config'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-permission-common'
+          - '@backstage/plugin-permission-node'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - chart.js
+          - react-chartjs-2
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:44.710Z'
+        lastAttemptAt: '2026-08-04T22:12:32.421Z'
         reason: config-schema-not-declared

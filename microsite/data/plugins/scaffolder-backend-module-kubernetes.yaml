@@ -11,8 +11,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:13.572Z'
-    checkedAt: '2026-08-04T05:03:13.572Z'
+    lastAttemptAt: '2026-08-04T22:13:03.133Z'
+    checkedAt: '2026-08-04T22:13:03.133Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/scaffolder-backend-module-kubernetes/backstage.json
     sourcePath: workspaces/scaffolder-backend-module-kubernetes/backstage.json
@@ -20,14 +20,21 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-scaffolder-backend-module-kubernetes'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:13.375Z'
-        checkedAt: '2026-08-04T05:03:13.375Z'
+        lastAttemptAt: '2026-08-04T22:13:02.790Z'
+        checkedAt: '2026-08-04T22:13:02.790Z'
         latestVersion: 2.20.0
         lastPublishedAt: '2026-08-03T19:51:59.529Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/scaffolder-backend-module-kubernetes/plugins/kubernetes-actions
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/backend-plugin-api'
+          - '@backstage/catalog-client'
+          - '@backstage/plugin-scaffolder-node'
+          - '@kubernetes/client-node'
+          - yaml
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:13.714Z'
+        lastAttemptAt: '2026-08-04T22:13:03.287Z'
         reason: config-schema-not-declared

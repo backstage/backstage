@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:09.377Z'
-    checkedAt: '2026-08-04T05:03:09.377Z'
+    lastAttemptAt: '2026-08-04T22:12:58.657Z'
+    checkedAt: '2026-08-04T22:12:58.657Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/octopus-deploy/backstage.json
     sourcePath: workspaces/octopus-deploy/backstage.json
@@ -21,17 +21,29 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-octopus-deploy'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:09.043Z'
-        checkedAt: '2026-08-04T05:03:09.043Z'
+        lastAttemptAt: '2026-08-04T22:12:58.304Z'
+        checkedAt: '2026-08-04T22:12:58.304Z'
         latestVersion: 0.12.0
         lastPublishedAt: '2026-07-22T07:39:45.561Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/octopus-deploy/plugins/octopus-deploy
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-common'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-scaffolder-react'
+          - '@material-ui/core'
+          - '@types/react'
+          - react-use
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:09.495Z'
-        checkedAt: '2026-08-04T05:03:09.495Z'
+        lastAttemptAt: '2026-08-04T22:12:58.770Z'
+        checkedAt: '2026-08-04T22:12:58.770Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object

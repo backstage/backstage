@@ -13,8 +13,8 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:15.763Z'
-    checkedAt: '2026-08-04T05:03:15.763Z'
+    lastAttemptAt: '2026-08-04T22:13:05.364Z'
+    checkedAt: '2026-08-04T22:13:05.364Z'
     version: 1.22.1
     sourceUrl: https://github.com/Oriflame/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
@@ -22,14 +22,28 @@ snapshot:
     - npmPackageName: '@oriflame/backstage-plugin-score-card'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:15.442Z'
-        checkedAt: '2026-08-04T05:03:15.442Z'
+        lastAttemptAt: '2026-08-04T22:13:05.023Z'
+        checkedAt: '2026-08-04T22:13:05.023Z'
         latestVersion: 0.9.1
         lastPublishedAt: '2024-10-03T18:23:09.078Z'
         repository:
           url: https://github.com/Oriflame/backstage-plugins
           directory: plugins/score-card
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:16.367Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/config'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/integration'
+          - '@backstage/integration-react'
+          - '@backstage/plugin-catalog-common'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@backstage/types'
+          - '@backstage/version-bridge'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@types/react'
+          - react-use

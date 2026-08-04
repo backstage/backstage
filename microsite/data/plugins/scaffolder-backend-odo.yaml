@@ -13,19 +13,38 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:14.437Z'
+    lastAttemptAt: '2026-08-04T22:13:04.051Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@redhat-developer/plugin-scaffolder-odo-actions'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:14.020Z'
-        checkedAt: '2026-08-04T05:03:14.020Z'
+        lastAttemptAt: '2026-08-04T22:13:03.646Z'
+        checkedAt: '2026-08-04T22:13:03.646Z'
         latestVersion: 0.20.0
         lastPublishedAt: '2023-12-20T23:08:21.053Z'
         repository:
           url: https://github.com/redhat-developer/backstage-odo-devfile-plugin
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:14.927Z'
-        reason: config-schema-not-json
+        backstageRole: backend-plugin
+        dependencyNames:
+          - '@backstage/backend-common'
+          - '@backstage/config'
+          - '@backstage/plugin-scaffolder-node'
+          - '@types/express'
+          - '@types/fs-extra'
+          - axios
+          - cachedir
+          - express
+          - express-promise-router
+          - fs-extra
+          - got
+          - gunzip-maybe
+          - hasha
+          - node-fetch
+          - pkg-conf
+          - rimraf
+          - tar
+          - tar-fs
+          - unzip-stream
+          - winston
+          - yn

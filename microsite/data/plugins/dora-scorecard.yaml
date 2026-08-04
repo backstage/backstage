@@ -11,20 +11,29 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:55.055Z'
+    lastAttemptAt: '2026-08-04T22:12:42.813Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@jikwan/backstage-plugin-dora-scorecard'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:54.659Z'
-        checkedAt: '2026-08-04T05:02:54.659Z'
+        lastAttemptAt: '2026-08-04T22:12:42.439Z'
+        checkedAt: '2026-08-04T22:12:42.439Z'
         latestVersion: 1.0.3
         lastPublishedAt: '2026-02-27T08:24:00.249Z'
         repository:
           url: https://github.com/zc149/backstage-plugin-dora-scorecard
           directory: plugins/dora-scorecard
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:55.430Z'
+        lastAttemptAt: '2026-08-04T22:12:43.162Z'
         reason: config-schema-not-declared

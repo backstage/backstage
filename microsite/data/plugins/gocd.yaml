@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:00.420Z'
-    checkedAt: '2026-08-04T05:03:00.420Z'
+    lastAttemptAt: '2026-08-04T22:12:48.715Z'
+    checkedAt: '2026-08-04T22:12:48.715Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/gocd/backstage.json
     sourcePath: workspaces/gocd/backstage.json
@@ -21,17 +21,30 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-gocd'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:00.076Z'
-        checkedAt: '2026-08-04T05:03:00.076Z'
+        lastAttemptAt: '2026-08-04T22:12:48.356Z'
+        checkedAt: '2026-08-04T22:12:48.356Z'
         latestVersion: 0.21.0
         lastPublishedAt: '2026-07-21T23:04:53.904Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/gocd/plugins/gocd
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/plugin-catalog-react'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - lodash
+          - luxon
+          - react-use
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:00.524Z'
-        checkedAt: '2026-08-04T05:03:00.524Z'
+        lastAttemptAt: '2026-08-04T22:12:48.826Z'
+        checkedAt: '2026-08-04T22:12:48.826Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object

@@ -13,17 +13,39 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:03.129Z'
+    lastAttemptAt: '2026-08-04T22:12:51.631Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@croz/plugin-ibm-apic-backend'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:03.129Z'
-        checkedAt: '2026-08-04T05:03:03.129Z'
+        lastAttemptAt: '2026-08-04T22:12:51.632Z'
+        checkedAt: '2026-08-04T22:12:51.632Z'
         latestVersion: 1.0.2
         lastPublishedAt: '2024-03-01T13:31:56.337Z'
+        backstageRole: backend-plugin
+        dependencyNames:
+          - '@backstage/backend-common'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/backend-tasks'
+          - '@backstage/catalog-model'
+          - '@backstage/config'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/version-bridge'
+          - '@sniptt/monads'
+          - '@types/express'
+          - '@types/lodash'
+          - '@types/node-fetch'
+          - '@types/uuid'
+          - express
+          - express-promise-router
+          - lodash
+          - node-fetch
+          - uuid
+          - winston
+          - yn
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:03.504Z'
+        lastAttemptAt: '2026-08-04T22:12:52.019Z'
         reason: config-schema-not-declared

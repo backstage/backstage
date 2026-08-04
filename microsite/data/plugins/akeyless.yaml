@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:36.963Z'
-    checkedAt: '2026-08-04T05:02:36.963Z'
+    lastAttemptAt: '2026-08-04T22:12:23.900Z'
+    checkedAt: '2026-08-04T22:12:23.900Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/akeyless/backstage.json
     sourcePath: workspaces/akeyless/backstage.json
@@ -21,14 +21,28 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-akeyless'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:36.556Z'
-        checkedAt: '2026-08-04T05:02:36.556Z'
+        lastAttemptAt: '2026-08-04T22:12:23.479Z'
+        checkedAt: '2026-08-04T22:12:23.479Z'
         latestVersion: 0.1.0
         lastPublishedAt: '2026-07-28T04:25:57.918Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/akeyless/plugins/akeyless
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage-community/plugin-akeyless-common'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@types/react'
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:37.970Z'
+        lastAttemptAt: '2026-08-04T22:12:25.801Z'
         reason: config-schema-not-declared

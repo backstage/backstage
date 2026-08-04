@@ -15,17 +15,34 @@ staleSince: '2026-08-04'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:02.426Z'
+    lastAttemptAt: '2026-08-04T22:12:50.933Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@humanitec/backstage-plugin'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:02.426Z'
-        checkedAt: '2026-08-04T05:03:02.426Z'
+        lastAttemptAt: '2026-08-04T22:12:50.933Z'
+        checkedAt: '2026-08-04T22:12:50.933Z'
         latestVersion: 0.9.7
         lastPublishedAt: '2025-04-08T19:15:14.267Z'
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-scaffolder'
+          - '@backstage/plugin-scaffolder-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@rjsf/utils'
+          - '@types/lodash.get'
+          - event-source-polyfill
+          - lodash.get
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:02.773Z'
+        lastAttemptAt: '2026-08-04T22:12:51.331Z'
         reason: config-schema-not-declared

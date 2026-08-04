@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:59.266Z'
-    checkedAt: '2026-08-04T05:02:59.266Z'
+    lastAttemptAt: '2026-08-04T22:12:47.186Z'
+    checkedAt: '2026-08-04T22:12:47.186Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/github/backstage.json
     sourcePath: workspaces/github/backstage.json
@@ -21,14 +21,35 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-github-actions'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:58.936Z'
-        checkedAt: '2026-08-04T05:02:58.936Z'
+        lastAttemptAt: '2026-08-04T22:12:46.992Z'
+        checkedAt: '2026-08-04T22:12:46.992Z'
         latestVersion: 1.3.0
         lastPublishedAt: '2026-07-21T23:06:24.593Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/github/plugins/github-actions
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/integration'
+          - '@backstage/integration-react'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/ui'
+          - '@material-ui/core'
+          - '@material-ui/lab'
+          - '@octokit/rest'
+          - '@remixicon/react'
+          - '@types/react'
+          - git-url-parse
+          - luxon
+          - react-aria-components
+          - react-use
+          - zod
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:59.384Z'
+        lastAttemptAt: '2026-08-04T22:12:47.308Z'
         reason: config-schema-not-declared

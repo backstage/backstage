@@ -11,8 +11,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:37.028Z'
-    checkedAt: '2026-08-04T05:02:37.028Z'
+    lastAttemptAt: '2026-08-04T22:12:24.014Z'
+    checkedAt: '2026-08-04T22:12:24.014Z'
     version: 1.43.2
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/agent-forge/backstage.json
     sourcePath: workspaces/agent-forge/backstage.json
@@ -20,14 +20,22 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-agent-forge'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:36.555Z'
-        checkedAt: '2026-08-04T05:02:36.555Z'
+        lastAttemptAt: '2026-08-04T22:12:23.478Z'
+        checkedAt: '2026-08-04T22:12:23.478Z'
         latestVersion: 0.4.0
         lastPublishedAt: '2025-12-24T23:03:01.738Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/agent-forge/plugins/agent-forge
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:38.038Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@agentic-profile/a2a-client'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@mui/material'
+          - '@mui/styles'
+          - react-use
+          - uuid

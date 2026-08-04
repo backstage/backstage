@@ -12,20 +12,33 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:03.589Z'
+    lastAttemptAt: '2026-08-04T22:12:52.193Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@incident-io/backstage'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:03.198Z'
-        checkedAt: '2026-08-04T05:03:03.198Z'
+        lastAttemptAt: '2026-08-04T22:12:51.801Z'
+        checkedAt: '2026-08-04T22:12:51.801Z'
         latestVersion: 0.2.1
         lastPublishedAt: '2026-05-18T15:37:12.856Z'
         repository:
           url: https://github.com/incident-io/backstage-plugins
           directory: incident
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:04.130Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-home-react'
+          - '@backstage/plugin-search-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - luxon
+          - qs
+          - react-use

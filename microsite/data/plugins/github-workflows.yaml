@@ -12,17 +12,37 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:59.620Z'
+    lastAttemptAt: '2026-08-04T22:12:47.937Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@veecode-platform/backstage-plugin-github-workflows'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:59.620Z'
-        checkedAt: '2026-08-04T05:02:59.620Z'
+        lastAttemptAt: '2026-08-04T22:12:47.937Z'
+        checkedAt: '2026-08-04T22:12:47.937Z'
         latestVersion: 1.4.0
         lastPublishedAt: '2026-03-20T12:59:37.432Z'
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/integration'
+          - '@backstage/integration-react'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@mui/icons-material'
+          - '@mui/lab'
+          - '@mui/material'
+          - '@mui/styles'
+          - '@veecode-platform/github-workflows-common'
+          - dayjs
+          - git-url-parse
+          - js-yaml
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:00.040Z'
+        lastAttemptAt: '2026-08-04T22:12:48.339Z'
         reason: config-schema-not-declared

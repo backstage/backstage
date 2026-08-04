@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:37.000Z'
-    checkedAt: '2026-08-04T05:02:37.000Z'
+    lastAttemptAt: '2026-08-04T22:12:23.925Z'
+    checkedAt: '2026-08-04T22:12:23.925Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/airbrake/backstage.json
     sourcePath: workspaces/airbrake/backstage.json
@@ -21,14 +21,27 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-airbrake'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:36.556Z'
-        checkedAt: '2026-08-04T05:02:36.556Z'
+        lastAttemptAt: '2026-08-04T22:12:23.479Z'
+        checkedAt: '2026-08-04T22:12:23.479Z'
         latestVersion: 0.23.0
         lastPublishedAt: '2026-07-21T22:58:01.042Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/airbrake/plugins/airbrake
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/dev-utils'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/test-utils'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@types/react'
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:38.070Z'
+        lastAttemptAt: '2026-08-04T22:12:24.798Z'
         reason: config-schema-not-declared

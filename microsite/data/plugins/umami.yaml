@@ -12,17 +12,18 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:21.615Z'
+    lastAttemptAt: '2026-08-04T22:13:11.414Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@axis-backstage/plugin-analytics-module-umami'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:21.615Z'
-        checkedAt: '2026-08-04T05:03:21.615Z'
+        lastAttemptAt: '2026-08-04T22:13:11.414Z'
+        checkedAt: '2026-08-04T22:13:11.414Z'
         latestVersion: 0.11.3
         lastPublishedAt: '2026-07-13T07:55:12.091Z'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:22.014Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/config'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'

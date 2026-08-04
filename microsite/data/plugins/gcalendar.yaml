@@ -11,8 +11,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:58.652Z'
-    checkedAt: '2026-08-04T05:02:58.652Z'
+    lastAttemptAt: '2026-08-04T22:12:46.986Z'
+    checkedAt: '2026-08-04T22:12:46.986Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/gcalendar/backstage.json
     sourcePath: workspaces/gcalendar/backstage.json
@@ -20,14 +20,31 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-gcalendar'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:58.334Z'
-        checkedAt: '2026-08-04T05:02:58.334Z'
+        lastAttemptAt: '2026-08-04T22:12:46.570Z'
+        checkedAt: '2026-08-04T22:12:46.570Z'
         latestVersion: 0.23.0
         lastPublishedAt: '2026-07-21T23:04:15.113Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/gcalendar/plugins/gcalendar
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/frontend-plugin-api'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@maxim_mazurok/gapi.client.calendar'
+          - '@tanstack/react-query'
+          - '@types/react'
+          - classnames
+          - dompurify
+          - lodash
+          - luxon
+          - material-ui-popup-state
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:58.788Z'
+        lastAttemptAt: '2026-08-04T22:12:47.108Z'
         reason: config-schema-not-declared

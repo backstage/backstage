@@ -213,14 +213,12 @@ describe('auditManifest internalDependencies', () => {
         backstage: freshBackstage(),
         packages: [
           {
-            functionality: 'frontend',
             npmPackageName: '@backstage/plugin-catalog',
             sourcePath: 'plugins/catalog/package.json',
             npm: freshNpm('2026-07-01T00:00:00.000Z'),
             configSchema: unavailableConfigSchema(),
           },
           {
-            functionality: 'backend',
             npmPackageName: '@backstage/plugin-catalog-backend',
             sourcePath: 'plugins/catalog-backend/package.json',
             internalDependencies: ['@backstage/plugin-catalog-common'],
@@ -228,7 +226,6 @@ describe('auditManifest internalDependencies', () => {
             configSchema: unavailableConfigSchema(),
           },
           {
-            functionality: 'common',
             npmPackageName: '@backstage/plugin-catalog-common',
             sourcePath: 'plugins/catalog-common/package.json',
             npm: freshNpm('2026-07-01T00:00:00.000Z'),
@@ -531,14 +528,12 @@ describe('auditManifest snapshot failures', () => {
         backstage: freshBackstage(),
         packages: [
           {
-            functionality: 'frontend',
             npmPackageName: '@backstage/plugin-catalog',
             sourcePath: 'plugins/catalog/package.json',
             npm: freshNpm('2026-07-01T00:00:00.000Z'),
             configSchema: unavailableConfigSchema(),
           },
           {
-            functionality: 'backend',
             npmPackageName: '@backstage/plugin-catalog-backend',
             sourcePath: 'plugins/catalog-backend/package.json',
             npm: previousBackendNpm,
@@ -576,14 +571,12 @@ describe('auditManifest snapshot failures', () => {
 
     assert.deepEqual(result.manifest.snapshot?.packages, [
       {
-        functionality: 'frontend',
         npmPackageName: '@backstage/plugin-catalog',
         sourcePath: 'plugins/catalog/package.json',
         npm: freshNpm('2026-07-01T00:00:00.000Z'),
         configSchema: unavailableConfigSchema(),
       },
       {
-        functionality: 'backend',
         npmPackageName: '@backstage/plugin-catalog-backend',
         sourcePath: 'plugins/catalog-backend/package.json',
         npm: {
@@ -600,6 +593,28 @@ describe('auditManifest snapshot failures', () => {
     assert.match(
       result.warnings.join('\n'),
       /npm snapshot unavailable for @backstage\/plugin-catalog-backend/,
+    );
+  });
+
+  it('omits configSchema entirely when the declared path is not a .json file, warning instead', async () => {
+    const result = await auditManifest(manifest('active'), {
+      fetchNpm: async () => freshNpm('2026-07-01T00:00:00.000Z'),
+      fetchConfigSchema: async () => ({
+        status: 'unavailable',
+        lastAttemptAt: attemptAt,
+        reason: 'config-schema-not-json',
+      }),
+      github: {
+        fetchBackstageSnapshot: async () => freshBackstage(),
+        discoverCanonicalPackages: async () => undefined,
+      } as unknown as GitHubSnapshotClient,
+      now: () => auditTime,
+    });
+
+    assert.equal(primaryPackage(result.manifest)?.configSchema, undefined);
+    assert.match(
+      result.warnings.join('\n'),
+      /config schema unavailable for @example\/plugin-example \(config-schema-not-json\)/,
     );
   });
 });

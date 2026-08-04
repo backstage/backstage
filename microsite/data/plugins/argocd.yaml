@@ -11,8 +11,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:40.153Z'
-    checkedAt: '2026-08-04T05:02:40.153Z'
+    lastAttemptAt: '2026-08-04T22:12:27.336Z'
+    checkedAt: '2026-08-04T22:12:27.336Z'
     version: 1.50.4
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/argocd/backstage.json
     sourcePath: workspaces/argocd/backstage.json
@@ -20,14 +20,29 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-argocd'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:39.940Z'
-        checkedAt: '2026-08-04T05:02:39.940Z'
+        lastAttemptAt: '2026-08-04T22:12:27.047Z'
+        checkedAt: '2026-08-04T22:12:27.047Z'
         latestVersion: 2.10.0
         lastPublishedAt: '2026-07-17T09:05:20.142Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/argocd/plugins/argocd
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:40.278Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage-community/plugin-argocd-common'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-kubernetes-react'
+          - '@backstage/plugin-permission-react'
+          - '@backstage/theme'
+          - '@backstage/ui'
+          - '@kubernetes/client-node'
+          - '@mui/icons-material'
+          - '@mui/material'
+          - '@patternfly/react-core'
+          - '@patternfly/react-icons'
+          - moment
+          - pluralize
+          - react-use

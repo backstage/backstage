@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:07.590Z'
-    checkedAt: '2026-08-04T05:03:07.590Z'
+    lastAttemptAt: '2026-08-04T22:12:56.585Z'
+    checkedAt: '2026-08-04T22:12:56.585Z'
     version: 1.52.0
     sourceUrl: https://github.com/massdriver-cloud/massdriver-backstage/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,14 +21,37 @@ snapshot:
     - npmPackageName: '@massdriver/backstage-plugin'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:07.202Z'
-        checkedAt: '2026-08-04T05:03:07.202Z'
+        lastAttemptAt: '2026-08-04T22:12:55.967Z'
+        checkedAt: '2026-08-04T22:12:55.967Z'
         latestVersion: 1.0.4
         lastPublishedAt: '2026-07-23T15:53:48.998Z'
         repository:
           url: https://github.com/massdriver-cloud/massdriver-backstage
           directory: plugins/massdriver
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:08.224Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@backstage/ui'
+          - '@emotion/cache'
+          - '@emotion/react'
+          - '@emotion/styled'
+          - '@massdriver/backstage-plugin-common'
+          - '@massdriver/forms'
+          - '@massdriver/ui'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@mui/icons-material'
+          - '@mui/lab'
+          - '@mui/material'
+          - '@rjsf/core'
+          - '@rjsf/mui'
+          - '@rjsf/utils'
+          - '@rjsf/validator-ajv8'
+          - '@xyflow/react'
+          - graphql
+          - html-to-image
+          - react-use

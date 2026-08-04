@@ -11,8 +11,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:49.439Z'
-    checkedAt: '2026-08-04T05:02:49.439Z'
+    lastAttemptAt: '2026-08-04T22:12:37.415Z'
+    checkedAt: '2026-08-04T22:12:37.415Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/code-climate/backstage.json
     sourcePath: workspaces/code-climate/backstage.json
@@ -20,14 +20,26 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-code-climate'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:49.095Z'
-        checkedAt: '2026-08-04T05:02:49.095Z'
+        lastAttemptAt: '2026-08-04T22:12:37.038Z'
+        checkedAt: '2026-08-04T22:12:37.038Z'
         latestVersion: 0.21.0
         lastPublishedAt: '2026-07-21T22:57:53.941Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/code-climate/plugins/code-climate
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@material-ui/core'
+          - '@types/react'
+          - humanize-duration
+          - luxon
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:49.554Z'
+        lastAttemptAt: '2026-08-04T22:12:37.534Z'
         reason: config-schema-not-declared

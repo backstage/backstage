@@ -11,8 +11,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:12.291Z'
-    checkedAt: '2026-08-04T05:03:12.291Z'
+    lastAttemptAt: '2026-08-04T22:13:01.679Z'
+    checkedAt: '2026-08-04T22:13:01.679Z'
     version: 1.41.1
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/report-portal/backstage.json
     sourcePath: workspaces/report-portal/backstage.json
@@ -20,14 +20,27 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-report-portal'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:11.906Z'
-        checkedAt: '2026-08-04T05:03:11.906Z'
+        lastAttemptAt: '2026-08-04T22:13:01.389Z'
+        checkedAt: '2026-08-04T22:13:01.389Z'
         latestVersion: 1.6.1
         lastPublishedAt: '2026-03-25T14:52:36.933Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/report-portal/plugins/report-portal
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:12.411Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage-community/plugin-report-portal-common'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-search-common'
+          - '@backstage/plugin-search-react'
+          - '@backstage/theme'
+          - '@mui/icons-material'
+          - '@mui/material'
+          - luxon
+          - react-dom
+          - react-multi-progress
+          - react-router
+          - react-use

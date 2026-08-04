@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:04.180Z'
-    checkedAt: '2026-08-04T05:03:04.180Z'
+    lastAttemptAt: '2026-08-04T22:12:52.830Z'
+    checkedAt: '2026-08-04T22:12:52.830Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/jenkins/backstage.json
     sourcePath: workspaces/jenkins/backstage.json
@@ -21,14 +21,30 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-jenkins'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:03.824Z'
-        checkedAt: '2026-08-04T05:03:03.824Z'
+        lastAttemptAt: '2026-08-04T22:12:52.628Z'
+        checkedAt: '2026-08-04T22:12:52.628Z'
         latestVersion: 0.33.0
         lastPublishedAt: '2026-07-22T00:17:45.008Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/jenkins/plugins/jenkins
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage-community/plugin-jenkins-common'
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@types/react'
+          - luxon
+          - react-use
+          - zod
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:04.277Z'
+        lastAttemptAt: '2026-08-04T22:12:52.929Z'
         reason: config-schema-not-declared

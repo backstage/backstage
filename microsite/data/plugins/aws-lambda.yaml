@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:41.906Z'
-    checkedAt: '2026-08-04T05:02:41.906Z'
+    lastAttemptAt: '2026-08-04T22:12:29.100Z'
+    checkedAt: '2026-08-04T22:12:29.100Z'
     version: 1.44.2
     sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,14 +21,26 @@ snapshot:
     - npmPackageName: '@roadiehq/backstage-plugin-aws-lambda'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:41.653Z'
-        checkedAt: '2026-08-04T05:02:41.653Z'
+        lastAttemptAt: '2026-08-04T22:12:28.767Z'
+        checkedAt: '2026-08-04T22:12:28.767Z'
         latestVersion: 2.4.0
         lastPublishedAt: '2025-10-31T09:32:20.419Z'
         repository:
           url: https://github.com/RoadieHQ/roadie-backstage-plugins
           directory: plugins/frontend/backstage-plugin-aws-lambda
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - luxon
+          - aws-sdk
+          - react-use
+          - cross-fetch
+          - '@material-ui/lab'
+          - '@material-ui/core'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:42.040Z'
+        lastAttemptAt: '2026-08-04T22:12:29.251Z'
         reason: config-schema-not-declared

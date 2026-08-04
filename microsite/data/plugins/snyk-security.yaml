@@ -12,17 +12,26 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:17.422Z'
+    lastAttemptAt: '2026-08-04T22:13:07.260Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: backstage-plugin-snyk
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:17.422Z'
-        checkedAt: '2026-08-04T05:03:17.422Z'
+        lastAttemptAt: '2026-08-04T22:13:07.260Z'
+        checkedAt: '2026-08-04T22:13:07.260Z'
         latestVersion: 2.5.10
         lastPublishedAt: '2026-02-03T23:03:30.943Z'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:17.525Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@mui/icons-material'
+          - '@mui/material'
+          - '@snyk/dep-graph'
+          - react-circular-progressbar
+          - react-use

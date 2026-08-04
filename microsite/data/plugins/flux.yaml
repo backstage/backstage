@@ -13,8 +13,8 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:58.262Z'
-    checkedAt: '2026-08-04T05:02:58.262Z'
+    lastAttemptAt: '2026-08-04T22:12:46.223Z'
+    checkedAt: '2026-08-04T22:12:46.223Z'
     version: 1.20.3
     sourceUrl: https://github.com/weaveworks/weaveworks-backstage/blob/main/backstage.json
     sourcePath: backstage.json
@@ -22,14 +22,33 @@ snapshot:
     - npmPackageName: '@weaveworksoss/backstage-plugin-flux'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:57.957Z'
-        checkedAt: '2026-08-04T05:02:57.957Z'
+        lastAttemptAt: '2026-08-04T22:12:45.886Z'
+        checkedAt: '2026-08-04T22:12:45.886Z'
         latestVersion: 0.8.5
         lastPublishedAt: '2023-12-01T15:54:49.051Z'
         repository:
           url: https://github.com/weaveworks/weaveworks-backstage
           directory: plugins/backstage-plugin-flux
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:58.790Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-kubernetes'
+          - '@backstage/plugin-kubernetes-common'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@tanstack/query-sync-storage-persister'
+          - '@tanstack/react-query'
+          - '@tanstack/react-query-persist-client'
+          - classnames
+          - compare-versions
+          - lodash
+          - luxon
+          - react-use
+          - styled-components
+          - use-deep-compare
+          - yaml

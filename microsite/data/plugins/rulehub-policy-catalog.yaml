@@ -12,19 +12,22 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:12.621Z'
+    lastAttemptAt: '2026-08-04T22:13:02.189Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@rulehub/rulehub-backstage-plugin'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:12.287Z'
-        checkedAt: '2026-08-04T05:03:12.287Z'
+        lastAttemptAt: '2026-08-04T22:13:01.756Z'
+        checkedAt: '2026-08-04T22:13:01.756Z'
         latestVersion: 0.1.1
         lastPublishedAt: '2026-03-06T05:03:39.717Z'
         repository:
           url: https://github.com/rulehub/rulehub-backstage-plugin
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - ajv
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:13.026Z'
+        lastAttemptAt: '2026-08-04T22:13:02.738Z'
         reason: config-schema-not-declared

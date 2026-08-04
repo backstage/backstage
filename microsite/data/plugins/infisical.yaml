@@ -13,20 +13,31 @@ staleSince: '2026-08-04'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:03.703Z'
+    lastAttemptAt: '2026-08-04T22:12:52.300Z'
     reason: backstage-tag-not-found
   packages:
     - npmPackageName: '@infisical/backstage-plugin-infisical'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:03.341Z'
-        checkedAt: '2026-08-04T05:03:03.341Z'
+        lastAttemptAt: '2026-08-04T22:12:51.914Z'
+        checkedAt: '2026-08-04T22:12:51.914Z'
         latestVersion: 0.1.1
         lastPublishedAt: '2025-06-13T19:56:10.120Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/infisical
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - react-use
+          - '@material-ui/lab'
+          - '@backstage/errors'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:03.703Z'
+        lastAttemptAt: '2026-08-04T22:12:52.300Z'
         reason: config-schema-not-declared

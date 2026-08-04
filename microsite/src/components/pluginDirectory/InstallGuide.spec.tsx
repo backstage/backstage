@@ -25,13 +25,14 @@ const unavailableConfigSchema = {
   reason: 'npm-data-unavailable' as const,
 };
 
-function freshNpm() {
+function freshNpm(backstageRole?: string) {
   return {
     status: 'fresh' as const,
     checkedAt: '2026-08-03T12:00:00.000Z',
     lastAttemptAt: '2026-08-03T12:00:00.000Z',
     latestVersion: '1.0.0',
     lastPublishedAt: '2026-07-01T00:00:00.000Z',
+    ...(backstageRole ? { backstageRole } : {}),
   };
 }
 
@@ -55,15 +56,13 @@ const plugin: PluginData = {
     },
     packages: [
       {
-        functionality: 'frontend',
         npmPackageName: '@example/plugin-example',
-        npm: freshNpm(),
+        npm: freshNpm('frontend'),
         configSchema: unavailableConfigSchema,
       },
       {
-        functionality: 'backend',
         npmPackageName: '@example/plugin-example-backend',
-        npm: freshNpm(),
+        npm: freshNpm('backend'),
         configSchema: unavailableConfigSchema,
       },
     ],
@@ -178,5 +177,182 @@ describe('InstallGuide', () => {
     );
 
     expect(screen.getByText('backend')).toBeInTheDocument();
+  });
+
+  it('shows how to wire a backend package into packages/backend/src/index.ts', async () => {
+    const user = userEvent.setup();
+    render(<InstallGuide plugin={plugin} />);
+
+    await user.selectOptions(
+      screen.getByRole('combobox', { name: 'Package' }),
+      '@example/plugin-example-backend',
+    );
+
+    expect(
+      screen.getByText('packages/backend/src/index.ts', { exact: false }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "backend.add(import('@example/plugin-example-backend'));",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Copy backend wiring command' }),
+    ).toBeInTheDocument();
+  });
+
+  it('does not show backend wiring instructions for a frontend package', () => {
+    render(<InstallGuide plugin={plugin} />);
+
+    expect(
+      screen.queryByText('packages/backend/src/index.ts', { exact: false }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows backend wiring instructions for a backend module package', () => {
+    render(
+      <InstallGuide
+        plugin={{
+          ...plugin,
+          npmPackageName: '@example/plugin-example-backend-module-foo',
+          snapshot: undefined,
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByText(
+        "backend.add(import('@example/plugin-example-backend-module-foo'));",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('omits packages listed as an internalDependency of another package, since they install transitively', () => {
+    render(
+      <InstallGuide
+        plugin={{
+          ...plugin,
+          snapshot: {
+            ...plugin.snapshot!,
+            packages: [
+              {
+                ...plugin.snapshot!.packages[0],
+                internalDependencies: ['@example/plugin-example-react'],
+              },
+              {
+                ...plugin.snapshot!.packages[1],
+                internalDependencies: [
+                  '@example/plugin-example-common',
+                  '@example/plugin-example-node',
+                ],
+              },
+              {
+                npmPackageName: '@example/plugin-example-common',
+                npm: freshNpm(),
+                configSchema: unavailableConfigSchema,
+              },
+              {
+                npmPackageName: '@example/plugin-example-node',
+                npm: freshNpm(),
+                configSchema: unavailableConfigSchema,
+              },
+              {
+                npmPackageName: '@example/plugin-example-react',
+                npm: freshNpm(),
+                configSchema: unavailableConfigSchema,
+              },
+              {
+                npmPackageName: '@example/plugin-example-backend-module-foo',
+                npm: freshNpm(),
+                configSchema: unavailableConfigSchema,
+              },
+            ],
+          },
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByRole('combobox', { name: 'Package' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('option', { name: /plugin-example \(frontend\)/ }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('option', {
+        name: /plugin-example-backend \(backend\)/,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('option', { name: /backend-module-foo/ }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('option', { name: /-common/ }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('option', { name: /-node/ }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('option', { name: /-react/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('keeps a same-named package in the picker when nothing lists it as a dependency, even if it looks like a library', () => {
+    render(
+      <InstallGuide
+        plugin={{
+          ...plugin,
+          snapshot: {
+            ...plugin.snapshot!,
+            packages: [
+              ...plugin.snapshot!.packages,
+              {
+                npmPackageName: '@example/plugin-example-common',
+                npm: freshNpm(),
+                configSchema: unavailableConfigSchema,
+              },
+            ],
+          },
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByRole('option', { name: /plugin-example-common/ }),
+    ).toBeInTheDocument();
+  });
+
+  it('falls back to the unfiltered package list when filtering would leave nothing to show', () => {
+    render(
+      <InstallGuide
+        plugin={{
+          ...plugin,
+          snapshot: {
+            ...plugin.snapshot!,
+            packages: [
+              {
+                npmPackageName: '@example/plugin-a',
+                internalDependencies: ['@example/plugin-b'],
+                npm: freshNpm(),
+                configSchema: unavailableConfigSchema,
+              },
+              {
+                npmPackageName: '@example/plugin-b',
+                internalDependencies: ['@example/plugin-a'],
+                npm: freshNpm(),
+                configSchema: unavailableConfigSchema,
+              },
+            ],
+          },
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByRole('option', { name: /plugin-a/ }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('option', { name: /plugin-b/ }),
+    ).toBeInTheDocument();
   });
 });

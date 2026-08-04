@@ -13,8 +13,8 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:57.017Z'
-    checkedAt: '2026-08-04T05:02:57.017Z'
+    lastAttemptAt: '2026-08-04T22:12:44.985Z'
+    checkedAt: '2026-08-04T22:12:44.985Z'
     version: 1.20.3
     sourceUrl: https://github.com/benjmac/backstage-plugin-festive-fun/blob/main/backstage.json
     sourcePath: backstage.json
@@ -22,13 +22,23 @@ snapshot:
     - npmPackageName: backstage-plugin-festive-fun
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:56.848Z'
-        checkedAt: '2026-08-04T05:02:56.848Z'
+        lastAttemptAt: '2026-08-04T22:12:44.850Z'
+        checkedAt: '2026-08-04T22:12:44.850Z'
         latestVersion: 0.1.4
         lastPublishedAt: '2023-12-08T15:40:18.742Z'
         repository:
           url: https://github.com/benjmac/backstage-plugin-festive-fun
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - react-use
+          - react-snowfall
+          - react-wavify
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:57.510Z'
+        lastAttemptAt: '2026-08-04T22:12:45.498Z'
         reason: config-schema-not-declared

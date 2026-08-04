@@ -13,17 +13,30 @@ staleSince: '2026-08-04'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:01.685Z'
+    lastAttemptAt: '2026-08-04T22:12:50.260Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@harnessio/backstage-plugin-harness-srm'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:01.685Z'
-        checkedAt: '2026-08-04T05:03:01.685Z'
+        lastAttemptAt: '2026-08-04T22:12:50.260Z'
+        checkedAt: '2026-08-04T22:12:50.260Z'
         latestVersion: 0.2.0
         lastPublishedAt: '2023-11-17T13:19:51.469Z'
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - react-use
+          - '@mui/material'
+          - path-to-regexp
+          - '@backstage/theme'
+          - '@material-ui/lab'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:02.064Z'
+        lastAttemptAt: '2026-08-04T22:12:50.633Z'
         reason: config-schema-not-declared

@@ -13,19 +13,32 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:07.032Z'
+    lastAttemptAt: '2026-08-04T22:12:55.964Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: backstage-plugin-litmus
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:06.889Z'
-        checkedAt: '2026-08-04T05:03:06.889Z'
+        lastAttemptAt: '2026-08-04T22:12:55.809Z'
+        checkedAt: '2026-08-04T22:12:55.809Z'
         latestVersion: 1.0.2
         lastPublishedAt: '2024-03-04T17:22:47.688Z'
         repository:
           url: https://github.com/litmuschaos/backstage-plugin
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:07.520Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/theme'
+          - '@emotion/react'
+          - '@emotion/styled'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@mui/icons-material'
+          - '@mui/material'
+          - '@mui/x-charts'
+          - cron-parser
+          - jwt-decode
+          - lodash-es
+          - react-use

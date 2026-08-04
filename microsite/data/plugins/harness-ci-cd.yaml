@@ -13,17 +13,30 @@ staleSince: '2026-08-04'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:01.460Z'
+    lastAttemptAt: '2026-08-04T22:12:49.894Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@harnessio/backstage-plugin-ci-cd'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:01.460Z'
-        checkedAt: '2026-08-04T05:03:01.460Z'
+        lastAttemptAt: '2026-08-04T22:12:49.894Z'
+        checkedAt: '2026-08-04T22:12:49.894Z'
         latestVersion: 0.11.0
         lastPublishedAt: '2024-08-21T09:56:17.412Z'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:02.125Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - dayjs
+          - react-use
+          - sweetalert2
+          - '@mui/material'
+          - '@emotion/react'
+          - path-to-regexp
+          - '@emotion/styled'
+          - '@backstage/theme'
+          - '@material-ui/lab'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'

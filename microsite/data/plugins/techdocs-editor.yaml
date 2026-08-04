@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:20.250Z'
-    checkedAt: '2026-08-04T05:03:20.250Z'
+    lastAttemptAt: '2026-08-04T22:13:10.033Z'
+    checkedAt: '2026-08-04T22:13:10.033Z'
     version: 1.50.0
     sourceUrl: https://github.com/Estehsan/backstage-techdoc-editor/blob/main/workspaces/techdocs-editor/backstage.json
     sourcePath: workspaces/techdocs-editor/backstage.json
@@ -21,14 +21,27 @@ snapshot:
     - npmPackageName: '@estehsaan/backstage-plugin-techdocs-editor'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:19.893Z'
-        checkedAt: '2026-08-04T05:03:19.893Z'
+        lastAttemptAt: '2026-08-04T22:13:09.686Z'
+        checkedAt: '2026-08-04T22:13:09.686Z'
         latestVersion: 2.0.1
         lastPublishedAt: '2026-07-29T13:05:12.463Z'
         repository:
           url: https://github.com/Estehsan/backstage-techdoc-editor
           directory: workspaces/techdocs-editor/plugins/techdocs-editor
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-techdocs-common'
+          - '@backstage/plugin-techdocs-react'
+          - '@backstage/ui'
+          - '@estehsaan/backstage-plugin-techdocs-editor-common'
+          - '@estehsaan/backstage-plugin-techdocs-editor-react'
+          - '@remixicon/react'
+          - react-router-dom
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:20.816Z'
+        lastAttemptAt: '2026-08-04T22:13:10.676Z'
         reason: config-schema-not-declared

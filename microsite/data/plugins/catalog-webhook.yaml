@@ -12,20 +12,25 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:47.324Z'
+    lastAttemptAt: '2026-08-04T22:12:34.964Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@forgedapps/backstage-catalog-webhook-plugin'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:47.005Z'
-        checkedAt: '2026-08-04T05:02:47.005Z'
+        lastAttemptAt: '2026-08-04T22:12:34.628Z'
+        checkedAt: '2026-08-04T22:12:34.628Z'
         latestVersion: 3.5.1
         lastPublishedAt: '2026-01-29T22:48:20.824Z'
         repository:
           url: https://github.com/forgedapps/backstage-catalog-webhook-plugin
           directory: .
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/backend-plugin-api'
+          - '@backstage/catalog-client'
+          - '@backstage/catalog-model'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:47.798Z'
+        lastAttemptAt: '2026-08-04T22:12:35.434Z'
         reason: config-schema-not-declared

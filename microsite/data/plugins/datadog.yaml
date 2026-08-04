@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:52.635Z'
-    checkedAt: '2026-08-04T05:02:52.635Z'
+    lastAttemptAt: '2026-08-04T22:12:39.979Z'
+    checkedAt: '2026-08-04T22:12:39.979Z'
     version: 1.44.2
     sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,14 +21,27 @@ snapshot:
     - npmPackageName: '@roadiehq/backstage-plugin-datadog'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:52.290Z'
-        checkedAt: '2026-08-04T05:02:52.290Z'
+        lastAttemptAt: '2026-08-04T22:12:39.725Z'
+        checkedAt: '2026-08-04T22:12:39.725Z'
         latestVersion: 2.7.2
         lastPublishedAt: '2026-04-01T07:10:56.114Z'
         repository:
           url: https://github.com/RoadieHQ/roadie-backstage-plugins
           directory: plugins/frontend/backstage-plugin-datadog
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - cross-fetch
+          - re-resizable
+          - '@material-ui/lab'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:52.788Z'
+        lastAttemptAt: '2026-08-04T22:12:40.133Z'
         reason: config-schema-not-declared

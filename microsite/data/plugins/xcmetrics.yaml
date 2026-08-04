@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:22.451Z'
-    checkedAt: '2026-08-04T05:03:22.451Z'
+    lastAttemptAt: '2026-08-04T22:13:12.286Z'
+    checkedAt: '2026-08-04T22:13:12.286Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/xcmetrics/backstage.json
     sourcePath: workspaces/xcmetrics/backstage.json
@@ -21,14 +21,27 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-xcmetrics'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:21.946Z'
-        checkedAt: '2026-08-04T05:03:21.946Z'
+        lastAttemptAt: '2026-08-04T22:13:11.906Z'
+        checkedAt: '2026-08-04T22:13:11.906Z'
         latestVersion: 0.19.0
         lastPublishedAt: '2026-04-24T18:01:44.528Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/xcmetrics/plugins/xcmetrics
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@types/react'
+          - lodash
+          - luxon
+          - react-use
+          - recharts
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:22.572Z'
+        lastAttemptAt: '2026-08-04T22:13:12.404Z'
         reason: config-schema-not-declared

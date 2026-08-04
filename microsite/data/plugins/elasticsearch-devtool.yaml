@@ -11,8 +11,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:55.982Z'
-    checkedAt: '2026-08-04T05:02:55.982Z'
+    lastAttemptAt: '2026-08-04T22:12:43.816Z'
+    checkedAt: '2026-08-04T22:12:43.816Z'
     version: 1.52.1
     sourceUrl: https://github.com/SaishNarvekar/elastic-devtool/blob/main/backstage.json
     sourcePath: backstage.json
@@ -20,13 +20,24 @@ snapshot:
     - npmPackageName: '@saishnarvekar/plugin-elastic-devtool'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:55.580Z'
-        checkedAt: '2026-08-04T05:02:55.580Z'
+        lastAttemptAt: '2026-08-04T22:12:43.459Z'
+        checkedAt: '2026-08-04T22:12:43.459Z'
         latestVersion: 0.1.4
         lastPublishedAt: '2026-07-12T18:31:31.909Z'
         repository:
           url: https://github.com/SaishNarvekar/elastic-devtool
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@monaco-editor/react'
+          - monaco-editor
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:56.448Z'
+        lastAttemptAt: '2026-08-04T22:12:44.373Z'
         reason: config-schema-not-declared

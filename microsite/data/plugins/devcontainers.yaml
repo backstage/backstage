@@ -12,17 +12,27 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:53.229Z'
+    lastAttemptAt: '2026-08-04T22:12:40.989Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@coder/backstage-plugin-devcontainers-react'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:53.229Z'
-        checkedAt: '2026-08-04T05:02:53.229Z'
+        lastAttemptAt: '2026-08-04T22:12:40.989Z'
+        checkedAt: '2026-08-04T22:12:40.989Z'
         latestVersion: 0.1.2
         lastPublishedAt: '2025-10-31T20:05:45.457Z'
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:53.581Z'
+        lastAttemptAt: '2026-08-04T22:12:41.311Z'
         reason: config-schema-not-declared

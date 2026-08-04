@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:11.470Z'
-    checkedAt: '2026-08-04T05:03:11.470Z'
+    lastAttemptAt: '2026-08-04T22:13:00.888Z'
+    checkedAt: '2026-08-04T22:13:00.888Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/puppetdb/backstage.json
     sourcePath: workspaces/puppetdb/backstage.json
@@ -21,14 +21,24 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-puppetdb'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:11.079Z'
-        checkedAt: '2026-08-04T05:03:11.079Z'
+        lastAttemptAt: '2026-08-04T22:13:00.528Z'
+        checkedAt: '2026-08-04T22:13:00.528Z'
         latestVersion: 0.21.0
         lastPublishedAt: '2026-07-22T00:21:01.693Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/puppetdb/plugins/puppetdb
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/plugin-catalog-react'
+          - '@material-ui/core'
+          - '@types/react'
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:11.593Z'
+        lastAttemptAt: '2026-08-04T22:13:01.003Z'
         reason: config-schema-not-declared

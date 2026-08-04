@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { PluginData } from '../../pluginDirectory/manifest';
+import { resolveFunctionality } from '../../pluginDirectory/packageRoles';
 import React, { useState } from 'react';
 
 import { CopyButton } from './CopyButton';
@@ -28,6 +29,15 @@ function inferPackageRole(name: string): string {
   return name.includes('-backend') ? 'backend' : 'frontend';
 }
 
+// Covers both the raw `backstage.role` values (`backend-plugin`,
+// `backend-plugin-module`) and the short forms `inferPackageRole` /
+// `resolveFunctionality` fall back to (`backend`, `backend-module`), so
+// backend plugins and backend modules both get the `backend.add(...)`
+// wiring snippet below.
+function isBackendPackage(role: string): boolean {
+  return role.startsWith('backend');
+}
+
 interface InstallPackage {
   name: string;
   role: string;
@@ -36,12 +46,27 @@ interface InstallPackage {
 function getInstallPackages(plugin: PluginData): InstallPackage[] {
   const snapshotPackages = plugin.snapshot?.packages;
   if (snapshotPackages && snapshotPackages.length > 0) {
-    return snapshotPackages.map(packageSnapshot => ({
+    const primaryNpmPackageName = plugin.npmPackageName;
+    const allPackages = snapshotPackages.map(packageSnapshot => ({
       name: packageSnapshot.npmPackageName,
       role:
-        packageSnapshot.functionality ??
+        resolveFunctionality(packageSnapshot, primaryNpmPackageName) ??
         inferPackageRole(packageSnapshot.npmPackageName),
     }));
+    // A package that's listed in another package's `internalDependencies`
+    // (e.g. a `-common`/`-node`/`-react` library the frontend/backend
+    // package directly depends on) installs transitively with that
+    // package, so it doesn't need its own `yarn add` step here. Fall back
+    // to the unfiltered list if that would leave nothing to show.
+    const dependencyNames = new Set(
+      snapshotPackages.flatMap(
+        packageSnapshot => packageSnapshot.internalDependencies ?? [],
+      ),
+    );
+    const installable = allPackages.filter(
+      installPackage => !dependencyNames.has(installPackage.name),
+    );
+    return installable.length > 0 ? installable : allPackages;
   }
 
   return [
@@ -84,6 +109,23 @@ export function InstallGuide({ plugin }: InstallGuideProps) {
                 label={`${selectedPackage.role} install command`}
               />
             </div>
+            {isBackendPackage(selectedPackage.role) && (
+              <>
+                <p>
+                  Add it to your backend in{' '}
+                  <code>packages/backend/src/index.ts</code>:
+                </p>
+                <div className={styles.codeRow}>
+                  <pre>
+                    <code>{`backend.add(import('${selectedPackage.name}'));`}</code>
+                  </pre>
+                  <CopyButton
+                    value={`backend.add(import('${selectedPackage.name}'));`}
+                    label="backend wiring command"
+                  />
+                </div>
+              </>
+            )}
           </>
         ) : (
           <p>No package installs declared.</p>

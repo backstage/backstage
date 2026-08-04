@@ -12,19 +12,32 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:10.323Z'
+    lastAttemptAt: '2026-08-04T22:12:59.693Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@parseable/backstage-plugin-logstream'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:09.942Z'
-        checkedAt: '2026-08-04T05:03:09.942Z'
+        lastAttemptAt: '2026-08-04T22:12:59.322Z'
+        checkedAt: '2026-08-04T22:12:59.322Z'
         latestVersion: 0.5.1
         lastPublishedAt: '2025-09-16T06:22:25.577Z'
         repository:
           url: https://github.com/parseablehq/backstage-plugin
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - zod
+          - react-use
+          - monaco-editor
+          - '@backstage/theme'
+          - '@material-ui/lab'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:10.754Z'
+        lastAttemptAt: '2026-08-04T22:13:00.183Z'
         reason: config-schema-not-declared

@@ -15,19 +15,34 @@ staleSince: '2026-08-04'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:56.821Z'
+    lastAttemptAt: '2026-08-04T22:12:44.982Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@facets-cloud/backstage-plugin'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:56.568Z'
-        checkedAt: '2026-08-04T05:02:56.568Z'
+        lastAttemptAt: '2026-08-04T22:12:44.615Z'
+        checkedAt: '2026-08-04T22:12:44.615Z'
         latestVersion: 0.1.3
         lastPublishedAt: '2025-03-20T12:23:14.221Z'
         repository:
           url: https://github.com/Facets-cloud/facets-backstage-plugin
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/backend-plugin-api'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@mui/icons-material'
+          - axios
+          - date-fns
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:57.225Z'
+        lastAttemptAt: '2026-08-04T22:12:45.424Z'
         reason: config-schema-not-declared

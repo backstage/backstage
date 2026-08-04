@@ -12,19 +12,30 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:18.161Z'
+    lastAttemptAt: '2026-08-04T22:13:08.054Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@spacelift-io/backstage-integration-frontend'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:17.781Z'
-        checkedAt: '2026-08-04T05:03:17.781Z'
+        lastAttemptAt: '2026-08-04T22:13:07.654Z'
+        checkedAt: '2026-08-04T22:13:07.654Z'
         latestVersion: 0.3.1
         lastPublishedAt: '2026-03-26T09:21:33.767Z'
         repository:
           url: https://github.com/spacelift-io/backstage-plugins
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:18.729Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - eslint-plugin-react-hooks
+          - luxon
+          - react
+          - react-dom
+          - react-use

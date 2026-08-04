@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:09.998Z'
-    checkedAt: '2026-08-04T05:03:09.998Z'
+    lastAttemptAt: '2026-08-04T22:12:59.150Z'
+    checkedAt: '2026-08-04T22:12:59.150Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/opencost/backstage.json
     sourcePath: workspaces/opencost/backstage.json
@@ -21,17 +21,30 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-opencost'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:09.594Z'
-        checkedAt: '2026-08-04T05:03:09.594Z'
+        lastAttemptAt: '2026-08-04T22:12:58.841Z'
+        checkedAt: '2026-08-04T22:12:58.841Z'
         latestVersion: 0.22.0
         lastPublishedAt: '2026-07-22T00:18:11.616Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/opencost/plugins/opencost
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@date-io/luxon'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/pickers'
+          - '@material-ui/styles'
+          - '@types/react'
+          - date-fns
+          - lodash
+          - recharts
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:10.108Z'
-        checkedAt: '2026-08-04T05:03:10.108Z'
+        lastAttemptAt: '2026-08-04T22:12:59.291Z'
+        checkedAt: '2026-08-04T22:12:59.291Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object

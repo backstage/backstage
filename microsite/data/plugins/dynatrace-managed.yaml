@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:55.424Z'
-    checkedAt: '2026-08-04T05:02:55.424Z'
+    lastAttemptAt: '2026-08-04T22:12:43.349Z'
+    checkedAt: '2026-08-04T22:12:43.349Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/dynatrace/backstage.json
     sourcePath: workspaces/dynatrace/backstage.json
@@ -21,17 +21,28 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-dynatrace'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:55.115Z'
-        checkedAt: '2026-08-04T05:02:55.115Z'
+        lastAttemptAt: '2026-08-04T22:12:43.009Z'
+        checkedAt: '2026-08-04T22:12:43.009Z'
         latestVersion: 10.22.0
         lastPublishedAt: '2026-07-21T23:04:41.699Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/dynatrace/plugins/dynatrace
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@material-ui/core'
+          - '@types/react'
+          - react-use
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:55.531Z'
-        checkedAt: '2026-08-04T05:02:55.531Z'
+        lastAttemptAt: '2026-08-04T22:12:43.479Z'
+        checkedAt: '2026-08-04T22:12:43.479Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object

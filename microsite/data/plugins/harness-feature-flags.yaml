@@ -13,17 +13,30 @@ staleSince: '2026-08-04'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:01.505Z'
+    lastAttemptAt: '2026-08-04T22:12:49.962Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@harnessio/backstage-plugin-feature-flags'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:01.505Z'
-        checkedAt: '2026-08-04T05:03:01.505Z'
+        lastAttemptAt: '2026-08-04T22:12:49.962Z'
+        checkedAt: '2026-08-04T22:12:49.962Z'
         latestVersion: 0.2.1
         lastPublishedAt: '2023-07-18T14:37:09.278Z'
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - dayjs
+          - react-use
+          - '@mui/material'
+          - path-to-regexp
+          - '@backstage/theme'
+          - '@material-ui/lab'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:01.852Z'
+        lastAttemptAt: '2026-08-04T22:12:50.325Z'
         reason: config-schema-not-declared

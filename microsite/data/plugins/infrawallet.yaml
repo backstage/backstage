@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:03.890Z'
-    checkedAt: '2026-08-04T05:03:03.890Z'
+    lastAttemptAt: '2026-08-04T22:12:52.529Z'
+    checkedAt: '2026-08-04T22:12:52.529Z'
     version: 1.51.0
     sourceUrl: https://github.com/electrolux-oss/infrawallet/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,14 +21,35 @@ snapshot:
     - npmPackageName: '@electrolux-oss/plugin-infrawallet'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:03.524Z'
-        checkedAt: '2026-08-04T05:03:03.524Z'
+        lastAttemptAt: '2026-08-04T22:12:52.156Z'
+        checkedAt: '2026-08-04T22:12:52.156Z'
         latestVersion: 1.2.0
         lastPublishedAt: '2026-06-09T12:31:02.774Z'
         repository:
           url: https://github.com/electrolux-oss/infrawallet
           directory: plugins/infrawallet
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:04.472Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - uuid
+          - lodash
+          - lucene
+          - moment
+          - date-fns
+          - recharts
+          - react-icons
+          - '@types/react'
+          - '@backstage/ui'
+          - '@mui/material'
+          - '@mui/x-charts'
+          - '@stitches/react'
+          - '@backstage/theme'
+          - '@mui/x-data-grid'
+          - '@backstage/config'
+          - mui-modal-provider
+          - '@mui/icons-material'
+          - '@mui/x-date-pickers'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'

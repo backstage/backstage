@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:17.413Z'
-    checkedAt: '2026-08-04T05:03:17.413Z'
+    lastAttemptAt: '2026-08-04T22:13:07.308Z'
+    checkedAt: '2026-08-04T22:13:07.308Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/shortcuts/backstage.json
     sourcePath: workspaces/shortcuts/backstage.json
@@ -21,14 +21,27 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-shortcuts'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:17.127Z'
-        checkedAt: '2026-08-04T05:03:17.127Z'
+        lastAttemptAt: '2026-08-04T22:13:07.014Z'
+        checkedAt: '2026-08-04T22:13:07.014Z'
         latestVersion: 0.23.0
         lastPublishedAt: '2026-07-22T00:21:24.444Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/shortcuts/plugins/shortcuts
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/theme'
+          - '@backstage/types'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@types/react'
+          - react-hook-form
+          - react-use
+          - uuid
+          - zen-observable
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:17.536Z'
+        lastAttemptAt: '2026-08-04T22:13:07.434Z'
         reason: config-schema-not-declared

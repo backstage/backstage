@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:58.843Z'
-    checkedAt: '2026-08-04T05:02:58.843Z'
+    lastAttemptAt: '2026-08-04T22:12:46.769Z'
+    checkedAt: '2026-08-04T22:12:46.769Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/gcp-projects/backstage.json
     sourcePath: workspaces/gcp-projects/backstage.json
@@ -21,14 +21,22 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-gcp-projects'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:58.603Z'
-        checkedAt: '2026-08-04T05:02:58.603Z'
+        lastAttemptAt: '2026-08-04T22:12:46.574Z'
+        checkedAt: '2026-08-04T22:12:46.574Z'
         latestVersion: 0.20.0
         lastPublishedAt: '2026-04-24T18:12:52.504Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/gcp-projects/plugins/gcp-projects
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@material-ui/core'
+          - '@react-hookz/web'
+          - '@types/react'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:58.948Z'
+        lastAttemptAt: '2026-08-04T22:12:46.936Z'
         reason: config-schema-not-declared

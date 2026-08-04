@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:22.026Z'
-    checkedAt: '2026-08-04T05:03:22.026Z'
+    lastAttemptAt: '2026-08-04T22:13:12.088Z'
+    checkedAt: '2026-08-04T22:13:12.088Z'
     version: 1.49.2
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/wheel-of-names/backstage.json
     sourcePath: workspaces/wheel-of-names/backstage.json
@@ -21,14 +21,32 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-wheel-of-names'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:21.694Z'
-        checkedAt: '2026-08-04T05:03:21.694Z'
+        lastAttemptAt: '2026-08-04T22:13:11.764Z'
+        checkedAt: '2026-08-04T22:13:11.764Z'
         latestVersion: 0.8.0
         lastPublishedAt: '2026-04-17T18:39:39.181Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/wheel-of-names/plugins/wheel-of-names
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-client'
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - canvas-confetti
+          - react
+          - react-dom
+          - react-router-dom
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:22.141Z'
+        lastAttemptAt: '2026-08-04T22:13:12.204Z'
         reason: config-schema-not-declared

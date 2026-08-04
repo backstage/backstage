@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:15.764Z'
-    checkedAt: '2026-08-04T05:03:15.764Z'
+    lastAttemptAt: '2026-08-04T22:13:05.393Z'
+    checkedAt: '2026-08-04T22:13:05.393Z'
     version: 1.37.0
     sourceUrl: https://github.com/Scalr/scalr-backstage-plugin/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,13 +21,22 @@ snapshot:
     - npmPackageName: '@scalr-io/backstage-plugin-scalr'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:15.370Z'
-        checkedAt: '2026-08-04T05:03:15.370Z'
+        lastAttemptAt: '2026-08-04T22:13:04.977Z'
+        checkedAt: '2026-08-04T22:13:04.977Z'
         latestVersion: 0.5.0
         lastPublishedAt: '2026-01-26T22:44:40.217Z'
         repository:
           url: https://github.com/Scalr/scalr-backstage-plugin
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:16.473Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@mui/material'
+          - axios
+          - react-use

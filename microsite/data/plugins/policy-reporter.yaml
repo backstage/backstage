@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:10.880Z'
-    checkedAt: '2026-08-04T05:03:10.880Z'
+    lastAttemptAt: '2026-08-04T22:13:00.254Z'
+    checkedAt: '2026-08-04T22:13:00.254Z'
     version: 1.52.0
     sourceUrl: https://github.com/kyverno/backstage-policy-reporter-plugin/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,14 +21,31 @@ snapshot:
     - npmPackageName: '@kyverno/backstage-plugin-policy-reporter'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:10.544Z'
-        checkedAt: '2026-08-04T05:03:10.544Z'
+        lastAttemptAt: '2026-08-04T22:12:59.884Z'
+        checkedAt: '2026-08-04T22:12:59.884Z'
         latestVersion: 2.10.0
         lastPublishedAt: '2026-07-08T06:50:53.005Z'
         repository:
           url: https://github.com/kyverno/backstage-policy-reporter-plugin
           directory: plugins/policy-reporter
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-client'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@backstage/ui'
+          - '@kyverno/backstage-plugin-policy-reporter-common'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@remixicon/react'
+          - qs
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:11.574Z'
+        lastAttemptAt: '2026-08-04T22:13:00.995Z'
         reason: config-schema-not-declared

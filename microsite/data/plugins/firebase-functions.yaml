@@ -13,19 +13,35 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:57.411Z'
+    lastAttemptAt: '2026-08-04T22:12:45.251Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@roadiehq/backstage-plugin-firebase-functions'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:57.090Z'
-        checkedAt: '2026-08-04T05:02:57.090Z'
+        lastAttemptAt: '2026-08-04T22:12:44.918Z'
+        checkedAt: '2026-08-04T22:12:44.918Z'
         latestVersion: 1.0.6
         lastPublishedAt: '2021-07-19T07:46:30.909Z'
         repository:
           url: https://github.com/RoadieHQ/backstage-plugin-firebase-functions
+        dependencyNames:
+          - react
+          - moment
+          - history
+          - react-dom
+          - react-use
+          - cross-fetch
+          - '@material-ui/lab'
+          - react-router-dom
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/core-app-api'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:57.949Z'
+        lastAttemptAt: '2026-08-04T22:12:45.756Z'
         reason: config-schema-not-declared

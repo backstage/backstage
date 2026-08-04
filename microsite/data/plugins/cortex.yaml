@@ -13,8 +13,8 @@ staleSince: '2026-08-04'
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:50.931Z'
-    checkedAt: '2026-08-04T05:02:50.931Z'
+    lastAttemptAt: '2026-08-04T22:12:38.484Z'
+    checkedAt: '2026-08-04T22:12:38.484Z'
     version: 1.27.7
     sourceUrl: https://github.com/cortexapps/backstage-plugin/blob/master/backstage.json
     sourcePath: backstage.json
@@ -22,13 +22,34 @@ snapshot:
     - npmPackageName: '@cortexapps/backstage-plugin'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:50.479Z'
-        checkedAt: '2026-08-04T05:02:50.479Z'
+        lastAttemptAt: '2026-08-04T22:12:38.036Z'
+        checkedAt: '2026-08-04T22:12:38.036Z'
         latestVersion: 2.13.6
         lastPublishedAt: '2025-02-24T12:55:50.032Z'
         repository:
           url: https://github.com/cortexapps/backstage-plugin
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:51.557Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - clsx
+          - lodash
+          - moment
+          - react-use
+          - '@nivo/core'
+          - '@nivo/line'
+          - rc-progress
+          - '@nivo/scales'
+          - query-string
+          - material-table
+          - '@backstage/theme'
+          - '@material-ui/lab'
+          - '@material-ui/core'
+          - simple-statistics
+          - '@material-ui/icons'
+          - '@types/react-router'
+          - '@cortexapps/birdseye'
+          - '@backstage/core-app-api'
+          - '@tanstack/react-virtual'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'

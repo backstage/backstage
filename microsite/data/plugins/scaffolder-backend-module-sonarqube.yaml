@@ -11,8 +11,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:14.201Z'
-    checkedAt: '2026-08-04T05:03:14.201Z'
+    lastAttemptAt: '2026-08-04T22:13:03.792Z'
+    checkedAt: '2026-08-04T22:13:03.792Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/scaffolder-backend-module-sonarqube/backstage.json
     sourcePath: workspaces/scaffolder-backend-module-sonarqube/backstage.json
@@ -20,14 +20,19 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-scaffolder-backend-module-sonarqube'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:13.883Z'
-        checkedAt: '2026-08-04T05:03:13.883Z'
+        lastAttemptAt: '2026-08-04T22:13:03.527Z'
+        checkedAt: '2026-08-04T22:13:03.527Z'
         latestVersion: 2.16.0
         lastPublishedAt: '2026-07-07T16:43:35.169Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/scaffolder-backend-module-sonarqube/plugins/scaffolder-backend-module-sonarqube
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-scaffolder-node'
+          - yaml
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:14.316Z'
+        lastAttemptAt: '2026-08-04T22:13:03.929Z'
         reason: config-schema-not-declared

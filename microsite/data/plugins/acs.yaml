@@ -11,8 +11,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:36.972Z'
-    checkedAt: '2026-08-04T05:02:36.972Z'
+    lastAttemptAt: '2026-08-04T22:12:23.914Z'
+    checkedAt: '2026-08-04T22:12:23.914Z'
     version: 1.49.4
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/acs/backstage.json
     sourcePath: workspaces/acs/backstage.json
@@ -20,14 +20,34 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-acs'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:36.554Z'
-        checkedAt: '2026-08-04T05:02:36.554Z'
+        lastAttemptAt: '2026-08-04T22:12:23.477Z'
+        checkedAt: '2026-08-04T22:12:23.477Z'
         latestVersion: 0.2.0
         lastPublishedAt: '2026-05-04T13:30:57.939Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/acs/plugins/acs
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:38.030Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@apollo/client'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@mui/material'
+          - '@mui/x-data-grid'
+          - '@patternfly/react-charts'
+          - '@patternfly/react-component-groups'
+          - '@patternfly/react-core'
+          - '@patternfly/react-icons'
+          - '@patternfly/react-styles'
+          - '@patternfly/react-table'
+          - '@patternfly/react-topology'
+          - date-fns
+          - raven-js
+          - react-data-table-component
+          - react-feather
+          - react-use

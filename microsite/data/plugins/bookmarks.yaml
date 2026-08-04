@@ -11,8 +11,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:45.402Z'
-    checkedAt: '2026-08-04T05:02:45.402Z'
+    lastAttemptAt: '2026-08-04T22:12:32.825Z'
+    checkedAt: '2026-08-04T22:12:32.825Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/bookmarks/backstage.json
     sourcePath: workspaces/bookmarks/backstage.json
@@ -20,17 +20,31 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-bookmarks'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:45.017Z'
-        checkedAt: '2026-08-04T05:02:45.017Z'
+        lastAttemptAt: '2026-08-04T22:12:32.427Z'
+        checkedAt: '2026-08-04T22:12:32.427Z'
         latestVersion: 0.13.0
         lastPublishedAt: '2026-07-21T21:38:00.141Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/bookmarks/plugins/bookmarks
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/frontend-test-utils'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@mui/icons-material'
+          - '@mui/material'
+          - '@mui/system'
+          - '@mui/x-tree-view'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:45.541Z'
-        checkedAt: '2026-08-04T05:02:45.541Z'
+        lastAttemptAt: '2026-08-04T22:12:32.955Z'
+        checkedAt: '2026-08-04T22:12:32.955Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object

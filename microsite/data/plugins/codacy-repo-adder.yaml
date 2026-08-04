@@ -13,17 +13,22 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:49.071Z'
+    lastAttemptAt: '2026-08-04T22:12:36.751Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@codacy/backstage-plugin'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:49.071Z'
-        checkedAt: '2026-08-04T05:02:49.071Z'
+        lastAttemptAt: '2026-08-04T22:12:36.751Z'
+        checkedAt: '2026-08-04T22:12:36.751Z'
         latestVersion: 0.1.2
         lastPublishedAt: '2024-04-19T10:33:50.903Z'
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/backend-common'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-scaffolder-node'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:49.467Z'
+        lastAttemptAt: '2026-08-04T22:12:37.139Z'
         reason: config-schema-not-declared

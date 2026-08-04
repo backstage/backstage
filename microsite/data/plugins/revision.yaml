@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:12.379Z'
-    checkedAt: '2026-08-04T05:03:12.379Z'
+    lastAttemptAt: '2026-08-04T22:13:01.856Z'
+    checkedAt: '2026-08-04T22:13:01.856Z'
     version: 1.46.2
     sourceUrl: https://github.com/revision-org/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,14 +21,20 @@ snapshot:
     - npmPackageName: '@revisionapp/backstage-revision-plugin'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:12.028Z'
-        checkedAt: '2026-08-04T05:03:12.028Z'
+        lastAttemptAt: '2026-08-04T22:13:01.458Z'
+        checkedAt: '2026-08-04T22:13:01.458Z'
         latestVersion: 0.5.3
         lastPublishedAt: '2026-01-15T15:39:49.530Z'
         repository:
           url: https://github.com/revision-org/backstage-plugins
           directory: plugins/revision
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:12.952Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - react-syntax-highlighter

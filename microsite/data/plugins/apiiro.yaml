@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:39.774Z'
-    checkedAt: '2026-08-04T05:02:39.774Z'
+    lastAttemptAt: '2026-08-04T22:12:26.652Z'
+    checkedAt: '2026-08-04T22:12:26.652Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/apiiro/backstage.json
     sourcePath: workspaces/apiiro/backstage.json
@@ -21,14 +21,27 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-apiiro'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:39.389Z'
-        checkedAt: '2026-08-04T05:02:39.389Z'
+        lastAttemptAt: '2026-08-04T22:12:26.307Z'
+        checkedAt: '2026-08-04T22:12:26.307Z'
         latestVersion: 1.1.0
         lastPublishedAt: '2026-06-25T06:21:03.464Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/apiiro/plugins/apiiro
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:39.876Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage-community/plugin-apiiro-common'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@mui/icons-material'
+          - '@mui/material'
+          - '@mui/x-charts'
+          - '@mui/x-data-grid'
+          - '@react-spring/web'
+          - '@tanstack/react-query'
+          - react-calendar
+          - react-icons
+          - react-use

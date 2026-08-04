@@ -12,20 +12,62 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:20.979Z'
+    lastAttemptAt: '2026-08-04T22:13:10.930Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@drodil/backstage-plugin-toolbox'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:20.979Z'
-        checkedAt: '2026-08-04T05:03:20.979Z'
-        latestVersion: 1.36.11
-        lastPublishedAt: '2026-07-29T07:35:32.869Z'
+        lastAttemptAt: '2026-08-04T22:13:10.930Z'
+        checkedAt: '2026-08-04T22:13:10.930Z'
+        latestVersion: 2.0.0
+        lastPublishedAt: '2026-08-04T07:16:05.723Z'
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-home-react'
+          - '@backstage/ui'
+          - '@drodil/backstage-plugin-toolbox-react'
+          - '@faker-js/faker'
+          - '@json2csv/plainjs'
+          - '@monaco-editor/react'
+          - '@remixicon/react'
+          - asn1js
+          - color-convert
+          - crypto-hash
+          - csvtojson
+          - i18next
+          - iban
+          - jose
+          - js-beautify
+          - js-md2
+          - js-md4
+          - json5
+          - jwt-decode
+          - lodash
+          - luxon
+          - monaco-editor
+          - pkijs
+          - qr-code-styling
+          - quicktype-core
+          - react-barcode
+          - react-qr-code
+          - react-use
+          - react-window
+          - sql-formatter
+          - ts-md5
+          - turndown
+          - turndown-plugin-gfm
+          - xml-js
+          - yaml
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:21.257Z'
-        checkedAt: '2026-08-04T05:03:21.257Z'
+        lastAttemptAt: '2026-08-04T22:13:11.326Z'
+        checkedAt: '2026-08-04T22:13:11.326Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object

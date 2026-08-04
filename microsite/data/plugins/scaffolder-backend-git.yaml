@@ -13,19 +13,28 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:13.343Z'
+    lastAttemptAt: '2026-08-04T22:13:02.853Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@mdude2314/backstage-plugin-scaffolder-git-actions'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:13.006Z'
-        checkedAt: '2026-08-04T05:03:13.006Z'
+        lastAttemptAt: '2026-08-04T22:13:02.530Z'
+        checkedAt: '2026-08-04T22:13:02.530Z'
         latestVersion: 1.1.1
         lastPublishedAt: '2023-11-27T12:40:56.500Z'
         repository:
           url: https://github.com/arhill05/backstage-plugin-scaffolder-git-actions
+        backstageRole: backend-plugin
+        dependencyNames:
+          - '@backstage/backend-common'
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@backstage/plugin-scaffolder-backend'
+          - '@types/express'
+          - node
+          - winston
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:13.763Z'
+        lastAttemptAt: '2026-08-04T22:13:03.332Z'
         reason: config-schema-not-declared

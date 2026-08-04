@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:21.714Z'
-    checkedAt: '2026-08-04T05:03:21.714Z'
+    lastAttemptAt: '2026-08-04T22:13:11.641Z'
+    checkedAt: '2026-08-04T22:13:11.641Z'
     version: 1.44.2
     sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,14 +21,22 @@ snapshot:
     - npmPackageName: '@roadiehq/backstage-plugin-travis-ci'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:21.436Z'
-        checkedAt: '2026-08-04T05:03:21.436Z'
+        lastAttemptAt: '2026-08-04T22:13:11.274Z'
+        checkedAt: '2026-08-04T22:13:11.274Z'
         latestVersion: 2.3.0
         lastPublishedAt: '2025-10-31T09:33:35.077Z'
         repository:
           url: https://github.com/RoadieHQ/roadie-backstage-plugins
           directory: plugins/frontend/backstage-plugin-travis-ci
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:21.819Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - date-fns
+          - react-use
+          - cross-fetch
+          - '@material-ui/lab'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'

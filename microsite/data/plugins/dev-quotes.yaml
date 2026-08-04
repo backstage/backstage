@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:53.336Z'
-    checkedAt: '2026-08-04T05:02:53.336Z'
+    lastAttemptAt: '2026-08-04T22:12:40.741Z'
+    checkedAt: '2026-08-04T22:12:40.741Z'
     version: 1.52.0
     sourceUrl: https://github.com/Parsifal-M/backstage-dev-quotes/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,14 +21,18 @@ snapshot:
     - npmPackageName: '@parsifal-m/plugin-dev-quotes-homepage'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:53.104Z'
-        checkedAt: '2026-08-04T05:02:53.104Z'
+        lastAttemptAt: '2026-08-04T22:12:40.503Z'
+        checkedAt: '2026-08-04T22:12:40.503Z'
         latestVersion: 4.0.0
         lastPublishedAt: '2026-07-14T13:12:16.017Z'
         repository:
           url: https://github.com/Parsifal-M/backstage-dev-quotes
           directory: .
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/frontend-plugin-api'
+          - '@material-ui/core'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:53.766Z'
+        lastAttemptAt: '2026-08-04T22:12:41.465Z'
         reason: config-schema-not-declared

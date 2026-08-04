@@ -13,8 +13,8 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:01.285Z'
-    checkedAt: '2026-08-04T05:03:01.285Z'
+    lastAttemptAt: '2026-08-04T22:12:49.909Z'
+    checkedAt: '2026-08-04T22:12:49.909Z'
     version: 1.29.2
     sourceUrl: https://github.com/BESTSELLER/backstage-plugin-harbor/blob/master/backstage.json
     sourcePath: backstage.json
@@ -22,13 +22,22 @@ snapshot:
     - npmPackageName: '@bestsellerit/backstage-plugin-harbor'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:00.937Z'
-        checkedAt: '2026-08-04T05:03:00.937Z'
+        lastAttemptAt: '2026-08-04T22:12:49.581Z'
+        checkedAt: '2026-08-04T22:12:49.581Z'
         latestVersion: 0.3.1
         lastPublishedAt: '2022-04-27T05:44:19.826Z'
         repository:
           url: https://github.com/BESTSELLER/backstage-plugin-harbor
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - react-d3-speedometer
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:02.219Z'
+        lastAttemptAt: '2026-08-04T22:12:50.953Z'
         reason: config-schema-not-declared

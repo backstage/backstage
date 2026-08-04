@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:12.874Z'
-    checkedAt: '2026-08-04T05:03:12.874Z'
+    lastAttemptAt: '2026-08-04T22:13:02.640Z'
+    checkedAt: '2026-08-04T22:13:02.640Z'
     version: 1.35.1
     sourceUrl: https://github.com/datolabs-io/backstage-plugins/blob/main/workspaces/scaffolder-backend-module-gcp/backstage.json
     sourcePath: workspaces/scaffolder-backend-module-gcp/backstage.json
@@ -21,14 +21,22 @@ snapshot:
     - npmPackageName: '@datolabs/plugin-scaffolder-backend-module-gcp'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:12.590Z'
-        checkedAt: '2026-08-04T05:03:12.590Z'
+        lastAttemptAt: '2026-08-04T22:13:02.246Z'
+        checkedAt: '2026-08-04T22:13:02.246Z'
         latestVersion: 0.4.0
         lastPublishedAt: '2026-05-22T06:50:37.611Z'
         repository:
           url: https://github.com/datolabs-io/backstage-plugins
           directory: workspaces/scaffolder-backend-module-gcp/plugins/scaffolder-backend-module-gcp
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-scaffolder-node'
+          - '@google-cloud/resource-manager'
+          - '@google-cloud/secret-manager'
+          - '@google-cloud/storage'
+          - google-auth-library
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:13.500Z'
+        lastAttemptAt: '2026-08-04T22:13:03.321Z'
         reason: config-schema-not-declared

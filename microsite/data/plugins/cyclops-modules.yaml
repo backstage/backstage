@@ -13,8 +13,8 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:51.317Z'
-    checkedAt: '2026-08-04T05:02:51.317Z'
+    lastAttemptAt: '2026-08-04T22:12:39.579Z'
+    checkedAt: '2026-08-04T22:12:39.579Z'
     version: 1.34.0
     sourceUrl: https://github.com/cyclops-ui/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
@@ -22,14 +22,20 @@ snapshot:
     - npmPackageName: '@cyclopsui/backstage-plugin-cyclops-modules'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:50.963Z'
-        checkedAt: '2026-08-04T05:02:50.963Z'
+        lastAttemptAt: '2026-08-04T22:12:38.885Z'
+        checkedAt: '2026-08-04T22:12:38.885Z'
         latestVersion: 0.2.5
         lastPublishedAt: '2025-01-06T09:37:27.608Z'
         repository:
           url: https://github.com/cyclops-ui/backstage-plugins
           directory: plugins/cyclops-modules
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:51.849Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/theme'
+          - '@cyclopsui/cyclops-ui'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - react-use

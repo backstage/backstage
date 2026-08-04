@@ -12,41 +12,63 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:38.774Z'
-    checkedAt: '2026-08-04T05:02:38.774Z'
+    lastAttemptAt: '2026-08-04T22:12:26.540Z'
+    checkedAt: '2026-08-04T22:12:26.540Z'
     version: 1.53.1
     sourceUrl: https://github.com/backstage/backstage/releases/tag/v1.53.1
     sourcePath: plugins/api-docs/package.json
   packages:
-    - functionality: frontend
-      npmPackageName: '@backstage/plugin-api-docs'
+    - npmPackageName: '@backstage/plugin-api-docs'
       sourcePath: plugins/api-docs/package.json
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:38.441Z'
-        checkedAt: '2026-08-04T05:02:38.441Z'
+        lastAttemptAt: '2026-08-04T22:12:25.876Z'
+        checkedAt: '2026-08-04T22:12:25.876Z'
         latestVersion: 0.14.3
         lastPublishedAt: '2026-07-14T11:56:44.001Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/api-docs
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - graphql
+          - graphiql
+          - graphql-ws
+          - '@backstage/ui'
+          - '@graphiql/react'
+          - '@material-ui/lab'
+          - '@remixicon/react'
+          - swagger-ui-react
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/catalog-model'
+          - '@asyncapi/react-component'
+          - '@backstage/plugin-catalog'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-catalog-common'
+          - '@backstage/plugin-permission-react'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:39.989Z'
+        lastAttemptAt: '2026-08-04T22:12:27.371Z'
         reason: config-schema-not-declared
-    - functionality: module
-      npmPackageName: '@backstage/plugin-api-docs-module-protoc-gen-doc'
+    - npmPackageName: '@backstage/plugin-api-docs-module-protoc-gen-doc'
       sourcePath: plugins/api-docs-module-protoc-gen-doc/package.json
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:40.235Z'
-        checkedAt: '2026-08-04T05:02:40.235Z'
+        lastAttemptAt: '2026-08-04T22:12:27.682Z'
+        checkedAt: '2026-08-04T22:12:27.682Z'
         latestVersion: 0.1.11
         lastPublishedAt: '2026-02-17T18:50:12.372Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/api-docs-module-protoc-gen-doc
+        backstageRole: frontend-plugin-module
+        dependencyNames:
+          - grpc-docs
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:40.583Z'
+        lastAttemptAt: '2026-08-04T22:12:28.065Z'
         reason: config-schema-not-declared

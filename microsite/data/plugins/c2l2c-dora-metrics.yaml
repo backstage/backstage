@@ -12,19 +12,26 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:46.387Z'
+    lastAttemptAt: '2026-08-04T22:12:33.885Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@c2l2c/backstage-plugin-dora-metrics'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:46.008Z'
-        checkedAt: '2026-08-04T05:02:46.008Z'
+        lastAttemptAt: '2026-08-04T22:12:33.481Z'
+        checkedAt: '2026-08-04T22:12:33.481Z'
         latestVersion: 0.4.3
         lastPublishedAt: '2026-06-28T13:32:13.365Z'
         repository:
           url: https://github.com/C2L2C/backstage-plugin-dora-metrics
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:46.805Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/config'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@material-ui/core'
+          - '@radix-ui/react-select'
+          - lucide-react

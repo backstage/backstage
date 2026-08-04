@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:20.935Z'
-    checkedAt: '2026-08-04T05:03:20.935Z'
+    lastAttemptAt: '2026-08-04T22:13:10.805Z'
+    checkedAt: '2026-08-04T22:13:10.805Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/todo/backstage.json
     sourcePath: workspaces/todo/backstage.json
@@ -21,14 +21,25 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-todo'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:20.653Z'
-        checkedAt: '2026-08-04T05:03:20.653Z'
+        lastAttemptAt: '2026-08-04T22:13:10.527Z'
+        checkedAt: '2026-08-04T22:13:10.527Z'
         latestVersion: 0.23.0
         lastPublishedAt: '2026-07-22T00:22:10.683Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/todo/plugins/todo
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@material-ui/icons'
+          - '@types/react'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:21.132Z'
+        lastAttemptAt: '2026-08-04T22:13:10.976Z'
         reason: config-schema-not-declared

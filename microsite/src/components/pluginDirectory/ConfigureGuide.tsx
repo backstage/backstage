@@ -21,6 +21,10 @@ import type {
   PackageSnapshot,
   PluginData,
 } from '../../pluginDirectory/manifest';
+import {
+  matchesRole,
+  resolveFunctionality,
+} from '../../pluginDirectory/packageRoles';
 import React, { useState } from 'react';
 
 import { configFormTemplates, configFormWidgets } from './ConfigForm';
@@ -62,7 +66,7 @@ interface ConfigureGuideProps {
 interface PackageSchemaEntry {
   npmPackageName: string;
   functionality: string | undefined;
-  schema: RJSFSchema;
+  schema: RJSFSchema | undefined;
   label?: string;
 }
 
@@ -153,8 +157,8 @@ function InteractiveConfigureForm({
 function schemaFor(packageSnapshot: PackageSnapshot): RJSFSchema | undefined {
   const configSchemaSnapshot = packageSnapshot.configSchema;
   const rawSchema =
-    configSchemaSnapshot.status === 'fresh' ||
-    configSchemaSnapshot.status === 'stale'
+    configSchemaSnapshot?.status === 'fresh' ||
+    configSchemaSnapshot?.status === 'stale'
       ? configSchemaSnapshot.schema
       : undefined;
   return isObjectSchema(rawSchema) ? rawSchema : undefined;
@@ -169,19 +173,21 @@ function combineSchemas(schemas: RJSFSchema[]): RJSFSchema {
   return schemas.length === 1 ? schemas[0] : { allOf: schemas };
 }
 
-// `functionality` may hold either the plugin-directory's canonical short
-// form (e.g. `'frontend'`, `'backend'`) or a raw `backstage.role` string read
-// from a package's published package.json (e.g. `'frontend-plugin'`,
-// `'backend-plugin'`) — see audit.ts's functionality derivation. Recognize
-// both forms so the merge doesn't silently stop firing once a package's
-// functionality is populated from the role-suffix form.
-function matchesRole(
-  functionality: string | undefined,
-  role: 'frontend' | 'backend',
-): boolean {
-  return (
-    functionality === role || functionality?.startsWith(`${role}-`) === true
-  );
+function collectSchemas(
+  candidateNames: string[],
+  packagesByName: Map<string, PackageSnapshot>,
+  onMatch?: (name: string) => void,
+): RJSFSchema[] {
+  const schemas: RJSFSchema[] = [];
+  for (const name of candidateNames) {
+    const candidate = packagesByName.get(name);
+    const schema = candidate ? schemaFor(candidate) : undefined;
+    if (schema) {
+      schemas.push(schema);
+      onMatch?.(name);
+    }
+  }
+  return schemas;
 }
 
 function buildRoleEntry(
@@ -189,37 +195,36 @@ function buildRoleEntry(
   label: string,
   packagesByName: Map<string, PackageSnapshot>,
   absorbed: Set<string>,
+  primaryNpmPackageName: string,
 ): PackageSchemaEntry | undefined {
   const rolePackage = [...packagesByName.values()].find(entry =>
-    matchesRole(entry.functionality, functionality),
+    matchesRole(
+      resolveFunctionality(entry, primaryNpmPackageName),
+      functionality,
+    ),
   );
   if (!rolePackage) {
     return undefined;
   }
+
+  // Mark the role package itself absorbed regardless of whether it (or its
+  // dependencies) has a schema, so the generic loop below doesn't also list
+  // it as its own separate entry.
+  absorbed.add(rolePackage.npmPackageName);
 
   const candidateNames = [
     rolePackage.npmPackageName,
     ...(rolePackage.internalDependencies ?? []),
   ];
 
-  const schemas: RJSFSchema[] = [];
-  for (const name of candidateNames) {
-    const candidate = packagesByName.get(name);
-    const schema = candidate ? schemaFor(candidate) : undefined;
-    if (schema) {
-      schemas.push(schema);
-      absorbed.add(name);
-    }
-  }
-
-  if (schemas.length === 0) {
-    return undefined;
-  }
+  const schemas = collectSchemas(candidateNames, packagesByName, name =>
+    absorbed.add(name),
+  );
 
   return {
     npmPackageName: rolePackage.npmPackageName,
     functionality,
-    schema: combineSchemas(schemas),
+    schema: schemas.length > 0 ? combineSchemas(schemas) : undefined,
     label,
   };
 }
@@ -233,6 +238,7 @@ function getPackageSchemas(plugin: PluginData): PackageSchemaEntry[] {
     ),
   );
   const absorbed = new Set<string>();
+  const primaryNpmPackageName = plugin.npmPackageName;
 
   const entries: PackageSchemaEntry[] = [];
   const frontendEntry = buildRoleEntry(
@@ -240,6 +246,7 @@ function getPackageSchemas(plugin: PluginData): PackageSchemaEntry[] {
     'Frontend',
     packagesByName,
     absorbed,
+    primaryNpmPackageName,
   );
   if (frontendEntry) {
     entries.push(frontendEntry);
@@ -249,6 +256,7 @@ function getPackageSchemas(plugin: PluginData): PackageSchemaEntry[] {
     'Backend',
     packagesByName,
     absorbed,
+    primaryNpmPackageName,
   );
   if (backendEntry) {
     entries.push(backendEntry);
@@ -258,14 +266,23 @@ function getPackageSchemas(plugin: PluginData): PackageSchemaEntry[] {
     if (absorbed.has(packageSnapshot.npmPackageName)) {
       continue;
     }
-    const schema = schemaFor(packageSnapshot);
-    if (!schema) {
-      continue;
-    }
+    // Skip dependencies already absorbed into the frontend/backend entries
+    // above, so a module's own entry stays focused on its own config rather
+    // than re-showing config that's already visible under Frontend/Backend.
+    const candidateNames = [
+      packageSnapshot.npmPackageName,
+      ...(packageSnapshot.internalDependencies ?? []).filter(
+        name => !absorbed.has(name),
+      ),
+    ];
+    const schemas = collectSchemas(candidateNames, packagesByName);
     entries.push({
       npmPackageName: packageSnapshot.npmPackageName,
-      functionality: packageSnapshot.functionality,
-      schema,
+      functionality: resolveFunctionality(
+        packageSnapshot,
+        primaryNpmPackageName,
+      ),
+      schema: schemas.length > 0 ? combineSchemas(schemas) : undefined,
     });
   }
 
@@ -294,17 +311,26 @@ export function ConfigureGuide({ plugin }: ConfigureGuideProps) {
               options={packageSchemas.map(entry => ({
                 value: entry.npmPackageName,
                 label: packageOptionLabel(entry),
+                // Frontend/Backend are each already a single, distinctly
+                // labeled option; group everything else together so the
+                // dropdown visually separates the plugin's main packages
+                // from its supporting ones.
+                group: entry.label ? undefined : 'Other packages',
               }))}
               onChange={setSelectedPackageName}
             />
           )}
-          <ConfigureFormErrorBoundary key={selectedEntry.npmPackageName}>
-            <InteractiveConfigureForm
-              formLabel={`${selectedEntry.npmPackageName} configuration`}
-              yamlLabel={`${selectedEntry.npmPackageName} generated YAML`}
-              schema={selectedEntry.schema}
-            />
-          </ConfigureFormErrorBoundary>
+          {selectedEntry.schema ? (
+            <ConfigureFormErrorBoundary key={selectedEntry.npmPackageName}>
+              <InteractiveConfigureForm
+                formLabel={`${selectedEntry.npmPackageName} configuration`}
+                yamlLabel={`${selectedEntry.npmPackageName} generated YAML`}
+                schema={selectedEntry.schema}
+              />
+            </ConfigureFormErrorBoundary>
+          ) : (
+            <p>No configuration schema provided.</p>
+          )}
         </>
       ) : (
         <p>No configuration schema provided.</p>

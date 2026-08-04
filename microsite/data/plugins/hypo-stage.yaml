@@ -12,20 +12,34 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:02.996Z'
+    lastAttemptAt: '2026-08-04T22:12:51.636Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@archhypo/plugin-hypo-stage'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:02.572Z'
-        checkedAt: '2026-08-04T05:03:02.572Z'
+        lastAttemptAt: '2026-08-04T22:12:51.250Z'
+        checkedAt: '2026-08-04T22:12:51.250Z'
         latestVersion: 1.0.0
         lastPublishedAt: '2026-04-12T22:32:37.517Z'
         repository:
           url: https://github.com/ArchHypo/hypo-stage
           directory: hypo-stage
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@archhypo/plugin-hypo-stage-backend'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - buffer
+          - react-use
+          - recharts
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:03.508Z'
+        lastAttemptAt: '2026-08-04T22:12:52.155Z'
         reason: config-schema-not-declared

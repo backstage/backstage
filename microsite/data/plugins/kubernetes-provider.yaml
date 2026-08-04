@@ -13,19 +13,33 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:06.037Z'
+    lastAttemptAt: '2026-08-04T22:12:54.854Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@antoinedao/backstage-provider-kubernetes'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:05.705Z'
-        checkedAt: '2026-08-04T05:03:05.705Z'
+        lastAttemptAt: '2026-08-04T22:12:54.378Z'
+        checkedAt: '2026-08-04T22:12:54.378Z'
         latestVersion: 0.1.2
         lastPublishedAt: '2023-04-10T11:44:55.056Z'
         repository:
           url: https://github.com/antoinedao/backstage-provider-kubernetes
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:06.405Z'
-        reason: config-schema-not-json
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/backend-common'
+          - '@backstage/backend-tasks'
+          - '@backstage/catalog-client'
+          - '@backstage/catalog-model'
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@backstage/plugin-catalog-backend'
+          - '@backstage/plugin-kubernetes-backend'
+          - '@backstage/types'
+          - '@kubernetes/client-node'
+          - crypto-js
+          - link2aws
+          - lodash
+          - p-limit
+          - uuid
+          - winston

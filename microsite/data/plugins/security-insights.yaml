@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:16.674Z'
-    checkedAt: '2026-08-04T05:03:16.674Z'
+    lastAttemptAt: '2026-08-04T22:13:06.607Z'
+    checkedAt: '2026-08-04T22:13:06.607Z'
     version: 1.44.2
     sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,14 +21,27 @@ snapshot:
     - npmPackageName: '@roadiehq/backstage-plugin-security-insights'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:16.364Z'
-        checkedAt: '2026-08-04T05:03:16.364Z'
+        lastAttemptAt: '2026-08-04T22:13:06.292Z'
+        checkedAt: '2026-08-04T22:13:06.292Z'
         latestVersion: 3.3.1
         lastPublishedAt: '2026-01-12T16:03:25.064Z'
         repository:
           url: https://github.com/RoadieHQ/roadie-backstage-plugins
           directory: plugins/frontend/backstage-plugin-security-insights
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:16.775Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - luxon
+          - react-use
+          - cross-fetch
+          - '@octokit/rest'
+          - git-url-parse
+          - '@material-ui/lab'
+          - '@octokit/graphql'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/integration-react'
+          - '@backstage/plugin-catalog-react'
+          - '@roadiehq/github-auth-utils-react'

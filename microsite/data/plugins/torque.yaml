@@ -15,17 +15,23 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:21.290Z'
+    lastAttemptAt: '2026-08-04T22:13:11.175Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@qtorque/backstage-torque-plugin'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:21.290Z'
-        checkedAt: '2026-08-04T05:03:21.290Z'
+        lastAttemptAt: '2026-08-04T22:13:11.175Z'
+        checkedAt: '2026-08-04T22:13:11.175Z'
         latestVersion: 0.1.2
         lastPublishedAt: '2023-01-25T15:14:54.208Z'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:21.616Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - react-use
+          - '@qtorque/backstage-plugin-torque-backend'

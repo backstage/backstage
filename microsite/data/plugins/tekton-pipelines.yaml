@@ -13,17 +13,30 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:19.904Z'
+    lastAttemptAt: '2026-08-04T22:13:09.752Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@jquad-group/plugin-tekton-pipelines'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:19.904Z'
-        checkedAt: '2026-08-04T05:03:19.904Z'
+        lastAttemptAt: '2026-08-04T22:13:09.752Z'
+        checkedAt: '2026-08-04T22:13:09.752Z'
         latestVersion: 0.3.3
         lastPublishedAt: '2023-05-07T14:51:25.719Z'
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@types/react'
+          - loglevel
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:20.238Z'
+        lastAttemptAt: '2026-08-04T22:13:10.129Z'
         reason: config-schema-not-declared

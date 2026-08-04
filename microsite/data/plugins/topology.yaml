@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:21.526Z'
-    checkedAt: '2026-08-04T05:03:21.526Z'
+    lastAttemptAt: '2026-08-04T22:13:11.339Z'
+    checkedAt: '2026-08-04T22:13:11.339Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/topology/backstage.json
     sourcePath: workspaces/topology/backstage.json
@@ -21,14 +21,50 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-topology'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:21.147Z'
-        checkedAt: '2026-08-04T05:03:21.147Z'
+        lastAttemptAt: '2026-08-04T22:13:11.039Z'
+        checkedAt: '2026-08-04T22:13:11.039Z'
         latestVersion: 2.16.0
         lastPublishedAt: '2026-07-30T22:27:04.372Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/topology/plugins/topology
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage-community/plugin-tekton-react'
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/filter-predicates'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-app-react'
+          - '@backstage/plugin-catalog'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-kubernetes'
+          - '@backstage/plugin-kubernetes-common'
+          - '@backstage/plugin-kubernetes-react'
+          - '@backstage/plugin-permission-common'
+          - '@backstage/plugin-permission-react'
+          - '@backstage/plugin-user-settings'
+          - '@backstage/theme'
+          - '@backstage/ui'
+          - '@kubernetes/client-node'
+          - '@patternfly/patternfly'
+          - '@patternfly/react-charts'
+          - '@patternfly/react-core'
+          - '@patternfly/react-tokens'
+          - '@patternfly/react-topology'
+          - '@remixicon/react'
+          - '@types/react'
+          - classnames
+          - git-url-parse
+          - js-yaml
+          - lodash
+          - mobx-react
+          - react-use
+          - victory
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:21.650Z'
+        lastAttemptAt: '2026-08-04T22:13:11.442Z'
         reason: config-schema-not-declared

@@ -13,17 +13,24 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:13.953Z'
+    lastAttemptAt: '2026-08-04T22:13:03.583Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@coderrob/backstage-plugin-scaffolder-backend-module-webex'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:13.953Z'
-        checkedAt: '2026-08-04T05:03:13.953Z'
+        lastAttemptAt: '2026-08-04T22:13:03.583Z'
+        checkedAt: '2026-08-04T22:13:03.583Z'
         latestVersion: 1.0.3
         lastPublishedAt: '2024-09-01T18:53:57.103Z'
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/backend-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/plugin-scaffolder-node'
+          - axios
+          - zod
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:14.390Z'
+        lastAttemptAt: '2026-08-04T22:13:03.935Z'
         reason: config-schema-not-declared

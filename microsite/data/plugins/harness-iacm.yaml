@@ -12,17 +12,30 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:01.680Z'
+    lastAttemptAt: '2026-08-04T22:12:50.229Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@harnessio/backstage-plugin-harness-iacm'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:01.680Z'
-        checkedAt: '2026-08-04T05:03:01.680Z'
+        lastAttemptAt: '2026-08-04T22:12:50.229Z'
+        checkedAt: '2026-08-04T22:12:50.229Z'
         latestVersion: 0.4.0
         lastPublishedAt: '2026-01-05T08:31:38.613Z'
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - dayjs
+          - react-use
+          - path-to-regexp
+          - '@backstage/theme'
+          - '@material-ui/lab'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-react'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:02.038Z'
+        lastAttemptAt: '2026-08-04T22:12:50.584Z'
         reason: config-schema-not-declared

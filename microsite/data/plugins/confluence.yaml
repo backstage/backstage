@@ -11,8 +11,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:50.215Z'
-    checkedAt: '2026-08-04T05:02:50.215Z'
+    lastAttemptAt: '2026-08-04T22:12:37.813Z'
+    checkedAt: '2026-08-04T22:12:37.813Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/confluence/backstage.json
     sourcePath: workspaces/confluence/backstage.json
@@ -20,14 +20,28 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-confluence'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:49.859Z'
-        checkedAt: '2026-08-04T05:02:49.859Z'
+        lastAttemptAt: '2026-08-04T22:12:37.592Z'
+        checkedAt: '2026-08-04T22:12:37.592Z'
         latestVersion: 0.14.1
         lastPublishedAt: '2026-03-08T00:00:15.597Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/confluence/plugins/confluence
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-search-common'
+          - '@backstage/plugin-search-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - date-fns
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:50.339Z'
+        lastAttemptAt: '2026-08-04T22:12:37.949Z'
         reason: config-schema-not-declared

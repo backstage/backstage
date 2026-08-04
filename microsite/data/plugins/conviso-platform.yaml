@@ -12,19 +12,38 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:02:50.329Z'
+    lastAttemptAt: '2026-08-04T22:12:38.218Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@conviso/backstage-plugin-conviso'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:49.970Z'
-        checkedAt: '2026-08-04T05:02:49.970Z'
+        lastAttemptAt: '2026-08-04T22:12:37.889Z'
+        checkedAt: '2026-08-04T22:12:37.889Z'
         latestVersion: 0.1.13
         lastPublishedAt: '2025-11-15T01:34:33.299Z'
         repository:
           url: https://github.com/convisoappsec/backstage-plugin-conviso
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-client'
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@mui/icons-material'
+          - '@mui/lab'
+          - '@mui/material'
+          - axios
+          - express
+          - formik
+          - react-use
+          - yup
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:50.810Z'
+        lastAttemptAt: '2026-08-04T22:12:38.691Z'
         reason: config-schema-not-declared

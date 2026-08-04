@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:59.475Z'
-    checkedAt: '2026-08-04T05:02:59.475Z'
+    lastAttemptAt: '2026-08-04T22:12:47.396Z'
+    checkedAt: '2026-08-04T22:12:47.396Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/copilot/backstage.json
     sourcePath: workspaces/copilot/backstage.json
@@ -21,14 +21,31 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-copilot'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:59.107Z'
-        checkedAt: '2026-08-04T05:02:59.107Z'
+        lastAttemptAt: '2026-08-04T22:12:47.148Z'
+        checkedAt: '2026-08-04T22:12:47.148Z'
         latestVersion: 1.2.0
         lastPublishedAt: '2026-07-15T08:11:22.259Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/copilot/plugins/copilot
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:59.580Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage-community/plugin-copilot-common'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/theme'
+          - '@backstage/ui'
+          - '@emotion/react'
+          - '@emotion/styled'
+          - '@internationalized/date'
+          - '@mui/icons-material'
+          - '@mui/material'
+          - '@mui/x-charts'
+          - '@remixicon/react'
+          - luxon
+          - react-aria-components
+          - react-use
+          - simple-date-range-calendar

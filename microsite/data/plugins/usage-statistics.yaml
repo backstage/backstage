@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:22.011Z'
-    checkedAt: '2026-08-04T05:03:22.011Z'
+    lastAttemptAt: '2026-08-04T22:13:11.883Z'
+    checkedAt: '2026-08-04T22:13:11.883Z'
     version: 1.53.0
     sourceUrl: https://github.com/CodeVerse-GP/usage-statistics/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,14 +21,29 @@ snapshot:
     - npmPackageName: '@codeverse-gp/plugin-usage-statistics'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:21.629Z'
-        checkedAt: '2026-08-04T05:03:21.629Z'
+        lastAttemptAt: '2026-08-04T22:13:11.508Z'
+        checkedAt: '2026-08-04T22:13:11.508Z'
         latestVersion: 1.6.0
         lastPublishedAt: '2026-07-25T15:41:07.966Z'
         repository:
           url: https://github.com/CodeVerse-GP/usage-statistics
           directory: plugins/usage-statistics
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - luxon
+          - react-use
+          - recharts
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:22.578Z'
+        lastAttemptAt: '2026-08-04T22:13:12.503Z'
         reason: config-schema-not-declared

@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:08.186Z'
-    checkedAt: '2026-08-04T05:03:08.186Z'
+    lastAttemptAt: '2026-08-04T22:12:57.278Z'
+    checkedAt: '2026-08-04T22:12:57.278Z'
     version: 1.48.1
     sourceUrl: https://github.com/zcmander/backstage-plugin-msforms/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,13 +21,22 @@ snapshot:
     - npmPackageName: '@zcmander/backstage-plugin-msforms'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:07.823Z'
-        checkedAt: '2026-08-04T05:03:07.823Z'
+        lastAttemptAt: '2026-08-04T22:12:56.806Z'
+        checkedAt: '2026-08-04T22:12:56.806Z'
         latestVersion: 2.0.1
         lastPublishedAt: '2026-03-11T05:56:51.455Z'
         repository:
           url: https://github.com/zcmander/backstage-plugin-msforms
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:08.711Z'
-        reason: config-schema-not-json
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - react
+          - react-use

@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:18.322Z'
-    checkedAt: '2026-08-04T05:03:18.322Z'
+    lastAttemptAt: '2026-08-04T22:13:08.256Z'
+    checkedAt: '2026-08-04T22:13:08.256Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/stack-overflow/backstage.json
     sourcePath: workspaces/stack-overflow/backstage.json
@@ -21,17 +21,34 @@ snapshot:
     - npmPackageName: '@backstage-community/plugin-stack-overflow'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:17.952Z'
-        checkedAt: '2026-08-04T05:03:17.952Z'
+        lastAttemptAt: '2026-08-04T22:13:07.878Z'
+        checkedAt: '2026-08-04T22:13:07.878Z'
         latestVersion: 0.20.0
         lastPublishedAt: '2026-07-22T00:21:30.225Z'
         repository:
           url: https://github.com/backstage/community-plugins
           directory: workspaces/stack-overflow/plugins/stack-overflow
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/config'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-home-react'
+          - '@backstage/plugin-search-common'
+          - '@backstage/plugin-search-react'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@testing-library/jest-dom'
+          - '@types/react'
+          - cross-fetch
+          - lodash
+          - qs
+          - react-use
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:18.447Z'
-        checkedAt: '2026-08-04T05:03:18.447Z'
+        lastAttemptAt: '2026-08-04T22:13:08.395Z'
+        checkedAt: '2026-08-04T22:13:08.395Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object

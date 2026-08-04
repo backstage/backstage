@@ -13,28 +13,47 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:02:42.720Z'
-    checkedAt: '2026-08-04T05:02:42.720Z'
+    lastAttemptAt: '2026-08-04T22:12:30.259Z'
+    checkedAt: '2026-08-04T22:12:30.259Z'
     version: 1.53.1
     sourceUrl: https://github.com/backstage/backstage/releases/tag/v1.53.1
     sourcePath: plugins/search/package.json
   packages:
-    - functionality: frontend
-      npmPackageName: '@backstage/plugin-search'
+    - npmPackageName: '@backstage/plugin-search'
       sourcePath: plugins/search/package.json
+      internalDependencies:
+        - '@backstage/plugin-search-react'
+        - '@backstage/plugin-search-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:42.368Z'
-        checkedAt: '2026-08-04T05:02:42.368Z'
+        lastAttemptAt: '2026-08-04T22:12:29.618Z'
+        checkedAt: '2026-08-04T22:12:29.618Z'
         latestVersion: 1.7.6
         lastPublishedAt: '2026-07-14T12:15:27.311Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/search
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - qs
+          - zod
+          - react-use
+          - '@backstage/ui'
+          - '@backstage/types'
+          - '@backstage/errors'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/version-bridge'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-search-react'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-search-common'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:42.721Z'
-        checkedAt: '2026-08-04T05:02:42.721Z'
+        lastAttemptAt: '2026-08-04T22:12:30.265Z'
+        checkedAt: '2026-08-04T22:12:30.265Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -60,22 +79,35 @@ snapshot:
                       visibility: frontend
                   description: An object representing the default search query configuration. By configuring and modifying the values of this object, you can customize the default values of the search queries and define how it behaves by default.
               description: Configuration options for the search plugin
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-search-backend-module-catalog'
+    - npmPackageName: '@backstage/plugin-search-backend-module-catalog'
       sourcePath: plugins/search-backend-module-catalog/package.json
+      internalDependencies:
+        - '@backstage/plugin-search-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:43.061Z'
-        checkedAt: '2026-08-04T05:02:43.061Z'
+        lastAttemptAt: '2026-08-04T22:12:30.790Z'
+        checkedAt: '2026-08-04T22:12:30.790Z'
         latestVersion: 0.3.17
         lastPublishedAt: '2026-07-14T12:15:45.475Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/search-backend-module-catalog
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@backstage/catalog-model'
+          - '@backstage/catalog-client'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-search-common'
+          - '@backstage/plugin-catalog-common'
+          - '@backstage/plugin-permission-common'
+          - '@backstage/plugin-search-backend-node'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:43.384Z'
-        checkedAt: '2026-08-04T05:02:43.384Z'
+        lastAttemptAt: '2026-08-04T22:12:31.147Z'
+        checkedAt: '2026-08-04T22:12:31.147Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -208,22 +240,35 @@ snapshot:
                             - timeout
                           description: The schedule for how often to run the collation job.
                       description: Configuration options for `@backstage/plugin-search-backend-module-catalog`
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-search-backend-module-elasticsearch'
+    - npmPackageName: '@backstage/plugin-search-backend-module-elasticsearch'
       sourcePath: plugins/search-backend-module-elasticsearch/package.json
+      internalDependencies:
+        - '@backstage/plugin-search-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:43.628Z'
-        checkedAt: '2026-08-04T05:02:43.628Z'
+        lastAttemptAt: '2026-08-04T22:12:31.457Z'
+        checkedAt: '2026-08-04T22:12:31.457Z'
         latestVersion: 1.8.5
         lastPublishedAt: '2026-07-14T12:15:54.986Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/search-backend-module-elasticsearch
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - aws4
+          - lodash
+          - elastic-builder
+          - '@backstage/config'
+          - '@elastic/elasticsearch'
+          - '@backstage/backend-plugin-api'
+          - '@opensearch-project/opensearch'
+          - '@backstage/integration-aws-node'
+          - '@backstage/plugin-search-common'
+          - '@backstage/plugin-search-backend-node'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:43.964Z'
-        checkedAt: '2026-08-04T05:02:43.964Z'
+        lastAttemptAt: '2026-08-04T22:12:31.771Z'
+        checkedAt: '2026-08-04T22:12:31.771Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -673,22 +718,30 @@ snapshot:
                         - provider
                   description: Options for ElasticSearch
               description: Configuration options for the search plugin
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-search-backend-module-explore'
+    - npmPackageName: '@backstage/plugin-search-backend-module-explore'
       sourcePath: plugins/search-backend-module-explore/package.json
+      internalDependencies:
+        - '@backstage/plugin-search-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:44.227Z'
-        checkedAt: '2026-08-04T05:02:44.227Z'
+        lastAttemptAt: '2026-08-04T22:12:32.016Z'
+        checkedAt: '2026-08-04T22:12:32.016Z'
         latestVersion: 0.3.16
         lastPublishedAt: '2026-07-14T12:16:05.047Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/search-backend-module-explore
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/config'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-search-common'
+          - '@backstage/plugin-search-backend-node'
+          - '@backstage-community/plugin-explore-common'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:44.558Z'
-        checkedAt: '2026-08-04T05:02:44.558Z'
+        lastAttemptAt: '2026-08-04T22:12:32.498Z'
+        checkedAt: '2026-08-04T22:12:32.498Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -799,22 +852,31 @@ snapshot:
                             - timeout
                           description: The schedule for how often to run the collation job.
                       description: Configuration options for `@backstage/plugin-search-backend-module-explore`
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-search-backend-module-pg'
+    - npmPackageName: '@backstage/plugin-search-backend-module-pg'
       sourcePath: plugins/search-backend-module-pg/package.json
+      internalDependencies:
+        - '@backstage/plugin-search-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:44.863Z'
-        checkedAt: '2026-08-04T05:02:44.863Z'
+        lastAttemptAt: '2026-08-04T22:12:32.804Z'
+        checkedAt: '2026-08-04T22:12:32.804Z'
         latestVersion: 0.5.57
         lastPublishedAt: '2026-07-14T12:16:14.007Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/search-backend-module-pg
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - knex
+          - lodash
+          - '@backstage/config'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-search-common'
+          - '@backstage/plugin-search-backend-node'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:45.172Z'
-        checkedAt: '2026-08-04T05:02:45.172Z'
+        lastAttemptAt: '2026-08-04T22:12:33.145Z'
+        checkedAt: '2026-08-04T22:12:33.145Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -860,22 +922,30 @@ snapshot:
                       description: Batch size to use when indexing
                   description: Options for PG
               description: Configuration options for the search plugin
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-search-backend-module-stack-overflow-collator'
+    - npmPackageName: '@backstage/plugin-search-backend-module-stack-overflow-collator'
       sourcePath: plugins/search-backend-module-stack-overflow-collator/package.json
+      internalDependencies:
+        - '@backstage/plugin-search-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:45.435Z'
-        checkedAt: '2026-08-04T05:02:45.435Z'
+        lastAttemptAt: '2026-08-04T22:12:33.392Z'
+        checkedAt: '2026-08-04T22:12:33.392Z'
         latestVersion: 0.3.22
         lastPublishedAt: '2026-07-14T12:16:22.669Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/search-backend-module-stack-overflow-collator
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - qs
+          - '@backstage/config'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-search-common'
+          - '@backstage/plugin-search-backend-node'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:45.737Z'
-        checkedAt: '2026-08-04T05:02:45.737Z'
+        lastAttemptAt: '2026-08-04T22:12:33.812Z'
+        checkedAt: '2026-08-04T22:12:33.812Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -908,22 +978,37 @@ snapshot:
                       - type: number
                   description: Type representing the request parameters.
               description: Configuration options for the stack overflow plugin
-    - functionality: backend-module
-      npmPackageName: '@backstage/plugin-search-backend-module-techdocs'
+    - npmPackageName: '@backstage/plugin-search-backend-module-techdocs'
       sourcePath: plugins/search-backend-module-techdocs/package.json
+      internalDependencies:
+        - '@backstage/plugin-search-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:46.086Z'
-        checkedAt: '2026-08-04T05:02:46.086Z'
+        lastAttemptAt: '2026-08-04T22:12:34.180Z'
+        checkedAt: '2026-08-04T22:12:34.180Z'
         latestVersion: 0.4.16
         lastPublishedAt: '2026-07-14T12:16:36.548Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/search-backend-module-techdocs
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - lodash
+          - p-limit
+          - '@backstage/config'
+          - '@backstage/catalog-model'
+          - '@backstage/catalog-client'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-search-common'
+          - '@backstage/plugin-techdocs-node'
+          - '@backstage/plugin-catalog-common'
+          - '@backstage/plugin-permission-common'
+          - '@backstage/plugin-search-backend-node'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:46.357Z'
-        checkedAt: '2026-08-04T05:02:46.357Z'
+        lastAttemptAt: '2026-08-04T22:12:34.594Z'
+        checkedAt: '2026-08-04T22:12:34.594Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -1049,22 +1134,39 @@ snapshot:
                           type: boolean
                           description: Defaults to `false`.
                       description: Configuration options for `@backstage/plugin-search-backend-module-techdocs`
-    - functionality: backend
-      npmPackageName: '@backstage/plugin-search-backend'
+    - npmPackageName: '@backstage/plugin-search-backend'
       sourcePath: plugins/search-backend/package.json
+      internalDependencies:
+        - '@backstage/plugin-search-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:46.782Z'
-        checkedAt: '2026-08-04T05:02:46.782Z'
+        lastAttemptAt: '2026-08-04T22:12:34.911Z'
+        checkedAt: '2026-08-04T22:12:34.911Z'
         latestVersion: 2.1.4
         lastPublishedAt: '2026-07-14T12:15:35.941Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/search-backend
+        backstageRole: backend-plugin
+        dependencyNames:
+          - qs
+          - zod
+          - lodash
+          - express
+          - dataloader
+          - '@backstage/types'
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/plugin-search-common'
+          - '@backstage/backend-openapi-utils'
+          - '@backstage/plugin-permission-node'
+          - '@backstage/plugin-permission-common'
+          - '@backstage/plugin-search-backend-node'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:47.127Z'
-        checkedAt: '2026-08-04T05:02:47.127Z'
+        lastAttemptAt: '2026-08-04T22:12:35.227Z'
+        checkedAt: '2026-08-04T22:12:35.227Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -1090,35 +1192,55 @@ snapshot:
                       default: 1000
                   description: Options related to the search integration with the Backstage permissions system
               description: Configuration options for the search plugin
-    - functionality: common
-      npmPackageName: '@backstage/plugin-search-common'
+    - npmPackageName: '@backstage/plugin-search-common'
       sourcePath: plugins/search-common/package.json
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:47.461Z'
-        checkedAt: '2026-08-04T05:02:47.461Z'
+        lastAttemptAt: '2026-08-04T22:12:35.543Z'
+        checkedAt: '2026-08-04T22:12:35.543Z'
         latestVersion: 1.2.24
         lastPublishedAt: '2026-05-19T21:10:45.043Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/search-common
+        backstageRole: common-library
+        dependencyNames:
+          - '@backstage/plugin-permission-common'
+          - '@backstage/types'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:47.788Z'
+        lastAttemptAt: '2026-08-04T22:12:35.979Z'
         reason: config-schema-not-declared
-    - functionality: react
-      npmPackageName: '@backstage/plugin-search-react'
+    - npmPackageName: '@backstage/plugin-search-react'
       sourcePath: plugins/search-react/package.json
+      internalDependencies:
+        - '@backstage/plugin-search-common'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:02:48.217Z'
-        checkedAt: '2026-08-04T05:02:48.217Z'
+        lastAttemptAt: '2026-08-04T22:12:36.240Z'
+        checkedAt: '2026-08-04T22:12:36.240Z'
         latestVersion: 1.11.6
         lastPublishedAt: '2026-07-14T12:16:56.430Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/search-react
+        backstageRole: web-library
+        dependencyNames:
+          - qs
+          - zod
+          - lodash
+          - react-use
+          - '@backstage/theme'
+          - '@backstage/types'
+          - '@material-ui/lab'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/version-bridge'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-search-common'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:02:48.522Z'
+        lastAttemptAt: '2026-08-04T22:12:36.635Z'
         reason: config-schema-not-declared

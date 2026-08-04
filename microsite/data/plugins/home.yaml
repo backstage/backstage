@@ -12,28 +12,55 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:02.634Z'
-    checkedAt: '2026-08-04T05:03:02.634Z'
+    lastAttemptAt: '2026-08-04T22:12:51.067Z'
+    checkedAt: '2026-08-04T22:12:51.067Z'
     version: 1.53.1
     sourceUrl: https://github.com/backstage/backstage/releases/tag/v1.53.1
     sourcePath: plugins/home/package.json
   packages:
-    - functionality: frontend
-      npmPackageName: '@backstage/plugin-home'
+    - npmPackageName: '@backstage/plugin-home'
       sourcePath: plugins/home/package.json
+      internalDependencies:
+        - '@backstage/plugin-home-react'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:02.338Z'
-        checkedAt: '2026-08-04T05:03:02.338Z'
+        lastAttemptAt: '2026-08-04T22:12:50.685Z'
+        checkedAt: '2026-08-04T22:12:50.685Z'
         latestVersion: 0.9.8
         lastPublishedAt: '2026-07-14T12:08:48.771Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/home
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - zod
+          - luxon
+          - lodash
+          - react-use
+          - '@rjsf/core'
+          - '@rjsf/utils'
+          - react-resizable
+          - '@backstage/theme'
+          - '@material-ui/lab'
+          - '@backstage/config'
+          - '@material-ui/core'
+          - '@rjsf/material-ui'
+          - react-grid-layout
+          - '@material-ui/icons'
+          - '@rjsf/validator-ajv8'
+          - '@backstage/core-app-api'
+          - '@backstage/catalog-model'
+          - '@backstage/catalog-client'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-home-react'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
       configSchema:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:02.634Z'
-        checkedAt: '2026-08-04T05:03:02.634Z'
+        lastAttemptAt: '2026-08-04T22:12:51.067Z'
+        checkedAt: '2026-08-04T22:12:51.067Z'
         schema:
           $schema: http://json-schema.org/draft-07/schema#
           type: object
@@ -95,19 +122,27 @@ snapshot:
                       visibility: frontend
                   description: Recent visited plugin
                   visibility: frontend
-    - functionality: react
-      npmPackageName: '@backstage/plugin-home-react'
+    - npmPackageName: '@backstage/plugin-home-react'
       sourcePath: plugins/home-react/package.json
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:02.988Z'
-        checkedAt: '2026-08-04T05:03:02.988Z'
+        lastAttemptAt: '2026-08-04T22:12:51.447Z'
+        checkedAt: '2026-08-04T22:12:51.447Z'
         latestVersion: 0.1.40
         lastPublishedAt: '2026-07-14T12:08:57.175Z'
         repository:
           url: https://github.com/backstage/backstage
           directory: plugins/home-react
+        backstageRole: web-library
+        dependencyNames:
+          - '@rjsf/utils'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:03.475Z'
+        lastAttemptAt: '2026-08-04T22:12:51.865Z'
         reason: config-schema-not-declared

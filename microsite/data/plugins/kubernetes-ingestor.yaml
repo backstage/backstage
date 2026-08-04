@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:05.570Z'
-    checkedAt: '2026-08-04T05:03:05.570Z'
+    lastAttemptAt: '2026-08-04T22:12:54.295Z'
+    checkedAt: '2026-08-04T22:12:54.295Z'
     version: 1.52.1
     sourceUrl: https://github.com/TeraSky-OSS/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,14 +21,34 @@ snapshot:
     - npmPackageName: '@terasky/backstage-plugin-kubernetes-ingestor'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:05.366Z'
-        checkedAt: '2026-08-04T05:03:05.366Z'
+        lastAttemptAt: '2026-08-04T22:12:54.052Z'
+        checkedAt: '2026-08-04T22:12:54.052Z'
         latestVersion: 4.0.0
         lastPublishedAt: '2026-07-06T12:51:55.663Z'
         repository:
           url: https://github.com/TeraSky-OSS/backstage-plugins
           directory: plugins/kubernetes-ingestor
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:05.689Z'
-        reason: config-schema-not-json
+        backstageRole: backend-plugin
+        dependencyNames:
+          - '@backstage/backend-defaults'
+          - '@backstage/backend-plugin-api'
+          - '@backstage/catalog-client'
+          - '@backstage/catalog-model'
+          - '@backstage/config'
+          - '@backstage/core-plugin-api'
+          - '@backstage/plugin-catalog-import'
+          - '@backstage/plugin-catalog-node'
+          - '@backstage/plugin-events-node'
+          - '@backstage/plugin-kubernetes'
+          - '@backstage/plugin-kubernetes-backend'
+          - '@backstage/plugin-kubernetes-common'
+          - '@backstage/plugin-kubernetes-node'
+          - '@backstage/plugin-permission-common'
+          - '@backstage/plugin-signals-node'
+          - '@types/pluralize'
+          - express
+          - express-promise-router
+          - js-yaml
+          - node-fetch
+          - pluralize
+          - winston

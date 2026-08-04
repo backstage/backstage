@@ -12,19 +12,32 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:06.319Z'
+    lastAttemptAt: '2026-08-04T22:12:55.065Z'
     reason: backstage-json-not-found
   packages:
     - npmPackageName: '@jfvilas/plugin-kwirth-log'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:06.003Z'
-        checkedAt: '2026-08-04T05:03:06.003Z'
+        lastAttemptAt: '2026-08-04T22:12:54.725Z'
+        checkedAt: '2026-08-04T22:12:54.725Z'
         latestVersion: 0.14.2
         lastPublishedAt: '2026-03-27T15:37:11.046Z'
         repository:
           url: https://github.com/jfvilas/plugin-kwirth-log
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/integration-react'
+          - '@backstage/plugin-auth-react'
+          - '@backstage/plugin-catalog-react'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@types/react'
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:06.675Z'
+        lastAttemptAt: '2026-08-04T22:12:55.473Z'
         reason: config-schema-not-declared

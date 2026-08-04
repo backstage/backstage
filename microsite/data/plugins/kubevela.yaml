@@ -13,8 +13,8 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:06.132Z'
-    checkedAt: '2026-08-04T05:03:06.132Z'
+    lastAttemptAt: '2026-08-04T22:12:55.065Z'
+    checkedAt: '2026-08-04T22:12:55.065Z'
     version: 1.9.0
     sourceUrl: https://github.com/wonderflow/vela-backstage-demo/blob/main/backstage.json
     sourcePath: backstage.json
@@ -22,14 +22,24 @@ snapshot:
     - npmPackageName: '@oamdev/plugin-kubevela-backend'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:05.746Z'
-        checkedAt: '2026-08-04T05:03:05.746Z'
+        lastAttemptAt: '2026-08-04T22:12:54.684Z'
+        checkedAt: '2026-08-04T22:12:54.684Z'
         latestVersion: 0.1.0
         lastPublishedAt: '2023-02-05T17:49:36.540Z'
         repository:
           url: https://github.com/wonderflow/vela-backstage-demo
           directory: plugins/kubevela-backend
+        backstageRole: backend-plugin
+        dependencyNames:
+          - '@backstage/backend-common'
+          - '@backstage/config'
+          - '@types/express'
+          - express
+          - express-promise-router
+          - winston
+          - node-fetch
+          - yn
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:06.594Z'
+        lastAttemptAt: '2026-08-04T22:12:55.556Z'
         reason: config-schema-not-declared

@@ -12,17 +12,31 @@ status: active
 snapshot:
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T05:03:11.506Z'
+    lastAttemptAt: '2026-08-04T22:13:00.793Z'
     reason: repository-unsupported
   packages:
     - npmPackageName: '@axis-backstage/plugin-readme'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:11.506Z'
-        checkedAt: '2026-08-04T05:03:11.506Z'
+        lastAttemptAt: '2026-08-04T22:13:00.793Z'
+        checkedAt: '2026-08-04T22:13:00.793Z'
         latestVersion: 0.19.2
         lastPublishedAt: '2026-07-13T07:58:45.563Z'
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-compat-api'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/errors'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/theme'
+          - '@mui/icons-material'
+          - '@mui/material'
+          - react-use
+          - zod
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:11.740Z'
+        lastAttemptAt: '2026-08-04T22:13:00.994Z'
         reason: config-schema-not-declared

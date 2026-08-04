@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:06.443Z'
-    checkedAt: '2026-08-04T05:03:06.443Z'
+    lastAttemptAt: '2026-08-04T22:12:55.191Z'
+    checkedAt: '2026-08-04T22:12:55.191Z'
     version: 1.52.1
     sourceUrl: https://github.com/TeraSky-OSS/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,14 +21,36 @@ snapshot:
     - npmPackageName: '@terasky/backstage-plugin-kyverno-policy-reports'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:06.059Z'
-        checkedAt: '2026-08-04T05:03:06.059Z'
+        lastAttemptAt: '2026-08-04T22:12:54.860Z'
+        checkedAt: '2026-08-04T22:12:54.860Z'
         latestVersion: 1.18.0
         lastPublishedAt: '2026-06-30T17:20:07.088Z'
         repository:
           url: https://github.com/TeraSky-OSS/backstage-plugins
           directory: plugins/kyverno-policy-reports
+        backstageRole: frontend-plugin
+        dependencyNames:
+          - '@backstage/catalog-model'
+          - '@backstage/core-components'
+          - '@backstage/core-plugin-api'
+          - '@backstage/frontend-plugin-api'
+          - '@backstage/plugin-catalog-react'
+          - '@backstage/plugin-kubernetes'
+          - '@backstage/plugin-kubernetes-react'
+          - '@backstage/plugin-permission-react'
+          - '@backstage/theme'
+          - '@material-ui/core'
+          - '@material-ui/icons'
+          - '@material-ui/lab'
+          - '@terasky/backstage-plugin-kyverno-common'
+          - dagre
+          - file-saver
+          - js-yaml
+          - react-copy-to-clipboard
+          - react-json-view
+          - react-syntax-highlighter
+          - react-use
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:06.546Z'
+        lastAttemptAt: '2026-08-04T22:12:55.362Z'
         reason: config-schema-not-declared

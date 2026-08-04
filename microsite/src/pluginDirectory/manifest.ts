@@ -135,7 +135,6 @@ const configSchemaSnapshotSchema = z.discriminatedUnion('status', [
 export type ConfigSchemaSnapshot = z.infer<typeof configSchemaSnapshotSchema>;
 
 const packageSnapshotSchema = z.strictObject({
-  functionality: z.string().min(1).optional(),
   npmPackageName: z.string().min(1),
   sourcePath: z.string().min(1).optional(),
   // Subset of this package's npm dependencyNames that are other packages of
@@ -143,10 +142,23 @@ const packageSnapshotSchema = z.strictObject({
   // config schemas together in the UI.
   internalDependencies: z.array(z.string().min(1)).optional(),
   npm: npmSnapshotSchema,
-  configSchema: configSchemaSnapshotSchema,
+  // Omitted when the package's npm-declared configSchema path isn't a
+  // `.json` file, which this audit doesn't support resolving.
+  configSchema: configSchemaSnapshotSchema.optional(),
 });
 
 export type PackageSnapshot = z.infer<typeof packageSnapshotSchema>;
+
+// A package's functionality (e.g. `'frontend-plugin'`, `'backend-plugin'`)
+// is derived on read from its `backstage.role`, rather than stored on the
+// snapshot, so it always reflects the role currently published to npm.
+export function packageFunctionality(
+  packageSnapshot: PackageSnapshot,
+): string | undefined {
+  return packageSnapshot.npm.status !== 'unavailable'
+    ? packageSnapshot.npm.backstageRole
+    : undefined;
+}
 
 export const pluginManifestSchema = z.strictObject({
   title: z.string().min(1),

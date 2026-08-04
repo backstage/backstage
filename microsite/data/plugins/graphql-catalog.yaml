@@ -13,8 +13,8 @@ staleSince: '2026-02-17'
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:00.822Z'
-    checkedAt: '2026-08-04T05:03:00.822Z'
+    lastAttemptAt: '2026-08-04T22:12:49.290Z'
+    checkedAt: '2026-08-04T22:12:49.290Z'
     version: 1.29.2
     sourceUrl: https://github.com/thefrontside/playhouse/blob/main/backstage.json
     sourcePath: backstage.json
@@ -22,14 +22,31 @@ snapshot:
     - npmPackageName: '@frontside/backstage-plugin-graphql-backend'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:00.447Z'
-        checkedAt: '2026-08-04T05:03:00.447Z'
+        lastAttemptAt: '2026-08-04T22:12:48.955Z'
+        checkedAt: '2026-08-04T22:12:48.955Z'
         latestVersion: 0.1.9
         lastPublishedAt: '2024-08-14T15:35:57.801Z'
         repository:
           url: https://github.com/thefrontside/playhouse
           directory: plugins/graphql-backend
+        backstageRole: backend-plugin
+        dependencyNames:
+          - helmet
+          - express
+          - graphql
+          - winston
+          - dataloader
+          - graphql-yoga
+          - '@envelop/core'
+          - graphql-modules
+          - '@envelop/dataloader'
+          - '@frontside/hydraphql'
+          - express-promise-router
+          - '@envelop/graphql-modules'
+          - '@backstage/backend-common'
+          - '@backstage/backend-plugin-api'
+          - '@frontside/backstage-plugin-graphql-backend-node'
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:01.455Z'
+        lastAttemptAt: '2026-08-04T22:12:49.979Z'
         reason: config-schema-not-declared

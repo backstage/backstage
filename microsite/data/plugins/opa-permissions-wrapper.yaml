@@ -12,8 +12,8 @@ status: active
 snapshot:
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T05:03:09.644Z'
-    checkedAt: '2026-08-04T05:03:09.644Z'
+    lastAttemptAt: '2026-08-04T22:12:58.863Z'
+    checkedAt: '2026-08-04T22:12:58.863Z'
     version: 1.52.1
     sourceUrl: https://github.com/Parsifal-M/backstage-opa-plugins/blob/main/backstage.json
     sourcePath: backstage.json
@@ -21,13 +21,23 @@ snapshot:
     - npmPackageName: '@parsifal-m/plugin-permission-backend-module-opa-wrapper'
       npm:
         status: fresh
-        lastAttemptAt: '2026-08-04T05:03:09.289Z'
-        checkedAt: '2026-08-04T05:03:09.289Z'
+        lastAttemptAt: '2026-08-04T22:12:58.435Z'
+        checkedAt: '2026-08-04T22:12:58.435Z'
         latestVersion: 2.0.2
         lastPublishedAt: '2026-05-08T11:30:44.065Z'
         repository:
           url: https://github.com/Parsifal-M/backstage-opa-plugins
+        backstageRole: backend-plugin-module
+        dependencyNames:
+          - '@backstage/backend-plugin-api'
+          - '@backstage/config'
+          - '@backstage/errors'
+          - '@backstage/plugin-auth-node'
+          - '@backstage/plugin-permission-common'
+          - '@backstage/plugin-permission-node'
+          - node-fetch
+          - winston
       configSchema:
         status: unavailable
-        lastAttemptAt: '2026-08-04T05:03:10.121Z'
+        lastAttemptAt: '2026-08-04T22:12:59.372Z'
         reason: config-schema-not-declared
