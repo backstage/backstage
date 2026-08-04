@@ -878,10 +878,10 @@ describe('runAuditCommand', () => {
         const [written] = await readManifestFiles(directory);
         assert.equal(result.changedFiles, 1);
         assert.equal(result.writtenFiles, 1);
+        const primaryPkg = primaryPackage(written.manifest);
         assert.equal(
-          primaryPackage(written.manifest)?.npm &&
-            'checkedAt' in primaryPackage(written.manifest)!.npm
-            ? primaryPackage(written.manifest)!.npm.checkedAt
+          primaryPkg?.npm && 'checkedAt' in primaryPkg.npm
+            ? primaryPkg.npm.checkedAt
             : undefined,
           attemptAt,
         );
