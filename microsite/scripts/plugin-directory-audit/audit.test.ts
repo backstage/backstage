@@ -72,7 +72,7 @@ function unavailableConfigSchema(): ConfigSchemaSnapshot {
   return {
     status: 'unavailable',
     lastAttemptAt: attemptAt,
-    reason: 'config-schema-not-fetched-in-test',
+    reason: 'config-schema-not-declared',
   };
 }
 
