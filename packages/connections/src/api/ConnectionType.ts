@@ -20,8 +20,7 @@ import type { ConnectionTypeKey, LookupConnectionType } from '../definitions';
 /** @public */
 export type LookupStrategy = 'host' | 'aws';
 
-/** @public */
-export type LookupStrategyParams = {
+export type LookupStrategyQuery = {
   host: { url: string };
   aws: { accountId?: string; arn?: string };
 };
@@ -108,10 +107,10 @@ export type ConnectionAuthValue<TAuthConfig extends { method: string }> =
 
 export type MatchAuth<
   TAuthConfig extends { method: string },
-  TParams = { url: string },
+  TQuery = { url: string },
 > = (
   authMethods: ConnectionAuthValue<TAuthConfig>[],
-  params: TParams,
+  query: TQuery,
 ) => ConnectionAuthValue<TAuthConfig> | undefined;
 
 /**
@@ -135,6 +134,7 @@ export type ConnectionType<
   T extends {
     type: string;
     lookupStrategy: LookupStrategy;
+    query: unknown;
     configSchema: unknown;
     auth: readonly {
       method: string;
@@ -142,6 +142,7 @@ export type ConnectionType<
   } = {
     type: string;
     lookupStrategy: LookupStrategy;
+    query: unknown;
     configSchema: unknown;
     auth: readonly {
       method: string;
@@ -166,9 +167,11 @@ export type ConnectionType<
         }
       : never
     : never)[];
+  /** Type-level accessor for the query shape accepted by `find()`. */
+  readonly query: T['query'];
   matchAuth?(
     authMethods: ConnectionAuthValue<T['auth'][number]>[],
-    params: LookupStrategyParams[T['lookupStrategy']],
+    query: T['query'],
   ): ConnectionAuthValue<T['auth'][number]> | undefined;
 };
 

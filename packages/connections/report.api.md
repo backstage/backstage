@@ -60,7 +60,7 @@ export interface ConnectionsService {
     TAuthMethod extends ConnectionAuthMethodKey<TType>,
   >(options: {
     type: TType;
-    params: LookupStrategyParams[LookupConnectionType<TType>['lookupStrategy']];
+    query: LookupConnectionType<TType>['query'];
     authMethods: readonly [TAuthMethod, ...TAuthMethod[]];
   }): Promise<Connection<TType, TAuthMethod>>;
 }
@@ -70,6 +70,7 @@ export type ConnectionType<
   T extends {
     type: string;
     lookupStrategy: LookupStrategy;
+    query: unknown;
     configSchema: unknown;
     auth: readonly {
       method: string;
@@ -77,6 +78,7 @@ export type ConnectionType<
   } = {
     type: string;
     lookupStrategy: LookupStrategy;
+    query: unknown;
     configSchema: unknown;
     auth: readonly {
       method: string;
@@ -101,9 +103,10 @@ export type ConnectionType<
         }
       : never
     : never)[];
+  readonly query: T['query'];
   matchAuth?(
     authMethods: ConnectionAuthValue<T['auth'][number]>[],
-    params: LookupStrategyParams[T['lookupStrategy']],
+    query: T['query'],
   ): ConnectionAuthValue<T['auth'][number]> | undefined;
 };
 
@@ -115,6 +118,9 @@ export const connectionTypes: {
   readonly 'aws-codecommit': ConnectionType<{
     type: 'aws-codecommit';
     lookupStrategy: 'host';
+    query: {
+      url: string;
+    };
     configSchema: {
       host: string;
       region: string;
@@ -122,15 +128,11 @@ export const connectionTypes: {
     auth: readonly (
       | {
           method: 'accessKey';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
           accessKeyId: string;
           secretAccessKey: string;
         }
       | {
           method: 'assumeRole';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
           roleArn: string;
           externalId?: string | undefined;
         }
@@ -139,6 +141,9 @@ export const connectionTypes: {
   readonly 'aws-s3': ConnectionType<{
     type: 'aws-s3';
     lookupStrategy: 'host';
+    query: {
+      url: string;
+    };
     configSchema: {
       host: string;
       endpoint?: string | undefined;
@@ -147,20 +152,14 @@ export const connectionTypes: {
     auth: readonly (
       | {
           method: 'none';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
         }
       | {
           method: 'accessKey';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
           accessKeyId: string;
           secretAccessKey: string;
         }
       | {
           method: 'assumeRole';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
           roleArn: string;
           externalId?: string | undefined;
         }
@@ -169,6 +168,9 @@ export const connectionTypes: {
   readonly 'azure-blob-storage': ConnectionType<{
     type: 'azure-blob-storage';
     lookupStrategy: 'host';
+    query: {
+      url: string;
+    };
     configSchema: {
       host: string;
       accountName?: string | undefined;
@@ -178,31 +180,21 @@ export const connectionTypes: {
     auth: readonly (
       | {
           method: 'none';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
         }
       | {
           method: 'accountKey';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
           accountKey: string;
         }
       | {
           method: 'sasToken';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
           sasToken: string;
         }
       | {
           method: 'connectionString';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
           connectionString: string;
         }
       | {
           method: 'aadCredential';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
           clientId: string;
           tenantId: string;
           clientSecret: string;
@@ -212,26 +204,23 @@ export const connectionTypes: {
   readonly azure: ConnectionType<{
     type: 'azure';
     lookupStrategy: 'host';
+    query: {
+      url: string;
+    };
     configSchema: {
       host: string;
     };
     auth: readonly (
       | {
           method: 'none';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
         }
       | {
           method: 'pat';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
           personalAccessToken: string;
           orgs?: string[] | undefined;
         }
       | {
           method: 'clientCredentials';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
           clientId: string;
           clientSecret: string;
           tenantId: string;
@@ -239,8 +228,6 @@ export const connectionTypes: {
         }
       | {
           method: 'managedIdentity';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
           clientId: string;
           tenantId?: string | undefined;
           managedIdentityClientId?: string | undefined;
@@ -251,33 +238,28 @@ export const connectionTypes: {
   readonly 'bitbucket-cloud': ConnectionType<{
     type: 'bitbucket-cloud';
     lookupStrategy: 'host';
+    query: {
+      url: string;
+    };
     configSchema: {
       host: string;
     };
     auth: readonly (
       | {
           method: 'none';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
         }
       | {
           method: 'token';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
           username: string;
           token: string;
         }
       | {
           method: 'appPassword';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
           username: string;
           appPassword: string;
         }
       | {
           method: 'oauth';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
           clientId: string;
           clientSecret: string;
         }
@@ -286,6 +268,9 @@ export const connectionTypes: {
   readonly 'bitbucket-server': ConnectionType<{
     type: 'bitbucket-server';
     lookupStrategy: 'host';
+    query: {
+      url: string;
+    };
     configSchema: {
       host: string;
       apiBaseUrl?: string | undefined;
@@ -293,19 +278,13 @@ export const connectionTypes: {
     auth: readonly (
       | {
           method: 'none';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
         }
       | {
           method: 'token';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
           token: string;
         }
       | {
           method: 'basic';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
           username: string;
           password: string;
         }
@@ -314,6 +293,9 @@ export const connectionTypes: {
   readonly gerrit: ConnectionType<{
     type: 'gerrit';
     lookupStrategy: 'host';
+    query: {
+      url: string;
+    };
     configSchema: {
       host: string;
       gitilesBaseUrl: string;
@@ -323,13 +305,9 @@ export const connectionTypes: {
     auth: readonly (
       | {
           method: 'none';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
         }
       | {
           method: 'basic';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
           username: string;
           password: string;
         }
@@ -338,6 +316,9 @@ export const connectionTypes: {
   readonly gitea: ConnectionType<{
     type: 'gitea';
     lookupStrategy: 'host';
+    query: {
+      url: string;
+    };
     configSchema: {
       host: string;
       baseUrl?: string | undefined;
@@ -345,13 +326,9 @@ export const connectionTypes: {
     auth: readonly (
       | {
           method: 'none';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
         }
       | {
           method: 'basic';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
           username: string;
           password: string;
         }
@@ -360,6 +337,9 @@ export const connectionTypes: {
   readonly github: ConnectionType<{
     type: 'github';
     lookupStrategy: 'host';
+    query: {
+      url: string;
+    };
     configSchema: {
       host: string;
       apiBaseUrl?: string | undefined;
@@ -368,19 +348,13 @@ export const connectionTypes: {
     auth: readonly (
       | {
           method: 'none';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
         }
       | {
           method: 'token';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
           token: string;
         }
       | {
           method: 'app';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
           appId: string | number;
           privateKey: string;
           clientId: string;
@@ -394,6 +368,9 @@ export const connectionTypes: {
   readonly gitlab: ConnectionType<{
     type: 'gitlab';
     lookupStrategy: 'host';
+    query: {
+      url: string;
+    };
     configSchema: {
       host: string;
       apiBaseUrl?: string | undefined;
@@ -402,13 +379,9 @@ export const connectionTypes: {
     auth: readonly (
       | {
           method: 'none';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
         }
       | {
           method: 'token';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
           token: string;
         }
     )[];
@@ -416,19 +389,18 @@ export const connectionTypes: {
   readonly 'google-gcs': ConnectionType<{
     type: 'google-gcs';
     lookupStrategy: 'host';
+    query: {
+      url: string;
+    };
     configSchema: {
       host: string;
     };
     auth: readonly (
       | {
           method: 'none';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
         }
       | {
           method: 'serviceAccount';
-          title?: string | undefined;
-          match?: ConnectionAuthMatch | undefined;
           clientEmail: string;
           privateKey: string;
         }
@@ -437,13 +409,14 @@ export const connectionTypes: {
   readonly harness: ConnectionType<{
     type: 'harness';
     lookupStrategy: 'host';
+    query: {
+      url: string;
+    };
     configSchema: {
       host: string;
     };
     auth: readonly {
       method: 'token';
-      title?: string | undefined;
-      match?: ConnectionAuthMatch | undefined;
       token: string;
       apiKey?: string | undefined;
     }[];
@@ -456,30 +429,20 @@ export type LookupConnectionType<T extends ConnectionTypeKey | ConnectionType> =
 
 // @public
 export const lookupStrategies: {
-  [K in LookupStrategy]: LookupStrategyDefinition<K>;
+  host: {
+    identityField: 'host';
+    identityFromQuery(query: { url: string }): string | undefined;
+  };
+  aws: {
+    identityFromQuery(_query: {
+      accountId?: string;
+      arn?: string;
+    }): string | undefined;
+  };
 };
 
 // @public (undocumented)
 export type LookupStrategy = 'host' | 'aws';
-
-// @public
-export type LookupStrategyDefinition<
-  K extends LookupStrategy = LookupStrategy,
-> = {
-  identityField?: string;
-  identityFromParams(params: LookupStrategyParams[K]): string | undefined;
-};
-
-// @public (undocumented)
-export type LookupStrategyParams = {
-  host: {
-    url: string;
-  };
-  aws: {
-    accountId?: string;
-    arn?: string;
-  };
-};
 
 // @public
 export type PortableSchema<TOutput = unknown, TInput = TOutput> = {

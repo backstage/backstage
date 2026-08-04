@@ -22,10 +22,8 @@ import type {
   ConnectionAuthMethodKey,
   ConnectionsService,
   ConnectionTypeKey,
-  LookupStrategy,
-  LookupStrategyDefinition,
-  LookupStrategyParams,
   LookupConnectionType,
+  LookupStrategy,
 } from '@backstage/connections';
 import { lookupStrategies } from '@backstage/connections';
 import { getConnectionType, isConnectionTypeKey } from './lookup';
@@ -57,7 +55,7 @@ function describeError(error: unknown): string {
 
 function getLookupStrategy<K extends LookupStrategy>(
   name: K,
-): LookupStrategyDefinition<K> {
+): (typeof lookupStrategies)[K] {
   return lookupStrategies[name];
 }
 
@@ -88,7 +86,7 @@ class PluginConnectionsService implements ConnectionsService {
     TAuthMethod extends ConnectionAuthMethodKey<TType>,
   >(options: {
     type: TType;
-    params: LookupStrategyParams[LookupConnectionType<TType>['lookupStrategy']];
+    query: LookupConnectionType<TType>['query'];
     authMethods: readonly [TAuthMethod, ...TAuthMethod[]];
   }): Promise<Connection<TType, TAuthMethod>> {
     const result = await this.findOptional(options);
@@ -105,16 +103,16 @@ class PluginConnectionsService implements ConnectionsService {
     TAuthMethod extends ConnectionAuthMethodKey<TType>,
   >({
     type,
-    params,
+    query,
     authMethods,
   }: {
     type: TType;
-    params: LookupStrategyParams[LookupConnectionType<TType>['lookupStrategy']];
+    query: LookupConnectionType<TType>['query'];
     authMethods: readonly [TAuthMethod, ...TAuthMethod[]];
   }): Promise<Connection<TType, TAuthMethod> | undefined> {
     const connectionType = getConnectionType(type);
     const strategy = getLookupStrategy(connectionType.lookupStrategy);
-    const identity = strategy.identityFromParams(params);
+    const identity = strategy.identityFromQuery(query);
 
     this.logger.debug(
       `Finding connection of type "${type}"${
@@ -146,11 +144,11 @@ class PluginConnectionsService implements ConnectionsService {
     }
 
     const matchAuth = connectionType.matchAuth as
-      | ((authMethods: any[], params: any) => any | undefined)
+      | ((authMethods: any[], query: any) => any | undefined)
       | undefined;
 
     const selected = matchAuth
-      ? matchAuth(connection.auth, params)
+      ? matchAuth(connection.auth, query)
       : connection.auth[0];
 
     if (!selected) {

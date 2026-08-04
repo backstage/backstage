@@ -14,60 +14,32 @@
  * limitations under the License.
  */
 import { InputError } from '@backstage/errors';
-import type {
-  LookupStrategy,
-  LookupStrategyParams,
-} from '../api/ConnectionType';
-
-/**
- * The semantics of a lookup strategy: where a connection's identity is
- * stored and how to derive it from lookup parameters.
- *
- * A connection's identity is the value that distinguishes it from other
- * connections of the same type — for host-based types the configured host,
- * e.g. "ghe.example.com". The identity is stored in a connection-level
- * config field and is also derivable from the params passed to
- * `ConnectionsService.find`, which is how a lookup pairs the two.
- * Strategies without an identity field (e.g. `aws`, where the accounts live
- * in the auth entries and are selected by `matchAuth`) allow only a single
- * connection of each type.
- *
- * @public
- */
-export type LookupStrategyDefinition<
-  K extends LookupStrategy = LookupStrategy,
-> = {
-  /** Connection-level config field holding the identity, if any. */
-  identityField?: string;
-  /** Derives the identity from the params passed to `ConnectionsService.find`. */
-  identityFromParams(params: LookupStrategyParams[K]): string | undefined;
-};
 
 /**
  * The definitions of all lookup strategies, shared by every
  * `ConnectionsService` implementation.
  *
- * Keyed by the `LookupStrategy` union so that a strategy added to the type
- * without a definition here fails to compile rather than at runtime.
- *
  * @public
  */
-export const lookupStrategies: {
-  [K in LookupStrategy]: LookupStrategyDefinition<K>;
-} = {
+export const lookupStrategies = {
   host: {
-    identityField: 'host',
-    identityFromParams: params => {
+    identityField: 'host' as const,
+    identityFromQuery(query: { url: string }): string | undefined {
       try {
-        return new URL(params.url).host;
+        return new URL(query.url).host;
       } catch {
         throw new InputError(
-          `Invalid url "${params.url}" passed to ConnectionsService.find`,
+          `Invalid url "${query.url}" passed to ConnectionsService.find`,
         );
       }
     },
   },
   aws: {
-    identityFromParams: () => undefined,
+    identityFromQuery(_query: {
+      accountId?: string;
+      arn?: string;
+    }): string | undefined {
+      return undefined;
+    },
   },
 };

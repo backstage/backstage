@@ -48,7 +48,7 @@ export const connectionsExampleBackendModuleGitlab = createBackendModule({
         try {
           const connection = await connections.find({
             type: 'gitlab',
-            params: { url: 'https://gitlab.com' },
+            query: { url: 'https://gitlab.com' },
             authMethods: ['token'],
           });
           logger.info(

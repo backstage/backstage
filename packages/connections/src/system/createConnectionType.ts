@@ -17,10 +17,9 @@ import { z } from 'zod/v4';
 import { InputError } from '@backstage/errors';
 import type { Expand, JsonObject } from '@backstage/types';
 import type {
-  ConnectionAuthMatch,
   ConnectionType,
   LookupStrategy,
-  LookupStrategyParams,
+  LookupStrategyQuery,
   MatchAuth,
   PortableSchema,
   WithoutReservedAuthMethods,
@@ -50,13 +49,7 @@ type RootConnectionAuthFromSchema<
   infer TMethod,
   infer TConfigSchema
 >
-  ? Expand<
-      {
-        method: TMethod;
-        title?: string;
-        match?: ConnectionAuthMatch;
-      } & ConfigFromSchema<TConfigSchema>
-    >
+  ? Expand<{ method: TMethod } & ConfigFromSchema<TConfigSchema>>
   : never;
 
 function createPortableSchema<TSchema extends z.ZodType>(
@@ -107,11 +100,12 @@ export function createConnectionType<
   authMethods: WithoutReservedAuthMethods<TAuthMethods>;
   matchAuth?: MatchAuth<
     RootConnectionAuthFromSchema<TAuthMethods[number]>,
-    LookupStrategyParams[TLookupStrategy]
+    LookupStrategyQuery[TLookupStrategy]
   >;
 }): ConnectionType<{
   type: TType;
   lookupStrategy: TLookupStrategy;
+  query: LookupStrategyQuery[TLookupStrategy];
   configSchema: ConfigFromSchema<TConfigSchema>;
   auth: readonly RootConnectionAuthFromSchema<TAuthMethods[number]>[];
 }> {
@@ -145,6 +139,7 @@ export function createConnectionType<
   } as unknown as ConnectionType<{
     type: TType;
     lookupStrategy: TLookupStrategy;
+    query: LookupStrategyQuery[TLookupStrategy];
     configSchema: ConfigFromSchema<TConfigSchema>;
     auth: readonly RootConnectionAuthFromSchema<TAuthMethods[number]>[];
   }>;

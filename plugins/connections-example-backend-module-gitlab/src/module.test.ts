@@ -57,7 +57,7 @@ describe('connections-example-backend-module-gitlab', () => {
           async init({ connections }) {
             const conn = await connections.find({
               type: 'gitlab',
-              params: { url: 'https://gitlab.com/my-org/my-repo' },
+              query: { url: 'https://gitlab.com/my-org/my-repo' },
               authMethods: ['token'],
             });
             expect(conn.host).toBe('gitlab.com');
@@ -97,7 +97,7 @@ describe('connections-example-backend-module-gitlab', () => {
             await expect(
               connections.find({
                 type: 'github',
-                params: { url: 'https://github.com/my-org/my-repo' },
+                query: { url: 'https://github.com/my-org/my-repo' },
                 authMethods: ['token'],
               }),
             ).rejects.toThrow(/undeclared connection of type "github"/);
@@ -134,7 +134,7 @@ describe('connections-example-backend-module-gitlab', () => {
           async init({ connections }) {
             const gh = await connections.find({
               type: 'github',
-              params: { url: 'https://github.com/my-org/my-repo' },
+              query: { url: 'https://github.com/my-org/my-repo' },
               authMethods: ['token'],
             });
             expect(gh.host).toBe('github.com');
@@ -142,7 +142,7 @@ describe('connections-example-backend-module-gitlab', () => {
             await expect(
               connections.find({
                 type: 'gitlab',
-                params: { url: 'https://gitlab.com/my-org/my-repo' },
+                query: { url: 'https://gitlab.com/my-org/my-repo' },
                 authMethods: ['token'],
               }),
             ).rejects.toThrow(/undeclared connection of type "gitlab"/);
@@ -163,7 +163,7 @@ describe('connections-example-backend-module-gitlab', () => {
           async init({ connections }) {
             const conn = await connections.find({
               type: 'gitlab',
-              params: { url: 'https://gitlab.com/my-org/my-repo' },
+              query: { url: 'https://gitlab.com/my-org/my-repo' },
               authMethods: ['token'],
             });
             expect(conn.host).toBe('gitlab.com');
@@ -171,7 +171,7 @@ describe('connections-example-backend-module-gitlab', () => {
             await expect(
               connections.find({
                 type: 'github',
-                params: { url: 'https://github.com/my-org/my-repo' },
+                query: { url: 'https://github.com/my-org/my-repo' },
                 authMethods: ['token'],
               }),
             ).rejects.toThrow(/undeclared connection of type "github"/);

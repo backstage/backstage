@@ -15,10 +15,7 @@
  */
 import { ConnectionTypeKey, LookupConnectionType } from '../definitions';
 import { Connection } from './Connection';
-import {
-  ConnectionAuthMethodKey,
-  LookupStrategyParams,
-} from './ConnectionType';
+import { ConnectionAuthMethodKey } from './ConnectionType';
 
 /** @public */
 export interface ConnectionsService {
@@ -27,7 +24,7 @@ export interface ConnectionsService {
     TAuthMethod extends ConnectionAuthMethodKey<TType>,
   >(options: {
     type: TType;
-    params: LookupStrategyParams[LookupConnectionType<TType>['lookupStrategy']];
+    query: LookupConnectionType<TType>['query'];
     authMethods: readonly [TAuthMethod, ...TAuthMethod[]];
   }): Promise<Connection<TType, TAuthMethod>>;
 }
