@@ -276,7 +276,7 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
     });
   });
 
-  it('should filter repositories that are excluded', async () => {
+  it('should filter repositories that are in excluded groups', async () => {
     const config = new ConfigReader(
       mock.config_single_integration_exclude_repos,
     );
@@ -300,10 +300,10 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
         entity =>
           !entity.entity.metadata.annotations[
             'backstage.io/managed-by-location'
-          ].includes('test-repo1') &&
+          ].includes('/group1/test-repo1') &&
           !entity.entity.metadata.annotations[
             'backstage.io/managed-by-location'
-          ].includes('awesome'),
+          ].includes('awesome-group'),
       ),
     });
   });
@@ -332,10 +332,10 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
         entity =>
           !entity.entity.metadata.annotations[
             'backstage.io/managed-by-location'
-          ].includes('subgroup1') &&
+          ].includes('/group1/subgroup1/') &&
           !entity.entity.metadata.annotations[
             'backstage.io/managed-by-location'
-          ].includes('awesome'),
+          ].includes('awesome-group'),
       ),
     });
   });
