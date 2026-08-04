@@ -19,7 +19,8 @@ import { after, afterEach, describe, it } from 'node:test';
 import type { PluginData } from '../../pluginDirectory/manifest';
 import React from 'react';
 import { cleanup, render, screen } from '@testing-library/react';
-import { HealthSummary, formatReleaseAge } from './HealthSummary';
+import { HealthSummary } from './HealthSummary';
+import { formatReleaseAge } from './healthPresentation';
 
 const fixedNow = new Date('2026-08-03T12:00:00.000Z');
 

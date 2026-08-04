@@ -15,6 +15,11 @@
  */
 import React, { useId } from 'react';
 
+import {
+  formatReleaseAge,
+  getNpmPackageUrl,
+  statusPresentations,
+} from './healthPresentation';
 import type {
   BackstageSnapshot,
   Capability,
@@ -28,10 +33,6 @@ interface HealthSummaryProps {
   plugin: PluginData;
   now?: Date;
 }
-
-const millisecondsPerDay = 24 * 60 * 60 * 1000;
-const daysPerMonth = 30;
-const daysPerYear = 365;
 
 const longDateFormatter = new Intl.DateTimeFormat('en-US', {
   day: 'numeric',
@@ -55,60 +56,6 @@ const capabilityLabels: Record<Capability, string> = {
   permissions: 'Permissions',
   signals: 'Signals',
 };
-
-const statusPresentations: Record<
-  SnapshotStatus,
-  {
-    cardClassName: string;
-    indicatorClassName: string;
-    label: string;
-    symbol: string;
-  }
-> = {
-  fresh: {
-    cardClassName: styles.healthCardFresh,
-    indicatorClassName: styles.statusFresh,
-    label: 'Current',
-    symbol: '✓',
-  },
-  stale: {
-    cardClassName: styles.healthCardStale,
-    indicatorClassName: styles.statusStale,
-    label: 'Stale',
-    symbol: '!',
-  },
-  unavailable: {
-    cardClassName: styles.healthCardUnavailable,
-    indicatorClassName: styles.statusUnavailable,
-    label: 'Unavailable',
-    symbol: '?',
-  },
-};
-
-export function formatReleaseAge(isoDate: string, now = new Date()): string {
-  const elapsedDays = Math.max(
-    0,
-    Math.floor(
-      (now.getTime() - new Date(isoDate).getTime()) / millisecondsPerDay,
-    ),
-  );
-
-  if (elapsedDays === 0) {
-    return 'today';
-  }
-  if (elapsedDays < daysPerMonth) {
-    return `${elapsedDays} ${elapsedDays === 1 ? 'day' : 'days'} ago`;
-  }
-  if (elapsedDays < daysPerYear) {
-    const elapsedMonths = Math.floor(elapsedDays / daysPerMonth);
-    return `${elapsedMonths} ${
-      elapsedMonths === 1 ? 'month' : 'months'
-    } ago`;
-  }
-
-  const elapsedYears = Math.floor(elapsedDays / daysPerYear);
-  return `${elapsedYears} ${elapsedYears === 1 ? 'year' : 'years'} ago`;
-}
 
 function SnapshotStatusIndicator({
   status,
@@ -177,9 +124,7 @@ export function HealthSummary({
             <>
               <p className={styles.cardLabel}>Latest version</p>
               <p className={styles.healthValue}>
-                <a
-                  href={`https://www.npmjs.com/package/${plugin.npmPackageName}`}
-                >
+                <a href={getNpmPackageUrl(plugin)}>
                   <code>{npmSnapshot.latestVersion}</code>
                 </a>
               </p>
