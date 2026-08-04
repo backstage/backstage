@@ -16,10 +16,14 @@
 import Link from '@docusaurus/Link';
 import type { PluginData } from '@site/src/pluginDirectory/manifest';
 import Layout from '@theme/Layout';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 import React from 'react';
 
+import { ConfigureGuide } from './ConfigureGuide';
 import { HealthSummary } from './HealthSummary';
-import { SetupGuide } from './SetupGuide';
+import { InstallGuide } from './InstallGuide';
+import { PluginHeader } from './PluginHeader';
 import styles from './pluginDirectory.module.scss';
 
 interface PluginDetailPageProps {
@@ -27,17 +31,9 @@ interface PluginDetailPageProps {
 }
 
 export default function PluginDetailPage({ plugin }: PluginDetailPageProps) {
-  const npmSnapshot = plugin.snapshot?.npm;
-  const repositoryUrl =
-    npmSnapshot && npmSnapshot.status !== 'unavailable'
-      ? npmSnapshot.repository?.url
-      : undefined;
-
   return (
     <Layout title={plugin.title} description={plugin.description}>
-      <main
-        className={`container padding-vert--lg ${styles.detailPage}`}
-      >
+      <main className={`container padding-vert--lg ${styles.detailPage}`}>
         <nav aria-label="Breadcrumbs" className="margin-bottom--lg">
           <ul className="breadcrumbs">
             <li className="breadcrumbs__item">
@@ -54,41 +50,19 @@ export default function PluginDetailPage({ plugin }: PluginDetailPageProps) {
         </nav>
 
         <article className={styles.detailArticle}>
-          <header className={styles.detailHeader}>
-            <h1>{plugin.title}</h1>
-            <p>
-              by <Link to={plugin.authorUrl}>{plugin.author}</Link>
-            </p>
-          </header>
+          <PluginHeader plugin={plugin} />
 
-          <p className={styles.description}>{plugin.description}</p>
-
-          <HealthSummary plugin={plugin} />
-          <SetupGuide plugin={plugin} />
-
-          <section
-            className={styles.resources}
-            aria-labelledby="plugin-resources"
-          >
-            <h2 id="plugin-resources">Resources</h2>
-            <ul>
-              <li>
-                <Link to={plugin.documentation}>Documentation</Link>
-              </li>
-              <li>
-                <Link
-                  to={`https://www.npmjs.com/package/${plugin.npmPackageName}`}
-                >
-                  npm package
-                </Link>
-              </li>
-              {repositoryUrl && (
-                <li>
-                  <Link to={repositoryUrl}>Repository</Link>
-                </li>
-              )}
-            </ul>
-          </section>
+          <Tabs>
+            <TabItem value="overview" label="Overview">
+              <HealthSummary plugin={plugin} />
+            </TabItem>
+            <TabItem value="install" label="Install">
+              <InstallGuide plugin={plugin} />
+            </TabItem>
+            <TabItem value="configure" label="Configure">
+              <ConfigureGuide plugin={plugin} />
+            </TabItem>
+          </Tabs>
         </article>
       </main>
     </Layout>
