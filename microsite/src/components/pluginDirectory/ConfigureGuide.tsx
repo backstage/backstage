@@ -17,7 +17,10 @@ import Form from '@rjsf/core';
 import type { RJSFSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 import { dump } from 'js-yaml';
-import type { PackageSnapshot, PluginData } from '../../pluginDirectory/manifest';
+import type {
+  PackageSnapshot,
+  PluginData,
+} from '../../pluginDirectory/manifest';
 import React, { useState } from 'react';
 
 import { configFormTemplates, configFormWidgets } from './ConfigForm';
@@ -157,8 +160,28 @@ function schemaFor(packageSnapshot: PackageSnapshot): RJSFSchema | undefined {
   return isObjectSchema(rawSchema) ? rawSchema : undefined;
 }
 
+// RJSF/ajv8 degrade an `allOf` merge conflict (e.g. two schemas declaring the
+// same leaf property with incompatible types) by silently stripping the
+// offending `allOf` branch rather than throwing, so a conflicting merge
+// currently fails silently rather than erroring. Real Backstage config
+// schemas are namespaced by plugin id, so this is an accepted limitation.
 function combineSchemas(schemas: RJSFSchema[]): RJSFSchema {
   return schemas.length === 1 ? schemas[0] : { allOf: schemas };
+}
+
+// `functionality` may hold either the plugin-directory's canonical short
+// form (e.g. `'frontend'`, `'backend'`) or a raw `backstage.role` string read
+// from a package's published package.json (e.g. `'frontend-plugin'`,
+// `'backend-plugin'`) — see audit.ts's functionality derivation. Recognize
+// both forms so the merge doesn't silently stop firing once a package's
+// functionality is populated from the role-suffix form.
+function matchesRole(
+  functionality: string | undefined,
+  role: 'frontend' | 'backend',
+): boolean {
+  return (
+    functionality === role || functionality?.startsWith(`${role}-`) === true
+  );
 }
 
 function buildRoleEntry(
@@ -167,8 +190,8 @@ function buildRoleEntry(
   packagesByName: Map<string, PackageSnapshot>,
   absorbed: Set<string>,
 ): PackageSchemaEntry | undefined {
-  const rolePackage = [...packagesByName.values()].find(
-    entry => entry.functionality === functionality,
+  const rolePackage = [...packagesByName.values()].find(entry =>
+    matchesRole(entry.functionality, functionality),
   );
   if (!rolePackage) {
     return undefined;
@@ -205,7 +228,8 @@ function getPackageSchemas(plugin: PluginData): PackageSchemaEntry[] {
   const packages = plugin.snapshot?.packages ?? [];
   const packagesByName = new Map(
     packages.map(
-      packageSnapshot => [packageSnapshot.npmPackageName, packageSnapshot] as const,
+      packageSnapshot =>
+        [packageSnapshot.npmPackageName, packageSnapshot] as const,
     ),
   );
   const absorbed = new Set<string>();
