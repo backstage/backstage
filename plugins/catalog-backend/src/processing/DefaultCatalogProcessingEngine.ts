@@ -291,25 +291,20 @@ export class DefaultCatalogProcessingEngine {
             }
 
             result.completedEntity.metadata.uid = id;
-            let relationsChange = {
-              deleted: [] as { source_entity_ref: string }[],
-              inserted: [] as { source_entity_ref: string }[],
-            };
-            await retryOnDeadlock(
+            const { relationsChange } = await retryOnDeadlock(
               () =>
-                this.processingDatabase.transaction(async tx => {
-                  ({ relationsChange } =
-                    await this.processingDatabase.updateProcessedEntity(tx, {
-                      id,
-                      processedEntity: result.completedEntity,
-                      resultHash,
-                      errors: errorsString,
-                      relations: result.relations,
-                      deferredEntities: result.deferredEntities,
-                      locationKey,
-                      refreshKeys: result.refreshKeys,
-                    }));
-                }),
+                this.processingDatabase.transaction(async tx =>
+                  this.processingDatabase.updateProcessedEntity(tx, {
+                    id,
+                    processedEntity: result.completedEntity,
+                    resultHash,
+                    errors: errorsString,
+                    relations: result.relations,
+                    deferredEntities: result.deferredEntities,
+                    locationKey,
+                    refreshKeys: result.refreshKeys,
+                  }),
+                ),
               this.knex,
             );
 
