@@ -125,7 +125,7 @@ describe('DefaultGithubCredentialsProvider tests', () => {
 
       expect(find).toHaveBeenCalledWith({
         type: 'github',
-        url: 'https://github.com/backstage/backstage',
+        params: { url: 'https://github.com/backstage/backstage' },
         authMethods: ['app', 'token', 'none'],
       });
       expect(
