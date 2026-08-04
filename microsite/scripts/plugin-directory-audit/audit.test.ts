@@ -626,7 +626,7 @@ async function withManifestDirectory(
     for (const [filename, value] of Object.entries(manifests)) {
       await writeFile(
         join(directory, filename),
-        `---\n${dump(value, { lineWidth: -1, quotingType: "'" })}`,
+        `---\n${dump(value, { lineWidth: -1, quoteStyle: 'single' })}`,
         'utf8',
       );
     }
