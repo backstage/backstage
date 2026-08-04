@@ -8,4 +8,18 @@ documentation: https://github.com/liatrio/backstage-dora-plugin/tree/main
 iconUrl: /img/liatrio-icon.png
 npmPackageName: '@liatrio/backstage-dora-plugin'
 addedDate: '2024-10-14'
-status: active
+status: inactive
+staleSince: '2026-08-04'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:01.740Z'
+    checkedAt: '2026-08-04T03:04:01.740Z'
+    latestVersion: 1.1.4
+    lastPublishedAt: '2025-05-29T20:15:40.612Z'
+    repository:
+      url: https://github.com/liatrio/backstage-dora-plugin
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:02.100Z'
+    reason: backstage-json-not-found

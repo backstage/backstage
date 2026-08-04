@@ -7,8 +7,8 @@ description: Monitor all your service's deployments at a glance, even across clu
 documentation: https://backstage.io/docs/features/kubernetes/
 iconUrl: /img/backstage-k8s.svg
 npmPackageName: '@backstage/plugin-kubernetes'
-order: 4
 addedDate: '2021-03-29'
+order: 4
 status: active
 capabilities:
   - entity-content
@@ -63,15 +63,9 @@ setup:
       properties:
         kubernetes:
           type: object
-          description: Configure how the backend locates and connects to Kubernetes clusters.
-          x-ui:
-            label: Kubernetes
           properties:
             serviceLocatorMethod:
               type: object
-              description: Choose how catalog entities are matched to clusters.
-              x-ui:
-                label: Service locator
               properties:
                 type:
                   type: string
@@ -85,15 +79,13 @@ setup:
                     label: Locator type
               required:
                 - type
+              description: Choose how catalog entities are matched to clusters.
+              x-ui:
+                label: Service locator
             clusterLocatorMethods:
               type: array
-              description: Add clusters that are declared directly in app-config.yaml.
-              x-ui:
-                label: Cluster locator methods
               items:
                 type: object
-                x-ui:
-                  label: Config locator
                 properties:
                   type:
                     type: string
@@ -105,13 +97,8 @@ setup:
                       label: Locator type
                   clusters:
                     type: array
-                    description: Configure one or more Kubernetes API servers.
-                    x-ui:
-                      label: Clusters
                     items:
                       type: object
-                      x-ui:
-                        label: Cluster
                       properties:
                         name:
                           type: string
@@ -153,11 +140,41 @@ setup:
                         - name
                         - url
                         - authProvider
+                      x-ui:
+                        label: Cluster
+                    description: Configure one or more Kubernetes API servers.
+                    x-ui:
+                      label: Clusters
                 required:
                   - type
                   - clusters
+                x-ui:
+                  label: Config locator
+              description: Add clusters that are declared directly in app-config.yaml.
+              x-ui:
+                label: Cluster locator methods
           required:
             - serviceLocatorMethod
             - clusterLocatorMethods
+          description: Configure how the backend locates and connects to Kubernetes clusters.
+          x-ui:
+            label: Kubernetes
       required:
         - kubernetes
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:27.203Z'
+    checkedAt: '2026-08-04T03:03:27.203Z'
+    latestVersion: 0.12.21
+    lastPublishedAt: '2026-07-14T12:09:13.207Z'
+    repository:
+      url: https://github.com/backstage/backstage
+      directory: plugins/kubernetes
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:27.570Z'
+    checkedAt: '2026-08-04T03:03:27.570Z'
+    version: 1.50.0
+    sourceUrl: https://github.com/backstage/backstage/blob/master/workspaces/ui/backstage.json
+    sourcePath: workspaces/ui/backstage.json

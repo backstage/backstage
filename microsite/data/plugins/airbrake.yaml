@@ -9,3 +9,20 @@ iconUrl: https://wp-assets.airbrake.io/wp-content/uploads/2020/10/05222904/Squar
 npmPackageName: '@backstage-community/plugin-airbrake'
 addedDate: '2022-01-10'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:04.508Z'
+    checkedAt: '2026-08-04T03:03:04.508Z'
+    latestVersion: 0.23.0
+    lastPublishedAt: '2026-07-21T22:58:01.042Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/airbrake/plugins/airbrake
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:04.924Z'
+    checkedAt: '2026-08-04T03:03:04.924Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/airbrake/backstage.json
+    sourcePath: workspaces/airbrake/backstage.json

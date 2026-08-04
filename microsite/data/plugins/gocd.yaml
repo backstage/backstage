@@ -9,3 +9,20 @@ iconUrl: https://www.gocd.org/assets/images/go_logo-5b5ca9e1.svg
 npmPackageName: '@backstage-community/plugin-gocd'
 addedDate: '2022-01-15'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:25.046Z'
+    checkedAt: '2026-08-04T03:04:25.046Z'
+    latestVersion: 0.21.0
+    lastPublishedAt: '2026-07-21T23:04:53.904Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/gocd/plugins/gocd
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:25.394Z'
+    checkedAt: '2026-08-04T03:04:25.394Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/gocd/backstage.json
+    sourcePath: workspaces/gocd/backstage.json

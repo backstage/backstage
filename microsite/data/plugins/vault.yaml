@@ -9,3 +9,20 @@ iconUrl: /img/vault.png
 npmPackageName: '@backstage-community/plugin-vault'
 addedDate: '2022-06-03'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:06:05.659Z'
+    checkedAt: '2026-08-04T03:06:05.659Z'
+    latestVersion: 0.23.0
+    lastPublishedAt: '2026-07-22T00:20:52.841Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/vault/plugins/vault
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:06:05.822Z'
+    checkedAt: '2026-08-04T03:06:05.822Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/vault/backstage.json
+    sourcePath: workspaces/vault/backstage.json

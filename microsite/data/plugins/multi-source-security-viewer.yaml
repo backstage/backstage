@@ -8,3 +8,20 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 npmPackageName: '@backstage-community/plugin-multi-source-security-viewer'
 addedDate: '2026-02-21'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:04.862Z'
+    checkedAt: '2026-08-04T03:05:04.862Z'
+    latestVersion: 0.17.3
+    lastPublishedAt: '2026-07-21T20:28:09.414Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/multi-source-security-viewer/plugins/multi-source-security-viewer
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:05.209Z'
+    checkedAt: '2026-08-04T03:05:05.209Z'
+    version: 1.51.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/multi-source-security-viewer/backstage.json
+    sourcePath: workspaces/multi-source-security-viewer/backstage.json

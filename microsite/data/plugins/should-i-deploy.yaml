@@ -8,5 +8,18 @@ documentation: https://github.com/NandoRFS/backstage-plugin-should-i-deploy/
 iconUrl: /img/should-i-deploy-logo.png
 npmPackageName: backstage-plugin-should-i-deploy
 addedDate: '2023-11-05'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:48.158Z'
+    checkedAt: '2026-08-04T03:05:48.158Z'
+    latestVersion: 0.1.6
+    lastPublishedAt: '2023-11-08T00:07:46.018Z'
+    repository:
+      url: https://github.com/NandoRFS/backstage-plugin-should-i-deploy
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:05:48.297Z'
+    reason: backstage-json-not-found

@@ -8,5 +8,18 @@ documentation: https://github.com/quantummetric/analytics-module-qm/blob/main/RE
 iconUrl: /img/qm-icon.png
 npmPackageName: '@quantum-metric/plugin-analytics-module-qm'
 addedDate: '2024-03-15'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:08.081Z'
+    checkedAt: '2026-08-04T03:03:08.081Z'
+    latestVersion: 1.0.2
+    lastPublishedAt: '2024-04-04T17:47:38.563Z'
+    repository:
+      url: https://github.com/quantummetric/analytics-module-qm
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:03:08.471Z'
+    reason: backstage-json-not-found

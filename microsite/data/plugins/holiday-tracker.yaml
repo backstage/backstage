@@ -8,4 +8,21 @@ documentation: https://github.com/Infosys/holiday-tracker-plugin/blob/main/plugi
 iconUrl: https://github.com/Infosys/holiday-tracker-plugin/blob/main/plugins/holiday-tracker/src/docs/holiday-tracker-plugin.logo.png?raw=true
 npmPackageName: '@infosys_ltd/holiday-tracker-plugin'
 addedDate: '2025-07-23'
-status: active
+status: inactive
+staleSince: '2026-08-04'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:35.545Z'
+    checkedAt: '2026-08-04T03:04:35.545Z'
+    latestVersion: 1.0.0
+    lastPublishedAt: '2025-07-15T10:13:30.929Z'
+    repository:
+      url: https://github.com/Infosys/holiday-tracker-plugin
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:35.941Z'
+    checkedAt: '2026-08-04T03:04:35.941Z'
+    version: 1.39.0
+    sourceUrl: https://github.com/Infosys/holiday-tracker-plugin/blob/main/backstage.json
+    sourcePath: backstage.json

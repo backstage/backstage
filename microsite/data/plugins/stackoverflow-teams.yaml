@@ -9,3 +9,19 @@ iconUrl: /img/stack-overflow-logo.svg
 npmPackageName: '@stackoverflow/backstage-plugin-stack-overflow-teams'
 addedDate: '2025-06-10'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:54.178Z'
+    checkedAt: '2026-08-04T03:05:54.178Z'
+    latestVersion: 1.6.3
+    lastPublishedAt: '2026-01-19T16:42:13.842Z'
+    repository:
+      url: https://github.com/StackExchange/backstage-stackoverflow
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:54.530Z'
+    checkedAt: '2026-08-04T03:05:54.530Z'
+    version: 1.46.0
+    sourceUrl: https://github.com/StackExchange/backstage-stackoverflow/blob/main/backstage.json
+    sourcePath: backstage.json

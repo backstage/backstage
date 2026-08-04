@@ -9,3 +9,20 @@ iconUrl: https://avatars1.githubusercontent.com/u/2810941?s=280&v=4
 npmPackageName: '@backstage-community/plugin-gcp-projects'
 addedDate: '2021-01-20'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:17.758Z'
+    checkedAt: '2026-08-04T03:04:17.758Z'
+    latestVersion: 0.20.0
+    lastPublishedAt: '2026-04-24T18:12:52.504Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/gcp-projects/plugins/gcp-projects
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:18.124Z'
+    checkedAt: '2026-08-04T03:04:18.124Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/gcp-projects/backstage.json
+    sourcePath: workspaces/gcp-projects/backstage.json

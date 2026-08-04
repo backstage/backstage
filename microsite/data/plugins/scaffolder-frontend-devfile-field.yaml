@@ -8,5 +8,18 @@ documentation: https://github.com/redhat-developer/backstage-odo-devfile-plugin/
 iconUrl: https://landscape.cncf.io/logos/devfile.svg
 npmPackageName: '@redhat-developer/plugin-scaffolder-frontend-module-devfile-field'
 addedDate: '2023-12-08'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:37.726Z'
+    checkedAt: '2026-08-04T03:05:37.726Z'
+    latestVersion: 0.20.0
+    lastPublishedAt: '2023-12-20T23:08:28.583Z'
+    repository:
+      url: https://github.com/redhat-developer/backstage-odo-devfile-plugin
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:05:38.054Z'
+    reason: backstage-json-not-found

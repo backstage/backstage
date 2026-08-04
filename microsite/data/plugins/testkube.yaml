@@ -9,3 +9,20 @@ iconUrl: /img/testkube-logo.svg
 npmPackageName: '@testkube/backstage-plugin'
 addedDate: '2026-03-10'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:06:01.760Z'
+    checkedAt: '2026-08-04T03:06:01.760Z'
+    latestVersion: 0.4.5
+    lastPublishedAt: '2026-06-18T15:58:34.749Z'
+    repository:
+      url: https://github.com/kubeshop/testkube-backstage-plugin
+      directory: plugins/testkube
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:06:01.914Z'
+    checkedAt: '2026-08-04T03:06:01.914Z'
+    version: 1.52.0
+    sourceUrl: https://github.com/kubeshop/testkube-backstage-plugin/blob/main/backstage.json
+    sourcePath: backstage.json

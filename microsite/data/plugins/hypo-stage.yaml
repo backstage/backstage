@@ -5,7 +5,21 @@ authorUrl: https://github.com/ArchHypo
 category: Discovery
 description: Document architectural assumptions, track uncertainty, and validate decisions with hypothesis management, quality attributes, and technical planning.
 documentation: https://github.com/ArchHypo/hypo-stage/blob/v1.0.0/README.md
-iconUrl: 'https://raw.githubusercontent.com/ArchHypo/hypo-stage/main/docs/backstage-directory/icon/hypo-stage.png'
+iconUrl: https://raw.githubusercontent.com/ArchHypo/hypo-stage/main/docs/backstage-directory/icon/hypo-stage.png
 npmPackageName: '@archhypo/plugin-hypo-stage'
 addedDate: '2026-04-14'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:37.675Z'
+    checkedAt: '2026-08-04T03:04:37.675Z'
+    latestVersion: 1.0.0
+    lastPublishedAt: '2026-04-12T22:32:37.517Z'
+    repository:
+      url: https://github.com/ArchHypo/hypo-stage
+      directory: hypo-stage
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:38.057Z'
+    reason: backstage-json-not-found

@@ -9,3 +9,19 @@ iconUrl: /img/opapermlogo.png
 npmPackageName: '@parsifal-m/plugin-permission-backend-module-opa-wrapper'
 addedDate: '2024-02-26'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:10.502Z'
+    checkedAt: '2026-08-04T03:05:10.502Z'
+    latestVersion: 2.0.2
+    lastPublishedAt: '2026-05-08T11:30:44.065Z'
+    repository:
+      url: https://github.com/Parsifal-M/backstage-opa-plugins
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:10.957Z'
+    checkedAt: '2026-08-04T03:05:10.957Z'
+    version: 1.52.1
+    sourceUrl: https://github.com/Parsifal-M/backstage-opa-plugins/blob/main/backstage.json
+    sourcePath: backstage.json

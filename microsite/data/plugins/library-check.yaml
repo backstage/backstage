@@ -8,5 +8,21 @@ documentation: https://github.com/anakzr/backstage-plugin-library-check
 iconUrl: /img/library-check-logo.png
 npmPackageName: '@anakz/backstage-plugin-library-check'
 addedDate: '2024-03-11'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:56.233Z'
+    checkedAt: '2026-08-04T03:04:56.233Z'
+    latestVersion: 0.1.0
+    lastPublishedAt: '2024-04-30T20:17:25.065Z'
+    repository:
+      url: https://github.com/anakzr/backstage-plugin-library-check
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:56.622Z'
+    checkedAt: '2026-08-04T03:04:56.622Z'
+    version: 1.23.3
+    sourceUrl: https://github.com/anakzr/backstage-plugin-library-check/blob/main/backstage.json
+    sourcePath: backstage.json

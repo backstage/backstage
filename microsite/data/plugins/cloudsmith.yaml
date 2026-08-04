@@ -9,3 +9,20 @@ iconUrl: https://cloudsmith.com/img/cloudsmith-mini-dark.svg
 npmPackageName: '@roadiehq/backstage-plugin-cloudsmith'
 addedDate: '2022-11-18'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:44.564Z'
+    checkedAt: '2026-08-04T03:03:44.564Z'
+    latestVersion: 1.3.0
+    lastPublishedAt: '2025-10-31T09:32:40.006Z'
+    repository:
+      url: https://github.com/RoadieHQ/roadie-backstage-plugins
+      directory: plugins/frontend/backstage-plugin-cloudsmith
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:44.918Z'
+    checkedAt: '2026-08-04T03:03:44.918Z'
+    version: 1.44.2
+    sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
+    sourcePath: backstage.json

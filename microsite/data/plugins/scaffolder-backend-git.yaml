@@ -8,5 +8,18 @@ documentation: https://github.com/arhill05/backstage-plugin-scaffolder-git-actio
 iconUrl: https://git-scm.com/images/logos/downloads/Git-Logo-2Color.png
 npmPackageName: '@mdude2314/backstage-plugin-scaffolder-git-actions'
 addedDate: '2022-05-13'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:30.063Z'
+    checkedAt: '2026-08-04T03:05:30.063Z'
+    latestVersion: 1.1.1
+    lastPublishedAt: '2023-11-27T12:40:56.500Z'
+    repository:
+      url: https://github.com/arhill05/backstage-plugin-scaffolder-git-actions
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:05:30.400Z'
+    reason: backstage-json-not-found

@@ -8,3 +8,20 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 npmPackageName: '@backstage-community/plugin-scaffolder-backend-module-kubernetes'
 addedDate: '2026-02-21'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:31.237Z'
+    checkedAt: '2026-08-04T03:05:31.237Z'
+    latestVersion: 2.20.0
+    lastPublishedAt: '2026-08-03T19:51:59.529Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/scaffolder-backend-module-kubernetes/plugins/kubernetes-actions
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:31.594Z'
+    checkedAt: '2026-08-04T03:05:31.594Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/scaffolder-backend-module-kubernetes/backstage.json
+    sourcePath: workspaces/scaffolder-backend-module-kubernetes/backstage.json

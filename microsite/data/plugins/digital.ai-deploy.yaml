@@ -8,4 +8,19 @@ documentation: https://docs.digital.ai/deploy/docs/concept/xl-deploy-backstage-o
 iconUrl: /img/digital.ai-deploy.svg
 npmPackageName: '@digital-ai/plugin-dai-deploy'
 addedDate: '2024-05-06'
-status: active
+status: inactive
+staleSince: '2026-08-04'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:59.607Z'
+    checkedAt: '2026-08-04T03:03:59.607Z'
+    latestVersion: 0.1.4
+    lastPublishedAt: '2025-04-08T14:02:14.199Z'
+    repository:
+      url: https://github.com/digital-ai/backstage-deploy
+      directory: .
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:03:59.975Z'
+    reason: backstage-json-not-found

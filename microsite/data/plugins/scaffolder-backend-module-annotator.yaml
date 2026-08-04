@@ -8,3 +8,20 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 npmPackageName: '@backstage-community/plugin-scaffolder-backend-module-annotator'
 addedDate: '2026-02-21'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:30.759Z'
+    checkedAt: '2026-08-04T03:05:30.759Z'
+    latestVersion: 2.18.1
+    lastPublishedAt: '2026-07-14T17:39:51.141Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/scaffolder-backend-module-annotator/plugins/scaffolder-backend-module-annotator
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:31.082Z'
+    checkedAt: '2026-08-04T03:05:31.082Z'
+    version: 1.52.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/scaffolder-backend-module-annotator/backstage.json
+    sourcePath: workspaces/scaffolder-backend-module-annotator/backstage.json

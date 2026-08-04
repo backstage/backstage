@@ -8,4 +8,18 @@ documentation: https://github.com/signadot/backstage-plugin
 iconUrl: https://avatars.githubusercontent.com/u/57196635
 npmPackageName: '@signadot-lib/backstage-plugin'
 addedDate: '2025-07-09'
-status: active
+status: inactive
+staleSince: '2026-08-04'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:48.658Z'
+    checkedAt: '2026-08-04T03:05:48.658Z'
+    latestVersion: 0.1.10-xrc.7
+    lastPublishedAt: '2025-07-15T14:54:42.064Z'
+    repository:
+      url: https://github.com/signadot/backstage-plugin
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:05:49.008Z'
+    reason: backstage-json-not-found

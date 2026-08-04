@@ -9,3 +9,12 @@ iconUrl: /img/umami-logo.svg
 npmPackageName: '@axis-backstage/plugin-analytics-module-umami'
 addedDate: '2024-02-05'
 status: active
+snapshot:
+  npm:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:06:04.565Z'
+    reason: repository-unsupported
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:06:04.565Z'
+    reason: npm-data-unavailable

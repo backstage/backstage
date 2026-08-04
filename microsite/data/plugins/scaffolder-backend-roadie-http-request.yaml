@@ -9,3 +9,20 @@ iconUrl: /img/scaffolder-http-request-logo.svg
 npmPackageName: '@roadiehq/scaffolder-backend-module-http-request'
 addedDate: '2022-03-03'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:35.987Z'
+    checkedAt: '2026-08-04T03:05:35.987Z'
+    latestVersion: 5.8.0
+    lastPublishedAt: '2026-06-18T08:33:38.908Z'
+    repository:
+      url: https://github.com/RoadieHQ/roadie-backstage-plugins
+      directory: plugins/scaffolder-actions/scaffolder-backend-module-http-request
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:36.197Z'
+    checkedAt: '2026-08-04T03:05:36.197Z'
+    version: 1.44.2
+    sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
+    sourcePath: backstage.json

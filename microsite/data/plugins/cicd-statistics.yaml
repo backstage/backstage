@@ -9,3 +9,20 @@ iconUrl: /img/cicd-statistics.svg
 npmPackageName: '@backstage-community/plugin-cicd-statistics'
 addedDate: '2022-01-13'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:40.627Z'
+    checkedAt: '2026-08-04T03:03:40.627Z'
+    latestVersion: 0.19.0
+    lastPublishedAt: '2026-07-21T22:58:01.998Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/cicd-statistics/plugins/cicd-statistics
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:40.951Z'
+    checkedAt: '2026-08-04T03:03:40.951Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/cicd-statistics/backstage.json
+    sourcePath: workspaces/cicd-statistics/backstage.json

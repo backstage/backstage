@@ -9,3 +9,20 @@ iconUrl: https://roadie.io/images/logos/argo.png
 npmPackageName: '@roadiehq/backstage-plugin-argo-cd'
 addedDate: '2021-04-20'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:15.326Z'
+    checkedAt: '2026-08-04T03:03:15.326Z'
+    latestVersion: 2.12.5
+    lastPublishedAt: '2026-04-06T08:55:55.061Z'
+    repository:
+      url: https://github.com/RoadieHQ/roadie-backstage-plugins
+      directory: plugins/frontend/backstage-plugin-argo-cd
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:15.768Z'
+    checkedAt: '2026-08-04T03:03:15.768Z'
+    version: 1.44.2
+    sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
+    sourcePath: backstage.json

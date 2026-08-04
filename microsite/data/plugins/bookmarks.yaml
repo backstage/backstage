@@ -8,3 +8,20 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 npmPackageName: '@backstage-community/plugin-bookmarks'
 addedDate: '2026-02-21'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:34.269Z'
+    checkedAt: '2026-08-04T03:03:34.269Z'
+    latestVersion: 0.13.0
+    lastPublishedAt: '2026-07-21T21:38:00.141Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/bookmarks/plugins/bookmarks
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:34.656Z'
+    checkedAt: '2026-08-04T03:03:34.656Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/bookmarks/backstage.json
+    sourcePath: workspaces/bookmarks/backstage.json

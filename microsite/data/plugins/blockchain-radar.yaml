@@ -8,4 +8,21 @@ documentation: https://github.com/aurora-is-near/backstage-plugin-blockchainrada
 iconUrl: https://raw.githubusercontent.com/aurora-is-near/backstage-plugin-blockchainradar/main/docs/imgs/signs/sign-green.svg
 npmPackageName: '@aurora-is-near/backstage-plugin-blockchainradar-backend'
 addedDate: '2023-08-31'
-status: active
+status: inactive
+staleSince: '2026-08-04'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:33.339Z'
+    checkedAt: '2026-08-04T03:03:33.339Z'
+    latestVersion: 1.0.39
+    lastPublishedAt: '2025-08-01T05:05:40.874Z'
+    repository:
+      url: https://github.com/aurora-is-near/backstage-plugin-blockchainradar
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:33.713Z'
+    checkedAt: '2026-08-04T03:03:33.713Z'
+    version: 1.16.0
+    sourceUrl: https://github.com/aurora-is-near/backstage-plugin-blockchainradar/blob/main/backstage.json
+    sourcePath: backstage.json

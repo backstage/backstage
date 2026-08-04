@@ -9,3 +9,20 @@ iconUrl: https://roadie.io/images/logos/insights.png
 npmPackageName: '@roadiehq/backstage-plugin-github-insights'
 addedDate: '2021-04-20'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:20.395Z'
+    checkedAt: '2026-08-04T03:04:20.395Z'
+    latestVersion: 3.5.0
+    lastPublishedAt: '2026-04-01T07:11:02.198Z'
+    repository:
+      url: https://github.com/RoadieHQ/roadie-backstage-plugins
+      directory: plugins/frontend/backstage-plugin-github-insights
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:20.773Z'
+    checkedAt: '2026-08-04T03:04:20.773Z'
+    version: 1.44.2
+    sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
+    sourcePath: backstage.json

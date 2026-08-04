@@ -10,3 +10,12 @@ npmPackageName: '@codacy/backstage-plugin'
 addedDate: '2024-04-19'
 status: inactive
 staleSince: '2026-02-17'
+snapshot:
+  npm:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:03:45.022Z'
+    reason: repository-unsupported
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:03:45.022Z'
+    reason: npm-data-unavailable

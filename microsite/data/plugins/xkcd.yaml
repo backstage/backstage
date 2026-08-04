@@ -6,6 +6,19 @@ category: Humor
 description: xkcd comic within Backstage
 documentation: https://github.com/Vity01/backstage-xkcd/
 iconUrl: https://raw.githubusercontent.com/Vity01/backstage-xkcd/main/docs/xkcd.svg
-npmPackageName: 'backstage-plugin-xkcd'
+npmPackageName: backstage-plugin-xkcd
 addedDate: '2023-05-05'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:06:06.888Z'
+    checkedAt: '2026-08-04T03:06:06.888Z'
+    latestVersion: 1.1.7
+    lastPublishedAt: '2026-02-05T17:31:39.987Z'
+    repository:
+      url: https://github.com/Vity01/backstage-xkcd
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:06:06.919Z'
+    reason: backstage-json-not-found

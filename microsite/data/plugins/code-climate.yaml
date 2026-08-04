@@ -8,3 +8,20 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 npmPackageName: '@backstage-community/plugin-code-climate'
 addedDate: '2026-02-21'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:45.422Z'
+    checkedAt: '2026-08-04T03:03:45.422Z'
+    latestVersion: 0.21.0
+    lastPublishedAt: '2026-07-21T22:57:53.941Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/code-climate/plugins/code-climate
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:45.755Z'
+    checkedAt: '2026-08-04T03:03:45.755Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/code-climate/backstage.json
+    sourcePath: workspaces/code-climate/backstage.json

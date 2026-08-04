@@ -9,3 +9,12 @@ iconUrl: https://static.harness.io/ng-static/images/favicon.png
 npmPackageName: '@harnessio/backstage-plugin-feature-flags'
 addedDate: '2023-03-01'
 status: active
+snapshot:
+  npm:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:31.499Z'
+    reason: repository-unsupported
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:31.499Z'
+    reason: npm-data-unavailable

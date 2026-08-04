@@ -1,3 +1,4 @@
+---
 title: Parseable Dataset Plugin
 author: Parseable
 authorUrl: https://parseable.com
@@ -8,3 +9,16 @@ iconUrl: https://raw.githubusercontent.com/parseablehq/.github/main/images/logo.
 npmPackageName: '@parseable/backstage-plugin-logstream'
 addedDate: '2025-07-14'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:15.507Z'
+    checkedAt: '2026-08-04T03:05:15.507Z'
+    latestVersion: 0.5.1
+    lastPublishedAt: '2025-09-16T06:22:25.577Z'
+    repository:
+      url: https://github.com/parseablehq/backstage-plugin
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:05:15.946Z'
+    reason: backstage-json-not-found

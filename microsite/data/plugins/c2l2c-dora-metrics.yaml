@@ -9,3 +9,16 @@ iconUrl: https://raw.githubusercontent.com/tailwindlabs/heroicons/master/src/24/
 npmPackageName: '@c2l2c/backstage-plugin-dora-metrics'
 addedDate: '2026-03-18'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:36.316Z'
+    checkedAt: '2026-08-04T03:03:36.316Z'
+    latestVersion: 0.4.3
+    lastPublishedAt: '2026-06-28T13:32:13.365Z'
+    repository:
+      url: https://github.com/C2L2C/backstage-plugin-dora-metrics
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:03:36.673Z'
+    reason: backstage-json-not-found

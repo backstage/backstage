@@ -1,5 +1,5 @@
 ---
-title: 'Linguist'
+title: Linguist
 author: Keyloop
 authorUrl: https://keyloop.com/
 category: Metadata
@@ -9,3 +9,20 @@ iconUrl: /img/linguist.svg
 npmPackageName: '@backstage-community/plugin-linguist'
 addedDate: '2023-06-17'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:57.607Z'
+    checkedAt: '2026-08-04T03:04:57.607Z'
+    latestVersion: 0.23.0
+    lastPublishedAt: '2026-07-22T00:17:21.363Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/linguist/plugins/linguist
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:57.979Z'
+    checkedAt: '2026-08-04T03:04:57.979Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/linguist/backstage.json
+    sourcePath: workspaces/linguist/backstage.json

@@ -9,3 +9,20 @@ iconUrl: /img/wheel-of-names.svg
 npmPackageName: '@backstage-community/plugin-wheel-of-names'
 addedDate: '2025-05-21'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:06:05.973Z'
+    checkedAt: '2026-08-04T03:06:05.973Z'
+    latestVersion: 0.8.0
+    lastPublishedAt: '2026-04-17T18:39:39.181Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/wheel-of-names/plugins/wheel-of-names
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:06:06.307Z'
+    checkedAt: '2026-08-04T03:06:06.307Z'
+    version: 1.49.2
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/wheel-of-names/backstage.json
+    sourcePath: workspaces/wheel-of-names/backstage.json

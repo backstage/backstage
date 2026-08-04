@@ -9,3 +9,17 @@ iconUrl: https://raw.githubusercontent.com/balajisiva/backstage-template-builder
 npmPackageName: '@balajisiva/backstage-plugin-template-builder'
 addedDate: '2026-02-16'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:30.289Z'
+    checkedAt: '2026-08-04T03:03:30.289Z'
+    latestVersion: 0.1.0
+    lastPublishedAt: '2026-02-16T18:53:34.092Z'
+    repository:
+      url: https://github.com/balajisiva/backstage-template-builder
+      directory: plugins/backstage-template-builder
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:03:30.670Z'
+    reason: backstage-json-not-found

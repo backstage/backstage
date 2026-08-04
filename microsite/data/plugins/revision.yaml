@@ -9,3 +9,20 @@ iconUrl: https://raw.githubusercontent.com/revision-org/revision-assets/b4895ae0
 npmPackageName: '@revisionapp/backstage-revision-plugin'
 addedDate: '2024-01-26'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:24.061Z'
+    checkedAt: '2026-08-04T03:05:24.061Z'
+    latestVersion: 0.5.3
+    lastPublishedAt: '2026-01-15T15:39:49.530Z'
+    repository:
+      url: https://github.com/revision-org/backstage-plugins
+      directory: plugins/revision
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:24.503Z'
+    checkedAt: '2026-08-04T03:05:24.503Z'
+    version: 1.46.2
+    sourceUrl: https://github.com/revision-org/backstage-plugins/blob/main/backstage.json
+    sourcePath: backstage.json

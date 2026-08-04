@@ -9,3 +9,16 @@ iconUrl: https://raw.githubusercontent.com/jfvilas/plugin-kwirth-metrics/master/
 npmPackageName: '@jfvilas/plugin-kwirth-metrics'
 addedDate: '2025-09-14'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:53.705Z'
+    checkedAt: '2026-08-04T03:04:53.705Z'
+    latestVersion: 0.14.2
+    lastPublishedAt: '2026-03-27T15:37:17.935Z'
+    repository:
+      url: https://github.com/jfvilas/plugin-kwirth-metrics
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:54.061Z'
+    reason: backstage-json-not-found

@@ -8,4 +8,21 @@ documentation: https://github.com/cortexapps/backstage-plugin
 iconUrl: /img/cortex.png
 npmPackageName: '@cortexapps/backstage-plugin'
 addedDate: '2021-06-03'
-status: active
+status: inactive
+staleSince: '2026-08-04'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:49.043Z'
+    checkedAt: '2026-08-04T03:03:49.043Z'
+    latestVersion: 2.13.6
+    lastPublishedAt: '2025-02-24T12:55:50.032Z'
+    repository:
+      url: https://github.com/cortexapps/backstage-plugin
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:49.398Z'
+    checkedAt: '2026-08-04T03:03:49.398Z'
+    version: 1.27.7
+    sourceUrl: https://github.com/cortexapps/backstage-plugin/blob/master/backstage.json
+    sourcePath: backstage.json

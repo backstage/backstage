@@ -1,3 +1,4 @@
+---
 title: Microsoft Forms
 author: ZcMander
 authorUrl: https://github.com/zcmander
@@ -8,3 +9,19 @@ iconUrl: /img/microsoft-forms.png
 npmPackageName: '@zcmander/backstage-plugin-msforms'
 addedDate: '2023-04-11'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:03.976Z'
+    checkedAt: '2026-08-04T03:05:03.976Z'
+    latestVersion: 2.0.1
+    lastPublishedAt: '2026-03-11T05:56:51.455Z'
+    repository:
+      url: https://github.com/zcmander/backstage-plugin-msforms
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:04.376Z'
+    checkedAt: '2026-08-04T03:05:04.376Z'
+    version: 1.48.1
+    sourceUrl: https://github.com/zcmander/backstage-plugin-msforms/blob/main/backstage.json
+    sourcePath: backstage.json

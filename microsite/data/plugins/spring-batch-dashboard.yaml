@@ -9,3 +9,17 @@ iconUrl: https://raw.githubusercontent.com/zc149/backstage-plugin-spring-batch-d
 npmPackageName: '@jikwan/backstage-plugin-spring-batch-dashboard'
 addedDate: '2026-03-11'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:52.907Z'
+    checkedAt: '2026-08-04T03:05:52.907Z'
+    latestVersion: 1.0.4
+    lastPublishedAt: '2026-03-11T01:38:47.472Z'
+    repository:
+      url: https://github.com/zc149/backstage-plugin-spring-batch-dashboard
+      directory: plugins/spring-batch-dashboard
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:05:53.286Z'
+    reason: backstage-json-not-found

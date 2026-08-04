@@ -9,3 +9,20 @@ iconUrl: /img/dx-icon.png
 npmPackageName: '@get-dx/backstage-plugin'
 addedDate: '2024-03-05'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:03.435Z'
+    checkedAt: '2026-08-04T03:04:03.435Z'
+    latestVersion: 1.1.2
+    lastPublishedAt: '2026-06-23T17:51:49.067Z'
+    repository:
+      url: https://github.com/get-dx/backstage-plugin
+      directory: .
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:03.800Z'
+    checkedAt: '2026-08-04T03:04:03.800Z'
+    version: 1.31.1
+    sourceUrl: https://github.com/get-dx/backstage-plugin/blob/main/backstage.json
+    sourcePath: backstage.json

@@ -9,3 +9,20 @@ iconUrl: https://avatars2.githubusercontent.com/u/38220399?s=400&v=4
 npmPackageName: '@backstage-community/plugin-cloudbuild'
 addedDate: '2021-01-20'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:41.994Z'
+    checkedAt: '2026-08-04T03:03:41.994Z'
+    latestVersion: 0.25.0
+    lastPublishedAt: '2026-07-21T22:57:14.978Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/cloudbuild/plugins/cloudbuild
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:42.417Z'
+    checkedAt: '2026-08-04T03:03:42.417Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/cloudbuild/backstage.json
+    sourcePath: workspaces/cloudbuild/backstage.json

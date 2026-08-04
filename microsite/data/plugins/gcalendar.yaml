@@ -8,3 +8,20 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 npmPackageName: '@backstage-community/plugin-gcalendar'
 addedDate: '2026-02-21'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:17.247Z'
+    checkedAt: '2026-08-04T03:04:17.247Z'
+    latestVersion: 0.23.0
+    lastPublishedAt: '2026-07-21T23:04:15.113Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/gcalendar/plugins/gcalendar
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:17.638Z'
+    checkedAt: '2026-08-04T03:04:17.638Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/gcalendar/backstage.json
+    sourcePath: workspaces/gcalendar/backstage.json

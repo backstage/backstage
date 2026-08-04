@@ -1,3 +1,4 @@
+---
 title: Kubernetes Ingestor
 author: terasky.com
 authorUrl: https://github.com/terasky-oss
@@ -8,3 +9,20 @@ iconUrl: https://avatars.githubusercontent.com/u/13629408
 npmPackageName: '@terasky/backstage-plugin-kubernetes-ingestor'
 addedDate: '2024-12-30'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:50.949Z'
+    checkedAt: '2026-08-04T03:04:50.949Z'
+    latestVersion: 4.0.0
+    lastPublishedAt: '2026-07-06T12:51:55.663Z'
+    repository:
+      url: https://github.com/TeraSky-OSS/backstage-plugins
+      directory: plugins/kubernetes-ingestor
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:51.321Z'
+    checkedAt: '2026-08-04T03:04:51.321Z'
+    version: 1.52.1
+    sourceUrl: https://github.com/TeraSky-OSS/backstage-plugins/blob/main/backstage.json
+    sourcePath: backstage.json

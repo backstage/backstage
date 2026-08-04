@@ -8,5 +8,18 @@ documentation: https://github.com/AntoineDao/backstage-provider-kubernetes#readm
 iconUrl: https://avatars.githubusercontent.com/u/13629408
 npmPackageName: '@antoinedao/backstage-provider-kubernetes'
 addedDate: '2023-04-10'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:51.425Z'
+    checkedAt: '2026-08-04T03:04:51.425Z'
+    latestVersion: 0.1.2
+    lastPublishedAt: '2023-04-10T11:44:55.056Z'
+    repository:
+      url: https://github.com/antoinedao/backstage-provider-kubernetes
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:51.803Z'
+    reason: backstage-json-not-found

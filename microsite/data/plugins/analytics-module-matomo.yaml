@@ -9,3 +9,20 @@ iconUrl: /img/matomo.png
 npmPackageName: '@backstage-community/plugin-analytics-module-matomo'
 addedDate: '2023-10-17'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:07.645Z'
+    checkedAt: '2026-08-04T03:03:07.645Z'
+    latestVersion: 1.30.0
+    lastPublishedAt: '2026-07-21T17:22:44.382Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/analytics/plugins/analytics-module-matomo
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:07.980Z'
+    checkedAt: '2026-08-04T03:03:07.980Z'
+    version: 1.52.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/analytics/backstage.json
+    sourcePath: workspaces/analytics/backstage.json

@@ -1,3 +1,4 @@
+---
 title: RuleHub Policy Catalog
 author: Rulehub
 authorUrl: https://github.com/rulehub
@@ -8,3 +9,16 @@ iconUrl: https://github.com/rulehub.png
 npmPackageName: '@rulehub/rulehub-backstage-plugin'
 addedDate: '2026-03-06'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:26.632Z'
+    checkedAt: '2026-08-04T03:05:26.632Z'
+    latestVersion: 0.1.1
+    lastPublishedAt: '2026-03-06T05:03:39.717Z'
+    repository:
+      url: https://github.com/rulehub/rulehub-backstage-plugin
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:05:27.016Z'
+    reason: backstage-json-not-found

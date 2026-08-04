@@ -9,3 +9,20 @@ iconUrl: /img/dynatrace.svg
 npmPackageName: '@dynatrace/backstage-plugin-dql'
 addedDate: '2024-03-22'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:04.914Z'
+    checkedAt: '2026-08-04T03:04:04.914Z'
+    latestVersion: 2.8.0
+    lastPublishedAt: '2026-06-03T12:20:31.815Z'
+    repository:
+      url: https://github.com/Dynatrace/backstage-plugin
+      directory: plugins\dql
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:05.272Z'
+    checkedAt: '2026-08-04T03:04:05.272Z'
+    version: 1.50.4
+    sourceUrl: https://github.com/Dynatrace/backstage-plugin/blob/main/backstage.json
+    sourcePath: backstage.json

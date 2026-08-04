@@ -9,3 +9,12 @@ iconUrl: https://veecode-platform.github.io/support/imgs/logo_2.svg
 npmPackageName: '@veecode-platform/backstage-plugin-github-workflows'
 addedDate: '2023-09-12'
 status: active
+snapshot:
+  npm:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:21.815Z'
+    reason: repository-unsupported
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:21.815Z'
+    reason: npm-data-unavailable

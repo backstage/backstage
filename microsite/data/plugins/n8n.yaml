@@ -9,3 +9,20 @@ iconUrl: /img/logo-gradient-on-dark.svg
 npmPackageName: '@backstage-community/plugin-n8n'
 addedDate: '2026-02-15'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:05.324Z'
+    checkedAt: '2026-08-04T03:05:05.324Z'
+    latestVersion: 0.4.0
+    lastPublishedAt: '2026-05-11T09:16:06.404Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/n8n/plugins/n8n
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:05.674Z'
+    checkedAt: '2026-08-04T03:05:05.674Z'
+    version: 1.50.2
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/n8n/backstage.json
+    sourcePath: workspaces/n8n/backstage.json

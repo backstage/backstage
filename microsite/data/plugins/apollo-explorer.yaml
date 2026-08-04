@@ -9,3 +9,20 @@ iconUrl: /img/apollo-explorer.png
 npmPackageName: '@backstage-community/plugin-apollo-explorer'
 addedDate: '2022-07-20'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:14.856Z'
+    checkedAt: '2026-08-04T03:03:14.856Z'
+    latestVersion: 0.23.0
+    lastPublishedAt: '2026-07-28T04:25:40.121Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/apollo-explorer/plugins/apollo-explorer
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:15.216Z'
+    checkedAt: '2026-08-04T03:03:15.216Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/apollo-explorer/backstage.json
+    sourcePath: workspaces/apollo-explorer/backstage.json

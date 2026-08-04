@@ -8,3 +8,20 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 npmPackageName: '@backstage-community/plugin-linkerd'
 addedDate: '2026-02-21'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:58.075Z'
+    checkedAt: '2026-08-04T03:04:58.075Z'
+    latestVersion: 0.22.0
+    lastPublishedAt: '2026-07-22T00:18:18.072Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/linkerd/plugins/linkerd
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:58.528Z'
+    checkedAt: '2026-08-04T03:04:58.528Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/linkerd/backstage.json
+    sourcePath: workspaces/linkerd/backstage.json

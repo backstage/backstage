@@ -9,3 +9,12 @@ iconUrl: https://veecode-platform.github.io/support/imgs/logo_4.svg
 npmPackageName: '@veecode-platform/backstage-plugin-kubernetes-gpt-analyzer'
 addedDate: '2024-07-31'
 status: active
+snapshot:
+  npm:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:50.568Z'
+    reason: repository-unsupported
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:50.568Z'
+    reason: npm-data-unavailable

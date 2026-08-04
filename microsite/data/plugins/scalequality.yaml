@@ -1,3 +1,4 @@
+---
 title: ScaleQuality
 author: ScaleQuality
 authorUrl: https://scalequality.io
@@ -8,3 +9,16 @@ iconUrl: https://raw.githubusercontent.com/scalequality-io/backstage-plugin/main
 npmPackageName: '@scalequality/backstage-plugin'
 addedDate: '2026-07-22'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:39.874Z'
+    checkedAt: '2026-08-04T03:05:39.874Z'
+    latestVersion: 0.1.3
+    lastPublishedAt: '2026-07-23T18:00:51.989Z'
+    repository:
+      url: https://github.com/scalequality-io/backstage-plugin
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:05:40.234Z'
+    reason: backstage-json-not-found

@@ -9,3 +9,19 @@ iconUrl: /img/qeta-logo.png
 npmPackageName: '@drodil/backstage-plugin-qeta'
 addedDate: '2022-12-21'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:19.912Z'
+    checkedAt: '2026-08-04T03:05:19.912Z'
+    latestVersion: 4.0.0
+    lastPublishedAt: '2026-08-03T09:25:30.913Z'
+    repository:
+      url: https://github.com/drodil/backstage-plugin-qeta
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:20.122Z'
+    checkedAt: '2026-08-04T03:05:20.122Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/drodil/backstage-plugin-qeta/blob/main/backstage.json
+    sourcePath: backstage.json

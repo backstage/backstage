@@ -8,5 +8,18 @@ documentation: https://github.com/K-Phoen/backstage-plugin-opsgenie/
 iconUrl: https://avatars.githubusercontent.com/u/1818843?s=200&v=4
 npmPackageName: '@k-phoen/backstage-plugin-opsgenie'
 addedDate: '2022-03-13'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:12.835Z'
+    checkedAt: '2026-08-04T03:05:12.835Z'
+    latestVersion: 0.6.6
+    lastPublishedAt: '2023-03-02T11:34:45.976Z'
+    repository:
+      url: https://github.com/K-Phoen/backstage-plugin-opsgenie
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:05:13.231Z'
+    reason: backstage-json-not-found

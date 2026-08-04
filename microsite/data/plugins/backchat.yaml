@@ -8,5 +8,18 @@ documentation: https://github.com/benwilcock/backstage-plugin-backchat
 iconUrl: /img/backchat-logo.png
 npmPackageName: '@benbravo73/backstage-plugin-backchat'
 addedDate: '2024-01-12'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:26.532Z'
+    checkedAt: '2026-08-04T03:03:26.532Z'
+    latestVersion: 0.0.5
+    lastPublishedAt: '2024-01-08T13:39:26.948Z'
+    repository:
+      url: https://github.com/benwilcock/backstage-plugin-backchat
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:03:26.870Z'
+    reason: backstage-json-not-found

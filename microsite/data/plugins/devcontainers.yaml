@@ -9,3 +9,12 @@ iconUrl: /img/devcontainers.png
 npmPackageName: '@coder/backstage-plugin-devcontainers-react'
 addedDate: '2024-03-15'
 status: active
+snapshot:
+  npm:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:03:58.267Z'
+    reason: repository-unsupported
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:03:58.267Z'
+    reason: npm-data-unavailable

@@ -10,3 +10,12 @@ npmPackageName: '@croz/plugin-ibm-apic-backend'
 addedDate: '2024-03-01'
 status: inactive
 staleSince: '2026-02-17'
+snapshot:
+  npm:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:38.525Z'
+    reason: repository-unsupported
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:38.525Z'
+    reason: npm-data-unavailable

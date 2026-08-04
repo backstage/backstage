@@ -8,3 +8,20 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 npmPackageName: '@backstage-community/plugin-acs'
 addedDate: '2026-02-21'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:02.726Z'
+    checkedAt: '2026-08-04T03:03:02.726Z'
+    latestVersion: 0.2.0
+    lastPublishedAt: '2026-05-04T13:30:57.939Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/acs/plugins/acs
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:03.075Z'
+    checkedAt: '2026-08-04T03:03:03.075Z'
+    version: 1.49.4
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/acs/backstage.json
+    sourcePath: workspaces/acs/backstage.json

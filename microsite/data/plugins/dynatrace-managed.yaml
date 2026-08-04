@@ -9,3 +9,20 @@ iconUrl: /img/dynatrace.svg
 npmPackageName: '@backstage-community/plugin-dynatrace'
 addedDate: '2022-06-23'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:04.433Z'
+    checkedAt: '2026-08-04T03:04:04.433Z'
+    latestVersion: 10.22.0
+    lastPublishedAt: '2026-07-21T23:04:41.699Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/dynatrace/plugins/dynatrace
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:04.795Z'
+    checkedAt: '2026-08-04T03:04:04.795Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/dynatrace/backstage.json
+    sourcePath: workspaces/dynatrace/backstage.json

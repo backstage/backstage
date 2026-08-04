@@ -9,3 +9,20 @@ iconUrl: /img/terraform-logo.svg
 npmPackageName: '@globallogicuki/backstage-plugin-terraform'
 addedDate: '2024-07-17'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:32.624Z'
+    checkedAt: '2026-08-04T03:04:32.624Z'
+    latestVersion: 0.11.6
+    lastPublishedAt: '2026-06-23T07:38:54.182Z'
+    repository:
+      url: https://github.com/globallogicuki/globallogic-backstage-plugins
+      directory: plugins/terraform
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:33.002Z'
+    checkedAt: '2026-08-04T03:04:33.002Z'
+    version: 1.47.0
+    sourceUrl: https://github.com/globallogicuki/globallogic-backstage-plugins/blob/main/backstage.json
+    sourcePath: backstage.json

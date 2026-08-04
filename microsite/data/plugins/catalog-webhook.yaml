@@ -9,3 +9,17 @@ iconUrl: /img/forgedapps.jpg
 npmPackageName: '@forgedapps/backstage-catalog-webhook-plugin'
 addedDate: '2024-10-28'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:39.452Z'
+    checkedAt: '2026-08-04T03:03:39.452Z'
+    latestVersion: 3.5.1
+    lastPublishedAt: '2026-01-29T22:48:20.824Z'
+    repository:
+      url: https://github.com/forgedapps/backstage-catalog-webhook-plugin
+      directory: .
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:03:39.819Z'
+    reason: backstage-json-not-found

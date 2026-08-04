@@ -8,5 +8,21 @@ documentation: https://github.com/benjmac/backstage-plugin-festive-fun/
 iconUrl: https://raw.githubusercontent.com/benjmac/backstage-plugin-festive-fun/main/docs/festive-fun-logo.png
 npmPackageName: backstage-plugin-festive-fun
 addedDate: '2023-11-20'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:10.939Z'
+    checkedAt: '2026-08-04T03:04:10.939Z'
+    latestVersion: 0.1.4
+    lastPublishedAt: '2023-12-08T15:40:18.742Z'
+    repository:
+      url: https://github.com/benjmac/backstage-plugin-festive-fun
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:11.073Z'
+    checkedAt: '2026-08-04T03:04:11.073Z'
+    version: 1.20.3
+    sourceUrl: https://github.com/benjmac/backstage-plugin-festive-fun/blob/main/backstage.json
+    sourcePath: backstage.json

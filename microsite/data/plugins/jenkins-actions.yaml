@@ -9,3 +9,20 @@ iconUrl: /img/jenkins.png
 npmPackageName: '@backstage-community/plugin-scaffolder-backend-module-jenkins'
 addedDate: '2024-12-06'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:42.475Z'
+    checkedAt: '2026-08-04T03:04:42.475Z'
+    latestVersion: 0.23.0
+    lastPublishedAt: '2026-07-22T00:18:02.609Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/jenkins/plugins/scaffolder-backend-module-jenkins
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:42.809Z'
+    checkedAt: '2026-08-04T03:04:42.809Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/jenkins/backstage.json
+    sourcePath: workspaces/jenkins/backstage.json

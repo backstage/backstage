@@ -9,3 +9,12 @@ iconUrl: https://raw.githubusercontent.com/AxisCommunications/backstage-plugins/
 npmPackageName: '@axis-backstage/plugin-statuspage'
 addedDate: '2024-02-06'
 status: active
+snapshot:
+  npm:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:05:56.414Z'
+    reason: repository-unsupported
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:05:56.414Z'
+    reason: npm-data-unavailable

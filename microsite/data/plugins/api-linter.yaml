@@ -9,3 +9,20 @@ iconUrl: https://raw.githubusercontent.com/zalando/zally/main/logo.png
 npmPackageName: backstage-plugin-api-linter
 addedDate: '2022-07-22'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:11.259Z'
+    checkedAt: '2026-08-04T03:03:11.259Z'
+    latestVersion: 1.1.2
+    lastPublishedAt: '2026-01-22T09:41:09.066Z'
+    repository:
+      url: https://github.com/zalando/backstage-plugin-api-linter
+      directory: .
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:11.409Z'
+    checkedAt: '2026-08-04T03:03:11.409Z'
+    version: 1.40.0
+    sourceUrl: https://github.com/zalando/backstage-plugin-api-linter/blob/main/backstage.json
+    sourcePath: backstage.json

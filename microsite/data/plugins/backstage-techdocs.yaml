@@ -7,6 +7,23 @@ description: A docs-like-code solution to technical documentation. Write your do
 documentation: https://backstage.io/docs/features/techdocs/
 iconUrl: /img/backstage-techdocs.svg
 npmPackageName: '@backstage/plugin-techdocs'
-order: 3
 addedDate: '2021-03-29'
+order: 3
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:29.306Z'
+    checkedAt: '2026-08-04T03:03:29.306Z'
+    latestVersion: 1.17.8
+    lastPublishedAt: '2026-07-14T12:17:39.477Z'
+    repository:
+      url: https://github.com/backstage/backstage
+      directory: plugins/techdocs
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:29.710Z'
+    checkedAt: '2026-08-04T03:03:29.710Z'
+    version: 1.50.0
+    sourceUrl: https://github.com/backstage/backstage/blob/master/workspaces/ui/backstage.json
+    sourcePath: workspaces/ui/backstage.json

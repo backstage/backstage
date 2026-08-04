@@ -9,3 +9,20 @@ iconUrl: /img/entity-feedback-logo.png
 npmPackageName: '@backstage-community/plugin-entity-feedback'
 addedDate: '2023-01-20'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:07.385Z'
+    checkedAt: '2026-08-04T03:04:07.385Z'
+    latestVersion: 0.21.1
+    lastPublishedAt: '2026-07-28T19:02:16.661Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/entity-feedback/plugins/entity-feedback
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:07.764Z'
+    checkedAt: '2026-08-04T03:04:07.764Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/entity-feedback/backstage.json
+    sourcePath: workspaces/entity-feedback/backstage.json

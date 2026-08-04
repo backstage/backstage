@@ -9,3 +9,20 @@ iconUrl: /img/puppet.png
 npmPackageName: '@backstage-community/plugin-puppetdb'
 addedDate: '2023-04-06'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:19.388Z'
+    checkedAt: '2026-08-04T03:05:19.388Z'
+    latestVersion: 0.21.0
+    lastPublishedAt: '2026-07-22T00:21:01.693Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/puppetdb/plugins/puppetdb
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:19.807Z'
+    checkedAt: '2026-08-04T03:05:19.807Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/puppetdb/backstage.json
+    sourcePath: workspaces/puppetdb/backstage.json

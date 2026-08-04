@@ -9,3 +9,20 @@ iconUrl: /img/massdriver-logo.svg
 npmPackageName: '@massdriver/backstage-plugin'
 addedDate: '2026-07-16'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:59.714Z'
+    checkedAt: '2026-08-04T03:04:59.714Z'
+    latestVersion: 1.0.4
+    lastPublishedAt: '2026-07-23T15:53:48.998Z'
+    repository:
+      url: https://github.com/massdriver-cloud/massdriver-backstage
+      directory: plugins/massdriver
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:00.030Z'
+    checkedAt: '2026-08-04T03:05:00.030Z'
+    version: 1.52.0
+    sourceUrl: https://github.com/massdriver-cloud/massdriver-backstage/blob/main/backstage.json
+    sourcePath: backstage.json

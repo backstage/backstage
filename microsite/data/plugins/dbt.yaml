@@ -8,5 +8,18 @@ documentation: https://github.com/IIBenII/backstage-plugin-dbt
 iconUrl: /img/logo-gradient-on-dark.svg
 npmPackageName: '@iiben_orgii/backstage-plugin-dbt'
 addedDate: '2023-04-27'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:55.481Z'
+    checkedAt: '2026-08-04T03:03:55.481Z'
+    latestVersion: 2.1.0
+    lastPublishedAt: '2024-05-17T13:30:57.556Z'
+    repository:
+      url: https://github.com/IIBenII/backstage-plugin-dbt
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:03:55.874Z'
+    reason: backstage-json-not-found

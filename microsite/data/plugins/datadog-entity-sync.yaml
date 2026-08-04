@@ -9,3 +9,12 @@ iconUrl: https://imgix.datadoghq.com/img/about/presskit/logo-v/dd_vertical_purpl
 npmPackageName: '@datadog/backstage-plugin-datadog-entity-sync-backend'
 addedDate: '2025-09-19'
 status: active
+snapshot:
+  npm:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:03:53.994Z'
+    reason: repository-unsupported
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:03:53.994Z'
+    reason: npm-data-unavailable

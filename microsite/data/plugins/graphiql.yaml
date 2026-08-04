@@ -9,3 +9,20 @@ iconUrl: https://upload.wikimedia.org/wikipedia/commons/1/17/GraphQL_Logo.svg
 npmPackageName: '@backstage-community/plugin-graphiql'
 addedDate: '2020-11-03'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:25.969Z'
+    checkedAt: '2026-08-04T03:04:25.969Z'
+    latestVersion: 0.18.0
+    lastPublishedAt: '2026-07-21T23:06:34.599Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/graphiql/plugins/graphiql
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:26.350Z'
+    checkedAt: '2026-08-04T03:04:26.350Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/graphiql/backstage.json
+    sourcePath: workspaces/graphiql/backstage.json

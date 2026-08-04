@@ -5,7 +5,24 @@ authorUrl: https://github.com/spreadshirt
 category: Quality
 description: Interface for validating entities.
 documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/entity-validation/plugins/entity-validation
-npmPackageName: '@backstage-community/plugin-entity-validation'
 iconUrl: /img/entity-validation.svg
+npmPackageName: '@backstage-community/plugin-entity-validation'
 addedDate: '2023-09-13'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:07.877Z'
+    checkedAt: '2026-08-04T03:04:07.877Z'
+    latestVersion: 0.22.0
+    lastPublishedAt: '2026-07-21T23:04:13.561Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/entity-validation/plugins/entity-validation
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:08.136Z'
+    checkedAt: '2026-08-04T03:04:08.136Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/entity-validation/backstage.json
+    sourcePath: workspaces/entity-validation/backstage.json

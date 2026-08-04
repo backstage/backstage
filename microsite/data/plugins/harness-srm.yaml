@@ -9,3 +9,12 @@ iconUrl: https://static.harness.io/ng-static/images/favicon.png
 npmPackageName: '@harnessio/backstage-plugin-harness-srm'
 addedDate: '2023-11-17'
 status: active
+snapshot:
+  npm:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:32.255Z'
+    reason: repository-unsupported
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:32.255Z'
+    reason: npm-data-unavailable

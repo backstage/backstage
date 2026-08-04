@@ -8,5 +8,21 @@ documentation: https://github.com/arhill05/backstage-plugin-scaffolder-backend-m
 iconUrl: /img/Slack-mark-RGB.png
 npmPackageName: '@mdude2314/backstage-plugin-scaffolder-backend-module-slack'
 addedDate: '2023-08-04'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:36.881Z'
+    checkedAt: '2026-08-04T03:05:36.881Z'
+    latestVersion: 3.0.2
+    lastPublishedAt: '2024-08-27T17:54:02.737Z'
+    repository:
+      url: https://github.com/arhill05/backstage-plugin-scaffolder-backend-module-slack
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:37.285Z'
+    checkedAt: '2026-08-04T03:05:37.285Z'
+    version: 1.27.5
+    sourceUrl: https://github.com/arhill05/backstage-plugin-scaffolder-backend-module-slack/blob/main/backstage.json
+    sourcePath: backstage.json

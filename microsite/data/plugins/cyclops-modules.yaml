@@ -8,5 +8,22 @@ documentation: https://github.com/cyclops-ui/backstage-plugins#readme
 iconUrl: /img/cyclops.svg
 npmPackageName: '@cyclopsui/backstage-plugin-cyclops-modules'
 addedDate: '2024-01-02'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:51.477Z'
+    checkedAt: '2026-08-04T03:03:51.477Z'
+    latestVersion: 0.2.5
+    lastPublishedAt: '2025-01-06T09:37:27.608Z'
+    repository:
+      url: https://github.com/cyclops-ui/backstage-plugins
+      directory: plugins/cyclops-modules
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:51.818Z'
+    checkedAt: '2026-08-04T03:03:51.818Z'
+    version: 1.34.0
+    sourceUrl: https://github.com/cyclops-ui/backstage-plugins/blob/main/backstage.json
+    sourcePath: backstage.json

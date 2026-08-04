@@ -1,3 +1,4 @@
+---
 title: Microsoft Calendar
 author: StatusNeo
 authorUrl: https://statusneo.com/
@@ -6,7 +7,24 @@ description: |
   The plugin integrates with your Microsoft Calendar.
   It displays all your calendars and events in it.
 documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/microsoft-calendar/plugins/microsoft-calendar
-iconUrl: '/img/logo-gradient-on-dark.svg'
+iconUrl: /img/logo-gradient-on-dark.svg
 npmPackageName: '@backstage-community/plugin-microsoft-calendar'
 addedDate: '2023-03-15'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:03.532Z'
+    checkedAt: '2026-08-04T03:05:03.532Z'
+    latestVersion: 0.21.0
+    lastPublishedAt: '2026-07-22T00:17:22.188Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/microsoft-calendar/plugins/microsoft-calendar
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:03.873Z'
+    checkedAt: '2026-08-04T03:05:03.873Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/microsoft-calendar/backstage.json
+    sourcePath: workspaces/microsoft-calendar/backstage.json

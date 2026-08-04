@@ -9,3 +9,20 @@ iconUrl: /img/topology.svg
 npmPackageName: '@backstage-community/plugin-topology'
 addedDate: '2023-05-15'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:06:03.944Z'
+    checkedAt: '2026-08-04T03:06:03.944Z'
+    latestVersion: 2.16.0
+    lastPublishedAt: '2026-07-30T22:27:04.372Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/topology/plugins/topology
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:06:04.101Z'
+    checkedAt: '2026-08-04T03:06:04.101Z'
+    version: 1.52.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/topology/backstage.json
+    sourcePath: workspaces/topology/backstage.json

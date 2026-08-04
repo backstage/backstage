@@ -8,4 +8,19 @@ documentation: https://github.com/daytonaio/backstage-plugins/tree/main/plugins/
 iconUrl: /img/daytona.svg
 npmPackageName: '@daytonaio/backstage-plugin-daytona'
 addedDate: '2024-11-02'
-status: active
+status: inactive
+staleSince: '2026-08-04'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:54.890Z'
+    checkedAt: '2026-08-04T03:03:54.890Z'
+    latestVersion: 0.2.10
+    lastPublishedAt: '2024-10-18T10:19:39.760Z'
+    repository:
+      url: https://github.com/daytonaio/backstage-plugins
+      directory: plugins/daytona
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:03:55.374Z'
+    reason: github-invalid-response

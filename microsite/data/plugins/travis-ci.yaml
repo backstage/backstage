@@ -9,3 +9,20 @@ iconUrl: https://roadie.io/images/logos/travis.png
 npmPackageName: '@roadiehq/backstage-plugin-travis-ci'
 addedDate: '2021-04-20'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:06:04.326Z'
+    checkedAt: '2026-08-04T03:06:04.326Z'
+    latestVersion: 2.3.0
+    lastPublishedAt: '2025-10-31T09:33:35.077Z'
+    repository:
+      url: https://github.com/RoadieHQ/roadie-backstage-plugins
+      directory: plugins/frontend/backstage-plugin-travis-ci
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:06:04.462Z'
+    checkedAt: '2026-08-04T03:06:04.462Z'
+    version: 1.44.2
+    sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
+    sourcePath: backstage.json

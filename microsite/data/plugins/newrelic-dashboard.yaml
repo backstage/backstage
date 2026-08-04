@@ -9,3 +9,20 @@ iconUrl: https://newrelic.com/themes/custom/erno/assets/mediakit/new_relic_logo_
 npmPackageName: '@backstage-community/plugin-newrelic-dashboard'
 addedDate: '2021-12-23'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:06.233Z'
+    checkedAt: '2026-08-04T03:05:06.233Z'
+    latestVersion: 0.26.0
+    lastPublishedAt: '2026-07-22T00:17:23.411Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/newrelic/plugins/newrelic-dashboard
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:06.667Z'
+    checkedAt: '2026-08-04T03:05:06.667Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/newrelic/backstage.json
+    sourcePath: workspaces/newrelic/backstage.json

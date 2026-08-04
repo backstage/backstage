@@ -1,3 +1,4 @@
+---
 title: Harness Cloud Cost Management
 author: harness.io
 authorUrl: https://github.com/harness/backstage-plugins
@@ -8,3 +9,12 @@ iconUrl: https://static.harness.io/ng-static/images/favicon.png
 npmPackageName: '@harnessio/backstage-plugin-harness-ccm'
 addedDate: '2024-09-27'
 status: active
+snapshot:
+  npm:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:30.374Z'
+    reason: repository-unsupported
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:30.374Z'
+    reason: npm-data-unavailable

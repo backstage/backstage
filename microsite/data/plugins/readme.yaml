@@ -9,3 +9,12 @@ iconUrl: https://raw.githubusercontent.com/AxisCommunications/backstage-plugins/
 npmPackageName: '@axis-backstage/plugin-readme'
 addedDate: '2023-12-07'
 status: active
+snapshot:
+  npm:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:05:21.984Z'
+    reason: repository-unsupported
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:05:21.984Z'
+    reason: npm-data-unavailable

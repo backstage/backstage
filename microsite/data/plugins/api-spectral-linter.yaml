@@ -9,3 +9,20 @@ iconUrl: https://raw.githubusercontent.com/dweber019/backstage-plugins/main/plug
 npmPackageName: '@dweber019/backstage-plugin-api-docs-spectral-linter'
 addedDate: '2023-03-27'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:12.259Z'
+    checkedAt: '2026-08-04T03:03:12.259Z'
+    latestVersion: 0.5.2
+    lastPublishedAt: '2025-12-19T07:45:21.378Z'
+    repository:
+      url: https://github.com/dweber019/backstage-plugins
+      directory: plugins/api-docs-spectral-linter
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:12.645Z'
+    checkedAt: '2026-08-04T03:03:12.645Z'
+    version: 1.46.1
+    sourceUrl: https://github.com/dweber019/backstage-plugins/blob/main/backstage.json
+    sourcePath: backstage.json

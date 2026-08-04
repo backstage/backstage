@@ -8,5 +8,18 @@ documentation: https://github.com/suxess-it/backstage-plugin-kubecost/blob/main/
 iconUrl: https://avatars.githubusercontent.com/u/45108136?s=200&v=4
 npmPackageName: '@suxess-it/backstage-plugin-kubecost'
 addedDate: '2023-06-29'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:49.095Z'
+    checkedAt: '2026-08-04T03:04:49.095Z'
+    latestVersion: 0.4.0
+    lastPublishedAt: '2024-04-22T06:39:28.844Z'
+    repository:
+      url: https://github.com/suxess-it/backstage-plugin-kubecost
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:49.441Z'
+    reason: backstage-json-not-found

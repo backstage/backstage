@@ -8,3 +8,20 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 npmPackageName: '@backstage-community/plugin-report-portal'
 addedDate: '2026-02-21'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:23.597Z'
+    checkedAt: '2026-08-04T03:05:23.597Z'
+    latestVersion: 1.6.1
+    lastPublishedAt: '2026-03-25T14:52:36.933Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/report-portal/plugins/report-portal
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:23.965Z'
+    checkedAt: '2026-08-04T03:05:23.965Z'
+    version: 1.41.1
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/report-portal/backstage.json
+    sourcePath: workspaces/report-portal/backstage.json

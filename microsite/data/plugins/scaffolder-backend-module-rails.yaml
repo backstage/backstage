@@ -9,3 +9,20 @@ iconUrl: /img/rails-icon.png
 npmPackageName: '@backstage/plugin-scaffolder-backend-module-rails'
 addedDate: '2021-06-24'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:31.703Z'
+    checkedAt: '2026-08-04T03:05:31.703Z'
+    latestVersion: 0.5.23
+    lastPublishedAt: '2026-07-14T12:14:18.438Z'
+    repository:
+      url: https://github.com/backstage/backstage
+      directory: plugins/scaffolder-backend-module-rails
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:32.070Z'
+    checkedAt: '2026-08-04T03:05:32.070Z'
+    version: 1.50.0
+    sourceUrl: https://github.com/backstage/backstage/blob/master/workspaces/ui/backstage.json
+    sourcePath: workspaces/ui/backstage.json

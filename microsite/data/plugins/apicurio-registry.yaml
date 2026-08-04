@@ -9,3 +9,20 @@ iconUrl: https://avatars.githubusercontent.com/u/28107283?s=200&v=4
 npmPackageName: '@simonnepomuk/backstage-plugin-apicurio-registry'
 addedDate: '2025-08-31'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:13.491Z'
+    checkedAt: '2026-08-04T03:03:13.491Z'
+    latestVersion: 1.0.0
+    lastPublishedAt: '2025-08-31T10:57:29.026Z'
+    repository:
+      url: https://github.com/simonnepomuk/backstage-plugin-apicurio-registry
+      directory: plugins/apicurio-registry
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:13.823Z'
+    checkedAt: '2026-08-04T03:03:13.823Z'
+    version: 1.51.0
+    sourceUrl: https://github.com/simonnepomuk/backstage-plugin-apicurio-registry/blob/main/backstage.json
+    sourcePath: backstage.json

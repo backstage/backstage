@@ -1,3 +1,4 @@
+---
 title: Policy Reporter
 author: kyverno
 authorUrl: https://github.com/kyverno
@@ -8,3 +9,20 @@ iconUrl: https://github.com/cncf/artwork/blob/main/projects/kyverno/icon/color/k
 npmPackageName: '@kyverno/backstage-plugin-policy-reporter'
 addedDate: '2025-01-31'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:17.770Z'
+    checkedAt: '2026-08-04T03:05:17.770Z'
+    latestVersion: 2.10.0
+    lastPublishedAt: '2026-07-08T06:50:53.005Z'
+    repository:
+      url: https://github.com/kyverno/backstage-policy-reporter-plugin
+      directory: plugins/policy-reporter
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:18.079Z'
+    checkedAt: '2026-08-04T03:05:18.079Z'
+    version: 1.52.0
+    sourceUrl: https://github.com/kyverno/backstage-policy-reporter-plugin/blob/main/backstage.json
+    sourcePath: backstage.json

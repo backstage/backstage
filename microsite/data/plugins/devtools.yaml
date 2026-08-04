@@ -1,5 +1,5 @@
 ---
-title: 'DevTools'
+title: DevTools
 author: Keyloop
 authorUrl: https://keyloop.com/
 category: Tools
@@ -9,3 +9,20 @@ iconUrl: /img/devtools.svg
 npmPackageName: '@backstage/plugin-devtools'
 addedDate: '2023-06-17'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:59.160Z'
+    checkedAt: '2026-08-04T03:03:59.160Z'
+    latestVersion: 0.1.41
+    lastPublishedAt: '2026-07-14T12:06:39.464Z'
+    repository:
+      url: https://github.com/backstage/backstage
+      directory: plugins/devtools
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:59.501Z'
+    checkedAt: '2026-08-04T03:03:59.501Z'
+    version: 1.50.0
+    sourceUrl: https://github.com/backstage/backstage/blob/master/workspaces/ui/backstage.json
+    sourcePath: workspaces/ui/backstage.json

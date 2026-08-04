@@ -8,3 +8,20 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 npmPackageName: '@backstage-community/plugin-code-coverage'
 addedDate: '2026-02-21'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:45.859Z'
+    checkedAt: '2026-08-04T03:03:45.859Z'
+    latestVersion: 0.14.1
+    lastPublishedAt: '2026-07-03T17:37:49.158Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/code-coverage/plugins/code-coverage
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:46.209Z'
+    checkedAt: '2026-08-04T03:03:46.209Z'
+    version: 1.49.2
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/code-coverage/backstage.json
+    sourcePath: workspaces/code-coverage/backstage.json

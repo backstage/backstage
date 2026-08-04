@@ -10,3 +10,12 @@ npmPackageName: '@hoophq/backstage-plugin'
 addedDate: '2022-12-20'
 status: inactive
 staleSince: '2026-02-17'
+snapshot:
+  npm:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:37.001Z'
+    reason: repository-unsupported
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:37.001Z'
+    reason: npm-data-unavailable

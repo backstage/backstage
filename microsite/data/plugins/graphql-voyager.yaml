@@ -9,3 +9,20 @@ iconUrl: https://res.cloudinary.com/apideck/image/upload/v1612724234/icons/graph
 npmPackageName: '@backstage-community/plugin-graphql-voyager'
 addedDate: '2023-01-27'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:27.384Z'
+    checkedAt: '2026-08-04T03:04:27.384Z'
+    latestVersion: 0.20.0
+    lastPublishedAt: '2026-07-21T23:04:50.110Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/graphql-voyager/plugins/graphql-voyager
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:27.744Z'
+    checkedAt: '2026-08-04T03:04:27.744Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/graphql-voyager/backstage.json
+    sourcePath: workspaces/graphql-voyager/backstage.json

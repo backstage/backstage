@@ -9,3 +9,20 @@ iconUrl: /img/scaffolder-studio.svg
 npmPackageName: '@kissmiklosjr/plugin-scaffolder-studio'
 addedDate: '2026-04-28'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:38.532Z'
+    checkedAt: '2026-08-04T03:05:38.532Z'
+    latestVersion: 1.7.0
+    lastPublishedAt: '2026-07-04T13:50:48.853Z'
+    repository:
+      url: https://github.com/kissmikijr/scaffolder-studio
+      directory: plugins/scaffolder-studio
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:38.878Z'
+    checkedAt: '2026-08-04T03:05:38.878Z'
+    version: 1.52.0
+    sourceUrl: https://github.com/kissmikijr/scaffolder-studio/blob/main/backstage.json
+    sourcePath: backstage.json

@@ -9,3 +9,20 @@ iconUrl: https://kafka.apache.org/images/apache-kafka.png
 npmPackageName: '@backstage-community/plugin-kafka'
 addedDate: '2021-01-21'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:45.569Z'
+    checkedAt: '2026-08-04T03:04:45.569Z'
+    latestVersion: 0.12.0
+    lastPublishedAt: '2026-04-17T18:32:16.632Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/kafka/plugins/kafka
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:45.911Z'
+    checkedAt: '2026-08-04T03:04:45.911Z'
+    version: 1.49.2
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/kafka/backstage.json
+    sourcePath: workspaces/kafka/backstage.json

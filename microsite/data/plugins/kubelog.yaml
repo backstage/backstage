@@ -9,3 +9,16 @@ iconUrl: https://raw.githubusercontent.com/jfvilas/kubelog/master/src/assets/kub
 npmPackageName: '@jfvilas/plugin-kubelog'
 addedDate: '2024-08-25'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:49.834Z'
+    checkedAt: '2026-08-04T03:04:49.834Z'
+    latestVersion: 0.14.2
+    lastPublishedAt: '2026-03-27T15:50:03.720Z'
+    repository:
+      url: https://github.com/jfvilas/kubelog
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:50.196Z'
+    reason: backstage-json-not-found

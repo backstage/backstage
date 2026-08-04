@@ -9,3 +9,20 @@ iconUrl: /img/home.png
 npmPackageName: '@backstage/plugin-home'
 addedDate: '2021-08-31'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:36.567Z'
+    checkedAt: '2026-08-04T03:04:36.567Z'
+    latestVersion: 0.9.8
+    lastPublishedAt: '2026-07-14T12:08:48.771Z'
+    repository:
+      url: https://github.com/backstage/backstage
+      directory: plugins/home
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:36.902Z'
+    checkedAt: '2026-08-04T03:04:36.902Z'
+    version: 1.50.0
+    sourceUrl: https://github.com/backstage/backstage/blob/master/workspaces/ui/backstage.json
+    sourcePath: workspaces/ui/backstage.json

@@ -8,5 +8,18 @@ documentation: https://github.com/Vity01/backstage-jfrog-artifactory-libs
 iconUrl: https://raw.githubusercontent.com/Vity01/backstage-jfrog-artifactory-libs/main/doc/artifactory.svg
 npmPackageName: backstage-plugin-jfrog-artifactory-libs
 addedDate: '2023-08-14'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:43.376Z'
+    checkedAt: '2026-08-04T03:04:43.376Z'
+    latestVersion: 1.0.11
+    lastPublishedAt: '2024-09-02T12:22:25.802Z'
+    repository:
+      url: https://github.com/Vity01/backstage-jfrog-artifactory-libs
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:43.513Z'
+    reason: backstage-json-not-found

@@ -8,4 +8,22 @@ documentation: https://github.com/CircleCI-Public/backstage-plugin/tree/main/plu
 iconUrl: /img/circleci.png
 npmPackageName: '@circleci/backstage-plugin'
 addedDate: '2021-04-28'
-status: active
+status: inactive
+staleSince: '2026-08-04'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:41.081Z'
+    checkedAt: '2026-08-04T03:03:41.081Z'
+    latestVersion: 0.1.1
+    lastPublishedAt: '2023-09-21T22:57:57.424Z'
+    repository:
+      url: https://github.com/CircleCI-Public/backstage-plugin
+      directory: plugins/circleci
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:41.412Z'
+    checkedAt: '2026-08-04T03:03:41.412Z'
+    version: 1.17.0
+    sourceUrl: https://github.com/CircleCI-Public/backstage-plugin/blob/main/backstage.json
+    sourcePath: backstage.json

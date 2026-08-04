@@ -9,3 +9,20 @@ iconUrl: /img/s3-bucket.svg
 npmPackageName: '@spreadshirt/backstage-plugin-s3-viewer'
 addedDate: '2023-01-18'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:27.451Z'
+    checkedAt: '2026-08-04T03:05:27.451Z'
+    latestVersion: 0.9.0
+    lastPublishedAt: '2026-03-18T11:21:37.580Z'
+    repository:
+      url: https://github.com/spreadshirt/backstage-plugin-s3
+      directory: plugins/s3-viewer
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:27.824Z'
+    checkedAt: '2026-08-04T03:05:27.824Z'
+    version: 1.48.5
+    sourceUrl: https://github.com/spreadshirt/backstage-plugin-s3/blob/main/backstage.json
+    sourcePath: backstage.json

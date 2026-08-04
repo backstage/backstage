@@ -9,3 +9,16 @@ iconUrl: https://raw.githubusercontent.com/convisoappsec/backstage-plugin-convis
 npmPackageName: '@conviso/backstage-plugin-conviso'
 addedDate: '2025-11-14'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:48.246Z'
+    checkedAt: '2026-08-04T03:03:48.246Z'
+    latestVersion: 0.1.13
+    lastPublishedAt: '2025-11-15T01:34:33.299Z'
+    repository:
+      url: https://github.com/convisoappsec/backstage-plugin-conviso
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:03:48.585Z'
+    reason: backstage-json-not-found

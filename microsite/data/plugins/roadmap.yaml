@@ -8,3 +8,12 @@ documentation: https://github.com/rothenbergt/backstage-roadmap-plugin
 npmPackageName: '@rothenbergt/backstage-plugin-roadmap'
 addedDate: '2026-07-04'
 status: active
+snapshot:
+  npm:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:05:25.035Z'
+    reason: repository-unsupported
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:05:25.035Z'
+    reason: npm-data-unavailable

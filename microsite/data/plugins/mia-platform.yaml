@@ -8,4 +8,21 @@ documentation: https://github.com/mia-platform/backstage-plugin/blob/main/README
 iconUrl: /img/mia-platform.png
 npmPackageName: '@mia-platform/backstage-plugin-frontend'
 addedDate: '2024-04-12'
-status: active
+status: inactive
+staleSince: '2026-08-04'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:01.595Z'
+    checkedAt: '2026-08-04T03:05:01.595Z'
+    latestVersion: 1.1.1
+    lastPublishedAt: '2024-05-09T08:29:42.229Z'
+    repository:
+      url: https://github.com/mia-platform/backstage-plugin
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:01.938Z'
+    checkedAt: '2026-08-04T03:05:01.938Z'
+    version: 1.25.0
+    sourceUrl: https://github.com/mia-platform/backstage-plugin/blob/main/backstage.json
+    sourcePath: backstage.json

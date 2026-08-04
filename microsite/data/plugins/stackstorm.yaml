@@ -9,3 +9,20 @@ iconUrl: /img/stackstorm.png
 npmPackageName: '@backstage-community/plugin-stackstorm'
 addedDate: '2023-02-02'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:55.175Z'
+    checkedAt: '2026-08-04T03:05:55.175Z'
+    latestVersion: 0.21.0
+    lastPublishedAt: '2026-07-22T00:20:21.512Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/stackstorm/plugins/stackstorm
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:55.542Z'
+    checkedAt: '2026-08-04T03:05:55.542Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/stackstorm/backstage.json
+    sourcePath: workspaces/stackstorm/backstage.json

@@ -10,5 +10,21 @@ documentation: https://github.com/StageCentral/backstage-artifactory-plugin/tree
 iconUrl: https://raw.githubusercontent.com/StageCentral/backstage-artifactory-plugin/main/logo/logo.png
 npmPackageName: '@stagecentral/plugin-artifactory'
 addedDate: '2023-08-23'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:16.894Z'
+    checkedAt: '2026-08-04T03:03:16.894Z'
+    latestVersion: 0.1.4
+    lastPublishedAt: '2024-04-26T12:54:33.980Z'
+    repository:
+      url: https://github.com/StageCentral/backstage-artifactory-plugin
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:17.249Z'
+    checkedAt: '2026-08-04T03:03:17.249Z'
+    version: 1.9.0
+    sourceUrl: https://github.com/StageCentral/backstage-artifactory-plugin/blob/main/backstage.json
+    sourcePath: backstage.json

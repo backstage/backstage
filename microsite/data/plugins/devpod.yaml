@@ -1,3 +1,4 @@
+---
 title: DevPod
 author: terasky.com
 authorUrl: https://github.com/terasky-oss
@@ -8,3 +9,20 @@ iconUrl: https://raw.githubusercontent.com/loft-sh/devpod/refs/heads/main/docs/s
 npmPackageName: '@terasky/backstage-plugin-devpod'
 addedDate: '2024-12-30'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:58.606Z'
+    checkedAt: '2026-08-04T03:03:58.606Z'
+    latestVersion: 1.13.0
+    lastPublishedAt: '2026-06-30T17:17:34.962Z'
+    repository:
+      url: https://github.com/TeraSky-OSS/backstage-plugins
+      directory: plugins/devpod-plugin
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:59.060Z'
+    checkedAt: '2026-08-04T03:03:59.060Z'
+    version: 1.52.1
+    sourceUrl: https://github.com/TeraSky-OSS/backstage-plugins/blob/main/backstage.json
+    sourcePath: backstage.json

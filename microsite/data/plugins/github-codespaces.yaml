@@ -8,5 +8,22 @@ documentation: https://github.com/adityasinghal26/backstage-plugins/tree/main/pl
 iconUrl: https://avatars.githubusercontent.com/u/9919?s=200&v=4
 npmPackageName: '@adityasinghal26/plugin-github-codespaces'
 addedDate: '2023-12-30'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:19.120Z'
+    checkedAt: '2026-08-04T03:04:19.120Z'
+    latestVersion: 1.0.4
+    lastPublishedAt: '2024-03-16T14:20:48.303Z'
+    repository:
+      url: https://github.com/adityasinghal26/backstage-plugins
+      directory: plugins/github-codespaces
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:19.476Z'
+    checkedAt: '2026-08-04T03:04:19.476Z'
+    version: 1.32.0
+    sourceUrl: https://github.com/adityasinghal26/backstage-plugins/blob/main/backstage.json
+    sourcePath: backstage.json

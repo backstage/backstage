@@ -9,3 +9,20 @@ iconUrl: https://avatars.githubusercontent.com/u/13230510?s=200&v=4
 npmPackageName: '@backstage-community/plugin-ilert'
 addedDate: '2021-04-20'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:38.902Z'
+    checkedAt: '2026-08-04T03:04:38.902Z'
+    latestVersion: 0.23.0
+    lastPublishedAt: '2026-07-22T00:16:21.432Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/ilert/plugins/ilert
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:39.292Z'
+    checkedAt: '2026-08-04T03:04:39.292Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/ilert/backstage.json
+    sourcePath: workspaces/ilert/backstage.json

@@ -8,5 +8,18 @@ documentation: https://github.com/litmuschaos/backstage-plugin/blob/master/READM
 iconUrl: https://raw.githubusercontent.com/cncf/artwork/master/projects/litmus/icon/color/litmus-icon-color.svg
 npmPackageName: backstage-plugin-litmus
 addedDate: '2023-10-06'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:58.652Z'
+    checkedAt: '2026-08-04T03:04:58.652Z'
+    latestVersion: 1.0.2
+    lastPublishedAt: '2024-03-04T17:22:47.688Z'
+    repository:
+      url: https://github.com/litmuschaos/backstage-plugin
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:58.798Z'
+    reason: backstage-json-not-found

@@ -9,3 +9,20 @@ iconUrl: /img/akeyless-logo.png
 npmPackageName: '@backstage-community/plugin-akeyless'
 addedDate: '2026-07-28'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:05.042Z'
+    checkedAt: '2026-08-04T03:03:05.042Z'
+    latestVersion: 0.1.0
+    lastPublishedAt: '2026-07-28T04:25:57.918Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/akeyless/plugins/akeyless
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:05.356Z'
+    checkedAt: '2026-08-04T03:03:05.356Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/akeyless/backstage.json
+    sourcePath: workspaces/akeyless/backstage.json

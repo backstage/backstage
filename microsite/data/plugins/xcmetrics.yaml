@@ -9,3 +9,20 @@ iconUrl: /img/xcmetrics-icon.png
 npmPackageName: '@backstage-community/plugin-xcmetrics'
 addedDate: '2021-08-06'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:06:06.632Z'
+    checkedAt: '2026-08-04T03:06:06.632Z'
+    latestVersion: 0.19.0
+    lastPublishedAt: '2026-04-24T18:01:44.528Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/xcmetrics/plugins/xcmetrics
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:06:06.778Z'
+    checkedAt: '2026-08-04T03:06:06.778Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/xcmetrics/backstage.json
+    sourcePath: workspaces/xcmetrics/backstage.json

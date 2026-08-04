@@ -9,3 +9,20 @@ iconUrl: /img/badges.svg
 npmPackageName: '@backstage-community/plugin-badges'
 addedDate: '2021-09-29'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:29.830Z'
+    checkedAt: '2026-08-04T03:03:29.830Z'
+    latestVersion: 0.23.0
+    lastPublishedAt: '2026-07-21T22:58:10.514Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/badges/plugins/badges
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:30.161Z'
+    checkedAt: '2026-08-04T03:03:30.161Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/badges/backstage.json
+    sourcePath: workspaces/badges/backstage.json

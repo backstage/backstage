@@ -9,3 +9,20 @@ iconUrl: /img/stack-overflow-logo.svg
 npmPackageName: '@backstage-community/plugin-stack-overflow'
 addedDate: '2022-06-14'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:53.617Z'
+    checkedAt: '2026-08-04T03:05:53.617Z'
+    latestVersion: 0.20.0
+    lastPublishedAt: '2026-07-22T00:21:30.225Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/stack-overflow/plugins/stack-overflow
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:54.073Z'
+    checkedAt: '2026-08-04T03:05:54.073Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/stack-overflow/backstage.json
+    sourcePath: workspaces/stack-overflow/backstage.json

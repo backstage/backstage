@@ -9,3 +9,20 @@ iconUrl: /img/kiali.svg
 npmPackageName: '@backstage-community/plugin-kiali'
 addedDate: '2023-07-25'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:46.455Z'
+    checkedAt: '2026-08-04T03:04:46.455Z'
+    latestVersion: 1.51.2
+    lastPublishedAt: '2026-07-31T10:50:02.735Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/kiali/plugins/kiali
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:46.811Z'
+    checkedAt: '2026-08-04T03:04:46.811Z'
+    version: 1.52.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/kiali/backstage.json
+    sourcePath: workspaces/kiali/backstage.json

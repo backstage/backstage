@@ -9,3 +9,19 @@ iconUrl: /img/coder.png
 npmPackageName: '@coder/backstage-plugin-coder'
 addedDate: '2024-03-15'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:46.319Z'
+    checkedAt: '2026-08-04T03:03:46.319Z'
+    latestVersion: 0.5.0-alpha.0
+    lastPublishedAt: '2025-10-31T20:04:56.746Z'
+    repository:
+      url: https://github.com/coder/backstage-plugins
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:46.740Z'
+    checkedAt: '2026-08-04T03:03:46.740Z'
+    version: 1.44.2
+    sourceUrl: https://github.com/coder/backstage-plugins/blob/main/backstage.json
+    sourcePath: backstage.json

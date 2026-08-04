@@ -9,3 +9,12 @@ iconUrl: /img/toolbox-logo.png
 npmPackageName: '@drodil/backstage-plugin-toolbox'
 addedDate: '2023-01-09'
 status: active
+snapshot:
+  npm:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:06:03.777Z'
+    reason: repository-unsupported
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:06:03.777Z'
+    reason: npm-data-unavailable

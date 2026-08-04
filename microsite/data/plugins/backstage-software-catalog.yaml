@@ -7,6 +7,23 @@ description: Manage all your services and software components, all in one place.
 documentation: https://backstage.io/docs/features/software-catalog/
 iconUrl: /img/backstage-software-catalog.svg
 npmPackageName: '@backstage/plugin-catalog'
-order: 1
 addedDate: '2021-06-17'
+order: 1
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:28.254Z'
+    checkedAt: '2026-08-04T03:03:28.254Z'
+    latestVersion: 2.0.7
+    lastPublishedAt: '2026-07-14T12:01:20.831Z'
+    repository:
+      url: https://github.com/backstage/backstage
+      directory: plugins/catalog
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:28.709Z'
+    checkedAt: '2026-08-04T03:03:28.709Z'
+    version: 1.50.0
+    sourceUrl: https://github.com/backstage/backstage/blob/master/workspaces/ui/backstage.json
+    sourcePath: workspaces/ui/backstage.json

@@ -9,3 +9,12 @@ iconUrl: https://roadie.io/images/logos/roadie-racks-ai.png
 npmPackageName: '@roadiehq/rag-ai'
 addedDate: '2024-03-12'
 status: active
+snapshot:
+  npm:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:03:04.134Z'
+    reason: repository-unsupported
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:03:04.134Z'
+    reason: npm-data-unavailable

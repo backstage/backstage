@@ -8,3 +8,20 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 npmPackageName: '@backstage-community/plugin-explore'
 addedDate: '2026-02-21'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:09.193Z'
+    checkedAt: '2026-08-04T03:04:09.193Z'
+    latestVersion: 1.0.0
+    lastPublishedAt: '2026-07-24T13:25:47.560Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/explore/plugins/explore
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:09.483Z'
+    checkedAt: '2026-08-04T03:04:09.483Z'
+    version: 1.52.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/explore/backstage.json
+    sourcePath: workspaces/explore/backstage.json

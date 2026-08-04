@@ -8,3 +8,20 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 npmPackageName: '@backstage-community/plugin-confluence'
 addedDate: '2026-02-21'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:47.781Z'
+    checkedAt: '2026-08-04T03:03:47.781Z'
+    latestVersion: 0.14.1
+    lastPublishedAt: '2026-03-08T00:00:15.597Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/confluence/plugins/confluence
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:48.139Z'
+    checkedAt: '2026-08-04T03:03:48.139Z'
+    version: 1.52.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/confluence/backstage.json
+    sourcePath: workspaces/confluence/backstage.json

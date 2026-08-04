@@ -8,5 +8,19 @@ documentation: https://github.com/beejiujitsu/wealthsimple-backstage-plugins/tre
 iconUrl: /img/glean-logo-circular-white.png
 npmPackageName: '@beejiujitsu/backstage-plugin-glean-backend'
 addedDate: '2024-12-30'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:23.837Z'
+    checkedAt: '2026-08-04T03:04:23.837Z'
+    latestVersion: 1.0.2
+    lastPublishedAt: '2024-12-30T17:33:05.913Z'
+    repository:
+      url: https://github.com/beejiujitsu/wealthsimple-backstage-plugins
+      directory: plugins/glean-backend
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:24.161Z'
+    reason: backstage-json-not-found

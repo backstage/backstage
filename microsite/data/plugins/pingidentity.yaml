@@ -8,3 +8,20 @@ documentation: https://github.com/backstage/community-plugins/blob/main/workspac
 npmPackageName: '@backstage-community/plugin-catalog-backend-module-pingidentity'
 addedDate: '2026-02-21'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:16.839Z'
+    checkedAt: '2026-08-04T03:05:16.839Z'
+    latestVersion: 0.14.0
+    lastPublishedAt: '2026-07-29T12:31:30.193Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/pingidentity/plugins/catalog-backend-module-pingidentity
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:17.161Z'
+    checkedAt: '2026-08-04T03:05:17.161Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/pingidentity/backstage.json
+    sourcePath: workspaces/pingidentity/backstage.json

@@ -9,3 +9,16 @@ iconUrl: https://app.targetboard.ai/assets/TargetBoard-Backstage-logo.svg
 npmPackageName: '@targetboard/backstage-plugin'
 addedDate: '2025-11-02'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:57.948Z'
+    checkedAt: '2026-08-04T03:05:57.948Z'
+    latestVersion: 0.1.14
+    lastPublishedAt: '2026-01-27T10:39:06.542Z'
+    repository:
+      url: https://github.com/targetboard/backstage-plugin
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:05:58.290Z'
+    reason: backstage-json-not-found

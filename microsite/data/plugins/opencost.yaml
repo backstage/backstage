@@ -9,3 +9,20 @@ iconUrl: /img/opencost.png
 npmPackageName: '@backstage-community/plugin-opencost'
 addedDate: '2023-10-26'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:12.327Z'
+    checkedAt: '2026-08-04T03:05:12.327Z'
+    latestVersion: 0.22.0
+    lastPublishedAt: '2026-07-22T00:18:11.616Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/opencost/plugins/opencost
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:12.722Z'
+    checkedAt: '2026-08-04T03:05:12.722Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/opencost/backstage.json
+    sourcePath: workspaces/opencost/backstage.json

@@ -9,3 +9,12 @@ iconUrl: https://veecode-platform.github.io/support/imgs/logo_5.svg
 npmPackageName: '@veecode-platform/backstage-plugin-infracost'
 addedDate: '2024-07-25'
 status: active
+snapshot:
+  npm:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:40.703Z'
+    reason: repository-unsupported
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:40.703Z'
+    reason: npm-data-unavailable

@@ -9,3 +9,20 @@ iconUrl: /img/sonarqube-icon.svg
 npmPackageName: '@backstage-community/plugin-sonarqube'
 addedDate: '2020-11-03'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:51.234Z'
+    checkedAt: '2026-08-04T03:05:51.234Z'
+    latestVersion: 1.1.0
+    lastPublishedAt: '2026-04-17T18:46:55.953Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/sonarqube/plugins/sonarqube
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:51.542Z'
+    checkedAt: '2026-08-04T03:05:51.542Z'
+    version: 1.50.2
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/sonarqube/backstage.json
+    sourcePath: workspaces/sonarqube/backstage.json

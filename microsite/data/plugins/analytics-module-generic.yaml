@@ -5,7 +5,21 @@ authorUrl: https://josie.lol
 category: Monitoring
 description: Track usage of your Backstage instance using generic POST endpoints.
 documentation: https://github.com/pfeifferj/backstage-plugin-analytics-generic/blob/main/README.md
-iconUrl: '/img/logo-gradient-on-dark.svg'
+iconUrl: /img/logo-gradient-on-dark.svg
 npmPackageName: '@pfeifferj/backstage-plugin-analytics-generic'
 addedDate: '2024-08-23'
-status: active
+status: inactive
+staleSince: '2026-08-04'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:06.869Z'
+    checkedAt: '2026-08-04T03:03:06.869Z'
+    latestVersion: 0.1.1
+    lastPublishedAt: '2025-06-09T18:03:52.072Z'
+    repository:
+      url: https://github.com/pfeifferj/backstage-plugin-analytics-generic
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:03:07.227Z'
+    reason: backstage-json-not-found

@@ -8,3 +8,17 @@ documentation: https://github.com/zc149/backstage-plugin-dora-scorecard
 npmPackageName: '@jikwan/backstage-plugin-dora-scorecard'
 addedDate: '2025-12-29'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:02.704Z'
+    checkedAt: '2026-08-04T03:04:02.704Z'
+    latestVersion: 1.0.3
+    lastPublishedAt: '2026-02-27T08:24:00.249Z'
+    repository:
+      url: https://github.com/zc149/backstage-plugin-dora-scorecard
+      directory: plugins/dora-scorecard
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:03.091Z'
+    reason: backstage-json-not-found

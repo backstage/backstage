@@ -8,5 +8,21 @@ documentation: https://github.com/BESTSELLER/backstage-plugin-harbor/blob/master
 iconUrl: https://raw.githubusercontent.com/cncf/artwork/master/projects/harbor/icon/color/harbor-icon-color.svg
 npmPackageName: '@bestsellerit/backstage-plugin-harbor'
 addedDate: '2022-06-23'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:29.067Z'
+    checkedAt: '2026-08-04T03:04:29.067Z'
+    latestVersion: 0.3.1
+    lastPublishedAt: '2022-04-27T05:44:19.826Z'
+    repository:
+      url: https://github.com/BESTSELLER/backstage-plugin-harbor
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:29.373Z'
+    checkedAt: '2026-08-04T03:04:29.373Z'
+    version: 1.29.2
+    sourceUrl: https://github.com/BESTSELLER/backstage-plugin-harbor/blob/master/backstage.json
+    sourcePath: backstage.json

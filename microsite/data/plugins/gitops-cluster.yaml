@@ -5,7 +5,24 @@ authorUrl: https://www.weave.works/
 category: Kubernetes
 description: Create GitOps-managed Kubernetes clusters. Currently, it supports provisioning EKS clusters on GitHub via GitHub Actions.
 documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/gitops-profiles/plugins/gitops-profiles
-iconUrl: '/img/logo-gradient-on-dark.svg'
+iconUrl: /img/logo-gradient-on-dark.svg
 npmPackageName: '@backstage-community/plugin-gitops-profiles'
 addedDate: '2020-11-03'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:23.369Z'
+    checkedAt: '2026-08-04T03:04:23.369Z'
+    latestVersion: 0.23.0
+    lastPublishedAt: '2026-07-22T00:16:55.284Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/gitops-profiles/plugins/gitops-profiles
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:23.732Z'
+    checkedAt: '2026-08-04T03:04:23.732Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/gitops-profiles/backstage.json
+    sourcePath: workspaces/gitops-profiles/backstage.json

@@ -9,3 +9,20 @@ iconUrl: https://roadie.io/images/logos/github.png
 npmPackageName: '@roadiehq/backstage-plugin-security-insights'
 addedDate: '2021-04-20'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:45.452Z'
+    checkedAt: '2026-08-04T03:05:45.452Z'
+    latestVersion: 3.3.1
+    lastPublishedAt: '2026-01-12T16:03:25.064Z'
+    repository:
+      url: https://github.com/RoadieHQ/roadie-backstage-plugins
+      directory: plugins/frontend/backstage-plugin-security-insights
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:45.826Z'
+    checkedAt: '2026-08-04T03:05:45.826Z'
+    version: 1.44.2
+    sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
+    sourcePath: backstage.json

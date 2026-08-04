@@ -8,5 +8,18 @@ documentation: https://roadie.io/backstage/plugins/firebase-functions/?utm_sourc
 iconUrl: https://roadie.io/images/logos/firebase.png
 npmPackageName: '@roadiehq/backstage-plugin-firebase-functions'
 addedDate: '2021-04-20'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:04:11.593Z'
+    checkedAt: '2026-08-04T03:04:11.593Z'
+    latestVersion: 1.0.6
+    lastPublishedAt: '2021-07-19T07:46:30.909Z'
+    repository:
+      url: https://github.com/RoadieHQ/backstage-plugin-firebase-functions
+  backstage:
+    status: unavailable
+    lastAttemptAt: '2026-08-04T03:04:11.917Z'
+    reason: backstage-json-not-found

@@ -9,3 +9,20 @@ iconUrl: /img/3scale.svg
 npmPackageName: '@backstage-community/plugin-3scale-backend'
 addedDate: '2023-05-15'
 status: active
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:00.581Z'
+    checkedAt: '2026-08-04T03:03:00.581Z'
+    latestVersion: 3.16.0
+    lastPublishedAt: '2026-07-30T12:22:21.508Z'
+    repository:
+      url: https://github.com/backstage/community-plugins
+      directory: workspaces/3scale/plugins/3scale-backend
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:03:01.112Z'
+    checkedAt: '2026-08-04T03:03:01.112Z'
+    version: 1.53.0
+    sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/3scale/backstage.json
+    sourcePath: workspaces/3scale/backstage.json

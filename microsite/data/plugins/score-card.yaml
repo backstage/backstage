@@ -8,5 +8,22 @@ documentation: https://github.com/Oriflame/backstage-plugins/tree/main/plugins/s
 iconUrl: /img/score-card-plugin-logo.png
 npmPackageName: '@oriflame/backstage-plugin-score-card'
 addedDate: '2022-10-06'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
+snapshot:
+  npm:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:41.768Z'
+    checkedAt: '2026-08-04T03:05:41.768Z'
+    latestVersion: 0.9.1
+    lastPublishedAt: '2024-10-03T18:23:09.078Z'
+    repository:
+      url: https://github.com/Oriflame/backstage-plugins
+      directory: plugins/score-card
+  backstage:
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:05:42.134Z'
+    checkedAt: '2026-08-04T03:05:42.134Z'
+    version: 1.22.1
+    sourceUrl: https://github.com/Oriflame/backstage-plugins/blob/main/backstage.json
+    sourcePath: backstage.json
