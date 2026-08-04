@@ -35,6 +35,19 @@ jobs:
               return;
             }
 
+            const { data: reviews } = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+            });
+            const hasActiveApproval = reviews.some(
+              r => r.user.login === 'backstage-service' && r.state === 'APPROVED'
+            );
+            if (hasActiveApproval) {
+              console.log("Already approved by backstage-service, skipping");
+              return;
+            }
+
             await github.rest.pulls.createReview({
               owner: context.repo.owner,
               repo: context.repo.repo,
