@@ -18,8 +18,13 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   build:
+    permissions:
+      contents: read
+
     runs-on: windows-2025
 
     strategy:
@@ -45,6 +50,8 @@ jobs:
           git config --global core.eol lf
 
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
 
       - name: Configure Git
         run: |
