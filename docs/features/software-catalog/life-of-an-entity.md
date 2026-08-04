@@ -298,7 +298,7 @@ which may trigger the implicit deletion of more than just the entity you thought
 you were deleting. This concept is explained here.
 
 Recall that all entity providers manage a private "bucket" of entities, as
-described in the [External integrations](external-integrations.md) article. They
+described in the [External integrations](external-integrations/index.md) article. They
 can perform some operations on those entities, including additions, updates, and
 deletions. Entity additions/updates are subject to the regular processing loops,
 which means that bucket entities may end up forming roots of an entire graph of

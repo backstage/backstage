@@ -304,7 +304,19 @@ export default {
             'features/software-catalog/well-known-relations',
             'features/software-catalog/well-known-statuses',
             'features/software-catalog/extending-the-model',
-            'features/software-catalog/external-integrations',
+            {
+              type: 'category',
+              label: 'External integrations',
+              link: {
+                type: 'doc',
+                id: 'features/software-catalog/external-integrations/index',
+              },
+              items: [
+                'features/software-catalog/external-integrations/entity-providers',
+                'features/software-catalog/external-integrations/processors',
+                'features/software-catalog/external-integrations/incremental-entity-providers',
+              ],
+            },
             'features/software-catalog/catalog-customization',
             'features/software-catalog/entity-presentation',
             'features/software-catalog/audit-events',

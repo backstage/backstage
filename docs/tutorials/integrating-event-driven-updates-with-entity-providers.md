@@ -210,4 +210,4 @@ Let's break down the key parts of this integration:
 3. **Implement the `onEvent` Method**: The `onEvent` method is crucial. It will be invoked whenever your provider receives an event for a subscribed topic. Inside this method:
 
    - Based on the event payload information (accessible through `params.eventPayload`), implement the logic to decide which entities should be added, deleted, or modified.
-   - Use a delta mutation to explicitly upsert or delete entities. This approach is more efficient than updating the entire catalog from scratch. For more details on mutations, refer to the ["Provider Mutations" section](https://backstage.io/docs/features/software-catalog/external-integrations#provider-mutations).
+   - Use a delta mutation to explicitly upsert or delete entities. This approach is more efficient than updating the entire catalog from scratch. For more details on mutations, refer to the ["Provider Mutations" section](https://backstage.io/docs/features/software-catalog/external-integrations/entity-providers#provider-mutations).
