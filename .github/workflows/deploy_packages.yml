@@ -81,7 +81,7 @@ jobs:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: Fetch previous commit for release check
-        run: git fetch origin '${{ github.event.before }}'
+        run: git fetch --depth 1 --filter=blob:none origin '${{ github.event.before }}'
 
       - name: Check if release
         if: inputs.force_release != true
