@@ -31,7 +31,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
-          fetch-depth: 10000 # Required to retrieve git history
+          fetch-depth: 0 # Required to retrieve git history
+          filter: blob:none
 
       - name: Use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
