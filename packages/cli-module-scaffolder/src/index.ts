@@ -21,29 +21,19 @@ export default createCliModule({
   packageJson,
   init: async reg => {
     reg.addCommand({
-      path: ['actions', 'list'],
-      description: 'List available actions from configured plugin sources',
-      execute: { loader: () => import('./commands/list') },
+      path: ['template', 'list'],
+      description: 'List available software templates',
+      execute: { loader: () => import('./commands/templateList') },
     });
     reg.addCommand({
-      path: ['actions', 'execute'],
-      description: 'Execute an action',
-      execute: { loader: () => import('./commands/execute') },
+      path: ['template', 'execute'],
+      description: 'Execute a software template',
+      execute: { loader: () => import('./commands/templateExecute') },
     });
     reg.addCommand({
-      path: ['actions', 'sources', 'add'],
-      description: 'Add a plugin source for action discovery',
-      execute: { loader: () => import('./commands/sourcesAdd') },
-    });
-    reg.addCommand({
-      path: ['actions', 'sources', 'list'],
-      description: 'List configured plugin sources',
-      execute: { loader: () => import('./commands/sourcesList') },
-    });
-    reg.addCommand({
-      path: ['actions', 'sources', 'remove'],
-      description: 'Remove a plugin source',
-      execute: { loader: () => import('./commands/sourcesRemove') },
+      path: ['template', 'dry-run'],
+      description: 'Validate a software template without making changes',
+      execute: { loader: () => import('./commands/templateDryRun') },
     });
   },
 });

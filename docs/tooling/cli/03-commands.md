@@ -51,25 +51,38 @@ help [command]                                 display help for command
 
 ### [Actions Module](./module-actions.md)
 
-| Command                  | Description                                                 |
-| ------------------------ | ----------------------------------------------------------- |
-| `actions list`           | List available actions from configured plugin sources       |
-| `actions execute`        | Execute an action                                           |
-| `actions sources add`    | Add a plugin source for action discovery                    |
-| `actions sources list`   | List configured plugin sources                              |
-| `actions sources remove` | Remove a plugin source                                      |
-| `catalog list`           | List catalog entities with optional kind/type filter        |
-| `catalog get`            | Get a specific catalog entity by name                       |
-| `catalog validate`       | Validate entity YAML against the catalog schema             |
-| `catalog register`       | Register a catalog entity from a location URL               |
-| `catalog unregister`     | Unregister a catalog entity by location                     |
-| `api list`               | List API entities in the catalog                            |
-| `api get-spec`           | Get the full API specification (OpenAPI, AsyncAPI, GraphQL) |
-| `search`                 | Search across all content types                             |
-| `docs search`            | Search TechDocs content                                     |
-| `template list`          | List available software templates                           |
-| `template execute`       | Execute a software template                                 |
-| `template dry-run`       | Validate a software template without making changes         |
+| Command                  | Description                                           |
+| ------------------------ | ----------------------------------------------------- |
+| `actions list`           | List available actions from configured plugin sources |
+| `actions execute`        | Execute an action                                     |
+| `actions sources add`    | Add a plugin source for action discovery              |
+| `actions sources list`   | List configured plugin sources                        |
+| `actions sources remove` | Remove a plugin source                                |
+
+### [Catalog Module](./module-catalog.md)
+
+| Command              | Description                                          |
+| -------------------- | ---------------------------------------------------- |
+| `catalog list`       | List catalog entities with optional kind/type filter |
+| `catalog get`        | Get a specific catalog entity by name                |
+| `catalog validate`   | Validate entity YAML against the catalog schema      |
+| `catalog register`   | Register a catalog entity from a location URL        |
+| `catalog unregister` | Unregister a catalog entity by location              |
+
+### [Scaffolder Module](./module-scaffolder.md)
+
+| Command            | Description                                         |
+| ------------------ | --------------------------------------------------- |
+| `template list`    | List available software templates                   |
+| `template execute` | Execute a software template                         |
+| `template dry-run` | Validate a software template without making changes |
+
+### [Search Module](./module-search.md)
+
+| Command       | Description                     |
+| ------------- | ------------------------------- |
+| `search`      | Search across all content types |
+| `docs search` | Search TechDocs content         |
 
 ### [Build Module](./module-build.md)
 

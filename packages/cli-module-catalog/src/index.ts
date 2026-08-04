@@ -21,29 +21,29 @@ export default createCliModule({
   packageJson,
   init: async reg => {
     reg.addCommand({
-      path: ['actions', 'list'],
-      description: 'List available actions from configured plugin sources',
-      execute: { loader: () => import('./commands/list') },
+      path: ['catalog', 'list'],
+      description: 'List catalog entities with optional kind/type filter',
+      execute: { loader: () => import('./commands/catalogList') },
     });
     reg.addCommand({
-      path: ['actions', 'execute'],
-      description: 'Execute an action',
-      execute: { loader: () => import('./commands/execute') },
+      path: ['catalog', 'get'],
+      description: 'Get a specific catalog entity by name',
+      execute: { loader: () => import('./commands/catalogGet') },
     });
     reg.addCommand({
-      path: ['actions', 'sources', 'add'],
-      description: 'Add a plugin source for action discovery',
-      execute: { loader: () => import('./commands/sourcesAdd') },
+      path: ['catalog', 'validate'],
+      description: 'Validate entity YAML against the catalog schema',
+      execute: { loader: () => import('./commands/catalogValidate') },
     });
     reg.addCommand({
-      path: ['actions', 'sources', 'list'],
-      description: 'List configured plugin sources',
-      execute: { loader: () => import('./commands/sourcesList') },
+      path: ['catalog', 'register'],
+      description: 'Register a catalog entity from a location URL',
+      execute: { loader: () => import('./commands/catalogRegister') },
     });
     reg.addCommand({
-      path: ['actions', 'sources', 'remove'],
-      description: 'Remove a plugin source',
-      execute: { loader: () => import('./commands/sourcesRemove') },
+      path: ['catalog', 'unregister'],
+      description: 'Unregister a catalog entity by location',
+      execute: { loader: () => import('./commands/catalogUnregister') },
     });
   },
 });

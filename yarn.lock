@@ -2571,6 +2571,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/cli-module-catalog@workspace:packages/cli-module-catalog":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-catalog@workspace:packages/cli-module-catalog"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    chalk: "npm:^4.0.0"
+    cleye: "npm:^2.6.0"
+  bin:
+    cli-module-catalog: bin/backstage-cli-module-catalog
+  languageName: unknown
+  linkType: soft
+
 "@backstage/cli-module-config@workspace:^, @backstage/cli-module-config@workspace:packages/cli-module-config":
   version: 0.0.0-use.local
   resolution: "@backstage/cli-module-config@workspace:packages/cli-module-config"
@@ -2724,6 +2738,34 @@ __metadata:
     zod-validation-error: "npm:^5.0.0"
   bin:
     cli-module-new: bin/backstage-cli-module-new
+  languageName: unknown
+  linkType: soft
+
+"@backstage/cli-module-scaffolder@workspace:packages/cli-module-scaffolder":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-scaffolder@workspace:packages/cli-module-scaffolder"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    chalk: "npm:^4.0.0"
+    cleye: "npm:^2.6.0"
+  bin:
+    cli-module-scaffolder: bin/backstage-cli-module-scaffolder
+  languageName: unknown
+  linkType: soft
+
+"@backstage/cli-module-search@workspace:packages/cli-module-search":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-search@workspace:packages/cli-module-search"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    chalk: "npm:^4.0.0"
+    cleye: "npm:^2.6.0"
+  bin:
+    cli-module-search: bin/backstage-cli-module-search
   languageName: unknown
   linkType: soft
 
