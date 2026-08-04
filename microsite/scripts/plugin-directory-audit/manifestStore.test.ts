@@ -47,17 +47,6 @@ async function withFixture(
 
 function snapshot(): NonNullable<PluginManifest['snapshot']> {
   return {
-    npm: {
-      status: 'fresh',
-      lastAttemptAt: '2026-08-03T12:00:00.000Z',
-      checkedAt: '2026-08-03T12:00:00.000Z',
-      latestVersion: '1.2.3',
-      lastPublishedAt: '2026-07-01T00:00:00.000Z',
-      repository: {
-        url: 'https://github.com/example/backstage-plugins',
-        directory: 'plugins/example',
-      },
-    },
     backstage: {
       status: 'fresh',
       lastAttemptAt: '2026-08-03T12:00:00.000Z',
@@ -67,6 +56,27 @@ function snapshot(): NonNullable<PluginManifest['snapshot']> {
         'https://github.com/example/backstage-plugins/blob/main/backstage.json',
       sourcePath: 'backstage.json',
     },
+    packages: [
+      {
+        npmPackageName: '@example/plugin-example',
+        npm: {
+          status: 'fresh',
+          lastAttemptAt: '2026-08-03T12:00:00.000Z',
+          checkedAt: '2026-08-03T12:00:00.000Z',
+          latestVersion: '1.2.3',
+          lastPublishedAt: '2026-07-01T00:00:00.000Z',
+          repository: {
+            url: 'https://github.com/example/backstage-plugins',
+            directory: 'plugins/example',
+          },
+        },
+        configSchema: {
+          status: 'unavailable',
+          lastAttemptAt: '2026-08-03T12:00:00.000Z',
+          reason: 'not-checked',
+        },
+      },
+    ],
   };
 }
 
@@ -91,11 +101,6 @@ describe('manifestStore', () => {
         manifest: {
           ...file.manifest,
           capabilities: ['search', 'catalog'],
-          setup: {
-            packages: [
-              { name: '@example/plugin-example', role: 'frontend' },
-            ],
-          },
           snapshot: snapshot(),
         },
       });
@@ -115,20 +120,7 @@ status: active
 capabilities:
   - search
   - catalog
-setup:
-  packages:
-    - name: '@example/plugin-example'
-      role: frontend
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-03T12:00:00.000Z'
-    checkedAt: '2026-08-03T12:00:00.000Z'
-    latestVersion: 1.2.3
-    lastPublishedAt: '2026-07-01T00:00:00.000Z'
-    repository:
-      url: https://github.com/example/backstage-plugins
-      directory: plugins/example
   backstage:
     status: fresh
     lastAttemptAt: '2026-08-03T12:00:00.000Z'
@@ -136,6 +128,21 @@ snapshot:
     version: 1.40.0
     sourceUrl: https://github.com/example/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@example/plugin-example'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-03T12:00:00.000Z'
+        checkedAt: '2026-08-03T12:00:00.000Z'
+        latestVersion: 1.2.3
+        lastPublishedAt: '2026-07-01T00:00:00.000Z'
+        repository:
+          url: https://github.com/example/backstage-plugins
+          directory: plugins/example
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-03T12:00:00.000Z'
+        reason: not-checked
 `,
       );
     });
