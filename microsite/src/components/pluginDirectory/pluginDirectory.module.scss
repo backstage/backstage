@@ -157,6 +157,29 @@
   color: var(--ifm-color-emphasis-700);
 }
 
+.compatibilityBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--ifm-spacing-horizontal) / 2);
+  margin-top: var(--ifm-spacing-vertical);
+}
+
+.compatibilityBadge {
+  align-items: center;
+  background: var(--ifm-color-emphasis-100);
+  border: var(--ifm-global-border-width) solid var(--ifm-color-emphasis-300);
+  border-radius: var(--ifm-badge-border-radius);
+  color: var(--ifm-font-color-base);
+  display: inline-flex;
+  font-size: var(--ifm-h5-font-size);
+  font-weight: var(--ifm-font-weight-bold);
+  gap: calc(var(--ifm-spacing-horizontal) / 4);
+  padding: calc(var(--ifm-spacing-vertical) / 4)
+    calc(var(--ifm-spacing-horizontal) / 2);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
 .healthValue {
   font-size: var(--ifm-h3-font-size);
   font-weight: var(--ifm-font-weight-bold);

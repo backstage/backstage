@@ -7,7 +7,9 @@
       "node",
       "@docusaurus/module-type-aliases",
       "@docusaurus/theme-classic",
-      "@types/webpack-env"
+      "@types/webpack-env",
+      "@testing-library/jest-dom",
+      "jest"
     ]
   },
   "exclude": ["node_modules", "build", ".docusaurus", "static", "blog"]

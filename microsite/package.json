@@ -18,6 +18,7 @@
     "start": "docusaurus start",
     "swizzle": "docusaurus swizzle",
     "test:plugin-directory": "tsx --test 'src/**/*.test.{ts,tsx}' 'scripts/**/*.test.{ts,tsx}'",
+    "test:plugin-directory:jest": "jest",
     "verify:sidebars": "node ./scripts/verify-sidebars",
     "version": "docusaurus-version",
     "write-translations": "docusaurus-write-translations"
@@ -51,13 +52,19 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@backstage/cli-module-test-jest": "workspace:^",
     "@docusaurus/module-type-aliases": "^3.1.1",
     "@docusaurus/tsconfig": "^3.1.1",
+    "@swc/jest": "^0.2.39",
+    "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30",
     "@types/js-yaml": "^4.0.9",
     "@types/jsdom": "^28.0.3",
     "@types/webpack-env": "^1.18.0",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "~30.2.0",
     "jsdom": "^30.0.1",
     "prettier": "^2.6.2",
     "tsx": "^4.23.5",
