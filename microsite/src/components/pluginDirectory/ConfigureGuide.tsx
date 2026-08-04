@@ -62,11 +62,12 @@ function InteractiveConfigureForm({
   const [formData, setFormData] = useState<Record<string, unknown> | undefined>(
     undefined,
   );
-  const [hasErrors, setHasErrors] = useState(true);
-  const generatedYaml =
-    !hasErrors && formData !== undefined
-      ? dump(formData, { lineWidth: -1, noRefs: true, sortKeys: false })
-      : '';
+  const hasErrors =
+    formData === undefined ||
+    validator.validateFormData(formData, schema).errors.length > 0;
+  const generatedYaml = !hasErrors
+    ? dump(formData, { lineWidth: -1, noRefs: true, sortKeys: false })
+    : '';
 
   return (
     <div className={styles.configureGrid}>
@@ -79,10 +80,7 @@ function InteractiveConfigureForm({
         widgets={configFormWidgets}
         liveValidate
         showErrorList={false}
-        onChange={({ formData: nextFormData, errors }) => {
-          setFormData(nextFormData);
-          setHasErrors(errors.length > 0);
-        }}
+        onChange={({ formData: nextFormData }) => setFormData(nextFormData)}
       >
         <></>
       </Form>
