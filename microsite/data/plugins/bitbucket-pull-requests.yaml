@@ -9,19 +9,25 @@ npmPackageName: '@backstage-community/plugin-bitbucket-pull-requests'
 addedDate: '2026-02-21'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:05.067Z'
-    checkedAt: '2026-08-04T03:37:05.067Z'
-    latestVersion: 3.0.3
-    lastPublishedAt: '2026-07-08T12:25:12.329Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/bitbucket-pull-requests/plugins/bitbucket-pull-requests
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:37:05.429Z'
-    checkedAt: '2026-08-04T03:37:05.429Z'
+    lastAttemptAt: '2026-08-04T05:02:44.509Z'
+    checkedAt: '2026-08-04T05:02:44.509Z'
     version: 1.41.2
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/bitbucket-pull-requests/backstage.json
     sourcePath: workspaces/bitbucket-pull-requests/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-bitbucket-pull-requests'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:44.123Z'
+        checkedAt: '2026-08-04T05:02:44.123Z'
+        latestVersion: 3.0.3
+        lastPublishedAt: '2026-07-08T12:25:12.329Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/bitbucket-pull-requests/plugins/bitbucket-pull-requests
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:44.614Z'
+        reason: config-schema-not-json

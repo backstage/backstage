@@ -11,16 +11,22 @@ addedDate: '2025-04-18'
 status: inactive
 staleSince: '2026-08-04'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:18.766Z'
-    checkedAt: '2026-08-04T03:39:18.766Z'
-    latestVersion: 1.0.1
-    lastPublishedAt: '2025-04-18T11:32:55.988Z'
-    repository:
-      url: https://github.com/CodeVerse-GP/scaffolder-backend-module-sendgrid
-      directory: .
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:39:19.213Z'
+    lastAttemptAt: '2026-08-04T05:03:16.817Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@codeverse-gp/scaffolder-backend-module-sendgrid'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:16.427Z'
+        checkedAt: '2026-08-04T05:03:16.427Z'
+        latestVersion: 1.0.1
+        lastPublishedAt: '2025-04-18T11:32:55.988Z'
+        repository:
+          url: https://github.com/CodeVerse-GP/scaffolder-backend-module-sendgrid
+          directory: .
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:17.290Z'
+        reason: config-schema-not-declared

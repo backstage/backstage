@@ -10,18 +10,24 @@ npmPackageName: '@fireflyai/backstage-plugin-firefly'
 addedDate: '2025-04-07'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:46.283Z'
-    checkedAt: '2026-08-04T03:37:46.283Z'
-    latestVersion: 1.0.3
-    lastPublishedAt: '2025-10-09T19:27:44.368Z'
-    repository:
-      url: https://github.com/gofireflyio/firefly-backstage-plugin
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:37:46.618Z'
-    checkedAt: '2026-08-04T03:37:46.618Z'
+    lastAttemptAt: '2026-08-04T05:02:57.749Z'
+    checkedAt: '2026-08-04T05:02:57.749Z'
     version: 1.36.0
     sourceUrl: https://github.com/gofireflyio/firefly-backstage-plugin/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@fireflyai/backstage-plugin-firefly'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:57.347Z'
+        checkedAt: '2026-08-04T05:02:57.347Z'
+        latestVersion: 1.0.3
+        lastPublishedAt: '2025-10-09T19:27:44.368Z'
+        repository:
+          url: https://github.com/gofireflyio/firefly-backstage-plugin
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:58.277Z'
+        reason: config-schema-not-declared

@@ -11,13 +11,19 @@ addedDate: '2022-12-08'
 status: inactive
 staleSince: '2026-08-04'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:03.517Z'
-    checkedAt: '2026-08-04T03:38:03.517Z'
-    latestVersion: 0.11.0
-    lastPublishedAt: '2024-08-21T09:56:17.412Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:03.517Z'
+    lastAttemptAt: '2026-08-04T05:03:01.460Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@harnessio/backstage-plugin-ci-cd'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:01.460Z'
+        checkedAt: '2026-08-04T05:03:01.460Z'
+        latestVersion: 0.11.0
+        lastPublishedAt: '2024-08-21T09:56:17.412Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:02.125Z'
+        reason: config-schema-not-json

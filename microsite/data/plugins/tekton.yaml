@@ -10,19 +10,25 @@ npmPackageName: '@backstage-community/plugin-tekton'
 addedDate: '2023-05-15'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:34.847Z'
-    checkedAt: '2026-08-04T03:39:34.847Z'
-    latestVersion: 3.40.1
-    lastPublishedAt: '2026-07-28T20:50:55.105Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/tekton/plugins/tekton
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:39:35.079Z'
-    checkedAt: '2026-08-04T03:39:35.079Z'
+    lastAttemptAt: '2026-08-04T05:03:20.581Z'
+    checkedAt: '2026-08-04T05:03:20.581Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/tekton/backstage.json
     sourcePath: workspaces/tekton/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-tekton'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:20.331Z'
+        checkedAt: '2026-08-04T05:03:20.331Z'
+        latestVersion: 3.40.1
+        lastPublishedAt: '2026-07-28T20:50:55.105Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/tekton/plugins/tekton
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:20.703Z'
+        reason: config-schema-not-declared

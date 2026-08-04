@@ -10,19 +10,104 @@ npmPackageName: '@backstage/plugin-home'
 addedDate: '2021-08-31'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:08.532Z'
-    checkedAt: '2026-08-04T03:38:08.532Z'
-    latestVersion: 0.9.8
-    lastPublishedAt: '2026-07-14T12:08:48.771Z'
-    repository:
-      url: https://github.com/backstage/backstage
-      directory: plugins/home
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:08.842Z'
-    checkedAt: '2026-08-04T03:38:08.842Z'
-    version: 1.50.0
-    sourceUrl: https://github.com/backstage/backstage/blob/master/workspaces/ui/backstage.json
-    sourcePath: workspaces/ui/backstage.json
+    lastAttemptAt: '2026-08-04T05:03:02.634Z'
+    checkedAt: '2026-08-04T05:03:02.634Z'
+    version: 1.53.1
+    sourceUrl: https://github.com/backstage/backstage/releases/tag/v1.53.1
+    sourcePath: plugins/home/package.json
+  packages:
+    - functionality: frontend
+      npmPackageName: '@backstage/plugin-home'
+      sourcePath: plugins/home/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:02.338Z'
+        checkedAt: '2026-08-04T05:03:02.338Z'
+        latestVersion: 0.9.8
+        lastPublishedAt: '2026-07-14T12:08:48.771Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/home
+      configSchema:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:02.634Z'
+        checkedAt: '2026-08-04T05:03:02.634Z'
+        schema:
+          $schema: http://json-schema.org/draft-07/schema#
+          type: object
+          properties:
+            home:
+              type: object
+              properties:
+                topVisits:
+                  type: object
+                  properties:
+                    filterBy:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          field:
+                            type: string
+                            visibility: frontend
+                          operator:
+                            type: string
+                            visibility: frontend
+                          value:
+                            type:
+                              - string
+                              - number
+                            visibility: frontend
+                        required:
+                          - field
+                          - operator
+                          - value
+                      description: Filter By config
+                      visibility: frontend
+                  description: Top visited plugin
+                  visibility: frontend
+                recentVisits:
+                  type: object
+                  properties:
+                    filterBy:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          field:
+                            type: string
+                            visibility: frontend
+                          operator:
+                            type: string
+                            visibility: frontend
+                          value:
+                            type:
+                              - string
+                              - number
+                            visibility: frontend
+                        required:
+                          - field
+                          - operator
+                          - value
+                      description: Filter By config
+                      visibility: frontend
+                  description: Recent visited plugin
+                  visibility: frontend
+    - functionality: react
+      npmPackageName: '@backstage/plugin-home-react'
+      sourcePath: plugins/home-react/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:02.988Z'
+        checkedAt: '2026-08-04T05:03:02.988Z'
+        latestVersion: 0.1.40
+        lastPublishedAt: '2026-07-14T12:08:57.175Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/home-react
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:03.475Z'
+        reason: config-schema-not-declared

@@ -9,19 +9,25 @@ npmPackageName: '@backstage-community/plugin-report-portal'
 addedDate: '2026-02-21'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:55.323Z'
-    checkedAt: '2026-08-04T03:38:55.323Z'
-    latestVersion: 1.6.1
-    lastPublishedAt: '2026-03-25T14:52:36.933Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/report-portal/plugins/report-portal
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:55.707Z'
-    checkedAt: '2026-08-04T03:38:55.707Z'
+    lastAttemptAt: '2026-08-04T05:03:12.291Z'
+    checkedAt: '2026-08-04T05:03:12.291Z'
     version: 1.41.1
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/report-portal/backstage.json
     sourcePath: workspaces/report-portal/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-report-portal'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:11.906Z'
+        checkedAt: '2026-08-04T05:03:11.906Z'
+        latestVersion: 1.6.1
+        lastPublishedAt: '2026-03-25T14:52:36.933Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/report-portal/plugins/report-portal
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:12.411Z'
+        reason: config-schema-not-json

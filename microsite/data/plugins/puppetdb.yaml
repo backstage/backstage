@@ -10,19 +10,25 @@ npmPackageName: '@backstage-community/plugin-puppetdb'
 addedDate: '2023-04-06'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:51.478Z'
-    checkedAt: '2026-08-04T03:38:51.478Z'
-    latestVersion: 0.21.0
-    lastPublishedAt: '2026-07-22T00:21:01.693Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/puppetdb/plugins/puppetdb
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:51.865Z'
-    checkedAt: '2026-08-04T03:38:51.865Z'
+    lastAttemptAt: '2026-08-04T05:03:11.470Z'
+    checkedAt: '2026-08-04T05:03:11.470Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/puppetdb/backstage.json
     sourcePath: workspaces/puppetdb/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-puppetdb'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:11.079Z'
+        checkedAt: '2026-08-04T05:03:11.079Z'
+        latestVersion: 0.21.0
+        lastPublishedAt: '2026-07-22T00:21:01.693Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/puppetdb/plugins/puppetdb
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:11.593Z'
+        reason: config-schema-not-declared

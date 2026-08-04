@@ -9,19 +9,25 @@ npmPackageName: '@backstage-community/plugin-servicenow'
 addedDate: '2026-02-21'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:20.298Z'
-    checkedAt: '2026-08-04T03:39:20.298Z'
-    latestVersion: 1.13.2
-    lastPublishedAt: '2026-07-22T21:54:36.667Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/servicenow/plugins/servicenow
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:39:20.630Z'
-    checkedAt: '2026-08-04T03:39:20.630Z'
+    lastAttemptAt: '2026-08-04T05:03:17.101Z'
+    checkedAt: '2026-08-04T05:03:17.101Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/servicenow/backstage.json
     sourcePath: workspaces/servicenow/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-servicenow'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:16.765Z'
+        checkedAt: '2026-08-04T05:03:16.765Z'
+        latestVersion: 1.13.2
+        lastPublishedAt: '2026-07-22T21:54:36.667Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/servicenow/plugins/servicenow
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:17.216Z'
+        reason: config-schema-not-declared

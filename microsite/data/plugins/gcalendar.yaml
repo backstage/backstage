@@ -9,19 +9,25 @@ npmPackageName: '@backstage-community/plugin-gcalendar'
 addedDate: '2026-02-21'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:50.172Z'
-    checkedAt: '2026-08-04T03:37:50.172Z'
-    latestVersion: 0.23.0
-    lastPublishedAt: '2026-07-21T23:04:15.113Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/gcalendar/plugins/gcalendar
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:37:50.533Z'
-    checkedAt: '2026-08-04T03:37:50.533Z'
+    lastAttemptAt: '2026-08-04T05:02:58.652Z'
+    checkedAt: '2026-08-04T05:02:58.652Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/gcalendar/backstage.json
     sourcePath: workspaces/gcalendar/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-gcalendar'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:58.334Z'
+        checkedAt: '2026-08-04T05:02:58.334Z'
+        latestVersion: 0.23.0
+        lastPublishedAt: '2026-07-21T23:04:15.113Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/gcalendar/plugins/gcalendar
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:58.788Z'
+        reason: config-schema-not-declared

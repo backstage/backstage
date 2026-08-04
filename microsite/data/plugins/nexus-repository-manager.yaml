@@ -10,19 +10,25 @@ npmPackageName: '@backstage-community/plugin-nexus-repository-manager'
 addedDate: '2023-10-25'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:38.537Z'
-    checkedAt: '2026-08-04T03:38:38.537Z'
-    latestVersion: 1.25.1
-    lastPublishedAt: '2026-07-21T20:32:30.872Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/nexus-repository-manager/plugins/nexus-repository-manager
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:38.939Z'
-    checkedAt: '2026-08-04T03:38:38.939Z'
+    lastAttemptAt: '2026-08-04T05:03:08.920Z'
+    checkedAt: '2026-08-04T05:03:08.920Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/nexus-repository-manager/backstage.json
     sourcePath: workspaces/nexus-repository-manager/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-nexus-repository-manager'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:08.608Z'
+        checkedAt: '2026-08-04T05:03:08.608Z'
+        latestVersion: 1.25.1
+        lastPublishedAt: '2026-07-21T20:32:30.872Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/nexus-repository-manager/plugins/nexus-repository-manager
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:09.037Z'
+        reason: config-schema-not-json

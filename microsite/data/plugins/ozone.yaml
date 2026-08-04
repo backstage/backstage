@@ -12,13 +12,19 @@ addedDate: '2023-06-14'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:46.098Z'
-    checkedAt: '2026-08-04T03:38:46.098Z'
-    latestVersion: 1.0.2
-    lastPublishedAt: '2023-07-06T13:37:22.741Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:46.098Z'
+    lastAttemptAt: '2026-08-04T05:03:09.935Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@ozonecloud/plugin-ozone'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:09.935Z'
+        checkedAt: '2026-08-04T05:03:09.935Z'
+        latestVersion: 1.0.2
+        lastPublishedAt: '2023-07-06T13:37:22.741Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:10.260Z'
+        reason: config-schema-not-declared

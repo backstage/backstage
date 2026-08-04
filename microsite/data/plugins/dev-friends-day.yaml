@@ -11,15 +11,21 @@ addedDate: '2024-02-28'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:30.956Z'
-    checkedAt: '2026-08-04T03:37:30.956Z'
-    latestVersion: 0.1.19
-    lastPublishedAt: '2024-02-28T16:20:54.311Z'
-    repository:
-      url: https://github.com/piatkiewicz/backstage-plugins
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:37:31.348Z'
+    lastAttemptAt: '2026-08-04T05:02:53.154Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@piatkiewicz/backstage-dev-friends-days'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:52.764Z'
+        checkedAt: '2026-08-04T05:02:52.764Z'
+        latestVersion: 0.1.19
+        lastPublishedAt: '2024-02-28T16:20:54.311Z'
+        repository:
+          url: https://github.com/piatkiewicz/backstage-plugins
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:53.527Z'
+        reason: config-schema-not-declared

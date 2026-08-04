@@ -10,16 +10,22 @@ npmPackageName: '@jikwan/backstage-plugin-spring-batch-dashboard'
 addedDate: '2026-03-11'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:25.921Z'
-    checkedAt: '2026-08-04T03:39:25.921Z'
-    latestVersion: 1.0.4
-    lastPublishedAt: '2026-03-11T01:38:47.472Z'
-    repository:
-      url: https://github.com/zc149/backstage-plugin-spring-batch-dashboard
-      directory: plugins/spring-batch-dashboard
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:39:26.280Z'
+    lastAttemptAt: '2026-08-04T05:03:18.220Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@jikwan/backstage-plugin-spring-batch-dashboard'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:17.850Z'
+        checkedAt: '2026-08-04T05:03:17.850Z'
+        latestVersion: 1.0.4
+        lastPublishedAt: '2026-03-11T01:38:47.472Z'
+        repository:
+          url: https://github.com/zc149/backstage-plugin-spring-batch-dashboard
+          directory: plugins/spring-batch-dashboard
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:18.582Z'
+        reason: config-schema-not-declared

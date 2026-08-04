@@ -10,19 +10,25 @@ npmPackageName: '@backstage-community/plugin-kiali'
 addedDate: '2023-07-25'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:18.267Z'
-    checkedAt: '2026-08-04T03:38:18.267Z'
-    latestVersion: 1.51.2
-    lastPublishedAt: '2026-07-31T10:50:02.735Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/kiali/plugins/kiali
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:18.602Z'
-    checkedAt: '2026-08-04T03:38:18.602Z'
+    lastAttemptAt: '2026-08-04T05:03:04.963Z'
+    checkedAt: '2026-08-04T05:03:04.963Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/kiali/backstage.json
     sourcePath: workspaces/kiali/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-kiali'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:04.728Z'
+        checkedAt: '2026-08-04T05:03:04.728Z'
+        latestVersion: 1.51.2
+        lastPublishedAt: '2026-07-31T10:50:02.735Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/kiali/plugins/kiali
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:05.102Z'
+        reason: config-schema-not-declared

@@ -9,19 +9,25 @@ npmPackageName: '@backstage-community/plugin-linkerd'
 addedDate: '2026-02-21'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:29.878Z'
-    checkedAt: '2026-08-04T03:38:29.878Z'
-    latestVersion: 0.22.0
-    lastPublishedAt: '2026-07-22T00:18:18.072Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/linkerd/plugins/linkerd
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:30.256Z'
-    checkedAt: '2026-08-04T03:38:30.256Z'
+    lastAttemptAt: '2026-08-04T05:03:07.242Z'
+    checkedAt: '2026-08-04T05:03:07.242Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/linkerd/backstage.json
     sourcePath: workspaces/linkerd/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-linkerd'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:06.876Z'
+        checkedAt: '2026-08-04T05:03:06.876Z'
+        latestVersion: 0.22.0
+        lastPublishedAt: '2026-07-22T00:18:18.072Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/linkerd/plugins/linkerd
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:07.369Z'
+        reason: config-schema-not-declared

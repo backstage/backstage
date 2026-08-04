@@ -11,15 +11,21 @@ addedDate: '2025-07-09'
 status: inactive
 staleSince: '2026-08-04'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:21.685Z'
-    checkedAt: '2026-08-04T03:39:21.685Z'
-    latestVersion: 0.1.10-xrc.7
-    lastPublishedAt: '2025-07-15T14:54:42.064Z'
-    repository:
-      url: https://github.com/signadot/backstage-plugin
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:39:22.026Z'
+    lastAttemptAt: '2026-08-04T05:03:17.526Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@signadot-lib/backstage-plugin'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:17.193Z'
+        checkedAt: '2026-08-04T05:03:17.193Z'
+        latestVersion: 0.1.10-xrc.7
+        lastPublishedAt: '2025-07-15T14:54:42.064Z'
+        repository:
+          url: https://github.com/signadot/backstage-plugin
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:17.961Z'
+        reason: config-schema-not-json

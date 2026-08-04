@@ -11,19 +11,25 @@ addedDate: '2023-12-30'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:51.844Z'
-    checkedAt: '2026-08-04T03:37:51.844Z'
-    latestVersion: 1.0.4
-    lastPublishedAt: '2024-03-16T14:20:48.303Z'
-    repository:
-      url: https://github.com/adityasinghal26/backstage-plugins
-      directory: plugins/github-codespaces
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:37:52.247Z'
-    checkedAt: '2026-08-04T03:37:52.247Z'
+    lastAttemptAt: '2026-08-04T05:02:59.359Z'
+    checkedAt: '2026-08-04T05:02:59.359Z'
     version: 1.32.0
     sourceUrl: https://github.com/adityasinghal26/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@adityasinghal26/plugin-github-codespaces'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:58.960Z'
+        checkedAt: '2026-08-04T05:02:58.960Z'
+        latestVersion: 1.0.4
+        lastPublishedAt: '2024-03-16T14:20:48.303Z'
+        repository:
+          url: https://github.com/adityasinghal26/backstage-plugins
+          directory: plugins/github-codespaces
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:59.851Z'
+        reason: config-schema-not-declared

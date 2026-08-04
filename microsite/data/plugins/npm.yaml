@@ -10,19 +10,36 @@ npmPackageName: '@backstage-community/plugin-npm'
 addedDate: '2024-11-29'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:40.581Z'
-    checkedAt: '2026-08-04T03:38:40.581Z'
-    latestVersion: 1.24.0
-    lastPublishedAt: '2026-07-21T20:11:23.273Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/npm/plugins/npm
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:40.946Z'
-    checkedAt: '2026-08-04T03:38:40.946Z'
+    lastAttemptAt: '2026-08-04T05:03:09.363Z'
+    checkedAt: '2026-08-04T05:03:09.363Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/npm/backstage.json
     sourcePath: workspaces/npm/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-npm'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:09.029Z'
+        checkedAt: '2026-08-04T05:03:09.029Z'
+        latestVersion: 1.24.0
+        lastPublishedAt: '2026-07-21T20:11:23.273Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/npm/plugins/npm
+      configSchema:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:09.498Z'
+        checkedAt: '2026-08-04T05:03:09.498Z'
+        schema:
+          $schema: http://json-schema.org/draft-07/schema#
+          type: object
+          properties:
+            npm:
+              type: object
+              properties:
+                defaultRegistry:
+                  type: string
+                  description: Use another default registry. This automatically enforce usage of the backend.
+                  visibility: frontend

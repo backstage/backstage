@@ -10,19 +10,25 @@ npmPackageName: '@backstage-community/plugin-todo'
 addedDate: '2021-03-16'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:38.033Z'
-    checkedAt: '2026-08-04T03:39:38.033Z'
-    latestVersion: 0.23.0
-    lastPublishedAt: '2026-07-22T00:22:10.683Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/todo/plugins/todo
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:39:38.310Z'
-    checkedAt: '2026-08-04T03:39:38.310Z'
+    lastAttemptAt: '2026-08-04T05:03:20.935Z'
+    checkedAt: '2026-08-04T05:03:20.935Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/todo/backstage.json
     sourcePath: workspaces/todo/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-todo'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:20.653Z'
+        checkedAt: '2026-08-04T05:03:20.653Z'
+        latestVersion: 0.23.0
+        lastPublishedAt: '2026-07-22T00:22:10.683Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/todo/plugins/todo
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:21.132Z'
+        reason: config-schema-not-declared

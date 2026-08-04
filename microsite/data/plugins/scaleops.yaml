@@ -10,19 +10,25 @@ npmPackageName: '@terasky/backstage-plugin-scaleops-frontend'
 addedDate: '2024-12-30'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:12.298Z'
-    checkedAt: '2026-08-04T03:39:12.298Z'
-    latestVersion: 2.7.0
-    lastPublishedAt: '2026-06-30T17:21:15.936Z'
-    repository:
-      url: https://github.com/TeraSky-OSS/backstage-plugins
-      directory: plugins/scaleops-frontend
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:39:12.665Z'
-    checkedAt: '2026-08-04T03:39:12.665Z'
+    lastAttemptAt: '2026-08-04T05:03:15.455Z'
+    checkedAt: '2026-08-04T05:03:15.455Z'
     version: 1.52.1
     sourceUrl: https://github.com/TeraSky-OSS/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@terasky/backstage-plugin-scaleops-frontend'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:15.122Z'
+        checkedAt: '2026-08-04T05:03:15.122Z'
+        latestVersion: 2.7.0
+        lastPublishedAt: '2026-06-30T17:21:15.936Z'
+        repository:
+          url: https://github.com/TeraSky-OSS/backstage-plugins
+          directory: plugins/scaleops-frontend
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:15.558Z'
+        reason: config-schema-not-json

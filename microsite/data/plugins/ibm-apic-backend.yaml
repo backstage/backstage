@@ -11,13 +11,19 @@ addedDate: '2024-03-01'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:10.443Z'
-    checkedAt: '2026-08-04T03:38:10.443Z'
-    latestVersion: 1.0.2
-    lastPublishedAt: '2024-03-01T13:31:56.337Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:10.443Z'
+    lastAttemptAt: '2026-08-04T05:03:03.129Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@croz/plugin-ibm-apic-backend'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:03.129Z'
+        checkedAt: '2026-08-04T05:03:03.129Z'
+        latestVersion: 1.0.2
+        lastPublishedAt: '2024-03-01T13:31:56.337Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:03.504Z'
+        reason: config-schema-not-declared

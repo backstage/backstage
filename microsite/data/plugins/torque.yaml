@@ -13,13 +13,19 @@ addedDate: '2023-01-25'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:39.295Z'
-    checkedAt: '2026-08-04T03:39:39.295Z'
-    latestVersion: 0.1.2
-    lastPublishedAt: '2023-01-25T15:14:54.208Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:39:39.295Z'
+    lastAttemptAt: '2026-08-04T05:03:21.290Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@qtorque/backstage-torque-plugin'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:21.290Z'
+        checkedAt: '2026-08-04T05:03:21.290Z'
+        latestVersion: 0.1.2
+        lastPublishedAt: '2023-01-25T15:14:54.208Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:21.616Z'
+        reason: config-schema-not-json

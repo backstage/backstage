@@ -11,13 +11,19 @@ addedDate: '2024-05-27'
 status: inactive
 staleSince: '2026-08-04'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:19.134Z'
-    checkedAt: '2026-08-04T03:38:19.134Z'
-    latestVersion: 2.1.3
-    lastPublishedAt: '2025-07-11T22:32:44.037Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:19.134Z'
+    lastAttemptAt: '2026-08-04T05:03:04.816Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@veecode-platform/plugin-kong-service-manager'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:04.816Z'
+        checkedAt: '2026-08-04T05:03:04.816Z'
+        latestVersion: 2.1.3
+        lastPublishedAt: '2025-07-11T22:32:44.037Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:05.194Z'
+        reason: config-schema-not-declared

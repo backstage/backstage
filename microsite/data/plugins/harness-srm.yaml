@@ -11,13 +11,19 @@ addedDate: '2023-11-17'
 status: inactive
 staleSince: '2026-08-04'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:04.359Z'
-    checkedAt: '2026-08-04T03:38:04.359Z'
-    latestVersion: 0.2.0
-    lastPublishedAt: '2023-11-17T13:19:51.469Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:04.359Z'
+    lastAttemptAt: '2026-08-04T05:03:01.685Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@harnessio/backstage-plugin-harness-srm'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:01.685Z'
+        checkedAt: '2026-08-04T05:03:01.685Z'
+        latestVersion: 0.2.0
+        lastPublishedAt: '2023-11-17T13:19:51.469Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:02.064Z'
+        reason: config-schema-not-declared

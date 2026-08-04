@@ -11,15 +11,21 @@ addedDate: '2023-11-05'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:21.124Z'
-    checkedAt: '2026-08-04T03:39:21.124Z'
-    latestVersion: 0.1.6
-    lastPublishedAt: '2023-11-08T00:07:46.018Z'
-    repository:
-      url: https://github.com/NandoRFS/backstage-plugin-should-i-deploy
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:39:21.293Z'
+    lastAttemptAt: '2026-08-04T05:03:17.289Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: backstage-plugin-should-i-deploy
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:17.136Z'
+        checkedAt: '2026-08-04T05:03:17.136Z'
+        latestVersion: 0.1.6
+        lastPublishedAt: '2023-11-08T00:07:46.018Z'
+        repository:
+          url: https://github.com/NandoRFS/backstage-plugin-should-i-deploy
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:17.681Z'
+        reason: config-schema-not-declared

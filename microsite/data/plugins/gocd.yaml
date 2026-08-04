@@ -10,19 +10,41 @@ npmPackageName: '@backstage-community/plugin-gocd'
 addedDate: '2022-01-15'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:57.673Z'
-    checkedAt: '2026-08-04T03:37:57.673Z'
-    latestVersion: 0.21.0
-    lastPublishedAt: '2026-07-21T23:04:53.904Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/gocd/plugins/gocd
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:37:58.020Z'
-    checkedAt: '2026-08-04T03:37:58.020Z'
+    lastAttemptAt: '2026-08-04T05:03:00.420Z'
+    checkedAt: '2026-08-04T05:03:00.420Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/gocd/backstage.json
     sourcePath: workspaces/gocd/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-gocd'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:00.076Z'
+        checkedAt: '2026-08-04T05:03:00.076Z'
+        latestVersion: 0.21.0
+        lastPublishedAt: '2026-07-21T23:04:53.904Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/gocd/plugins/gocd
+      configSchema:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:00.524Z'
+        checkedAt: '2026-08-04T05:03:00.524Z'
+        schema:
+          $schema: http://json-schema.org/draft-07/schema#
+          type: object
+          properties:
+            gocd:
+              type: object
+              properties:
+                baseUrl:
+                  type: string
+                  description: The base url of the GoCD installation.
+                  visibility: frontend
+              required:
+                - baseUrl
+              description: Configurations for the GoCD plugin
+          required:
+            - gocd

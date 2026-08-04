@@ -11,15 +11,21 @@ addedDate: '2023-12-08'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:10.125Z'
-    checkedAt: '2026-08-04T03:39:10.125Z'
-    latestVersion: 0.20.0
-    lastPublishedAt: '2023-12-20T23:08:28.583Z'
-    repository:
-      url: https://github.com/redhat-developer/backstage-odo-devfile-plugin
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:39:10.485Z'
+    lastAttemptAt: '2026-08-04T05:03:15.101Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@redhat-developer/plugin-scaffolder-frontend-module-devfile-field'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:14.749Z'
+        checkedAt: '2026-08-04T05:03:14.749Z'
+        latestVersion: 0.20.0
+        lastPublishedAt: '2023-12-20T23:08:28.583Z'
+        repository:
+          url: https://github.com/redhat-developer/backstage-odo-devfile-plugin
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:15.101Z'
+        reason: config-schema-not-declared

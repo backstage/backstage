@@ -11,19 +11,535 @@ addedDate: '2021-03-29'
 order: 2
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:01.936Z'
-    checkedAt: '2026-08-04T03:37:01.936Z'
-    latestVersion: 1.38.1
-    lastPublishedAt: '2026-07-14T12:12:12.436Z'
-    repository:
-      url: https://github.com/backstage/backstage
-      directory: plugins/scaffolder
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:37:02.355Z'
-    checkedAt: '2026-08-04T03:37:02.355Z'
-    version: 1.50.0
-    sourceUrl: https://github.com/backstage/backstage/blob/master/workspaces/ui/backstage.json
-    sourcePath: workspaces/ui/backstage.json
+    lastAttemptAt: '2026-08-04T05:02:42.910Z'
+    checkedAt: '2026-08-04T05:02:42.910Z'
+    version: 1.53.1
+    sourceUrl: https://github.com/backstage/backstage/releases/tag/v1.53.1
+    sourcePath: plugins/scaffolder/package.json
+  packages:
+    - functionality: frontend
+      npmPackageName: '@backstage/plugin-scaffolder'
+      sourcePath: plugins/scaffolder/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:42.496Z'
+        checkedAt: '2026-08-04T05:02:42.496Z'
+        latestVersion: 1.38.1
+        lastPublishedAt: '2026-07-14T12:12:12.436Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/scaffolder
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:42.911Z'
+        reason: config-schema-not-declared
+    - functionality: backend-module
+      npmPackageName: '@backstage/plugin-scaffolder-backend-module-azure'
+      sourcePath: plugins/scaffolder-backend-module-azure/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:43.286Z'
+        checkedAt: '2026-08-04T05:02:43.286Z'
+        latestVersion: 0.2.23
+        lastPublishedAt: '2026-07-14T12:12:34.728Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/scaffolder-backend-module-azure
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:43.604Z'
+        reason: config-schema-not-declared
+    - functionality: backend-module
+      npmPackageName: '@backstage/plugin-scaffolder-backend-module-bitbucket-cloud'
+      sourcePath: plugins/scaffolder-backend-module-bitbucket-cloud/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:43.930Z'
+        checkedAt: '2026-08-04T05:02:43.930Z'
+        latestVersion: 0.3.8
+        lastPublishedAt: '2026-07-14T12:12:43.512Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/scaffolder-backend-module-bitbucket-cloud
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:44.207Z'
+        reason: config-schema-not-declared
+    - functionality: backend-module
+      npmPackageName: '@backstage/plugin-scaffolder-backend-module-bitbucket-server'
+      sourcePath: plugins/scaffolder-backend-module-bitbucket-server/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:44.551Z'
+        checkedAt: '2026-08-04T05:02:44.551Z'
+        latestVersion: 0.2.23
+        lastPublishedAt: '2026-07-14T12:12:52.700Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/scaffolder-backend-module-bitbucket-server
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:44.805Z'
+        reason: config-schema-not-declared
+    - functionality: backend-module
+      npmPackageName: '@backstage/plugin-scaffolder-backend-module-confluence-to-markdown'
+      sourcePath: plugins/scaffolder-backend-module-confluence-to-markdown/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:45.105Z'
+        checkedAt: '2026-08-04T05:02:45.105Z'
+        latestVersion: 0.3.23
+        lastPublishedAt: '2026-07-14T12:13:03.354Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/scaffolder-backend-module-confluence-to-markdown
+      configSchema:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:45.357Z'
+        checkedAt: '2026-08-04T05:02:45.357Z'
+        schema:
+          $schema: http://json-schema.org/draft-07/schema#
+          type: object
+          properties:
+            confluence:
+              type: object
+              properties:
+                baseUrl:
+                  type: string
+                  description: The base URL for accessing the Confluence API
+                auth:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - basic
+                        - bearer
+                        - userpass
+                      description: Authentication method - basic, bearer, username/password
+                    token:
+                      type: string
+                      description: Token used for the basic and bearer auth methods
+                      visibility: secret
+                    email:
+                      type: string
+                      description: Email used with the token for the basic auth method
+                      visibility: secret
+                    username:
+                      type: string
+                      description: Username used with the Username/Password auth method
+                      visibility: secret
+                    password:
+                      type: string
+                      description: Password used with the Username/Password auth method
+                      visibility: secret
+                  required:
+                    - type
+              required:
+                - baseUrl
+                - auth
+              description: Configuration options for the Confluence to Markdown action
+    - functionality: backend-module
+      npmPackageName: '@backstage/plugin-scaffolder-backend-module-cookiecutter'
+      sourcePath: plugins/scaffolder-backend-module-cookiecutter/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:45.719Z'
+        checkedAt: '2026-08-04T05:02:45.719Z'
+        latestVersion: 0.3.25
+        lastPublishedAt: '2026-07-14T12:13:12.349Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/scaffolder-backend-module-cookiecutter
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:46.100Z'
+        reason: config-schema-not-declared
+    - functionality: backend-module
+      npmPackageName: '@backstage/plugin-scaffolder-backend-module-gcp'
+      sourcePath: plugins/scaffolder-backend-module-gcp/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:46.441Z'
+        checkedAt: '2026-08-04T05:02:46.441Z'
+        latestVersion: 0.2.23
+        lastPublishedAt: '2026-07-14T12:13:20.496Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/scaffolder-backend-module-gcp
+      configSchema:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:46.683Z'
+        checkedAt: '2026-08-04T05:02:46.683Z'
+        schema:
+          $schema: http://json-schema.org/draft-07/schema#
+          type: object
+          properties:
+            scaffolder:
+              type: object
+              properties:
+                EXPERIMENTAL_workspaceSerializationGcpBucketName:
+                  type: string
+                  description: Sets GCP bucket name to store serialized workspace for scaffolder tasks.
+              description: Configuration options for the scaffolder plugin
+    - functionality: backend-module
+      npmPackageName: '@backstage/plugin-scaffolder-backend-module-gerrit'
+      sourcePath: plugins/scaffolder-backend-module-gerrit/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:47.107Z'
+        checkedAt: '2026-08-04T05:02:47.107Z'
+        latestVersion: 0.2.23
+        lastPublishedAt: '2026-07-14T12:13:30.718Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/scaffolder-backend-module-gerrit
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:47.410Z'
+        reason: config-schema-not-declared
+    - functionality: backend-module
+      npmPackageName: '@backstage/plugin-scaffolder-backend-module-gitea'
+      sourcePath: plugins/scaffolder-backend-module-gitea/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:47.864Z'
+        checkedAt: '2026-08-04T05:02:47.864Z'
+        latestVersion: 0.2.23
+        lastPublishedAt: '2026-07-14T12:13:39.411Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/scaffolder-backend-module-gitea
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:48.273Z'
+        reason: config-schema-not-declared
+    - functionality: backend-module
+      npmPackageName: '@backstage/plugin-scaffolder-backend-module-github'
+      sourcePath: plugins/scaffolder-backend-module-github/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:48.603Z'
+        checkedAt: '2026-08-04T05:02:48.603Z'
+        latestVersion: 0.9.11
+        lastPublishedAt: '2026-07-14T12:13:50.817Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/scaffolder-backend-module-github
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:48.984Z'
+        reason: config-schema-not-declared
+    - functionality: backend-module
+      npmPackageName: '@backstage/plugin-scaffolder-backend-module-gitlab'
+      sourcePath: plugins/scaffolder-backend-module-gitlab/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:49.328Z'
+        checkedAt: '2026-08-04T05:02:49.328Z'
+        latestVersion: 0.11.8
+        lastPublishedAt: '2026-07-14T12:14:00.633Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/scaffolder-backend-module-gitlab
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:49.733Z'
+        reason: config-schema-not-declared
+    - functionality: backend-module
+      npmPackageName: '@backstage/plugin-scaffolder-backend-module-notifications'
+      sourcePath: plugins/scaffolder-backend-module-notifications/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:50.075Z'
+        checkedAt: '2026-08-04T05:02:50.075Z'
+        latestVersion: 0.1.24
+        lastPublishedAt: '2026-07-14T12:14:09.550Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/scaffolder-backend-module-notifications
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:50.338Z'
+        reason: config-schema-not-declared
+    - functionality: backend-module
+      npmPackageName: '@backstage/plugin-scaffolder-backend-module-rails'
+      sourcePath: plugins/scaffolder-backend-module-rails/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:50.600Z'
+        checkedAt: '2026-08-04T05:02:50.600Z'
+        latestVersion: 0.5.23
+        lastPublishedAt: '2026-07-14T12:14:18.438Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/scaffolder-backend-module-rails
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:50.921Z'
+        reason: config-schema-not-declared
+    - functionality: backend-module
+      npmPackageName: '@backstage/plugin-scaffolder-backend-module-sentry'
+      sourcePath: plugins/scaffolder-backend-module-sentry/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:51.253Z'
+        checkedAt: '2026-08-04T05:02:51.253Z'
+        latestVersion: 0.3.6
+        lastPublishedAt: '2026-07-14T12:14:28.973Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/scaffolder-backend-module-sentry
+      configSchema:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:51.644Z'
+        checkedAt: '2026-08-04T05:02:51.644Z'
+        schema:
+          $schema: http://json-schema.org/draft-07/schema#
+          type: object
+          properties:
+            scaffolder:
+              type: object
+              properties:
+                sentry:
+                  type: object
+                  properties:
+                    apiBaseUrl:
+                      type: string
+                    token:
+                      type: string
+    - functionality: backend-module
+      npmPackageName: '@backstage/plugin-scaffolder-backend-module-yeoman'
+      sourcePath: plugins/scaffolder-backend-module-yeoman/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:52.098Z'
+        checkedAt: '2026-08-04T05:02:52.098Z'
+        latestVersion: 0.4.24
+        lastPublishedAt: '2026-07-14T12:14:38.217Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/scaffolder-backend-module-yeoman
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:52.586Z'
+        reason: config-schema-not-declared
+    - functionality: backend
+      npmPackageName: '@backstage/plugin-scaffolder-backend'
+      sourcePath: plugins/scaffolder-backend/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:52.890Z'
+        checkedAt: '2026-08-04T05:02:52.890Z'
+        latestVersion: 4.0.2
+        lastPublishedAt: '2026-07-14T12:12:25.587Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/scaffolder-backend
+      configSchema:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:53.311Z'
+        checkedAt: '2026-08-04T05:02:53.311Z'
+        schema:
+          $schema: http://json-schema.org/draft-07/schema#
+          type: object
+          properties:
+            scaffolder:
+              type: object
+              properties:
+                defaultAuthor:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    email:
+                      type: string
+                  description: The commit author info used when new components are created.
+                defaultCommitSigningKey:
+                  type: string
+                  description: Default PGP signing key for signing commits.
+                  visibility: secret
+                defaultCommitMessage:
+                  type: string
+                  description: The commit message used when new components are created.
+                concurrentTasksLimit:
+                  type: number
+                  description: |-
+                    Sets the number of concurrent tasks that can be run at any given time on the TaskWorker.
+
+                    Defaults to 10.
+
+                    Set to 0 to disable task workers altogether.
+                EXPERIMENTAL_gracefulShutdown:
+                  type: boolean
+                  description: Tries to wait for tasks to finish during SIGTERM before shutting down the TaskWorker.
+                EXPERIMENTAL_recoverTasks:
+                  type: boolean
+                  description: |-
+                    Sets the tasks recoverability on system start up.
+
+                    If not specified, the default value is false.
+                EXPERIMENTAL_workspaceSerialization:
+                  type: boolean
+                  description: Sets the serialization of the workspace to have an ability to rerun the failed task.
+                EXPERIMENTAL_workspaceSerializationProvider:
+                  type: string
+                  description: |-
+                    Sets the provider for workspace serialization.
+
+                    By default, it is your database.
+                EXPERIMENTAL_recoverTasksTimeout:
+                  anyOf:
+                    - type: object
+                      properties:
+                        years:
+                          type: number
+                        months:
+                          type: number
+                        weeks:
+                          type: number
+                        days:
+                          type: number
+                        hours:
+                          type: number
+                        minutes:
+                          type: number
+                        seconds:
+                          type: number
+                        milliseconds:
+                          type: number
+                      description: Human friendly durations object.
+                    - type: string
+                  description: |-
+                    Every task which is in progress state and having a last heartbeat longer than a specified timeout is going to be attempted to recover.
+
+                    If not specified, the default value is 5 seconds.
+                taskTimeoutJanitorFrequency:
+                  anyOf:
+                    - type: object
+                      properties:
+                        years:
+                          type: number
+                        months:
+                          type: number
+                        weeks:
+                          type: number
+                        days:
+                          type: number
+                        hours:
+                          type: number
+                        minutes:
+                          type: number
+                        seconds:
+                          type: number
+                        milliseconds:
+                          type: number
+                      description: Human friendly durations object.
+                    - type: string
+                  description: |-
+                    Makes sure to auto-expire and clean up things that time out or for other reasons should not be left lingering.
+
+                    By default, the frequency is every 5 minutes.
+                taskTimeout:
+                  anyOf:
+                    - type: object
+                      properties:
+                        years:
+                          type: number
+                        months:
+                          type: number
+                        weeks:
+                          type: number
+                        days:
+                          type: number
+                        hours:
+                          type: number
+                        minutes:
+                          type: number
+                        seconds:
+                          type: number
+                        milliseconds:
+                          type: number
+                      description: Human friendly durations object.
+                    - type: string
+                  description: |-
+                    Sets the task's heartbeat timeout, when to consider a task to be staled.
+
+                    Once task is considered to be staled, the scheduler will shut it down on the next cycle.
+
+                    Default value is 24 hours.
+                auditor:
+                  type: object
+                  properties:
+                    taskParameterMaxLength:
+                      type: number
+                  description: |-
+                    Sets the maximum length for task parameters recorded by the auditor.
+
+                    If set to -1, the limit is disabled and parameters are not truncated. Defaults to 256 character length.
+                defaultEnvironment:
+                  type: object
+                  properties:
+                    parameters:
+                      type: object
+                      additionalProperties:
+                        type: string
+                      description: Default parameters accessible via ${{ environment.parameters.* }} in templates.
+                    secrets:
+                      type: object
+                      additionalProperties:
+                        type: string
+                      description: Secret values from environment variables accessible via ${{ environment.secrets.* }} in templates. Values should reference environment variables like ${SECRET_NAME}.
+                      visibility: secret
+                  description: Default environment variables and secrets available to all templates.
+              description: Configuration options for the scaffolder plugin
+    - functionality: common
+      npmPackageName: '@backstage/plugin-scaffolder-common'
+      sourcePath: plugins/scaffolder-common/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:53.672Z'
+        checkedAt: '2026-08-04T05:02:53.672Z'
+        latestVersion: 2.2.1
+        lastPublishedAt: '2026-06-16T18:13:00.606Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/scaffolder-common
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:53.964Z'
+        reason: config-schema-not-declared
+    - functionality: node
+      npmPackageName: '@backstage/plugin-scaffolder-node'
+      sourcePath: plugins/scaffolder-node/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:54.268Z'
+        checkedAt: '2026-08-04T05:02:54.268Z'
+        latestVersion: 0.13.5
+        lastPublishedAt: '2026-07-14T12:14:51.739Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/scaffolder-node
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:54.620Z'
+        reason: config-schema-not-declared
+    - functionality: react
+      npmPackageName: '@backstage/plugin-scaffolder-react'
+      sourcePath: plugins/scaffolder-react/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:54.860Z'
+        checkedAt: '2026-08-04T05:02:54.860Z'
+        latestVersion: 2.0.2
+        lastPublishedAt: '2026-07-14T12:15:14.573Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/scaffolder-react
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:55.255Z'
+        reason: config-schema-not-declared

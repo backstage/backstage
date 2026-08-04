@@ -11,18 +11,24 @@ addedDate: '2025-07-23'
 status: inactive
 staleSince: '2026-08-04'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:07.608Z'
-    checkedAt: '2026-08-04T03:38:07.608Z'
-    latestVersion: 1.0.0
-    lastPublishedAt: '2025-07-15T10:13:30.929Z'
-    repository:
-      url: https://github.com/Infosys/holiday-tracker-plugin
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:08.027Z'
-    checkedAt: '2026-08-04T03:38:08.027Z'
+    lastAttemptAt: '2026-08-04T05:03:02.527Z'
+    checkedAt: '2026-08-04T05:03:02.527Z'
     version: 1.39.0
     sourceUrl: https://github.com/Infosys/holiday-tracker-plugin/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@infosys_ltd/holiday-tracker-plugin'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:02.156Z'
+        checkedAt: '2026-08-04T05:03:02.156Z'
+        latestVersion: 1.0.0
+        lastPublishedAt: '2025-07-15T10:13:30.929Z'
+        repository:
+          url: https://github.com/Infosys/holiday-tracker-plugin
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:03.099Z'
+        reason: config-schema-not-declared

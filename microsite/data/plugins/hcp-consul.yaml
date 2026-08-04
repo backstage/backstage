@@ -11,18 +11,24 @@ addedDate: '2023-11-24'
 status: inactive
 staleSince: '2026-08-04'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:05.575Z'
-    checkedAt: '2026-08-04T03:38:05.575Z'
-    latestVersion: 0.1.1
-    lastPublishedAt: '2023-11-28T06:30:14.534Z'
-    repository:
-      url: https://github.com/hashicorp-forge/backstage-plugin-hcp-consul
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:05.976Z'
-    checkedAt: '2026-08-04T03:38:05.976Z'
+    lastAttemptAt: '2026-08-04T05:03:02.221Z'
+    checkedAt: '2026-08-04T05:03:02.221Z'
     version: 1.18.0
     sourceUrl: https://github.com/hashicorp-forge/backstage-plugin-hcp-consul/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@hashicorp/plugin-hcp-consul'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:01.776Z'
+        checkedAt: '2026-08-04T05:03:01.776Z'
+        latestVersion: 0.1.1
+        lastPublishedAt: '2023-11-28T06:30:14.534Z'
+        repository:
+          url: https://github.com/hashicorp-forge/backstage-plugin-hcp-consul
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:02.905Z'
+        reason: config-schema-not-json

@@ -10,19 +10,53 @@ npmPackageName: '@backstage-community/plugin-periskop'
 addedDate: '2022-02-25'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:48.244Z'
-    checkedAt: '2026-08-04T03:38:48.244Z'
-    latestVersion: 0.20.0
-    lastPublishedAt: '2026-07-22T00:17:47.616Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/periskop/plugins/periskop
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:48.584Z'
-    checkedAt: '2026-08-04T03:38:48.584Z'
+    lastAttemptAt: '2026-08-04T05:03:10.809Z'
+    checkedAt: '2026-08-04T05:03:10.809Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/periskop/backstage.json
     sourcePath: workspaces/periskop/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-periskop'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:10.450Z'
+        checkedAt: '2026-08-04T05:03:10.450Z'
+        latestVersion: 0.20.0
+        lastPublishedAt: '2026-07-22T00:17:47.616Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/periskop/plugins/periskop
+      configSchema:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:10.952Z'
+        checkedAt: '2026-08-04T05:03:10.952Z'
+        schema:
+          $schema: http://json-schema.org/draft-07/schema#
+          type: object
+          properties:
+            periskop:
+              type: object
+              properties:
+                instances:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        description: The name of the given Periskop instance
+                        visibility: frontend
+                      url:
+                        type: string
+                        description: The hostname of the given Periskop instance
+                        visibility: frontend
+                    required:
+                      - name
+                      - url
+                  description: Integration configuration for the periskop servers
+                  visibility: frontend
+              required:
+                - instances
+              description: Configuration options for the periskop plugin

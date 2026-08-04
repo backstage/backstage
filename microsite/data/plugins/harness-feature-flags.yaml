@@ -11,13 +11,19 @@ addedDate: '2023-03-01'
 status: inactive
 staleSince: '2026-08-04'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:03.782Z'
-    checkedAt: '2026-08-04T03:38:03.782Z'
-    latestVersion: 0.2.1
-    lastPublishedAt: '2023-07-18T14:37:09.278Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:03.782Z'
+    lastAttemptAt: '2026-08-04T05:03:01.505Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@harnessio/backstage-plugin-feature-flags'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:01.505Z'
+        checkedAt: '2026-08-04T05:03:01.505Z'
+        latestVersion: 0.2.1
+        lastPublishedAt: '2023-07-18T14:37:09.278Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:01.852Z'
+        reason: config-schema-not-declared

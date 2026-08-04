@@ -10,13 +10,19 @@ npmPackageName: '@roadiehq/backstage-plugin-launchdarkly'
 addedDate: '2024-07-27'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:26.974Z'
-    checkedAt: '2026-08-04T03:38:26.974Z'
-    latestVersion: 1.4.0
-    lastPublishedAt: '2025-10-31T09:33:12.697Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:26.974Z'
+    lastAttemptAt: '2026-08-04T05:03:06.210Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@roadiehq/backstage-plugin-launchdarkly'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:06.210Z'
+        checkedAt: '2026-08-04T05:03:06.210Z'
+        latestVersion: 1.4.0
+        lastPublishedAt: '2025-10-31T09:33:12.697Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:06.547Z'
+        reason: config-schema-not-declared

@@ -10,19 +10,25 @@ npmPackageName: backstage-plugin-api-linter
 addedDate: '2022-07-22'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:36:44.659Z'
-    checkedAt: '2026-08-04T03:36:44.659Z'
-    latestVersion: 1.1.2
-    lastPublishedAt: '2026-01-22T09:41:09.066Z'
-    repository:
-      url: https://github.com/zalando/backstage-plugin-api-linter
-      directory: .
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:36:44.807Z'
-    checkedAt: '2026-08-04T03:36:44.807Z'
+    lastAttemptAt: '2026-08-04T05:02:39.047Z'
+    checkedAt: '2026-08-04T05:02:39.047Z'
     version: 1.40.0
     sourceUrl: https://github.com/zalando/backstage-plugin-api-linter/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: backstage-plugin-api-linter
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:38.910Z'
+        checkedAt: '2026-08-04T05:02:38.910Z'
+        latestVersion: 1.1.2
+        lastPublishedAt: '2026-01-22T09:41:09.066Z'
+        repository:
+          url: https://github.com/zalando/backstage-plugin-api-linter
+          directory: .
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:39.633Z'
+        reason: config-schema-not-declared

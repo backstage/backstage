@@ -10,18 +10,187 @@ npmPackageName: '@drodil/backstage-plugin-qeta'
 addedDate: '2022-12-21'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:51.963Z'
-    checkedAt: '2026-08-04T03:38:51.963Z'
-    latestVersion: 4.0.0
-    lastPublishedAt: '2026-08-03T09:25:30.913Z'
-    repository:
-      url: https://github.com/drodil/backstage-plugin-qeta
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:52.322Z'
-    checkedAt: '2026-08-04T03:38:52.322Z'
+    lastAttemptAt: '2026-08-04T05:03:11.523Z'
+    checkedAt: '2026-08-04T05:03:11.523Z'
     version: 1.53.0
     sourceUrl: https://github.com/drodil/backstage-plugin-qeta/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@drodil/backstage-plugin-qeta'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:11.242Z'
+        checkedAt: '2026-08-04T05:03:11.242Z'
+        latestVersion: 4.0.0
+        lastPublishedAt: '2026-08-03T09:25:30.913Z'
+        repository:
+          url: https://github.com/drodil/backstage-plugin-qeta
+      configSchema:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:12.097Z'
+        checkedAt: '2026-08-04T05:03:12.097Z'
+        schema:
+          $schema: http://json-schema.org/draft-07/schema#
+          type: object
+          properties:
+            qeta:
+              type: object
+              properties:
+                allowAnonymous:
+                  type: boolean
+                  description: Allow anonymous questions
+                  visibility: frontend
+                permissions:
+                  type: boolean
+                  visibility: frontend
+                entityKinds:
+                  type: array
+                  items:
+                    type: string
+                  description: Determine what kind of entities can be attached to questions. For example [System, Component, API, Location, Template]. Default is [Component, System].
+                  visibility: frontend
+                  deprecated: use `entities` config instead
+                entities:
+                  type: object
+                  properties:
+                    disabled:
+                      type: boolean
+                      description: Disable entity pages and entity pickers.
+                      visibility: frontend
+                    kinds:
+                      type: array
+                      items:
+                        type: string
+                      description: Determine what kind of entities can be attached to posts. For example [System, Component, API, Location, Template]. Default is [Component, System].
+                      visibility: frontend
+                    max:
+                      type: number
+                      description: Maximum entities to attach to posts.
+                      visibility: frontend
+                    min:
+                      type: number
+                      description: Minimum entities required to attach to post.
+                      visibility: frontend
+                  description: Entities configuration for posts.
+                  visibility: frontend
+                tags:
+                  type: object
+                  properties:
+                    disabled:
+                      type: boolean
+                      description: Disable tags pages and tag pickers.
+                      visibility: frontend
+                    allowCreation:
+                      type: boolean
+                      description: 'Allow creation of new tags. Default: true'
+                      visibility: frontend
+                    allowedTags:
+                      type: array
+                      items:
+                        type: string
+                      description: Allowed tags to be used with posts. Only valid if allowCreation is false.
+                      visibility: frontend
+                    max:
+                      type: number
+                      description: 'Maximum number of tags per post. Default: 5'
+                      visibility: frontend
+                    min:
+                      type: number
+                      description: Minimum number of tags required per post.
+                      visibility: frontend
+                  description: Posts tags specific configuration
+                  visibility: frontend
+                mentions:
+                  type: object
+                  properties:
+                    supportedKinds:
+                      type: array
+                      items:
+                        type: string
+                      description: |-
+                        List of types of mentions that can be used in posts.
+
+                        Currently supported types are:
+                        - `user`: Mention a user
+                        - `group`: Mention a group
+                      visibility: frontend
+                  description: Posts mentions specific configuration
+                  visibility: frontend
+                moderators:
+                  type: array
+                  items:
+                    type: string
+                  description: List of users/groups that can moderate questions and answers in case permission framework is not in use. In case permission framework is in use, this list is used to determine if user can access the moderator panel
+                  visibility: frontend
+                questions:
+                  type: object
+                  properties:
+                    disabled:
+                      type: boolean
+                      description: Disable questions in the UI.
+                      visibility: frontend
+                  description: Questions specific configuration.
+                  visibility: frontend
+                articles:
+                  type: object
+                  properties:
+                    disabled:
+                      type: boolean
+                      description: Disable articles in the UI.
+                      visibility: frontend
+                  description: Articles specific configuration.
+                  visibility: frontend
+                links:
+                  type: object
+                  properties:
+                    disabled:
+                      type: boolean
+                      description: Disable links in the UI.
+                      visibility: frontend
+                  description: Links specific configuration.
+                  visibility: frontend
+                collections:
+                  type: object
+                  properties:
+                    disabled:
+                      type: boolean
+                      description: Disable collections in the UI.
+                      visibility: frontend
+                  description: Collections specific configuration.
+                  visibility: frontend
+                storage:
+                  type: object
+                  properties:
+                    disabled:
+                      type: boolean
+                      description: If desire to disable image upload.
+                      visibility: frontend
+                    allowedMimeTypes:
+                      type: array
+                      items:
+                        type: string
+                      description: Allowed mime types for images.
+                      visibility: frontend
+                  description: If desire to disable image upload.
+                  visibility: frontend
+                aiBotName:
+                  type: string
+                  description: Name of the AI bot that responds to users questions. Defaults to 'AI'
+                  visibility: frontend
+                history:
+                  type: object
+                  properties:
+                    enabled:
+                      type: boolean
+                      description: 'Enable or disable revision tracking. Default: false'
+                      visibility: frontend
+                    enabledContent:
+                      type: array
+                      items:
+                        type: string
+                      description: 'Content types that should have revision tracking enabled. Possible values: ''article'', ''question'', ''link'' Default: [''article'']'
+                      visibility: frontend
+                  description: Post history / revision tracking configuration
+                  visibility: frontend

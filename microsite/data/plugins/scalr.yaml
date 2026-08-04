@@ -10,18 +10,24 @@ npmPackageName: '@scalr-io/backstage-plugin-scalr'
 addedDate: '2025-04-15'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:13.441Z'
-    checkedAt: '2026-08-04T03:39:13.441Z'
-    latestVersion: 0.5.0
-    lastPublishedAt: '2026-01-26T22:44:40.217Z'
-    repository:
-      url: https://github.com/Scalr/scalr-backstage-plugin
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:39:13.883Z'
-    checkedAt: '2026-08-04T03:39:13.883Z'
+    lastAttemptAt: '2026-08-04T05:03:15.764Z'
+    checkedAt: '2026-08-04T05:03:15.764Z'
     version: 1.37.0
     sourceUrl: https://github.com/Scalr/scalr-backstage-plugin/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@scalr-io/backstage-plugin-scalr'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:15.370Z'
+        checkedAt: '2026-08-04T05:03:15.370Z'
+        latestVersion: 0.5.0
+        lastPublishedAt: '2026-01-26T22:44:40.217Z'
+        repository:
+          url: https://github.com/Scalr/scalr-backstage-plugin
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:16.473Z'
+        reason: config-schema-not-json

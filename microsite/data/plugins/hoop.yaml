@@ -11,13 +11,19 @@ addedDate: '2022-12-20'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:08.950Z'
-    checkedAt: '2026-08-04T03:38:08.950Z'
-    latestVersion: 0.1.4
-    lastPublishedAt: '2022-12-21T15:17:08.989Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:08.950Z'
+    lastAttemptAt: '2026-08-04T05:03:02.425Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@hoophq/backstage-plugin'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:02.425Z'
+        checkedAt: '2026-08-04T05:03:02.425Z'
+        latestVersion: 0.1.4
+        lastPublishedAt: '2022-12-21T15:17:08.989Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:02.773Z'
+        reason: config-schema-not-json

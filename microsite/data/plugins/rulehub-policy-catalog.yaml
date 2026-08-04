@@ -10,15 +10,21 @@ npmPackageName: '@rulehub/rulehub-backstage-plugin'
 addedDate: '2026-03-06'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:58.666Z'
-    checkedAt: '2026-08-04T03:38:58.666Z'
-    latestVersion: 0.1.1
-    lastPublishedAt: '2026-03-06T05:03:39.717Z'
-    repository:
-      url: https://github.com/rulehub/rulehub-backstage-plugin
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:59.010Z'
+    lastAttemptAt: '2026-08-04T05:03:12.621Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@rulehub/rulehub-backstage-plugin'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:12.287Z'
+        checkedAt: '2026-08-04T05:03:12.287Z'
+        latestVersion: 0.1.1
+        lastPublishedAt: '2026-03-06T05:03:39.717Z'
+        repository:
+          url: https://github.com/rulehub/rulehub-backstage-plugin
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:13.026Z'
+        reason: config-schema-not-declared

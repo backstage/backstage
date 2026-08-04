@@ -10,19 +10,25 @@ npmPackageName: '@backstage-community/plugin-airbrake'
 addedDate: '2022-01-10'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:36:37.881Z'
-    checkedAt: '2026-08-04T03:36:37.881Z'
-    latestVersion: 0.23.0
-    lastPublishedAt: '2026-07-21T22:58:01.042Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/airbrake/plugins/airbrake
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:36:38.161Z'
-    checkedAt: '2026-08-04T03:36:38.161Z'
+    lastAttemptAt: '2026-08-04T05:02:37.000Z'
+    checkedAt: '2026-08-04T05:02:37.000Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/airbrake/backstage.json
     sourcePath: workspaces/airbrake/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-airbrake'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:36.556Z'
+        checkedAt: '2026-08-04T05:02:36.556Z'
+        latestVersion: 0.23.0
+        lastPublishedAt: '2026-07-21T22:58:01.042Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/airbrake/plugins/airbrake
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:38.070Z'
+        reason: config-schema-not-declared

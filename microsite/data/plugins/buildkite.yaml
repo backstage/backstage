@@ -10,15 +10,21 @@ npmPackageName: '@buildkite/backstage-plugin-buildkite'
 addedDate: '2025-04-12'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:08.333Z'
-    checkedAt: '2026-08-04T03:37:08.333Z'
-    latestVersion: 1.4.0
-    lastPublishedAt: '2026-03-10T02:29:08.006Z'
-    repository:
-      url: https://github.com/buildkite/backstage-plugin
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:37:08.681Z'
+    lastAttemptAt: '2026-08-04T05:02:45.691Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@buildkite/backstage-plugin-buildkite'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:45.322Z'
+        checkedAt: '2026-08-04T05:02:45.322Z'
+        latestVersion: 1.4.0
+        lastPublishedAt: '2026-03-10T02:29:08.006Z'
+        repository:
+          url: https://github.com/buildkite/backstage-plugin
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:46.255Z'
+        reason: config-schema-not-json

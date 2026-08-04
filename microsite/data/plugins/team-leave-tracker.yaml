@@ -9,19 +9,25 @@ npmPackageName: '@codeverse-gp/plugin-team-leave-tracker'
 addedDate: '2026-07-19'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:32.000Z'
-    checkedAt: '2026-08-04T03:39:32.000Z'
-    latestVersion: 1.1.0
-    lastPublishedAt: '2026-07-25T15:43:02.267Z'
-    repository:
-      url: https://github.com/CodeVerse-GP/leave-tracker
-      directory: plugins/team-leave-tracker
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:39:32.344Z'
-    checkedAt: '2026-08-04T03:39:32.344Z'
+    lastAttemptAt: '2026-08-04T05:03:19.642Z'
+    checkedAt: '2026-08-04T05:03:19.642Z'
     version: 1.53.0
     sourceUrl: https://github.com/CodeVerse-GP/leave-tracker/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@codeverse-gp/plugin-team-leave-tracker'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:19.310Z'
+        checkedAt: '2026-08-04T05:03:19.310Z'
+        latestVersion: 1.1.0
+        lastPublishedAt: '2026-07-25T15:43:02.267Z'
+        repository:
+          url: https://github.com/CodeVerse-GP/leave-tracker
+          directory: plugins/team-leave-tracker
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:20.261Z'
+        reason: config-schema-not-declared

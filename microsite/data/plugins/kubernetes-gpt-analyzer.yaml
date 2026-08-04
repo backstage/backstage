@@ -11,13 +11,19 @@ addedDate: '2024-07-31'
 status: inactive
 staleSince: '2026-08-04'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:22.630Z'
-    checkedAt: '2026-08-04T03:38:22.630Z'
-    latestVersion: 0.2.0
-    lastPublishedAt: '2025-06-27T14:49:41.942Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:22.630Z'
+    lastAttemptAt: '2026-08-04T05:03:05.349Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@veecode-platform/backstage-plugin-kubernetes-gpt-analyzer'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:05.349Z'
+        checkedAt: '2026-08-04T05:03:05.349Z'
+        latestVersion: 0.2.0
+        lastPublishedAt: '2025-06-27T14:49:41.942Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:05.721Z'
+        reason: config-schema-not-declared

@@ -11,15 +11,21 @@ addedDate: '2023-05-19'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:23.064Z'
-    checkedAt: '2026-08-04T03:39:23.064Z'
-    latestVersion: 0.2.7
-    lastPublishedAt: '2023-07-20T14:58:14.164Z'
-    repository:
-      url: https://github.com/solo-io/dev-portal-backstage-public
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:39:23.400Z'
+    lastAttemptAt: '2026-08-04T05:03:17.897Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@solo.io/dev-portal-backstage-plugin'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:17.556Z'
+        checkedAt: '2026-08-04T05:03:17.556Z'
+        latestVersion: 0.2.7
+        lastPublishedAt: '2023-07-20T14:58:14.164Z'
+        repository:
+          url: https://github.com/solo-io/dev-portal-backstage-public
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:18.712Z'
+        reason: config-schema-not-json

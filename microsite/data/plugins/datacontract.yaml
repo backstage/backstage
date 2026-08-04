@@ -10,15 +10,21 @@ npmPackageName: '@remunda/backstage-plugin-datacontract'
 addedDate: '2025-08-19'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:27.960Z'
-    checkedAt: '2026-08-04T03:37:27.960Z'
-    latestVersion: 0.1.1
-    lastPublishedAt: '2025-08-19T13:02:56.744Z'
-    repository:
-      url: https://github.com/remunda/backstage-plugins
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:37:28.331Z'
+    lastAttemptAt: '2026-08-04T05:02:51.691Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@remunda/backstage-plugin-datacontract'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:51.364Z'
+        checkedAt: '2026-08-04T05:02:51.364Z'
+        latestVersion: 0.1.1
+        lastPublishedAt: '2025-08-19T13:02:56.744Z'
+        repository:
+          url: https://github.com/remunda/backstage-plugins
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:52.123Z'
+        reason: config-schema-not-declared

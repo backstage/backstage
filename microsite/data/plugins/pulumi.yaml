@@ -11,13 +11,19 @@ addedDate: '2023-09-27'
 status: inactive
 staleSince: '2026-08-04'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:51.065Z'
-    checkedAt: '2026-08-04T03:38:51.065Z'
-    latestVersion: 0.18.0
-    lastPublishedAt: '2025-05-24T16:27:08.670Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:51.065Z'
+    lastAttemptAt: '2026-08-04T05:03:10.777Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@pulumi/backstage-plugin-pulumi'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:10.777Z'
+        checkedAt: '2026-08-04T05:03:10.777Z'
+        latestVersion: 0.18.0
+        lastPublishedAt: '2025-05-24T16:27:08.670Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:11.142Z'
+        reason: config-schema-not-declared

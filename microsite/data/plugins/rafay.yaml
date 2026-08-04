@@ -11,13 +11,19 @@ addedDate: '2023-08-24'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:53.276Z'
-    checkedAt: '2026-08-04T03:38:53.276Z'
-    latestVersion: 0.1.12
-    lastPublishedAt: '2024-06-12T04:55:05.025Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:53.276Z'
+    lastAttemptAt: '2026-08-04T05:03:11.343Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@rafaysystems/backstage-plugin-rafay'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:11.343Z'
+        checkedAt: '2026-08-04T05:03:11.343Z'
+        latestVersion: 0.1.12
+        lastPublishedAt: '2024-06-12T04:55:05.025Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:11.747Z'
+        reason: config-schema-not-declared

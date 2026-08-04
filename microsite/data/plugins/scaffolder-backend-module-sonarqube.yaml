@@ -9,19 +9,25 @@ npmPackageName: '@backstage-community/plugin-scaffolder-backend-module-sonarqube
 addedDate: '2026-02-21'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:05.295Z'
-    checkedAt: '2026-08-04T03:39:05.295Z'
-    latestVersion: 2.16.0
-    lastPublishedAt: '2026-07-07T16:43:35.169Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/scaffolder-backend-module-sonarqube/plugins/scaffolder-backend-module-sonarqube
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:39:05.655Z'
-    checkedAt: '2026-08-04T03:39:05.655Z'
+    lastAttemptAt: '2026-08-04T05:03:14.201Z'
+    checkedAt: '2026-08-04T05:03:14.201Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/scaffolder-backend-module-sonarqube/backstage.json
     sourcePath: workspaces/scaffolder-backend-module-sonarqube/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-scaffolder-backend-module-sonarqube'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:13.883Z'
+        checkedAt: '2026-08-04T05:03:13.883Z'
+        latestVersion: 2.16.0
+        lastPublishedAt: '2026-07-07T16:43:35.169Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/scaffolder-backend-module-sonarqube/plugins/scaffolder-backend-module-sonarqube
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:14.316Z'
+        reason: config-schema-not-declared

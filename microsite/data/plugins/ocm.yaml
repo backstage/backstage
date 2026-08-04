@@ -10,19 +10,25 @@ npmPackageName: '@backstage-community/plugin-ocm'
 addedDate: '2023-05-15'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:41.047Z'
-    checkedAt: '2026-08-04T03:38:41.047Z'
-    latestVersion: 5.19.0
-    lastPublishedAt: '2026-07-21T19:42:48.833Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/ocm/plugins/ocm
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:41.465Z'
-    checkedAt: '2026-08-04T03:38:41.465Z'
+    lastAttemptAt: '2026-08-04T05:03:09.471Z'
+    checkedAt: '2026-08-04T05:03:09.471Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/ocm/backstage.json
     sourcePath: workspaces/ocm/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-ocm'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:09.040Z'
+        checkedAt: '2026-08-04T05:03:09.040Z'
+        latestVersion: 5.19.0
+        lastPublishedAt: '2026-07-21T19:42:48.833Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/ocm/plugins/ocm
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:09.589Z'
+        reason: config-schema-not-declared

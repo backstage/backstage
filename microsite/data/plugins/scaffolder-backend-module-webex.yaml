@@ -11,13 +11,19 @@ addedDate: '2024-09-04'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:05.762Z'
-    checkedAt: '2026-08-04T03:39:05.762Z'
-    latestVersion: 1.0.3
-    lastPublishedAt: '2024-09-01T18:53:57.103Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:39:05.762Z'
+    lastAttemptAt: '2026-08-04T05:03:13.953Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@coderrob/backstage-plugin-scaffolder-backend-module-webex'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:13.953Z'
+        checkedAt: '2026-08-04T05:03:13.953Z'
+        latestVersion: 1.0.3
+        lastPublishedAt: '2024-09-01T18:53:57.103Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:14.390Z'
+        reason: config-schema-not-declared

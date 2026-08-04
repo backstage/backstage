@@ -10,19 +10,25 @@ npmPackageName: '@backstage-community/plugin-vault'
 addedDate: '2022-06-03'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:41.426Z'
-    checkedAt: '2026-08-04T03:39:41.426Z'
-    latestVersion: 0.23.0
-    lastPublishedAt: '2026-07-22T00:20:52.841Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/vault/plugins/vault
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:39:41.804Z'
-    checkedAt: '2026-08-04T03:39:41.804Z'
+    lastAttemptAt: '2026-08-04T05:03:22.027Z'
+    checkedAt: '2026-08-04T05:03:22.027Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/vault/backstage.json
     sourcePath: workspaces/vault/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-vault'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:21.655Z'
+        checkedAt: '2026-08-04T05:03:21.655Z'
+        latestVersion: 0.23.0
+        lastPublishedAt: '2026-07-22T00:20:52.841Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/vault/plugins/vault
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:22.173Z'
+        reason: config-schema-not-declared

@@ -10,13 +10,19 @@ npmPackageName: '@axis-backstage/plugin-readme'
 addedDate: '2023-12-07'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:53.961Z'
-    checkedAt: '2026-08-04T03:38:53.961Z'
-    latestVersion: 0.19.2
-    lastPublishedAt: '2026-07-13T07:58:45.563Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:53.961Z'
+    lastAttemptAt: '2026-08-04T05:03:11.506Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@axis-backstage/plugin-readme'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:11.506Z'
+        checkedAt: '2026-08-04T05:03:11.506Z'
+        latestVersion: 0.19.2
+        lastPublishedAt: '2026-07-13T07:58:45.563Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:11.740Z'
+        reason: config-schema-not-declared

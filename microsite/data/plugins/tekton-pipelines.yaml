@@ -11,13 +11,19 @@ addedDate: '2022-08-08'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:34.483Z'
-    checkedAt: '2026-08-04T03:39:34.483Z'
-    latestVersion: 0.3.3
-    lastPublishedAt: '2023-05-07T14:51:25.719Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:39:34.483Z'
+    lastAttemptAt: '2026-08-04T05:03:19.904Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@jquad-group/plugin-tekton-pipelines'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:19.904Z'
+        checkedAt: '2026-08-04T05:03:19.904Z'
+        latestVersion: 0.3.3
+        lastPublishedAt: '2023-05-07T14:51:25.719Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:20.238Z'
+        reason: config-schema-not-declared

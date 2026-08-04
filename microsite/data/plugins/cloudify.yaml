@@ -11,13 +11,19 @@ addedDate: '2022-05-31'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:19.430Z'
-    checkedAt: '2026-08-04T03:37:19.430Z'
-    latestVersion: 1.0.0
-    lastPublishedAt: '2022-05-25T12:12:33.395Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:37:19.430Z'
+    lastAttemptAt: '2026-08-04T05:02:48.776Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: plugin-cloudify
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:48.776Z'
+        checkedAt: '2026-08-04T05:02:48.776Z'
+        latestVersion: 1.0.0
+        lastPublishedAt: '2022-05-25T12:12:33.395Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:48.905Z'
+        reason: config-schema-not-declared

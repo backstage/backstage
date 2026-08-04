@@ -10,19 +10,25 @@ npmPackageName: '@backstage-community/plugin-graphql-voyager'
 addedDate: '2023-01-27'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:59.904Z'
-    checkedAt: '2026-08-04T03:37:59.904Z'
-    latestVersion: 0.20.0
-    lastPublishedAt: '2026-07-21T23:04:50.110Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/graphql-voyager/plugins/graphql-voyager
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:00.283Z'
-    checkedAt: '2026-08-04T03:38:00.283Z'
+    lastAttemptAt: '2026-08-04T05:03:01.008Z'
+    checkedAt: '2026-08-04T05:03:01.008Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/graphql-voyager/backstage.json
     sourcePath: workspaces/graphql-voyager/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-graphql-voyager'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:00.669Z'
+        checkedAt: '2026-08-04T05:03:00.669Z'
+        latestVersion: 0.20.0
+        lastPublishedAt: '2026-07-21T23:04:50.110Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/graphql-voyager/plugins/graphql-voyager
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:01.113Z'
+        reason: config-schema-not-declared

@@ -11,13 +11,19 @@ addedDate: '2022-12-08'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:04.693Z'
-    checkedAt: '2026-08-04T03:37:04.693Z'
-    latestVersion: 0.0.3
-    lastPublishedAt: '2022-12-09T12:44:10.244Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:37:04.693Z'
+    lastAttemptAt: '2026-08-04T05:02:43.343Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@marcinguy/backstage-plugin-betterscan'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:43.343Z'
+        checkedAt: '2026-08-04T05:02:43.343Z'
+        latestVersion: 0.0.3
+        lastPublishedAt: '2022-12-09T12:44:10.244Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:43.725Z'
+        reason: config-schema-not-declared

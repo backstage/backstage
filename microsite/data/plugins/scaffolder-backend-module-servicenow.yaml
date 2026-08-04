@@ -9,19 +9,25 @@ npmPackageName: '@backstage-community/plugin-scaffolder-backend-module-serviceno
 addedDate: '2026-02-21'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:04.904Z'
-    checkedAt: '2026-08-04T03:39:04.904Z'
-    latestVersion: 2.16.0
-    lastPublishedAt: '2026-07-08T15:37:04.373Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/scaffolder-backend-module-servicenow/plugins/scaffolder-backend-module-servicenow
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:39:05.187Z'
-    checkedAt: '2026-08-04T03:39:05.187Z'
+    lastAttemptAt: '2026-08-04T05:03:14.180Z'
+    checkedAt: '2026-08-04T05:03:14.180Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/scaffolder-backend-module-servicenow/backstage.json
     sourcePath: workspaces/scaffolder-backend-module-servicenow/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-scaffolder-backend-module-servicenow'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:13.817Z'
+        checkedAt: '2026-08-04T05:03:13.817Z'
+        latestVersion: 2.16.0
+        lastPublishedAt: '2026-07-08T15:37:04.373Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/scaffolder-backend-module-servicenow/plugins/scaffolder-backend-module-servicenow
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:14.308Z'
+        reason: config-schema-not-declared

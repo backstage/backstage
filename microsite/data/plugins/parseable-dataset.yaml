@@ -10,15 +10,21 @@ npmPackageName: '@parseable/backstage-plugin-logstream'
 addedDate: '2025-07-14'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:47.367Z'
-    checkedAt: '2026-08-04T03:38:47.367Z'
-    latestVersion: 0.5.1
-    lastPublishedAt: '2025-09-16T06:22:25.577Z'
-    repository:
-      url: https://github.com/parseablehq/backstage-plugin
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:47.751Z'
+    lastAttemptAt: '2026-08-04T05:03:10.323Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@parseable/backstage-plugin-logstream'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:09.942Z'
+        checkedAt: '2026-08-04T05:03:09.942Z'
+        latestVersion: 0.5.1
+        lastPublishedAt: '2025-09-16T06:22:25.577Z'
+        repository:
+          url: https://github.com/parseablehq/backstage-plugin
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:10.754Z'
+        reason: config-schema-not-declared

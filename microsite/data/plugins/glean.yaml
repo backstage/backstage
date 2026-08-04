@@ -11,16 +11,22 @@ addedDate: '2024-12-30'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:56.447Z'
-    checkedAt: '2026-08-04T03:37:56.447Z'
-    latestVersion: 1.0.2
-    lastPublishedAt: '2024-12-30T17:33:05.913Z'
-    repository:
-      url: https://github.com/beejiujitsu/wealthsimple-backstage-plugins
-      directory: plugins/glean-backend
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:37:56.820Z'
+    lastAttemptAt: '2026-08-04T05:03:00.319Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@beejiujitsu/backstage-plugin-glean-backend'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:59.972Z'
+        checkedAt: '2026-08-04T05:02:59.972Z'
+        latestVersion: 1.0.2
+        lastPublishedAt: '2024-12-30T17:33:05.913Z'
+        repository:
+          url: https://github.com/beejiujitsu/wealthsimple-backstage-plugins
+          directory: plugins/glean-backend
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:01.097Z'
+        reason: config-schema-not-json

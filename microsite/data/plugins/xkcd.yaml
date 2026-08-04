@@ -10,15 +10,21 @@ npmPackageName: backstage-plugin-xkcd
 addedDate: '2023-05-05'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:43.177Z'
-    checkedAt: '2026-08-04T03:39:43.177Z'
-    latestVersion: 1.1.7
-    lastPublishedAt: '2026-02-05T17:31:39.987Z'
-    repository:
-      url: https://github.com/Vity01/backstage-xkcd
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:39:43.271Z'
+    lastAttemptAt: '2026-08-04T05:03:22.290Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: backstage-plugin-xkcd
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:22.134Z'
+        checkedAt: '2026-08-04T05:03:22.134Z'
+        latestVersion: 1.1.7
+        lastPublishedAt: '2026-02-05T17:31:39.987Z'
+        repository:
+          url: https://github.com/Vity01/backstage-xkcd
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:22.649Z'
+        reason: config-schema-not-declared

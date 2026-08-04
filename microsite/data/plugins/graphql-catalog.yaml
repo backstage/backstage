@@ -11,19 +11,25 @@ addedDate: '2024-05-01'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:58.937Z'
-    checkedAt: '2026-08-04T03:37:58.937Z'
-    latestVersion: 0.1.9
-    lastPublishedAt: '2024-08-14T15:35:57.801Z'
-    repository:
-      url: https://github.com/thefrontside/playhouse
-      directory: plugins/graphql-backend
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:37:59.294Z'
-    checkedAt: '2026-08-04T03:37:59.294Z'
+    lastAttemptAt: '2026-08-04T05:03:00.822Z'
+    checkedAt: '2026-08-04T05:03:00.822Z'
     version: 1.29.2
     sourceUrl: https://github.com/thefrontside/playhouse/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@frontside/backstage-plugin-graphql-backend'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:00.447Z'
+        checkedAt: '2026-08-04T05:03:00.447Z'
+        latestVersion: 0.1.9
+        lastPublishedAt: '2024-08-14T15:35:57.801Z'
+        repository:
+          url: https://github.com/thefrontside/playhouse
+          directory: plugins/graphql-backend
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:01.455Z'
+        reason: config-schema-not-declared

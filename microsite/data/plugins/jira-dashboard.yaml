@@ -10,13 +10,19 @@ npmPackageName: '@axis-backstage/plugin-jira-dashboard'
 addedDate: '2023-12-07'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:16.108Z'
-    checkedAt: '2026-08-04T03:38:16.108Z'
-    latestVersion: 2.3.6
-    lastPublishedAt: '2026-07-13T07:55:45.496Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:16.108Z'
+    lastAttemptAt: '2026-08-04T05:03:04.178Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@axis-backstage/plugin-jira-dashboard'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:04.178Z'
+        checkedAt: '2026-08-04T05:03:04.178Z'
+        latestVersion: 2.3.6
+        lastPublishedAt: '2026-07-13T07:55:45.496Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:04.452Z'
+        reason: config-schema-not-declared

@@ -11,18 +11,24 @@ addedDate: '2021-06-03'
 status: inactive
 staleSince: '2026-08-04'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:23.872Z'
-    checkedAt: '2026-08-04T03:37:23.872Z'
-    latestVersion: 2.13.6
-    lastPublishedAt: '2025-02-24T12:55:50.032Z'
-    repository:
-      url: https://github.com/cortexapps/backstage-plugin
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:37:24.127Z'
-    checkedAt: '2026-08-04T03:37:24.127Z'
+    lastAttemptAt: '2026-08-04T05:02:50.931Z'
+    checkedAt: '2026-08-04T05:02:50.931Z'
     version: 1.27.7
     sourceUrl: https://github.com/cortexapps/backstage-plugin/blob/master/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@cortexapps/backstage-plugin'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:50.479Z'
+        checkedAt: '2026-08-04T05:02:50.479Z'
+        latestVersion: 2.13.6
+        lastPublishedAt: '2025-02-24T12:55:50.032Z'
+        repository:
+          url: https://github.com/cortexapps/backstage-plugin
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:51.557Z'
+        reason: config-schema-not-json

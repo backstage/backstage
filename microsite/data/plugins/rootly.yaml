@@ -10,19 +10,45 @@ npmPackageName: '@rootly/backstage-plugin'
 addedDate: '2022-06-16'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:57.578Z'
-    checkedAt: '2026-08-04T03:38:57.578Z'
-    latestVersion: 1.3.1
-    lastPublishedAt: '2026-07-30T05:06:00.424Z'
-    repository:
-      url: https://github.com/rootlyhq/backstage-plugin
-      directory: .
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:58.035Z'
-    checkedAt: '2026-08-04T03:38:58.035Z'
+    lastAttemptAt: '2026-08-04T05:03:12.508Z'
+    checkedAt: '2026-08-04T05:03:12.508Z'
     version: 1.43.3
     sourceUrl: https://github.com/rootlyhq/backstage-plugin/blob/master/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@rootly/backstage-plugin'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:12.224Z'
+        checkedAt: '2026-08-04T05:03:12.224Z'
+        latestVersion: 1.3.1
+        lastPublishedAt: '2026-07-30T05:06:00.424Z'
+        repository:
+          url: https://github.com/rootlyhq/backstage-plugin
+          directory: .
+      configSchema:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:13.200Z'
+        checkedAt: '2026-08-04T05:03:13.200Z'
+        schema:
+          $schema: http://json-schema.org/draft-07/schema#
+          type: object
+          properties:
+            rootly:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  isDefault:
+                    type: boolean
+                  apiKey:
+                    type: string
+                  proxyPath:
+                    type: string
+                  apiHost:
+                    type: string
+                required:
+                  - apiKey
+              deepVisibility: frontend

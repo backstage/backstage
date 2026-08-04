@@ -11,15 +11,21 @@ addedDate: '2022-05-13'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:02.192Z'
-    checkedAt: '2026-08-04T03:39:02.192Z'
-    latestVersion: 1.1.1
-    lastPublishedAt: '2023-11-27T12:40:56.500Z'
-    repository:
-      url: https://github.com/arhill05/backstage-plugin-scaffolder-git-actions
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:39:02.531Z'
+    lastAttemptAt: '2026-08-04T05:03:13.343Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@mdude2314/backstage-plugin-scaffolder-git-actions'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:13.006Z'
+        checkedAt: '2026-08-04T05:03:13.006Z'
+        latestVersion: 1.1.1
+        lastPublishedAt: '2023-11-27T12:40:56.500Z'
+        repository:
+          url: https://github.com/arhill05/backstage-plugin-scaffolder-git-actions
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:13.763Z'
+        reason: config-schema-not-declared

@@ -10,18 +10,24 @@ npmPackageName: '@gluo-nv/backstage-plugin-hetzner'
 addedDate: '2025-06-03'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:06.648Z'
-    checkedAt: '2026-08-04T03:38:06.648Z'
-    latestVersion: 0.1.19
-    lastPublishedAt: '2026-07-01T12:24:27.913Z'
-    repository:
-      url: https://github.com/gluobe/hetzner-backstage-plugin
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:07.028Z'
-    checkedAt: '2026-08-04T03:38:07.028Z'
+    lastAttemptAt: '2026-08-04T05:03:02.301Z'
+    checkedAt: '2026-08-04T05:03:02.301Z'
     version: 1.52.1
     sourceUrl: https://github.com/gluobe/hetzner-backstage-plugin/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@gluo-nv/backstage-plugin-hetzner'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:01.931Z'
+        checkedAt: '2026-08-04T05:03:01.931Z'
+        latestVersion: 0.1.19
+        lastPublishedAt: '2026-07-01T12:24:27.913Z'
+        repository:
+          url: https://github.com/gluobe/hetzner-backstage-plugin
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:02.895Z'
+        reason: config-schema-not-declared

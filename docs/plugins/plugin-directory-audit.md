@@ -48,8 +48,10 @@ The audit owns these top-level manifest fields:
 | `snapshot`   | object                              | Generated npm and Backstage source data. New entries may omit this field.                                                   |
 
 Contributors own `title`, `author`, `authorUrl`, `category`, `description`,
-`documentation`, `iconUrl`, `npmPackageName`, `addedDate`, `order`,
-`capabilities`, and `setup`. The audit preserves those fields.
+`documentation`, `iconUrl`, `npmPackageName`, `addedDate`, `order`, and
+`capabilities`. The audit preserves those fields. Manifests no longer accept
+a manually authored `setup` field — install and configuration guidance is
+derived entirely from the audited `snapshot` data.
 
 ## Status transitions
 
@@ -99,15 +101,15 @@ stable lowercase kebab-case codes.
 
 ### Backstage snapshot
 
-| Field           | Fresh    | Stale    | Unavailable | Description                                                |
-| --------------- | -------- | -------- | ----------- | ---------------------------------------------------------- |
-| `status`        | Required | Required | Required    | Snapshot status.                                           |
-| `lastAttemptAt` | Required | Required | Required    | Time of the current fetch attempt.                         |
-| `reason`        | No       | Required | Required    | Stable failure reason code.                                |
-| `checkedAt`     | Required | Required | No          | Time of the last successful fetch.                         |
-| `version`       | Required | Required | No          | Backstage version read from `backstage.json`.              |
-| `sourceUrl`     | Required | Required | No          | GitHub URL for the selected `backstage.json`.              |
-| `sourcePath`    | Required | Required | No          | Repository-relative path of the selected `backstage.json`. |
+| Field           | Fresh    | Stale    | Unavailable | Description                                                                                                                       |
+| --------------- | -------- | -------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `status`        | Required | Required | Required    | Snapshot status.                                                                                                                  |
+| `lastAttemptAt` | Required | Required | Required    | Time of the current fetch attempt.                                                                                                |
+| `reason`        | No       | Required | Required    | Stable failure reason code.                                                                                                       |
+| `checkedAt`     | Required | Required | No          | Time of the last successful fetch.                                                                                                |
+| `version`       | Required | Required | No          | Backstage version read from `backstage.json`, or the latest stable release tag for `backstage/backstage` packages.                |
+| `sourceUrl`     | Required | Required | No          | GitHub URL for the selected `backstage.json`, or the release page for the resolved tag for `backstage/backstage` packages.        |
+| `sourcePath`    | Required | Required | No          | Repository-relative path of the selected `backstage.json`, or the plugin's own `package.json` for `backstage/backstage` packages. |
 
 For a package in a GitHub monorepo, the audit starts at
 `repository.directory` and searches each ancestor for `backstage.json`. It
@@ -115,21 +117,34 @@ uses the closest match and then falls back to the repository root. Within one
 audit, packages from the same repository reuse in-flight and completed
 repository metadata and recursive tree requests.
 
+Packages in the `backstage/backstage` repository skip `backstage.json`
+discovery entirely. That repository's root `package.json` version tracks the
+next unreleased minor during a release cycle (for example `1.54.0-next.1`),
+which never matches a published package. Instead, the audit lists repository
+tags newest-first and uses the first tag matching `v<major>.<minor>.<patch>`
+(no prerelease suffix) as the version. `sourceUrl` links to that release as a
+whole; `sourcePath` identifies the specific plugin by pointing at its own
+`package.json` (`{repository.directory}/package.json`, or the root
+`package.json` when no directory is given) at that release tag, and the audit
+verifies the file exists in that tag's tree before reporting a fresh
+snapshot.
+
 ## Warning reason codes
 
 The audit prints warnings after processing all manifests. A warning records the
 plugin, source, and reason code. Valid remote failures remain warnings and are
 stored in the snapshot.
 
-| Source    | Reason                         | Condition                                                                                            |
-| --------- | ------------------------------ | ---------------------------------------------------------------------------------------------------- |
-| npm       | `npm-not-found`                | The npm registry returns `404`.                                                                      |
-| npm       | `npm-invalid-response`         | The registry request fails, the response is malformed, or required `latest` release data is missing. |
-| npm       | `npm-request-failed`           | The npm source operation throws before returning a snapshot.                                         |
-| Backstage | `npm-data-unavailable`         | No valid npm release data or previous Backstage snapshot is available.                               |
-| Backstage | `repository-unsupported`       | npm metadata does not contain a supported GitHub repository location.                                |
-| Backstage | `repository-directory-invalid` | The npm package directory is absolute or contains a parent traversal.                                |
-| Backstage | `github-invalid-response`      | GitHub repository metadata, tree data, or file content cannot be fetched completely.                 |
-| Backstage | `github-request-failed`        | The GitHub source operation throws before returning a snapshot.                                      |
-| Backstage | `backstage-json-not-found`     | No applicable `backstage.json` exists.                                                               |
-| Backstage | `backstage-json-invalid`       | The selected file is not valid JSON with a nonempty string `version`.                                |
+| Source    | Reason                         | Condition                                                                                                                           |
+| --------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| npm       | `npm-not-found`                | The npm registry returns `404`.                                                                                                     |
+| npm       | `npm-invalid-response`         | The registry request fails, the response is malformed, or required `latest` release data is missing.                                |
+| npm       | `npm-request-failed`           | The npm source operation throws before returning a snapshot.                                                                        |
+| Backstage | `npm-data-unavailable`         | No valid npm release data or previous Backstage snapshot is available.                                                              |
+| Backstage | `repository-unsupported`       | npm metadata does not contain a supported GitHub repository location.                                                               |
+| Backstage | `repository-directory-invalid` | The npm package directory is absolute or contains a parent traversal.                                                               |
+| Backstage | `github-invalid-response`      | GitHub repository metadata, tree data, or file content cannot be fetched completely.                                                |
+| Backstage | `github-request-failed`        | The GitHub source operation throws before returning a snapshot.                                                                     |
+| Backstage | `backstage-json-not-found`     | No applicable `backstage.json` exists.                                                                                              |
+| Backstage | `backstage-json-invalid`       | The selected file is not valid JSON with a nonempty string `version`.                                                               |
+| Backstage | `backstage-tag-not-found`      | No `v<major>.<minor>.<patch>` tag exists for `backstage/backstage`, or the plugin's `package.json` is missing from that tag's tree. |

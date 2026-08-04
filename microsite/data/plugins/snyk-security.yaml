@@ -10,13 +10,19 @@ npmPackageName: backstage-plugin-snyk
 addedDate: '2021-01-22'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:22.925Z'
-    checkedAt: '2026-08-04T03:39:22.925Z'
-    latestVersion: 2.5.10
-    lastPublishedAt: '2026-02-03T23:03:30.943Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:39:22.925Z'
+    lastAttemptAt: '2026-08-04T05:03:17.422Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: backstage-plugin-snyk
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:17.422Z'
+        checkedAt: '2026-08-04T05:03:17.422Z'
+        latestVersion: 2.5.10
+        lastPublishedAt: '2026-02-03T23:03:30.943Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:17.525Z'
+        reason: config-schema-not-json

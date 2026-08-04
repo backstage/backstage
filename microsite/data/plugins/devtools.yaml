@@ -10,19 +10,135 @@ npmPackageName: '@backstage/plugin-devtools'
 addedDate: '2023-06-17'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:33.275Z'
-    checkedAt: '2026-08-04T03:37:33.275Z'
-    latestVersion: 0.1.41
-    lastPublishedAt: '2026-07-14T12:06:39.464Z'
-    repository:
-      url: https://github.com/backstage/backstage
-      directory: plugins/devtools
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:37:33.639Z'
-    checkedAt: '2026-08-04T03:37:33.639Z'
-    version: 1.50.0
-    sourceUrl: https://github.com/backstage/backstage/blob/master/workspaces/ui/backstage.json
-    sourcePath: workspaces/ui/backstage.json
+    lastAttemptAt: '2026-08-04T05:02:54.191Z'
+    checkedAt: '2026-08-04T05:02:54.191Z'
+    version: 1.53.1
+    sourceUrl: https://github.com/backstage/backstage/releases/tag/v1.53.1
+    sourcePath: plugins/devtools/package.json
+  packages:
+    - functionality: frontend
+      npmPackageName: '@backstage/plugin-devtools'
+      sourcePath: plugins/devtools/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:53.646Z'
+        checkedAt: '2026-08-04T05:02:53.646Z'
+        latestVersion: 0.1.41
+        lastPublishedAt: '2026-07-14T12:06:39.464Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/devtools
+      configSchema:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:54.191Z'
+        checkedAt: '2026-08-04T05:02:54.191Z'
+        schema:
+          $schema: http://json-schema.org/draft-07/schema#
+          type: object
+          properties:
+            devTools:
+              type: object
+              properties:
+                scheduledTasks:
+                  type: object
+                  properties:
+                    plugins:
+                      type: array
+                      items:
+                        type: string
+                      description: A list of plugin IDs to select from, e.g. ['catalog', 'scaffolder']
+                      visibility: frontend
+                  required:
+                    - plugins
+                  description: Scheduled tasks configuration
+                  visibility: frontend
+    - functionality: backend
+      npmPackageName: '@backstage/plugin-devtools-backend'
+      sourcePath: plugins/devtools-backend/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:54.565Z'
+        checkedAt: '2026-08-04T05:02:54.565Z'
+        latestVersion: 0.5.19
+        lastPublishedAt: '2026-07-14T12:06:47.958Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/devtools-backend
+      configSchema:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:54.976Z'
+        checkedAt: '2026-08-04T05:02:54.976Z'
+        schema:
+          $schema: http://json-schema.org/draft-07/schema#
+          type: object
+          properties:
+            devTools:
+              type: object
+              properties:
+                externalDependencies:
+                  type: object
+                  properties:
+                    endpoints:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            description: The name of the endpoint.
+                          type:
+                            type: string
+                            description: Type of check to perform; currently fetch or ping
+                          target:
+                            type: string
+                            description: The target of the endpoint; currently either a URL for fetch or server name for ping.
+                        required:
+                          - name
+                          - type
+                          - target
+                      description: The list of endpoints to check.
+                  description: External dependency configuration.
+                info:
+                  type: object
+                  properties:
+                    packagePrefixes:
+                      type: array
+                      items:
+                        type: string
+                      description: A list of package prefixes that DevTools will use for filtering all available dependencies (default is ["@backstage"])
+                  description: Info configuration
+              description: DevTools configuration.
+    - functionality: common
+      npmPackageName: '@backstage/plugin-devtools-common'
+      sourcePath: plugins/devtools-common/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:55.229Z'
+        checkedAt: '2026-08-04T05:02:55.229Z'
+        latestVersion: 0.1.25
+        lastPublishedAt: '2026-05-19T21:01:57.247Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/devtools-common
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:55.577Z'
+        reason: config-schema-not-declared
+    - functionality: react
+      npmPackageName: '@backstage/plugin-devtools-react'
+      sourcePath: plugins/devtools-react/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:55.869Z'
+        checkedAt: '2026-08-04T05:02:55.869Z'
+        latestVersion: 0.2.4
+        lastPublishedAt: '2026-07-14T12:06:54.539Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/devtools-react
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:56.103Z'
+        reason: config-schema-not-declared

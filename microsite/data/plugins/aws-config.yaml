@@ -10,19 +10,25 @@ npmPackageName: '@aws/aws-config-catalog-module-for-backstage'
 addedDate: '2026-03-26'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:36:54.190Z'
-    checkedAt: '2026-08-04T03:36:54.190Z'
-    latestVersion: 0.3.3
-    lastPublishedAt: '2026-04-23T15:04:10.824Z'
-    repository:
-      url: https://github.com/awslabs/backstage-plugins-for-aws
-      directory: plugins/core/catalog-config
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:36:54.718Z'
-    checkedAt: '2026-08-04T03:36:54.718Z'
+    lastAttemptAt: '2026-08-04T05:02:41.076Z'
+    checkedAt: '2026-08-04T05:02:41.076Z'
     version: 1.43.1
     sourceUrl: https://github.com/awslabs/backstage-plugins-for-aws/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@aws/aws-config-catalog-module-for-backstage'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:40.748Z'
+        checkedAt: '2026-08-04T05:02:40.748Z'
+        latestVersion: 0.3.3
+        lastPublishedAt: '2026-04-23T15:04:10.824Z'
+        repository:
+          url: https://github.com/awslabs/backstage-plugins-for-aws
+          directory: plugins/core/catalog-config
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:41.292Z'
+        reason: config-schema-not-json

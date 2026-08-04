@@ -10,15 +10,21 @@ npmPackageName: '@jfvilas/plugin-kwirth-metrics'
 addedDate: '2025-09-14'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:25.771Z'
-    checkedAt: '2026-08-04T03:38:25.771Z'
-    latestVersion: 0.14.2
-    lastPublishedAt: '2026-03-27T15:37:17.935Z'
-    repository:
-      url: https://github.com/jfvilas/plugin-kwirth-metrics
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:26.113Z'
+    lastAttemptAt: '2026-08-04T05:03:06.412Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@jfvilas/plugin-kwirth-metrics'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:06.054Z'
+        checkedAt: '2026-08-04T05:03:06.054Z'
+        latestVersion: 0.14.2
+        lastPublishedAt: '2026-03-27T15:37:17.935Z'
+        repository:
+          url: https://github.com/jfvilas/plugin-kwirth-metrics
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:06.825Z'
+        reason: config-schema-not-declared

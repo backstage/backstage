@@ -11,13 +11,19 @@ addedDate: '2023-10-24'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:35.487Z'
-    checkedAt: '2026-08-04T03:37:35.487Z'
-    latestVersion: 1.1.0-alpha
-    lastPublishedAt: '2024-07-22T18:42:39.136Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:37:35.487Z'
+    lastAttemptAt: '2026-08-04T05:02:54.026Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@workm8/backstage-docker-tags'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:54.026Z'
+        checkedAt: '2026-08-04T05:02:54.026Z'
+        latestVersion: 1.1.0-alpha
+        lastPublishedAt: '2024-07-22T18:42:39.136Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:54.361Z'
+        reason: config-schema-not-declared

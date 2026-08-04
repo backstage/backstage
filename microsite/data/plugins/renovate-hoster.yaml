@@ -10,19 +10,25 @@ npmPackageName: '@secustor/backstage-plugin-renovate'
 addedDate: '2025-03-31'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:54.632Z'
-    checkedAt: '2026-08-04T03:38:54.632Z'
-    latestVersion: 0.21.0
-    lastPublishedAt: '2026-07-28T15:32:50.700Z'
-    repository:
-      url: https://github.com/secustor/backstage-plugins
-      directory: plugins/renovate
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:54.895Z'
-    checkedAt: '2026-08-04T03:38:54.895Z'
+    lastAttemptAt: '2026-08-04T05:03:12.263Z'
+    checkedAt: '2026-08-04T05:03:12.263Z'
     version: 1.53.0
     sourceUrl: https://github.com/secustor/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@secustor/backstage-plugin-renovate'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:11.884Z'
+        checkedAt: '2026-08-04T05:03:11.884Z'
+        latestVersion: 0.21.0
+        lastPublishedAt: '2026-07-28T15:32:50.700Z'
+        repository:
+          url: https://github.com/secustor/backstage-plugins
+          directory: plugins/renovate
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:12.824Z'
+        reason: config-schema-not-declared

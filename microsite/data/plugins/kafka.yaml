@@ -10,19 +10,25 @@ npmPackageName: '@backstage-community/plugin-kafka'
 addedDate: '2021-01-21'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:17.432Z'
-    checkedAt: '2026-08-04T03:38:17.432Z'
-    latestVersion: 0.12.0
-    lastPublishedAt: '2026-04-17T18:32:16.632Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/kafka/plugins/kafka
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:17.818Z'
-    checkedAt: '2026-08-04T03:38:17.818Z'
+    lastAttemptAt: '2026-08-04T05:03:04.878Z'
+    checkedAt: '2026-08-04T05:03:04.878Z'
     version: 1.49.2
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/kafka/backstage.json
     sourcePath: workspaces/kafka/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-kafka'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:04.581Z'
+        checkedAt: '2026-08-04T05:03:04.581Z'
+        latestVersion: 0.12.0
+        lastPublishedAt: '2026-04-17T18:32:16.632Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/kafka/plugins/kafka
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:05.006Z'
+        reason: config-schema-not-json

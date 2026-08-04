@@ -9,19 +9,25 @@ npmPackageName: '@backstage-community/plugin-acr'
 addedDate: '2026-02-21'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:36:35.459Z'
-    checkedAt: '2026-08-04T03:36:35.459Z'
-    latestVersion: 1.26.0
-    lastPublishedAt: '2026-07-03T11:43:03.531Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/acr/plugins/acr
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:36:35.798Z'
-    checkedAt: '2026-08-04T03:36:35.798Z'
+    lastAttemptAt: '2026-08-04T05:02:36.992Z'
+    checkedAt: '2026-08-04T05:02:36.992Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/acr/backstage.json
     sourcePath: workspaces/acr/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-acr'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:36.553Z'
+        checkedAt: '2026-08-04T05:02:36.553Z'
+        latestVersion: 1.26.0
+        lastPublishedAt: '2026-07-03T11:43:03.531Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/acr/plugins/acr
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:38.036Z'
+        reason: config-schema-not-declared

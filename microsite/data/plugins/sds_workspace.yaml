@@ -10,18 +10,24 @@ npmPackageName: '@citrixcloud/backstage-sds-workspaces'
 addedDate: '2025-10-07'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:15.549Z'
-    checkedAt: '2026-08-04T03:39:15.549Z'
-    latestVersion: 0.1.6
-    lastPublishedAt: '2025-11-12T13:27:16.435Z'
-    repository:
-      url: https://github.com/strong-network/backstage-sds-plugins
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:39:15.925Z'
-    checkedAt: '2026-08-04T03:39:15.925Z'
+    lastAttemptAt: '2026-08-04T05:03:16.090Z'
+    checkedAt: '2026-08-04T05:03:16.090Z'
     version: 1.42.1
     sourceUrl: https://github.com/strong-network/backstage-sds-plugins/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@citrixcloud/backstage-sds-workspaces'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:15.734Z'
+        checkedAt: '2026-08-04T05:03:15.734Z'
+        latestVersion: 0.1.6
+        lastPublishedAt: '2025-11-12T13:27:16.435Z'
+        repository:
+          url: https://github.com/strong-network/backstage-sds-plugins
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:16.817Z'
+        reason: config-schema-not-declared

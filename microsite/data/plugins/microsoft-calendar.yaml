@@ -12,19 +12,25 @@ npmPackageName: '@backstage-community/plugin-microsoft-calendar'
 addedDate: '2023-03-15'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:35.283Z'
-    checkedAt: '2026-08-04T03:38:35.283Z'
-    latestVersion: 0.21.0
-    lastPublishedAt: '2026-07-22T00:17:22.188Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/microsoft-calendar/plugins/microsoft-calendar
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:35.645Z'
-    checkedAt: '2026-08-04T03:38:35.645Z'
+    lastAttemptAt: '2026-08-04T05:03:08.065Z'
+    checkedAt: '2026-08-04T05:03:08.065Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/microsoft-calendar/backstage.json
     sourcePath: workspaces/microsoft-calendar/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-microsoft-calendar'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:07.696Z'
+        checkedAt: '2026-08-04T05:03:07.696Z'
+        latestVersion: 0.21.0
+        lastPublishedAt: '2026-07-22T00:17:22.188Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/microsoft-calendar/plugins/microsoft-calendar
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:08.190Z'
+        reason: config-schema-not-declared

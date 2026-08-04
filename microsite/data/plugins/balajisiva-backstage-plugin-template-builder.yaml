@@ -10,16 +10,22 @@ npmPackageName: '@balajisiva/backstage-plugin-template-builder'
 addedDate: '2026-02-16'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:03.365Z'
-    checkedAt: '2026-08-04T03:37:03.365Z'
-    latestVersion: 0.1.0
-    lastPublishedAt: '2026-02-16T18:53:34.092Z'
-    repository:
-      url: https://github.com/balajisiva/backstage-template-builder
-      directory: plugins/backstage-template-builder
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:37:03.741Z'
+    lastAttemptAt: '2026-08-04T05:02:43.397Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@balajisiva/backstage-plugin-template-builder'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:43.035Z'
+        checkedAt: '2026-08-04T05:02:43.035Z'
+        latestVersion: 0.1.0
+        lastPublishedAt: '2026-02-16T18:53:34.092Z'
+        repository:
+          url: https://github.com/balajisiva/backstage-template-builder
+          directory: plugins/backstage-template-builder
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:43.766Z'
+        reason: config-schema-not-declared

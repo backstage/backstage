@@ -10,15 +10,21 @@ npmPackageName: '@targetboard/backstage-plugin'
 addedDate: '2025-11-02'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:31.081Z'
-    checkedAt: '2026-08-04T03:39:31.081Z'
-    latestVersion: 0.1.14
-    lastPublishedAt: '2026-01-27T10:39:06.542Z'
-    repository:
-      url: https://github.com/targetboard/backstage-plugin
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:39:31.441Z'
+    lastAttemptAt: '2026-08-04T05:03:19.377Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@targetboard/backstage-plugin'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:19.002Z'
+        checkedAt: '2026-08-04T05:03:19.002Z'
+        latestVersion: 0.1.14
+        lastPublishedAt: '2026-01-27T10:39:06.542Z'
+        repository:
+          url: https://github.com/targetboard/backstage-plugin
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:19.859Z'
+        reason: config-schema-not-declared

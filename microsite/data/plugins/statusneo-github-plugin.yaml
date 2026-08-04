@@ -11,15 +11,21 @@ addedDate: '2023-02-15'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:28.645Z'
-    checkedAt: '2026-08-04T03:39:28.645Z'
-    latestVersion: 0.2.6
-    lastPublishedAt: '2023-08-29T07:07:30.159Z'
-    repository:
-      url: https://github.com/StatusNeo/backstage-plugin-github
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:39:29.033Z'
+    lastAttemptAt: '2026-08-04T05:03:19.022Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@statusneo/backstage-plugin-github'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:18.629Z'
+        checkedAt: '2026-08-04T05:03:18.629Z'
+        latestVersion: 0.2.6
+        lastPublishedAt: '2023-08-29T07:07:30.159Z'
+        repository:
+          url: https://github.com/StatusNeo/backstage-plugin-github
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:19.464Z'
+        reason: config-schema-not-declared

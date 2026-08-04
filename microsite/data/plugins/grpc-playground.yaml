@@ -11,18 +11,24 @@ addedDate: '2022-06-08'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:00.921Z'
-    checkedAt: '2026-08-04T03:38:00.921Z'
-    latestVersion: 0.3.0
-    lastPublishedAt: '2022-08-29T08:15:05.214Z'
-    repository:
-      url: https://github.com/zalopay-oss/backstage-grpc-playground
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:01.054Z'
-    checkedAt: '2026-08-04T03:38:01.054Z'
+    lastAttemptAt: '2026-08-04T05:03:00.977Z'
+    checkedAt: '2026-08-04T05:03:00.977Z'
     version: 1.1.0
     sourceUrl: https://github.com/zalopay-oss/backstage-grpc-playground/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: backstage-grpc-playground
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:00.835Z'
+        checkedAt: '2026-08-04T05:03:00.835Z'
+        latestVersion: 0.3.0
+        lastPublishedAt: '2022-08-29T08:15:05.214Z'
+        repository:
+          url: https://github.com/zalopay-oss/backstage-grpc-playground
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:01.580Z'
+        reason: config-schema-not-json

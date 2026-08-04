@@ -10,15 +10,21 @@ npmPackageName: '@flagsmith/backstage-plugin'
 addedDate: '2026-02-26'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:47.652Z'
-    checkedAt: '2026-08-04T03:37:47.652Z'
-    latestVersion: 0.3.0
-    lastPublishedAt: '2026-02-24T13:23:44.806Z'
-    repository:
-      url: https://github.com/Flagsmith/flagsmith-backstage-plugin
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:37:47.991Z'
+    lastAttemptAt: '2026-08-04T05:02:57.967Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@flagsmith/backstage-plugin'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:57.624Z'
+        checkedAt: '2026-08-04T05:02:57.624Z'
+        latestVersion: 0.3.0
+        lastPublishedAt: '2026-02-24T13:23:44.806Z'
+        repository:
+          url: https://github.com/Flagsmith/flagsmith-backstage-plugin
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:58.433Z'
+        reason: config-schema-not-declared

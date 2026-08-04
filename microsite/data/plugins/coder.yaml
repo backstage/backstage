@@ -10,18 +10,24 @@ npmPackageName: '@coder/backstage-plugin-coder'
 addedDate: '2024-03-15'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:21.356Z'
-    checkedAt: '2026-08-04T03:37:21.356Z'
-    latestVersion: 0.5.0-alpha.0
-    lastPublishedAt: '2025-10-31T20:04:56.746Z'
-    repository:
-      url: https://github.com/coder/backstage-plugins
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:37:21.664Z'
-    checkedAt: '2026-08-04T03:37:21.664Z'
+    lastAttemptAt: '2026-08-04T05:02:49.968Z'
+    checkedAt: '2026-08-04T05:02:49.968Z'
     version: 1.44.2
     sourceUrl: https://github.com/coder/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@coder/backstage-plugin-coder'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:49.591Z'
+        checkedAt: '2026-08-04T05:02:49.591Z'
+        latestVersion: 0.5.0-alpha.0
+        lastPublishedAt: '2025-10-31T20:04:56.746Z'
+        repository:
+          url: https://github.com/coder/backstage-plugins
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:50.558Z'
+        reason: config-schema-not-json

@@ -11,13 +11,19 @@ addedDate: '2022-09-05'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:36:58.213Z'
-    checkedAt: '2026-08-04T03:36:58.213Z'
-    latestVersion: 1.0.8
-    lastPublishedAt: '2023-02-16T18:20:15.561Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:36:58.213Z'
+    lastAttemptAt: '2026-08-04T05:02:41.770Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@vippsno/plugin-azure-resources'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:41.770Z'
+        checkedAt: '2026-08-04T05:02:41.770Z'
+        latestVersion: 1.0.8
+        lastPublishedAt: '2023-02-16T18:20:15.561Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:42.138Z'
+        reason: config-schema-not-declared

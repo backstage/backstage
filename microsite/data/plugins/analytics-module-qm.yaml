@@ -11,15 +11,21 @@ addedDate: '2024-03-15'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:36:41.646Z'
-    checkedAt: '2026-08-04T03:36:41.646Z'
-    latestVersion: 1.0.2
-    lastPublishedAt: '2024-04-04T17:47:38.563Z'
-    repository:
-      url: https://github.com/quantummetric/analytics-module-qm
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:36:41.991Z'
+    lastAttemptAt: '2026-08-04T05:02:38.706Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@quantum-metric/plugin-analytics-module-qm'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:38.356Z'
+        checkedAt: '2026-08-04T05:02:38.356Z'
+        latestVersion: 1.0.2
+        lastPublishedAt: '2024-04-04T17:47:38.563Z'
+        repository:
+          url: https://github.com/quantummetric/analytics-module-qm
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:39.194Z'
+        reason: config-schema-not-json

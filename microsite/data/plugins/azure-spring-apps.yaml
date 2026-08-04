@@ -11,13 +11,19 @@ addedDate: '2022-11-21'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:36:58.979Z'
-    checkedAt: '2026-08-04T03:36:58.979Z'
-    latestVersion: 2.0.3
-    lastPublishedAt: '2022-12-26T20:47:11.880Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:36:58.979Z'
+    lastAttemptAt: '2026-08-04T05:02:41.795Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@enfuse/plugin-azure-spring-apps'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:41.795Z'
+        checkedAt: '2026-08-04T05:02:41.795Z'
+        latestVersion: 2.0.3
+        lastPublishedAt: '2022-12-26T20:47:11.880Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:42.020Z'
+        reason: config-schema-not-json

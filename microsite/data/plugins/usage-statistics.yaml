@@ -10,19 +10,25 @@ npmPackageName: '@codeverse-gp/plugin-usage-statistics'
 addedDate: '2025-11-05'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:40.472Z'
-    checkedAt: '2026-08-04T03:39:40.472Z'
-    latestVersion: 1.6.0
-    lastPublishedAt: '2026-07-25T15:41:07.966Z'
-    repository:
-      url: https://github.com/CodeVerse-GP/usage-statistics
-      directory: plugins/usage-statistics
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:39:40.899Z'
-    checkedAt: '2026-08-04T03:39:40.899Z'
+    lastAttemptAt: '2026-08-04T05:03:22.011Z'
+    checkedAt: '2026-08-04T05:03:22.011Z'
     version: 1.53.0
     sourceUrl: https://github.com/CodeVerse-GP/usage-statistics/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@codeverse-gp/plugin-usage-statistics'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:21.629Z'
+        checkedAt: '2026-08-04T05:03:21.629Z'
+        latestVersion: 1.6.0
+        lastPublishedAt: '2026-07-25T15:41:07.966Z'
+        repository:
+          url: https://github.com/CodeVerse-GP/usage-statistics
+          directory: plugins/usage-statistics
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:22.578Z'
+        reason: config-schema-not-declared

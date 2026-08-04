@@ -11,13 +11,19 @@ addedDate: '2024-06-25'
 status: inactive
 staleSince: '2026-08-04'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:03.269Z'
-    checkedAt: '2026-08-04T03:38:03.269Z'
-    latestVersion: 0.2.0
-    lastPublishedAt: '2024-09-05T06:27:35.761Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:03.269Z'
+    lastAttemptAt: '2026-08-04T05:03:01.205Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@harnessio/backstage-plugin-harness-chaos'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:01.205Z'
+        checkedAt: '2026-08-04T05:03:01.205Z'
+        latestVersion: 0.2.0
+        lastPublishedAt: '2024-09-05T06:27:35.761Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:01.617Z'
+        reason: config-schema-not-declared

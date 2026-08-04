@@ -10,19 +10,25 @@ npmPackageName: '@roadiehq/backstage-plugin-bugsnag'
 addedDate: '2021-09-24'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:07.894Z'
-    checkedAt: '2026-08-04T03:37:07.894Z'
-    latestVersion: 2.4.0
-    lastPublishedAt: '2025-10-31T09:32:29.966Z'
-    repository:
-      url: https://github.com/RoadieHQ/roadie-backstage-plugins
-      directory: plugins/frontend/backstage-plugin-bugsnag
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:37:08.221Z'
-    checkedAt: '2026-08-04T03:37:08.221Z'
+    lastAttemptAt: '2026-08-04T05:02:45.523Z'
+    checkedAt: '2026-08-04T05:02:45.523Z'
     version: 1.44.2
     sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@roadiehq/backstage-plugin-bugsnag'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:45.188Z'
+        checkedAt: '2026-08-04T05:02:45.188Z'
+        latestVersion: 2.4.0
+        lastPublishedAt: '2025-10-31T09:32:29.966Z'
+        repository:
+          url: https://github.com/RoadieHQ/roadie-backstage-plugins
+          directory: plugins/frontend/backstage-plugin-bugsnag
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:45.647Z'
+        reason: config-schema-not-json

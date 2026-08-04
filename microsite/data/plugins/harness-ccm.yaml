@@ -10,13 +10,19 @@ npmPackageName: '@harnessio/backstage-plugin-harness-ccm'
 addedDate: '2024-09-27'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:03.002Z'
-    checkedAt: '2026-08-04T03:38:03.002Z'
-    latestVersion: 0.1.4
-    lastPublishedAt: '2026-01-15T13:58:16.391Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:03.002Z'
+    lastAttemptAt: '2026-08-04T05:03:01.006Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@harnessio/backstage-plugin-harness-ccm'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:01.006Z'
+        checkedAt: '2026-08-04T05:03:01.006Z'
+        latestVersion: 0.1.4
+        lastPublishedAt: '2026-01-15T13:58:16.391Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:01.327Z'
+        reason: config-schema-not-declared

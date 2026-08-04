@@ -10,15 +10,21 @@ npmPackageName: '@jfvilas/plugin-kwirth-log'
 addedDate: '2025-09-18'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:24.981Z'
-    checkedAt: '2026-08-04T03:38:24.981Z'
-    latestVersion: 0.14.2
-    lastPublishedAt: '2026-03-27T15:37:11.046Z'
-    repository:
-      url: https://github.com/jfvilas/plugin-kwirth-log
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:25.342Z'
+    lastAttemptAt: '2026-08-04T05:03:06.319Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@jfvilas/plugin-kwirth-log'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:06.003Z'
+        checkedAt: '2026-08-04T05:03:06.003Z'
+        latestVersion: 0.14.2
+        lastPublishedAt: '2026-03-27T15:37:11.046Z'
+        repository:
+          url: https://github.com/jfvilas/plugin-kwirth-log
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:06.675Z'
+        reason: config-schema-not-declared

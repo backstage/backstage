@@ -11,13 +11,19 @@ addedDate: '2024-04-19'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:20.067Z'
-    checkedAt: '2026-08-04T03:37:20.067Z'
-    latestVersion: 0.1.2
-    lastPublishedAt: '2024-04-19T10:33:50.903Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:37:20.067Z'
+    lastAttemptAt: '2026-08-04T05:02:49.071Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@codacy/backstage-plugin'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:49.071Z'
+        checkedAt: '2026-08-04T05:02:49.071Z'
+        latestVersion: 0.1.2
+        lastPublishedAt: '2024-04-19T10:33:50.903Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:49.467Z'
+        reason: config-schema-not-declared

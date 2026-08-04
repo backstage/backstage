@@ -9,19 +9,25 @@ npmPackageName: '@backstage-community/plugin-nomad'
 addedDate: '2026-02-21'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:40.101Z'
-    checkedAt: '2026-08-04T03:38:40.101Z'
-    latestVersion: 0.21.0
-    lastPublishedAt: '2026-07-22T00:20:13.952Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/nomad/plugins/nomad
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:40.472Z'
-    checkedAt: '2026-08-04T03:38:40.472Z'
+    lastAttemptAt: '2026-08-04T05:03:09.117Z'
+    checkedAt: '2026-08-04T05:03:09.117Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/nomad/backstage.json
     sourcePath: workspaces/nomad/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-nomad'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:08.758Z'
+        checkedAt: '2026-08-04T05:03:08.758Z'
+        latestVersion: 0.21.0
+        lastPublishedAt: '2026-07-22T00:20:13.952Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/nomad/plugins/nomad
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:09.285Z'
+        reason: config-schema-not-declared

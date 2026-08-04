@@ -10,19 +10,25 @@ npmPackageName: '@roadiehq/scaffolder-backend-module-utils'
 addedDate: '2022-03-03'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:08.705Z'
-    checkedAt: '2026-08-04T03:39:08.705Z'
-    latestVersion: 4.1.2
-    lastPublishedAt: '2026-02-12T08:57:28.353Z'
-    repository:
-      url: https://github.com/RoadieHQ/roadie-backstage-plugins
-      directory: plugins/scaffolder-actions/scaffolder-backend-module-utils
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:39:08.997Z'
-    checkedAt: '2026-08-04T03:39:08.997Z'
+    lastAttemptAt: '2026-08-04T05:03:14.921Z'
+    checkedAt: '2026-08-04T05:03:14.921Z'
     version: 1.44.2
     sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@roadiehq/scaffolder-backend-module-utils'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:14.611Z'
+        checkedAt: '2026-08-04T05:03:14.611Z'
+        latestVersion: 4.1.2
+        lastPublishedAt: '2026-02-12T08:57:28.353Z'
+        repository:
+          url: https://github.com/RoadieHQ/roadie-backstage-plugins
+          directory: plugins/scaffolder-actions/scaffolder-backend-module-utils
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:15.033Z'
+        reason: config-schema-not-declared

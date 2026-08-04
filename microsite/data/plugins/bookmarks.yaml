@@ -9,19 +9,51 @@ npmPackageName: '@backstage-community/plugin-bookmarks'
 addedDate: '2026-02-21'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:07.378Z'
-    checkedAt: '2026-08-04T03:37:07.378Z'
-    latestVersion: 0.13.0
-    lastPublishedAt: '2026-07-21T21:38:00.141Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/bookmarks/plugins/bookmarks
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:37:07.779Z'
-    checkedAt: '2026-08-04T03:37:07.779Z'
+    lastAttemptAt: '2026-08-04T05:02:45.402Z'
+    checkedAt: '2026-08-04T05:02:45.402Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/bookmarks/backstage.json
     sourcePath: workspaces/bookmarks/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-bookmarks'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:45.017Z'
+        checkedAt: '2026-08-04T05:02:45.017Z'
+        latestVersion: 0.13.0
+        lastPublishedAt: '2026-07-21T21:38:00.141Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/bookmarks/plugins/bookmarks
+      configSchema:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:45.541Z'
+        checkedAt: '2026-08-04T05:02:45.541Z'
+        schema:
+          $schema: http://json-schema.org/draft-07/schema#
+          type: object
+          properties:
+            bookmarks:
+              type: object
+              properties:
+                customProtocols:
+                  type: object
+                  additionalProperties:
+                    type: object
+                    properties:
+                      iframeBaseUrl:
+                        type: string
+                        description: The base URL to use for iframe src with %s replaced by the encoded original URL, e.g. "https://myapp-iframe-host.com/iframe?url=%s"
+                      linkBaseUrl:
+                        type: string
+                        description: The base URL to use for anchor href with %s replaced by the encoded original URL, e.g. "https://myapp-web-host.com/open?url=%s"
+                    required:
+                      - iframeBaseUrl
+                      - linkBaseUrl
+                    description: The custom protocol to match, e.g. "myapp" for "myapp://some/path"
+                  description: Configuration for custom protocols, which can be used to embed or link to URLs with non-standard protocols.
+                  deepVisibility: frontend
+              description: Configuration for the Bookmarks plugin
+              visibility: frontend

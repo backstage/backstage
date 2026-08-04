@@ -10,19 +10,40 @@ npmPackageName: '@backstage-community/plugin-dynatrace'
 addedDate: '2022-06-23'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:38.317Z'
-    checkedAt: '2026-08-04T03:37:38.317Z'
-    latestVersion: 10.22.0
-    lastPublishedAt: '2026-07-21T23:04:41.699Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/dynatrace/plugins/dynatrace
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:37:38.714Z'
-    checkedAt: '2026-08-04T03:37:38.714Z'
+    lastAttemptAt: '2026-08-04T05:02:55.424Z'
+    checkedAt: '2026-08-04T05:02:55.424Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/dynatrace/backstage.json
     sourcePath: workspaces/dynatrace/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-dynatrace'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:55.115Z'
+        checkedAt: '2026-08-04T05:02:55.115Z'
+        latestVersion: 10.22.0
+        lastPublishedAt: '2026-07-21T23:04:41.699Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/dynatrace/plugins/dynatrace
+      configSchema:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:55.531Z'
+        checkedAt: '2026-08-04T05:02:55.531Z'
+        schema:
+          $schema: http://json-schema.org/draft-07/schema#
+          type: object
+          properties:
+            dynatrace:
+              type: object
+              properties:
+                baseUrl:
+                  type: string
+                  description: base url for links
+                  visibility: frontend
+              required:
+                - baseUrl
+              description: dynatrace config
+              visibility: frontend

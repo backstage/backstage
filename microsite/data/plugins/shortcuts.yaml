@@ -10,19 +10,25 @@ npmPackageName: '@backstage-community/plugin-shortcuts'
 addedDate: '2021-10-06'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:20.736Z'
-    checkedAt: '2026-08-04T03:39:20.736Z'
-    latestVersion: 0.23.0
-    lastPublishedAt: '2026-07-22T00:21:24.444Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/shortcuts/plugins/shortcuts
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:39:21.008Z'
-    checkedAt: '2026-08-04T03:39:21.008Z'
+    lastAttemptAt: '2026-08-04T05:03:17.413Z'
+    checkedAt: '2026-08-04T05:03:17.413Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/shortcuts/backstage.json
     sourcePath: workspaces/shortcuts/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-shortcuts'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:17.127Z'
+        checkedAt: '2026-08-04T05:03:17.127Z'
+        latestVersion: 0.23.0
+        lastPublishedAt: '2026-07-22T00:21:24.444Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/shortcuts/plugins/shortcuts
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:17.536Z'
+        reason: config-schema-not-declared

@@ -10,19 +10,25 @@ npmPackageName: '@backstage-community/plugin-wheel-of-names'
 addedDate: '2025-05-21'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:41.943Z'
-    checkedAt: '2026-08-04T03:39:41.943Z'
-    latestVersion: 0.8.0
-    lastPublishedAt: '2026-04-17T18:39:39.181Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/wheel-of-names/plugins/wheel-of-names
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:39:42.278Z'
-    checkedAt: '2026-08-04T03:39:42.278Z'
+    lastAttemptAt: '2026-08-04T05:03:22.026Z'
+    checkedAt: '2026-08-04T05:03:22.026Z'
     version: 1.49.2
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/wheel-of-names/backstage.json
     sourcePath: workspaces/wheel-of-names/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-wheel-of-names'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:21.694Z'
+        checkedAt: '2026-08-04T05:03:21.694Z'
+        latestVersion: 0.8.0
+        lastPublishedAt: '2026-04-17T18:39:39.181Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/wheel-of-names/plugins/wheel-of-names
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:22.141Z'
+        reason: config-schema-not-declared

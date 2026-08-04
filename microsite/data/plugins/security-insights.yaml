@@ -10,19 +10,25 @@ npmPackageName: '@roadiehq/backstage-plugin-security-insights'
 addedDate: '2021-04-20'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:18.297Z'
-    checkedAt: '2026-08-04T03:39:18.297Z'
-    latestVersion: 3.3.1
-    lastPublishedAt: '2026-01-12T16:03:25.064Z'
-    repository:
-      url: https://github.com/RoadieHQ/roadie-backstage-plugins
-      directory: plugins/frontend/backstage-plugin-security-insights
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:39:18.636Z'
-    checkedAt: '2026-08-04T03:39:18.636Z'
+    lastAttemptAt: '2026-08-04T05:03:16.674Z'
+    checkedAt: '2026-08-04T05:03:16.674Z'
     version: 1.44.2
     sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@roadiehq/backstage-plugin-security-insights'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:16.364Z'
+        checkedAt: '2026-08-04T05:03:16.364Z'
+        latestVersion: 3.3.1
+        lastPublishedAt: '2026-01-12T16:03:25.064Z'
+        repository:
+          url: https://github.com/RoadieHQ/roadie-backstage-plugins
+          directory: plugins/frontend/backstage-plugin-security-insights
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:16.775Z'
+        reason: config-schema-not-json

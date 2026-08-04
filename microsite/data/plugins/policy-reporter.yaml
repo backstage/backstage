@@ -10,19 +10,25 @@ npmPackageName: '@kyverno/backstage-plugin-policy-reporter'
 addedDate: '2025-01-31'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:49.653Z'
-    checkedAt: '2026-08-04T03:38:49.653Z'
-    latestVersion: 2.10.0
-    lastPublishedAt: '2026-07-08T06:50:53.005Z'
-    repository:
-      url: https://github.com/kyverno/backstage-policy-reporter-plugin
-      directory: plugins/policy-reporter
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:50.000Z'
-    checkedAt: '2026-08-04T03:38:50.000Z'
+    lastAttemptAt: '2026-08-04T05:03:10.880Z'
+    checkedAt: '2026-08-04T05:03:10.880Z'
     version: 1.52.0
     sourceUrl: https://github.com/kyverno/backstage-policy-reporter-plugin/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@kyverno/backstage-plugin-policy-reporter'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:10.544Z'
+        checkedAt: '2026-08-04T05:03:10.544Z'
+        latestVersion: 2.10.0
+        lastPublishedAt: '2026-07-08T06:50:53.005Z'
+        repository:
+          url: https://github.com/kyverno/backstage-policy-reporter-plugin
+          directory: plugins/policy-reporter
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:11.574Z'
+        reason: config-schema-not-declared

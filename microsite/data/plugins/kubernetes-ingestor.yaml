@@ -10,19 +10,25 @@ npmPackageName: '@terasky/backstage-plugin-kubernetes-ingestor'
 addedDate: '2024-12-30'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:22.974Z'
-    checkedAt: '2026-08-04T03:38:22.974Z'
-    latestVersion: 4.0.0
-    lastPublishedAt: '2026-07-06T12:51:55.663Z'
-    repository:
-      url: https://github.com/TeraSky-OSS/backstage-plugins
-      directory: plugins/kubernetes-ingestor
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:23.316Z'
-    checkedAt: '2026-08-04T03:38:23.316Z'
+    lastAttemptAt: '2026-08-04T05:03:05.570Z'
+    checkedAt: '2026-08-04T05:03:05.570Z'
     version: 1.52.1
     sourceUrl: https://github.com/TeraSky-OSS/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@terasky/backstage-plugin-kubernetes-ingestor'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:05.366Z'
+        checkedAt: '2026-08-04T05:03:05.366Z'
+        latestVersion: 4.0.0
+        lastPublishedAt: '2026-07-06T12:51:55.663Z'
+        repository:
+          url: https://github.com/TeraSky-OSS/backstage-plugins
+          directory: plugins/kubernetes-ingestor
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:05.689Z'
+        reason: config-schema-not-json

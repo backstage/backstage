@@ -10,15 +10,21 @@ npmPackageName: '@infosys_ltd/resource-actionhub'
 addedDate: '2026-04-23'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:18.631Z'
-    checkedAt: '2026-08-04T03:37:18.631Z'
-    latestVersion: 0.1.3
-    lastPublishedAt: '2026-06-02T11:11:27.328Z'
-    repository:
-      url: https://github.com/Infosys/CloudServiceActionHub
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:37:18.994Z'
+    lastAttemptAt: '2026-08-04T05:02:48.834Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@infosys_ltd/resource-actionhub'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:48.456Z'
+        checkedAt: '2026-08-04T05:02:48.456Z'
+        latestVersion: 0.1.3
+        lastPublishedAt: '2026-06-02T11:11:27.328Z'
+        repository:
+          url: https://github.com/Infosys/CloudServiceActionHub
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:49.273Z'
+        reason: config-schema-not-declared

@@ -10,171 +10,326 @@ npmPackageName: '@backstage/plugin-kubernetes'
 addedDate: '2021-03-29'
 order: 4
 status: active
-capabilities:
-  - entity-content
-setup:
-  packages:
-    - name: '@backstage/plugin-kubernetes'
-      role: frontend
-    - name: '@backstage/plugin-kubernetes-backend'
-      role: backend
-  frontend:
-    routes:
-      - name: kubernetes
-        type: provided
-        description: Links the Kubernetes entity content to its routable page.
-    extensions:
-      - id: entity-content:kubernetes/kubernetes
-        kind: entity-content
-        description: Adds a Kubernetes tab to catalog entities with Kubernetes resources.
-        enabledByDefault: true
-      - id: api:kubernetes
-        kind: api
-        description: Provides the Kubernetes client API.
-        enabledByDefault: true
-      - id: api:kubernetes/proxy
-        kind: api
-        description: Provides the Kubernetes proxy API.
-        enabledByDefault: true
-      - id: api:kubernetes/auth-providers
-        kind: api
-        description: Provides the built-in Kubernetes authentication providers.
-        enabledByDefault: true
-      - id: api:kubernetes/cluster-link-formatter
-        kind: api
-        description: Formats links to Kubernetes cluster dashboards.
-        enabledByDefault: true
-  integration:
-    - title: Register the backend plugin
-      explanation: Add the Kubernetes backend to packages/backend/src/index.ts before starting the backend.
-      language: ts
-      source: |
-        backend.add(import('@backstage/plugin-kubernetes-backend'));
-    - title: Annotate catalog entities
-      explanation: Add the Kubernetes ID annotation to each catalog entity that should show Kubernetes resources.
-      language: yaml
-      source: |
-        metadata:
-          annotations:
-            backstage.io/kubernetes-id: dice-roller
-  config:
-    schema:
-      type: object
-      properties:
-        kubernetes:
-          type: object
-          properties:
-            serviceLocatorMethod:
-              type: object
-              properties:
-                type:
-                  type: string
-                  enum:
-                    - multiTenant
-                    - singleTenant
-                    - catalogRelation
-                  default: multiTenant
-                  description: Determines which configured clusters are queried for each entity.
-                  x-ui:
-                    label: Locator type
-              required:
-                - type
-              description: Choose how catalog entities are matched to clusters.
-              x-ui:
-                label: Service locator
-            clusterLocatorMethods:
-              type: array
-              items:
-                type: object
-                properties:
-                  type:
-                    type: string
-                    enum:
-                      - config
-                    default: config
-                    description: Reads cluster connection details from app-config.yaml.
-                    x-ui:
-                      label: Locator type
-                  clusters:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        name:
-                          type: string
-                          description: Unique name shown to Backstage users.
-                          x-ui:
-                            label: Cluster name
-                        url:
-                          type: string
-                          description: Base URL of the Kubernetes control plane.
-                          x-ui:
-                            label: API server URL
-                        authProvider:
-                          type: string
-                          enum:
-                            - serviceAccount
-                          default: serviceAccount
-                          description: Authentication strategy used for this cluster.
-                          x-ui:
-                            label: Authentication provider
-                        serviceAccountToken:
-                          type: string
-                          description: Read from the declared environment variable; no secret value is entered here.
-                          x-ui:
-                            label: Service account token
-                            secretEnv: K8S_SERVICE_ACCOUNT_TOKEN
-                        skipTLSVerify:
-                          type: boolean
-                          default: false
-                          description: Skip API server certificate verification.
-                          x-ui:
-                            label: Skip TLS verification
-                        skipMetricsLookup:
-                          type: boolean
-                          default: false
-                          description: Skip pod CPU and memory metrics lookup.
-                          x-ui:
-                            label: Skip metrics lookup
-                      required:
-                        - name
-                        - url
-                        - authProvider
-                      x-ui:
-                        label: Cluster
-                    description: Configure one or more Kubernetes API servers.
-                    x-ui:
-                      label: Clusters
-                required:
-                  - type
-                  - clusters
-                x-ui:
-                  label: Config locator
-              description: Add clusters that are declared directly in app-config.yaml.
-              x-ui:
-                label: Cluster locator methods
-          required:
-            - serviceLocatorMethod
-            - clusterLocatorMethods
-          description: Configure how the backend locates and connects to Kubernetes clusters.
-          x-ui:
-            label: Kubernetes
-      required:
-        - kubernetes
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:00.634Z'
-    checkedAt: '2026-08-04T03:37:00.634Z'
-    latestVersion: 0.12.21
-    lastPublishedAt: '2026-07-14T12:09:13.207Z'
-    repository:
-      url: https://github.com/backstage/backstage
-      directory: plugins/kubernetes
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:37:00.852Z'
-    checkedAt: '2026-08-04T03:37:00.852Z'
-    version: 1.50.0
-    sourceUrl: https://github.com/backstage/backstage/blob/master/workspaces/ui/backstage.json
-    sourcePath: workspaces/ui/backstage.json
+    lastAttemptAt: '2026-08-04T05:02:42.674Z'
+    checkedAt: '2026-08-04T05:02:42.674Z'
+    version: 1.53.1
+    sourceUrl: https://github.com/backstage/backstage/releases/tag/v1.53.1
+    sourcePath: plugins/kubernetes/package.json
+  packages:
+    - functionality: frontend
+      npmPackageName: '@backstage/plugin-kubernetes'
+      sourcePath: plugins/kubernetes/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:42.316Z'
+        checkedAt: '2026-08-04T05:02:42.316Z'
+        latestVersion: 0.12.21
+        lastPublishedAt: '2026-07-14T12:09:13.207Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/kubernetes
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:42.676Z'
+        reason: config-schema-not-declared
+    - functionality: backend
+      npmPackageName: '@backstage/plugin-kubernetes-backend'
+      sourcePath: plugins/kubernetes-backend/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:42.926Z'
+        checkedAt: '2026-08-04T05:02:42.926Z'
+        latestVersion: 0.21.6
+        lastPublishedAt: '2026-07-14T12:09:23.900Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/kubernetes-backend
+      configSchema:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:43.258Z'
+        checkedAt: '2026-08-04T05:02:43.258Z'
+        schema:
+          $schema: http://json-schema.org/draft-07/schema#
+          type: object
+          properties:
+            kubernetes:
+              type: object
+              properties:
+                objectTypes:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      - pods
+                      - services
+                      - configmaps
+                      - deployments
+                      - limitranges
+                      - resourcequotas
+                      - replicasets
+                      - horizontalpodautoscalers
+                      - jobs
+                      - cronjobs
+                      - ingresses
+                      - customresources
+                      - statefulsets
+                      - daemonsets
+                serviceLocatorMethod:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - multiTenant
+                        - singleTenant
+                        - catalogRelation
+                  required:
+                    - type
+                clusterLocatorMethods:
+                  type: array
+                  items:
+                    anyOf:
+                      - type: object
+                        properties:
+                          type:
+                            type: string
+                            const: config
+                            visibility: frontend
+                          clusters:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                url:
+                                  type: string
+                                  visibility: frontend
+                                name:
+                                  type: string
+                                  visibility: frontend
+                                title:
+                                  type: string
+                                  visibility: frontend
+                                serviceAccountToken:
+                                  type: string
+                                  visibility: secret
+                                authProvider:
+                                  type: string
+                                  visibility: frontend
+                                authMetadata:
+                                  type: object
+                                  visibility: secret
+                                oidcTokenProvider:
+                                  type: string
+                                  visibility: frontend
+                                skipTLSVerify:
+                                  type: boolean
+                                  visibility: frontend
+                                skipMetricsLookup:
+                                  type: boolean
+                                  visibility: frontend
+                                caData:
+                                  type: string
+                                  visibility: secret
+                                caFile:
+                                  type: string
+                                  visibility: secret
+                                customResources:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      group:
+                                        type: string
+                                      apiVersion:
+                                        type: string
+                                      plural:
+                                        type: string
+                                    required:
+                                      - group
+                                      - apiVersion
+                                      - plural
+                              required:
+                                - url
+                                - name
+                        required:
+                          - type
+                          - clusters
+                      - type: object
+                        properties:
+                          type:
+                            type: string
+                            const: catalog
+                            visibility: frontend
+                        required:
+                          - type
+                      - type: object
+                        properties:
+                          type:
+                            type: string
+                            const: localKubectlProxy
+                            visibility: frontend
+                        required:
+                          - type
+                      - type: object
+                        properties:
+                          type:
+                            type: string
+                            const: gke
+                            visibility: frontend
+                          projectId:
+                            type: string
+                            visibility: frontend
+                          region:
+                            type: string
+                            visibility: frontend
+                          authProvider:
+                            type: string
+                            visibility: frontend
+                          skipTLSVerify:
+                            type: boolean
+                            visibility: frontend
+                          skipMetricsLookup:
+                            type: boolean
+                            visibility: frontend
+                          endpointType:
+                            type: string
+                            enum:
+                              - public
+                              - dns
+                            description: The type of endpoint to use for connecting to the cluster. 'public' uses the public IP endpoint (default). 'dns' uses the DNS-based control plane endpoint.
+                            visibility: frontend
+                        required:
+                          - type
+                          - projectId
+                customResources:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      group:
+                        type: string
+                      apiVersion:
+                        type: string
+                      plural:
+                        type: string
+                    required:
+                      - group
+                      - apiVersion
+                      - plural
+                googleServiceAccountCredentials:
+                  type: string
+                  description: (Optional) Google Service Account credentials for authentication JSON string containing the service account key
+                  visibility: secret
+                apiVersionOverrides:
+                  type: object
+                  properties:
+                    pods:
+                      type: string
+                    services:
+                      type: string
+                    configmaps:
+                      type: string
+                    deployments:
+                      type: string
+                    limitranges:
+                      type: string
+                    resourcequotas:
+                      type: string
+                    replicasets:
+                      type: string
+                    horizontalpodautoscalers:
+                      type: string
+                    jobs:
+                      type: string
+                    cronjobs:
+                      type: string
+                    ingresses:
+                      type: string
+                    customresources:
+                      type: string
+                    statefulsets:
+                      type: string
+                    daemonsets:
+                      type: string
+                  description: (Optional) API Version Overrides If set, the specified api version will be used to make requests for the corresponding object. If running a legacy Kubernetes version, you may use this to override the default api versions that are not supported in your cluster.
+              required:
+                - serviceLocatorMethod
+                - clusterLocatorMethods
+    - functionality: common
+      npmPackageName: '@backstage/plugin-kubernetes-common'
+      sourcePath: plugins/kubernetes-common/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:43.606Z'
+        checkedAt: '2026-08-04T05:02:43.606Z'
+        latestVersion: 0.9.12
+        lastPublishedAt: '2026-05-19T21:04:26.294Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/kubernetes-common
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:43.884Z'
+        reason: config-schema-not-declared
+    - functionality: node
+      npmPackageName: '@backstage/plugin-kubernetes-node'
+      sourcePath: plugins/kubernetes-node/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:44.156Z'
+        checkedAt: '2026-08-04T05:02:44.156Z'
+        latestVersion: 0.4.6
+        lastPublishedAt: '2026-07-14T12:09:40.808Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/kubernetes-node
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:44.423Z'
+        reason: config-schema-not-declared
+    - functionality: react
+      npmPackageName: '@backstage/plugin-kubernetes-react'
+      sourcePath: plugins/kubernetes-react/package.json
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:44.668Z'
+        checkedAt: '2026-08-04T05:02:44.668Z'
+        latestVersion: 0.5.22
+        lastPublishedAt: '2026-07-14T12:09:51.903Z'
+        repository:
+          url: https://github.com/backstage/backstage
+          directory: plugins/kubernetes-react
+      configSchema:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:44.976Z'
+        checkedAt: '2026-08-04T05:02:44.976Z'
+        schema:
+          $schema: http://json-schema.org/draft-07/schema#
+          type: object
+          properties:
+            kubernetes:
+              type: object
+              properties:
+                podExecTerminal:
+                  type: object
+                  properties:
+                    enabled:
+                      type: boolean
+                      description: Enable `PodExecTerminal` UI feature
+                      visibility: frontend
+                  description: Pod Exec Terminal config
+                frontend:
+                  type: object
+                  properties:
+                    podDelete:
+                      type: object
+                      properties:
+                        enabled:
+                          type: boolean
+                          description: Enable `podDelete` UI feature
+                          visibility: frontend
+                      description: Pod Delete config
+                  description: Frontend config

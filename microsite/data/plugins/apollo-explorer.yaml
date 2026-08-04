@@ -10,19 +10,25 @@ npmPackageName: '@backstage-community/plugin-apollo-explorer'
 addedDate: '2022-07-20'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:36:48.338Z'
-    checkedAt: '2026-08-04T03:36:48.338Z'
-    latestVersion: 0.23.0
-    lastPublishedAt: '2026-07-28T04:25:40.121Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/apollo-explorer/plugins/apollo-explorer
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:36:48.579Z'
-    checkedAt: '2026-08-04T03:36:48.579Z'
+    lastAttemptAt: '2026-08-04T05:02:39.878Z'
+    checkedAt: '2026-08-04T05:02:39.878Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/apollo-explorer/backstage.json
     sourcePath: workspaces/apollo-explorer/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-apollo-explorer'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:39.542Z'
+        checkedAt: '2026-08-04T05:02:39.542Z'
+        latestVersion: 0.23.0
+        lastPublishedAt: '2026-07-28T04:25:40.121Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/apollo-explorer/plugins/apollo-explorer
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:39.991Z'
+        reason: config-schema-not-declared

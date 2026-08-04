@@ -9,19 +9,61 @@ npmPackageName: '@backstage-community/plugin-mcp-chat'
 addedDate: '2026-02-21'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:32.478Z'
-    checkedAt: '2026-08-04T03:38:32.478Z'
-    latestVersion: 0.9.0
-    lastPublishedAt: '2026-07-21T22:38:36.198Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/mcp-chat/plugins/mcp-chat
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:32.853Z'
-    checkedAt: '2026-08-04T03:38:32.853Z'
+    lastAttemptAt: '2026-08-04T05:03:07.850Z'
+    checkedAt: '2026-08-04T05:03:07.850Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/mcp-chat/backstage.json
     sourcePath: workspaces/mcp-chat/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-mcp-chat'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:07.426Z'
+        checkedAt: '2026-08-04T05:03:07.426Z'
+        latestVersion: 0.9.0
+        lastPublishedAt: '2026-07-21T22:38:36.198Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/mcp-chat/plugins/mcp-chat
+      configSchema:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:07.972Z'
+        checkedAt: '2026-08-04T05:03:07.972Z'
+        schema:
+          $schema: http://json-schema.org/draft-07/schema#
+          type: object
+          properties:
+            mcpChat:
+              type: object
+              properties:
+                quickPrompts:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      title:
+                        type: string
+                        description: Title of the quick prompt
+                        visibility: frontend
+                      description:
+                        type: string
+                        description: Description of what the prompt does
+                        visibility: frontend
+                      prompt:
+                        type: string
+                        description: The actual prompt text to be used
+                        visibility: frontend
+                      category:
+                        type: string
+                        description: Category to group related prompts
+                        visibility: frontend
+                    required:
+                      - title
+                      - description
+                      - prompt
+                      - category
+                  description: Quick prompts configuration for the frontend
+                  visibility: frontend
+              description: Configuration options for the MCP Chat plugin

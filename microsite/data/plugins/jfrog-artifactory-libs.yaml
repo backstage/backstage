@@ -11,15 +11,21 @@ addedDate: '2023-08-14'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:15.251Z'
-    checkedAt: '2026-08-04T03:38:15.251Z'
-    latestVersion: 1.0.11
-    lastPublishedAt: '2024-09-02T12:22:25.802Z'
-    repository:
-      url: https://github.com/Vity01/backstage-jfrog-artifactory-libs
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:15.394Z'
+    lastAttemptAt: '2026-08-04T05:03:04.154Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: backstage-plugin-jfrog-artifactory-libs
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:03.989Z'
+        checkedAt: '2026-08-04T05:03:03.989Z'
+        latestVersion: 1.0.11
+        lastPublishedAt: '2024-09-02T12:22:25.802Z'
+        repository:
+          url: https://github.com/Vity01/backstage-jfrog-artifactory-libs
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:04.580Z'
+        reason: config-schema-not-json

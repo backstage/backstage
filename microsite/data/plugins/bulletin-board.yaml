@@ -11,13 +11,19 @@ addedDate: '2023-04-01'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:09.145Z'
-    checkedAt: '2026-08-04T03:37:09.145Z'
-    latestVersion: 0.4.1
-    lastPublishedAt: '2023-05-17T11:43:08.204Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:37:09.145Z'
+    lastAttemptAt: '2026-08-04T05:02:46.003Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: backstage-plugin-bulletin-board
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:46.003Z'
+        checkedAt: '2026-08-04T05:02:46.003Z'
+        latestVersion: 0.4.1
+        lastPublishedAt: '2023-05-17T11:43:08.204Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:46.148Z'
+        reason: config-schema-not-declared

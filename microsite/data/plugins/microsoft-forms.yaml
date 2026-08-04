@@ -10,18 +10,24 @@ npmPackageName: '@zcmander/backstage-plugin-msforms'
 addedDate: '2023-04-11'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:35.753Z'
-    checkedAt: '2026-08-04T03:38:35.753Z'
-    latestVersion: 2.0.1
-    lastPublishedAt: '2026-03-11T05:56:51.455Z'
-    repository:
-      url: https://github.com/zcmander/backstage-plugin-msforms
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:36.227Z'
-    checkedAt: '2026-08-04T03:38:36.227Z'
+    lastAttemptAt: '2026-08-04T05:03:08.186Z'
+    checkedAt: '2026-08-04T05:03:08.186Z'
     version: 1.48.1
     sourceUrl: https://github.com/zcmander/backstage-plugin-msforms/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@zcmander/backstage-plugin-msforms'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:07.823Z'
+        checkedAt: '2026-08-04T05:03:07.823Z'
+        latestVersion: 2.0.1
+        lastPublishedAt: '2026-03-11T05:56:51.455Z'
+        repository:
+          url: https://github.com/zcmander/backstage-plugin-msforms
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:08.711Z'
+        reason: config-schema-not-json

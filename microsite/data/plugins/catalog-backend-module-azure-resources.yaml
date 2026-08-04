@@ -9,19 +9,256 @@ npmPackageName: '@backstage-community/plugin-catalog-backend-module-azure-resour
 addedDate: '2026-02-21'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:10.081Z'
-    checkedAt: '2026-08-04T03:37:10.081Z'
-    latestVersion: 0.11.0
-    lastPublishedAt: '2026-07-22T10:36:43.683Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/azure-resources/plugins/catalog-backend-module-azure-resources
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:37:10.321Z'
-    checkedAt: '2026-08-04T03:37:10.321Z'
+    lastAttemptAt: '2026-08-04T05:02:46.501Z'
+    checkedAt: '2026-08-04T05:02:46.501Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/azure-resources/backstage.json
     sourcePath: workspaces/azure-resources/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-catalog-backend-module-azure-resources'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:46.152Z'
+        checkedAt: '2026-08-04T05:02:46.152Z'
+        latestVersion: 0.11.0
+        lastPublishedAt: '2026-07-22T10:36:43.683Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/azure-resources/plugins/catalog-backend-module-azure-resources
+      configSchema:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:46.641Z'
+        checkedAt: '2026-08-04T05:02:46.641Z'
+        schema:
+          $schema: http://json-schema.org/draft-07/schema#
+          type: object
+          properties:
+            catalog:
+              type: object
+              properties:
+                providers:
+                  type: object
+                  properties:
+                    azureResources:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            description: Identifier of the provider which will be used at the location key for ingested entities.
+                          query:
+                            type: string
+                            description: Azure Resource Graph query to fetch resources. This is a Kusto Query Language (KQL) query that will be executed against Azure Resource Graph.
+                          scope:
+                            type: object
+                            properties:
+                              managementGroups:
+                                type: array
+                                items:
+                                  type: string
+                                description: List of management group IDs to query.
+                              subscriptions:
+                                type: array
+                                items:
+                                  type: string
+                                description: List of subscription IDs to query.
+                            description: Scope configuration specifying which management groups or subscriptions to query. At least one of managementGroups or subscriptions must be specified.
+                          schedule:
+                            type: object
+                            properties:
+                              frequency:
+                                anyOf:
+                                  - type: object
+                                    properties:
+                                      cron:
+                                        type: string
+                                        description: A crontab style string.
+                                    required:
+                                      - cron
+                                  - type: string
+                                  - type: object
+                                    properties:
+                                      years:
+                                        type: number
+                                      months:
+                                        type: number
+                                      weeks:
+                                        type: number
+                                      days:
+                                        type: number
+                                      hours:
+                                        type: number
+                                      minutes:
+                                        type: number
+                                      seconds:
+                                        type: number
+                                      milliseconds:
+                                        type: number
+                                    description: Human friendly durations object.
+                                  - type: object
+                                    properties:
+                                      trigger:
+                                        type: string
+                                        const: manual
+                                    required:
+                                      - trigger
+                                description: How often you want the task to run. The system does its best to avoid overlapping invocations.
+                              timeout:
+                                anyOf:
+                                  - type: string
+                                  - type: object
+                                    properties:
+                                      years:
+                                        type: number
+                                      months:
+                                        type: number
+                                      weeks:
+                                        type: number
+                                      days:
+                                        type: number
+                                      hours:
+                                        type: number
+                                      minutes:
+                                        type: number
+                                      seconds:
+                                        type: number
+                                      milliseconds:
+                                        type: number
+                                    description: Human friendly durations object.
+                                description: The maximum amount of time that a single task invocation can take, before it's considered timed out and gets "released" such that a new invocation is permitted to take place (possibly, then, on a different worker).
+                              initialDelay:
+                                anyOf:
+                                  - type: string
+                                  - type: object
+                                    properties:
+                                      years:
+                                        type: number
+                                      months:
+                                        type: number
+                                      weeks:
+                                        type: number
+                                      days:
+                                        type: number
+                                      hours:
+                                        type: number
+                                      minutes:
+                                        type: number
+                                      seconds:
+                                        type: number
+                                      milliseconds:
+                                        type: number
+                                    description: Human friendly durations object.
+                                description: The amount of time that should pass before the first invocation happens.
+                              scope:
+                                type: string
+                                enum:
+                                  - global
+                                  - local
+                                description: Sets the scope of concurrency control / locking to apply for invocations of this task.
+                            required:
+                              - frequency
+                              - timeout
+                            description: Schedule configuration for refresh tasks.
+                          mapping:
+                            type: object
+                            properties:
+                              metadata:
+                                type: object
+                                properties:
+                                  name:
+                                    type: string
+                                    description: Property path for entity name
+                                  namespace:
+                                    type: string
+                                    description: Property path for entity namespace
+                                  title:
+                                    type: string
+                                    description: Property path for entity title
+                                  description:
+                                    type: string
+                                    description: Property path for entity description
+                                  labels:
+                                    type: object
+                                    additionalProperties:
+                                      type: string
+                                    description: Property path for entity labels
+                                  annotations:
+                                    type: object
+                                    additionalProperties:
+                                      type: string
+                                    description: Property path for entity annotations
+                                  tags:
+                                    type: array
+                                    items:
+                                      type: string
+                                    description: Property path for entity tags
+                                  links:
+                                    type: array
+                                    items:
+                                      type: object
+                                      properties:
+                                        url:
+                                          type: string
+                                          description: Link URL
+                                        title:
+                                          type: string
+                                          description: Link title
+                                        icon:
+                                          type: string
+                                          description: Link icon
+                                    description: Property path for entity links
+                                description: Mapping for entity metadata fields
+                              spec:
+                                type: object
+                                properties:
+                                  type:
+                                    type: string
+                                    description: Property path for entity type
+                                  lifecycle:
+                                    type: string
+                                    description: Property path for entity lifecycle
+                                  owner:
+                                    type: string
+                                    description: Property path for entity owner
+                                  system:
+                                    type: string
+                                    description: Property path for entity system
+                                  subcomponentOf:
+                                    type: string
+                                    description: Property path for entity subcomponentOf
+                                  providesApis:
+                                    type: array
+                                    items:
+                                      type: string
+                                    description: Property path for entity providesApis
+                                  consumesApis:
+                                    type: array
+                                    items:
+                                      type: string
+                                    description: Property path for entity consumesApis
+                                  dependsOn:
+                                    type: array
+                                    items:
+                                      type: string
+                                    description: Property path for entity dependsOn
+                                  dependencyOf:
+                                    type: array
+                                    items:
+                                      type: string
+                                    description: Property path for entity dependencyOf
+                                description: Mapping for entity spec fields
+                            description: Optional mapping configuration to customize how Azure resource properties are mapped to Backstage entity fields. Supports dot notation for nested properties (e.g., 'tags.myAnnotation').
+                          defaultOwner:
+                            type: string
+                            description: Optional default owner to assign to entities when no owner information is found in the Azure resource.
+                          maxPages:
+                            type: number
+                            description: Maximum number of pages to fetch from Azure Resource Graph to prevent infinite loops. With a default page size of 1000, this allows controlling how many resources can be retrieved.
+                        required:
+                          - id
+                          - query
+                      description: Azure Resources catalog provider configuration
+          description: Configuration schema for the Azure Resources catalog provider

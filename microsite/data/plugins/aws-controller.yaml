@@ -10,16 +10,22 @@ npmPackageName: '@aws-forge/backstage-plugin-aws-controller'
 addedDate: '2026-05-24'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:36:54.842Z'
-    checkedAt: '2026-08-04T03:36:54.842Z'
-    latestVersion: 0.1.0
-    lastPublishedAt: '2026-05-24T09:31:47.834Z'
-    repository:
-      url: https://github.com/refaelb/backstage-plugin-aws-control
-      directory: aws
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:36:55.263Z'
+    lastAttemptAt: '2026-08-04T05:02:41.257Z'
     reason: github-invalid-response
+  packages:
+    - npmPackageName: '@aws-forge/backstage-plugin-aws-controller'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:40.878Z'
+        checkedAt: '2026-08-04T05:02:40.878Z'
+        latestVersion: 0.1.0
+        lastPublishedAt: '2026-05-24T09:31:47.834Z'
+        repository:
+          url: https://github.com/refaelb/backstage-plugin-aws-control
+          directory: aws
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:41.412Z'
+        reason: config-schema-not-declared

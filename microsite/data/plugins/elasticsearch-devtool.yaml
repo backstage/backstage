@@ -9,18 +9,24 @@ npmPackageName: '@saishnarvekar/plugin-elastic-devtool'
 addedDate: '2026-06-28'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:39.893Z'
-    checkedAt: '2026-08-04T03:37:39.893Z'
-    latestVersion: 0.1.4
-    lastPublishedAt: '2026-07-12T18:31:31.909Z'
-    repository:
-      url: https://github.com/SaishNarvekar/elastic-devtool
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:37:40.254Z'
-    checkedAt: '2026-08-04T03:37:40.254Z'
+    lastAttemptAt: '2026-08-04T05:02:55.982Z'
+    checkedAt: '2026-08-04T05:02:55.982Z'
     version: 1.52.1
     sourceUrl: https://github.com/SaishNarvekar/elastic-devtool/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@saishnarvekar/plugin-elastic-devtool'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:55.580Z'
+        checkedAt: '2026-08-04T05:02:55.580Z'
+        latestVersion: 0.1.4
+        lastPublishedAt: '2026-07-12T18:31:31.909Z'
+        repository:
+          url: https://github.com/SaishNarvekar/elastic-devtool
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:56.448Z'
+        reason: config-schema-not-declared

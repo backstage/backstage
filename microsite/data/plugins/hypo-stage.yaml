@@ -10,16 +10,22 @@ npmPackageName: '@archhypo/plugin-hypo-stage'
 addedDate: '2026-04-14'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:09.536Z'
-    checkedAt: '2026-08-04T03:38:09.536Z'
-    latestVersion: 1.0.0
-    lastPublishedAt: '2026-04-12T22:32:37.517Z'
-    repository:
-      url: https://github.com/ArchHypo/hypo-stage
-      directory: hypo-stage
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:09.977Z'
+    lastAttemptAt: '2026-08-04T05:03:02.996Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@archhypo/plugin-hypo-stage'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:02.572Z'
+        checkedAt: '2026-08-04T05:03:02.572Z'
+        latestVersion: 1.0.0
+        lastPublishedAt: '2026-04-12T22:32:37.517Z'
+        repository:
+          url: https://github.com/ArchHypo/hypo-stage
+          directory: hypo-stage
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:03.508Z'
+        reason: config-schema-not-declared

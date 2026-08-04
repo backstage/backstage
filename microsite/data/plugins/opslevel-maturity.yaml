@@ -11,15 +11,21 @@ addedDate: '2022-12-07'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:45.415Z'
-    checkedAt: '2026-08-04T03:38:45.415Z'
-    latestVersion: 1.1.2
-    lastPublishedAt: '2023-10-25T18:37:06.496Z'
-    repository:
-      url: https://github.com/OpsLevel/backstage-plugin
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:45.617Z'
+    lastAttemptAt: '2026-08-04T05:03:10.017Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: backstage-plugin-opslevel-maturity
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:09.863Z'
+        checkedAt: '2026-08-04T05:03:09.863Z'
+        latestVersion: 1.1.2
+        lastPublishedAt: '2023-10-25T18:37:06.496Z'
+        repository:
+          url: https://github.com/OpsLevel/backstage-plugin
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:10.520Z'
+        reason: config-schema-not-declared

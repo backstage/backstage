@@ -10,19 +10,151 @@ npmPackageName: '@backstage-community/plugin-3scale-backend'
 addedDate: '2023-05-15'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:36:33.909Z'
-    checkedAt: '2026-08-04T03:36:33.909Z'
-    latestVersion: 3.16.0
-    lastPublishedAt: '2026-07-30T12:22:21.508Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/3scale/plugins/3scale-backend
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:36:34.388Z'
-    checkedAt: '2026-08-04T03:36:34.388Z'
+    lastAttemptAt: '2026-08-04T05:02:36.987Z'
+    checkedAt: '2026-08-04T05:02:36.987Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/3scale/backstage.json
     sourcePath: workspaces/3scale/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-3scale-backend'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:36.536Z'
+        checkedAt: '2026-08-04T05:02:36.536Z'
+        latestVersion: 3.16.0
+        lastPublishedAt: '2026-07-30T12:22:21.508Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/3scale/plugins/3scale-backend
+      configSchema:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:38.030Z'
+        checkedAt: '2026-08-04T05:02:38.030Z'
+        schema:
+          $schema: http://json-schema.org/draft-07/schema#
+          type: object
+          properties:
+            catalog:
+              type: object
+              properties:
+                providers:
+                  type: object
+                  properties:
+                    threeScaleApiEntity:
+                      type: object
+                      additionalProperties:
+                        type: object
+                        properties:
+                          baseUrl:
+                            type: string
+                            description: ThreeScaleConfig
+                          accessToken:
+                            type: string
+                            visibility: secret
+                          systemLabel:
+                            type: string
+                          ownerLabel:
+                            type: string
+                          addLabels:
+                            type: boolean
+                          schedule:
+                            type: object
+                            properties:
+                              frequency:
+                                anyOf:
+                                  - type: object
+                                    properties:
+                                      cron:
+                                        type: string
+                                        description: A crontab style string.
+                                    required:
+                                      - cron
+                                  - type: string
+                                  - type: object
+                                    properties:
+                                      years:
+                                        type: number
+                                      months:
+                                        type: number
+                                      weeks:
+                                        type: number
+                                      days:
+                                        type: number
+                                      hours:
+                                        type: number
+                                      minutes:
+                                        type: number
+                                      seconds:
+                                        type: number
+                                      milliseconds:
+                                        type: number
+                                    description: Human friendly durations object.
+                                  - type: object
+                                    properties:
+                                      trigger:
+                                        type: string
+                                        const: manual
+                                    required:
+                                      - trigger
+                                description: How often you want the task to run. The system does its best to avoid overlapping invocations.
+                              timeout:
+                                anyOf:
+                                  - type: string
+                                  - type: object
+                                    properties:
+                                      years:
+                                        type: number
+                                      months:
+                                        type: number
+                                      weeks:
+                                        type: number
+                                      days:
+                                        type: number
+                                      hours:
+                                        type: number
+                                      minutes:
+                                        type: number
+                                      seconds:
+                                        type: number
+                                      milliseconds:
+                                        type: number
+                                    description: Human friendly durations object.
+                                description: The maximum amount of time that a single task invocation can take, before it's considered timed out and gets "released" such that a new invocation is permitted to take place (possibly, then, on a different worker).
+                              initialDelay:
+                                anyOf:
+                                  - type: string
+                                  - type: object
+                                    properties:
+                                      years:
+                                        type: number
+                                      months:
+                                        type: number
+                                      weeks:
+                                        type: number
+                                      days:
+                                        type: number
+                                      hours:
+                                        type: number
+                                      minutes:
+                                        type: number
+                                      seconds:
+                                        type: number
+                                      milliseconds:
+                                        type: number
+                                    description: Human friendly durations object.
+                                description: The amount of time that should pass before the first invocation happens.
+                              scope:
+                                type: string
+                                enum:
+                                  - global
+                                  - local
+                                description: Sets the scope of concurrency control / locking to apply for invocations of this task.
+                            required:
+                              - frequency
+                              - timeout
+                            description: Config options for  {@link  SchedulerServiceTaskScheduleDefinition }  that control the scheduling of a task.
+                        required:
+                          - baseUrl
+                          - accessToken

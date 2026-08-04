@@ -13,13 +13,19 @@ addedDate: '2022-06-22'
 status: inactive
 staleSince: '2026-08-04'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:09.302Z'
-    checkedAt: '2026-08-04T03:38:09.302Z'
-    latestVersion: 0.9.7
-    lastPublishedAt: '2025-04-08T19:15:14.267Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:09.302Z'
+    lastAttemptAt: '2026-08-04T05:03:02.426Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@humanitec/backstage-plugin'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:02.426Z'
+        checkedAt: '2026-08-04T05:03:02.426Z'
+        latestVersion: 0.9.7
+        lastPublishedAt: '2025-04-08T19:15:14.267Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:02.773Z'
+        reason: config-schema-not-declared

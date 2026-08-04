@@ -10,15 +10,21 @@ npmPackageName: '@spacelift-io/backstage-integration-frontend'
 addedDate: '2025-06-10'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:24.584Z'
-    checkedAt: '2026-08-04T03:39:24.584Z'
-    latestVersion: 0.3.1
-    lastPublishedAt: '2026-03-26T09:21:33.767Z'
-    repository:
-      url: https://github.com/spacelift-io/backstage-plugins
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:39:24.960Z'
+    lastAttemptAt: '2026-08-04T05:03:18.161Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@spacelift-io/backstage-integration-frontend'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:17.781Z'
+        checkedAt: '2026-08-04T05:03:17.781Z'
+        latestVersion: 0.3.1
+        lastPublishedAt: '2026-03-26T09:21:33.767Z'
+        repository:
+          url: https://github.com/spacelift-io/backstage-plugins
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:18.729Z'
+        reason: config-schema-not-json

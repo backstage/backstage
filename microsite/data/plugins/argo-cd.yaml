@@ -10,19 +10,25 @@ npmPackageName: '@roadiehq/backstage-plugin-argo-cd'
 addedDate: '2021-04-20'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:36:48.679Z'
-    checkedAt: '2026-08-04T03:36:48.679Z'
-    latestVersion: 2.12.5
-    lastPublishedAt: '2026-04-06T08:55:55.061Z'
-    repository:
-      url: https://github.com/RoadieHQ/roadie-backstage-plugins
-      directory: plugins/frontend/backstage-plugin-argo-cd
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:36:49.132Z'
-    checkedAt: '2026-08-04T03:36:49.132Z'
+    lastAttemptAt: '2026-08-04T05:02:39.797Z'
+    checkedAt: '2026-08-04T05:02:39.797Z'
     version: 1.44.2
     sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@roadiehq/backstage-plugin-argo-cd'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:39.549Z'
+        checkedAt: '2026-08-04T05:02:39.549Z'
+        latestVersion: 2.12.5
+        lastPublishedAt: '2026-04-06T08:55:55.061Z'
+        repository:
+          url: https://github.com/RoadieHQ/roadie-backstage-plugins
+          directory: plugins/frontend/backstage-plugin-argo-cd
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:40.453Z'
+        reason: config-schema-not-json

@@ -9,19 +9,25 @@ npmPackageName: '@backstage-community/plugin-argocd'
 addedDate: '2026-02-21'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:36:49.801Z'
-    checkedAt: '2026-08-04T03:36:49.801Z'
-    latestVersion: 2.10.0
-    lastPublishedAt: '2026-07-17T09:05:20.142Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/argocd/plugins/argocd
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:36:50.179Z'
-    checkedAt: '2026-08-04T03:36:50.179Z'
+    lastAttemptAt: '2026-08-04T05:02:40.153Z'
+    checkedAt: '2026-08-04T05:02:40.153Z'
     version: 1.50.4
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/argocd/backstage.json
     sourcePath: workspaces/argocd/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-argocd'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:39.940Z'
+        checkedAt: '2026-08-04T05:02:39.940Z'
+        latestVersion: 2.10.0
+        lastPublishedAt: '2026-07-17T09:05:20.142Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/argocd/plugins/argocd
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:40.278Z'
+        reason: config-schema-not-json

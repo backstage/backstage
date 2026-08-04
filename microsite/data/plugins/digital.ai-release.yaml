@@ -11,16 +11,22 @@ addedDate: '2024-05-28'
 status: inactive
 staleSince: '2026-08-04'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:34.640Z'
-    checkedAt: '2026-08-04T03:37:34.640Z'
-    latestVersion: 0.1.4
-    lastPublishedAt: '2025-03-27T05:19:14.230Z'
-    repository:
-      url: https://github.com/digital-ai/backstage-release
-      directory: .
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:37:35.011Z'
+    lastAttemptAt: '2026-08-04T05:02:54.280Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@digital-ai/plugin-dai-release'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:53.880Z'
+        checkedAt: '2026-08-04T05:02:53.880Z'
+        latestVersion: 0.1.4
+        lastPublishedAt: '2025-03-27T05:19:14.230Z'
+        repository:
+          url: https://github.com/digital-ai/backstage-release
+          directory: .
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:54.774Z'
+        reason: config-schema-not-declared

@@ -11,19 +11,25 @@ addedDate: '2022-05-03'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:15.203Z'
-    checkedAt: '2026-08-04T03:37:15.203Z'
-    latestVersion: 0.1.1
-    lastPublishedAt: '2023-06-30T21:18:22.382Z'
-    repository:
-      url: https://github.com/cloud-carbon-footprint/ccf-backstage-plugin
-      directory: plugins/frontend
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:37:18.050Z'
-    checkedAt: '2026-08-04T03:37:18.050Z'
+    lastAttemptAt: '2026-08-04T05:02:48.616Z'
+    checkedAt: '2026-08-04T05:02:48.616Z'
     version: 1.15.0
     sourceUrl: https://github.com/cloud-carbon-footprint/ccf-backstage-plugin/blob/trunk/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@cloud-carbon-footprint/backstage-plugin-frontend'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:48.255Z'
+        checkedAt: '2026-08-04T05:02:48.255Z'
+        latestVersion: 0.1.1
+        lastPublishedAt: '2023-06-30T21:18:22.382Z'
+        repository:
+          url: https://github.com/cloud-carbon-footprint/ccf-backstage-plugin
+          directory: plugins/frontend
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:49.291Z'
+        reason: config-schema-not-json

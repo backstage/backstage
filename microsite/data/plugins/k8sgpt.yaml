@@ -11,13 +11,19 @@ addedDate: '2023-06-05'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:17.078Z'
-    checkedAt: '2026-08-04T03:38:17.078Z'
-    latestVersion: 0.2.2
-    lastPublishedAt: '2023-10-05T11:53:41.973Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:17.078Z'
+    lastAttemptAt: '2026-08-04T05:03:04.503Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@suxess-it/backstage-plugin-k8sgpt'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:04.503Z'
+        checkedAt: '2026-08-04T05:03:04.503Z'
+        latestVersion: 0.2.2
+        lastPublishedAt: '2023-10-05T11:53:41.973Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:04.850Z'
+        reason: config-schema-not-declared

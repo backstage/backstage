@@ -10,19 +10,25 @@ npmPackageName: '@dweber019/backstage-plugin-simple-icons'
 addedDate: '2024-07-30'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:22.494Z'
-    checkedAt: '2026-08-04T03:39:22.494Z'
-    latestVersion: 0.1.2
-    lastPublishedAt: '2025-12-19T07:45:31.286Z'
-    repository:
-      url: https://github.com/dweber019/backstage-plugins
-      directory: plugins/simple-icons
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:39:22.814Z'
-    checkedAt: '2026-08-04T03:39:22.814Z'
+    lastAttemptAt: '2026-08-04T05:03:17.510Z'
+    checkedAt: '2026-08-04T05:03:17.510Z'
     version: 1.46.1
     sourceUrl: https://github.com/dweber019/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@dweber019/backstage-plugin-simple-icons'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:17.252Z'
+        checkedAt: '2026-08-04T05:03:17.252Z'
+        latestVersion: 0.1.2
+        lastPublishedAt: '2025-12-19T07:45:31.286Z'
+        repository:
+          url: https://github.com/dweber019/backstage-plugins
+          directory: plugins/simple-icons
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:17.632Z'
+        reason: config-schema-not-declared

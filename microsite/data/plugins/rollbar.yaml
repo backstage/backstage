@@ -10,19 +10,25 @@ npmPackageName: '@backstage-community/plugin-rollbar'
 addedDate: '2020-11-03'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:57.108Z'
-    checkedAt: '2026-08-04T03:38:57.108Z'
-    latestVersion: 0.13.0
-    lastPublishedAt: '2026-04-17T18:31:57.574Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/rollbar/plugins/rollbar
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:57.463Z'
-    checkedAt: '2026-08-04T03:38:57.463Z'
+    lastAttemptAt: '2026-08-04T05:03:12.531Z'
+    checkedAt: '2026-08-04T05:03:12.531Z'
     version: 1.49.2
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/rollbar/backstage.json
     sourcePath: workspaces/rollbar/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-rollbar'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:12.137Z'
+        checkedAt: '2026-08-04T05:03:12.137Z'
+        latestVersion: 0.13.0
+        lastPublishedAt: '2026-04-17T18:31:57.574Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/rollbar/plugins/rollbar
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:12.663Z'
+        reason: config-schema-not-json

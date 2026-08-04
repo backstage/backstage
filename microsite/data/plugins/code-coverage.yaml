@@ -9,19 +9,25 @@ npmPackageName: '@backstage-community/plugin-code-coverage'
 addedDate: '2026-02-21'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:20.914Z'
-    checkedAt: '2026-08-04T03:37:20.914Z'
-    latestVersion: 0.14.1
-    lastPublishedAt: '2026-07-03T17:37:49.158Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/code-coverage/plugins/code-coverage
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:37:21.251Z'
-    checkedAt: '2026-08-04T03:37:21.251Z'
+    lastAttemptAt: '2026-08-04T05:02:49.944Z'
+    checkedAt: '2026-08-04T05:02:49.944Z'
     version: 1.49.2
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/code-coverage/backstage.json
     sourcePath: workspaces/code-coverage/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-code-coverage'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:49.585Z'
+        checkedAt: '2026-08-04T05:02:49.585Z'
+        latestVersion: 0.14.1
+        lastPublishedAt: '2026-07-03T17:37:49.158Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/code-coverage/plugins/code-coverage
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:50.074Z'
+        reason: config-schema-not-declared

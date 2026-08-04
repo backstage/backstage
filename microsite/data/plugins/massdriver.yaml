@@ -10,19 +10,25 @@ npmPackageName: '@massdriver/backstage-plugin'
 addedDate: '2026-07-16'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:31.441Z'
-    checkedAt: '2026-08-04T03:38:31.441Z'
-    latestVersion: 1.0.4
-    lastPublishedAt: '2026-07-23T15:53:48.998Z'
-    repository:
-      url: https://github.com/massdriver-cloud/massdriver-backstage
-      directory: plugins/massdriver
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:31.788Z'
-    checkedAt: '2026-08-04T03:38:31.788Z'
+    lastAttemptAt: '2026-08-04T05:03:07.590Z'
+    checkedAt: '2026-08-04T05:03:07.590Z'
     version: 1.52.0
     sourceUrl: https://github.com/massdriver-cloud/massdriver-backstage/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@massdriver/backstage-plugin'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:07.202Z'
+        checkedAt: '2026-08-04T05:03:07.202Z'
+        latestVersion: 1.0.4
+        lastPublishedAt: '2026-07-23T15:53:48.998Z'
+        repository:
+          url: https://github.com/massdriver-cloud/massdriver-backstage
+          directory: plugins/massdriver
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:08.224Z'
+        reason: config-schema-not-json

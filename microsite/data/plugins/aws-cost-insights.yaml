@@ -10,16 +10,22 @@ npmPackageName: '@letthem/backstage-plugin-aws-cost-insights'
 addedDate: '2026-03-04'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:36:55.480Z'
-    checkedAt: '2026-08-04T03:36:55.480Z'
-    latestVersion: 1.0.1
-    lastPublishedAt: '2026-03-05T07:40:55.762Z'
-    repository:
-      url: https://github.com/letthem/backstage-plugin-cost-insights
-      directory: plugins/cost-insights
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:36:55.836Z'
+    lastAttemptAt: '2026-08-04T05:02:41.586Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@letthem/backstage-plugin-aws-cost-insights'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:41.126Z'
+        checkedAt: '2026-08-04T05:02:41.126Z'
+        latestVersion: 1.0.1
+        lastPublishedAt: '2026-03-05T07:40:55.762Z'
+        repository:
+          url: https://github.com/letthem/backstage-plugin-cost-insights
+          directory: plugins/cost-insights
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:42.006Z'
+        reason: config-schema-not-declared

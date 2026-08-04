@@ -11,19 +11,25 @@ addedDate: '2024-01-02'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:26.203Z'
-    checkedAt: '2026-08-04T03:37:26.203Z'
-    latestVersion: 0.2.5
-    lastPublishedAt: '2025-01-06T09:37:27.608Z'
-    repository:
-      url: https://github.com/cyclops-ui/backstage-plugins
-      directory: plugins/cyclops-modules
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:37:26.449Z'
-    checkedAt: '2026-08-04T03:37:26.449Z'
+    lastAttemptAt: '2026-08-04T05:02:51.317Z'
+    checkedAt: '2026-08-04T05:02:51.317Z'
     version: 1.34.0
     sourceUrl: https://github.com/cyclops-ui/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@cyclopsui/backstage-plugin-cyclops-modules'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:50.963Z'
+        checkedAt: '2026-08-04T05:02:50.963Z'
+        latestVersion: 0.2.5
+        lastPublishedAt: '2025-01-06T09:37:27.608Z'
+        repository:
+          url: https://github.com/cyclops-ui/backstage-plugins
+          directory: plugins/cyclops-modules
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:51.849Z'
+        reason: config-schema-not-json

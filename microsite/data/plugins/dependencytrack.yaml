@@ -10,13 +10,19 @@ npmPackageName: '@trimm/plugin-dependencytrack'
 addedDate: '2022-09-06'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:30.635Z'
-    checkedAt: '2026-08-04T03:37:30.635Z'
-    latestVersion: 0.4.0
-    lastPublishedAt: '2026-06-25T06:45:27.503Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:37:30.635Z'
+    lastAttemptAt: '2026-08-04T05:02:52.677Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@trimm/plugin-dependencytrack'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:52.677Z'
+        checkedAt: '2026-08-04T05:02:52.677Z'
+        latestVersion: 0.4.0
+        lastPublishedAt: '2026-06-25T06:45:27.503Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:52.870Z'
+        reason: config-schema-not-json

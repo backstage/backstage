@@ -10,19 +10,25 @@ npmPackageName: '@backstage-community/plugin-copilot'
 addedDate: '2024-10-21'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:52.768Z'
-    checkedAt: '2026-08-04T03:37:52.768Z'
-    latestVersion: 1.2.0
-    lastPublishedAt: '2026-07-15T08:11:22.259Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/copilot/plugins/copilot
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:37:53.135Z'
-    checkedAt: '2026-08-04T03:37:53.135Z'
+    lastAttemptAt: '2026-08-04T05:02:59.475Z'
+    checkedAt: '2026-08-04T05:02:59.475Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/copilot/backstage.json
     sourcePath: workspaces/copilot/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-copilot'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:59.107Z'
+        checkedAt: '2026-08-04T05:02:59.107Z'
+        latestVersion: 1.2.0
+        lastPublishedAt: '2026-07-15T08:11:22.259Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/copilot/plugins/copilot
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:59.580Z'
+        reason: config-schema-not-json

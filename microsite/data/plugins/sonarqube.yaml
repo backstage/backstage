@@ -10,19 +10,25 @@ npmPackageName: '@backstage-community/plugin-sonarqube'
 addedDate: '2020-11-03'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:24.227Z'
-    checkedAt: '2026-08-04T03:39:24.227Z'
-    latestVersion: 1.1.0
-    lastPublishedAt: '2026-04-17T18:46:55.953Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/sonarqube/plugins/sonarqube
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:39:24.473Z'
-    checkedAt: '2026-08-04T03:39:24.473Z'
+    lastAttemptAt: '2026-08-04T05:03:17.976Z'
+    checkedAt: '2026-08-04T05:03:17.976Z'
     version: 1.50.2
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/sonarqube/backstage.json
     sourcePath: workspaces/sonarqube/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-sonarqube'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:17.719Z'
+        checkedAt: '2026-08-04T05:03:17.719Z'
+        latestVersion: 1.1.0
+        lastPublishedAt: '2026-04-17T18:46:55.953Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/sonarqube/plugins/sonarqube
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:18.094Z'
+        reason: config-schema-not-json

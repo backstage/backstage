@@ -11,19 +11,25 @@ addedDate: '2023-08-23'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:48.930Z'
-    checkedAt: '2026-08-04T03:37:48.930Z'
-    latestVersion: 0.8.5
-    lastPublishedAt: '2023-12-01T15:54:49.051Z'
-    repository:
-      url: https://github.com/weaveworks/weaveworks-backstage
-      directory: plugins/backstage-plugin-flux
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:37:49.143Z'
-    checkedAt: '2026-08-04T03:37:49.143Z'
+    lastAttemptAt: '2026-08-04T05:02:58.262Z'
+    checkedAt: '2026-08-04T05:02:58.262Z'
     version: 1.20.3
     sourceUrl: https://github.com/weaveworks/weaveworks-backstage/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@weaveworksoss/backstage-plugin-flux'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:57.957Z'
+        checkedAt: '2026-08-04T05:02:57.957Z'
+        latestVersion: 0.8.5
+        lastPublishedAt: '2023-12-01T15:54:49.051Z'
+        repository:
+          url: https://github.com/weaveworks/weaveworks-backstage
+          directory: plugins/backstage-plugin-flux
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:58.790Z'
+        reason: config-schema-not-json

@@ -11,15 +11,21 @@ addedDate: '2024-01-12'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:36:59.837Z'
-    checkedAt: '2026-08-04T03:36:59.837Z'
-    latestVersion: 0.0.5
-    lastPublishedAt: '2024-01-08T13:39:26.948Z'
-    repository:
-      url: https://github.com/benwilcock/backstage-plugin-backchat
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:37:00.199Z'
+    lastAttemptAt: '2026-08-04T05:02:42.658Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@benbravo73/backstage-plugin-backchat'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:42.315Z'
+        checkedAt: '2026-08-04T05:02:42.315Z'
+        latestVersion: 0.0.5
+        lastPublishedAt: '2024-01-08T13:39:26.948Z'
+        repository:
+          url: https://github.com/benwilcock/backstage-plugin-backchat
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:43.040Z'
+        reason: config-schema-not-json

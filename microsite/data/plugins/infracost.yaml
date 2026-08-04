@@ -11,13 +11,19 @@ addedDate: '2024-07-25'
 status: inactive
 staleSince: '2026-08-04'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:12.542Z'
-    checkedAt: '2026-08-04T03:38:12.542Z'
-    latestVersion: 0.4.0
-    lastPublishedAt: '2025-06-27T14:49:40.947Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:12.542Z'
+    lastAttemptAt: '2026-08-04T05:03:03.342Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@veecode-platform/backstage-plugin-infracost'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:03.342Z'
+        checkedAt: '2026-08-04T05:03:03.342Z'
+        latestVersion: 0.4.0
+        lastPublishedAt: '2025-06-27T14:49:40.947Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:03.722Z'
+        reason: config-schema-not-declared

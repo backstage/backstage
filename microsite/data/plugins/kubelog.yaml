@@ -10,15 +10,21 @@ npmPackageName: '@jfvilas/plugin-kubelog'
 addedDate: '2024-08-25'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:21.781Z'
-    checkedAt: '2026-08-04T03:38:21.781Z'
-    latestVersion: 0.14.2
-    lastPublishedAt: '2026-03-27T15:50:03.720Z'
-    repository:
-      url: https://github.com/jfvilas/kubelog
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:22.257Z'
+    lastAttemptAt: '2026-08-04T05:03:05.567Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@jfvilas/plugin-kubelog'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:05.190Z'
+        checkedAt: '2026-08-04T05:03:05.190Z'
+        latestVersion: 0.14.2
+        lastPublishedAt: '2026-03-27T15:50:03.720Z'
+        repository:
+          url: https://github.com/jfvilas/kubelog
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:05.909Z'
+        reason: config-schema-not-declared

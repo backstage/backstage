@@ -9,19 +9,25 @@ npmPackageName: '@backstage-community/plugin-catalog-backend-module-scaffolder-r
 addedDate: '2026-02-21'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:10.485Z'
-    checkedAt: '2026-08-04T03:39:10.485Z'
-    latestVersion: 2.15.0
-    lastPublishedAt: '2026-07-08T08:07:05.421Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/scaffolder-relation-processor/plugins/catalog-backend-module-scaffolder-relation-processor
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:39:10.766Z'
-    checkedAt: '2026-08-04T03:39:10.766Z'
+    lastAttemptAt: '2026-08-04T05:03:15.263Z'
+    checkedAt: '2026-08-04T05:03:15.263Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/scaffolder-relation-processor/backstage.json
     sourcePath: workspaces/scaffolder-relation-processor/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-catalog-backend-module-scaffolder-relation-processor'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:14.900Z'
+        checkedAt: '2026-08-04T05:03:14.900Z'
+        latestVersion: 2.15.0
+        lastPublishedAt: '2026-07-08T08:07:05.421Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/scaffolder-relation-processor/plugins/catalog-backend-module-scaffolder-relation-processor
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:15.411Z'
+        reason: config-schema-not-json

@@ -11,19 +11,25 @@ addedDate: '2022-05-13'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:19.522Z'
-    checkedAt: '2026-08-04T03:38:19.522Z'
-    latestVersion: 0.4.0
-    lastPublishedAt: '2022-12-08T03:38:48.123Z'
-    repository:
-      url: https://github.com/GoogleContainerTools/kpt-backstage-plugins
-      directory: plugins/cad
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:38:19.858Z'
-    checkedAt: '2026-08-04T03:38:19.858Z'
+    lastAttemptAt: '2026-08-04T05:03:05.217Z'
+    checkedAt: '2026-08-04T05:03:05.217Z'
     version: 1.12.1
     sourceUrl: https://github.com/GoogleContainerTools/kpt-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json
+  packages:
+    - npmPackageName: '@kpt/backstage-plugin-cad'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:04.861Z'
+        checkedAt: '2026-08-04T05:03:04.861Z'
+        latestVersion: 0.4.0
+        lastPublishedAt: '2022-12-08T03:38:48.123Z'
+        repository:
+          url: https://github.com/GoogleContainerTools/kpt-backstage-plugins
+          directory: plugins/cad
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:06.192Z'
+        reason: config-schema-not-json

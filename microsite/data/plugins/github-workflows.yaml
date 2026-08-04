@@ -10,13 +10,19 @@ npmPackageName: '@veecode-platform/backstage-plugin-github-workflows'
 addedDate: '2023-09-12'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:54.426Z'
-    checkedAt: '2026-08-04T03:37:54.426Z'
-    latestVersion: 1.4.0
-    lastPublishedAt: '2026-03-20T12:59:37.432Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:37:54.426Z'
+    lastAttemptAt: '2026-08-04T05:02:59.620Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@veecode-platform/backstage-plugin-github-workflows'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:59.620Z'
+        checkedAt: '2026-08-04T05:02:59.620Z'
+        latestVersion: 1.4.0
+        lastPublishedAt: '2026-03-20T12:59:37.432Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:00.040Z'
+        reason: config-schema-not-declared

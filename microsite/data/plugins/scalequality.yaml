@@ -10,15 +10,21 @@ npmPackageName: '@scalequality/backstage-plugin'
 addedDate: '2026-07-22'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:39:12.785Z'
-    checkedAt: '2026-08-04T03:39:12.785Z'
-    latestVersion: 0.1.3
-    lastPublishedAt: '2026-07-23T18:00:51.989Z'
-    repository:
-      url: https://github.com/scalequality-io/backstage-plugin
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:39:13.006Z'
+    lastAttemptAt: '2026-08-04T05:03:15.693Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@scalequality/backstage-plugin'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:15.285Z'
+        checkedAt: '2026-08-04T05:03:15.285Z'
+        latestVersion: 0.1.3
+        lastPublishedAt: '2026-07-23T18:00:51.989Z'
+        repository:
+          url: https://github.com/scalequality-io/backstage-plugin
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:16.136Z'
+        reason: config-schema-not-declared

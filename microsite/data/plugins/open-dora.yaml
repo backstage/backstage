@@ -11,15 +11,21 @@ addedDate: '2023-11-29'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:43.230Z'
-    checkedAt: '2026-08-04T03:38:43.230Z'
-    latestVersion: 0.4.0
-    lastPublishedAt: '2024-04-16T07:10:10.226Z'
-    repository:
-      url: https://github.com/DevoteamNL/opendora
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:43.612Z'
+    lastAttemptAt: '2026-08-04T05:03:09.710Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@devoteam-nl/open-dora-backstage-plugin'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:09.348Z'
+        checkedAt: '2026-08-04T05:03:09.348Z'
+        latestVersion: 0.4.0
+        lastPublishedAt: '2024-04-16T07:10:10.226Z'
+        repository:
+          url: https://github.com/DevoteamNL/opendora
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:10.197Z'
+        reason: config-schema-not-json

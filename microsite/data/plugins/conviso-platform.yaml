@@ -10,15 +10,21 @@ npmPackageName: '@conviso/backstage-plugin-conviso'
 addedDate: '2025-11-14'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:23.111Z'
-    checkedAt: '2026-08-04T03:37:23.111Z'
-    latestVersion: 0.1.13
-    lastPublishedAt: '2025-11-15T01:34:33.299Z'
-    repository:
-      url: https://github.com/convisoappsec/backstage-plugin-conviso
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:37:23.466Z'
+    lastAttemptAt: '2026-08-04T05:02:50.329Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@conviso/backstage-plugin-conviso'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:49.970Z'
+        checkedAt: '2026-08-04T05:02:49.970Z'
+        latestVersion: 0.1.13
+        lastPublishedAt: '2025-11-15T01:34:33.299Z'
+        repository:
+          url: https://github.com/convisoappsec/backstage-plugin-conviso
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:50.810Z'
+        reason: config-schema-not-declared

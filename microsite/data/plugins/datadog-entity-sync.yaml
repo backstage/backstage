@@ -10,13 +10,19 @@ npmPackageName: '@datadog/backstage-plugin-datadog-entity-sync-backend'
 addedDate: '2025-09-19'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:28.741Z'
-    checkedAt: '2026-08-04T03:37:28.741Z'
-    latestVersion: 1.1.5
-    lastPublishedAt: '2026-02-03T17:29:14.559Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:37:28.741Z'
+    lastAttemptAt: '2026-08-04T05:02:52.132Z'
     reason: repository-unsupported
+  packages:
+    - npmPackageName: '@datadog/backstage-plugin-datadog-entity-sync-backend'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:52.132Z'
+        checkedAt: '2026-08-04T05:02:52.132Z'
+        latestVersion: 1.1.5
+        lastPublishedAt: '2026-02-03T17:29:14.559Z'
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:52.518Z'
+        reason: config-schema-not-declared

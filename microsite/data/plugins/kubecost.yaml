@@ -11,15 +11,21 @@ addedDate: '2023-06-29'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:38:20.975Z'
-    checkedAt: '2026-08-04T03:38:20.975Z'
-    latestVersion: 0.4.0
-    lastPublishedAt: '2024-04-22T06:39:28.844Z'
-    repository:
-      url: https://github.com/suxess-it/backstage-plugin-kubecost
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:38:21.319Z'
+    lastAttemptAt: '2026-08-04T05:03:05.524Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@suxess-it/backstage-plugin-kubecost'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:03:05.172Z'
+        checkedAt: '2026-08-04T05:03:05.172Z'
+        latestVersion: 0.4.0
+        lastPublishedAt: '2024-04-22T06:39:28.844Z'
+        repository:
+          url: https://github.com/suxess-it/backstage-plugin-kubecost
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:03:05.948Z'
+        reason: config-schema-not-json

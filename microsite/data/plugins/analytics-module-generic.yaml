@@ -11,15 +11,21 @@ addedDate: '2024-08-23'
 status: inactive
 staleSince: '2026-08-04'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:36:40.214Z'
-    checkedAt: '2026-08-04T03:36:40.214Z'
-    latestVersion: 0.1.1
-    lastPublishedAt: '2025-06-09T18:03:52.072Z'
-    repository:
-      url: https://github.com/pfeifferj/backstage-plugin-analytics-generic
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:36:40.480Z'
+    lastAttemptAt: '2026-08-04T05:02:38.681Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: '@pfeifferj/backstage-plugin-analytics-generic'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:38.325Z'
+        checkedAt: '2026-08-04T05:02:38.325Z'
+        latestVersion: 0.1.1
+        lastPublishedAt: '2025-06-09T18:03:52.072Z'
+        repository:
+          url: https://github.com/pfeifferj/backstage-plugin-analytics-generic
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:39.081Z'
+        reason: config-schema-not-json

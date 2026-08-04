@@ -9,19 +9,25 @@ npmPackageName: '@backstage-community/plugin-code-climate'
 addedDate: '2026-02-21'
 status: active
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:20.438Z'
-    checkedAt: '2026-08-04T03:37:20.438Z'
-    latestVersion: 0.21.0
-    lastPublishedAt: '2026-07-21T22:57:53.941Z'
-    repository:
-      url: https://github.com/backstage/community-plugins
-      directory: workspaces/code-climate/plugins/code-climate
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:37:20.786Z'
-    checkedAt: '2026-08-04T03:37:20.786Z'
+    lastAttemptAt: '2026-08-04T05:02:49.439Z'
+    checkedAt: '2026-08-04T05:02:49.439Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/code-climate/backstage.json
     sourcePath: workspaces/code-climate/backstage.json
+  packages:
+    - npmPackageName: '@backstage-community/plugin-code-climate'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:49.095Z'
+        checkedAt: '2026-08-04T05:02:49.095Z'
+        latestVersion: 0.21.0
+        lastPublishedAt: '2026-07-21T22:57:53.941Z'
+        repository:
+          url: https://github.com/backstage/community-plugins
+          directory: workspaces/code-climate/plugins/code-climate
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:49.554Z'
+        reason: config-schema-not-declared

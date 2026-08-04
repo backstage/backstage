@@ -11,16 +11,22 @@ addedDate: '2024-11-02'
 status: inactive
 staleSince: '2026-08-04'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:37:29.396Z'
-    checkedAt: '2026-08-04T03:37:29.396Z'
-    latestVersion: 0.2.10
-    lastPublishedAt: '2024-10-18T10:19:39.760Z'
-    repository:
-      url: https://github.com/daytonaio/backstage-plugins
-      directory: plugins/daytona
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:37:29.741Z'
+    lastAttemptAt: '2026-08-04T05:02:52.788Z'
     reason: github-invalid-response
+  packages:
+    - npmPackageName: '@daytonaio/backstage-plugin-daytona'
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:52.519Z'
+        checkedAt: '2026-08-04T05:02:52.519Z'
+        latestVersion: 0.2.10
+        lastPublishedAt: '2024-10-18T10:19:39.760Z'
+        repository:
+          url: https://github.com/daytonaio/backstage-plugins
+          directory: plugins/daytona
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:52.909Z'
+        reason: config-schema-not-json

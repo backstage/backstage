@@ -11,15 +11,21 @@ addedDate: '2021-08-30'
 status: archived
 staleSince: '2026-02-17'
 snapshot:
-  npm:
-    status: fresh
-    lastAttemptAt: '2026-08-04T03:36:52.743Z'
-    checkedAt: '2026-08-04T03:36:52.743Z'
-    latestVersion: 2.0.10
-    lastPublishedAt: '2023-07-10T03:49:08.810Z'
-    repository:
-      url: https://github.com/purple-technology/backstage-aws-cloudformation-plugin
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:36:52.883Z'
+    lastAttemptAt: '2026-08-04T05:02:40.440Z'
     reason: backstage-json-not-found
+  packages:
+    - npmPackageName: backstage-aws-cloudformation-plugin
+      npm:
+        status: fresh
+        lastAttemptAt: '2026-08-04T05:02:40.290Z'
+        checkedAt: '2026-08-04T05:02:40.290Z'
+        latestVersion: 2.0.10
+        lastPublishedAt: '2023-07-10T03:49:08.810Z'
+        repository:
+          url: https://github.com/purple-technology/backstage-aws-cloudformation-plugin
+      configSchema:
+        status: unavailable
+        lastAttemptAt: '2026-08-04T05:02:40.905Z'
+        reason: config-schema-not-declared
