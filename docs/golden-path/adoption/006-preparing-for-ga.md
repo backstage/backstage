@@ -1,161 +1,89 @@
 ---
 id: preparing-for-ga
-sidebar_label: 006 - Preparing for GA
-title: Preparing for GA
-description: How to prepare your Backstage instance for a company-wide general availability launch
+sidebar_label: 006 - Prepare for GA
+title: Prepare for general availability
+description: Decide whether a Backstage pilot is ready for a wider organizational launch
 ---
 
-Before planning a company-wide general availability (GA) launch, confirm that the technical team has completed the [golden path for deploying Backstage](../deployment/index.md). Then name the people who will own the launch, support developers, review feedback, and decide what changes after launch.
+General availability (GA) expands both the audience and the organization's
+responsibility for the product. Use pilot evidence and technical sign-off to
+make the launch decision explicit.
 
-## Define launch readiness
+**Decision prompt:** Are we comfortable launching, or should we address gaps
+first?
 
-Agree on a short readiness checklist with the sponsor and participating teams:
+## Confirm product readiness
 
-- The launch workflows solve a validated problem for their intended audiences.
-- Documentation, support channels, and escalation owners are visible.
-- Baseline measures and a review cadence are in place.
-- Early users can explain the value in their own words.
-- The product team has capacity to respond after the announcement.
+Review the pilot with the sponsor, product team, technical partner, and
+participating developers. Confirm that:
 
-GA is a change in operating responsibility, not only a communication milestone. Delay the announcement if nobody is accountable for the experience that follows it.
+- the launch workflows solve a validated problem for their intended audiences;
+- pilot evidence supports expanding beyond the original cohort;
+- documentation, support channels, and escalation owners are visible;
+- measures and a review cadence are in place;
+- early users can explain the value in their own words;
+- the product team has capacity to respond after the announcement.
 
-## Launch announcements
+A launch can proceed with known limitations when decision-makers understand the
+risk, name an owner, and agree when it will be revisited. GA should not make an
+experimental workflow appear more dependable than it is.
 
-Getting the word out is one of the most important parts of a successful general
-availability (GA) launch. A good announcement does two things: it tells
-developers that Backstage is available, and it tells them why they should care.
+## Request technical readiness sign-off
 
-### Use your internal communication channels
+The adoption lead should not make production-readiness judgments alone. Confirm
+that the technical partner has completed the
+[Deployment Golden Path](../deployment/index.md) and reviewed the launch against
+the organization's requirements for:
 
-Start with the channels your developers already use. Post in Slack or Teams
-channels that reach engineering broadly, share a short write-up in your company
-newsletter or engineering blog, and send a targeted email to team leads who can
-cascade the message to their reports. Tailor the message for each channel; a
-Slack announcement can be shorter and more conversational than a written post.
+- authentication, authorization, and appropriate access;
+- security, data sensitivity, and privacy;
+- reliability, recovery, monitoring, and incident response;
+- upgrades, dependencies, and operational ownership;
+- accessibility and supported user environments.
 
-Lead with the problem Backstage solves for your developers, not with a list of
-features. Developers respond better to "you no longer need to chase down
-ownership information across five different tools" than "we have launched a
+The technical partner should describe important gaps in language the sponsor and
+product team can use in the launch decision. Record accepted risks and follow-up
+owners rather than hiding uncertainty in technical detail.
+
+## Plan the launch
+
+A launch announcement should explain that Backstage is available and why
+developers should care. Lead with the problem it solves, not a list of features.
+"Find a service owner and runbook in one place" is stronger than "we launched a
 software catalog."
 
-### Host an internal meetup or demo
+Use communication channels developers already follow, such as an engineering
+newsletter, team-lead forum, internal chat, or developer meetup. Tailor the
+message to the audience and point people to:
 
-A live demo builds trust in a way that a written announcement cannot. Developers
-can see the product in action, ask questions, and leave with a concrete
-impression of how Backstage fits into their day-to-day work.
+- the workflows included at launch;
+- where to get started;
+- documentation and support;
+- where to report problems or provide feedback;
+- known limitations that affect their work.
 
-Keep the demo short and focused. Walk through one or two high-value workflows,
-ideally ones that address the pain points you identified during your stakeholder
-feedback sessions. Leave time for questions. If the session is recorded, share
-the recording in your communication channels so developers who couldn't attend can catch
-up.
+A short live demo can build trust. Show one or two validated workflows and leave
+time for questions. Invite a pilot participant to co-present when possible;
+peer experience often carries more weight than a platform-team announcement.
 
-Consider running multiple sessions to reach different time zones or teams.
-Smaller, more targeted demos for specific teams can be more effective than a
-single large all-hands.
+## Worked example
 
-:::tip
-Invite a developer from the teams that participated in your proof of concept
-(PoC) to co-present. Peer endorsement carries more weight than a platform team
-talking about their own product.
-:::
+The pilot shows that on-call engineers consistently find ownership information
+faster, and source data remains accurate enough for regular use. The technical
+partner confirms company sign-in, access controls, monitoring, backups, upgrade
+ownership, and support escalation.
 
-## Operate after launch
+Twelve services still lack operational documentation. The sponsor accepts that
+missing entries are clearly identified and an accountable team will address
+them before the first monthly review. The launch message focuses on ownership
+and service-documentation discovery rather than presenting Backstage as a complete portal.
 
-The period immediately after GA is often slower than you expect. This is normal.
-Developers are busy, habits are hard to change, and adoption takes time to build
-momentum. The goal in these early months is not to force adoption but to remove
-the friction that prevents it.
+## Before you continue
 
-### Listen to feedback early and often
+You should now have an explicit launch decision grounded in pilot evidence and
+product and technical readiness. Make support, accepted risks, follow-up owners,
+communication, measurement, and the first post-launch review visible to everyone
+responsible for the launch.
 
-Set up a clear feedback channel from day one. This could be a dedicated Slack
-channel, a form, or a recurring office hours session. Make it visible in your
-launch announcement so developers know where to go. The feedback you receive in
-the first few weeks is some of the most valuable you will ever get, because it
-reflects the real first-time experience.
-
-Pay attention to the things developers are struggling with, not just the feature
-requests. Struggles point to gaps in documentation, confusing workflows, or
-missing integrations that are blocking adoption.
-
-### Use analytics to guide your decisions
-
-Backstage does not ship with usage analytics by default, but you can integrate
-an analytics provider through the plugin ecosystem, you can find more information on this in the [Analytics](../../plugins/analytics.md) section of the Backstage documentation. Tracking which parts of
-Backstage developers actually use helps you make informed decisions about where
-to invest your time.
-
-Compare these signals with the baseline and outcome you agreed on before the PoC. Usage shows whether developers reached a workflow; completion time, support demand, and direct feedback help determine whether the workflow improved.
-
-Look for patterns: Are developers landing on the catalog but not drilling into
-entity pages? Is the search feature underused? Are Software Templates being
-triggered but not completed? These signals tell you where the experience is
-breaking down and where it is working well.
-
-### Talk to your users directly
-
-Analytics tell you what is happening. Conversations tell you why. Schedule
-regular check-ins with developers across different teams, especially those who
-were early adopters. Ask them what they use, what they avoid, and what would
-make Backstage more useful in their daily work.
-
-Short, informal conversations are often more revealing than formal surveys.
-A five-minute chat with a developer who almost never opens Backstage can give
-you more actionable insight than a month of dashboards.
-
-## How to keep iterating
-
-GA is not the finish line. The most successful Backstage instances are the ones
-that keep improving after launch, driven by a clear process for taking feedback
-and turning it into changes.
-
-### Make decisions based on feedback
-
-Prioritize work that addresses real developer pain points over work that feels
-interesting to build. When you receive recurring feedback about the same issue,
-treat that as a strong signal. When feedback is mixed or unclear, go back to
-your users and dig deeper before committing to a direction.
-
-Document the decisions you make and the reasoning behind them. This helps your
-team stay aligned and gives you a record to reference when revisiting past
-choices.
-
-### Look for processes that could be improved
-
-As Backstage matures in your organization, you will start to notice patterns in
-how developers interact with it. Some of those patterns will reveal manual steps
-that Backstage could automate, or workflows that exist outside Backstage that
-would benefit from being brought in.
-
-Review your catalog regularly. Are entities going stale? Is ownership information
-drifting out of date? These are signs that the processes around Backstage need
-attention, not the product itself. Work with teams to build the habits and
-automation that keep the data accurate.
-
-### Keep stakeholders informed
-
-Your leadership and key stakeholders backed this investment. Keep them updated
-with regular progress reports that connect Backstage's impact to the outcomes
-they care about: developer productivity, reduced toil, faster onboarding, and
-improved system reliability.
-
-Share wins, but also be transparent about what is not working and what you plan
-to do about it. Stakeholders who trust your judgment are more likely to continue
-investing in the platform over time.
-
-## Learn from adopters
-
-### [Lego bricks for developers: Turning insights into golden paths at Neo4j](https://www.youtube.com/watch?v=IdLXeK8motg)
-
-_BackstageCon North America, 2025 · 27:54 video_
-
-- Combine page analytics with qualitative feedback to learn what developers use and what they still need.
-- Preserve the parts users value while turning broad guidance into focused, team-owned paths that can improve independently.
-
-### [How Ericsson scaled developer experience with Backstage](https://www.youtube.com/watch?v=1mDEkiN4NTs)
-
-_BackstageCon North America, 2025 · 25:08 video_
-
-- Study an adopter that connects scale with automation, standardization, and collaboration rather than treating launch as a one-time announcement.
-- Use recurring engagement data as one input to the operating rhythm, alongside evidence of efficiency and developer outcomes.
+After launch, move from project delivery to a recurring product rhythm. Continue
+with [Operate after launch](./007-operate-after-launch.md).

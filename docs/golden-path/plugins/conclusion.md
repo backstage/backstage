@@ -20,9 +20,9 @@ existing option does not meet your organization's needs.
 ## Develop plugins sustainably
 
 Building the software is only the beginning. Use the Adoption Golden Path to
-gather [stakeholder feedback](../adoption/004-first-stakeholder-feedback.md),
-decide whether to [adopt or build](../adoption/005-customizing-your-instance.md#adopt-or-build),
-and establish [plugin ownership](../adoption/007-plugin-ownership.md). These
+gather [stakeholder feedback](../adoption/003-evaluate-poc.md), decide whether
+to [adopt or build](../adoption/005-shared-pilot.md#adopt-or-build), and
+establish [plugin ownership](../adoption/008-govern-ownership.md). These
 practices help you decide what to improve, who will maintain the plugin, and
 when an unsupported plugin should be retired.
 

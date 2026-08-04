@@ -18,7 +18,7 @@ and example [Software Catalog](../../features/software-catalog/index.md) data li
 At the end, you will have an unchanged Backstage app running on your computer
 and understand how its main pieces fit together. You will be ready to continue
 with [plugin development](../plugins/index.md), [deployment](../deployment/index.md),
-or an organizational [proof of concept](../adoption/003-setting-up-a-poc.md).
+or an organizational [proof of concept](../adoption/002-setting-up-a-poc.md).
 
 This tutorial does not configure [production authentication](../../auth/index.md),
 connect organizational catalog data, or prepare the app for deployment. The
