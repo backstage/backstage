@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-backend
 
+## 3.9.0-next.2
+
+### Minor Changes
+
+- c7c0ec3: Added a `refresh-catalog-entity` action so agents and MCP clients can re-queue a single entity for processing after creating or updating it — useful for reading back fresh data immediately after a scaffolder run without waiting for the next scheduled processing loop.
+
+### Patch Changes
+
+- aa318d0: Migrated internal query filter handling from `EntityFilter` to `FilterPredicate`, simplifying the filter parsing and query application pipeline.
+- 10f0713: Replaced the delete-all and reinsert pattern for the `relations` table with a diff-based sync that only touches rows that actually changed. In steady state (the common case), zero writes occur, eliminating write churn, dead tuples, and WAL traffic from the processing path. Stitching is now also skipped for relation neighbors that did not change.
+- eb6dff2: Fixed an issue where PostgreSQL deadlock errors during entity provider mutations were silently swallowed, causing entities to be dropped until the next full refresh. Transactions are now automatically retried on deadlock with exponential back-off.
+- dd562f0: Fixed a potential MySQL deadlock during concurrent entity processing by retrying the `updateProcessedEntity` transaction on deadlock errors.
+- b031a48: Fixed an issue where SCM `location.moved` events would generate new locations in the database for files that were not actively tracked.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.1
+
 ## 3.8.2-next.1
 
 ### Patch Changes

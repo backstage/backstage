@@ -1,5 +1,11 @@
 # @backstage/backend-plugin-api
 
+## 1.10.0-next.1
+
+### Patch Changes
+
+- b1b6c80: Documented the default destructive and read-only action attribute values.
+
 ## 1.10.0-next.0
 
 ### Minor Changes

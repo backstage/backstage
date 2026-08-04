@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.13.6-next.2
+
+### Patch Changes
+
+- 78bf918: chore(deps): bump `tar` from 7.5.15 to 7.5.21
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.1
+
 ## 0.13.6-next.1
 
 ### Patch Changes

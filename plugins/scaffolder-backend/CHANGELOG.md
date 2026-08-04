@@ -1,5 +1,14 @@
 # @backstage/plugin-scaffolder-backend
 
+## 4.0.3-next.2
+
+### Patch Changes
+
+- 943687f: Removed the native addon requirement from scaffolder template rendering. Templates now run through a TypeScript interpreter, and the backend no longer needs the `--no-node-snapshot` Node.js option.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.6-next.2
+  - @backstage/backend-plugin-api@1.10.0-next.1
+
 ## 4.0.3-next.1
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @backstage/cli
 
+## 0.36.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-module-build@0.1.7-next.0
+  - @backstage/cli-module-test-jest@0.1.5-next.0
+  - @backstage/cli-defaults@0.1.5-next.0
+
 ## 0.36.5-next.0
 
 ### Patch Changes

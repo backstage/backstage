@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend
 
+## 0.30.0-next.1
+
+### Patch Changes
+
+- 4e884d2: Skip SSRF protection for CIMD metadata fetches when the `client_id` matches an exact (non-wildcard) entry in `allowedClientIdPatterns`. Exact patterns mean the administrator explicitly listed a specific URL, so the DNS resolution is trusted. Wildcard patterns still enforce the SSRF check to protect against attacker-controlled subdomains resolving to internal addresses.
+- 827989d: Fixed the built-in CLI client being rejected when `allowedClientIdPatterns` is configured for Client ID Metadata Documents.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.1
+
 ## 0.30.0-next.0
 
 ### Minor Changes
