@@ -133,6 +133,43 @@ describe('HealthSummary', () => {
     assert.equal(screen.queryByText(/Compatible with Backstage/i), null);
   });
 
+  it('renders package health without repository links when npm omits repository metadata', () => {
+    const tektonPlugin: PluginData = {
+      ...freshPlugin,
+      title: 'Tekton Pipelines',
+      npmPackageName: '@jquad-group/plugin-tekton-pipelines',
+      snapshot: {
+        npm: {
+          status: 'fresh',
+          checkedAt: '2026-08-03T10:00:00.000Z',
+          lastAttemptAt: '2026-08-03T10:00:00.000Z',
+          latestVersion: '0.3.3',
+          lastPublishedAt: '2023-05-07T14:51:25.719Z',
+        },
+        backstage: {
+          status: 'unavailable',
+          lastAttemptAt: '2026-08-03T10:00:00.000Z',
+          reason: 'repository-unsupported',
+        },
+      },
+    };
+
+    render(<HealthSummary plugin={tektonPlugin} now={fixedNow} />);
+
+    const npmVersion = screen.getByRole('link', { name: '0.3.3' });
+    assert.equal(
+      npmVersion.getAttribute('href'),
+      'https://www.npmjs.com/package/@jquad-group/plugin-tekton-pipelines',
+    );
+    assert.ok(screen.getByText('Released 3 years ago'));
+    assert.equal(
+      screen.queryByRole('link', { name: 'Source repository' }),
+      null,
+    );
+    assert.ok(screen.getByText('Current'));
+    assert.ok(screen.getByText('Backstage source data is not available.'));
+  });
+
   it('keeps stale verification state explicit and dated', () => {
     render(<HealthSummary plugin={stalePlugin} now={fixedNow} />);
 

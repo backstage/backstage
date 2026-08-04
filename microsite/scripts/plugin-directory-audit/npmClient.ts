@@ -15,7 +15,9 @@
  */
 import type { NpmSnapshot } from '../../src/pluginDirectory/manifest';
 
-type Repository = Extract<NpmSnapshot, { status: 'fresh' }>['repository'];
+type Repository = NonNullable<
+  Extract<NpmSnapshot, { status: 'fresh' }>['repository']
+>;
 type UnavailableReason = Extract<
   NpmSnapshot,
   { status: 'unavailable' }
@@ -153,9 +155,6 @@ export async function fetchNpmSnapshot(
   }
 
   const repository = parseRepository(body.repository);
-  if (!repository) {
-    return unavailable(lastAttemptAt, 'repository-unsupported');
-  }
 
   return {
     status: 'fresh',
@@ -163,6 +162,6 @@ export async function fetchNpmSnapshot(
     checkedAt: lastAttemptAt,
     latestVersion,
     lastPublishedAt,
-    repository,
+    ...(repository ? { repository } : {}),
   };
 }

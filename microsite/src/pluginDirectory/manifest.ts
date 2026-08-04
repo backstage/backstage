@@ -210,7 +210,7 @@ const npmSnapshotValuesSchema = {
   checkedAt: timestampSchema,
   latestVersion: z.string().min(1),
   lastPublishedAt: timestampSchema,
-  repository: repositorySchema,
+  repository: repositorySchema.optional(),
 };
 
 const npmSnapshotSchema = z.discriminatedUnion('status', [

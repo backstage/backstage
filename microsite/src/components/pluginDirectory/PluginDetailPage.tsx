@@ -30,7 +30,7 @@ export default function PluginDetailPage({ plugin }: PluginDetailPageProps) {
   const npmSnapshot = plugin.snapshot?.npm;
   const repositoryUrl =
     npmSnapshot && npmSnapshot.status !== 'unavailable'
-      ? npmSnapshot.repository.url
+      ? npmSnapshot.repository?.url
       : undefined;
 
   return (

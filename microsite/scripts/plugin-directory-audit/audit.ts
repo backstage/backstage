@@ -52,7 +52,7 @@ function staleNpmSnapshot(
     checkedAt: previous.checkedAt,
     latestVersion: previous.latestVersion,
     lastPublishedAt: previous.lastPublishedAt,
-    repository: previous.repository,
+    ...(previous.repository ? { repository: previous.repository } : {}),
   };
 }
 
@@ -78,6 +78,10 @@ function staleBackstageSnapshot(
 function repositoryLocation(
   snapshot: Extract<NpmSnapshot, { status: 'fresh' | 'stale' }>,
 ): RepositoryLocation | undefined {
+  if (!snapshot.repository) {
+    return undefined;
+  }
+
   let url: URL;
   try {
     url = new URL(snapshot.repository.url);

@@ -196,6 +196,83 @@ describe('auditManifest snapshot failures', () => {
     assert.match(result.warnings.join('\n'), /npm-invalid-response/);
   });
 
+  it('keeps a repository-less npm release fresh and isolates Backstage failure', async () => {
+    let githubCalled = false;
+    const npm = {
+      status: 'fresh',
+      lastAttemptAt: attemptAt,
+      checkedAt: attemptAt,
+      latestVersion: '0.3.3',
+      lastPublishedAt: '2023-05-07T14:51:25.719Z',
+    } satisfies NpmSnapshot;
+
+    const result = await auditManifest(
+      manifest('active', {
+        title: 'Tekton Pipelines',
+        npmPackageName: '@jquad-group/plugin-tekton-pipelines',
+      }),
+      {
+        fetchNpm: async () => npm,
+        github: {
+          fetchBackstageSnapshot: async () => {
+            githubCalled = true;
+            return freshBackstage();
+          },
+        } as GitHubSnapshotClient,
+        now: () => auditTime,
+      },
+    );
+
+    assert.deepEqual(result.manifest.snapshot?.npm, npm);
+    assert.deepEqual(result.manifest.snapshot?.backstage, {
+      status: 'unavailable',
+      lastAttemptAt: attemptAt,
+      reason: 'repository-unsupported',
+    });
+    assert.equal(result.manifest.status, 'inactive');
+    assert.equal(result.manifest.staleSince, '2026-08-03');
+    assert.equal(githubCalled, false);
+    assert.deepEqual(result.warnings, [
+      'Tekton Pipelines: Backstage snapshot unavailable (repository-unsupported)',
+    ]);
+  });
+
+  it('keeps an absent repository absent when npm release data becomes stale', async () => {
+    const previousNpm = {
+      status: 'fresh',
+      lastAttemptAt: '2026-07-01T00:00:00.000Z',
+      checkedAt: '2026-07-01T00:00:00.000Z',
+      latestVersion: '0.3.3',
+      lastPublishedAt: '2023-05-07T14:51:25.719Z',
+    } satisfies NpmSnapshot;
+    const input = manifest('inactive', {
+      staleSince: '2025-04-12',
+      snapshot: { npm: previousNpm, backstage: freshBackstage() },
+    });
+
+    const result = await auditManifest(
+      input,
+      dependencies({
+        status: 'unavailable',
+        lastAttemptAt: attemptAt,
+        reason: 'npm-invalid-response',
+      }),
+    );
+
+    assert.deepEqual(result.manifest.snapshot?.npm, {
+      status: 'stale',
+      lastAttemptAt: attemptAt,
+      reason: 'npm-invalid-response',
+      checkedAt: '2026-07-01T00:00:00.000Z',
+      latestVersion: '0.3.3',
+      lastPublishedAt: '2023-05-07T14:51:25.719Z',
+    });
+    assert.equal(
+      Object.hasOwn(result.manifest.snapshot?.npm ?? {}, 'repository'),
+      false,
+    );
+  });
+
   it('keeps fresh npm data when the first GitHub lookup is unavailable', async () => {
     const result = await auditManifest(
       manifest('active'),

@@ -140,6 +140,55 @@ describe('pluginManifestSchema', () => {
     assert.equal(manifest.snapshot?.backstage.status, 'fresh');
   });
 
+  it('accepts fresh and stale npm release snapshots without a repository', () => {
+    const fresh = pluginManifestSchema.parse({
+      ...legacyManifest,
+      snapshot: {
+        npm: {
+          status: 'fresh',
+          lastAttemptAt: checkedAt,
+          checkedAt,
+          latestVersion: '0.3.3',
+          lastPublishedAt: '2023-05-07T14:51:25.719Z',
+        },
+        backstage: {
+          status: 'unavailable',
+          lastAttemptAt: checkedAt,
+          reason: 'repository-unsupported',
+        },
+      },
+    });
+    const stale = pluginManifestSchema.parse({
+      ...legacyManifest,
+      snapshot: {
+        npm: {
+          status: 'stale',
+          lastAttemptAt: checkedAt,
+          reason: 'npm-invalid-response',
+          checkedAt: '2026-08-01T08:30:00.000Z',
+          latestVersion: '0.3.3',
+          lastPublishedAt: '2023-05-07T14:51:25.719Z',
+        },
+        backstage: {
+          status: 'unavailable',
+          lastAttemptAt: checkedAt,
+          reason: 'repository-unsupported',
+        },
+      },
+    });
+
+    assert.equal(fresh.snapshot?.npm.status, 'fresh');
+    assert.equal(stale.snapshot?.npm.status, 'stale');
+    assert.equal(
+      Object.hasOwn(fresh.snapshot?.npm ?? {}, 'repository'),
+      false,
+    );
+    assert.equal(
+      Object.hasOwn(stale.snapshot?.npm ?? {}, 'repository'),
+      false,
+    );
+  });
+
   it('rejects an unknown capability', () => {
     assert.throws(() =>
       pluginManifestSchema.parse({

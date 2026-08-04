@@ -101,12 +101,15 @@ describe('fetchNpmSnapshot', () => {
     }
   });
 
-  it('reports missing packages and unsupported repositories with stable reasons', async () => {
-    const missing = await fetchNpmSnapshot(
-      'missing-package',
-      registryFetch({ error: 'Not found' }, 404),
+  it('keeps valid release data when repository metadata is missing or unsupported', async () => {
+    const packageWithoutRepository = await fetchNpmSnapshot(
+      '@jquad-group/plugin-tekton-pipelines',
+      registryFetch({
+        'dist-tags': { latest: '0.3.3' },
+        time: { '0.3.3': '2023-05-07T14:51:25.719Z' },
+      }),
     );
-    const unsupported = await fetchNpmSnapshot(
+    const packageWithNonGitHubRepository = await fetchNpmSnapshot(
       'gitlab-plugin',
       registryFetch({
         'dist-tags': { latest: '1.0.0' },
@@ -115,13 +118,31 @@ describe('fetchNpmSnapshot', () => {
       }),
     );
 
+    assert.deepEqual(packageWithoutRepository, {
+      status: 'fresh',
+      lastAttemptAt: packageWithoutRepository.lastAttemptAt,
+      checkedAt: packageWithoutRepository.lastAttemptAt,
+      latestVersion: '0.3.3',
+      lastPublishedAt: '2023-05-07T14:51:25.719Z',
+    });
+    assert.deepEqual(packageWithNonGitHubRepository, {
+      status: 'fresh',
+      lastAttemptAt: packageWithNonGitHubRepository.lastAttemptAt,
+      checkedAt: packageWithNonGitHubRepository.lastAttemptAt,
+      latestVersion: '1.0.0',
+      lastPublishedAt: '2026-06-30T08:15:00Z',
+    });
+  });
+
+  it('reports missing packages with a stable reason', async () => {
+    const missing = await fetchNpmSnapshot(
+      'missing-package',
+      registryFetch({ error: 'Not found' }, 404),
+    );
+
     assert.equal(missing.status, 'unavailable');
-    assert.equal(unsupported.status, 'unavailable');
     if (missing.status === 'unavailable') {
       assert.equal(missing.reason, 'npm-not-found');
-    }
-    if (unsupported.status === 'unavailable') {
-      assert.equal(unsupported.reason, 'repository-unsupported');
     }
   });
 });

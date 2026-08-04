@@ -141,9 +141,11 @@ export function HealthSummary({
                   </time>
                 </p>
               )}
-              <p className={styles.cardLinks}>
-                <a href={npmSnapshot.repository.url}>Source repository</a>
-              </p>
+              {npmSnapshot.repository && (
+                <p className={styles.cardLinks}>
+                  <a href={npmSnapshot.repository.url}>Source repository</a>
+                </p>
+              )}
             </>
           )}
         </article>

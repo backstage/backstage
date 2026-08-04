@@ -86,16 +86,16 @@ stable lowercase kebab-case codes.
 
 ### npm snapshot
 
-| Field                  | Fresh    | Stale    | Unavailable | Description                                          |
-| ---------------------- | -------- | -------- | ----------- | ---------------------------------------------------- |
-| `status`               | Required | Required | Required    | Snapshot status.                                     |
-| `lastAttemptAt`        | Required | Required | Required    | Time of the current fetch attempt.                   |
-| `reason`               | No       | Required | Required    | Stable failure reason code.                          |
-| `checkedAt`            | Required | Required | No          | Time of the last successful fetch.                   |
-| `latestVersion`        | Required | Required | No          | Version selected by npm's `latest` distribution tag. |
-| `lastPublishedAt`      | Required | Required | No          | Publication time for `latestVersion`.                |
-| `repository.url`       | Required | Required | No          | Normalized repository URL from npm metadata.         |
-| `repository.directory` | Optional | Optional | No          | Package directory from npm metadata.                 |
+| Field                  | Fresh    | Stale    | Unavailable | Description                                                         |
+| ---------------------- | -------- | -------- | ----------- | ------------------------------------------------------------------- |
+| `status`               | Required | Required | Required    | Snapshot status.                                                    |
+| `lastAttemptAt`        | Required | Required | Required    | Time of the current fetch attempt.                                  |
+| `reason`               | No       | Required | Required    | Stable failure reason code.                                         |
+| `checkedAt`            | Required | Required | No          | Time of the last successful fetch.                                  |
+| `latestVersion`        | Required | Required | No          | Version selected by npm's `latest` distribution tag.                |
+| `lastPublishedAt`      | Required | Required | No          | Publication time for `latestVersion`.                               |
+| `repository.url`       | Optional | Optional | No          | Normalized GitHub repository URL from npm metadata, when supported. |
+| `repository.directory` | Optional | Optional | No          | Package directory from npm metadata.                                |
 
 ### Backstage snapshot
 
@@ -125,10 +125,9 @@ stored in the snapshot.
 | --------- | ------------------------------ | ---------------------------------------------------------------------------------------------------- |
 | npm       | `npm-not-found`                | The npm registry returns `404`.                                                                      |
 | npm       | `npm-invalid-response`         | The registry request fails, the response is malformed, or required `latest` release data is missing. |
-| npm       | `repository-unsupported`       | npm metadata does not contain a supported repository location.                                       |
 | npm       | `npm-request-failed`           | The npm source operation throws before returning a snapshot.                                         |
-| Backstage | `npm-data-unavailable`         | No npm repository data or previous Backstage snapshot is available.                                  |
-| Backstage | `repository-unsupported`       | The normalized npm repository is not a supported GitHub repository URL.                              |
+| Backstage | `npm-data-unavailable`         | No valid npm release data or previous Backstage snapshot is available.                               |
+| Backstage | `repository-unsupported`       | npm metadata does not contain a supported GitHub repository location.                                |
 | Backstage | `repository-directory-invalid` | The npm package directory is absolute or contains a parent traversal.                                |
 | Backstage | `github-invalid-response`      | GitHub repository metadata, tree data, or file content cannot be fetched completely.                 |
 | Backstage | `github-request-failed`        | The GitHub source operation throws before returning a snapshot.                                      |
