@@ -112,7 +112,7 @@ function dependencies(
     github: {
       fetchBackstageSnapshot: async () => backstage,
       discoverCanonicalPackages: async () => undefined,
-    } as GitHubSnapshotClient,
+    } as unknown as GitHubSnapshotClient,
     now: () => auditTime,
   };
 }
@@ -137,7 +137,7 @@ function multiPackageDependencies(
           sourcePath: 'plugins/example-common/package.json',
         },
       ],
-    } as GitHubSnapshotClient,
+    } as unknown as GitHubSnapshotClient,
     now: () => auditTime,
   };
 }
@@ -147,7 +147,7 @@ describe('auditManifest internalDependencies', () => {
     const backendNpm: NpmSnapshot = {
       ...freshNpm('2026-08-01T00:00:00.000Z'),
       dependencyNames: ['@example/plugin-example-common', 'zod'],
-    };
+    } as NpmSnapshot;
     const commonNpm: NpmSnapshot = freshNpm('2026-08-01T00:00:00.000Z');
 
     const result = await auditManifest(
@@ -178,7 +178,7 @@ describe('auditManifest internalDependencies', () => {
         '@example/plugin-example-backend',
         '@example/plugin-example-common',
       ],
-    };
+    } as NpmSnapshot;
     const commonNpm: NpmSnapshot = freshNpm('2026-08-01T00:00:00.000Z');
 
     const result = await auditManifest(
@@ -265,7 +265,7 @@ describe('auditManifest internalDependencies', () => {
             sourcePath: 'plugins/catalog-common/package.json',
           },
         ],
-      } as GitHubSnapshotClient,
+      } as unknown as GitHubSnapshotClient,
       now: () => auditTime,
     });
 
@@ -349,12 +349,12 @@ describe('auditManifest snapshot failures', () => {
       ...freshNpm('2025-07-01T00:00:00.000Z'),
       lastAttemptAt: '2026-07-01T00:00:00.000Z',
       checkedAt: '2026-07-01T00:00:00.000Z',
-    } satisfies NpmSnapshot;
+    } as NpmSnapshot;
     const previousBackstage = {
       ...freshBackstage(),
       lastAttemptAt: '2026-07-01T00:00:00.000Z',
       checkedAt: '2026-07-01T00:00:00.000Z',
-    } satisfies BackstageSnapshot;
+    } as BackstageSnapshot;
     let githubCalled = false;
     const input = manifest('active', {
       snapshot: {
@@ -376,7 +376,7 @@ describe('auditManifest snapshot failures', () => {
           return freshBackstage();
         },
         discoverCanonicalPackages: async () => undefined,
-      } as GitHubSnapshotClient,
+      } as unknown as GitHubSnapshotClient,
       now: () => auditTime,
     });
 
@@ -419,7 +419,7 @@ describe('auditManifest snapshot failures', () => {
             return freshBackstage();
           },
           discoverCanonicalPackages: async () => undefined,
-        } as GitHubSnapshotClient,
+        } as unknown as GitHubSnapshotClient,
         now: () => auditTime,
       },
     );
@@ -505,7 +505,7 @@ describe('auditManifest snapshot failures', () => {
       github: {
         fetchBackstageSnapshot: async () => freshBackstage(),
         discoverCanonicalPackages: async () => undefined,
-      } as GitHubSnapshotClient,
+      } as unknown as GitHubSnapshotClient,
       now: () => auditTime,
     });
 
@@ -570,7 +570,7 @@ describe('auditManifest snapshot failures', () => {
             sourcePath: 'plugins/catalog-backend/package.json',
           },
         ],
-      } as GitHubSnapshotClient,
+      } as unknown as GitHubSnapshotClient,
       now: () => auditTime,
     });
 
@@ -626,7 +626,7 @@ async function withManifestDirectory(
     for (const [filename, value] of Object.entries(manifests)) {
       await writeFile(
         join(directory, filename),
-        `---\n${dump(value, { lineWidth: -1, quotingType: "'" })}`,
+        `---\n${dump(value, { lineWidth: -1, quoteStyle: 'single' })}`,
         'utf8',
       );
     }
@@ -674,7 +674,7 @@ describe('runAuditCommand', () => {
             github: {
               fetchBackstageSnapshot: async () => freshBackstage(),
               discoverCanonicalPackages: async () => undefined,
-            } as GitHubSnapshotClient,
+            } as unknown as GitHubSnapshotClient,
             now: () => auditTime,
           },
           output: captureOutput(events),
@@ -732,7 +732,7 @@ describe('runAuditCommand', () => {
             github: {
               fetchBackstageSnapshot: async () => freshBackstage(),
               discoverCanonicalPackages: async () => undefined,
-            } as GitHubSnapshotClient,
+            } as unknown as GitHubSnapshotClient,
             now: () => auditTime,
           },
           output: captureOutput(events),
@@ -856,12 +856,12 @@ describe('runAuditCommand', () => {
           ...freshBackstage(),
           lastAttemptAt: previousAttemptAt,
           checkedAt: previousAttemptAt,
-        },
+        } as BackstageSnapshot,
         packages: packagesFor({
           ...freshNpm('2026-07-01T00:00:00.000Z'),
           lastAttemptAt: previousAttemptAt,
           checkedAt: previousAttemptAt,
-        }),
+        } as NpmSnapshot),
       },
     });
 
@@ -878,11 +878,20 @@ describe('runAuditCommand', () => {
         const [written] = await readManifestFiles(directory);
         assert.equal(result.changedFiles, 1);
         assert.equal(result.writtenFiles, 1);
+        const primaryPkg = primaryPackage(written.manifest);
         assert.equal(
-          primaryPackage(written.manifest)?.npm.checkedAt,
+          primaryPkg?.npm && 'checkedAt' in primaryPkg.npm
+            ? primaryPkg.npm.checkedAt
+            : undefined,
           attemptAt,
         );
-        assert.equal(written.manifest.snapshot?.backstage.checkedAt, attemptAt);
+        assert.equal(
+          written.manifest.snapshot?.backstage &&
+            'checkedAt' in written.manifest.snapshot.backstage
+            ? written.manifest.snapshot.backstage.checkedAt
+            : undefined,
+          attemptAt,
+        );
         assert.equal(
           events.filter(event => event.method === 'table').length,
           1,
@@ -935,7 +944,7 @@ describe('runAuditCommand', () => {
             github: {
               fetchBackstageSnapshot: async () => freshBackstage(),
               discoverCanonicalPackages: async () => undefined,
-            } as GitHubSnapshotClient,
+            } as unknown as GitHubSnapshotClient,
             now: () => auditTime,
           },
           output: captureOutput(events),

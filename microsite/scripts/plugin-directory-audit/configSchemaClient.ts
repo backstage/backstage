@@ -92,7 +92,7 @@ export async function fetchConfigSchemaSnapshot(
   );
   try {
     const tarballPath = join(packageDirectory, 'package.tgz');
-    await writeFile(tarballPath, tarballBuffer);
+    await writeFile(tarballPath, Uint8Array.from(tarballBuffer));
 
     try {
       await extract({ file: tarballPath, cwd: packageDirectory });

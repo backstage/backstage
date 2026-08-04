@@ -80,7 +80,7 @@ export async function writeManifestFile(file: ManifestFile): Promise<void> {
 
   const yaml = dump(orderManifestKeys(file.manifest), {
     lineWidth: -1,
-    quotingType: "'",
+    quoteStyle: 'single',
     forceQuotes: false,
     noRefs: true,
   });

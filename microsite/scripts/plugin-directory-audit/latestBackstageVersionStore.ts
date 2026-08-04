@@ -23,7 +23,7 @@ export async function writeLatestBackstageVersionFile(
 ): Promise<void> {
   const yaml = dump(data, {
     lineWidth: -1,
-    quotingType: "'",
+    quoteStyle: 'single',
     forceQuotes: false,
     noRefs: true,
   });

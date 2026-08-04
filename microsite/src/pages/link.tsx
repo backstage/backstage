@@ -13,6 +13,7 @@ if (global.window) {
   target = redirects[global.window.location.search.slice(1)] || fallback;
 }
 
-export default function Link() {
+export default function Link(): React.ReactElement {
+  // @ts-expect-error: Incompatibility between @types/react@18.3.31 and @docusaurus/router's Redirect typing
   return <Redirect to={target} />;
 }
