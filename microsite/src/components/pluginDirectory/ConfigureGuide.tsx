@@ -17,7 +17,7 @@ import Form from '@rjsf/core';
 import type { RJSFSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 import { dump } from 'js-yaml';
-import type { PluginData } from '../../pluginDirectory/manifest';
+import type { PackageSnapshot, PluginData } from '../../pluginDirectory/manifest';
 import React, { useState } from 'react';
 
 import { configFormTemplates, configFormWidgets } from './ConfigForm';
@@ -60,9 +60,13 @@ interface PackageSchemaEntry {
   npmPackageName: string;
   functionality: string | undefined;
   schema: RJSFSchema;
+  label?: string;
 }
 
 function packageOptionLabel(entry: PackageSchemaEntry): string {
+  if (entry.label) {
+    return entry.label;
+  }
   return entry.functionality
     ? `${entry.npmPackageName} (${entry.functionality})`
     : entry.npmPackageName;
@@ -143,25 +147,104 @@ function InteractiveConfigureForm({
   );
 }
 
+function schemaFor(packageSnapshot: PackageSnapshot): RJSFSchema | undefined {
+  const configSchemaSnapshot = packageSnapshot.configSchema;
+  const rawSchema =
+    configSchemaSnapshot.status === 'fresh' ||
+    configSchemaSnapshot.status === 'stale'
+      ? configSchemaSnapshot.schema
+      : undefined;
+  return isObjectSchema(rawSchema) ? rawSchema : undefined;
+}
+
+function combineSchemas(schemas: RJSFSchema[]): RJSFSchema {
+  return schemas.length === 1 ? schemas[0] : { allOf: schemas };
+}
+
+function buildRoleEntry(
+  functionality: 'frontend' | 'backend',
+  label: string,
+  packagesByName: Map<string, PackageSnapshot>,
+  absorbed: Set<string>,
+): PackageSchemaEntry | undefined {
+  const rolePackage = [...packagesByName.values()].find(
+    entry => entry.functionality === functionality,
+  );
+  if (!rolePackage) {
+    return undefined;
+  }
+
+  const candidateNames = [
+    rolePackage.npmPackageName,
+    ...(rolePackage.internalDependencies ?? []),
+  ];
+
+  const schemas: RJSFSchema[] = [];
+  for (const name of candidateNames) {
+    const candidate = packagesByName.get(name);
+    const schema = candidate ? schemaFor(candidate) : undefined;
+    if (schema) {
+      schemas.push(schema);
+      absorbed.add(name);
+    }
+  }
+
+  if (schemas.length === 0) {
+    return undefined;
+  }
+
+  return {
+    npmPackageName: rolePackage.npmPackageName,
+    functionality,
+    schema: combineSchemas(schemas),
+    label,
+  };
+}
+
 function getPackageSchemas(plugin: PluginData): PackageSchemaEntry[] {
   const packages = plugin.snapshot?.packages ?? [];
+  const packagesByName = new Map(
+    packages.map(
+      packageSnapshot => [packageSnapshot.npmPackageName, packageSnapshot] as const,
+    ),
+  );
+  const absorbed = new Set<string>();
+
   const entries: PackageSchemaEntry[] = [];
+  const frontendEntry = buildRoleEntry(
+    'frontend',
+    'Frontend',
+    packagesByName,
+    absorbed,
+  );
+  if (frontendEntry) {
+    entries.push(frontendEntry);
+  }
+  const backendEntry = buildRoleEntry(
+    'backend',
+    'Backend',
+    packagesByName,
+    absorbed,
+  );
+  if (backendEntry) {
+    entries.push(backendEntry);
+  }
+
   for (const packageSnapshot of packages) {
-    const configSchemaSnapshot = packageSnapshot.configSchema;
-    const rawSchema =
-      configSchemaSnapshot.status === 'fresh' ||
-      configSchemaSnapshot.status === 'stale'
-        ? configSchemaSnapshot.schema
-        : undefined;
-    if (!isObjectSchema(rawSchema)) {
+    if (absorbed.has(packageSnapshot.npmPackageName)) {
+      continue;
+    }
+    const schema = schemaFor(packageSnapshot);
+    if (!schema) {
       continue;
     }
     entries.push({
       npmPackageName: packageSnapshot.npmPackageName,
       functionality: packageSnapshot.functionality,
-      schema: rawSchema,
+      schema,
     });
   }
+
   return entries;
 }
 
