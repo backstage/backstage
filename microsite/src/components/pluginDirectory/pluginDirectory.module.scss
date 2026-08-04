@@ -45,6 +45,18 @@
   margin: 0;
 }
 
+.builtWithVersion {
+  color: var(--ifm-color-content-secondary);
+  font-size: var(--ifm-h4-font-size);
+  font-weight: var(--ifm-font-weight-normal);
+  margin-left: calc(var(--ifm-spacing-horizontal) / 2);
+}
+
+.versionsBehind {
+  color: var(--ifm-color-warning-darkest);
+  font-weight: var(--ifm-font-weight-semibold);
+}
+
 .description {
   font-size: var(--ifm-h3-font-size);
   line-height: var(--ifm-heading-line-height);
@@ -165,29 +177,6 @@
   color: var(--ifm-color-emphasis-700);
 }
 
-.compatibilityBadges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: calc(var(--ifm-spacing-horizontal) / 2);
-  margin-top: var(--ifm-spacing-vertical);
-}
-
-.compatibilityBadge {
-  align-items: center;
-  background: var(--ifm-color-emphasis-100);
-  border: var(--ifm-global-border-width) solid var(--ifm-color-emphasis-300);
-  border-radius: var(--ifm-badge-border-radius);
-  color: var(--ifm-font-color-base);
-  display: inline-flex;
-  font-size: var(--ifm-h5-font-size);
-  font-weight: var(--ifm-font-weight-bold);
-  gap: calc(var(--ifm-spacing-horizontal) / 4);
-  padding: calc(var(--ifm-spacing-vertical) / 4)
-    calc(var(--ifm-spacing-horizontal) / 2);
-  text-decoration: none;
-  white-space: nowrap;
-}
-
 .resourceIcons {
   align-items: center;
   display: flex;
@@ -286,24 +275,10 @@
   }
 }
 
-.installList,
 .contributionList {
   list-style: none;
   margin: 0;
   padding: 0;
-}
-
-.installList {
-  border-bottom: var(--ifm-global-border-width) solid
-    var(--ifm-color-emphasis-300);
-
-  li {
-    border-top: var(--ifm-global-border-width) solid
-      var(--ifm-color-emphasis-300);
-    display: grid;
-    gap: calc(var(--ifm-spacing-vertical) / 2);
-    padding: var(--ifm-spacing-vertical) 0;
-  }
 }
 
 .packageRole,
@@ -422,6 +397,24 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.packageSelectLabel {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--ifm-spacing-horizontal) / 2);
+  font-size: var(--ifm-h5-font-size);
+  font-weight: var(--ifm-font-weight-bold);
+}
+
+.packageSelect {
+  background: var(--ifm-card-background-color);
+  border: var(--ifm-global-border-width) solid var(--ifm-color-emphasis-300);
+  border-radius: var(--ifm-global-radius);
+  color: var(--ifm-font-color-base);
+  font: inherit;
+  padding: calc(var(--ifm-spacing-vertical) / 4)
+    calc(var(--ifm-spacing-horizontal) / 2);
+}
+
 .configForm,
 .yamlPreview {
   min-width: 0;
@@ -527,17 +520,6 @@
   }
 }
 
-.secretPlaceholder {
-  background: var(--ifm-color-emphasis-100);
-  border: var(--ifm-global-border-width) solid
-    var(--ifm-color-emphasis-300);
-  border-radius: var(--ifm-global-radius);
-  display: block;
-  overflow-wrap: anywhere;
-  padding: calc(var(--ifm-spacing-vertical) / 2)
-    calc(var(--ifm-spacing-horizontal) / 2);
-}
-
 .arrayItem {
   display: grid;
   gap: calc(var(--ifm-spacing-vertical) / 2);
@@ -564,23 +546,6 @@
 
 .previewNotice {
   margin-top: calc(var(--ifm-spacing-vertical) / 2);
-}
-
-.setupFallback {
-  background: var(--ifm-color-emphasis-100);
-  border-left: calc(var(--ifm-global-border-width) * 4) solid
-    var(--ifm-color-emphasis-500);
-  padding: var(--ifm-spacing-vertical) var(--ifm-spacing-horizontal);
-
-  strong {
-    display: block;
-    margin-bottom: calc(var(--ifm-spacing-vertical) / 2);
-  }
-
-  p {
-    color: var(--ifm-color-content-secondary);
-    margin: 0;
-  }
 }
 
 .setupStep button:focus-visible,
