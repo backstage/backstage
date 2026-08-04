@@ -18,6 +18,7 @@ import { describe, it } from 'node:test';
 import {
   GitHubSnapshotClient,
   selectBackstageJsonPath,
+  selectCanonicalPackages,
 } from './githubClient';
 
 function jsonResponse(body: unknown, status = 200): Response {
@@ -47,6 +48,80 @@ describe('selectBackstageJsonPath', () => {
         'workspaces/kubernetes/plugins/frontend',
       ),
       undefined,
+    );
+  });
+});
+
+describe('selectCanonicalPackages', () => {
+  it('groups sibling frontend/backend/common/module packages and excludes unrelated ones', () => {
+    const treePaths = [
+      'plugins/catalog/package.json',
+      'plugins/catalog-backend/package.json',
+      'plugins/catalog-common/package.json',
+      'plugins/catalog-node/package.json',
+      'plugins/catalog-react/package.json',
+      'plugins/catalog-backend-module-logs/package.json',
+      'plugins/catalog-import/package.json',
+      'plugins/kubernetes/package.json',
+    ];
+
+    assert.deepEqual(selectCanonicalPackages(treePaths, 'plugins/catalog'), [
+      {
+        functionality: 'frontend',
+        npmPackageName: '@backstage/plugin-catalog',
+        sourcePath: 'plugins/catalog/package.json',
+      },
+      {
+        functionality: 'backend-module',
+        npmPackageName: '@backstage/plugin-catalog-backend-module-logs',
+        sourcePath: 'plugins/catalog-backend-module-logs/package.json',
+      },
+      {
+        functionality: 'backend',
+        npmPackageName: '@backstage/plugin-catalog-backend',
+        sourcePath: 'plugins/catalog-backend/package.json',
+      },
+      {
+        functionality: 'common',
+        npmPackageName: '@backstage/plugin-catalog-common',
+        sourcePath: 'plugins/catalog-common/package.json',
+      },
+      {
+        functionality: 'node',
+        npmPackageName: '@backstage/plugin-catalog-node',
+        sourcePath: 'plugins/catalog-node/package.json',
+      },
+      {
+        functionality: 'react',
+        npmPackageName: '@backstage/plugin-catalog-react',
+        sourcePath: 'plugins/catalog-react/package.json',
+      },
+    ]);
+  });
+
+  it('resolves a backend-only plugin to its own single-entry family', () => {
+    assert.deepEqual(
+      selectCanonicalPackages(
+        ['plugins/kubernetes-backend/package.json'],
+        'plugins/kubernetes-backend',
+      ),
+      [
+        {
+          functionality: 'backend',
+          npmPackageName: '@backstage/plugin-kubernetes-backend',
+          sourcePath: 'plugins/kubernetes-backend/package.json',
+        },
+      ],
+    );
+  });
+
+  it('returns nothing outside the plugins/ folder', () => {
+    assert.deepEqual(
+      selectCanonicalPackages(
+        ['packages/core-plugin-api/package.json'],
+        'packages/core-plugin-api',
+      ),
+      [],
     );
   });
 });
@@ -137,24 +212,33 @@ describe('GitHubSnapshotClient', () => {
       1,
     );
     assert.ok(
-      requests.every(request => request.authorization === 'Bearer github-token'),
+      requests.every(
+        request => request.authorization === 'Bearer github-token',
+      ),
     );
     assert.ok(requests.every(request => !request.url.includes('github-token')));
   });
 
-  it('uses the canonical Backstage workspace version for Backstage packages', async () => {
+  it('uses the latest stable git tag as the canonical Backstage version', async () => {
+    const requestedUrls: string[] = [];
     const fetchImpl = (async (input: string | URL | Request) => {
       const url = input.toString();
-      if (url === 'https://api.github.com/repos/backstage/backstage') {
-        return jsonResponse({ default_branch: 'master' });
+      requestedUrls.push(url);
+      if (
+        url ===
+        'https://api.github.com/repos/backstage/backstage/tags?per_page=100&page=1'
+      ) {
+        return jsonResponse([
+          { name: 'v1.54.0-next.1' },
+          { name: 'v1.54.0-next.0' },
+          { name: 'v1.53.1' },
+          { name: 'v1.53.0' },
+        ]);
       }
-      if (url.includes('/git/trees/master')) {
+      if (url.includes('/git/trees/v1.53.1')) {
         return jsonResponse({
-          tree: [{ path: 'workspaces/ui/backstage.json', type: 'blob' }],
+          tree: [{ path: 'plugins/kubernetes/package.json', type: 'blob' }],
         });
-      }
-      if (url.includes('/contents/workspaces/ui/backstage.json')) {
-        return jsonResponse({ version: '1.50.0' });
       }
       return jsonResponse({}, 404);
     }) as typeof fetch;
@@ -169,8 +253,147 @@ describe('GitHubSnapshotClient', () => {
 
     assert.equal(snapshot.status, 'fresh');
     if (snapshot.status === 'fresh') {
-      assert.equal(snapshot.version, '1.50.0');
-      assert.equal(snapshot.sourcePath, 'workspaces/ui/backstage.json');
+      assert.equal(snapshot.version, '1.53.1');
+      assert.equal(snapshot.sourcePath, 'plugins/kubernetes/package.json');
+      assert.equal(
+        snapshot.sourceUrl,
+        'https://github.com/backstage/backstage/releases/tag/v1.53.1',
+      );
+    }
+    assert.ok(requestedUrls.every(url => !url.includes('/contents/')));
+  });
+
+  it('fetches the latest stable Backstage release version', async () => {
+    const fetchImpl = (async (input: string | URL | Request) => {
+      const url = input.toString();
+      if (
+        url ===
+        'https://api.github.com/repos/backstage/backstage/tags?per_page=100&page=1'
+      ) {
+        return jsonResponse([
+          { name: 'v1.54.0-next.1' },
+          { name: 'v1.53.1' },
+          { name: 'v1.53.0' },
+        ]);
+      }
+      return jsonResponse({}, 404);
+    }) as typeof fetch;
+
+    const version = await new GitHubSnapshotClient({
+      fetchImpl,
+    }).fetchLatestBackstageVersion();
+
+    assert.equal(version, '1.53.1');
+  });
+
+  it('discovers the sibling package family for a backstage/backstage plugin', async () => {
+    const fetchImpl = (async (input: string | URL | Request) => {
+      const url = input.toString();
+      if (url.includes('/tags')) {
+        return jsonResponse([{ name: 'v1.53.1' }]);
+      }
+      if (url.includes('/git/trees/v1.53.1')) {
+        return jsonResponse({
+          tree: [
+            { path: 'plugins/catalog/package.json', type: 'blob' },
+            { path: 'plugins/catalog-backend/package.json', type: 'blob' },
+            { path: 'plugins/catalog-import/package.json', type: 'blob' },
+          ],
+        });
+      }
+      return jsonResponse({}, 404);
+    }) as typeof fetch;
+
+    const siblings = await new GitHubSnapshotClient({
+      fetchImpl,
+    }).discoverCanonicalPackages({
+      owner: 'backstage',
+      repository: 'backstage',
+      directory: 'plugins/catalog',
+    });
+
+    assert.deepEqual(siblings, [
+      {
+        functionality: 'frontend',
+        npmPackageName: '@backstage/plugin-catalog',
+        sourcePath: 'plugins/catalog/package.json',
+      },
+      {
+        functionality: 'backend',
+        npmPackageName: '@backstage/plugin-catalog-backend',
+        sourcePath: 'plugins/catalog-backend/package.json',
+      },
+    ]);
+  });
+
+  it('returns undefined when discovering packages for a non-canonical repository', async () => {
+    const fetchImpl = (async () => jsonResponse({}, 404)) as typeof fetch;
+    const siblings = await new GitHubSnapshotClient({
+      fetchImpl,
+    }).discoverCanonicalPackages({
+      owner: 'example',
+      repository: 'plugins',
+      directory: 'packages/search',
+    });
+
+    assert.equal(siblings, undefined);
+  });
+
+  it('pages through tags and reports unavailable when no stable tag exists', async () => {
+    const requestedUrls: string[] = [];
+    const fetchImpl = (async (input: string | URL | Request) => {
+      const url = input.toString();
+      requestedUrls.push(url);
+      if (
+        url.startsWith('https://api.github.com/repos/backstage/backstage/tags')
+      ) {
+        const page = new URL(url).searchParams.get('page');
+        if (page === '1') {
+          return jsonResponse(
+            Array.from({ length: 100 }, (_, index) => ({
+              name: `v1.${100 - index}.0-next.0`,
+            })),
+          );
+        }
+        return jsonResponse([{ name: 'v1.0.0-next.0' }]);
+      }
+      return jsonResponse({}, 404);
+    }) as typeof fetch;
+
+    const snapshot = await new GitHubSnapshotClient({
+      fetchImpl,
+    }).fetchBackstageSnapshot({ owner: 'backstage', repository: 'backstage' });
+
+    assert.equal(snapshot.status, 'unavailable');
+    if (snapshot.status === 'unavailable') {
+      assert.equal(snapshot.reason, 'backstage-tag-not-found');
+    }
+    assert.equal(requestedUrls.filter(url => url.includes('/tags')).length, 2);
+  });
+
+  it('reports unavailable when the plugin package.json is missing at the resolved tag', async () => {
+    const fetchImpl = (async (input: string | URL | Request) => {
+      const url = input.toString();
+      if (url.includes('/tags')) {
+        return jsonResponse([{ name: 'v1.53.1' }]);
+      }
+      if (url.includes('/git/trees/v1.53.1')) {
+        return jsonResponse({ tree: [] });
+      }
+      return jsonResponse({}, 404);
+    }) as typeof fetch;
+
+    const snapshot = await new GitHubSnapshotClient({
+      fetchImpl,
+    }).fetchBackstageSnapshot({
+      owner: 'backstage',
+      repository: 'backstage',
+      directory: 'plugins/missing',
+    });
+
+    assert.equal(snapshot.status, 'unavailable');
+    if (snapshot.status === 'unavailable') {
+      assert.equal(snapshot.reason, 'backstage-tag-not-found');
     }
   });
 
@@ -223,7 +446,9 @@ describe('GitHubSnapshotClient', () => {
         return jsonResponse({ default_branch: 'main' });
       }
       if (url.includes('/git/trees/main')) {
-        return jsonResponse({ tree: [{ path: 'backstage.json', type: 'blob' }] });
+        return jsonResponse({
+          tree: [{ path: 'backstage.json', type: 'blob' }],
+        });
       }
       return jsonResponse({ version: 142 });
     }) as typeof fetch;

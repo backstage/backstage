@@ -30,21 +30,120 @@ type UnavailableReason = Extract<
   { status: 'unavailable' }
 >['reason'];
 
-const repositoryBackstageJsonPaths: Readonly<Record<string, string>> = {
-  'backstage/backstage': 'workspaces/ui/backstage.json',
-};
+const CANONICAL_BACKSTAGE_REPOSITORY = 'backstage/backstage';
+const STABLE_TAG_PATTERN = /^v(\d+\.\d+\.\d+)$/;
+const MAX_TAG_PAGES = 5;
+const TAGS_PER_PAGE = 100;
 
-function selectRepositoryBackstageJsonPath(
-  treePaths: readonly string[],
+function isCanonicalBackstageRepository(
   repository: RepositoryLocation,
-): string | undefined {
-  const path =
-    repositoryBackstageJsonPaths[
-      `${repository.owner}/${repository.repository}`.toLowerCase()
-    ];
-  return path && treePaths.includes(path) ? path : undefined;
+): boolean {
+  return (
+    `${repository.owner}/${repository.repository}`.toLowerCase() ===
+    CANONICAL_BACKSTAGE_REPOSITORY
+  );
 }
 
+const PLUGIN_PACKAGE_NAME_PREFIX = '@backstage/plugin-';
+const PACKAGE_ROLE_SUFFIXES = ['backend', 'common', 'node', 'react'] as const;
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// backstage/backstage keeps every plugin's packages flat under `plugins/`
+// instead of grouping them into a per-plugin workspace (unlike
+// backstage/community-plugins). Package names follow a stable
+// `<slug>[-backend|-common|-node|-react]` or `<slug>-backend-module-<x>`
+// convention, which lets us reconstruct the plugin's package family from
+// directory names alone.
+function deriveSlug(name: string): string {
+  const backendModuleMatch = /^(.+)-backend-module-.+$/.exec(name);
+  if (backendModuleMatch) {
+    return backendModuleMatch[1];
+  }
+  const moduleMatch = /^(.+)-module-.+$/.exec(name);
+  if (moduleMatch) {
+    return moduleMatch[1];
+  }
+  for (const suffix of PACKAGE_ROLE_SUFFIXES) {
+    const withDash = `-${suffix}`;
+    if (name.endsWith(withDash) && name.length > withDash.length) {
+      return name.slice(0, -withDash.length);
+    }
+  }
+  return name;
+}
+
+function deriveFunctionality(slug: string, name: string): string {
+  if (name === slug) {
+    return 'frontend';
+  }
+
+  const escapedSlug = escapeRegExp(slug);
+  if (new RegExp(`^${escapedSlug}-backend-module-.+$`).test(name)) {
+    return 'backend-module';
+  }
+  if (new RegExp(`^${escapedSlug}-module-.+$`).test(name)) {
+    return 'module';
+  }
+  for (const suffix of PACKAGE_ROLE_SUFFIXES) {
+    if (name === `${slug}-${suffix}`) {
+      return suffix;
+    }
+  }
+  return name;
+}
+
+export interface CanonicalPackage {
+  functionality: string;
+  npmPackageName: string;
+  sourcePath: string;
+}
+
+export function selectCanonicalPackages(
+  treePaths: readonly string[],
+  packageDirectory: string,
+): CanonicalPackage[] {
+  const segments = packageDirectory.split('/').filter(Boolean);
+  if (segments.length === 0 || segments[0] !== 'plugins') {
+    return [];
+  }
+
+  const name0 = segments[segments.length - 1];
+  const slug = deriveSlug(name0);
+  const prefix = 'plugins/';
+  const suffix = '/package.json';
+
+  const packages: CanonicalPackage[] = [];
+  for (const path of treePaths) {
+    if (!path.startsWith(prefix) || !path.endsWith(suffix)) {
+      continue;
+    }
+
+    const remainder = path.slice(prefix.length, -suffix.length);
+    if (remainder.includes('/') || deriveSlug(remainder) !== slug) {
+      continue;
+    }
+
+    packages.push({
+      functionality: deriveFunctionality(slug, remainder),
+      npmPackageName: `${PLUGIN_PACKAGE_NAME_PREFIX}${remainder}`,
+      sourcePath: path,
+    });
+  }
+
+  packages.sort((a, b) => {
+    if (a.functionality === 'frontend') {
+      return -1;
+    }
+    if (b.functionality === 'frontend') {
+      return 1;
+    }
+    return a.sourcePath.localeCompare(b.sourcePath);
+  });
+  return packages;
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -68,7 +167,9 @@ function normalizePackageDirectory(directory?: string): string | null {
     return null;
   }
 
-  return segments.filter(segment => segment !== '' && segment !== '.').join('/');
+  return segments
+    .filter(segment => segment !== '' && segment !== '.')
+    .join('/');
 }
 
 export function selectBackstageJsonPath(
@@ -118,6 +219,10 @@ export class GitHubSnapshotClient {
     Promise<RepositoryMetadata>
   >();
   private readonly treePromises = new Map<string, Promise<readonly string[]>>();
+  private readonly latestStableTagPromises = new Map<
+    string,
+    Promise<string | undefined>
+  >();
 
   constructor(options: { fetchImpl?: typeof fetch; token?: string } = {}) {
     this.fetchImpl = options.fetchImpl ?? fetch;
@@ -135,6 +240,14 @@ export class GitHubSnapshotClient {
       return unavailable(lastAttemptAt, 'repository-directory-invalid');
     }
 
+    if (isCanonicalBackstageRepository(repository)) {
+      return this.fetchCanonicalBackstageSnapshot(
+        repository,
+        lastAttemptAt,
+        packageDirectory,
+      );
+    }
+
     let metadata: RepositoryMetadata;
     let treePaths: readonly string[];
     try {
@@ -144,9 +257,10 @@ export class GitHubSnapshotClient {
       return unavailable(lastAttemptAt, 'github-invalid-response');
     }
 
-    const sourcePath =
-      selectBackstageJsonPath(treePaths, packageDirectory || undefined) ??
-      selectRepositoryBackstageJsonPath(treePaths, repository);
+    const sourcePath = selectBackstageJsonPath(
+      treePaths,
+      packageDirectory || undefined,
+    );
     if (!sourcePath) {
       return unavailable(lastAttemptAt, 'backstage-json-not-found');
     }
@@ -194,6 +308,144 @@ export class GitHubSnapshotClient {
       )}/${encodePath(sourcePath)}`,
       sourcePath,
     };
+  }
+
+  private async fetchCanonicalBackstageSnapshot(
+    repository: RepositoryLocation,
+    lastAttemptAt: string,
+    packageDirectory: string,
+  ): Promise<BackstageSnapshot> {
+    let tagName: string | undefined;
+    try {
+      tagName = await this.getLatestStableTag(repository);
+    } catch {
+      return unavailable(lastAttemptAt, 'github-invalid-response');
+    }
+    if (!tagName) {
+      return unavailable(lastAttemptAt, 'backstage-tag-not-found');
+    }
+
+    const sourcePath = packageDirectory
+      ? `${packageDirectory}/package.json`
+      : 'package.json';
+
+    let treePaths: readonly string[];
+    try {
+      treePaths = await this.getTreePaths(repository, tagName);
+    } catch {
+      return unavailable(lastAttemptAt, 'github-invalid-response');
+    }
+    if (!treePaths.includes(sourcePath)) {
+      return unavailable(lastAttemptAt, 'backstage-tag-not-found');
+    }
+
+    return {
+      status: 'fresh',
+      lastAttemptAt,
+      checkedAt: lastAttemptAt,
+      version: tagName.slice(1),
+      sourceUrl: `https://github.com/${encodeURIComponent(
+        repository.owner,
+      )}/${encodeURIComponent(
+        repository.repository,
+      )}/releases/tag/${encodeURIComponent(tagName)}`,
+      sourcePath,
+    };
+  }
+
+  /**
+   * Returns the newest stable (non-prerelease) Backstage release version,
+   * e.g. "1.53.1". The root package.json can't be used for this since it
+   * tracks the next unreleased minor.
+   */
+  async fetchLatestBackstageVersion(): Promise<string | undefined> {
+    const tagName = await this.getLatestStableTag({
+      owner: 'backstage',
+      repository: 'backstage',
+    });
+    return tagName?.slice(1);
+  }
+
+  /**
+   * Discovers the full family of related npm packages for a plugin hosted in
+   * backstage/backstage (frontend, backend, common, node, backend modules,
+   * ...). Returns undefined for any other repository, or when the plugin's
+   * package family can't be resolved.
+   */
+  async discoverCanonicalPackages(
+    repository: RepositoryLocation,
+  ): Promise<CanonicalPackage[] | undefined> {
+    if (!isCanonicalBackstageRepository(repository)) {
+      return undefined;
+    }
+
+    const packageDirectory = normalizePackageDirectory(repository.directory);
+    if (!packageDirectory) {
+      return undefined;
+    }
+
+    let tagName: string | undefined;
+    try {
+      tagName = await this.getLatestStableTag(repository);
+    } catch {
+      return undefined;
+    }
+    if (!tagName) {
+      return undefined;
+    }
+
+    let treePaths: readonly string[];
+    try {
+      treePaths = await this.getTreePaths(repository, tagName);
+    } catch {
+      return undefined;
+    }
+
+    return selectCanonicalPackages(treePaths, packageDirectory);
+  }
+
+  private getLatestStableTag(
+    repository: RepositoryLocation,
+  ): Promise<string | undefined> {
+    const key = this.repositoryKey(repository);
+    let promise = this.latestStableTagPromises.get(key);
+    if (!promise) {
+      promise = this.loadLatestStableTag(repository);
+      this.latestStableTagPromises.set(key, promise);
+    }
+    return promise;
+  }
+
+  private async loadLatestStableTag(
+    repository: RepositoryLocation,
+  ): Promise<string | undefined> {
+    const baseUrl = this.repositoryApiUrl(repository);
+    for (let page = 1; page <= MAX_TAG_PAGES; page += 1) {
+      const response = await this.request(
+        `${baseUrl}/tags?per_page=${TAGS_PER_PAGE}&page=${page}`,
+      );
+      if (!response.ok) {
+        throw new Error(`GitHub tags request failed: ${response.status}`);
+      }
+
+      const body: unknown = await response.json();
+      if (!Array.isArray(body)) {
+        throw new Error('GitHub tags response is not an array');
+      }
+
+      for (const entry of body) {
+        if (isRecord(entry) && typeof entry.name === 'string') {
+          if (STABLE_TAG_PATTERN.test(entry.name)) {
+            return entry.name;
+          }
+        }
+      }
+
+      if (body.length < TAGS_PER_PAGE) {
+        break;
+      }
+    }
+    return undefined;
   }
 
   private getRepositoryMetadata(
@@ -255,7 +507,11 @@ export class GitHubSnapshotClient {
     }
 
     const body: unknown = await response.json();
-    if (!isRecord(body) || !Array.isArray(body.tree) || body.truncated === true) {
+    if (
+      !isRecord(body) ||
+      !Array.isArray(body.tree) ||
+      body.truncated === true
+    ) {
       throw new Error('GitHub tree response is incomplete');
     }
 
