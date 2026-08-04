@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:06.775Z'
-    checkedAt: '2026-08-04T03:05:06.775Z'
+    lastAttemptAt: '2026-08-04T03:38:38.537Z'
+    checkedAt: '2026-08-04T03:38:38.537Z'
     latestVersion: 1.25.1
     lastPublishedAt: '2026-07-21T20:32:30.872Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/nexus-repository-manager/plugins/nexus-repository-manager
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:07.010Z'
-    checkedAt: '2026-08-04T03:05:07.010Z'
+    lastAttemptAt: '2026-08-04T03:38:38.939Z'
+    checkedAt: '2026-08-04T03:38:38.939Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/nexus-repository-manager/backstage.json
     sourcePath: workspaces/nexus-repository-manager/backstage.json

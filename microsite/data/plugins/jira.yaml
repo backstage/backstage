@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:44.771Z'
-    checkedAt: '2026-08-04T03:04:44.771Z'
+    lastAttemptAt: '2026-08-04T03:38:16.585Z'
+    checkedAt: '2026-08-04T03:38:16.585Z'
     latestVersion: 2.14.0
     lastPublishedAt: '2025-10-31T09:33:07.801Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/frontend/backstage-plugin-jira
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:45.111Z'
-    checkedAt: '2026-08-04T03:04:45.111Z'
+    lastAttemptAt: '2026-08-04T03:38:16.950Z'
+    checkedAt: '2026-08-04T03:38:16.950Z'
     version: 1.44.2
     sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json

@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:55.403Z'
-    checkedAt: '2026-08-04T03:04:55.403Z'
+    lastAttemptAt: '2026-08-04T03:38:27.298Z'
+    checkedAt: '2026-08-04T03:38:27.298Z'
     latestVersion: 5.2.0
     lastPublishedAt: '2026-04-15T13:30:06.163Z'
     repository:
@@ -21,5 +21,5 @@ snapshot:
       directory: packages/ldap-auth
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:04:55.743Z'
+    lastAttemptAt: '2026-08-04T03:38:27.606Z'
     reason: backstage-json-not-found

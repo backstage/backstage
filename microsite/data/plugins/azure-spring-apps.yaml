@@ -8,14 +8,16 @@ documentation: https://github.com/enfuse/asae-backstage-plugin/blob/main/README.
 iconUrl: /img/enfuse.png
 npmPackageName: '@enfuse/plugin-azure-spring-apps'
 addedDate: '2022-11-21'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
 snapshot:
   npm:
-    status: unavailable
-    lastAttemptAt: '2026-08-04T03:03:25.575Z'
-    reason: repository-unsupported
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:36:58.979Z'
+    checkedAt: '2026-08-04T03:36:58.979Z'
+    latestVersion: 2.0.3
+    lastPublishedAt: '2022-12-26T20:47:11.880Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:03:25.575Z'
-    reason: npm-data-unavailable
+    lastAttemptAt: '2026-08-04T03:36:58.979Z'
+    reason: repository-unsupported

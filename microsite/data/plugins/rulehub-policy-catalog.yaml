@@ -12,13 +12,13 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:26.632Z'
-    checkedAt: '2026-08-04T03:05:26.632Z'
+    lastAttemptAt: '2026-08-04T03:38:58.666Z'
+    checkedAt: '2026-08-04T03:38:58.666Z'
     latestVersion: 0.1.1
     lastPublishedAt: '2026-03-06T05:03:39.717Z'
     repository:
       url: https://github.com/rulehub/rulehub-backstage-plugin
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:05:27.016Z'
+    lastAttemptAt: '2026-08-04T03:38:59.010Z'
     reason: backstage-json-not-found

@@ -13,13 +13,13 @@ staleSince: '2026-02-17'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:13.585Z'
-    checkedAt: '2026-08-04T03:05:13.585Z'
+    lastAttemptAt: '2026-08-04T03:38:45.415Z'
+    checkedAt: '2026-08-04T03:38:45.415Z'
     latestVersion: 1.1.2
     lastPublishedAt: '2023-10-25T18:37:06.496Z'
     repository:
       url: https://github.com/OpsLevel/backstage-plugin
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:05:13.723Z'
+    lastAttemptAt: '2026-08-04T03:38:45.617Z'
     reason: backstage-json-not-found

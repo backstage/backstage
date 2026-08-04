@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:04.433Z'
-    checkedAt: '2026-08-04T03:04:04.433Z'
+    lastAttemptAt: '2026-08-04T03:37:38.317Z'
+    checkedAt: '2026-08-04T03:37:38.317Z'
     latestVersion: 10.22.0
     lastPublishedAt: '2026-07-21T23:04:41.699Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/dynatrace/plugins/dynatrace
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:04.795Z'
-    checkedAt: '2026-08-04T03:04:04.795Z'
+    lastAttemptAt: '2026-08-04T03:37:38.714Z'
+    checkedAt: '2026-08-04T03:37:38.714Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/dynatrace/backstage.json
     sourcePath: workspaces/dynatrace/backstage.json

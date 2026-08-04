@@ -13,13 +13,13 @@ staleSince: '2026-02-17'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:11.457Z'
-    checkedAt: '2026-08-04T03:05:11.457Z'
+    lastAttemptAt: '2026-08-04T03:38:43.230Z'
+    checkedAt: '2026-08-04T03:38:43.230Z'
     latestVersion: 0.4.0
     lastPublishedAt: '2024-04-16T07:10:10.226Z'
     repository:
       url: https://github.com/DevoteamNL/opendora
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:05:11.836Z'
+    lastAttemptAt: '2026-08-04T03:38:43.612Z'
     reason: backstage-json-not-found

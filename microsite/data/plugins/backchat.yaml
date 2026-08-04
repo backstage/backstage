@@ -13,13 +13,13 @@ staleSince: '2026-02-17'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:26.532Z'
-    checkedAt: '2026-08-04T03:03:26.532Z'
+    lastAttemptAt: '2026-08-04T03:36:59.837Z'
+    checkedAt: '2026-08-04T03:36:59.837Z'
     latestVersion: 0.0.5
     lastPublishedAt: '2024-01-08T13:39:26.948Z'
     repository:
       url: https://github.com/benwilcock/backstage-plugin-backchat
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:03:26.870Z'
+    lastAttemptAt: '2026-08-04T03:37:00.199Z'
     reason: backstage-json-not-found

@@ -11,8 +11,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:33.154Z'
-    checkedAt: '2026-08-04T03:05:33.154Z'
+    lastAttemptAt: '2026-08-04T03:39:05.295Z'
+    checkedAt: '2026-08-04T03:39:05.295Z'
     latestVersion: 2.16.0
     lastPublishedAt: '2026-07-07T16:43:35.169Z'
     repository:
@@ -20,8 +20,8 @@ snapshot:
       directory: workspaces/scaffolder-backend-module-sonarqube/plugins/scaffolder-backend-module-sonarqube
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:33.493Z'
-    checkedAt: '2026-08-04T03:05:33.493Z'
+    lastAttemptAt: '2026-08-04T03:39:05.655Z'
+    checkedAt: '2026-08-04T03:39:05.655Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/scaffolder-backend-module-sonarqube/backstage.json
     sourcePath: workspaces/scaffolder-backend-module-sonarqube/backstage.json

@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:24.160Z'
-    checkedAt: '2026-08-04T03:03:24.160Z'
+    lastAttemptAt: '2026-08-04T03:36:57.832Z'
+    checkedAt: '2026-08-04T03:36:57.832Z'
     latestVersion: 0.33.0
     lastPublishedAt: '2026-07-21T22:58:03.011Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/azure-devops/plugins/azure-devops
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:24.563Z'
-    checkedAt: '2026-08-04T03:03:24.563Z'
+    lastAttemptAt: '2026-08-04T03:36:58.107Z'
+    checkedAt: '2026-08-04T03:36:58.107Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/azure-devops/backstage.json
     sourcePath: workspaces/azure-devops/backstage.json

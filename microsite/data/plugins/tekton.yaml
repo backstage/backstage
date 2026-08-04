@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:06:00.955Z'
-    checkedAt: '2026-08-04T03:06:00.955Z'
+    lastAttemptAt: '2026-08-04T03:39:34.847Z'
+    checkedAt: '2026-08-04T03:39:34.847Z'
     latestVersion: 3.40.1
     lastPublishedAt: '2026-07-28T20:50:55.105Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/tekton/plugins/tekton
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:06:01.067Z'
-    checkedAt: '2026-08-04T03:06:01.067Z'
+    lastAttemptAt: '2026-08-04T03:39:35.079Z'
+    checkedAt: '2026-08-04T03:39:35.079Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/tekton/backstage.json
     sourcePath: workspaces/tekton/backstage.json

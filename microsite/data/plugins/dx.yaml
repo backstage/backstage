@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:03.435Z'
-    checkedAt: '2026-08-04T03:04:03.435Z'
+    lastAttemptAt: '2026-08-04T03:37:37.474Z'
+    checkedAt: '2026-08-04T03:37:37.474Z'
     latestVersion: 1.1.2
     lastPublishedAt: '2026-06-23T17:51:49.067Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: .
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:03.800Z'
-    checkedAt: '2026-08-04T03:04:03.800Z'
+    lastAttemptAt: '2026-08-04T03:37:37.715Z'
+    checkedAt: '2026-08-04T03:37:37.715Z'
     version: 1.31.1
     sourceUrl: https://github.com/get-dx/backstage-plugin/blob/main/backstage.json
     sourcePath: backstage.json

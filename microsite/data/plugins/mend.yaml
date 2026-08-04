@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:01.144Z'
-    checkedAt: '2026-08-04T03:05:01.144Z'
+    lastAttemptAt: '2026-08-04T03:38:32.952Z'
+    checkedAt: '2026-08-04T03:38:32.952Z'
     latestVersion: 2.1.0
     lastPublishedAt: '2026-06-25T06:30:12.679Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/mend/plugins/mend
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:01.487Z'
-    checkedAt: '2026-08-04T03:05:01.487Z'
+    lastAttemptAt: '2026-08-04T03:38:33.281Z'
+    checkedAt: '2026-08-04T03:38:33.281Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/mend/backstage.json
     sourcePath: workspaces/mend/backstage.json

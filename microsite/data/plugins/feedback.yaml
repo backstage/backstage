@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:10.386Z'
-    checkedAt: '2026-08-04T03:04:10.386Z'
+    lastAttemptAt: '2026-08-04T03:37:44.266Z'
+    checkedAt: '2026-08-04T03:37:44.266Z'
     latestVersion: 1.8.8
     lastPublishedAt: '2026-07-29T06:42:21.546Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/feedback/plugins/feedback
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:10.773Z'
-    checkedAt: '2026-08-04T03:04:10.773Z'
+    lastAttemptAt: '2026-08-04T03:37:44.624Z'
+    checkedAt: '2026-08-04T03:37:44.624Z'
     version: 1.51.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/feedback/backstage.json
     sourcePath: workspaces/feedback/backstage.json

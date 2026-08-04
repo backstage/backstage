@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:49.394Z'
-    checkedAt: '2026-08-04T03:05:49.394Z'
+    lastAttemptAt: '2026-08-04T03:39:22.494Z'
+    checkedAt: '2026-08-04T03:39:22.494Z'
     latestVersion: 0.1.2
     lastPublishedAt: '2025-12-19T07:45:31.286Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/simple-icons
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:49.757Z'
-    checkedAt: '2026-08-04T03:05:49.757Z'
+    lastAttemptAt: '2026-08-04T03:39:22.814Z'
+    checkedAt: '2026-08-04T03:39:22.814Z'
     version: 1.46.1
     sourceUrl: https://github.com/dweber019/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json

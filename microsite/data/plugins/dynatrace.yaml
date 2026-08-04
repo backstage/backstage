@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:04.914Z'
-    checkedAt: '2026-08-04T03:04:04.914Z'
+    lastAttemptAt: '2026-08-04T03:37:38.806Z'
+    checkedAt: '2026-08-04T03:37:38.806Z'
     latestVersion: 2.8.0
     lastPublishedAt: '2026-06-03T12:20:31.815Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins\dql
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:05.272Z'
-    checkedAt: '2026-08-04T03:04:05.272Z'
+    lastAttemptAt: '2026-08-04T03:37:39.196Z'
+    checkedAt: '2026-08-04T03:37:39.196Z'
     version: 1.50.4
     sourceUrl: https://github.com/Dynatrace/backstage-plugin/blob/main/backstage.json
     sourcePath: backstage.json

@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:14.326Z'
-    checkedAt: '2026-08-04T03:03:14.326Z'
+    lastAttemptAt: '2026-08-04T03:36:47.827Z'
+    checkedAt: '2026-08-04T03:36:47.827Z'
     latestVersion: 1.1.0
     lastPublishedAt: '2026-06-25T06:21:03.464Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/apiiro/plugins/apiiro
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:14.753Z'
-    checkedAt: '2026-08-04T03:03:14.753Z'
+    lastAttemptAt: '2026-08-04T03:36:48.184Z'
+    checkedAt: '2026-08-04T03:36:48.184Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/apiiro/backstage.json
     sourcePath: workspaces/apiiro/backstage.json

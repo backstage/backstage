@@ -13,13 +13,13 @@ staleSince: '2026-02-17'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:12.835Z'
-    checkedAt: '2026-08-04T03:05:12.835Z'
+    lastAttemptAt: '2026-08-04T03:38:44.622Z'
+    checkedAt: '2026-08-04T03:38:44.622Z'
     latestVersion: 0.6.6
     lastPublishedAt: '2023-03-02T11:34:45.976Z'
     repository:
       url: https://github.com/K-Phoen/backstage-plugin-opsgenie
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:05:13.231Z'
+    lastAttemptAt: '2026-08-04T03:38:44.981Z'
     reason: backstage-json-not-found

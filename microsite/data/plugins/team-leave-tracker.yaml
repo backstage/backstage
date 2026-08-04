@@ -11,8 +11,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:58.713Z'
-    checkedAt: '2026-08-04T03:05:58.713Z'
+    lastAttemptAt: '2026-08-04T03:39:32.000Z'
+    checkedAt: '2026-08-04T03:39:32.000Z'
     latestVersion: 1.1.0
     lastPublishedAt: '2026-07-25T15:43:02.267Z'
     repository:
@@ -20,8 +20,8 @@ snapshot:
       directory: plugins/team-leave-tracker
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:59.069Z'
-    checkedAt: '2026-08-04T03:05:59.069Z'
+    lastAttemptAt: '2026-08-04T03:39:32.344Z'
+    checkedAt: '2026-08-04T03:39:32.344Z'
     version: 1.53.0
     sourceUrl: https://github.com/CodeVerse-GP/leave-tracker/blob/main/backstage.json
     sourcePath: backstage.json

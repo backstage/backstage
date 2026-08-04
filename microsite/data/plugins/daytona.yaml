@@ -13,8 +13,8 @@ staleSince: '2026-08-04'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:54.890Z'
-    checkedAt: '2026-08-04T03:03:54.890Z'
+    lastAttemptAt: '2026-08-04T03:37:29.396Z'
+    checkedAt: '2026-08-04T03:37:29.396Z'
     latestVersion: 0.2.10
     lastPublishedAt: '2024-10-18T10:19:39.760Z'
     repository:
@@ -22,5 +22,5 @@ snapshot:
       directory: plugins/daytona
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:03:55.374Z'
+    lastAttemptAt: '2026-08-04T03:37:29.741Z'
     reason: github-invalid-response

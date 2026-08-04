@@ -8,14 +8,16 @@ documentation: https://github.com/konfig-dev/backstage-plugin-konfig/tree/main/p
 iconUrl: https://raw.githubusercontent.com/konfig-dev/backstage-plugin-konfig/main/plugins/backstage-plugin-konfig/docs/logo.png
 npmPackageName: backstage-plugin-konfig
 addedDate: '2023-08-07'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
 snapshot:
   npm:
-    status: unavailable
-    lastAttemptAt: '2026-08-04T03:03:12.103Z'
-    reason: repository-unsupported
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:36:45.366Z'
+    checkedAt: '2026-08-04T03:36:45.366Z'
+    latestVersion: 0.4.2
+    lastPublishedAt: '2023-08-03T22:58:44.939Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:03:12.103Z'
-    reason: npm-data-unavailable
+    lastAttemptAt: '2026-08-04T03:36:45.366Z'
+    reason: repository-unsupported

@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:42.475Z'
-    checkedAt: '2026-08-04T03:04:42.475Z'
+    lastAttemptAt: '2026-08-04T03:38:14.392Z'
+    checkedAt: '2026-08-04T03:38:14.392Z'
     latestVersion: 0.23.0
     lastPublishedAt: '2026-07-22T00:18:02.609Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/jenkins/plugins/scaffolder-backend-module-jenkins
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:42.809Z'
-    checkedAt: '2026-08-04T03:04:42.809Z'
+    lastAttemptAt: '2026-08-04T03:38:14.755Z'
+    checkedAt: '2026-08-04T03:38:14.755Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/jenkins/backstage.json
     sourcePath: workspaces/jenkins/backstage.json

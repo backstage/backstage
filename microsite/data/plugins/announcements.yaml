@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:08.932Z'
-    checkedAt: '2026-08-04T03:03:08.932Z'
+    lastAttemptAt: '2026-08-04T03:36:42.442Z'
+    checkedAt: '2026-08-04T03:36:42.442Z'
     latestVersion: 2.11.1
     lastPublishedAt: '2026-07-14T17:22:31.385Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/announcements/plugins/announcements
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:09.295Z'
-    checkedAt: '2026-08-04T03:03:09.295Z'
+    lastAttemptAt: '2026-08-04T03:36:42.748Z'
+    checkedAt: '2026-08-04T03:36:42.748Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/announcements/backstage.json
     sourcePath: workspaces/announcements/backstage.json

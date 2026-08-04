@@ -10,13 +10,16 @@ documentation: https://github.com/humanitec/humanitec-backstage-plugins
 iconUrl: /img/humanitec-logo.png
 npmPackageName: '@humanitec/backstage-plugin'
 addedDate: '2022-06-22'
-status: active
+status: inactive
+staleSince: '2026-08-04'
 snapshot:
   npm:
-    status: unavailable
-    lastAttemptAt: '2026-08-04T03:04:37.332Z'
-    reason: repository-unsupported
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:38:09.302Z'
+    checkedAt: '2026-08-04T03:38:09.302Z'
+    latestVersion: 0.9.7
+    lastPublishedAt: '2025-04-08T19:15:14.267Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:04:37.332Z'
-    reason: npm-data-unavailable
+    lastAttemptAt: '2026-08-04T03:38:09.302Z'
+    reason: repository-unsupported

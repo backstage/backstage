@@ -13,16 +13,16 @@ staleSince: '2026-08-04'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:01.595Z'
-    checkedAt: '2026-08-04T03:05:01.595Z'
+    lastAttemptAt: '2026-08-04T03:38:33.386Z'
+    checkedAt: '2026-08-04T03:38:33.386Z'
     latestVersion: 1.1.1
     lastPublishedAt: '2024-05-09T08:29:42.229Z'
     repository:
       url: https://github.com/mia-platform/backstage-plugin
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:01.938Z'
-    checkedAt: '2026-08-04T03:05:01.938Z'
+    lastAttemptAt: '2026-08-04T03:38:33.716Z'
+    checkedAt: '2026-08-04T03:38:33.716Z'
     version: 1.25.0
     sourceUrl: https://github.com/mia-platform/backstage-plugin/blob/main/backstage.json
     sourcePath: backstage.json

@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:09.594Z'
-    checkedAt: '2026-08-04T03:05:09.594Z'
+    lastAttemptAt: '2026-08-04T03:38:41.589Z'
+    checkedAt: '2026-08-04T03:38:41.589Z'
     latestVersion: 0.12.0
     lastPublishedAt: '2026-07-22T07:39:45.561Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/octopus-deploy/plugins/octopus-deploy
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:09.963Z'
-    checkedAt: '2026-08-04T03:05:09.963Z'
+    lastAttemptAt: '2026-08-04T03:38:41.839Z'
+    checkedAt: '2026-08-04T03:38:41.839Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/octopus-deploy/backstage.json
     sourcePath: workspaces/octopus-deploy/backstage.json

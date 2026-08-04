@@ -13,13 +13,13 @@ staleSince: '2026-02-17'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:34.636Z'
-    checkedAt: '2026-08-04T03:05:34.636Z'
+    lastAttemptAt: '2026-08-04T03:39:06.873Z'
+    checkedAt: '2026-08-04T03:39:06.873Z'
     latestVersion: 0.20.0
     lastPublishedAt: '2023-12-20T23:08:21.053Z'
     repository:
       url: https://github.com/redhat-developer/backstage-odo-devfile-plugin
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:05:35.044Z'
+    lastAttemptAt: '2026-08-04T03:39:07.257Z'
     reason: backstage-json-not-found

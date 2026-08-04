@@ -12,13 +12,13 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:43.513Z'
-    checkedAt: '2026-08-04T03:03:43.513Z'
+    lastAttemptAt: '2026-08-04T03:37:18.631Z'
+    checkedAt: '2026-08-04T03:37:18.631Z'
     latestVersion: 0.1.3
     lastPublishedAt: '2026-06-02T11:11:27.328Z'
     repository:
       url: https://github.com/Infosys/CloudServiceActionHub
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:03:43.895Z'
+    lastAttemptAt: '2026-08-04T03:37:18.994Z'
     reason: backstage-json-not-found

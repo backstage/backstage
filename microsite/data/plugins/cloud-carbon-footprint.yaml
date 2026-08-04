@@ -13,8 +13,8 @@ staleSince: '2026-02-17'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:42.525Z'
-    checkedAt: '2026-08-04T03:03:42.525Z'
+    lastAttemptAt: '2026-08-04T03:37:15.203Z'
+    checkedAt: '2026-08-04T03:37:15.203Z'
     latestVersion: 0.1.1
     lastPublishedAt: '2023-06-30T21:18:22.382Z'
     repository:
@@ -22,8 +22,8 @@ snapshot:
       directory: plugins/frontend
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:42.914Z'
-    checkedAt: '2026-08-04T03:03:42.914Z'
+    lastAttemptAt: '2026-08-04T03:37:18.050Z'
+    checkedAt: '2026-08-04T03:37:18.050Z'
     version: 1.15.0
     sourceUrl: https://github.com/cloud-carbon-footprint/ccf-backstage-plugin/blob/trunk/backstage.json
     sourcePath: backstage.json

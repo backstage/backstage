@@ -13,16 +13,16 @@ staleSince: '2026-08-04'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:33.339Z'
-    checkedAt: '2026-08-04T03:03:33.339Z'
+    lastAttemptAt: '2026-08-04T03:37:06.489Z'
+    checkedAt: '2026-08-04T03:37:06.489Z'
     latestVersion: 1.0.39
     lastPublishedAt: '2025-08-01T05:05:40.874Z'
     repository:
       url: https://github.com/aurora-is-near/backstage-plugin-blockchainradar
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:33.713Z'
-    checkedAt: '2026-08-04T03:03:33.713Z'
+    lastAttemptAt: '2026-08-04T03:37:06.860Z'
+    checkedAt: '2026-08-04T03:37:06.860Z'
     version: 1.16.0
     sourceUrl: https://github.com/aurora-is-near/backstage-plugin-blockchainradar/blob/main/backstage.json
     sourcePath: backstage.json

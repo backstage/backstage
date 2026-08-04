@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:50.552Z'
-    checkedAt: '2026-08-04T03:03:50.552Z'
+    lastAttemptAt: '2026-08-04T03:37:25.220Z'
+    checkedAt: '2026-08-04T03:37:25.220Z'
     latestVersion: 2.19.1
     lastPublishedAt: '2026-07-08T14:06:34.056Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/crossplane-resources
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:50.899Z'
-    checkedAt: '2026-08-04T03:03:50.899Z'
+    lastAttemptAt: '2026-08-04T03:37:25.583Z'
+    checkedAt: '2026-08-04T03:37:25.583Z'
     version: 1.52.1
     sourceUrl: https://github.com/TeraSky-OSS/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json

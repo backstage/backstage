@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:36.316Z'
-    checkedAt: '2026-08-04T03:05:36.316Z'
+    lastAttemptAt: '2026-08-04T03:39:08.705Z'
+    checkedAt: '2026-08-04T03:39:08.705Z'
     latestVersion: 4.1.2
     lastPublishedAt: '2026-02-12T08:57:28.353Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/scaffolder-actions/scaffolder-backend-module-utils
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:36.773Z'
-    checkedAt: '2026-08-04T03:05:36.773Z'
+    lastAttemptAt: '2026-08-04T03:39:08.997Z'
+    checkedAt: '2026-08-04T03:39:08.997Z'
     version: 1.44.2
     sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json

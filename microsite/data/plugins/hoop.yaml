@@ -8,14 +8,16 @@ documentation: https://github.com/hoophq/backstage-plugin
 iconUrl: https://avatars.githubusercontent.com/u/113131551?s=200&v=4
 npmPackageName: '@hoophq/backstage-plugin'
 addedDate: '2022-12-20'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
 snapshot:
   npm:
-    status: unavailable
-    lastAttemptAt: '2026-08-04T03:04:37.001Z'
-    reason: repository-unsupported
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:38:08.950Z'
+    checkedAt: '2026-08-04T03:38:08.950Z'
+    latestVersion: 0.1.4
+    lastPublishedAt: '2022-12-21T15:17:08.989Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:04:37.001Z'
-    reason: npm-data-unavailable
+    lastAttemptAt: '2026-08-04T03:38:08.950Z'
+    reason: repository-unsupported

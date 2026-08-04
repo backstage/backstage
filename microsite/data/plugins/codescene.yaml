@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:47.298Z'
-    checkedAt: '2026-08-04T03:03:47.298Z'
+    lastAttemptAt: '2026-08-04T03:37:22.262Z'
+    checkedAt: '2026-08-04T03:37:22.262Z'
     latestVersion: 0.20.0
     lastPublishedAt: '2026-07-21T22:57:38.172Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/codescene/plugins/codescene
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:47.673Z'
-    checkedAt: '2026-08-04T03:03:47.673Z'
+    lastAttemptAt: '2026-08-04T03:37:22.599Z'
+    checkedAt: '2026-08-04T03:37:22.599Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/codescene/backstage.json
     sourcePath: workspaces/codescene/backstage.json

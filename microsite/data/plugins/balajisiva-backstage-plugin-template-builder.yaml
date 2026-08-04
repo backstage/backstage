@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:30.289Z'
-    checkedAt: '2026-08-04T03:03:30.289Z'
+    lastAttemptAt: '2026-08-04T03:37:03.365Z'
+    checkedAt: '2026-08-04T03:37:03.365Z'
     latestVersion: 0.1.0
     lastPublishedAt: '2026-02-16T18:53:34.092Z'
     repository:
@@ -21,5 +21,5 @@ snapshot:
       directory: plugins/backstage-template-builder
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:03:30.670Z'
+    lastAttemptAt: '2026-08-04T03:37:03.741Z'
     reason: backstage-json-not-found

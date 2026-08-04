@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:28.428Z'
-    checkedAt: '2026-08-04T03:05:28.428Z'
+    lastAttemptAt: '2026-08-04T03:39:00.310Z'
+    checkedAt: '2026-08-04T03:39:00.310Z'
     latestVersion: 0.4.0
     lastPublishedAt: '2026-05-22T06:50:37.611Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/scaffolder-backend-module-gcp/plugins/scaffolder-backend-module-gcp
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:28.812Z'
-    checkedAt: '2026-08-04T03:05:28.812Z'
+    lastAttemptAt: '2026-08-04T03:39:00.663Z'
+    checkedAt: '2026-08-04T03:39:00.663Z'
     version: 1.35.1
     sourceUrl: https://github.com/datolabs-io/backstage-plugins/blob/main/workspaces/scaffolder-backend-module-gcp/backstage.json
     sourcePath: workspaces/scaffolder-backend-module-gcp/backstage.json

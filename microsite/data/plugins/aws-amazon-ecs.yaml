@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:18.939Z'
-    checkedAt: '2026-08-04T03:03:18.939Z'
+    lastAttemptAt: '2026-08-04T03:36:52.272Z'
+    checkedAt: '2026-08-04T03:36:52.272Z'
     latestVersion: 0.6.3
     lastPublishedAt: '2026-04-23T15:04:15.202Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/ecs/frontend
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:19.317Z'
-    checkedAt: '2026-08-04T03:03:19.317Z'
+    lastAttemptAt: '2026-08-04T03:36:52.625Z'
+    checkedAt: '2026-08-04T03:36:52.625Z'
     version: 1.43.1
     sourceUrl: https://github.com/awslabs/backstage-plugins-for-aws/blob/main/backstage.json
     sourcePath: backstage.json

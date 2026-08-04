@@ -13,13 +13,13 @@ staleSince: '2026-02-17'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:51.425Z'
-    checkedAt: '2026-08-04T03:04:51.425Z'
+    lastAttemptAt: '2026-08-04T03:38:23.423Z'
+    checkedAt: '2026-08-04T03:38:23.423Z'
     latestVersion: 0.1.2
     lastPublishedAt: '2023-04-10T11:44:55.056Z'
     repository:
       url: https://github.com/antoinedao/backstage-provider-kubernetes
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:04:51.803Z'
+    lastAttemptAt: '2026-08-04T03:38:23.778Z'
     reason: backstage-json-not-found

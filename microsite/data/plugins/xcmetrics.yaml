@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:06:06.632Z'
-    checkedAt: '2026-08-04T03:06:06.632Z'
+    lastAttemptAt: '2026-08-04T03:39:42.707Z'
+    checkedAt: '2026-08-04T03:39:42.707Z'
     latestVersion: 0.19.0
     lastPublishedAt: '2026-04-24T18:01:44.528Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/xcmetrics/plugins/xcmetrics
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:06:06.778Z'
-    checkedAt: '2026-08-04T03:06:06.778Z'
+    lastAttemptAt: '2026-08-04T03:39:43.075Z'
+    checkedAt: '2026-08-04T03:39:43.075Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/xcmetrics/backstage.json
     sourcePath: workspaces/xcmetrics/backstage.json

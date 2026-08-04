@@ -13,8 +13,8 @@ staleSince: '2026-08-04'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:59.607Z'
-    checkedAt: '2026-08-04T03:03:59.607Z'
+    lastAttemptAt: '2026-08-04T03:37:33.777Z'
+    checkedAt: '2026-08-04T03:37:33.777Z'
     latestVersion: 0.1.4
     lastPublishedAt: '2025-04-08T14:02:14.199Z'
     repository:
@@ -22,5 +22,5 @@ snapshot:
       directory: .
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:03:59.975Z'
+    lastAttemptAt: '2026-08-04T03:37:34.105Z'
     reason: backstage-json-not-found

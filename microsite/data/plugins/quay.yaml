@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:20.714Z'
-    checkedAt: '2026-08-04T03:05:20.714Z'
+    lastAttemptAt: '2026-08-04T03:38:52.822Z'
+    checkedAt: '2026-08-04T03:38:52.822Z'
     latestVersion: 1.37.1
     lastPublishedAt: '2026-07-21T21:13:43.327Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/quay/plugins/quay
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:21.063Z'
-    checkedAt: '2026-08-04T03:05:21.063Z'
+    lastAttemptAt: '2026-08-04T03:38:53.165Z'
+    checkedAt: '2026-08-04T03:38:53.165Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/quay/backstage.json
     sourcePath: workspaces/quay/backstage.json

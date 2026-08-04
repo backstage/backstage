@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:24.061Z'
-    checkedAt: '2026-08-04T03:05:24.061Z'
+    lastAttemptAt: '2026-08-04T03:38:55.800Z'
+    checkedAt: '2026-08-04T03:38:55.800Z'
     latestVersion: 0.5.3
     lastPublishedAt: '2026-01-15T15:39:49.530Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/revision
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:24.503Z'
-    checkedAt: '2026-08-04T03:05:24.503Z'
+    lastAttemptAt: '2026-08-04T03:38:56.201Z'
+    checkedAt: '2026-08-04T03:38:56.201Z'
     version: 1.46.2
     sourceUrl: https://github.com/revision-org/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json

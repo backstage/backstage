@@ -12,16 +12,16 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:12.442Z'
-    checkedAt: '2026-08-04T03:04:12.442Z'
+    lastAttemptAt: '2026-08-04T03:37:46.283Z'
+    checkedAt: '2026-08-04T03:37:46.283Z'
     latestVersion: 1.0.3
     lastPublishedAt: '2025-10-09T19:27:44.368Z'
     repository:
       url: https://github.com/gofireflyio/firefly-backstage-plugin
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:12.688Z'
-    checkedAt: '2026-08-04T03:04:12.688Z'
+    lastAttemptAt: '2026-08-04T03:37:46.618Z'
+    checkedAt: '2026-08-04T03:37:46.618Z'
     version: 1.36.0
     sourceUrl: https://github.com/gofireflyio/firefly-backstage-plugin/blob/main/backstage.json
     sourcePath: backstage.json

@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:53.617Z'
-    checkedAt: '2026-08-04T03:05:53.617Z'
+    lastAttemptAt: '2026-08-04T03:39:26.646Z'
+    checkedAt: '2026-08-04T03:39:26.646Z'
     latestVersion: 0.20.0
     lastPublishedAt: '2026-07-22T00:21:30.225Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/stack-overflow/plugins/stack-overflow
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:54.073Z'
-    checkedAt: '2026-08-04T03:05:54.073Z'
+    lastAttemptAt: '2026-08-04T03:39:26.976Z'
+    checkedAt: '2026-08-04T03:39:26.976Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/stack-overflow/backstage.json
     sourcePath: workspaces/stack-overflow/backstage.json

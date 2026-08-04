@@ -12,16 +12,16 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:34.611Z'
-    checkedAt: '2026-08-04T03:04:34.611Z'
+    lastAttemptAt: '2026-08-04T03:38:06.648Z'
+    checkedAt: '2026-08-04T03:38:06.648Z'
     latestVersion: 0.1.19
     lastPublishedAt: '2026-07-01T12:24:27.913Z'
     repository:
       url: https://github.com/gluobe/hetzner-backstage-plugin
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:34.990Z'
-    checkedAt: '2026-08-04T03:04:34.990Z'
+    lastAttemptAt: '2026-08-04T03:38:07.028Z'
+    checkedAt: '2026-08-04T03:38:07.028Z'
     version: 1.52.1
     sourceUrl: https://github.com/gluobe/hetzner-backstage-plugin/blob/main/backstage.json
     sourcePath: backstage.json

@@ -8,13 +8,16 @@ documentation: https://platform.vee.codes/plugin/gitlab-pipelines/
 iconUrl: https://veecode-platform.github.io/support/imgs/logo_1.svg
 npmPackageName: '@veecode-platform/backstage-plugin-gitlab-pipelines'
 addedDate: '2023-09-27'
-status: active
+status: inactive
+staleSince: '2026-08-04'
 snapshot:
   npm:
-    status: unavailable
-    lastAttemptAt: '2026-08-04T03:04:22.223Z'
-    reason: repository-unsupported
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:37:54.811Z'
+    checkedAt: '2026-08-04T03:37:54.811Z'
+    latestVersion: 0.7.0
+    lastPublishedAt: '2025-06-27T14:49:41.654Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:04:22.223Z'
-    reason: npm-data-unavailable
+    lastAttemptAt: '2026-08-04T03:37:54.811Z'
+    reason: repository-unsupported

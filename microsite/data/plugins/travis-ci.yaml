@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:06:04.326Z'
-    checkedAt: '2026-08-04T03:06:04.326Z'
+    lastAttemptAt: '2026-08-04T03:39:39.639Z'
+    checkedAt: '2026-08-04T03:39:39.639Z'
     latestVersion: 2.3.0
     lastPublishedAt: '2025-10-31T09:33:35.077Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/frontend/backstage-plugin-travis-ci
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:06:04.462Z'
-    checkedAt: '2026-08-04T03:06:04.462Z'
+    lastAttemptAt: '2026-08-04T03:39:39.984Z'
+    checkedAt: '2026-08-04T03:39:39.984Z'
     version: 1.44.2
     sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json

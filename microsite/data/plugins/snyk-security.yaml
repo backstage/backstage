@@ -11,10 +11,12 @@ addedDate: '2021-01-22'
 status: active
 snapshot:
   npm:
-    status: unavailable
-    lastAttemptAt: '2026-08-04T03:05:49.878Z'
-    reason: repository-unsupported
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:39:22.925Z'
+    checkedAt: '2026-08-04T03:39:22.925Z'
+    latestVersion: 2.5.10
+    lastPublishedAt: '2026-02-03T23:03:30.943Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:05:49.878Z'
-    reason: npm-data-unavailable
+    lastAttemptAt: '2026-08-04T03:39:22.925Z'
+    reason: repository-unsupported

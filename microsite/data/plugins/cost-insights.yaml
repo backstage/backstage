@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:50.073Z'
-    checkedAt: '2026-08-04T03:03:50.073Z'
+    lastAttemptAt: '2026-08-04T03:37:24.751Z'
+    checkedAt: '2026-08-04T03:37:24.751Z'
     latestVersion: 0.29.1
     lastPublishedAt: '2026-07-03T17:38:23.939Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/cost-insights/plugins/cost-insights
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:50.424Z'
-    checkedAt: '2026-08-04T03:03:50.424Z'
+    lastAttemptAt: '2026-08-04T03:37:25.120Z'
+    checkedAt: '2026-08-04T03:37:25.120Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/cost-insights/backstage.json
     sourcePath: workspaces/cost-insights/backstage.json

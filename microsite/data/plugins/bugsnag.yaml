@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:34.775Z'
-    checkedAt: '2026-08-04T03:03:34.775Z'
+    lastAttemptAt: '2026-08-04T03:37:07.894Z'
+    checkedAt: '2026-08-04T03:37:07.894Z'
     latestVersion: 2.4.0
     lastPublishedAt: '2025-10-31T09:32:29.966Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/frontend/backstage-plugin-bugsnag
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:35.108Z'
-    checkedAt: '2026-08-04T03:03:35.108Z'
+    lastAttemptAt: '2026-08-04T03:37:08.221Z'
+    checkedAt: '2026-08-04T03:37:08.221Z'
     version: 1.44.2
     sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json

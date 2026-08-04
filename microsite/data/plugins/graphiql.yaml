@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:25.969Z'
-    checkedAt: '2026-08-04T03:04:25.969Z'
+    lastAttemptAt: '2026-08-04T03:37:58.537Z'
+    checkedAt: '2026-08-04T03:37:58.537Z'
     latestVersion: 0.18.0
     lastPublishedAt: '2026-07-21T23:06:34.599Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/graphiql/plugins/graphiql
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:26.350Z'
-    checkedAt: '2026-08-04T03:04:26.350Z'
+    lastAttemptAt: '2026-08-04T03:37:58.836Z'
+    checkedAt: '2026-08-04T03:37:58.836Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/graphiql/backstage.json
     sourcePath: workspaces/graphiql/backstage.json

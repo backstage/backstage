@@ -12,13 +12,13 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:53.302Z'
-    checkedAt: '2026-08-04T03:03:53.302Z'
+    lastAttemptAt: '2026-08-04T03:37:27.960Z'
+    checkedAt: '2026-08-04T03:37:27.960Z'
     latestVersion: 0.1.1
     lastPublishedAt: '2025-08-19T13:02:56.744Z'
     repository:
       url: https://github.com/remunda/backstage-plugins
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:03:53.633Z'
+    lastAttemptAt: '2026-08-04T03:37:28.331Z'
     reason: backstage-json-not-found

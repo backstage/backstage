@@ -11,8 +11,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:32.183Z'
-    checkedAt: '2026-08-04T03:05:32.183Z'
+    lastAttemptAt: '2026-08-04T03:39:04.524Z'
+    checkedAt: '2026-08-04T03:39:04.524Z'
     latestVersion: 2.17.0
     lastPublishedAt: '2026-07-08T08:07:17.873Z'
     repository:
@@ -20,8 +20,8 @@ snapshot:
       directory: workspaces/scaffolder-backend-module-regex/plugins/regex-actions
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:32.580Z'
-    checkedAt: '2026-08-04T03:05:32.580Z'
+    lastAttemptAt: '2026-08-04T03:39:04.802Z'
+    checkedAt: '2026-08-04T03:39:04.802Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/scaffolder-backend-module-regex/backstage.json
     sourcePath: workspaces/scaffolder-backend-module-regex/backstage.json

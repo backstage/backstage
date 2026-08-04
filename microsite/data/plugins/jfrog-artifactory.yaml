@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:43.909Z'
-    checkedAt: '2026-08-04T03:04:43.909Z'
+    lastAttemptAt: '2026-08-04T03:38:15.738Z'
+    checkedAt: '2026-08-04T03:38:15.738Z'
     latestVersion: 1.30.2
     lastPublishedAt: '2026-07-22T11:28:08.208Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/jfrog-artifactory/plugins/jfrog-artifactory
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:44.273Z'
-    checkedAt: '2026-08-04T03:04:44.273Z'
+    lastAttemptAt: '2026-08-04T03:38:16.014Z'
+    checkedAt: '2026-08-04T03:38:16.014Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/jfrog-artifactory/backstage.json
     sourcePath: workspaces/jfrog-artifactory/backstage.json

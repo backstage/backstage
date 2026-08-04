@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:05.324Z'
-    checkedAt: '2026-08-04T03:05:05.324Z'
+    lastAttemptAt: '2026-08-04T03:38:37.176Z'
+    checkedAt: '2026-08-04T03:38:37.176Z'
     latestVersion: 0.4.0
     lastPublishedAt: '2026-05-11T09:16:06.404Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/n8n/plugins/n8n
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:05.674Z'
-    checkedAt: '2026-08-04T03:05:05.674Z'
+    lastAttemptAt: '2026-08-04T03:38:37.508Z'
+    checkedAt: '2026-08-04T03:38:37.508Z'
     version: 1.50.2
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/n8n/backstage.json
     sourcePath: workspaces/n8n/backstage.json

@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:05.951Z'
-    checkedAt: '2026-08-04T03:03:05.951Z'
+    lastAttemptAt: '2026-08-04T03:36:39.263Z'
+    checkedAt: '2026-08-04T03:36:39.263Z'
     latestVersion: 0.4.1
     lastPublishedAt: '2026-04-02T23:31:46.510Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/amplication/plugins/scaffolder-backend-module-amplication
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:06.315Z'
-    checkedAt: '2026-08-04T03:03:06.315Z'
+    lastAttemptAt: '2026-08-04T03:36:39.653Z'
+    checkedAt: '2026-08-04T03:36:39.653Z'
     version: 1.41.1
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/amplication/backstage.json
     sourcePath: workspaces/amplication/backstage.json

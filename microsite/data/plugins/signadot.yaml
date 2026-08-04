@@ -13,13 +13,13 @@ staleSince: '2026-08-04'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:48.658Z'
-    checkedAt: '2026-08-04T03:05:48.658Z'
+    lastAttemptAt: '2026-08-04T03:39:21.685Z'
+    checkedAt: '2026-08-04T03:39:21.685Z'
     latestVersion: 0.1.10-xrc.7
     lastPublishedAt: '2025-07-15T14:54:42.064Z'
     repository:
       url: https://github.com/signadot/backstage-plugin
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:05:49.008Z'
+    lastAttemptAt: '2026-08-04T03:39:22.026Z'
     reason: backstage-json-not-found

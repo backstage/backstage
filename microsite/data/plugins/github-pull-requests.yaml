@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:21.315Z'
-    checkedAt: '2026-08-04T03:04:21.315Z'
+    lastAttemptAt: '2026-08-04T03:37:54.046Z'
+    checkedAt: '2026-08-04T03:37:54.046Z'
     latestVersion: 3.7.1
     lastPublishedAt: '2026-07-20T13:18:03.090Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/frontend/backstage-plugin-github-pull-requests
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:21.703Z'
-    checkedAt: '2026-08-04T03:04:21.703Z'
+    lastAttemptAt: '2026-08-04T03:37:54.307Z'
+    checkedAt: '2026-08-04T03:37:54.307Z'
     version: 1.44.2
     sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json

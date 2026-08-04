@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:57.400Z'
-    checkedAt: '2026-08-04T03:03:57.400Z'
+    lastAttemptAt: '2026-08-04T03:37:31.695Z'
+    checkedAt: '2026-08-04T03:37:31.695Z'
     latestVersion: 4.0.0
     lastPublishedAt: '2026-07-14T13:12:16.017Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: .
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:57.738Z'
-    checkedAt: '2026-08-04T03:03:57.738Z'
+    lastAttemptAt: '2026-08-04T03:37:31.932Z'
+    checkedAt: '2026-08-04T03:37:31.932Z'
     version: 1.52.0
     sourceUrl: https://github.com/Parsifal-M/backstage-dev-quotes/blob/main/backstage.json
     sourcePath: backstage.json

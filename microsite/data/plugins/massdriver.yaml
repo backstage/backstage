@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:59.714Z'
-    checkedAt: '2026-08-04T03:04:59.714Z'
+    lastAttemptAt: '2026-08-04T03:38:31.441Z'
+    checkedAt: '2026-08-04T03:38:31.441Z'
     latestVersion: 1.0.4
     lastPublishedAt: '2026-07-23T15:53:48.998Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/massdriver
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:00.030Z'
-    checkedAt: '2026-08-04T03:05:00.030Z'
+    lastAttemptAt: '2026-08-04T03:38:31.788Z'
+    checkedAt: '2026-08-04T03:38:31.788Z'
     version: 1.52.0
     sourceUrl: https://github.com/massdriver-cloud/massdriver-backstage/blob/main/backstage.json
     sourcePath: backstage.json

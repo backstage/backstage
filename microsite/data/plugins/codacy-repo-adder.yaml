@@ -8,14 +8,16 @@ documentation: https://github.com/codacy/backstage-plugin/blob/main/README.md
 iconUrl: /img/codacy-icon.svg
 npmPackageName: '@codacy/backstage-plugin'
 addedDate: '2024-04-19'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
 snapshot:
   npm:
-    status: unavailable
-    lastAttemptAt: '2026-08-04T03:03:45.022Z'
-    reason: repository-unsupported
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:37:20.067Z'
+    checkedAt: '2026-08-04T03:37:20.067Z'
+    latestVersion: 0.1.2
+    lastPublishedAt: '2024-04-19T10:33:50.903Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:03:45.022Z'
-    reason: npm-data-unavailable
+    lastAttemptAt: '2026-08-04T03:37:20.067Z'
+    reason: repository-unsupported

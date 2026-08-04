@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:18.637Z'
-    checkedAt: '2026-08-04T03:05:18.637Z'
+    lastAttemptAt: '2026-08-04T03:38:50.709Z'
+    checkedAt: '2026-08-04T03:38:50.709Z'
     latestVersion: 3.3.1
     lastPublishedAt: '2026-04-23T09:32:31.243Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/backstage-plugin-prometheus
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:18.883Z'
-    checkedAt: '2026-08-04T03:05:18.883Z'
+    lastAttemptAt: '2026-08-04T03:38:50.943Z'
+    checkedAt: '2026-08-04T03:38:50.943Z'
     version: 1.44.2
     sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json

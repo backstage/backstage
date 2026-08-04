@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:23.157Z'
-    checkedAt: '2026-08-04T03:03:23.157Z'
+    lastAttemptAt: '2026-08-04T03:36:56.876Z'
+    checkedAt: '2026-08-04T03:36:56.876Z'
     latestVersion: 2.4.0
     lastPublishedAt: '2025-10-31T09:32:20.419Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/frontend/backstage-plugin-aws-lambda
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:23.565Z'
-    checkedAt: '2026-08-04T03:03:23.565Z'
+    lastAttemptAt: '2026-08-04T03:36:57.238Z'
+    checkedAt: '2026-08-04T03:36:57.238Z'
     version: 1.44.2
     sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json

@@ -12,13 +12,13 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:14.565Z'
-    checkedAt: '2026-08-04T03:04:14.565Z'
+    lastAttemptAt: '2026-08-04T03:37:47.652Z'
+    checkedAt: '2026-08-04T03:37:47.652Z'
     latestVersion: 0.3.0
     lastPublishedAt: '2026-02-24T13:23:44.806Z'
     repository:
       url: https://github.com/Flagsmith/flagsmith-backstage-plugin
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:04:14.820Z'
+    lastAttemptAt: '2026-08-04T03:37:47.991Z'
     reason: backstage-json-not-found

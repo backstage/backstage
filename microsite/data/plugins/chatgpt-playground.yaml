@@ -8,14 +8,16 @@ documentation: https://github.com/enfuse/backstage-chatgpt-plugin/blob/main/READ
 iconUrl: /img/enfuse.png
 npmPackageName: '@enfuse/chatgpt-plugin-frontend'
 addedDate: '2023-05-23'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
 snapshot:
   npm:
-    status: unavailable
-    lastAttemptAt: '2026-08-04T03:03:40.211Z'
-    reason: repository-unsupported
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:37:12.894Z'
+    checkedAt: '2026-08-04T03:37:12.894Z'
+    latestVersion: 1.1.1
+    lastPublishedAt: '2023-08-03T01:08:02.823Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:03:40.211Z'
-    reason: npm-data-unavailable
+    lastAttemptAt: '2026-08-04T03:37:12.894Z'
+    reason: repository-unsupported

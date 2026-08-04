@@ -164,8 +164,8 @@ setup:
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:27.203Z'
-    checkedAt: '2026-08-04T03:03:27.203Z'
+    lastAttemptAt: '2026-08-04T03:37:00.634Z'
+    checkedAt: '2026-08-04T03:37:00.634Z'
     latestVersion: 0.12.21
     lastPublishedAt: '2026-07-14T12:09:13.207Z'
     repository:
@@ -173,8 +173,8 @@ snapshot:
       directory: plugins/kubernetes
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:27.570Z'
-    checkedAt: '2026-08-04T03:03:27.570Z'
+    lastAttemptAt: '2026-08-04T03:37:00.852Z'
+    checkedAt: '2026-08-04T03:37:00.852Z'
     version: 1.50.0
     sourceUrl: https://github.com/backstage/backstage/blob/master/workspaces/ui/backstage.json
     sourcePath: workspaces/ui/backstage.json

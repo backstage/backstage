@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:50.949Z'
-    checkedAt: '2026-08-04T03:04:50.949Z'
+    lastAttemptAt: '2026-08-04T03:38:22.974Z'
+    checkedAt: '2026-08-04T03:38:22.974Z'
     latestVersion: 4.0.0
     lastPublishedAt: '2026-07-06T12:51:55.663Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/kubernetes-ingestor
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:51.321Z'
-    checkedAt: '2026-08-04T03:04:51.321Z'
+    lastAttemptAt: '2026-08-04T03:38:23.316Z'
+    checkedAt: '2026-08-04T03:38:23.316Z'
     version: 1.52.1
     sourceUrl: https://github.com/TeraSky-OSS/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json

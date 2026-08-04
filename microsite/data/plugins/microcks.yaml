@@ -12,16 +12,16 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:02.565Z'
-    checkedAt: '2026-08-04T03:05:02.565Z'
+    lastAttemptAt: '2026-08-04T03:38:34.351Z'
+    checkedAt: '2026-08-04T03:38:34.351Z'
     latestVersion: 0.0.7
     lastPublishedAt: '2025-09-18T13:30:26.304Z'
     repository:
       url: https://github.com/microcks/microcks-backstage-provider
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:02.927Z'
-    checkedAt: '2026-08-04T03:05:02.927Z'
+    lastAttemptAt: '2026-08-04T03:38:34.728Z'
+    checkedAt: '2026-08-04T03:38:34.728Z'
     version: 1.43.0
     sourceUrl: https://github.com/microcks/microcks-backstage-provider/blob/main/backstage.json
     sourcePath: backstage.json

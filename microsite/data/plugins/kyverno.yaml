@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:54.411Z'
-    checkedAt: '2026-08-04T03:04:54.411Z'
+    lastAttemptAt: '2026-08-04T03:38:26.480Z'
+    checkedAt: '2026-08-04T03:38:26.480Z'
     latestVersion: 1.18.0
     lastPublishedAt: '2026-06-30T17:20:07.088Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/kyverno-policy-reports
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:54.825Z'
-    checkedAt: '2026-08-04T03:04:54.825Z'
+    lastAttemptAt: '2026-08-04T03:38:26.852Z'
+    checkedAt: '2026-08-04T03:38:26.852Z'
     version: 1.52.1
     sourceUrl: https://github.com/TeraSky-OSS/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json

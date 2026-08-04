@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:12.259Z'
-    checkedAt: '2026-08-04T03:03:12.259Z'
+    lastAttemptAt: '2026-08-04T03:36:45.503Z'
+    checkedAt: '2026-08-04T03:36:45.503Z'
     latestVersion: 0.5.2
     lastPublishedAt: '2025-12-19T07:45:21.378Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/api-docs-spectral-linter
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:12.645Z'
-    checkedAt: '2026-08-04T03:03:12.645Z'
+    lastAttemptAt: '2026-08-04T03:36:45.913Z'
+    checkedAt: '2026-08-04T03:36:45.913Z'
     version: 1.46.1
     sourceUrl: https://github.com/dweber019/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json

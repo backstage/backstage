@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:27.384Z'
-    checkedAt: '2026-08-04T03:04:27.384Z'
+    lastAttemptAt: '2026-08-04T03:37:59.904Z'
+    checkedAt: '2026-08-04T03:37:59.904Z'
     latestVersion: 0.20.0
     lastPublishedAt: '2026-07-21T23:04:50.110Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/graphql-voyager/plugins/graphql-voyager
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:27.744Z'
-    checkedAt: '2026-08-04T03:04:27.744Z'
+    lastAttemptAt: '2026-08-04T03:38:00.283Z'
+    checkedAt: '2026-08-04T03:38:00.283Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/graphql-voyager/backstage.json
     sourcePath: workspaces/graphql-voyager/backstage.json

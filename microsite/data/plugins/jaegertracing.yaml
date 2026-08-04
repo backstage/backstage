@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:42.020Z'
-    checkedAt: '2026-08-04T03:04:42.020Z'
+    lastAttemptAt: '2026-08-04T03:38:13.962Z'
+    checkedAt: '2026-08-04T03:38:13.962Z'
     latestVersion: 0.18.0
     lastPublishedAt: '2026-07-21T23:05:58.246Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/jaeger/plugins/jaeger
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:42.350Z'
-    checkedAt: '2026-08-04T03:04:42.350Z'
+    lastAttemptAt: '2026-08-04T03:38:14.281Z'
+    checkedAt: '2026-08-04T03:38:14.281Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/jaeger/backstage.json
     sourcePath: workspaces/jaeger/backstage.json

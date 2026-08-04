@@ -11,8 +11,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:21.570Z'
-    checkedAt: '2026-08-04T03:05:21.570Z'
+    lastAttemptAt: '2026-08-04T03:38:53.664Z'
+    checkedAt: '2026-08-04T03:38:53.664Z'
     latestVersion: 2.0.0
     lastPublishedAt: '2026-07-28T21:04:53.432Z'
     repository:
@@ -20,8 +20,8 @@ snapshot:
       directory: workspaces/rbac/plugins/rbac
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:21.869Z'
-    checkedAt: '2026-08-04T03:05:21.869Z'
+    lastAttemptAt: '2026-08-04T03:38:53.866Z'
+    checkedAt: '2026-08-04T03:38:53.866Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/rbac/backstage.json
     sourcePath: workspaces/rbac/backstage.json

@@ -11,8 +11,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:31.237Z'
-    checkedAt: '2026-08-04T03:05:31.237Z'
+    lastAttemptAt: '2026-08-04T03:39:03.405Z'
+    checkedAt: '2026-08-04T03:39:03.405Z'
     latestVersion: 2.20.0
     lastPublishedAt: '2026-08-03T19:51:59.529Z'
     repository:
@@ -20,8 +20,8 @@ snapshot:
       directory: workspaces/scaffolder-backend-module-kubernetes/plugins/kubernetes-actions
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:31.594Z'
-    checkedAt: '2026-08-04T03:05:31.594Z'
+    lastAttemptAt: '2026-08-04T03:39:03.786Z'
+    checkedAt: '2026-08-04T03:39:03.786Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/scaffolder-backend-module-kubernetes/backstage.json
     sourcePath: workspaces/scaffolder-backend-module-kubernetes/backstage.json

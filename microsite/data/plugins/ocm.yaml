@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:09.102Z'
-    checkedAt: '2026-08-04T03:05:09.102Z'
+    lastAttemptAt: '2026-08-04T03:38:41.047Z'
+    checkedAt: '2026-08-04T03:38:41.047Z'
     latestVersion: 5.19.0
     lastPublishedAt: '2026-07-21T19:42:48.833Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/ocm/plugins/ocm
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:09.483Z'
-    checkedAt: '2026-08-04T03:05:09.483Z'
+    lastAttemptAt: '2026-08-04T03:38:41.465Z'
+    checkedAt: '2026-08-04T03:38:41.465Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/ocm/backstage.json
     sourcePath: workspaces/ocm/backstage.json

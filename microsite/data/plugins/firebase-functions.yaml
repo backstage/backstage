@@ -13,13 +13,13 @@ staleSince: '2026-02-17'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:11.593Z'
-    checkedAt: '2026-08-04T03:04:11.593Z'
+    lastAttemptAt: '2026-08-04T03:37:45.400Z'
+    checkedAt: '2026-08-04T03:37:45.400Z'
     latestVersion: 1.0.6
     lastPublishedAt: '2021-07-19T07:46:30.909Z'
     repository:
       url: https://github.com/RoadieHQ/backstage-plugin-firebase-functions
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:04:11.917Z'
+    lastAttemptAt: '2026-08-04T03:37:45.762Z'
     reason: backstage-json-not-found

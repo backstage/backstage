@@ -13,8 +13,8 @@ staleSince: '2026-08-04'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:40.228Z'
-    checkedAt: '2026-08-04T03:04:40.228Z'
+    lastAttemptAt: '2026-08-04T03:38:12.072Z'
+    checkedAt: '2026-08-04T03:38:12.072Z'
     latestVersion: 0.1.1
     lastPublishedAt: '2025-06-13T19:56:10.120Z'
     repository:
@@ -22,8 +22,8 @@ snapshot:
       directory: plugins/infisical
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:40.603Z'
-    checkedAt: '2026-08-04T03:04:40.603Z'
+    lastAttemptAt: '2026-08-04T03:38:12.435Z'
+    checkedAt: '2026-08-04T03:38:12.435Z'
     version: 1.50.0
     sourceUrl: https://github.com/backstage/backstage/blob/master/workspaces/ui/backstage.json
     sourcePath: workspaces/ui/backstage.json

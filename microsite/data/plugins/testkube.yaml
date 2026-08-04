@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:06:01.760Z'
-    checkedAt: '2026-08-04T03:06:01.760Z'
+    lastAttemptAt: '2026-08-04T03:39:35.871Z'
+    checkedAt: '2026-08-04T03:39:35.871Z'
     latestVersion: 0.4.5
     lastPublishedAt: '2026-06-18T15:58:34.749Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/testkube
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:06:01.914Z'
-    checkedAt: '2026-08-04T03:06:01.914Z'
+    lastAttemptAt: '2026-08-04T03:39:36.296Z'
+    checkedAt: '2026-08-04T03:39:36.296Z'
     version: 1.52.0
     sourceUrl: https://github.com/kubeshop/testkube-backstage-plugin/blob/main/backstage.json
     sourcePath: backstage.json

@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:21.474Z'
-    checkedAt: '2026-08-04T03:03:21.474Z'
+    lastAttemptAt: '2026-08-04T03:36:54.842Z'
+    checkedAt: '2026-08-04T03:36:54.842Z'
     latestVersion: 0.1.0
     lastPublishedAt: '2026-05-24T09:31:47.834Z'
     repository:
@@ -21,5 +21,5 @@ snapshot:
       directory: aws
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:03:21.846Z'
+    lastAttemptAt: '2026-08-04T03:36:55.263Z'
     reason: github-invalid-response

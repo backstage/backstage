@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:25.101Z'
-    checkedAt: '2026-08-04T03:03:25.101Z'
+    lastAttemptAt: '2026-08-04T03:36:58.561Z'
+    checkedAt: '2026-08-04T03:36:58.561Z'
     latestVersion: 0.13.0
     lastPublishedAt: '2026-04-24T20:29:01.275Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/azure-sites/plugins/azure-sites
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:25.461Z'
-    checkedAt: '2026-08-04T03:03:25.461Z'
+    lastAttemptAt: '2026-08-04T03:36:58.877Z'
+    checkedAt: '2026-08-04T03:36:58.877Z'
     version: 1.47.2
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/azure-sites/backstage.json
     sourcePath: workspaces/azure-sites/backstage.json

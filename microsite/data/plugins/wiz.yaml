@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:06:06.408Z'
-    checkedAt: '2026-08-04T03:06:06.408Z'
+    lastAttemptAt: '2026-08-04T03:39:42.377Z'
+    checkedAt: '2026-08-04T03:39:42.377Z'
     latestVersion: 2.3.0
     lastPublishedAt: '2025-11-11T13:54:15.793Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/frontend/backstage-plugin-wiz
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:06:06.520Z'
-    checkedAt: '2026-08-04T03:06:06.520Z'
+    lastAttemptAt: '2026-08-04T03:39:42.610Z'
+    checkedAt: '2026-08-04T03:39:42.610Z'
     version: 1.44.2
     sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json

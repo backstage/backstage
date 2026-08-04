@@ -13,13 +13,13 @@ staleSince: '2026-02-17'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:58.652Z'
-    checkedAt: '2026-08-04T03:04:58.652Z'
+    lastAttemptAt: '2026-08-04T03:38:30.373Z'
+    checkedAt: '2026-08-04T03:38:30.373Z'
     latestVersion: 1.0.2
     lastPublishedAt: '2024-03-04T17:22:47.688Z'
     repository:
       url: https://github.com/litmuschaos/backstage-plugin
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:04:58.798Z'
+    lastAttemptAt: '2026-08-04T03:38:30.516Z'
     reason: backstage-json-not-found

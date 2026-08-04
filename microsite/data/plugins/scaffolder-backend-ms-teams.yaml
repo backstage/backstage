@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:33.960Z'
-    checkedAt: '2026-08-04T03:05:33.960Z'
+    lastAttemptAt: '2026-08-04T03:39:06.148Z'
+    checkedAt: '2026-08-04T03:39:06.148Z'
     latestVersion: 3.1.0
     lastPublishedAt: '2026-07-04T07:55:56.814Z'
     repository:
@@ -21,5 +21,5 @@ snapshot:
       directory: .
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:05:34.295Z'
+    lastAttemptAt: '2026-08-04T03:39:06.510Z'
     reason: backstage-json-not-found

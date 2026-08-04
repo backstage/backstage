@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:44.563Z'
-    checkedAt: '2026-08-04T03:05:44.563Z'
+    lastAttemptAt: '2026-08-04T03:39:17.465Z'
+    checkedAt: '2026-08-04T03:39:17.465Z'
     latestVersion: 1.11.6
     lastPublishedAt: '2026-03-02T09:34:13.671Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/search-backend-module-cognitive-search
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:44.912Z'
-    checkedAt: '2026-08-04T03:05:44.912Z'
+    lastAttemptAt: '2026-08-04T03:39:17.796Z'
+    checkedAt: '2026-08-04T03:39:17.796Z'
     version: 1.48.3
     sourceUrl: https://github.com/ap-communications/platt-backstage-plugin/blob/main/backstage.json
     sourcePath: backstage.json

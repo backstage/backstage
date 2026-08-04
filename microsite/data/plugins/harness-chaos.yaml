@@ -8,13 +8,16 @@ documentation: https://github.com/harness/backstage-plugins/tree/main/plugins/ha
 iconUrl: https://static.harness.io/ng-static/images/favicon.png
 npmPackageName: '@harnessio/backstage-plugin-harness-chaos'
 addedDate: '2024-06-25'
-status: active
+status: inactive
+staleSince: '2026-08-04'
 snapshot:
   npm:
-    status: unavailable
-    lastAttemptAt: '2026-08-04T03:04:30.756Z'
-    reason: repository-unsupported
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:38:03.269Z'
+    checkedAt: '2026-08-04T03:38:03.269Z'
+    latestVersion: 0.2.0
+    lastPublishedAt: '2024-09-05T06:27:35.761Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:04:30.756Z'
-    reason: npm-data-unavailable
+    lastAttemptAt: '2026-08-04T03:38:03.269Z'
+    reason: repository-unsupported

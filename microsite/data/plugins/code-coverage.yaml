@@ -11,8 +11,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:45.859Z'
-    checkedAt: '2026-08-04T03:03:45.859Z'
+    lastAttemptAt: '2026-08-04T03:37:20.914Z'
+    checkedAt: '2026-08-04T03:37:20.914Z'
     latestVersion: 0.14.1
     lastPublishedAt: '2026-07-03T17:37:49.158Z'
     repository:
@@ -20,8 +20,8 @@ snapshot:
       directory: workspaces/code-coverage/plugins/code-coverage
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:46.209Z'
-    checkedAt: '2026-08-04T03:03:46.209Z'
+    lastAttemptAt: '2026-08-04T03:37:21.251Z'
+    checkedAt: '2026-08-04T03:37:21.251Z'
     version: 1.49.2
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/code-coverage/backstage.json
     sourcePath: workspaces/code-coverage/backstage.json

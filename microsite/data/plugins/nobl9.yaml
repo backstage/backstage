@@ -13,8 +13,8 @@ staleSince: '2026-08-04'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:07.122Z'
-    checkedAt: '2026-08-04T03:05:07.122Z'
+    lastAttemptAt: '2026-08-04T03:38:39.034Z'
+    checkedAt: '2026-08-04T03:38:39.034Z'
     latestVersion: 0.3.1
     lastPublishedAt: '2025-02-21T16:15:12.115Z'
     repository:
@@ -22,8 +22,8 @@ snapshot:
       directory: plugins/nobl9-plugin
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:07.484Z'
-    checkedAt: '2026-08-04T03:05:07.484Z'
+    lastAttemptAt: '2026-08-04T03:38:39.451Z'
+    checkedAt: '2026-08-04T03:38:39.451Z'
     version: 1.36.0
     sourceUrl: https://github.com/nobl9/nobl9-backstage-plugin/blob/main/backstage.json
     sourcePath: backstage.json

@@ -13,8 +13,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:28.827Z'
-    checkedAt: '2026-08-04T03:03:28.827Z'
+    lastAttemptAt: '2026-08-04T03:37:01.936Z'
+    checkedAt: '2026-08-04T03:37:01.936Z'
     latestVersion: 1.38.1
     lastPublishedAt: '2026-07-14T12:12:12.436Z'
     repository:
@@ -22,8 +22,8 @@ snapshot:
       directory: plugins/scaffolder
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:29.200Z'
-    checkedAt: '2026-08-04T03:03:29.200Z'
+    lastAttemptAt: '2026-08-04T03:37:02.355Z'
+    checkedAt: '2026-08-04T03:37:02.355Z'
     version: 1.50.0
     sourceUrl: https://github.com/backstage/backstage/blob/master/workspaces/ui/backstage.json
     sourcePath: workspaces/ui/backstage.json

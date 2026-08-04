@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:09.892Z'
-    checkedAt: '2026-08-04T03:03:09.892Z'
+    lastAttemptAt: '2026-08-04T03:36:43.371Z'
+    checkedAt: '2026-08-04T03:36:43.371Z'
     latestVersion: 0.14.3
     lastPublishedAt: '2026-07-14T11:56:44.001Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/api-docs
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:10.257Z'
-    checkedAt: '2026-08-04T03:03:10.257Z'
+    lastAttemptAt: '2026-08-04T03:36:43.700Z'
+    checkedAt: '2026-08-04T03:36:43.700Z'
     version: 1.50.0
     sourceUrl: https://github.com/backstage/backstage/blob/master/workspaces/ui/backstage.json
     sourcePath: workspaces/ui/backstage.json

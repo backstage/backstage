@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:07.645Z'
-    checkedAt: '2026-08-04T03:03:07.645Z'
+    lastAttemptAt: '2026-08-04T03:36:40.824Z'
+    checkedAt: '2026-08-04T03:36:40.824Z'
     latestVersion: 1.30.0
     lastPublishedAt: '2026-07-21T17:22:44.382Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/analytics/plugins/analytics-module-matomo
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:07.980Z'
-    checkedAt: '2026-08-04T03:03:07.980Z'
+    lastAttemptAt: '2026-08-04T03:36:41.457Z'
+    checkedAt: '2026-08-04T03:36:41.457Z'
     version: 1.52.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/analytics/backstage.json
     sourcePath: workspaces/analytics/backstage.json

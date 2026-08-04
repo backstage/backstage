@@ -12,13 +12,13 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:49.834Z'
-    checkedAt: '2026-08-04T03:04:49.834Z'
+    lastAttemptAt: '2026-08-04T03:38:21.781Z'
+    checkedAt: '2026-08-04T03:38:21.781Z'
     latestVersion: 0.14.2
     lastPublishedAt: '2026-03-27T15:50:03.720Z'
     repository:
       url: https://github.com/jfvilas/kubelog
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:04:50.196Z'
+    lastAttemptAt: '2026-08-04T03:38:22.257Z'
     reason: backstage-json-not-found

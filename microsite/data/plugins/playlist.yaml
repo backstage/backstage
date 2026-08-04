@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:17.285Z'
-    checkedAt: '2026-08-04T03:05:17.285Z'
+    lastAttemptAt: '2026-08-04T03:38:49.211Z'
+    checkedAt: '2026-08-04T03:38:49.211Z'
     latestVersion: 0.21.0
     lastPublishedAt: '2026-07-20T18:32:43.173Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/playlist/plugins/playlist
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:17.660Z'
-    checkedAt: '2026-08-04T03:05:17.660Z'
+    lastAttemptAt: '2026-08-04T03:38:49.520Z'
+    checkedAt: '2026-08-04T03:38:49.520Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/playlist/backstage.json
     sourcePath: workspaces/playlist/backstage.json

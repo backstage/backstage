@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:10.086Z'
-    checkedAt: '2026-08-04T03:05:10.086Z'
+    lastAttemptAt: '2026-08-04T03:38:41.931Z'
+    checkedAt: '2026-08-04T03:38:41.931Z'
     latestVersion: 1.4.1
     lastPublishedAt: '2026-07-21T08:53:14.463Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/catalog-backend-module-okta
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:10.386Z'
-    checkedAt: '2026-08-04T03:05:10.386Z'
+    lastAttemptAt: '2026-08-04T03:38:42.136Z'
+    checkedAt: '2026-08-04T03:38:42.136Z'
     version: 1.44.2
     sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json

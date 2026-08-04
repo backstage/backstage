@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:46.764Z'
-    checkedAt: '2026-08-04T03:05:46.764Z'
+    lastAttemptAt: '2026-08-04T03:39:19.732Z'
+    checkedAt: '2026-08-04T03:39:19.732Z'
     latestVersion: 1.20.0
     lastPublishedAt: '2026-07-22T00:24:04.985Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/sentry/plugins/sentry
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:47.122Z'
-    checkedAt: '2026-08-04T03:05:47.122Z'
+    lastAttemptAt: '2026-08-04T03:39:20.175Z'
+    checkedAt: '2026-08-04T03:39:20.175Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/sentry/backstage.json
     sourcePath: workspaces/sentry/backstage.json

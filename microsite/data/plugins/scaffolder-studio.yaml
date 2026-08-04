@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:38.532Z'
-    checkedAt: '2026-08-04T03:05:38.532Z'
+    lastAttemptAt: '2026-08-04T03:39:10.873Z'
+    checkedAt: '2026-08-04T03:39:10.873Z'
     latestVersion: 1.7.0
     lastPublishedAt: '2026-07-04T13:50:48.853Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/scaffolder-studio
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:38.878Z'
-    checkedAt: '2026-08-04T03:05:38.878Z'
+    lastAttemptAt: '2026-08-04T03:39:11.227Z'
+    checkedAt: '2026-08-04T03:39:11.227Z'
     version: 1.52.0
     sourceUrl: https://github.com/kissmikijr/scaffolder-studio/blob/main/backstage.json
     sourcePath: backstage.json

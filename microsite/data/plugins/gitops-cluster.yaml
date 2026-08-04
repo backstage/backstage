@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:23.369Z'
-    checkedAt: '2026-08-04T03:04:23.369Z'
+    lastAttemptAt: '2026-08-04T03:37:55.978Z'
+    checkedAt: '2026-08-04T03:37:55.978Z'
     latestVersion: 0.23.0
     lastPublishedAt: '2026-07-22T00:16:55.284Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/gitops-profiles/plugins/gitops-profiles
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:23.732Z'
-    checkedAt: '2026-08-04T03:04:23.732Z'
+    lastAttemptAt: '2026-08-04T03:37:56.356Z'
+    checkedAt: '2026-08-04T03:37:56.356Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/gitops-profiles/backstage.json
     sourcePath: workspaces/gitops-profiles/backstage.json

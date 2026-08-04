@@ -13,13 +13,13 @@ staleSince: '2026-08-04'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:06.869Z'
-    checkedAt: '2026-08-04T03:03:06.869Z'
+    lastAttemptAt: '2026-08-04T03:36:40.214Z'
+    checkedAt: '2026-08-04T03:36:40.214Z'
     latestVersion: 0.1.1
     lastPublishedAt: '2025-06-09T18:03:52.072Z'
     repository:
       url: https://github.com/pfeifferj/backstage-plugin-analytics-generic
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:03:07.227Z'
+    lastAttemptAt: '2026-08-04T03:36:40.480Z'
     reason: backstage-json-not-found

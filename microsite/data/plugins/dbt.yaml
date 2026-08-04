@@ -13,13 +13,13 @@ staleSince: '2026-02-17'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:55.481Z'
-    checkedAt: '2026-08-04T03:03:55.481Z'
+    lastAttemptAt: '2026-08-04T03:37:29.859Z'
+    checkedAt: '2026-08-04T03:37:29.859Z'
     latestVersion: 2.1.0
     lastPublishedAt: '2024-05-17T13:30:57.556Z'
     repository:
       url: https://github.com/IIBenII/backstage-plugin-dbt
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:03:55.874Z'
+    lastAttemptAt: '2026-08-04T03:37:30.274Z'
     reason: backstage-json-not-found

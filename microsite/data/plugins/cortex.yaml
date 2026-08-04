@@ -13,16 +13,16 @@ staleSince: '2026-08-04'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:49.043Z'
-    checkedAt: '2026-08-04T03:03:49.043Z'
+    lastAttemptAt: '2026-08-04T03:37:23.872Z'
+    checkedAt: '2026-08-04T03:37:23.872Z'
     latestVersion: 2.13.6
     lastPublishedAt: '2025-02-24T12:55:50.032Z'
     repository:
       url: https://github.com/cortexapps/backstage-plugin
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:49.398Z'
-    checkedAt: '2026-08-04T03:03:49.398Z'
+    lastAttemptAt: '2026-08-04T03:37:24.127Z'
+    checkedAt: '2026-08-04T03:37:24.127Z'
     version: 1.27.7
     sourceUrl: https://github.com/cortexapps/backstage-plugin/blob/master/backstage.json
     sourcePath: backstage.json

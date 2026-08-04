@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:32.894Z'
-    checkedAt: '2026-08-04T03:03:32.894Z'
+    lastAttemptAt: '2026-08-04T03:37:06.015Z'
+    checkedAt: '2026-08-04T03:37:06.015Z'
     latestVersion: 0.13.0
     lastPublishedAt: '2026-03-07T13:39:31.042Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/blackduck/plugins/blackduck
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:33.236Z'
-    checkedAt: '2026-08-04T03:03:33.236Z'
+    lastAttemptAt: '2026-08-04T03:37:06.387Z'
+    checkedAt: '2026-08-04T03:37:06.387Z'
     version: 1.48.4
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/blackduck/backstage.json
     sourcePath: workspaces/blackduck/backstage.json

@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:57.152Z'
-    checkedAt: '2026-08-04T03:04:57.152Z'
+    lastAttemptAt: '2026-08-04T03:38:29.038Z'
+    checkedAt: '2026-08-04T03:38:29.038Z'
     latestVersion: 0.25.0
     lastPublishedAt: '2026-07-22T00:16:53.057Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/lighthouse/plugins/lighthouse
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:57.507Z'
-    checkedAt: '2026-08-04T03:04:57.507Z'
+    lastAttemptAt: '2026-08-04T03:38:29.329Z'
+    checkedAt: '2026-08-04T03:38:29.329Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/lighthouse/backstage.json
     sourcePath: workspaces/lighthouse/backstage.json

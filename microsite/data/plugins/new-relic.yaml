@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:05.769Z'
-    checkedAt: '2026-08-04T03:05:05.769Z'
+    lastAttemptAt: '2026-08-04T03:38:37.614Z'
+    checkedAt: '2026-08-04T03:38:37.614Z'
     latestVersion: 0.24.0
     lastPublishedAt: '2026-07-22T00:17:15.558Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/newrelic/plugins/newrelic
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:06.119Z'
-    checkedAt: '2026-08-04T03:05:06.119Z'
+    lastAttemptAt: '2026-08-04T03:38:37.951Z'
+    checkedAt: '2026-08-04T03:38:37.951Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/newrelic/backstage.json
     sourcePath: workspaces/newrelic/backstage.json

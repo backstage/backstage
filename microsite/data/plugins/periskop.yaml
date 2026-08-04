@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:16.381Z'
-    checkedAt: '2026-08-04T03:05:16.381Z'
+    lastAttemptAt: '2026-08-04T03:38:48.244Z'
+    checkedAt: '2026-08-04T03:38:48.244Z'
     latestVersion: 0.20.0
     lastPublishedAt: '2026-07-22T00:17:47.616Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/periskop/plugins/periskop
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:16.726Z'
-    checkedAt: '2026-08-04T03:05:16.726Z'
+    lastAttemptAt: '2026-08-04T03:38:48.584Z'
+    checkedAt: '2026-08-04T03:38:48.584Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/periskop/backstage.json
     sourcePath: workspaces/periskop/backstage.json

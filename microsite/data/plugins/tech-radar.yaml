@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:59.958Z'
-    checkedAt: '2026-08-04T03:05:59.958Z'
+    lastAttemptAt: '2026-08-04T03:39:33.321Z'
+    checkedAt: '2026-08-04T03:39:33.321Z'
     latestVersion: 1.21.0
     lastPublishedAt: '2026-07-22T13:15:22.736Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/tech-radar/plugins/tech-radar
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:06:00.042Z'
-    checkedAt: '2026-08-04T03:06:00.042Z'
+    lastAttemptAt: '2026-08-04T03:39:33.580Z'
+    checkedAt: '2026-08-04T03:39:33.580Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/tech-radar/backstage.json
     sourcePath: workspaces/tech-radar/backstage.json

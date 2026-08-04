@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:15.326Z'
-    checkedAt: '2026-08-04T03:03:15.326Z'
+    lastAttemptAt: '2026-08-04T03:36:48.679Z'
+    checkedAt: '2026-08-04T03:36:48.679Z'
     latestVersion: 2.12.5
     lastPublishedAt: '2026-04-06T08:55:55.061Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/frontend/backstage-plugin-argo-cd
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:15.768Z'
-    checkedAt: '2026-08-04T03:03:15.768Z'
+    lastAttemptAt: '2026-08-04T03:36:49.132Z'
+    checkedAt: '2026-08-04T03:36:49.132Z'
     version: 1.44.2
     sourceUrl: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json

@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:22.766Z'
-    checkedAt: '2026-08-04T03:05:22.766Z'
+    lastAttemptAt: '2026-08-04T03:38:54.632Z'
+    checkedAt: '2026-08-04T03:38:54.632Z'
     latestVersion: 0.21.0
     lastPublishedAt: '2026-07-28T15:32:50.700Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/renovate
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:23.129Z'
-    checkedAt: '2026-08-04T03:05:23.129Z'
+    lastAttemptAt: '2026-08-04T03:38:54.895Z'
+    checkedAt: '2026-08-04T03:38:54.895Z'
     version: 1.53.0
     sourceUrl: https://github.com/secustor/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json

@@ -11,8 +11,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:02.704Z'
-    checkedAt: '2026-08-04T03:04:02.704Z'
+    lastAttemptAt: '2026-08-04T03:37:36.657Z'
+    checkedAt: '2026-08-04T03:37:36.657Z'
     latestVersion: 1.0.3
     lastPublishedAt: '2026-02-27T08:24:00.249Z'
     repository:
@@ -20,5 +20,5 @@ snapshot:
       directory: plugins/dora-scorecard
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:04:03.091Z'
+    lastAttemptAt: '2026-08-04T03:37:37.083Z'
     reason: backstage-json-not-found

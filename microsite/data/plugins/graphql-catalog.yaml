@@ -13,8 +13,8 @@ staleSince: '2026-02-17'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:26.459Z'
-    checkedAt: '2026-08-04T03:04:26.459Z'
+    lastAttemptAt: '2026-08-04T03:37:58.937Z'
+    checkedAt: '2026-08-04T03:37:58.937Z'
     latestVersion: 0.1.9
     lastPublishedAt: '2024-08-14T15:35:57.801Z'
     repository:
@@ -22,8 +22,8 @@ snapshot:
       directory: plugins/graphql-backend
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:26.813Z'
-    checkedAt: '2026-08-04T03:04:26.813Z'
+    lastAttemptAt: '2026-08-04T03:37:59.294Z'
+    checkedAt: '2026-08-04T03:37:59.294Z'
     version: 1.29.2
     sourceUrl: https://github.com/thefrontside/playhouse/blob/main/backstage.json
     sourcePath: backstage.json

@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:06:04.716Z'
-    checkedAt: '2026-08-04T03:06:04.716Z'
+    lastAttemptAt: '2026-08-04T03:39:40.472Z'
+    checkedAt: '2026-08-04T03:39:40.472Z'
     latestVersion: 1.6.0
     lastPublishedAt: '2026-07-25T15:41:07.966Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/usage-statistics
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:06:05.151Z'
-    checkedAt: '2026-08-04T03:06:05.151Z'
+    lastAttemptAt: '2026-08-04T03:39:40.899Z'
+    checkedAt: '2026-08-04T03:39:40.899Z'
     version: 1.53.0
     sourceUrl: https://github.com/CodeVerse-GP/usage-statistics/blob/main/backstage.json
     sourcePath: backstage.json

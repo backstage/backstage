@@ -13,13 +13,13 @@ staleSince: '2026-08-04'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:01.740Z'
-    checkedAt: '2026-08-04T03:04:01.740Z'
+    lastAttemptAt: '2026-08-04T03:37:35.834Z'
+    checkedAt: '2026-08-04T03:37:35.834Z'
     latestVersion: 1.1.4
     lastPublishedAt: '2025-05-29T20:15:40.612Z'
     repository:
       url: https://github.com/liatrio/backstage-dora-plugin
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:04:02.100Z'
+    lastAttemptAt: '2026-08-04T03:37:36.170Z'
     reason: backstage-json-not-found

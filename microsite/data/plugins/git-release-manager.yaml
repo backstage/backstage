@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:18.234Z'
-    checkedAt: '2026-08-04T03:04:18.234Z'
+    lastAttemptAt: '2026-08-04T03:37:51.070Z'
+    checkedAt: '2026-08-04T03:37:51.070Z'
     latestVersion: 0.13.2
     lastPublishedAt: '2026-04-17T18:31:07.282Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/git-release-manager/plugins/git-release-manager
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:18.626Z'
-    checkedAt: '2026-08-04T03:04:18.626Z'
+    lastAttemptAt: '2026-08-04T03:37:51.407Z'
+    checkedAt: '2026-08-04T03:37:51.407Z'
     version: 1.48.4
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/git-release-manager/backstage.json
     sourcePath: workspaces/git-release-manager/backstage.json

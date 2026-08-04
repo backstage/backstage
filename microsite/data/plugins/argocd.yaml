@@ -11,8 +11,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:16.398Z'
-    checkedAt: '2026-08-04T03:03:16.398Z'
+    lastAttemptAt: '2026-08-04T03:36:49.801Z'
+    checkedAt: '2026-08-04T03:36:49.801Z'
     latestVersion: 2.10.0
     lastPublishedAt: '2026-07-17T09:05:20.142Z'
     repository:
@@ -20,8 +20,8 @@ snapshot:
       directory: workspaces/argocd/plugins/argocd
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:16.793Z'
-    checkedAt: '2026-08-04T03:03:16.793Z'
+    lastAttemptAt: '2026-08-04T03:36:50.179Z'
+    checkedAt: '2026-08-04T03:36:50.179Z'
     version: 1.50.4
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/argocd/backstage.json
     sourcePath: workspaces/argocd/backstage.json

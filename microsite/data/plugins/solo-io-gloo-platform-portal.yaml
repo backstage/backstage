@@ -13,13 +13,13 @@ staleSince: '2026-02-17'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:50.016Z'
-    checkedAt: '2026-08-04T03:05:50.016Z'
+    lastAttemptAt: '2026-08-04T03:39:23.064Z'
+    checkedAt: '2026-08-04T03:39:23.064Z'
     latestVersion: 0.2.7
     lastPublishedAt: '2023-07-20T14:58:14.164Z'
     repository:
       url: https://github.com/solo-io/dev-portal-backstage-public
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:05:50.347Z'
+    lastAttemptAt: '2026-08-04T03:39:23.400Z'
     reason: backstage-json-not-found

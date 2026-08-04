@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:32.399Z'
-    checkedAt: '2026-08-04T03:03:32.399Z'
+    lastAttemptAt: '2026-08-04T03:37:05.528Z'
+    checkedAt: '2026-08-04T03:37:05.528Z'
     latestVersion: 0.12.0
     lastPublishedAt: '2026-04-17T18:31:41.877Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/bitrise/plugins/bitrise
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:32.781Z'
-    checkedAt: '2026-08-04T03:03:32.781Z'
+    lastAttemptAt: '2026-08-04T03:37:05.911Z'
+    checkedAt: '2026-08-04T03:37:05.911Z'
     version: 1.49.2
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/bitrise/backstage.json
     sourcePath: workspaces/bitrise/backstage.json

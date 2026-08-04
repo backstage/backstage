@@ -8,14 +8,16 @@ documentation: https://github.com/croz-ltd/apic-backend-plugin?utm_source=backst
 iconUrl: https://croz.net/app/uploads/2024/05/apple-touch-icon.png
 npmPackageName: '@croz/plugin-ibm-apic-backend'
 addedDate: '2024-03-01'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
 snapshot:
   npm:
-    status: unavailable
-    lastAttemptAt: '2026-08-04T03:04:38.525Z'
-    reason: repository-unsupported
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:38:10.443Z'
+    checkedAt: '2026-08-04T03:38:10.443Z'
+    latestVersion: 1.0.2
+    lastPublishedAt: '2024-03-01T13:31:56.337Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:04:38.525Z'
-    reason: npm-data-unavailable
+    lastAttemptAt: '2026-08-04T03:38:10.443Z'
+    reason: repository-unsupported

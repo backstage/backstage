@@ -11,8 +11,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:37.015Z'
-    checkedAt: '2026-08-04T03:03:37.015Z'
+    lastAttemptAt: '2026-08-04T03:37:10.081Z'
+    checkedAt: '2026-08-04T03:37:10.081Z'
     latestVersion: 0.11.0
     lastPublishedAt: '2026-07-22T10:36:43.683Z'
     repository:
@@ -20,8 +20,8 @@ snapshot:
       directory: workspaces/azure-resources/plugins/catalog-backend-module-azure-resources
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:37.352Z'
-    checkedAt: '2026-08-04T03:03:37.352Z'
+    lastAttemptAt: '2026-08-04T03:37:10.321Z'
+    checkedAt: '2026-08-04T03:37:10.321Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/azure-resources/backstage.json
     sourcePath: workspaces/azure-resources/backstage.json

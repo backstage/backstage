@@ -13,16 +13,16 @@ staleSince: '2026-02-17'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:43.721Z'
-    checkedAt: '2026-08-04T03:05:43.721Z'
+    lastAttemptAt: '2026-08-04T03:39:16.579Z'
+    checkedAt: '2026-08-04T03:39:16.579Z'
     latestVersion: 1.0.1
     lastPublishedAt: '2024-05-23T17:26:28.221Z'
     repository:
       url: https://github.com/arhill05/backstage-plugin-search-backend-module-azure-devops-wiki
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:44.113Z'
-    checkedAt: '2026-08-04T03:05:44.113Z'
+    lastAttemptAt: '2026-08-04T03:39:17.022Z'
+    checkedAt: '2026-08-04T03:39:17.022Z'
     version: 1.27.3
     sourceUrl: https://github.com/arhill05/backstage-plugin-search-backend-module-azure-devops-wiki/blob/main/backstage.json
     sourcePath: backstage.json

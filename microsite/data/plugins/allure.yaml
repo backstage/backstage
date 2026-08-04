@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:05.460Z'
-    checkedAt: '2026-08-04T03:03:05.460Z'
+    lastAttemptAt: '2026-08-04T03:36:38.757Z'
+    checkedAt: '2026-08-04T03:36:38.757Z'
     latestVersion: 0.21.0
     lastPublishedAt: '2026-07-21T23:00:06.892Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/allure/plugins/allure
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:05.849Z'
-    checkedAt: '2026-08-04T03:03:05.849Z'
+    lastAttemptAt: '2026-08-04T03:36:39.158Z'
+    checkedAt: '2026-08-04T03:36:39.158Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/allure/backstage.json
     sourcePath: workspaces/allure/backstage.json

@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:06:03.511Z'
-    checkedAt: '2026-08-04T03:06:03.511Z'
+    lastAttemptAt: '2026-08-04T03:39:38.033Z'
+    checkedAt: '2026-08-04T03:39:38.033Z'
     latestVersion: 0.23.0
     lastPublishedAt: '2026-07-22T00:22:10.683Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/todo/plugins/todo
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:06:03.658Z'
-    checkedAt: '2026-08-04T03:06:03.658Z'
+    lastAttemptAt: '2026-08-04T03:39:38.310Z'
+    checkedAt: '2026-08-04T03:39:38.310Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/todo/backstage.json
     sourcePath: workspaces/todo/backstage.json

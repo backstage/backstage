@@ -13,8 +13,8 @@ staleSince: '2026-02-17'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:52.154Z'
-    checkedAt: '2026-08-04T03:04:52.154Z'
+    lastAttemptAt: '2026-08-04T03:38:24.128Z'
+    checkedAt: '2026-08-04T03:38:24.128Z'
     latestVersion: 0.1.0
     lastPublishedAt: '2023-02-05T17:49:36.540Z'
     repository:
@@ -22,8 +22,8 @@ snapshot:
       directory: plugins/kubevela-backend
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:52.518Z'
-    checkedAt: '2026-08-04T03:04:52.518Z'
+    lastAttemptAt: '2026-08-04T03:38:24.504Z'
+    checkedAt: '2026-08-04T03:38:24.504Z'
     version: 1.9.0
     sourceUrl: https://github.com/wonderflow/vela-backstage-demo/blob/main/backstage.json
     sourcePath: backstage.json

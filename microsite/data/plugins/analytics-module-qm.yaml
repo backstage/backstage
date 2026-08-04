@@ -13,13 +13,13 @@ staleSince: '2026-02-17'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:08.081Z'
-    checkedAt: '2026-08-04T03:03:08.081Z'
+    lastAttemptAt: '2026-08-04T03:36:41.646Z'
+    checkedAt: '2026-08-04T03:36:41.646Z'
     latestVersion: 1.0.2
     lastPublishedAt: '2024-04-04T17:47:38.563Z'
     repository:
       url: https://github.com/quantummetric/analytics-module-qm
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:03:08.471Z'
+    lastAttemptAt: '2026-08-04T03:36:41.991Z'
     reason: backstage-json-not-found

@@ -11,8 +11,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:38.054Z'
-    checkedAt: '2026-08-04T03:05:38.054Z'
+    lastAttemptAt: '2026-08-04T03:39:10.485Z'
+    checkedAt: '2026-08-04T03:39:10.485Z'
     latestVersion: 2.15.0
     lastPublishedAt: '2026-07-08T08:07:05.421Z'
     repository:
@@ -20,8 +20,8 @@ snapshot:
       directory: workspaces/scaffolder-relation-processor/plugins/catalog-backend-module-scaffolder-relation-processor
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:38.437Z'
-    checkedAt: '2026-08-04T03:05:38.437Z'
+    lastAttemptAt: '2026-08-04T03:39:10.766Z'
+    checkedAt: '2026-08-04T03:39:10.766Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/scaffolder-relation-processor/backstage.json
     sourcePath: workspaces/scaffolder-relation-processor/backstage.json

@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:47.678Z'
-    checkedAt: '2026-08-04T03:05:47.678Z'
+    lastAttemptAt: '2026-08-04T03:39:20.736Z'
+    checkedAt: '2026-08-04T03:39:20.736Z'
     latestVersion: 0.23.0
     lastPublishedAt: '2026-07-22T00:21:24.444Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/shortcuts/plugins/shortcuts
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:48.049Z'
-    checkedAt: '2026-08-04T03:05:48.049Z'
+    lastAttemptAt: '2026-08-04T03:39:21.008Z'
+    checkedAt: '2026-08-04T03:39:21.008Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/shortcuts/backstage.json
     sourcePath: workspaces/shortcuts/backstage.json

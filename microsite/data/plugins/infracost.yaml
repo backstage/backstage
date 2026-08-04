@@ -8,13 +8,16 @@ documentation: https://platform.vee.codes/plugin/Infracost
 iconUrl: https://veecode-platform.github.io/support/imgs/logo_5.svg
 npmPackageName: '@veecode-platform/backstage-plugin-infracost'
 addedDate: '2024-07-25'
-status: active
+status: inactive
+staleSince: '2026-08-04'
 snapshot:
   npm:
-    status: unavailable
-    lastAttemptAt: '2026-08-04T03:04:40.703Z'
-    reason: repository-unsupported
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:38:12.542Z'
+    checkedAt: '2026-08-04T03:38:12.542Z'
+    latestVersion: 0.4.0
+    lastPublishedAt: '2025-06-27T14:49:40.947Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:04:40.703Z'
-    reason: npm-data-unavailable
+    lastAttemptAt: '2026-08-04T03:38:12.542Z'
+    reason: repository-unsupported

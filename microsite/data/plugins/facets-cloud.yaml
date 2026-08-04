@@ -15,13 +15,13 @@ staleSince: '2026-08-04'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:09.588Z'
-    checkedAt: '2026-08-04T03:04:09.588Z'
+    lastAttemptAt: '2026-08-04T03:37:43.520Z'
+    checkedAt: '2026-08-04T03:37:43.520Z'
     latestVersion: 0.1.3
     lastPublishedAt: '2025-03-20T12:23:14.221Z'
     repository:
       url: https://github.com/Facets-cloud/facets-backstage-plugin
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:04:09.945Z'
+    lastAttemptAt: '2026-08-04T03:37:43.864Z'
     reason: backstage-json-not-found

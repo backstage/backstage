@@ -12,16 +12,16 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:40.736Z'
-    checkedAt: '2026-08-04T03:05:40.736Z'
+    lastAttemptAt: '2026-08-04T03:39:13.441Z'
+    checkedAt: '2026-08-04T03:39:13.441Z'
     latestVersion: 0.5.0
     lastPublishedAt: '2026-01-26T22:44:40.217Z'
     repository:
       url: https://github.com/Scalr/scalr-backstage-plugin
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:41.140Z'
-    checkedAt: '2026-08-04T03:05:41.140Z'
+    lastAttemptAt: '2026-08-04T03:39:13.883Z'
+    checkedAt: '2026-08-04T03:39:13.883Z'
     version: 1.37.0
     sourceUrl: https://github.com/Scalr/scalr-backstage-plugin/blob/main/backstage.json
     sourcePath: backstage.json

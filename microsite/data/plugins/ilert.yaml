@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:38.902Z'
-    checkedAt: '2026-08-04T03:04:38.902Z'
+    lastAttemptAt: '2026-08-04T03:38:10.826Z'
+    checkedAt: '2026-08-04T03:38:10.826Z'
     latestVersion: 0.23.0
     lastPublishedAt: '2026-07-22T00:16:21.432Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/ilert/plugins/ilert
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:39.292Z'
-    checkedAt: '2026-08-04T03:04:39.292Z'
+    lastAttemptAt: '2026-08-04T03:38:11.192Z'
+    checkedAt: '2026-08-04T03:38:11.192Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/ilert/backstage.json
     sourcePath: workspaces/ilert/backstage.json

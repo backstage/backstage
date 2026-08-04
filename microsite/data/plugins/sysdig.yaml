@@ -8,14 +8,16 @@ documentation: https://github.com/sysdiglabs/backstage-plugin-sysdig/blob/main/R
 iconUrl: https://sysdig.com/wp-content/uploads/sysdig-logo-new-white.svg
 npmPackageName: '@sysdig/backstage-plugin-sysdig'
 addedDate: '2024-03-06'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
 snapshot:
   npm:
-    status: unavailable
-    lastAttemptAt: '2026-08-04T03:05:57.582Z'
-    reason: repository-unsupported
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:39:30.688Z'
+    checkedAt: '2026-08-04T03:39:30.688Z'
+    latestVersion: 1.3.2
+    lastPublishedAt: '2024-09-30T11:02:42.601Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:05:57.582Z'
-    reason: npm-data-unavailable
+    lastAttemptAt: '2026-08-04T03:39:30.688Z'
+    reason: repository-unsupported

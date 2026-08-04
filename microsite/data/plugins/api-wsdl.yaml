@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:13.117Z'
-    checkedAt: '2026-08-04T03:03:13.117Z'
+    lastAttemptAt: '2026-08-04T03:36:46.427Z'
+    checkedAt: '2026-08-04T03:36:46.427Z'
     latestVersion: 0.1.2
     lastPublishedAt: '2025-12-19T07:45:20.670Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/api-docs-module-wsdl
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:13.382Z'
-    checkedAt: '2026-08-04T03:03:13.382Z'
+    lastAttemptAt: '2026-08-04T03:36:46.808Z'
+    checkedAt: '2026-08-04T03:36:46.808Z'
     version: 1.46.1
     sourceUrl: https://github.com/dweber019/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json

@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:52.480Z'
-    checkedAt: '2026-08-04T03:05:52.480Z'
+    lastAttemptAt: '2026-08-04T03:39:25.476Z'
+    checkedAt: '2026-08-04T03:39:25.476Z'
     latestVersion: 0.25.0
     lastPublishedAt: '2026-07-22T00:20:54.472Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/splunk/plugins/splunk-on-call
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:52.810Z'
-    checkedAt: '2026-08-04T03:05:52.810Z'
+    lastAttemptAt: '2026-08-04T03:39:25.815Z'
+    checkedAt: '2026-08-04T03:39:25.815Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/splunk/backstage.json
     sourcePath: workspaces/splunk/backstage.json

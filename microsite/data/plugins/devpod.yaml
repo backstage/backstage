@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:58.606Z'
-    checkedAt: '2026-08-04T03:03:58.606Z'
+    lastAttemptAt: '2026-08-04T03:37:32.826Z'
+    checkedAt: '2026-08-04T03:37:32.826Z'
     latestVersion: 1.13.0
     lastPublishedAt: '2026-06-30T17:17:34.962Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/devpod-plugin
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:59.060Z'
-    checkedAt: '2026-08-04T03:03:59.060Z'
+    lastAttemptAt: '2026-08-04T03:37:33.162Z'
+    checkedAt: '2026-08-04T03:37:33.162Z'
     version: 1.52.1
     sourceUrl: https://github.com/TeraSky-OSS/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json

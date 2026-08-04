@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:07.877Z'
-    checkedAt: '2026-08-04T03:04:07.877Z'
+    lastAttemptAt: '2026-08-04T03:37:41.693Z'
+    checkedAt: '2026-08-04T03:37:41.693Z'
     latestVersion: 0.22.0
     lastPublishedAt: '2026-07-21T23:04:13.561Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: workspaces/entity-validation/plugins/entity-validation
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:08.136Z'
-    checkedAt: '2026-08-04T03:04:08.136Z'
+    lastAttemptAt: '2026-08-04T03:37:41.948Z'
+    checkedAt: '2026-08-04T03:37:41.948Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/entity-validation/backstage.json
     sourcePath: workspaces/entity-validation/backstage.json

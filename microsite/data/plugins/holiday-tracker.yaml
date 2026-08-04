@@ -13,16 +13,16 @@ staleSince: '2026-08-04'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:35.545Z'
-    checkedAt: '2026-08-04T03:04:35.545Z'
+    lastAttemptAt: '2026-08-04T03:38:07.608Z'
+    checkedAt: '2026-08-04T03:38:07.608Z'
     latestVersion: 1.0.0
     lastPublishedAt: '2025-07-15T10:13:30.929Z'
     repository:
       url: https://github.com/Infosys/holiday-tracker-plugin
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:35.941Z'
-    checkedAt: '2026-08-04T03:04:35.941Z'
+    lastAttemptAt: '2026-08-04T03:38:08.027Z'
+    checkedAt: '2026-08-04T03:38:08.027Z'
     version: 1.39.0
     sourceUrl: https://github.com/Infosys/holiday-tracker-plugin/blob/main/backstage.json
     sourcePath: backstage.json

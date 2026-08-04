@@ -13,8 +13,8 @@ staleSince: '2026-02-17'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:23.837Z'
-    checkedAt: '2026-08-04T03:04:23.837Z'
+    lastAttemptAt: '2026-08-04T03:37:56.447Z'
+    checkedAt: '2026-08-04T03:37:56.447Z'
     latestVersion: 1.0.2
     lastPublishedAt: '2024-12-30T17:33:05.913Z'
     repository:
@@ -22,5 +22,5 @@ snapshot:
       directory: plugins/glean-backend
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:04:24.161Z'
+    lastAttemptAt: '2026-08-04T03:37:56.820Z'
     reason: backstage-json-not-found

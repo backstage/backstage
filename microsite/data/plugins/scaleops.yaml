@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:39.398Z'
-    checkedAt: '2026-08-04T03:05:39.398Z'
+    lastAttemptAt: '2026-08-04T03:39:12.298Z'
+    checkedAt: '2026-08-04T03:39:12.298Z'
     latestVersion: 2.7.0
     lastPublishedAt: '2026-06-30T17:21:15.936Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/scaleops-frontend
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:39.772Z'
-    checkedAt: '2026-08-04T03:05:39.772Z'
+    lastAttemptAt: '2026-08-04T03:39:12.665Z'
+    checkedAt: '2026-08-04T03:39:12.665Z'
     version: 1.52.1
     sourceUrl: https://github.com/TeraSky-OSS/backstage-plugins/blob/main/backstage.json
     sourcePath: backstage.json

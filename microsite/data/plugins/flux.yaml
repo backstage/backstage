@@ -13,8 +13,8 @@ staleSince: '2026-02-17'
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:15.782Z'
-    checkedAt: '2026-08-04T03:04:15.782Z'
+    lastAttemptAt: '2026-08-04T03:37:48.930Z'
+    checkedAt: '2026-08-04T03:37:48.930Z'
     latestVersion: 0.8.5
     lastPublishedAt: '2023-12-01T15:54:49.051Z'
     repository:
@@ -22,8 +22,8 @@ snapshot:
       directory: plugins/backstage-plugin-flux
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:16.136Z'
-    checkedAt: '2026-08-04T03:04:16.136Z'
+    lastAttemptAt: '2026-08-04T03:37:49.143Z'
+    checkedAt: '2026-08-04T03:37:49.143Z'
     version: 1.20.3
     sourceUrl: https://github.com/weaveworks/weaveworks-backstage/blob/main/backstage.json
     sourcePath: backstage.json

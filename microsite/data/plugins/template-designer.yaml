@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:06:01.178Z'
-    checkedAt: '2026-08-04T03:06:01.178Z'
+    lastAttemptAt: '2026-08-04T03:39:35.174Z'
+    checkedAt: '2026-08-04T03:39:35.174Z'
     latestVersion: 0.4.8
     lastPublishedAt: '2026-02-16T22:21:35.567Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: ./plugins/temlplate-designer
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:06:01.293Z'
-    checkedAt: '2026-08-04T03:06:01.293Z'
+    lastAttemptAt: '2026-08-04T03:39:35.416Z'
+    checkedAt: '2026-08-04T03:39:35.416Z'
     version: 1.45.2
     sourceUrl: https://github.com/tduniec/template-designer-plugin/blob/main/backstage.json
     sourcePath: backstage.json

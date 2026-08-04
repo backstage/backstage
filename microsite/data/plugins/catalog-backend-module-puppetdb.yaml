@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:38.429Z'
-    checkedAt: '2026-08-04T03:03:38.429Z'
+    lastAttemptAt: '2026-08-04T03:37:11.369Z'
+    checkedAt: '2026-08-04T03:37:11.369Z'
     latestVersion: 0.2.24
     lastPublishedAt: '2026-07-14T12:04:58.488Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/catalog-backend-module-puppetdb
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:38.886Z'
-    checkedAt: '2026-08-04T03:03:38.886Z'
+    lastAttemptAt: '2026-08-04T03:37:11.677Z'
+    checkedAt: '2026-08-04T03:37:11.677Z'
     version: 1.50.0
     sourceUrl: https://github.com/backstage/backstage/blob/master/workspaces/ui/backstage.json
     sourcePath: workspaces/ui/backstage.json

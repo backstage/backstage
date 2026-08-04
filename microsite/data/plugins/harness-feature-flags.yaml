@@ -8,13 +8,16 @@ documentation: https://github.com/harness/backstage-plugins/tree/main/plugins/ha
 iconUrl: https://static.harness.io/ng-static/images/favicon.png
 npmPackageName: '@harnessio/backstage-plugin-feature-flags'
 addedDate: '2023-03-01'
-status: active
+status: inactive
+staleSince: '2026-08-04'
 snapshot:
   npm:
-    status: unavailable
-    lastAttemptAt: '2026-08-04T03:04:31.499Z'
-    reason: repository-unsupported
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:38:03.782Z'
+    checkedAt: '2026-08-04T03:38:03.782Z'
+    latestVersion: 0.2.1
+    lastPublishedAt: '2023-07-18T14:37:09.278Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:04:31.499Z'
-    reason: npm-data-unavailable
+    lastAttemptAt: '2026-08-04T03:38:03.782Z'
+    reason: repository-unsupported

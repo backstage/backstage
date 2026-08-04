@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:31.703Z'
-    checkedAt: '2026-08-04T03:05:31.703Z'
+    lastAttemptAt: '2026-08-04T03:39:03.927Z'
+    checkedAt: '2026-08-04T03:39:03.927Z'
     latestVersion: 0.5.23
     lastPublishedAt: '2026-07-14T12:14:18.438Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: plugins/scaffolder-backend-module-rails
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:05:32.070Z'
-    checkedAt: '2026-08-04T03:05:32.070Z'
+    lastAttemptAt: '2026-08-04T03:39:04.405Z'
+    checkedAt: '2026-08-04T03:39:04.405Z'
     version: 1.50.0
     sourceUrl: https://github.com/backstage/backstage/blob/master/workspaces/ui/backstage.json
     sourcePath: workspaces/ui/backstage.json

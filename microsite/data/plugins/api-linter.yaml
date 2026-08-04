@@ -12,8 +12,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:11.259Z'
-    checkedAt: '2026-08-04T03:03:11.259Z'
+    lastAttemptAt: '2026-08-04T03:36:44.659Z'
+    checkedAt: '2026-08-04T03:36:44.659Z'
     latestVersion: 1.1.2
     lastPublishedAt: '2026-01-22T09:41:09.066Z'
     repository:
@@ -21,8 +21,8 @@ snapshot:
       directory: .
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:11.409Z'
-    checkedAt: '2026-08-04T03:03:11.409Z'
+    lastAttemptAt: '2026-08-04T03:36:44.807Z'
+    checkedAt: '2026-08-04T03:36:44.807Z'
     version: 1.40.0
     sourceUrl: https://github.com/zalando/backstage-plugin-api-linter/blob/main/backstage.json
     sourcePath: backstage.json

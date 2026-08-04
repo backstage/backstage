@@ -11,8 +11,8 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:09.410Z'
-    checkedAt: '2026-08-04T03:03:09.410Z'
+    lastAttemptAt: '2026-08-04T03:36:42.861Z'
+    checkedAt: '2026-08-04T03:36:42.861Z'
     latestVersion: 0.22.0
     lastPublishedAt: '2026-07-21T22:57:37.128Z'
     repository:
@@ -20,8 +20,8 @@ snapshot:
       directory: workspaces/apache-airflow/plugins/apache-airflow
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:03:09.787Z'
-    checkedAt: '2026-08-04T03:03:09.787Z'
+    lastAttemptAt: '2026-08-04T03:36:43.260Z'
+    checkedAt: '2026-08-04T03:36:43.260Z'
     version: 1.53.0
     sourceUrl: https://github.com/backstage/community-plugins/blob/main/workspaces/apache-airflow/backstage.json
     sourcePath: workspaces/apache-airflow/backstage.json

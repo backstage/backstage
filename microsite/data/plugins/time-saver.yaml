@@ -12,16 +12,16 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:06:02.515Z'
-    checkedAt: '2026-08-04T03:06:02.515Z'
+    lastAttemptAt: '2026-08-04T03:39:36.817Z'
+    checkedAt: '2026-08-04T03:39:36.817Z'
     latestVersion: 2.2.0
     lastPublishedAt: '2026-03-30T21:00:36.639Z'
     repository:
       url: https://github.com/tduniec/backstage-timesaver-plugin
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:06:02.634Z'
-    checkedAt: '2026-08-04T03:06:02.634Z'
+    lastAttemptAt: '2026-08-04T03:39:37.057Z'
+    checkedAt: '2026-08-04T03:39:37.057Z'
     version: 1.49.5
     sourceUrl: https://github.com/tduniec/backstage-timesaver-plugin/blob/main/backstage.json
     sourcePath: backstage.json

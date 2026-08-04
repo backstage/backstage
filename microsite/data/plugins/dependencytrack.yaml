@@ -8,14 +8,15 @@ documentation: https://github.com/TRIMM/plugin-dependencytrack/blob/main/README.
 iconUrl: https://avatars.githubusercontent.com/u/40258585?s=200&v=4
 npmPackageName: '@trimm/plugin-dependencytrack'
 addedDate: '2022-09-06'
-status: inactive
-staleSince: '2026-02-17'
+status: active
 snapshot:
   npm:
-    status: unavailable
-    lastAttemptAt: '2026-08-04T03:03:56.235Z'
-    reason: repository-unsupported
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:37:30.635Z'
+    checkedAt: '2026-08-04T03:37:30.635Z'
+    latestVersion: 0.4.0
+    lastPublishedAt: '2026-06-25T06:45:27.503Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:03:56.235Z'
-    reason: npm-data-unavailable
+    lastAttemptAt: '2026-08-04T03:37:30.635Z'
+    reason: repository-unsupported

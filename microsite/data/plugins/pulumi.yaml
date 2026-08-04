@@ -8,13 +8,16 @@ documentation: https://github.com/pulumi/pulumi-backstage-plugin
 iconUrl: https://www.pulumi.com/logos/brand/avatar-on-white.png
 npmPackageName: '@pulumi/backstage-plugin-pulumi'
 addedDate: '2023-09-27'
-status: active
+status: inactive
+staleSince: '2026-08-04'
 snapshot:
   npm:
-    status: unavailable
-    lastAttemptAt: '2026-08-04T03:05:18.995Z'
-    reason: repository-unsupported
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:38:51.065Z'
+    checkedAt: '2026-08-04T03:38:51.065Z'
+    latestVersion: 0.18.0
+    lastPublishedAt: '2025-05-24T16:27:08.670Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:05:18.995Z'
-    reason: npm-data-unavailable
+    lastAttemptAt: '2026-08-04T03:38:51.065Z'
+    reason: repository-unsupported

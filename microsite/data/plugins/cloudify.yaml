@@ -8,14 +8,16 @@ documentation: https://github.com/cloudify-cosmo/backstage-cloudify-plugin#readm
 iconUrl: https://avatars.githubusercontent.com/u/6260555?s=200&v=4
 npmPackageName: plugin-cloudify
 addedDate: '2022-05-31'
-status: inactive
+status: archived
 staleSince: '2026-02-17'
 snapshot:
   npm:
-    status: unavailable
-    lastAttemptAt: '2026-08-04T03:03:44.428Z'
-    reason: repository-unsupported
+    status: fresh
+    lastAttemptAt: '2026-08-04T03:37:19.430Z'
+    checkedAt: '2026-08-04T03:37:19.430Z'
+    latestVersion: 1.0.0
+    lastPublishedAt: '2022-05-25T12:12:33.395Z'
   backstage:
     status: unavailable
-    lastAttemptAt: '2026-08-04T03:03:44.428Z'
-    reason: npm-data-unavailable
+    lastAttemptAt: '2026-08-04T03:37:19.430Z'
+    reason: repository-unsupported

@@ -11,16 +11,16 @@ status: active
 snapshot:
   npm:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:05.953Z'
-    checkedAt: '2026-08-04T03:04:05.953Z'
+    lastAttemptAt: '2026-08-04T03:37:39.893Z'
+    checkedAt: '2026-08-04T03:37:39.893Z'
     latestVersion: 0.1.4
     lastPublishedAt: '2026-07-12T18:31:31.909Z'
     repository:
       url: https://github.com/SaishNarvekar/elastic-devtool
   backstage:
     status: fresh
-    lastAttemptAt: '2026-08-04T03:04:06.319Z'
-    checkedAt: '2026-08-04T03:04:06.319Z'
+    lastAttemptAt: '2026-08-04T03:37:40.254Z'
+    checkedAt: '2026-08-04T03:37:40.254Z'
     version: 1.52.1
     sourceUrl: https://github.com/SaishNarvekar/elastic-devtool/blob/main/backstage.json
     sourcePath: backstage.json
