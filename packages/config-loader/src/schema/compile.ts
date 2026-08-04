@@ -187,14 +187,10 @@ export function compileConfigSchemas(
       }
 
       if (options?.noUndeclaredProperties) {
-        const hasProperties =
-          typeof schema.properties === 'object' &&
-          schema.properties !== null &&
-          Object.keys(schema.properties).length > 0;
-        const hasPatternProperties =
-          typeof schema.patternProperties === 'object' &&
-          schema.patternProperties !== null &&
-          Object.keys(schema.patternProperties).length > 0;
+        const hasPropertyWithKey = (key: string) =>
+          typeof schema[key] === 'object' &&
+          schema[key] !== null &&
+          Object.keys(schema[key]).length > 0;
         /**
          * The `additionalProperties` key can only be applied to `type: object`
          * in the JSON schema. It's only applied to objects that specify
@@ -203,7 +199,8 @@ export function compileConfigSchemas(
          */
         if (
           schema?.type === 'object' &&
-          (hasProperties || hasPatternProperties)
+          (hasPropertyWithKey('properties') ||
+            hasPropertyWithKey('patternProperties'))
         ) {
           schema.additionalProperties ||= false;
         }
