@@ -295,7 +295,7 @@ const config: Config = {
               },
             ],
           },
-        };
+        } as any;
       },
       async postBuild({ outDir }: { outDir: string }) {
         if (!existsSync(wellKnownDocsPath)) {
@@ -580,13 +580,6 @@ const config: Config = {
       ],
     },
     image: 'img/sharing-opengraph.png',
-    metadata: [
-      {
-        name: 'description',
-        content:
-          'Backstage is an open source developer portal framework that centralizes your software catalog, unifies infrastructure tools, and helps teams ship high-quality code faster.',
-      },
-    ],
     footer: {
       links: [
         {

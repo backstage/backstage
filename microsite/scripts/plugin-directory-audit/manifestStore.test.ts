@@ -100,7 +100,7 @@ describe('manifestStore', () => {
         ...file,
         manifest: {
           ...file.manifest,
-          capabilities: ['search', 'catalog'],
+          capabilities: ['search-result', 'catalog-provider'],
           snapshot: snapshot(),
         },
       });
