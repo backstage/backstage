@@ -13,47 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  createInitialConfig,
-  generateConfigYaml,
-  validateConfig,
-} from '../../pluginDirectory/config';
-import type { ConfigValue } from '../../pluginDirectory/config';
 import type { PluginData } from '../../pluginDirectory/manifest';
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 
-import { ConfigForm } from './ConfigForm';
 import { CopyButton } from './CopyButton';
+import { SetupFallback } from './SetupFallback';
 import styles from './pluginDirectory.module.scss';
 
-interface SetupGuideProps {
+interface InstallGuideProps {
   plugin: PluginData;
 }
 
-export function SetupGuide({ plugin }: SetupGuideProps) {
-  const configSchema = plugin.setup?.config?.schema;
-  const [configValue, setConfigValue] = useState<ConfigValue>(() =>
-    configSchema ? createInitialConfig(configSchema) : undefined,
-  );
-  const configErrors = useMemo(
-    () => (configSchema ? validateConfig(configSchema, configValue) : []),
-    [configSchema, configValue],
-  );
-  const generatedYaml =
-    configSchema && configErrors.length === 0
-      ? generateConfigYaml(configSchema, configValue)
-      : '';
-
+export function InstallGuide({ plugin }: InstallGuideProps) {
   if (!plugin.setup) {
-    return (
-      <section className={styles.setupFallback} aria-label="Setup guide">
-        <strong>Setup guide not provided</strong>
-        <p>
-          Use the documentation and package resources below for installation
-          instructions.
-        </p>
-      </section>
-    );
+    return <SetupFallback />;
   }
 
   const { packages = [], frontend, integration = [] } = plugin.setup;
@@ -61,14 +34,9 @@ export function SetupGuide({ plugin }: SetupGuideProps) {
   const extensions = frontend?.extensions ?? [];
 
   return (
-    <section className={styles.setupGuide} aria-label="Setup guide">
+    <div className={styles.installGuide}>
       <section className={styles.setupStep} aria-labelledby="setup-install">
-        <div className={styles.stepHeading}>
-          <span className={styles.stepNumber} aria-hidden="true">
-            1
-          </span>
-          <h2 id="setup-install">Install</h2>
-        </div>
+        <h2 id="setup-install">Install</h2>
         {packages.length > 0 ? (
           <ul className={styles.installList}>
             {packages.map((packageSetup, index) => {
@@ -97,12 +65,7 @@ export function SetupGuide({ plugin }: SetupGuideProps) {
       </section>
 
       <section className={styles.setupStep} aria-labelledby="setup-integrate">
-        <div className={styles.stepHeading}>
-          <span className={styles.stepNumber} aria-hidden="true">
-            2
-          </span>
-          <h2 id="setup-integrate">Integrate</h2>
-        </div>
+        <h2 id="setup-integrate">Integrate</h2>
 
         <section className={styles.contributionGroup}>
           <h3>Routes added</h3>
@@ -179,59 +142,6 @@ export function SetupGuide({ plugin }: SetupGuideProps) {
           </div>
         )}
       </section>
-
-      <section className={styles.setupStep} aria-labelledby="setup-configure">
-        <div className={styles.stepHeading}>
-          <span className={styles.stepNumber} aria-hidden="true">
-            3
-          </span>
-          <h2 id="setup-configure">Configure</h2>
-        </div>
-        {configSchema ? (
-          <div className={styles.configureGrid}>
-            <form
-              className={styles.configForm}
-              aria-label="Plugin configuration"
-              noValidate
-              onSubmit={event => event.preventDefault()}
-            >
-              <ConfigForm
-                schema={configSchema}
-                value={configValue}
-                errors={configErrors}
-                onChange={setConfigValue}
-              />
-            </form>
-            <div className={styles.yamlPreview}>
-              <div className={styles.previewHeader}>
-                <p>
-                  <strong>Generated app-config.yaml</strong>
-                </p>
-                <CopyButton
-                  value={generatedYaml}
-                  label="generated YAML"
-                  disabled={configErrors.length > 0}
-                />
-              </div>
-              <pre aria-label="Generated app-config.yaml">
-                <code>
-                  {generatedYaml ||
-                    '# Complete required fields to generate app-config.yaml.\n'}
-                </code>
-              </pre>
-              {configErrors.length > 0 && (
-                <p className={styles.previewNotice} role="status">
-                  Resolve {configErrors.length}{' '}
-                  {configErrors.length === 1 ? 'error' : 'errors'} to enable
-                  copying.
-                </p>
-              )}
-            </div>
-          </div>
-        ) : (
-          <p>No configuration schema provided.</p>
-        )}
-      </section>
-    </section>
+    </div>
   );
 }

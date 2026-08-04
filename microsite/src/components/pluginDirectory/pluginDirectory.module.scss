@@ -260,12 +260,9 @@
   }
 }
 
-.setupGuide {
-  border-top: var(--ifm-global-border-width) solid
-    var(--ifm-color-emphasis-300);
+.installGuide {
   display: grid;
   gap: calc(var(--ifm-spacing-vertical) * 3);
-  padding-top: calc(var(--ifm-spacing-vertical) * 2);
 }
 
 .setupStep {
@@ -275,31 +272,10 @@
   > p {
     margin: 0;
   }
-}
-
-.stepHeading {
-  align-items: center;
-  display: flex;
-  gap: calc(var(--ifm-spacing-horizontal) / 2);
 
   h2 {
     margin: 0;
   }
-}
-
-.stepNumber {
-  align-items: center;
-  background: var(--ifm-color-emphasis-200);
-  border: var(--ifm-global-border-width) solid
-    var(--ifm-color-emphasis-400);
-  border-radius: 50%;
-  display: inline-flex;
-  flex: 0 0 auto;
-  font-family: var(--ifm-font-family-monospace);
-  font-weight: var(--ifm-font-weight-bold);
-  height: calc(var(--ifm-h3-font-size) * 1.5);
-  justify-content: center;
-  width: calc(var(--ifm-h3-font-size) * 1.5);
 }
 
 .installList,
@@ -599,7 +575,7 @@
   }
 }
 
-.setupGuide button:focus-visible,
+.setupStep button:focus-visible,
 .configForm input:focus-visible,
 .configForm select:focus-visible {
   outline: calc(var(--ifm-global-border-width) * 2) solid
@@ -640,7 +616,7 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .setupGuide {
+  .installGuide {
     gap: calc(var(--ifm-spacing-vertical) * 2);
   }
 
