@@ -247,18 +247,20 @@ export { exampleTodoListPlugin } from './plugin';
 
 ## Test the authorized update endpoint
 
-Let's go back to the permission policy's handle function and try to authorize our new permission with an `isOwner` condition.
+Let's go back to the permission policy's handle function and try to authorize our new permission with an `isOwner` condition. Update the `CustomPolicy` class in the permission policy module created during the [Getting Started](../getting-started.md) steps:
 
-```ts title="packages/backend/src/plugins/permission.ts"
-import {
-  IdentityClient
-} from '@backstage/plugin-auth-node';
+```ts
 import {
   PermissionPolicy,
   PolicyQuery,
   PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
-import { isPermission } from '@backstage/plugin-permission-common';
+import {
+  AuthorizeResult,
+  PolicyDecision,
+  isPermission,
+} from '@backstage/plugin-permission-common';
+import { UserInfoService } from '@backstage/backend-plugin-api';
 /* highlight-remove-next-line */
 import { todoListCreatePermission } from '@internal/plugin-todo-list-common';
 /* highlight-add-start */
@@ -272,33 +274,39 @@ import {
 } from '@internal/plugin-todo-list-backend';
 /* highlight-add-end */
 
+export class CustomPolicy implements PermissionPolicy {
+  constructor(private readonly userInfo: UserInfoService) {}
 
-async handle(
-  request: PolicyQuery,
-  /* highlight-remove-next-line */
-  _user?: PolicyQueryUser,
-  /* highlight-add-next-line */
-  user?: PolicyQueryUser,
-): Promise<PolicyDecision> {
-  if (isPermission(request.permission, todoListCreatePermission)) {
+  async handle(
+    request: PolicyQuery,
+    /* highlight-remove-next-line */
+    _user?: PolicyQueryUser,
+    /* highlight-add-next-line */
+    user?: PolicyQueryUser,
+  ): Promise<PolicyDecision> {
+    if (isPermission(request.permission, todoListCreatePermission)) {
+      return {
+        result: AuthorizeResult.ALLOW,
+      };
+    }
+    /* highlight-add-start */
+    if (isPermission(request.permission, todoListUpdatePermission)) {
+      const userEntityRef = user
+        ? (await this.userInfo.getUserInfo(user.credentials)).userEntityRef
+        : '';
+      return createTodoListConditionalDecision(
+        request.permission,
+        todoListConditions.isOwner({
+          userId: userEntityRef,
+        }),
+      );
+    }
+    /* highlight-add-end */
+
     return {
       result: AuthorizeResult.ALLOW,
     };
   }
-  /* highlight-add-start */
-  if (isPermission(request.permission, todoListUpdatePermission)) {
-    return createTodoListConditionalDecision(
-      request.permission,
-      todoListConditions.isOwner({
-        userId: user?.info.userEntityRef ?? '',
-      }),
-    );
-  }
-  /* highlight-add-end */
-
-  return {
-    result: AuthorizeResult.ALLOW,
-  };
 }
 ```
 
