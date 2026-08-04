@@ -379,27 +379,36 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     kind: string,
     items: JsonObject[],
   ): JsonObject[] {
+    let result = items;
+
     if (objectType === 'customresources') {
-      return items.map((item: JsonObject) => ({
+      const singularKind = kind.replace(/(List)$/, '');
+      result = result.map((item: JsonObject) => ({
         ...item,
-        kind: kind.replace(/(List)$/, ''),
+        kind: singularKind,
       }));
     }
 
-    if (objectType === 'secrets') {
-      return items.map((item: JsonObject) => {
+    if (
+      objectType === 'secrets' ||
+      (kind && kind.replace(/List$/, '') === 'Secret')
+    ) {
+      result = result.map((item: JsonObject) => {
+        const redacted: JsonObject = { ...item };
         if (item.data && typeof item.data === 'object') {
-          return {
-            ...item,
-            data: Object.fromEntries(
-              Object.keys(item.data).map(key => [key, '***']),
-            ),
-          };
+          redacted.data = Object.fromEntries(
+            Object.keys(item.data).map(key => [key, '***']),
+          );
         }
-        return item;
+        if (item.stringData && typeof item.stringData === 'object') {
+          redacted.stringData = Object.fromEntries(
+            Object.keys(item.stringData).map(key => [key, '***']),
+          );
+        }
+        return redacted;
       });
     }
 
-    return items;
+    return result;
   }
 }

@@ -1315,6 +1315,7 @@ describe('KubernetesFetcher', () => {
           res(
             checkToken(req, ctx, 'token'),
             withLabels(req, ctx, {
+              kind: 'SecretList',
               items: [
                 {
                   metadata: { name: 'secret-name' },
@@ -1373,12 +1374,77 @@ describe('KubernetesFetcher', () => {
       });
     });
 
+    it('should mask secret data when fetched as custom resources', async () => {
+      worker.use(
+        rest.get('http://localhost:9999/api/v1/secrets', (req, res, ctx) =>
+          res(
+            checkToken(req, ctx, 'token'),
+            withLabels(req, ctx, {
+              kind: 'SecretList',
+              items: [
+                {
+                  metadata: { name: 'secret-name' },
+                  data: { password: 'cGFzc3dvcmQ=' },
+                  stringData: { token: 'plaintext-token' },
+                },
+              ],
+            }),
+          ),
+        ),
+      );
+
+      const result = await sut.fetchObjectsForService({
+        serviceId: 'some-service',
+        clusterDetails: {
+          name: 'cluster1',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        credential: { type: 'bearer token', token: 'token' },
+        objectTypesToFetch: new Set(),
+        labelSelector: '',
+        customResources: [
+          {
+            objectType: 'customresources',
+            group: '',
+            apiVersion: 'v1',
+            plural: 'secrets',
+          },
+        ],
+      });
+
+      expect(result).toStrictEqual({
+        errors: [],
+        responses: [
+          {
+            type: 'customresources',
+            resources: [
+              {
+                kind: 'Secret',
+                metadata: {
+                  name: 'secret-name',
+                  labels: {},
+                },
+                data: {
+                  password: '***',
+                },
+                stringData: {
+                  token: '***',
+                },
+              },
+            ],
+          },
+        ],
+      });
+    });
+
     it('should handle secrets without data field', async () => {
       worker.use(
         rest.get('http://localhost:9999/api/v1/secrets', (req, res, ctx) =>
           res(
             checkToken(req, ctx, 'token'),
             withLabels(req, ctx, {
+              kind: 'SecretList',
               items: [
                 {
                   metadata: { name: 'secret-without-data' },
@@ -1446,13 +1512,56 @@ describe('KubernetesFetcher', () => {
       expect(result[0].kind).toBe('HelloWorld');
     });
 
-    it('masks secret data values', () => {
+    it('masks secret data and stringData values', () => {
       const result = (fetcher as any).transformResources(
         'secrets',
         'SecretList',
-        [{ data: { password: 'secret123' } }],
+        [
+          {
+            data: { password: 'secret123' },
+            stringData: { token: 'plaintext-token' },
+          },
+        ],
       );
       expect(result[0].data.password).toBe('***');
+      expect(result[0].stringData.token).toBe('***');
+    });
+
+    it('masks secrets by objectType when list kind is missing', () => {
+      const result = (fetcher as any).transformResources('secrets', undefined, [
+        {
+          data: { password: 'secret123' },
+          stringData: { token: 'plaintext-token' },
+        },
+      ]);
+      expect(result[0].data.password).toBe('***');
+      expect(result[0].stringData.token).toBe('***');
+    });
+
+    it('masks secrets fetched as custom resources', () => {
+      const result = (fetcher as any).transformResources(
+        'customresources',
+        'SecretList',
+        [
+          {
+            data: { password: 'secret123' },
+            stringData: { token: 'plaintext-token' },
+          },
+        ],
+      );
+      expect(result[0].kind).toBe('Secret');
+      expect(result[0].data.password).toBe('***');
+      expect(result[0].stringData.token).toBe('***');
+    });
+
+    it('does not redact non-secret custom resources', () => {
+      const result = (fetcher as any).transformResources(
+        'customresources',
+        'HelloWorldList',
+        [{ data: { config: 'visible' } }],
+      );
+      expect(result[0].kind).toBe('HelloWorld');
+      expect(result[0].data.config).toBe('visible');
     });
 
     it('returns other types unchanged', () => {
