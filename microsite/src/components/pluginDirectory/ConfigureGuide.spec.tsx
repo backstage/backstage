@@ -226,4 +226,157 @@ describe('ConfigureGuide', () => {
 
     expect(screen.getByText('No configuration schema provided.')).toBeInTheDocument();
   });
+
+  it('merges a frontend package with no schema of its own into its dependency\'s schema', async () => {
+    render(
+      <ConfigureGuide
+        plugin={{
+          ...plugin,
+          snapshot: {
+            ...plugin.snapshot!,
+            packages: [
+              {
+                npmPackageName: '@example/plugin-frontend',
+                functionality: 'frontend',
+                internalDependencies: ['@example/plugin-react'],
+                npm: plugin.snapshot!.packages[0].npm,
+                configSchema: {
+                  status: 'unavailable',
+                  lastAttemptAt: '2026-01-01T00:00:00.000Z',
+                  reason: 'config-schema-not-declared',
+                },
+              },
+              {
+                npmPackageName: '@example/plugin-react',
+                functionality: 'react',
+                npm: plugin.snapshot!.packages[0].npm,
+                configSchema: {
+                  status: 'fresh',
+                  lastAttemptAt: '2026-01-01T00:00:00.000Z',
+                  checkedAt: '2026-01-01T00:00:00.000Z',
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      featureFlag: { type: 'boolean' },
+                    },
+                    required: ['featureFlag'],
+                  },
+                },
+              },
+              {
+                npmPackageName: '@example/plugin-extra-module',
+                functionality: 'module',
+                npm: plugin.snapshot!.packages[0].npm,
+                configSchema: {
+                  status: 'fresh',
+                  lastAttemptAt: '2026-01-01T00:00:00.000Z',
+                  checkedAt: '2026-01-01T00:00:00.000Z',
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      path: { type: 'string' },
+                    },
+                    required: ['path'],
+                  },
+                },
+              },
+            ],
+          },
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByRole('option', { name: 'Frontend' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('option', {
+        name: '@example/plugin-extra-module (module)',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('option', { name: /plugin-react/ }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByLabelText(/^featureFlag/)).toHaveAttribute(
+      'type',
+      'checkbox',
+    );
+  });
+
+  it('merges a shared dependency\'s schema into both Frontend and Backend sections', async () => {
+    const user = userEvent.setup();
+    const npm = plugin.snapshot!.packages[0].npm;
+    render(
+      <ConfigureGuide
+        plugin={{
+          ...plugin,
+          snapshot: {
+            ...plugin.snapshot!,
+            packages: [
+              {
+                npmPackageName: '@example/plugin-frontend',
+                functionality: 'frontend',
+                internalDependencies: ['@example/plugin-common'],
+                npm,
+                configSchema: {
+                  status: 'fresh',
+                  lastAttemptAt: '2026-01-01T00:00:00.000Z',
+                  checkedAt: '2026-01-01T00:00:00.000Z',
+                  schema: {
+                    type: 'object',
+                    properties: { frontendField: { type: 'string' } },
+                    required: ['frontendField'],
+                  },
+                },
+              },
+              {
+                npmPackageName: '@example/plugin-backend',
+                functionality: 'backend',
+                internalDependencies: ['@example/plugin-common'],
+                npm,
+                configSchema: {
+                  status: 'fresh',
+                  lastAttemptAt: '2026-01-01T00:00:00.000Z',
+                  checkedAt: '2026-01-01T00:00:00.000Z',
+                  schema: {
+                    type: 'object',
+                    properties: { backendField: { type: 'string' } },
+                    required: ['backendField'],
+                  },
+                },
+              },
+              {
+                npmPackageName: '@example/plugin-common',
+                functionality: 'common',
+                npm,
+                configSchema: {
+                  status: 'fresh',
+                  lastAttemptAt: '2026-01-01T00:00:00.000Z',
+                  checkedAt: '2026-01-01T00:00:00.000Z',
+                  schema: {
+                    type: 'object',
+                    properties: { sharedField: { type: 'string' } },
+                    required: ['sharedField'],
+                  },
+                },
+              },
+            ],
+          },
+        }}
+      />,
+    );
+
+    expect(screen.getByLabelText(/^frontendField/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^sharedField/)).toBeInTheDocument();
+    expect(screen.queryByLabelText(/^backendField/)).not.toBeInTheDocument();
+
+    await user.selectOptions(
+      screen.getByRole('combobox', { name: 'Package' }),
+      'Backend',
+    );
+
+    expect(screen.getByLabelText(/^backendField/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^sharedField/)).toBeInTheDocument();
+    expect(screen.queryByLabelText(/^frontendField/)).not.toBeInTheDocument();
+  });
 });
