@@ -30,7 +30,7 @@ import {
 
 /** @public */
 export type PassportOAuthResult = {
-  fullProfile: PassportProfile;
+  fullProfile?: PassportProfile;
   params: {
     id_token?: string;
     scope: string;

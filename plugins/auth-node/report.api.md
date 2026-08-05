@@ -567,7 +567,7 @@ export type PassportOAuthPrivateInfo = {
 
 // @public (undocumented)
 export type PassportOAuthResult = {
-  fullProfile: PassportProfile;
+  fullProfile?: PassportProfile;
   params: {
     id_token?: string;
     scope: string;
