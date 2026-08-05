@@ -108,6 +108,10 @@ export type ConnectionType<
     authMethods: ConnectionAuthValue<T['auth'][number]>[],
     query: T['query'],
   ): ConnectionAuthValue<T['auth'][number]> | undefined;
+  validate?(connection: {
+    config: T['configSchema'];
+    auth: readonly T['auth'][number][];
+  }): void;
 };
 
 // @public (undocumented)

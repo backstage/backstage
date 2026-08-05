@@ -326,6 +326,16 @@ export class DefaultConnectionsService {
     const { type, auth: _, title, match, ...configFields } = connection;
     const parsed = connectionType.configSchema.parse(configFields);
 
+    // Cross-entry validation sees the connection as the type declared it,
+    // without the framework-owned title and match fields.
+    const validate = connectionType.validate as
+      | ((connection: { config: unknown; auth: unknown[] }) => void)
+      | undefined;
+    validate?.({
+      config: parsed,
+      auth: auth.map(({ title: _title, match: _match, ...rest }) => rest),
+    });
+
     return {
       ...parsed,
       type: connection.type,

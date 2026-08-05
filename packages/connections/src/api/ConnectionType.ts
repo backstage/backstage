@@ -173,6 +173,15 @@ export type ConnectionType<
     authMethods: ConnectionAuthValue<T['auth'][number]>[],
     query: T['query'],
   ): ConnectionAuthValue<T['auth'][number]> | undefined;
+  /**
+   * Validates a complete parsed connection, enabling rules that span
+   * multiple auth entries or combine connection configuration with auth
+   * entries. Runs after all schemas have parsed and throws on violations.
+   */
+  validate?(connection: {
+    config: T['configSchema'];
+    auth: readonly T['auth'][number][];
+  }): void;
 };
 
 /** @public */

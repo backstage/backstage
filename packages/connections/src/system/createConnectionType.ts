@@ -92,6 +92,7 @@ export function createConnectionType<
   lookupStrategy,
   authMethods,
   matchAuth,
+  validate,
 }: {
   type: TType;
   title: string;
@@ -102,6 +103,12 @@ export function createConnectionType<
     RootConnectionAuthFromSchema<TAuthMethods[number]>,
     LookupStrategyQuery[TLookupStrategy]
   >;
+  // Cross-entry validation that the per-entry schemas cannot express; runs
+  // against the fully parsed connection and throws on violations.
+  validate?: (connection: {
+    config: ConfigFromSchema<TConfigSchema>;
+    auth: readonly RootConnectionAuthFromSchema<TAuthMethods[number]>[];
+  }) => void;
 }): ConnectionType<{
   type: TType;
   lookupStrategy: TLookupStrategy;
@@ -136,6 +143,7 @@ export function createConnectionType<
     ),
     configSchema: portableConfigSchema,
     matchAuth,
+    validate,
   } as unknown as ConnectionType<{
     type: TType;
     lookupStrategy: TLookupStrategy;
