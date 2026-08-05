@@ -575,17 +575,20 @@ export async function createRouter(
         );
 
         for (const parameters of [template.spec.parameters ?? []].flat()) {
-          const { if: condition, ...schema } = parameters as Record<
-            string,
-            unknown
-          >;
+          const param = parameters as Record<string, unknown>;
+          const condition = param.if;
+          const isStepCondition =
+            typeof condition === 'string' || typeof condition === 'boolean';
           if (
+            isStepCondition &&
             !evaluateCondition(
-              condition as string | boolean | undefined,
+              condition as string | boolean,
               values as Record<string, JsonValue>,
             )
           )
             continue;
+          const { if: _, ...rest } = param;
+          const schema = isStepCondition ? rest : param;
           const result = validate(values, schema);
 
           if (!result.valid) {
@@ -1064,17 +1067,20 @@ export async function createRouter(
         }/${template.metadata.name}`;
 
         for (const parameters of [template.spec.parameters ?? []].flat()) {
-          const { if: condition, ...schema } = parameters as Record<
-            string,
-            unknown
-          >;
+          const param = parameters as Record<string, unknown>;
+          const condition = param.if;
+          const isStepCondition =
+            typeof condition === 'string' || typeof condition === 'boolean';
           if (
+            isStepCondition &&
             !evaluateCondition(
-              condition as string | boolean | undefined,
+              condition as string | boolean,
               body.values as Record<string, JsonValue>,
             )
           )
             continue;
+          const { if: _, ...rest } = param;
+          const schema = isStepCondition ? rest : param;
           const result = validate(body.values, schema);
           if (!result.valid) {
             await auditorEvent?.fail({

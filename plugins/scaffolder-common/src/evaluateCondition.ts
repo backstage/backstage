@@ -60,7 +60,7 @@ function evaluateExpression(
   formState: Record<string, JsonValue>,
 ): JsonValue | undefined {
   const comparisonMatch = expression.match(
-    /^([^\s=!]+(?:\.[^\s=!]+)*|'[^']*'|"[^"]*"|-?\d+(?:\.\d+)?|true|false|null|undefined)\s*(===|!==|==|!=)\s*([^\s=!]+(?:\.[^\s=!]+)*|'[^']*'|"[^"]*"|-?\d+(?:\.\d+)?|true|false|null|undefined)$/,
+    /^(\w+(?:\.\w+)*|'[^']*'|"[^"]*"|-?\d+(?:\.\d+)?)\s*(===|!==|==|!=)\s*(\w+(?:\.\w+)*|'[^']*'|"[^"]*"|-?\d+(?:\.\d+)?)$/,
   );
   if (comparisonMatch) {
     const left = resolveValue(comparisonMatch[1].trim(), formState);
