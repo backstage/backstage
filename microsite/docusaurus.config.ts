@@ -678,7 +678,7 @@ const config: Config = {
       theme: backstageTheme,
       // Supported languages: https://prismjs.com/#supported-languages
       // Default languages: https://github.com/FormidableLabs/prism-react-renderer/blob/master/packages/generate-prism-languages/index.ts#L9-L23
-      additionalLanguages: ['docker', 'bash'],
+      additionalLanguages: ['docker', 'bash', 'log', 'shell-session'],
       magicComments: [
         // Extend the default highlight class name
         {

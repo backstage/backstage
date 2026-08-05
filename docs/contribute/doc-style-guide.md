@@ -116,7 +116,7 @@ yarn start
 
 The output is similar to this:
 
-```console
+```log
 [0] webpack output is served from /
 [1] Loaded config from app-config.yaml
 ```
@@ -124,8 +124,15 @@ The output is similar to this:
 ### Use appropriate language tags for code blocks
 
 Use the correct language identifier for fenced code blocks: `ts` or `typescript`
-for TypeScript, `yaml` for YAML configuration, `shell` for shell commands,
-`console` for command output, and `diff` for changesets.
+for TypeScript, `yaml` for YAML configuration, `shell` for shell commands, `log`
+for command output, `shell-session` for a transcript that mixes prompts and
+output, and `diff` for changesets. Use `text` when nothing else fits, such as a
+directory tree.
+
+Every identifier must be a language Prism recognizes, and anything outside the
+set Docusaurus bundles by default has to be listed in `additionalLanguages` in
+`microsite/docusaurus.config.ts`. An unrecognized identifier is not an error —
+the block simply renders unhighlighted, which is easy to miss.
 
 ## Admonitions
 

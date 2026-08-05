@@ -56,7 +56,7 @@ The wizard for this command will ask what name you want to have for your new app
 
 When you run the command, you'll see an output like this.
 
-```console
+```text
 
 ? Enter a name for the app [required] my-backstage-app
 
