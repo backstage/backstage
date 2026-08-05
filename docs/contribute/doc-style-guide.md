@@ -132,7 +132,7 @@ directory tree.
 Every identifier must be a language Prism recognizes, and anything outside the
 set Docusaurus bundles by default has to be listed in `additionalLanguages` in
 `microsite/docusaurus.config.ts`. An unrecognized identifier is not an error —
-the block simply renders unhighlighted, which is easy to miss.
+the block simply loses its syntax highlighting, which is easy to miss.
 
 ## Admonitions
 

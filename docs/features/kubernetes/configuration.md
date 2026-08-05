@@ -414,7 +414,7 @@ clusterLinksFormatters.myDashboard = (options) => ...;
 ```
 
 See also
-[https://github.com/backstage/backstage/tree/master/plugins/kubernetes/src/utils/clusterLinks/formatters](https://github.com/backstage/backstage/tree/master/plugins/kubernetes/src/utils/clusterLinks/formatters)
+[https://github.com/backstage/backstage/tree/master/plugins/kubernetes-react/src/api/formatters](https://github.com/backstage/backstage/tree/master/plugins/kubernetes-react/src/api/formatters)
 for real examples.
 
 ##### `clusters.\*.dashboardParameters` (optional)
