@@ -190,7 +190,7 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
             .boolean()
             .optional()
             .describe(
-              'Automatically merge the MR when the pipeline succeeds. Uses GitLab auto-merge. Default: `false`',
+              'Automatically merge the MR when all merge checks succeed. Uses GitLab auto-merge. Default: `false`',
             ),
       },
       output: {
