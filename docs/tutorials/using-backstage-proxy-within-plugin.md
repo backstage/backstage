@@ -30,7 +30,7 @@ If your plugin requires access to an API, backstage offers
 
 ## Setting up the backstage proxy
 
-Let's say your plugin's API is hosted at _[https://api.myawesomeservice.com/v1_](https://api.myawesomeservice.com/v1_),
+Let's say your plugin's API is hosted at _[https://api.myawesomeservice.com/v1](https://api.myawesomeservice.com/v1)_,
 and you want to be able to access it within backstage at
 `/api/proxy/<your-proxy-uri>`, and add a default header called
 `X-Custom-Source`. You will need to add the following to `app-config.yaml`:
@@ -110,7 +110,7 @@ This section describes the steps to wrap your API client in a [Utility API](../a
 ### Defining the API client interface
 
 Continuing from the previous example, let's assume that
-_[https://api.myawesomeservice.com/v1_](https://api.myawesomeservice.com/v1_) has the following endpoints:
+_[https://api.myawesomeservice.com/v1](https://api.myawesomeservice.com/v1)_ has the following endpoints:
 
 | Method                   | Description             |
 | :----------------------- | :---------------------- |
