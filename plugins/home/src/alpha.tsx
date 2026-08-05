@@ -226,7 +226,7 @@ const homePageRandomJokeWidget = HomePageWidgetBlueprint.make({
 });
 
 const homePageTopVisitedWidget = HomePageWidgetBlueprint.make({
-  name: 'top-visited',
+  name: 'most-visited',
   params: {
     name: 'HomePageTopVisited',
     title: 'Most Visited',
