@@ -119,6 +119,34 @@ export type ConnectionTypeKey = keyof typeof connectionTypes;
 
 // @public (undocumented)
 export const connectionTypes: {
+  readonly aws: ConnectionType<{
+    type: 'aws';
+    lookupStrategy: 'aws';
+    query: {
+      accountId?: string;
+      arn?: string;
+    };
+    configSchema: {
+      roleName?: string | undefined;
+      partition?: string | undefined;
+      region?: string | undefined;
+      externalId?: string | undefined;
+      webIdentityTokenFile?: string | undefined;
+    };
+    auth: readonly {
+      method: 'account';
+      accountId?: string | undefined;
+      mainAccount?: boolean | undefined;
+      accessKeyId?: string | undefined;
+      secretAccessKey?: string | undefined;
+      profile?: string | undefined;
+      roleName?: string | undefined;
+      partition?: string | undefined;
+      region?: string | undefined;
+      externalId?: string | undefined;
+      webIdentityTokenFile?: string | undefined;
+    }[];
+  }>;
   readonly 'aws-codecommit': ConnectionType<{
     type: 'aws-codecommit';
     lookupStrategy: 'host';

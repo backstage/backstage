@@ -15,7 +15,7 @@
  */
 import { mockServices } from '@backstage/backend-test-utils';
 import { DefaultConnectionsService } from './DefaultConnectionsService';
-import { JsonArray } from '@backstage/types';
+import { JsonArray, JsonObject } from '@backstage/types';
 
 const mockConnectionsConfig = (connections: JsonArray) =>
   mockServices.rootConfig({ data: { connections } });
@@ -547,6 +547,152 @@ describe('DefaultConnectionsService', () => {
           authMethods: ['token'],
         }),
       ).rejects.toThrow(/Invalid url/);
+    });
+  });
+
+  describe('aws lookup strategy', () => {
+    const awsService = () =>
+      DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockConnectionsConfig([
+          {
+            type: 'aws',
+            roleName: 'wildcard-role',
+            auth: [
+              {
+                method: 'account',
+                accountId: '111111111111',
+                roleName: 'first-role',
+              },
+              {
+                method: 'account',
+                accountId: '222222222222',
+                accessKeyId: 'second-key',
+                secretAccessKey: 'second-secret',
+              },
+              { method: 'account', mainAccount: true, profile: 'main-profile' },
+            ],
+          },
+        ]),
+      });
+
+    it('selects the account matching an account ID or ARN', async () => {
+      const connections = awsService().forPlugin('catalog');
+
+      const byAccountId = await connections.find({
+        type: 'aws',
+        query: { accountId: '111111111111' },
+        authMethods: ['account'],
+      });
+      expect(byAccountId.auth).toMatchObject({
+        method: 'account',
+        accountId: '111111111111',
+        roleName: 'first-role',
+      });
+
+      const byArn = await connections.find({
+        type: 'aws',
+        query: { arn: 'arn:aws:iam::222222222222:role/some-role' },
+        authMethods: ['account'],
+      });
+      expect(byArn.auth).toMatchObject({
+        method: 'account',
+        accountId: '222222222222',
+        accessKeyId: 'second-key',
+      });
+    });
+
+    it('falls back to the main account when no account matches', async () => {
+      const connections = awsService().forPlugin('catalog');
+
+      const unknownAccount = await connections.find({
+        type: 'aws',
+        query: { accountId: '999999999999' },
+        authMethods: ['account'],
+      });
+      expect(unknownAccount.auth).toMatchObject({
+        method: 'account',
+        mainAccount: true,
+        profile: 'main-profile',
+      });
+      // The connection-level roleName is returned alongside the fallback
+      // entry, letting consumers assume that role in the requested account.
+      expect(unknownAccount.roleName).toBe('wildcard-role');
+
+      const noQuery = await connections.find({
+        type: 'aws',
+        query: {},
+        authMethods: ['account'],
+      });
+      expect(noQuery.auth).toMatchObject({ mainAccount: true });
+    });
+
+    it('rejects invalid credential combinations in auth entries', () => {
+      expect(() =>
+        DefaultConnectionsService.create({
+          logger: mockServices.logger.mock(),
+          config: mockConnectionsConfig([
+            {
+              type: 'aws',
+              auth: [
+                {
+                  method: 'account',
+                  accountId: '111111111111',
+                  accessKeyId: 'key-without-secret',
+                },
+              ],
+            },
+          ]),
+        }),
+      ).toThrow(/Invalid connection of type "aws"/);
+    });
+
+    it('rejects connections that violate cross-entry rules', () => {
+      const serviceWithAuth = (auth: JsonObject[], config?: JsonObject) => () =>
+        DefaultConnectionsService.create({
+          logger: mockServices.logger.mock(),
+          config: mockConnectionsConfig([{ type: 'aws', ...config, auth }]),
+        });
+
+      expect(
+        serviceWithAuth([
+          { method: 'account', mainAccount: true },
+          { method: 'account', mainAccount: true, profile: 'other' },
+        ]),
+      ).toThrow(/Multiple auth entries are marked as mainAccount/);
+
+      expect(
+        serviceWithAuth([
+          { method: 'account', accountId: '111111111111' },
+          { method: 'account', accountId: '111111111111', profile: 'other' },
+        ]),
+      ).toThrow(/Multiple auth entries for AWS account "111111111111"/);
+
+      expect(
+        serviceWithAuth([{ method: 'account', accountId: '111111111111' }], {
+          roleName: 'wildcard-role',
+        }),
+      ).toThrow(/requires an auth entry marked as mainAccount/);
+    });
+
+    it('rejects multiple aws connections', () => {
+      expect(() =>
+        DefaultConnectionsService.create({
+          logger: mockServices.logger.mock(),
+          config: mockConnectionsConfig([
+            {
+              type: 'aws',
+              auth: [{ method: 'account', mainAccount: true }],
+            },
+            {
+              type: 'aws',
+              auth: [
+                { method: 'account', mainAccount: true, profile: 'other' },
+              ],
+            },
+          ]),
+        }),
+      ).toThrow(/Duplicate connection of type "aws"/);
     });
   });
 
