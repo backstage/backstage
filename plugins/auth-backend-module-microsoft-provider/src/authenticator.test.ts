@@ -48,6 +48,7 @@ describe('microsoftAuthenticator', () => {
   let implementation: {
     domainHint: string | undefined;
     helper: PassportOAuthAuthenticatorHelper;
+    skipUserProfile: boolean;
   };
 
   beforeEach(() => {
@@ -259,14 +260,15 @@ describe('microsoftAuthenticator', () => {
       expect(profile.photos).toStrictEqual([{ value: photo }]);
     });
 
-    it('returns access token for non-microsoft graph scope', async () => {
+    it('fetches profile via Graph when refreshing with non-Graph scopes', async () => {
       const foreignScope = 'aks-audience/user.read';
       const refreshResponse = await microsoftAuthenticator.refresh(
         createRefreshRequest(foreignScope),
         implementation,
       );
 
-      expect(refreshResponse.fullProfile).toBeUndefined();
+      expect(refreshResponse.fullProfile).toBeDefined();
+      expect(refreshResponse.fullProfile!.displayName).toBe('Conrad');
       expect(refreshResponse.session.accessToken).toBe(
         microsoftApi.generateAccessToken(foreignScope),
       );

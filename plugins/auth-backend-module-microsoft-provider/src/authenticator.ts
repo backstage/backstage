@@ -72,6 +72,7 @@ export const microsoftAuthenticator = createOAuthAuthenticator({
     return {
       helper,
       domainHint,
+      skipUserProfile,
     };
   },
 
@@ -92,6 +93,27 @@ export const microsoftAuthenticator = createOAuthAuthenticator({
   },
 
   async refresh(input, ctx) {
-    return ctx.helper.refresh(input);
+    const result = await ctx.helper.refresh(input);
+    if (result.fullProfile || ctx.skipUserProfile) {
+      return result;
+    }
+    // When the requested scopes target a non-Graph resource, the access
+    // token can't be used to fetch the user profile. Make a second
+    // refresh to get a Graph-scoped token for profile fetching, so the
+    // sign-in resolver always receives a valid profile.
+    const graphResult = await ctx.helper.refresh({
+      ...input,
+      refreshToken: result.session.refreshToken ?? input.refreshToken,
+      scope: 'openid email User.Read offline_access',
+    });
+    return {
+      ...result,
+      fullProfile: graphResult.fullProfile,
+      session: {
+        ...result.session,
+        refreshToken:
+          graphResult.session.refreshToken ?? result.session.refreshToken,
+      },
+    };
   },
 });
