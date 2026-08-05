@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,8 @@ function resolveValue(
 
   if (token === 'true') return true;
   if (token === 'false') return false;
-  if (token === 'null' || token === 'undefined') return undefined;
+  if (token === 'null') return null;
+  if (token === 'undefined') return undefined;
 
   const parts = token.split('.');
   if (parts[0] !== 'parameters') return undefined;

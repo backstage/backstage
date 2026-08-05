@@ -1079,6 +1079,62 @@ describe('scaffolder router', () => {
       expect(response.status).toEqual(201);
     });
 
+    it('strips hidden step values from task parameters', async () => {
+      const templateWithConditionalParams = generateMockTemplate({
+        parameters: [
+          {
+            type: 'object',
+            required: ['provider'],
+            properties: {
+              provider: {
+                type: 'string',
+                description: 'Cloud provider',
+              },
+            },
+          },
+          {
+            type: 'object',
+            if: "${{ parameters.provider === 'AWS' }}",
+            required: ['awsRegion'],
+            properties: {
+              awsRegion: {
+                type: 'string',
+                description: 'AWS Region',
+              },
+            },
+          },
+        ],
+      });
+
+      const { router, taskBroker } = await createTestRouter({
+        entities: [templateWithConditionalParams, mockUser],
+      });
+
+      const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+
+      const response = await request(router)
+        .post('/v2/tasks')
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            provider: 'GCP',
+            awsRegion: 'us-east-1',
+          },
+        });
+
+      expect(response.status).toEqual(201);
+      expect(broker).toHaveBeenCalledWith(
+        expect.objectContaining({
+          spec: expect.objectContaining({
+            parameters: { provider: 'GCP' },
+          }),
+        }),
+      );
+    });
+
     it('validates parameter steps whose if condition evaluates to true', async () => {
       const templateWithConditionalParams = generateMockTemplate({
         parameters: [

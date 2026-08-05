@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -145,6 +145,23 @@ describe('evaluateCondition', () => {
       expect(
         evaluateCondition("parameters.cloudProvider === 'AWS'", state),
       ).toBe(true);
+    });
+
+    it('distinguishes null from undefined', () => {
+      expect(
+        evaluateCondition('${{ parameters.value === null }}', { value: null }),
+      ).toBe(true);
+      expect(evaluateCondition('${{ parameters.value === null }}', {})).toBe(
+        false,
+      );
+      expect(
+        evaluateCondition('${{ parameters.value === undefined }}', {}),
+      ).toBe(true);
+      expect(
+        evaluateCondition('${{ parameters.value === undefined }}', {
+          value: null,
+        }),
+      ).toBe(false);
     });
 
     it('treats empty arrays as falsy', () => {

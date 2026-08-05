@@ -322,7 +322,7 @@ export const Stepper = (stepperProps: StepperProps) => {
         {visibleSteps.map((step, index) => {
           const isAllowedLabelClick = activeStep > index;
           return (
-            <MuiStep key={index}>
+            <MuiStep key={step.title}>
               <MuiStepLabel
                 aria-label={t('stepper.stepIndexLabel', { index: index + 1 })}
                 style={{ cursor: isAllowedLabelClick ? 'pointer' : 'default' }}

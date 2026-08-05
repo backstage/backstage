@@ -482,7 +482,8 @@ In this example, only the step matching the selected provider is shown in the wi
 
 The `if` field supports:
 
-- **Equality comparisons:** `${{ parameters.field === 'value' }}` and `${{ parameters.field !== 'value' }}`
+- **Strict equality:** `${{ parameters.field === 'value' }}` and `${{ parameters.field !== 'value' }}`
+- **Loose equality:** `${{ parameters.field == 'value' }}` and `${{ parameters.field != 'value' }}` (uses JavaScript loose comparison, where e.g. `null == undefined` is true)
 - **Truthiness checks:** `${{ parameters.field }}` evaluates to true when the field is set and non-empty
 - **Negation:** `${{ !parameters.field }}`
 - **Boolean values:** `if: true` or `if: false`
