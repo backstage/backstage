@@ -50,7 +50,3 @@ snapshot:
           - pretty-bytes
           - react-use
           - recharts
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:28.480Z'
-        reason: config-schema-not-declared

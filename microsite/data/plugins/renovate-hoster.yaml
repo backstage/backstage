@@ -53,7 +53,3 @@ snapshot:
           - '@textea/json-viewer'
           - git-url-parse
           - react-use
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:02.253Z'
-        reason: config-schema-not-declared

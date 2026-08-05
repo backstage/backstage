@@ -42,7 +42,3 @@ snapshot:
           - d3-force
           - react-use
           - zod
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:10.012Z'
-        reason: config-schema-not-declared

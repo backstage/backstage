@@ -108,43 +108,16 @@ const backstageSnapshotSchema = z.discriminatedUnion('status', [
 
 export type BackstageSnapshot = z.infer<typeof backstageSnapshotSchema>;
 
-const configSchemaSnapshotValuesSchema = {
-  checkedAt: timestampSchema,
-  schema: z.unknown(),
-};
-
-const configSchemaSnapshotSchema = z.discriminatedUnion('status', [
-  z.strictObject({
-    status: z.literal('fresh'),
-    lastAttemptAt: timestampSchema,
-    ...configSchemaSnapshotValuesSchema,
-  }),
-  z.strictObject({
-    status: z.literal('stale'),
-    lastAttemptAt: timestampSchema,
-    reason: reasonCodeSchema,
-    ...configSchemaSnapshotValuesSchema,
-  }),
-  z.strictObject({
-    status: z.literal('unavailable'),
-    lastAttemptAt: timestampSchema,
-    reason: reasonCodeSchema,
-  }),
-]);
-
-export type ConfigSchemaSnapshot = z.infer<typeof configSchemaSnapshotSchema>;
-
 const packageSnapshotSchema = z.strictObject({
   npmPackageName: z.string().min(1),
   sourcePath: z.string().min(1).optional(),
   // Subset of this package's npm dependencyNames that are other packages of
   // this same plugin's snapshot.packages, used to group related packages'
-  // config schemas together in the UI.
+  // config schemas together in the UI. Config schemas themselves are
+  // resolved client-side on demand (see npmRegistryClient.ts) rather than
+  // stored here.
   internalDependencies: z.array(z.string().min(1)).optional(),
   npm: npmSnapshotSchema,
-  // Omitted when the package's npm-declared configSchema path isn't a
-  // `.json` file, which this audit doesn't support resolving.
-  configSchema: configSchemaSnapshotSchema.optional(),
 });
 
 export type PackageSnapshot = z.infer<typeof packageSnapshotSchema>;

@@ -28,7 +28,3 @@ snapshot:
         dependencyNames:
           - aws-sdk
           - find-and-replace-anything
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:28.035Z'
-        reason: config-schema-not-declared

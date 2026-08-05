@@ -37,7 +37,3 @@ snapshot:
           - '@material-ui/lab'
           - react-use
           - zod
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:04.717Z'
-        reason: config-schema-not-declared

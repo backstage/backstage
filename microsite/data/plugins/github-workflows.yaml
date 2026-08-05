@@ -42,7 +42,3 @@ snapshot:
           - git-url-parse
           - js-yaml
           - react-use
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:48.339Z'
-        reason: config-schema-not-declared

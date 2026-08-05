@@ -50,7 +50,3 @@ snapshot:
           - react-syntax-highlighter
           - react-use
           - recharts
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:56.459Z'
-        reason: config-schema-not-declared

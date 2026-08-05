@@ -44,7 +44,3 @@ snapshot:
           - '@mui/icons-material'
           - react-use
           - semver
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:58.749Z'
-        reason: config-schema-not-declared

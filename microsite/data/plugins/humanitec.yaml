@@ -42,7 +42,3 @@ snapshot:
           - event-source-polyfill
           - lodash.get
           - react-use
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:51.331Z'
-        reason: config-schema-not-declared

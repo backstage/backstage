@@ -37,7 +37,3 @@ snapshot:
           - '@backstage/plugin-home'
           - '@backstage/core-components'
           - '@backstage/core-plugin-api'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:37.176Z'
-        reason: config-schema-not-declared

@@ -42,7 +42,3 @@ snapshot:
           - date-fns
           - fuse.js
           - react-use
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:01.853Z'
-        reason: config-schema-not-declared

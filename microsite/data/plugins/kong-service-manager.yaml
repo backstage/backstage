@@ -50,7 +50,3 @@ snapshot:
           - '@backstage/plugin-permission-react'
           - '@veecode-platform/plugin-kong-service-manager-react'
           - '@veecode-platform/backstage-plugin-kong-service-manager-common'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:54.025Z'
-        reason: config-schema-not-declared

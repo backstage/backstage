@@ -40,7 +40,3 @@ snapshot:
           - '@mui/material'
           - lodash
           - react-use
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:46.113Z'
-        reason: config-schema-not-declared

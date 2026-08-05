@@ -47,9 +47,11 @@
     "docusaurus-theme-openapi-docs": "^4.3.0",
     "js-yaml": "^5.2.3",
     "luxon": "^3.0.0",
+    "pako": "^3.0.1",
     "prism-react-renderer": "^2.1.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
+    "react-markdown": "^8.0.0",
     "sass": "^1.57.1",
     "swc-loader": "^0.2.3",
     "zod": "^4.4.3"

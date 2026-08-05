@@ -35,7 +35,3 @@ snapshot:
           - '@material-ui/lab'
           - react-use
           - swr
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:01.034Z'
-        reason: config-schema-not-declared

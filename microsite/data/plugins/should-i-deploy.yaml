@@ -38,7 +38,3 @@ snapshot:
           - '@types/react'
           - cross-fetch
           - react-use
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:07.585Z'
-        reason: config-schema-not-declared

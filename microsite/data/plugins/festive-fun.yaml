@@ -38,7 +38,3 @@ snapshot:
           - react-use
           - react-snowfall
           - react-wavify
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:45.498Z'
-        reason: config-schema-not-declared

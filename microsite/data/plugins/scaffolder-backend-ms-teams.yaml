@@ -34,7 +34,3 @@ snapshot:
           - axios
           - yaml
           - zod
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:04.334Z'
-        reason: config-schema-not-declared

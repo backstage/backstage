@@ -41,7 +41,3 @@ snapshot:
           - '@material-ui/icons'
           - '@types/react'
           - react-use
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:57.958Z'
-        reason: config-schema-not-declared

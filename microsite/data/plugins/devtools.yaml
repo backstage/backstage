@@ -47,30 +47,6 @@ snapshot:
           - '@backstage/frontend-plugin-api'
           - '@backstage/plugin-devtools-common'
           - '@backstage/plugin-permission-react'
-      configSchema:
-        status: fresh
-        lastAttemptAt: '2026-08-04T22:12:41.804Z'
-        checkedAt: '2026-08-04T22:12:41.804Z'
-        schema:
-          $schema: http://json-schema.org/draft-07/schema#
-          type: object
-          properties:
-            devTools:
-              type: object
-              properties:
-                scheduledTasks:
-                  type: object
-                  properties:
-                    plugins:
-                      type: array
-                      items:
-                        type: string
-                      description: A list of plugin IDs to select from, e.g. ['catalog', 'scaffolder']
-                      visibility: frontend
-                  required:
-                    - plugins
-                  description: Scheduled tasks configuration
-                  visibility: frontend
     - npmPackageName: '@backstage/plugin-devtools-backend'
       sourcePath: plugins/devtools-backend/package.json
       internalDependencies:
@@ -103,50 +79,6 @@ snapshot:
           - '@backstage/plugin-devtools-common'
           - '@backstage/plugin-permission-node'
           - '@backstage/plugin-permission-common'
-      configSchema:
-        status: fresh
-        lastAttemptAt: '2026-08-04T22:12:42.425Z'
-        checkedAt: '2026-08-04T22:12:42.425Z'
-        schema:
-          $schema: http://json-schema.org/draft-07/schema#
-          type: object
-          properties:
-            devTools:
-              type: object
-              properties:
-                externalDependencies:
-                  type: object
-                  properties:
-                    endpoints:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          name:
-                            type: string
-                            description: The name of the endpoint.
-                          type:
-                            type: string
-                            description: Type of check to perform; currently fetch or ping
-                          target:
-                            type: string
-                            description: The target of the endpoint; currently either a URL for fetch or server name for ping.
-                        required:
-                          - name
-                          - type
-                          - target
-                      description: The list of endpoints to check.
-                  description: External dependency configuration.
-                info:
-                  type: object
-                  properties:
-                    packagePrefixes:
-                      type: array
-                      items:
-                        type: string
-                      description: A list of package prefixes that DevTools will use for filtering all available dependencies (default is ["@backstage"])
-                  description: Info configuration
-              description: DevTools configuration.
     - npmPackageName: '@backstage/plugin-devtools-common'
       sourcePath: plugins/devtools-common/package.json
       npm:
@@ -162,10 +94,6 @@ snapshot:
         dependencyNames:
           - '@backstage/plugin-permission-common'
           - '@backstage/types'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:43.011Z'
-        reason: config-schema-not-declared
     - npmPackageName: '@backstage/plugin-devtools-react'
       sourcePath: plugins/devtools-react/package.json
       npm:
@@ -182,7 +110,3 @@ snapshot:
           - '@material-ui/core'
           - '@backstage/core-plugin-api'
           - '@backstage/frontend-plugin-api'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:43.658Z'
-        reason: config-schema-not-declared

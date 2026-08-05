@@ -19,7 +19,6 @@ import type {
   PluginManifest,
 } from '../../src/pluginDirectory/manifest';
 import { auditManifest, type AuditDependencies } from './audit';
-import { fetchConfigSchemaSnapshot } from './configSchemaClient';
 import { GitHubSnapshotClient } from './githubClient';
 import { writeLatestBackstageVersionFile } from './latestBackstageVersionStore';
 import { readManifestFiles, writeManifestFile } from './manifestStore';
@@ -283,7 +282,6 @@ async function main(args: readonly string[]): Promise<void> {
     ),
     dependencies: {
       fetchNpm: fetchNpmSnapshot,
-      fetchConfigSchema: fetchConfigSchemaSnapshot,
       github: new GitHubSnapshotClient({ token: process.env.GITHUB_TOKEN }),
       now: () => new Date(),
     },

@@ -27,7 +27,3 @@ snapshot:
         backstageRole: frontend-plugin
         dependencyNames:
           - ajv
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:02.738Z'
-        reason: config-schema-not-declared

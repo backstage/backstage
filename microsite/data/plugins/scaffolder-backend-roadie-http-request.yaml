@@ -36,7 +36,3 @@ snapshot:
           - '@backstage/plugin-scaffolder-node'
           - cross-fetch
           - zod
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:04.375Z'
-        reason: config-schema-not-declared

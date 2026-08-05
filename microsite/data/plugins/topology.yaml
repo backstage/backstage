@@ -64,7 +64,3 @@ snapshot:
           - mobx-react
           - react-use
           - victory
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:11.442Z'
-        reason: config-schema-not-declared

@@ -37,7 +37,3 @@ snapshot:
           - '@monaco-editor/react'
           - monaco-editor
           - react-use
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:44.373Z'
-        reason: config-schema-not-declared

@@ -35,7 +35,3 @@ snapshot:
           - react-ace
           - react-use
           - swagger-ui-react
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:26.771Z'
-        reason: config-schema-not-declared

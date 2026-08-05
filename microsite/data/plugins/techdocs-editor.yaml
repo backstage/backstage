@@ -41,7 +41,3 @@ snapshot:
           - '@estehsaan/backstage-plugin-techdocs-editor-react'
           - '@remixicon/react'
           - react-router-dom
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:10.676Z'
-        reason: config-schema-not-declared

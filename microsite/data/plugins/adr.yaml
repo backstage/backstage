@@ -46,7 +46,3 @@ snapshot:
           - lodash
           - react-use
           - zod
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:24.732Z'
-        reason: config-schema-not-declared

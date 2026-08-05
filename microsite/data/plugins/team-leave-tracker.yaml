@@ -38,7 +38,3 @@ snapshot:
           - '@mui/icons-material'
           - '@mui/material'
           - tss-react
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:10.222Z'
-        reason: config-schema-not-declared

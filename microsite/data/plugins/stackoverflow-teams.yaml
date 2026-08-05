@@ -49,7 +49,3 @@ snapshot:
           - '@tiptap/react'
           - '@tiptap/starter-kit'
           - react-use
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:09.328Z'
-        reason: config-schema-not-declared

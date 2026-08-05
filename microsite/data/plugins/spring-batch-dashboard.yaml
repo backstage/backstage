@@ -36,7 +36,3 @@ snapshot:
           - react-dom
           - react-use
           - recharts
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:08.531Z'
-        reason: config-schema-not-declared

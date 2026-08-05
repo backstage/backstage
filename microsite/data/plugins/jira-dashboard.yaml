@@ -38,7 +38,3 @@ snapshot:
           - lodash
           - luxon
           - react-use
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:53.146Z'
-        reason: config-schema-not-declared

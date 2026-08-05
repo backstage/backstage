@@ -36,7 +36,3 @@ snapshot:
           - '@types/react'
           - graphql-voyager
           - react-use
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:49.605Z'
-        reason: config-schema-not-declared

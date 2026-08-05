@@ -31,7 +31,3 @@ snapshot:
           - '@backstage/plugin-catalog-react'
           - '@backstage/theme'
           - react-use
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:06.004Z'
-        reason: config-schema-not-declared

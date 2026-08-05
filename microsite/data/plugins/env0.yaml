@@ -46,7 +46,3 @@ snapshot:
           - '@backstage/plugin-scaffolder'
           - '@backstage/plugin-catalog-react'
           - '@backstage/plugin-scaffolder-react'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:45.555Z'
-        reason: config-schema-not-declared

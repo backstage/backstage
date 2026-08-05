@@ -21,14 +21,16 @@ import type {
   PackageSnapshot,
   PluginData,
 } from '../../pluginDirectory/manifest';
+import { fetchPackageConfigSchema } from '../../pluginDirectory/npmRegistryClient';
 import {
   matchesRole,
   resolveFunctionality,
 } from '../../pluginDirectory/packageRoles';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { configFormTemplates, configFormWidgets } from './ConfigForm';
 import { CopyButton } from './CopyButton';
+import { packageOptionLabel } from './packageOptionLabel';
 import { PackageSelect } from './PackageSelect';
 import styles from './pluginDirectory.module.scss';
 
@@ -63,20 +65,16 @@ interface ConfigureGuideProps {
   plugin: PluginData;
 }
 
-interface PackageSchemaEntry {
+interface PackageCandidate {
   npmPackageName: string;
-  functionality: string | undefined;
-  schema: RJSFSchema | undefined;
-  label?: string;
+  version: string;
 }
 
-function packageOptionLabel(entry: PackageSchemaEntry): string {
-  if (entry.label) {
-    return entry.label;
-  }
-  return entry.functionality
-    ? `${entry.npmPackageName} (${entry.functionality})`
-    : entry.npmPackageName;
+interface PackageEntryDescriptor {
+  npmPackageName: string;
+  functionality: string | undefined;
+  candidates: PackageCandidate[];
+  label?: string;
 }
 
 function isObjectSchema(value: unknown): value is RJSFSchema {
@@ -154,16 +152,6 @@ function InteractiveConfigureForm({
   );
 }
 
-function schemaFor(packageSnapshot: PackageSnapshot): RJSFSchema | undefined {
-  const configSchemaSnapshot = packageSnapshot.configSchema;
-  const rawSchema =
-    configSchemaSnapshot?.status === 'fresh' ||
-    configSchemaSnapshot?.status === 'stale'
-      ? configSchemaSnapshot.schema
-      : undefined;
-  return isObjectSchema(rawSchema) ? rawSchema : undefined;
-}
-
 // RJSF/ajv8 degrade an `allOf` merge conflict (e.g. two schemas declaring the
 // same leaf property with incompatible types) by silently stripping the
 // offending `allOf` branch rather than throwing, so a conflicting merge
@@ -173,21 +161,35 @@ function combineSchemas(schemas: RJSFSchema[]): RJSFSchema {
   return schemas.length === 1 ? schemas[0] : { allOf: schemas };
 }
 
-function collectSchemas(
+// A candidate can only be fetched if this package's npm snapshot resolved a
+// version to fetch against; packages whose npm data is entirely unavailable
+// are silently skipped, same as they'd have no schema to show either way.
+function candidateFor(
+  packageSnapshot: PackageSnapshot,
+): PackageCandidate | undefined {
+  return packageSnapshot.npm.status !== 'unavailable'
+    ? {
+        npmPackageName: packageSnapshot.npmPackageName,
+        version: packageSnapshot.npm.latestVersion,
+      }
+    : undefined;
+}
+
+function collectCandidates(
   candidateNames: string[],
   packagesByName: Map<string, PackageSnapshot>,
-  onMatch?: (name: string) => void,
-): RJSFSchema[] {
-  const schemas: RJSFSchema[] = [];
+): PackageCandidate[] {
+  const candidates: PackageCandidate[] = [];
   for (const name of candidateNames) {
-    const candidate = packagesByName.get(name);
-    const schema = candidate ? schemaFor(candidate) : undefined;
-    if (schema) {
-      schemas.push(schema);
-      onMatch?.(name);
+    const packageSnapshot = packagesByName.get(name);
+    const candidate = packageSnapshot
+      ? candidateFor(packageSnapshot)
+      : undefined;
+    if (candidate) {
+      candidates.push(candidate);
     }
   }
-  return schemas;
+  return candidates;
 }
 
 function buildRoleEntry(
@@ -196,7 +198,7 @@ function buildRoleEntry(
   packagesByName: Map<string, PackageSnapshot>,
   absorbed: Set<string>,
   primaryNpmPackageName: string,
-): PackageSchemaEntry | undefined {
+): PackageEntryDescriptor | undefined {
   const rolePackage = [...packagesByName.values()].find(entry =>
     matchesRole(
       resolveFunctionality(entry, primaryNpmPackageName),
@@ -207,29 +209,25 @@ function buildRoleEntry(
     return undefined;
   }
 
-  // Mark the role package itself absorbed regardless of whether it (or its
-  // dependencies) has a schema, so the generic loop below doesn't also list
-  // it as its own separate entry.
-  absorbed.add(rolePackage.npmPackageName);
-
   const candidateNames = [
     rolePackage.npmPackageName,
     ...(rolePackage.internalDependencies ?? []),
   ];
-
-  const schemas = collectSchemas(candidateNames, packagesByName, name =>
-    absorbed.add(name),
-  );
+  // Every candidate of this role - not just ones that turn out to have a
+  // schema - is absorbed, so the generic loop below never re-lists a
+  // dependency of Frontend/Backend as its own separate entry. Whether a
+  // candidate actually contributes a schema is only known once it's fetched.
+  candidateNames.forEach(name => absorbed.add(name));
 
   return {
     npmPackageName: rolePackage.npmPackageName,
     functionality,
-    schema: schemas.length > 0 ? combineSchemas(schemas) : undefined,
+    candidates: collectCandidates(candidateNames, packagesByName),
     label,
   };
 }
 
-function getPackageSchemas(plugin: PluginData): PackageSchemaEntry[] {
+function getPackageEntries(plugin: PluginData): PackageEntryDescriptor[] {
   const packages = plugin.snapshot?.packages ?? [];
   const packagesByName = new Map(
     packages.map(
@@ -240,7 +238,7 @@ function getPackageSchemas(plugin: PluginData): PackageSchemaEntry[] {
   const absorbed = new Set<string>();
   const primaryNpmPackageName = plugin.npmPackageName;
 
-  const entries: PackageSchemaEntry[] = [];
+  const entries: PackageEntryDescriptor[] = [];
   const frontendEntry = buildRoleEntry(
     'frontend',
     'Frontend',
@@ -275,40 +273,103 @@ function getPackageSchemas(plugin: PluginData): PackageSchemaEntry[] {
         name => !absorbed.has(name),
       ),
     ];
-    const schemas = collectSchemas(candidateNames, packagesByName);
     entries.push({
       npmPackageName: packageSnapshot.npmPackageName,
       functionality: resolveFunctionality(
         packageSnapshot,
         primaryNpmPackageName,
       ),
-      schema: schemas.length > 0 ? combineSchemas(schemas) : undefined,
+      candidates: collectCandidates(candidateNames, packagesByName),
     });
   }
 
   return entries;
 }
 
+type ConfigSchemaState =
+  | { status: 'loading' }
+  | { status: 'ready'; schema: RJSFSchema | undefined }
+  | { status: 'error' };
+
+function useCombinedConfigSchema(
+  candidates: PackageCandidate[],
+): ConfigSchemaState {
+  const candidatesKey = candidates
+    .map(candidate => `${candidate.npmPackageName}@${candidate.version}`)
+    .join(',');
+  const [state, setState] = useState<ConfigSchemaState>({
+    status: 'loading',
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+    setState({ status: 'loading' });
+
+    Promise.all(
+      candidates.map(candidate =>
+        fetchPackageConfigSchema(candidate.npmPackageName, candidate.version),
+      ),
+    ).then(results => {
+      if (cancelled) {
+        return;
+      }
+
+      const failures = results.filter(result => result.status === 'error');
+      if (failures.length > 0) {
+        failures.forEach(failure => {
+          console.error(
+            'Failed to load a package configuration schema',
+            (failure as { status: 'error'; error: unknown }).error,
+          );
+        });
+        setState({ status: 'error' });
+        return;
+      }
+
+      const schemas = results
+        .map(result =>
+          result.status === 'ready' ? result.value : undefined,
+        )
+        .filter(isObjectSchema);
+      setState({
+        status: 'ready',
+        schema: schemas.length > 0 ? combineSchemas(schemas) : undefined,
+      });
+    });
+
+    return () => {
+      cancelled = true;
+    };
+    // candidatesKey is a stable summary of `candidates`' contents; depending
+    // on the array itself would refetch on every render, since a fresh array
+    // is built from the plugin snapshot each time.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [candidatesKey]);
+
+  return state;
+}
+
 export function ConfigureGuide({ plugin }: ConfigureGuideProps) {
-  const packageSchemas = getPackageSchemas(plugin);
+  const packageEntries = getPackageEntries(plugin);
   const [selectedPackageName, setSelectedPackageName] = useState<
     string | undefined
-  >(packageSchemas[0]?.npmPackageName);
+  >(packageEntries[0]?.npmPackageName);
 
   const selectedEntry =
-    packageSchemas.find(
+    packageEntries.find(
       entry => entry.npmPackageName === selectedPackageName,
-    ) ?? packageSchemas[0];
+    ) ?? packageEntries[0];
+  const schemaState = useCombinedConfigSchema(selectedEntry?.candidates ?? []);
 
   return (
     <section className={styles.setupStep} aria-labelledby="setup-configure">
       <h2 id="setup-configure">Configure</h2>
-      {packageSchemas.length > 0 && selectedEntry ? (
+      {packageEntries.length > 0 && selectedEntry ? (
         <>
-          {packageSchemas.length > 1 && (
+          {packageEntries.length > 1 && (
             <PackageSelect
               value={selectedEntry.npmPackageName}
-              options={packageSchemas.map(entry => ({
+              options={packageEntries.map(entry => ({
                 value: entry.npmPackageName,
                 label: packageOptionLabel(entry),
                 // Frontend/Backend are each already a single, distinctly
@@ -320,17 +381,26 @@ export function ConfigureGuide({ plugin }: ConfigureGuideProps) {
               onChange={setSelectedPackageName}
             />
           )}
-          {selectedEntry.schema ? (
-            <ConfigureFormErrorBoundary key={selectedEntry.npmPackageName}>
-              <InteractiveConfigureForm
-                formLabel={`${selectedEntry.npmPackageName} configuration`}
-                yamlLabel={`${selectedEntry.npmPackageName} generated YAML`}
-                schema={selectedEntry.schema}
-              />
-            </ConfigureFormErrorBoundary>
-          ) : (
-            <p>No configuration schema provided.</p>
+          {schemaState.status === 'loading' && (
+            <p role="status">Loading configuration schema…</p>
           )}
+          {schemaState.status === 'error' && (
+            <p role="alert">
+              Couldn&apos;t load this package&apos;s configuration schema.
+            </p>
+          )}
+          {schemaState.status === 'ready' &&
+            (schemaState.schema ? (
+              <ConfigureFormErrorBoundary key={selectedEntry.npmPackageName}>
+                <InteractiveConfigureForm
+                  formLabel={`${selectedEntry.npmPackageName} configuration`}
+                  yamlLabel={`${selectedEntry.npmPackageName} generated YAML`}
+                  schema={schemaState.schema}
+                />
+              </ConfigureFormErrorBoundary>
+            ) : (
+              <p>No configuration schema provided.</p>
+            ))}
         </>
       ) : (
         <p>No configuration schema provided.</p>

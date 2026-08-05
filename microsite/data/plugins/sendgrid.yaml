@@ -33,7 +33,3 @@ snapshot:
           - '@backstage/plugin-scaffolder-node'
           - '@sendgrid/mail'
           - yaml
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:07.180Z'
-        reason: config-schema-not-declared

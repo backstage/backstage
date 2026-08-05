@@ -59,7 +59,3 @@ snapshot:
           - lodash
           - mobx-react
           - react-use
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:10.552Z'
-        reason: config-schema-not-declared

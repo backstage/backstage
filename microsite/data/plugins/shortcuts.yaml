@@ -41,7 +41,3 @@ snapshot:
           - react-use
           - uuid
           - zen-observable
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:07.434Z'
-        reason: config-schema-not-declared

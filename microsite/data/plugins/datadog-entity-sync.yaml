@@ -32,7 +32,3 @@ snapshot:
           - '@datadog/backstage-plugin-datadog-entity-sync-node'
           - express
           - express-promise-router
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:39.842Z'
-        reason: config-schema-not-declared

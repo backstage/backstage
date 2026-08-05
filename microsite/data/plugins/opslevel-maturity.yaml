@@ -60,7 +60,3 @@ snapshot:
           - react-router-dom
           - react-use
           - typescript
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:59.658Z'
-        reason: config-schema-not-declared

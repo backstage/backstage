@@ -21,7 +21,6 @@ import { describe, it } from 'node:test';
 import { dump } from 'js-yaml';
 import type {
   BackstageSnapshot,
-  ConfigSchemaSnapshot,
   NpmSnapshot,
   PluginManifest,
 } from '../../src/pluginDirectory/manifest';
@@ -68,14 +67,6 @@ function freshNpm(lastPublishedAt: string): NpmSnapshot {
   };
 }
 
-function unavailableConfigSchema(): ConfigSchemaSnapshot {
-  return {
-    status: 'unavailable',
-    lastAttemptAt: attemptAt,
-    reason: 'config-schema-not-declared',
-  };
-}
-
 function freshBackstage(): BackstageSnapshot {
   return {
     status: 'fresh',
@@ -92,7 +83,7 @@ function packagesFor(
   npm: NpmSnapshot,
   npmPackageName = '@example/plugin-example',
 ): NonNullable<PluginManifest['snapshot']>['packages'] {
-  return [{ npmPackageName, npm, configSchema: unavailableConfigSchema() }];
+  return [{ npmPackageName, npm }];
 }
 
 function primaryPackage(manifest: PluginManifest) {
@@ -108,7 +99,6 @@ function dependencies(
 ): AuditDependencies {
   return {
     fetchNpm: async () => npm,
-    fetchConfigSchema: async () => unavailableConfigSchema(),
     github: {
       fetchBackstageSnapshot: async () => backstage,
       discoverCanonicalPackages: async () => undefined,
@@ -122,7 +112,6 @@ function multiPackageDependencies(
 ): AuditDependencies {
   return {
     fetchNpm: async (packageName: string) => npmByPackageName[packageName],
-    fetchConfigSchema: async () => unavailableConfigSchema(),
     github: {
       fetchBackstageSnapshot: async () => freshBackstage(),
       discoverCanonicalPackages: async () => [
@@ -216,20 +205,17 @@ describe('auditManifest internalDependencies', () => {
             npmPackageName: '@backstage/plugin-catalog',
             sourcePath: 'plugins/catalog/package.json',
             npm: freshNpm('2026-07-01T00:00:00.000Z'),
-            configSchema: unavailableConfigSchema(),
           },
           {
             npmPackageName: '@backstage/plugin-catalog-backend',
             sourcePath: 'plugins/catalog-backend/package.json',
             internalDependencies: ['@backstage/plugin-catalog-common'],
             npm: previousBackendNpm,
-            configSchema: unavailableConfigSchema(),
           },
           {
             npmPackageName: '@backstage/plugin-catalog-common',
             sourcePath: 'plugins/catalog-common/package.json',
             npm: freshNpm('2026-07-01T00:00:00.000Z'),
-            configSchema: unavailableConfigSchema(),
           },
         ],
       },
@@ -242,8 +228,7 @@ describe('auditManifest internalDependencies', () => {
         }
         return freshNpm('2026-07-01T00:00:00.000Z');
       },
-      fetchConfigSchema: async () => unavailableConfigSchema(),
-      github: {
+        github: {
         fetchBackstageSnapshot: async () => freshBackstage(),
         discoverCanonicalPackages: async () => [
           {
@@ -366,8 +351,7 @@ describe('auditManifest snapshot failures', () => {
         lastAttemptAt: attemptAt,
         reason: 'npm-invalid-response',
       }),
-      fetchConfigSchema: async () => unavailableConfigSchema(),
-      github: {
+        github: {
         fetchBackstageSnapshot: async () => {
           githubCalled = true;
           return freshBackstage();
@@ -409,8 +393,7 @@ describe('auditManifest snapshot failures', () => {
       }),
       {
         fetchNpm: async () => npm,
-        fetchConfigSchema: async () => unavailableConfigSchema(),
-        github: {
+            github: {
           fetchBackstageSnapshot: async () => {
             githubCalled = true;
             return freshBackstage();
@@ -498,8 +481,7 @@ describe('auditManifest snapshot failures', () => {
       fetchNpm: async () => {
         throw new Error('registry unavailable');
       },
-      fetchConfigSchema: async () => unavailableConfigSchema(),
-      github: {
+        github: {
         fetchBackstageSnapshot: async () => freshBackstage(),
         discoverCanonicalPackages: async () => undefined,
       } as unknown as GitHubSnapshotClient,
@@ -531,13 +513,11 @@ describe('auditManifest snapshot failures', () => {
             npmPackageName: '@backstage/plugin-catalog',
             sourcePath: 'plugins/catalog/package.json',
             npm: freshNpm('2026-07-01T00:00:00.000Z'),
-            configSchema: unavailableConfigSchema(),
           },
           {
             npmPackageName: '@backstage/plugin-catalog-backend',
             sourcePath: 'plugins/catalog-backend/package.json',
             npm: previousBackendNpm,
-            configSchema: unavailableConfigSchema(),
           },
         ],
       },
@@ -550,8 +530,7 @@ describe('auditManifest snapshot failures', () => {
         }
         return freshNpm('2026-07-01T00:00:00.000Z');
       },
-      fetchConfigSchema: async () => unavailableConfigSchema(),
-      github: {
+        github: {
         fetchBackstageSnapshot: async () => freshBackstage(),
         discoverCanonicalPackages: async () => [
           {
@@ -574,7 +553,6 @@ describe('auditManifest snapshot failures', () => {
         npmPackageName: '@backstage/plugin-catalog',
         sourcePath: 'plugins/catalog/package.json',
         npm: freshNpm('2026-07-01T00:00:00.000Z'),
-        configSchema: unavailableConfigSchema(),
       },
       {
         npmPackageName: '@backstage/plugin-catalog-backend',
@@ -587,34 +565,11 @@ describe('auditManifest snapshot failures', () => {
           latestVersion: previousBackendNpm.latestVersion,
           lastPublishedAt: previousBackendNpm.lastPublishedAt,
         },
-        configSchema: unavailableConfigSchema(),
       },
     ]);
     assert.match(
       result.warnings.join('\n'),
       /npm snapshot unavailable for @backstage\/plugin-catalog-backend/,
-    );
-  });
-
-  it('omits configSchema entirely when the declared path is not a .json file, warning instead', async () => {
-    const result = await auditManifest(manifest('active'), {
-      fetchNpm: async () => freshNpm('2026-07-01T00:00:00.000Z'),
-      fetchConfigSchema: async () => ({
-        status: 'unavailable',
-        lastAttemptAt: attemptAt,
-        reason: 'config-schema-not-json',
-      }),
-      github: {
-        fetchBackstageSnapshot: async () => freshBackstage(),
-        discoverCanonicalPackages: async () => undefined,
-      } as unknown as GitHubSnapshotClient,
-      now: () => auditTime,
-    });
-
-    assert.equal(primaryPackage(result.manifest)?.configSchema, undefined);
-    assert.match(
-      result.warnings.join('\n'),
-      /config schema unavailable for @example\/plugin-example \(config-schema-not-json\)/,
     );
   });
 });
@@ -685,7 +640,6 @@ describe('runAuditCommand', () => {
               }
               return freshNpm('2025-07-01T00:00:00.000Z');
             },
-            fetchConfigSchema: async () => unavailableConfigSchema(),
             github: {
               fetchBackstageSnapshot: async () => freshBackstage(),
               discoverCanonicalPackages: async () => undefined,
@@ -743,7 +697,6 @@ describe('runAuditCommand', () => {
                   ? '2026-07-01T00:00:00.000Z'
                   : '2025-07-01T00:00:00.000Z',
               ),
-            fetchConfigSchema: async () => unavailableConfigSchema(),
             github: {
               fetchBackstageSnapshot: async () => freshBackstage(),
               discoverCanonicalPackages: async () => undefined,
@@ -955,7 +908,6 @@ describe('runAuditCommand', () => {
               await mkdir(failedPath);
               return freshNpm('2025-07-01T00:00:00.000Z');
             },
-            fetchConfigSchema: async () => unavailableConfigSchema(),
             github: {
               fetchBackstageSnapshot: async () => freshBackstage(),
               discoverCanonicalPackages: async () => undefined,

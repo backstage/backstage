@@ -37,7 +37,3 @@ snapshot:
           - '@material-ui/core'
           - react-d3-speedometer
           - react-use
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:50.953Z'
-        reason: config-schema-not-declared

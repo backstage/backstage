@@ -41,7 +41,3 @@ snapshot:
           - '@backstage/backend-plugin-api'
           - '@aws-sdk/client-secrets-manager'
           - '@backstage/plugin-scaffolder-node'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:04.184Z'
-        reason: config-schema-not-declared

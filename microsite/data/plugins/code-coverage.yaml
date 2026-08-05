@@ -43,7 +43,3 @@ snapshot:
           - luxon
           - react-use
           - recharts
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:37.557Z'
-        reason: config-schema-not-declared

@@ -36,7 +36,3 @@ snapshot:
           - '@google-cloud/secret-manager'
           - '@google-cloud/storage'
           - google-auth-library
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:03.321Z'
-        reason: config-schema-not-declared

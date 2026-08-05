@@ -16,12 +16,10 @@
 import { isDeepStrictEqual } from 'node:util';
 import type {
   BackstageSnapshot,
-  ConfigSchemaSnapshot,
   NpmSnapshot,
   PackageSnapshot,
   PluginManifest,
 } from '../../src/pluginDirectory/manifest';
-import type { fetchConfigSchemaSnapshot } from './configSchemaClient';
 import type {
   CanonicalPackage,
   GitHubSnapshotClient,
@@ -31,7 +29,6 @@ import { fetchNpmSnapshot } from './npmClient';
 
 export interface AuditDependencies {
   fetchNpm: typeof fetchNpmSnapshot;
-  fetchConfigSchema: typeof fetchConfigSchemaSnapshot;
   github: GitHubSnapshotClient;
   now: () => Date;
 }
@@ -83,23 +80,6 @@ function staleBackstageSnapshot(
     version: previous.version,
     sourceUrl: previous.sourceUrl,
     sourcePath: previous.sourcePath,
-  };
-}
-
-function staleConfigSchemaSnapshot(
-  previous: ConfigSchemaSnapshot | undefined,
-  unavailable: Extract<ConfigSchemaSnapshot, { status: 'unavailable' }>,
-): ConfigSchemaSnapshot {
-  if (!previous || previous.status === 'unavailable') {
-    return unavailable;
-  }
-
-  return {
-    status: 'stale',
-    lastAttemptAt: unavailable.lastAttemptAt,
-    reason: unavailable.reason,
-    checkedAt: previous.checkedAt,
-    schema: previous.schema,
   };
 }
 
@@ -174,59 +154,6 @@ function transitionStatus(
   return manifest;
 }
 
-async function resolvePackageConfigSchema(
-  npmPackageName: string,
-  npm: NpmSnapshot,
-  previousPackage: PackageSnapshot | undefined,
-  dependencies: AuditDependencies,
-  lastAttemptAt: string,
-  warnings: string[],
-  title: string,
-): Promise<ConfigSchemaSnapshot | undefined> {
-  if (npm.status === 'unavailable') {
-    return (
-      previousPackage?.configSchema ?? {
-        status: 'unavailable',
-        lastAttemptAt,
-        reason: 'npm-data-unavailable',
-      }
-    );
-  }
-
-  let fetchedConfigSchema: ConfigSchemaSnapshot;
-  try {
-    fetchedConfigSchema = await dependencies.fetchConfigSchema(
-      npmPackageName,
-      npm.latestVersion,
-    );
-  } catch {
-    fetchedConfigSchema = {
-      status: 'unavailable',
-      lastAttemptAt,
-      reason: 'config-schema-request-failed',
-    };
-  }
-
-  if (fetchedConfigSchema.status === 'unavailable') {
-    if (fetchedConfigSchema.reason !== 'config-schema-not-declared') {
-      warnings.push(
-        `${title}: config schema unavailable for ${npmPackageName} (${fetchedConfigSchema.reason})`,
-      );
-    }
-    // Unsupported declaration format, not a transient failure: drop the
-    // snapshot entirely rather than persisting an unavailable/stale record.
-    if (fetchedConfigSchema.reason === 'config-schema-not-json') {
-      return undefined;
-    }
-    return staleConfigSchemaSnapshot(
-      previousPackage?.configSchema,
-      fetchedConfigSchema,
-    );
-  }
-
-  return fetchedConfigSchema;
-}
-
 async function collectPackageSnapshots(
   manifest: PluginManifest,
   primaryNpm: NpmSnapshot,
@@ -292,16 +219,6 @@ async function collectPackageSnapshots(
       );
     }
 
-    const configSchema = await resolvePackageConfigSchema(
-      member.npmPackageName,
-      npm,
-      previousPackage,
-      dependencies,
-      lastAttemptAt,
-      warnings,
-      manifest.title,
-    );
-
     const internalDependencies =
       npm.status !== 'unavailable' && npm.dependencyNames
         ? npm.dependencyNames.filter(
@@ -316,7 +233,6 @@ async function collectPackageSnapshots(
         ? { internalDependencies }
         : {}),
       npm,
-      ...(configSchema ? { configSchema } : {}),
     });
   }
 

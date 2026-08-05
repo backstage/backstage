@@ -45,7 +45,3 @@ snapshot:
           - '@backstage/plugin-catalog-react'
           - '@backstage/plugin-kubernetes-common'
           - '@veecode-platform/plugin-kubernetes-react'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:54.282Z'
-        reason: config-schema-not-declared

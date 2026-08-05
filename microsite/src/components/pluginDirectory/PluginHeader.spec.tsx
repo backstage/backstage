@@ -51,11 +51,6 @@ const plugin: PluginData = {
           lastPublishedAt: '2026-07-22T12:00:00.000Z',
           repository: { url: 'https://github.com/example/catalog-insights' },
         },
-        configSchema: {
-          status: 'unavailable',
-          lastAttemptAt: '2026-08-03T10:00:00.000Z',
-          reason: 'npm-data-unavailable',
-        },
       },
     ],
   },

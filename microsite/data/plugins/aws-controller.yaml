@@ -32,7 +32,3 @@ snapshot:
           - '@material-ui/lab'
           - axios
           - react-use
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:28.789Z'
-        reason: config-schema-not-declared

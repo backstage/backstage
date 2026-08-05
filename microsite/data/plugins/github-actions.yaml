@@ -49,7 +49,3 @@ snapshot:
           - react-aria-components
           - react-use
           - zod
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:47.308Z'
-        reason: config-schema-not-declared

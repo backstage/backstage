@@ -44,7 +44,3 @@ snapshot:
           - react-dom
           - react-router-dom
           - react-use
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:07.277Z'
-        reason: config-schema-not-declared

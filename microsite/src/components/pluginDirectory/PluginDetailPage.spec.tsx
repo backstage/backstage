@@ -14,10 +14,35 @@
  * limitations under the License.
  */
 import type { PluginData } from '../../pluginDirectory/manifest';
+import {
+  fetchPackageConfigSchema,
+  fetchPackageReadme,
+} from '../../pluginDirectory/npmRegistryClient';
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import PluginDetailPage from './PluginDetailPage';
+
+jest.mock('../../pluginDirectory/npmRegistryClient');
+jest.mock('react-markdown', () => ({
+  __esModule: true,
+  default: ({ children }: { children: string }) => <>{children}</>,
+}));
+
+const mockFetchPackageConfigSchema = fetchPackageConfigSchema as jest.MockedFunction<
+  typeof fetchPackageConfigSchema
+>;
+const mockFetchPackageReadme = fetchPackageReadme as jest.MockedFunction<
+  typeof fetchPackageReadme
+>;
+
+const endpointSchema = {
+  type: 'object',
+  properties: {
+    endpoint: { type: 'string' },
+  },
+  required: ['endpoint'],
+};
 
 const plugin: PluginData = {
   title: 'Example Plugin',
@@ -47,25 +72,26 @@ const plugin: PluginData = {
           latestVersion: '1.0.0',
           lastPublishedAt: '2026-07-01T00:00:00.000Z',
         },
-        configSchema: {
-          status: 'fresh',
-          lastAttemptAt: '2026-08-03T12:00:00.000Z',
-          checkedAt: '2026-08-03T12:00:00.000Z',
-          schema: {
-            type: 'object',
-            properties: {
-              endpoint: { type: 'string' },
-            },
-            required: ['endpoint'],
-          },
-        },
       },
     ],
   },
 };
 
 describe('PluginDetailPage', () => {
-  it('renders the header and all three tabs', () => {
+  beforeEach(() => {
+    mockFetchPackageConfigSchema.mockReset();
+    mockFetchPackageReadme.mockReset();
+    mockFetchPackageConfigSchema.mockResolvedValue({
+      status: 'ready',
+      value: endpointSchema,
+    });
+    mockFetchPackageReadme.mockResolvedValue({
+      status: 'ready',
+      value: undefined,
+    });
+  });
+
+  it('renders the header and all three tabs', async () => {
     render(<PluginDetailPage plugin={plugin} latestBackstageVersion={null} />);
 
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
@@ -74,6 +100,10 @@ describe('PluginDetailPage', () => {
     expect(screen.getByRole('tab', { name: 'Overview' })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Install' })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Configure' })).toBeInTheDocument();
+    // Both tabs' schema/README fetches settle in the background even though
+    // only Overview is visible (Tabs mounts all TabItems); wait for them so
+    // the test doesn't finish before act() sees the resulting state update.
+    await screen.findByLabelText(/^endpoint/);
   });
 
   it('keeps configuration form values after switching tabs away and back', async () => {
@@ -81,7 +111,10 @@ describe('PluginDetailPage', () => {
     render(<PluginDetailPage plugin={plugin} latestBackstageVersion={null} />);
 
     await user.click(screen.getByRole('tab', { name: 'Configure' }));
-    await user.type(screen.getByLabelText(/^endpoint/), 'https://api.example.com');
+    await user.type(
+      await screen.findByLabelText(/^endpoint/),
+      'https://api.example.com',
+    );
 
     await user.click(screen.getByRole('tab', { name: 'Overview' }));
     await user.click(screen.getByRole('tab', { name: 'Configure' }));

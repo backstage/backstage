@@ -34,7 +34,3 @@ snapshot:
           - '@backstage/plugin-scaffolder-node'
           - '@kubernetes/client-node'
           - yaml
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:03.287Z'
-        reason: config-schema-not-declared

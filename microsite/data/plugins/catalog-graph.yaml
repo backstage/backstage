@@ -48,7 +48,3 @@ snapshot:
           - '@backstage/core-plugin-api'
           - '@backstage/frontend-plugin-api'
           - '@backstage/plugin-catalog-react'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:35.005Z'
-        reason: config-schema-not-declared

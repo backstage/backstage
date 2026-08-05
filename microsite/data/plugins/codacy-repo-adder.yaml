@@ -28,7 +28,3 @@ snapshot:
           - '@backstage/backend-common'
           - '@backstage/backend-plugin-api'
           - '@backstage/plugin-scaffolder-node'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:37.139Z'
-        reason: config-schema-not-declared

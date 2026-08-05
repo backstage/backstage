@@ -42,7 +42,3 @@ snapshot:
           - '@mui/material'
           - '@tanstack/react-query'
           - react-use
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:56.913Z'
-        reason: config-schema-not-declared

@@ -30,7 +30,3 @@ snapshot:
           - '@backstage/plugin-scaffolder-node'
           - axios
           - zod
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:03.935Z'
-        reason: config-schema-not-declared

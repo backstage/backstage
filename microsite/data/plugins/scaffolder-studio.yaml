@@ -81,7 +81,3 @@ snapshot:
           - uuid
           - yaml
           - zod
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:06.163Z'
-        reason: config-schema-not-declared

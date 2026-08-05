@@ -39,7 +39,3 @@ snapshot:
           - winston
           - node-fetch
           - yn
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:55.556Z'
-        reason: config-schema-not-declared

@@ -46,7 +46,3 @@ snapshot:
           - '@backstage/backend-common'
           - '@backstage/backend-plugin-api'
           - '@frontside/backstage-plugin-graphql-backend-node'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:49.979Z'
-        reason: config-schema-not-declared

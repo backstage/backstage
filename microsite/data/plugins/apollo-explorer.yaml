@@ -36,7 +36,3 @@ snapshot:
           - '@backstage/ui'
           - '@types/react'
           - use-deep-compare-effect
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:27.073Z'
-        reason: config-schema-not-declared

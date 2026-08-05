@@ -49,7 +49,3 @@ snapshot:
           - '@backstage/frontend-plugin-api'
           - '@backstage/plugin-catalog-react'
           - '@roadiehq/github-auth-utils-react'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:47.573Z'
-        reason: config-schema-not-declared

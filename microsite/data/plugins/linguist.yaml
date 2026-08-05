@@ -42,7 +42,3 @@ snapshot:
           - luxon
           - react-use
           - slugify
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:56.090Z'
-        reason: config-schema-not-declared

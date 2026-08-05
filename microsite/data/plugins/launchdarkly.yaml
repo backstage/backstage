@@ -32,7 +32,3 @@ snapshot:
           - '@backstage/core-components'
           - '@backstage/core-plugin-api'
           - '@backstage/plugin-catalog-react'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:55.362Z'
-        reason: config-schema-not-declared

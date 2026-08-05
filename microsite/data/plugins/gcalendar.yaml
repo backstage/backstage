@@ -44,7 +44,3 @@ snapshot:
           - luxon
           - material-ui-popup-state
           - react-use
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:47.108Z'
-        reason: config-schema-not-declared

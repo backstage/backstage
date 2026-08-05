@@ -48,7 +48,3 @@ snapshot:
           - react-hook-form
           - react-use
           - react-window
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:31.218Z'
-        reason: config-schema-not-declared

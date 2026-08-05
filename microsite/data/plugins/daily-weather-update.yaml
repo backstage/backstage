@@ -37,7 +37,3 @@ snapshot:
           - '@material-ui/icons'
           - '@backstage/core-components'
           - '@backstage/core-plugin-api'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:40.004Z'
-        reason: config-schema-not-declared

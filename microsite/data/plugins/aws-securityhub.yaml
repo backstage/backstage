@@ -46,7 +46,3 @@ snapshot:
           - '@aws/aws-core-plugin-for-backstage-react'
           - '@aws/aws-core-plugin-for-backstage-common'
           - '@aws/aws-securityhub-plugin-for-backstage-common'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:29.237Z'
-        reason: config-schema-not-declared

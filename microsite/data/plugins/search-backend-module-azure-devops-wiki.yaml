@@ -35,7 +35,3 @@ snapshot:
           - axios
           - axios-retry
           - winston
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:06.673Z'
-        reason: config-schema-not-declared

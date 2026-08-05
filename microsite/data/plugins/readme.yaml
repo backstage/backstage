@@ -36,7 +36,3 @@ snapshot:
           - '@mui/material'
           - react-use
           - zod
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:00.994Z'
-        reason: config-schema-not-declared

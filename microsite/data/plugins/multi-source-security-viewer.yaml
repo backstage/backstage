@@ -54,7 +54,3 @@ snapshot:
           - '@patternfly/react-tokens'
           - '@tanstack/react-query'
           - lodash
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:57.345Z'
-        reason: config-schema-not-declared

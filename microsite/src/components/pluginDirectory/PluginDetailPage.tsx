@@ -23,6 +23,7 @@ import React from 'react';
 import { ConfigureGuide } from './ConfigureGuide';
 import { HealthSummary } from './HealthSummary';
 import { InstallGuide } from './InstallGuide';
+import { PackageReadme } from './PackageReadme';
 import { PluginHeader } from './PluginHeader';
 import styles from './pluginDirectory.module.scss';
 
@@ -62,6 +63,7 @@ export default function PluginDetailPage({
           <Tabs>
             <TabItem value="overview" label="Overview">
               <HealthSummary plugin={plugin} />
+              <PackageReadme plugin={plugin} />
             </TabItem>
             <TabItem value="install" label="Install">
               <InstallGuide plugin={plugin} />

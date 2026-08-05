@@ -37,7 +37,3 @@ snapshot:
           - '@backstage/plugin-permission-node'
           - node-fetch
           - winston
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:59.372Z'
-        reason: config-schema-not-declared

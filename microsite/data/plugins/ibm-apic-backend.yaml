@@ -45,7 +45,3 @@ snapshot:
           - uuid
           - winston
           - yn
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:52.019Z'
-        reason: config-schema-not-declared

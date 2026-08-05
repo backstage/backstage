@@ -36,7 +36,3 @@ snapshot:
           - '@types/react'
           - loglevel
           - react-use
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:10.129Z'
-        reason: config-schema-not-declared

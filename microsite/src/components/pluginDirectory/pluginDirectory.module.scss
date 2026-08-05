@@ -275,6 +275,12 @@
   }
 }
 
+.readmeContent {
+  > :first-child {
+    margin-top: 0;
+  }
+}
+
 .contributionList {
   list-style: none;
   margin: 0;

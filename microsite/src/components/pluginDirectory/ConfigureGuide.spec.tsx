@@ -14,10 +14,27 @@
  * limitations under the License.
  */
 import type { PluginData } from '../../pluginDirectory/manifest';
+import { fetchPackageConfigSchema } from '../../pluginDirectory/npmRegistryClient';
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ConfigureGuide } from './ConfigureGuide';
+
+jest.mock('../../pluginDirectory/npmRegistryClient');
+
+const mockFetchPackageConfigSchema = fetchPackageConfigSchema as jest.MockedFunction<
+  typeof fetchPackageConfigSchema
+>;
+
+// Maps npmPackageName -> schema (or undefined for "declared none"). Every
+// package referenced by a test's fixture must appear here, even with an
+// undefined value, so the mock doesn't silently resolve to "not mocked".
+function mockConfigSchemas(schemasByPackage: Record<string, unknown>) {
+  mockFetchPackageConfigSchema.mockImplementation(async npmPackageName => ({
+    status: 'ready',
+    value: schemasByPackage[npmPackageName],
+  }));
+}
 
 function npmSnapshot(backstageRole?: string) {
   return {
@@ -29,6 +46,63 @@ function npmSnapshot(backstageRole?: string) {
     ...(backstageRole ? { backstageRole } : {}),
   };
 }
+
+const appSchema = {
+  type: 'object',
+  properties: {
+    app: {
+      type: 'object',
+      description: 'Settings used by the example plugin.',
+      properties: {
+        endpoint: {
+          type: 'string',
+          description: 'Base URL for the example service.',
+        },
+        mode: {
+          type: 'string',
+          enum: ['production', 'staging'],
+          default: 'production',
+        },
+        retryCount: {
+          type: 'integer',
+          default: 3,
+        },
+        sampleRate: {
+          type: 'number',
+          default: 0.5,
+        },
+        enabled: {
+          type: 'boolean',
+          default: false,
+        },
+        clusters: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+              role: {
+                type: 'string',
+                enum: ['primary', 'secondary'],
+                default: 'primary',
+              },
+            },
+            required: ['name', 'role'],
+          },
+        },
+      },
+      required: [
+        'endpoint',
+        'mode',
+        'retryCount',
+        'sampleRate',
+        'enabled',
+        'clusters',
+      ],
+    },
+  },
+  required: ['app'],
+};
 
 const plugin: PluginData = {
   title: 'Example Plugin',
@@ -51,74 +125,7 @@ const plugin: PluginData = {
     packages: [
       {
         npmPackageName: '@example/plugin-example',
-        npm: {
-          status: 'fresh',
-          lastAttemptAt: '2026-01-01T00:00:00.000Z',
-          checkedAt: '2026-01-01T00:00:00.000Z',
-          latestVersion: '1.0.0',
-          lastPublishedAt: '2026-01-01T00:00:00.000Z',
-        },
-        configSchema: {
-          status: 'fresh',
-          lastAttemptAt: '2026-01-01T00:00:00.000Z',
-          checkedAt: '2026-01-01T00:00:00.000Z',
-          schema: {
-            type: 'object',
-            properties: {
-              app: {
-                type: 'object',
-                description: 'Settings used by the example plugin.',
-                properties: {
-                  endpoint: {
-                    type: 'string',
-                    description: 'Base URL for the example service.',
-                  },
-                  mode: {
-                    type: 'string',
-                    enum: ['production', 'staging'],
-                    default: 'production',
-                  },
-                  retryCount: {
-                    type: 'integer',
-                    default: 3,
-                  },
-                  sampleRate: {
-                    type: 'number',
-                    default: 0.5,
-                  },
-                  enabled: {
-                    type: 'boolean',
-                    default: false,
-                  },
-                  clusters: {
-                    type: 'array',
-                    items: {
-                      type: 'object',
-                      properties: {
-                        name: { type: 'string' },
-                        role: {
-                          type: 'string',
-                          enum: ['primary', 'secondary'],
-                          default: 'primary',
-                        },
-                      },
-                      required: ['name', 'role'],
-                    },
-                  },
-                },
-                required: [
-                  'endpoint',
-                  'mode',
-                  'retryCount',
-                  'sampleRate',
-                  'enabled',
-                  'clusters',
-                ],
-              },
-            },
-            required: ['app'],
-          },
-        },
+        npm: npmSnapshot(),
       },
     ],
   },
@@ -150,7 +157,12 @@ const anyOfSchema = {
 };
 
 describe('ConfigureGuide', () => {
+  beforeEach(() => {
+    mockFetchPackageConfigSchema.mockReset();
+  });
+
   it('renders recursive controls, validates inline, and updates deterministic YAML', async () => {
+    mockConfigSchemas({ '@example/plugin-example': appSchema });
     const user = userEvent.setup();
     const copiedValues: string[] = [];
     Object.defineProperty(navigator, 'clipboard', {
@@ -163,7 +175,7 @@ describe('ConfigureGuide', () => {
     });
     render(<ConfigureGuide plugin={plugin} />);
 
-    const yamlCopy = screen.getByRole('button', {
+    const yamlCopy = await screen.findByRole('button', {
       name: 'Copy @example/plugin-example generated YAML',
     });
     expect(yamlCopy).toBeDisabled();
@@ -215,32 +227,14 @@ describe('ConfigureGuide', () => {
   });
 
   it('renders an interactive form for anyOf fields instead of a read-only dump', async () => {
-    render(
-      <ConfigureGuide
-        plugin={{
-          ...plugin,
-          snapshot: {
-            ...plugin.snapshot!,
-            packages: [
-              {
-                ...plugin.snapshot!.packages[0],
-                configSchema: {
-                  status: 'fresh',
-                  lastAttemptAt: '2026-01-01T00:00:00.000Z',
-                  checkedAt: '2026-01-01T00:00:00.000Z',
-                  schema: anyOfSchema,
-                },
-              },
-            ],
-          },
-        }}
-      />,
-    );
+    mockConfigSchemas({ '@example/plugin-example': anyOfSchema });
 
-    expect(screen.queryByText(/"anyOf"/)).not.toBeInTheDocument();
+    render(<ConfigureGuide plugin={plugin} />);
+
     expect(
-      screen.getByRole('option', { name: 'Cron expression' }),
+      await screen.findByRole('option', { name: 'Cron expression' }),
     ).toBeInTheDocument();
+    expect(screen.queryByText(/"anyOf"/)).not.toBeInTheDocument();
 
     const yamlCopy = screen.getByRole('button', {
       name: 'Copy @example/plugin-example generated YAML',
@@ -248,21 +242,21 @@ describe('ConfigureGuide', () => {
     expect(yamlCopy).toBeDisabled();
   });
 
-  it('renders an explicit message when no package snapshot is available', () => {
+  it('renders an explicit message when no package snapshot is available', async () => {
     render(<ConfigureGuide plugin={{ ...plugin, snapshot: undefined }} />);
 
     expect(
-      screen.getByText('No configuration schema provided.'),
+      await screen.findByText('No configuration schema provided.'),
     ).toBeInTheDocument();
+    expect(mockFetchPackageConfigSchema).not.toHaveBeenCalled();
   });
 
   it('still lists a package with no config schema of its own, showing an explicit message when selected', async () => {
+    mockConfigSchemas({
+      '@example/plugin-example': appSchema,
+      '@example/plugin-example-common': undefined,
+    });
     const user = userEvent.setup();
-    const unavailableConfigSchemaSnapshot = {
-      status: 'unavailable' as const,
-      lastAttemptAt: '2026-01-01T00:00:00.000Z',
-      reason: 'config-schema-not-declared' as const,
-    };
     render(
       <ConfigureGuide
         plugin={{
@@ -274,7 +268,6 @@ describe('ConfigureGuide', () => {
               {
                 npmPackageName: '@example/plugin-example-common',
                 npm: npmSnapshot(),
-                configSchema: unavailableConfigSchemaSnapshot,
               },
             ],
           },
@@ -283,7 +276,7 @@ describe('ConfigureGuide', () => {
     );
 
     expect(
-      screen.getByRole('option', {
+      await screen.findByRole('option', {
         name: '@example/plugin-example-common (common)',
       }),
     ).toBeInTheDocument();
@@ -294,11 +287,29 @@ describe('ConfigureGuide', () => {
     );
 
     expect(
-      screen.getByText('No configuration schema provided.'),
+      await screen.findByText('No configuration schema provided.'),
     ).toBeInTheDocument();
   });
 
   it("merges a frontend package with no schema of its own into its dependency's schema", async () => {
+    mockConfigSchemas({
+      '@example/plugin-frontend': undefined,
+      '@example/plugin-react': {
+        type: 'object',
+        properties: {
+          featureFlag: { type: 'boolean' },
+        },
+        required: ['featureFlag'],
+      },
+      '@example/plugin-extra-module': {
+        type: 'object',
+        properties: {
+          path: { type: 'string' },
+        },
+        required: ['path'],
+      },
+    });
+
     render(
       <ConfigureGuide
         plugin={{
@@ -310,43 +321,14 @@ describe('ConfigureGuide', () => {
                 npmPackageName: '@example/plugin-frontend',
                 internalDependencies: ['@example/plugin-react'],
                 npm: npmSnapshot('frontend-plugin'),
-                configSchema: {
-                  status: 'unavailable',
-                  lastAttemptAt: '2026-01-01T00:00:00.000Z',
-                  reason: 'config-schema-not-declared',
-                },
               },
               {
                 npmPackageName: '@example/plugin-react',
                 npm: npmSnapshot(),
-                configSchema: {
-                  status: 'fresh',
-                  lastAttemptAt: '2026-01-01T00:00:00.000Z',
-                  checkedAt: '2026-01-01T00:00:00.000Z',
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      featureFlag: { type: 'boolean' },
-                    },
-                    required: ['featureFlag'],
-                  },
-                },
               },
               {
                 npmPackageName: '@example/plugin-extra-module',
                 npm: npmSnapshot('module'),
-                configSchema: {
-                  status: 'fresh',
-                  lastAttemptAt: '2026-01-01T00:00:00.000Z',
-                  checkedAt: '2026-01-01T00:00:00.000Z',
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      path: { type: 'string' },
-                    },
-                    required: ['path'],
-                  },
-                },
               },
             ],
           },
@@ -365,13 +347,30 @@ describe('ConfigureGuide', () => {
     expect(
       screen.queryByRole('option', { name: /plugin-react/ }),
     ).not.toBeInTheDocument();
-    expect(screen.getByLabelText(/^featureFlag/)).toHaveAttribute(
+    expect(await screen.findByLabelText(/^featureFlag/)).toHaveAttribute(
       'type',
       'checkbox',
     );
   });
 
   it("merges a shared dependency's schema into both Frontend and Backend sections", async () => {
+    mockConfigSchemas({
+      '@example/plugin-frontend': {
+        type: 'object',
+        properties: { frontendField: { type: 'string' } },
+        required: ['frontendField'],
+      },
+      '@example/plugin-backend': {
+        type: 'object',
+        properties: { backendField: { type: 'string' } },
+        required: ['backendField'],
+      },
+      '@example/plugin-common': {
+        type: 'object',
+        properties: { sharedField: { type: 'string' } },
+        required: ['sharedField'],
+      },
+    });
     const user = userEvent.setup();
     render(
       <ConfigureGuide
@@ -384,45 +383,15 @@ describe('ConfigureGuide', () => {
                 npmPackageName: '@example/plugin-frontend',
                 internalDependencies: ['@example/plugin-common'],
                 npm: npmSnapshot('frontend-plugin'),
-                configSchema: {
-                  status: 'fresh',
-                  lastAttemptAt: '2026-01-01T00:00:00.000Z',
-                  checkedAt: '2026-01-01T00:00:00.000Z',
-                  schema: {
-                    type: 'object',
-                    properties: { frontendField: { type: 'string' } },
-                    required: ['frontendField'],
-                  },
-                },
               },
               {
                 npmPackageName: '@example/plugin-backend',
                 internalDependencies: ['@example/plugin-common'],
                 npm: npmSnapshot('backend-plugin'),
-                configSchema: {
-                  status: 'fresh',
-                  lastAttemptAt: '2026-01-01T00:00:00.000Z',
-                  checkedAt: '2026-01-01T00:00:00.000Z',
-                  schema: {
-                    type: 'object',
-                    properties: { backendField: { type: 'string' } },
-                    required: ['backendField'],
-                  },
-                },
               },
               {
                 npmPackageName: '@example/plugin-common',
                 npm: npmSnapshot('common'),
-                configSchema: {
-                  status: 'fresh',
-                  lastAttemptAt: '2026-01-01T00:00:00.000Z',
-                  checkedAt: '2026-01-01T00:00:00.000Z',
-                  schema: {
-                    type: 'object',
-                    properties: { sharedField: { type: 'string' } },
-                    required: ['sharedField'],
-                  },
-                },
               },
             ],
           },
@@ -430,7 +399,7 @@ describe('ConfigureGuide', () => {
       />,
     );
 
-    expect(screen.getByLabelText(/^frontendField/)).toBeInTheDocument();
+    expect(await screen.findByLabelText(/^frontendField/)).toBeInTheDocument();
     expect(screen.getByLabelText(/^sharedField/)).toBeInTheDocument();
     expect(screen.queryByLabelText(/^backendField/)).not.toBeInTheDocument();
 
@@ -439,12 +408,23 @@ describe('ConfigureGuide', () => {
       'Backend',
     );
 
-    expect(screen.getByLabelText(/^backendField/)).toBeInTheDocument();
+    expect(await screen.findByLabelText(/^backendField/)).toBeInTheDocument();
     expect(screen.getByLabelText(/^sharedField/)).toBeInTheDocument();
     expect(screen.queryByLabelText(/^frontendField/)).not.toBeInTheDocument();
   });
 
   it('merges a package whose backstage.role is "frontend-plugin" with its dependency\'s schema into a Frontend section', async () => {
+    mockConfigSchemas({
+      '@example/plugin-frontend': undefined,
+      '@example/plugin-react': {
+        type: 'object',
+        properties: {
+          featureFlag: { type: 'boolean' },
+        },
+        required: ['featureFlag'],
+      },
+    });
+
     render(
       <ConfigureGuide
         plugin={{
@@ -456,27 +436,10 @@ describe('ConfigureGuide', () => {
                 npmPackageName: '@example/plugin-frontend',
                 internalDependencies: ['@example/plugin-react'],
                 npm: npmSnapshot('frontend-plugin'),
-                configSchema: {
-                  status: 'unavailable',
-                  lastAttemptAt: '2026-01-01T00:00:00.000Z',
-                  reason: 'config-schema-not-declared',
-                },
               },
               {
                 npmPackageName: '@example/plugin-react',
                 npm: npmSnapshot(),
-                configSchema: {
-                  status: 'fresh',
-                  lastAttemptAt: '2026-01-01T00:00:00.000Z',
-                  checkedAt: '2026-01-01T00:00:00.000Z',
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      featureFlag: { type: 'boolean' },
-                    },
-                    required: ['featureFlag'],
-                  },
-                },
               },
             ],
           },
@@ -487,7 +450,7 @@ describe('ConfigureGuide', () => {
     expect(
       screen.queryByRole('option', { name: /plugin-react/ }),
     ).not.toBeInTheDocument();
-    expect(screen.getByLabelText(/^featureFlag/)).toHaveAttribute(
+    expect(await screen.findByLabelText(/^featureFlag/)).toHaveAttribute(
       'type',
       'checkbox',
     );
@@ -502,6 +465,35 @@ describe('ConfigureGuide', () => {
   });
 
   it('merges two schemas that share the same top-level object property key with disjoint sub-properties', async () => {
+    mockConfigSchemas({
+      '@example/kubernetes-backend': {
+        type: 'object',
+        properties: {
+          kubernetes: {
+            type: 'object',
+            properties: {
+              serviceLocatorMethod: { type: 'string' },
+            },
+            required: ['serviceLocatorMethod'],
+          },
+        },
+        required: ['kubernetes'],
+      },
+      '@example/kubernetes-react': {
+        type: 'object',
+        properties: {
+          kubernetes: {
+            type: 'object',
+            properties: {
+              customResources: { type: 'string' },
+            },
+            required: ['customResources'],
+          },
+        },
+        required: ['kubernetes'],
+      },
+    });
+
     render(
       <ConfigureGuide
         plugin={{
@@ -513,46 +505,10 @@ describe('ConfigureGuide', () => {
                 npmPackageName: '@example/kubernetes-backend',
                 internalDependencies: ['@example/kubernetes-react'],
                 npm: npmSnapshot('backend-plugin'),
-                configSchema: {
-                  status: 'fresh',
-                  lastAttemptAt: '2026-01-01T00:00:00.000Z',
-                  checkedAt: '2026-01-01T00:00:00.000Z',
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      kubernetes: {
-                        type: 'object',
-                        properties: {
-                          serviceLocatorMethod: { type: 'string' },
-                        },
-                        required: ['serviceLocatorMethod'],
-                      },
-                    },
-                    required: ['kubernetes'],
-                  },
-                },
               },
               {
                 npmPackageName: '@example/kubernetes-react',
                 npm: npmSnapshot('module'),
-                configSchema: {
-                  status: 'fresh',
-                  lastAttemptAt: '2026-01-01T00:00:00.000Z',
-                  checkedAt: '2026-01-01T00:00:00.000Z',
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      kubernetes: {
-                        type: 'object',
-                        properties: {
-                          customResources: { type: 'string' },
-                        },
-                        required: ['customResources'],
-                      },
-                    },
-                    required: ['kubernetes'],
-                  },
-                },
               },
             ],
           },
@@ -560,7 +516,9 @@ describe('ConfigureGuide', () => {
       />,
     );
 
-    expect(screen.getByLabelText(/^serviceLocatorMethod/)).toBeInTheDocument();
+    expect(
+      await screen.findByLabelText(/^serviceLocatorMethod/),
+    ).toBeInTheDocument();
     expect(screen.getByLabelText(/^customResources/)).toBeInTheDocument();
   });
 });

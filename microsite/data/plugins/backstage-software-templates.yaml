@@ -83,10 +83,6 @@ snapshot:
           - '@backstage/plugin-permission-react'
           - '@backstage/plugin-scaffolder-react'
           - '@backstage/plugin-scaffolder-common'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:30.593Z'
-        reason: config-schema-not-declared
     - npmPackageName: '@backstage/plugin-scaffolder-backend-module-azure'
       sourcePath: plugins/scaffolder-backend-module-azure/package.json
       internalDependencies:
@@ -109,10 +105,6 @@ snapshot:
           - '@backstage/integration'
           - '@backstage/backend-plugin-api'
           - '@backstage/plugin-scaffolder-node'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:31.626Z'
-        reason: config-schema-not-declared
     - npmPackageName: '@backstage/plugin-scaffolder-backend-module-bitbucket-cloud'
       sourcePath: plugins/scaffolder-backend-module-bitbucket-cloud/package.json
       internalDependencies:
@@ -138,10 +130,6 @@ snapshot:
           - '@backstage/backend-plugin-api'
           - '@backstage/plugin-scaffolder-node'
           - '@backstage/plugin-bitbucket-cloud-common'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:32.211Z'
-        reason: config-schema-not-declared
     - npmPackageName: '@backstage/plugin-scaffolder-backend-module-bitbucket-server'
       sourcePath: plugins/scaffolder-backend-module-bitbucket-server/package.json
       internalDependencies:
@@ -164,10 +152,6 @@ snapshot:
           - '@backstage/integration'
           - '@backstage/backend-plugin-api'
           - '@backstage/plugin-scaffolder-node'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:32.735Z'
-        reason: config-schema-not-declared
     - npmPackageName: '@backstage/plugin-scaffolder-backend-module-confluence-to-markdown'
       sourcePath: plugins/scaffolder-backend-module-confluence-to-markdown/package.json
       internalDependencies:
@@ -192,52 +176,6 @@ snapshot:
           - '@backstage/integration'
           - '@backstage/backend-plugin-api'
           - '@backstage/plugin-scaffolder-node'
-      configSchema:
-        status: fresh
-        lastAttemptAt: '2026-08-04T22:12:33.414Z'
-        checkedAt: '2026-08-04T22:12:33.414Z'
-        schema:
-          $schema: http://json-schema.org/draft-07/schema#
-          type: object
-          properties:
-            confluence:
-              type: object
-              properties:
-                baseUrl:
-                  type: string
-                  description: The base URL for accessing the Confluence API
-                auth:
-                  type: object
-                  properties:
-                    type:
-                      type: string
-                      enum:
-                        - basic
-                        - bearer
-                        - userpass
-                      description: Authentication method - basic, bearer, username/password
-                    token:
-                      type: string
-                      description: Token used for the basic and bearer auth methods
-                      visibility: secret
-                    email:
-                      type: string
-                      description: Email used with the token for the basic auth method
-                      visibility: secret
-                    username:
-                      type: string
-                      description: Username used with the Username/Password auth method
-                      visibility: secret
-                    password:
-                      type: string
-                      description: Password used with the Username/Password auth method
-                      visibility: secret
-                  required:
-                    - type
-              required:
-                - baseUrl
-                - auth
-              description: Configuration options for the Confluence to Markdown action
     - npmPackageName: '@backstage/plugin-scaffolder-backend-module-cookiecutter'
       sourcePath: plugins/scaffolder-backend-module-cookiecutter/package.json
       internalDependencies:
@@ -261,10 +199,6 @@ snapshot:
           - '@backstage/integration'
           - '@backstage/backend-plugin-api'
           - '@backstage/plugin-scaffolder-node'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:34.617Z'
-        reason: config-schema-not-declared
     - npmPackageName: '@backstage/plugin-scaffolder-backend-module-gcp'
       sourcePath: plugins/scaffolder-backend-module-gcp/package.json
       internalDependencies:
@@ -287,21 +221,6 @@ snapshot:
           - '@backstage/integration'
           - '@backstage/backend-plugin-api'
           - '@backstage/plugin-scaffolder-node'
-      configSchema:
-        status: fresh
-        lastAttemptAt: '2026-08-04T22:12:35.297Z'
-        checkedAt: '2026-08-04T22:12:35.297Z'
-        schema:
-          $schema: http://json-schema.org/draft-07/schema#
-          type: object
-          properties:
-            scaffolder:
-              type: object
-              properties:
-                EXPERIMENTAL_workspaceSerializationGcpBucketName:
-                  type: string
-                  description: Sets GCP bucket name to store serialized workspace for scaffolder tasks.
-              description: Configuration options for the scaffolder plugin
     - npmPackageName: '@backstage/plugin-scaffolder-backend-module-gerrit'
       sourcePath: plugins/scaffolder-backend-module-gerrit/package.json
       internalDependencies:
@@ -323,10 +242,6 @@ snapshot:
           - '@backstage/integration'
           - '@backstage/backend-plugin-api'
           - '@backstage/plugin-scaffolder-node'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:35.885Z'
-        reason: config-schema-not-declared
     - npmPackageName: '@backstage/plugin-scaffolder-backend-module-gitea'
       sourcePath: plugins/scaffolder-backend-module-gitea/package.json
       internalDependencies:
@@ -348,10 +263,6 @@ snapshot:
           - '@backstage/integration'
           - '@backstage/backend-plugin-api'
           - '@backstage/plugin-scaffolder-node'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:36.520Z'
-        reason: config-schema-not-declared
     - npmPackageName: '@backstage/plugin-scaffolder-backend-module-github'
       sourcePath: plugins/scaffolder-backend-module-github/package.json
       internalDependencies:
@@ -383,10 +294,6 @@ snapshot:
           - '@backstage/plugin-catalog-node'
           - '@backstage/plugin-scaffolder-node'
           - octokit-plugin-create-pull-request
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:37.231Z'
-        reason: config-schema-not-declared
     - npmPackageName: '@backstage/plugin-scaffolder-backend-module-gitlab'
       sourcePath: plugins/scaffolder-backend-module-gitlab/package.json
       internalDependencies:
@@ -413,10 +320,6 @@ snapshot:
           - '@gitbeaker/requester-utils'
           - '@backstage/backend-plugin-api'
           - '@backstage/plugin-scaffolder-node'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:38.051Z'
-        reason: config-schema-not-declared
     - npmPackageName: '@backstage/plugin-scaffolder-backend-module-notifications'
       sourcePath: plugins/scaffolder-backend-module-notifications/package.json
       internalDependencies:
@@ -437,10 +340,6 @@ snapshot:
           - '@backstage/plugin-scaffolder-node'
           - '@backstage/plugin-notifications-node'
           - '@backstage/plugin-notifications-common'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:38.856Z'
-        reason: config-schema-not-declared
     - npmPackageName: '@backstage/plugin-scaffolder-backend-module-rails'
       sourcePath: plugins/scaffolder-backend-module-rails/package.json
       internalDependencies:
@@ -465,10 +364,6 @@ snapshot:
           - '@backstage/integration'
           - '@backstage/backend-plugin-api'
           - '@backstage/plugin-scaffolder-node'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:39.796Z'
-        reason: config-schema-not-declared
     - npmPackageName: '@backstage/plugin-scaffolder-backend-module-sentry'
       sourcePath: plugins/scaffolder-backend-module-sentry/package.json
       internalDependencies:
@@ -489,24 +384,6 @@ snapshot:
           - '@backstage/errors'
           - '@backstage/backend-plugin-api'
           - '@backstage/plugin-scaffolder-node'
-      configSchema:
-        status: fresh
-        lastAttemptAt: '2026-08-04T22:12:40.631Z'
-        checkedAt: '2026-08-04T22:12:40.631Z'
-        schema:
-          $schema: http://json-schema.org/draft-07/schema#
-          type: object
-          properties:
-            scaffolder:
-              type: object
-              properties:
-                sentry:
-                  type: object
-                  properties:
-                    apiBaseUrl:
-                      type: string
-                    token:
-                      type: string
     - npmPackageName: '@backstage/plugin-scaffolder-backend-module-yeoman'
       sourcePath: plugins/scaffolder-backend-module-yeoman/package.json
       internalDependencies:
@@ -528,10 +405,6 @@ snapshot:
           - '@backstage/backend-plugin-api'
           - '@backstage/plugin-scaffolder-node'
           - '@backstage/plugin-scaffolder-node-test-utils'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:41.379Z'
-        reason: config-schema-not-declared
     - npmPackageName: '@backstage/plugin-scaffolder-backend'
       sourcePath: plugins/scaffolder-backend/package.json
       internalDependencies:
@@ -582,163 +455,6 @@ snapshot:
           - '@backstage/plugin-scaffolder-node'
           - '@backstage/plugin-permission-common'
           - '@backstage/plugin-scaffolder-common'
-      configSchema:
-        status: fresh
-        lastAttemptAt: '2026-08-04T22:12:42.241Z'
-        checkedAt: '2026-08-04T22:12:42.241Z'
-        schema:
-          $schema: http://json-schema.org/draft-07/schema#
-          type: object
-          properties:
-            scaffolder:
-              type: object
-              properties:
-                defaultAuthor:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    email:
-                      type: string
-                  description: The commit author info used when new components are created.
-                defaultCommitSigningKey:
-                  type: string
-                  description: Default PGP signing key for signing commits.
-                  visibility: secret
-                defaultCommitMessage:
-                  type: string
-                  description: The commit message used when new components are created.
-                concurrentTasksLimit:
-                  type: number
-                  description: |-
-                    Sets the number of concurrent tasks that can be run at any given time on the TaskWorker.
-
-                    Defaults to 10.
-
-                    Set to 0 to disable task workers altogether.
-                EXPERIMENTAL_gracefulShutdown:
-                  type: boolean
-                  description: Tries to wait for tasks to finish during SIGTERM before shutting down the TaskWorker.
-                EXPERIMENTAL_recoverTasks:
-                  type: boolean
-                  description: |-
-                    Sets the tasks recoverability on system start up.
-
-                    If not specified, the default value is false.
-                EXPERIMENTAL_workspaceSerialization:
-                  type: boolean
-                  description: Sets the serialization of the workspace to have an ability to rerun the failed task.
-                EXPERIMENTAL_workspaceSerializationProvider:
-                  type: string
-                  description: |-
-                    Sets the provider for workspace serialization.
-
-                    By default, it is your database.
-                EXPERIMENTAL_recoverTasksTimeout:
-                  anyOf:
-                    - type: object
-                      properties:
-                        years:
-                          type: number
-                        months:
-                          type: number
-                        weeks:
-                          type: number
-                        days:
-                          type: number
-                        hours:
-                          type: number
-                        minutes:
-                          type: number
-                        seconds:
-                          type: number
-                        milliseconds:
-                          type: number
-                      description: Human friendly durations object.
-                    - type: string
-                  description: |-
-                    Every task which is in progress state and having a last heartbeat longer than a specified timeout is going to be attempted to recover.
-
-                    If not specified, the default value is 5 seconds.
-                taskTimeoutJanitorFrequency:
-                  anyOf:
-                    - type: object
-                      properties:
-                        years:
-                          type: number
-                        months:
-                          type: number
-                        weeks:
-                          type: number
-                        days:
-                          type: number
-                        hours:
-                          type: number
-                        minutes:
-                          type: number
-                        seconds:
-                          type: number
-                        milliseconds:
-                          type: number
-                      description: Human friendly durations object.
-                    - type: string
-                  description: |-
-                    Makes sure to auto-expire and clean up things that time out or for other reasons should not be left lingering.
-
-                    By default, the frequency is every 5 minutes.
-                taskTimeout:
-                  anyOf:
-                    - type: object
-                      properties:
-                        years:
-                          type: number
-                        months:
-                          type: number
-                        weeks:
-                          type: number
-                        days:
-                          type: number
-                        hours:
-                          type: number
-                        minutes:
-                          type: number
-                        seconds:
-                          type: number
-                        milliseconds:
-                          type: number
-                      description: Human friendly durations object.
-                    - type: string
-                  description: |-
-                    Sets the task's heartbeat timeout, when to consider a task to be staled.
-
-                    Once task is considered to be staled, the scheduler will shut it down on the next cycle.
-
-                    Default value is 24 hours.
-                auditor:
-                  type: object
-                  properties:
-                    taskParameterMaxLength:
-                      type: number
-                  description: |-
-                    Sets the maximum length for task parameters recorded by the auditor.
-
-                    If set to -1, the limit is disabled and parameters are not truncated. Defaults to 256 character length.
-                defaultEnvironment:
-                  type: object
-                  properties:
-                    parameters:
-                      type: object
-                      additionalProperties:
-                        type: string
-                      description: Default parameters accessible via ${{ environment.parameters.* }} in templates.
-                    secrets:
-                      type: object
-                      additionalProperties:
-                        type: string
-                      description: Secret values from environment variables accessible via ${{ environment.secrets.* }} in templates. Values should reference environment variables like ${SECRET_NAME}.
-                      visibility: secret
-                  description: Default environment variables and secrets available to all templates.
-              description: Configuration options for the scaffolder plugin
     - npmPackageName: '@backstage/plugin-scaffolder-common'
       sourcePath: plugins/scaffolder-common/package.json
       npm:
@@ -762,10 +478,6 @@ snapshot:
           - '@backstage/catalog-model'
           - '@microsoft/fetch-event-source'
           - '@backstage/plugin-permission-common'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:42.855Z'
-        reason: config-schema-not-declared
     - npmPackageName: '@backstage/plugin-scaffolder-node'
       sourcePath: plugins/scaffolder-node/package.json
       internalDependencies:
@@ -802,10 +514,6 @@ snapshot:
           - '@backstage/plugin-permission-node'
           - '@backstage/plugin-permission-common'
           - '@backstage/plugin-scaffolder-common'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:43.405Z'
-        reason: config-schema-not-declared
     - npmPackageName: '@backstage/plugin-scaffolder-react'
       sourcePath: plugins/scaffolder-react/package.json
       internalDependencies:
@@ -859,7 +567,3 @@ snapshot:
           - '@backstage/plugin-catalog-react'
           - '@backstage/plugin-permission-react'
           - '@backstage/plugin-scaffolder-common'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:44.015Z'
-        reason: config-schema-not-declared

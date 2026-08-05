@@ -19,12 +19,6 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { InstallGuide } from './InstallGuide';
 
-const unavailableConfigSchema = {
-  status: 'unavailable' as const,
-  lastAttemptAt: '2026-08-03T12:00:00.000Z',
-  reason: 'npm-data-unavailable' as const,
-};
-
 function freshNpm(backstageRole?: string) {
   return {
     status: 'fresh' as const,
@@ -58,12 +52,10 @@ const plugin: PluginData = {
       {
         npmPackageName: '@example/plugin-example',
         npm: freshNpm('frontend'),
-        configSchema: unavailableConfigSchema,
       },
       {
         npmPackageName: '@example/plugin-example-backend',
         npm: freshNpm('backend'),
-        configSchema: unavailableConfigSchema,
       },
     ],
   },
@@ -249,22 +241,18 @@ describe('InstallGuide', () => {
               {
                 npmPackageName: '@example/plugin-example-common',
                 npm: freshNpm(),
-                configSchema: unavailableConfigSchema,
               },
               {
                 npmPackageName: '@example/plugin-example-node',
                 npm: freshNpm(),
-                configSchema: unavailableConfigSchema,
               },
               {
                 npmPackageName: '@example/plugin-example-react',
                 npm: freshNpm(),
-                configSchema: unavailableConfigSchema,
               },
               {
                 npmPackageName: '@example/plugin-example-backend-module-foo',
                 npm: freshNpm(),
-                configSchema: unavailableConfigSchema,
               },
             ],
           },
@@ -309,7 +297,6 @@ describe('InstallGuide', () => {
               {
                 npmPackageName: '@example/plugin-example-common',
                 npm: freshNpm(),
-                configSchema: unavailableConfigSchema,
               },
             ],
           },
@@ -334,13 +321,11 @@ describe('InstallGuide', () => {
                 npmPackageName: '@example/plugin-a',
                 internalDependencies: ['@example/plugin-b'],
                 npm: freshNpm(),
-                configSchema: unavailableConfigSchema,
               },
               {
                 npmPackageName: '@example/plugin-b',
                 internalDependencies: ['@example/plugin-a'],
                 npm: freshNpm(),
-                configSchema: unavailableConfigSchema,
               },
             ],
           },

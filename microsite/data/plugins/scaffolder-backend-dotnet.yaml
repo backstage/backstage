@@ -33,7 +33,3 @@ snapshot:
         dependencyNames:
           - '@backstage/plugin-scaffolder-backend'
           - '@backstage/plugin-scaffolder-node'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:03.184Z'
-        reason: config-schema-not-declared

@@ -44,7 +44,3 @@ snapshot:
           - lodash
           - moment
           - react-use
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:42.463Z'
-        reason: config-schema-not-declared

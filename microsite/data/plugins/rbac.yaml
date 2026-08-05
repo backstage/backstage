@@ -50,7 +50,3 @@ snapshot:
           - formik
           - react-use
           - yup
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:01.057Z'
-        reason: config-schema-not-declared

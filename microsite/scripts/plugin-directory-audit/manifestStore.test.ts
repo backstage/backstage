@@ -70,11 +70,6 @@ function snapshot(): NonNullable<PluginManifest['snapshot']> {
             directory: 'plugins/example',
           },
         },
-        configSchema: {
-          status: 'unavailable',
-          lastAttemptAt: '2026-08-03T12:00:00.000Z',
-          reason: 'not-checked',
-        },
       },
     ],
   };
@@ -139,10 +134,6 @@ snapshot:
         repository:
           url: https://github.com/example/backstage-plugins
           directory: plugins/example
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-03T12:00:00.000Z'
-        reason: not-checked
 `,
       );
     });

@@ -39,7 +39,3 @@ snapshot:
           - '@backstage/plugin-catalog-react'
           - '@material-ui/icons'
           - '@types/react'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:10.976Z'
-        reason: config-schema-not-declared

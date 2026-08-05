@@ -49,7 +49,3 @@ snapshot:
           - lucide-react
           - react-use
           - uuid
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:31.336Z'
-        reason: config-schema-not-declared

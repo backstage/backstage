@@ -36,11 +36,6 @@ const freshPackageSnapshot: PackageSnapshot = {
       url: 'https://github.com/example/catalog-insights',
     },
   },
-  configSchema: {
-    status: 'unavailable',
-    lastAttemptAt: '2026-08-03T10:00:00.000Z',
-    reason: 'npm-data-unavailable',
-  },
 };
 
 const freshPlugin: PluginData = {
@@ -182,11 +177,6 @@ describe('HealthSummary', () => {
               lastAttemptAt: '2026-08-03T10:00:00.000Z',
               latestVersion: '0.3.3',
               lastPublishedAt: '2023-05-07T14:51:25.719Z',
-            },
-            configSchema: {
-              status: 'unavailable',
-              lastAttemptAt: '2026-08-03T10:00:00.000Z',
-              reason: 'npm-data-unavailable',
             },
           },
         ],

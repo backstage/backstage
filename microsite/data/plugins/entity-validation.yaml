@@ -51,7 +51,3 @@ snapshot:
           - lodash
           - react-use
           - yaml
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:44.477Z'
-        reason: config-schema-not-declared

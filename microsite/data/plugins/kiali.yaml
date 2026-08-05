@@ -70,7 +70,3 @@ snapshot:
           - victory-box-plot
           - victory-core
           - victory-voronoi-container
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:53.980Z'
-        reason: config-schema-not-declared

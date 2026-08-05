@@ -41,7 +41,3 @@ snapshot:
           - '@material-ui/lab'
           - '@types/react'
           - react-use
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:12.132Z'
-        reason: config-schema-not-declared

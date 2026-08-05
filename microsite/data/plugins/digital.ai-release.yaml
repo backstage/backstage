@@ -51,7 +51,3 @@ snapshot:
           - moment
           - react-use
           - styled-components
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:42.638Z'
-        reason: config-schema-not-declared

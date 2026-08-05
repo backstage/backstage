@@ -34,7 +34,3 @@ snapshot:
           - '@types/express'
           - node
           - winston
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:13:03.332Z'
-        reason: config-schema-not-declared

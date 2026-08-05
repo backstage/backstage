@@ -50,10 +50,6 @@ snapshot:
           - '@backstage/plugin-catalog-react'
           - '@backstage/plugin-catalog-common'
           - '@backstage/plugin-permission-react'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:27.371Z'
-        reason: config-schema-not-declared
     - npmPackageName: '@backstage/plugin-api-docs-module-protoc-gen-doc'
       sourcePath: plugins/api-docs-module-protoc-gen-doc/package.json
       npm:
@@ -68,7 +64,3 @@ snapshot:
         backstageRole: frontend-plugin-module
         dependencyNames:
           - grpc-docs
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:28.065Z'
-        reason: config-schema-not-declared

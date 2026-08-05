@@ -35,7 +35,3 @@ snapshot:
           - react-syntax-highlighter
           - react-use
           - typescript
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:35.204Z'
-        reason: config-schema-not-declared

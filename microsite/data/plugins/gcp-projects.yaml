@@ -36,7 +36,3 @@ snapshot:
           - '@material-ui/core'
           - '@react-hookz/web'
           - '@types/react'
-      configSchema:
-        status: unavailable
-        lastAttemptAt: '2026-08-04T22:12:46.936Z'
-        reason: config-schema-not-declared
