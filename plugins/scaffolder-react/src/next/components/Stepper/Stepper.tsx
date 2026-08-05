@@ -343,7 +343,7 @@ export const Stepper = (stepperProps: StepperProps) => {
         {/* eslint-disable-next-line no-nested-ternary */}
         {activeStep < visibleSteps.length ? (
           <Form
-            key={activeStep}
+            key={`${activeStep}-${visibleSteps[activeStep]?.title}`}
             validator={validator}
             extraErrors={errors as unknown as ErrorSchema}
             formData={stepsState}
