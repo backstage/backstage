@@ -22,6 +22,7 @@ function configFields(connection: Record<string, unknown>) {
   return config;
 }
 
+const AwsConnectionType = connectionTypes.aws;
 const AwsCodeCommitConnectionType = connectionTypes['aws-codecommit'];
 const AwsS3ConnectionType = connectionTypes['aws-s3'];
 const AzureBlobStorageConnectionType = connectionTypes['azure-blob-storage'];
@@ -695,6 +696,135 @@ describe('getLegacyIntegrations', () => {
       const [converted] = getLegacyIntegrations(config);
       expect(() =>
         GiteaConnectionType.configSchema.parse(configFields(converted)),
+      ).not.toThrow();
+    });
+  });
+
+  describe('aws', () => {
+    it('converts accounts, mainAccount, and accountDefaults from top-level aws config', () => {
+      const config = mockServices.rootConfig({
+        data: {
+          aws: {
+            accountDefaults: {
+              roleName: 'backstage-role',
+              partition: 'aws',
+              region: 'us-east-1',
+              externalId: 'default-ext',
+            },
+            mainAccount: {
+              profile: 'main-profile',
+              region: 'eu-west-1',
+            },
+            accounts: [
+              {
+                accountId: '111111111111',
+                roleName: 'my-role',
+                externalId: 'ext-id',
+              },
+              {
+                accountId: '222222222222',
+                accessKeyId: 'AKID',
+                secretAccessKey: 'secret',
+              },
+            ],
+          },
+        },
+      });
+
+      expect(getLegacyIntegrations(config)).toEqual([
+        {
+          type: 'aws',
+          roleName: 'backstage-role',
+          partition: 'aws',
+          region: 'us-east-1',
+          externalId: 'default-ext',
+          auth: [
+            {
+              method: 'account',
+              accountId: '111111111111',
+              roleName: 'my-role',
+              externalId: 'ext-id',
+            },
+            {
+              method: 'account',
+              accountId: '222222222222',
+              accessKeyId: 'AKID',
+              secretAccessKey: 'secret',
+            },
+            {
+              method: 'account',
+              mainAccount: true,
+              profile: 'main-profile',
+              region: 'eu-west-1',
+            },
+          ],
+        },
+      ]);
+    });
+
+    it('always emits a main account entry, matching the implicit legacy default credentials chain', () => {
+      const emptyAws = mockServices.rootConfig({ data: { aws: {} } });
+      expect(getLegacyIntegrations(emptyAws)).toEqual([
+        {
+          type: 'aws',
+          auth: [{ method: 'account', mainAccount: true }],
+        },
+      ]);
+
+      const accountsOnly = mockServices.rootConfig({
+        data: {
+          aws: {
+            accounts: [{ accountId: '111111111111', profile: 'other' }],
+          },
+        },
+      });
+      expect(getLegacyIntegrations(accountsOnly)).toEqual([
+        {
+          type: 'aws',
+          auth: [
+            { method: 'account', accountId: '111111111111', profile: 'other' },
+            { method: 'account', mainAccount: true },
+          ],
+        },
+      ]);
+    });
+
+    it('produces output that validates against the aws connection schema', () => {
+      const config = mockServices.rootConfig({
+        data: {
+          aws: {
+            accountDefaults: { roleName: 'backstage-role' },
+            mainAccount: { accessKeyId: 'AKID', secretAccessKey: 'secret' },
+            accounts: [
+              { accountId: '111111111111', roleName: 'my-role' },
+              {
+                accountId: '222222222222',
+                roleName: 'other-role',
+                webIdentityTokenFile: '/token',
+              },
+            ],
+          },
+        },
+      });
+
+      const [converted] = getLegacyIntegrations(config);
+
+      // Mirrors what DefaultConnectionsService does: parse the connection
+      // config and each auth entry, then apply the cross-entry validation.
+      const parsedConfig = AwsConnectionType.configSchema.parse(
+        configFields(converted),
+      );
+      const parsedAuth = (converted.auth as Array<Record<string, unknown>>).map(
+        ({ method, ...fields }) => ({
+          method: 'account' as const,
+          ...AwsConnectionType.authMethods[0].configSchema.parse(fields),
+        }),
+      );
+      expect(() =>
+        AwsConnectionType.validate?.({
+          config: parsedConfig,
+          auth: parsedAuth,
+        }),
       ).not.toThrow();
     });
   });

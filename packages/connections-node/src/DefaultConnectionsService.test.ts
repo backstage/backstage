@@ -694,6 +694,83 @@ describe('DefaultConnectionsService', () => {
         }),
       ).toThrow(/Duplicate connection of type "aws"/);
     });
+
+    it('resolves legacy top-level aws config through connections', async () => {
+      const service = DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockServices.rootConfig({
+          data: {
+            aws: {
+              accountDefaults: { roleName: 'backstage-role' },
+              mainAccount: { profile: 'main-profile' },
+              accounts: [
+                { accountId: '111111111111', roleName: 'legacy-role' },
+              ],
+            },
+          },
+        }),
+      });
+      const connections = service.forPlugin('catalog');
+
+      const byAccountId = await connections.find({
+        type: 'aws',
+        query: { accountId: '111111111111' },
+        authMethods: ['account'],
+      });
+      expect(byAccountId.roleName).toBe('backstage-role');
+      expect(byAccountId.auth).toMatchObject({
+        accountId: '111111111111',
+        roleName: 'legacy-role',
+      });
+
+      const fallback = await connections.find({
+        type: 'aws',
+        query: { accountId: '999999999999' },
+        authMethods: ['account'],
+      });
+      expect(fallback.auth).toMatchObject({
+        mainAccount: true,
+        profile: 'main-profile',
+      });
+    });
+
+    it('prefers explicit aws connections config over legacy aws config', async () => {
+      const logger = mockServices.logger.mock();
+      const service = DefaultConnectionsService.create({
+        logger,
+        config: mockServices.rootConfig({
+          data: {
+            aws: {
+              mainAccount: { profile: 'legacy-profile' },
+            },
+            connections: [
+              {
+                type: 'aws',
+                auth: [
+                  {
+                    method: 'account',
+                    mainAccount: true,
+                    profile: 'explicit-profile',
+                  },
+                ],
+              },
+            ],
+          },
+        }),
+      });
+
+      const fallback = await service.forPlugin('catalog').find({
+        type: 'aws',
+        query: {},
+        authMethods: ['account'],
+      });
+      expect(fallback.auth).toMatchObject({ profile: 'explicit-profile' });
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'defined in both legacy integrations and connections config',
+        ),
+      );
+    });
   });
 
   describe('title', () => {
