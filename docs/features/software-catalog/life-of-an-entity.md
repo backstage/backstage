@@ -286,7 +286,7 @@ The default behavior of the catalog is to automatically remove orphaned
 entities. However, if you want to keep them instead, you can disable the
 automated cleanup with the following app-config option.
 
-```
+```yaml
 catalog:
   orphanStrategy: keep
 ```

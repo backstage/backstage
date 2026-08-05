@@ -43,8 +43,8 @@ In both cases, you'll want to find the plugin's installation documentation. For 
 
 Generally, installing a backend plugin is really easy - you just add a
 
-```
-backend.import(`@scope/package`)
+```ts
+backend.import(`@scope/package`);
 ```
 
 to your `packages/backend/src/index.ts` file alongside the other entries. Saving the file will trigger a hot reload and just like that your new plugin is available and usable. For advanced cases, there may be required config for the plugin that you'll have to set. That config will (or should) be documented by the plugin in their `README`.

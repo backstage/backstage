@@ -47,7 +47,7 @@ We use a separate `todo-list-common` package since all permissions authorized by
 
 Install the following module:
 
-```
+```shell
 $ yarn workspace @internal/plugin-todo-list-backend \
   add @backstage/plugin-permission-common @backstage/plugin-permission-node @internal/plugin-todo-list-common
 ```

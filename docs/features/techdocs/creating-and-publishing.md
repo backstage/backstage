@@ -159,7 +159,7 @@ published as a standalone part of TechDocs.
 3. Add your `index.md` Markdown file, in a folder named `docs/` with your desired
    documentation in Markdown. Your file structure should now look like this:
 
-   ```
+   ```text
    your-great-documentation/
      docs/
        index.md

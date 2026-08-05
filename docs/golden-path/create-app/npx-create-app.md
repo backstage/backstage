@@ -100,7 +100,7 @@ This may take a few minutes to fully install everything. Don't stress if the loa
 
 Below is a simplified layout of the files and folders generated when creating an app.
 
-```
+```text
 app
 ├── app-config.yaml
 ├── catalog-info.yaml

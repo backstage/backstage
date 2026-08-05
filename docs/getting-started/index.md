@@ -34,7 +34,7 @@ needed for you to run your app.
 
 Below is a simplified layout of the files and folders generated when creating an app.
 
-```
+```text
 app
 ├── app-config.yaml
 ├── catalog-info.yaml
@@ -159,7 +159,7 @@ To run the application:
 
 As the frontend and backend are starting, you will see output similar to the following. The output shows that the app and backend are starting up with the configuration coming from `app-config.yaml`. You will see the plugins being initialized, and authorization and permissions being setup. In addition you will see a series of REST API calls for those plugins that use a service backend, such as the service catalog.
 
-```
+```log
 Starting app, backend
 Loaded config from app-config.yaml
 .

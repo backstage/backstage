@@ -26,7 +26,7 @@ should have a separate package in a folder, which represents your plugin.
 
 Example:
 
-```
+```shell-session
 $ yarn new
 # Select `frontend-plugin`
 > ? Enter an ID for the plugin [required] my-plugin

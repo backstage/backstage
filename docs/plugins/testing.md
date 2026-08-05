@@ -28,15 +28,21 @@ frameworks and libraries like [Mocha](https://mochajs.org/),
 
 Running all tests:
 
-    yarn test
+```shell
+yarn test
+```
 
 Running an individual test (e.g. `MyComponent.test.tsx`):
 
-    yarn test MyComponent
+```shell
+yarn test MyComponent
+```
 
 To run both `MyComponent.test.tsx` and `MyControl.test.tsx` suite of tests:
 
-    yarn test MyComponent MyControl
+```shell
+yarn test MyComponent MyControl
+```
 
 :::note
 
@@ -369,13 +375,15 @@ functions:
 
 **`wrapInTestApp`**
 
-    import { wrapInTestApp } from '../../test-utils';
-    ...
-    it('Definitely is not a coconut', () => {
-      const mangoWrapper = mount(wrapInTestApp(<Mango />));
+```tsx
+import { wrapInTestApp } from '../../test-utils';
+...
+it('Definitely is not a coconut', () => {
+  const mangoWrapper = mount(wrapInTestApp(<Mango />));
 
-      expect(mangoWrapper.context().store).toBeDefined();
-    });
+  expect(mangoWrapper.context().store).toBeDefined();
+});
+```
 
 Note: wrapping in the test application **requires** you to do a `find()` or
 `dive()` since the wrapped component is now the application.

@@ -17,7 +17,7 @@ great things. But first off, let's look at what we get out of the box.
 
 The new plugin should look something like:
 
-```
+```text
 new-plugin/
     dev/
         index.ts

@@ -66,7 +66,7 @@ When you see `dir:.`, you can translate it to mean:
 
 The directory tree of the entity would look something like this:
 
-```
+```text
 ├── catalog-info.yaml
 ├── mkdocs.yml
 └── docs
@@ -77,7 +77,7 @@ If, for example, you wanted to keep a lean root directory, you could place your
 `mkdocs.yml` file in a subdirectory and update the `backstage.io/techdocs-ref`
 annotation value accordingly, e.g. to `dir:./sub-folder`:
 
-```
+```text
 ├── catalog-info.yaml
 └── sub-folder
     ├── mkdocs.yml
@@ -1007,7 +1007,7 @@ You may want to make files available for download by your users such as PDF
 documents, images, or code templates. Download links for files included in your
 docs directory can be made by adding `{: download }` after a markdown link.
 
-```
+```markdown
 [Link text](https://example.com/foo.jpg){: download }
 ```
 
@@ -1017,6 +1017,6 @@ clicked.
 Specify a file name to control the name the file will be given when it is
 downloaded:
 
-```
+```markdown
 [Link text](https://example.com/foo.jpg){: download="foo.jpg" }
 ```

@@ -21,7 +21,7 @@ interface consists of four methods. Each of these methods is hosted at an
 endpoint (by default) `/api/auth/[provider]/method`, where `method` performs a
 certain operation as follows:
 
-```
+```text
   /auth/[provider]/start -> Initiate a login from the web page
   /auth/[provider]/handler/frame -> Handle a finished authentication operation
   /auth/[provider]/refresh -> Refresh the validity of a login

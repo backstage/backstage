@@ -10,7 +10,7 @@ It is worth noting that the Backstage Software Catalog should not be considered 
 
 [**Entities:**](https://backstage.io/docs/features/software-catalog/system-model) An entity refers to a node in the graph that represents a distinct object, concept, or thing. Nodes are the fundamental building blocks of a graph database and are used to represent entities and their properties.
 
-![](../../assets/software-catalog/entity.drawio.svg)
+![Diagram of an entity envelope and its apiVersion, kind, metadata and spec fields](../../assets/software-catalog/entity.drawio.svg)
 
 [**Kinds:**](https://backstage.io/docs/features/software-catalog/descriptor-format#contents) These are broad categories used to group related entities. Kinds are used to provide a high-level categorization of entities, such as "service", "database", or "team". Kinds are often used to provide a way to filter entities in the catalog and to provide a high-level overview of the types of entities that are being managed.
 

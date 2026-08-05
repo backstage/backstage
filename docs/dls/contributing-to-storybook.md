@@ -46,7 +46,7 @@ want to document on Storybook.
 
 See below an example of the structure:
 
-```
+```text
 core
 └── src
     └── components
