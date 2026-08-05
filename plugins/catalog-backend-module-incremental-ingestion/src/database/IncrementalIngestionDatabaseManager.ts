@@ -125,20 +125,6 @@ export class IncrementalIngestionDatabaseManager {
   }
 
   /**
-   * Finds the last ingestion record for the named provider.
-   * @param provider - string
-   * @returns IngestionRecord | undefined
-   */
-  async getPreviousIngestionRecord(provider: string) {
-    return await this.client.transaction(async tx => {
-      return await tx<IngestionRecord>('ingestions')
-        .where('provider_name', provider)
-        .andWhereNot('completion_ticket', 'open')
-        .first();
-    });
-  }
-
-  /**
    * Removes all entries from `ingestion_marks_entities`, `ingestion_marks`, and `ingestions`
    * for prior ingestions that completed (i.e., have a `completion_ticket` value other than 'open').
    * @param provider - string
@@ -255,8 +241,8 @@ export class IncrementalIngestionDatabaseManager {
   }
 
   /**
-   * This method is used to remove entity records from the ingestion_mark_entities
-   * table by their entity reference, scoped to a single source_key.
+   * Removes entity records by entity reference from `ingestion_mark_entities`,
+   * and from `active_entities` for the given provider, in the same transaction.
    */
   async deleteEntityRecordsByRef(
     sourceKey: string,
@@ -269,6 +255,11 @@ export class IncrementalIngestionDatabaseManager {
     const refs = entities.map(e => e.entityRef);
     await this.client.transaction(async tx => {
       await tx('ingestion_mark_entities')
+        .delete()
+        .where('source_key', sourceKey)
+        .modify(this.whereInArray('entity_ref', refs));
+
+      await tx('active_entities')
         .delete()
         .where('source_key', sourceKey)
         .modify(this.whereInArray('entity_ref', refs));
@@ -299,15 +290,13 @@ export class IncrementalIngestionDatabaseManager {
   }
 
   /**
-   * Computes which entities to remove, if any, at the end of a burst.
-   * @param provider - string
+   * Counts the number of entities marked in this burst.
    * @param ingestionId - string
-   * @returns All entities to remove for this burst.
+   * @returns The count of marked entities.
    */
-  async computeRemoved(provider: string, ingestionId: string) {
-    const previousIngestion = await this.getPreviousIngestionRecord(provider);
+  async countMarkedEntities(ingestionId: string) {
     return await this.client.transaction(async tx => {
-      const count = await tx('ingestion_mark_entities')
+      const [{ total }] = await tx('ingestion_mark_entities')
         .count({ total: 'ingestion_mark_entities.entity_ref' })
         .join(
           'ingestion_marks',
@@ -317,28 +306,42 @@ export class IncrementalIngestionDatabaseManager {
         .join('ingestions', 'ingestions.id', 'ingestion_marks.ingestion_id')
         .where('ingestions.id', ingestionId);
 
-      const total = count.reduce((acc, cur) => acc + Number(cur.total), 0);
+      return Number(total);
+    });
+  }
 
-      const removed: { entityRef: string }[] = [];
-      if (previousIngestion) {
-        const stale: { entity_ref: string }[] = await tx(
-          'ingestion_mark_entities',
+  /**
+   * Finds entities that belong to the provider in this module's own
+   * `active_entities` tally, but were not marked in this burst, meaning
+   * they no longer exist in the upstream source.
+   * @param sourceKey - string
+   * @param ingestionId - string
+   * @returns All entities to remove for this burst.
+   */
+  async findStaleEntities(sourceKey: string, ingestionId: string) {
+    return await this.client.transaction(async tx => {
+      const currentMarkRefs = tx('ingestion_mark_entities')
+        .select('ingestion_mark_entities.entity_ref')
+        .join(
+          'ingestion_marks',
+          'ingestion_marks.id',
+          'ingestion_mark_entities.ingestion_mark_id',
         )
-          .select('ingestion_mark_entities.entity_ref')
-          .join(
-            'ingestion_marks',
-            'ingestion_marks.id',
-            'ingestion_mark_entities.ingestion_mark_id',
-          )
-          .join('ingestions', 'ingestions.id', 'ingestion_marks.ingestion_id')
-          .where('ingestions.id', previousIngestion.id);
+        .join('ingestions', 'ingestions.id', 'ingestion_marks.ingestion_id')
+        .where('ingestions.id', ingestionId)
+        .as('current_mark_refs');
 
-        for (const row of stale) {
-          removed.push({ entityRef: row.entity_ref });
-        }
-      }
+      const stale: { entity_ref: string }[] = await tx('active_entities')
+        .select('active_entities.entity_ref')
+        .where('active_entities.source_key', sourceKey)
+        .leftJoin(
+          currentMarkRefs,
+          'current_mark_refs.entity_ref',
+          'active_entities.entity_ref',
+        )
+        .whereNull('current_mark_refs.entity_ref');
 
-      return { total, removed };
+      return stale.map(row => ({ entityRef: row.entity_ref }));
     });
   }
 
@@ -589,7 +592,9 @@ export class IncrementalIngestionDatabaseManager {
   }
 
   /**
-   * Performs an upsert to the `ingestion_mark_entities` table for all deferred entities.
+   * Performs an upsert to the `ingestion_mark_entities` table for all deferred
+   * entities, and inserts the same refs into `active_entities` for the given
+   * provider.
    * @param sourceKey - string
    * @param entities - DeferredEntity[]
    * @param markId - string
@@ -617,6 +622,11 @@ export class IncrementalIngestionDatabaseManager {
         )
         .onConflict(['source_key', 'entity_ref'])
         .merge(['ingestion_mark_id']);
+
+      await tx('active_entities')
+        .insert(refs.map(ref => ({ source_key: sourceKey, entity_ref: ref })))
+        .onConflict(['source_key', 'entity_ref'])
+        .ignore();
     });
   }
 

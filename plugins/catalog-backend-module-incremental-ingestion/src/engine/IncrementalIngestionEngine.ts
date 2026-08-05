@@ -277,6 +277,7 @@ export class IncrementalIngestionEngine implements IterationEngine {
     done: boolean;
     cursor?: unknown;
   }) {
+    const providerName = this.options.provider.getProviderName();
     this.options.logger.debug(
       `incremental-engine: Ingestion '${id}': MARK ${
         entities.length
@@ -295,11 +296,7 @@ export class IncrementalIngestionEngine implements IterationEngine {
       },
     });
 
-    await this.manager.createMarkEntities(
-      this.options.provider.getProviderName(),
-      entities,
-      markId,
-    );
+    await this.manager.createMarkEntities(providerName, entities, markId);
 
     const added = entities.map(deferred => ({
       ...deferred,
@@ -320,12 +317,8 @@ export class IncrementalIngestionEngine implements IterationEngine {
       this.options.logger.info(
         `incremental-engine: Ingestion '${id}': Final page reached, calculating removed entities`,
       );
-      const result = await this.manager.computeRemoved(
-        this.options.provider.getProviderName(),
-        id,
-      );
-
-      const { total } = result;
+      const total = await this.manager.countMarkedEntities(id);
+      const stale = await this.manager.findStaleEntities(providerName, id);
 
       let doRemoval = true;
       if (this.options.rejectEmptySourceCollections) {
@@ -340,11 +333,10 @@ export class IncrementalIngestionEngine implements IterationEngine {
       if (this.options.rejectRemovalsAbovePercentage) {
         // If the total entities upserted in this ingestion is 0, then
         // 100% of entities are stale and marked for removal.
-        const percentRemoved =
-          total > 0 ? (result.removed.length / total) * 100 : 100;
+        const percentRemoved = total > 0 ? (stale.length / total) * 100 : 100;
         if (percentRemoved <= this.options.rejectRemovalsAbovePercentage) {
           this.options.logger.info(
-            `incremental-engine: Ingestion '${id}': Removing ${result.removed.length} entities that have no matching assets`,
+            `incremental-engine: Ingestion '${id}': Removing ${stale.length} entities that have no matching assets`,
           );
         } else {
           const notice = `Attempted to remove ${percentRemoved}% of matching entities!`;
@@ -361,9 +353,10 @@ export class IncrementalIngestionEngine implements IterationEngine {
         }
       }
       if (doRemoval) {
-        for (const entityRef of result.removed) {
+        for (const entityRef of stale) {
           removed.push(entityRef);
         }
+        await this.manager.deleteEntityRecordsByRef(providerName, stale);
       }
     }
 

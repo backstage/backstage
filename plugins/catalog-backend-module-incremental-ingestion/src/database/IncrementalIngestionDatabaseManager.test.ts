@@ -96,7 +96,7 @@ describe.each(databases.eachSupportedId())(
       ]);
     });
 
-    it('computeRemoved correctly sums total count from count query', async () => {
+    it('countMarkedEntities correctly sums total count from count query', async () => {
       const knex = await databases.init(databaseId);
       await knex.migrate.latest({ directory: migrationsDir });
 
@@ -132,11 +132,110 @@ describe.each(databases.eachSupportedId())(
         markId,
       );
 
-      const result = await manager.computeRemoved('testProvider', ingestionId);
+      const total = await manager.countMarkedEntities(ingestionId);
 
       // On PostgreSQL, count queries return strings, so total should be 3 not NaN or string concatenation
-      expect(result.total).toBe(3);
-      expect(typeof result.total).toBe('number');
+      expect(total).toBe(3);
+      expect(typeof total).toBe('number');
+    });
+
+    it('findStaleEntities detects a stale entity even with no previous cycle bookkeeping', async () => {
+      const knex = await databases.init(databaseId);
+      await knex.migrate.latest({ directory: migrationsDir });
+
+      const manager = new IncrementalIngestionDatabaseManager({
+        client: knex,
+      });
+      const { ingestionId } = (await manager.createProviderIngestionRecord(
+        'testProvider',
+      ))!;
+
+      const markId = uuid();
+      await manager.createMark({
+        record: {
+          id: markId,
+          ingestion_id: ingestionId,
+          sequence: 1,
+          cursor: { data: 1 },
+        },
+      });
+
+      const makeEntity = (name: string): DeferredEntity => ({
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { namespace: 'default', name },
+        },
+      });
+
+      // Current cycle only marks comp1; `active_entities` still believes the
+      // provider owns comp1 and comp2 (comp2 has no ingestion_marks/
+      // ingestion_mark_entities row for any cycle at all, but is present in
+      // the running tally from a prior cycle).
+      await manager.createMarkEntities(
+        'testProvider',
+        [makeEntity('comp1')],
+        markId,
+      );
+
+      await knex('active_entities').insert([
+        {
+          source_key: 'testProvider',
+          entity_ref: 'component:default/comp2',
+        },
+      ]);
+
+      const stale = await manager.findStaleEntities(
+        'testProvider',
+        ingestionId,
+      );
+
+      expect(stale).toEqual([{ entityRef: 'component:default/comp2' }]);
+    });
+
+    it('findStaleEntities does not flag entities that are present in both the tally and the current cycle, or new entities not yet in the tally', async () => {
+      const knex = await databases.init(databaseId);
+      await knex.migrate.latest({ directory: migrationsDir });
+
+      const manager = new IncrementalIngestionDatabaseManager({
+        client: knex,
+      });
+      const { ingestionId } = (await manager.createProviderIngestionRecord(
+        'testProvider',
+      ))!;
+
+      const markId = uuid();
+      await manager.createMark({
+        record: {
+          id: markId,
+          ingestion_id: ingestionId,
+          sequence: 1,
+          cursor: { data: 1 },
+        },
+      });
+
+      const makeEntity = (name: string): DeferredEntity => ({
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { namespace: 'default', name },
+        },
+      });
+
+      // comp1 is in the tally and marked this cycle (unchanged).
+      // comp3 is marked this cycle, which also adds it to the tally.
+      await manager.createMarkEntities(
+        'testProvider',
+        [makeEntity('comp1'), makeEntity('comp3')],
+        markId,
+      );
+
+      const stale = await manager.findStaleEntities(
+        'testProvider',
+        ingestionId,
+      );
+
+      expect(stale).toEqual([]);
     });
 
     it('createMarkEntities handles existing and new refs correctly', async () => {
@@ -382,6 +481,79 @@ describe.each(databases.eachSupportedId())(
       ))!;
 
       expect(last_error).toEqual(expectedLastError);
+    });
+
+    it('active_entities migration backfills from refresh_state_references for existing installs', async () => {
+      const knex = await databases.init(databaseId);
+
+      // Migrate up to (but not including) the migration that creates
+      // `active_entities`, then simulate the host catalog's table and an
+      // existing incremental ingestion provider before continuing.
+      await migrateUntilBefore(knex, '20260811140000_active_entities.js');
+
+      await knex.schema.createTable('refresh_state_references', table => {
+        table.increments('id');
+        table.text('source_key').nullable();
+        table.text('target_entity_ref').notNullable();
+      });
+
+      await knex('ingestions').insert({
+        id: uuid(),
+        provider_name: 'testProvider',
+        status: 'resting',
+        next_action: 'rest',
+        completion_ticket: 'open',
+      });
+
+      await knex('refresh_state_references').insert([
+        {
+          source_key: 'testProvider',
+          target_entity_ref: 'component:default/comp1',
+        },
+        {
+          source_key: 'testProvider',
+          target_entity_ref: 'component:default/comp2',
+        },
+        {
+          source_key: 'unrelatedSource',
+          target_entity_ref: 'component:default/comp3',
+        },
+      ]);
+
+      await knex.migrate.latest({ directory: migrationsDir });
+
+      const backfilled = await knex('active_entities')
+        .select('source_key', 'entity_ref')
+        .orderBy('entity_ref');
+      expect(backfilled).toEqual([
+        { source_key: 'testProvider', entity_ref: 'component:default/comp1' },
+        { source_key: 'testProvider', entity_ref: 'component:default/comp2' },
+      ]);
+    });
+
+    it('deleteEntityRecordsByRef removes matching active_entities refs for the named provider only', async () => {
+      const knex = await databases.init(databaseId);
+      await knex.migrate.latest({ directory: migrationsDir });
+
+      const manager = new IncrementalIngestionDatabaseManager({ client: knex });
+
+      await knex('active_entities').insert([
+        { source_key: 'testProvider', entity_ref: 'component:default/a' },
+        { source_key: 'testProvider', entity_ref: 'component:default/b' },
+        { source_key: 'otherProvider', entity_ref: 'component:default/a' },
+      ]);
+
+      await manager.deleteEntityRecordsByRef('testProvider', [
+        { entityRef: 'component:default/a' },
+      ]);
+
+      const remaining = await knex('active_entities')
+        .select('source_key', 'entity_ref')
+        .orderBy(['source_key', 'entity_ref']);
+      expect(remaining).toEqual([
+        { source_key: 'otherProvider', entity_ref: 'component:default/a' },
+        { source_key: 'testProvider', entity_ref: 'component:default/b' },
+      ]);
     });
   },
 );
