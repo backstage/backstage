@@ -14,14 +14,39 @@
  * limitations under the License.
  */
 
-import { createPermission } from '@backstage/plugin-permission-common';
+import {
+  createPermission,
+  ResourcePermission,
+} from '@backstage/plugin-permission-common';
 
-/** This permission is used to check access to the proxy endpoint
+/**
+ * The resource type for Kubernetes proxy requests.
+ * Used to enable conditional permission policies on proxy operations.
+ * @public
+ */
+export const RESOURCE_TYPE_KUBERNETES_PROXY = 'kubernetes-proxy-request';
+
+/**
+ * Convenience type for Kubernetes proxy request
+ * {@link @backstage/plugin-permission-common#ResourcePermission}s.
+ * @public
+ */
+export type KubernetesProxyPermission = ResourcePermission<
+  typeof RESOURCE_TYPE_KUBERNETES_PROXY
+>;
+
+/** This permission is used to check access to the proxy endpoint.
+ *
+ * @remarks
+ * This is a resource permission that supports conditional policies based on
+ * request attributes such as cluster, namespace, resource type, action, and verb.
+ *
  * @public
  */
 export const kubernetesProxyPermission = createPermission({
   name: 'kubernetes.proxy',
   attributes: {},
+  resourceType: RESOURCE_TYPE_KUBERNETES_PROXY,
 });
 
 /** This permission is used to check access to the /resources and /services/:serviceId endpoints

@@ -913,14 +913,25 @@ metadata:
       .set('authorization', mockCredentials.service.header());
 
     expect(response.status).toEqual(200);
-    expect(response.body).toMatchObject({
-      permissions: [
-        { type: 'basic', name: 'kubernetes.proxy', attributes: {} },
-        { type: 'basic', name: 'kubernetes.resources.read', attributes: {} },
-        { type: 'basic', name: 'kubernetes.clusters.read', attributes: {} },
-      ],
-      rules: [],
-    });
+    expect(response.body.permissions).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: 'kubernetes.proxy' }),
+        expect.objectContaining({ name: 'kubernetes.resources.read' }),
+        expect.objectContaining({ name: 'kubernetes.clusters.read' }),
+      ]),
+    );
+    expect(response.body.rules).toHaveLength(5);
+    expect(
+      response.body.rules.map((rule: { name: string }) => rule.name),
+    ).toEqual(
+      expect.arrayContaining([
+        'IS_CLUSTER',
+        'IS_NAMESPACE',
+        'IS_RESOURCE_TYPE',
+        'IS_ACTION',
+        'IS_VERB',
+      ]),
+    );
   });
 
   it('fails when an unsupported serviceLocator type is specified', () => {

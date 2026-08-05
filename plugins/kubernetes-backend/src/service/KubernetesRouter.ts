@@ -34,6 +34,7 @@ import {
   DiscoveryService,
   HttpAuthService,
   LoggerService,
+  PermissionsRegistryService,
 } from '@backstage/backend-plugin-api';
 import {
   AuthenticationStrategy,
@@ -57,6 +58,7 @@ export interface KubernetesEnvironment {
   catalog: CatalogService;
   discovery: DiscoveryService;
   permissions: PermissionEvaluator;
+  permissionsRegistry: PermissionsRegistryService;
   auth: AuthService;
   httpAuth: HttpAuthService;
   auditor: AuditorService;
@@ -173,7 +175,13 @@ export class KubernetesRouter {
     const logger = this.env.logger;
     const auditor = this.env.auditor;
     const router = Router();
-    router.use('/proxy', proxy.createRequestHandler({ permissionApi }));
+    router.use(
+      '/proxy',
+      proxy.createRequestHandler({
+        permissionApi,
+        permissionsRegistry: this.env.permissionsRegistry,
+      }),
+    );
     router.use(express.json());
 
     // @deprecated

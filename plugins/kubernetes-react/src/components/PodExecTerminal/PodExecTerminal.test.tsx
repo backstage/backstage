@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { discoveryApiRef } from '@backstage/core-plugin-api';
+import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
 import {
   mockApis,
+  MockFetchApi,
   renderInTestApp,
   TestApiProvider,
   textContentMatcher,
@@ -38,10 +39,25 @@ describe('PodExecTerminal', () => {
   const podNamespace = 'podNamespace';
 
   const mockDiscoveryApi = mockApis.discovery();
+  const execPath =
+    '/proxy/api/v1/namespaces/podNamespace/pods/pod1/exec?container=container2&stdin=true&stdout=true&stderr=true&tty=true&command=%2Fbin%2Fsh';
 
-  it('Should render an XTerm web terminal', async () => {
+  it('shows a permission denied message when the proxy rejects exec access', async () => {
+    const mockFetchApi = new MockFetchApi({
+      baseImplementation: jest.fn().mockResolvedValue(
+        new Response(JSON.stringify({ error: { name: 'NotAllowedError' } }), {
+          status: 403,
+        }),
+      ),
+    });
+
     await renderInTestApp(
-      <TestApiProvider apis={[[discoveryApiRef, mockDiscoveryApi]]}>
+      <TestApiProvider
+        apis={[
+          [discoveryApiRef, mockDiscoveryApi],
+          [fetchApiRef, mockFetchApi],
+        ]}
+      >
         <PodExecTerminal
           cluster={cluster}
           containerName={containerName}
@@ -53,18 +69,40 @@ describe('PodExecTerminal', () => {
 
     await expect(
       screen.findByText(
-        textContentMatcher('Starting terminal, please wait...'),
+        textContentMatcher(
+          'You are not allowed to open a terminal for this pod. Contact your portal administrator if you need access.',
+        ),
       ),
     ).resolves.toBeInTheDocument();
+
+    expect(mockFetchApi.fetch).toHaveBeenCalledWith(
+      `http://example.com/api/kubernetes${execPath}`,
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          'Backstage-Kubernetes-Cluster': 'cluster1',
+        }),
+      }),
+    );
   });
 
   it('Should connect to WebSocket server & render response', async () => {
-    const server = new WS(
-      'ws://example.com/api/kubernetes/proxy/api/v1/namespaces/podNamespace/pods/pod1/exec?container=container2&stdin=true&stdout=true&stderr=true&tty=true&command=%2Fbin%2Fsh',
-    );
+    const mockFetchApi = new MockFetchApi({
+      baseImplementation: jest
+        .fn()
+        .mockResolvedValue(
+          new Response('Upgrade request required', { status: 400 }),
+        ),
+    });
+
+    const server = new WS(`ws://example.com/api/kubernetes${execPath}`);
 
     await renderInTestApp(
-      <TestApiProvider apis={[[discoveryApiRef, mockDiscoveryApi]]}>
+      <TestApiProvider
+        apis={[
+          [discoveryApiRef, mockDiscoveryApi],
+          [fetchApiRef, mockFetchApi],
+        ]}
+      >
         <PodExecTerminal
           cluster={cluster}
           containerName={containerName}

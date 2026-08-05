@@ -12,16 +12,19 @@ beyond the default behaviors of the existing Kubernetes plugin) can leverage the
 Kubernetes backend plugin's proxy endpoint to allow them to make arbitrary
 requests to the [REST API](https://kubernetes.io/docs/reference/using-api/api-concepts/).
 
-Here is a snippet fetching namespaces using the `KubernetesBackendClient` library
+Here is a snippet fetching namespaces using the `kubernetesApiRef`:
 
 ```typescript
 import { useApi } from '@backstage/core-plugin-api';
-import { kubernetesApiRef } from '@backstage/plugin-kubernetes';
+import { kubernetesApiRef } from '@backstage/plugin-kubernetes-react';
 
-const CLUSTER_NAME = ''; // use a known cluster name
+const CLUSTER_NAME = 'minikube'; // use a known cluster name
 
 const kubernetesApi = useApi(kubernetesApiRef);
-await kubernetesApi.proxy(CLUSTER_NAME, '/api/v1/namespaces');
+await kubernetesApi.proxy({
+  clusterName: CLUSTER_NAME,
+  path: '/api/v1/namespaces',
+});
 ```
 
 ## How it works
@@ -51,13 +54,25 @@ The current `/proxy` Implementation expects a
 [Bearer token](https://kubernetes.io/docs/reference/access-authn-authz/authentication/#putting-a-bearer-token-in-a-request)
 to be provided as a `Backstage-Kubernetes-Authorization` header for a target cluster. This token will be used as the `Authorization` header when forwarding a request to a target cluster.
 
-## How to disable the proxy endpoint via PermissionPolicy
+## Permissions
 
-The kubernetes plugin can disable the use of the `proxy` endpoint by leveraging the permission framework. This integration allows admins to use well defined PermissionPolicies to restrict the use of the endpoint all together. The `proxy` endpoint can return 403 errors even if it has a valid ID token attached that a cluster would authorize thus allowing integrators the confidence that Backstage is not accessing kubernetes clusters on behalf of undesired parties.
+The `/proxy` route is protected by the Backstage permission framework using the
+`kubernetes.proxy` permission. This check runs on **every** proxy request, before
+the call is forwarded to a cluster. A user can be denied by Backstage even when
+their cluster credentials would have allowed the same request on the API server.
 
-This feature assumes your backstage instance has enabled the [permissions framework](https://backstage.io/docs/permissions/getting-started)
+This assumes your Backstage instance has the [permissions framework](../../permissions/getting-started.md) enabled.
+See [Permissions](permissions.md) for the full list of Kubernetes plugin permissions.
 
-A sample policy like:
+The Kubernetes tab in the UI checks `kubernetes.clusters.read` and
+`kubernetes.resources.read` only. Features that use the proxy (pod logs, exec,
+delete, and custom integrations) can still receive **403** responses when
+`kubernetes.proxy` is denied or when conditional policy rules do not match the
+request.
+
+### Deny all proxy access
+
+To block the proxy entirely, return `DENY` for `kubernetes.proxy`:
 
 ```typescript
 import {
@@ -85,7 +100,7 @@ class KubernetesDenyAllProxyEndpointPolicy implements PermissionPolicy {
 }
 ```
 
-would leverage the permission framework to return the following response:
+Denied requests return a response similar to:
 
 ```json
 {
@@ -95,7 +110,70 @@ would leverage the permission framework to return the following response:
 }
 ```
 
-even if a valid ID token was attached that a cluster would authorize.
+### Attribute-based access control
+
+`kubernetes.proxy` is a _resource permission_ with resource type
+`kubernetes-proxy-request`. The backend parses each proxy request (HTTP method,
+path, and query string) into attributes such as cluster, namespace, resource
+type, Kubernetes API verb, and a high-level action category (`read`, `write`,
+`delete`, or `exec`).
+
+Use a conditional policy decision to restrict proxy access—for example, read-only
+operations in production clusters:
+
+```typescript
+import { RESOURCE_TYPE_KUBERNETES_PROXY } from '@backstage/plugin-kubernetes-common';
+import {
+  kubernetesConditions,
+  createKubernetesProxyConditionalDecision,
+} from '@backstage/plugin-kubernetes-backend';
+import {
+  AuthorizeResult,
+  isResourcePermission,
+  PolicyDecision,
+} from '@backstage/plugin-permission-common';
+import {
+  PermissionPolicy,
+  PolicyQuery,
+  PolicyQueryUser,
+} from '@backstage/plugin-permission-node';
+
+class KubernetesReadOnlyProxyPolicy implements PermissionPolicy {
+  async handle(
+    request: PolicyQuery,
+    user?: PolicyQueryUser,
+  ): Promise<PolicyDecision> {
+    if (
+      isResourcePermission(request.permission, RESOURCE_TYPE_KUBERNETES_PROXY)
+    ) {
+      return createKubernetesProxyConditionalDecision(request.permission, {
+        allOf: [
+          kubernetesConditions.isAction({ actions: ['read'] }),
+          kubernetesConditions.isCluster({ clusters: ['production'] }),
+        ],
+      });
+    }
+    return { result: AuthorizeResult.ALLOW };
+  }
+}
+```
+
+The `@backstage/plugin-kubernetes-backend` package exports condition helpers
+(`kubernetesConditions`) and `createKubernetesProxyConditionalDecision` for use
+in your permission policy module. The following rules are evaluated against each
+request:
+
+| Rule name          | Matches on                                                                                |
+| ------------------ | ----------------------------------------------------------------------------------------- |
+| `IS_CLUSTER`       | Resolved target cluster name (from configured clusters, not only the request header)      |
+| `IS_NAMESPACE`     | Namespace segment of the API path, when present                                           |
+| `IS_RESOURCE_TYPE` | Plural resource name (for example `pods`, `deployments`)                                  |
+| `IS_ACTION`        | Action category: `read`, `write`, `delete`, or `exec`                                     |
+| `IS_VERB`          | Kubernetes API verb derived from the method and path (for example `get`, `list`, `patch`) |
+
+Policies that return a definitive `ALLOW` for `kubernetes.proxy` grant full proxy access without evaluating these attributes. Use **conditional** decisions (as in the examples above) to enforce least-privilege restrictions on read, write, delete, exec, secrets, namespaces, and clusters.
+
+For more background on conditional policies, see [Writing a policy](../../permissions/writing-a-policy.md).
 
 ## Other known limitations
 

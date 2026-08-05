@@ -8,18 +8,27 @@ import { AuthenticationStrategy } from '@backstage/plugin-kubernetes-node';
 import { AuthMetadata } from '@backstage/plugin-kubernetes-node';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { ClusterDetails } from '@backstage/plugin-kubernetes-node';
+import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
+import { Conditions } from '@backstage/plugin-permission-node';
 import { Config } from '@backstage/config';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import * as k8sTypes from '@backstage/plugin-kubernetes-node';
 import { KubernetesClustersSupplier } from '@backstage/plugin-kubernetes-node';
 import { KubernetesCredential } from '@backstage/plugin-kubernetes-node';
+import { KubernetesProxyFilter } from '@backstage/plugin-kubernetes-node';
+import { KubernetesProxyRequest } from '@backstage/plugin-kubernetes-node';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 import type { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ObjectToFetch } from '@backstage/plugin-kubernetes-node';
+import { PermissionCondition } from '@backstage/plugin-permission-common';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import { PermissionRule } from '@backstage/plugin-permission-node';
+import { PermissionsRegistryService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'http-proxy-middleware';
+import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { TokenCredential } from '@azure/identity';
 
 // @public (undocumented)
@@ -66,6 +75,14 @@ export class AzureIdentityStrategy implements AuthenticationStrategy {
   // (undocumented)
   validateCluster(): Error[];
 }
+
+// @public
+export const createKubernetesProxyConditionalDecision: (
+  permission: ResourcePermission<'kubernetes-proxy-request'>,
+  conditions: PermissionCriteria<
+    PermissionCondition<'kubernetes-proxy-request'>
+  >,
+) => ConditionalPolicyDecision;
 
 // @public (undocumented)
 export const DEFAULT_OBJECTS: ObjectToFetch[];
@@ -121,6 +138,50 @@ export const HEADER_KUBERNETES_AUTH: string;
 // @public
 export const HEADER_KUBERNETES_CLUSTER: string;
 
+// @public
+export const kubernetesConditions: Conditions<{
+  isCluster: PermissionRule<
+    KubernetesProxyRequest,
+    KubernetesProxyFilter,
+    'kubernetes-proxy-request',
+    {
+      clusters: string[];
+    }
+  >;
+  isNamespace: PermissionRule<
+    KubernetesProxyRequest,
+    KubernetesProxyFilter,
+    'kubernetes-proxy-request',
+    {
+      namespaces: string[];
+    }
+  >;
+  isResourceType: PermissionRule<
+    KubernetesProxyRequest,
+    KubernetesProxyFilter,
+    'kubernetes-proxy-request',
+    {
+      resourceTypes: string[];
+    }
+  >;
+  isAction: PermissionRule<
+    KubernetesProxyRequest,
+    KubernetesProxyFilter,
+    'kubernetes-proxy-request',
+    {
+      actions: ('write' | 'delete' | 'exec' | 'read')[];
+    }
+  >;
+  isVerb: PermissionRule<
+    KubernetesProxyRequest,
+    KubernetesProxyFilter,
+    'kubernetes-proxy-request',
+    {
+      verbs: string[];
+    }
+  >;
+}>;
+
 // @public (undocumented)
 export interface KubernetesObjectsProviderOptions {
   // (undocumented)
@@ -153,6 +214,7 @@ export class KubernetesProxy {
 // @public
 export type KubernetesProxyCreateRequestHandlerOptions = {
   permissionApi: PermissionsService;
+  permissionsRegistry: PermissionsRegistryService;
 };
 
 // @public
