@@ -4,13 +4,13 @@ title: Testing with Jest
 description: Documentation on How to do unit testing with Jest
 ---
 
-:::caution Legacy Documentation
+:::caution[Legacy Documentation]
 
 This section is part of the legacy plugins documentation. The general testing principles described here still apply, but for system-specific testing guides, see [Testing Frontend Plugins](../frontend-system/building-plugins/02-testing.md) and [Testing Backend Plugins and Modules](../backend-system/building-plugins-and-modules/02-testing.md).
 
 :::
 
-:::note Note
+:::note
 
 You may want to consider migrating to Jest 30, to do this, you can follow this guide: [Migrating to Jest 30](../tutorials/jest30-migration.md)
 
@@ -38,7 +38,7 @@ To run both `MyComponent.test.tsx` and `MyControl.test.tsx` suite of tests:
 
     yarn test MyComponent MyControl
 
-:::note Note
+:::note
 
 if `console.log`s are not appearing, run only the individual test you are
 working on.

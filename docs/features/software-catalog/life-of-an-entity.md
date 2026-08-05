@@ -125,7 +125,7 @@ all of the processors' contributions to one step are run in the order that the
 processors were registered, then all of their contributions to the next step in
 the same order, and so on.
 
-:::note Technical note
+:::note[Technical note]
 
 Processors registered from the same catalog module always run
 in the registration order, but this does not apply over multiple catalog modules as
@@ -174,7 +174,7 @@ steps and merging them into the final object which is what is visible from the
 catalog API. As the final entity itself gets updated, the stitcher makes sure
 that the search table gets refreshed accordingly as well.
 
-:::note Note
+:::note
 
 The search table mentioned here is not related to the core Search
 feature of Backstage. It's rather the table that backs the ability to filter
@@ -195,7 +195,7 @@ The diagram shows how the stitcher reads from several sources:
 The last part is noteworthy: This is how the stitcher is able to collect all of
 the relation edges, both incoming and outgoing, no matter who produced them.
 
-:::note Technical note
+:::note[Technical note]
 
 Whether the entity will be stitched depends on the entity hash value,
 which is calculated based on the entity body, relations, errors, referred entities,

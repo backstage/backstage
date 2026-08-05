@@ -7,7 +7,7 @@ description: How to create and run a Standalone Backstage.
 
 Audience: Developers and Admins
 
-:::note Note
+:::note
 It is not required, although recommended to have a basic understanding of [Yarn](https://www.pluralsight.com/guides/yarn-a-package-manager-for-node-js) and [npm](https://docs.npmjs.com/about-npm) before starting this guide.
 :::
 
@@ -17,7 +17,7 @@ This guide walks through how to create your own Backstage customizable app. This
 
 By the end of this guide, you will have a standalone Backstage installation running locally with an in-memory `SQLite` database and demo content. To be clear, this is not a production-ready installation, and it does not contain information specific to your organization until you set up integrations with your specific data sources!
 
-:::note Contributors
+:::note[Contributors]
 
 If you are planning to contribute a new feature or bug fix to the Backstage project, we advise you to follow the [Contributors](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md#get-started) guide instead to do a repository-based installation.
 
@@ -180,7 +180,7 @@ Rspack compiled successfully
 
 Once the Backstage UI is displayed, you can start exploring the demo immediately.
 
-:::tip Browser window didn't open with yarn start
+:::tip[Browser window didn't open with yarn start]
 
 When you see the message `Rspack compiled successfully`, you can navigate directly to `http://localhost:3000` to see your Backstage app.
 

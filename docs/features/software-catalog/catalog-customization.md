@@ -306,7 +306,7 @@ export const CustomCatalogPage = () => {
 };
 ```
 
-:::note Note
+:::note
 
 The catalog index page is designed to have a minimal code footprint to support
 easy customization, but creating a replica does introduce a possibility of

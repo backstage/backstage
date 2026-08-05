@@ -201,7 +201,7 @@ permissions to:
 - `s3:ListBucket` - To retrieve bucket metadata
 - `s3:GetObject` - To retrieve files from the bucket
 
-:::note Note
+:::note
 
 If you need to migrate documentation objects from an older-style path
 format including case-sensitive entity metadata, you will need to add some

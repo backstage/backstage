@@ -200,7 +200,7 @@ const legacyPlugin = makeLegacyPlugin(
 After this, your backend will know how to instantiate your thing on demand and
 place it in the legacy plugin environment.
 
-:::note Note
+:::note
 
 If you happen to be dealing with a service ref that does NOT have a
 default implementation, but rather has a separate service factory, then you
@@ -238,7 +238,7 @@ maintained by the Backstage maintainers, you may find that they have already
 been migrated to the new backend system. This section describes some specific
 such migrations you can make.
 
-:::note Note
+:::note
 
 For each of these, note that your backend still needs to have a
 dependency (e.g. in `packages/backend/package.json`) to those plugin packages,
@@ -902,7 +902,7 @@ auth:
             - resolver: emailMatchingUserEntityProfileEmail
 ```
 
-:::note Note
+:::note
 
 The resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
 
@@ -1163,7 +1163,7 @@ backend.add(import('@backstage/plugin-search-backend'));
 /* highlight-add-end */
 ```
 
-:::note Note
+:::note
 
 This will use the Lunr search engine which stores its index in memory.
 
@@ -1254,7 +1254,7 @@ backend.add(
 /* highlight-add-end */
 ```
 
-:::note Note
+:::note
 
 The above example includes a default allow-all policy. If that is not what you want, do not add the second line and instead investigate one of the options below.
 

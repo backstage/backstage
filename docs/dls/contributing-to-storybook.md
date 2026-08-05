@@ -55,7 +55,7 @@ core
             └── Progress.stories.tsx
 ```
 
-:::note Note
+:::note
 
 Make sure your component story file has the following format
 componentName.stories.tsx

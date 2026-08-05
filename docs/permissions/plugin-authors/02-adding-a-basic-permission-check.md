@@ -37,7 +37,7 @@ export const todoListPermissions = [todoListCreatePermission];
 
 For this tutorial, we've automatically exported all permissions from this file (see `plugins/todo-list-common/src/index.ts`).
 
-:::note Note
+:::note
 
 We use a separate `todo-list-common` package since all permissions authorized by your plugin should be exported from a ["common-library" package](https://backstage.io/docs/tooling/cli/build-system#package-roles). This allows Backstage integrators to reference them in frontend components as well as permission policies.
 

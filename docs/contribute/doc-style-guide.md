@@ -148,6 +148,19 @@ Use `:::note` for supplementary information, `:::tip` for helpful suggestions,
 `:::caution` for potential pitfalls, and `:::danger` for actions that could
 cause data loss or security issues.
 
+To give an admonition a custom title, put the title in square brackets. Writing
+the title after the type without brackets no longer works, and the admonition
+renders as plain text instead.
+
+```markdown
+:::tip[Browser window didn't open]
+Navigate to `http://localhost:3000` yourself.
+:::
+```
+
+Only add a title when it says something the type doesn't. A `:::note` titled
+`Note` is noise, so leave it off.
+
 Keep admonitions short and focused. Each admonition should contain a single,
 clear point. If you find yourself writing multiple paragraphs inside an
 admonition, consider whether the content belongs in the main text instead.

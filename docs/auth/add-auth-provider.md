@@ -4,7 +4,7 @@ title: Contributing New Provider Modules
 description: Documentation on adding new authentication providers
 ---
 
-:::note Note
+:::note
 
 The primary audience for this documentation are contributors that want to add support for new authentication providers.
 While you can follow it to implement your own custom providers it is much

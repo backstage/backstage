@@ -4,7 +4,7 @@ title: Structure of a Plugin
 description: Details about structure of a plugin
 ---
 
-:::caution Legacy Documentation
+:::caution[Legacy Documentation]
 
 This page describes the structure of a plugin for the **old frontend system**. For the new frontend system, see [Building Frontend Plugins](../frontend-system/building-plugins/01-index.md). The general folder structure is similar, but the plugin wiring in `plugin.ts` differs significantly.
 
