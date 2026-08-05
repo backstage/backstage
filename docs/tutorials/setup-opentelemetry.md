@@ -112,7 +112,7 @@ For local development, you can add the required flag in your `packages/backend/p
   ...
 ```
 
-You can now start your Backstage instance as usual, using `yarn start` and you'll be able to see your metrics at: <http://localhost:9464/metrics>
+You can now start your Backstage instance as usual, using `yarn start` and you'll be able to see your metrics at: [http://localhost:9464/metrics](http://localhost:9464/metrics)
 
 ### Troubleshooting
 

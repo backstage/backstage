@@ -260,7 +260,7 @@ The implementation is similar to the OAuth provider, but the `authenticator` fun
 > done should be invoked with false instead of a user to indicate an
 > authentication failure.
 >
-> http://www.passportjs.org/docs/configure/
+> [http://www.passportjs.org/docs/configure/](http://www.passportjs.org/docs/configure/)
 
 ### Add the provider to the backend
 

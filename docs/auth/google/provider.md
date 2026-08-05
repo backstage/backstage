@@ -24,9 +24,9 @@ To support Google authentication, you must create OAuth credentials:
    - Add yourself as a test user, if using External user type
 6. Set **Application Type** to `Web Application` with these settings:
    - `Name`: Backstage (or your custom app name)
-   - `Authorized JavaScript origins`: <http://localhost:3000>
+   - `Authorized JavaScript origins`: [http://localhost:3000](http://localhost:3000)
    - `Authorized Redirect URIs`:
-     <http://localhost:7007/api/auth/google/handler/frame>
+     [http://localhost:7007/api/auth/google/handler/frame](http://localhost:7007/api/auth/google/handler/frame)
 7. Click Create
 
 ## Configuration

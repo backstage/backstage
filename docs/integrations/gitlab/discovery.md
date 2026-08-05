@@ -99,7 +99,7 @@ events:
       - gitlab
 ```
 
-This will then expose an endpoint like this: <http://localhost/api/events/http/gitlab>
+This will then expose an endpoint like this: [http://localhost/api/events/http/gitlab](http://localhost/api/events/http/gitlab)
 
 ### Events Setup using AWS SQS module
 

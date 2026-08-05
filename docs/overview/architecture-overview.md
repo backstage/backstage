@@ -278,7 +278,7 @@ backend:
 #### Extended configuration
 
 - Unlike Redis, Infinispan will **not** create the cache for you. It's expected you've configured the cache in your infinispan server prior to configuration here.
-- A full list of configuration items are available: https://docs.jboss.org/infinispan/hotrod-clients/javascript/1.0/apidocs/module-infinispan.html including support for backup clusters.
+- A full list of configuration items are available: [https://docs.jboss.org/infinispan/hotrod-clients/javascript/1.0/apidocs/module-infinispan.html](https://docs.jboss.org/infinispan/hotrod-clients/javascript/1.0/apidocs/module-infinispan.html) including support for backup clusters.
 
 ```yaml
 backend:
