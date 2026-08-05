@@ -216,10 +216,18 @@ export function createOAuthRouteHandlers<TProfile>(
         );
         const { profile } = await profileTransform(result, resolverContext);
 
-        const signInResult =
-          signInResolver &&
-          hasFullProfile(result) &&
-          (await signInResolver({ profile, result }, resolverContext));
+        let signInResult: { token: string } | false | undefined;
+        if (signInResolver) {
+          if (!hasFullProfile(result)) {
+            throw new Error(
+              'Sign-in requires a user profile, but the authenticator did not provide one',
+            );
+          }
+          signInResult = await signInResolver(
+            { profile, result },
+            resolverContext,
+          );
+        }
 
         const grantedScopes = await scopeManager.handleCallback(req, {
           result,
@@ -408,5 +416,5 @@ export function createOAuthRouteHandlers<TProfile>(
 function hasFullProfile<TProfile>(
   result: OAuthAuthenticatorResponse<TProfile>,
 ): result is OAuthAuthenticatorResult<TProfile> {
-  return !!result.fullProfile;
+  return result.fullProfile !== undefined;
 }

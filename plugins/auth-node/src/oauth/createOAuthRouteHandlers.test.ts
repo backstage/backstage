@@ -777,6 +777,54 @@ describe('createOAuthRouteHandlers', () => {
       );
     });
 
+    it('should fail initial auth when sign-in resolver is configured but fullProfile is missing', async () => {
+      const signInResolver = jest.fn(async () => ({
+        token: mockBackstageToken,
+      }));
+
+      const agent = request.agent(
+        wrapInApp(
+          createOAuthRouteHandlers({
+            ...baseConfig,
+            profileTransform: async () => ({ profile: { email: 'em@i.l' } }),
+            signInResolver,
+          }),
+        ),
+      );
+
+      agent.jar.setCookie(
+        'my-provider-nonce=123',
+        '127.0.0.1',
+        '/my-provider/handler',
+      );
+
+      mockAuthenticator.authenticate.mockResolvedValue({
+        fullProfile: undefined,
+        session: mockSession,
+      });
+
+      const res = await agent.get('/my-provider/handler/frame').query({
+        state: encodeOAuthState({
+          env: 'development',
+          nonce: '123',
+          scope: 'my-scope',
+        } as OAuthState),
+      });
+
+      expect(res.status).toBe(200);
+      expect(signInResolver).not.toHaveBeenCalled();
+      const parsed = parseWebMessageResponse(res.text);
+      expect(parsed.response).toEqual(
+        expect.objectContaining({
+          type: 'authorization_response',
+          error: expect.objectContaining({
+            name: 'Error',
+            message: expect.stringContaining('Sign-in requires a user profile'),
+          }),
+        }),
+      );
+    });
+
     it('should redirect with persisted scope', async () => {
       const agent = request.agent(
         wrapInApp(
@@ -1149,7 +1197,7 @@ describe('createOAuthRouteHandlers', () => {
       );
 
       mockAuthenticator.refresh.mockImplementation(async ({ scope }) => ({
-        fullProfile: undefined as any,
+        fullProfile: undefined,
         session: { ...mockSession, scope },
       }));
 
