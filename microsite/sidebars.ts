@@ -284,7 +284,12 @@ export default {
             },
             'features/search/architecture',
             'features/search/search-engines',
-            'features/search/collators',
+            {
+              type: 'category',
+              label: 'Collators',
+              link: { type: 'doc', id: 'features/search/collators' },
+              items: ['features/search/custom-collators'],
+            },
             'features/search/how-to-guides',
           ],
         ),
