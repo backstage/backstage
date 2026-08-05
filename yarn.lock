@@ -7796,8 +7796,8 @@ __metadata:
   linkType: hard
 
 "@changesets/cli@npm:^2.14.0":
-  version: 2.31.0
-  resolution: "@changesets/cli@npm:2.31.0"
+  version: 2.31.1
+  resolution: "@changesets/cli@npm:2.31.1"
   dependencies:
     "@changesets/apply-release-plan": "npm:^7.1.1"
     "@changesets/assemble-release-plan": "npm:^6.0.10"
@@ -7827,7 +7827,7 @@ __metadata:
     term-size: "npm:^2.1.0"
   bin:
     changeset: bin.js
-  checksum: 10/7e64feb46375b56fe97e4eb41d0a38594275b5f0a5d9a8dc7fc2ded09194abbdc1386e9fcd6316da634b76aab07bf364005a331d3092a3cbbebf9ea84b61e488
+  checksum: 10/cdd707e821cd1b589eb2301b9c2f4219c118a6f4bdf20ec9f0a0ad43e99a8a4ef5883f90ab926723cee904217f7aabe14ee43346eda873495254f40e28672585
   languageName: node
   linkType: hard
 
