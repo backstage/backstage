@@ -25,8 +25,8 @@ import type {
   LookupConnectionType,
   LookupStrategy,
 } from '@backstage/connections';
-import { lookupStrategies } from '@backstage/connections';
 import { getConnectionType, isConnectionTypeKey } from './lookup';
+import { lookupStrategies } from './lookupStrategies';
 import type { RootConnection } from './types';
 import { JsonObject } from '@backstage/types';
 import {

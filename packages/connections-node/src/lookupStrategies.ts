@@ -16,10 +16,11 @@
 import { InputError } from '@backstage/errors';
 
 /**
- * The definitions of all lookup strategies, shared by every
- * `ConnectionsService` implementation.
+ * The definitions of all lookup strategies, keyed by the `lookupStrategy` of
+ * each connection type. Each definition knows how to derive the identity to
+ * match connections against from the query passed to `ConnectionsService.find`.
  *
- * @public
+ * @internal
  */
 export const lookupStrategies = {
   host: {

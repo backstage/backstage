@@ -427,20 +427,6 @@ export const connectionTypes: {
 export type LookupConnectionType<T extends ConnectionTypeKey | ConnectionType> =
   T extends ConnectionTypeKey ? (typeof connectionTypes)[T] : T;
 
-// @public
-export const lookupStrategies: {
-  host: {
-    identityField: 'host';
-    identityFromQuery(query: { url: string }): string | undefined;
-  };
-  aws: {
-    identityFromQuery(_query: {
-      accountId?: string;
-      arn?: string;
-    }): string | undefined;
-  };
-};
-
 // @public (undocumented)
 export type LookupStrategy = 'host' | 'aws';
 
