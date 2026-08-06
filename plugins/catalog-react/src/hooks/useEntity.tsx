@@ -70,8 +70,6 @@ export const AsyncEntityProvider = (props: AsyncEntityProviderProps) => {
     }),
     [entity],
   );
-  // We provide both the old and the new context, since
-  // consumers might be doing things like `useContext(EntityContext)`
   return (
     <NewEntityContext.Provider value={value}>
       <AnalyticsContext attributes={attributes}>{children}</AnalyticsContext>

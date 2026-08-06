@@ -25,11 +25,11 @@ const AnalyticsReactContext = createVersionedContext<{
   1: AnalyticsContextValue;
 }>('analytics-context');
 
-const defaultAnalyticsContext: AnalyticsContextValue = {
+const defaultAnalyticsContext: AnalyticsContextValue = Object.freeze({
   routeRef: 'unknown',
   pluginId: 'root',
   extension: 'App',
-};
+});
 
 /**
  * A "private" (to this package) hook that enables context inheritance and a
