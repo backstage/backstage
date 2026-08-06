@@ -13,6 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
+  actions: write
   contents: read
   pull-requests: read
 
@@ -96,6 +97,19 @@ jobs:
       - *yarn-install
 
       - parallel:
+          - name: type checking and declarations
+            run: yarn tsc:full
+
+            # We need to generate the API references as well, so that we can verify the doc links
+          - name: check api reports and generate API reference
+            run: yarn build:api-reports:only --ci --docs
+
+          # Build docs-ui to ensure documentation site builds successfully
+          - name: install docs-ui dependencies
+            working-directory: docs-ui
+            run: yarn install
+
+      - parallel:
           - name: verify yarn dependency duplicates
             run: node scripts/verify-lockfile-duplicates.js
 
@@ -114,13 +128,6 @@ jobs:
           - name: validate config
             run: yarn backstage-cli config:check --lax
 
-          - name: type checking and declarations
-            run: yarn tsc:full
-
-            # We need to generate the API references as well, so that we can verify the doc links
-          - name: check api reports and generate API reference
-            run: yarn build:api-reports:only --ci --docs
-
           - name: verify api reference
             run: node scripts/verify-api-reference.js
 
@@ -138,13 +145,9 @@ jobs:
 
           - name: verify plugin directory
             run: node scripts/verify-plugin-directory.js
+
           - name: build all packages
             run: yarn backstage-cli repo build --all
-
-            # Build docs-ui to ensure documentation site builds successfully
-          - name: install docs-ui dependencies
-            working-directory: docs-ui
-            run: yarn install
 
           - name: build docs-ui
             working-directory: docs-ui
