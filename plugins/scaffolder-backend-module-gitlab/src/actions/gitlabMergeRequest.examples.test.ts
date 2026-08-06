@@ -37,6 +37,7 @@ const mockGitlabClient = {
     create: jest.fn(async (_: any) => {
       return {
         default_branch: 'main',
+        iid: 9876,
       };
     }),
     show: jest.fn(async (_: any) => {
