@@ -21,9 +21,10 @@ import {
   resolvePath,
   useInRouterContext,
   useLocation,
+  useNavigate,
   useResolvedPath,
 } from 'react-router-dom';
-import { Button as RAButton } from 'react-aria-components';
+import { Button as RAButton, RouterProvider } from 'react-aria-components';
 import { RiArrowDownSLine } from '@remixicon/react';
 import { useDefinition } from '../../hooks/useDefinition';
 import {
@@ -33,6 +34,7 @@ import {
 } from './HeaderNavDefinition';
 import { HeaderNavIndicators } from './HeaderNavIndicators';
 import { MenuTrigger, Menu, MenuItem } from '../Menu';
+import { useResolvedHref } from '../../hooks/useResolvedHref';
 import type {
   HeaderNavLinkProps,
   HeaderNavTabGroup,
@@ -236,12 +238,36 @@ function HeaderNavInner(props: HeaderNavProps) {
   );
 }
 
+function ReplaceNavigateWrapper(props: { children: React.ReactNode }) {
+  const navigate = useNavigate();
+  const replaceNavigate = useCallback(
+    (to: string) => navigate(to, { replace: true }),
+    [navigate],
+  );
+  return (
+    <RouterProvider navigate={replaceNavigate} useHref={useResolvedHref}>
+      {props.children}
+    </RouterProvider>
+  );
+}
+
 /** @internal */
 export function HeaderNav(props: HeaderNavProps) {
   const inRouter = useInRouterContext();
 
-  if (props.activeTabId === undefined && inRouter) {
-    return <HeaderNavAutoDetect tabs={props.tabs} />;
+  if (inRouter) {
+    if (props.activeTabId === undefined) {
+      return (
+        <ReplaceNavigateWrapper>
+          <HeaderNavAutoDetect tabs={props.tabs} />
+        </ReplaceNavigateWrapper>
+      );
+    }
+    return (
+      <ReplaceNavigateWrapper>
+        <HeaderNavInner tabs={props.tabs} activeTabId={props.activeTabId} />
+      </ReplaceNavigateWrapper>
+    );
   }
 
   return <HeaderNavInner tabs={props.tabs} activeTabId={props.activeTabId} />;
