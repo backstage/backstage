@@ -95,7 +95,7 @@ This provider includes several resolvers out of the box that you can use:
 - `emailMatchingUserEntityAnnotation`: Matches the email address from the auth provider with the User entity where the value of the `microsoft.com/email` annotation matches. If no match is found it will throw a `NotFoundError`.
 - `userIdMatchingUserEntityAnnotation`: Matches the user profile ID from the auth provider with the User entity where the value of the `graph.microsoft.com/user-id` annotation matches. This resolver is recommended to resolve users without an email in their profile. If no match is found it will throw a `NotFoundError`.
 
-:::note Note
+:::note
 
 The resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
 
