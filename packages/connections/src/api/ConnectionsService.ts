@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ConnectionTypeKey } from '../definitions';
+import { ConnectionTypeKey, LookupConnectionType } from '../definitions';
 import { Connection } from './Connection';
 import { ConnectionAuthMethodKey } from './ConnectionType';
 
@@ -24,7 +24,7 @@ export interface ConnectionsService {
     TAuthMethod extends ConnectionAuthMethodKey<TType>,
   >(options: {
     type: TType;
-    url: string;
+    query: LookupConnectionType<TType>['query'];
     authMethods: readonly [TAuthMethod, ...TAuthMethod[]];
   }): Promise<Connection<TType, TAuthMethod>>;
 }
