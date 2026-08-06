@@ -18,37 +18,24 @@ import type {
   PluginData,
   SnapshotStatus,
 } from '../../pluginDirectory/manifest';
-import styles from './pluginDirectory.module.scss';
 
 const millisecondsPerDay = 24 * 60 * 60 * 1000;
 const daysPerMonth = 30;
 const daysPerYear = 365;
 
 export interface StatusPresentation {
-  cardClassName: string;
-  indicatorClassName: string;
   label: string;
-  symbol: string;
 }
 
 export const statusPresentations: Record<SnapshotStatus, StatusPresentation> = {
   fresh: {
-    cardClassName: styles.healthCardFresh,
-    indicatorClassName: styles.statusFresh,
     label: 'Current',
-    symbol: '✓',
   },
   stale: {
-    cardClassName: styles.healthCardStale,
-    indicatorClassName: styles.statusStale,
     label: 'Getting old',
-    symbol: '!',
   },
   unavailable: {
-    cardClassName: styles.healthCardUnavailable,
-    indicatorClassName: styles.statusUnavailable,
     label: 'Not reported',
-    symbol: '?',
   },
 };
 

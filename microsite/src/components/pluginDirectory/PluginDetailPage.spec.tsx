@@ -91,32 +91,44 @@ describe('PluginDetailPage', () => {
     });
   });
 
-  it('renders the header and all three tabs', async () => {
+  it('renders the plugin overview before opening package documentation', async () => {
+    const user = userEvent.setup();
     render(<PluginDetailPage plugin={plugin} latestBackstageVersion={null} />);
 
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
       'Example Plugin',
     );
-    expect(screen.getByRole('tab', { name: 'Overview' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Should I adopt this plugin?' }),
+    ).toBeVisible();
+    expect(screen.queryByRole('tab')).not.toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole('button', {
+        name: /Example frontend.*@example\/plugin-example/,
+      }),
+    );
+    expect(screen.getByRole('tab', { name: 'README' })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Install' })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Configure' })).toBeInTheDocument();
-    // Both tabs' schema/README fetches settle in the background even though
-    // only Overview is visible (Tabs mounts all TabItems); wait for them so
-    // the test doesn't finish before act() sees the resulting state update.
-    await screen.findByLabelText(/^endpoint/);
   });
 
   it('keeps configuration form values after switching tabs away and back', async () => {
     const user = userEvent.setup();
     render(<PluginDetailPage plugin={plugin} latestBackstageVersion={null} />);
 
+    await user.click(
+      screen.getByRole('button', {
+        name: /Example frontend.*@example\/plugin-example/,
+      }),
+    );
     await user.click(screen.getByRole('tab', { name: 'Configure' }));
     await user.type(
       await screen.findByLabelText(/^endpoint/),
       'https://api.example.com',
     );
 
-    await user.click(screen.getByRole('tab', { name: 'Overview' }));
+    await user.click(screen.getByRole('tab', { name: 'README' }));
     await user.click(screen.getByRole('tab', { name: 'Configure' }));
 
     expect(screen.getByLabelText(/^endpoint/)).toHaveValue(

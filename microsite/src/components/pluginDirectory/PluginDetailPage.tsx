@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Link from '@docusaurus/Link';
-import type { PluginData } from '@site/src/pluginDirectory/manifest';
 import Layout from '@theme/Layout';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import React from 'react';
-
+import React, { useState } from 'react';
+import type { PluginData } from '../../pluginDirectory/manifest';
 import { ConfigureGuide } from './ConfigureGuide';
-import { HealthSummary } from './HealthSummary';
 import { InstallGuide } from './InstallGuide';
 import { PackageReadme } from './PackageReadme';
 import { PluginHeader } from './PluginHeader';
+import { PluginOverview } from './PluginOverview';
 import styles from './pluginDirectory.module.scss';
 
 interface PluginDetailPageProps {
@@ -36,42 +34,57 @@ export default function PluginDetailPage({
   plugin,
   latestBackstageVersion,
 }: PluginDetailPageProps) {
-  return (
-    <Layout title={plugin.title} description={plugin.description}>
-      <main className={`container padding-vert--lg ${styles.detailPage}`}>
-        <nav aria-label="Breadcrumbs" className="margin-bottom--lg">
-          <ul className="breadcrumbs">
-            <li className="breadcrumbs__item">
-              <Link className="breadcrumbs__link" to="/plugins">
-                Plugin directory
-              </Link>
-            </li>
-            <li className="breadcrumbs__item breadcrumbs__item--active">
-              <span className="breadcrumbs__link" aria-current="page">
-                {plugin.title}
-              </span>
-            </li>
-          </ul>
-        </nav>
+  const packages = plugin.snapshot?.packages ?? [];
+  const [selectedPackageName, setSelectedPackageName] = useState<
+    string | undefined
+  >();
+  const selectedPackage = packages.find(
+    packageSnapshot =>
+      packageSnapshot.npmPackageName === selectedPackageName,
+  );
 
+  return (
+    <Layout
+      title={plugin.title}
+      description={plugin.description}
+      wrapperClassName={styles.detailPage}
+    >
+      <main className="container margin-vert--lg">
         <article className={styles.detailArticle}>
           <PluginHeader
             plugin={plugin}
             latestBackstageVersion={latestBackstageVersion}
           />
-
-          <Tabs>
-            <TabItem value="overview" label="Overview">
-              <HealthSummary plugin={plugin} />
-              <PackageReadme plugin={plugin} />
-            </TabItem>
-            <TabItem value="install" label="Install">
-              <InstallGuide plugin={plugin} />
-            </TabItem>
-            <TabItem value="configure" label="Configure">
-              <ConfigureGuide plugin={plugin} />
-            </TabItem>
-          </Tabs>
+          <PluginOverview
+            plugin={plugin}
+            latestBackstageVersion={latestBackstageVersion}
+            onSelectPackage={setSelectedPackageName}
+          />
+          {selectedPackage && (
+            <section aria-labelledby="selected-package-heading">
+              <h2 id="selected-package-heading">
+                {selectedPackage.npmPackageName}
+              </h2>
+              <Tabs>
+                <TabItem value="readme" label="README" default>
+                  <PackageReadme packageSnapshot={selectedPackage} />
+                </TabItem>
+                <TabItem value="install" label="Install">
+                  <InstallGuide
+                    packageSnapshot={selectedPackage}
+                    primaryNpmPackageName={plugin.npmPackageName}
+                  />
+                </TabItem>
+                <TabItem value="configure" label="Configure">
+                  <ConfigureGuide
+                    packageSnapshot={selectedPackage}
+                    packages={packages}
+                    primaryNpmPackageName={plugin.npmPackageName}
+                  />
+                </TabItem>
+              </Tabs>
+            </section>
+          )}
         </article>
       </main>
     </Layout>
