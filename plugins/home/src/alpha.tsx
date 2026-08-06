@@ -225,7 +225,7 @@ const homePageRandomJokeWidget = HomePageWidgetBlueprint.make({
   },
 });
 
-const homePageTopVisitedWidget = HomePageWidgetBlueprint.make({
+const homePageMostVisitedWidget = HomePageWidgetBlueprint.make({
   name: 'most-visited',
   params: {
     name: 'HomePageTopVisited',
@@ -318,7 +318,7 @@ export default createFrontendPlugin({
     homePageToolkitWidget,
     homePageStarredEntitiesWidget,
     homePageRandomJokeWidget,
-    homePageTopVisitedWidget,
+    homePageMostVisitedWidget,
     homePageRecentlyVisitedWidget,
     homePageWorldClockWidget,
   ],
