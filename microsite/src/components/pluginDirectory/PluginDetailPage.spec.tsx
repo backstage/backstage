@@ -124,7 +124,7 @@ describe('PluginDetailPage', () => {
     }));
   });
 
-  it('navigates from the package browser to a shareable package workspace', async () => {
+  it('opens the primary package workspace by default and switches packages', async () => {
     const user = userEvent.setup();
     const view = renderPage();
 
@@ -135,41 +135,20 @@ describe('PluginDetailPage', () => {
       screen.getByRole('navigation', { name: 'Packages' }),
     ).toBeVisible();
     expect(screen.getByLabelText('Search packages')).toBeVisible();
-    expect(
-      screen.queryByRole('heading', { name: 'Should I adopt this plugin?' }),
-    ).not.toBeInTheDocument();
-    expect(screen.queryByRole('tab')).not.toBeInTheDocument();
-
-    await user.click(
-      screen.getByRole('button', {
-        name: /Example frontend.*@example\/plugin-example/,
-      }),
-    );
-    expect(mockPush).toHaveBeenCalledWith({
-      pathname: '/plugins/example-plugin',
-      search: '?package=%40example%2Fplugin-example&tab=readme',
-      hash: '',
-    });
-
-    mockUseLocation.mockReturnValue(
-      location('?package=%40example%2Fplugin-example&tab=readme'),
-    );
-    view.rerender(
-      <PluginDetailPage plugin={plugin} latestBackstageVersion={null} />,
-    );
     expect(screen.getByRole('tab', { name: 'README' })).toHaveAttribute(
       'aria-selected',
       'true',
     );
     expect(
-      await screen.findByText('README for @example/plugin-example'),
+      screen.getByRole('heading', { name: 'Example frontend' }),
     ).toBeVisible();
     expect(
-      screen.getByRole('navigation', { name: 'Packages' }),
+      await screen.findByText('README for @example/plugin-example'),
     ).toBeVisible();
     expect(screen.getByRole('navigation', { name: 'Breadcrumb' })).toHaveTextContent(
       'Plugin directoryExample PluginExample frontend',
     );
+    expect(mockPush).not.toHaveBeenCalled();
 
     await user.click(
       screen.getByRole('button', { name: /Example backend/ }),

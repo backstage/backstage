@@ -18,7 +18,6 @@ import Layout from '@theme/Layout';
 import React from 'react';
 import type { PluginData } from '../../pluginDirectory/manifest';
 import { getPackagePresentations } from './packagePresentation';
-import { PackageNavigation } from './PackageNavigation';
 import { PackageWorkspace } from './PackageWorkspace';
 import { PluginHeader } from './PluginHeader';
 import styles from './pluginDirectory.module.scss';
@@ -36,6 +35,7 @@ export default function PluginDetailPage({
   const packages = getPackagePresentations(plugin);
   const workspaceState = usePackageWorkspaceState(
     packages.map(entry => entry.npmPackageName),
+    plugin.npmPackageName,
   );
   const selectedPackage = packages.find(
     entry => entry.npmPackageName === workspaceState.selectedPackageName,
@@ -55,16 +55,9 @@ export default function PluginDetailPage({
                 <Link to="/plugins">Plugin directory</Link>
               </li>
               <li>
-                {selectedPackage ? (
-                  <button
-                    type="button"
-                    onClick={workspaceState.selectOverview}
-                  >
-                    {plugin.title}
-                  </button>
-                ) : (
-                  <span aria-current="page">{plugin.title}</span>
-                )}
+                <span aria-current={selectedPackage ? undefined : 'page'}>
+                  {plugin.title}
+                </span>
               </li>
               {selectedPackage && (
                 <li>
@@ -87,11 +80,7 @@ export default function PluginDetailPage({
               onSelectTab={workspaceState.selectTab}
             />
           ) : (
-            <PackageNavigation
-              packages={packages}
-              onSelectPackage={workspaceState.selectPackage}
-              standalone
-            />
+            <p>No packages reported.</p>
           )}
         </article>
       </main>

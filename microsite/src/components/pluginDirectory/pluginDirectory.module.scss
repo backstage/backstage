@@ -20,6 +20,8 @@
 .detailArticle {
   display: grid;
   gap: calc(var(--ifm-spacing-vertical) * 2);
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
 }
 
 .detailHeader {
@@ -129,6 +131,7 @@
 .setupStep {
   display: grid;
   gap: var(--ifm-spacing-vertical);
+  min-width: 0;
 
   > p {
     margin: 0;
@@ -140,6 +143,7 @@
 }
 
 .readmeContent {
+  min-width: 0;
   > :first-child {
     margin-top: 0;
   }
@@ -283,15 +287,6 @@
     content: '/';
     margin-right: calc(var(--ifm-spacing-horizontal) / 2);
   }
-
-  button {
-    background: transparent;
-    border: 0;
-    color: var(--ifm-link-color);
-    cursor: pointer;
-    font: inherit;
-    padding: 0;
-  }
 }
 
 .packageWorkspace {
@@ -301,10 +296,12 @@
   display: grid;
   grid-template-columns: 16.5rem minmax(0, 1fr);
   min-height: 31rem;
+  min-width: 0;
 }
 
 .mobilePackageSelect {
   display: none;
+  min-width: 0;
 }
 
 .packageNavigation {
@@ -317,18 +314,6 @@
   top: calc(var(--ifm-navbar-height) + var(--ifm-spacing-vertical));
 }
 
-.packageNavigationStandalone {
-  border: var(--ifm-global-border-width) solid
-    var(--ifm-color-emphasis-300);
-  border-radius: calc(var(--ifm-global-radius) / 2);
-  max-height: none;
-  position: static;
-
-  .packageNavigationGroups {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  }
-}
 
 .packageSearchLabel {
   border-bottom: var(--ifm-global-border-width) solid
@@ -493,6 +478,7 @@
 .packageTabPanel {
   padding: calc(var(--ifm-spacing-vertical) * 1.5)
     calc(var(--ifm-spacing-horizontal) * 1.5);
+  min-width: 0;
 }
 
 .packageSelectLabel {
@@ -509,8 +495,11 @@
   border-radius: var(--ifm-global-radius);
   color: var(--ifm-font-color-base);
   font: inherit;
+  max-width: 100%;
+  min-width: 0;
   padding: calc(var(--ifm-spacing-vertical) / 4)
     calc(var(--ifm-spacing-horizontal) / 2);
+  width: 100%;
 }
 
 .configForm,
@@ -676,13 +665,6 @@
     display: none;
   }
 
-  .packageNavigationStandalone {
-    display: block;
-
-    .packageNavigationGroups {
-      grid-template-columns: minmax(0, 1fr);
-    }
-  }
 
   .mobilePackageSelect {
     border-bottom: var(--ifm-global-border-width) solid

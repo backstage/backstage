@@ -48,13 +48,16 @@ describe('usePackageWorkspaceState', () => {
   });
 
   it.each(['', '?tab=install', '?package=unknown&tab=install'])(
-    'resolves %p to the overview', search => {
+    'resolves %p to the default package README',
+    search => {
       mockUseLocation.mockReturnValue(location(search));
       const { result } = renderHook(() =>
-        usePackageWorkspaceState(validPackages),
+        usePackageWorkspaceState(validPackages, '@backstage/plugin-catalog'),
       );
 
-      expect(result.current.selectedPackageName).toBeUndefined();
+      expect(result.current.selectedPackageName).toBe(
+        '@backstage/plugin-catalog',
+      );
       expect(result.current.selectedTab).toBe('readme');
     },
   );
@@ -64,7 +67,7 @@ describe('usePackageWorkspaceState', () => {
       location('?package=%40backstage%2Fplugin-catalog&tab=unknown'),
     );
     const { result, rerender } = renderHook(() =>
-      usePackageWorkspaceState(validPackages),
+      usePackageWorkspaceState(validPackages, '@backstage/plugin-catalog'),
     );
     expect(result.current.selectedPackageName).toBe(
       '@backstage/plugin-catalog',
@@ -84,7 +87,7 @@ describe('usePackageWorkspaceState', () => {
   it('writes complete, shareable package state and preserves the URL hash', () => {
     mockUseLocation.mockReturnValue(location('', '#details'));
     const { result, rerender } = renderHook(() =>
-      usePackageWorkspaceState(validPackages),
+      usePackageWorkspaceState(validPackages, '@backstage/plugin-catalog'),
     );
 
     act(() => result.current.selectPackage('@backstage/plugin-catalog'));
@@ -102,13 +105,6 @@ describe('usePackageWorkspaceState', () => {
     expect(mockPush).toHaveBeenLastCalledWith({
       pathname: '/plugins/backstage-software-catalog',
       search: '?package=%40backstage%2Fplugin-catalog&tab=configure',
-      hash: '#details',
-    });
-
-    act(() => result.current.selectOverview());
-    expect(mockPush).toHaveBeenLastCalledWith({
-      pathname: '/plugins/backstage-software-catalog',
-      search: '',
       hash: '#details',
     });
   });

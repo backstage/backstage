@@ -21,7 +21,6 @@ export type PackageTab = 'readme' | 'install' | 'configure';
 export interface PackageWorkspaceState {
   selectedPackageName: string | undefined;
   selectedTab: PackageTab;
-  selectOverview(): void;
   selectPackage(npmPackageName: string): void;
   selectTab(tab: PackageTab): void;
 }
@@ -32,25 +31,32 @@ function isPackageTab(value: string | null): value is PackageTab {
 
 export function usePackageWorkspaceState(
   validPackageNames: readonly string[],
+  defaultPackageName: string,
 ): PackageWorkspaceState {
   const location = useLocation();
   const history = useHistory();
   const params = new URLSearchParams(location.search);
   const requestedPackage = params.get('package') ?? undefined;
-  const selectedPackageName = validPackageNames.includes(requestedPackage ?? '')
+  const hasValidRequestedPackage = validPackageNames.includes(
+    requestedPackage ?? '',
+  );
+  const fallbackPackageName = validPackageNames.includes(defaultPackageName)
+    ? defaultPackageName
+    : validPackageNames[0];
+  const selectedPackageName = hasValidRequestedPackage
     ? requestedPackage
-    : undefined;
+    : fallbackPackageName;
   const requestedTab = params.get('tab');
   const selectedTab: PackageTab =
-    selectedPackageName && isPackageTab(requestedTab) ? requestedTab : 'readme';
+    hasValidRequestedPackage && isPackageTab(requestedTab)
+      ? requestedTab
+      : 'readme';
 
   const pushState = useCallback(
-    (packageName?: string, tab: PackageTab = 'readme') => {
+    (packageName: string, tab: PackageTab = 'readme') => {
       const search = new URLSearchParams();
-      if (packageName) {
-        search.set('package', packageName);
-        search.set('tab', tab);
-      }
+      search.set('package', packageName);
+      search.set('tab', tab);
       const query = search.toString();
       history.push({
         pathname: location.pathname,
@@ -64,8 +70,11 @@ export function usePackageWorkspaceState(
   return {
     selectedPackageName,
     selectedTab,
-    selectOverview: () => pushState(),
     selectPackage: npmPackageName => pushState(npmPackageName),
-    selectTab: tab => pushState(selectedPackageName, tab),
+    selectTab: tab => {
+      if (selectedPackageName) {
+        pushState(selectedPackageName, tab);
+      }
+    },
   };
 }

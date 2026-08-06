@@ -20,16 +20,14 @@ import styles from './pluginDirectory.module.scss';
 
 interface PackageNavigationProps {
   packages: readonly PackagePresentation[];
-  selectedPackageName?: string;
+  selectedPackageName: string;
   onSelectPackage: (npmPackageName: string) => void;
-  standalone?: boolean;
 }
 
 export function PackageNavigation({
   packages,
   selectedPackageName,
   onSelectPackage,
-  standalone = false,
 }: PackageNavigationProps) {
   const [query, setQuery] = useState('');
   const normalizedQuery = query.trim().toLowerCase();
@@ -42,26 +40,19 @@ export function PackageNavigation({
 
   return (
     <>
-      {!standalone && selectedPackageName && (
-        <div className={styles.mobilePackageSelect}>
-          <PackageSelect
-            value={selectedPackageName}
-            options={packages.map(entry => ({
-              value: entry.npmPackageName,
-              label: entry.label,
-              group: entry.groupLabel,
-            }))}
-            onChange={onSelectPackage}
-            label="Choose a package"
-          />
-        </div>
-      )}
-      <nav
-        className={`${styles.packageNavigation} ${
-          standalone ? styles.packageNavigationStandalone : ''
-        }`}
-        aria-label="Packages"
-      >
+      <div className={styles.mobilePackageSelect}>
+        <PackageSelect
+          value={selectedPackageName}
+          options={packages.map(entry => ({
+            value: entry.npmPackageName,
+            label: entry.label,
+            group: entry.groupLabel,
+          }))}
+          onChange={onSelectPackage}
+          label="Choose a package"
+        />
+      </div>
+      <nav className={styles.packageNavigation} aria-label="Packages">
         <label className={styles.packageSearchLabel}>
           Search packages
           <input
