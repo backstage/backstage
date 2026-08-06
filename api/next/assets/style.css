@@ -504,8 +504,15 @@
     body {
         background: var(--color-background);
         font-family:
-            -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans",
-            Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            "Noto Sans",
+            Helvetica,
+            Arial,
+            sans-serif,
+            "Apple Color Emoji",
+            "Segoe UI Emoji";
         font-size: 16px;
         color: var(--color-text);
         margin: 0;
@@ -529,6 +536,14 @@
     }
     :target {
         scroll-margin-block: calc(var(--dim-header-height) + 0.5rem);
+    }
+
+    math[display="block"] {
+        position: relative;
+        padding: 10px;
+        border: 1px solid var(--color-accent);
+        border-radius: 0.8em;
+        margin-bottom: 8px;
     }
 
     code,
@@ -1047,7 +1062,7 @@
 
         cursor: pointer;
     }
-    .tsd-accordion-summary a {
+    .tsd-accordion-summary > a {
         width: calc(100% - 1.5rem);
     }
     .tsd-accordion-summary > * {
