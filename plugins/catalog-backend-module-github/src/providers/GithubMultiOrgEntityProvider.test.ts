@@ -368,7 +368,7 @@ describe('GithubMultiOrgEntityProvider', () => {
       });
     });
 
-    it('should warn and skip orgs without a GitHub App installation', async () => {
+    it('should throw and log warning when an org has no GitHub App installation (missing headers)', async () => {
       entityProvider = new GithubMultiOrgEntityProvider({
         id: 'my-id',
         gitHubConfig,
@@ -414,22 +414,21 @@ describe('GithubMultiOrgEntityProvider', () => {
 
       (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
 
-      // The read should complete (skipping orgB) rather than failing entirely
-      await entityProvider.read();
+      // The read should throw to prevent silent entity deletion
+      await expect(entityProvider.read()).rejects.toThrow(
+        "No GitHub credentials available for org 'orgB'",
+      );
 
-      expect(mockGetCredentials).toHaveBeenCalledWith({
-        url: 'https://github.com/orgB',
-      });
       expect(logger.warn).toHaveBeenCalledWith(
         expect.stringContaining(
           "No GitHub credentials available for org 'orgB'",
         ),
       );
-      // orgA and orgC are still ingested
-      expect(entityProviderConnection.applyMutation).toHaveBeenCalled();
+      // Full mutation must NOT be applied — aborting preserves existing entities
+      expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
     });
 
-    it('should warn and skip when getCredentials throws a NotFoundError for an org', async () => {
+    it('should throw and log warning when getCredentials throws a NotFoundError for an org', async () => {
       mockGetCredentials.mockImplementation(({ url }: { url: string }) => {
         if (url.includes('orgB')) {
           const error = new Error(
@@ -469,42 +468,16 @@ describe('GithubMultiOrgEntityProvider', () => {
 
       (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
 
-      await entityProvider.read();
+      // Should throw to prevent the full mutation from deleting orgB's entities
+      await expect(entityProvider.read()).rejects.toThrow(
+        'No app installation found for orgB',
+      );
 
       expect(logger.warn).toHaveBeenCalledWith(
         expect.stringContaining(
           "No GitHub credentials available for org 'orgB'",
         ),
       );
-    });
-
-    it('should throw if all orgs are skipped due to missing credentials', async () => {
-      mockGetCredentials.mockImplementation(() => {
-        const error = new Error(
-          'No app installation found for org in 123',
-        ) as Error & { name?: string };
-        error.name = 'NotFoundError';
-        throw error;
-      });
-
-      entityProvider = new GithubMultiOrgEntityProvider({
-        id: 'my-id',
-        gitHubConfig,
-        githubCredentialsProvider: {
-          getCredentials: mockGetCredentials,
-        },
-        githubUrl: 'https://github.com',
-        logger,
-        orgs: ['orgA', 'orgB'],
-      });
-
-      await entityProvider.connect(entityProviderConnection);
-
-      await expect(entityProvider.read()).rejects.toThrow(
-        'No GitHub orgs could be processed due to missing GitHub credentials',
-      );
-
-      expect(logger.warn).toHaveBeenCalledTimes(2);
       expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
     });
 

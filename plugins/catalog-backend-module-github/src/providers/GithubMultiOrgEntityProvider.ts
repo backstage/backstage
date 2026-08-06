@@ -361,8 +361,6 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       ? this.options.orgs
       : await this.getAllOrgs(this.options.gitHubConfig);
 
-    let anyOrgProcessed = false;
-
     for (const org of orgsToProcess) {
       let credentials: GithubCredentials;
       try {
@@ -372,8 +370,12 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
           });
       } catch (error) {
         if (isAppInstallationMissingError(error)) {
+          // Log a clear warning so the user knows *why* ingestion failed,
+          // then throw to abort the read and preserve existing entities.
+          // Skipping an org in a full mutation would silently delete its
+          // entities from the catalog.
           logMissingCredentialsWarning(logger, org);
-          continue;
+          throw error;
         }
         throw error;
       }
@@ -382,12 +384,15 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 
       // When no installation (and no fallback token) is available the request
       // would otherwise fail later with a confusing rate limit / auth error.
+      // Log a clear warning and abort to preserve existing catalog entities.
       if (!headers) {
         logMissingCredentialsWarning(logger, org);
-        continue;
+        throw new Error(
+          `No GitHub credentials available for org '${org}'. ` +
+            `Aborting ingestion to prevent silent deletion of existing entities. ` +
+            `See https://backstage.io/docs/integrations/github/github-apps/#troubleshooting for more information.`,
+        );
       }
-
-      anyOrgProcessed = true;
 
       const client = graphql.defaults({
         baseUrl: this.options.gitHubConfig.apiBaseUrl,
@@ -434,13 +439,6 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       }
 
       allTeams.push(...teams);
-    }
-
-    if (!anyOrgProcessed) {
-      throw new Error(
-        `No GitHub orgs could be processed due to missing GitHub credentials. ` +
-          `See https://backstage.io/docs/integrations/github/github-apps/#troubleshooting for more information.`,
-      );
     }
 
     const allUsers = Array.from(allUsersMap.values());
