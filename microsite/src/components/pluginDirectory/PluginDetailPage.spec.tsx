@@ -124,7 +124,7 @@ describe('PluginDetailPage', () => {
     }));
   });
 
-  it('navigates from the plugin overview to a shareable package workspace', async () => {
+  it('navigates from the package browser to a shareable package workspace', async () => {
     const user = userEvent.setup();
     const view = renderPage();
 
@@ -132,8 +132,12 @@ describe('PluginDetailPage', () => {
       'Example Plugin',
     );
     expect(
-      screen.getByRole('heading', { name: 'Should I adopt this plugin?' }),
+      screen.getByRole('navigation', { name: 'Packages' }),
     ).toBeVisible();
+    expect(screen.getByLabelText('Search packages')).toBeVisible();
+    expect(
+      screen.queryByRole('heading', { name: 'Should I adopt this plugin?' }),
+    ).not.toBeInTheDocument();
     expect(screen.queryByRole('tab')).not.toBeInTheDocument();
 
     await user.click(

@@ -57,18 +57,29 @@ const plugin: PluginData = {
 };
 
 describe('PluginHeader', () => {
-  it('renders identity, description, built-with version, and resource links', () => {
-    render(<PluginHeader plugin={plugin} latestBackstageVersion={null} />);
+  it('renders identity, description, evaluation facts, and resource links', () => {
+    render(
+      <PluginHeader
+        plugin={plugin}
+        latestBackstageVersion="1.53.1"
+        now={new Date('2026-08-06T00:00:00.000Z')}
+      />,
+    );
 
     const heading = screen.getByRole('heading', { level: 1 });
     expect(heading).toHaveTextContent('Catalog Insights');
-    expect(heading).toHaveTextContent('built with Backstage v1.50.0');
+    expect(heading).not.toHaveTextContent('built with Backstage');
     expect(
       screen.getByRole('link', { name: 'Example Maintainers' }),
     ).toHaveAttribute('href', 'https://example.com');
     expect(
       screen.getByText('Adds operational context to catalog entities.'),
     ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText('Plugin evaluation summary'),
+    ).toHaveTextContent(
+      'Last updated2.4.014 days agoCurrent releaseBackstage sourceBuilt with Backstage 1.50.03 minor releases behindFunctionality1 adoption outcomes reported',
+    );
     expect(
       screen.getByRole('link', { name: /Documentation/ }),
     ).toBeInTheDocument();
@@ -78,12 +89,5 @@ describe('PluginHeader', () => {
     expect(
       screen.getByRole('link', { name: /Repository/ }),
     ).toBeInTheDocument();
-    expect(screen.queryByText(/versions? behind/)).not.toBeInTheDocument();
-  });
-
-  it('shows how many minor versions behind the plugin is when a later Backstage release exists', () => {
-    render(<PluginHeader plugin={plugin} latestBackstageVersion="1.53.1" />);
-
-    expect(screen.getByText('· 3 versions behind')).toBeInTheDocument();
   });
 });

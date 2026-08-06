@@ -18,9 +18,9 @@ import Layout from '@theme/Layout';
 import React from 'react';
 import type { PluginData } from '../../pluginDirectory/manifest';
 import { getPackagePresentations } from './packagePresentation';
+import { PackageNavigation } from './PackageNavigation';
 import { PackageWorkspace } from './PackageWorkspace';
 import { PluginHeader } from './PluginHeader';
-import { PluginOverview } from './PluginOverview';
 import styles from './pluginDirectory.module.scss';
 import { usePackageWorkspaceState } from './usePackageWorkspaceState';
 
@@ -87,10 +87,10 @@ export default function PluginDetailPage({
               onSelectTab={workspaceState.selectTab}
             />
           ) : (
-            <PluginOverview
-              plugin={plugin}
-              latestBackstageVersion={latestBackstageVersion}
+            <PackageNavigation
+              packages={packages}
               onSelectPackage={workspaceState.selectPackage}
+              standalone
             />
           )}
         </article>

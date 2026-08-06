@@ -17,56 +17,102 @@ import Link from '@docusaurus/Link';
 import type { PluginData } from '@site/src/pluginDirectory/manifest';
 import React from 'react';
 
-import { countMinorVersionsBehind } from './healthPresentation';
+import { getPluginDecisionSummary } from './packagePresentation';
 import { ResourceIcons } from './ResourceIcons';
 import styles from './pluginDirectory.module.scss';
 
 interface PluginHeaderProps {
   plugin: PluginData;
   latestBackstageVersion?: string | null;
+  now?: Date;
+}
+
+function releaseStatus(status: 'fresh' | 'stale'): string {
+  return status === 'fresh' ? 'Current release' : 'Getting old';
+}
+
+function backstageComparison(
+  versionsBehind: number | undefined,
+): string | undefined {
+  if (versionsBehind === undefined) {
+    return undefined;
+  }
+  if (versionsBehind === 0) {
+    return 'Current Backstage release';
+  }
+  return `${versionsBehind} minor ${
+    versionsBehind === 1 ? 'release' : 'releases'
+  } behind`;
 }
 
 export function PluginHeader({
   plugin,
   latestBackstageVersion,
+  now,
 }: PluginHeaderProps) {
-  const backstageSnapshot = plugin.snapshot?.backstage;
-  const builtWithVersion =
-    backstageSnapshot && backstageSnapshot.status !== 'unavailable'
-      ? backstageSnapshot.version
-      : undefined;
-  const versionsBehind =
-    builtWithVersion && latestBackstageVersion
-      ? countMinorVersionsBehind(builtWithVersion, latestBackstageVersion)
-      : undefined;
+  const summary = getPluginDecisionSummary(
+    plugin,
+    latestBackstageVersion,
+    now,
+  );
+  const comparison =
+    summary.backstage.status === 'unavailable'
+      ? undefined
+      : backstageComparison(summary.backstage.versionsBehind);
 
   return (
     <header className={styles.detailHeader}>
       <div className={styles.headerTop}>
         <div>
-          <h1>
-            {plugin.title}
-            {builtWithVersion && (
-              <span className={styles.builtWithVersion}>
-                built with Backstage v{builtWithVersion}
-              </span>
-            )}
-          </h1>
+          <h1>{plugin.title}</h1>
           <p className={styles.byline}>
             by <Link to={plugin.authorUrl}>{plugin.author}</Link>
-            {!!versionsBehind && (
-              <span className={styles.versionsBehind}>
-                {' '}
-                · {versionsBehind} version{versionsBehind === 1 ? '' : 's'}{' '}
-                behind
-              </span>
-            )}
           </p>
         </div>
         <ResourceIcons plugin={plugin} />
       </div>
 
       <p className={styles.description}>{plugin.description}</p>
+      <dl
+        className={styles.decisionSummary}
+        aria-label="Plugin evaluation summary"
+      >
+        <div>
+          <dt>Last updated</dt>
+          <dd>
+            {summary.release.status === 'unavailable' ? (
+              'Not reported'
+            ) : (
+              <>
+                <strong>{summary.release.version}</strong>
+                <span>{summary.release.age}</span>
+                <span>{releaseStatus(summary.release.status)}</span>
+              </>
+            )}
+          </dd>
+        </div>
+        <div>
+          <dt>Backstage source</dt>
+          <dd>
+            {summary.backstage.status === 'unavailable' ? (
+              'Not reported'
+            ) : (
+              <>
+                <strong>Built with Backstage {summary.backstage.version}</strong>
+                {comparison && <span>{comparison}</span>}
+              </>
+            )}
+          </dd>
+        </div>
+        <div>
+          <dt>Functionality</dt>
+          <dd>
+            {summary.functionality.length > 0
+              ? `${summary.functionality.length} adoption outcomes reported`
+              : 'Not reported'}
+          </dd>
+        </div>
+      </dl>
     </header>
   );
 }
