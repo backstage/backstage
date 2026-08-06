@@ -106,7 +106,7 @@ To add documentation to an existing entity:
     :::note
     Although `docs` is a popular directory name for storing documentation,
     it can be renamed to something else and can be configured by `mkdocs.yml`. See
-    [https://www.mkdocs.org/user-guide/configuration/#docs_dir](https://www.mkdocs.org/user-guide/configuration/#docs_dir)
+    <https://www.mkdocs.org/user-guide/configuration/#docs_dir>
     :::
 
 4.  Create a `docs/index.md` file, as a minimum. For example:

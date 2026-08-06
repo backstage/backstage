@@ -8,4 +8,4 @@ description: Guidelines for how to use the Backstage logos and icons
 Guidelines for how to use the Backstage logo and icon can be found
 [here](https://backstage.io/logo_assets/Backstage_Identity_Assets_Overview.pdf).
 
-You can find the assets at [https://github.com/cncf/artwork/tree/main/projects/backstage](https://github.com/cncf/artwork/tree/main/projects/backstage).
+You can find the assets at <https://github.com/cncf/artwork/tree/main/projects/backstage>.

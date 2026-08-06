@@ -104,7 +104,7 @@ Apart from STMP, the email processor also supports the following transmissions:
 - sendmail
 - stream (only for debugging purposes)
 
-See more information at [https://github.com/backstage/backstage/blob/master/plugins/notifications-backend-module-email/README.md](https://github.com/backstage/backstage/blob/master/plugins/notifications-backend-module-email/README.md)
+See more information at <https://github.com/backstage/backstage/blob/master/plugins/notifications-backend-module-email/README.md>
 
 ### Slack Processor
 

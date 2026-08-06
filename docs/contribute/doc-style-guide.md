@@ -238,6 +238,17 @@ helps downstream localization.
 | :------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------- |
 | Write hyperlinks with descriptive text. For example: See [Getting Started](../getting-started/index.md) for details. | Use ambiguous link text. For example: See [here](../getting-started/index.md) for details. |
 | Write Markdown-style links: `[link text](./index.md)`.                                                               | Write HTML-style links or create links that open in new tabs.                              |
+| Give a plain address some markup: `<https://example.com>`.                                                           | Paste a bare address: `https://example.com`.                                               |
+
+A link with descriptive text is the better choice wherever you can write one.
+People using a screen reader often navigate a page by listing its links, so link
+text such as `the Kubernetes configuration` tells them where it goes while a raw
+address does not.
+
+When the address itself is what you want to show, the syntax depends on the file
+extension. In `.md` files, use either angle brackets or a Markdown link. In
+`.mdx` files, use a Markdown link: angle brackets are not valid there and the
+build fails.
 
 ### Lists
 

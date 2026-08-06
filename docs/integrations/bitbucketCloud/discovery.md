@@ -59,9 +59,9 @@ You need to decide how you want to receive events from external sources like
 
 Further documentation:
 
-- [https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
-- [https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
-- [https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-bitbucket-cloud/README.md](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-bitbucket-cloud/README.md)
+- <https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md>
+- <https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md>
+- <https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-bitbucket-cloud/README.md>
 
 ## Configuration
 

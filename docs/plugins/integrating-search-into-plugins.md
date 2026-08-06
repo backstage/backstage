@@ -256,7 +256,7 @@ Run `yarn start` in the root folder of your Backstage project and look for logs 
 [backend]: YYYY-MM-DDTHH:MM:SS.000Z search info Collating documents for faq-snippets succeeded documentType=faq-snippets
 ```
 
-It means that the collator task was started and completed successfully. Visit [http://localhost:3000](http://localhost:3000), log in, select the 'All' tab, and type in one of your snippets title in the search box.
+It means that the collator task was started and completed successfully. Visit <http://localhost:3000>, log in, select the 'All' tab, and type in one of your snippets title in the search box.
 
 Results should appear for snippets.
 

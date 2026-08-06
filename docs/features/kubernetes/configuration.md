@@ -414,7 +414,7 @@ clusterLinksFormatters.myDashboard = (options) => ...;
 ```
 
 See also
-[https://github.com/backstage/backstage/tree/master/plugins/kubernetes-react/src/api/formatters](https://github.com/backstage/backstage/tree/master/plugins/kubernetes-react/src/api/formatters)
+<https://github.com/backstage/backstage/tree/master/plugins/kubernetes-react/src/api/formatters>
 for real examples.
 
 ##### `clusters.\*.dashboardParameters` (optional)
@@ -471,7 +471,7 @@ gcloud container clusters describe <YOUR_CLUSTER_NAME> \
 ```
 
 See also
-[https://cloud.google.com/kubernetes-engine/docs/how-to/api-server-authentication#environments-without-gcloud](https://cloud.google.com/kubernetes-engine/docs/how-to/api-server-authentication#environments-without-gcloud)
+<https://cloud.google.com/kubernetes-engine/docs/how-to/api-server-authentication#environments-without-gcloud>
 for complete docs about GKE without `gcloud`.
 
 ##### `clusters.\*.caFile` (optional)
@@ -573,7 +573,7 @@ about resources.
 Defaults to `google` which leverages the logged in user's Google OAuth credentials.
 
 Set to `googleServiceAccount` to leverage
-Application Default Credentials ([https://cloud.google.com/docs/authentication/application-default-credentials](https://cloud.google.com/docs/authentication/application-default-credentials)).
+Application Default Credentials (<https://cloud.google.com/docs/authentication/application-default-credentials>).
 To use a service account JSON key (not recommended), set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable
 on the Backstage backend to the path of the service account key file.
 

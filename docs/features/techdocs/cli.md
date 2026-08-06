@@ -7,7 +7,7 @@ description: TechDocs CLI - a utility command line interface for managing TechDo
 Utility command line interface for managing TechDocs sites in
 [Backstage](https://github.com/backstage/backstage).
 
-[https://backstage.io/docs/features/techdocs/](https://backstage.io/docs/features/techdocs/)
+<https://backstage.io/docs/features/techdocs/>
 
 ## Features
 

@@ -101,7 +101,7 @@ events:
       - github
 ```
 
-This will then expose an endpoint like this: [http://localhost/api/events/http/github](http://localhost/api/events/http/github)
+This will then expose an endpoint like this: <http://localhost/api/events/http/github>
 
 ### Events Setup using AWS SQS module
 
