@@ -69,7 +69,10 @@ export function ResourceIcons({ plugin }: ResourceIconsProps) {
         <DocumentIcon />
         <span>Documentation</span>
       </a>
-      <a className={styles.resourceIcon} href={getNpmPackageUrl(plugin)}>
+      <a
+        className={styles.resourceIcon}
+        href={getNpmPackageUrl(plugin.npmPackageName)}
+      >
         <PackageIcon />
         <span>npm package</span>
       </a>

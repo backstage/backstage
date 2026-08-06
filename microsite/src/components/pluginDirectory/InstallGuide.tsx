@@ -52,7 +52,6 @@ export function InstallGuide({
   return (
     <div className={styles.installGuide}>
       <section className={styles.setupStep} aria-label="Install">
-        <span className={styles.packageRole}>{packageRole}</span>
         <h2>1. Add the package</h2>
         <div className={styles.codeRow}>
           <pre>

@@ -40,7 +40,7 @@ const plugin: PluginData = {
 describe('getNpmPackageUrl', () => {
   it('builds the npmjs.com package URL from the manifest package name', () => {
     assert.equal(
-      getNpmPackageUrl(plugin),
+      getNpmPackageUrl('@example/plugin-example'),
       'https://www.npmjs.com/package/@example/plugin-example',
     );
   });

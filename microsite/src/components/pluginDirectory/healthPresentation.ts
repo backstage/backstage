@@ -64,8 +64,8 @@ export function formatReleaseAge(isoDate: string, now = new Date()): string {
   return `${elapsedYears} ${elapsedYears === 1 ? 'year' : 'years'} ago`;
 }
 
-export function getNpmPackageUrl(plugin: PluginData): string {
-  return `https://www.npmjs.com/package/${plugin.npmPackageName}`;
+export function getNpmPackageUrl(npmPackageName: string): string {
+  return `https://www.npmjs.com/package/${npmPackageName}`;
 }
 
 const backstageVersionPattern = /^(\d+)\.(\d+)\.\d+/;
