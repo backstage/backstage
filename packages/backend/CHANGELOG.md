@@ -1,5 +1,21 @@
 # example-backend
 
+## 0.0.53-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.7-next.2
+  - @backstage/plugin-catalog-backend@3.9.0-next.2
+  - @backstage/plugin-auth-backend@0.30.0-next.1
+  - @backstage/backend-plugin-api@1.10.0-next.1
+  - @backstage/plugin-mcp-actions-backend@0.2.1-next.1
+  - @backstage/plugin-notifications-backend@0.6.8-next.1
+  - @backstage/plugin-scaffolder-backend@4.0.3-next.2
+  - @backstage/plugin-catalog-backend-module-logs@0.1.25-next.1
+  - @backstage/plugin-app-backend@0.5.17-next.1
+  - @backstage/plugin-devtools-backend@0.5.20-next.1
+
 ## 0.0.53-next.1
 
 ### Patch Changes

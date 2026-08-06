@@ -274,13 +274,18 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
         const Component = () => {
           const routeParams = useRouteRefParams(entityRouteRef);
           const entityFromUrl = useEntityFromUrl();
-          const entity =
-            entityFromUrl.entity &&
+          const matchesRoute =
+            !!entityFromUrl.entity &&
             stringifyEntityRef(entityFromUrl.entity) ===
-              stringifyEntityRef(routeParams)
-              ? entityFromUrl.entity
-              : undefined;
-          const entityProviderProps = { ...entityFromUrl, entity };
+              stringifyEntityRef(routeParams);
+          const entity = matchesRoute ? entityFromUrl.entity : undefined;
+          const entityProviderProps = {
+            ...entityFromUrl,
+            entity,
+            loading:
+              entityFromUrl.loading ||
+              (!!entityFromUrl.entity && !matchesRoute),
+          };
           const filteredMenuItems = entity
             ? menuItems
                 .filter(i => i.filter(entity))

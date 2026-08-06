@@ -81,9 +81,9 @@ function AddTodo({ onAdd }: { onAdd: (title: string) => any }) {
 
 Here we are using the [`usePermission` hook](https://backstage.io/api/stable/functions/_backstage_plugin-permission-react.usePermission.html) to communicate with the permission policy and receive a decision on whether this user is authorized to create a todo list item.
 
-It's really that simple! Let's change our policy to test the disabled button:
+It's really that simple! Let's change our policy to test the disabled button. Update the `CustomPolicy` class in the permission policy module created during the [Getting Started](../getting-started.md) steps:
 
-```ts title="packages/backend/src/plugins/permission.ts"
+```ts
 if (isPermission(request.permission, todoListCreatePermission)) {
   return {
     /* highlight-remove-next-line */

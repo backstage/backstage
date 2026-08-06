@@ -1,5 +1,13 @@
 # @backstage/create-app
 
+## 0.9.1-next.2
+
+### Patch Changes
+
+- 943687f: Generated backend Dockerfiles no longer disable the Node.js snapshot or install native build dependencies for the Scaffolder.
+- 9138f34: Added a GitHub Actions CI workflow to the default app template. New Backstage instances created with `create-app` now include a `.github/workflows/ci.yml` that runs lint, type checking, tests, configuration validation, and a Docker image build on every pull request.
+- 2828e31: Added a prerequisites check when creating a new app that validates Node.js LTS version and Yarn availability before proceeding, and warns if Python is not found.
+
 ## 0.9.1-next.1
 
 ### Patch Changes

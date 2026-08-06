@@ -168,7 +168,7 @@ Sometimes the frontend starts before the backend resulting in errors on the sign
 
 ## Adding a User
 
-The recommended approach for adding Users, and Groups, into your Catalog is to use one of the existing Org Entity Providers - [like this one for GitHub](https://backstage.io/docs/integrations/github/org) - or if those don't work you may need to [create one](https://backstage.io/docs/features/software-catalog/external-integrations#custom-entity-providers) that fits your Organization's needs.
+The recommended approach for adding Users, and Groups, into your Catalog is to use one of the existing Org Entity Providers - [like this one for GitHub](https://backstage.io/docs/integrations/github/org) - or if those don't work you may need to [create one](https://backstage.io/docs/features/software-catalog/external-integrations/entity-providers) that fits your Organization's needs.
 
 For the sake of this guide we'll simply step you through adding a User to the `org.yaml` file that is included when you create a new Backstage instance. Let's do that:
 

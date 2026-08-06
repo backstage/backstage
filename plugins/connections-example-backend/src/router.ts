@@ -79,7 +79,7 @@ export async function createRouter({
     try {
       connection = await connections.find({
         type: p.type as ConnectionTypeKey,
-        url: p.url,
+        query: { url: p.url },
         authMethods: authMethods as any,
       });
     } catch (e) {

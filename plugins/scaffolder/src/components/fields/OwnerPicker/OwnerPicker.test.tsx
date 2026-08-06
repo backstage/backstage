@@ -57,7 +57,9 @@ describe('<OwnerPicker />', () => {
   let props: FieldProps<string>;
 
   const catalogApi = catalogApiMock.mock({
-    getEntities: jest.fn(async () => ({ items: entities })),
+    streamEntities: jest.fn(async function* () {
+      yield entities;
+    }),
   });
   let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
@@ -99,22 +101,19 @@ describe('<OwnerPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith(
-        expect.objectContaining({
-          filter: {
-            kind: ['Group', 'User'],
-          },
-          fields: [
-            'kind',
-            'metadata.name',
-            'metadata.namespace',
-            'metadata.title',
-            'metadata.description',
-            'spec.profile.displayName',
-            'spec.type',
-          ],
-        }),
-      );
+      expect(catalogApi.streamEntities).toHaveBeenCalledWith({
+        query: {},
+        filter: { kind: ['Group', 'User'] },
+        fields: [
+          'kind',
+          'metadata.name',
+          'metadata.namespace',
+          'metadata.title',
+          'metadata.description',
+          'spec.profile.displayName',
+          'spec.type',
+        ],
+      });
     });
   });
 
@@ -143,7 +142,9 @@ describe('<OwnerPicker />', () => {
         formData,
       } as unknown as FieldProps<any>;
 
-      catalogApi.getEntities.mockResolvedValue({ items: entities });
+      catalogApi.streamEntities.mockImplementation(async function* () {
+        yield entities;
+      });
     });
     it('Prevents user from modifying input when ui:disabled is true', async () => {
       props.uiSchema = { 'ui:disabled': true };
@@ -205,22 +206,19 @@ describe('<OwnerPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith(
-        expect.objectContaining({
-          filter: {
-            kind: ['User'],
-          },
-          fields: [
-            'kind',
-            'metadata.name',
-            'metadata.namespace',
-            'metadata.title',
-            'metadata.description',
-            'spec.profile.displayName',
-            'spec.type',
-          ],
-        }),
-      );
+      expect(catalogApi.streamEntities).toHaveBeenCalledWith({
+        query: {},
+        filter: { kind: ['User'] },
+        fields: [
+          'kind',
+          'metadata.name',
+          'metadata.namespace',
+          'metadata.title',
+          'metadata.description',
+          'spec.profile.displayName',
+          'spec.type',
+        ],
+      });
     });
   });
 
@@ -245,7 +243,9 @@ describe('<OwnerPicker />', () => {
         formData,
       } as unknown as FieldProps<any>;
 
-      catalogApi.getEntities.mockResolvedValue({ items: entities });
+      catalogApi.streamEntities.mockImplementation(async function* () {
+        yield entities;
+      });
     });
 
     it('searches for group entities of type team', async () => {
@@ -255,8 +255,9 @@ describe('<OwnerPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith(
+      expect(catalogApi.streamEntities).toHaveBeenCalledWith(
         expect.objectContaining({
+          query: {},
           filter: [
             {
               kind: ['Group'],
@@ -300,8 +301,9 @@ describe('<OwnerPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith(
+      expect(catalogApi.streamEntities).toHaveBeenCalledWith(
         expect.objectContaining({
+          query: {},
           filter: [
             {
               kind: ['Group', 'User'],

@@ -1,6 +1,6 @@
 {
   "name": "example-backend",
-  "version": "0.0.53-next.1",
+  "version": "0.0.53-next.2",
   "backstage": {
     "role": "backend"
   },
@@ -69,9 +69,9 @@
     "@backstage/plugin-signals-backend": "workspace:^",
     "@backstage/plugin-techdocs-backend": "workspace:^",
     "@backstage/plugin-user-settings-backend": "workspace:^",
-    "@opentelemetry/auto-instrumentations-node": "^0.71.0",
-    "@opentelemetry/exporter-prometheus": "^0.213.0",
-    "@opentelemetry/sdk-node": "^0.213.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.79.0",
+    "@opentelemetry/exporter-prometheus": "^0.221.0",
+    "@opentelemetry/sdk-node": "^0.221.0",
     "example-app": "link:../app"
   },
   "devDependencies": {

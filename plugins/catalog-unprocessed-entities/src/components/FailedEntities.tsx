@@ -23,37 +23,17 @@ import {
   TableColumn,
 } from '@backstage/core-components';
 
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import { Theme, makeStyles } from '@material-ui/core/styles';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { Alert, Box, ButtonIcon, Text } from '@backstage/ui';
+import { RiDeleteBinLine } from '@remixicon/react';
+import { useApi } from '@backstage/core-plugin-api';
 
-import { UnprocessedEntity } from '../types';
 import { EntityDialog } from './EntityDialog';
 import { catalogUnprocessedEntitiesApiRef } from '../api';
 import useAsync from 'react-use/esm/useAsync';
-import DeleteIcon from '@material-ui/icons/Delete';
 import { DeleteEntityConfirmationDialog } from './DeleteEntityConfirmationDialog';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  errorBox: {
-    color: theme.palette.status.error,
-    backgroundColor: theme.palette.errorBackground,
-    padding: '1em',
-    margin: '1em',
-    border: `1px solid ${theme.palette.status.error}`,
-  },
-  errorTitle: {
-    width: '100%',
-    fontWeight: 'bold',
-  },
-  successMessage: {
-    background: theme.palette.infoBackground,
-    color: theme.palette.infoText,
-    padding: theme.spacing(2),
-  },
-}));
+import { UnprocessedEntity } from '@backstage/plugin-catalog-unprocessed-entities-common';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
+import styles from './FailedEntities.module.css';
 
 const RenderErrorContext = ({
   error,
@@ -65,10 +45,10 @@ const RenderErrorContext = ({
   if (error.message.includes('tags.')) {
     return (
       <>
-        <Typography>Tags</Typography>
+        <Text className={styles.errorText}>Tags</Text>
         <ul>
           {rowData.unprocessed_entity.metadata.tags?.map(t => (
-            <li>{t}</li>
+            <li key={t}>{t}</li>
           ))}
         </ul>
       </>
@@ -78,10 +58,10 @@ const RenderErrorContext = ({
   if (error.message.includes('metadata.name')) {
     return (
       <>
-        <Typography>Name</Typography>
-        <Typography variant="caption">
+        <Text className={styles.errorText}>Name</Text>
+        <Text className={styles.errorText} variant="body-small">
           {rowData.unprocessed_entity.metadata.name}
-        </Typography>
+        </Text>
       </>
     );
   }
@@ -105,16 +85,13 @@ export const convertTimeToLocalTimezone = (dateTime: string | Date) => {
 };
 
 export const FailedEntities = () => {
-  const classes = useStyles();
   const unprocessedApi = useApi(catalogUnprocessedEntitiesApiRef);
   const {
     loading,
     error,
     value: data,
   } = useAsync(async () => await unprocessedApi.failed());
-  const [, setSelectedSearchTerm] = useState<string>('');
-  const unprocessedEntityApi = useApi(catalogUnprocessedEntitiesApiRef);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
   const [selectedEntityId, setSelectedEntityId] = useState<string | undefined>(
     undefined,
   );
@@ -145,16 +122,16 @@ export const FailedEntities = () => {
   const cleanUpAfterRemoval = async () => {
     try {
       if (selectedEntityId) {
-        await unprocessedEntityApi.delete(selectedEntityId);
-        alertApi.post({
-          message: `Entity ${selectedEntityRef} has been deleted`,
-          severity: 'success',
+        await unprocessedApi.delete(selectedEntityId);
+        toastApi.post({
+          title: `Entity ${selectedEntityRef} has been deleted`,
+          status: 'success',
         });
       }
     } catch (e) {
-      alertApi.post({
-        message: `Ran into an issue when deleting ${selectedEntityRef}. Please try again later.`,
-        severity: 'error',
+      toastApi.post({
+        title: `Failed to delete entity ${selectedEntityRef}`,
+        status: 'danger',
       });
     }
     setConfirmationDialogOpen(false);
@@ -162,7 +139,7 @@ export const FailedEntities = () => {
 
   const columns: TableColumn[] = [
     {
-      title: <Typography>entityRef</Typography>,
+      title: <Text>entityRef</Text>,
       sorting: true,
       field: 'entity_ref',
       customFilterAndSearch: (query, row: any) =>
@@ -173,21 +150,21 @@ export const FailedEntities = () => {
         (rowData as UnprocessedEntity).entity_ref,
     },
     {
-      title: <Typography>Location Path</Typography>,
+      title: <Text>Location Path</Text>,
       sorting: true,
       field: 'location_key',
       render: (rowData: UnprocessedEntity | {}) =>
         (rowData as UnprocessedEntity).location_key,
     },
     {
-      title: <Typography>Kind</Typography>,
+      title: <Text>Kind</Text>,
       sorting: true,
       field: 'kind',
       render: (rowData: UnprocessedEntity | {}) =>
         (rowData as UnprocessedEntity).unprocessed_entity.kind,
     },
     {
-      title: <Typography>Owner</Typography>,
+      title: <Text>Owner</Text>,
       sorting: true,
       field: 'unprocessed_entity.spec.owner',
       render: (rowData: UnprocessedEntity | {}) =>
@@ -195,7 +172,7 @@ export const FailedEntities = () => {
         'unknown',
     },
     {
-      title: <Typography>Last Discovery At</Typography>,
+      title: <Text>Last Discovery At</Text>,
       sorting: true,
       field: 'last_discovery_at',
       render: (rowData: UnprocessedEntity | {}) =>
@@ -204,7 +181,7 @@ export const FailedEntities = () => {
         ) || 'unknown',
     },
     {
-      title: <Typography>Next Refresh At</Typography>,
+      title: <Text>Next Refresh At</Text>,
       sorting: true,
       field: 'next_update_at',
       render: (rowData: UnprocessedEntity | {}) =>
@@ -213,29 +190,29 @@ export const FailedEntities = () => {
         ) || 'unknown',
     },
     {
-      title: <Typography>Raw Entity Definition</Typography>,
+      title: <Text>Raw Entity Definition</Text>,
       sorting: false,
       render: (rowData: UnprocessedEntity | {}) => (
         <EntityDialog entity={rowData as UnprocessedEntity} />
       ),
     },
     {
-      title: <Typography>Actions</Typography>,
+      title: <Text>Actions</Text>,
       render: (rowData: UnprocessedEntity | {}) => {
         const { entity_id, entity_ref } = rowData as UnprocessedEntity;
 
         return (
-          <IconButton
+          <ButtonIcon
+            variant="tertiary"
             aria-label="delete"
-            onClick={() =>
+            icon={<RiDeleteBinLine />}
+            onPress={() =>
               handleDelete({
                 entityId: entity_id,
                 entityRef: entity_ref,
               })
             }
-          >
-            <DeleteIcon fontSize="small" data-testid="delete-icon" />
-          </IconButton>
+          />
         );
       },
     },
@@ -248,12 +225,11 @@ export const FailedEntities = () => {
         columns={columns}
         data={data?.entities ?? []}
         emptyContent={
-          <Typography className={classes.successMessage}>
-            No failed entities found
-          </Typography>
-        }
-        onSearchChange={(searchTerm: string) =>
-          setSelectedSearchTerm(searchTerm)
+          <Alert
+            status="info"
+            title="No failed entities found"
+            style={{ placeSelf: 'center', margin: 'var(--bui-space-4)' }}
+          />
         }
         detailPanel={({ rowData }) => {
           const errors = (rowData as UnprocessedEntity).errors;
@@ -261,10 +237,16 @@ export const FailedEntities = () => {
             <>
               {errors?.map((e, idx) => {
                 return (
-                  <Box key={idx} className={classes.errorBox}>
-                    <Typography className={classes.errorTitle}>
+                  <Box
+                    key={idx}
+                    bg="danger"
+                    p="4"
+                    m="4"
+                    className={styles.errorBox}
+                  >
+                    <Text as="p" weight="bold" className={styles.errorText}>
                       {e.name}
-                    </Typography>
+                    </Text>
                     <MarkdownContent content={e.message} />
                     <RenderErrorContext
                       error={e}

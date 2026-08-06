@@ -1,5 +1,11 @@
 # @backstage/frontend-plugin-api
 
+## 0.18.0-next.0
+
+### Minor Changes
+
+- 907793c: **BREAKING**: Removed the deprecated `config.schema` option for extensions and extension blueprints. Use the top-level `configSchema` option with Standard Schema-compatible schema values, such as Zod v4.
+
 ## 0.17.3
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @backstage/backend-test-utils
 
+## 1.11.6-next.1
+
+### Patch Changes
+
+- b1b6c80: Aligned mocked action attributes so read-only actions default to non-destructive.
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.7-next.2
+  - @backstage/backend-plugin-api@1.10.0-next.1
+
 ## 1.11.6-next.0
 
 ### Patch Changes

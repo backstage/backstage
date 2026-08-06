@@ -1,5 +1,13 @@
 # @backstage/plugin-mcp-actions-backend
 
+## 0.2.1-next.1
+
+### Patch Changes
+
+- d7d03d9: Replaced duplicated documentation in the README with a link to the full docs on `backstage.io`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.1
+
 ## 0.2.1-next.0
 
 ### Patch Changes
