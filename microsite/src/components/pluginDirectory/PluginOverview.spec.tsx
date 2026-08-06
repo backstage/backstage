@@ -113,8 +113,7 @@ describe('PluginOverview', () => {
       screen.getByRole('heading', { name: 'Shared libraries' }),
     ).toBeVisible();
   });
-
-  it('reports unavailable evidence without inventing functionality', () => {
+  it('keeps unavailable evidence neutral and uses the authored description', () => {
     render(
       <PluginOverview
         plugin={{ ...plugin, capabilities: undefined, snapshot: undefined }}
@@ -123,7 +122,8 @@ describe('PluginOverview', () => {
       />,
     );
 
-    expect(screen.getAllByText('Not reported')).toHaveLength(3);
+    expect(screen.getAllByText('Not reported')).toHaveLength(2);
+    expect(screen.getByText('Manage software components.')).toBeVisible();
     expect(screen.getByText('No package details reported.')).toBeVisible();
     expect(
       screen.queryByText('Browse and inspect catalog entities'),

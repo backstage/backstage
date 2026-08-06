@@ -173,7 +173,7 @@ function functionalityOutcomes(plugin: PluginData): string[] {
     outcomes.push('Apply catalog permissions');
   }
 
-  return outcomes;
+  return outcomes.length > 0 ? outcomes : [plugin.description];
 }
 
 export function getPackagePresentations(

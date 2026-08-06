@@ -113,7 +113,7 @@ describe('getPluginDecisionSummary', () => {
     );
   });
 
-  it('reports unavailable facts without inventing functionality', () => {
+  it('uses the authored description when capability metadata is unavailable', () => {
     const pluginWithoutSnapshot: PluginData = {
       ...plugin,
       capabilities: undefined,
@@ -123,7 +123,7 @@ describe('getPluginDecisionSummary', () => {
     assert.deepEqual(getPluginDecisionSummary(pluginWithoutSnapshot, null), {
       release: { status: 'unavailable' },
       backstage: { status: 'unavailable' },
-      functionality: [],
+      functionality: ['Manage software components.'],
     });
   });
 });
