@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-import React, { useState } from 'react';
+import React from 'react';
 import type { PluginData } from '../../pluginDirectory/manifest';
-import { ConfigureGuide } from './ConfigureGuide';
-import { InstallGuide } from './InstallGuide';
-import { PackageReadme } from './PackageReadme';
+import { getPackagePresentations } from './packagePresentation';
+import { PackageWorkspace } from './PackageWorkspace';
 import { PluginHeader } from './PluginHeader';
 import { PluginOverview } from './PluginOverview';
 import styles from './pluginDirectory.module.scss';
+import { usePackageWorkspaceState } from './usePackageWorkspaceState';
 
 interface PluginDetailPageProps {
   plugin: PluginData;
@@ -34,13 +33,12 @@ export default function PluginDetailPage({
   plugin,
   latestBackstageVersion,
 }: PluginDetailPageProps) {
-  const packages = plugin.snapshot?.packages ?? [];
-  const [selectedPackageName, setSelectedPackageName] = useState<
-    string | undefined
-  >();
+  const packages = getPackagePresentations(plugin);
+  const workspaceState = usePackageWorkspaceState(
+    packages.map(entry => entry.npmPackageName),
+  );
   const selectedPackage = packages.find(
-    packageSnapshot =>
-      packageSnapshot.npmPackageName === selectedPackageName,
+    entry => entry.npmPackageName === workspaceState.selectedPackageName,
   );
 
   return (
@@ -51,39 +49,49 @@ export default function PluginDetailPage({
     >
       <main className="container margin-vert--lg">
         <article className={styles.detailArticle}>
+          <nav className={styles.breadcrumbs} aria-label="Breadcrumb">
+            <ol>
+              <li>
+                <Link to="/plugins">Plugin directory</Link>
+              </li>
+              <li>
+                {selectedPackage ? (
+                  <button
+                    type="button"
+                    onClick={workspaceState.selectOverview}
+                  >
+                    {plugin.title}
+                  </button>
+                ) : (
+                  <span aria-current="page">{plugin.title}</span>
+                )}
+              </li>
+              {selectedPackage && (
+                <li>
+                  <span aria-current="page">{selectedPackage.label}</span>
+                </li>
+              )}
+            </ol>
+          </nav>
           <PluginHeader
             plugin={plugin}
             latestBackstageVersion={latestBackstageVersion}
           />
-          <PluginOverview
-            plugin={plugin}
-            latestBackstageVersion={latestBackstageVersion}
-            onSelectPackage={setSelectedPackageName}
-          />
-          {selectedPackage && (
-            <section aria-labelledby="selected-package-heading">
-              <h2 id="selected-package-heading">
-                {selectedPackage.npmPackageName}
-              </h2>
-              <Tabs>
-                <TabItem value="readme" label="README" default>
-                  <PackageReadme packageSnapshot={selectedPackage} />
-                </TabItem>
-                <TabItem value="install" label="Install">
-                  <InstallGuide
-                    packageSnapshot={selectedPackage}
-                    primaryNpmPackageName={plugin.npmPackageName}
-                  />
-                </TabItem>
-                <TabItem value="configure" label="Configure">
-                  <ConfigureGuide
-                    packageSnapshot={selectedPackage}
-                    packages={packages}
-                    primaryNpmPackageName={plugin.npmPackageName}
-                  />
-                </TabItem>
-              </Tabs>
-            </section>
+          {selectedPackage ? (
+            <PackageWorkspace
+              plugin={plugin}
+              packages={packages}
+              packagePresentation={selectedPackage}
+              selectedTab={workspaceState.selectedTab}
+              onSelectPackage={workspaceState.selectPackage}
+              onSelectTab={workspaceState.selectTab}
+            />
+          ) : (
+            <PluginOverview
+              plugin={plugin}
+              latestBackstageVersion={latestBackstageVersion}
+              onSelectPackage={workspaceState.selectPackage}
+            />
           )}
         </article>
       </main>

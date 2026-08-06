@@ -27,6 +27,8 @@ interface PackageSelectProps {
   value: string;
   options: readonly PackageSelectOption[];
   onChange: (value: string) => void;
+  label?: string;
+  className?: string;
 }
 
 function renderOption(option: PackageSelectOption) {
@@ -64,10 +66,16 @@ function renderOptions(options: readonly PackageSelectOption[]) {
   return nodes;
 }
 
-export function PackageSelect({ value, options, onChange }: PackageSelectProps) {
+export function PackageSelect({
+  value,
+  options,
+  onChange,
+  label = 'Package',
+  className,
+}: PackageSelectProps) {
   return (
-    <label className={styles.packageSelectLabel}>
-      Package
+    <label className={`${styles.packageSelectLabel} ${className ?? ''}`.trim()}>
+      {label}
       <select
         className={styles.packageSelect}
         value={value}
