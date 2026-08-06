@@ -112,18 +112,13 @@ export class DefaultGithubCredentialsProvider
         });
 
       const { auth } = connection;
-      const conn = connection as unknown as {
-        host: string;
-        apiBaseUrl?: string;
-        rawBaseUrl?: string;
-      };
 
       // Adapt the connection schema to the existing provider configuration so
       // credential creation and token caching stay in one implementation.
       const config: GithubIntegrationConfig = {
-        host: conn.host,
-        apiBaseUrl: conn.apiBaseUrl,
-        rawBaseUrl: conn.rawBaseUrl,
+        host: connection.host,
+        apiBaseUrl: connection.apiBaseUrl,
+        rawBaseUrl: connection.rawBaseUrl,
       };
 
       // Reusing an App provider preserves its installation-token cache. App
@@ -155,13 +150,13 @@ export class DefaultGithubCredentialsProvider
             allowedInstallationOwners: normalizedOrgs,
           },
         ];
-        providerKey = `${conn.host}:app:${appId}:${JSON.stringify(
+        providerKey = `${connection.host}:app:${appId}:${JSON.stringify(
           normalizedOrgs ?? [],
         )}:${String(auth.publicAccess ?? false)}`;
       } else if (auth.method === 'token') {
         config.token = auth.token;
       } else {
-        providerKey = `${conn.host}:none`;
+        providerKey = `${connection.host}:none`;
       }
 
       let provider = providerKey ? this.providers.get(providerKey) : undefined;
