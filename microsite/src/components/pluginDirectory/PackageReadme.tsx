@@ -15,15 +15,12 @@
  */
 import React, { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import type { PluginData } from '../../pluginDirectory/manifest';
+import type { PackageSnapshot } from '../../pluginDirectory/manifest';
 import { fetchPackageReadme } from '../../pluginDirectory/npmRegistryClient';
-import { resolveFunctionality } from '../../pluginDirectory/packageRoles';
-import { packageOptionLabel } from './packageOptionLabel';
-import { PackageSelect } from './PackageSelect';
 import styles from './pluginDirectory.module.scss';
 
 interface PackageReadmeProps {
-  plugin: PluginData;
+  packageSnapshot: PackageSnapshot;
 }
 
 type ReadmeState =
@@ -70,52 +67,22 @@ function usePackageReadme(
   return state;
 }
 
-export function PackageReadme({ plugin }: PackageReadmeProps) {
-  const packages = plugin.snapshot?.packages ?? [];
-  const [selectedPackageName, setSelectedPackageName] = useState<
-    string | undefined
-  >(plugin.npmPackageName);
-
-  const selectedPackage =
-    packages.find(
-      packageSnapshot => packageSnapshot.npmPackageName === selectedPackageName,
-    ) ?? packages[0];
-  const selectedVersion =
-    selectedPackage && selectedPackage.npm.status !== 'unavailable'
-      ? selectedPackage.npm.latestVersion
-      : undefined;
-  const state = usePackageReadme(selectedPackage?.npmPackageName, selectedVersion);
-
-  if (packages.length === 0 || !selectedPackage) {
-    return null;
-  }
+export function PackageReadme({ packageSnapshot }: PackageReadmeProps) {
+  const version =
+    packageSnapshot.npm.status === 'unavailable'
+      ? undefined
+      : packageSnapshot.npm.latestVersion;
+  const state = usePackageReadme(packageSnapshot.npmPackageName, version);
 
   return (
-    <section className={styles.setupStep} aria-labelledby="overview-readme">
-      <h2 id="overview-readme">README</h2>
-      {packages.length > 1 && (
-        <PackageSelect
-          value={selectedPackage.npmPackageName}
-          options={packages.map(packageSnapshot => ({
-            value: packageSnapshot.npmPackageName,
-            label: packageOptionLabel({
-              npmPackageName: packageSnapshot.npmPackageName,
-              functionality: resolveFunctionality(
-                packageSnapshot,
-                plugin.npmPackageName,
-              ),
-            }),
-          }))}
-          onChange={setSelectedPackageName}
-        />
-      )}
+    <section className={styles.setupStep} aria-label="Package README">
       {state.status === 'loading' && <p role="status">Loading README…</p>}
       {(state.status === 'unavailable' ||
         (state.status === 'ready' && state.value === undefined)) && (
-        <p>No README available for this package.</p>
+        <p>No README is available for this package.</p>
       )}
       {state.status === 'error' && (
-        <p role="alert">Couldn&apos;t load this package&apos;s README.</p>
+        <p role="alert">The package README could not be loaded.</p>
       )}
       {state.status === 'ready' && state.value !== undefined && (
         <div className={styles.readmeContent}>

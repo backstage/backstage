@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { PluginData } from '../../pluginDirectory/manifest';
+import type { PackageSnapshot } from '../../pluginDirectory/manifest';
 import { resolveFunctionality } from '../../pluginDirectory/packageRoles';
-import React, { useState } from 'react';
+import React from 'react';
 
 import { CopyButton } from './CopyButton';
-import { PackageSelect } from './PackageSelect';
 import styles from './pluginDirectory.module.scss';
 
 interface InstallGuideProps {
-  plugin: PluginData;
+  packageSnapshot: PackageSnapshot;
+  primaryNpmPackageName: string;
 }
 
 function inferPackageRole(name: string): string {
@@ -38,97 +38,48 @@ function isBackendPackage(role: string): boolean {
   return role.startsWith('backend');
 }
 
-interface InstallPackage {
-  name: string;
-  role: string;
-}
 
-function getInstallPackages(plugin: PluginData): InstallPackage[] {
-  const snapshotPackages = plugin.snapshot?.packages;
-  if (snapshotPackages && snapshotPackages.length > 0) {
-    const primaryNpmPackageName = plugin.npmPackageName;
-    const allPackages = snapshotPackages.map(packageSnapshot => ({
-      name: packageSnapshot.npmPackageName,
-      role:
-        resolveFunctionality(packageSnapshot, primaryNpmPackageName) ??
-        inferPackageRole(packageSnapshot.npmPackageName),
-    }));
-    // A package that's listed in another package's `internalDependencies`
-    // (e.g. a `-common`/`-node`/`-react` library the frontend/backend
-    // package directly depends on) installs transitively with that
-    // package, so it doesn't need its own `yarn add` step here. Fall back
-    // to the unfiltered list if that would leave nothing to show.
-    const dependencyNames = new Set(
-      snapshotPackages.flatMap(
-        packageSnapshot => packageSnapshot.internalDependencies ?? [],
-      ),
-    );
-    const installable = allPackages.filter(
-      installPackage => !dependencyNames.has(installPackage.name),
-    );
-    return installable.length > 0 ? installable : allPackages;
-  }
-
-  return [
-    { name: plugin.npmPackageName, role: inferPackageRole(plugin.npmPackageName) },
-  ];
-}
-
-export function InstallGuide({ plugin }: InstallGuideProps) {
-  const packages = getInstallPackages(plugin);
-  const [selectedPackageName, setSelectedPackageName] = useState(
-    packages[0]?.name,
-  );
-  const selectedPackage =
-    packages.find(packageSetup => packageSetup.name === selectedPackageName) ??
-    packages[0];
+export function InstallGuide({
+  packageSnapshot,
+  primaryNpmPackageName,
+}: InstallGuideProps) {
+  const packageRole =
+    resolveFunctionality(packageSnapshot, primaryNpmPackageName) ??
+    inferPackageRole(packageSnapshot.npmPackageName);
+  const installCommand = `yarn add ${packageSnapshot.npmPackageName}`;
+  const backendCommand = `backend.add(import('${packageSnapshot.npmPackageName}'));`;
 
   return (
     <div className={styles.installGuide}>
-      <section className={styles.setupStep} aria-labelledby="setup-install">
-        <h2 id="setup-install">Install</h2>
-        {selectedPackage ? (
+      <section className={styles.setupStep} aria-label="Install">
+        <span className={styles.packageRole}>{packageRole}</span>
+        <h2>1. Add the package</h2>
+        <div className={styles.codeRow}>
+          <pre>
+            <code>{installCommand}</code>
+          </pre>
+          <CopyButton
+            value={installCommand}
+            label={`${packageRole} install command`}
+          />
+        </div>
+        {isBackendPackage(packageRole) && (
           <>
-            {packages.length > 1 && (
-              <PackageSelect
-                value={selectedPackage.name}
-                options={packages.map(packageSetup => ({
-                  value: packageSetup.name,
-                  label: `${packageSetup.name} (${packageSetup.role})`,
-                }))}
-                onChange={setSelectedPackageName}
-              />
-            )}
-            <span className={styles.packageRole}>{selectedPackage.role}</span>
+            <h2>2. Add it to the backend</h2>
+            <p>
+              Register the package in{' '}
+              <code>packages/backend/src/index.ts</code>:
+            </p>
             <div className={styles.codeRow}>
               <pre>
-                <code>{`yarn add ${selectedPackage.name}`}</code>
+                <code>{backendCommand}</code>
               </pre>
               <CopyButton
-                value={`yarn add ${selectedPackage.name}`}
-                label={`${selectedPackage.role} install command`}
+                value={backendCommand}
+                label="backend wiring command"
               />
             </div>
-            {isBackendPackage(selectedPackage.role) && (
-              <>
-                <p>
-                  Add it to your backend in{' '}
-                  <code>packages/backend/src/index.ts</code>:
-                </p>
-                <div className={styles.codeRow}>
-                  <pre>
-                    <code>{`backend.add(import('${selectedPackage.name}'));`}</code>
-                  </pre>
-                  <CopyButton
-                    value={`backend.add(import('${selectedPackage.name}'));`}
-                    label="backend wiring command"
-                  />
-                </div>
-              </>
-            )}
           </>
-        ) : (
-          <p>No package installs declared.</p>
         )}
       </section>
     </div>
