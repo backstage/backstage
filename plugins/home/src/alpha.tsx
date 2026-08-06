@@ -228,7 +228,7 @@ const homePageRandomJokeWidget = HomePageWidgetBlueprint.make({
 const homePageMostVisitedWidget = HomePageWidgetBlueprint.make({
   name: 'most-visited',
   params: {
-    name: 'HomePageTopVisited',
+    name: 'HomePageMostVisited',
     title: 'Most Visited',
     description: 'Shows your most frequently visited pages',
     components: () =>
