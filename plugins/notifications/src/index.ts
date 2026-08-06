@@ -13,11 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  notificationsPlugin,
-  NotificationsPage,
-  UnreadNotificationsCard,
-} from './plugin';
+export { notificationsPlugin, NotificationsPage } from './plugin';
 export * from './api';
 export { useNotificationsApi } from './hooks';
 export * from './components';

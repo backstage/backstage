@@ -24,7 +24,6 @@
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.tsx",
-    "./notifications-home-module": "./src/alpha/notificationsHomeModuleExport.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
@@ -33,9 +32,6 @@
     "*": {
       "alpha": [
         "src/alpha.tsx"
-      ],
-      "notifications-home-module": [
-        "src/alpha/notificationsHomeModuleExport.ts"
       ],
       "package.json": [
         "package.json"

@@ -209,8 +209,8 @@ export const notificationsTranslationRef: TranslationRef<
   'plugin.notifications',
   {
     readonly 'table.errors.markAllReadFailed': 'Failed to mark all notifications as read';
-    readonly 'table.pagination.labelDisplayedRows': '{from}-{to} of {count}';
     readonly 'table.pagination.firstTooltip': 'First Page';
+    readonly 'table.pagination.labelDisplayedRows': '{from}-{to} of {count}';
     readonly 'table.pagination.labelRowsSelect': 'rows';
     readonly 'table.pagination.lastTooltip': 'Last Page';
     readonly 'table.pagination.nextTooltip': 'Next Page';
@@ -221,20 +221,26 @@ export const notificationsTranslationRef: TranslationRef<
     readonly 'table.bulkActions.returnSelectedAmongUnread': 'Return selected among unread';
     readonly 'table.bulkActions.saveSelectedForLater': 'Save selected for later';
     readonly 'table.bulkActions.undoSaveForSelected': 'Undo save for selected';
-    readonly 'table.confirmDialog.title': 'Are you sure?';
     readonly 'table.confirmDialog.cancel': 'Cancel';
+    readonly 'table.confirmDialog.title': 'Are you sure?';
     readonly 'table.confirmDialog.markAllReadDescription': 'Mark all notifications as read.';
     readonly 'table.confirmDialog.markAllReadConfirmation': 'Mark All';
-    readonly 'filters.title': 'Filters';
+    readonly 'settings.table.origin': 'Origin';
+    readonly 'settings.table.topic': 'Topic';
+    readonly 'settings.title': 'Notification settings';
+    readonly 'settings.errors.useNotificationFormat': 'useNotificationFormat must be used within a NotificationFormatProvider';
+    readonly 'settings.errorTitle': 'Failed to load settings';
+    readonly 'settings.noSettingsAvailable': 'No notification settings available, check back later';
     readonly 'filters.view.all': 'All';
     readonly 'filters.view.label': 'View';
     readonly 'filters.view.read': 'Read notifications';
     readonly 'filters.view.saved': 'Saved';
     readonly 'filters.view.unread': 'Unread notifications';
+    readonly 'filters.title': 'Filters';
     readonly 'filters.severity.normal': 'Normal';
-    readonly 'filters.severity.label': 'Min severity';
     readonly 'filters.severity.high': 'High';
     readonly 'filters.severity.low': 'Low';
+    readonly 'filters.severity.label': 'Min severity';
     readonly 'filters.severity.critical': 'Critical';
     readonly 'filters.topic.label': 'Topic';
     readonly 'filters.topic.anyTopic': 'Any topic';
@@ -249,12 +255,6 @@ export const notificationsTranslationRef: TranslationRef<
     readonly 'filters.sortBy.topic': 'Topic';
     readonly 'filters.sortBy.newest': 'Newest on top';
     readonly 'filters.sortBy.oldest': 'Oldest on top';
-    readonly 'settings.errors.useNotificationFormat': 'useNotificationFormat must be used within a NotificationFormatProvider';
-    readonly 'settings.title': 'Notification settings';
-    readonly 'settings.table.origin': 'Origin';
-    readonly 'settings.table.topic': 'Topic';
-    readonly 'settings.errorTitle': 'Failed to load settings';
-    readonly 'settings.noSettingsAvailable': 'No notification settings available, check back later';
     readonly 'notificationsPage.title': 'Notifications';
     readonly 'notificationsPage.tableTitle.all_one': 'All notifications ({{count}})';
     readonly 'notificationsPage.tableTitle.all_other': 'All notifications ({{count}})';
@@ -264,9 +264,9 @@ export const notificationsTranslationRef: TranslationRef<
     readonly 'notificationsPage.tableTitle.unread_other': 'Unread notifications ({{count}})';
     readonly 'notificationsPage.tableTitle.read_one': 'Read notifications ({{count}})';
     readonly 'notificationsPage.tableTitle.read_other': 'Read notifications ({{count}})';
+    readonly 'sidebar.title': 'Notifications';
     readonly 'sidebar.errors.markAsReadFailed': 'Failed to mark notification as read';
     readonly 'sidebar.errors.fetchNotificationFailed': 'Failed to fetch notification';
-    readonly 'sidebar.title': 'Notifications';
     readonly 'unreadCard.emptyState': 'All caught up!';
     readonly 'unreadCard.title_one': 'Last unread notifications ({{count}})';
     readonly 'unreadCard.title_other': 'Last unread notifications ({{count}})';
@@ -276,25 +276,6 @@ export const notificationsTranslationRef: TranslationRef<
     readonly 'unreadCard.resultsCount': '{{displayed}} results out of {{total}}';
   }
 >;
-
-// @public
-export const UnreadNotificationsCard: (
-  props: UnreadNotificationsCardProps,
-) => JSX_2.Element;
-
-// @public (undocumented)
-export type UnreadNotificationsCardProps = {
-  maxMessages?: number;
-  charLimit?: number;
-  initialCount?: number;
-  maxChars?: number;
-  descriptionMaxChars?: number;
-};
-
-// @public
-export const UnreadNotificationsCardWithProvider: (
-  props: UnreadNotificationsCardProps,
-) => JSX_2.Element;
 
 // @public (undocumented)
 export type UpdateNotificationsOptions = {

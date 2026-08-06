@@ -83,6 +83,8 @@ function NotificationsPageContent(
   } = props;
 
   const [refresh, setRefresh] = useState(false);
+  // TODO: Reuse useNotificationsRefresh instead of duplicating signals +
+  // polling refresh logic here.
   const { lastSignal } = useSignal('notifications');
   const [searchParams] = useSearchParams();
   const highlightedNotificationId = searchParams.get('id') ?? undefined;
@@ -212,12 +214,10 @@ function NotificationsPageContent(
       return notifications;
     }
 
-    // Keep the table at pageSize when injecting a deep-linked notification.
-    return [highlightedNotification, ...(notifications ?? [])].slice(
-      0,
-      pageSize,
-    );
-  }, [notifications, highlightedNotification, pageSize]);
+    // Allow pageSize + 1 so a deep-linked notification can be injected
+    // without silently dropping a row that belongs on this page.
+    return [highlightedNotification, ...(notifications ?? [])];
+  }, [notifications, highlightedNotification]);
 
   if (error) {
     return <ResponseErrorPanel error={error} />;

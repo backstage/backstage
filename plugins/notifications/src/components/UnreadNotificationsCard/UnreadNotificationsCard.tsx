@@ -42,7 +42,7 @@ import styles from './UnreadNotificationsCard.module.css';
 
 const ThrottleDelayMs = 2000;
 
-/** @public */
+/** @internal */
 export type UnreadNotificationsCardProps = {
   /** Maximum number of unread notifications to fetch and display */
   maxMessages?: number;
@@ -164,7 +164,7 @@ const NotificationListItem = ({
   );
 };
 
-/** @public */
+/** @internal */
 export const UnreadNotificationsCard = ({
   maxMessages,
   charLimit,
@@ -342,10 +342,9 @@ export const UnreadNotificationsCard = ({
 };
 
 /**
- * UnreadNotificationsCard exported for use on the home page where the
- * notifications plugin APIs are expected to be available.
+ * UnreadNotificationsCard used by the NFS home page widget.
  *
- * @public
+ * @internal
  */
 export const UnreadNotificationsCardWithProvider = (
   props: UnreadNotificationsCardProps,
