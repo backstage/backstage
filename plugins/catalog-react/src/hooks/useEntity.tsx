@@ -20,7 +20,7 @@ import {
   createVersionedValueMap,
   useVersionedContext,
 } from '@backstage/version-bridge';
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
 
 /** @public */
 export type EntityLoadingStatus<TEntity extends Entity = Entity> = {
@@ -57,18 +57,24 @@ export interface AsyncEntityProviderProps {
  */
 export const AsyncEntityProvider = (props: AsyncEntityProviderProps) => {
   const { children, entity, loading, error, refresh } = props;
-  const value = { entity, loading, error, refresh };
+  // The versioned value is memoized so that context consumers don't get
+  // rerendered when this provider rerenders without any of the actual
+  // values changing, e.g. as a result of URL query parameter updates.
+  const value = useMemo(
+    () => createVersionedValueMap({ 1: { entity, loading, error, refresh } }),
+    [entity, loading, error, refresh],
+  );
+  const attributes = useMemo(
+    () => ({
+      ...(entity ? { entityRef: stringifyEntityRef(entity) } : undefined),
+    }),
+    [entity],
+  );
   // We provide both the old and the new context, since
   // consumers might be doing things like `useContext(EntityContext)`
   return (
-    <NewEntityContext.Provider value={createVersionedValueMap({ 1: value })}>
-      <AnalyticsContext
-        attributes={{
-          ...(entity ? { entityRef: stringifyEntityRef(entity) } : undefined),
-        }}
-      >
-        {children}
-      </AnalyticsContext>
+    <NewEntityContext.Provider value={value}>
+      <AnalyticsContext attributes={attributes}>{children}</AnalyticsContext>
     </NewEntityContext.Provider>
   );
 };
