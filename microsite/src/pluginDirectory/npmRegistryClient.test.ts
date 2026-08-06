@@ -66,29 +66,41 @@ function fakeFetch(
 }
 
 describe('fetchPackageReadme', () => {
-  it('returns the readme field from the version doc', async () => {
+  it('reads README.md out of the tarball', async () => {
+    const tarball = await buildTarball(
+      { name: '@example/plugin-example' },
+      { 'README.md': '# Example\n' },
+    );
+
     const result = await fetchPackageReadme(
       '@example/plugin-example',
       '1.0.0',
-      fakeFetch({ readme: '# Example\n' }),
+      fakeFetch({ dist: { tarball: tarballUrl } }, tarball),
     );
     assert.deepEqual(result, { status: 'ready', value: '# Example\n' });
   });
 
-  it('treats the npm placeholder string as no README', async () => {
+  it('matches README.md case-insensitively', async () => {
+    const tarball = await buildTarball(
+      { name: '@example/plugin-example' },
+      { 'readme.md': '# Example\n' },
+    );
+
     const result = await fetchPackageReadme(
       '@example/plugin-example',
       '1.0.0',
-      fakeFetch({ readme: 'ERROR: No README data found!' }),
+      fakeFetch({ dist: { tarball: tarballUrl } }, tarball),
     );
-    assert.deepEqual(result, { status: 'ready', value: undefined });
+    assert.deepEqual(result, { status: 'ready', value: '# Example\n' });
   });
 
-  it('treats a missing readme field as no README', async () => {
+  it('treats a missing README file as no README', async () => {
+    const tarball = await buildTarball({ name: '@example/plugin-example' });
+
     const result = await fetchPackageReadme(
       '@example/plugin-example',
       '1.0.0',
-      fakeFetch({}),
+      fakeFetch({ dist: { tarball: tarballUrl } }, tarball),
     );
     assert.deepEqual(result, { status: 'ready', value: undefined });
   });

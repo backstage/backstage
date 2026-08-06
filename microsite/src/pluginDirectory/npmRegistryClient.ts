@@ -16,10 +16,6 @@
 import { ungzip } from 'pako';
 import { parseTar } from './tar';
 
-// The literal string the npm registry returns in place of a real README when
-// a package has none.
-const README_PLACEHOLDER = 'ERROR: No README data found!';
-
 export type RegistryResult<T> =
   | { status: 'ready'; value: T | undefined } // undefined = declared-none-found
   | { status: 'error'; error: unknown };
@@ -46,26 +42,53 @@ async function fetchVersionDoc(
   return await response.json();
 }
 
+// The registry's version documents no longer carry a `readme` field, so read it
+// from README.md in the published tarball instead.
+async function fetchTarballEntries(
+  npmPackageName: string,
+  version: string,
+  fetchImpl: typeof fetch,
+): Promise<Map<string, Uint8Array>> {
+  const versionDoc = await fetchVersionDoc(npmPackageName, version, fetchImpl);
+  const tarballUrl =
+    isRecord(versionDoc) && isRecord(versionDoc.dist)
+      ? versionDoc.dist.tarball
+      : undefined;
+  if (typeof tarballUrl !== 'string' || tarballUrl.length === 0) {
+    throw new Error(
+      `registry.npmjs.org version doc for ${npmPackageName}@${version} has no dist.tarball`,
+    );
+  }
+
+  const tarballResponse = await fetchImpl(tarballUrl);
+  if (!tarballResponse.ok) {
+    throw new Error(
+      `Failed to download tarball for ${npmPackageName}@${version}: ${tarballResponse.status}`,
+    );
+  }
+  const gzipped = new Uint8Array(await tarballResponse.arrayBuffer());
+  return parseTar(ungzip(gzipped));
+}
+
 export async function fetchPackageReadme(
   npmPackageName: string,
   version: string,
   fetchImpl: typeof fetch = fetch,
 ): Promise<RegistryResult<string>> {
   try {
-    const versionDoc = await fetchVersionDoc(
+    const entries = await fetchTarballEntries(
       npmPackageName,
       version,
       fetchImpl,
     );
-    const readme = isRecord(versionDoc) ? versionDoc.readme : undefined;
-    if (
-      typeof readme !== 'string' ||
-      readme.length === 0 ||
-      readme === README_PLACEHOLDER
-    ) {
+    const readmeName = Array.from(entries.keys())
+      .filter(name => name.startsWith('package/'))
+      .find(name => /^readme(\.md)?$/i.test(name.slice('package/'.length)));
+    if (!readmeName) {
       return { status: 'ready', value: undefined };
     }
-    return { status: 'ready', value: readme };
+    const readme = new TextDecoder().decode(entries.get(readmeName));
+    return { status: 'ready', value: readme.length > 0 ? readme : undefined };
   } catch (error) {
     return { status: 'error', error };
   }
@@ -77,29 +100,11 @@ export async function fetchPackageConfigSchema(
   fetchImpl: typeof fetch = fetch,
 ): Promise<RegistryResult<unknown>> {
   try {
-    const versionDoc = await fetchVersionDoc(
+    const entries = await fetchTarballEntries(
       npmPackageName,
       version,
       fetchImpl,
     );
-    const tarballUrl =
-      isRecord(versionDoc) && isRecord(versionDoc.dist)
-        ? versionDoc.dist.tarball
-        : undefined;
-    if (typeof tarballUrl !== 'string' || tarballUrl.length === 0) {
-      throw new Error(
-        `registry.npmjs.org version doc for ${npmPackageName}@${version} has no dist.tarball`,
-      );
-    }
-
-    const tarballResponse = await fetchImpl(tarballUrl);
-    if (!tarballResponse.ok) {
-      throw new Error(
-        `Failed to download tarball for ${npmPackageName}@${version}: ${tarballResponse.status}`,
-      );
-    }
-    const gzipped = new Uint8Array(await tarballResponse.arrayBuffer());
-    const entries = parseTar(ungzip(gzipped));
 
     const packageJsonBytes = entries.get('package/package.json');
     if (!packageJsonBytes) {
