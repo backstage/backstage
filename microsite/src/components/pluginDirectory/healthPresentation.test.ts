@@ -17,7 +17,11 @@ import './testDom';
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import type { PluginData } from '../../pluginDirectory/manifest';
-import { countMinorVersionsBehind, getNpmPackageUrl } from './healthPresentation';
+import {
+  countMinorVersionsBehind,
+  getNpmPackageUrl,
+  statusPresentations,
+} from './healthPresentation';
 
 const plugin: PluginData = {
   title: 'Example Plugin',
@@ -39,6 +43,14 @@ describe('getNpmPackageUrl', () => {
       getNpmPackageUrl(plugin),
       'https://www.npmjs.com/package/@example/plugin-example',
     );
+  });
+});
+
+describe('statusPresentations', () => {
+  it('uses evaluation language that does not imply missing data is unhealthy', () => {
+    assert.equal(statusPresentations.fresh.label, 'Current');
+    assert.equal(statusPresentations.stale.label, 'Getting old');
+    assert.equal(statusPresentations.unavailable.label, 'Not reported');
   });
 });
 

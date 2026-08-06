@@ -41,13 +41,13 @@ export const statusPresentations: Record<SnapshotStatus, StatusPresentation> = {
   stale: {
     cardClassName: styles.healthCardStale,
     indicatorClassName: styles.statusStale,
-    label: 'Stale',
+    label: 'Getting old',
     symbol: '!',
   },
   unavailable: {
     cardClassName: styles.healthCardUnavailable,
     indicatorClassName: styles.statusUnavailable,
-    label: 'Unavailable',
+    label: 'Not reported',
     symbol: '?',
   },
 };
