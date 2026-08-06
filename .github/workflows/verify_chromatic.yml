@@ -64,22 +64,34 @@ jobs:
             packages/ui/src/**/*.css
 
       - name: Prepare Chromatic Message
+        env:
+          CHROMATIC_BUILD_URL: ${{ steps.chromatic.outputs.buildUrl }}
+          CHROMATIC_CHANGE_COUNT: ${{ steps.chromatic.outputs.changeCount }}
         if: github.event_name == 'pull_request' && steps.chromatic.outputs.url
         id: prepareMessage
         run: |
-          if [ "${{ steps.chromatic.outputs.changeCount }}" = "0" ] || [ -z "${{ steps.chromatic.outputs.changeCount }}" ]; then
-            echo "changesText=No visual changes detected - [**View build in Chromatic**](${{ steps.chromatic.outputs.buildUrl }})" >> $GITHUB_OUTPUT
+          if [ "$CHROMATIC_CHANGE_COUNT" = "0" ] || [ -z "$CHROMATIC_CHANGE_COUNT" ]; then
+            text="No visual changes detected - [**View build in Chromatic**]($CHROMATIC_BUILD_URL)"
           else
-            echo "changesText=**${{ steps.chromatic.outputs.changeCount }}** visual changes are waiting for review - [**Review changes in Chromatic**](${{ steps.chromatic.outputs.buildUrl }})" >> $GITHUB_OUTPUT
+            text="**$CHROMATIC_CHANGE_COUNT** visual changes are waiting for review - [**Review changes in Chromatic**]($CHROMATIC_BUILD_URL)"
           fi
 
+          echo "changes-text=$text" >> "$GITHUB_OUTPUT"
+
       - name: Post Chromatic Results to Job Summary
+        env:
+          CHANGES_TEXT: ${{ steps.prepareMessage.outputs.changes-text }}
+          CHROMATIC_COMPONENT_COUNT: ${{ steps.chromatic.outputs.componentCount }}
+          CHROMATIC_SPEC_COUNT: ${{ steps.chromatic.outputs.specCount }}
+          CHROMATIC_STORYBOOK_URL: ${{ steps.chromatic.outputs.storybookUrl }}
         if: github.event_name == 'pull_request' && steps.chromatic.outputs.url
         run: |
-          echo "## 🎨 Visual Testing with Chromatic" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- ${{ steps.prepareMessage.outputs.changesText }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **${{ steps.chromatic.outputs.specCount}}** stories for **${{ steps.chromatic.outputs.componentCount}}** Components - [**Preview changes in Storybook**](${{ steps.chromatic.outputs.storybookUrl }})" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## 🎨 Visual Testing with Chromatic"
+            echo ""
+            echo "- $CHANGES_TEXT"
+            echo "- **$CHROMATIC_SPEC_COUNT** stories for **$CHROMATIC_COMPONENT_COUNT** Components - [**Preview changes in Storybook**]($CHROMATIC_STORYBOOK_URL)"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Post Chromatic Link in PR Comment
         if: github.event_name == 'pull_request' && steps.chromatic.outputs.url && github.event.pull_request.head.repo.full_name == github.repository

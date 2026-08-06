@@ -47,11 +47,15 @@ jobs:
           git config --global user.name 'Github versions workflow'
 
       - name: Create release
+        env:
+          CLIENT_PAYLOAD_VERSION: ${{ github.event.client_payload.version }}
         # This grabs the scripts from master in order to support backfills
         run: |
           mkdir -p scripts
           wget -O scripts/assemble-manifest.js https://raw.githubusercontent.com/backstage/backstage/master/scripts/assemble-manifest.js
-          node scripts/assemble-manifest.js ${{ github.event.client_payload.version }}
+          node scripts/assemble-manifest.js "$CLIENT_PAYLOAD_VERSION"
+
+          echo "CLIENT_PAYLOAD_VERSION=$CLIENT_PAYLOAD_VERSION" >> "$GITHUB_ENV"
 
       # Copies the build output of the yarn-plugin package to the appropriate
       # directory, allowing the plugin to be installed with a command like
@@ -61,13 +65,13 @@ jobs:
         run: >-
           cp
           bundles/@yarnpkg/plugin-backstage.js
-          ../../versions/v1/releases/${{ github.event.client_payload.version }}/yarn-plugin
+          "../../versions/v1/releases/$CLIENT_PAYLOAD_VERSION/yarn-plugin"
 
       - name: Commit to versions repo
         working-directory: versions
         run: |
           git add .
-          git commit -am "${{ github.event.client_payload.version }}"
+          git commit -am "$CLIENT_PAYLOAD_VERSION"
           git push
 
       - name: Dispatch update-helper update

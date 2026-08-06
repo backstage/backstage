@@ -45,10 +45,11 @@ jobs:
 
       - name: Get changed files
         run: |
-          gh api "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" \
             --paginate -q '.[] | select(.status != "removed") | .filename' > /tmp/pr-files.txt
         env:
           GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
 
       - name: Documentation quality check
         run: node scripts/check-docs-quality.js --ci /tmp/pr-files.txt
