@@ -80,64 +80,10 @@ can find the current version of your Backstage installation in `backstage.json`.
 ## Applying automated codemods
 
 After you bump packages and review create-app / Upgrade Helper diffs, apply
-automated source migrations from the
-[Backstage codemods](https://github.com/backstage/codemods) repository. These
-are recipes — ordered bundles of source transforms — published to the
-[Codemod Registry](https://go.codemod.com/registry) and run with the
-[Codemod CLI](https://docs.codemod.com/cli). They are separate from the older
-`@backstage/codemods` npm package, which has been removed from this repository.
-
-Recipes fall into two groups:
-
-1. **Versioned migration recipes** — mechanical fixes for a specific Backstage
-   release (for example renames and breaking API changes that landed in that
-   release).
-2. **Misc recipes** — larger, cross-cutting migrations you opt into when you
-   are ready (for example Material-UI to Backstage UI).
-
-### Versioned migration recipes
-
-For a target release `1.XX.0`, the recipe package name is
-`@backstage/v1-XX-0-migration-recipe`. Dry-run first, then apply against your
-Backstage app:
-
-```shell
-# Example: upgrading toward Backstage 1.52.0
-yarn dlx codemod@latest run @backstage/v1-52-0-migration-recipe \
-  --target . \
-  --dry-run
-
-yarn dlx codemod@latest run @backstage/v1-52-0-migration-recipe \
-  --target .
-```
-
-If no recipe exists for your target version, skip this step. The
-[codemods README](https://github.com/backstage/codemods) lists the latest
-published recipes.
-
-After a recipe runs, search your repository for `TODO(backstage-codemod)` and
-resolve each marker. Check that recipe's README for out-of-scope items that
-still need a manual change.
-
-:::tip Misc recipes (optional)
-
-Misc recipes cover larger migrations that are not tied to a single release.
-They are optional during a routine bump. Migrating from Material-UI 4 to
-Backstage UI? Start with the
-[mui4-to-bui-migration-recipe README](https://github.com/backstage/codemods/tree/main/codemods/misc/mui4-to-bui-migration-recipe),
-then use the [`mui-to-bui-migration` skill](../ai/skills.md) to clean up what
-the recipe leaves behind.
-
-```shell
-yarn dlx codemod@latest run @backstage/mui4-to-bui-migration-recipe \
-  --target . \
-  --dry-run
-
-yarn dlx codemod@latest run @backstage/mui4-to-bui-migration-recipe \
-  --target .
-```
-
-:::
+_versioned_ Codemod Registry recipes for release-specific source migrations,
+and optionally _misc_ recipes for larger work such as Material-UI to Backstage
+UI. See [Codemods](../tooling/codemods.md) for commands, taxonomy, and
+follow-up steps.
 
 ## Managing package versions with the Backstage yarn plugin
 

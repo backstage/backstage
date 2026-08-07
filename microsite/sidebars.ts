@@ -661,6 +661,7 @@ export default {
             'tooling/package-metadata',
           ],
         ),
+        'tooling/codemods',
         sidebarElementWithIndex(
           {
             label: 'User Interface',
