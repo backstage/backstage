@@ -86,12 +86,12 @@ jobs:
           CHROMATIC_STORYBOOK_URL: ${{ steps.chromatic.outputs.storybookUrl }}
         if: github.event_name == 'pull_request' && steps.chromatic.outputs.url
         run: |
-          {
-            echo "## 🎨 Visual Testing with Chromatic"
-            echo ""
-            echo "- $CHANGES_TEXT"
-            echo "- **$CHROMATIC_SPEC_COUNT** stories for **$CHROMATIC_COMPONENT_COUNT** Components - [**Preview changes in Storybook**]($CHROMATIC_STORYBOOK_URL)"
-          } >> "$GITHUB_STEP_SUMMARY"
+          cat << EOF >> "$GITHUB_SUMMARY"
+          ## 🎨 Visual Testing with Chromatic
+
+          - $CHANGES_TEXT
+          - **$CHROMATIC_SPEC_COUNT** stories for **$CHROMATIC_COMPONENT_COUNT** Components - [**Preview changes in Storybook**]($CHROMATIC_STORYBOOK_URL)
+          EOF
 
       - name: Post Chromatic Link in PR Comment
         if: github.event_name == 'pull_request' && steps.chromatic.outputs.url && github.event.pull_request.head.repo.full_name == github.repository
@@ -100,6 +100,6 @@ jobs:
           message: |
             ## 🎨 Visual Testing with Chromatic
 
-            - ${{ steps.prepareMessage.outputs.changesText }}
+            - ${{ steps.prepareMessage.outputs.changes-text }}
             - **${{ steps.chromatic.outputs.specCount}}** stories for **${{ steps.chromatic.outputs.componentCount}}** Components - [**Preview changes in Storybook**](${{ steps.chromatic.outputs.storybookUrl }})
           repo-token: ${{ secrets.GITHUB_TOKEN }}
