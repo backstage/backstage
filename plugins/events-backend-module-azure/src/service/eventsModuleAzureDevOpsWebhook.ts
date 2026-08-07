@@ -40,15 +40,14 @@ export default createBackendModule({
       deps: {
         config: coreServices.rootConfig,
         events: eventsExtensionPoint,
+        logger: coreServices.logger,
       },
-      async init({ config, events }) {
-        const validator = createAzureDevOpsWebhookValidator(config);
-        if (validator) {
-          events.addHttpPostIngress({
-            topic: 'azureDevOps',
-            validator,
-          });
-        }
+      async init({ config, events, logger }) {
+        const validator = createAzureDevOpsWebhookValidator(config, logger);
+        events.addHttpPostIngress({
+          topic: 'azureDevOps',
+          validator,
+        });
       },
     });
   },
