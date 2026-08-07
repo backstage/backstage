@@ -23,7 +23,6 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { IContainer, IContainerStatus } from 'kubernetes-models/v1';
 import { DateTime } from 'luxon';
-import { FC } from 'react';
 
 import { useIsPodExecTerminalEnabled } from '../../../hooks';
 import { bytesToMiB, formatMillicores } from '../../../utils/resources';
@@ -108,12 +107,12 @@ export interface ContainerCardProps {
  *
  * @public
  */
-export const ContainerCard: FC<ContainerCardProps> = ({
+export function ContainerCard({
   podScope,
   containerSpec,
   containerStatus,
   containerMetrics,
-}: ContainerCardProps) => {
+}: ContainerCardProps) {
   const { t } = useTranslationRef(kubernetesReactTranslationRef);
   const isPodExecTerminalEnabled = useIsPodExecTerminalEnabled();
 
@@ -249,4 +248,4 @@ export const ContainerCard: FC<ContainerCardProps> = ({
       </CardActions>
     </Card>
   );
-};
+}
