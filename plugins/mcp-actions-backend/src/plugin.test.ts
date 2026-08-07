@@ -24,7 +24,11 @@ import {
 } from '@backstage/backend-test-utils/alpha';
 import { mcpPlugin } from './plugin';
 import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
-import { createBackendPlugin } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createBackendPlugin,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { ListToolsResultSchema } from '@modelcontextprotocol/sdk/types.js';
@@ -523,12 +527,19 @@ describe('Mcp Backend', () => {
           getExternalBaseUrl: async pluginId =>
             `${externalBaseUrl}/${pluginId}`,
         });
+        const mockAuditor = mockServices.auditor.mock();
+        const mockAuditorFactory = createServiceFactory({
+          service: coreServices.auditor,
+          deps: {},
+          factory: async () => mockAuditor,
+        });
 
         const { server } = await startTestBackend({
           features: [
             mcpPlugin,
             mockPluginWithActions,
             mockDiscovery.factory,
+            mockAuditorFactory,
             mockServices.httpAuth.factory({
               defaultCredentials: mockCredentials.none(),
             }),
@@ -585,6 +596,7 @@ describe('Mcp Backend', () => {
         expect(invalidCredentials.header['www-authenticate']).toBe(
           `Bearer resource_metadata="${resourceMetadataUrl}", error="invalid_token"`,
         );
+        expect(mockAuditor.createEvent).not.toHaveBeenCalled();
 
         const validCredentials = await request(server)
           .post(path)
