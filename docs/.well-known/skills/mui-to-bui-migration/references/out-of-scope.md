@@ -9,7 +9,8 @@ Leave these on MUI (or redesign manually) unless a newer recipe README says othe
 - `Drawer`, `Snackbar`, `Stepper`, and `Timeline`
 - `@material-table/core` / material-table and broader table-system migrations
 - Perfect theme parity, dark-mode polish, and final design-token tuning after source-level migration
-- Custom wrapper abstractions that hide MUI behind project-specific APIs — migrate the wrapper boundary by hand
+- Custom wrapper abstractions that hide MUI behind project-specific APIs:
+  migrate the wrapper boundary by hand
 
 Platform constraint that may still need MUI-shaped icons:
 

@@ -91,5 +91,5 @@ packages.
 
 ## Success criteria
 
-Migration is complete when steps 3–6 are done for the agreed target: recipe
+Migration is complete when steps 3 through 6 are done for the agreed target: recipe
 dry-run and apply finished, leftovers closed per step 5, and verify green.
