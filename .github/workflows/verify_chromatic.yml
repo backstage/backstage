@@ -86,7 +86,7 @@ jobs:
           CHROMATIC_STORYBOOK_URL: ${{ steps.chromatic.outputs.storybookUrl }}
         if: github.event_name == 'pull_request' && steps.chromatic.outputs.url
         run: |
-          cat << EOF >> "$GITHUB_SUMMARY"
+          cat << EOF >> "$GITHUB_STEP_SUMMARY"
           ## 🎨 Visual Testing with Chromatic
 
           - $CHANGES_TEXT
