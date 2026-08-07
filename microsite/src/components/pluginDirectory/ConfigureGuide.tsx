@@ -71,6 +71,49 @@ function isObjectSchema(value: unknown): value is RJSFSchema {
   );
 }
 
+// config.d.ts commonly declares free-form config sections as a bare
+// `object` type (e.g. `entityOverrides?: object`), which compiles to a JSON
+// Schema object node with no `properties`. RJSF only lets users add fields
+// to an object when `additionalProperties` is set, so without this such
+// sections would render as an empty, uneditable fieldset.
+function allowOpenObjects(schema: RJSFSchema): RJSFSchema {
+  if (Array.isArray(schema.allOf)) {
+    return { ...schema, allOf: schema.allOf.map(allowOpenObjects) as RJSFSchema[] };
+  }
+  if (Array.isArray(schema.oneOf)) {
+    return { ...schema, oneOf: schema.oneOf.map(allowOpenObjects) as RJSFSchema[] };
+  }
+  if (Array.isArray(schema.anyOf)) {
+    return { ...schema, anyOf: schema.anyOf.map(allowOpenObjects) as RJSFSchema[] };
+  }
+
+  const next = { ...schema };
+
+  if (next.properties) {
+    next.properties = Object.fromEntries(
+      Object.entries(next.properties).map(([name, propertySchema]) => [
+        name,
+        typeof propertySchema === 'object'
+          ? allowOpenObjects(propertySchema as RJSFSchema)
+          : propertySchema,
+      ]),
+    );
+  }
+  if (next.items && typeof next.items === 'object' && !Array.isArray(next.items)) {
+    next.items = allowOpenObjects(next.items as RJSFSchema);
+  }
+  if (
+    next.type === 'object' &&
+    !next.properties &&
+    next.additionalProperties === undefined &&
+    !next.patternProperties
+  ) {
+    next.additionalProperties = true;
+  }
+
+  return next;
+}
+
 function InteractiveConfigureForm({
   formLabel,
   yamlLabel,
@@ -220,7 +263,8 @@ function useCombinedConfigSchema(
         .map(result =>
           result.status === 'ready' ? result.value : undefined,
         )
-        .filter(isObjectSchema);
+        .filter(isObjectSchema)
+        .map(allowOpenObjects);
       setState({
         status: 'ready',
         schema: schemas.length > 0 ? combineSchemas(schemas) : undefined,

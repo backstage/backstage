@@ -167,4 +167,46 @@ describe('ConfigureGuide', () => {
     expect(consoleError).toHaveBeenCalled();
     consoleError.mockRestore();
   });
+
+  it('allows adding, renaming, and removing entries in a bare object schema', async () => {
+    const user = userEvent.setup();
+    mockFetchPackageConfigSchema.mockResolvedValue({
+      status: 'ready',
+      value: {
+        type: 'object',
+        properties: {
+          entityOverrides: {
+            type: 'object',
+            description: 'Properties to override on the final entity object.',
+          },
+        },
+      },
+    });
+    render(
+      <ConfigureGuide
+        packageSnapshot={backendPackage}
+        packages={[backendPackage]}
+        primaryNpmPackageName={primaryNpmPackageName}
+      />,
+    );
+
+    await user.click(await screen.findByRole('button', { name: 'Add property' }));
+    const keyInput = screen.getByLabelText('Property name');
+    await user.clear(keyInput);
+    await user.type(keyInput, 'metadata.name');
+    await user.tab();
+    const valueInput = screen.getByLabelText('metadata.name');
+    await user.clear(valueInput);
+    await user.type(valueInput, 'my-component');
+
+    expect(
+      screen.getByLabelText('@example/plugin-example-backend generated YAML'),
+    ).toHaveTextContent('entityOverrides:');
+    expect(
+      screen.getByLabelText('@example/plugin-example-backend generated YAML'),
+    ).toHaveTextContent('metadata.name: my-component');
+
+    await user.click(screen.getByRole('button', { name: 'Remove' }));
+    expect(screen.queryByLabelText('metadata.name')).not.toBeInTheDocument();
+  });
 });

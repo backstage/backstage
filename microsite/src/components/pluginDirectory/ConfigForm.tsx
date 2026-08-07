@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {
-  ArrayFieldTemplateProps,
-  DescriptionFieldProps,
-  FieldErrorProps,
-  FieldTemplateProps,
-  MultiSchemaFieldTemplateProps,
-  ObjectFieldTemplateProps,
-  RegistryWidgetsType,
-  TemplatesType,
-  UiSchema,
-  WidgetProps,
+import {
+  ADDITIONAL_PROPERTY_FLAG,
+  canExpand,
+  type ArrayFieldTemplateProps,
+  type DescriptionFieldProps,
+  type FieldErrorProps,
+  type FieldTemplateProps,
+  type MultiSchemaFieldTemplateProps,
+  type ObjectFieldTemplateProps,
+  type RegistryWidgetsType,
+  type TemplatesType,
+  type UiSchema,
+  type WidgetProps,
 } from '@rjsf/utils';
 import React from 'react';
 
@@ -37,7 +39,7 @@ function itemTitle(schema: ArrayFieldTemplateProps['schema']): string {
   return 'Item';
 }
 
-function ConfigFieldTemplate(props: FieldTemplateProps) {
+function ConfigFieldContent(props: FieldTemplateProps) {
   const {
     id,
     classNames,
@@ -107,6 +109,47 @@ function ConfigFieldTemplate(props: FieldTemplateProps) {
   );
 }
 
+// A field inside a free-form ("open") object — one whose schema declares
+// `additionalProperties` rather than fixed `properties`, e.g. a bare
+// `entityOverrides?: object` in config.d.ts — has no fixed key. RJSF flags
+// such fields so their key can be renamed or the entry removed.
+function ConfigAdditionalPropertyField(props: FieldTemplateProps) {
+  const { id, label, disabled, readonly, onKeyRenameBlur, onRemoveProperty } = props;
+
+  return (
+    <div className={styles.additionalPropertyRow}>
+      <div className={styles.formField}>
+        <label htmlFor={`${id}-key`} className={styles.fieldLabel}>
+          Property name
+        </label>
+        <input
+          id={`${id}-key`}
+          type="text"
+          defaultValue={label}
+          disabled={disabled || readonly}
+          onBlur={onKeyRenameBlur}
+        />
+      </div>
+      <ConfigFieldContent {...props} />
+      <button
+        type="button"
+        className="button button--outline button--danger button--sm"
+        disabled={disabled || readonly}
+        onClick={onRemoveProperty}
+      >
+        Remove
+      </button>
+    </div>
+  );
+}
+
+function ConfigFieldTemplate(props: FieldTemplateProps) {
+  if (ADDITIONAL_PROPERTY_FLAG in props.schema) {
+    return <ConfigAdditionalPropertyField {...props} />;
+  }
+  return <ConfigFieldContent {...props} />;
+}
+
 function ConfigFieldErrorTemplate({ errors }: FieldErrorProps) {
   if (!errors || errors.length === 0) {
     return null;
@@ -168,7 +211,18 @@ function ConfigMultiSchemaFieldTemplate({
 }
 
 function ConfigObjectFieldTemplate(props: ObjectFieldTemplateProps) {
-  const { title, description, properties, fieldPathId } = props;
+  const {
+    title,
+    description,
+    properties,
+    fieldPathId,
+    schema,
+    uiSchema,
+    formData,
+    disabled,
+    readonly,
+    onAddProperty,
+  } = props;
   const isRoot = fieldPathId.path.length === 0;
 
   return (
@@ -182,6 +236,16 @@ function ConfigObjectFieldTemplate(props: ObjectFieldTemplateProps) {
           </React.Fragment>
         ))}
       </div>
+      {canExpand(schema, uiSchema, formData) && (
+        <button
+          type="button"
+          className="button button--outline button--primary button--sm"
+          disabled={disabled || readonly}
+          onClick={onAddProperty}
+        >
+          Add property
+        </button>
+      )}
     </fieldset>
   );
 }

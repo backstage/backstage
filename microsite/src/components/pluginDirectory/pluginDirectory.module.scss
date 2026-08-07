@@ -583,6 +583,13 @@ a.releaseBadge {
   justify-items: start;
 }
 
+.additionalPropertyRow {
+  align-items: end;
+  display: grid;
+  gap: var(--ifm-spacing-horizontal);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+}
+
 .previewHeader {
   align-items: center;
   display: flex;
