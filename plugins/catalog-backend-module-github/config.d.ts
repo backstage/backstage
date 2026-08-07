@@ -322,6 +322,14 @@ export interface Config {
                */
               organizationMembers?: number;
             };
+
+            queryLimits?: {
+              /**
+               * (Optional) Maximum number of team members to fetch per team when querying team members.
+               * Default: `undefined` (no limit).
+               */
+              teamMembers?: number;
+            };
           }
         | Array<{
             /**

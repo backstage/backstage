@@ -105,9 +105,9 @@ Directly under the `githubOrg` is a list of configurations, each entry is a stru
 
   Reducing page sizes will result in more API calls and slightly longer sync times, but will prevent API resource limits for organizations with large number of teams and members.
 
-- `queryLimits` (optional): Configure maximum item limits for GitHub GraphQL API queries. Use this if the catalog refresh job times out because your organization has teams with thousands of members — the job's request headers timeout is 60 minutes, so very large teams can cause it to fail.
+- `queryLimits` (optional): Configure limits for GitHub GraphQL API queries to make sure catalog jobs do not time out. This can happen if you have large organization and too many GraphQL request are executed in one session. Request headers timeout is 60 minutes, check if your jobs are reaching this limit.
 
-  - `teamMembers`: Maximum number of members a team can have before it's excluded from the catalog (default: undefined, no limit)
+  - `teamMembers`: Maximum number of members a team can have before it's excluded from the catalog. Use this if the job times out because your organization has teams with thousands of members which take too long to fetch (default: undefined, no limit)
 
   If you set this, teams with more members than the limit will not appear in the catalog.
 

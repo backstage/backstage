@@ -67,7 +67,7 @@ export type GithubPageSizes = {
 };
 
 /**
- * Configuration for Github GraphQL API paging options
+ * Configuration for GitHub GraphQL API paging options
  *
  * @public
  */
@@ -885,7 +885,7 @@ export async function queryWithPaging<
       });
       if (transformedNode) {
         result.push(transformedNode);
-        if (result.length >= maxResultItems) {
+        if (result.length > maxResultItems) {
           maxItemsReached = true;
           break;
         }

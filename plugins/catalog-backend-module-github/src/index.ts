@@ -43,6 +43,7 @@ export {
   defaultOrganizationTeamTransformer,
   type TransformerContext,
   type GithubPageSizes,
+  type GithubQueryLimits,
 } from './lib';
 
 export * from './deprecated';
