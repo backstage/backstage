@@ -34,6 +34,7 @@ import {
   QueryResponse,
   GithubUser,
   GithubTeam,
+  DEFAULT_PAGE_SIZES,
   createAddEntitiesOperation,
   createRemoveEntitiesOperation,
   createReplaceEntitiesOperation,
@@ -892,6 +893,64 @@ describe('github', () => {
       );
 
       await expect(getTeamMembers(graphql, 'a', 'b')).resolves.toEqual(output);
+    });
+
+    it('returns empty members when teamMembers query limit is reached', async () => {
+      const input: QueryResponse = {
+        organization: {
+          team: {
+            slug: '',
+            combinedSlug: '',
+            members: {
+              pageInfo: { hasNextPage: false },
+              nodes: [{ login: 'user1' }, { login: 'user2' }],
+            },
+          },
+        },
+      };
+
+      server.use(
+        graphqlMsw.query('members', () => HttpResponse.json({ data: input })),
+      );
+
+      await expect(
+        getTeamMembers(graphql, 'a', 'b', DEFAULT_PAGE_SIZES, {
+          teamMembers: 1,
+        }),
+      ).resolves.toEqual({ members: [] });
+    });
+
+    it('returns all members when count is below teamMembers query limit', async () => {
+      const input: QueryResponse = {
+        organization: {
+          team: {
+            slug: '',
+            combinedSlug: '',
+            members: {
+              pageInfo: { hasNextPage: false },
+              nodes: [{ login: 'user1' }],
+            },
+          },
+        },
+      };
+
+      server.use(
+        graphqlMsw.query('members', () => HttpResponse.json({ data: input })),
+      );
+
+      await expect(
+        getTeamMembers(graphql, 'a', 'b', DEFAULT_PAGE_SIZES, {
+          teamMembers: 2,
+        }),
+      ).resolves.toEqual({ members: [{ login: 'user1' }] });
+    });
+
+    it('throws when teamMembers query limit is negative', async () => {
+      await expect(
+        getTeamMembers(graphql, 'a', 'b', DEFAULT_PAGE_SIZES, {
+          teamMembers: -1,
+        }),
+      ).rejects.toThrow('Invalid maxItems (-1): must be >= 0');
     });
   });
 
@@ -1815,6 +1874,72 @@ describe('github', () => {
       );
 
       await getOrganizationTeams(graphql as any, org);
+    });
+  });
+
+  describe('Query limits configuration', () => {
+    const org = 'my-org';
+
+    it('passes queryLimits through getOrganizationTeams when members paginate', async () => {
+      server.use(
+        graphqlMsw.query('teams', () =>
+          HttpResponse.json({
+            data: {
+              organization: {
+                teams: {
+                  pageInfo: { hasNextPage: false, endCursor: null },
+                  nodes: [
+                    {
+                      slug: 'team1',
+                      combinedSlug: 'my-org/team1',
+                      name: 'Team 1',
+                      description: 'desc',
+                      avatarUrl: '',
+                      editTeamUrl: '',
+                      parentTeam: null,
+                      members: {
+                        pageInfo: { hasNextPage: true },
+                        nodes: [{ login: 'user1' }],
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          }),
+        ),
+        graphqlMsw.query('members', () =>
+          HttpResponse.json({
+            data: {
+              organization: {
+                team: {
+                  slug: 'team1',
+                  combinedSlug: 'my-org/team1',
+                  members: {
+                    pageInfo: { hasNextPage: false },
+                    nodes: [{ login: 'user1' }, { login: 'user2' }],
+                  },
+                },
+              },
+            },
+          }),
+        ),
+      );
+
+      const { teams } = await getOrganizationTeams(
+        graphql as any,
+        org,
+        undefined,
+        DEFAULT_PAGE_SIZES,
+        { teamMembers: 1 },
+      );
+
+      expect(teams).toHaveLength(1);
+      expect(teams[0]).toEqual(
+        expect.objectContaining({
+          spec: expect.objectContaining({ members: [] }),
+        }),
+      );
     });
   });
 });

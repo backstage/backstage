@@ -980,6 +980,98 @@ describe('GithubMultiOrgEntityProvider', () => {
 
       expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
     });
+
+    it('should apply queryLimits when reading specified orgs', async () => {
+      entityProvider = new GithubMultiOrgEntityProvider({
+        id: 'my-id',
+        gitHubConfig,
+        githubCredentialsProvider: {
+          getCredentials: mockGetCredentials,
+        },
+        githubUrl: 'https://github.com',
+        logger,
+        orgs: ['orgA'],
+        queryLimits: { teamMembers: 1 },
+      });
+
+      await entityProvider.connect(entityProviderConnection);
+
+      mockClient
+        .mockResolvedValueOnce({
+          organization: {
+            membersWithRole: {
+              pageInfo: { hasNextPage: false },
+              nodes: [
+                {
+                  login: 'a',
+                  id: 'f',
+                  name: 'b',
+                  bio: 'c',
+                  email: 'd',
+                  avatarUrl: 'e',
+                },
+              ],
+            },
+          },
+        })
+        .mockResolvedValueOnce({
+          organization: {
+            teams: {
+              pageInfo: { hasNextPage: false },
+              nodes: [
+                {
+                  slug: 'team',
+                  combinedSlug: 'orgA/team',
+                  name: 'Team',
+                  description: 'The one and only team',
+                  avatarUrl: 'http://example.com/team.jpeg',
+                  parentTeam: {
+                    slug: 'parent',
+                    combinedSlug: '',
+                    members: { pageInfo: { hasNextPage: false }, nodes: [] },
+                  },
+                  members: {
+                    pageInfo: { hasNextPage: true },
+                    nodes: [{ login: 'a', id: 'f' }],
+                  },
+                },
+              ],
+            },
+          },
+        })
+        .mockResolvedValueOnce({
+          organization: {
+            team: {
+              slug: 'team',
+              combinedSlug: 'orgA/team',
+              members: {
+                pageInfo: { hasNextPage: false },
+                nodes: [
+                  { login: 'a', id: 'f' },
+                  { login: 'b', id: 'g' },
+                ],
+              },
+            },
+          },
+        });
+
+      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+
+      await entityProvider.read();
+
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith(
+        expect.objectContaining({
+          entities: expect.arrayContaining([
+            expect.objectContaining({
+              entity: expect.objectContaining({
+                kind: 'Group',
+                spec: expect.objectContaining({ members: [] }),
+              }),
+            }),
+          ]),
+        }),
+      );
+    });
   });
 
   describe('withLocations', () => {

@@ -24,7 +24,9 @@ export {
   type GithubUser,
   type GithubTeam,
   type GithubPageSizes,
+  type GithubQueryLimits,
   DEFAULT_PAGE_SIZES,
+  DEFAULT_QUERY_LIMITS,
 } from './github';
 export {
   type UserTransformer,

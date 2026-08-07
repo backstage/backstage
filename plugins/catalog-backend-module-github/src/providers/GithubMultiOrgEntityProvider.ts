@@ -68,7 +68,9 @@ import {
   TransformerContext,
   UserTransformer,
   GithubPageSizes,
+  GithubQueryLimits,
   DEFAULT_PAGE_SIZES,
+  DEFAULT_QUERY_LIMITS,
 } from '../lib';
 import {
   ANNOTATION_GITHUB_TEAM_SLUG,
@@ -181,6 +183,12 @@ export interface GithubMultiOrgEntityProviderOptions {
   pageSizes?: Partial<GithubPageSizes>;
 
   /**
+   * Optionally configure query limits for GitHub GraphQL API queries.
+   * Add these max amounts if the job runs for so long that it times out (request headers timeout is 60 minutes)
+   */
+  queryLimits?: Partial<GithubQueryLimits>;
+
+  /**
    * Optionally exclude suspended users when querying organization users.
    * @defaultValue false
    * @remarks
@@ -249,6 +257,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       events: options.events,
       alwaysUseDefaultNamespace: options.alwaysUseDefaultNamespace,
       pageSizes: options.pageSizes,
+      queryLimits: options.queryLimits,
       excludeSuspendedUsers: options.excludeSuspendedUsers,
       cache: options.cache,
       experimental_checkForSuspendedUsersWithRest:
@@ -273,6 +282,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       teamTransformer?: TeamTransformer;
       alwaysUseDefaultNamespace?: boolean;
       pageSizes?: Partial<GithubPageSizes>;
+      queryLimits?: Partial<GithubQueryLimits>;
       excludeSuspendedUsers?: boolean;
       cache?: CacheService;
       experimental_checkForSuspendedUsersWithRest?: boolean;
@@ -289,6 +299,27 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       ...DEFAULT_PAGE_SIZES,
       ...this.options.pageSizes,
     };
+  }
+
+  private getQueryLimits(): GithubQueryLimits {
+    return {
+      ...DEFAULT_QUERY_LIMITS,
+      ...this.options.queryLimits,
+    };
+  }
+
+  private async getOrgGraphqlClient(org: string) {
+    const { headers, type: tokenType } =
+      await this.options.githubCredentialsProvider.getCredentials({
+        url: `${this.options.githubUrl}/${org}`,
+      });
+
+    const client = graphql.defaults({
+      baseUrl: this.options.gitHubConfig.apiBaseUrl,
+      headers,
+    });
+
+    return { client, tokenType };
   }
 
   private get useRestSuspendedCheck(): boolean {
@@ -355,25 +386,17 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 
     const allUsersMap = new Map();
     const allTeams: Entity[] = [];
+    const pageSizes = this.getPageSizes();
+    const queryLimits = this.getQueryLimits();
 
     const orgsToProcess = this.options.orgs?.length
       ? this.options.orgs
       : await this.getAllOrgs(this.options.gitHubConfig);
 
     for (const org of orgsToProcess) {
-      const { headers, type: tokenType } =
-        await this.options.githubCredentialsProvider.getCredentials({
-          url: `${this.options.githubUrl}/${org}`,
-        });
-      const client = graphql.defaults({
-        baseUrl: this.options.gitHubConfig.apiBaseUrl,
-        headers,
-      });
-
       logger.info(`Reading GitHub users and teams for org: ${org}`);
 
-      const pageSizes = this.getPageSizes();
-
+      const { client, tokenType } = await this.getOrgGraphqlClient(org);
       const { users } = await getOrganizationUsers(
         client,
         org,
@@ -389,6 +412,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         org,
         this.defaultMultiOrgTeamTransformer.bind(this),
         pageSizes,
+        queryLimits,
       );
 
       // Grab current users from `allUsersMap` if they already exist in our
