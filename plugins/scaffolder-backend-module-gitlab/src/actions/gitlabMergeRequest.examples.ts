@@ -139,4 +139,24 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description: 'Create a merge request with a custom commit message',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'createMergeRequest',
+          action: 'publish:gitlab:merge-request',
+          name: 'Create a Merge Request',
+          input: {
+            repoUrl: 'gitlab.com?repo=repo&owner=owner',
+            title: 'Create my new MR',
+            description: 'This MR is really good',
+            sourcePath: './path/to/my/changes',
+            branchName: 'new-mr',
+            commitMessage: 'chore: add scaffolded changes',
+          },
+        },
+      ],
+    }),
+  },
 ];

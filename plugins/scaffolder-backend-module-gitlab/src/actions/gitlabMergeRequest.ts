@@ -117,6 +117,13 @@ Accepts the format \`gitlab.com?repo=project_name&owner=group_name\` where \
             .describe('The description of the merge request'),
         branchName: z =>
           z.string().describe('The source branch name of the merge request'),
+        commitMessage: z =>
+          z
+            .string()
+            .optional()
+            .describe(
+              'The commit message to use when committing the changes to the source branch (defaults to the merge request _title_)',
+            ),
         targetBranchName: z =>
           z
             .string()
@@ -200,6 +207,7 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
         assignee,
         reviewers,
         branchName,
+        commitMessage,
         targetBranchName,
         description,
         repoUrl,
@@ -385,7 +393,7 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
               const commit = await api.Commits.create(
                 repoID,
                 branchName,
-                title,
+                commitMessage ?? title,
                 actions,
               );
               return commit.id;
