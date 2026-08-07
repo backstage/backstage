@@ -311,10 +311,6 @@ const config: Config = {
         fromExtensions: [],
         redirects: [
           {
-            from: '/docs/tutorials/migrating-away-from-core',
-            to: '/docs/getting-started/keeping-backstage-updated',
-          },
-          {
             from: '/docs',
             to: '/docs/landing-page/doc-landing-page',
           },
