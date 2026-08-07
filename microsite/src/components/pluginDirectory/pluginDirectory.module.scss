@@ -53,41 +53,45 @@
 }
 
 
-.decisionSummary {
-  border-block: var(--ifm-global-border-width) solid
-    var(--ifm-color-emphasis-300);
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+.releaseBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--ifm-spacing-horizontal) / 2);
+  list-style: none;
   margin: calc(var(--ifm-spacing-vertical) * 1.5) 0 0;
+  padding: 0;
+}
 
-  > div {
-    min-width: 0;
-    padding: calc(var(--ifm-spacing-vertical) * 1.25)
-      var(--ifm-spacing-horizontal);
+.releaseBadge {
+  align-items: center;
+  background: var(--ifm-color-emphasis-100);
+  border: var(--ifm-global-border-width) solid var(--ifm-color-emphasis-300);
+  border-radius: var(--ifm-badge-border-radius);
+  display: inline-flex;
+  gap: calc(var(--ifm-spacing-horizontal) / 1.5);
+  padding: calc(var(--ifm-spacing-vertical) / 2) var(--ifm-spacing-horizontal);
+
+  svg {
+    color: var(--ifm-color-content-secondary);
+    flex: 0 0 auto;
+    font-size: 1.5em;
   }
+}
 
-  > div + div {
-    border-left: var(--ifm-global-border-width) solid
-      var(--ifm-color-emphasis-300);
-  }
+a.releaseBadge {
+  color: var(--ifm-color-content-secondary);
+  font-weight: var(--ifm-font-weight-semibold);
+  text-decoration: none;
+}
 
-  dt {
+.releaseBadgeDetails {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--ifm-spacing-vertical) / 16);
+
+  span {
     color: var(--ifm-color-content-secondary);
     font-size: var(--ifm-h5-font-size);
-    font-weight: var(--ifm-font-weight-bold);
-    text-transform: uppercase;
-  }
-
-  dd {
-    display: grid;
-    gap: calc(var(--ifm-spacing-vertical) / 4);
-    margin: calc(var(--ifm-spacing-vertical) / 2) 0 0;
-    overflow-wrap: anywhere;
-
-    span {
-      color: var(--ifm-color-content-secondary);
-      font-size: var(--ifm-h5-font-size);
-    }
   }
 }
 
@@ -98,28 +102,6 @@
   font-weight: var(--ifm-font-weight-bold);
   letter-spacing: calc(var(--ifm-global-border-width) * 0.5);
   text-transform: uppercase;
-}
-
-
-.resourceIcons {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--ifm-spacing-horizontal);
-}
-
-.resourceIcon {
-  align-items: center;
-  color: var(--ifm-color-content-secondary);
-  display: inline-flex;
-  font-size: var(--ifm-h5-font-size);
-  font-weight: var(--ifm-font-weight-semibold);
-  gap: calc(var(--ifm-spacing-horizontal) / 4);
-  text-decoration: none;
-
-  svg {
-    flex: 0 0 auto;
-  }
 }
 
 
@@ -408,21 +390,8 @@
   }
 
   dl {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    display: flex;
     margin: calc(var(--ifm-spacing-vertical) * 1.5) 0 0;
-  }
-
-  dl > div {
-    border-left: var(--ifm-global-border-width) solid
-      var(--ifm-color-emphasis-300);
-    min-width: 0;
-    padding-inline: var(--ifm-spacing-horizontal);
-
-    &:first-child {
-      border-left: 0;
-      padding-left: 0;
-    }
   }
 
   dt {
@@ -476,6 +445,7 @@
 }
 
 .packageTabPanel {
+  min-height: 100vh;
   padding: calc(var(--ifm-spacing-vertical) * 1.5)
     calc(var(--ifm-spacing-horizontal) * 1.5);
   min-width: 0;
@@ -683,16 +653,6 @@
     padding: var(--ifm-spacing-vertical) var(--ifm-spacing-horizontal);
   }
 
-  .packageContext dl {
-    gap: var(--ifm-spacing-vertical);
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .packageContext dl > div {
-    border-left: 0;
-    padding-inline: 0;
-  }
-
   .packageTabs {
     gap: var(--ifm-spacing-horizontal);
     overflow-x: auto;
@@ -700,16 +660,6 @@
   }
 
 
-
-  .decisionSummary {
-    grid-template-columns: minmax(0, 1fr);
-
-    > div + div {
-      border-left: 0;
-      border-top: var(--ifm-global-border-width) solid
-        var(--ifm-color-emphasis-300);
-    }
-  }
 
   .installGuide {
     gap: calc(var(--ifm-spacing-vertical) * 2);

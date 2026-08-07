@@ -18,31 +18,13 @@ import type { PluginData } from '@site/src/pluginDirectory/manifest';
 import React from 'react';
 
 import { getPluginDecisionSummary } from './packagePresentation';
-import { ResourceIcons } from './ResourceIcons';
+import { BackstageIcon, DocumentIcon, NpmIcon } from './ReleaseIcons';
 import styles from './pluginDirectory.module.scss';
 
 interface PluginHeaderProps {
   plugin: PluginData;
   latestBackstageVersion?: string | null;
   now?: Date;
-}
-
-function releaseStatus(status: 'fresh' | 'stale'): string {
-  return status === 'fresh' ? 'Current release' : 'Getting old';
-}
-
-function backstageComparison(
-  versionsBehind: number | undefined,
-): string | undefined {
-  if (versionsBehind === undefined) {
-    return undefined;
-  }
-  if (versionsBehind === 0) {
-    return 'Current Backstage release';
-  }
-  return `${versionsBehind} minor ${
-    versionsBehind === 1 ? 'release' : 'releases'
-  } behind`;
 }
 
 export function PluginHeader({
@@ -55,10 +37,6 @@ export function PluginHeader({
     latestBackstageVersion,
     now,
   );
-  const comparison =
-    summary.backstage.status === 'unavailable'
-      ? undefined
-      : backstageComparison(summary.backstage.versionsBehind);
 
   return (
     <header className={styles.detailHeader}>
@@ -69,50 +47,46 @@ export function PluginHeader({
             by <Link to={plugin.authorUrl}>{plugin.author}</Link>
           </p>
         </div>
-        <ResourceIcons plugin={plugin} />
       </div>
 
       <p className={styles.description}>{plugin.description}</p>
-      <dl
-        className={styles.decisionSummary}
+      <ul
+        className={styles.releaseBadges}
         aria-label="Plugin evaluation summary"
       >
-        <div>
-          <dt>Last updated</dt>
-          <dd>
+        <li className={styles.releaseBadge}>
+          <NpmIcon />
+          <div className={styles.releaseBadgeDetails}>
             {summary.release.status === 'unavailable' ? (
-              'Not reported'
+              <span>npm release not reported</span>
             ) : (
               <>
                 <strong>{summary.release.version}</strong>
-                <span>{summary.release.age}</span>
-                <span>{releaseStatus(summary.release.status)}</span>
+                <span>published {summary.release.age}</span>
               </>
             )}
-          </dd>
-        </div>
-        <div>
-          <dt>Backstage source</dt>
-          <dd>
+          </div>
+        </li>
+        <li className={styles.releaseBadge}>
+          <BackstageIcon />
+          <div className={styles.releaseBadgeDetails}>
             {summary.backstage.status === 'unavailable' ? (
-              'Not reported'
+              <span>Backstage source not reported</span>
             ) : (
               <>
-                <strong>Built with Backstage {summary.backstage.version}</strong>
-                {comparison && <span>{comparison}</span>}
+                <strong>{summary.backstage.version}</strong>
+                <span>{summary.backstage.age}</span>
               </>
             )}
-          </dd>
-        </div>
-        <div>
-          <dt>Functionality</dt>
-          <dd>
-            {summary.functionality.length > 0
-              ? `${summary.functionality.length} adoption outcomes reported`
-              : 'Not reported'}
-          </dd>
-        </div>
-      </dl>
+          </div>
+        </li>
+        <li>
+          <a className={styles.releaseBadge} href={plugin.documentation}>
+            <DocumentIcon />
+            <span>Documentation</span>
+          </a>
+        </li>
+      </ul>
     </header>
   );
 }

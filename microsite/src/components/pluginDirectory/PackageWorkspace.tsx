@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import type { PluginData } from '../../pluginDirectory/manifest';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ConfigureGuide } from './ConfigureGuide';
 import { InstallGuide } from './InstallGuide';
 import type { PackagePresentation } from './packagePresentation';
@@ -55,6 +55,8 @@ export function PackageWorkspace({
     /[^a-zA-Z0-9]+/g,
     '-',
   )}`;
+  const packageContentRef = useRef<HTMLElement>(null);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
     setVisitedTabs(current => {
@@ -65,6 +67,22 @@ export function PackageWorkspace({
     });
   }, [selectedTab]);
 
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    const content = packageContentRef.current;
+    if (content) {
+      // The browser resets scroll to the top when the package/tab query
+      // params change; correct it on the next frame, once this package's
+      // (min-height guarded) layout has settled.
+      requestAnimationFrame(() => {
+        content.scrollIntoView?.({ block: 'start' });
+      });
+    }
+  }, [packagePresentation.npmPackageName, selectedTab]);
+
   return (
     <div className={styles.packageWorkspace}>
       <PackageNavigation
@@ -72,7 +90,7 @@ export function PackageWorkspace({
         selectedPackageName={packagePresentation.npmPackageName}
         onSelectPackage={onSelectPackage}
       />
-      <section className={styles.packageContent}>
+      <section className={styles.packageContent} ref={packageContentRef}>
         <PackageContext
           plugin={plugin}
           packagePresentation={packagePresentation}

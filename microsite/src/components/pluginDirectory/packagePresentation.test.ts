@@ -90,7 +90,7 @@ describe('getPackagePresentations', () => {
 });
 
 describe('getPluginDecisionSummary', () => {
-  it('presents release, Backstage source, and evidence-backed functionality', () => {
+  it('presents release and Backstage source', () => {
     assert.deepEqual(
       getPluginDecisionSummary(
         plugin,
@@ -102,18 +102,14 @@ describe('getPluginDecisionSummary', () => {
         backstage: {
           status: 'fresh',
           version: '1.53.1',
+          age: '2 days ago',
           versionsBehind: 0,
         },
-        functionality: [
-          'Browse and inspect catalog entities',
-          'Ingest metadata through providers and processors',
-          'Extend catalog pages and entity experiences',
-        ],
       },
     );
   });
 
-  it('uses the authored description when capability metadata is unavailable', () => {
+  it('reports unavailable when snapshot metadata is unavailable', () => {
     const pluginWithoutSnapshot: PluginData = {
       ...plugin,
       capabilities: undefined,
@@ -123,7 +119,6 @@ describe('getPluginDecisionSummary', () => {
     assert.deepEqual(getPluginDecisionSummary(pluginWithoutSnapshot, null), {
       release: { status: 'unavailable' },
       backstage: { status: 'unavailable' },
-      functionality: ['Manage software components.'],
     });
   });
 });

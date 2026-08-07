@@ -57,7 +57,7 @@ const plugin: PluginData = {
 };
 
 describe('PluginHeader', () => {
-  it('renders identity, description, evaluation facts, and resource links', () => {
+  it('renders identity, description, and evaluation facts', () => {
     render(
       <PluginHeader
         plugin={plugin}
@@ -78,16 +78,10 @@ describe('PluginHeader', () => {
     expect(
       screen.getByLabelText('Plugin evaluation summary'),
     ).toHaveTextContent(
-      'Last updated2.4.014 days agoCurrent releaseBackstage sourceBuilt with Backstage 1.50.03 minor releases behindFunctionality1 adoption outcomes reported',
+      '2.4.0published 14 days ago1.50.02 days agoDocumentation',
     );
     expect(
       screen.getByRole('link', { name: /Documentation/ }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('link', { name: /npm package/ }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('link', { name: /Repository/ }),
-    ).toBeInTheDocument();
+    ).toHaveAttribute('href', 'https://example.com/catalog-insights/docs');
   });
 });

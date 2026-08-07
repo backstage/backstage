@@ -17,6 +17,7 @@ import type { PluginData } from '../../pluginDirectory/manifest';
 import React, { useEffect, useRef } from 'react';
 import { formatReleaseAge, getNpmPackageUrl } from './healthPresentation';
 import type { PackagePresentation } from './packagePresentation';
+import { BackstageIcon, NpmIcon } from './ReleaseIcons';
 import styles from './pluginDirectory.module.scss';
 
 interface PackageContextProps {
@@ -47,8 +48,8 @@ export function PackageContext({
 
   useEffect(() => {
     if (previousPackageName.current !== packagePresentation.npmPackageName) {
-      headingRef.current?.focus();
       previousPackageName.current = packagePresentation.npmPackageName;
+      headingRef.current?.focus({ preventScroll: true });
     }
   }, [packagePresentation.npmPackageName]);
 
@@ -64,29 +65,38 @@ export function PackageContext({
           <dt>Role</dt>
           <dd>{displayRole(packagePresentation.functionality)}</dd>
         </div>
-        <div>
-          <dt>Latest version</dt>
-          <dd>
-            {npm.status === 'unavailable' ? 'Not reported' : npm.latestVersion}
-          </dd>
-        </div>
-        <div>
-          <dt>Released</dt>
-          <dd>
-            {npm.status === 'unavailable'
-              ? 'Not reported'
-              : formatReleaseAge(npm.lastPublishedAt, now)}
-          </dd>
-        </div>
-        <div>
-          <dt>Backstage source</dt>
-          <dd>
-            {backstage && backstage.status !== 'unavailable'
-              ? `Built with Backstage ${backstage.version}`
-              : 'Not reported'}
-          </dd>
-        </div>
       </dl>
+      <ul
+        className={styles.releaseBadges}
+        aria-label="Package release summary"
+      >
+        <li className={styles.releaseBadge}>
+          <NpmIcon />
+          <div className={styles.releaseBadgeDetails}>
+            {npm.status === 'unavailable' ? (
+              <span>npm release not reported</span>
+            ) : (
+              <>
+                <strong>{npm.latestVersion}</strong>
+                <span>published {formatReleaseAge(npm.lastPublishedAt, now)}</span>
+              </>
+            )}
+          </div>
+        </li>
+        <li className={styles.releaseBadge}>
+          <BackstageIcon />
+          <div className={styles.releaseBadgeDetails}>
+            {backstage && backstage.status !== 'unavailable' ? (
+              <>
+                <strong>{backstage.version}</strong>
+                <span>{formatReleaseAge(backstage.checkedAt, now)}</span>
+              </>
+            ) : (
+              <span>Backstage source not reported</span>
+            )}
+          </div>
+        </li>
+      </ul>
       <div className={styles.packageContextLinks}>
         <a
           href={getNpmPackageUrl(packagePresentation.npmPackageName)}

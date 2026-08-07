@@ -116,7 +116,7 @@ describe('PackageWorkspace', () => {
     expect(frontendHeading).not.toHaveFocus();
     expect(screen.getAllByText('@backstage/plugin-catalog').length).toBeGreaterThan(0);
     expect(screen.getByText('2.0.7')).toBeVisible();
-    expect(screen.getByText('Built with Backstage 1.53.1')).toBeVisible();
+    expect(screen.getByText('1.53.1')).toBeVisible();
     expect(
       await screen.findByText('README for @backstage/plugin-catalog'),
     ).toBeVisible();

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import type {
-  Capability,
   PackageSnapshot,
   PluginData,
 } from '../../pluginDirectory/manifest';
@@ -49,10 +48,10 @@ export interface PluginDecisionSummary {
     | {
         status: 'fresh' | 'stale';
         version: string;
+        age: string;
         versionsBehind: number | undefined;
       }
     | { status: 'unavailable' };
-  functionality: string[];
 }
 
 const groupLabels: Record<PackageGroupId, PackageGroupLabel> = {
@@ -138,44 +137,6 @@ function packageLabel(
   return toDisplayWords(suffix);
 }
 
-function hasAnyCapability(
-  capabilities: readonly Capability[],
-  values: readonly Capability[],
-): boolean {
-  return values.some(value => capabilities.includes(value));
-}
-
-function functionalityOutcomes(plugin: PluginData): string[] {
-  const capabilities = plugin.capabilities ?? [];
-  const outcomes: string[] = [];
-  const entityExperiences: Capability[] = ['entity-card', 'entity-content'];
-
-  if (hasAnyCapability(capabilities, entityExperiences)) {
-    outcomes.push('Browse and inspect catalog entities');
-  }
-  if (
-    hasAnyCapability(capabilities, ['catalog-provider', 'catalog-processor'])
-  ) {
-    outcomes.push('Ingest metadata through providers and processors');
-  }
-  if (
-    hasAnyCapability(capabilities, [
-      ...entityExperiences,
-      'standalone-page',
-      'home-page',
-      'search-result',
-      'techdocs-addon',
-    ])
-  ) {
-    outcomes.push('Extend catalog pages and entity experiences');
-  }
-  if (capabilities.includes('permissions')) {
-    outcomes.push('Apply catalog permissions');
-  }
-
-  return outcomes.length > 0 ? outcomes : [plugin.description];
-}
-
 export function getPackagePresentations(
   plugin: PluginData,
 ): PackagePresentation[] {
@@ -224,6 +185,7 @@ export function getPluginDecisionSummary(
       ? {
           status: backstageSnapshot.status,
           version: backstageSnapshot.version,
+          age: formatReleaseAge(backstageSnapshot.checkedAt, now),
           versionsBehind: latestBackstageVersion
             ? countMinorVersionsBehind(
                 backstageSnapshot.version,
@@ -236,6 +198,5 @@ export function getPluginDecisionSummary(
   return {
     release,
     backstage,
-    functionality: functionalityOutcomes(plugin),
   };
 }
