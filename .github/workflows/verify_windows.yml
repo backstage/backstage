@@ -66,6 +66,6 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
           $MESSAGE=@"
-          {\"content\": \"Windows master build failed https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID\"}
+          {\"content\": \"Windows master build failed https://github.com/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID\"}
           "@
           C:\msys64\usr\bin\curl.exe -i -H "Accept: application/json" -H "Content-Type:application/json" -X POST $env:DISCORD_WEBHOOK --data $MESSAGE
