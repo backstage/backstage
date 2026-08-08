@@ -2,7 +2,7 @@
 id: configuration
 title: Configuring Kubernetes integration
 sidebar_label: Configuration
-description: Configuring the Kubernetes integration for Backstage expose your entity's objects
+description: Configuring the Kubernetes integration for Backstage to expose your entity's objects
 ---
 
 Configuring the Backstage Kubernetes integration involves two steps:
@@ -124,9 +124,9 @@ Valid values are:
 - `multiTenant` - This configuration assumes that all components run on all the
   provided clusters.
 
-- `singleTenant` - This configuration assumes that current component run on one cluster in provided clusters.
+- `singleTenant` - This configuration assumes that the current component runs on one cluster in the provided clusters.
 
-- `catalogRelation` - This configuration assumes that the current component runs only on all clusters it is dependant on.
+- `catalogRelation` - This configuration assumes that the current component runs only on all clusters it is dependent on.
 
 ### `clusterLocatorContinueOnError` (optional)
 
@@ -373,7 +373,7 @@ application whose `clientId` is used by the auth provider should be granted the
 `openid` scope), `google`, `microsoft`, `okta`, `onelogin`.
 
 Take note that `oidcTokenProvider` is just the issuer for the token, you can use any
-of these with an OIDC enabled cluster, like using `microsoft` as the issuer for a EKS
+of these with an OIDC enabled cluster, like using `microsoft` as the issuer for an EKS
 cluster.
 
 ##### `clusters.\*.dashboardUrl` (optional)
@@ -619,7 +619,7 @@ Kubernetes resources.
 
 **Notes:**
 
-- The optional `kubernetes.customResources` property is overrode by `customResources` at the [clusters level](#clusterscustomresources-optional).
+- The optional `kubernetes.customResources` property is overridden by `customResources` at the [clusters level](#clusterscustomresources-optional).
 
 Defaults to empty array. Example:
 
