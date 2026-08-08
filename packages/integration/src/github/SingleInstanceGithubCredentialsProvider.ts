@@ -19,6 +19,7 @@ import { GithubAppConfig, GithubIntegrationConfig } from './config';
 import { createAppAuth } from '@octokit/auth-app';
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
 import { DateTime } from 'luxon';
+import { cloneDeep } from 'lodash';
 import {
   GithubCredentials,
   GithubCredentialsProvider,
@@ -126,6 +127,7 @@ class GithubAppManager {
     fetchedAt: DateTime;
     expiresAt: DateTime;
   };
+  private lastInstallationsRefreshAttempt?: DateTime;
   private pendingInstallations?: Promise<Installations>;
   public readonly publicAccess: boolean;
 
@@ -208,7 +210,7 @@ class GithubAppManager {
   }
 
   async getPublicInstallationToken(): Promise<{ accessToken: string }> {
-    const [installation] = await this.getInstallations();
+    const [installation] = await this.getCachedInstallations();
 
     if (!installation) {
       throw new Error(`No installation found for public app`);
@@ -246,7 +248,11 @@ class GithubAppManager {
     }
   }
 
-  async getInstallations(
+  async getInstallations(): Promise<Installations> {
+    return cloneDeep(await this.getCachedInstallations());
+  }
+
+  private async getCachedInstallations(
     options: { forceRefresh?: boolean } = {},
   ): Promise<Installations> {
     if (
@@ -254,7 +260,7 @@ class GithubAppManager {
       this.installationsCache &&
       DateTime.local() < this.installationsCache.expiresAt
     ) {
-      return [...this.installationsCache.data];
+      return this.installationsCache.data;
     }
     if (!this.pendingInstallations) {
       const pending = this.appClient
@@ -269,14 +275,14 @@ class GithubAppManager {
           return data;
         })
         .finally(() => {
+          this.lastInstallationsRefreshAttempt = DateTime.local();
           if (this.pendingInstallations === pending) {
             this.pendingInstallations = undefined;
           }
         });
       this.pendingInstallations = pending;
     }
-    const data = await this.pendingInstallations;
-    return [...data];
+    return await this.pendingInstallations;
   }
 
   private async getInstallationData(owner: string): Promise<InstallationData> {
@@ -289,13 +295,15 @@ class GithubAppManager {
           inst.account.login?.toLocaleLowerCase('en-US') === ownerLower,
       );
 
-    let installations = await this.getInstallations();
+    let installations = await this.getCachedInstallations();
     let installation = find(installations);
 
     // Owner not in cache — a newly-created installation may have appeared
     // since we last paginated. Force a refresh (throttled) before failing.
     if (!installation && this.canRefreshInstallations()) {
-      installations = await this.getInstallations({ forceRefresh: true });
+      installations = await this.getCachedInstallations({
+        forceRefresh: true,
+      });
       installation = find(installations);
     }
 
@@ -317,9 +325,9 @@ class GithubAppManager {
     if (!this.installationsCache) {
       return true;
     }
-    const age = DateTime.local()
-      .diff(this.installationsCache.fetchedAt)
-      .as('seconds');
+    const refreshReference =
+      this.lastInstallationsRefreshAttempt ?? this.installationsCache.fetchedAt;
+    const age = DateTime.local().diff(refreshReference).as('seconds');
     return age >= INSTALLATIONS_REFRESH_THROTTLE_SECONDS;
   }
 }

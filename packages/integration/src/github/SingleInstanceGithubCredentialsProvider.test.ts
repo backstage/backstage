@@ -40,7 +40,10 @@ jest.mock('@octokit/rest', () => {
   return { Octokit };
 });
 
-import { SingleInstanceGithubCredentialsProvider } from './SingleInstanceGithubCredentialsProvider';
+import {
+  GithubAppCredentialsMux,
+  SingleInstanceGithubCredentialsProvider,
+} from './SingleInstanceGithubCredentialsProvider';
 import { RestEndpointMethodTypes } from '@octokit/rest';
 import { DateTime } from 'luxon';
 
@@ -610,6 +613,38 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
     expect(octokit.apps.listInstallations.mock.calls.length).toBe(1);
   });
 
+  it('should not expose cached installation data to mutation', async () => {
+    const mux = new GithubAppCredentialsMux({
+      host: 'github.com',
+      apps: [
+        {
+          appId: 1,
+          privateKey: 'privateKey',
+          webhookSecret: '123',
+          clientId: 'CLIENT_ID',
+          clientSecret: 'CLIENT_SECRET',
+        },
+      ],
+    });
+    octokit.apps.listInstallations.mockResolvedValue({
+      headers: { etag: '123' },
+      data: [
+        {
+          id: 1,
+          repository_selection: 'all',
+          account: { login: 'backstage' },
+        },
+      ],
+    } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+    const first = await mux.getAllInstallations();
+    (first[0].account as { login: string }).login = 'changed';
+
+    const second = await mux.getAllInstallations();
+    expect(second[0].account).toMatchObject({ login: 'backstage' });
+    expect(octokit.apps.listInstallations).toHaveBeenCalledTimes(1);
+  });
+
   it('should de-duplicate concurrent installation lookups', async () => {
     let resolveListInstallations!: (value: unknown) => void;
     octokit.apps.listInstallations.mockReturnValue(
@@ -747,6 +782,32 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
       // Inside the throttle window — subsequent misses reuse the cache.
       jest.setSystemTime(new Date('2024-01-01T12:02:30Z'));
       await github.getCredentials({ url: 'https://github.com/z' });
+      expect(octokit.apps.listInstallations).toHaveBeenCalledTimes(2);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it('should throttle failed on-miss refreshes of the installations cache', async () => {
+    jest.useFakeTimers({ now: new Date('2024-01-01T12:00:00Z') });
+    try {
+      octokit.apps.listInstallations
+        .mockResolvedValueOnce({
+          headers: { etag: '1' },
+          data: [],
+        } as unknown as RestEndpointMethodTypes['apps']['listInstallations']['response'])
+        .mockRejectedValueOnce({ status: 500, message: 'Boom' });
+
+      await github.getCredentials({ url: 'https://github.com/x' });
+      jest.setSystemTime(new Date('2024-01-01T12:02:00Z'));
+
+      await expect(
+        github.getCredentials({ url: 'https://github.com/y' }),
+      ).rejects.toMatchObject({ status: 500, message: 'Boom' });
+
+      jest.setSystemTime(new Date('2024-01-01T12:02:30Z'));
+      await github.getCredentials({ url: 'https://github.com/z' });
+
       expect(octokit.apps.listInstallations).toHaveBeenCalledTimes(2);
     } finally {
       jest.useRealTimers();
