@@ -108,6 +108,32 @@
     "ast-types@npm:^0.13.4": "0.16.3",
     "csstype@npm:^3.0.2": "3.0.9"
   },
+  "dependenciesMeta": {
+    "@swc/core": {
+      "built": true
+    },
+    "@tree-sitter-grammars/tree-sitter-yaml": {
+      "built": true
+    },
+    "better-sqlite3": {
+      "built": true
+    },
+    "esbuild": {
+      "built": true
+    },
+    "keytar": {
+      "built": true
+    },
+    "tree-sitter": {
+      "built": true
+    },
+    "tree-sitter-json": {
+      "built": true
+    },
+    "unrs-resolver": {
+      "built": true
+    }
+  },
   "dependencies": {
     "@backstage/errors": "workspace:^",
     "@manypkg/get-packages": "^1.1.3",
