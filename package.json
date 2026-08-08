@@ -117,6 +117,32 @@
     "csstype@npm:^3.1.3": "3.0.9",
     "recast@npm:0.23.9>ast-types": "patch:ast-types@npm%3A0.16.1#./.yarn/patches/ast-types-npm-0.16.1-43c4ac4b0d.patch"
   },
+  "dependenciesMeta": {
+    "@swc/core": {
+      "built": true
+    },
+    "@tree-sitter-grammars/tree-sitter-yaml": {
+      "built": true
+    },
+    "better-sqlite3": {
+      "built": true
+    },
+    "esbuild": {
+      "built": true
+    },
+    "keytar": {
+      "built": true
+    },
+    "tree-sitter": {
+      "built": true
+    },
+    "tree-sitter-json": {
+      "built": true
+    },
+    "unrs-resolver": {
+      "built": true
+    }
+  },
   "dependencies": {
     "@backstage/errors": "workspace:^",
     "@manypkg/get-packages": "^1.1.3",
@@ -179,7 +205,7 @@
     "vite": "^7.1.5",
     "zod": "^3.25.76 || ^4.0.0"
   },
-  "packageManager": "yarn@4.8.1",
+  "packageManager": "yarn@4.18.0",
   "engines": {
     "node": "22 || 24"
   },

@@ -49,5 +49,13 @@
     "postcss-import": "^16.1.1",
     "typescript": "^5",
     "unified": "^11.0.4"
+  },
+  "dependenciesMeta": {
+    "sharp": {
+      "built": true
+    },
+    "unrs-resolver": {
+      "built": true
+    }
   }
 }
