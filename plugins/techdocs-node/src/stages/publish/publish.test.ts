@@ -35,10 +35,6 @@ jest.mock('@azure/identity', () => ({
 }));
 
 describe('Publisher', () => {
-  beforeEach(() => {
-    jest.resetModules(); // clear the cache
-  });
-
   it('should create local publisher by default', async () => {
     const mockConfig = new ConfigReader({});
 

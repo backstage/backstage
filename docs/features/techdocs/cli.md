@@ -49,6 +49,15 @@ npm install -g @techdocs/cli
 techdocs-cli [command]
 ```
 
+By default, this installs the SDKs for all cloud storage providers (`awsS3`, `googleGcs`,
+`azureBlobStorage`, `openStackSwift`). If you only publish to one provider,
+you can skip them and add back just the one you need:
+
+```bash
+npm install -g @techdocs/cli --omit=optional
+npm install -g @azure/identity @azure/storage-blob   # Azure only, for example
+```
+
 ## Usage
 
 ### Preview TechDocs site locally in a Backstage like environment

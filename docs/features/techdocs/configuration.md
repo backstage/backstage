@@ -191,6 +191,12 @@ techdocs:
     type: 'local'
 ```
 
+Any option other than `'local'` requires installing the corresponding cloud storage SDK as an
+explicit dependency in your backend package, since these are optional peer dependencies of
+`@backstage/plugin-techdocs-node`. See
+[Using Cloud Storage for TechDocs generated files](./using-cloud-storage.md) for
+the packages to install for each provider.
+
 ### Local Storage
 
 `techdocs.publisher.local`

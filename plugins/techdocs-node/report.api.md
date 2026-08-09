@@ -13,7 +13,6 @@ import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { StorageOptions } from '@google-cloud/storage';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import * as winston from 'winston';
 import { Writable } from 'node:stream';
@@ -219,8 +218,7 @@ export type PublisherFactory = {
 
 // @public
 export interface PublisherSettings {
-  // (undocumented)
-  googleGcs?: StorageOptions;
+  googleGcs?: unknown;
 }
 
 // @public
