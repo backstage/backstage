@@ -1,0 +1,11 @@
+---
+title: gRPC Docs
+author: Samuel Fabel
+authorUrl: https://github.com/samuelfabel
+category: Discovery
+description: 'Swagger-style gRPC playground in the API Definition tab for catalog entities with spec.type: grpc.'
+documentation: https://github.com/samuelfabel/backstage-grpc-docs
+iconUrl: /img/logo-gradient-on-dark.svg
+npmPackageName: '@samuel.fabel/plugin-grpc-docs'
+addedDate: '2026-08-03'
+status: active
