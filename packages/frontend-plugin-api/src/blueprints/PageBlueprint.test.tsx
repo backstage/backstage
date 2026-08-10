@@ -423,7 +423,12 @@ describe('PageBlueprint', () => {
 
     // Breadcrumb wrapping stays framework-side: the adapter rendered nothing
     // but the element it was given, and the sub-page breadcrumb is present.
-    const breadcrumbs = screen.getByRole('navigation', { name: 'Breadcrumbs' });
+    // Awaited rather than read synchronously: breadcrumb entries register from
+    // an effect, and the header renders no nav at all until the first one
+    // arrives, so the content being on screen does not mean the nav is yet.
+    const breadcrumbs = await screen.findByRole('navigation', {
+      name: 'Breadcrumbs',
+    });
     expect(breadcrumbs).toHaveTextContent('Recorded');
     expect(breadcrumbs).toHaveTextContent('Settings');
   });

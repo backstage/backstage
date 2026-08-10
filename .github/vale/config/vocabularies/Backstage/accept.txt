@@ -418,6 +418,7 @@ requestors
 rerender
 rerenders
 resizable
+resolver's
 resourcequotas
 retryable
 reusability
@@ -515,6 +516,8 @@ Talkdesk
 Tanzu
 targetRef
 tasklist
+teardown
+Teardown
 techdocs
 Telenor
 telus
