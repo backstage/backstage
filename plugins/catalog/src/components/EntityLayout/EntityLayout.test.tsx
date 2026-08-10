@@ -49,7 +49,7 @@ import {
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { EntityLayout } from './EntityLayout';
 import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ReactNode, useEffect } from 'react';
 import {
   appHistoryApiRef,
