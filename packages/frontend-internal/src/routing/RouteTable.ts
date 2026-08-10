@@ -114,10 +114,24 @@ type RankedRoute = {
  * Appends a path below another, dropping a trailing splat: the splat is how a
  * page says "the rest of the path is mine", and a sub-page registered below it
  * claims a piece of exactly that rest.
+ *
+ * The slash runs on either side are scanned off rather than matched with
+ * `/\/+$/` and `/^\/+/`, for the reason {@link trimTrailingSlash} scans: a
+ * route path can carry a long run of slashes, and a backtracking matcher
+ * retries an unanchored trailing pattern from every position in that run,
+ * which is quadratic in its length. Scanning answers the same for every input.
  */
 function joinRoutePath(parent: string, child: string): string {
-  const base = parent.replace(/\/\*$/, '').replace(/\/+$/, '');
-  return `${base}/${child.replace(/^\/+/, '')}`;
+  const withoutSplat = parent.endsWith('/*') ? parent.slice(0, -2) : parent;
+  let end = withoutSplat.length;
+  while (end > 0 && withoutSplat[end - 1] === '/') {
+    end -= 1;
+  }
+  let start = 0;
+  while (start < child.length && child[start] === '/') {
+    start += 1;
+  }
+  return `${withoutSplat.slice(0, end)}/${child.slice(start)}`;
 }
 
 /** Appends a concrete path segment to a concrete base path. */
