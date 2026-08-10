@@ -187,7 +187,7 @@ describe('createConnectionType', () => {
         config: {},
         auth: [
           { method: 'token', token: 'a', primary: true },
-          { method: 'token', token: 'b' },
+          { method: 'token', token: 'b', match: { plugins: ['catalog'] } },
         ],
       }),
     ).not.toThrow();

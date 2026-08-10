@@ -85,7 +85,13 @@ export type ConnectionAuthMatch = {
 
 // Expand flattens intersections and Omit into plain object literals so that
 // editor tooltips stay readable.
-/** @public */
+/**
+ * The shape of an auth entry as written in configuration: the fields declared
+ * by the auth method's own schema plus the framework-managed `title` and
+ * `match` fields.
+ *
+ * @public
+ */
 export type RootConnectionAuth<M> = M extends {
   method: infer TMethod extends string;
   configSchema: { parse: (...args: any[]) => infer TConfig };
@@ -99,11 +105,15 @@ export type RootConnectionAuth<M> = M extends {
     >
   : never;
 
-/** @public */
+/**
+ * A resolved auth entry as handed to plugins and `matchAuth` implementations:
+ * the fields declared by the auth method's own schema plus a guaranteed
+ * display title.
+ *
+ * @public
+ */
 export type ConnectionAuthValue<TAuthConfig extends { method: string }> =
-  TAuthConfig extends any
-    ? Expand<Omit<TAuthConfig, 'title' | 'match'> & { title: string }>
-    : never;
+  TAuthConfig extends any ? Expand<TAuthConfig & { title: string }> : never;
 
 export type MatchAuth<
   TAuthConfig extends { method: string },
@@ -160,27 +170,39 @@ export type ConnectionType<
       ? {
           method: TAuth['method'];
           title: string;
-          configSchema: PortableSchema<
-            Expand<Omit<TAuth, 'method' | 'match' | 'title'>>,
-            unknown
-          >;
+          configSchema: PortableSchema<Expand<Omit<TAuth, 'method'>>, unknown>;
         }
       : never
     : never)[];
   /** Type-level accessor for the query shape accepted by `find()`. */
   readonly query: T['query'];
+  /**
+   * Type-level accessor for the configured auth entry shapes. Each entry is
+   * the method discriminator plus the fields declared by that method's own
+   * config schema; framework-managed fields such as `title` and `match` are
+   * added by the shapes that need them rather than being part of the entries
+   * themselves.
+   */
+  readonly auth: T['auth'];
   matchAuth?(
     authMethods: ConnectionAuthValue<T['auth'][number]>[],
     query: T['query'],
   ): ConnectionAuthValue<T['auth'][number]> | undefined;
   /**
-   * Validates a complete parsed connection, enabling rules that span
-   * multiple auth entries or combine connection configuration with auth
-   * entries. Runs after all schemas have parsed and throws on violations.
+   * Validates the connection as a whole, after each schema has accepted
+   * its own part.
+   *
+   * Use this for rules that no single auth entry can check by itself, for
+   * example "account IDs must be unique across entries". Receives the
+   * parsed connection config and all parsed auth entries, each including
+   * its plugin `match` so that rules can take scoping into account; throw
+   * an error to reject the connection.
    */
   validate?(connection: {
     config: T['configSchema'];
-    auth: readonly T['auth'][number][];
+    auth: readonly Expand<
+      T['auth'][number] & { match?: ConnectionAuthMatch }
+    >[];
   }): void;
 };
 

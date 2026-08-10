@@ -8,9 +8,7 @@ import type { JsonObject } from '@backstage/types';
 
 // @public (undocumented)
 export type AuthValue<T extends ConnectionType | ConnectionTypeKey> =
-  ConnectionAuthValue<
-    RootConnectionAuth<LookupConnectionType<T>['authMethods'][number]>
-  >;
+  ConnectionAuthValue<LookupConnectionType<T>['auth'][number]>;
 
 // @public (undocumented)
 export type Connection<
@@ -39,14 +37,14 @@ export type ConnectionAuthMethodKey<
   T extends ConnectionType | ConnectionTypeKey,
 > = LookupConnectionType<T>['authMethods'][number]['method'];
 
-// @public (undocumented)
+// @public
 export type ConnectionAuthValue<
   TAuthConfig extends {
     method: string;
   },
 > = TAuthConfig extends any
   ? Expand<
-      Omit<TAuthConfig, 'title' | 'match'> & {
+      TAuthConfig & {
         title: string;
       }
     >
@@ -96,21 +94,23 @@ export type ConnectionType<
       ? {
           method: TAuth['method'];
           title: string;
-          configSchema: PortableSchema<
-            Expand<Omit<TAuth, 'method' | 'match' | 'title'>>,
-            unknown
-          >;
+          configSchema: PortableSchema<Expand<Omit<TAuth, 'method'>>, unknown>;
         }
       : never
     : never)[];
   readonly query: T['query'];
+  readonly auth: T['auth'];
   matchAuth?(
     authMethods: ConnectionAuthValue<T['auth'][number]>[],
     query: T['query'],
   ): ConnectionAuthValue<T['auth'][number]> | undefined;
   validate?(connection: {
     config: T['configSchema'];
-    auth: readonly T['auth'][number][];
+    auth: readonly Expand<
+      T['auth'][number] & {
+        match?: ConnectionAuthMatch;
+      }
+    >[];
   }): void;
 };
 
@@ -470,7 +470,7 @@ export type PortableSchema<TOutput = unknown, TInput = TOutput> = {
   };
 };
 
-// @public (undocumented)
+// @public
 export type RootConnectionAuth<M> = M extends {
   method: infer TMethod extends string;
   configSchema: {

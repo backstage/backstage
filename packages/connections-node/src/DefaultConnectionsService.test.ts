@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { mockServices } from '@backstage/backend-test-utils';
+import { connectionTypes } from '@backstage/connections';
 import { DefaultConnectionsService } from './DefaultConnectionsService';
 import { JsonArray, JsonObject } from '@backstage/types';
 
@@ -673,6 +674,39 @@ describe('DefaultConnectionsService', () => {
           roleName: 'wildcard-role',
         }),
       ).toThrow(/requires an auth entry marked as mainAccount/);
+    });
+
+    it('passes plugin match along to cross-entry validation', () => {
+      const aws = connectionTypes.aws as Required<typeof connectionTypes.aws>;
+      const validateSpy = jest.spyOn(aws, 'validate');
+
+      DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockConnectionsConfig([
+          {
+            type: 'aws',
+            auth: [
+              {
+                method: 'account',
+                mainAccount: true,
+                match: { plugins: ['catalog'] },
+              },
+            ],
+          },
+        ]),
+      });
+
+      expect(validateSpy).toHaveBeenCalledWith({
+        config: {},
+        auth: [
+          expect.objectContaining({
+            method: 'account',
+            mainAccount: true,
+            match: { plugins: ['catalog'] },
+          }),
+        ],
+      });
+      validateSpy.mockRestore();
     });
 
     it('rejects multiple aws connections', () => {
