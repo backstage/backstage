@@ -15,11 +15,11 @@
  */
 
 /**
- * A location within the app, as seen by framework navigation.
+ * A location within the app, as seen by the app's own navigation.
  *
  * @public
  */
-export interface FrameworkLocation {
+export interface AppLocation {
   pathname: string;
   search: string;
   hash: string;
@@ -28,12 +28,12 @@ export interface FrameworkLocation {
 }
 
 /**
- * Options for framework navigation.
+ * Options for app navigation.
  *
  * @public
  */
-export interface FrameworkNavigateOptions {
+export interface AppNavigateOptions {
   replace?: boolean;
-  /** User-visible navigation state (exposed on {@link FrameworkLocation.state}). */
+  /** User-visible navigation state (exposed on {@link AppLocation.state}). */
   state?: unknown;
 }

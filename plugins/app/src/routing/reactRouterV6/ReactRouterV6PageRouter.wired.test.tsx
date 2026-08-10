@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+import { useState } from 'react';
 import { act, screen } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import { PageBlueprint } from '@backstage/frontend-plugin-api';
-import { Link, Routes, Route } from 'react-router-dom';
+import { Link, Routes, Route, useParams } from 'react-router-dom';
 
 /**
  * Wired-path coverage for opaque React Router children under the default
@@ -71,5 +72,62 @@ describe('ReactRouterV6PageRouter', () => {
     );
     expect(screen.queryByTestId('opaque-index')).not.toBeInTheDocument();
     expect(appHistory.location.pathname).toBe('/opaque-v6/general');
+  });
+
+  it('should keep page content mounted while the concrete mount prefix changes', async () => {
+    // Entity A → entity B under one page pattern is the navigation that costs
+    // the most to get wrong: the page stays, and everything it was holding —
+    // in-page state, scroll position, in-flight requests — has to stay with it.
+    //
+    // Deliberately routed through the `pageRouterApiRef` default rather than a
+    // `PageRouterBlueprint` override, because an override is handed to the
+    // wrapper as a value the app built once, while the default is looked up
+    // per render. Only the default path can lose the page to a fresh component
+    // identity, so only the default path proves it does not.
+    const Counting = () => {
+      const [bumped, setBumped] = useState(0);
+      const { name } = useParams();
+      return (
+        <div data-testid="counting-page">
+          <span data-testid="name">{name}</span>
+          <span data-testid="bumped">{bumped}</span>
+          <button type="button" onClick={() => setBumped(n => n + 1)}>
+            Bump
+          </button>
+        </div>
+      );
+    };
+
+    const entityPage = PageBlueprint.make({
+      name: 'entity-v6',
+      params: {
+        path: '/e/:name',
+        loader: async () => <Counting />,
+      },
+    });
+
+    const { appHistory } = renderTestApp({
+      extensions: [entityPage],
+      initialRouteEntries: ['/e/a'],
+    });
+
+    expect(await screen.findByTestId('counting-page')).toBeInTheDocument();
+    expect(screen.getByTestId('name')).toHaveTextContent('a');
+    await act(async () => {
+      screen.getByRole('button', { name: 'Bump' }).click();
+    });
+    await act(async () => {
+      screen.getByRole('button', { name: 'Bump' }).click();
+    });
+    expect(screen.getByTestId('bumped')).toHaveTextContent('2');
+
+    await act(async () => {
+      appHistory.navigate('/e/b');
+    });
+
+    // The page really did move — the param is the new one — and it moved
+    // without being torn down and rebuilt.
+    expect(await screen.findByTestId('name')).toHaveTextContent('b');
+    expect(screen.getByTestId('bumped')).toHaveTextContent('2');
   });
 });

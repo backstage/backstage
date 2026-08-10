@@ -23,9 +23,9 @@ others do not:
 | `/nfs-routing-demo-v7` (React Router v7)       | `v6-guest`  | React Router v6 and v7 route trees in the same app     |
 |                                                | `v7-only`   | framework chrome with no React Router v6 in context    |
 
-`PageBlueprint` hands sub-pages to the active adapter as data rather than as a
-compiled route tree, so each adapter builds the tree with its own routing
-library — including TanStack Router, which could not host a tabbed page at all
+Sub-pages are ordinary routes one level below their page, matched by the app's
+own route table, so an adapter is only ever handed the content that is already
+showing — including TanStack Router, which could not host a tabbed page at all
 while the framework was passing down a React Router `<Routes>` tree. A sub-page
 that attaches its own `router` input runs its content under that adapter; one
 that does not falls back to the app-plugin default (React Router v6), which is

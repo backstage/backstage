@@ -23,14 +23,17 @@ export {
   type PageMount,
 } from './PageMountContext';
 export {
+  APP_ROOT_PATH,
+  climbPageBase,
   createPath,
   normalizeBasePath,
+  pageBasePaths,
+  parsePath,
+  resolveAppPath,
+  resolvePath,
   useAppBasePath,
-  useAppGoBack,
-  useAppHref,
-  useAppLocation,
-  useAppResolvedPath,
-  type AppLocation,
+  type AppPath,
+  type AppTo,
 } from './AppRouting';
 export { useAppHistoryLocation } from './useAppHistoryLocation';
 export {
@@ -53,9 +56,17 @@ export {
   type CompiledPath,
   type PathMatch,
 } from './routePattern';
-export { RouteTable, type RouteTableMatch } from './RouteTable';
+export {
+  RouteTable,
+  type RouteTableEntry,
+  type RouteTableMatch,
+  type RouteTableSubPageMatch,
+} from './RouteTable';
 export {
   AppRouteSwitch,
+  SubPageSelectionProvider,
+  useSubPageSelection,
   type AppRouteSwitchProps,
   type AppRouteRedirect,
+  type SubPageSelection,
 } from './AppRouteSwitch';

@@ -55,6 +55,13 @@ const _default: OverridableFrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ExtensionDataRef<
+            string[],
+            'core.page.subPagePaths',
+            {
+              optional: true;
+            }
           >;
       inputs: {
         pages: ExtensionInput<

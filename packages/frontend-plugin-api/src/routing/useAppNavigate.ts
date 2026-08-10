@@ -18,11 +18,11 @@ import { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApiHolder } from '../apis/system';
 import { appHistoryApiRef } from './AppHistoryApi';
-import type { FrameworkNavigateOptions } from './FrameworkLocation';
+import type { AppNavigateOptions } from './AppLocation';
 
 /**
- * Returns a navigate function backed by the framework's app history, or
- * `undefined` when no app history is registered (old frontend system / OFS).
+ * Returns a navigate function backed by the app history, or `undefined` when
+ * no app history is registered (old frontend system / OFS).
  *
  * Not exported from the package: {@link useAppNavigate} is the supported
  * entry point and applies the React Router fallback for you. App shell code
@@ -31,12 +31,12 @@ import type { FrameworkNavigateOptions } from './FrameworkLocation';
  *
  * @internal
  */
-export function useOptionalFrameworkNavigate():
-  | ((path: string, options?: FrameworkNavigateOptions) => void)
+export function useOptionalAppNavigate():
+  | ((path: string, options?: AppNavigateOptions) => void)
   | undefined {
   const appHistory = useApiHolder().get(appHistoryApiRef);
   const navigate = useCallback(
-    (path: string, options?: FrameworkNavigateOptions) => {
+    (path: string, options?: AppNavigateOptions) => {
       appHistory?.navigate(path, options);
     },
     [appHistory],
@@ -45,8 +45,8 @@ export function useOptionalFrameworkNavigate():
 }
 
 /**
- * Navigate using the framework's app history when registered, otherwise
- * React Router's `useNavigate`.
+ * Navigate using the app history when registered, otherwise React Router's
+ * `useNavigate`.
  *
  * Prefer this in shared plugin code that must run under both the new and old
  * frontend systems. Paths should be app-absolute (basename-stripped).
@@ -57,20 +57,20 @@ export function useOptionalFrameworkNavigate():
  */
 export function useAppNavigate(): (
   path: string,
-  options?: FrameworkNavigateOptions,
+  options?: AppNavigateOptions,
 ) => void {
-  const frameworkNavigate = useOptionalFrameworkNavigate();
+  const appNavigate = useOptionalAppNavigate();
   const reactRouterNavigate = useNavigate();
   return useMemo(
     () =>
-      frameworkNavigate ??
-      ((to: string, options?: FrameworkNavigateOptions) => {
+      appNavigate ??
+      ((to: string, options?: AppNavigateOptions) => {
         if (options) {
           reactRouterNavigate(to, options);
         } else {
           reactRouterNavigate(to);
         }
       }),
-    [frameworkNavigate, reactRouterNavigate],
+    [appNavigate, reactRouterNavigate],
   );
 }

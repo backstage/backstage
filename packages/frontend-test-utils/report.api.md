@@ -11,6 +11,7 @@ import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ApiRef } from '@backstage/frontend-plugin-api';
 import { AppHistoryApi } from '@backstage/frontend-plugin-api';
+import { AppNavigateOptions } from '@backstage/frontend-plugin-api';
 import { AppNode } from '@backstage/frontend-plugin-api';
 import { AppNodeInstance } from '@backstage/frontend-plugin-api';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
@@ -35,7 +36,6 @@ import { FeatureFlagsSaveOptions } from '@backstage/frontend-plugin-api';
 import { FeatureFlagState } from '@backstage/frontend-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { FetchApi as FetchApi_2 } from '@backstage/frontend-plugin-api';
-import { FrameworkNavigateOptions } from '@backstage/frontend-plugin-api';
 import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { IdentityApi } from '@backstage/frontend-plugin-api';
 import { IdentityApi as IdentityApi_2 } from '@backstage/core-plugin-api';
@@ -310,7 +310,7 @@ export namespace mockApis {
 export interface MockAppHistory extends AppHistoryApi {
   navigateCalls: Array<{
     to: string;
-    options?: FrameworkNavigateOptions;
+    options?: AppNavigateOptions;
   }>;
 }
 

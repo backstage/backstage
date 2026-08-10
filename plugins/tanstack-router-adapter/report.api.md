@@ -4,15 +4,12 @@
 
 ```ts
 import { JSX as JSX_2 } from 'react/jsx-runtime';
-import type { PageRouterSubPage } from '@backstage/frontend-plugin-api';
 import type { ReactNode } from 'react';
 
 // @public
 export function TanStackPageRouter(props: {
   basePath: string;
   routePattern: string;
-  subPages?: readonly PageRouterSubPage[];
-  indexPath?: string;
   children?: ReactNode;
 }): JSX_2.Element;
 ```

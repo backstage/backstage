@@ -187,6 +187,14 @@ describe('TanStackPageRouter wired path', () => {
     expect(await screen.findByTestId('settings-page')).toBeInTheDocument();
     expect(screen.queryByTestId('overview-page')).not.toBeInTheDocument();
 
+    // A path below a sub-page still belongs to that sub-page: the framework
+    // matched it, and this adapter passed the tail through untouched.
+    await act(async () => {
+      appHistory.navigate('/tabbed-ts/settings/deeper');
+    });
+
+    expect(await screen.findByTestId('settings-page')).toBeInTheDocument();
+
     // The page root redirects to the first sub-page.
     await act(async () => {
       appHistory.navigate('/tabbed-ts');

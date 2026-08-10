@@ -15,7 +15,6 @@
  */
 
 import type { ReactNode } from 'react';
-import type { PageRouterSubPage } from '@backstage/frontend-plugin-api';
 import { TanStackRouterHost } from './TanStackRouterHost';
 
 /**
@@ -25,14 +24,15 @@ import { TanStackRouterHost } from './TanStackRouterHost';
  * `window.history` via push/replace.
  *
  * Register as a page override via `PageRouterBlueprint`, or as the
- * `pageRouterApiRef` default.
+ * `pageRouterApiRef` default. Attach it to a sub-page the same way to give
+ * that sub-page's content a TanStack context of its own, scoped to the
+ * sub-page rather than to the page above it.
  *
- * Sub-pages (tabs) are supported: the framework hands them over as data, so
- * this adapter compiles them into real TanStack routes rather than being
- * handed a React Router tree it cannot host. A page's own opaque `children`
- * are rendered under a single root route — if that content uses React Router
- * internally, that is the page author's choice, made alongside their choice
- * of this adapter.
+ * The content is opaque: whichever sub-page of a page is showing has already
+ * been decided by the framework's own route matching, so this adapter never
+ * builds a route for one — and is never handed another library's route tree
+ * to host. If the content uses another routing library internally, that is
+ * the page author's choice, made alongside their choice of this adapter.
  *
  * Programmatic back/forward and cross-adapter navigation blockers are not
  * supported — there is a single, real browser history with no shared
@@ -51,18 +51,10 @@ export function TanStackPageRouter(props: {
   basePath: string;
   /** Registered route pattern this page is mounted at. */
   routePattern: string;
-  /** The page's sub-pages, for this adapter to route between. */
-  subPages?: readonly PageRouterSubPage[];
-  /** Sub-page path the page root redirects to. */
-  indexPath?: string;
   children?: ReactNode;
 }) {
   return (
-    <TanStackRouterHost
-      routePattern={props.routePattern}
-      subPages={props.subPages}
-      indexPath={props.indexPath}
-    >
+    <TanStackRouterHost routePattern={props.routePattern}>
       {props.children}
     </TanStackRouterHost>
   );

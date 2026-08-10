@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import { FrameworkLocation } from '@backstage/frontend-plugin-api';
+import { AppLocation } from '@backstage/frontend-plugin-api';
 import { Observable, Subscription } from '@backstage/types';
 
 /** @internal */
-export function parseFrameworkLocation(
-  path: string,
-  state?: unknown,
-): FrameworkLocation {
+export function parseAppLocation(path: string, state?: unknown): AppLocation {
   const url = new URL(path, 'http://localhost');
   return {
     pathname: url.pathname,
@@ -45,9 +42,9 @@ export function parseFrameworkLocation(
  * @internal
  */
 export function createSyncLocationObservable(
-  getCurrent: () => FrameworkLocation,
-  subscribers: Set<(value: FrameworkLocation) => void>,
-): Observable<FrameworkLocation> {
+  getCurrent: () => AppLocation,
+  subscribers: Set<(value: AppLocation) => void>,
+): Observable<AppLocation> {
   return {
     [Symbol.observable]() {
       return this;
@@ -59,7 +56,7 @@ export function createSyncLocationObservable(
           ? observerOrNext
           : observerOrNext?.next?.bind(observerOrNext);
 
-      const handler = (value: FrameworkLocation) => {
+      const handler = (value: AppLocation) => {
         if (!closed && next) {
           next(value);
         }
@@ -91,9 +88,9 @@ export function createSyncLocationObservable(
  *
  * @internal
  */
-export function emitFrameworkLocation(
-  location: FrameworkLocation,
-  subscribers: Set<(value: FrameworkLocation) => void>,
+export function emitAppLocation(
+  location: AppLocation,
+  subscribers: Set<(value: AppLocation) => void>,
 ): void {
   for (const subscriber of [...subscribers]) {
     subscriber(location);

@@ -545,7 +545,7 @@ For programmatic navigation to a route ref, use `useNavigateRouteRef`. If you al
 
 ### Page routers
 
-Leaving a page's `router` input empty keeps the app default, which is React Router v6. `PageBlueprint` composes a page's sub-pages (`pages` input / `SubPageBlueprint`) and `loader` content into a regular React Router `<Routes>` tree, the same way pages did before the new frontend system.
+Leaving a page's `router` input empty keeps the app default, which is React Router v6. A page's sub-pages (`pages` input / `SubPageBlueprint`) are ordinary routes one level below the page: the app's own route matching registers them and picks the one to show, so a page router never builds a route and never has to know that sub-pages exist.
 
 If you want a different page router (for example React Router v7), attach one of the packaged routers with `PageRouterBlueprint`:
 
@@ -561,7 +561,9 @@ const toolsV7Router = PageRouterBlueprint.make({
 
 The page's content is passed to the page router unchanged, so the page keeps composing its own React Router elements and the router only scopes them to the page's path.
 
-TanStack Router (`@backstage/plugin-tanstack-router-adapter`) renders through its own route tree. A page's sub-pages reach a page router as data rather than as a ready-made React Router tree, so the adapter compiles them into TanStack routes and can host a page with tabs. A page's own content is rendered as given: if that content composes React Router elements internally, that is the page author's choice to make alongside the choice of adapter.
+Attach a router to a sub-page the same way (for example `attachTo: { id: 'sub-page:tools/overview', input: 'router' }`) to give that sub-page's content a context of its own, scoped to the sub-page rather than to the page above it. Nothing is inherited: a sub-page whose content uses a different routing library than the app default has to say so itself.
+
+TanStack Router (`@backstage/plugin-tanstack-router-adapter`) renders through its own route tree. Because content reaches a page router already selected, TanStack can host a page with tabs without ever being handed another library's route tree. A page's own content is rendered as given: if that content composes React Router elements internally, that is the page author's choice to make alongside the choice of adapter.
 
 ### Testing
 

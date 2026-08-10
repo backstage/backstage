@@ -17,16 +17,22 @@
 import {
   Component,
   useCallback,
+  useContext,
   useEffect,
+  useMemo,
   useSyncExternalStore,
   type ComponentType,
   type ErrorInfo,
   type ReactElement,
   type ReactNode,
 } from 'react';
+import {
+  createVersionedContext,
+  createVersionedValueMap,
+} from '@backstage/version-bridge';
 import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
 import { PageMountProvider, type PageMount } from './PageMountContext';
-import { RouteTable } from './RouteTable';
+import { RouteTable, type RouteTableSubPageMatch } from './RouteTable';
 import { matchPath, substitutePathParams } from './routePattern';
 
 interface PluginErrorBoundaryProps {
@@ -96,6 +102,79 @@ class PluginErrorBoundary extends Component<
     }
     return this.props.children;
   }
+}
+
+/**
+ * Which of the matched page's sub-pages the current location selects.
+ *
+ * The object being present at all means the page is being routed by
+ * {@link AppRouteSwitch}. `selected` being absent means the location picked
+ * none of the page's sub-pages — the page's own root, or a path below the page
+ * that no sub-page claims.
+ */
+export interface SubPageSelection {
+  selected?: {
+    /** The sub-page path exactly as registered, e.g. `overview`. */
+    path: string;
+    /** The sub-page's own mount, for its content and its adapter. */
+    mount: PageMount;
+  };
+}
+
+/**
+ * Carries the sub-page half of the current route match down to the page that
+ * owns those sub-pages.
+ *
+ * Versioned for the same reason `page-mount-context` is: `@internal/frontend`
+ * is an inline package, so provider and consumer can be compiled from
+ * different vintages of this module while sharing one context object through
+ * the global singleton. See `PageMountContext` for the full reasoning.
+ */
+const SubPageSelectionContext = createVersionedContext<{
+  1: SubPageSelection;
+}>('sub-page-selection-context');
+
+/**
+ * Provides the sub-page selection that {@link useSubPageSelection} reads.
+ *
+ * Memoized on the match's fields rather than its object identity, since page
+ * matching builds a fresh match on every location change.
+ */
+export function SubPageSelectionProvider(props: {
+  subPage: RouteTableSubPageMatch | undefined;
+  children: ReactNode;
+}) {
+  const { path, routePattern, basePath } = props.subPage ?? {};
+
+  const versionedValue = useMemo(
+    () =>
+      createVersionedValueMap({
+        1: {
+          selected:
+            path === undefined ||
+            routePattern === undefined ||
+            basePath === undefined
+              ? undefined
+              : { path, mount: { basePath, routePattern } },
+        },
+      }),
+    [path, routePattern, basePath],
+  );
+
+  return (
+    <SubPageSelectionContext.Provider value={versionedValue}>
+      {props.children}
+    </SubPageSelectionContext.Provider>
+  );
+}
+
+/**
+ * Returns which sub-page of the surrounding page the current location selects,
+ * or `undefined` when the page is not being routed by {@link AppRouteSwitch}
+ * (e.g. an isolated `renderInTestApp`).
+ */
+export function useSubPageSelection(): SubPageSelection | undefined {
+  return useContext(SubPageSelectionContext)?.atVersion(1);
 }
 
 /**
@@ -193,6 +272,12 @@ function resolveRedirectTarget(
  * `PageMount` provided to the matched page carries both that pattern
  * and the concrete matched URL prefix (`match.basePath`).
  *
+ * A match is a chain — the page, then the sub-page of that page the location
+ * selects. The page shell is rendered for the page half, so it stays mounted
+ * across a change of sub-page, while the sub-page half is published separately
+ * for the content inside that shell to pick up (see
+ * {@link useSubPageSelection}). No routing library is involved on either side.
+ *
  * The error boundary is keyed by the pattern, so switching pages remounts it,
  * while navigation between two concrete mounts of the same pattern does not.
  * See {@link PluginErrorBoundary} for how a crash at one such mount is kept
@@ -215,17 +300,25 @@ export function AppRouteSwitch(props: AppRouteSwitchProps) {
 
   const redirectTarget = resolveRedirectTarget(redirects, location);
 
-  useEffect(() => {
-    if (redirectTarget) {
-      history.navigate(redirectTarget, { replace: true });
-    }
-  }, [history, redirectTarget]);
-
   const match = redirectTarget
     ? undefined
     : routeTable.match(location.pathname);
   const matchedPath = match?.path;
   const matchedBasePath = match?.basePath;
+
+  // A page composed from sub-pages has nothing to show at its own root, so the
+  // match names the sub-page to land on instead. Query and hash come along, the
+  // same way a configured redirect carries them.
+  const indexTarget = match?.indexRedirect
+    ? `${match.indexRedirect}${location.search}${location.hash}`
+    : undefined;
+  const navigationTarget = redirectTarget ?? indexTarget;
+
+  useEffect(() => {
+    if (navigationTarget) {
+      history.navigate(navigationTarget, { replace: true });
+    }
+  }, [history, navigationTarget]);
 
   if (redirectTarget) {
     return null;
@@ -247,13 +340,15 @@ export function AppRouteSwitch(props: AppRouteSwitchProps) {
 
   return (
     <PageMountProvider mount={pageMount}>
-      <PluginErrorBoundary
-        key={matchedPath}
-        basePath={matchedBasePath}
-        fallback={fallback}
-      >
-        <PageComponent />
-      </PluginErrorBoundary>
+      <SubPageSelectionProvider subPage={match?.subPage}>
+        <PluginErrorBoundary
+          key={matchedPath}
+          basePath={matchedBasePath}
+          fallback={fallback}
+        >
+          <PageComponent />
+        </PluginErrorBoundary>
+      </SubPageSelectionProvider>
     </PageMountProvider>
   );
 }

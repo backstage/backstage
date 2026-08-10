@@ -19,7 +19,6 @@ import { useApiHolder } from '../apis/system';
 import {
   pageRouterApiRef,
   type PageRouterComponent,
-  type PageRouterSubPage,
 } from '../apis/definitions/PageRouterApi';
 import type { PageMount } from '@internal/frontend';
 
@@ -31,11 +30,7 @@ export interface PageRouterWrapperProps {
   mount: PageMount | undefined;
   /** Adapter from the page's (or sub-page's) `router` extension input. */
   RouterOverride?: PageRouterComponent;
-  /** Sub-pages for the adapter to route between, as data. */
-  subPages?: readonly PageRouterSubPage[];
-  /** Sub-page path the page root should land on. */
-  indexPath?: string;
-  /** Opaque content, when there are no sub-pages. */
+  /** The content to render inside the adapter's context. */
   children?: ReactNode;
 }
 
@@ -43,45 +38,34 @@ export interface PageRouterWrapperProps {
  * Renders a page's or sub-page's content region with its own router input
  * override, or the app-plugin default from {@link pageRouterApiRef}.
  *
- * Sub-pages are handed to the adapter as data rather than as an already
- * composed route tree, so the adapter decides how they are matched — see
- * {@link PageRouterComponent}. The page chrome around this (header, tabs,
- * breadcrumbs) is framework-owned and deliberately sits outside the adapter:
- * it resolves its links from the page mount and the route resolution API, so
- * it must not require any particular routing library to be in context.
+ * The content is opaque to the adapter: which sub-page of a page is showing is
+ * decided by top-level route matching, so no adapter ever has to build routes
+ * of its own and no routing library has to host another library's routes. The
+ * page chrome around this (header, tabs, breadcrumbs) is framework-owned and
+ * deliberately sits outside the adapter: it resolves its links from the page
+ * mount and the route resolution API, so it must not require any particular
+ * routing library to be in context.
  *
  * When there is no mount (e.g. isolated `renderInTestApp` without
- * `AppRouteSwitch`) there is nothing to scope an adapter to, so content
- * renders without one and a sub-page list falls back to its index entry.
+ * `AppRouteSwitch`) there is nothing to scope an adapter to, so the content
+ * renders without one.
  */
 export function PageRouterWrapper(props: PageRouterWrapperProps) {
-  const { mount, RouterOverride, subPages, indexPath, children } = props;
+  const { mount, RouterOverride, children } = props;
   const apiHolder = useApiHolder();
 
-  // Without an adapter there is nothing to dispatch between sub-pages, so the
-  // index sub-page stands in for the whole list.
-  const unroutedContent = subPages?.length
-    ? subPages.find(subPage => subPage.path === indexPath)?.element ??
-      subPages[0].element
-    : children;
-
   if (!mount) {
-    return <>{unroutedContent}</>;
+    return <>{children}</>;
   }
 
   const Router = RouterOverride ?? apiHolder.get(pageRouterApiRef);
 
   if (!Router) {
-    return <>{unroutedContent}</>;
+    return <>{children}</>;
   }
 
   return (
-    <Router
-      basePath={mount.basePath}
-      routePattern={mount.routePattern}
-      subPages={subPages}
-      indexPath={indexPath}
-    >
+    <Router basePath={mount.basePath} routePattern={mount.routePattern}>
       {children}
     </Router>
   );

@@ -227,6 +227,282 @@ describe('RouteTable', () => {
     });
   });
 
+  describe('sub-pages', () => {
+    it('should return the page and the sub-page it selects as one chain', () => {
+      const table = new RouteTable([
+        { path: '/catalog', subPaths: ['overview', 'detail'] },
+      ]);
+
+      expect(table.match('/catalog/overview')).toEqual({
+        path: '/catalog',
+        basePath: '/catalog',
+        subPage: {
+          path: 'overview',
+          routePattern: '/catalog/overview',
+          basePath: '/catalog/overview',
+        },
+      });
+
+      // A path below the sub-page still belongs to that sub-page, and mounts
+      // it at its own base rather than at the whole pathname.
+      expect(table.match('/catalog/detail/deep/deeper')).toEqual({
+        path: '/catalog',
+        basePath: '/catalog',
+        subPage: {
+          path: 'detail',
+          routePattern: '/catalog/detail',
+          basePath: '/catalog/detail',
+        },
+      });
+    });
+
+    it('should carry the params of a parameterized page into the sub-page mount', () => {
+      const table = new RouteTable([
+        { path: '/catalog/:namespace/:kind/:name', subPaths: ['overview'] },
+      ]);
+
+      expect(
+        table.match('/catalog/default/component/foo/overview/deep'),
+      ).toEqual({
+        path: '/catalog/:namespace/:kind/:name',
+        basePath: '/catalog/default/component/foo',
+        subPage: {
+          path: 'overview',
+          routePattern: '/catalog/:namespace/:kind/:name/overview',
+          basePath: '/catalog/default/component/foo/overview',
+        },
+      });
+    });
+
+    it('should register a sub-page of a splat page below the splat, not through it', () => {
+      // Joining the page pattern to the sub-path verbatim would give
+      // `/docs/*/overview`, which matches nothing and leaves the sub-page with
+      // no mount of its own to resolve relative targets against.
+      const table = new RouteTable([{ path: '/docs/*', subPaths: ['intro'] }]);
+
+      expect(table.match('/docs/intro/chapter-1')).toEqual({
+        path: '/docs/*',
+        basePath: '/docs',
+        subPage: {
+          path: 'intro',
+          routePattern: '/docs/intro',
+          basePath: '/docs/intro',
+        },
+      });
+    });
+
+    it('should rank sub-page routes with every other route', () => {
+      const table = new RouteTable([
+        { path: '/catalog', subPaths: ['entities'] },
+        '/catalog/:namespace/:kind/:name',
+      ]);
+
+      // The static sub-page route beats the page it belongs to.
+      expect(table.match('/catalog/entities')).toEqual({
+        path: '/catalog',
+        basePath: '/catalog',
+        subPage: {
+          path: 'entities',
+          routePattern: '/catalog/entities',
+          basePath: '/catalog/entities',
+        },
+      });
+      // A sibling page that matches more specifically still wins outright.
+      expect(table.match('/catalog/default/component/foo')).toEqual({
+        path: '/catalog/:namespace/:kind/:name',
+        basePath: '/catalog/default/component/foo',
+      });
+    });
+
+    it('should send the root of a page with sub-pages to its first sub-page', () => {
+      const table = new RouteTable([
+        { path: '/catalog', subPaths: ['overview', 'detail'] },
+        { path: '/', subPaths: ['start'] },
+        '/plain',
+      ]);
+
+      expect(table.match('/catalog')).toEqual({
+        path: '/catalog',
+        basePath: '/catalog',
+        indexRedirect: '/catalog/overview',
+      });
+      expect(table.match('/catalog/')).toEqual({
+        path: '/catalog',
+        basePath: '/catalog',
+        indexRedirect: '/catalog/overview',
+      });
+      expect(table.match('/')).toEqual({
+        path: '/',
+        basePath: '/',
+        indexRedirect: '/start',
+      });
+
+      // A page without sub-pages is never redirected, at its root or below it.
+      expect(table.match('/plain')).toEqual({
+        path: '/plain',
+        basePath: '/plain',
+      });
+      expect(table.match('/plain/deeper')).toEqual({
+        path: '/plain',
+        basePath: '/plain',
+      });
+    });
+
+    it('should leave a path below the page that no sub-page claims on the page', () => {
+      const table = new RouteTable([
+        { path: '/catalog', subPaths: ['overview'] },
+      ]);
+
+      // Not the page root, so redirecting to a tab would paper over a bad URL.
+      expect(table.match('/catalog/bogus')).toEqual({
+        path: '/catalog',
+        basePath: '/catalog',
+      });
+    });
+
+    it('should ignore an empty sub-page path', () => {
+      // It would register the page's own pattern a second time and make the
+      // index redirect point back at the page root it came from.
+      const table = new RouteTable([
+        { path: '/catalog', subPaths: ['', 'overview'] },
+      ]);
+
+      expect(table.match('/catalog')).toEqual({
+        path: '/catalog',
+        basePath: '/catalog',
+        indexRedirect: '/catalog/overview',
+      });
+    });
+
+    it('should ignore sub-page paths that do not name anything below the page', () => {
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+
+      // `/` is the page itself spelled as a path, and `..` builds a literal
+      // `/x/..` route that no location ever reaches — a browser resolves it
+      // away long before the app sees it. Neither may become the index
+      // redirect: `//` re-matches to `//` and parks the page on a blank
+      // content region.
+      const table = new RouteTable([
+        { path: '/', subPaths: ['/', '..', 'start'] },
+        { path: '/catalog', subPaths: ['../escape', 'a/../b', 'overview'] },
+      ]);
+
+      expect(table.match('/')).toEqual({
+        path: '/',
+        basePath: '/',
+        indexRedirect: '/start',
+      });
+      expect(table.match('/catalog')).toEqual({
+        path: '/catalog',
+        basePath: '/catalog',
+        indexRedirect: '/catalog/overview',
+      });
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Sub-page path ".." of page "/"'),
+      );
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Sub-page path "a/../b" of page "/catalog"'),
+      );
+      warnSpy.mockRestore();
+    });
+
+    it('should normalize a sub-page path written with separators of its own', () => {
+      const table = new RouteTable([
+        { path: '/catalog', subPaths: ['/overview/'] },
+      ]);
+
+      // Joining the two verbatim would give a `/catalog//overview/` redirect
+      // that never reaches the sub-page it names.
+      expect(table.match('/catalog')).toEqual({
+        path: '/catalog',
+        basePath: '/catalog',
+        indexRedirect: '/catalog/overview',
+      });
+      expect(table.match('/catalog/overview')).toEqual({
+        path: '/catalog',
+        basePath: '/catalog',
+        subPage: {
+          // Reported exactly as registered, since that is what the page
+          // matches its own sub-page content against.
+          path: '/overview/',
+          routePattern: '/catalog/overview',
+          basePath: '/catalog/overview',
+        },
+      });
+    });
+
+    it('should let a registered page keep a path a sub-page route would take, in either registration order', () => {
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+      const tabbedCatalog = {
+        path: '/catalog',
+        subPaths: ['overview', 'detail'],
+      };
+
+      for (const pages of [
+        [tabbedCatalog, '/catalog/overview'],
+        ['/catalog/overview', tabbedCatalog],
+      ]) {
+        warnSpy.mockClear();
+        const table = new RouteTable(pages);
+
+        // The page keeps its own path — a page is a claim its author made on a
+        // URL, so it cannot be shadowed by a route generated below somebody
+        // else's page, and which plugin loaded first cannot decide it.
+        expect(table.match('/catalog/overview')).toEqual({
+          path: '/catalog/overview',
+          basePath: '/catalog/overview',
+        });
+        // The tabbed page still works, and its root lands on the first tab
+        // that is actually reachable rather than inside the other page.
+        expect(table.match('/catalog')).toEqual({
+          path: '/catalog',
+          basePath: '/catalog',
+          indexRedirect: '/catalog/detail',
+        });
+        expect(table.match('/catalog/detail')).toEqual({
+          path: '/catalog',
+          basePath: '/catalog',
+          subPage: {
+            path: 'detail',
+            routePattern: '/catalog/detail',
+            basePath: '/catalog/detail',
+          },
+        });
+        expect(warnSpy).toHaveBeenCalledWith(
+          expect.stringContaining(
+            'Sub-page "overview" of page "/catalog" would be routed at "/catalog/overview"',
+          ),
+        );
+      }
+
+      warnSpy.mockRestore();
+    });
+
+    it('should keep the first registration when two pages generate the same sub-page route', () => {
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+      const table = new RouteTable([
+        { path: '/docs', subPaths: ['guides/intro'] },
+        { path: '/docs/guides', subPaths: ['intro'] },
+      ]);
+
+      expect(table.match('/docs/guides/intro')).toEqual({
+        path: '/docs',
+        basePath: '/docs',
+        subPage: {
+          path: 'guides/intro',
+          routePattern: '/docs/guides/intro',
+          basePath: '/docs/guides/intro',
+        },
+      });
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Sub-page "intro" of page "/docs/guides" would be routed at "/docs/guides/intro"',
+        ),
+      );
+      warnSpy.mockRestore();
+    });
+  });
+
   it('should warn on duplicate base paths', () => {
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
     const table = new RouteTable(['/catalog', '/scaffolder', '/catalog']);

@@ -28,7 +28,7 @@ import {
   useAppNavigate,
 } from '@backstage/frontend-plugin-api';
 import { useAppHistoryLocation, usePageMount } from '@internal/frontend';
-import { Link, useLocation } from 'react-router';
+import { Link, useLocation, useResolvedPath } from 'react-router';
 import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';
 
 /**
@@ -237,6 +237,14 @@ describe('multi-router coexistence', () => {
           <div data-testid="adapter">v7</div>
           <div data-testid="pathname">{location.pathname}</div>
           <div data-testid="contract-base">{pageMount?.basePath}</div>
+          {/* The page above this sub-page is routed by the default v6
+              adapter, so there is no v7 route context around this one to
+              inherit — and `..` still has to mean the page, not the app
+              root. */}
+          <div data-testid="up">{useResolvedPath('..').pathname}</div>
+          <Link to="../graph" data-testid="to-graph">
+            Graph tab
+          </Link>
           <RouteLink routeRef={homeRouteRef} data-testid="to-home">
             Home (v6)
           </RouteLink>
@@ -271,6 +279,16 @@ describe('multi-router coexistence', () => {
       },
     });
 
+    const graphSubPage = SubPageBlueprint.make({
+      name: 'graph',
+      attachTo: { id: 'page:test/visualizer', input: 'pages' },
+      params: {
+        path: 'graph',
+        title: 'Graph',
+        loader: async () => <div data-testid="graph-subpage">Graph</div>,
+      },
+    });
+
     const treeV7Router = PageRouterBlueprint.make({
       name: 'tree-v7',
       attachTo: { id: 'sub-page:test/tree', input: 'router' },
@@ -280,7 +298,13 @@ describe('multi-router coexistence', () => {
     });
 
     const { appHistory } = renderTestApp({
-      extensions: [homePage, visualizerPage, treeSubPage, treeV7Router],
+      extensions: [
+        homePage,
+        visualizerPage,
+        treeSubPage,
+        graphSubPage,
+        treeV7Router,
+      ],
       initialRouteEntries: ['/home-pudding'],
     });
 
@@ -302,6 +326,31 @@ describe('multi-router coexistence', () => {
       expect(screen.getByTestId('pathname').textContent).toBe(
         '/visualizer-pudding/tree',
       );
+    });
+
+    // Crossing libraries at the page/sub-page boundary must not move where a
+    // relative target lands: `..` is the page above, and the sibling tab href
+    // has to be followable.
+    expect(screen.getByTestId('up').textContent).toBe('/visualizer-pudding');
+    expect(screen.getByTestId('to-graph')).toHaveAttribute(
+      'href',
+      '/visualizer-pudding/graph',
+    );
+
+    await act(async () => {
+      screen.getByTestId('to-graph').click();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('graph-subpage')).toBeInTheDocument();
+      expect(appHistory.location.pathname).toBe('/visualizer-pudding/graph');
+    });
+
+    await act(async () => {
+      appHistory.navigate('/visualizer-pudding/tree');
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId('tree-subpage')).toBeInTheDocument();
     });
 
     await act(async () => {

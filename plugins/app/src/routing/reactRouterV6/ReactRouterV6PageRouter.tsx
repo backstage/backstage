@@ -15,12 +15,7 @@
  */
 
 import { useMemo, type ReactNode } from 'react';
-import {
-  appHistoryApiRef,
-  useApi,
-  type PageRouterSubPage,
-} from '@backstage/frontend-plugin-api';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { appHistoryApiRef, useApi } from '@backstage/frontend-plugin-api';
 import { createScopedRouter } from './createScopedRouter';
 
 /**
@@ -28,11 +23,11 @@ import { createScopedRouter } from './createScopedRouter';
  * from the framework's app history and never writes `window.history` via
  * push/replace.
  *
- * Sub-pages arrive as data and are compiled here into a React Router
- * `<Routes>` tree, applying this library's own prefix convention (a `/*`
- * splat, so a sub-page can nest further routes of its own). `children` are
- * opaque React Router content (e.g. `<Routes>` / `<Route>` trees composed by
- * the page itself) and are rendered as-is.
+ * `children` are opaque React Router content (e.g. `<Routes>` / `<Route>`
+ * trees composed by the page itself, or the sub-page the framework routed to)
+ * and are rendered as-is. This adapter builds no routes of its own: which
+ * sub-page of a page is showing is decided by the framework's own route
+ * matching, one level above.
  *
  * @internal
  */
@@ -46,13 +41,9 @@ export function ReactRouterV6PageRouter(props: {
   basePath: string;
   /** Registered route pattern this page is mounted at. */
   routePattern: string;
-  /** The page's sub-pages, for this adapter to route between. */
-  subPages?: readonly PageRouterSubPage[];
-  /** Sub-page path the page root redirects to. */
-  indexPath?: string;
   children?: ReactNode;
 }) {
-  const { routePattern, subPages, indexPath, children } = props;
+  const { routePattern, children } = props;
   const appHistory = useApi(appHistoryApiRef);
 
   // Only ever recreated for a genuinely different router: a new element type
@@ -63,24 +54,5 @@ export function ReactRouterV6PageRouter(props: {
     [appHistory, routePattern],
   );
 
-  return (
-    <scopedRouter.Router>
-      {subPages?.length ? (
-        <Routes>
-          {indexPath && (
-            <Route index element={<Navigate to={indexPath} replace />} />
-          )}
-          {subPages.map(subPage => (
-            <Route
-              key={subPage.path}
-              path={`${subPage.path}/*`}
-              element={subPage.element}
-            />
-          ))}
-        </Routes>
-      ) : (
-        children
-      )}
-    </scopedRouter.Router>
-  );
+  return <scopedRouter.Router>{children}</scopedRouter.Router>;
 }

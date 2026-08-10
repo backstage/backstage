@@ -129,6 +129,16 @@ function renderPage(initialPath: string) {
     attachTo: { id: 'page:test/things', input: 'router' },
     params: { component: adapter.PageRouter },
   });
+  // A sub-page is an ordinary route with a routing context of its own, so the
+  // content written with this library declares this adapter for itself rather
+  // than inheriting whatever the page above it happens to use.
+  const subPageRouters = ['overview', 'settings'].map(name =>
+    PageRouterBlueprint.make({
+      name: `${name}-under-test`,
+      attachTo: { id: `sub-page:test/${name}`, input: 'router' },
+      params: { component: adapter.PageRouter },
+    }),
+  );
 
   return renderTestApp({
     extensions: [
@@ -137,6 +147,7 @@ function renderPage(initialPath: string) {
       overviewSubPage,
       settingsSubPage,
       pageRouter,
+      ...subPageRouters,
     ],
     initialRouteEntries: [initialPath],
   });

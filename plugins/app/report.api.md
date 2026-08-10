@@ -204,6 +204,13 @@ const appPlugin: OverridableFrontendPlugin<
               {
                 optional: true;
               }
+            >
+          | ConfigurableExtensionDataRef<
+              string[],
+              'core.page.subPagePaths',
+              {
+                optional: true;
+              }
             >,
           {
             singleton: false;

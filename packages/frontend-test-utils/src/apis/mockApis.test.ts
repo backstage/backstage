@@ -16,7 +16,7 @@
 
 import {
   FeatureFlagState,
-  FrameworkLocation,
+  AppLocation,
   createRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { mockApis } from './mockApis';
@@ -182,7 +182,7 @@ describe('mockApis', () => {
       const seen: string[] = [];
       // The same function subscribing twice is two subscriptions, exactly as
       // it is on the real app history.
-      const onNext = (l: FrameworkLocation) => seen.push(l.pathname);
+      const onNext = (l: AppLocation) => seen.push(l.pathname);
 
       const first = history.location$.subscribe(onNext);
       const second = history.location$.subscribe(onNext);
@@ -202,7 +202,7 @@ describe('mockApis', () => {
     });
 
     it('only stops tracking the location when a test asks it to', () => {
-      const pinned: FrameworkLocation = {
+      const pinned: AppLocation = {
         pathname: '/pinned',
         search: '',
         hash: '',
@@ -227,7 +227,7 @@ describe('mockApis', () => {
         state: undefined,
       });
 
-      const seen: FrameworkLocation[] = [];
+      const seen: AppLocation[] = [];
       const subscription = history.location$.subscribe(l => seen.push(l));
       expect(seen).toEqual([history.location]);
 

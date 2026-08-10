@@ -201,12 +201,12 @@ describe('TanStack + RR v6 coexistence', () => {
     };
 
     const TreeTanStackSubPage = () => {
-      const frameworkLocation = useAppLocation();
+      const appLocation = useAppLocation();
       const scopedLocation = useTanStackLocation();
       return (
         <div data-testid="tree-subpage">
           <div data-testid="adapter">tanstack</div>
-          <div data-testid="pathname">{frameworkLocation.pathname}</div>
+          <div data-testid="pathname">{appLocation.pathname}</div>
           {/* Scoped to the sub-page's own mount, not to its parent page. */}
           <div data-testid="scoped-pathname">{scopedLocation.pathname}</div>
           <RouteLink routeRef={homeRouteRef} data-testid="to-home">

@@ -16,15 +16,20 @@
 
 import {
   type AppHistoryApi,
-  type FrameworkLocation,
-  type FrameworkNavigateOptions,
+  type AppLocation,
+  type AppNavigateOptions,
 } from '@backstage/frontend-plugin-api';
-import { isExternalTarget } from '@internal/frontend';
+import {
+  createPath,
+  isExternalTarget,
+  pageBasePaths,
+  resolveAppPath,
+} from '@internal/frontend';
 import {
   createSyncLocationObservable,
-  emitFrameworkLocation,
-  parseFrameworkLocation,
-} from './mockFrameworkLocation';
+  emitAppLocation,
+  parseAppLocation,
+} from './mockAppLocation';
 
 /**
  * Options for {@link createMockAppHistory}.
@@ -72,7 +77,7 @@ export interface MockAppHistory extends AppHistoryApi {
    */
   navigateCalls: Array<{
     to: string;
-    options?: FrameworkNavigateOptions;
+    options?: AppNavigateOptions;
   }>;
 }
 
@@ -111,7 +116,7 @@ export function createMockAppHistory(
     basename = '',
   } = options;
 
-  const subscribers = new Set<(value: FrameworkLocation) => void>();
+  const subscribers = new Set<(value: AppLocation) => void>();
   const navigateCalls: MockAppHistory['navigateCalls'] = [];
 
   /**
@@ -129,8 +134,8 @@ export function createMockAppHistory(
     return pathname;
   }
 
-  const initial = parseFrameworkLocation(initialLocation);
-  let current: FrameworkLocation = {
+  const initial = parseAppLocation(initialLocation);
+  let current: AppLocation = {
     ...initial,
     pathname: stripBasename(initial.pathname),
   };
@@ -139,7 +144,7 @@ export function createMockAppHistory(
   // something observable about the location changed, so `location` is safe to
   // hand straight to `useSyncExternalStore` and a navigate to the location we
   // are already on does not force a re-render.
-  function commitLocation(next: FrameworkLocation): FrameworkLocation {
+  function commitLocation(next: AppLocation): AppLocation {
     if (
       current.pathname !== next.pathname ||
       current.search !== next.search ||
@@ -159,7 +164,7 @@ export function createMockAppHistory(
     },
     location$,
     navigateCalls,
-    navigate(to: string, navOptions?: FrameworkNavigateOptions) {
+    navigate(to: string, navOptions?: AppNavigateOptions) {
       if (isExternalTarget(to)) {
         throw new Error(
           'AppHistory.navigate does not support absolute or protocol-relative URLs',
@@ -169,10 +174,8 @@ export function createMockAppHistory(
       // `?? undefined` mirrors the real app history, which reads state back out
       // of the History API — where an absent state is `null` — and normalizes
       // it before emitting.
-      commitLocation(
-        parseFrameworkLocation(to, navOptions?.state ?? undefined),
-      );
-      emitFrameworkLocation(current, subscribers);
+      commitLocation(parseAppLocation(to, navOptions?.state ?? undefined));
+      emitAppLocation(current, subscribers);
       if (!navigateImpl) {
         return;
       }
@@ -183,16 +186,24 @@ export function createMockAppHistory(
         navigateImpl(to, navOptions);
       }
     },
-    createHref(to: string) {
+    createHref(to: string, hrefOptions?: { basePath?: string }) {
       if (isExternalTarget(to)) {
         return to;
       }
+      // Resolved exactly as the real app history resolves: against the page
+      // mount the caller passed, or against the app root when it passed none,
+      // and against the current location for a target with no pathname of its
+      // own. A mock that skipped this would let a relative target survive a
+      // test unresolved, which is exactly the kind of gap that hides a bug
+      // until production.
+      const resolved = resolveAppPath(
+        to,
+        pageBasePaths(hrefOptions?.basePath),
+        current.pathname,
+      );
       // Normalised through URL even without a basename, because the real
-      // implementation always is. Skipping it here would let a target the app
-      // history would have turned app-absolute (`catalog`, `/a/../b`) survive a
-      // test unchanged, which is exactly the kind of gap that hides a bug until
-      // production.
-      const url = new URL(to, 'http://localhost');
+      // implementation always is.
+      const url = new URL(createPath(resolved), 'http://localhost');
       return `${basename}${url.pathname}${url.search}${url.hash}`;
     },
   };

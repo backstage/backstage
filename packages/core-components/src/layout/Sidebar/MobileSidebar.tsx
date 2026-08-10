@@ -36,7 +36,7 @@ import { SidebarOpenStateProvider } from './SidebarOpenStateContext';
 import { SidebarGroup } from './SidebarGroup';
 import { SidebarConfigContext, SidebarConfig } from './config';
 import { MobileSidebarContext } from './MobileSidebarContext';
-import { useAppLocation } from '@internal/frontend';
+import { useAppLocation } from '../appRouting';
 import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
 
 /**

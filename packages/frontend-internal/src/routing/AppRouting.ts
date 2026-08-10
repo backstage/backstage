@@ -14,150 +14,84 @@
  * limitations under the License.
  */
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  type Context,
-  type ContextType,
-} from 'react';
-// React Router v6 specifically, which is why `@internal/frontend` keeps its
-// `react-router-dom` peer dependency at `^6.30.2` while the rest of the new
-// frontend system is router-agnostic. The `UNSAFE_*` context objects below are
-// v6 internals, and reading them is a legacy-compatibility dependency rather
-// than a new-frontend-system one. Two things need it: the old frontend system,
-// where React Router v6 is the router, is permanent, and is never migrated; and
-// the ambient route-match base under the residual root projection that
-// `AppRoot` still renders for chrome that resolves relative links through React
-// Router. Any package that inlines this module therefore has to declare
-// react-router itself.
-import {
-  resolvePath,
-  UNSAFE_LocationContext,
-  UNSAFE_NavigationContext,
-  UNSAFE_RouteContext,
-  type Path,
-  type To,
-} from 'react-router-dom';
-import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
-import { isExternalTarget } from './isExternalTarget';
 import { usePageMount } from './PageMountContext';
-import { useAppHistoryLocation } from './useAppHistoryLocation';
 
 /**
- * AppRouting — the single answer to "which authority resolves this path?".
+ * AppRouting — the path algebra every link target is resolved with, and
+ * nothing else.
  *
- * Two authorities can answer, and every call site has to pick the same way:
+ * `@internal/frontend` is an inline package: its source is compiled into every
+ * consumer, `@backstage/frontend-plugin-api` included, so whatever lives here
+ * lands in a package that should be a lightweight client of the app history.
+ * This module therefore carries no React Router import and no routing
+ * authority of its own — only pure functions and the one hook that reads the
+ * framework's own {@link PageMount} context.
  *
- * - **Framework**: an `AppHistoryApi` is registered (new frontend system).
- *   Location comes from the app history, and relative targets resolve against
- *   the current {@link PageMount} `basePath` — the framework's analogue of
- *   React Router's `pathnameBase` — or against the matches a page adapter
- *   projects, where there are any. Hrefs are that resolved, app-absolute path
- *   handed to `createHref`, which applies the app's deploy basename.
- * - **React Router**: no app history (old frontend system). Every value is the
- *   one React Router's own hook at that call site produced before the framework
- *   seam existed, so legacy behavior is unchanged.
+ * The two authorities that used to be reconciled here now each own their side:
  *
- * Rendering app chrome does not require either authority. Chrome legitimately
- * renders with no ambient React Router: `RouterBlueprint` is supported and its
- * own docs invite swapping the root router for a passthrough,
- * `convertLegacyAppOptions` routes a migrating app's `components.Router` into
- * that same slot, and `createSpecializedApp` without `@backstage/plugin-app`
- * has no router at all. React Router's `useLocation` / `useResolvedPath` /
- * `useHref` / `useNavigate` throw there, so this module does not call them: it
- * reads the very contexts they read, which are `null` outside a router rather
- * than throwing — that is exactly how `useInRouterContext` detects a router.
- * Location, target resolution, href and going back therefore run the same
- * `useContext` calls on every render and branch on the resulting *value*, so
- * hook order is stable whichever authority answers, no call site needs to
- * disable `react-hooks/rules-of-hooks`, and with neither authority present the
- * answers degrade to the app root instead of blanking the app.
+ * - **Framework** (new frontend system): `AppHistoryApi.createHref` resolves a
+ *   target against the page it was written in and applies the app's deploy
+ *   basename. `@backstage/frontend-app-api` implements it on top of the
+ *   functions below, and every consumer already holds an `AppHistoryApi`
+ *   through `appHistoryApiRef`, so no consumer has to reimplement the rule.
+ * - **React Router** (old frontend system): each consumer delegates to React
+ *   Router itself, in the package that already declares the dependency and
+ *   owns the version — `@backstage/core-components` for the `Sidebar` and
+ *   `ErrorPage`, `@backstage/frontend-plugin-api` for `useHref` and
+ *   `RouteLink`. That path is permanent and is never migrated, so keeping the
+ *   delegation next to the code that needs it is what keeps it honest.
  *
- * The app history is passed in rather than resolved here. `@internal/frontend`
- * is inlined into `@backstage/frontend-plugin-api`, so importing
- * `appHistoryApiRef` (or `useApiHolder`) at runtime would close an import
- * cycle. Callers already hold the app history: chrome resolves it from the API
- * holder, and the app and plugin API read it with `useApi(appHistoryApiRef)`.
- *
- * Consumers live in `@backstage/core-components` (`Sidebar`, `ErrorPage`,
- * `Link`), `@backstage/frontend-plugin-api` (`RouteLink`) and `plugins/app`
- * (`AppRoot`, `PageLayout`). `@backstage/ui` deliberately does not use this
- * module: BUI is a standalone design system that receives `navigate` and
- * `useHref` as props instead.
+ * The functions below reproduce React Router's own path algebra so both sides
+ * agree on what a target means. They are written out rather than imported for
+ * two reasons: this module must not depend on React Router at all, and the
+ * React Router v6 beta this repo still supports — `AppManager.compat.test.tsx`
+ * runs the old frontend system against both, and the migration CLI writes
+ * `'6.0.0-beta.0 || ^6.3.0'` — exports neither `createPath` nor `parsePath`.
+ * `AppRouting.test.tsx` pins every one of them against the real implementation
+ * so a divergence fails rather than drifting.
  */
 
 /**
  * The part of a location that path matching cares about.
  *
- * Structurally compatible with both React Router's `Location` and
- * `FrameworkLocation`, so either can be returned without copying.
+ * Structurally compatible with React Router's `Location` and `Path` as well as
+ * with `AppLocation`, so any of them can be passed or returned without
+ * copying.
  */
-export interface AppLocation {
+export interface AppPath {
   pathname: string;
   search: string;
   hash: string;
 }
 
-const ROOT_LOCATION: AppLocation = { pathname: '/', search: '', hash: '' };
-
-/*
- * The v6 context objects React Router's own hooks read, or stand-ins for them.
+/**
+ * A link target: a path written as a string, or already split into parts.
  *
- * The `UNSAFE_*` names only exist from React Router v6 stable onwards. The v6
- * beta this repo still supports — `AppManager.compat.test.tsx` runs the old
- * frontend system against both, and the migration CLI writes
- * `'6.0.0-beta.0 || ^6.3.0'` — exports no `UNSAFE_` name at all, so each import
- * is `undefined` there, and handing that to `useContext` throws before any hook
- * below can answer.
- *
- * Resolving each context once, here at import time, keeps every `useContext`
- * call unconditional and always handed a real context object. Nothing ever
- * provides a stand-in, so under beta every read returns its default — no
- * router, no matches — which is the answer beta can actually support, and the
- * one the hooks below already degrade to. That is what the new frontend system
- * needs from it: chrome rendered with no React Router at all resolves through
- * the framework authority, which does not read these contexts.
- *
- * The value types are hoisted into named aliases because the `??` narrows each
- * `UNSAFE_*` identifier to `never` on its own right-hand side.
+ * The string form is what every call site in the repo uses; the object form
+ * exists because {@link resolvePath} is React Router's function and takes it.
  */
-type LocationContextValue = ContextType<typeof UNSAFE_LocationContext>;
-type NavigationContextValue = ContextType<typeof UNSAFE_NavigationContext>;
-type RouteContextValue = ContextType<typeof UNSAFE_RouteContext>;
+export type AppTo = string | Partial<AppPath>;
 
-// `null` is React Router's own default for these two, and is what
-// `useRouterContext` below reads as "no router". The types say otherwise
-// because the hooks that read them assert a router before touching them.
-const LocationContext =
-  UNSAFE_LocationContext ?? createContext<LocationContextValue>(null!);
-const NavigationContext =
-  UNSAFE_NavigationContext ?? createContext<NavigationContextValue>(null!);
-const RouteContext =
-  UNSAFE_RouteContext ??
-  createContext<RouteContextValue>({
-    outlet: null,
-    matches: [],
-    isDataRoute: false,
-  });
+/** The location every answer degrades to when nothing else can answer. */
+export const APP_ROOT_PATH: AppPath = {
+  pathname: '/',
+  search: '',
+  hash: '',
+};
 
 /**
  * React Router's `parsePath`, vendored.
  *
- * Absent from the v6 beta for the same reason the `UNSAFE_*` contexts are, but
- * with no React involvement there is nothing to stand in for — it is simply
- * written out. `resolvePath` *is* exported by the beta, and stays imported.
- *
- * The semantics are React Router's exactly, because {@link resolveAgainstRoutes}
+ * The semantics are React Router's exactly, because {@link resolveAppPath}
  * branches on them: a target with no pathname of its own (`?tab=readme`,
  * `#section`) comes back with the `pathname` key absent rather than empty,
  * which is what makes it resolve against the current location, and a bare `?`
  * or `#` parses as a search or hash that {@link createPath} drops again. The
  * hash is taken before the search, so a `?` inside a fragment stays in the
- * fragment. `AppRouting.test.tsx` pins this against the real implementation.
+ * fragment.
  */
-export function parsePath(path: string): Partial<Path> {
-  const parsedPath: Partial<Path> = {};
+export function parsePath(path: string): Partial<AppPath> {
+  const parsedPath: Partial<AppPath> = {};
   let rest = path;
 
   if (rest) {
@@ -182,8 +116,7 @@ export function parsePath(path: string): Partial<Path> {
 }
 
 /**
- * React Router's `createPath`, vendored alongside {@link parsePath} and absent
- * from the v6 beta for the same reason.
+ * React Router's `createPath`, vendored alongside {@link parsePath}.
  *
  * Again the semantics are React Router's exactly: a missing pathname defaults
  * to the app root but an explicitly empty one does not, a search or hash that
@@ -194,7 +127,7 @@ export function createPath({
   pathname = '/',
   search = '',
   hash = '',
-}: Partial<Path>): string {
+}: Partial<AppPath>): string {
   let path = pathname;
   if (search && search !== '?') {
     path += search.charAt(0) === '?' ? search : `?${search}`;
@@ -203,92 +136,6 @@ export function createPath({
     path += hash.charAt(0) === '#' ? hash : `#${hash}`;
   }
   return path;
-}
-
-/**
- * Reads one of React Router's own contexts.
- *
- * React Router types these as always present because its hooks assert a router
- * before touching them, but their runtime default is `null`. The read is
- * widened to admit that, which is what lets the router be optional.
- */
-function useRouterContext<T>(context: Context<T>): T | undefined {
-  return useContext(context) ?? undefined;
-}
-
-/**
- * The route bases a relative target resolves against, derived exactly the way
- * React Router's `useResolvedPath` derives them: the `pathnameBase` of every
- * match that contributes a path segment, or the leaf's full `pathname` when the
- * `v7_relativeSplatPath` future flag is on.
- *
- * Empty when there is no router, and equally inside one where nothing matched —
- * both mean relative targets resolve against the app root.
- */
-function useRouteBasePaths(): string[] {
-  const matches = useContext(RouteContext).matches;
-  const relativeSplatPath =
-    useRouterContext(NavigationContext)?.future?.v7_relativeSplatPath ?? false;
-
-  const contributing = matches.filter(
-    (match, index) => index === 0 || !!match.route.path,
-  );
-  return contributing.map((match, index) =>
-    relativeSplatPath && index === contributing.length - 1
-      ? match.pathname
-      : match.pathnameBase,
-  );
-}
-
-/**
- * React Router's own target resolution, without the throw.
- *
- * `useResolvedPath` is `resolvePath` against the base of the deepest matched
- * route, plus the two rules `resolvePath` does not carry on its own: a target
- * with no pathname of its own (`?tab=readme`, `#section`) resolves against the
- * current location, and each leading `..` climbs one route match rather than
- * one path segment. Reproduced here rather than called so that the hooks around
- * it stay unconditional; `AppRouting.test.tsx` pins the two against each other
- * by rendering React Router's hook and this one in the same tree.
- */
-function resolveAgainstRoutes(
-  to: To,
-  routeBasePaths: string[],
-  locationPathname: string,
-): Path {
-  const target = typeof to === 'string' ? parsePath(to) : { ...to };
-  const isEmptyPath = to === '' || target.pathname === '';
-  const toPathname = isEmptyPath ? '/' : target.pathname;
-
-  let from: string;
-  if (toPathname === undefined) {
-    from = locationPathname;
-  } else {
-    let baseIndex = routeBasePaths.length - 1;
-    if (toPathname.startsWith('..')) {
-      const segments = toPathname.split('/');
-      while (segments[0] === '..') {
-        segments.shift();
-        baseIndex -= 1;
-      }
-      target.pathname = segments.join('/');
-    }
-    from = baseIndex >= 0 ? routeBasePaths[baseIndex] : '/';
-  }
-
-  const resolved = resolvePath(target, from);
-
-  const hasExplicitTrailingSlash =
-    !!toPathname && toPathname !== '/' && toPathname.endsWith('/');
-  const hasCurrentTrailingSlash =
-    (isEmptyPath || toPathname === '.') && locationPathname.endsWith('/');
-  if (
-    !resolved.pathname.endsWith('/') &&
-    (hasExplicitTrailingSlash || hasCurrentTrailingSlash)
-  ) {
-    resolved.pathname += '/';
-  }
-  return resolved;
 }
 
 /**
@@ -320,182 +167,270 @@ export function normalizeBasePath(basePath: string | undefined): string {
 }
 
 /**
- * The base path that relative targets resolve against, as a prefix without a
- * trailing slash (empty string at the app root).
+ * React Router's `resolvePathname`, vendored: each `..` in the target drops
+ * one segment of the base, each `.` drops nothing, and everything else is
+ * appended.
  *
- * Only meaningful on the framework path; React Router derives its own base
- * from the matched routes.
+ * The base has its trailing slashes taken off through
+ * {@link normalizeBasePath} rather than React Router's own `/\/+$/`, which
+ * answers the same for every input and does not backtrack over a long run.
+ */
+function resolvePathname(relativePath: string, fromPathname: string): string {
+  const segments = normalizeBasePath(fromPathname).split('/');
+
+  for (const segment of relativePath.split('/')) {
+    if (segment === '..') {
+      // Keep the leading empty segment, so the result still starts at `/`.
+      if (segments.length > 1) {
+        segments.pop();
+      }
+    } else if (segment !== '.') {
+      segments.push(segment);
+    }
+  }
+
+  return segments.length > 1 ? segments.join('/') : '/';
+}
+
+const normalizeSearch = (search: string): string => {
+  if (!search || search === '?') {
+    return '';
+  }
+  return search.startsWith('?') ? search : `?${search}`;
+};
+
+const normalizeHash = (hash: string): string => {
+  if (!hash || hash === '#') {
+    return '';
+  }
+  return hash.startsWith('#') ? hash : `#${hash}`;
+};
+
+/**
+ * React Router's `resolvePath`, vendored.
+ *
+ * An absolute target is taken as written, a relative one is resolved against
+ * `fromPathname`, and a target with no pathname of its own keeps
+ * `fromPathname` — which is what makes `?tab=readme` and `#section` stay where
+ * they were written once the caller has picked the right base.
+ *
+ * The v6 beta does export this one, but importing it would put React Router
+ * back into this package, so it is written out alongside its two siblings.
+ */
+export function resolvePath(to: AppTo, fromPathname: string = '/'): AppPath {
+  const {
+    pathname: toPathname,
+    search = '',
+    hash = '',
+  } = typeof to === 'string' ? parsePath(to) : to;
+
+  let pathname: string;
+  if (!toPathname) {
+    // No pathname of its own, so the base is the answer.
+    pathname = fromPathname;
+  } else if (toPathname.startsWith('/')) {
+    pathname = toPathname;
+  } else {
+    pathname = resolvePathname(toPathname, fromPathname);
+  }
+
+  return {
+    pathname,
+    search: normalizeSearch(search),
+    hash: normalizeHash(hash),
+  };
+}
+
+/**
+ * React Router's `useResolvedPath`, as a function of the bases it would have
+ * read out of the router.
+ *
+ * `useResolvedPath` is {@link resolvePath} against the base of the deepest
+ * matched route, plus the two rules `resolvePath` does not carry on its own: a
+ * target with no pathname of its own (`?tab=readme`, `#section`) resolves
+ * against the current location, and each leading `..` climbs one entry of
+ * `basePaths` rather than one path segment.
+ *
+ * `basePaths` is the stack a target resolves against, outermost first. On the
+ * React Router side it is the `pathnameBase` of every match that contributes a
+ * path segment, which is what a consumer reads out of the router. On the
+ * framework side it is {@link pageBasePaths} of the current page's mount,
+ * which derives the same boundaries from the pattern the page is mounted at.
+ * Empty means the app root, which is also what React Router answers where
+ * nothing matched.
+ */
+export function resolveAppPath(
+  to: AppTo,
+  basePaths: string[],
+  locationPathname: string,
+): AppPath {
+  const target = typeof to === 'string' ? parsePath(to) : { ...to };
+  const isEmptyPath = to === '' || target.pathname === '';
+  const toPathname = isEmptyPath ? '/' : target.pathname;
+
+  let from: string;
+  if (toPathname === undefined) {
+    from = locationPathname;
+  } else {
+    let baseIndex = basePaths.length - 1;
+    if (toPathname.startsWith('..')) {
+      const segments = toPathname.split('/');
+      while (segments[0] === '..') {
+        segments.shift();
+        baseIndex -= 1;
+      }
+      target.pathname = segments.join('/');
+    }
+    from = baseIndex >= 0 ? basePaths[baseIndex] : '/';
+  }
+
+  const resolved = resolvePath(target, from);
+
+  const hasExplicitTrailingSlash =
+    !!toPathname && toPathname !== '/' && toPathname.endsWith('/');
+  const hasCurrentTrailingSlash =
+    (isEmptyPath || toPathname === '.') && locationPathname.endsWith('/');
+  if (
+    !resolved.pathname.endsWith('/') &&
+    (hasExplicitTrailingSlash || hasCurrentTrailingSlash)
+  ) {
+    resolved.pathname += '/';
+  }
+  return resolved;
+}
+
+/**
+ * How many leading segments of a mount its innermost route match spans.
+ *
+ * A pattern binds a parameter to whatever the location put in that segment, so
+ * the prefix up to and including the last parameter cannot be split: there is
+ * no route between `/catalog` and `/catalog/:namespace/:kind/:name`, and a
+ * `..` that stopped inside it would land on `/catalog/default/component`,
+ * which nothing claims. Everything the pattern spells out literally after that
+ * is an ordinary path level — that is how React Router's own trees nest, and
+ * how a sub-page, whose pattern is its page's with its own path appended, sits
+ * one match below its page.
+ *
+ * Zero for a pattern with no parameters at all, so a mount the pattern spells
+ * out in full is read the way a browser reads a path.
+ */
+function matchSpan(routePattern: string, segmentCount: number): number {
+  let span = 0;
+  routePattern
+    .split('/')
+    .filter(Boolean)
+    .forEach((segment, index) => {
+      if (segment.startsWith(':')) {
+        span = index + 1;
+      }
+    });
+  return Math.min(span, segmentCount);
+}
+
+/**
+ * The stack a target written inside a page resolves against, outermost first:
+ * the app root, the page's innermost match, and every ordinary path level
+ * below it.
+ *
+ * React Router derives its stack from the route matches, so a leading `..`
+ * climbs one *match* — and a match can span several path segments, as
+ * `/catalog/:namespace/:kind/:name` does. The framework has no routing library
+ * to ask, but it does not need one: a page publishes the pattern it is mounted
+ * at alongside the concrete base that pattern matched, and the pattern is what
+ * says where the match boundary falls. See {@link matchSpan}.
+ *
+ * A mount with no pattern of its own is read literally, as a mount whose
+ * pattern is its base path — which is what {@link PageMount} says a static
+ * mount's pattern is, and the answer a caller holding only a base path can
+ * support.
+ *
+ * Spelling it as a stack rather than calling {@link resolvePath} directly is
+ * what lets {@link resolveAppPath} answer for both authorities: one function
+ * resolves a target, and only the stack handed to it differs.
+ */
+export function pageBasePaths(
+  basePath: string | undefined,
+  routePattern?: string,
+): string[] {
+  const normalized = normalizeBasePath(basePath);
+  // The first segment of an app-absolute base path is empty, and stands for
+  // the app root; a base that is empty or relative starts the stack there too.
+  // Empty segments elsewhere contribute nothing rather than a level that
+  // repeats its parent, so a doubled separator cannot make `..` climb twice.
+  const segments = normalized.split('/').filter(Boolean);
+  const span = matchSpan(routePattern ?? normalized, segments.length);
+  const stack = ['/'];
+  let prefix = '';
+  segments.forEach((segment, index) => {
+    prefix += `/${segment}`;
+    if (index + 1 >= span) {
+      stack.push(prefix);
+    }
+  });
+  return stack;
+}
+
+/**
+ * Splits a target's leading `..` off the rest of it, and names the base that
+ * climb lands on.
+ *
+ * The stack a target climbs is the one thing about resolution that only the
+ * React tree knows — a page publishes its mount there and nowhere else — while
+ * every other rule belongs to whoever owns the location and the deploy
+ * basename. Handing back a target with no `..` left in it, next to the base it
+ * is now relative to, is what lets a caller do the climb without taking over
+ * the rest: {@link resolveAppPath} answers the same for the pair as it would
+ * have for the original target and the whole stack.
+ *
+ * A target with no pathname of its own (`?tab=readme`, `#section`) climbs
+ * nothing and is handed back untouched, so it still resolves against the
+ * current location rather than against a base.
+ */
+export function climbPageBase(
+  to: string,
+  basePaths: string[],
+): { to: string; basePath: string } {
+  const deepest = basePaths[basePaths.length - 1] ?? '/';
+  const target = parsePath(to);
+  if (!target.pathname?.startsWith('..')) {
+    return { to, basePath: deepest };
+  }
+
+  const segments = target.pathname.split('/');
+  let index = basePaths.length - 1;
+  while (segments[0] === '..') {
+    segments.shift();
+    index -= 1;
+  }
+  // Climbing past the outermost base lands on the app root rather than running
+  // off the end of the stack, exactly as React Router does at its own.
+  const basePath = index >= 0 ? basePaths[index] : '/';
+
+  // Nothing but `..` was written, so the answer is the base itself — spelled
+  // out rather than left empty, so that a `..?tab=x` lands on the base rather
+  // than falling through to the current location. A trailing slash the target
+  // asked for is kept, since it is the base that is being addressed.
+  const rest = segments.join('/');
+  const climbed =
+    rest ||
+    (segments.length ? `${basePath === '/' ? '' : basePath}/` : basePath);
+  return { to: createPath({ ...target, pathname: climbed }), basePath };
+}
+
+/**
+ * The base path that relative targets resolve against on the framework path,
+ * as a prefix without a trailing slash (empty string at the app root).
+ *
+ * This is the framework's analogue of React Router's `pathnameBase`: a page —
+ * or a sub-page, whose mount is provided inside its page's — publishes where
+ * it is mounted, and every link written inside it resolves against that,
+ * whether it is written in the page's own chrome, in its content, or in app
+ * chrome rendered under it. Chrome rendered above any page sees no mount at
+ * all and resolves against the app root.
+ *
+ * Only meaningful on the framework path; a consumer's React Router fallback
+ * derives its own bases from the matched routes.
  */
 export function useAppBasePath(): string {
   return normalizeBasePath(usePageMount()?.basePath);
-}
-
-/**
- * The route bases a relative target resolves against on the framework path,
- * in the same shape {@link useRouteBasePaths} produces for React Router.
- *
- * A page adapter projects the page's own match on top of the matches it is
- * mounted inside, so wherever one is in context the stack it publishes is
- * already the one React Router would have produced — ancestors included, which
- * is what a leading `..` climbs. That is what makes a sub-page's
- * `../sibling-tab` point at the sibling tab rather than at the app root.
- *
- * Chrome rendered above an adapter sees no matches at all — a page's header,
- * tabs and breadcrumbs resolve their links from the mount rather than from a
- * routing library, and an app whose `RouterBlueprint` is a passthrough has no
- * React Router anywhere. There the page mount is the only base there is:
- * relative targets resolve against it, and `..` climbs off the page, which is
- * the answer React Router gives at its outermost match too.
- */
-function useFrameworkBasePaths(): string[] {
-  const basePath = useAppBasePath();
-  const routeBasePaths = useRouteBasePaths();
-
-  return routeBasePaths.length > 0 ? routeBasePaths : [basePath || '/'];
-}
-
-/**
- * The current app-relative location.
- *
- * Falls back to the app root when neither authority can answer, so chrome that
- * only needs a pathname still renders without a router.
- */
-export function useAppLocation(
-  appHistory: AppHistoryApi | undefined,
-): AppLocation {
-  const frameworkLocation = useAppHistoryLocation(appHistory);
-  const routerLocation = useRouterContext(LocationContext)?.location;
-
-  if (appHistory) {
-    return frameworkLocation ?? ROOT_LOCATION;
-  }
-  return routerLocation ?? ROOT_LOCATION;
-}
-
-/**
- * Resolves a link target to an app-absolute {@link Path}.
- *
- * Absolute targets are returned unchanged by both authorities; relative ones
- * resolve against the page mount base path (framework) or the matched route
- * base (React Router, which falls back to the app root when nothing matched,
- * and equally when there is no router).
- */
-export function useAppResolvedPath(
-  appHistory: AppHistoryApi | undefined,
-  to: To,
-): Path {
-  const basePath = useAppBasePath();
-  const routeBasePaths = useRouteBasePaths();
-  const routerLocation = useRouterContext(LocationContext)?.location;
-
-  if (appHistory) {
-    return resolvePath(to, basePath || '/');
-  }
-  return resolveAgainstRoutes(
-    to,
-    routeBasePaths,
-    routerLocation?.pathname ?? ROOT_LOCATION.pathname,
-  );
-}
-
-/**
- * Resolves a link target to a browser-ready href, including the app's deploy
- * basename.
- *
- * The target is resolved against the page it is written in before the basename
- * is applied, exactly as React Router's `useHref` resolves against the route it
- * is called from: `#section` and `?tab=readme` keep the current location,
- * `widgets` resolves against the page's base, and each leading `..` climbs one
- * route match. The framework has to do that resolution here, because
- * `AppHistory.createHref` resolves its input against the app *root* — the
- * right contract for it, and the one `navigate` shares, but on its own it turns
- * a fragment link written inside a page into a link to the app root.
- *
- * Targets that are not app-relative — absolute (`https://example.com/x`),
- * protocol-relative (`//example.com/x`), and opaque schemes such as `mailto:`
- * and `tel:` — are returned unchanged. `AppHistory.createHref` already does
- * this on the framework path; React Router's `useHref` does not, and would
- * resolve them against the current route and prefix the basename, so both
- * paths go through the same guard to agree.
- *
- * With no router there is no basename and no navigator to render the href, so
- * the target is handed back as written — the same answer `@backstage/ui`'s
- * `useResolvedHref` gives outside a router.
- */
-export function useAppHref(
-  appHistory: AppHistoryApi | undefined,
-  to: string,
-): string {
-  const navigation = useRouterContext(NavigationContext);
-  const frameworkBasePaths = useFrameworkBasePaths();
-  const appLocation = useAppLocation(appHistory);
-  // Always the React Router authority: the framework path resolves through the
-  // bases above instead, and renders the result through `createHref`.
-  const routerResolvedPath = useAppResolvedPath(undefined, to);
-
-  if (isExternalTarget(to)) {
-    return to;
-  }
-  if (appHistory) {
-    // App-absolute by the time `createHref` sees it, so all that is left for it
-    // to do is prefix the deploy basename.
-    return appHistory.createHref(
-      createPath(
-        resolveAgainstRoutes(to, frameworkBasePaths, appLocation.pathname),
-      ),
-    );
-  }
-  if (!navigation) {
-    return to;
-  }
-
-  // React Router's `useHref`: the resolved path, prefixed with the router
-  // basename, handed to the navigator to render.
-  const { basename, navigator } = navigation;
-  const { pathname, search, hash } = routerResolvedPath;
-  let joinedPathname = pathname;
-  if (basename !== '/') {
-    joinedPathname =
-      pathname === '/'
-        ? basename
-        : `${basename}/${pathname}`.replace(/\/\/+/g, '/');
-  }
-  return navigator.createHref({ pathname: joinedPathname, search, hash });
-}
-
-/**
- * Returns a callback that navigates back one history entry.
- *
- * The React Router authority goes back through the navigator, which is what
- * `useNavigate`'s `navigate(-1)` does with a numeric delta — in a plain router
- * the navigator is the history itself, and in a data router `go` forwards to
- * `router.navigate(-1)`, so both routers pop the entry they always did. Taking
- * the navigator out of the context rather than calling `useNavigate` is what
- * lets this hook render outside a router at all, exactly as its siblings above
- * do.
- *
- * Both other cases go back through the browser. `AppHistoryApi` has no `go()`
- * of its own — it listens for `popstate` — so the browser is already what goes
- * back on the framework path, and with no router there is no navigator to ask
- * and the browser is the only history there is.
- *
- * As with its siblings, tolerating a missing router is a promise about this
- * hook, not about the chrome that calls it: `ErrorPage` renders its go-back
- * link through `@backstage/core-components`' `Link`, which hands internal
- * targets to React Router's own `Link` and has always needed a router. Chrome
- * that renders with no router at all is a capability the framework does not
- * have yet.
- */
-export function useAppGoBack(
-  appHistory: AppHistoryApi | undefined,
-): () => void {
-  const navigator = useRouterContext(NavigationContext)?.navigator;
-
-  return useCallback(() => {
-    if (!appHistory && navigator) {
-      navigator.go(-1);
-      return;
-    }
-    window.history.back();
-  }, [appHistory, navigator]);
 }

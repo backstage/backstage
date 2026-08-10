@@ -15,21 +15,20 @@
  */
 
 import {
+  createContext,
+  useContext,
   useEffect,
   useMemo,
   useRef,
-  type MutableRefObject,
   type ReactNode,
 } from 'react';
 import {
   useApi,
   appHistoryApiRef,
   type AppHistoryApi,
-  type PageRouterSubPage,
 } from '@backstage/frontend-plugin-api';
 import type { RouterHistory } from '@tanstack/history';
 import {
-  Navigate,
   Outlet,
   RouterProvider,
   createRootRoute,
@@ -50,89 +49,49 @@ interface TanStackScopedRouter {
   history: RouterHistory;
 }
 
-/** Live view of what the host is currently asked to render. */
-interface PageContentRefs {
-  children: MutableRefObject<ReactNode>;
-  subPages: MutableRefObject<readonly PageRouterSubPage[]>;
-  indexPath: MutableRefObject<string | undefined>;
-}
-
-/** TanStack route paths are absolute within the page's scoped history. */
-function toScopedRoutePath(path: string): string {
-  return path.startsWith('/') ? path : `/${path}`;
-}
-
 /**
- * Builds the route tree for a page's sub-pages.
+ * What the host is currently asked to render, held outside the router.
  *
- * The framework hands over author-written paths, so this is where TanStack's
- * own conventions get applied: each sub-page gets an exact route plus a
- * sibling `$` splat route, which together are this library's equivalent of
- * React Router's `path/*`.
+ * Going through context rather than through the route tree is what keeps the
+ * router mount-stable: the content a page shows changes whenever the framework
+ * routes to a different sub-page, and rebuilding the route tree for that would
+ * throw away page state, scroll position and in-flight requests. Context
+ * updates reach the route component through `RouterProvider` like any other
+ * React context.
  */
-function createSubPageRoutes(
-  rootRoute: AnyRoute,
-  content: PageContentRefs,
-): AnyRoute[] {
-  const routes: AnyRoute[] = [];
-  const indexPath = content.indexPath.current;
+const PageContentContext = createContext<ReactNode>(null);
 
-  if (indexPath) {
-    routes.push(
-      createRoute({
-        getParentRoute: () => rootRoute,
-        path: '/',
-        component: () => (
-          <Navigate to={toScopedRoutePath(indexPath) as never} replace />
-        ),
-      } as any) as AnyRoute,
-    );
-  }
-
-  content.subPages.current.forEach((subPage, index) => {
-    // Read through the ref so a re-rendered sub-page element is picked up
-    // without rebuilding the router.
-    const component = () => <>{content.subPages.current[index]?.element}</>;
-    const path = toScopedRoutePath(subPage.path);
-    for (const routePath of [path, `${path}/$`]) {
-      routes.push(
-        createRoute({
-          getParentRoute: () => rootRoute,
-          path: routePath,
-          component,
-        } as any) as AnyRoute,
-      );
-    }
-  });
-
-  return routes;
+function PageContent() {
+  return <>{useContext(PageContentContext)}</>;
 }
 
 /**
  * Creates a TanStack router whose history projects the framework's
- * `AppHistoryApi`, scoped to the page's route pattern. Sub-pages become real
- * TanStack routes; a page without sub-pages renders its opaque children under
- * a single root route. Never writes `window.history`.
+ * `AppHistoryApi`, scoped to the page's route pattern. Never writes
+ * `window.history`.
+ *
+ * The tree is two routes and never varies: the page's own root, and a `$`
+ * splat sibling for everything below it. TanStack has no "match a prefix"
+ * route, so the splat is this library's way of saying that the tail below the
+ * mount belongs to the page — whatever the framework has routed into it.
  *
  * @internal
  */
 function createTanStackScopedRouter(
   appHistory: AppHistoryApi,
   routePattern: string,
-  content: PageContentRefs,
 ): TanStackScopedRouter {
   const history = createTanStackHistory(appHistory, { routePattern });
-
-  if (content.subPages.current.length === 0) {
-    const routeTree = createRootRoute({
-      component: () => <>{content.children.current}</>,
-    });
-    return { router: createRouter({ routeTree, history }), history };
-  }
-
   const rootRoute = createRootRoute({ component: Outlet }) as AnyRoute;
   const routeTree = rootRoute.addChildren(
-    createSubPageRoutes(rootRoute, content),
+    ['/', '/$'].map(
+      path =>
+        createRoute({
+          getParentRoute: () => rootRoute,
+          path,
+          component: PageContent,
+        } as any) as AnyRoute,
+    ),
   );
 
   return { router: createRouter({ routeTree, history }), history };
@@ -145,45 +104,25 @@ function createTanStackScopedRouter(
  * The concrete mount prefix changing (e.g. entity A → entity B under the same
  * page) does not recreate the router: the underlying history derives the
  * prefix from `routePattern` and the live location, so the page keeps its
- * in-page state across that navigation. The set of sub-page *paths* does
- * define the route tree, so a change there does rebuild it.
+ * in-page state across that navigation.
  *
  * @internal
  */
 export function TanStackRouterHost(props: {
   routePattern: string;
-  subPages?: readonly PageRouterSubPage[];
-  indexPath?: string;
   children?: ReactNode;
 }) {
-  const { routePattern, subPages, indexPath, children } = props;
+  const { routePattern, children } = props;
   const appHistory = useApi(appHistoryApiRef);
 
-  const contentRef = useRef<PageContentRefs>({
-    children: { current: children },
-    subPages: { current: subPages ?? [] },
-    indexPath: { current: indexPath },
-  });
-  contentRef.current.children.current = children;
-  contentRef.current.subPages.current = subPages ?? [];
-  contentRef.current.indexPath.current = indexPath;
-
   const scopedRef = useRef<TanStackScopedRouter | null>(null);
-  const routeTreeKey = `${indexPath ?? ''}|${(subPages ?? [])
-    .map(subPage => subPage.path)
-    .join('|')}`;
 
   const scoped = useMemo(() => {
     scopedRef.current?.history.destroy();
-    const created = createTanStackScopedRouter(
-      appHistory,
-      routePattern,
-      contentRef.current,
-    );
+    const created = createTanStackScopedRouter(appHistory, routePattern);
     scopedRef.current = created;
     return created;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [appHistory, routePattern, routeTreeKey]);
+  }, [appHistory, routePattern]);
 
   useEffect(() => {
     return () => {
@@ -192,5 +131,9 @@ export function TanStackRouterHost(props: {
     };
   }, [scoped]);
 
-  return <RouterProvider router={scoped.router} />;
+  return (
+    <PageContentContext.Provider value={children}>
+      <RouterProvider router={scoped.router} />
+    </PageContentContext.Provider>
+  );
 }

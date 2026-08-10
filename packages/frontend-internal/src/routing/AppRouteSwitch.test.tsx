@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { useEffect, type ComponentType } from 'react';
+import { useEffect, useState, type ComponentType } from 'react';
 import { render, screen, act } from '@testing-library/react';
 import {
   createMockAppHistory,
   type MockAppHistory,
 } from '@backstage/frontend-test-utils';
-import { AppRouteSwitch } from './AppRouteSwitch';
+import { AppRouteSwitch, useSubPageSelection } from './AppRouteSwitch';
 import { RouteTable } from './RouteTable';
 import { usePageMount } from './PageMountContext';
 
@@ -337,6 +337,133 @@ describe('AppRouteSwitch', () => {
 
     expect(screen.getByTestId('fallback-page')).toBeInTheDocument();
     errorSpy.mockRestore();
+  });
+
+  describe('sub-pages', () => {
+    // Everything a page needs from a match, in one probe: where the page is
+    // mounted, which sub-page the location selects and where *that* is
+    // mounted, plus a piece of page state that a remount would reset.
+    function TabbedPage() {
+      const mount = usePageMount();
+      const selected = useSubPageSelection()?.selected;
+      const [kept, setKept] = useState(0);
+      return (
+        <div data-testid="tabbed-page">
+          <span data-testid="page-base">{mount?.basePath}</span>
+          <span data-testid="sub-path">{selected?.path ?? 'none'}</span>
+          <span data-testid="sub-base">
+            {selected?.mount.basePath ?? 'none'}
+          </span>
+          <span data-testid="sub-pattern">
+            {selected?.mount.routePattern ?? 'none'}
+          </span>
+          <span data-testid="kept">{kept}</span>
+          <button type="button" onClick={() => setKept(n => n + 1)}>
+            Keep
+          </button>
+        </div>
+      );
+    }
+
+    const pattern = '/catalog/:namespace/:kind/:name';
+
+    function renderTabbedPage(initialLocation: string) {
+      history = createMockAppHistory({ initialLocation });
+      const routeTable = new RouteTable([
+        { path: pattern, subPaths: ['overview', 'detail'] },
+        '/scaffolder',
+      ]);
+      const pages = new Map<string, ComponentType>([
+        [pattern, TabbedPage],
+        ['/scaffolder', ScaffolderPage],
+      ]);
+      render(
+        <AppRouteSwitch
+          history={history}
+          routeTable={routeTable}
+          pages={pages}
+          fallback={<FallbackPage />}
+        />,
+      );
+      return history;
+    }
+
+    it('should render the page for the page half of the match and publish the sub-page half', () => {
+      renderTabbedPage('/catalog/default/component/foo/overview');
+
+      expect(screen.getByTestId('page-base')).toHaveTextContent(
+        '/catalog/default/component/foo',
+      );
+      expect(screen.getByTestId('sub-path')).toHaveTextContent('overview');
+      expect(screen.getByTestId('sub-base')).toHaveTextContent(
+        '/catalog/default/component/foo/overview',
+      );
+      expect(screen.getByTestId('sub-pattern')).toHaveTextContent(
+        `${pattern}/overview`,
+      );
+    });
+
+    it('should keep the page mounted while the selected sub-page changes', () => {
+      renderTabbedPage('/catalog/default/component/foo/overview');
+
+      act(() => {
+        screen.getByRole('button', { name: 'Keep' }).click();
+      });
+      act(() => {
+        screen.getByRole('button', { name: 'Keep' }).click();
+      });
+      expect(screen.getByTestId('kept')).toHaveTextContent('2');
+
+      act(() => {
+        history.navigate('/catalog/default/component/foo/detail');
+      });
+
+      // A different tab of the same page is the same match at the page level,
+      // so the page keeps its state — asserted as the value it held, not as a
+      // mount count.
+      expect(screen.getByTestId('sub-path')).toHaveTextContent('detail');
+      expect(screen.getByTestId('kept')).toHaveTextContent('2');
+    });
+
+    it('should send the root of a page with sub-pages to its first sub-page, query and fragment included', () => {
+      const appHistory = renderTabbedPage(
+        '/catalog/default/component/foo?q=1#frag',
+      );
+
+      expect(appHistory.navigateCalls).toEqual([
+        {
+          to: '/catalog/default/component/foo/overview?q=1#frag',
+          options: { replace: true },
+        },
+      ]);
+      // The page itself was never handed over to the fallback on the way
+      // through, and ends up showing its first tab.
+      expect(screen.getByTestId('sub-path')).toHaveTextContent('overview');
+      expect(screen.getByTestId('page-base')).toHaveTextContent(
+        '/catalog/default/component/foo',
+      );
+    });
+
+    it('should leave a page without sub-pages where it is', () => {
+      const appHistory = renderTabbedPage('/scaffolder');
+
+      expect(appHistory.navigateCalls).toEqual([]);
+      expect(screen.getByTestId('scaffolder-page')).toHaveTextContent(
+        'Scaffolder: /scaffolder',
+      );
+    });
+
+    it('should report no selection for a path below the page that no sub-page claims', () => {
+      const appHistory = renderTabbedPage(
+        '/catalog/default/component/foo/bogus',
+      );
+
+      expect(appHistory.navigateCalls).toEqual([]);
+      expect(screen.getByTestId('sub-path')).toHaveTextContent('none');
+      expect(screen.getByTestId('page-base')).toHaveTextContent(
+        '/catalog/default/component/foo',
+      );
+    });
   });
 
   it('should redirect via history.navigate before matching pages', () => {

@@ -16,7 +16,7 @@
 
 import type {
   AppHistoryApi,
-  FrameworkLocation,
+  AppLocation,
 } from '@backstage/frontend-plugin-api';
 import { parseHref } from '@tanstack/history';
 import type {
@@ -155,7 +155,7 @@ export function createTanStackHistory(
   }
 
   function toHistoryLocation(
-    appLoc: FrameworkLocation,
+    appLoc: AppLocation,
     scopedPathname: string,
   ): HistoryLocation {
     const href = `${scopedPathname}${appLoc.search}${appLoc.hash}`;
@@ -175,7 +175,7 @@ export function createTanStackHistory(
 
   const subscribers = new Set<HistorySubscriber>();
   let subscription: { unsubscribe(): void } | undefined;
-  let sourceLocation: FrameworkLocation = appHistory.location;
+  let sourceLocation: AppLocation = appHistory.location;
   let latestLocation: HistoryLocation = toHistoryLocation(
     sourceLocation,
     splitScope(sourceLocation.pathname)?.scoped ?? '/',
@@ -183,7 +183,7 @@ export function createTanStackHistory(
   let blockers: NavigationBlocker[] = [];
   let pendingAction: HistoryNotifyAction | undefined;
 
-  function commit(appLoc: FrameworkLocation, scope: PageScope): void {
+  function commit(appLoc: AppLocation, scope: PageScope): void {
     basePath = scope.base;
     sourceLocation = appLoc;
     latestLocation = toHistoryLocation(appLoc, scope.scoped);

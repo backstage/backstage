@@ -17,10 +17,15 @@
 import { JSX, ReactNode } from 'react';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
-import { usePageMount } from '@internal/frontend';
+import {
+  usePageMount,
+  useSubPageSelection,
+  type SubPageSelection,
+} from '@internal/frontend';
 import {
   coreExtensionData,
   createExtensionBlueprint,
+  createExtensionDataRef,
   createExtensionInput,
 } from '../wiring';
 import { ExtensionBoundary, PageLayout, PageLayoutTab } from '../components';
@@ -31,12 +36,36 @@ import { routeResolutionApiRef } from '../apis/definitions/RouteResolutionApi';
 import { pluginHeaderActionsApiRef } from '../apis/definitions/PluginHeaderActionsApi';
 import { RouteResolutionApi } from '../apis/definitions/RouteResolutionApi';
 import { optionalStringSchema } from '../schema/optionalStringSchema';
-import type {
-  PageRouterComponent,
-  PageRouterSubPage,
-} from '../apis/definitions/PageRouterApi';
+import type { PageRouterComponent } from '../apis/definitions/PageRouterApi';
 import { PageRouterBlueprint } from './PageRouterBlueprint';
 import { PageRouterWrapper } from './PageRouterWrapper';
+
+/**
+ * One sub-page of a page, as the page itself sees it: a tab to show in the
+ * chrome, and the content to render when that tab is the one selected.
+ *
+ * Deliberately not part of any public contract — sub-pages are ordinary routes
+ * one level below the page, and nothing outside this blueprint needs to know
+ * that the page is composed from them.
+ */
+interface PageSubPage {
+  /** The sub-page path exactly as its author wrote it, e.g. `overview`. */
+  path: string;
+  /** The sub-page's tab label, defaulting to {@link PageSubPage.path}. */
+  label: string;
+  /** The sub-page's tab icon, if the author supplied one. */
+  icon?: IconElement;
+  /** The fully rendered sub-page content, framework concerns already applied. */
+  element: ReactNode;
+}
+
+/**
+ * The sub-page paths a page declares, in registration order, so that top-level
+ * route matching can register them as routes of their own.
+ */
+const subPagePathsDataRef = createExtensionDataRef<string[]>().with({
+  id: 'core.page.subPagePaths',
+});
 
 function resolveTitleLink(
   routeResolutionApi: RouteResolutionApi,
@@ -53,6 +82,26 @@ function resolveTitleLink(
   }
 }
 
+/**
+ * The content of the sub-page the current location selects.
+ *
+ * Selection is a routing decision, made once by top-level matching, so the
+ * page only has to look up the element that belongs to the selected path.
+ * Without a selection at all the page is being rendered outside route matching
+ * (e.g. an isolated `renderInTestApp`), where the first sub-page stands in for
+ * the list — that is where the page root would have led anyway.
+ */
+function selectSubPageContent(
+  subPages: readonly PageSubPage[],
+  selection: SubPageSelection | undefined,
+): ReactNode {
+  if (!selection) {
+    return subPages[0]?.element;
+  }
+  const selectedPath = selection.selected?.path;
+  return subPages.find(subPage => subPage.path === selectedPath)?.element;
+}
+
 function PluginPageShell(props: {
   node: AppNode;
   RouterOverride?: PageRouterComponent;
@@ -60,8 +109,7 @@ function PluginPageShell(props: {
   icon?: IconElement;
   noHeader?: boolean;
   tabs?: PageLayoutTab[];
-  subPages?: readonly PageRouterSubPage[];
-  indexPath?: string;
+  subPages?: readonly PageSubPage[];
   titleRouteRef?: RouteRef;
   pluginId: string;
   children?: ReactNode;
@@ -74,16 +122,20 @@ function PluginPageShell(props: {
     noHeader,
     tabs,
     subPages,
-    indexPath,
     titleRouteRef,
     pluginId,
     children,
   } = props;
   const pageMount = usePageMount();
+  const subPageSelection = useSubPageSelection();
   const routeResolutionApi = useApi(routeResolutionApiRef);
   const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
   const headerActionsApi = useApi(pluginHeaderActionsApiRef);
   const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
+
+  const content = subPages
+    ? selectSubPageContent(subPages, subPageSelection)
+    : children;
 
   return (
     <ExtensionBoundary node={node}>
@@ -95,13 +147,8 @@ function PluginPageShell(props: {
         titleLink={titleLink}
         headerActions={headerActions}
       >
-        <PageRouterWrapper
-          mount={pageMount}
-          RouterOverride={RouterOverride}
-          subPages={subPages}
-          indexPath={indexPath}
-        >
-          {children}
+        <PageRouterWrapper mount={pageMount} RouterOverride={RouterOverride}>
+          {content}
         </PageRouterWrapper>
       </PageLayout>
     </ExtensionBoundary>
@@ -115,12 +162,13 @@ function PluginPageShell(props: {
  * to override the default React Router v6 adapter registered by the app plugin.
  * When the input is empty, the default is resolved from {@link pageRouterApiRef}.
  *
- * Sub-pages attached to the `pages` input (e.g. via `SubPageBlueprint`) are
- * handed to the adapter as data — their author-written paths and rendered
- * elements — so each adapter builds the route tree in its own routing library
- * (see {@link PageRouterSubPage}). Tabbed sub-pages therefore work under any
- * adapter, not just React Router ones. A `loader`'s content is opaque and is
- * simply rendered inside the adapter's context.
+ * Sub-pages attached to the `pages` input (e.g. via `SubPageBlueprint`) become
+ * ordinary routes one level below the page: their paths are published so that
+ * top-level route matching can register them, and matching then names the one
+ * to show. Tabbed sub-pages therefore work under any adapter, since no adapter
+ * ever builds a route. Whatever content the page ends up showing — a
+ * `loader`'s element or the selected sub-page — is opaque to the adapter and
+ * simply rendered inside its context.
  *
  * @public
  */
@@ -146,7 +194,11 @@ export const PageBlueprint = createExtensionBlueprint({
     coreExtensionData.routeRef.optional(),
     coreExtensionData.title.optional(),
     coreExtensionData.icon.optional(),
+    subPagePathsDataRef.optional(),
   ],
+  dataRefs: {
+    subPagePaths: subPagePathsDataRef,
+  },
   configSchema: {
     path: optionalStringSchema,
     title: optionalStringSchema,
@@ -178,6 +230,9 @@ export const PageBlueprint = createExtensionBlueprint({
     const RouterOverride = inputs.router?.get(
       PageRouterBlueprint.dataRefs.component,
     );
+    // A page written around a `loader` owns its whole content region, so
+    // anything attached to its `pages` input has nothing to be shown in.
+    const subPages = params.loader ? [] : collectSubPages(inputs.pages);
 
     yield coreExtensionData.routePath(routePath);
     yield coreExtensionData.reactElement(
@@ -190,9 +245,15 @@ export const PageBlueprint = createExtensionBlueprint({
         pluginId,
         noHeader,
         loader: params.loader,
-        pages: inputs.pages,
+        subPages,
       }),
     );
+    if (subPages.length > 0) {
+      // Route matching registers these one level below the page, which is what
+      // makes a sub-page an ordinary route rather than something the page has
+      // to dispatch between itself.
+      yield subPagePathsDataRef(subPages.map(subPage => subPage.path));
+    }
     if (params.routeRef) {
       yield coreExtensionData.routeRef(params.routeRef);
     }
@@ -205,6 +266,34 @@ export const PageBlueprint = createExtensionBlueprint({
   },
 });
 
+/**
+ * Reads the `pages` input into the shape the page itself works in.
+ *
+ * One pass serves both consumers: the page chrome (tabs) and content
+ * selection. Breadcrumb registration is applied here so that whatever renders
+ * a sub-page only ever sees a finished element.
+ */
+function collectSubPages(
+  pages: readonly {
+    get(ref: any): any;
+  }[],
+): PageSubPage[] {
+  return pages.map(page => {
+    const path = page.get(coreExtensionData.routePath);
+    const label = page.get(coreExtensionData.title) || path;
+    return {
+      path,
+      label,
+      icon: page.get(coreExtensionData.icon),
+      element: (
+        <BreadcrumbEntry entry={{ label, href: path }}>
+          {page.get(coreExtensionData.reactElement)}
+        </BreadcrumbEntry>
+      ),
+    };
+  });
+}
+
 function createPageElement(options: {
   node: AppNode;
   RouterOverride?: PageRouterComponent;
@@ -214,9 +303,7 @@ function createPageElement(options: {
   pluginId: string;
   noHeader: boolean;
   loader?: () => Promise<JSX.Element>;
-  pages: readonly {
-    get(ref: any): any;
-  }[];
+  subPages: readonly PageSubPage[];
 }): JSX.Element {
   const {
     node,
@@ -227,7 +314,7 @@ function createPageElement(options: {
     pluginId,
     noHeader,
     loader,
-    pages,
+    subPages,
   } = options;
 
   if (loader) {
@@ -246,24 +333,7 @@ function createPageElement(options: {
     );
   }
 
-  if (pages.length > 0) {
-    // One pass over the sub-page input serves both consumers: the page chrome
-    // (tabs) and the router adapter (routes). Breadcrumb registration is
-    // applied here so adapters only ever see finished elements.
-    const subPages: PageRouterSubPage[] = pages.map(page => {
-      const path = page.get(coreExtensionData.routePath);
-      const label = page.get(coreExtensionData.title) || path;
-      return {
-        path,
-        label,
-        icon: page.get(coreExtensionData.icon),
-        element: (
-          <BreadcrumbEntry entry={{ label, href: path }}>
-            {page.get(coreExtensionData.reactElement)}
-          </BreadcrumbEntry>
-        ),
-      };
-    });
+  if (subPages.length > 0) {
     const tabs: PageLayoutTab[] = subPages.map(({ path, label, icon }) => ({
       id: path,
       label,
@@ -278,7 +348,6 @@ function createPageElement(options: {
         icon={resolvedIcon}
         tabs={tabs}
         subPages={subPages}
-        indexPath={subPages[0]?.path}
         titleRouteRef={titleRouteRef}
         pluginId={pluginId}
       />

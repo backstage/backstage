@@ -19,7 +19,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { ReactNode } from 'react';
 import { Link } from '../../components/Link';
-import { useAppGoBack } from '@internal/frontend';
+import { useAppGoBack } from '../appRouting';
 import { useSupportConfig } from '../../hooks';
 import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
 import { MicDrop } from './MicDrop';

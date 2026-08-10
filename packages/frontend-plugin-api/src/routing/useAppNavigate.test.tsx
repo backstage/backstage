@@ -19,12 +19,9 @@ import { PropsWithChildren } from 'react';
 import { TestApiProvider } from '@backstage/test-utils';
 import { Observable, Subscription } from '@backstage/types';
 import { MemoryRouter, useLocation } from 'react-router-dom';
-import {
-  useAppNavigate,
-  useOptionalFrameworkNavigate,
-} from './useFrameworkNavigation';
+import { useAppNavigate, useOptionalAppNavigate } from './useAppNavigate';
 import { appHistoryApiRef, type AppHistoryApi } from './AppHistoryApi';
-import type { FrameworkLocation } from './FrameworkLocation';
+import type { AppLocation } from './AppLocation';
 
 /**
  * A hand-rolled `AppHistoryApi` matching the real implementation's contract:
@@ -32,16 +29,16 @@ import type { FrameworkLocation } from './FrameworkLocation';
  * reference that only changes when the location changes.
  */
 function createFakeAppHistory(
-  initial: FrameworkLocation,
+  initial: AppLocation,
   navigate: AppHistoryApi['navigate'] = jest.fn(),
 ): {
   appHistory: AppHistoryApi;
-  emit: (location: FrameworkLocation) => void;
+  emit: (location: AppLocation) => void;
 } {
-  const subscribers = new Set<(value: FrameworkLocation) => void>();
+  const subscribers = new Set<(value: AppLocation) => void>();
   let current = initial;
 
-  const location$: Observable<FrameworkLocation> = {
+  const location$: Observable<AppLocation> = {
     [Symbol.observable]() {
       return this;
     },
@@ -87,9 +84,9 @@ function createFakeAppHistory(
   };
 }
 
-describe('useOptionalFrameworkNavigate', () => {
+describe('useOptionalAppNavigate', () => {
   it('returns undefined when no app history is registered', () => {
-    const { result } = renderHook(() => useOptionalFrameworkNavigate(), {
+    const { result } = renderHook(() => useOptionalAppNavigate(), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
         <TestApiProvider apis={[]}>{children}</TestApiProvider>
       ),
@@ -105,7 +102,7 @@ describe('useOptionalFrameworkNavigate', () => {
       navigate,
     );
 
-    const { result } = renderHook(() => useOptionalFrameworkNavigate(), {
+    const { result } = renderHook(() => useOptionalAppNavigate(), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
         <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
           {children}
@@ -136,7 +133,7 @@ describe('useOptionalFrameworkNavigate', () => {
 });
 
 describe('useAppNavigate', () => {
-  it('uses the framework app history when registered', () => {
+  it('uses the app history when registered', () => {
     const navigate = jest.fn();
     const { appHistory } = createFakeAppHistory(
       { pathname: '/', search: '', hash: '', state: undefined },

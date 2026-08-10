@@ -25,8 +25,9 @@ import {
 } from 'react';
 import type {
   AppHistoryApi,
-  FrameworkLocation,
+  AppLocation,
 } from '@backstage/frontend-plugin-api';
+import { usePageMountChain, type PageMount } from './PageMountContext';
 
 /**
  * Minimal location shape shared by React Router v6 and v7.
@@ -173,7 +174,12 @@ function takeAncestorMatches(
   return parentMatches.slice(0, count);
 }
 
-function toAdapterLocation(loc: FrameworkLocation): AdapterLocation {
+/** Normalizes a registered route pattern to the form matching expects. */
+function normalizePattern(pattern: string): string {
+  return pattern === '/' ? '/' : pattern.replace(/\/$/, '') || '/';
+}
+
+function toAdapterLocation(loc: AppLocation): AdapterLocation {
   return {
     pathname: loc.pathname,
     search: loc.search,
@@ -213,12 +219,15 @@ function toPath(to: AdapterTo, currentPathname: string): string {
  * location it describes. Without one, the projection is at app root scope and
  * publishes the neutral empty route context instead.
  *
- * That match is *appended* to the route context the projection is rendered
- * inside rather than replacing it, so a mount nested in an existing route tree
- * — a sub-page under its parent page's adapter — publishes a stack of the same
- * depth a real nested `<Routes>` would, and `..` walks up to the parent mount
- * instead of to the app root. At page scope there is nothing above but app
- * chrome, whose context is empty, so the stack is the projected match alone.
+ * That match is *appended* to the mounts this projection is nested inside
+ * rather than replacing them, so a sub-page publishes a stack of the same depth
+ * a real nested `<Routes>` would, and `..` walks up to the parent page instead
+ * of to the app root. Those ancestors are taken from the surrounding route
+ * context when it has any, and otherwise from the framework's own chain of page
+ * mounts — which is what keeps a relative target meaning the same thing when
+ * the page above the sub-page is routed by a different library, or by none. At
+ * page scope there is nothing above but app chrome, so the stack is the
+ * projected match alone.
  *
  * `go` is not supported by `AppHistoryApi` (there is a single, real browser
  * history — use browser back/forward). Calling `navigate(-1)` warns and is a
@@ -236,20 +245,14 @@ export function createAppHistoryRouter(
   } = options;
 
   const normalizedPattern =
-    routePattern === undefined || routePattern === '/'
-      ? routePattern
-      : routePattern.replace(/\/$/, '');
-  let splatPattern: string | undefined;
-  if (normalizedPattern !== undefined) {
-    splatPattern = normalizedPattern === '/' ? '/*' : `${normalizedPattern}/*`;
-  }
+    routePattern === undefined ? undefined : normalizePattern(routePattern);
 
   // useSyncExternalStore requires getSnapshot() to return a referentially
   // stable value between store events, or it will loop forever re-rendering.
   // Track the latest location in plain closure variables (updated only by the
   // subscription callback below), mirroring how AppHistoryApi itself is
   // implemented, rather than recomputing a fresh object on every call.
-  let sourceLocation: FrameworkLocation = appHistory.location;
+  let sourceLocation: AppLocation = appHistory.location;
   let latestLocation: AdapterLocation = toAdapterLocation(sourceLocation);
   const listeners = new Set<() => void>();
   let subscription: { unsubscribe(): void } | undefined;
@@ -284,30 +287,82 @@ export function createAppHistoryRouter(
     return latestLocation;
   }
 
+  /**
+   * Matches a mount's route pattern against a pathname the way a real
+   * `<Route path={`${pattern}/*`}>` would.
+   *
+   * Prefers a splat match so in-plugin nested Routes / useParams['*'] work, and
+   * so descendant `<Routes>` see a parent route path that ends in `*`. Falls
+   * back to an exact-prefix match so relative Links from the page root (e.g.
+   * `/catalog` + `./create`) resolve against pathnameBase `/catalog` rather
+   * than treating the last segment as a file name.
+   */
+  function matchMount(
+    normalized: string,
+    pathname: string,
+  ): AdapterPathMatch | null {
+    const splatPattern = normalized === '/' ? '/*' : `${normalized}/*`;
+    return (
+      bindings.matchPath({ path: splatPattern, end: false }, pathname) ??
+      bindings.matchPath({ path: normalized, end: false }, pathname)
+    );
+  }
+
+  function toRouteMatch(match: AdapterPathMatch, id: string) {
+    return {
+      params: match.params,
+      pathname: match.pathname,
+      pathnameBase: match.pathnameBase,
+      route: {
+        path: match.pattern.path,
+        caseSensitive: false,
+        children: undefined,
+        element: null,
+        index: false,
+        id,
+      },
+    };
+  }
+
+  /**
+   * The matches for the framework's own record of the mounts this router is
+   * nested inside — the page above a sub-page.
+   *
+   * Each is projected exactly the way the leaf is, from the mount's pattern and
+   * the same location, so an ancestor stands for the same match its own adapter
+   * publishes. A mount the location has already left contributes nothing rather
+   * than a guess.
+   */
+  function projectAncestorMounts(
+    mountChain: readonly PageMount[],
+    pathname: string,
+    pathnameBase: string,
+  ): any[] {
+    const matches: any[] = [];
+    for (const mount of mountChain) {
+      if (!isAncestorBase(mount.basePath, pathnameBase)) {
+        continue;
+      }
+      const match = matchMount(normalizePattern(mount.routePattern), pathname);
+      if (match) {
+        matches.push(toRouteMatch(match, `page-${matches.length}`));
+      }
+    }
+    return matches;
+  }
+
   function buildRouteMatches(
     location: AdapterLocation,
     parentMatches: readonly any[],
+    mountChain: readonly PageMount[],
   ) {
     // At app root scope there is no route to be mounted under, so there is
     // never a match to project.
-    if (normalizedPattern === undefined || splatPattern === undefined) {
+    if (normalizedPattern === undefined) {
       return EMPTY_ROUTE_CONTEXT;
     }
 
-    // Prefer a splat match so in-plugin nested Routes / useParams['*'] work,
-    // and so descendant `<Routes>` see a parent route path that ends in `*`.
-    // Fall back to an exact-prefix match so relative Links from the page root
-    // (e.g. `/catalog` + `./create`) resolve against pathnameBase `/catalog`
-    // rather than treating the last segment as a file name.
-    const match =
-      bindings.matchPath(
-        { path: splatPattern, end: false },
-        location.pathname,
-      ) ??
-      bindings.matchPath(
-        { path: normalizedPattern, end: false },
-        location.pathname,
-      );
+    const match = matchMount(normalizedPattern, location.pathname);
 
     // A location outside the page's own pattern only happens while the app is
     // navigating away, i.e. for the render just before this page unmounts. A
@@ -319,28 +374,29 @@ export function createAppHistoryRouter(
     }
 
     // A mount inside an existing route tree is one level *deeper* than that
-    // tree, not a fresh root: `..` means "up one route match", so replacing the
-    // surrounding stack with a single match would make the first `..` land at
-    // the app root instead of at the parent mount. The ancestors are carried
-    // over verbatim — they are the real matches React Router produced for the
-    // same location — and the projected match is appended as their leaf.
+    // tree, not a fresh root: `..` means "up one route match", so publishing a
+    // single match would make the first `..` land at the app root instead of at
+    // the parent mount.
+    //
+    // The surrounding library context answers that when it has something above
+    // this mount to say — those are the real matches React Router produced for
+    // the same location, layout routes and all. It is silent whenever the page
+    // above chose another routing library, which is why it cannot be the only
+    // source: the nesting is the framework's, and a relative target must not
+    // change meaning because the page above swapped adapters. The framework's
+    // own chain of mounts answers for those cases, projected the same way.
+    const ancestors = takeAncestorMatches(parentMatches, match.pathnameBase);
     return {
       outlet: null,
       matches: [
-        ...takeAncestorMatches(parentMatches, match.pathnameBase),
-        {
-          params: match.params,
-          pathname: match.pathname,
-          pathnameBase: match.pathnameBase,
-          route: {
-            path: match.pattern.path,
-            caseSensitive: false,
-            children: undefined,
-            element: null,
-            index: false,
-            id: 'page',
-          },
-        },
+        ...(ancestors.length > 0
+          ? ancestors
+          : projectAncestorMounts(
+              mountChain,
+              location.pathname,
+              match.pathnameBase,
+            )),
+        toRouteMatch(match, 'page'),
       ] as any[],
       isDataRoute: false,
     };
@@ -370,6 +426,9 @@ export function createAppHistoryRouter(
         each?.route?.path,
       ]) ?? [],
     );
+    // The framework's own record of the mounts above this one, for the mounts
+    // whose adapters do not publish this library's route context at all.
+    const mountChain = usePageMountChain();
 
     const locationContextValue = useMemo(
       () => ({ location, navigationType: bindings.NavigationType.Pop }),
@@ -429,10 +488,10 @@ export function createAppHistoryRouter(
     );
 
     const routeContextValue = useMemo(
-      () => buildRouteMatches(location, parentMatches ?? []),
+      () => buildRouteMatches(location, parentMatches ?? [], mountChain),
       // `parentMatchesKey` stands in for `parentMatches`, see above.
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      [location, parentMatchesKey],
+      [location, parentMatchesKey, mountChain],
     );
 
     return createElement(

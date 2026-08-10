@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { FrameworkLocation } from '@backstage/frontend-plugin-api';
+import type { AppLocation } from '@backstage/frontend-plugin-api';
 
 /**
  * Options for {@link HistoryBackend} push/replace.
@@ -35,7 +35,7 @@ export interface HistoryWriteOptions {
  */
 export interface HistoryBackend {
   /** Current location including pathname, search, hash, and state. */
-  getLocation(): FrameworkLocation;
+  getLocation(): AppLocation;
   /**
    * Push a new entry. `url` is pathname + search + hash (no origin).
    */
@@ -64,7 +64,7 @@ export interface HistoryBackend {
 export function createWindowHistoryBackend(): HistoryBackend {
   let popstateListener: (() => void) | undefined;
 
-  const readLocation = (): FrameworkLocation => ({
+  const readLocation = (): AppLocation => ({
     pathname: window.location.pathname,
     search: window.location.search,
     hash: window.location.hash,
@@ -162,7 +162,7 @@ export function createMemoryHistoryBackend(
     }
   };
 
-  const readLocation = (): FrameworkLocation => {
+  const readLocation = (): AppLocation => {
     const entry = entries[index];
     return {
       pathname: entry.pathname,

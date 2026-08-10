@@ -27,6 +27,7 @@ import {
   pluginWrapperApiRef,
   appHistoryApiRef,
   useAnalytics,
+  useHref,
 } from '@backstage/frontend-plugin-api';
 import { BreadcrumbsRegistryProvider } from './BreadcrumbsRegistryProvider';
 import {
@@ -52,7 +53,6 @@ import { isProtectedApp } from '../../../../packages/core-app-api/src/app/isProt
 import { RouteTracker } from '../../../../packages/frontend-app-api/src/routing/RouteTracker';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { getBasePath } from '../../../../packages/frontend-app-api/src/routing/getBasePath';
-import { useAppHref } from '@internal/frontend';
 import { RootReactRouterV6 } from '../components/RootReactRouterV6';
 
 export const AppRoot = createExtension({
@@ -193,27 +193,6 @@ type RouteResolverProxy = {
 };
 
 /**
- * The `useHref` half of the react-aria router contract, for every BUI anchor
- * that reaches the DOM through it — `Tab`, `HeaderNav`, `MenuItem href`,
- * `ButtonLink`.
- *
- * Without it those render hrefs without the app's deploy basename, so
- * everything but a left click — middle click, open in a new tab, copy link
- * address, crawlers — lands on a 404. react-aria calls this at the anchor's own
- * position rather than here, which is what lets it resolve a target against the
- * page the anchor is written in instead of against the app root; going through
- * `useAppHref` is also what keeps a target from rendering as one href in BUI
- * chrome and a different one in the `RouteLink` beside it.
- *
- * Declared at module scope so the reference handed to `BUIProvider`, and from
- * there to react-aria's `RouterProvider`, never changes identity.
- */
-function useFrameworkHref(path: string): string {
-  const appHistory = useApi(appHistoryApiRef);
-  return useAppHref(appHistory, path);
-}
-
-/**
  * Props for the {@link AppRouter} component.
  * @public
  */
@@ -239,10 +218,14 @@ export interface AppRouterProps {
  * context (`useResolvedPath`, relative links, and `@backstage/ui`'s own
  * react-router-backed href resolution in `useDefinition` / `Tabs` /
  * `HeaderNav`). `BUIProvider` navigates through the app history directly and
- * renders hrefs through {@link useFrameworkHref}, so BUI-authored chrome
+ * renders hrefs through the public {@link useHref}, so BUI-authored chrome
  * (`Link`, `Tabs`, `Menu`, ...) works through the framework instead of a
  * scoped page router, regardless of which page (if any) chrome is rendered
- * under.
+ * under. react-aria calls `useHref` at each anchor's own position rather than
+ * here, which is what lets a target resolve against the page the anchor is
+ * written in; without it every BUI anchor would render an href with no deploy
+ * basename, and everything but a left click — middle click, open in a new tab,
+ * copy link address, crawlers — would land on a 404.
  * Sidebar active-state and RouteTracker already prefer framework location.
  * Per-page adapters own in-plugin routing via PageBlueprint's `router` input
  * / {@link pageRouterApiRef}.
@@ -264,7 +247,7 @@ export function AppRouter(props: AppRouterProps) {
   // it works regardless of which page (if any) chrome happens to be
   // rendered under.
   const appHistory = useApi(appHistoryApiRef);
-  const frameworkNavigate = useCallback(
+  const appNavigate = useCallback(
     (path: string, options?: Parameters<typeof appHistory.navigate>[1]) => {
       appHistory.navigate(path, options);
     },
@@ -310,8 +293,8 @@ export function AppRouter(props: AppRouterProps) {
       <RouterComponent>
         <BUIProvider
           useAnalytics={useAnalytics}
-          navigate={frameworkNavigate}
-          useHref={useFrameworkHref}
+          navigate={appNavigate}
+          useHref={useHref}
         >
           <BreadcrumbsRegistryProvider>
             {...extraElements}
@@ -327,8 +310,8 @@ export function AppRouter(props: AppRouterProps) {
     <RouterComponent>
       <BUIProvider
         useAnalytics={useAnalytics}
-        navigate={frameworkNavigate}
-        useHref={useFrameworkHref}
+        navigate={appNavigate}
+        useHref={useHref}
       >
         <BreadcrumbsRegistryProvider>
           {...extraElements}

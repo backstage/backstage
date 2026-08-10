@@ -24,7 +24,7 @@ import { Link } from '../../components/Link/Link';
 import { SidebarConfig, SidebarConfigContext } from './config';
 import { MobileSidebarContext } from './MobileSidebarContext';
 import { useSidebarPinState } from './SidebarPinStateContext';
-import { useAppLocation } from '@internal/frontend';
+import { useAppLocation } from '../appRouting';
 import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
 
 /**

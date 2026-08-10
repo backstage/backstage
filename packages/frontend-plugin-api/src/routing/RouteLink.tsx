@@ -20,7 +20,7 @@ import {
   ReactNode,
   forwardRef,
 } from 'react';
-import { useAppHref } from '@internal/frontend';
+import { useAppHref } from './useHref';
 import { AnyRouteRefParams } from './types';
 import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';

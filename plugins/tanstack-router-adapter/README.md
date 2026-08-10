@@ -22,7 +22,7 @@ const tanstackRouter = PageRouterBlueprint.make({
 
 ## Limits
 
-Pages built from sub-pages (tabs) are supported: the framework hands the sub-page list over as data, and this adapter compiles it into real TanStack routes. A page's own content, supplied through a `PageBlueprint` `loader`, is rendered as-is under a single root route — if that content routes internally with another library, that is the page author's choice, made alongside their choice of this adapter.
+Pages built from sub-pages (tabs) are supported: the framework's own route matching picks the sub-page to show, and this adapter renders whatever it is given. Content is always opaque, whether it comes from a `PageBlueprint` `loader` or from a sub-page — if it routes internally with another library, that is the page author's choice, made alongside their choice of this adapter. Attach this adapter to a sub-page as well to give that sub-page's content a TanStack context scoped to the sub-page itself.
 
 - Programmatic back, forward and `go` warn and do nothing. There is a single, real browser history; use the browser's own back and forward.
 - `useBlocker` only intercepts navigation started from within this page. It does not see navigation coming from elsewhere in the app.

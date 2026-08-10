@@ -23,11 +23,8 @@ export {
 } from './ExternalRouteRef';
 export { useRouteRef } from './useRouteRef';
 export { useRouteRefParams } from './useRouteRefParams';
-// FrameworkLocation / FrameworkNavigateOptions are the adopter-facing types.
-export type {
-  FrameworkLocation,
-  FrameworkNavigateOptions,
-} from './FrameworkLocation';
+// AppLocation / AppNavigateOptions are the adopter-facing types.
+export type { AppLocation, AppNavigateOptions } from './AppLocation';
 export type { AppHistoryApi } from './AppHistoryApi';
 export { appHistoryApiRef } from './AppHistoryApi';
 // useAppNavigate is the public react-aria-style navigate hook. Location
@@ -38,7 +35,7 @@ export { appHistoryApiRef } from './AppHistoryApi';
 // Note: this comment must not contain the string "at-internal", because
 // TypeScript's `stripInternal` matches it anywhere in a leading comment and
 // would drop the export below from the emitted declarations.
-export { useAppNavigate } from './useFrameworkNavigation';
+export { useAppNavigate } from './useAppNavigate';
 export { useHref } from './useHref';
 export {
   useNavigateRouteRef,

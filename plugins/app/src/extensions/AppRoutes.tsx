@@ -21,6 +21,7 @@ import {
   coreExtensionData,
   createExtensionInput,
   NotFoundErrorPage,
+  PageBlueprint,
   appHistoryApiRef,
   useApi,
 } from '@backstage/frontend-plugin-api';
@@ -45,6 +46,7 @@ export const AppRoutes = createExtension({
       coreExtensionData.routePath,
       coreExtensionData.routeRef.optional(),
       coreExtensionData.reactElement,
+      PageBlueprint.dataRefs.subPagePaths.optional(),
     ]),
   },
   configSchema: {
@@ -61,10 +63,15 @@ export const AppRoutes = createExtension({
   factory({ inputs, config }) {
     const redirects = config.redirects ?? [];
 
-    const routePaths = inputs.routes.map(route =>
-      normalizeRoutePath(route.get(coreExtensionData.routePath)),
+    // A page's sub-pages are registered as routes one level below it, so a
+    // sub-page is matched by the same table as everything else and nothing
+    // above it has to know that sub-pages exist.
+    const routeTable = new RouteTable(
+      inputs.routes.map(route => ({
+        path: normalizeRoutePath(route.get(coreExtensionData.routePath)),
+        subPaths: route.get(PageBlueprint.dataRefs.subPagePaths),
+      })),
     );
-    const routeTable = new RouteTable(routePaths);
 
     const pages = new Map<string, ComponentType>();
     for (const route of inputs.routes) {

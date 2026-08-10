@@ -17,7 +17,7 @@
 import { useCallback, useSyncExternalStore } from 'react';
 import type {
   AppHistoryApi,
-  FrameworkLocation,
+  AppLocation,
 } from '@backstage/frontend-plugin-api';
 
 /**
@@ -36,7 +36,7 @@ import type {
  */
 export function useAppHistoryLocation(
   appHistory: AppHistoryApi | undefined,
-): FrameworkLocation | undefined {
+): AppLocation | undefined {
   const subscribe = useCallback(
     (onStoreChange: () => void) => {
       if (!appHistory) {
@@ -51,7 +51,7 @@ export function useAppHistoryLocation(
   );
 
   const getSnapshot = useCallback(
-    (): FrameworkLocation | undefined => appHistory?.location,
+    (): AppLocation | undefined => appHistory?.location,
     [appHistory],
   );
 

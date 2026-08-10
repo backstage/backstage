@@ -16,17 +16,22 @@
 
 import type {
   AppHistoryApi,
-  FrameworkLocation,
-  FrameworkNavigateOptions,
+  AppLocation,
+  AppNavigateOptions,
 } from '@backstage/frontend-plugin-api';
 import type { Observable, Subscription } from '@backstage/types';
-import { isExternalTarget } from '@internal/frontend';
+import {
+  createPath,
+  isExternalTarget,
+  pageBasePaths,
+  resolveAppPath,
+} from '@internal/frontend';
 import {
   createWindowHistoryBackend,
   type HistoryBackend,
 } from './HistoryBackend';
 
-type LocationHandler = (location: FrameworkLocation) => void;
+type LocationHandler = (location: AppLocation) => void;
 
 /**
  * Options for constructing an {@link AppHistory}.
@@ -61,7 +66,7 @@ export class AppHistory implements AppHistoryApi {
   private readonly subscribers: Set<LocationHandler> = new Set();
   private readonly unlisten: () => void;
   private disposed = false;
-  private current: FrameworkLocation;
+  private current: AppLocation;
 
   /** @internal */
   static create(options?: AppHistoryOptions): AppHistory {
@@ -83,7 +88,7 @@ export class AppHistory implements AppHistoryApi {
    * location itself changes. Backs `getSnapshot` in `useSyncExternalStore`,
    * which re-renders forever if repeated reads return new references.
    */
-  get location(): FrameworkLocation {
+  get location(): AppLocation {
     return this.refresh();
   }
 
@@ -94,7 +99,7 @@ export class AppHistory implements AppHistoryApi {
    * plugin code emits no event), while reusing the reference keeps the result
    * safe to hand to `useSyncExternalStore`.
    */
-  private refresh(): FrameworkLocation {
+  private refresh(): AppLocation {
     const next = this.readLocation();
     if (
       this.current.pathname !== next.pathname ||
@@ -108,11 +113,11 @@ export class AppHistory implements AppHistoryApi {
   }
 
   /** Observable of the current location (basename-stripped). */
-  readonly location$: Observable<FrameworkLocation> = {
+  readonly location$: Observable<AppLocation> = {
     subscribe: (
       observerOrOnNext?:
-        | { next?: (value: FrameworkLocation) => void }
-        | ((value: FrameworkLocation) => void),
+        | { next?: (value: AppLocation) => void }
+        | ((value: AppLocation) => void),
       _onError?: (error: Error) => void,
       _onComplete?: () => void,
     ): Subscription => {
@@ -122,7 +127,7 @@ export class AppHistory implements AppHistoryApi {
           ? observerOrOnNext
           : observerOrOnNext?.next?.bind(observerOrOnNext);
 
-      const handler: LocationHandler = (loc: FrameworkLocation) => {
+      const handler: LocationHandler = (loc: AppLocation) => {
         if (!isClosed && onNext) {
           onNext(loc);
         }
@@ -151,7 +156,7 @@ export class AppHistory implements AppHistoryApi {
   /**
    * Navigate to a path (relative to the app root, not basename).
    */
-  navigate(to: string, options?: FrameworkNavigateOptions): void {
+  navigate(to: string, options?: AppNavigateOptions): void {
     if (isExternalTarget(to)) {
       throw new Error(
         'AppHistory.navigate does not support absolute or protocol-relative URLs',
@@ -172,8 +177,31 @@ export class AppHistory implements AppHistoryApi {
   }
 
   /**
-   * Resolve an app-relative path to a browser-ready href, prefixed with the
-   * app's deploy basename.
+   * Resolve a path to a browser-ready href, prefixed with the app's deploy
+   * basename.
+   *
+   * This is where the framework answers "what does this link target mean?".
+   * `options.basePath` is the mount of the page the target was written in, so
+   * a relative target resolves against the page rather than against the app
+   * root, and a target with no pathname of its own — `?tab=readme`, `#section`
+   * — resolves against the current location, so it stays on the page it was
+   * written on. Both rules are React Router's, which is what lets a plugin
+   * render the same href under either frontend system. Callers that already
+   * hold an app-absolute path pass no `basePath` and get the app root as the
+   * base, which leaves such a path untouched.
+   *
+   * A `basePath` arrives here as a plain path with nothing to say about how it
+   * was matched, so each leading `..` climbs one of its segments. Deciding
+   * which base a `..` lands on where that is not the same thing — a page
+   * mounted at `/catalog/:namespace/:kind/:name` is one match spanning four
+   * segments, so a single `..` climbs off it — needs the page's route pattern,
+   * which only the tree the target was written in has. `useHref` resolves that
+   * climb there and passes the base it landed on, so the two agree.
+   *
+   * A target with no pathname of its own is resolved against the location this
+   * history is standing at *now*, so a caller that renders such an href has to
+   * re-render when the location changes — first-party chrome does that by
+   * subscribing through `useAppHistoryLocation`.
    *
    * Targets that are not app-relative — absolute (`https://example.com/x`),
    * protocol-relative (`//example.com/x`), and opaque schemes such as
@@ -186,11 +214,19 @@ export class AppHistory implements AppHistoryApi {
    * {@link AppHistory.navigate} when a target must be app-relative — it
    * throws for these instead.
    */
-  createHref(to: string): string {
+  createHref(to: string, options?: { basePath?: string }): string {
     if (isExternalTarget(to)) {
       return to;
     }
-    const url = new URL(to, 'http://localhost');
+    const resolved = resolveAppPath(
+      to,
+      pageBasePaths(options?.basePath),
+      this.location.pathname,
+    );
+    // Still normalized through `URL`, which is what turns a resolved path that
+    // is not already app-absolute into one, and collapses any `.`/`..` a
+    // caller wrote into an absolute target.
+    const url = new URL(createPath(resolved), 'http://localhost');
     return `${this.basename}${url.pathname}${url.search}${url.hash}`;
   }
 
@@ -205,7 +241,7 @@ export class AppHistory implements AppHistoryApi {
     this.subscribers.clear();
   }
 
-  private readLocation(): FrameworkLocation {
+  private readLocation(): AppLocation {
     const raw = this.history.getLocation();
     return {
       pathname: this.stripBasename(raw.pathname),

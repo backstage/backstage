@@ -21,9 +21,11 @@ import {
   Route,
   Routes,
   useLocation,
+  useParams,
   useResolvedPath,
 } from 'react-router-dom';
 import type { PageRouterComponent } from '../apis/definitions/PageRouterApi';
+import { useHref } from '../routing';
 import { PageBlueprint } from './PageBlueprint';
 import { PageRouterBlueprint } from './PageRouterBlueprint';
 import { SubPageBlueprint } from './SubPageBlueprint';
@@ -269,6 +271,74 @@ describe('SubPageBlueprint', () => {
     });
   });
 
+  it('should give a subpage of a parameterized page its own params and nested routes', async () => {
+    const entityPage = PageBlueprint.make({
+      name: 'entity',
+      params: {
+        path: '/entities/:namespace/:kind/:name',
+        title: 'Entity',
+      },
+    });
+
+    const overviewSubPage = SubPageBlueprint.make({
+      name: 'overview',
+      attachTo: { id: 'page:test/entity', input: 'pages' },
+      params: {
+        path: 'overview',
+        title: 'Overview',
+        loader: async () => {
+          const Probe = () => {
+            const mount = usePageMount();
+            return (
+              <div data-testid="overview-page">
+                <div data-testid="params">{JSON.stringify(useParams())}</div>
+                <div data-testid="mount-base">{mount?.basePath}</div>
+                <Routes>
+                  <Route
+                    path="deep/:section"
+                    element={<span data-testid="deep">deep</span>}
+                  />
+                </Routes>
+              </div>
+            );
+          };
+          return <Probe />;
+        },
+      },
+    });
+
+    const { appHistory } = renderTestApp({
+      extensions: [entityPage, overviewSubPage],
+      initialRouteEntries: ['/entities/default/component/foo/overview'],
+    });
+
+    expect(await screen.findByTestId('overview-page')).toBeInTheDocument();
+    expect(screen.getByTestId('mount-base')).toHaveTextContent(
+      '/entities/default/component/foo/overview',
+    );
+    // The page's params reach the subpage, and the tail below the subpage is
+    // the subpage's own splat rather than the page's.
+    expect(JSON.parse(screen.getByTestId('params').textContent!)).toEqual({
+      namespace: 'default',
+      kind: 'component',
+      name: 'foo',
+      '*': '',
+    });
+    expect(screen.queryByTestId('deep')).not.toBeInTheDocument();
+
+    await act(async () => {
+      appHistory.navigate('/entities/default/component/foo/overview/deep/spec');
+    });
+
+    expect(await screen.findByTestId('deep')).toBeInTheDocument();
+    expect(JSON.parse(screen.getByTestId('params').textContent!)).toEqual({
+      namespace: 'default',
+      kind: 'component',
+      name: 'foo',
+      '*': 'deep/spec',
+    });
+  });
+
   it('should keep relative subpage routes and tabbed layouts working under parent/child scopes', async () => {
     const parentPage = PageBlueprint.make({
       params: {
@@ -350,6 +420,22 @@ describe('SubPageBlueprint', () => {
    * that published a single match of its own instead would send every `..` to
    * the app root.
    */
+  const RelativeTargetsProbe = () => (
+    <div data-testid="templates-page">
+      <div data-testid="up">{useResolvedPath('..').pathname}</div>
+      <div data-testid="self">{useResolvedPath('.').pathname}</div>
+      <Link to="..">Parent page</Link>
+      <Link to="../tasks">Tasks tab</Link>
+      <Link to="./actions">Actions</Link>
+      <Routes>
+        <Route
+          path="actions/:name"
+          element={<Link to="../preview">Up from a nested route</Link>}
+        />
+      </Routes>
+    </div>
+  );
+
   const relativeTargetsPage = PageBlueprint.make({
     params: { path: '/create', title: 'Scaffolder' },
   });
@@ -358,24 +444,7 @@ describe('SubPageBlueprint', () => {
     params: {
       path: 'templates',
       title: 'Templates',
-      loader: async () => {
-        const Templates = () => (
-          <div data-testid="templates-page">
-            <div data-testid="up">{useResolvedPath('..').pathname}</div>
-            <div data-testid="self">{useResolvedPath('.').pathname}</div>
-            <Link to="..">Parent page</Link>
-            <Link to="../tasks">Tasks tab</Link>
-            <Link to="./actions">Actions</Link>
-            <Routes>
-              <Route
-                path="actions/:name"
-                element={<Link to="../preview">Up from a nested route</Link>}
-              />
-            </Routes>
-          </div>
-        );
-        return <Templates />;
-      },
+      loader: async () => <RelativeTargetsProbe />,
     },
   });
   const relativeTargetsSiblingSubPage = SubPageBlueprint.make({
@@ -484,5 +553,171 @@ describe('SubPageBlueprint', () => {
       'href',
       '/backstage/create/templates/actions',
     );
+  });
+
+  /**
+   * The same relative targets, with the page above the sub-page routed by a
+   * different library.
+   *
+   * A sub-page's own adapter publishes a match for the sub-page mount, and how
+   * far `..` climbs is decided by how deep that match sits. Reading the depth
+   * out of the surrounding library context only answers while the page above
+   * happens to use the same library — under a TanStack or React Router v7
+   * parent there is no v6 context to read, and the sub-page would look like the
+   * only match there is. The nesting itself is the framework's, not the
+   * library's, so it has to hold whichever adapter the page above picked.
+   *
+   * The stand-in parent adapter is deliberately not another real router: what
+   * the sub-page must survive is the *absence* of its own library's context,
+   * which is exactly what any foreign adapter leaves behind.
+   */
+  const ForeignPageRouter: PageRouterComponent = ({ children }) => (
+    <div data-testid="foreign-page-router">{children}</div>
+  );
+  const foreignParentPage = PageBlueprint.make({
+    name: 'foreign',
+    params: { path: '/mixed', title: 'Mixed' },
+  });
+  const foreignPageRouter = PageRouterBlueprint.make({
+    name: 'foreign',
+    attachTo: { id: 'page:test/foreign', input: 'router' },
+    params: { component: ForeignPageRouter },
+  });
+  const foreignParentSubPage = SubPageBlueprint.make({
+    name: 'mixed-templates',
+    attachTo: { id: 'page:test/foreign', input: 'pages' },
+    params: {
+      path: 'templates',
+      title: 'Templates',
+      loader: async () => <RelativeTargetsProbe />,
+    },
+  });
+  const foreignParentSiblingSubPage = SubPageBlueprint.make({
+    name: 'mixed-tasks',
+    attachTo: { id: 'page:test/foreign', input: 'pages' },
+    params: {
+      path: 'tasks',
+      title: 'Tasks',
+      loader: async () => <div data-testid="tasks-page">Tasks</div>,
+    },
+  });
+
+  it('should resolve relative targets in a subpage against the subpage when the page above it uses another routing library', async () => {
+    const { appHistory } = renderTestApp({
+      extensions: [
+        foreignParentPage,
+        foreignPageRouter,
+        foreignParentSubPage,
+        foreignParentSiblingSubPage,
+      ],
+      initialRouteEntries: ['/mixed/templates'],
+    });
+
+    expect(await screen.findByTestId('templates-page')).toBeInTheDocument();
+    // The page really is routed by the foreign adapter, so the sub-page below
+    // it has no context of its own library to inherit.
+    expect(screen.getByTestId('foreign-page-router')).toContainElement(
+      screen.getByTestId('templates-page'),
+    );
+    expect(screen.getByTestId('up').textContent).toBe('/mixed');
+    expect(screen.getByTestId('self').textContent).toBe('/mixed/templates');
+    expect(screen.getByRole('link', { name: 'Parent page' })).toHaveAttribute(
+      'href',
+      '/mixed',
+    );
+    expect(screen.getByRole('link', { name: 'Tasks tab' })).toHaveAttribute(
+      'href',
+      '/mixed/tasks',
+    );
+    expect(screen.getByRole('link', { name: 'Actions' })).toHaveAttribute(
+      'href',
+      '/mixed/templates/actions',
+    );
+
+    // A route the sub-page composed itself is a match deeper again, and `..`
+    // from there lands back on the sub-page.
+    await act(async () => {
+      appHistory.navigate('/mixed/templates/actions/build');
+    });
+    expect(
+      await screen.findByRole('link', { name: 'Up from a nested route' }),
+    ).toHaveAttribute('href', '/mixed/templates/preview');
+
+    // Following the sibling href has to land on the sibling tab.
+    await act(async () => {
+      appHistory.navigate('/mixed/templates');
+    });
+    await act(async () => {
+      screen.getByRole('link', { name: 'Tasks tab' }).click();
+    });
+    expect(await screen.findByTestId('tasks-page')).toBeInTheDocument();
+    expect(appHistory.location.pathname).toBe('/mixed/tasks');
+  });
+
+  it('should mount a subpage of a splat page where routing matched it, from a location below the subpage', async () => {
+    // A splat page says "everything below here is mine", and a sub-page claims
+    // a piece of exactly that. Appending the sub-path to the page's *pattern*
+    // instead of reading the match would give `/docs/*/intro` — a pattern with
+    // a literal `*` in the middle, which matches no location at all and leaves
+    // the sub-page's content with nothing to resolve against.
+    //
+    // Read from a location one level below the sub-page's own base, which is
+    // the only place the base can be told apart from the current pathname.
+    const Probe = () => {
+      const mount = usePageMount();
+      return (
+        <div data-testid="intro-page">
+          <div data-testid="mount-base">{mount?.basePath}</div>
+          <div data-testid="mount-pattern">{mount?.routePattern}</div>
+          {/* The framework's own resolution, which every `Link` and `useHref`
+              written in this sub-page goes through. */}
+          <div data-testid="framework-href">{useHref('detail')}</div>
+          <div data-testid="self">{useResolvedPath('.').pathname}</div>
+          <Link to="./chapter-2">Next chapter</Link>
+          <Routes>
+            <Route
+              path="chapter-1"
+              element={<span data-testid="chapter">chapter one</span>}
+            />
+          </Routes>
+        </div>
+      );
+    };
+
+    const docsPage = PageBlueprint.make({
+      name: 'docs',
+      params: { path: '/docs/*', title: 'Docs' },
+    });
+    const introSubPage = SubPageBlueprint.make({
+      name: 'intro',
+      attachTo: { id: 'page:test/docs', input: 'pages' },
+      params: {
+        path: 'intro',
+        title: 'Intro',
+        loader: async () => <Probe />,
+      },
+    });
+
+    renderTestApp({
+      extensions: [docsPage, introSubPage],
+      initialRouteEntries: ['/docs/intro/chapter-1'],
+    });
+
+    expect(await screen.findByTestId('intro-page')).toBeInTheDocument();
+    // Exact, since every wrong answer here is the right one with the tail
+    // still on the end of it.
+    expect(screen.getByTestId('mount-base').textContent).toBe('/docs/intro');
+    expect(screen.getByTestId('mount-pattern').textContent).toBe('/docs/intro');
+    expect(screen.getByTestId('framework-href').textContent).toBe(
+      '/docs/intro/detail',
+    );
+    expect(screen.getByTestId('self').textContent).toBe('/docs/intro');
+    expect(screen.getByRole('link', { name: 'Next chapter' })).toHaveAttribute(
+      'href',
+      '/docs/intro/chapter-2',
+    );
+    // The tail below the sub-page belongs to the sub-page, not to the splat
+    // page above it.
+    expect(screen.getByTestId('chapter')).toBeInTheDocument();
   });
 });

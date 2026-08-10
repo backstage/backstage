@@ -17,7 +17,11 @@
 import { ReactNode, useMemo } from 'react';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
-import { PageMountProvider, usePageMount } from '@internal/frontend';
+import {
+  PageMountProvider,
+  usePageMount,
+  useSubPageSelection,
+} from '@internal/frontend';
 import {
   coreExtensionData,
   createExtensionBlueprint,
@@ -36,10 +40,15 @@ function joinMountPath(parentPath: string, subPath: string): string {
 }
 
 /**
- * Provides the subpage's own `PageMount` (`parentBase + '/' + subPath`) to its
- * content, and runs that content through the same adapter resolution a page
- * uses — the subpage's own `router` input when it has one, otherwise the
- * app-plugin default.
+ * Provides the subpage's own `PageMount` to its content, and runs that content
+ * through the same adapter resolution a page uses — the subpage's own `router`
+ * input when it has one, otherwise the app-plugin default.
+ *
+ * The mount comes from the route match that selected this subpage, so the base
+ * a relative target resolves against is the one matching actually produced
+ * rather than a guess reassembled from strings. Outside route matching (e.g.
+ * an isolated `renderInTestApp`) there is no match to read, and appending the
+ * subpath to the parent's mount is the honest approximation.
  *
  * Resolving an adapter here (rather than letting content inherit whatever
  * routing context the parent page's adapter happened to leave behind) is what
@@ -48,9 +57,13 @@ function joinMountPath(parentPath: string, subPath: string): string {
  * so there is nothing for the framework to reconcile.
  *
  * Scoped does not mean re-rooted: the subpage is still nested inside the
- * parent page, so its adapter publishes its mount *below* whatever routing
- * context surrounds it. That is what keeps `../sibling-tab` pointing at the
- * sibling tab rather than at the app root.
+ * parent page, and the mount it is given is published below the parent's.
+ * Which of those two mounts a relative target resolves against is then the
+ * adapter's own business — an adapter that projects the app location (the
+ * React Router ones) reads the nesting back out of the framework and keeps
+ * `../sibling-tab` pointing at the sibling tab, whichever library the page
+ * above happens to use, while one that re-roots its own history at the mount
+ * (TanStack) keeps every target inside the subpage by construction.
  */
 function SubPageRouterWrapper(props: {
   path: string;
@@ -59,8 +72,15 @@ function SubPageRouterWrapper(props: {
 }) {
   const { path, RouterOverride, children } = props;
   const parentMount = usePageMount();
+  const selected = useSubPageSelection()?.selected;
+  const matchedMount = selected?.path === path ? selected.mount : undefined;
+  const matchedBasePath = matchedMount?.basePath;
+  const matchedRoutePattern = matchedMount?.routePattern;
 
   const mount = useMemo(() => {
+    if (matchedBasePath !== undefined && matchedRoutePattern !== undefined) {
+      return { basePath: matchedBasePath, routePattern: matchedRoutePattern };
+    }
     if (!parentMount) {
       return undefined;
     }
@@ -68,7 +88,7 @@ function SubPageRouterWrapper(props: {
       basePath: joinMountPath(parentMount.basePath, path),
       routePattern: joinMountPath(parentMount.routePattern, path),
     };
-  }, [parentMount, path]);
+  }, [matchedBasePath, matchedRoutePattern, parentMount, path]);
 
   if (!mount) {
     return <>{children}</>;
@@ -87,13 +107,13 @@ function SubPageRouterWrapper(props: {
  * Creates extensions that are sub-page React components attached to a parent page.
  * Sub-pages are rendered as tabs within the parent page's header.
  *
- * `PageBlueprint` hands each subpage's output path and element to the parent
- * page's router adapter, which routes between them using its own routing
- * library. Each subpage also receives its own `PageMount`
- * (`parentBase + '/' + subPath`) for descendants (e.g. breadcrumbs), and its
- * content is scoped to that mount by its own adapter — the optional `router`
- * input (via {@link PageRouterBlueprint} attached to this sub-page) when
- * present, otherwise the app-plugin default.
+ * A subpage is an ordinary route one level below its parent page: the page
+ * publishes the subpath, top-level route matching registers it, and the match
+ * names the subpage to show. Each subpage receives its own `PageMount` from
+ * that match for descendants (e.g. breadcrumbs), and its content is scoped to
+ * that mount by its own adapter — the optional `router` input (via
+ * {@link PageRouterBlueprint} attached to this sub-page) when present,
+ * otherwise the app-plugin default.
  *
  * @public
  * @example

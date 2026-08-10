@@ -17,8 +17,8 @@
 import { createTanStackHistory } from './createTanStackHistory';
 import type {
   AppHistoryApi,
-  FrameworkLocation,
-  FrameworkNavigateOptions,
+  AppLocation,
+  AppNavigateOptions,
 } from '@backstage/frontend-plugin-api';
 import type { Observable } from '@backstage/types';
 
@@ -33,28 +33,28 @@ import type { Observable } from '@backstage/types';
 function createMockAppHistory(initialPathname = '/'): {
   appHistory: AppHistoryApi;
   navigatedTo: () => string[];
-  navigateCalls: Array<{ to: string; options?: FrameworkNavigateOptions }>;
+  navigateCalls: Array<{ to: string; options?: AppNavigateOptions }>;
 } {
   const navigateCalls: Array<{
     to: string;
-    options?: FrameworkNavigateOptions;
+    options?: AppNavigateOptions;
   }> = [];
   const initialUrl = new URL(initialPathname, 'http://localhost');
-  let current: FrameworkLocation = {
+  let current: AppLocation = {
     pathname: initialUrl.pathname,
     search: initialUrl.search,
     hash: initialUrl.hash,
     state: undefined,
   };
-  const listeners = new Set<(loc: FrameworkLocation) => void>();
+  const listeners = new Set<(loc: AppLocation) => void>();
 
-  const location$: Observable<FrameworkLocation> = {
+  const location$: Observable<AppLocation> = {
     subscribe: observerOrOnNext => {
       const onNext =
         typeof observerOrOnNext === 'function'
           ? observerOrOnNext
           : observerOrOnNext?.next?.bind(observerOrOnNext);
-      const handler = (loc: FrameworkLocation) => onNext?.(loc);
+      const handler = (loc: AppLocation) => onNext?.(loc);
       listeners.add(handler);
       handler(current);
       return {

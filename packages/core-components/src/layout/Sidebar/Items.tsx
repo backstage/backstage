@@ -52,13 +52,9 @@ import {
   createElement,
 } from 'react';
 
-import { Link, NavLinkProps, resolvePath } from 'react-router-dom';
-import {
-  useAppBasePath,
-  useAppLocation,
-  useAppResolvedPath,
-  type AppLocation,
-} from '@internal/frontend';
+import { Link, NavLinkProps } from 'react-router-dom';
+import { resolvePath, useAppBasePath, type AppPath } from '@internal/frontend';
+import { useAppLocation, useAppResolvedPath } from '../appRouting';
 import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
 
 import {
@@ -250,7 +246,7 @@ function useMemoStyles(sidebarConfig: SidebarConfig) {
  */
 const useLocationMatch = (
   submenu: ReactElement<SidebarSubmenuProps>,
-  location: AppLocation,
+  location: AppPath,
   basePath: string,
 ): boolean =>
   useElementFilter(

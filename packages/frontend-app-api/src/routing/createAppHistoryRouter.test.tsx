@@ -35,7 +35,7 @@ import {
 import {
   createAppHistoryRouter,
   type ReactRouterAdapterBindings,
-} from './createAppHistoryRouter';
+} from '@internal/frontend';
 
 const v6Bindings: ReactRouterAdapterBindings = {
   NavigationType,

@@ -89,6 +89,13 @@ const _default: OverridableFrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ExtensionDataRef<
+            string[],
+            'core.page.subPagePaths',
+            {
+              optional: true;
+            }
           >;
       inputs: {
         pages: ExtensionInput<
@@ -244,6 +251,13 @@ export const searchPage: OverridableExtensionDefinition<{
     | ExtensionDataRef<
         IconElement,
         'core.icon',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef<
+        string[],
+        'core.page.subPagePaths',
         {
           optional: true;
         }

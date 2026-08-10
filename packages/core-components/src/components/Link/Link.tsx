@@ -41,7 +41,6 @@ import {
   createRoutesFromChildren,
   Link as RouterLink,
   LinkProps as RouterLinkProps,
-  resolvePath,
   Route,
   useInRouterContext,
   UNSAFE_RouteContext,
@@ -52,18 +51,21 @@ import {
   shouldNavigateViaFramework,
   shouldResolveViaPageMount,
 } from './absoluteLinkNavigate';
-// `createPath` comes from here rather than from `react-router-dom` above: the
-// v6 beta this package still supports exports no `createPath`, so calling it
-// would throw the moment a relative target resolved against the page mount.
-// `@internal/frontend` vendors it verbatim for exactly that reason, and
-// `AppRouting.test.tsx` pins the copy against React Router's own. `resolvePath`,
-// which the same branch uses, *is* exported by the beta and stays imported.
+// `createPath` and `resolvePath` come from here rather than from
+// `react-router-dom` above: the v6 beta this package still supports exports no
+// `createPath`, so calling it would throw the moment a relative target resolved
+// against the page mount. `@internal/frontend` vendors both verbatim — that
+// package carries no React Router of its own — and `AppRouting.test.tsx` pins
+// the copies against React Router's own.
 import {
+  climbPageBase,
   createPath,
   isExternalTarget,
-  useAppBasePath,
-  useAppHref,
+  pageBasePaths,
+  resolvePath,
+  useAppHistoryLocation,
   usePageMount,
+  type PageMount,
 } from '@internal/frontend';
 import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
 
@@ -268,6 +270,46 @@ function useHasAmbientRouter(): boolean {
 }
 
 /**
+ * Splits a target's leading `..` off the base that climb lands on, over the
+ * stack the page it is written in publishes.
+ *
+ * A `..` climbs one route *match*, and only the page's route pattern says where
+ * a match ends: a page mounted at `/catalog/:namespace/:kind/:name` is a single
+ * match spanning four segments, so one `..` climbs off the page rather than
+ * into `/catalog/default/component`, which no route claims. Resolving against
+ * the page's concrete base path alone climbs one path *segment* instead, and
+ * only agrees where the pattern happens to claim one segment per match.
+ *
+ * This is `useHref`'s climb over `useHref`'s stack, which is what keeps a
+ * target from rendering as one href here and a different one in the chrome
+ * beside it. Everything left of the climb belongs to whoever owns the location
+ * and the deploy basename, so the pair is handed on rather than resolved here.
+ */
+function climbInPage(
+  to: string,
+  pageMount: PageMount | undefined,
+): { to: string; basePath: string } {
+  return climbPageBase(
+    to,
+    pageBasePaths(pageMount?.basePath, pageMount?.routePattern),
+  );
+}
+
+/**
+ * Resolves a relative target written inside a page to an app-absolute path.
+ *
+ * The climb is {@link climbInPage}'s; what is left of the target is ordinary
+ * path resolution against the base that climb landed on. Only targets with a
+ * pathname of their own get here — `?tab=readme` and `#section` are relative to
+ * the location rather than to any base, and are left for whoever owns the
+ * location — so the base is the whole answer.
+ */
+function resolveInPage(to: string, pageMount: PageMount | undefined): string {
+  const climbed = climbInPage(to, pageMount);
+  return createPath(resolvePath(climbed.to, climbed.basePath));
+}
+
+/**
  * Props that only React Router's `Link` implements, and that a plain anchor
  * therefore has to drop.
  */
@@ -282,11 +324,13 @@ const ROUTER_ONLY_PROPS = [
 /**
  * Renders an internal target with no ambient React Router to hand it to.
  *
- * The href is resolved through the same authority the rest of app chrome uses,
- * so the app's deploy basename is applied where there is an app history to
- * apply it, and the target is handed back as written where there is neither
- * authority. Split into its own component so that the hooks it needs only run
- * on the path that needs them, leaving the React Router path untouched.
+ * The href comes from the app history, which resolves the target against the
+ * page it is written in and applies the app's deploy basename; with no app
+ * history either, the target is handed back as written, which is all that is
+ * left to say about it. React Router is deliberately not consulted — this
+ * component only renders where there is none. Split out so that the hooks it
+ * needs only run on the path that needs them, leaving the React Router path
+ * untouched.
  *
  * The props React Router implements on top of an anchor cannot be honoured
  * here, so each one that was passed is named in a development-only warning
@@ -307,7 +351,18 @@ const RouterlessLink = forwardRef<
     reloadDocument,
     ...anchorProps
   } = props;
-  const href = useAppHref(appHistory, to);
+  // Which base a leading `..` lands on is the one part of the answer only this
+  // tree can give — the page publishes its mount and its pattern here and
+  // nowhere else — so the climb is resolved here and the app history is handed
+  // the base it landed on, exactly as `useHref` does.
+  const climbed = climbInPage(to, usePageMount());
+  // Subscribes to the app history. A target with no pathname of its own —
+  // `?tab=readme`, `#section` — is resolved against the current location, so
+  // the href has to be recomputed when the app navigates.
+  useAppHistoryLocation(appHistory);
+  const href = appHistory
+    ? appHistory.createHref(climbed.to, { basePath: climbed.basePath })
+    : to;
 
   if (process.env.NODE_ENV !== 'production') {
     for (const name of ROUTER_ONLY_PROPS) {
@@ -346,7 +401,6 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
     const analytics = useAnalytics();
     const appHistory = useOptionalAppHistory();
     const pageMount = usePageMount();
-    const basePath = useAppBasePath();
     const hasAmbientRouteMatch = useHasAmbientRouteMatch();
     const hasAmbientRouter = useHasAmbientRouter();
 
@@ -371,9 +425,7 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
         pageMount,
         hasAmbientRouteMatch,
       });
-    const to = resolveViaPageMount
-      ? createPath(resolvePath(rawTo, basePath || '/'))
-      : rawTo;
+    const to = resolveViaPageMount ? resolveInPage(rawTo, pageMount) : rawTo;
 
     const linkText = getNodeText(props.children) || to;
     // Case-insensitive for the same reason as `isExternalTarget`: `HTTPS:` is

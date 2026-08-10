@@ -48,9 +48,10 @@ import { TanStackPageRouter } from './TanStackPageRouter';
 /**
  * The page content, written with this adapter's routing library. Carries a
  * piece of in-page state that a remount would reset, what the library makes
- * of the current search params, a link, and content one level deeper than the
- * sub-page itself (TanStack hands that tail over as the `_splat` param rather
- * than through a descendant route tree).
+ * of the current search params, a link scoped to the sub-page's own mount,
+ * and content one level deeper than the sub-page itself (TanStack hands that
+ * tail over as the `_splat` param rather than through a descendant route
+ * tree).
  */
 function SubPageProbe(props: { name: string }) {
   const [bumped, setBumped] = useState(0);
@@ -64,7 +65,7 @@ function SubPageProbe(props: { name: string }) {
       <button type="button" onClick={() => setBumped(n => n + 1)}>
         Bump
       </button>
-      <Link to={`/${props.name}/deep` as never}>Deep</Link>
+      <Link to={'/deep' as never}>Deep</Link>
       {params._splat === 'deep' && <span data-testid="deep">deep</span>}
     </div>
   );
@@ -113,6 +114,16 @@ function renderPage(initialPath: string) {
     attachTo: { id: 'page:test/things', input: 'router' },
     params: { component: adapter.PageRouter },
   });
+  // A sub-page is an ordinary route with a routing context of its own, so the
+  // content written with this library declares this adapter for itself rather
+  // than inheriting whatever the page above it happens to use.
+  const subPageRouters = ['overview', 'settings'].map(name =>
+    PageRouterBlueprint.make({
+      name: `${name}-under-test`,
+      attachTo: { id: `sub-page:test/${name}`, input: 'router' },
+      params: { component: adapter.PageRouter },
+    }),
+  );
 
   return renderTestApp({
     extensions: [
@@ -121,6 +132,7 @@ function renderPage(initialPath: string) {
       overviewSubPage,
       settingsSubPage,
       pageRouter,
+      ...subPageRouters,
     ],
     initialRouteEntries: [initialPath],
   });

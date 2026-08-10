@@ -38,6 +38,7 @@ import {
   PageBlueprint,
   SubPageBlueprint,
   appHistoryApiRef,
+  useHref,
 } from '@backstage/frontend-plugin-api';
 import {
   isExternalTarget,
@@ -430,6 +431,115 @@ describe('<Link />', () => {
 
       fireEvent.click(screen.getByRole('link', { name: 'Sibling tab' }));
       expect(navigate).toHaveBeenCalledWith('/demo-v7/v6-guest');
+    });
+
+    it('climbs one route match per `..` on a parameterised page, with no v6 adapter to ask', () => {
+      // A page whose pattern binds parameters is a single route match spanning
+      // every segment up to the last of them, so a `..` written on it climbs
+      // off the page. Resolving against the page's concrete base path instead
+      // climbs one path segment and lands on `/catalog/default/component`,
+      // which no route claims — visible only where no React Router v6 adapter
+      // is there to answer, which is every page hosted by TanStack, by React
+      // Router v7, or by no router at all.
+      const entityPage: PageMount = {
+        basePath: '/catalog/default/component/artist-lookup',
+        routePattern: '/catalog/:namespace/:kind/:name',
+      };
+      const entitySubPage: PageMount = {
+        basePath: '/catalog/default/component/artist-lookup/ci-cd',
+        routePattern: '/catalog/:namespace/:kind/:name/ci-cd',
+      };
+      const targets = ['..', '../..', '../sibling', 'releases'];
+
+      /** Reads `useHref`'s answer for the same target in the same tree. */
+      const HrefLink = ({ to }: { to: string }) => (
+        <a href={useHref(to)}>{to}</a>
+      );
+
+      const hrefsOn = (
+        mount: PageMount,
+        hosted: 'by a bare router' | 'by no router',
+      ) => {
+        const appHistory = createMockAppHistory({
+          initialLocation: `/backstage${mount.basePath}`,
+          basename: '/backstage',
+        });
+        const page = (
+          <PageMountProvider mount={mount}>
+            <nav aria-label="Link">
+              {targets.map(to => (
+                <Link key={to} to={to}>
+                  {to}
+                </Link>
+              ))}
+            </nav>
+            <nav aria-label="useHref">
+              {targets.map(to => (
+                <HrefLink key={to} to={to} />
+              ))}
+            </nav>
+          </PageMountProvider>
+        );
+
+        const { unmount } = render(
+          <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
+            {hosted === 'by a bare router' ? (
+              // A router with nothing matched is all a TanStack or React Router
+              // v7 page leaves in context for react-router v6 consumers.
+              <MemoryRouter initialEntries={[`/backstage${mount.basePath}`]}>
+                {page}
+              </MemoryRouter>
+            ) : (
+              page
+            )}
+          </TestApiProvider>,
+        );
+
+        const read = (name: string) =>
+          Object.fromEntries(
+            within(screen.getByRole('navigation', { name }))
+              .getAllByRole('link')
+              .map(link => [link.textContent, link.getAttribute('href')]),
+          );
+        const rendered = { link: read('Link'), useHref: read('useHref') };
+        unmount();
+        return rendered;
+      };
+
+      const onThePage = {
+        // One match up from a four-segment page is the app root, not
+        // `/backstage/catalog/default/component`.
+        '..': '/backstage/',
+        // And there is nothing above the app root to climb to.
+        '../..': '/backstage/',
+        '../sibling': '/backstage/sibling',
+        releases: '/backstage/catalog/default/component/artist-lookup/releases',
+      };
+      const onTheSubPage = {
+        // A sub-page's pattern is its page's with its own path appended, so it
+        // sits exactly one match below the page.
+        '..': '/backstage/catalog/default/component/artist-lookup',
+        '../..': '/backstage/',
+        '../sibling':
+          '/backstage/catalog/default/component/artist-lookup/sibling',
+        releases:
+          '/backstage/catalog/default/component/artist-lookup/ci-cd/releases',
+      };
+
+      // `Link` and `useHref` are two authorities answering the same question,
+      // so the same target on the same page has to render the same href
+      // through either — and the answer must not depend on whether a v6 router
+      // happens to be in context, since the page is not hosted by one.
+      for (const hosted of ['by a bare router', 'by no router'] as const) {
+        expect(hrefsOn(entityPage, hosted)).toEqual({
+          link: onThePage,
+          useHref: onThePage,
+        });
+        expect(hrefsOn(entitySubPage, hosted)).toEqual({
+          link: onTheSubPage,
+          useHref: onTheSubPage,
+        });
+      }
     });
 
     it('leaves relative targets to a page-scoped React Router, including `..` up a nested route', () => {

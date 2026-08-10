@@ -20,8 +20,8 @@ import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';
 import { ExternalRouteRef } from './ExternalRouteRef';
 import { useRouteRef } from './useRouteRef';
-import { useAppNavigate } from './useFrameworkNavigation';
-import type { FrameworkNavigateOptions } from './FrameworkLocation';
+import { useAppNavigate } from './useAppNavigate';
+import type { AppNavigateOptions } from './AppLocation';
 
 /**
  * A function that resolves a {@link RouteRef} to a path and navigates via
@@ -31,8 +31,8 @@ import type { FrameworkNavigateOptions } from './FrameworkLocation';
  */
 export type NavigateRouteRefFunc<TParams extends AnyRouteRefParams> = (
   ...[paramsOrOptions, options]: TParams extends undefined
-    ? readonly [options?: FrameworkNavigateOptions]
-    : readonly [params: TParams, options?: FrameworkNavigateOptions]
+    ? readonly [options?: AppNavigateOptions]
+    : readonly [params: TParams, options?: AppNavigateOptions]
 ) => void;
 
 /**
@@ -64,13 +64,13 @@ export function useNavigateRouteRef<TParams extends AnyRouteRefParams>(
       }
       if (routeFunc.length > 0) {
         const params = args[0] as TParams;
-        const options = args[1] as FrameworkNavigateOptions | undefined;
+        const options = args[1] as AppNavigateOptions | undefined;
         navigate(
           (routeFunc as unknown as (p: TParams) => string)(params),
           options,
         );
       } else {
-        const options = args[0] as FrameworkNavigateOptions | undefined;
+        const options = args[0] as AppNavigateOptions | undefined;
         navigate((routeFunc as unknown as () => string)(), options);
       }
     },

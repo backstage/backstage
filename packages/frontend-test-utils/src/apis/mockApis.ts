@@ -34,7 +34,7 @@ import {
   type ErrorApi,
   type FetchApi,
   type FeatureFlagState,
-  type FrameworkLocation,
+  type AppLocation,
   type IdentityApi,
   type RouteResolutionApi,
   type StorageApi,
@@ -533,7 +533,7 @@ export namespace mockApis {
       const instance = createMockAppHistory({ navigate });
       // Set by `createApiMock` when a test passes an explicit `location`; the
       // one documented way to stop the location tracking navigation.
-      let pinnedLocation: FrameworkLocation | undefined;
+      let pinnedLocation: AppLocation | undefined;
 
       return createApiMock(appHistoryApiRef, () => ({
         // A getter, like the real app history's: reading it after a navigation
@@ -542,7 +542,7 @@ export namespace mockApis {
         get location() {
           return pinnedLocation ?? instance.location;
         },
-        set location(value: FrameworkLocation) {
+        set location(value: AppLocation) {
           pinnedLocation = value;
         },
         location$: instance.location$,

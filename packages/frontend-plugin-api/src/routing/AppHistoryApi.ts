@@ -16,10 +16,7 @@
 
 import { createApiRef } from '../apis';
 import type { Observable } from '@backstage/types';
-import type {
-  FrameworkLocation,
-  FrameworkNavigateOptions,
-} from './FrameworkLocation';
+import type { AppLocation, AppNavigateOptions } from './AppLocation';
 
 /**
  * A thin facade over the app's browser history, shared by every plugin and
@@ -44,7 +41,7 @@ export interface AppHistoryApi {
    * surfacing. {@link AppHistoryApi.createHref} passes the same targets
    * through instead.
    */
-  navigate(path: string, options?: FrameworkNavigateOptions): void;
+  navigate(path: string, options?: AppNavigateOptions): void;
   /**
    * The current location (basename-stripped, app-relative).
    *
@@ -52,12 +49,33 @@ export interface AppHistoryApi {
    * directly as the snapshot for `useSyncExternalStore` and compared by
    * identity.
    */
-  readonly location: FrameworkLocation;
+  readonly location: AppLocation;
   /** Observable of the current location (basename-stripped, app-relative). */
-  readonly location$: Observable<FrameworkLocation>;
+  readonly location$: Observable<AppLocation>;
   /**
-   * Resolve an app-relative path to a browser-ready href, including the app's
-   * deploy basename.
+   * Resolve a path to a browser-ready href, including the app's deploy
+   * basename.
+   *
+   * `basePath` is the app-absolute prefix a relative target is resolved
+   * against — the mount of the page the target is written in, which chrome
+   * and plugins alike read from the framework. Omitting it resolves against
+   * the app root, so a caller with no page in context (or one that already
+   * holds an app-absolute path) can leave it out. A target with no pathname of
+   * its own, such as `?tab=readme` or `#section`, resolves against the current
+   * location instead, so it stays on the page it was written on.
+   *
+   * A `basePath` is read as a plain path, so each leading `..` in the target
+   * climbs one segment of it. Where a page spans several segments of a single
+   * route — `/catalog/:namespace/:kind/:name` matching
+   * `/catalog/default/component/foo` — a `..` has to climb off the whole page
+   * instead, which is what React Router answers there and what {@link useHref}
+   * passes in: it resolves the climb against the page's own pattern and hands
+   * over the base it landed on.
+   *
+   * Resolving here rather than at the call site is what keeps a target from
+   * rendering as one href in app chrome and a different one in the page beside
+   * it: the rule lives with the history that owns the basename, and every
+   * consumer reaches it through {@link appHistoryApiRef}.
    *
    * Targets that are not app-relative — absolute (`https://example.com/x`),
    * protocol-relative (`//example.com/x`), and opaque schemes such as
@@ -71,7 +89,7 @@ export interface AppHistoryApi {
    * Only the path portion is inspected, so `/search?query=https://example.com`
    * is an ordinary app-relative target.
    */
-  createHref(to: string): string;
+  createHref(to: string, options?: { basePath?: string }): string;
 }
 
 /**

@@ -206,10 +206,15 @@ export type ApiRefConfig = {
 
 // @public
 export interface AppHistoryApi {
-  createHref(to: string): string;
-  readonly location$: Observable<FrameworkLocation>;
-  readonly location: FrameworkLocation;
-  navigate(path: string, options?: FrameworkNavigateOptions): void;
+  createHref(
+    to: string,
+    options?: {
+      basePath?: string;
+    },
+  ): string;
+  readonly location$: Observable<AppLocation>;
+  readonly location: AppLocation;
+  navigate(path: string, options?: AppNavigateOptions): void;
 }
 
 // @public
@@ -235,6 +240,24 @@ export type AppLanguageApi = {
 export const appLanguageApiRef: ApiRef_2<AppLanguageApi, 'core.applanguage'> & {
   readonly $$type: '@backstage/ApiRef';
 };
+
+// @public
+export interface AppLocation {
+  // (undocumented)
+  hash: string;
+  // (undocumented)
+  pathname: string;
+  // (undocumented)
+  search: string;
+  state: unknown;
+}
+
+// @public
+export interface AppNavigateOptions {
+  // (undocumented)
+  replace?: boolean;
+  state?: unknown;
+}
 
 // @public
 export interface AppNode {
@@ -1443,24 +1466,6 @@ export const fetchApiRef: ApiRef_2<FetchApi, 'core.fetch'> & {
   readonly $$type: '@backstage/ApiRef';
 };
 
-// @public
-export interface FrameworkLocation {
-  // (undocumented)
-  hash: string;
-  // (undocumented)
-  pathname: string;
-  // (undocumented)
-  search: string;
-  state: unknown;
-}
-
-// @public
-export interface FrameworkNavigateOptions {
-  // (undocumented)
-  replace?: boolean;
-  state?: unknown;
-}
-
 // @public (undocumented)
 export type FrontendFeature =
   | (Omit<FrontendPlugin, 'pluginId'> & {
@@ -1615,8 +1620,8 @@ export const microsoftAuthApiRef: ApiRef_2<
 // @public
 export type NavigateRouteRefFunc<TParams extends AnyRouteRefParams> = (
   ...input: TParams extends undefined
-    ? readonly [options?: FrameworkNavigateOptions]
-    : readonly [params: TParams, options?: FrameworkNavigateOptions]
+    ? readonly [options?: AppNavigateOptions]
+    : readonly [params: TParams, options?: AppNavigateOptions]
 ) => void;
 
 // @public (undocumented)
@@ -1880,6 +1885,13 @@ export const PageBlueprint: ExtensionBlueprint_2<{
         {
           optional: true;
         }
+      >
+    | ExtensionDataRef_2<
+        string[],
+        'core.page.subPagePaths',
+        {
+          optional: true;
+        }
       >;
   inputs: {
     pages: ExtensionInput_2<
@@ -1933,7 +1945,13 @@ export const PageBlueprint: ExtensionBlueprint_2<{
     path?: string | undefined;
     title?: string | undefined;
   };
-  dataRefs: never;
+  dataRefs: {
+    subPagePaths: ConfigurableExtensionDataRef_2<
+      string[],
+      'core.page.subPagePaths',
+      {}
+    >;
+  };
 }>;
 
 // @public
@@ -2003,18 +2021,8 @@ export const PageRouterBlueprint: ExtensionBlueprint_2<{
 export type PageRouterComponent = ComponentType<{
   basePath: string;
   routePattern: string;
-  subPages?: readonly PageRouterSubPage[];
-  indexPath?: string;
   children?: ReactNode;
 }>;
-
-// @public
-export interface PageRouterSubPage {
-  element: ReactNode;
-  icon?: IconElement;
-  label: string;
-  path: string;
-}
 
 // @public @deprecated (undocumented)
 export type PageTab = PageLayoutTab;
@@ -2570,7 +2578,7 @@ export function useApiHolder(): ApiHolder;
 // @public
 export function useAppNavigate(): (
   path: string,
-  options?: FrameworkNavigateOptions,
+  options?: AppNavigateOptions,
 ) => void;
 
 // @public

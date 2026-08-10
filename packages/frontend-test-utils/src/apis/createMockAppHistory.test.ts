@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { FrameworkLocation } from '@backstage/frontend-plugin-api';
+import { AppLocation } from '@backstage/frontend-plugin-api';
 import { createMockAppHistory } from './createMockAppHistory';
 
 describe('createMockAppHistory', () => {
@@ -22,7 +22,7 @@ describe('createMockAppHistory', () => {
     const appHistory = createMockAppHistory({
       initialLocation: '/catalog?q=1#hash',
     });
-    const locs: FrameworkLocation[] = [];
+    const locs: AppLocation[] = [];
     appHistory.location$.subscribe(l => locs.push(l));
     expect(locs).toEqual([
       {
@@ -37,7 +37,7 @@ describe('createMockAppHistory', () => {
   it('should update location$ and record navigate calls', () => {
     const navigate = jest.fn();
     const appHistory = createMockAppHistory({ navigate });
-    const locs: FrameworkLocation[] = [];
+    const locs: AppLocation[] = [];
     appHistory.location$.subscribe(l => locs.push(l));
 
     appHistory.navigate('/tools', { state: { step: 1 } });
@@ -89,7 +89,7 @@ describe('createMockAppHistory', () => {
     });
 
     // location$ hands out the same reference the accessor returns.
-    let emitted: FrameworkLocation | undefined;
+    let emitted: AppLocation | undefined;
     appHistory.location$.subscribe(l => {
       emitted = l;
     });
@@ -101,7 +101,7 @@ describe('createMockAppHistory', () => {
     const seen: string[] = [];
     // The real app history wraps each subscription in its own handler, so the
     // same function subscribing twice is two subscriptions.
-    const onNext = (l: FrameworkLocation) => seen.push(l.pathname);
+    const onNext = (l: AppLocation) => seen.push(l.pathname);
 
     const first = appHistory.location$.subscribe(onNext);
     const second = appHistory.location$.subscribe(onNext);

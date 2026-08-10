@@ -120,12 +120,20 @@ export type PageMountResolveOptions = {
  * React Router resolves a relative target against the routes matched in
  * context. A page or subpage hosted by the React Router v6 adapter publishes
  * its own match on top of the ones it is mounted inside, so React Router
- * already has the right base — and keeps it, because there `..` means "up one
- * route match", which only the route tree knows how to walk. A page hosted by
- * TanStack or React Router v7 publishes no v6 match at all, so React Router
- * would silently resolve against the app root and the link would leave the
- * page entirely. `PageMount.basePath` is the framework's analogue of React
- * Router's `pathnameBase`, and is the only base available there.
+ * already has the right base and keeps it. A page hosted by TanStack or React
+ * Router v7 publishes no v6 match at all, so React Router would silently
+ * resolve against the app root and the link would leave the page entirely.
+ * `PageMount.basePath` is the framework's analogue of React Router's
+ * `pathnameBase`, and is the only base available there.
+ *
+ * `..` means "up one route match", and the framework knows where a match ends
+ * without a route tree to walk: `PageMount.routePattern` says which segments
+ * of the base a single pattern claims. The caller below climbs that stack
+ * rather than the base path's segments — see `climbInPage` in `Link.tsx`, and
+ * `pageBasePaths` in `@internal/frontend` — so a page mounted at
+ * `/catalog/:namespace/:kind/:name` and hosted by another routing library
+ * resolves `..` off the page, the same way `useHref` does, rather than into
+ * `/catalog/default/component`, which no route claims.
  *
  * Only relative *path* targets qualify. App-absolute (`/x`) targets need no
  * base at all, while search-only (`?tab=x`) and fragment-only (`#section`)
