@@ -15,10 +15,16 @@
  */
 
 import { fireEvent, render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useNavigationType } from 'react-router-dom';
 import { BUIProvider } from '../../provider';
 import { HeaderNav } from './HeaderNav';
 import type { ComponentProps } from 'react';
+
+let lastNavigationType: string | undefined;
+function NavigationTypeSpy() {
+  lastNavigationType = useNavigationType();
+  return null;
+}
 
 function renderHeaderNav(
   props: ComponentProps<typeof HeaderNav>,
@@ -78,6 +84,29 @@ describe('HeaderNav', () => {
     expect(screen.getByRole('link', { name: 'Settings' })).not.toHaveAttribute(
       'aria-current',
     );
+  });
+
+  it('uses replace navigation when clicking a tab', () => {
+    render(
+      <MemoryRouter basename="/app" initialEntries={['/app/catalog']}>
+        <BUIProvider>
+          <NavigationTypeSpy />
+          <HeaderNav
+            tabs={[
+              { id: 'overview', label: 'Overview', href: '/catalog/overview' },
+              { id: 'settings', label: 'Settings', href: '/catalog/settings' },
+            ]}
+            activeTabId={null}
+          />
+        </BUIProvider>
+      </MemoryRouter>,
+    );
+
+    expect(lastNavigationType).toBe('POP');
+
+    fireEvent.click(screen.getByRole('link', { name: 'Settings' }));
+
+    expect(lastNavigationType).toBe('REPLACE');
   });
 
   it('includes the router basename in grouped tab hrefs', async () => {
