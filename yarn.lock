@@ -7486,7 +7486,7 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
 
