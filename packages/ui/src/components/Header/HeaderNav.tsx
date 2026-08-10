@@ -21,10 +21,9 @@ import {
   resolvePath,
   useInRouterContext,
   useLocation,
-  useNavigate,
   useResolvedPath,
 } from 'react-router-dom';
-import { Button as RAButton, RouterProvider } from 'react-aria-components';
+import { Button as RAButton } from 'react-aria-components';
 import { RiArrowDownSLine } from '@remixicon/react';
 import { useDefinition } from '../../hooks/useDefinition';
 import {
@@ -34,7 +33,6 @@ import {
 } from './HeaderNavDefinition';
 import { HeaderNavIndicators } from './HeaderNavIndicators';
 import { MenuTrigger, Menu, MenuItem } from '../Menu';
-import { useResolvedHref } from '../../hooks/useResolvedHref';
 import type {
   HeaderNavLinkProps,
   HeaderNavTabGroup,
@@ -50,7 +48,10 @@ function HeaderNavLink(props: HeaderNavLinkProps) {
   const { id, label, href, active, registerRef, onHighlight } = ownProps;
 
   const linkRef = useRef<HTMLAnchorElement>(null);
-  const { linkProps } = useLink({ href }, linkRef);
+  const { linkProps } = useLink(
+    { href, routerOptions: { replace: true } },
+    linkRef,
+  );
   const { hoverProps } = useHover({
     onHoverStart: () => onHighlight(id),
     onHoverEnd: () => onHighlight(null),
@@ -123,7 +124,12 @@ function HeaderNavGroupItem(props: HeaderNavGroupItemProps) {
           selectedKeys={new Set(activeChildId ? [activeChildId] : [])}
         >
           {group.items.map(item => (
-            <MenuItem key={item.id} id={item.id} href={item.href}>
+            <MenuItem
+              key={item.id}
+              id={item.id}
+              href={item.href}
+              routerOptions={{ replace: true }}
+            >
               {item.label}
             </MenuItem>
           ))}
@@ -238,36 +244,12 @@ function HeaderNavInner(props: HeaderNavProps) {
   );
 }
 
-function ReplaceNavigateWrapper(props: { children: React.ReactNode }) {
-  const navigate = useNavigate();
-  const replaceNavigate = useCallback(
-    (to: string) => navigate(to, { replace: true }),
-    [navigate],
-  );
-  return (
-    <RouterProvider navigate={replaceNavigate} useHref={useResolvedHref}>
-      {props.children}
-    </RouterProvider>
-  );
-}
-
 /** @internal */
 export function HeaderNav(props: HeaderNavProps) {
   const inRouter = useInRouterContext();
 
-  if (inRouter) {
-    if (props.activeTabId === undefined) {
-      return (
-        <ReplaceNavigateWrapper>
-          <HeaderNavAutoDetect tabs={props.tabs} />
-        </ReplaceNavigateWrapper>
-      );
-    }
-    return (
-      <ReplaceNavigateWrapper>
-        <HeaderNavInner tabs={props.tabs} activeTabId={props.activeTabId} />
-      </ReplaceNavigateWrapper>
-    );
+  if (props.activeTabId === undefined && inRouter) {
+    return <HeaderNavAutoDetect tabs={props.tabs} />;
   }
 
   return <HeaderNavInner tabs={props.tabs} activeTabId={props.activeTabId} />;
