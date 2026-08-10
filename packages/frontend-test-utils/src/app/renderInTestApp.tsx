@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { Route, Routes } from 'react-router-dom';
+import { type ReactNode } from 'react';
+import { Route, Routes, useMatch } from 'react-router-dom';
+import { PageMountProvider } from '@internal/frontend';
 import { prepareSpecializedApp } from '@backstage/frontend-app-api';
 import { render } from '@testing-library/react';
 import { ConfigReader } from '@backstage/config';
@@ -46,6 +48,46 @@ const DEFAULT_MOCK_CONFIG = {
   app: { baseUrl: 'http://localhost:3000' },
   backend: { baseUrl: 'http://localhost:7007' },
 };
+
+/**
+ * Publishes the page mount for an element rendered at `mountPath`.
+ *
+ * The test app owns navigation through an app history, the same seam as
+ * production, so page-relative targets are resolved against the page they are
+ * written in rather than against React Router. The page mount is what carries
+ * that page. In a real app it is published while the location is matched to a
+ * page; here the element is rendered directly, with no `AppRouteSwitch` above
+ * it to do so, and `mountPath` is the caller saying where the element sits.
+ *
+ * Without this, everything page-relative inside the element under test — a tab
+ * href, a `..` climb, a fragment-only target — would resolve against the app
+ * root, which is a place the element is not mounted.
+ *
+ * The pattern is published alongside the concrete base because a leading `..`
+ * climbs one route match rather than one path segment, and only the pattern
+ * says where the match ends: an element at `/catalog/:namespace/:kind/:name`
+ * is one route however many segments its address has.
+ */
+function TestPageMount(props: {
+  routePath: string;
+  routePattern: string;
+  children: ReactNode;
+}) {
+  const { routePath, routePattern, children } = props;
+  // Rendered as the route's own element, so this matches by construction. The
+  // guard is for the caller whose `initialRouteEntries` do not reach
+  // `mountPath`: publishing a mount the location is not actually at would be
+  // worse than publishing none.
+  const match = useMatch(routePath);
+  if (!match) {
+    return <>{children}</>;
+  }
+  return (
+    <PageMountProvider mount={{ basePath: match.pathnameBase, routePattern }}>
+      {children}
+    </PageMountProvider>
+  );
+}
 
 /**
  * Options to customize the behavior of the test app.
@@ -84,6 +126,10 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
    * The route path pattern that the test element is rendered at. When set,
    * the element is wrapped in a `<Route>` with this path, enabling
    * `useParams()` to extract parameters from the URL.
+   *
+   * The element is also treated as a page mounted at this pattern, so targets
+   * written relative to the page — a tab href, a `..` climb — resolve against
+   * it rather than against the app root, as they would in a real app.
    *
    * Should be used together with `initialRouteEntries` to set a concrete
    * URL that matches the pattern.
@@ -168,9 +214,23 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
             mountPath === '/' || mountPath.endsWith('/*')
               ? mountPath
               : `${mountPath.replace(/\/$/, '')}/*`;
+          // The pattern the caller mounted at, which is `routePath` without
+          // the splat the wrapping route needs in order to host nested routes.
+          const routePattern =
+            routePath === '/' ? '/' : routePath.replace(/\/\*$/, '') || '/';
           content = (
             <Routes>
-              <Route path={routePath} element={content} />
+              <Route
+                path={routePath}
+                element={
+                  <TestPageMount
+                    routePath={routePath}
+                    routePattern={routePattern}
+                  >
+                    {content}
+                  </TestPageMount>
+                }
+              />
             </Routes>
           );
         }
