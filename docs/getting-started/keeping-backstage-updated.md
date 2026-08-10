@@ -79,11 +79,10 @@ can find the current version of your Backstage installation in `backstage.json`.
 
 ## Applying automated codemods
 
-After you bump packages and review create-app / Upgrade Helper diffs, apply
-_versioned_ Codemod Registry recipes for release-specific source migrations,
-and optionally _misc_ recipes for larger work such as Material-UI to Backstage
-UI. See [Codemods](../tooling/codemods.md) for commands, taxonomy, and
-follow-up steps.
+After package bumps and create-app / Upgrade Helper diffs, run _versioned_
+Codemod Registry recipes for that release. For larger work such as Material-UI
+to Backstage UI, use a _misc_ recipe when you are ready. Commands and details
+are in [Codemods](../tooling/codemods.md).
 
 ## Managing package versions with the Backstage yarn plugin
 
