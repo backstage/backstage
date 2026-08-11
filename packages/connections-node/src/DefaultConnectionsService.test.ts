@@ -709,7 +709,7 @@ describe('DefaultConnectionsService', () => {
       validateSpy.mockRestore();
     });
 
-    it('rejects multiple aws connections', () => {
+    it('rejects multiple aws connections because aws has singleton cardinality', () => {
       expect(() =>
         DefaultConnectionsService.create({
           logger: mockServices.logger.mock(),
@@ -726,7 +726,7 @@ describe('DefaultConnectionsService', () => {
             },
           ]),
         }),
-      ).toThrow(/Duplicate connection of type "aws"/);
+      ).toThrow(/singleton connection type that only allows one entry/);
     });
 
     it('resolves legacy top-level aws config through connections', async () => {
@@ -1059,6 +1059,67 @@ describe('DefaultConnectionsService', () => {
       ).toThrow(
         /Invalid connection of type "github".*Unrecognized key: "host2"/s,
       );
+    });
+  });
+
+  describe('cardinality', () => {
+    it('allows multiple multiton connections with different identities', () => {
+      const service = DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockConnectionsConfig([
+          {
+            type: 'github',
+            host: 'github.com',
+            auth: [{ method: 'token', token: 'public' }],
+          },
+          {
+            type: 'github',
+            host: 'ghe.acme.com',
+            auth: [{ method: 'token', token: 'enterprise' }],
+          },
+        ]),
+      });
+      expect(service).toBeDefined();
+    });
+
+    it('rejects duplicate multiton connections with the same identity', () => {
+      expect(() =>
+        DefaultConnectionsService.create({
+          logger: mockServices.logger.mock(),
+          config: mockConnectionsConfig([
+            {
+              type: 'github',
+              host: 'github.com',
+              auth: [{ method: 'token', token: 'first' }],
+            },
+            {
+              type: 'github',
+              host: 'github.com',
+              auth: [{ method: 'token', token: 'second' }],
+            },
+          ]),
+        }),
+      ).toThrow(/Duplicate connection of type "github" for host "github.com"/);
+    });
+
+    it('rejects duplicate singleton connections', () => {
+      expect(() =>
+        DefaultConnectionsService.create({
+          logger: mockServices.logger.mock(),
+          config: mockConnectionsConfig([
+            {
+              type: 'aws',
+              auth: [{ method: 'account', mainAccount: true }],
+            },
+            {
+              type: 'aws',
+              auth: [
+                { method: 'account', mainAccount: true, profile: 'other' },
+              ],
+            },
+          ]),
+        }),
+      ).toThrow(/singleton connection type that only allows one entry/);
     });
   });
 });

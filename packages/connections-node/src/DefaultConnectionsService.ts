@@ -224,20 +224,34 @@ export class DefaultConnectionsService {
       ...combineConnectionSources(legacy, fromConfig, this.logger),
     );
 
-    const seen = new Set<string>();
+    // Singleton connection types (e.g. aws) allow at most one connection in
+    // the config. Multiton types (e.g. github) allow many, keyed by their
+    // identity field so each must be unique.
+    const singletonsSeen = new Set<string>();
+    const identitiesSeen = new Set<string>();
     for (const c of this.connections) {
       const connectionType = getConnectionType(c.type as ConnectionTypeKey);
-      const strategy = getLookupStrategy(connectionType.lookupStrategy);
-      const identity = connectionIdentityOf(strategy, c);
-      const key = `${c.type} ${identity ?? ''}`;
-      if (seen.has(key)) {
-        throw new InputError(
-          identity !== undefined
-            ? `Duplicate connection of type "${c.type}" for ${strategy.identityField} "${identity}"`
-            : `Duplicate connection of type "${c.type}"`,
-        );
+
+      if (connectionType.cardinality === 'singleton') {
+        if (singletonsSeen.has(c.type)) {
+          throw new InputError(
+            `Duplicate connection of type "${c.type}"; this is a singleton connection type that only allows one entry`,
+          );
+        }
+        singletonsSeen.add(c.type);
+      } else {
+        const strategy = getLookupStrategy(connectionType.lookupStrategy);
+        const identity = connectionIdentityOf(strategy, c);
+        if (identity !== undefined) {
+          const key = `${c.type} ${identity}`;
+          if (identitiesSeen.has(key)) {
+            throw new InputError(
+              `Duplicate connection of type "${c.type}" for ${strategy.identityField} "${identity}"`,
+            );
+          }
+          identitiesSeen.add(key);
+        }
       }
-      seen.add(key);
     }
 
     this.#assignDefaultTitles();

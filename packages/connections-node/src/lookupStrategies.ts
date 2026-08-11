@@ -47,6 +47,9 @@ export const lookupStrategies: Record<
       }
     },
   },
+  // AWS has no identity field to match against — all accounts live under a
+  // single connection. Account selection is handled entirely by the
+  // connection type's matchAuth implementation.
   aws: {
     identityFromQuery() {
       return undefined;

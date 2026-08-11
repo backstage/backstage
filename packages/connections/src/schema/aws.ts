@@ -46,6 +46,7 @@ function accountIdFromArn(arn: string): string | undefined {
 export const AwsConnectionType = createConnectionType({
   type: 'aws',
   title: 'AWS',
+  cardinality: 'singleton',
   lookupStrategy: 'aws',
   configSchema: z
     .object({
