@@ -16,6 +16,6 @@ spec:
   agents:
     - claude-code
     - copilot
-  allowedTools: Read Edit WebSearch
+  allowedTools: Bash(git:*) Bash(jq:*) Read Edit
   license: Apache-2.0
   compatibility: Node.js 20+, macOS/Linux
