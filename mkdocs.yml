@@ -115,9 +115,10 @@ nav:
           - Discovery: 'integrations/aws-s3/discovery.md'
       - AWS CodeCommit:
           - Locations: 'integrations/aws-codecommit/locations.md'
-      - Azure:
+      - Azure DevOps:
           - Locations: 'integrations/azure/locations.md'
           - Discovery: 'integrations/azure/discovery.md'
+      - Microsoft Entra ID:
           - Org Data: 'integrations/azure/org.md'
       - Bitbucket Cloud:
           - Locations: 'integrations/bitbucketCloud/locations.md'
