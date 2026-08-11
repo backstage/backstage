@@ -18,7 +18,7 @@ apiVersion Template.</p>
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">TaskSpecV1beta3</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#apiversion">apiVersion</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;scaffolder.backstage.io/v1beta3&quot;</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#experimental_recovery">EXPERIMENTAL_recovery</a><span class="tsd-signature-symbol">?:</span> <a href="_backstage_plugin-scaffolder-common.index.TaskRecovery.html" class="tsd-signature-type tsd-kind-interface">TaskRecovery</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#output">output</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-signature-symbol">[</span><span class="tsd-kind-index-signature">name</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]:</span> <a href="../types/_backstage_types.JsonValue.html" class="tsd-signature-type tsd-kind-type-alias">JsonValue</a> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#parameters">parameters</a><span class="tsd-signature-symbol">:</span> <a href="../types/_backstage_types.JsonObject.html" class="tsd-signature-type tsd-kind-type-alias">JsonObject</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#steps">steps</a><span class="tsd-signature-symbol">:</span> <a href="_backstage_plugin-scaffolder-common.index.TaskStep.html" class="tsd-signature-type tsd-kind-interface">TaskStep</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#templateinfo">templateInfo</a><span class="tsd-signature-symbol">?:</span> <a href="../types/_backstage_plugin-scaffolder-common.index.TemplateInfo.html" class="tsd-signature-type tsd-kind-type-alias">TemplateInfo</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#user">user</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">entity</span><span class="tsd-signature-symbol">?:</span> <a href="_backstage_catalog-model.index.UserEntity.html" class="tsd-signature-type tsd-kind-interface">UserEntity</a><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">ref</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/dda4de4da0c0d648b8566da39bef46ab556a51dd/plugins/scaffolder-common/src/TaskSpec.ts#L109">plugins/scaffolder-common/src/TaskSpec.ts:109</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/2dea4b6a96958434734f8641c260eaa2444fe4fe/plugins/scaffolder-common/src/TaskSpec.ts#L109">plugins/scaffolder-common/src/TaskSpec.ts:109</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -43,21 +43,21 @@ apiVersion Template.</p>
 <div class="tsd-comment tsd-typography"><p>The apiVersion string of the TaskSpec.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/dda4de4da0c0d648b8566da39bef46ab556a51dd/plugins/scaffolder-common/src/TaskSpec.ts#L113">plugins/scaffolder-common/src/TaskSpec.ts:113</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/2dea4b6a96958434734f8641c260eaa2444fe4fe/plugins/scaffolder-common/src/TaskSpec.ts#L113">plugins/scaffolder-common/src/TaskSpec.ts:113</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="experimental_recovery"><code class="tsd-tag">Optional</code><span>EXPERIMENTAL_<wbr/>recovery</span><a href="#experimental_recovery" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">EXPERIMENTAL_recovery</span><span class="tsd-signature-symbol">?:</span> <a href="_backstage_plugin-scaffolder-common.index.TaskRecovery.html" class="tsd-signature-type tsd-kind-interface">TaskRecovery</a></div>
 <div class="tsd-comment tsd-typography"><p>How to recover the task after system restart or system crash.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/dda4de4da0c0d648b8566da39bef46ab556a51dd/plugins/scaffolder-common/src/TaskSpec.ts#L149">plugins/scaffolder-common/src/TaskSpec.ts:149</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/2dea4b6a96958434734f8641c260eaa2444fe4fe/plugins/scaffolder-common/src/TaskSpec.ts#L149">plugins/scaffolder-common/src/TaskSpec.ts:149</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="output"><span>output</span><a href="#output" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">output</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-signature-symbol">[</span><span class="tsd-kind-index-signature">name</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]:</span> <a href="../types/_backstage_types.JsonValue.html" class="tsd-signature-type tsd-kind-type-alias">JsonValue</a> <span class="tsd-signature-symbol">}</span></div>
 <div class="tsd-comment tsd-typography"><p>The output is an object where template authors can pull out information from template actions and return them in a known standard way.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/dda4de4da0c0d648b8566da39bef46ab556a51dd/plugins/scaffolder-common/src/TaskSpec.ts#L128">plugins/scaffolder-common/src/TaskSpec.ts:128</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/2dea4b6a96958434734f8641c260eaa2444fe4fe/plugins/scaffolder-common/src/TaskSpec.ts#L128">plugins/scaffolder-common/src/TaskSpec.ts:128</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="parameters"><span>parameters</span><a href="#parameters" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">parameters</span><span class="tsd-signature-symbol">:</span> <a href="../types/_backstage_types.JsonObject.html" class="tsd-signature-type tsd-kind-type-alias">JsonObject</a></div>
@@ -66,7 +66,7 @@ to collect user input and validate it against that schema. This can then be used
 variables passed from the user into each action in the template.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/dda4de4da0c0d648b8566da39bef46ab556a51dd/plugins/scaffolder-common/src/TaskSpec.ts#L119">plugins/scaffolder-common/src/TaskSpec.ts:119</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/2dea4b6a96958434734f8641c260eaa2444fe4fe/plugins/scaffolder-common/src/TaskSpec.ts#L119">plugins/scaffolder-common/src/TaskSpec.ts:119</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="steps"><span>steps</span><a href="#steps" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">steps</span><span class="tsd-signature-symbol">:</span> <a href="_backstage_plugin-scaffolder-common.index.TaskStep.html" class="tsd-signature-type tsd-kind-interface">TaskStep</a><span class="tsd-signature-symbol">[]</span></div>
@@ -74,14 +74,14 @@ variables passed from the user into each action in the template.</p>
 javascript action and some optional input parameters that may or may not have been collected from the end user.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/dda4de4da0c0d648b8566da39bef46ab556a51dd/plugins/scaffolder-common/src/TaskSpec.ts#L124">plugins/scaffolder-common/src/TaskSpec.ts:124</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/2dea4b6a96958434734f8641c260eaa2444fe4fe/plugins/scaffolder-common/src/TaskSpec.ts#L124">plugins/scaffolder-common/src/TaskSpec.ts:124</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="templateinfo"><code class="tsd-tag">Optional</code><span>template<wbr/>Info</span><a href="#templateinfo" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">templateInfo</span><span class="tsd-signature-symbol">?:</span> <a href="../types/_backstage_plugin-scaffolder-common.index.TemplateInfo.html" class="tsd-signature-type tsd-kind-type-alias">TemplateInfo</a></div>
 <div class="tsd-comment tsd-typography"><p>Some information about the template that is stored on the task spec.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/dda4de4da0c0d648b8566da39bef46ab556a51dd/plugins/scaffolder-common/src/TaskSpec.ts#L132">plugins/scaffolder-common/src/TaskSpec.ts:132</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/2dea4b6a96958434734f8641c260eaa2444fe4fe/plugins/scaffolder-common/src/TaskSpec.ts#L132">plugins/scaffolder-common/src/TaskSpec.ts:132</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="user"><code class="tsd-tag">Optional</code><span>user</span><a href="#user" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">user</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">entity</span><span class="tsd-signature-symbol">?:</span> <a href="_backstage_catalog-model.index.UserEntity.html" class="tsd-signature-type tsd-kind-interface">UserEntity</a><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">ref</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">}</span></div>
@@ -99,7 +99,7 @@ javascript action and some optional input parameters that may or may not have be
 <div class="tsd-comment tsd-typography"><p>An entity ref for the author of the task</p>
 </div></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/dda4de4da0c0d648b8566da39bef46ab556a51dd/plugins/scaffolder-common/src/TaskSpec.ts#L136">plugins/scaffolder-common/src/TaskSpec.ts:136</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/2dea4b6a96958434734f8641c260eaa2444fe4fe/plugins/scaffolder-common/src/TaskSpec.ts#L136">plugins/scaffolder-common/src/TaskSpec.ts:136</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
