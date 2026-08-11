@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog
 
+## 2.0.8-next.3
+
+### Patch Changes
+
+- 05aed2e: Fixed a brief "Entity not found" flash when navigating between catalog entity pages.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9-next.1
+  - @backstage/plugin-catalog-react@3.2.1-next.3
+
 ## 2.0.8-next.2
 
 ### Patch Changes
