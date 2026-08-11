@@ -20,4 +20,9 @@
  * @packageDocumentation
  */
 
-export { TanStackPageRouter } from './TanStackPageRouter';
+export {
+  TanStackPageContent,
+  TanStackPageRouter,
+  createTanStackPageRouter,
+  type CreateTanStackPageRouterOptions,
+} from './TanStackPageRouter';

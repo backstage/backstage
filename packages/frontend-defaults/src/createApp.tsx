@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import { JSX, lazy, ReactNode, Suspense, useEffect, useState } from 'react';
+import {
+  JSX,
+  lazy,
+  ReactNode,
+  Suspense,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   ConfigApi,
   ExtensionFactoryMiddleware,
@@ -162,6 +170,7 @@ function PreparedAppRoot(props: {
   dispose: () => void;
 }): JSX.Element {
   const { dispose } = props;
+  const mountedRef = useRef(false);
   const bootstrapApp = props.preparedApp.getBootstrapApp();
   const [finalizedApp, setFinalizedApp] = useState<
     FinalizedSpecializedApp | undefined
@@ -179,7 +188,17 @@ function PreparedAppRoot(props: {
   // Known residue: re-running `createApp` under a hot reload builds a new app
   // without unmounting the old one, so this cleanup never runs for the previous
   // instance and its listener stays attached until the page is reloaded.
-  useEffect(() => dispose, [dispose]);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      queueMicrotask(() => {
+        if (!mountedRef.current) {
+          dispose();
+        }
+      });
+    };
+  }, [dispose]);
 
   if (!finalizedApp) {
     return bootstrapApp.element;

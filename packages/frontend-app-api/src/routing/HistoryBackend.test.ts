@@ -109,6 +109,7 @@ describe('HistoryBackend', () => {
   describe('createWindowHistoryBackend', () => {
     afterEach(() => {
       window.history.replaceState(null, '', '/');
+      delete (window as unknown as { navigation?: unknown }).navigation;
     });
 
     it('should read and write window.history', () => {
@@ -168,6 +169,108 @@ describe('HistoryBackend', () => {
       window.dispatchEvent(new PopStateEvent('popstate'));
 
       expect(listener).not.toHaveBeenCalled();
+    });
+
+    it('should expose stable entry metadata without leaking it as user state', () => {
+      const history = createWindowHistoryBackend();
+      const initial = history.getEntry();
+
+      history.push('/next', { state: 'user-state' });
+      const pushed = history.getEntry();
+
+      expect(pushed.key).not.toBe(initial.key);
+      expect(pushed.index).toBe(initial.index + 1);
+      expect(pushed.canGoBack).toBe(true);
+      expect(history.getLocation().state).toBe('user-state');
+
+      history.replace('/replaced', { state: { user: true } });
+      expect(history.getEntry()).toEqual(pushed);
+      expect(history.getLocation().state).toEqual({ user: true });
+      history.dispose();
+    });
+
+    it('should seed a valid local index when an older browser stack is ambiguous', () => {
+      window.history.pushState(null, '', '/older-a');
+      window.history.pushState(null, '', '/older-b');
+
+      const history = createWindowHistoryBackend();
+
+      expect(history.getEntry()).toMatchObject({
+        index: 0,
+        length: 1,
+        canGoBack: false,
+      });
+
+      history.push('/owned');
+      const pushed = history.getEntry();
+      expect(pushed).toMatchObject({ index: 1, length: 2, canGoBack: true });
+      expect(pushed.index).toBeLessThan(pushed.length);
+      history.dispose();
+    });
+
+    it('should assign stable metadata to an unknown entry reached by traversal', () => {
+      const history = createWindowHistoryBackend();
+      const initial = history.getEntry();
+      const listener = jest.fn();
+      history.listen(listener);
+
+      window.history.pushState({ outside: true }, '', '/outside');
+      window.dispatchEvent(new PopStateEvent('popstate'));
+      const unknown = history.getEntry();
+
+      expect(unknown.key).not.toBe(initial.key);
+      expect(unknown.index).toBeGreaterThanOrEqual(0);
+      expect(unknown.index).toBeLessThan(unknown.length);
+      expect(history.getLocation().state).toEqual({ outside: true });
+
+      // Browsers can dispatch both events for one fragment traversal. The
+      // metadata written above must not make the second event look new.
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+      expect(listener).toHaveBeenCalledTimes(1);
+      expect(history.getEntry()).toEqual(unknown);
+      history.dispose();
+    });
+
+    it('should use Navigation API entry metadata and change events when available', () => {
+      const navigation = new EventTarget() as EventTarget & {
+        currentEntry: { key: string; index: number };
+        canGoBack: boolean;
+      };
+      navigation.currentEntry = { key: 'native-key', index: 3 };
+      navigation.canGoBack = true;
+      Object.defineProperty(window, 'navigation', {
+        configurable: true,
+        value: navigation,
+      });
+      const history = createWindowHistoryBackend();
+      const listener = jest.fn();
+      history.listen(listener);
+
+      expect(history.getEntry()).toEqual({
+        key: 'native-key',
+        index: 3,
+        length: window.history.length,
+        canGoBack: true,
+      });
+
+      navigation.currentEntry = { key: 'next-native-key', index: 4 };
+      navigation.dispatchEvent(new Event('currententrychange'));
+      window.dispatchEvent(new PopStateEvent('popstate'));
+
+      expect(listener).toHaveBeenCalledTimes(1);
+      history.dispose();
+    });
+
+    it('should observe hash navigation when Navigation API is unavailable', () => {
+      const history = createWindowHistoryBackend();
+      const listener = jest.fn();
+      history.listen(listener);
+
+      window.history.pushState(null, '', '/page#section');
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+
+      expect(listener).toHaveBeenCalledTimes(1);
+      history.dispose();
     });
   });
 });

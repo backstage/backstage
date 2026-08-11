@@ -16,6 +16,7 @@
 
 import { useMemo, type ReactNode } from 'react';
 import { appHistoryApiRef, useApi } from '@backstage/frontend-plugin-api';
+import { usePageMount } from '@internal/frontend';
 import { createScopedRouter } from './createScopedRouter';
 
 /**
@@ -23,7 +24,7 @@ import { createScopedRouter } from './createScopedRouter';
  * from the framework's app history and never writes `window.history` via
  * push/replace.
  *
- * `children` are opaque React Router content (e.g. `<Routes>` / `<Route>`
+ * `children` are opaque React Router content (for example `<Routes>` / `<Route>`
  * trees composed by the page itself, or the sub-page the framework routed to)
  * and are rendered as-is. This adapter builds no routes of its own: which
  * sub-page of a page is showing is decided by the framework's own route
@@ -31,28 +32,25 @@ import { createScopedRouter } from './createScopedRouter';
  *
  * @internal
  */
-export function ReactRouterV6PageRouter(props: {
-  /**
-   * Concrete app-absolute URL prefix this page is mounted at. Not read by
-   * this adapter: the page's route match is derived from `routePattern` and
-   * the live location, which keeps the two in step and keeps the router
-   * mount-stable while the concrete prefix changes (entity A → entity B).
-   */
-  basePath: string;
-  /** Registered route pattern this page is mounted at. */
-  routePattern: string;
-  children?: ReactNode;
-}) {
-  const { routePattern, children } = props;
+export function ReactRouterV6PageRouter(props: { children?: ReactNode }) {
+  const { children } = props;
   const appHistory = useApi(appHistoryApiRef);
+  const routePattern = usePageMount()?.routePattern;
 
   // Only ever recreated for a genuinely different router: a new element type
   // here would unmount and remount the whole page subtree, throwing away page
   // state, scroll position and in-flight requests.
   const scopedRouter = useMemo(
-    () => createScopedRouter(appHistory, { routePattern }),
+    () =>
+      routePattern
+        ? createScopedRouter(appHistory, { routePattern })
+        : undefined,
     [appHistory, routePattern],
   );
+
+  if (!scopedRouter) {
+    return <>{children}</>;
+  }
 
   return <scopedRouter.Router>{children}</scopedRouter.Router>;
 }

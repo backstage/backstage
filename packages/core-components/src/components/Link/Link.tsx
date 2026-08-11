@@ -48,6 +48,7 @@ import {
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
 import {
+  shouldInterceptAppLinkClick,
   shouldNavigateViaFramework,
   shouldResolveViaPageMount,
 } from './absoluteLinkNavigate';
@@ -204,10 +205,6 @@ const getNodeText = (node: ReactNode): string => {
   return '';
 };
 
-function isModifiedEvent(event: ReactMouseEvent): boolean {
-  return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
-}
-
 // Named rather than written inline below, because the `??` narrows
 // `UNSAFE_RouteContext` to `never` on its right-hand side.
 type RouteContextValue = ContextType<typeof UNSAFE_RouteContext>;
@@ -256,8 +253,8 @@ function useHasAmbientRouteMatch(): boolean {
  *
  * React Router's `Link` renders through `useHref` and `useNavigate`, both of
  * which throw outside a router, and app chrome is allowed to render without
- * one: `RouterBlueprint` may be swapped for a passthrough, and
- * `createSpecializedApp` without `@backstage/plugin-app` has no router at all.
+ * one: new-frontend-system chrome is routerless, and a specialized app may
+ * also omit `@backstage/plugin-app` entirely.
  * `useInRouterContext` is React Router's own probe for exactly that: it returns
  * `false` instead of throwing, and unlike the `UNSAFE_*` context objects it is
  * exported by every v6 release including the beta, which is why `RouteTracker`
@@ -396,7 +393,21 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
   // `to` is destructured out rather than read off `props`, because three of the
   // four branches below render a plain anchor and spread the rest of the props
   // onto it — where `to` is not an attribute a browser knows.
-  ({ onClick, noTrack, externalLinkIcon, to: writtenTo, ...props }, ref) => {
+  (
+    {
+      onClick,
+      noTrack,
+      externalLinkIcon,
+      to: writtenTo,
+      state,
+      replace,
+      relative,
+      preventScrollReset,
+      reloadDocument,
+      ...props
+    },
+    ref,
+  ) => {
     const classes = useStyles();
     const analytics = useAnalytics();
     const appHistory = useOptionalAppHistory();
@@ -433,7 +444,9 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
     const newWindow = external && !!/^https?:/i.exec(to);
     const navigateViaFramework =
       !external &&
-      (resolveViaPageMount ||
+      appHistory &&
+      (!hasAmbientRouter ||
+        resolveViaPageMount ||
         shouldNavigateViaFramework({
           to,
           appHistory,
@@ -446,6 +459,22 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
       );
     }
 
+    if (navigateViaFramework && process.env.NODE_ENV !== 'production') {
+      for (const [name, value] of [
+        ['relative', relative],
+        ['preventScrollReset', preventScrollReset],
+      ] as const) {
+        if (value !== undefined) {
+          // eslint-disable-next-line no-console
+          console.warn(
+            `Link ignored the '${name}' prop for the link to '${to}', ` +
+              'because the framework app history does not implement that ' +
+              'React Router-specific behavior.',
+          );
+        }
+      }
+    }
+
     const handleClick = (event: ReactMouseEvent<any, MouseEvent>) => {
       onClick?.(event);
       if (!noTrack) {
@@ -454,13 +483,22 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
       if (
         navigateViaFramework &&
         appHistory &&
-        !event.defaultPrevented &&
-        event.button === 0 &&
-        !isModifiedEvent(event) &&
-        props.target !== '_blank'
+        shouldInterceptAppLinkClick(event, {
+          target: props.target,
+          download: props.download,
+          reloadDocument,
+        })
       ) {
         event.preventDefault();
-        appHistory.navigate(to);
+        const navigationOptions = {
+          ...(replace ? { replace: true } : {}),
+          ...(state !== undefined ? { state } : {}),
+        };
+        if (Object.keys(navigationOptions).length > 0) {
+          appHistory.navigate(to, navigationOptions);
+        } else {
+          appHistory.navigate(to);
+        }
       }
     };
 
@@ -512,6 +550,11 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
           {...props}
           ref={ref}
           to={to}
+          state={state}
+          replace={replace}
+          relative={relative}
+          preventScrollReset={preventScrollReset}
+          reloadDocument={reloadDocument}
           onClick={handleClick}
           appHistory={appHistory}
         />
@@ -519,7 +562,19 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
     }
 
     // Interact with React Router for internal links
-    return <RouterLink {...props} ref={ref} to={to} onClick={handleClick} />;
+    return (
+      <RouterLink
+        {...props}
+        ref={ref}
+        to={to}
+        state={state}
+        replace={replace}
+        relative={relative}
+        preventScrollReset={preventScrollReset}
+        reloadDocument={reloadDocument}
+        onClick={handleClick}
+      />
+    );
   },
 );
 

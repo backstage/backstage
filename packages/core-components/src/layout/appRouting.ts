@@ -58,15 +58,13 @@ import {
  *   one React Router's own hook at that call site produced before the framework
  *   seam existed, so legacy behavior is unchanged.
  *
- * Rendering app chrome does not require either authority. Chrome legitimately
- * renders with no ambient React Router: `RouterBlueprint` is supported and its
- * own docs invite swapping the root router for a passthrough,
- * `convertLegacyAppOptions` routes a migrating app's `components.Router` into
- * that same slot, and `createSpecializedApp` without `@backstage/plugin-app`
- * has no router at all. React Router's `useLocation` / `useResolvedPath` /
- * `useNavigate` throw there, so this module does not call them: it reads the
- * very contexts they read, which are `null` outside a router rather than
- * throwing — that is exactly how `useInRouterContext` detects a router.
+ * New-frontend-system chrome reads the app history directly and therefore
+ * does not require an ambient React Router. A specialized app without
+ * `@backstage/plugin-app` may have neither authority. React Router's
+ * `useLocation` / `useResolvedPath` / `useNavigate` throw there, so this module
+ * does not call them: it reads the very contexts they read, which are `null`
+ * outside a router rather than throwing — that is exactly how
+ * `useInRouterContext` detects a router.
  * Location, target resolution and going back therefore run the same
  * `useContext` calls on every render and branch on the resulting *value*, so
  * hook order is stable whichever authority answers, no call site needs to

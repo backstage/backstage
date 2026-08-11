@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Fragment, type ReactNode } from 'react';
+import { Fragment } from 'react';
 import {
   ApiBlueprint,
   createApiFactory,
@@ -30,10 +30,9 @@ import {
   type FrontendFeature,
   type RouteRef,
 } from '@backstage/frontend-plugin-api';
-import { RouterBlueprint } from '@backstage/plugin-app-react';
 import { OpaqueExternalRouteRef } from '@internal/frontend';
 import { getMockApiFactory } from '../apis/MockWithApiFactory';
-import { TestAppRouter, type TestNavigation } from './createTestNavigation';
+import type { TestNavigation } from './createTestNavigation';
 
 /**
  * Shared mounted-route + app-history wiring for test app renderers.
@@ -91,10 +90,6 @@ export function prepareTestAppFeatures(options: {
     }
   }
 
-  function TestRouter({ children }: { children: ReactNode }) {
-    return <TestAppRouter appHistory={appHistory}>{children}</TestAppRouter>;
-  }
-
   const features: FrontendFeature[] = [
     createFrontendModule({
       pluginId: 'app',
@@ -107,11 +102,6 @@ export function prepareTestAppFeatures(options: {
               deps: {},
               factory: () => appHistory,
             }),
-        }),
-        RouterBlueprint.make({
-          params: {
-            component: TestRouter,
-          },
         }),
       ],
     }),

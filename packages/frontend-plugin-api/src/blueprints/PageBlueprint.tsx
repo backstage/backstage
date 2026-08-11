@@ -17,11 +17,7 @@
 import { JSX, ReactNode } from 'react';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
-import {
-  usePageMount,
-  useSubPageSelection,
-  type SubPageSelection,
-} from '@internal/frontend';
+import { useSubPageSelection, type SubPageSelection } from '@internal/frontend';
 import {
   coreExtensionData,
   createExtensionBlueprint,
@@ -63,9 +59,11 @@ interface PageSubPage {
  * The sub-page paths a page declares, in registration order, so that top-level
  * route matching can register them as routes of their own.
  */
-const subPagePathsDataRef = createExtensionDataRef<string[]>().with({
-  id: 'core.page.subPagePaths',
-});
+const internalPageSubPagePathsDataRef = createExtensionDataRef<string[]>().with(
+  {
+    id: 'core.page.subPagePaths',
+  },
+);
 
 function resolveTitleLink(
   routeResolutionApi: RouteResolutionApi,
@@ -126,7 +124,6 @@ function PluginPageShell(props: {
     pluginId,
     children,
   } = props;
-  const pageMount = usePageMount();
   const subPageSelection = useSubPageSelection();
   const routeResolutionApi = useApi(routeResolutionApiRef);
   const titleLink = resolveTitleLink(routeResolutionApi, titleRouteRef);
@@ -147,7 +144,7 @@ function PluginPageShell(props: {
         titleLink={titleLink}
         headerActions={headerActions}
       >
-        <PageRouterWrapper mount={pageMount} RouterOverride={RouterOverride}>
+        <PageRouterWrapper RouterOverride={RouterOverride}>
           {content}
         </PageRouterWrapper>
       </PageLayout>
@@ -194,11 +191,8 @@ export const PageBlueprint = createExtensionBlueprint({
     coreExtensionData.routeRef.optional(),
     coreExtensionData.title.optional(),
     coreExtensionData.icon.optional(),
-    subPagePathsDataRef.optional(),
+    internalPageSubPagePathsDataRef.optional(),
   ],
-  dataRefs: {
-    subPagePaths: subPagePathsDataRef,
-  },
   configSchema: {
     path: optionalStringSchema,
     title: optionalStringSchema,
@@ -252,7 +246,9 @@ export const PageBlueprint = createExtensionBlueprint({
       // Route matching registers these one level below the page, which is what
       // makes a sub-page an ordinary route rather than something the page has
       // to dispatch between itself.
-      yield subPagePathsDataRef(subPages.map(subPage => subPage.path));
+      yield internalPageSubPagePathsDataRef(
+        subPages.map(subPage => subPage.path),
+      );
     }
     if (params.routeRef) {
       yield coreExtensionData.routeRef(params.routeRef);

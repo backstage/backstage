@@ -172,4 +172,44 @@ describe('ReactRouterV7PageRouter wired path', () => {
       expect(screen.getByTestId('splat')).toHaveTextContent('overview');
     });
   });
+
+  it('should project omitted static-optional segments through the v7 adapter', async () => {
+    const OptionalStaticPage = () => {
+      const { taskId } = useParams();
+      return (
+        <>
+          <span data-testid="optional-task-id">{taskId}</span>
+          <Link to="./details" data-testid="optional-details-link">
+            Details
+          </Link>
+        </>
+      );
+    };
+
+    const optionalPage = PageBlueprint.make({
+      name: 'optional-static-v7',
+      params: {
+        path: '/project-v7/task?/:taskId',
+        loader: async () => <OptionalStaticPage />,
+      },
+    });
+    const optionalRouter = PageRouterBlueprint.make({
+      name: 'optional-static-v7',
+      attachTo: { id: 'page:test/optional-static-v7', input: 'router' },
+      params: { component: ReactRouterV7PageRouter },
+    });
+
+    renderTestApp({
+      extensions: [optionalPage, optionalRouter],
+      initialRouteEntries: ['/project-v7/123'],
+    });
+
+    expect(await screen.findByTestId('optional-task-id')).toHaveTextContent(
+      '123',
+    );
+    expect(screen.getByTestId('optional-details-link')).toHaveAttribute(
+      'href',
+      '/project-v7/123/details',
+    );
+  });
 });

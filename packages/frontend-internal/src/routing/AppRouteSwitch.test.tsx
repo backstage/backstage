@@ -141,8 +141,34 @@ describe('AppRouteSwitch', () => {
     );
   });
 
-  it('should handle root path catch-all', () => {
+  it('should require an explicit splat for a root catch-all', () => {
     history = createMockAppHistory({ initialLocation: '/something' });
+
+    function RootPage() {
+      const mount = usePageMount();
+      return <div data-testid="root-page">Root: {mount?.basePath}</div>;
+    }
+
+    const routeTable = new RouteTable(['/catalog', '/']);
+    const pages = new Map<string, ComponentType>([
+      ['/catalog', CatalogPage],
+      ['/', RootPage],
+    ]);
+
+    render(
+      <AppRouteSwitch
+        history={history}
+        routeTable={routeTable}
+        pages={pages}
+        fallback={<FallbackPage />}
+      />,
+    );
+
+    expect(screen.getByTestId('fallback-page')).toBeInTheDocument();
+  });
+
+  it('should render the root page at the exact root path', () => {
+    history = createMockAppHistory({ initialLocation: '/' });
 
     function RootPage() {
       const mount = usePageMount();
@@ -513,6 +539,36 @@ describe('AppRouteSwitch', () => {
       '/docs/default/component/my-entity',
       { replace: true },
     );
+    navigateSpy.mockRestore();
+  });
+
+  it('should substitute redirect params without treating query and hash as route syntax', () => {
+    history = createMockAppHistory({
+      initialLocation: '/source/widget?incoming=1#old',
+    });
+
+    const routeTable = new RouteTable(['/target']);
+    const pages = new Map<string, ComponentType>([['/target', CatalogPage]]);
+    const navigateSpy = jest.spyOn(history, 'navigate');
+
+    render(
+      <AppRouteSwitch
+        history={history}
+        routeTable={routeTable}
+        pages={pages}
+        redirects={[
+          {
+            from: '/source/:name',
+            to: '/target/:name?fixed=1#new',
+          },
+        ]}
+        fallback={<FallbackPage />}
+      />,
+    );
+
+    expect(navigateSpy).toHaveBeenCalledWith('/target/widget?fixed=1#new', {
+      replace: true,
+    });
     navigateSpy.mockRestore();
   });
 

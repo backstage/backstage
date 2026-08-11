@@ -123,6 +123,31 @@ describe('react-router parity', () => {
       pathname: '/catalog/entities/component/foo',
     },
     {
+      name: 'optional params omitted',
+      paths: ['/catalog/:kind?/:name?', '/scaffolder'],
+      pathname: '/catalog',
+    },
+    {
+      name: 'optional params present',
+      paths: ['/catalog/:kind?/:name?', '/scaffolder'],
+      pathname: '/catalog/component/widget',
+    },
+    {
+      name: 'optional params rank by the concrete matching variant',
+      paths: ['/one/:id', '/one/:two?/:three?'],
+      pathname: '/one/foo',
+    },
+    {
+      name: 'optional static segment omitted',
+      paths: ['/project/task?/:taskId'],
+      pathname: '/project/123',
+    },
+    {
+      name: 'optional static segment present',
+      paths: ['/project/task?/:taskId'],
+      pathname: '/project/task/123',
+    },
+    {
       name: 'static over longer param pattern',
       paths: ['/x/:a/:b/:c', '/x/y/z'],
       pathname: '/x/y/z',
@@ -189,8 +214,8 @@ describe('react-router parity', () => {
       pathname: '/unknown',
     },
     {
-      name: 'root catch-all',
-      paths: ['/', '/catalog'],
+      name: 'explicit root splat',
+      paths: ['/*', '/catalog'],
       pathname: '/unknown/deep/path',
     },
     { name: 'root exact', paths: ['/', '/catalog'], pathname: '/' },
@@ -267,6 +292,14 @@ describe('react-router parity', () => {
     },
   );
 
+  it('keeps the root page exact so unknown URLs reach the app fallback', () => {
+    expect(new RouteTable(['/', '/catalog']).match('/unknown')).toBeUndefined();
+    expect(new RouteTable(['/', '/catalog']).match('/')).toEqual({
+      path: '/',
+      basePath: '/',
+    });
+  });
+
   it.each(cases)(
     'matchRouteRefs agrees with matchRoutes on $name',
     ({ paths, pathname }) => {
@@ -342,6 +375,12 @@ describe('react-router parity', () => {
     expect(generatePath('/a/:b?/c', {})).toBe(
       reactRouterGeneratePath('/a/:b?/c', {}),
     );
+    expect(generatePath('/:lang?/about', {})).toBe(
+      reactRouterGeneratePath('/:lang?/about', {}),
+    );
+    expect(generatePath('/project/task?/:taskId', { taskId: '123' })).toBe(
+      reactRouterGeneratePath('/project/task?/:taskId', { taskId: '123' }),
+    );
     expect(generatePath('/simple/path')).toBe(
       reactRouterGeneratePath('/simple/path'),
     );
@@ -357,9 +396,8 @@ describe('react-router parity', () => {
       '/entity/a/b?c',
     );
 
-    // An omitted optional param leaves an empty trailing segment rather than
-    // dropping the separator, so resolved route funcs keep a trailing slash.
-    expect(generatePath('/entity/:id?', {})).toBe('/entity/');
-    expect(reactRouterGeneratePath('/entity/:id?', {})).toBe('/entity');
+    expect(generatePath('/entity/:id?', {})).toBe(
+      reactRouterGeneratePath('/entity/:id?', {}),
+    );
   });
 });

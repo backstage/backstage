@@ -183,6 +183,40 @@ describe('matchRouteRefs', () => {
     );
   });
 
+  it('should rank the concrete optional route variant that matched', () => {
+    const firstRef = createRouteRef();
+    const optionalRef = createRouteRef();
+    const routes: BackstageRouteObject[] = [
+      { ...rest, path: '/one/:id', routeRefs: new Set([firstRef]) },
+      {
+        ...rest,
+        path: '/one/:two?/:three?',
+        routeRefs: new Set([optionalRef]),
+      },
+    ];
+
+    const result = matchRouteRefs(routes, '/one/foo');
+
+    expect(result).toHaveLength(1);
+    expect(result![0].routeObject.routeRefs).toEqual(new Set([firstRef]));
+    expect(result![0].params).toEqual({ id: 'foo' });
+  });
+
+  it('should match optional static route segments when omitted or present', () => {
+    const routes: BackstageRouteObject[] = [
+      { ...rest, path: '/project/task?/:taskId' },
+    ];
+
+    expect(matchRouteRefs(routes, '/project/123')?.[0]).toMatchObject({
+      pathname: '/project/123',
+      params: { taskId: '123' },
+    });
+    expect(matchRouteRefs(routes, '/project/task/123')?.[0]).toMatchObject({
+      pathname: '/project/task/123',
+      params: { taskId: '123' },
+    });
+  });
+
   it('should fall back to splat when no specific match', () => {
     const ref1 = createRouteRef();
 

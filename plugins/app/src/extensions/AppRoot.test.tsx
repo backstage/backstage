@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ReactNode } from 'react';
 import { render, screen } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
@@ -22,10 +21,7 @@ import {
   PageRouterBlueprint,
   createFrontendModule,
 } from '@backstage/frontend-plugin-api';
-import {
-  RouterBlueprint,
-  SignInPageBlueprint,
-} from '@backstage/plugin-app-react';
+import { SignInPageBlueprint } from '@backstage/plugin-app-react';
 import { createApp } from '@backstage/frontend-defaults';
 import { mockApis } from '@backstage/test-utils';
 import { ButtonLink, Link, Tab, TabList, TabPanel, Tabs } from '@backstage/ui';
@@ -65,6 +61,7 @@ async function expectBasenameHrefs() {
 
 describe('AppRoot', () => {
   it('should resolve BUI chrome hrefs through the app basename', async () => {
+    expect.assertions(2);
     const catalogPage = PageBlueprint.make({
       name: 'catalog',
       params: {
@@ -86,6 +83,7 @@ describe('AppRoot', () => {
   // only reachable through a full app with a sign-in page rather than
   // renderTestApp, which finalizes without one.
   it('should resolve BUI chrome hrefs through the app basename while signing in', async () => {
+    expect.assertions(2);
     const app = createApp({
       advanced: {
         configLoader: async () => ({
@@ -113,24 +111,14 @@ describe('AppRoot', () => {
   // position, so it can — and must — resolve a target against the page the
   // anchor is written in. `AppHistory.createHref` on its own resolves against
   // the app root, which turns an in-page fragment link into a link off the
-  // page. Both routers below are passthroughs, which is the supported shape
-  // (`RouterBlueprint` swapped out, a page hosted by another routing library)
-  // in which BUI has no React Router context of its own to resolve against and
-  // the raw target reaches this seam.
-  const passthroughAppRouter = createFrontendModule({
-    pluginId: 'app',
-    extensions: [
-      RouterBlueprint.make({
-        params: { component: ({ children }) => <>{children}</> },
-      }),
-    ],
-  });
-
+  // current page. The page adapter is deliberately a passthrough; BUI chrome
+  // resolves from the framework mount rather than relying on that adapter's
+  // router context.
   const passthroughPageRouter = PageRouterBlueprint.make({
     name: 'passthrough',
     attachTo: { id: 'page:test/catalog', input: 'router' },
     params: {
-      component: ({ children }: { children?: ReactNode }) => <>{children}</>,
+      component: ({ children }) => <>{children}</>,
     },
   });
 
@@ -153,7 +141,6 @@ describe('AppRoot', () => {
 
     renderTestApp({
       extensions: [catalogPage, passthroughPageRouter],
-      features: [passthroughAppRouter],
       initialRouteEntries: ['/catalog/foo'],
       config: BASENAME_CONFIG,
     });

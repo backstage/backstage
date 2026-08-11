@@ -16,6 +16,7 @@
 
 import { useMemo, type ReactNode } from 'react';
 import { useApi, appHistoryApiRef } from '@backstage/frontend-plugin-api';
+import { usePageMount } from '@internal/frontend';
 import { createScopedRouter } from './createScopedRouter';
 
 /**
@@ -30,8 +31,8 @@ import { createScopedRouter } from './createScopedRouter';
  * which sub-page of a page is showing is decided by the framework's own route
  * matching, one level above.
  *
- * Programmatic back/forward (`navigate(-1)`) is not supported — there is a
- * single, real browser history; use the browser's own back/forward.
+ * Programmatic back and forward (`navigate(-1)`) traverse the app-owned
+ * browser history.
  *
  * Attach via PageRouterBlueprint to a page's optional `router` input to
  * override the app-plugin default, or to a sub-page's to give that sub-page's
@@ -40,28 +41,25 @@ import { createScopedRouter } from './createScopedRouter';
  *
  * @public
  */
-export function ReactRouterV7PageRouter(props: {
-  /**
-   * Concrete app-absolute URL prefix this page is mounted at. Not read by
-   * this adapter: the page's route match is derived from `routePattern` and
-   * the live location, which keeps the two in step and keeps the router
-   * mount-stable while the concrete prefix changes (entity A → entity B).
-   */
-  basePath: string;
-  /** Registered route pattern this page is mounted at. */
-  routePattern: string;
-  children?: ReactNode;
-}) {
-  const { routePattern, children } = props;
+export function ReactRouterV7PageRouter(props: { children?: ReactNode }) {
+  const { children } = props;
   const appHistory = useApi(appHistoryApiRef);
+  const routePattern = usePageMount()?.routePattern;
 
   // Only ever recreated for a genuinely different router: a new element type
   // here would unmount and remount the whole page subtree, throwing away page
   // state, scroll position and in-flight requests.
   const scopedRouter = useMemo(
-    () => createScopedRouter(appHistory, { routePattern }),
+    () =>
+      routePattern
+        ? createScopedRouter(appHistory, { routePattern })
+        : undefined,
     [appHistory, routePattern],
   );
+
+  if (!scopedRouter) {
+    return <>{children}</>;
+  }
 
   return <scopedRouter.Router>{children}</scopedRouter.Router>;
 }

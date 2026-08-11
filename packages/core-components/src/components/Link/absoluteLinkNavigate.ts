@@ -50,6 +50,46 @@ export type AbsoluteLinkNavigateOptions = {
   pageMount: PageMount | undefined;
 };
 
+/** Inputs used to decide whether an app link click belongs to client routing. */
+export type AppLinkClick = {
+  defaultPrevented: boolean;
+  button: number;
+  metaKey: boolean;
+  altKey: boolean;
+  ctrlKey: boolean;
+  shiftKey: boolean;
+};
+
+/**
+ * Whether a click should be handled by the app history.
+ *
+ * All other interactions are deliberately left to the anchor element and the
+ * browser: modified or non-primary clicks, downloads, and links targeting a
+ * different browsing context.
+ *
+ * @internal
+ */
+export function shouldInterceptAppLinkClick(
+  event: AppLinkClick,
+  options: { target?: string; download?: unknown; reloadDocument?: boolean },
+): boolean {
+  const target = options.target?.toLowerCase();
+  const currentContext = !target || target === '_self';
+  const download = options.download !== undefined && options.download !== false;
+
+  return (
+    !event.defaultPrevented &&
+    event.button === 0 &&
+    !event.metaKey &&
+    !event.altKey &&
+    !event.ctrlKey &&
+    !event.shiftKey &&
+    currentContext &&
+    !download &&
+    !options.reloadDocument
+  );
+}
+
 /**
  * True when new-frontend-system navigation signals are present (app history
  * and/or page mount in context).

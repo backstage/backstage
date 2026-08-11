@@ -21,6 +21,7 @@ import type {
   AppNavigateOptions,
 } from '@backstage/frontend-plugin-api';
 import type { Observable } from '@backstage/types';
+import { createMockAppHistory as createFrameworkMockAppHistory } from '@backstage/frontend-test-utils';
 
 /**
  * Minimal hand-rolled `AppHistoryApi` for adapter-level tests, so this
@@ -67,24 +68,31 @@ function createMockAppHistory(initialPathname = '/'): {
     },
   };
 
+  function navigate(path: string, options?: AppNavigateOptions): void;
+  function navigate(delta: number): void;
+  function navigate(to: string | number, options?: AppNavigateOptions): void {
+    if (typeof to === 'number') {
+      return;
+    }
+    navigateCalls.push({ to, options });
+    const url = new URL(to, 'http://localhost');
+    current = {
+      pathname: url.pathname,
+      search: url.search,
+      hash: url.hash,
+      state: options?.state,
+    };
+    for (const listener of [...listeners]) {
+      listener(current);
+    }
+  }
+
   const appHistory: AppHistoryApi = {
     get location() {
       return current;
     },
     location$,
-    navigate(to, options) {
-      navigateCalls.push({ to, options });
-      const url = new URL(to, 'http://localhost');
-      current = {
-        pathname: url.pathname,
-        search: url.search,
-        hash: url.hash,
-        state: options?.state,
-      };
-      for (const listener of [...listeners]) {
-        listener(current);
-      }
-    },
+    navigate,
     createHref(to) {
       return to;
     },
@@ -166,6 +174,48 @@ describe('createTanStackHistory', () => {
     history.destroy();
   });
 
+  it('should derive splat, optional, and case-insensitive mounts from the shared matcher', () => {
+    const splat = createMockAppHistory('/docs/a/b');
+    const splatHistory = createTanStackHistory(splat.appHistory, {
+      routePattern: '/docs/*',
+    });
+    expect(splatHistory.location.pathname).toBe('/a/b');
+    expect(splatHistory.createHref('/next')).toBe('/docs/next');
+    splatHistory.destroy();
+
+    const optional = createMockAppHistory('/things');
+    const optionalHistory = createTanStackHistory(optional.appHistory, {
+      routePattern: '/things/:id?',
+    });
+    expect(optionalHistory.location.pathname).toBe('/');
+    expect(optionalHistory.createHref('/tab')).toBe('/things/tab');
+    optionalHistory.destroy();
+
+    const insensitive = createMockAppHistory('/CATALOG/details');
+    const insensitiveHistory = createTanStackHistory(insensitive.appHistory, {
+      routePattern: '/catalog',
+    });
+    expect(insensitiveHistory.location.pathname).toBe('/details');
+    expect(insensitiveHistory.createHref('/next')).toBe('/CATALOG/next');
+    insensitiveHistory.destroy();
+  });
+
+  it('should synthesize fallback metadata only once for a subscribed push', () => {
+    const { appHistory } = createMockAppHistory('/tools');
+    const history = createTanStackHistory(appHistory, {
+      routePattern: '/tools',
+    });
+    const unsubscribe = history.subscribe(() => {});
+
+    history.push('/a');
+
+    expect(history.location.state.__TSR_index).toBe(1);
+    expect(history.length).toBe(2);
+    expect(history.canGoBack()).toBe(true);
+    unsubscribe();
+    history.destroy();
+  });
+
   it('should ignore off-page locations rather than parking them in the scoped location', () => {
     const { appHistory, navigatedTo } = createMockAppHistory('/tools');
     const history = createTanStackHistory(appHistory, {
@@ -223,25 +273,42 @@ describe('createTanStackHistory', () => {
     history.destroy();
   });
 
-  it('should warn and no-op on go/back/forward instead of touching window.history', () => {
-    const { appHistory } = createMockAppHistory();
+  it('should traverse through AppHistoryApi with stable keys and truthful actions', () => {
+    const appHistory = createFrameworkMockAppHistory();
     const historyGoSpy = jest.spyOn(window.history, 'go');
-    const consoleWarn = jest
-      .spyOn(console, 'warn')
-      .mockImplementation(() => undefined);
     const history = createTanStackHistory(appHistory, { routePattern: '/' });
+    const actions: unknown[] = [];
+    const unsubscribe = history.subscribe(event => actions.push(event.action));
 
     history.push('/one');
-    history.go(-1);
+    const oneKey = history.location.state.__TSR_key;
+    history.push('/two');
+    const twoKey = history.location.state.__TSR_key;
+    expect(twoKey).not.toBe(oneKey);
+
     history.back();
+    expect(history.location.pathname).toBe('/one');
+    expect(history.location.state.__TSR_key).toBe(oneKey);
+    expect(actions.at(-1)).toEqual({ type: 'BACK' });
+
     history.forward();
+    expect(history.location.pathname).toBe('/two');
+    expect(history.location.state.__TSR_key).toBe(twoKey);
+    expect(actions.at(-1)).toEqual({ type: 'FORWARD' });
+
+    history.go(-2);
+    expect(history.location.pathname).toBe('/');
+    expect(history.canGoBack()).toBe(false);
+    expect(actions.at(-1)).toEqual({ type: 'GO', index: -2 });
 
     expect(historyGoSpy).not.toHaveBeenCalled();
-    expect(consoleWarn).toHaveBeenCalled();
-    // Location is unaffected — go/back/forward are unsupported no-ops.
-    expect(history.location.pathname).toBe('/one');
+    expect(appHistory.navigateCalls.slice(-3)).toEqual([
+      { to: -1 },
+      { to: 1 },
+      { to: -2 },
+    ]);
+    unsubscribe();
     historyGoSpy.mockRestore();
-    consoleWarn.mockRestore();
     history.destroy();
   });
 
@@ -269,23 +336,26 @@ describe('createTanStackHistory', () => {
       routePattern: '/tools',
     });
     let blocked = false;
+    let nextState: unknown;
     history.block({
-      blockerFn: async () => {
+      blockerFn: async ({ nextLocation }) => {
         blocked = true;
+        nextState = nextLocation.state;
         return true;
       },
     });
 
-    history.push('/blocked');
+    history.push('/blocked', { reason: 'unsaved' });
     await Promise.resolve();
     await Promise.resolve();
 
     expect(blocked).toBe(true);
+    expect(nextState).toEqual({ reason: 'unsaved' });
     expect(history.location.pathname).toBe('/');
     history.destroy();
   });
 
-  it('should not run blockers on go/back/forward', async () => {
+  it('should not run blockers before numeric traversal because the destination is browser-owned', async () => {
     const { appHistory } = createMockAppHistory('/tools');
     const history = createTanStackHistory(appHistory, {
       routePattern: '/tools',

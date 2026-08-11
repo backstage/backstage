@@ -23,7 +23,7 @@ import type { AppLocation, AppNavigateOptions } from './AppLocation';
  * app chrome. This is the sole writer to `window.history`.
  *
  * The public navigation surface mirrors the `navigate` + `useHref` pattern
- * used by libraries like react-aria: {@link AppHistoryApi.navigate} performs
+ * used by libraries like react-aria: `AppHistoryApi.navigate` performs
  * navigation, and {@link AppHistoryApi.createHref} (paired with the public
  * {@link useHref} hook) resolves an app-relative path to a browser-ready
  * href (including the app's deploy basename).
@@ -34,7 +34,7 @@ export interface AppHistoryApi {
   /**
    * Navigate to an app-relative path.
    *
-   * Throws for targets that are not app-relative — absolute
+   * A path throws when it is not app-relative — absolute
    * (`https://example.com/x`), protocol-relative (`//example.com/x`), and
    * opaque schemes such as `mailto:` and `tel:`. Navigation is an explicit
    * action with a single correct answer, so a wrong target is a bug worth
@@ -42,6 +42,8 @@ export interface AppHistoryApi {
    * through instead.
    */
   navigate(path: string, options?: AppNavigateOptions): void;
+  /** Traverse a relative number of browser-history entries. */
+  navigate(delta: number): void;
   /**
    * The current location (basename-stripped, app-relative).
    *
@@ -83,7 +85,7 @@ export interface AppHistoryApi {
    * silently produce a broken internal link, and throwing is not an option
    * either: hrefs are resolved during render, where an error takes out the
    * whole tree. So `<a href={useHref(props.url)}>` is safe for a possibly
-   * external URL. Use {@link AppHistoryApi.navigate} when a target must be
+   * external URL. Use `AppHistoryApi.navigate` when a target must be
    * app-relative — it throws for these instead.
    *
    * Only the path portion is inspected, so `/search?query=https://example.com`

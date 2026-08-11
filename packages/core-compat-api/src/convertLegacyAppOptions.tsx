@@ -28,7 +28,6 @@ import {
 } from '@backstage/frontend-plugin-api';
 import {
   IconBundleBlueprint,
-  RouterBlueprint,
   SignInPageBlueprint,
   SwappableComponentBlueprint,
   ThemeBlueprint,
@@ -141,18 +140,8 @@ export function convertLegacyAppOptions(
       );
     }
     if (Router) {
-      // The adopter did not pick this blueprint — the compat layer picks it on
-      // their behalf, for every app migrating from the old frontend system. Its
-      // deprecation warning lives in the blueprint's own factory and is meant
-      // for callers who did choose it, so overriding the factory here keeps it
-      // out of this path while emitting exactly the data `make` would have.
-      const RouterComponent = componentCompatWrapper(Router);
-      extensions.push(
-        RouterBlueprint.makeWithOverrides({
-          *factory() {
-            yield RouterBlueprint.dataRefs.component(RouterComponent);
-          },
-        }),
+      throw new Error(
+        'components.Router is not supported by convertLegacyAppOptions. Remove a plain BrowserRouter, move global providers to AppRootWrapperBlueprint, and attach alternate routers to pages with PageRouterBlueprint.',
       );
     }
     if (SignInPage) {

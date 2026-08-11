@@ -41,7 +41,7 @@ import {
   useApi,
 } from '@backstage/core-plugin-api';
 import { default as appPluginOriginal } from '@backstage/plugin-app';
-import { ComponentType, useState, useEffect } from 'react';
+import { ComponentType, StrictMode, useState, useEffect } from 'react';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
@@ -160,6 +160,7 @@ describe('createApp', () => {
       expect(popstateListeners(removeEventListenerSpy)).toHaveLength(0);
 
       rendered.unmount();
+      await Promise.resolve();
 
       // Asserted at the window level rather than through emissions, because
       // clearing the app history's own subscribers would silence it without
@@ -170,6 +171,53 @@ describe('createApp', () => {
       );
       expect(popstateListeners(removeEventListenerSpy)).toHaveLength(1);
       expect(popstateListeners(addEventListenerSpy)).toHaveLength(1);
+    } finally {
+      addEventListenerSpy.mockRestore();
+      removeEventListenerSpy.mockRestore();
+    }
+  });
+
+  it('should keep browser resources alive across StrictMode effect replay', async () => {
+    window.history.replaceState(null, '', '/');
+    const addEventListenerSpy = jest.spyOn(window, 'addEventListener');
+    const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
+    const popstateCalls = (spy: jest.SpyInstance) =>
+      spy.mock.calls.filter(([type]) => type === 'popstate');
+
+    try {
+      const app = createApp({
+        advanced: {
+          configLoader: async () => ({ config: mockApis.config() }),
+        },
+        features: [
+          appPlugin,
+          createFrontendPlugin({
+            pluginId: 'strict-mode-test',
+            extensions: [
+              PageBlueprint.make({
+                params: {
+                  path: '/',
+                  loader: async () => <div>Strict Mode Page</div>,
+                },
+              }),
+            ],
+          }),
+        ],
+      });
+
+      const rendered = await renderWithEffects(
+        <StrictMode>{app.createRoot()}</StrictMode>,
+      );
+      await expect(
+        screen.findByText('Strict Mode Page'),
+      ).resolves.toBeInTheDocument();
+
+      expect(popstateCalls(addEventListenerSpy)).toHaveLength(1);
+      expect(popstateCalls(removeEventListenerSpy)).toHaveLength(0);
+
+      rendered.unmount();
+      await Promise.resolve();
+      expect(popstateCalls(removeEventListenerSpy)).toHaveLength(1);
     } finally {
       addEventListenerSpy.mockRestore();
       removeEventListenerSpy.mockRestore();

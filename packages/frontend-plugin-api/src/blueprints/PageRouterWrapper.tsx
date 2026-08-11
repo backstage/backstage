@@ -20,14 +20,12 @@ import {
   pageRouterApiRef,
   type PageRouterComponent,
 } from '../apis/definitions/PageRouterApi';
-import type { PageMount } from '@internal/frontend';
+import { usePageMount } from '@internal/frontend';
 
 /**
  * Props for {@link PageRouterWrapper}.
  */
 export interface PageRouterWrapperProps {
-  /** The mount this content is rendered at, or `undefined` when unmounted. */
-  mount: PageMount | undefined;
   /** Adapter from the page's (or sub-page's) `router` extension input. */
   RouterOverride?: PageRouterComponent;
   /** The content to render inside the adapter's context. */
@@ -46,12 +44,15 @@ export interface PageRouterWrapperProps {
  * mount and the route resolution API, so it must not require any particular
  * routing library to be in context.
  *
- * When there is no mount (e.g. isolated `renderInTestApp` without
+ * The mount is read from the framework context rather than passed through the
+ * public router component. When there is no mount (for example, isolated
+ * `renderInTestApp` without
  * `AppRouteSwitch`) there is nothing to scope an adapter to, so the content
  * renders without one.
  */
 export function PageRouterWrapper(props: PageRouterWrapperProps) {
-  const { mount, RouterOverride, children } = props;
+  const { RouterOverride, children } = props;
+  const mount = usePageMount();
   const apiHolder = useApiHolder();
 
   if (!mount) {
@@ -64,9 +65,5 @@ export function PageRouterWrapper(props: PageRouterWrapperProps) {
     return <>{children}</>;
   }
 
-  return (
-    <Router basePath={mount.basePath} routePattern={mount.routePattern}>
-      {children}
-    </Router>
-  );
+  return <Router>{children}</Router>;
 }

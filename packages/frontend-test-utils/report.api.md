@@ -309,7 +309,7 @@ export namespace mockApis {
 // @public
 export interface MockAppHistory extends AppHistoryApi {
   navigateCalls: Array<{
-    to: string;
+    to: string | number;
     options?: AppNavigateOptions;
   }>;
 }

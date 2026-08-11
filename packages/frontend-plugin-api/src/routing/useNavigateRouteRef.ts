@@ -15,6 +15,11 @@
  */
 
 import { useCallback } from 'react';
+import {
+  OpaqueExternalRouteRef,
+  OpaqueRouteRef,
+  OpaqueSubRouteRef,
+} from '@internal/frontend';
 import { AnyRouteRefParams } from './types';
 import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';
@@ -56,13 +61,27 @@ export function useNavigateRouteRef<TParams extends AnyRouteRefParams>(
 ): NavigateRouteRefFunc<TParams> | undefined {
   const routeFunc = useRouteRef(routeRef);
   const navigate = useAppNavigate();
+  const hasParams = (() => {
+    switch (routeRef.$$type) {
+      case '@backstage/RouteRef':
+        return OpaqueRouteRef.toInternal(routeRef).getParams().length > 0;
+      case '@backstage/SubRouteRef':
+        return OpaqueSubRouteRef.toInternal(routeRef).getParams().length > 0;
+      case '@backstage/ExternalRouteRef':
+        return (
+          OpaqueExternalRouteRef.toInternal(routeRef).getParams().length > 0
+        );
+      default:
+        return false;
+    }
+  })();
 
   const navigateRouteRef = useCallback(
     (...args: unknown[]) => {
       if (!routeFunc) {
         return;
       }
-      if (routeFunc.length > 0) {
+      if (hasParams) {
         const params = args[0] as TParams;
         const options = args[1] as AppNavigateOptions | undefined;
         navigate(
@@ -74,7 +93,7 @@ export function useNavigateRouteRef<TParams extends AnyRouteRefParams>(
         navigate((routeFunc as unknown as () => string)(), options);
       }
     },
-    [routeFunc, navigate],
+    [routeFunc, navigate, hasParams],
   );
 
   if (!routeFunc) {

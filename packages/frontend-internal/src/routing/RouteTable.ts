@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { matchPath, routePriority, trimTrailingSlash } from './routePattern';
+import {
+  expandOptionalSegments,
+  matchPath,
+  routePriority,
+  trimTrailingSlash,
+} from './routePattern';
 
 /**
  * A page to register in a {@link RouteTable}, together with the sub-pages it
@@ -96,8 +101,10 @@ export interface RouteTableMatch {
 }
 
 type RankedRoute = {
-  /** The pattern matched against the pathname. */
+  /** The registered pattern returned to consumers. */
   path: string;
+  /** The concrete optional-segment expansion matched against the pathname. */
+  matchPath: string;
   priority: number;
   /** The page this route belongs to, which is `path` itself for a page route. */
   pagePath: string;
@@ -166,7 +173,7 @@ function normalizeSubPath(subPath: string): string | undefined {
  *
  * Routes are sorted by specificity (static segments over params over splats)
  * and then matched as path prefixes. Equally specific patterns are tried in
- * registration order. The root path `/` acts as a catch-all.
+ * registration order. The root path `/` is exact; use `/*` for a catch-all.
  *
  * A page's sub-pages are registered as ordinary routes one level below it and
  * ranked with everything else, so a sub-page is not a special kind of route —
@@ -257,22 +264,28 @@ export class RouteTable {
         subRoutes.push({ path, subPath, indexPath: normalized });
       }
 
-      ranked.push({
-        path: entry.path,
-        priority: routePriority(entry.path),
-        pagePath: entry.path,
-        // The first sub-page that actually has a route: sending the page root
-        // to one that was dropped above would land the page inside whatever
-        // took the path instead.
-        indexSubPath: subRoutes[0]?.indexPath,
-      });
-      for (const { path, subPath } of subRoutes) {
+      for (const concretePath of expandOptionalSegments(entry.path)) {
         ranked.push({
-          path,
-          priority: routePriority(path),
+          path: entry.path,
+          matchPath: concretePath,
+          priority: routePriority(concretePath),
           pagePath: entry.path,
-          subPath,
+          // The first sub-page that actually has a route: sending the page root
+          // to one that was dropped above would land the page inside whatever
+          // took the path instead.
+          indexSubPath: subRoutes[0]?.indexPath,
         });
+      }
+      for (const { path, subPath } of subRoutes) {
+        for (const concretePath of expandOptionalSegments(path)) {
+          ranked.push({
+            path,
+            matchPath: concretePath,
+            priority: routePriority(concretePath),
+            pagePath: entry.path,
+            subPath,
+          });
+        }
       }
     }
 
@@ -288,9 +301,14 @@ export class RouteTable {
   match(pathname: string): RouteTableMatch | undefined {
     let matched: RouteTableMatch | undefined;
     for (const route of this.paths) {
-      // A prefix match of `/` matches everything, so the root is the catch-all
-      // without needing to be special cased here.
-      const result = matchPath(route.path, pathname, false);
+      // A root page owns the root URL only. Catch-all ownership must be
+      // explicit through `/*`, otherwise an unknown URL would silently render
+      // the home page instead of reaching the app's not-found fallback.
+      const result = matchPath(
+        route.matchPath,
+        pathname,
+        route.matchPath === '/',
+      );
       if (!result) {
         continue;
       }
@@ -330,24 +348,6 @@ export class RouteTable {
         },
       };
       break;
-    }
-
-    if (!matched) {
-      return undefined;
-    }
-
-    if (
-      process.env.NODE_ENV !== 'production' &&
-      matched.path === '/' &&
-      pathname !== '/' &&
-      pathname.split('/').filter(Boolean).length > 1
-    ) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        `[RouteTable] Pathname "${pathname}" fell through to the root "/" catch-all. This may indicate a missing route registration. Registered paths: ${this.paths
-          .map(p => p.path)
-          .join(', ')}`,
-      );
     }
 
     return matched;

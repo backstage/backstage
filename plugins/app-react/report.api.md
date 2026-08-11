@@ -171,30 +171,6 @@ export interface NavContentNavItemsWithComponent {
   take(id: string): JSX.Element | null;
 }
 
-// @public @deprecated
-export const RouterBlueprint: ExtensionBlueprint<{
-  kind: 'app-router-component';
-  params: {
-    Component?: [error: 'Use the `component` parameter instead'];
-    component: (props: { children: ReactNode }) => JSX.Element | null;
-  };
-  output: ExtensionDataRef<
-    (props: { children: ReactNode }) => JSX.Element | null,
-    'app.router.wrapper',
-    {}
-  >;
-  inputs: {};
-  config: {};
-  configInput: {};
-  dataRefs: {
-    component: ConfigurableExtensionDataRef<
-      (props: { children: ReactNode }) => JSX.Element | null,
-      'app.router.wrapper',
-      {}
-    >;
-  };
-}>;
-
 // @public
 export const SignInPageBlueprint: ExtensionBlueprint<{
   kind: 'sign-in-page';

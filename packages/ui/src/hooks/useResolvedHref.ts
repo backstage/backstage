@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { createContext, useContext } from 'react';
 import { useHref, useInRouterContext } from 'react-router-dom';
 import { isExternalLink, sanitizeHref } from '../utils/linkUtils';
+import { useOptionalBUIRouter } from '../provider/BUIRouter';
 
 /**
- * Whether a resolver the host app injected into `BUIProvider` is the authority
- * for every href rendered below it.
+ * Whether `BUIProvider` has selected a routing authority for its descendants.
  *
  * A target is resolved once, and this is what says by whom. react-aria calls
  * the injected resolver at each anchor's own position, where it can still tell
@@ -32,16 +31,8 @@ import { isExternalLink, sanitizeHref } from '../utils/linkUtils';
  *
  * @internal
  */
-export const InjectedHrefResolverContext = createContext(false);
-
-/**
- * Whether the surrounding `BUIProvider` was given a `useHref` that governs the
- * rendered href — see {@link InjectedHrefResolverContext}.
- *
- * @internal
- */
-export function useHasInjectedHrefResolver(): boolean {
-  return useContext(InjectedHrefResolverContext);
+export function useHasBUIRouter(): boolean {
+  return Boolean(useOptionalBUIRouter());
 }
 
 /**
@@ -51,9 +42,7 @@ export function useHasInjectedHrefResolver(): boolean {
  *
  * Hrefs a browser would execute rather than navigate to are made inert first.
  * `useDefinition` already does this for every BUI component, so in practice
- * this only bites for hrefs that arrive some other way — `BUIProvider` hands
- * this hook to react-aria's `RouterProvider` as its `useHref`, which is a path
- * into the DOM that does not pass through a component definition.
+ * this only bites for hrefs that arrive some other way.
  *
  * @internal
  */

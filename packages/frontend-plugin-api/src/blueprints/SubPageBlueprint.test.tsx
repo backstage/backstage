@@ -174,13 +174,8 @@ describe('SubPageBlueprint', () => {
   });
 
   it('should allow a subpage router override while the parent stays on the default', async () => {
-    const CustomSubpageRouter: PageRouterComponent = ({
-      basePath,
-      children,
-    }) => (
-      <div data-testid="custom-subpage-router" data-base={basePath}>
-        {children}
-      </div>
+    const CustomSubpageRouter: PageRouterComponent = ({ children }) => (
+      <div data-testid="custom-subpage-router">{children}</div>
     );
 
     const parentPage = PageBlueprint.make({
@@ -244,10 +239,7 @@ describe('SubPageBlueprint', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('tree-page')).toBeInTheDocument();
-      expect(screen.getByTestId('custom-subpage-router')).toHaveAttribute(
-        'data-base',
-        '/visualizer/tree',
-      );
+      expect(screen.getByTestId('custom-subpage-router')).toBeInTheDocument();
       expect(screen.getByTestId('tree-mount')).toHaveTextContent(
         '/visualizer/tree',
       );

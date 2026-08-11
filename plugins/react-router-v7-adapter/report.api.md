@@ -8,8 +8,6 @@ import { ReactNode } from 'react';
 
 // @public
 export function ReactRouterV7PageRouter(props: {
-  basePath: string;
-  routePattern: string;
   children?: ReactNode;
 }): JSX_2.Element;
 ```

@@ -1,7 +1,7 @@
 ---
-'@backstage/plugin-app-react': patch
+'@backstage/plugin-app-react': minor
 ---
 
-Deprecated `RouterBlueprint`. Browser history in the new frontend system is now owned by the app, and each page picks the router that renders its content through `PageRouterBlueprint` / `pageRouterApiRef` from `@backstage/frontend-plugin-api`.
+**BREAKING**: Removed `RouterBlueprint`. The new frontend system now has one browser-history authority and no longer supports replacing the router at the app root.
 
-Existing overrides keep working and there is no removal date — React Router v6 remains supported — but new code should use a page-level router instead of replacing the app root router. Apps that attach their own root router now log a one-time deprecation warning to the console at startup.
+Remove overrides that only installed `BrowserRouter`. Move global providers to `AppRootWrapperBlueprint`, and attach alternate routers to individual pages or sub-pages with `PageRouterBlueprint`. This does not change the old frontend system's `components.Router` option.

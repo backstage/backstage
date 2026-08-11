@@ -545,7 +545,7 @@ For programmatic navigation to a route ref, use `useNavigateRouteRef`. If you al
 
 ### Page routers
 
-Leaving a page's `router` input empty keeps the app default, which is React Router v6. A page's sub-pages (`pages` input / `SubPageBlueprint`) are ordinary routes one level below the page: the app's own route matching registers them and picks the one to show, so a page router never builds a route and never has to know that sub-pages exist.
+Leaving a page's `router` input empty keeps the app default, which is React Router v6. A page's sub-pages (`pages` input / `SubPageBlueprint`) are ordinary routes one level below the page: the app's own route matching registers them and picks the one to show, so a page router never has to know that sub-pages exist.
 
 If you want a different page router (for example React Router v7), attach one of the packaged routers with `PageRouterBlueprint`:
 
@@ -559,31 +559,35 @@ const toolsV7Router = PageRouterBlueprint.make({
 });
 ```
 
-The page's content is passed to the page router unchanged, so the page keeps composing its own React Router elements and the router only scopes them to the page's path.
+The page's content is passed to the page router unchanged. The public page router component receives only `children`; first-party adapters read the page mount from a private framework context. This keeps concrete mount paths and route patterns out of the public adapter contract.
 
 Attach a router to a sub-page the same way (for example `attachTo: { id: 'sub-page:tools/overview', input: 'router' }`) to give that sub-page's content a context of its own, scoped to the sub-page rather than to the page above it. Nothing is inherited: a sub-page whose content uses a different routing library than the app default has to say so itself.
 
-TanStack Router (`@backstage/plugin-tanstack-router-adapter`) renders through its own route tree. Because content reaches a page router already selected, TanStack can host a page with tabs without ever being handed another library's route tree. A page's own content is rendered as given: if that content composes React Router elements internally, that is the page author's choice to make alongside the choice of adapter.
+The default `TanStackPageRouter` from `@backstage/plugin-tanstack-router-adapter` renders opaque page content through a catch-all route. To bind a plugin-owned nested TanStack route tree, create an adapter with `createTanStackPageRouter` and render `TanStackPageContent` at the point in the tree where the page element belongs. TanStack types remain inside the adapter package and your plugin.
 
 ### Testing
 
-When exercising new frontend system navigation, use `renderInTestApp` and `renderTestApp` from `@backstage/frontend-test-utils`. They drive an in-memory `AppHistoryApi` and return it as `appHistory`, so you can call `appHistory.navigate(path)` to move between locations and assert on `location$` or `createHref`. Browser back and forward are not simulated; drive multi-step scenarios with explicit `navigate` calls.
+When exercising new frontend system navigation, use `renderInTestApp` and `renderTestApp` from `@backstage/frontend-test-utils`. They drive an in-memory `AppHistoryApi` and return it as `appHistory`, so you can call `appHistory.navigate(path)` to move between locations, call `appHistory.navigate(-1)` to traverse history, and assert on `location$` or `createHref`.
 
 Relative in-plugin tests that only need React Router context can continue to use existing patterns.
 
-### Deprecated root router overrides
+### Migrate root router overrides
 
-`RouterBlueprint` no longer controls plugin routing. It keeps working and there is no removal date, but new code should pick a router per page with `PageRouterBlueprint` / `pageRouterApiRef`. See [Common Extension Blueprints](../building-plugins/03-common-extension-blueprints.md) for the Router blueprint migration notes.
+The new frontend system does not support `RouterBlueprint` or a converted legacy `components.Router`. An opaque root component can create a second history that the app cannot observe, so the app root has one fixed history projection instead.
 
-If your plugin mocks `AppHistoryApi` directly, keep to its minimal surface: `navigate`, `location$`, and `createHref`.
+- Remove the override when it only installs `BrowserRouter`.
+- Move providers that wrapped the router to `AppRootWrapperBlueprint`.
+- Select a router for a page or sub-page with `PageRouterBlueprint`.
+
+The old frontend system still supports its `components.Router` option. See [Common Extension Blueprints](../building-plugins/03-common-extension-blueprints.md#migrate-a-root-router-override) for migration examples.
+
+If your plugin mocks `AppHistoryApi` directly, keep to its minimal surface: `navigate`, `location`, `location$`, and `createHref`.
 
 ### Known limitations
 
-Scoped plugin routing does not remove React Router from every part of an app. These are the known gaps.
+These are the remaining limits of scoped plugin routing.
 
-- **Backstage UI resolves hrefs before the framework sees them.** Components from `@backstage/ui` resolve a link target through React Router unless the host app passes `useHref` to `BUIProvider`. `@backstage/plugin-app` passes one, so apps built on it are unaffected. A host that does not — the old frontend system, or a custom app root — resolves page chrome targets against the app root rather than against the page they were written in, so a fragment-only or relative target written in page chrome leaves the page.
-- **A custom href resolver owns external targets.** When an app passes `useHref` to `BUIProvider`, Backstage UI stops applying its own external-link check and hands the target to that resolver as written. Returning absolute, protocol-relative, and opaque-scheme targets such as `mailto:` unchanged is then the resolver's job. The resolver `@backstage/plugin-app` passes does this, so apps built on it are unaffected.
-- **App chrome still expects a router.** Parts of the app shell read React Router context, which is why the app root keeps providing one. Route tracking in `@backstage/core-app-api` no longer needs it and renders without one; lifting the requirement from the rest of the chrome starts there.
+- **The root still projects React Router v6 for compatibility.** First-party new frontend system chrome does not depend on that context. Target removal by August 2027. Remove the projection when routerless chrome conformance tests cover the full app shell and the source dependency boundary contains no React Router imports outside the compatibility projection and the React Router v6 page adapter. If those gates are not met by August 2027, re-evaluate the remaining dependencies and set a new removal target. This removal is independent of support for React Router v6 inside a page or inside Backstage UI's old frontend system fallback.
+- **A custom Backstage UI router owns the complete routing capability.** If a custom host passes `router` to `BUIProvider`, its `navigate`, `useHref`, and `useLocation` implementations must observe the same routing authority. The app plugin supplies this capability from `AppHistoryApi`.
 - **Teardown does not cover hot reload.** An app releases its browser history listener when its React root is torn down. Re-running `createApp` during a hot reload builds a new app without tearing down the previous one, so that app's teardown never runs and its listener stays attached until the page reloads.
-- **TanStack Router state is page-local.** The TanStack adapter keeps its history bookkeeping in memory for as long as the page is mounted, so the state it tracks does not survive the page being torn down and rendered again. Its navigation blocker covers only navigation started inside the page, not navigation the app performs.
-- **The React Router v7 adapter builds shared routing code against v7.** `@backstage/plugin-react-router-v7-adapter` declares React Router v7 as its peer dependency, so the routing helpers it shares with the rest of the frontend system compile against v7 inside that package. Those helpers do not read React Router context, so this has no effect. A helper that started to would resolve against v7 there and v6 elsewhere.
+- **Navigation blockers are page-local.** A router library can block navigation that starts inside its page. It cannot block navigation initiated elsewhere in the app because `AppHistoryApi` has no shared blocker contract.

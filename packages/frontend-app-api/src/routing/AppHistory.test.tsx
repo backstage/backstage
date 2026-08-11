@@ -18,6 +18,7 @@ import {
   createMemoryHistoryBackend,
   createWindowHistoryBackend,
 } from './HistoryBackend';
+import type { AppLocation } from '@backstage/frontend-plugin-api';
 import { createAppHistory, type AppHistory } from './AppHistory';
 
 describe('AppHistory', () => {
@@ -30,6 +31,7 @@ describe('AppHistory', () => {
 
   afterEach(() => {
     history.dispose();
+    delete (window as unknown as { navigation?: unknown }).navigation;
   });
 
   it('should navigate by updating window.history', () => {
@@ -108,6 +110,18 @@ describe('AppHistory', () => {
       expect(locations[locations.length - 1]).toBe('/catalog/entity/foo');
       expect(memoryBackend.getLocation().pathname).toBe('/catalog/entity/foo');
       expect(window.location.pathname).toBe(windowBefore);
+    });
+
+    it('should traverse the existing history stack with a numeric navigation', () => {
+      memoryHistory.navigate('/first');
+      memoryHistory.navigate('/second');
+      const locations: string[] = [];
+      memoryHistory.location$.subscribe(loc => locations.push(loc.pathname));
+
+      memoryHistory.navigate(-1);
+
+      expect(memoryHistory.location.pathname).toBe('/first');
+      expect(locations.at(-1)).toBe('/first');
     });
 
     it('should apply basename with memory history', () => {
@@ -204,6 +218,46 @@ describe('AppHistory', () => {
     window.dispatchEvent(new PopStateEvent('popstate'));
 
     expect(locations).toContain('/other/page');
+  });
+
+  it('should emit hash changes when Navigation API is unavailable', () => {
+    const locations: string[] = [];
+    history.location$.subscribe(loc => locations.push(loc.hash));
+
+    window.history.pushState(null, '', '/page#section');
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+
+    expect(history.location.hash).toBe('#section');
+    expect(locations.at(-1)).toBe('#section');
+  });
+
+  it('should follow Navigation API current-entry changes when available', () => {
+    history.dispose();
+    const navigation = new EventTarget() as EventTarget & {
+      currentEntry: { key: string; index: number };
+      canGoBack: boolean;
+    };
+    navigation.currentEntry = { key: 'initial', index: 0 };
+    navigation.canGoBack = false;
+    Object.defineProperty(window, 'navigation', {
+      configurable: true,
+      value: navigation,
+    });
+    history = createAppHistory();
+    const seen: AppLocation[] = [];
+    history.location$.subscribe(loc => seen.push(loc));
+
+    window.history.pushState({ source: 'native' }, '', '/native-entry');
+    navigation.currentEntry = { key: 'native', index: 1 };
+    navigation.canGoBack = true;
+    navigation.dispatchEvent(new Event('currententrychange'));
+
+    expect(seen.at(-1)).toEqual({
+      pathname: '/native-entry',
+      search: '',
+      hash: '',
+      state: { source: 'native' },
+    });
   });
 
   it('should use replaceState when replace option is true', () => {

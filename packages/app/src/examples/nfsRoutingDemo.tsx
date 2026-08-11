@@ -26,7 +26,7 @@
  * | `/nfs-routing-demo` (React Router v6)         | `nested-v6`    | React Router v6 nested inside v6         |
  * |                                               | `tanstack`     | a TanStack sub-page inside a v6 page     |
  * |                                               | `deep-link`    | links 3 segments below the page base     |
- * | `/nfs-routing-demo-tanstack` (TanStack)       | `tanstack`     | TanStack sub-page inside a TanStack page |
+ * | `/nfs-routing-demo-tanstack` (TanStack)       | `tanstack`     | a plugin-owned nested TanStack tree       |
  * |                                               | `v6-guest`     | a React Router v6 sub-page inside it     |
  * | `/nfs-routing-demo-v7` (React Router v7)      | `v6-guest`     | v6 and v7 route trees in one app         |
  * |                                               | `v7-only`      | framework chrome with no v6 in context   |
@@ -69,9 +69,19 @@ import {
   useLocation,
   useParams,
 } from 'react-router-dom';
-import { useRouterState } from '@tanstack/react-router';
+import {
+  Outlet,
+  createRootRoute,
+  createRoute,
+  createRouter,
+  useRouterState,
+} from '@tanstack/react-router';
 import { ReactRouterV7PageRouter } from '@backstage/plugin-react-router-v7-adapter';
-import { TanStackPageRouter } from '@backstage/plugin-tanstack-router-adapter';
+import {
+  TanStackPageContent,
+  TanStackPageRouter,
+  createTanStackPageRouter,
+} from '@backstage/plugin-tanstack-router-adapter';
 import Typography from '@material-ui/core/Typography';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import CallSplitIcon from '@material-ui/icons/CallSplit';
@@ -432,22 +442,19 @@ function TanStackTabsPanel() {
   return (
     <Panel
       title="TanStack all the way down"
-      proves="TanStack can host a tabbed page at all — it builds the tab route tree itself"
+      proves="a framework-selected tab can host a plugin-owned nested TanStack route tree"
       base={TANSTACK_PAGE_PATH}
     >
       <Typography paragraph>
-        Before sub-pages were handed to adapters as data, this page could not
-        exist: the framework composed tabs into a React Router{' '}
-        <code style={codeStyle}>&lt;Routes&gt;</code> tree and passed it down as
-        opaque children, so only a React Router adapter could host one. TanStack
-        now receives the list of sub-pages and calls{' '}
-        <code style={codeStyle}>createRoute</code> for each, plus a sibling{' '}
-        <code style={codeStyle}>$</code> splat route — its own equivalent of
-        React Router's <code style={codeStyle}>path/*</code>.
+        The framework selected this tab before handing its opaque content to the
+        adapter. The adapter was created with{' '}
+        <code style={codeStyle}>createTanStackPageRouter</code> and binds the
+        plugin's own route tree to the app-owned history.
       </Typography>
       <Typography paragraph>
-        This tab then attached a TanStack adapter of its own, so there is a
-        TanStack router inside a TanStack router. The inner one reports{' '}
+        <code style={codeStyle}>TanStackPageContent</code> renders this panel at
+        the root, while the nested <code style={codeStyle}>extra/deep</code>{' '}
+        route renders through an outlet. The inner router reports{' '}
         <code style={codeStyle}>{scopedPathname}</code>.
       </Typography>
       <ul>
@@ -472,14 +479,44 @@ function TanStackTabsPanel() {
   );
 }
 
+function TanStackDeepRoute() {
+  return (
+    <Typography paragraph>
+      The plugin-owned TanStack route tree matched{' '}
+      <code style={codeStyle}>extra/deep</code>.
+    </Typography>
+  );
+}
+
+const tanStackSubPageRootRoute = createRootRoute({
+  component: () => (
+    <>
+      <TanStackPageContent />
+      <Outlet />
+    </>
+  ),
+});
+const tanStackSubPageDeepRoute = createRoute({
+  getParentRoute: () => tanStackSubPageRootRoute,
+  path: '/extra/deep',
+  component: TanStackDeepRoute,
+});
+const tanStackSubPageRouteTree = tanStackSubPageRootRoute.addChildren([
+  tanStackSubPageDeepRoute,
+]);
+const TanStackNestedPageRouter = createTanStackPageRouter({
+  createRouter: ({ history }) =>
+    createRouter({ routeTree: tanStackSubPageRouteTree, history }),
+});
+
 function TanStackV6GuestIndex() {
   return (
     <>
       <Typography paragraph>
         This tab attached no router of its own, so it fell back to the
         app-plugin default — React Router v6 — even though the page hosting it
-        is TanStack. The tab's <em>route</em> was created by TanStack; the tab's{' '}
-        <em>content</em> is running v6.
+        is TanStack. The framework selected the tab, and its <em>content</em> is
+        running v6.
       </Typography>
       <ul>
         <HrefReadout
@@ -714,7 +751,7 @@ const TanStackHostTanStackSubPageRouter = PageRouterBlueprint.make({
     id: 'sub-page:pages/nfsRoutingDemoTanstack-tanstack',
     input: 'router',
   },
-  params: { component: TanStackPageRouter },
+  params: { component: TanStackNestedPageRouter },
 });
 
 const TanStackHostV6SubPage = SubPageBlueprint.make({

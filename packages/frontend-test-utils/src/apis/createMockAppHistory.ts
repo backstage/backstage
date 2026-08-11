@@ -20,10 +20,13 @@ import {
   type AppNavigateOptions,
 } from '@backstage/frontend-plugin-api';
 import {
+  appHistoryMetadataSymbol,
   createPath,
   isExternalTarget,
   pageBasePaths,
   resolveAppPath,
+  type AppHistoryAction,
+  type AppHistoryMetadata,
 } from '@internal/frontend';
 import {
   createSyncLocationObservable,
@@ -76,7 +79,7 @@ export interface MockAppHistory extends AppHistoryApi {
    * Recorded `navigate` calls, in order.
    */
   navigateCalls: Array<{
-    to: string;
+    to: string | number;
     options?: AppNavigateOptions;
   }>;
 }
@@ -139,6 +142,20 @@ export function createMockAppHistory(
     ...initial,
     pathname: stripBasename(initial.pathname),
   };
+  let nextKey = 1;
+  const entries: Array<{ location: AppLocation; key: string }> = [
+    { location: current, key: 'mock-0' },
+  ];
+  let entryIndex = 0;
+  let action: AppHistoryAction = 'POP';
+
+  const readMetadata = (): AppHistoryMetadata => ({
+    action,
+    key: entries[entryIndex].key,
+    index: entryIndex,
+    length: entries.length,
+    canGoBack: entryIndex > 0,
+  });
 
   // Mirrors the real app history: the reference is only replaced when
   // something observable about the location changed, so `location` is safe to
@@ -158,13 +175,30 @@ export function createMockAppHistory(
 
   const location$ = createSyncLocationObservable(() => current, subscribers);
 
-  return {
+  const history = {
     get location() {
       return current;
     },
     location$,
     navigateCalls,
-    navigate(to: string, navOptions?: AppNavigateOptions) {
+    get [appHistoryMetadataSymbol]() {
+      return readMetadata();
+    },
+    navigate(to: string | number, navOptions?: AppNavigateOptions) {
+      if (typeof to === 'number') {
+        navigateCalls.push({ to });
+        const nextIndex = entryIndex + to;
+        if (nextIndex >= 0 && nextIndex < entries.length) {
+          entryIndex = nextIndex;
+          current = entries[entryIndex].location;
+          action = 'POP';
+          emitAppLocation(current, subscribers);
+        }
+        if (navigateImpl) {
+          (navigateImpl as (delta: number) => void)(to);
+        }
+        return;
+      }
       if (isExternalTarget(to)) {
         throw new Error(
           'AppHistory.navigate does not support absolute or protocol-relative URLs',
@@ -174,7 +208,17 @@ export function createMockAppHistory(
       // `?? undefined` mirrors the real app history, which reads state back out
       // of the History API — where an absent state is `null` — and normalizes
       // it before emitting.
-      commitLocation(parseAppLocation(to, navOptions?.state ?? undefined));
+      const next = parseAppLocation(to, navOptions?.state ?? undefined);
+      commitLocation(next);
+      if (navOptions?.replace) {
+        entries[entryIndex] = { ...entries[entryIndex], location: current };
+        action = 'REPLACE';
+      } else {
+        entries.splice(entryIndex + 1);
+        entries.push({ location: current, key: `mock-${nextKey++}` });
+        entryIndex = entries.length - 1;
+        action = 'PUSH';
+      }
       emitAppLocation(current, subscribers);
       if (!navigateImpl) {
         return;
@@ -207,4 +251,5 @@ export function createMockAppHistory(
       return `${basename}${url.pathname}${url.search}${url.hash}`;
     },
   };
+  return history as MockAppHistory;
 }

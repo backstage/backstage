@@ -63,17 +63,30 @@ Nav content extensions allow you to replace the entire navbar with your own comp
 
 Your custom component receives a `navItems` prop—a collection with `take(id)` and `rest()` methods for placing specific items in custom positions. Nav items are auto-discovered from page extensions, and metadata (title, icon) comes from page config, nav item extensions, or plugin defaults. Use `navItems.take('page:home')` to take a specific item by extension ID, and `navItems.rest()` to get all remaining items. The deprecated `items` prop (a flat list) remains supported for backward compatibility.
 
-### Router - [Reference](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.RouterBlueprint.html) (deprecated)
+### Migrate a root router override
 
-> **Deprecated.** Browser history is owned by the app, so a root router component no longer controls plugin routing. Existing overrides keep working and there is no removal date, but new code should choose a router per page instead.
+The new frontend system has one app-owned browser history and does not provide `RouterBlueprint`. Migrate an old root override according to what the component did:
 
-Router extensions replace the root router component attached to the app root.
+- Remove it when it only rendered `BrowserRouter`.
+- Use `AppRootWrapperBlueprint` when it supplied global React providers.
+- Use [`PageRouterBlueprint`](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.PageRouterBlueprint.html) to select React Router v7, TanStack Router, or another adapter for a page or sub-page.
 
-**Migration:**
+The following example moves a provider to an app root wrapper:
 
-- Use [`PageRouterBlueprint`](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.PageRouterBlueprint.html) / `pageRouterApiRef` to pick the router that renders a page. The default is React Router v6, and a page can opt in to React Router v7 or TanStack Router instead.
-- In tests, use `renderInTestApp` / `renderTestApp` from `@backstage/frontend-test-utils` and drive navigation through the `appHistory` they return, instead of a root `MemoryRouter` or a `RouterBlueprint` override.
-- For a plugin-author guide to absolute navigation and testing under page-scoped routing, see [Scoped Plugin Routing](../architecture/36-routes.md#scoped-plugin-routing).
+```tsx
+import { AppRootWrapperBlueprint } from '@backstage/plugin-app-react';
+
+const queryClientWrapper = AppRootWrapperBlueprint.make({
+  name: 'query-client',
+  params: {
+    component: ({ children }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    ),
+  },
+});
+```
+
+In tests, use `renderInTestApp` or `renderTestApp` from `@backstage/frontend-test-utils` and drive navigation through the `appHistory` they return instead of installing a root `MemoryRouter`. The old frontend system continues to support `components.Router`.
 
 ## Extension blueprints in `@backstage/plugin-catalog-react/alpha`
 

@@ -130,4 +130,39 @@ describe('ReactRouterV6PageRouter', () => {
     expect(await screen.findByTestId('name')).toHaveTextContent('b');
     expect(screen.getByTestId('bumped')).toHaveTextContent('2');
   });
+
+  it('should project omitted static-optional segments into route params and relative links', async () => {
+    const OptionalStaticPage = () => {
+      const { taskId } = useParams();
+      return (
+        <>
+          <span data-testid="optional-task-id">{taskId}</span>
+          <Link to="./details" data-testid="optional-details-link">
+            Details
+          </Link>
+        </>
+      );
+    };
+
+    const optionalPage = PageBlueprint.make({
+      name: 'optional-static-v6',
+      params: {
+        path: '/project/task?/:taskId',
+        loader: async () => <OptionalStaticPage />,
+      },
+    });
+
+    renderTestApp({
+      extensions: [optionalPage],
+      initialRouteEntries: ['/project/123'],
+    });
+
+    expect(await screen.findByTestId('optional-task-id')).toHaveTextContent(
+      '123',
+    );
+    expect(screen.getByTestId('optional-details-link')).toHaveAttribute(
+      'href',
+      '/project/123/details',
+    );
+  });
 });

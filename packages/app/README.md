@@ -13,15 +13,15 @@ Three live sibling pages demo different page router adapters (RFC
 hosted by a different routing library, and each tab proves a combination the
 others do not:
 
-| Page (host adapter)                            | Tab         | Combination proved                                     |
-| ---------------------------------------------- | ----------- | ------------------------------------------------------ |
-| `/nfs-routing-demo` (React Router v6, default) | `nested-v6` | React Router v6 nested inside React Router v6          |
-|                                                | `tanstack`  | a TanStack sub-page inside a React Router v6 page      |
-|                                                | `deep-link` | links resolved three segments below the page base      |
-| `/nfs-routing-demo-tanstack` (TanStack Router) | `tanstack`  | TanStack building the tab route tree, and a nested one |
-|                                                | `v6-guest`  | a React Router v6 sub-page inside a TanStack page      |
-| `/nfs-routing-demo-v7` (React Router v7)       | `v6-guest`  | React Router v6 and v7 route trees in the same app     |
-|                                                | `v7-only`   | framework chrome with no React Router v6 in context    |
+| Page (host adapter)                            | Tab         | Combination proved                                  |
+| ---------------------------------------------- | ----------- | --------------------------------------------------- |
+| `/nfs-routing-demo` (React Router v6, default) | `nested-v6` | React Router v6 nested inside React Router v6       |
+|                                                | `tanstack`  | a TanStack sub-page inside a React Router v6 page   |
+|                                                | `deep-link` | links resolved three segments below the page base   |
+| `/nfs-routing-demo-tanstack` (TanStack Router) | `tanstack`  | a plugin-owned nested TanStack route tree           |
+|                                                | `v6-guest`  | a React Router v6 sub-page inside a TanStack page   |
+| `/nfs-routing-demo-v7` (React Router v7)       | `v6-guest`  | React Router v6 and v7 route trees in the same app  |
+|                                                | `v7-only`   | framework chrome with no React Router v6 in context |
 
 Sub-pages are ordinary routes one level below their page, matched by the app's
 own route table, so an adapter is only ever handed the content that is already

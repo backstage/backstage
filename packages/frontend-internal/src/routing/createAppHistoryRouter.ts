@@ -28,6 +28,12 @@ import type {
   AppLocation,
 } from '@backstage/frontend-plugin-api';
 import { usePageMountChain, type PageMount } from './PageMountContext';
+import {
+  readAppHistoryMetadata,
+  type AppHistoryAction,
+  type AppHistoryMetadata,
+} from './AppHistoryMetadata';
+import { expandOptionalSegments } from './routePattern';
 
 /**
  * Minimal location shape shared by React Router v6 and v7.
@@ -63,7 +69,7 @@ export interface AdapterPathMatch {
  * package that owns the version supplies its own imports.
  */
 export interface ReactRouterAdapterBindings {
-  NavigationType: { Pop: unknown };
+  NavigationType: { Pop: unknown; Push: unknown; Replace: unknown };
   matchPath: (
     pattern: { path: string; end?: boolean },
     pathname: string,
@@ -179,14 +185,30 @@ function normalizePattern(pattern: string): string {
   return pattern === '/' ? '/' : pattern.replace(/\/$/, '') || '/';
 }
 
-function toAdapterLocation(loc: AppLocation): AdapterLocation {
+function toAdapterLocation(
+  loc: AppLocation,
+  metadata: AppHistoryMetadata,
+): AdapterLocation {
   return {
     pathname: loc.pathname,
     search: loc.search,
     hash: loc.hash,
     state: loc.state ?? null,
-    key: 'default',
+    key: metadata.key,
   };
+}
+
+function toNavigationType(
+  bindings: ReactRouterAdapterBindings,
+  action: AppHistoryAction,
+): unknown {
+  if (action === 'PUSH') {
+    return bindings.NavigationType.Push;
+  }
+  if (action === 'REPLACE') {
+    return bindings.NavigationType.Replace;
+  }
+  return bindings.NavigationType.Pop;
 }
 
 function toPath(to: AdapterTo, currentPathname: string): string {
@@ -229,20 +251,15 @@ function toPath(to: AdapterTo, currentPathname: string): string {
  * page scope there is nothing above but app chrome, so the stack is the
  * projected match alone.
  *
- * `go` is not supported by `AppHistoryApi` (there is a single, real browser
- * history — use browser back/forward). Calling `navigate(-1)` warns and is a
- * no-op.
+ * Numeric traversal delegates to `AppHistoryApi`, as push and replace do,
+ * so the framework remains the sole history authority.
  */
 export function createAppHistoryRouter(
   bindings: ReactRouterAdapterBindings,
   appHistory: AppHistoryApi,
   options: CreateAppHistoryRouterOptions = {},
 ): AppHistoryRouterResult {
-  const {
-    routePattern,
-    navigationContextExtras = {},
-    name = 'createAppHistoryRouter',
-  } = options;
+  const { routePattern, navigationContextExtras = {} } = options;
 
   const normalizedPattern =
     routePattern === undefined ? undefined : normalizePattern(routePattern);
@@ -253,7 +270,11 @@ export function createAppHistoryRouter(
   // subscription callback below), mirroring how AppHistoryApi itself is
   // implemented, rather than recomputing a fresh object on every call.
   let sourceLocation: AppLocation = appHistory.location;
-  let latestLocation: AdapterLocation = toAdapterLocation(sourceLocation);
+  let latestMetadata = readAppHistoryMetadata(appHistory);
+  let latestLocation: AdapterLocation = toAdapterLocation(
+    sourceLocation,
+    latestMetadata,
+  );
   const listeners = new Set<() => void>();
   let subscription: { unsubscribe(): void } | undefined;
 
@@ -261,14 +282,20 @@ export function createAppHistoryRouter(
     listeners.add(listener);
     if (!subscription) {
       subscription = appHistory.location$.subscribe(loc => {
+        const metadata = readAppHistoryMetadata(appHistory);
         // `AppHistoryApi.location` is a stable reference, so an observable
         // that replays its current value on subscribe is a no-op here rather
         // than a spurious re-render with an equal-but-new location object.
-        if (loc === sourceLocation) {
+        if (
+          loc === sourceLocation &&
+          metadata.key === latestMetadata.key &&
+          metadata.action === latestMetadata.action
+        ) {
           return;
         }
         sourceLocation = loc;
-        latestLocation = toAdapterLocation(loc);
+        latestMetadata = metadata;
+        latestLocation = toAdapterLocation(loc, metadata);
         for (const each of listeners) {
           each();
         }
@@ -301,11 +328,19 @@ export function createAppHistoryRouter(
     normalized: string,
     pathname: string,
   ): AdapterPathMatch | null {
-    const splatPattern = normalized === '/' ? '/*' : `${normalized}/*`;
-    return (
-      bindings.matchPath({ path: splatPattern, end: false }, pathname) ??
-      bindings.matchPath({ path: normalized, end: false }, pathname)
-    );
+    for (const concretePattern of expandOptionalSegments(normalized)) {
+      let splatPattern = concretePattern;
+      if (!concretePattern.endsWith('/*')) {
+        splatPattern = concretePattern === '/' ? '/*' : `${concretePattern}/*`;
+      }
+      const match =
+        bindings.matchPath({ path: splatPattern, end: false }, pathname) ??
+        bindings.matchPath({ path: concretePattern, end: false }, pathname);
+      if (match) {
+        return match;
+      }
+    }
+    return null;
   }
 
   function toRouteMatch(match: AdapterPathMatch, id: string) {
@@ -431,7 +466,10 @@ export function createAppHistoryRouter(
     const mountChain = usePageMountChain();
 
     const locationContextValue = useMemo(
-      () => ({ location, navigationType: bindings.NavigationType.Pop }),
+      () => ({
+        location,
+        navigationType: toNavigationType(bindings, latestMetadata.action),
+      }),
       [location],
     );
 
@@ -444,15 +482,8 @@ export function createAppHistoryRouter(
               : `${to.pathname ?? ''}${to.search ?? ''}${to.hash ?? ''}`;
           return appHistory.createHref(path);
         },
-        go(_delta: number): void {
-          if (process.env.NODE_ENV !== 'production') {
-            // eslint-disable-next-line no-console
-            console.warn(
-              `[${name}] navigator.go() is not supported by the ` +
-                'framework app history; use the browser’s own ' +
-                'back/forward instead.',
-            );
-          }
+        go(delta: number): void {
+          appHistory.navigate(delta);
         },
         // React Router resolves relative `to` targets against the pathname we
         // supply via LocationContext (the real app-absolute pathname), so the

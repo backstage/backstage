@@ -32,6 +32,13 @@ import { RootHistoryRouter } from '../../../../packages/frontend-app-api/src/rou
  * navigation — so that this projection can eventually be dropped. Chrome that
  * still has to work under both frontend systems goes through the `useApp*`
  * helpers in `@internal/frontend`, which pick the authority for it.
+ *
+ * Target removal of this compatibility projection by August 2027. Remove it
+ * once all first-party new frontend system chrome runs without an ambient
+ * React Router context, routerless conformance tests cover that behavior, and
+ * dependency enforcement prevents new React Router v6 imports in that chrome.
+ * If those gates are not met by August 2027, re-evaluate the remaining
+ * dependencies and set a new removal target.
  */
 export function RootReactRouterV6(props: { children: ReactNode }) {
   const { children } = props;

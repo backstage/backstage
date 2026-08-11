@@ -52,10 +52,14 @@ import {
   createElement,
 } from 'react';
 
-import { Link, NavLinkProps } from 'react-router-dom';
+// Keep this as a value-style import so the long-standing public declaration
+// remains byte-for-byte stable after Link stops using React Router at runtime.
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import { NavLinkProps } from 'react-router-dom';
 import { resolvePath, useAppBasePath, type AppPath } from '@internal/frontend';
 import { useAppLocation, useAppResolvedPath } from '../appRouting';
 import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
+import { Link, type LinkProps } from '../../components/Link';
 
 import {
   SidebarConfig,
@@ -302,7 +306,8 @@ type SidebarItemButtonProps = SidebarItemBaseProps & {
 type SidebarItemLinkProps = SidebarItemBaseProps & {
   to: string;
   onClick?: (ev: MouseEvent) => void;
-} & NavLinkProps;
+} & Omit<NavLinkProps, 'to' | 'color'> &
+  Pick<LinkProps, 'color'>;
 
 type SidebarItemWithSubmenuProps = SidebarItemBaseProps & {
   to?: string;
@@ -333,11 +338,13 @@ const sidebarSubmenuType = createElement(SidebarSubmenu).type;
 //               properly yet, matching for example /foobar with /foo.
 export const WorkaroundNavLink = forwardRef<
   HTMLAnchorElement,
-  NavLinkProps & {
-    children?: ReactNode;
-    activeStyle?: CSSProperties;
-    activeClassName?: string;
-  }
+  Omit<NavLinkProps, 'to' | 'color'> &
+    Pick<LinkProps, 'color'> & {
+      to: string;
+      children?: ReactNode;
+      activeStyle?: CSSProperties;
+      activeClassName?: string;
+    }
 >(function WorkaroundNavLinkWithRef(
   {
     to,
@@ -368,12 +375,16 @@ export const WorkaroundNavLink = forwardRef<
   }
 
   const ariaCurrent = isActive ? ariaCurrentProp : undefined;
+  // NavLink and Material UI both extend anchor props, but disagree on the
+  // type of a handful of legacy attributes such as `color`.
+  const linkProps = rest as Omit<LinkProps, 'to'>;
 
   return (
     <Link
-      {...rest}
+      {...linkProps}
       to={to}
       ref={ref}
+      noTrack
       aria-current={ariaCurrent}
       style={{ ...style, ...(isActive ? activeStyle : undefined) }}
       className={classnames([

@@ -14,3 +14,5 @@
  * limitations under the License.
  */
 import '@testing-library/jest-dom';
+
+window.scrollTo = jest.fn();

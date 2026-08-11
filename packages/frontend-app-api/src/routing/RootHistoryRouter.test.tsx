@@ -21,10 +21,13 @@ import {
   Link,
   useLocation,
   useNavigate,
+  useNavigationType,
   useParams,
   useResolvedPath,
 } from 'react-router-dom';
 import { RootHistoryRouter } from './RootHistoryRouter';
+import { createAppHistory } from './AppHistory';
+import { createMemoryHistoryBackend } from './HistoryBackend';
 
 /**
  * Reads everything the root projection is responsible for supplying: the
@@ -40,6 +43,8 @@ function ChromeProbe() {
       <span data-testid="pathname">{location.pathname}</span>
       <span data-testid="search">{location.search}</span>
       <span data-testid="hash">{location.hash}</span>
+      <span data-testid="key">{location.key}</span>
+      <span data-testid="navigation-type">{useNavigationType()}</span>
       <span data-testid="params">{JSON.stringify(useParams())}</span>
       <span data-testid="resolved">{useResolvedPath('./create').pathname}</span>
       <Link to="/catalog">Catalog</Link>
@@ -96,7 +101,6 @@ describe('RootHistoryRouter', () => {
     const pushSpy = jest.spyOn(window.history, 'pushState');
     const replaceSpy = jest.spyOn(window.history, 'replaceState');
     const goSpy = jest.spyOn(window.history, 'go');
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
     const history = createMockAppHistory({
       initialLocation: '/catalog',
       basename: '/backstage',
@@ -127,16 +131,14 @@ describe('RootHistoryRouter', () => {
     ]);
     expect(screen.getByTestId('pathname')).toHaveTextContent('/replaced');
 
-    // There is a single, real browser history and this projection never owns
-    // it, so back/forward is a warn-and-noop rather than a window.history.go.
+    // Numeric navigation goes through the same app history authority rather
+    // than reaching around it to window.history.
     act(() => {
       screen.getByRole('button', { name: 'Back' }).click();
     });
 
-    expect(warnSpy).toHaveBeenCalledWith(
-      expect.stringContaining('navigator.go() is not supported'),
-    );
-    expect(screen.getByTestId('pathname')).toHaveTextContent('/replaced');
+    expect(history.navigateCalls.at(-1)).toEqual({ to: -1 });
+    expect(screen.getByTestId('pathname')).toHaveTextContent('/catalog');
     expect(pushSpy).not.toHaveBeenCalled();
     expect(replaceSpy).not.toHaveBeenCalled();
     expect(goSpy).not.toHaveBeenCalled();
@@ -144,6 +146,36 @@ describe('RootHistoryRouter', () => {
     pushSpy.mockRestore();
     replaceSpy.mockRestore();
     goSpy.mockRestore();
-    warnSpy.mockRestore();
+  });
+
+  it('should project stable entry keys and truthful navigation types', () => {
+    const history = createAppHistory({
+      history: createMemoryHistoryBackend({ initialEntries: ['/start'] }),
+    });
+
+    render(
+      <RootHistoryRouter history={history}>
+        <ChromeProbe />
+      </RootHistoryRouter>,
+    );
+
+    const initialKey = screen.getByTestId('key').textContent;
+    expect(initialKey).not.toBe('default');
+    expect(screen.getByTestId('navigation-type')).toHaveTextContent('POP');
+
+    act(() => screen.getByRole('button', { name: 'Push' }).click());
+    const pushedKey = screen.getByTestId('key').textContent;
+    expect(pushedKey).not.toBe(initialKey);
+    expect(screen.getByTestId('navigation-type')).toHaveTextContent('PUSH');
+
+    act(() => screen.getByRole('button', { name: 'Replace' }).click());
+    expect(screen.getByTestId('key').textContent).toBe(pushedKey);
+    expect(screen.getByTestId('navigation-type')).toHaveTextContent('REPLACE');
+
+    act(() => screen.getByRole('button', { name: 'Back' }).click());
+    expect(screen.getByTestId('key').textContent).toBe(initialKey);
+    expect(screen.getByTestId('navigation-type')).toHaveTextContent('POP');
+
+    history.dispose();
   });
 });

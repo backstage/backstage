@@ -62,6 +62,17 @@ describe('createMockAppHistory', () => {
     expect(navigate.mock.calls[0]).toHaveLength(1);
   });
 
+  it('should traverse locations with numeric navigation', () => {
+    const appHistory = createMockAppHistory({ initialLocation: '/start' });
+    appHistory.navigate('/first');
+    appHistory.navigate('/second');
+
+    appHistory.navigate(-1);
+
+    expect(appHistory.location.pathname).toBe('/first');
+    expect(appHistory.navigateCalls.at(-1)).toEqual({ to: -1 });
+  });
+
   it('should expose location as a stable reference that tracks navigation', () => {
     const appHistory = createMockAppHistory({ initialLocation: '/catalog' });
 

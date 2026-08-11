@@ -14,11 +14,75 @@
  * limitations under the License.
  */
 
-import { useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useCallback, useContext, useMemo } from 'react';
+import { resolveAppPath } from '@internal/frontend';
 import { useApiHolder } from '../apis/system';
-import { appHistoryApiRef } from './AppHistoryApi';
+import { appHistoryApiRef, type AppHistoryApi } from './AppHistoryApi';
 import type { AppNavigateOptions } from './AppLocation';
+import {
+  DataRouterContext,
+  LocationContext,
+  NavigationContext,
+  RouteContext,
+  useRouterContext,
+} from './reactRouterContext';
+
+/** React Router's route-relative navigate, read without requiring a router. */
+function useOptionalReactRouterNavigate():
+  | AppHistoryApi['navigate']
+  | undefined {
+  const navigation = useRouterContext(NavigationContext);
+  const dataRouter = useRouterContext(DataRouterContext);
+  const location = useRouterContext(LocationContext)?.location;
+  const matches = useContext(RouteContext).matches;
+  const relativeSplatPath = navigation?.future?.v7_relativeSplatPath ?? false;
+  const routeBasePaths = useMemo(() => {
+    const contributing = matches.filter(
+      (match, index) => index === 0 || !!match.route.path,
+    );
+    return contributing.map((match, index) =>
+      relativeSplatPath && index === contributing.length - 1
+        ? match.pathname
+        : match.pathnameBase,
+    );
+  }, [matches, relativeSplatPath]);
+
+  return useMemo(() => {
+    if (!navigation) {
+      return undefined;
+    }
+
+    const navigate = (
+      pathOrDelta: string | number,
+      options?: AppNavigateOptions,
+    ) => {
+      if (typeof pathOrDelta === 'number') {
+        navigation.navigator.go(pathOrDelta);
+        return;
+      }
+      const resolved = resolveAppPath(
+        pathOrDelta,
+        routeBasePaths,
+        location?.pathname ?? '/',
+      );
+      if (!dataRouter && navigation.basename !== '/') {
+        resolved.pathname =
+          resolved.pathname === '/'
+            ? navigation.basename
+            : `${navigation.basename}/${resolved.pathname}`.replace(
+                /\/\/+/g,
+                '/',
+              );
+      }
+      if (options?.replace) {
+        navigation.navigator.replace(resolved, options.state, options);
+      } else {
+        navigation.navigator.push(resolved, options?.state, options);
+      }
+    };
+    return navigate as AppHistoryApi['navigate'];
+  }, [dataRouter, navigation, location?.pathname, routeBasePaths]);
+}
 
 /**
  * Returns a navigate function backed by the app history, or `undefined` when
@@ -32,16 +96,20 @@ import type { AppNavigateOptions } from './AppLocation';
  * @internal
  */
 export function useOptionalAppNavigate():
-  | ((path: string, options?: AppNavigateOptions) => void)
+  | AppHistoryApi['navigate']
   | undefined {
   const appHistory = useApiHolder().get(appHistoryApiRef);
   const navigate = useCallback(
-    (path: string, options?: AppNavigateOptions) => {
-      appHistory?.navigate(path, options);
+    (pathOrDelta: string | number, options?: AppNavigateOptions) => {
+      if (typeof pathOrDelta === 'number') {
+        appHistory?.navigate(pathOrDelta);
+      } else {
+        appHistory?.navigate(pathOrDelta, options);
+      }
     },
     [appHistory],
   );
-  return appHistory ? navigate : undefined;
+  return appHistory ? (navigate as AppHistoryApi['navigate']) : undefined;
 }
 
 /**
@@ -49,28 +117,25 @@ export function useOptionalAppNavigate():
  * `useNavigate`.
  *
  * Prefer this in shared plugin code that must run under both the new and old
- * frontend systems. Paths should be app-absolute (basename-stripped).
+ * frontend systems. Paths should be app-absolute (basename-stripped); a number
+ * traverses that many entries through the current history authority.
  *
  * The react-aria-style counterpart to this hook is {@link useHref}.
  *
  * @public
  */
-export function useAppNavigate(): (
-  path: string,
-  options?: AppNavigateOptions,
-) => void {
+export function useAppNavigate(): AppHistoryApi['navigate'] {
   const appNavigate = useOptionalAppNavigate();
-  const reactRouterNavigate = useNavigate();
-  return useMemo(
-    () =>
-      appNavigate ??
-      ((to: string, options?: AppNavigateOptions) => {
-        if (options) {
-          reactRouterNavigate(to, options);
-        } else {
-          reactRouterNavigate(to);
-        }
-      }),
-    [appNavigate, reactRouterNavigate],
-  );
+  const reactRouterNavigate = useOptionalReactRouterNavigate();
+  return useMemo(() => {
+    const navigate = appNavigate ?? reactRouterNavigate;
+    if (navigate) {
+      return navigate as AppHistoryApi['navigate'];
+    }
+    return (() => {
+      throw new Error(
+        'useAppNavigate requires either an app history or a React Router context',
+      );
+    }) as AppHistoryApi['navigate'];
+  }, [appNavigate, reactRouterNavigate]);
 }

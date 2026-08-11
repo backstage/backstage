@@ -18,7 +18,12 @@ import { renderHook, act } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 import { TestApiProvider } from '@backstage/test-utils';
 import { Observable, Subscription } from '@backstage/types';
-import { MemoryRouter, useLocation } from 'react-router-dom';
+import {
+  createMemoryRouter,
+  MemoryRouter,
+  RouterProvider,
+  useLocation,
+} from 'react-router-dom';
 import { useAppNavigate, useOptionalAppNavigate } from './useAppNavigate';
 import { appHistoryApiRef, type AppHistoryApi } from './AppHistoryApi';
 import type { AppLocation } from './AppLocation';
@@ -129,6 +134,12 @@ describe('useOptionalAppNavigate', () => {
       replace: true,
       state: { from: 'test' },
     });
+
+    act(() => {
+      result.current!(-1);
+    });
+
+    expect(navigate).toHaveBeenCalledWith(-1);
   });
 });
 
@@ -142,11 +153,9 @@ describe('useAppNavigate', () => {
 
     const { result } = renderHook(() => useAppNavigate(), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
-        <MemoryRouter>
-          <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
-            {children}
-          </TestApiProvider>
-        </MemoryRouter>
+        <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
+          {children}
+        </TestApiProvider>
       ),
     });
 
@@ -155,6 +164,12 @@ describe('useAppNavigate', () => {
     });
 
     expect(navigate).toHaveBeenCalledWith('/catalog', { replace: true });
+
+    act(() => {
+      result.current(-1);
+    });
+
+    expect(navigate).toHaveBeenCalledWith(-1);
   });
 
   it('falls back to React Router navigate when no app history is registered', () => {
@@ -180,5 +195,46 @@ describe('useAppNavigate', () => {
     });
 
     expect(locationPathname).toBe('/search');
+
+    act(() => {
+      result.current(-1);
+    });
+
+    expect(locationPathname).toBe('/start');
+  });
+
+  it('lets a data router own basename handling', () => {
+    let navigate: ReturnType<typeof useAppNavigate> | undefined;
+    const router = createMemoryRouter(
+      [
+        {
+          path: '*',
+          element: (
+            <TestApiProvider apis={[]}>
+              <Probe />
+            </TestApiProvider>
+          ),
+        },
+      ],
+      {
+        basename: '/backstage',
+        initialEntries: ['/backstage/start'],
+      },
+    );
+
+    function Probe() {
+      navigate = useAppNavigate();
+      return null;
+    }
+
+    renderHook(() => undefined, {
+      wrapper: () => <RouterProvider router={router} />,
+    });
+
+    act(() => {
+      navigate!('/search');
+    });
+
+    expect(router.state.location.pathname).toBe('/backstage/search');
   });
 });

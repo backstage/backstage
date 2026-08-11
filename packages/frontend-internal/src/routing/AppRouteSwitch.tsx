@@ -33,7 +33,7 @@ import {
 import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
 import { PageMountProvider, type PageMount } from './PageMountContext';
 import { RouteTable, type RouteTableSubPageMatch } from './RouteTable';
-import { matchPath, substitutePathParams } from './routePattern';
+import { generatePath, matchPath } from './routePattern';
 
 interface PluginErrorBoundaryProps {
   basePath: string;
@@ -245,13 +245,13 @@ function resolveRedirectTarget(
   for (const redirect of redirects) {
     const params = matchRedirect(redirect.from, location.pathname);
     if (params) {
-      const substituted = substitutePathParams(redirect.to, params);
+      const template = new URL(redirect.to, 'http://localhost');
+      const pathname = generatePath(template.pathname, params);
       // Preserve the incoming search/hash unless the redirect template
       // declares its own.
-      const url = new URL(substituted, 'http://localhost');
-      const search = url.search || location.search;
-      const hash = url.hash || location.hash;
-      return `${url.pathname}${search}${hash}`;
+      const search = template.search || location.search;
+      const hash = template.hash || location.hash;
+      return `${pathname}${search}${hash}`;
     }
   }
   return undefined;

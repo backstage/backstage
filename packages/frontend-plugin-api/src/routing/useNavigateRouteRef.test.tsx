@@ -26,6 +26,7 @@ import { useNavigateRouteRef } from './useNavigateRouteRef';
 import { createRouteRef } from './RouteRef';
 import { appHistoryApiRef } from './AppHistoryApi';
 import { routeResolutionApiRef } from '../apis';
+import type { RouteResolutionApi } from '../apis';
 
 describe('useNavigateRouteRef', () => {
   const catalogRouteRef = createRouteRef({
@@ -57,6 +58,45 @@ describe('useNavigateRouteRef', () => {
     });
 
     expect(result.current).toBeDefined();
+    act(() => {
+      result.current!({
+        namespace: 'default',
+        kind: 'component',
+        name: 'widget',
+      });
+    });
+
+    expect(navigate).toHaveBeenCalledWith(
+      '/catalog/default/component/widget',
+      undefined,
+    );
+  });
+
+  it('uses route ref params rather than route function arity', () => {
+    const routeFunc = (
+      ...[params]: [{ namespace: string; kind: string; name: string }]
+    ) => `/catalog/${params.namespace}/${params.kind}/${params.name}`;
+    expect(routeFunc).toHaveLength(0);
+
+    const { result } = renderHook(() => useNavigateRouteRef(catalogRouteRef), {
+      wrapper: ({ children }: PropsWithChildren<{}>) => (
+        <TestApiProvider
+          apis={[
+            [
+              routeResolutionApiRef,
+              createMockRouteResolutionApi({
+                resolve: (() =>
+                  routeFunc) as unknown as RouteResolutionApi['resolve'],
+              }),
+            ],
+            [appHistoryApiRef, createMockAppHistory({ navigate })],
+          ]}
+        >
+          <MemoryRouter>{children}</MemoryRouter>
+        </TestApiProvider>
+      ),
+    });
+
     act(() => {
       result.current!({
         namespace: 'default',

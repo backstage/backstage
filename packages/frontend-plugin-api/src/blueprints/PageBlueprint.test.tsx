@@ -366,16 +366,13 @@ describe('PageBlueprint', () => {
   });
 
   it('should hand the selected sub-page to the router adapter as opaque content', async () => {
-    const received: Array<{ props: string[]; basePath: string }> = [];
+    const received: string[][] = [];
 
     // A deliberately non-routing adapter. It has no way to choose between
     // sub-pages, and does not need one: the selection has already been made by
     // the time the content reaches it.
     const RecordingRouter: PageRouterComponent = props => {
-      received.push({
-        props: Object.keys(props).sort(),
-        basePath: props.basePath,
-      });
+      received.push(Object.keys(props).sort());
       return <div data-testid="recording-router">{props.children}</div>;
     };
 
@@ -415,11 +412,9 @@ describe('PageBlueprint', () => {
     );
     expect(screen.queryByTestId('overview')).not.toBeInTheDocument();
 
-    // The whole contract: where the page is mounted, and what to render there.
-    // Nothing that describes sub-pages, so no adapter can be asked to route
-    // between them.
-    expect(received[0].props).toEqual(['basePath', 'children', 'routePattern']);
-    expect(received[0].basePath).toBe('/recorded');
+    // The whole public contract is the opaque content. Mount details stay in
+    // the framework context for first-party adapters to consume privately.
+    expect(received[0]).toEqual(['children']);
 
     // Breadcrumb wrapping stays framework-side: the adapter rendered nothing
     // but the element it was given, and the sub-page breadcrumb is present.

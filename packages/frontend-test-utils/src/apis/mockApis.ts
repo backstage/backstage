@@ -29,6 +29,7 @@ import {
   translationApiRef,
   type AnalyticsApi,
   type AppHistoryApi,
+  type AppNavigateOptions,
   type ConfigApi,
   type DiscoveryApi,
   type ErrorApi,
@@ -531,6 +532,21 @@ export namespace mockApis {
       // accepts `https://example.com` and reports the app root forever.
       const { navigate, ...rest } = partialImpl ?? {};
       const instance = createMockAppHistory({ navigate });
+      const navigateMock = jest.fn(
+        (
+          ...args:
+            | [path: string, options?: AppNavigateOptions]
+            | [delta: number]
+        ) => {
+          if (typeof args[0] === 'number') {
+            instance.navigate(args[0]);
+          } else if (args.length === 1) {
+            instance.navigate(args[0]);
+          } else {
+            instance.navigate(args[0], args[1]);
+          }
+        },
+      ) as unknown as jest.MockedFunction<AppHistoryApi['navigate']>;
       // Set by `createApiMock` when a test passes an explicit `location`; the
       // one documented way to stop the location tracking navigation.
       let pinnedLocation: AppLocation | undefined;
@@ -548,9 +564,7 @@ export namespace mockApis {
         location$: instance.location$,
         // Rest args rather than named ones, so a single-argument call stays a
         // single-argument call all the way through to a supplied `navigate`.
-        navigate: jest.fn((...args: Parameters<AppHistoryApi['navigate']>) =>
-          instance.navigate(...args),
-        ),
+        navigate: navigateMock,
         createHref: jest.fn((to: string) => instance.createHref(to)),
       }))(rest);
     };

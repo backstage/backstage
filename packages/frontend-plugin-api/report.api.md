@@ -215,6 +215,7 @@ export interface AppHistoryApi {
   readonly location$: Observable<AppLocation>;
   readonly location: AppLocation;
   navigate(path: string, options?: AppNavigateOptions): void;
+  navigate(delta: number): void;
 }
 
 // @public
@@ -1945,13 +1946,7 @@ export const PageBlueprint: ExtensionBlueprint_2<{
     path?: string | undefined;
     title?: string | undefined;
   };
-  dataRefs: {
-    subPagePaths: ConfigurableExtensionDataRef_2<
-      string[],
-      'core.page.subPagePaths',
-      {}
-    >;
-  };
+  dataRefs: never;
 }>;
 
 // @public
@@ -2019,8 +2014,6 @@ export const PageRouterBlueprint: ExtensionBlueprint_2<{
 
 // @public
 export type PageRouterComponent = ComponentType<{
-  basePath: string;
-  routePattern: string;
   children?: ReactNode;
 }>;
 
@@ -2576,10 +2569,7 @@ export function useApi<T>(apiRef: ApiRef<T>): T;
 export function useApiHolder(): ApiHolder;
 
 // @public
-export function useAppNavigate(): (
-  path: string,
-  options?: AppNavigateOptions,
-) => void;
+export function useAppNavigate(): AppHistoryApi['navigate'];
 
 // @public
 export function useAppNode(): AppNode | undefined;

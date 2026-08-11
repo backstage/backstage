@@ -23,7 +23,7 @@ import {
   createPath,
   resolvePath,
 } from 'react-router-dom';
-import { BUIProvider } from '../../provider';
+import { BUIProvider, type BUIRouter } from '../../provider';
 import { isExternalLink } from '../../utils/linkUtils';
 import { Link } from '../../components/Link';
 import { ButtonLink } from '../../components/ButtonLink';
@@ -60,6 +60,12 @@ function usePageScopedHref(target: string): string {
   return `${DEPLOY_BASENAME}${createPath(resolvePath(target, PAGE_PATH))}`;
 }
 
+const scopedRouter: BUIRouter = {
+  navigate: () => {},
+  useHref: usePageScopedHref,
+  useLocation: () => ({ pathname: PAGE_PATH, search: '', hash: '' }),
+};
+
 /**
  * Page chrome under the new frontend system: the host resolver is in charge,
  * and the react-router context around it is the app root projection rather than
@@ -70,9 +76,7 @@ function usePageScopedHref(target: string): string {
 function ScopedHarness({ children }: { children: ReactNode }) {
   return (
     <MemoryRouter initialEntries={[PAGE_PATH]}>
-      <BUIProvider navigate={() => {}} useHref={usePageScopedHref}>
-        {children}
-      </BUIProvider>
+      <BUIProvider router={scopedRouter}>{children}</BUIProvider>
     </MemoryRouter>
   );
 }
@@ -241,7 +245,7 @@ describe('href resolution across components', () => {
 
       render(
         <MemoryRouter initialEntries={[PAGE_PATH]}>
-          <BUIProvider navigate={() => {}} useHref={useRecordingHref}>
+          <BUIProvider router={{ ...scopedRouter, useHref: useRecordingHref }}>
             {/* eslint-disable-next-line no-script-url */}
             <Surfaces href="javascript:alert(document.cookie)" />
           </BUIProvider>
@@ -274,28 +278,5 @@ describe('href resolution across components', () => {
         await expectEverySurfaceToRender(LegacyHarness, href, expected);
       },
     );
-
-    // Handing over navigation is not the same as handing over resolution. An
-    // app that only routes clicks through its own history has given BUI
-    // nothing to resolve a target with, so react-router keeps the job.
-    it('still resolves against react-router when only navigate is given', async () => {
-      render(
-        <MemoryRouter initialEntries={[PAGE_PATH]}>
-          <BUIProvider navigate={() => {}}>
-            <Routes>
-              <Route path={PAGE_PATH} element={<Surfaces href="widgets" />} />
-            </Routes>
-          </BUIProvider>
-        </MemoryRouter>,
-      );
-
-      expect(
-        await screen.findByRole('link', { name: 'A link' }),
-      ).toHaveAttribute('href', '/pages/entity/widgets');
-      expect(await screen.findByRole('tab', { name: 'A tab' })).toHaveAttribute(
-        'href',
-        '/pages/entity/widgets',
-      );
-    });
   });
 });

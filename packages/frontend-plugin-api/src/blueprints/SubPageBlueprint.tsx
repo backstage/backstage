@@ -96,7 +96,7 @@ function SubPageRouterWrapper(props: {
 
   return (
     <PageMountProvider mount={mount}>
-      <PageRouterWrapper mount={mount} RouterOverride={RouterOverride}>
+      <PageRouterWrapper RouterOverride={RouterOverride}>
         {children}
       </PageRouterWrapper>
     </PageMountProvider>

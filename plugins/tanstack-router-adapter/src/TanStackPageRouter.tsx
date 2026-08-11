@@ -15,7 +15,55 @@
  */
 
 import type { ReactNode } from 'react';
-import { TanStackRouterHost } from './TanStackRouterHost';
+import type { PageRouterComponent } from '@backstage/frontend-plugin-api';
+import { usePageMount } from '@internal/frontend';
+import type { RouterHistory } from '@tanstack/history';
+import type { AnyRouter } from '@tanstack/react-router';
+import {
+  TanStackRouterHost,
+  createDefaultTanStackRouter,
+} from './TanStackRouterHost';
+
+/** Options for {@link createTanStackPageRouter}. @public */
+export interface CreateTanStackPageRouterOptions {
+  /**
+   * Creates the TanStack router using history projected from the framework.
+   * The route tree may render `TanStackPageContent` wherever the opaque
+   * Backstage page element belongs.
+   */
+  createRouter(options: { history: RouterHistory }): AnyRouter;
+}
+
+/**
+ * Creates a page-router component backed by a plugin-owned TanStack route
+ * tree. The resulting component is suitable for `PageRouterBlueprint`.
+ *
+ * @public
+ */
+export function createTanStackPageRouter(
+  options: CreateTanStackPageRouterOptions,
+): PageRouterComponent {
+  return function TanStackPageRouterAdapter(props: { children?: ReactNode }) {
+    const routePattern = usePageMount()?.routePattern;
+
+    if (!routePattern) {
+      return <>{props.children}</>;
+    }
+
+    return (
+      <TanStackRouterHost
+        routePattern={routePattern}
+        createRouter={options.createRouter}
+      >
+        {props.children}
+      </TanStackRouterHost>
+    );
+  };
+}
+
+const DefaultTanStackPageRouter = createTanStackPageRouter({
+  createRouter: createDefaultTanStackRouter,
+});
 
 /**
  * TanStack Router page adapter. Projects the framework's `AppHistoryApi`
@@ -34,28 +82,17 @@ import { TanStackRouterHost } from './TanStackRouterHost';
  * to host. If the content uses another routing library internally, that is
  * the page author's choice, made alongside their choice of this adapter.
  *
- * Programmatic back/forward and cross-adapter navigation blockers are not
- * supported — there is a single, real browser history with no shared
- * blocker seam; `useBlocker` still works for navigation initiated through
- * this page's own TanStack `<Link>` / `router.navigate`.
+ * Programmatic back and forward traverse the app-owned browser history.
+ * Cross-adapter navigation blockers are not supported because there is no
+ * shared blocker seam; `useBlocker` still works for navigation initiated
+ * through this page's own TanStack `<Link>` / `router.navigate`.
  *
  * @public
  */
-export function TanStackPageRouter(props: {
-  /**
-   * Concrete app-absolute URL prefix this page is mounted at. Not read by
-   * this adapter: the scoped history derives the prefix from `routePattern`
-   * and the live location, so it is never a step behind the location it is
-   * scoping.
-   */
-  basePath: string;
-  /** Registered route pattern this page is mounted at. */
-  routePattern: string;
-  children?: ReactNode;
-}) {
+export function TanStackPageRouter(props: { children?: ReactNode }) {
   return (
-    <TanStackRouterHost routePattern={props.routePattern}>
-      {props.children}
-    </TanStackRouterHost>
+    <DefaultTanStackPageRouter>{props.children}</DefaultTanStackPageRouter>
   );
 }
+
+export { TanStackPageContent } from './TanStackRouterHost';

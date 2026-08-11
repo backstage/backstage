@@ -15,8 +15,8 @@
  */
 
 /**
- * Shared path-pattern compile / match / priority, used by `RouteTable` and
- * `matchRouteRefs` in `@backstage/frontend-app-api`.
+ * Shared path-pattern matching, generation and priority, used by `RouteTable`
+ * and the routing implementation in `@backstage/frontend-app-api`.
  *
  * It lives here rather than in either consumer so both agree by construction —
  * a route pattern must mean the same thing to top-level page matching and to
@@ -56,7 +56,7 @@ export interface PathMatch {
 }
 
 // Per-segment scores, mirroring react-router's route ranking.
-const PARAM_SEGMENT = /^:[\w-]+$/;
+const PARAM_SEGMENT = /^:[\w-]+\??$/;
 const DYNAMIC_SEGMENT_SCORE = 3;
 const EMPTY_SEGMENT_SCORE = 1;
 const STATIC_SEGMENT_SCORE = 10;
@@ -65,10 +65,9 @@ const SPLAT_PENALTY = -2;
 /**
  * Higher score = more specific = tried first.
  *
- * Each segment is scored on its own rather than the scores being summed into a
- * length-dependent total, so a short static pattern always outranks a longer
- * pattern built from params. Splats are penalized, and empty layout paths and
- * `/` rank lowest.
+ * Static segments score above params at the same depth. Scores accumulate
+ * across the pattern, splats are penalized, and empty layout paths and `/`
+ * rank lowest.
  *
  * @internal
  */
@@ -90,10 +89,45 @@ export function routePriority(path: string): number {
 }
 
 /**
+ * Expands a route into the concrete patterns represented by its optional
+ * segments, in the same required-before-omitted order as react-router.
+ *
+ * Ranking has to operate on these concrete patterns rather than on the route
+ * as written. For example, `/one/:two?/:three?` matching `/one/foo` has only
+ * one dynamic segment in that match, and therefore ties `/one/:id` instead of
+ * outranking it because of an optional segment that was not present.
+ *
+ * @internal
+ */
+export function expandOptionalSegments(path: string): string[] {
+  const [first, ...rest] = path.split('/');
+  const optional = first.endsWith('?');
+  const required = first.replace(/\?$/, '');
+
+  if (rest.length === 0) {
+    return optional ? [required, ''] : [required];
+  }
+
+  const restExpanded = expandOptionalSegments(rest.join('/'));
+  const expanded = restExpanded.map(subPath =>
+    subPath === '' ? required : `${required}/${subPath}`,
+  );
+
+  if (optional) {
+    expanded.push(...restExpanded);
+  }
+
+  return expanded.map(candidate =>
+    path.startsWith('/') && candidate === '' ? '/' : candidate,
+  );
+}
+
+/**
  * Converts a route path pattern into a RegExp and extracts parameter names.
- * Handles named params (`:id`), a trailing catch-all `*`, and empty layout
- * paths. Matching is case insensitive unless `caseSensitive` is set, which is
- * the react-router default.
+ * Handles named params (`:id`), optional params (`:id?`), optional static
+ * segments (`task?`), a trailing catch-all `*`, and empty layout paths.
+ * Matching is case insensitive unless `caseSensitive` is set, which is the
+ * react-router default.
  *
  * @internal
  */
@@ -123,10 +157,15 @@ export function compilePath(
 
   for (const segment of namedSegments) {
     if (segment.startsWith(':')) {
-      paramNames.push(segment.slice(1));
-      regexpSource += '/([^/]+)';
+      const optional = segment.endsWith('?');
+      paramNames.push(segment.slice(1, optional ? -1 : undefined));
+      regexpSource += optional ? '(?:/([^/]+))?' : '/([^/]+)';
     } else {
-      regexpSource += `/${escapeRegExp(segment)}`;
+      const optional = segment.endsWith('?');
+      const required = optional ? segment.slice(0, -1) : segment;
+      regexpSource += optional
+        ? `(?:/${escapeRegExp(required)})?`
+        : `/${escapeRegExp(required)}`;
     }
   }
 
@@ -247,23 +286,65 @@ function safelyDecodeURIComponent(value: string): string {
 }
 
 /**
- * Substitute named and splat params into a path template.
- * Uses word boundaries for named params so `:a` does not match inside `:ab`.
+ * Generates a concrete path from a Backstage route pattern.
+ *
+ * This follows React Router v6's segment semantics: named params are required
+ * unless suffixed with `?`, omitted optional segments (including their slash)
+ * disappear, and only a final `*` is a splat. Backstage additionally encodes
+ * characters that could otherwise change the generated URL's path, query or
+ * fragment.
  *
  * @internal
  */
-export function substitutePathParams(
-  template: string,
-  params: Record<string, string>,
+export function generatePath(
+  pattern: string,
+  params: Record<string, string | undefined> = {},
 ): string {
-  let target = template;
-  for (const [name, value] of Object.entries(params)) {
-    // Replacing via a function keeps `$&`, `$'` and `` $` `` in the value
-    // literal rather than having them expanded as replacement patterns.
-    target = target.replace(
-      name === '*' ? /\*/g : new RegExp(`:${escapeRegExp(name)}\\b`, 'g'),
-      () => value ?? '',
-    );
-  }
-  return target;
+  const prefix = pattern.startsWith('/') ? '/' : '';
+  const segments = pattern
+    .split(/\/+/)
+    .map((segment, index, allSegments) => {
+      if (segment === '*' && index === allSegments.length - 1) {
+        return encodeSplatParam(params['*'] ?? '');
+      }
+
+      const param = segment.match(/^:([\w-]+)(\??)$/);
+      if (param) {
+        const [, name, optional] = param;
+        const value = params[name];
+        if (value === undefined) {
+          if (optional !== '?') {
+            throw new Error(
+              `Missing required param "${name}" in path "${pattern}"`,
+            );
+          }
+          return '';
+        }
+        return encodePathParam(value);
+      }
+
+      // React Router treats a trailing `?` on a static segment as an optional
+      // marker during generation, even though it has no value to omit.
+      return segment.replace(/\?$/g, '');
+    })
+    .filter(Boolean);
+
+  return prefix + segments.join('/');
+}
+
+/** Encode a single path segment (no `/`). */
+function encodePathParam(value: string): string {
+  return value.replaceAll(/[&?#;/]/g, character =>
+    encodeURIComponent(character),
+  );
+}
+
+/** Keep `/` separators in splat values while protecting the URL around them. */
+function encodeSplatParam(value: string): string {
+  return value
+    .split('/')
+    .map(segment =>
+      segment.replaceAll(/[&?#;]/g, character => encodeURIComponent(character)),
+    )
+    .join('/');
 }

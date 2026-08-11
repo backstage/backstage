@@ -33,8 +33,7 @@ import {
 import { normalizeBasePath, usePageMount } from '@internal/frontend';
 import { PluginHeader } from '@backstage/ui';
 import Button from '@material-ui/core/Button';
-import { useContext, useMemo } from 'react';
-import { UNSAFE_RouteContext as RouteContext } from 'react-router-dom';
+import { useMemo } from 'react';
 
 export const Progress = SwappableComponentBlueprint.make({
   name: 'core-progress',
@@ -89,21 +88,11 @@ export const PageLayout = SwappableComponentBlueprint.make({
           tabs,
           children,
         } = props;
-        // Prefer the page's PageMount basePath when NFS is present; fall
-        // back to the ambient React Router match for isolated/OFS trees (e.g.
-        // createExtensionTester + renderInTestApp without AppRouteSwitch).
-        // The match is read from the context React Router's own
-        // `useResolvedPath` reads rather than through that hook, so both
-        // answers are computed on every render and chrome never requires an
-        // ambient router — an app may legitimately replace the root one with a
-        // passthrough through RouterBlueprint.
+        // Page chrome resolves entirely from the framework-owned mount. The
+        // fixed root React Router projection is a temporary compatibility
+        // layer for third-party chrome, not an input to first-party chrome.
         const pageMount = usePageMount();
-        const { matches } = useContext(RouteContext);
-        const routeMatchBase =
-          matches.length > 0 ? matches[matches.length - 1].pathnameBase : '';
-        const parentPath = normalizeBasePath(
-          pageMount ? pageMount.basePath : routeMatchBase,
-        );
+        const parentPath = normalizeBasePath(pageMount?.basePath ?? '');
         // Empty string titleLink is treated as unset (same as undefined) so the
         // breadcrumb still points at the page mount path rather than "".
         const breadcrumbHref =

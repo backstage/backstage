@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { ReactNode } from 'react';
-import { MemoryRouter } from 'react-router-dom';
 import { convertLegacyAppOptions } from './convertLegacyAppOptions';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
@@ -28,8 +26,6 @@ import {
   createApiRef,
   createPlugin,
 } from '@backstage/core-plugin-api';
-import { renderTestApp } from '@backstage/frontend-test-utils';
-import { screen } from '@testing-library/react';
 
 function serializeModule(module: FrontendModule) {
   const { extensions } = toInternalFrontendModule(module);
@@ -76,31 +72,11 @@ describe('convertLegacyAppOptions', () => {
     `);
   });
 
-  it('should convert a legacy Router component into one that wraps the app', async () => {
-    const module = convertLegacyAppOptions({
-      components: {
-        // A root router replacement has to supply React Router context, since
-        // app chrome still reads it — hence MemoryRouter rather than a plain
-        // wrapper element.
-        Router: ({ children }: { children?: ReactNode }) => (
-          <MemoryRouter>
-            <span>Legacy router</span>
-            {children}
-          </MemoryRouter>
-        ),
-      } as any,
-    });
-
-    expect(serializeModule(module)).toEqual([
-      'Extension{id=app-router-component:app}',
-    ]);
-
-    // The compat layer overrides the blueprint factory so that migrating apps
-    // are not warned about a blueprint they never chose. That override has to
-    // yield the same data the blueprint would have, so this asserts the
-    // converted router actually ends up wrapping the app.
-    renderTestApp({ features: [module] });
-
-    expect(await screen.findByText('Legacy router')).toBeInTheDocument();
+  it('should reject legacy root router components', () => {
+    expect(() =>
+      convertLegacyAppOptions({
+        components: { Router: () => null } as any,
+      }),
+    ).toThrow('components.Router is not supported by convertLegacyAppOptions');
   });
 });

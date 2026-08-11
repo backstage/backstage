@@ -61,9 +61,22 @@ interface TanStackScopedRouter {
  */
 const PageContentContext = createContext<ReactNode>(null);
 
-function PageContent() {
+/**
+ * Renders the opaque page content supplied by the Backstage page blueprint.
+ * Place this in a route component when using `createTanStackPageRouter` with
+ * a plugin-owned route tree.
+ *
+ * @public
+ */
+export function TanStackPageContent() {
   return <>{useContext(PageContentContext)}</>;
 }
+
+interface CreateTanStackRouterOptions {
+  history: RouterHistory;
+}
+
+type CreateTanStackRouter = (options: CreateTanStackRouterOptions) => AnyRouter;
 
 /**
  * Creates a TanStack router whose history projects the framework's
@@ -80,8 +93,18 @@ function PageContent() {
 function createTanStackScopedRouter(
   appHistory: AppHistoryApi,
   routePattern: string,
+  createPageRouter: CreateTanStackRouter,
 ): TanStackScopedRouter {
   const history = createTanStackHistory(appHistory, { routePattern });
+  return { router: createPageRouter({ history }), history };
+}
+
+/**
+ * Creates the default catch-all route tree used by `TanStackPageRouter`.
+ */
+export function createDefaultTanStackRouter(
+  options: CreateTanStackRouterOptions,
+): AnyRouter {
   const rootRoute = createRootRoute({ component: Outlet }) as AnyRoute;
   const routeTree = rootRoute.addChildren(
     ['/', '/$'].map(
@@ -89,12 +112,12 @@ function createTanStackScopedRouter(
         createRoute({
           getParentRoute: () => rootRoute,
           path,
-          component: PageContent,
+          component: TanStackPageContent,
         } as any) as AnyRoute,
     ),
   );
 
-  return { router: createRouter({ routeTree, history }), history };
+  return createRouter({ routeTree, history: options.history });
 }
 
 /**
@@ -110,24 +133,43 @@ function createTanStackScopedRouter(
  */
 export function TanStackRouterHost(props: {
   routePattern: string;
+  createRouter: CreateTanStackRouter;
   children?: ReactNode;
 }) {
-  const { routePattern, children } = props;
+  const { routePattern, createRouter: createPageRouter, children } = props;
   const appHistory = useApi(appHistoryApiRef);
 
-  const scopedRef = useRef<TanStackScopedRouter | null>(null);
-
-  const scoped = useMemo(() => {
-    scopedRef.current?.history.destroy();
-    const created = createTanStackScopedRouter(appHistory, routePattern);
-    scopedRef.current = created;
-    return created;
-  }, [appHistory, routePattern]);
+  const scoped = useMemo(
+    () =>
+      createTanStackScopedRouter(appHistory, routePattern, createPageRouter),
+    [appHistory, routePattern, createPageRouter],
+  );
+  const lifecycleRef = useRef<{
+    generation: number;
+    scoped: TanStackScopedRouter | null;
+  }>({ generation: 0, scoped: null });
 
   useEffect(() => {
+    const generation = lifecycleRef.current.generation + 1;
+    lifecycleRef.current = { generation, scoped };
+
     return () => {
-      scopedRef.current?.history.destroy();
-      scopedRef.current = null;
+      // React StrictMode replays effects without recreating the memoized
+      // router. Defer disposal so the replayed setup can claim the same
+      // instance; a genuinely replaced or unmounted instance is still
+      // released immediately after the current commit finishes.
+      queueMicrotask(() => {
+        const current = lifecycleRef.current;
+        if (current.scoped !== scoped || current.generation === generation) {
+          scoped.history.destroy();
+          if (current.scoped === scoped) {
+            lifecycleRef.current = {
+              generation: current.generation,
+              scoped: null,
+            };
+          }
+        }
+      });
     };
   }, [scoped]);
 

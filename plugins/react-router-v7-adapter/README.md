@@ -22,6 +22,4 @@ const myV7Router = PageRouterBlueprint.make({
 
 The page keeps composing its own content — an existing `<Routes>` tree, relative `Link`s, nested `<Routes>` and `useParams` all keep working.
 
-## Limits
-
-- Programmatic back and forward (`navigate(-1)`) is not supported. There is a single, real browser history; use the browser's own back and forward.
+Programmatic back and forward, such as `navigate(-1)`, traverse the app-owned browser history.

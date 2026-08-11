@@ -222,7 +222,7 @@ describe('AppRoutes', () => {
     });
   });
 
-  it('should fall through to the root page for unknown paths when root is registered', async () => {
+  it('should render the not-found fallback for unknown paths when root is registered', async () => {
     const homePage = PageBlueprint.make({
       name: 'home',
       params: {
@@ -244,11 +244,9 @@ describe('AppRoutes', () => {
       initialRouteEntries: ['/unknown'],
     });
 
-    await waitFor(() => {
-      // RouteTable treats `/` as a catch-all; unmatched URLs render the root page.
-      expect(screen.getByTestId('home-page')).toBeInTheDocument();
-      expect(screen.queryByTestId('catalog-page')).not.toBeInTheDocument();
-    });
+    expect(await screen.findByText(/PAGE NOT FOUND/i)).toBeInTheDocument();
+    expect(screen.queryByTestId('home-page')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('catalog-page')).not.toBeInTheDocument();
   });
 
   it('should render the not-found fallback when no route matches', async () => {

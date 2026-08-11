@@ -27,7 +27,7 @@ describe('generatePath', () => {
   });
 
   it('should handle optional params', () => {
-    expect(generatePath('/entity/:id?', {})).toBe('/entity/');
+    expect(generatePath('/entity/:id?', {})).toBe('/entity');
   });
 
   it('should handle splat routes', () => {
@@ -68,7 +68,7 @@ describe('generatePath', () => {
     expect(generatePath('/entity/:my-param', { 'my-param': 'x' })).toBe(
       '/entity/x',
     );
-    expect(generatePath('/entity/:my-param?', {})).toBe('/entity/');
+    expect(generatePath('/entity/:my-param?', {})).toBe('/entity');
     expect(() => generatePath('/entity/:my-param', {})).toThrow(
       'Missing required param "my-param"',
     );

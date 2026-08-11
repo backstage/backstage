@@ -14,23 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  createContext,
-  useContext,
-  type Context,
-  type ContextType,
-} from 'react';
-// React Router v6 specifically, and only for the old frontend system: this
-// package already declares the dependency (`useAppNavigate` calls
-// `useNavigate`) and owns the version, which is why the fallback below lives
-// here rather than in `@internal/frontend`. That package is inlined into this
-// one, so anything it carries lands here too — it is now free of React Router
-// and holds only the path algebra both authorities share.
-import {
-  UNSAFE_LocationContext,
-  UNSAFE_NavigationContext,
-  UNSAFE_RouteContext,
-} from 'react-router-dom';
+import { useContext } from 'react';
 import {
   APP_ROOT_PATH,
   climbPageBase,
@@ -43,63 +27,26 @@ import {
 } from '@internal/frontend';
 import { useApiHolder } from '../apis/system';
 import { appHistoryApiRef, type AppHistoryApi } from './AppHistoryApi';
+import {
+  LocationContext,
+  NavigationContext,
+  RouteContext,
+  useRouterContext,
+} from './reactRouterContext';
 
 /*
- * The v6 context objects React Router's own hooks read, or stand-ins for them.
+ * Reading React Router's contexts rather than calling `useHref` /
+ * `useResolvedPath` /
+ * `useLocation` is what lets this hook render with no router at all. New
+ * frontend system chrome is deliberately routerless, and a specialized app
+ * does not need to mount a React Router provider. Those hooks throw there; the
+ * contexts are `null` instead, which is exactly how `useInRouterContext`
+ * detects a router.
  *
- * The `UNSAFE_*` names only exist from React Router v6 stable onwards. The v6
- * beta this repo still supports — `AppManager.compat.test.tsx` runs the old
- * frontend system against both, and the migration CLI writes
- * `'6.0.0-beta.0 || ^6.3.0'` — exports no `UNSAFE_` name at all, so each import
- * is `undefined` there, and handing that to `useContext` throws before this
- * hook can answer.
- *
- * Resolving each context once, here at import time, keeps every `useContext`
- * call unconditional and always handed a real context object. Nothing ever
- * provides a stand-in, so under beta every read returns its default — no
- * router, no matches — which is the answer beta can actually support, and the
- * one this hook already degrades to.
- *
- * Reading the contexts rather than calling `useHref` / `useResolvedPath` /
- * `useLocation` is what lets this hook render with no router at all, which a
- * framework app is allowed to be: `RouterBlueprint` may be swapped for a
- * passthrough, and `createSpecializedApp` without `@backstage/plugin-app`
- * mounts none. Those hooks throw there; the contexts are `null` instead, which
- * is exactly how `useInRouterContext` detects a router.
- *
- * The value types are hoisted into named aliases because the `??` narrows each
- * `UNSAFE_*` identifier to `never` on its own right-hand side.
+ * This package owns the React Router v6 dependency for the old frontend
+ * fallback. `@internal/frontend` stays free of it and carries only the path
+ * algebra both authorities share.
  */
-type LocationContextValue = ContextType<typeof UNSAFE_LocationContext>;
-type NavigationContextValue = ContextType<typeof UNSAFE_NavigationContext>;
-type RouteContextValue = ContextType<typeof UNSAFE_RouteContext>;
-
-// `null` is React Router's own default for these two, and is what
-// `useRouterContext` below reads as "no router". The types say otherwise
-// because the hooks that read them assert a router before touching them.
-const LocationContext =
-  UNSAFE_LocationContext ?? createContext<LocationContextValue>(null!);
-const NavigationContext =
-  UNSAFE_NavigationContext ?? createContext<NavigationContextValue>(null!);
-const RouteContext =
-  UNSAFE_RouteContext ??
-  createContext<RouteContextValue>({
-    outlet: null,
-    matches: [],
-    isDataRoute: false,
-  });
-
-/**
- * Reads one of React Router's own contexts.
- *
- * React Router types these as always present because its hooks assert a router
- * before touching them, but their runtime default is `null`. The read is
- * widened to admit that, which is what lets the router be optional.
- */
-function useRouterContext<T>(context: Context<T>): T | undefined {
-  return useContext(context) ?? undefined;
-}
-
 /**
  * The route bases a relative target resolves against, derived exactly the way
  * React Router's `useResolvedPath` derives them: the `pathnameBase` of every
@@ -220,10 +167,9 @@ export function useAppHref(
  * one href here and a different one in the `Link` beside it.
  *
  * Calling React Router's own `useHref` instead would also make this hook throw
- * wherever there is no router — which a framework app is allowed to be, since
- * `RouterBlueprint` can be swapped for a passthrough and `createSpecializedApp`
- * without `@backstage/plugin-app` mounts none at all. With neither authority
- * present the target is handed back as written.
+ * in routerless new frontend system chrome or a specialized app that mounts no
+ * React Router provider. With neither authority present the target is handed
+ * back as written.
  *
  * Targets that are not app-relative are returned unchanged under both
  * frontend systems — see {@link AppHistoryApi.createHref}. React Router has no

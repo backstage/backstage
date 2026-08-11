@@ -1,8 +1,10 @@
 ---
-'@backstage/plugin-app': patch
+'@backstage/plugin-app': minor
 ---
 
 The app now provides the default page router for scoped plugin routing ([RFC #33603](https://github.com/backstage/backstage/issues/33603)): pages and sub-pages that leave their `router` input empty render with React Router v6, so `react-router-dom` usage inside plugin pages keeps working. Top level pages are selected from the app history rather than from a router component at the app root, the app shell keeps a React Router context so chrome components that rely on it are unaffected, and page header tabs and breadcrumbs resolve against the page that is currently mounted.
+
+**BREAKING**: The new frontend system no longer accepts a root router extension. Remove plain `BrowserRouter` overrides, move global providers to `AppRootWrapperBlueprint`, and select alternate routers at the page or sub-page level with `PageRouterBlueprint`. The app temporarily projects a React Router v6 context for existing chrome without giving it browser-history ownership; this compatibility projection can be removed once the documented routerless behavioral exit criteria are met.
 
 A page's sub-pages are now ordinary routes one level below the page, matched by the app itself rather than by a route tree inside the page. Any routing library can therefore host a page with tabs, not only React Router, and a sub-page whose content uses a different routing library attaches its own router rather than inheriting the one its page uses — so a page's tabs and a tab's content can be rendered by different libraries.
 

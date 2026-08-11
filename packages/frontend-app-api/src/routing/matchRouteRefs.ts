@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { matchPath, routePriority } from '@internal/frontend';
+import {
+  expandOptionalSegments,
+  matchPath,
+  routePriority,
+} from '@internal/frontend';
 import { BackstageRouteObject } from './types';
 
 /** @internal */
@@ -88,12 +92,13 @@ function childRemainingPath(
 
 function matchLeafRoute(
   route: BackstageRouteObject,
+  concretePath: string,
   remainingPathname: string,
   parentPathname: string,
   matches: RouteRefMatch[],
 ): boolean {
   const result = matchPath(
-    route.path,
+    concretePath,
     remainingPathname,
     true,
     route.caseSensitive,
@@ -113,12 +118,13 @@ function matchLeafRoute(
 
 function matchParentRoute(
   route: BackstageRouteObject,
+  concretePath: string,
   remainingPathname: string,
   parentPathname: string,
   matches: RouteRefMatch[],
 ): boolean {
   const partialResult = matchPath(
-    route.path,
+    concretePath,
     remainingPathname,
     false,
     route.caseSensitive,
@@ -155,7 +161,7 @@ function matchParentRoute(
   // Children didn't match; check if this route itself is an exact match
   matches.length = savedLength;
   const exactResult = matchPath(
-    route.path,
+    concretePath,
     remainingPathname,
     true,
     route.caseSensitive,
@@ -179,16 +185,38 @@ function matchRouteBranch(
   parentPathname: string,
   matches: RouteRefMatch[],
 ): boolean {
-  // Sort routes by specificity: most specific first, splat/empty last
-  const sorted = [...routes].sort(
-    (a, b) => routePriority(b.path) - routePriority(a.path),
-  );
+  // Optional segments describe several concrete route branches. Rank the
+  // branch that actually matches rather than crediting an omitted segment to
+  // the route as written; stable sorting keeps registration order as the tie
+  // breaker, matching react-router's sibling-route behavior.
+  const sorted = routes
+    .flatMap(route =>
+      expandOptionalSegments(route.path).map(concretePath => ({
+        route,
+        concretePath,
+      })),
+    )
+    .sort(
+      (a, b) => routePriority(b.concretePath) - routePriority(a.concretePath),
+    );
 
-  for (const route of sorted) {
+  for (const { route, concretePath } of sorted) {
     const hasChildren = Boolean(route.children?.length);
     const matched = hasChildren
-      ? matchParentRoute(route, remainingPathname, parentPathname, matches)
-      : matchLeafRoute(route, remainingPathname, parentPathname, matches);
+      ? matchParentRoute(
+          route,
+          concretePath,
+          remainingPathname,
+          parentPathname,
+          matches,
+        )
+      : matchLeafRoute(
+          route,
+          concretePath,
+          remainingPathname,
+          parentPathname,
+          matches,
+        );
     if (matched) {
       return true;
     }

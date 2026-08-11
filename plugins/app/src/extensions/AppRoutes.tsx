@@ -18,14 +18,22 @@ import { Suspense, type ComponentType, type ReactNode } from 'react';
 import { z } from 'zod/v4';
 import {
   createExtension,
+  createExtensionDataRef,
   coreExtensionData,
   createExtensionInput,
   NotFoundErrorPage,
-  PageBlueprint,
   appHistoryApiRef,
   useApi,
 } from '@backstage/frontend-plugin-api';
 import { AppRouteSwitch, RouteTable } from '@internal/frontend';
+
+// Extension data is keyed by ID, so the app can consume this private page
+// blueprint output without exporting its ref through the public plugin API.
+const internalPageSubPagePathsDataRef = createExtensionDataRef<string[]>().with(
+  {
+    id: 'core.page.subPagePaths',
+  },
+);
 
 function normalizeRoutePath(path: string): string {
   if (path === '/') {
@@ -46,7 +54,7 @@ export const AppRoutes = createExtension({
       coreExtensionData.routePath,
       coreExtensionData.routeRef.optional(),
       coreExtensionData.reactElement,
-      PageBlueprint.dataRefs.subPagePaths.optional(),
+      internalPageSubPagePathsDataRef.optional(),
     ]),
   },
   configSchema: {
@@ -69,7 +77,7 @@ export const AppRoutes = createExtension({
     const routeTable = new RouteTable(
       inputs.routes.map(route => ({
         path: normalizeRoutePath(route.get(coreExtensionData.routePath)),
-        subPaths: route.get(PageBlueprint.dataRefs.subPagePaths),
+        subPaths: route.get(internalPageSubPagePathsDataRef),
       })),
     );
 

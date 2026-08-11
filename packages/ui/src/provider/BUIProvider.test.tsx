@@ -19,14 +19,24 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { useRouter } from 'react-aria/private/utils/openLink';
 import { MemoryRouter } from 'react-router-dom';
 import { BUIProvider } from './BUIProvider';
+import type { BUIRouter } from './BUIRouter';
 import { Link } from '../components/Link';
+
+function createRouter(overrides: Partial<BUIRouter> = {}): BUIRouter {
+  return {
+    navigate: jest.fn(),
+    useHref: href => href,
+    useLocation: () => ({ pathname: '/', search: '', hash: '' }),
+    ...overrides,
+  };
+}
 
 describe('BUIProvider', () => {
   it('routes descendant link clicks through a provided navigate function instead of react-router', () => {
     const navigate = jest.fn();
 
     render(
-      <BUIProvider navigate={navigate}>
+      <BUIProvider router={createRouter({ navigate })}>
         <Link href="/catalog/default/component/widget">Widget</Link>
       </BUIProvider>,
     );
@@ -54,7 +64,7 @@ describe('BUIProvider', () => {
     }
 
     render(
-      <BUIProvider navigate={navigate} useHref={useHref}>
+      <BUIProvider router={createRouter({ navigate, useHref })}>
         <RouterProbe />
       </BUIProvider>,
     );
@@ -63,7 +73,7 @@ describe('BUIProvider', () => {
     expect(captured?.useHref('/widget')).toBe('/base/widget');
   });
 
-  it('falls back to react-router navigation when navigate is not provided (default behavior)', () => {
+  it('adapts ambient react-router navigation when router is not provided', () => {
     render(
       <MemoryRouter initialEntries={['/']}>
         <BUIProvider>
@@ -78,7 +88,7 @@ describe('BUIProvider', () => {
     );
   });
 
-  it('renders without a router or navigate function', () => {
+  it('renders without any routing authority', () => {
     render(
       <BUIProvider>
         <Link href="/catalog">Catalog</Link>
@@ -89,5 +99,25 @@ describe('BUIProvider', () => {
       'href',
       '/catalog',
     );
+  });
+
+  it.each([
+    ['a new browsing context', { target: '_blank' }],
+    ['a named browsing context', { target: 'documentation' }],
+    ['a download', { download: 'catalog.json' }],
+  ])('leaves %s to the browser', (_description, linkProps) => {
+    const navigate = jest.fn();
+
+    render(
+      <BUIProvider router={createRouter({ navigate })}>
+        <Link href="/catalog" {...linkProps}>
+          Catalog
+        </Link>
+      </BUIProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('link', { name: 'Catalog' }));
+
+    expect(navigate).not.toHaveBeenCalled();
   });
 });

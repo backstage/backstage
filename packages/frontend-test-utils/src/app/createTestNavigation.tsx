@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { type ReactNode } from 'react';
 import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
 import type { RenderResult } from '@testing-library/react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -27,8 +26,6 @@ import {
   createAppHistory,
   type AppHistory,
 } from '../../../frontend-app-api/src/routing/AppHistory';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { RootHistoryRouter } from '../../../frontend-app-api/src/routing/RootHistoryRouter';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { getBasePath } from '../../../frontend-app-api/src/routing/getBasePath';
 import { ConfigReader } from '@backstage/config';
@@ -99,20 +96,4 @@ export function createTestNavigation(options?: {
     basename: basename || undefined,
   });
   return { appHistory, history, basename };
-}
-
-/**
- * Root React Router v6 projection of the app history for test apps.
- *
- * History authority remains the AppHistory — this does not own
- * `window.history` via push/replace.
- *
- * @internal
- */
-export function TestAppRouter(props: {
-  children: ReactNode;
-  appHistory: AppHistory;
-}) {
-  const { children, appHistory } = props;
-  return <RootHistoryRouter history={appHistory}>{children}</RootHistoryRouter>;
 }

@@ -16,13 +16,6 @@
 
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useFocusVisible, useHover, useLink } from 'react-aria';
-import {
-  matchRoutes,
-  resolvePath,
-  useInRouterContext,
-  useLocation,
-  useResolvedPath,
-} from 'react-router-dom';
 import { Button as RAButton } from 'react-aria-components';
 import { RiArrowDownSLine } from '@remixicon/react';
 import { useDefinition } from '../../hooks/useDefinition';
@@ -33,11 +26,18 @@ import {
 } from './HeaderNavDefinition';
 import { HeaderNavIndicators } from './HeaderNavIndicators';
 import { MenuTrigger, Menu, MenuItem } from '../Menu';
+import { useIsomorphicLayoutEffect } from '../../hooks/useIsomorphicLayoutEffect';
 import type {
+  HeaderNavTab,
   HeaderNavLinkProps,
   HeaderNavTabGroup,
   HeaderNavTabItem,
 } from './types';
+import {
+  toBUIRouterLogicalPathname,
+  useOptionalBUIRouter,
+  type BUIRouter,
+} from '../../provider/BUIRouter';
 
 function isTabGroup(tab: HeaderNavTabItem): tab is HeaderNavTabGroup {
   return 'items' in tab;
@@ -136,24 +136,87 @@ interface HeaderNavProps {
   activeTabId?: string | null;
 }
 
-function useAutoActiveTabId(tabs: HeaderNavTabItem[]): string | undefined {
-  const basePath = useResolvedPath('.').pathname;
-  const { pathname } = useLocation();
+function HeaderNavActiveCandidate(props: {
+  tab: HeaderNavTab;
+  router: BUIRouter;
+  resolvedRootHref: string;
+  locationPathname: string;
+  onActiveChange: (id: string, score: number | undefined) => void;
+}) {
+  const { tab, router, resolvedRootHref, locationPathname, onActiveChange } =
+    props;
+  const resolvedHref = router.useHref(tab.href);
+  const pathname = toBUIRouterLogicalPathname(resolvedHref, resolvedRootHref);
+  const active =
+    pathname !== undefined &&
+    (locationPathname === pathname ||
+      locationPathname.startsWith(`${pathname}/`));
+  const activeScore =
+    active && pathname !== undefined ? pathname.length : undefined;
 
-  return useMemo(() => {
-    const allTabs = tabs.flatMap(tab => (isTabGroup(tab) ? tab.items : [tab]));
-    const routeObjects = allTabs.map(tab => ({
-      path: `${resolvePath(tab.href, basePath).pathname}/*`,
-      id: tab.id,
-    }));
-    const matches = matchRoutes(routeObjects, pathname);
-    return matches?.[0]?.route.id;
-  }, [tabs, basePath, pathname]);
+  useIsomorphicLayoutEffect(() => {
+    onActiveChange(tab.id, activeScore);
+    return () => onActiveChange(tab.id, undefined);
+  }, [activeScore, onActiveChange, tab.id]);
+
+  return null;
 }
 
 function HeaderNavAutoDetect(props: { tabs: HeaderNavTabItem[] }) {
-  const activeTabId = useAutoActiveTabId(props.tabs);
-  return <HeaderNavInner tabs={props.tabs} activeTabId={activeTabId} />;
+  const { tabs } = props;
+  const router = useOptionalBUIRouter()!;
+  const { pathname } = router.useLocation();
+  const resolvedRootHref = router.useHref('/');
+  const [activeTabs, setActiveTabs] = useState<Map<string, number>>(
+    () => new Map(),
+  );
+
+  const onActiveChange = useCallback(
+    (id: string, score: number | undefined) => {
+      setActiveTabs(previous => {
+        if (score === undefined) {
+          if (!previous.has(id)) {
+            return previous;
+          }
+          const next = new Map(previous);
+          next.delete(id);
+          return next;
+        }
+        if (previous.get(id) === score) {
+          return previous;
+        }
+        return new Map(previous).set(id, score);
+      });
+    },
+    [],
+  );
+
+  const allTabs = tabs.flatMap(tab => (isTabGroup(tab) ? tab.items : [tab]));
+  let activeTabId: string | undefined;
+  let activeScore = -1;
+  for (const tab of allTabs) {
+    const score = activeTabs.get(tab.id);
+    if (score !== undefined && score > activeScore) {
+      activeTabId = tab.id;
+      activeScore = score;
+    }
+  }
+
+  return (
+    <>
+      {allTabs.map(tab => (
+        <HeaderNavActiveCandidate
+          key={tab.id}
+          tab={tab}
+          router={router}
+          resolvedRootHref={resolvedRootHref}
+          locationPathname={pathname}
+          onActiveChange={onActiveChange}
+        />
+      ))}
+      <HeaderNavInner tabs={tabs} activeTabId={activeTabId} />
+    </>
+  );
 }
 
 function HeaderNavInner(props: HeaderNavProps) {
@@ -238,9 +301,9 @@ function HeaderNavInner(props: HeaderNavProps) {
 
 /** @internal */
 export function HeaderNav(props: HeaderNavProps) {
-  const inRouter = useInRouterContext();
+  const router = useOptionalBUIRouter();
 
-  if (props.activeTabId === undefined && inRouter) {
+  if (props.activeTabId === undefined && router) {
     return <HeaderNavAutoDetect tabs={props.tabs} />;
   }
 

@@ -21,23 +21,21 @@ import { createApiRef } from '../system';
  * A page-level router adapter that provides library routing context for a
  * page or sub-page, without owning browser history.
  *
- * An adapter's only job is to render `children` inside its library's context,
- * scoped to the mount it is given. The content is opaque: it is whatever the
- * page author supplied (a `PageBlueprint` `loader`, or a sub-page's own
- * content), and which sub-page of a page is showing has already been decided
- * by the framework's own route matching one level above.
+ * An adapter's only job is to render `children` inside its library's context.
+ * The content is opaque: it is whatever the page author supplied (a
+ * `PageBlueprint` `loader`, or a sub-page's own content), and which sub-page
+ * of a page is showing has already been decided by the framework's own route
+ * matching one level above. First-party adapters read mount details from a
+ * private framework context, keeping that representation out of this API.
  *
- * An adapter therefore never builds a route, and is never handed another
- * routing library's route tree to host — which is what used to make sub-pages
- * work only under React Router adapters.
+ * The framework never asks an adapter to reconstruct the page or sub-page
+ * route tree, and never hands it another routing library's routes. An adapter
+ * may still host a plugin-owned route tree inside the page content, for
+ * example through `createTanStackPageRouter`.
  *
  * @public
  */
 export type PageRouterComponent = ComponentType<{
-  /** Concrete app-absolute URL prefix this page is mounted at. */
-  basePath: string;
-  /** Registered route pattern this page is mounted at. */
-  routePattern: string;
   /** Opaque content to render inside the adapter's routing context. */
   children?: ReactNode;
 }>;

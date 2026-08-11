@@ -16,9 +16,10 @@
 
 import {
   compilePath,
+  expandOptionalSegments,
+  generatePath,
   matchPath,
   routePriority,
-  substitutePathParams,
   trimTrailingSlash,
 } from './routePattern';
 
@@ -27,6 +28,9 @@ describe('routePattern', () => {
     it('scores per segment so a static prefix outranks a longer param pattern', () => {
       expect(routePriority('/catalog/entities')).toBeGreaterThan(
         routePriority('/catalog/:name'),
+      );
+      expect(routePriority('/catalog/entities')).toBeGreaterThan(
+        routePriority('/catalog/:name?'),
       );
       expect(routePriority('/catalog/:name')).toBeGreaterThan(
         routePriority('/catalog'),
@@ -43,6 +47,19 @@ describe('routePattern', () => {
       expect(routePriority('/catalog/*')).toBeGreaterThan(routePriority('/'));
       expect(routePriority('/')).toBeGreaterThan(routePriority(''));
       expect(routePriority('')).toBeGreaterThan(routePriority('*'));
+    });
+
+    it('expands optional segments with required variants first', () => {
+      expect(expandOptionalSegments('/one/:two?/:three?')).toEqual([
+        '/one/:two/:three',
+        '/one/:two',
+        '/one/:three',
+        '/one',
+      ]);
+      expect(expandOptionalSegments('/project/task?/:taskId')).toEqual([
+        '/project/task/:taskId',
+        '/project/:taskId',
+      ]);
     });
   });
 
@@ -160,6 +177,48 @@ describe('routePattern', () => {
       });
     });
 
+    it('matches optional params whether they are present or omitted', () => {
+      expect(matchPath('/catalog/:kind?/:name?', '/catalog', true)).toEqual({
+        matchedPathname: '/catalog',
+        pathnameBase: '/catalog',
+        params: {},
+      });
+      expect(
+        matchPath('/catalog/:kind?/:name?', '/catalog/component/widget', true),
+      ).toEqual({
+        matchedPathname: '/catalog/component/widget',
+        pathnameBase: '/catalog/component/widget',
+        params: { kind: 'component', name: 'widget' },
+      });
+      expect(matchPath('/:lang?/about', '/about', true)).toEqual({
+        matchedPathname: '/about',
+        pathnameBase: '/about',
+        params: {},
+      });
+      expect(matchPath('/:lang?/about', '/en/about', true)).toEqual({
+        matchedPathname: '/en/about',
+        pathnameBase: '/en/about',
+        params: { lang: 'en' },
+      });
+    });
+
+    it('matches optional static segments whether they are present or omitted', () => {
+      expect(
+        matchPath('/project/task?/:taskId', '/project/task/123', true),
+      ).toEqual({
+        matchedPathname: '/project/task/123',
+        pathnameBase: '/project/task/123',
+        params: { taskId: '123' },
+      });
+      expect(matchPath('/project/task?/:taskId', '/project/123', true)).toEqual(
+        {
+          matchedPathname: '/project/123',
+          pathnameBase: '/project/123',
+          params: { taskId: '123' },
+        },
+      );
+    });
+
     it('captures splat segments, including an empty remainder', () => {
       expect(matchPath('/docs/*', '/docs/a/b', true)).toEqual({
         matchedPathname: '/docs/a/b',
@@ -210,27 +269,31 @@ describe('routePattern', () => {
     });
   });
 
-  describe('substitutePathParams', () => {
+  describe('generatePath', () => {
     it('substitutes named params without corrupting longer names', () => {
-      expect(
-        substitutePathParams('/target/:ab/:a', { ab: 'bar', a: 'foo' }),
-      ).toBe('/target/bar/foo');
+      expect(generatePath('/target/:ab/:a', { ab: 'bar', a: 'foo' })).toBe(
+        '/target/bar/foo',
+      );
     });
 
     it('substitutes splat params', () => {
-      expect(substitutePathParams('/docs/*', { '*': 'a/b' })).toBe('/docs/a/b');
+      expect(generatePath('/docs/*', { '*': 'a/b' })).toBe('/docs/a/b');
+    });
+
+    it('removes omitted optional segments wherever they appear', () => {
+      expect(generatePath('/:lang?/about', {})).toBe('/about');
+      expect(generatePath('/:lang?/about', { lang: 'en' })).toBe('/en/about');
+      expect(generatePath('/project/task?/:taskId', { taskId: '123' })).toBe(
+        '/project/task/123',
+      );
     });
 
     it('treats `$` in a value as a literal, not a replacement pattern', () => {
-      expect(substitutePathParams('/target/:a', { a: 'x$&y' })).toBe(
-        '/target/x$&y',
-      );
-      expect(substitutePathParams('/target/:a/:b', { a: "$'", b: '$`' })).toBe(
+      expect(generatePath('/target/:a', { a: 'x$&y' })).toBe('/target/x$%26y');
+      expect(generatePath('/target/:a/:b', { a: "$'", b: '$`' })).toBe(
         "/target/$'/$`",
       );
-      expect(substitutePathParams('/docs/*', { '*': 'a$&b' })).toBe(
-        '/docs/a$&b',
-      );
+      expect(generatePath('/docs/*', { '*': 'a$&b' })).toBe('/docs/a$%26b');
     });
   });
 });

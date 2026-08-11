@@ -45,7 +45,10 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/filter-predicates": "workspace:^",
+    "@backstage/frontend-plugin-api": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@backstage/version-bridge": "workspace:^"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
@@ -64,9 +67,9 @@
   "peerDependencies": {
     "@tanstack/history": "^1.162.0",
     "@tanstack/react-router": "^1.170.17",
-    "@types/react": "^17.0.0 || ^18.0.0",
-    "react": "^17.0.0 || ^18.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0"
+    "@types/react": "^18.0.0 || ^19.0.0",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {

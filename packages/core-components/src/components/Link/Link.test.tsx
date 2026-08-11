@@ -325,6 +325,51 @@ describe('<Link />', () => {
       );
     });
 
+    it('only intercepts current-context primary clicks and preserves navigation options', () => {
+      render(
+        <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
+          <PageMountProvider mount={scopedContract}>
+            <MemoryRouter>
+              <Link to="/catalog/new-tab" target="_blank">
+                New tab
+              </Link>
+              <Link to="/catalog/named" target="documentation">
+                Named context
+              </Link>
+              <Link to="/catalog/download" download="catalog.json">
+                Download
+              </Link>
+              <Link
+                to="/catalog/current"
+                target="_self"
+                replace
+                state={{ source: 'sidebar' }}
+              >
+                Current context
+              </Link>
+            </MemoryRouter>
+          </PageMountProvider>
+        </TestApiProvider>,
+      );
+
+      fireEvent.click(screen.getByRole('link', { name: 'New tab' }));
+      fireEvent.click(screen.getByRole('link', { name: 'Named context' }));
+      fireEvent.click(screen.getByRole('link', { name: 'Download' }));
+      fireEvent.click(screen.getByRole('link', { name: 'Current context' }), {
+        ctrlKey: true,
+      });
+      fireEvent.click(screen.getByRole('link', { name: 'Current context' }), {
+        button: 1,
+      });
+      expect(navigate).not.toHaveBeenCalled();
+
+      fireEvent.click(screen.getByRole('link', { name: 'Current context' }));
+      expect(navigate).toHaveBeenCalledWith('/catalog/current', {
+        replace: true,
+        state: { source: 'sidebar' },
+      });
+    });
+
     it('renders an href that includes the app deploy basename', () => {
       const deployedAppHistory = createMockAppHistory({
         navigate,
@@ -890,7 +935,7 @@ describe('<Link />', () => {
       );
     });
 
-    it('warns about each router-only prop it drops, outside production builds', async () => {
+    it('honors supported router props and warns about unsupported ones', async () => {
       const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
       const appHistory = createMockAppHistory({
         initialLocation: '/catalog/foo',
@@ -902,6 +947,7 @@ describe('<Link />', () => {
         'preventScrollReset',
         'reloadDocument',
       ];
+      const unsupportedProps = ['relative', 'preventScrollReset'];
       const link = (
         <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
           <Link
@@ -925,11 +971,12 @@ describe('<Link />', () => {
       // an attribute a browser knows.
       expect(anchor).not.toHaveAttribute('to');
       for (const name of routerOnlyProps) {
-        // Dropped rather than forwarded to the DOM, which is what the warning
-        // is there to make visible.
         expect(anchor).not.toHaveAttribute(name);
+      }
+      for (const name of unsupportedProps) {
         expect(warn).toHaveBeenCalledWith(expect.stringContaining(`'${name}'`));
       }
+      expect(warn).toHaveBeenCalledTimes(unsupportedProps.length);
 
       unmount();
       warn.mockClear();

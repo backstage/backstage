@@ -18,10 +18,7 @@ import { forwardRef, useRef } from 'react';
 import { mergeProps, useFocusRing, useLink } from 'react-aria';
 import type { LinkProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
-import {
-  useHasInjectedHrefResolver,
-  useResolvedHref,
-} from '../../hooks/useResolvedHref';
+import { useHasBUIRouter, useResolvedHref } from '../../hooks/useResolvedHref';
 import { LinkDefinition } from './definition';
 import { getNodeText } from '../../analytics/getNodeText';
 
@@ -48,9 +45,9 @@ const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
   // is in there all the same.
   const ariaHref = (linkProps as React.AnchorHTMLAttributes<HTMLAnchorElement>)
     .href;
-  const hasInjectedResolver = useHasInjectedHrefResolver();
+  const hasBUIRouter = useHasBUIRouter();
   const routerHref = useResolvedHref(restProps.href);
-  const resolvedHref = hasInjectedResolver ? ariaHref : routerHref;
+  const resolvedHref = hasBUIRouter ? ariaHref : routerHref;
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     linkProps.onClick?.(e);

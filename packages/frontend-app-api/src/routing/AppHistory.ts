@@ -23,7 +23,10 @@ import type { Observable, Subscription } from '@backstage/types';
 import {
   createPath,
   isExternalTarget,
+  appHistoryMetadataSymbol,
   pageBasePaths,
+  type AppHistoryAction,
+  type AppHistoryMetadata,
   resolveAppPath,
 } from '@internal/frontend';
 import {
@@ -67,6 +70,7 @@ export class AppHistory implements AppHistoryApi {
   private readonly unlisten: () => void;
   private disposed = false;
   private current: AppLocation;
+  private currentMetadata: AppHistoryMetadata;
 
   /** @internal */
   static create(options?: AppHistoryOptions): AppHistory {
@@ -77,9 +81,10 @@ export class AppHistory implements AppHistoryApi {
     this.basename = options?.basename ?? '';
     this.history = options?.history ?? createWindowHistoryBackend();
     this.current = this.readLocation();
+    this.currentMetadata = this.readMetadata('POP');
 
-    this.unlisten = this.history.listen(() => {
-      this.emit();
+    this.unlisten = this.history.listen(action => {
+      this.emit(action);
     });
   }
 
@@ -92,6 +97,12 @@ export class AppHistory implements AppHistoryApi {
     return this.refresh();
   }
 
+  /** Private compatibility facts consumed by first-party router adapters. */
+  get [appHistoryMetadataSymbol](): AppHistoryMetadata {
+    this.refresh();
+    return this.currentMetadata;
+  }
+
   /**
    * Re-reads the backend and returns the current location, reusing the
    * previous object when nothing observable changed. Reading live keeps us
@@ -99,8 +110,9 @@ export class AppHistory implements AppHistoryApi {
    * plugin code emits no event), while reusing the reference keeps the result
    * safe to hand to `useSyncExternalStore`.
    */
-  private refresh(): AppLocation {
+  private refresh(action?: AppHistoryAction): AppLocation {
     const next = this.readLocation();
+    const nextEntry = this.history.getEntry();
     if (
       this.current.pathname !== next.pathname ||
       this.current.search !== next.search ||
@@ -108,6 +120,19 @@ export class AppHistory implements AppHistoryApi {
       !Object.is(this.current.state, next.state)
     ) {
       this.current = next;
+    }
+    const entryChanged =
+      this.currentMetadata.key !== nextEntry.key ||
+      this.currentMetadata.index !== nextEntry.index ||
+      this.currentMetadata.length !== nextEntry.length ||
+      this.currentMetadata.canGoBack !== nextEntry.canGoBack;
+    const nextAction =
+      action ?? (entryChanged ? 'POP' : this.currentMetadata.action);
+    if (entryChanged || this.currentMetadata.action !== nextAction) {
+      this.currentMetadata = {
+        ...nextEntry,
+        action: nextAction,
+      };
     }
     return this.current;
   }
@@ -156,7 +181,13 @@ export class AppHistory implements AppHistoryApi {
   /**
    * Navigate to a path (relative to the app root, not basename).
    */
-  navigate(to: string, options?: AppNavigateOptions): void {
+  navigate(to: string, options?: AppNavigateOptions): void;
+  navigate(delta: number): void;
+  navigate(to: string | number, options?: AppNavigateOptions): void {
+    if (typeof to === 'number') {
+      this.history.go(to);
+      return;
+    }
     if (isExternalTarget(to)) {
       throw new Error(
         'AppHistory.navigate does not support absolute or protocol-relative URLs',
@@ -173,7 +204,7 @@ export class AppHistory implements AppHistoryApi {
     }
     // Emit directly rather than relying on backend listen for push/replace.
     // popstate should only fire for real back/forward navigation.
-    this.emit();
+    this.emit(options?.replace ? 'REPLACE' : 'PUSH');
   }
 
   /**
@@ -252,6 +283,10 @@ export class AppHistory implements AppHistoryApi {
     };
   }
 
+  private readMetadata(action: AppHistoryAction): AppHistoryMetadata {
+    return { ...this.history.getEntry(), action };
+  }
+
   private stripBasename(pathname: string): string {
     if (
       this.basename &&
@@ -262,8 +297,8 @@ export class AppHistory implements AppHistoryApi {
     return pathname;
   }
 
-  private emit(): void {
-    const location = this.refresh();
+  private emit(action: AppHistoryAction): void {
+    const location = this.refresh(action);
     const handlers = [...this.subscribers];
     for (const handler of handlers) {
       handler(location);

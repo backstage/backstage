@@ -52,7 +52,54 @@ describe('RouteTable', () => {
       path: '/catalog',
       basePath: '/catalog',
     });
-    expect(table.match('/unknown')).toEqual({ path: '/', basePath: '/' });
+    expect(table.match('/')).toEqual({ path: '/', basePath: '/' });
+    expect(table.match('/unknown')).toBeUndefined();
+  });
+
+  it('should match optional page params when present or omitted', () => {
+    const table = new RouteTable([
+      '/catalog/:kind?/:name?',
+      '/catalog/entities',
+    ]);
+    expect(table.match('/catalog')).toEqual({
+      path: '/catalog/:kind?/:name?',
+      basePath: '/catalog',
+    });
+    expect(table.match('/catalog/component/widget')).toEqual({
+      path: '/catalog/:kind?/:name?',
+      basePath: '/catalog/component/widget',
+    });
+    expect(table.match('/catalog/entities')).toEqual({
+      path: '/catalog/entities',
+      basePath: '/catalog/entities',
+    });
+  });
+
+  it('should rank the concrete optional variant that matched', () => {
+    const table = new RouteTable([
+      '/one/:id',
+      '/one/:two?/:three?',
+      '/project/task?/:taskId',
+    ]);
+
+    // The second route only contributes one dynamic segment to this match, so
+    // it ties the first route and registration order decides, as in RRv6.
+    expect(table.match('/one/foo')).toEqual({
+      path: '/one/:id',
+      basePath: '/one/foo',
+    });
+    expect(table.match('/project/123')).toEqual({
+      path: '/project/task?/:taskId',
+      basePath: '/project/123',
+    });
+  });
+
+  it('should handle an explicit root catch-all', () => {
+    const table = new RouteTable(['/*', '/catalog']);
+    expect(table.match('/unknown/deep/path')).toEqual({
+      path: '/*',
+      basePath: '/',
+    });
   });
 
   it('should not match partial prefixes without separator', () => {
@@ -530,71 +577,5 @@ describe('RouteTable', () => {
       basePath: '/catalog',
     });
     warnSpy.mockRestore();
-  });
-
-  describe('root catch-all dev warning', () => {
-    const env = process.env as Record<string, string | undefined>;
-    const originalEnv = env.NODE_ENV;
-
-    afterEach(() => {
-      env.NODE_ENV = originalEnv;
-    });
-
-    it('should warn when a multi-segment path falls through to root', () => {
-      env.NODE_ENV = 'development';
-      const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
-      const table = new RouteTable(['/', '/catalog']);
-
-      table.match('/unknown/deep/path');
-
-      expect(warnSpy).toHaveBeenCalledWith(
-        expect.stringContaining('fell through to the root "/" catch-all'),
-      );
-      warnSpy.mockRestore();
-    });
-
-    it('should not warn for single-segment paths falling through to root', () => {
-      env.NODE_ENV = 'development';
-      const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
-      const table = new RouteTable(['/', '/catalog']);
-
-      table.match('/unknown');
-
-      expect(warnSpy).not.toHaveBeenCalled();
-      warnSpy.mockRestore();
-    });
-
-    it('should not warn when a non-root route matches', () => {
-      env.NODE_ENV = 'development';
-      const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
-      const table = new RouteTable(['/', '/catalog']);
-
-      table.match('/catalog/foo/bar');
-
-      expect(warnSpy).not.toHaveBeenCalled();
-      warnSpy.mockRestore();
-    });
-
-    it('should not warn for the root path itself', () => {
-      env.NODE_ENV = 'development';
-      const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
-      const table = new RouteTable(['/']);
-
-      table.match('/');
-
-      expect(warnSpy).not.toHaveBeenCalled();
-      warnSpy.mockRestore();
-    });
-
-    it('should not warn in production', () => {
-      env.NODE_ENV = 'production';
-      const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
-      const table = new RouteTable(['/', '/catalog']);
-
-      table.match('/unknown/deep/path');
-
-      expect(warnSpy).not.toHaveBeenCalled();
-      warnSpy.mockRestore();
-    });
   });
 });

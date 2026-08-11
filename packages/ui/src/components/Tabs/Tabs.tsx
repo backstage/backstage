@@ -34,7 +34,6 @@ import type {
   TabsContextValue,
   TabProps,
 } from './types';
-import { useLocation } from 'react-router-dom';
 import { TabsIndicators } from './TabsIndicators';
 import {
   Tabs as AriaTabs,
@@ -52,6 +51,11 @@ import {
 } from './definition';
 import { isInternalLink } from '../../utils/linkUtils';
 import { getNodeText } from '../../analytics/getNodeText';
+import {
+  toBUIRouterLogicalPathname,
+  useOptionalBUIRouter,
+  type BUIRouter,
+} from '../../provider/BUIRouter';
 
 const TabsContext = createContext<TabsContextValue | undefined>(undefined);
 
@@ -73,6 +77,26 @@ type TabSelectionContextValue = {
 const TabSelectionContext = createContext<TabSelectionContextValue | null>(
   null,
 );
+
+function findInitialRoutedTabs(children: ReactNode): Set<string> {
+  const ids = new Set<string>();
+
+  function visit(nodes: ReactNode) {
+    Children.forEach(nodes, child => {
+      if (!isValidElement(child)) {
+        return;
+      }
+      if (child.type === Tab && isInternalLink(child.props.href)) {
+        ids.add(String(child.props.id));
+        return;
+      }
+      visit(child.props.children);
+    });
+  }
+
+  visit(children);
+  return ids;
+}
 
 /**
  * Strips query params and hash from a href, leaving only the pathname.
@@ -119,7 +143,9 @@ export const Tabs = (props: TabsProps) => {
   const prevHoveredKey = useRef<string | null>(null);
 
   // State for tracking routed tabs (tabs with hrefs)
-  const [routedTabs, setRoutedTabs] = useState<Set<string>>(() => new Set());
+  const [routedTabs, setRoutedTabs] = useState<Set<string>>(() =>
+    findInitialRoutedTabs(children as ReactNode),
+  );
 
   // State for tracking active tabs reported by TabRouteRegistration components
   const [activeTabs, setActiveTabs] = useState<Map<string, number>>(
@@ -288,10 +314,56 @@ function RoutedTabEffects({
   href: string;
   matchStrategy?: 'exact' | 'prefix';
 }) {
-  const selectionCtx = useContext(TabSelectionContext);
-  const location = useLocation();
+  const router = useOptionalBUIRouter();
 
-  // Register as a routed tab (for controlled vs uncontrolled mode)
+  if (!router) {
+    return <RoutedTabRegistration id={id} />;
+  }
+
+  return (
+    <RoutedTabEffectsWithRouter
+      id={id}
+      href={href}
+      matchStrategy={matchStrategy}
+      router={router}
+    />
+  );
+}
+
+function RoutedTabRegistration({ id }: { id: string }) {
+  const selectionCtx = useContext(TabSelectionContext);
+
+  useEffect(() => {
+    if (selectionCtx) {
+      selectionCtx.registerRoutedTab(id);
+      return () => selectionCtx.unregisterRoutedTab(id);
+    }
+    return undefined;
+  }, [id, selectionCtx]);
+
+  return null;
+}
+
+function RoutedTabEffectsWithRouter({
+  id,
+  href,
+  matchStrategy,
+  router,
+}: {
+  id: string;
+  href: string;
+  matchStrategy: 'exact' | 'prefix';
+  router: BUIRouter;
+}) {
+  const selectionCtx = useContext(TabSelectionContext);
+  const location = router.useLocation();
+  const resolvedHref = router.useHref(href);
+  const resolvedRootHref = router.useHref('/');
+  const logicalPathname = toBUIRouterLogicalPathname(
+    resolvedHref,
+    resolvedRootHref,
+  );
+
   useEffect(() => {
     if (selectionCtx) {
       selectionCtx.registerRoutedTab(id);
@@ -301,8 +373,13 @@ function RoutedTabEffects({
   }, [id, selectionCtx]);
 
   // Register as active tab when URL matches (for tab selection)
-  const isActive = isTabActive(href, location.pathname, matchStrategy);
-  const segmentCount = hrefPathname(href).split('/').filter(Boolean).length;
+  const isActive =
+    logicalPathname !== undefined &&
+    isTabActive(logicalPathname, location.pathname, matchStrategy);
+  const segmentCount =
+    logicalPathname === undefined
+      ? 0
+      : hrefPathname(logicalPathname).split('/').filter(Boolean).length;
 
   useEffect(() => {
     if (isActive && selectionCtx) {
