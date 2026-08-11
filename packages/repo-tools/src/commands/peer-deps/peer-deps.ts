@@ -44,7 +44,11 @@ const peerDependenciesReact18Only = {
   'react-dom': '^18.0.0',
 };
 
-const react18OnlyPackages = new Set(['@backstage/ui']);
+const react18OnlyPackages = new Set([
+  '@backstage/plugin-app-react-router-v7',
+  '@backstage/plugin-app-tanstack-router',
+  '@backstage/ui',
+]);
 
 const groupsOfPeerDependencies = [['@types/react', 'react', 'react-dom']];
 
