@@ -22,7 +22,7 @@ import {
   FrontendFeature,
   featureFlagsApiRef,
 } from '@backstage/frontend-plugin-api';
-import { OpaqueFrontendPlugin } from '@internal/frontend';
+import { OpaqueApiRef, OpaqueFrontendPlugin } from '@internal/frontend';
 import { instantiateAppNodeSubtree } from '../tree/instantiateAppNodeTree';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
@@ -250,14 +250,14 @@ export function collectApiFactoryEntries(options: {
     );
     if (apiFactory) {
       const apiRefId = apiFactory.api.id;
-      const ownerId = getApiOwnerId(apiRefId);
+      const ownerId = getApiOwnerId(apiFactory.api);
       const pluginId = apiNode.spec.plugin.pluginId ?? 'app';
       const existingFactory = factoriesById.get(apiRefId);
 
       // This allows modules to override factories provided by the plugin, but
       // it rejects API overrides from other plugins. In the event of a
-      // conflict, the owning plugin is attempted to be inferred from the API
-      // reference ID.
+      // conflict, the owning plugin is inferred from explicit ownership
+      // metadata or the API reference ID.
       if (existingFactory && existingFactory.pluginId !== pluginId) {
         const shouldReplace =
           ownerId === pluginId && existingFactory.pluginId !== ownerId;
@@ -309,7 +309,15 @@ export function collectApiFactoryEntries(options: {
 
 // TODO(Rugvip): It would be good if this was more explicit, but I think that
 //               might need to wait for some future update for API factories.
-function getApiOwnerId(apiRefId: string): string {
+function getApiOwnerId(apiRef: { id: string }): string {
+  if (OpaqueApiRef.isType(apiRef)) {
+    const { pluginId } = OpaqueApiRef.toInternal(apiRef);
+    if (pluginId) {
+      return pluginId;
+    }
+  }
+
+  const apiRefId = apiRef.id;
   const [prefix, ...rest] = apiRefId.split('.');
   if (!prefix) {
     return apiRefId;

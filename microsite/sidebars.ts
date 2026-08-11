@@ -62,6 +62,7 @@ export default {
         'getting-started/configure-app-with-plugins',
         'getting-started/homepage',
       ]),
+      'getting-started/ci',
       sidebarElementWithIndex({ label: 'Deploying Backstage' }, [
         'deployment/index',
         'deployment/scaling',
@@ -152,7 +153,14 @@ export default {
             description:
               'Features in Backstage you can leverage with your AI tools.',
           },
-          ['ai/skills', 'ai/mcp-actions', 'ai/well-known-actions'],
+          [
+            'ai/overview',
+            'ai/ai-in-the-catalog',
+            'ai/mcp-actions',
+            'ai/well-known-actions',
+            'ai/skills',
+            'ai/well-known-skills',
+          ],
         ),
         sidebarElementWithIndex(
           {
@@ -181,6 +189,7 @@ export default {
                 'auth/google/provider',
                 'auth/google/gcp-iap-auth',
                 'auth/guest/provider',
+                'auth/keycloak/provider',
                 'auth/okta/provider',
                 'auth/oauth2-proxy/provider',
                 'auth/onelogin/provider',
@@ -275,7 +284,12 @@ export default {
             },
             'features/search/architecture',
             'features/search/search-engines',
-            'features/search/collators',
+            {
+              type: 'category',
+              label: 'Collators',
+              link: { type: 'doc', id: 'features/search/collators' },
+              items: ['features/search/custom-collators'],
+            },
             'features/search/how-to-guides',
           ],
         ),
@@ -295,7 +309,19 @@ export default {
             'features/software-catalog/well-known-relations',
             'features/software-catalog/well-known-statuses',
             'features/software-catalog/extending-the-model',
-            'features/software-catalog/external-integrations',
+            {
+              type: 'category',
+              label: 'External integrations',
+              link: {
+                type: 'doc',
+                id: 'features/software-catalog/external-integrations/index',
+              },
+              items: [
+                'features/software-catalog/external-integrations/entity-providers',
+                'features/software-catalog/external-integrations/processors',
+                'features/software-catalog/external-integrations/incremental-entity-providers',
+              ],
+            },
             'features/software-catalog/catalog-customization',
             'features/software-catalog/entity-presentation',
             'features/software-catalog/audit-events',
@@ -440,6 +466,9 @@ export default {
         ]),
         sidebarElementWithIndex({ label: 'Google GCS' }, [
           'integrations/google-cloud-storage/locations',
+        ]),
+        sidebarElementWithIndex({ label: 'Keycloak' }, [
+          'integrations/keycloak/org',
         ]),
         sidebarElementWithIndex({ label: 'LDAP' }, ['integrations/ldap/org']),
         sidebarElementWithIndex({ label: 'Okta' }, ['integrations/okta/org']),

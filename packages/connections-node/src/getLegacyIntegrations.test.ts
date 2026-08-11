@@ -17,6 +17,11 @@ import { mockServices } from '@backstage/backend-test-utils';
 import { connectionTypes } from '@backstage/connections';
 import { getLegacyIntegrations } from './getLegacyIntegrations';
 
+function configFields(connection: Record<string, unknown>) {
+  const { type, auth, title, match, ...config } = connection;
+  return config;
+}
+
 const AwsCodeCommitConnectionType = connectionTypes['aws-codecommit'];
 const AwsS3ConnectionType = connectionTypes['aws-s3'];
 const AzureBlobStorageConnectionType = connectionTypes['azure-blob-storage'];
@@ -205,7 +210,7 @@ describe('getLegacyIntegrations', () => {
 
       const [converted] = getLegacyIntegrations(config);
       expect(() =>
-        GithubConnectionType.configSchema.parse(converted),
+        GithubConnectionType.configSchema.parse(configFields(converted)),
       ).not.toThrow();
     });
   });
@@ -322,7 +327,7 @@ describe('getLegacyIntegrations', () => {
 
       const [converted] = getLegacyIntegrations(config);
       expect(() =>
-        GitlabConnectionType.configSchema.parse(converted),
+        GitlabConnectionType.configSchema.parse(configFields(converted)),
       ).not.toThrow();
     });
   });
@@ -398,7 +403,9 @@ describe('getLegacyIntegrations', () => {
 
       const [converted] = getLegacyIntegrations(config);
       expect(() =>
-        BitbucketCloudConnectionType.configSchema.parse(converted),
+        BitbucketCloudConnectionType.configSchema.parse(
+          configFields(converted),
+        ),
       ).not.toThrow();
     });
   });
@@ -476,7 +483,9 @@ describe('getLegacyIntegrations', () => {
 
       const [converted] = getLegacyIntegrations(config);
       expect(() =>
-        BitbucketServerConnectionType.configSchema.parse(converted),
+        BitbucketServerConnectionType.configSchema.parse(
+          configFields(converted),
+        ),
       ).not.toThrow();
     });
   });
@@ -581,7 +590,7 @@ describe('getLegacyIntegrations', () => {
 
       const [converted] = getLegacyIntegrations(config);
       expect(() =>
-        AzureConnectionType.configSchema.parse(converted),
+        AzureConnectionType.configSchema.parse(configFields(converted)),
       ).not.toThrow();
     });
   });
@@ -636,7 +645,7 @@ describe('getLegacyIntegrations', () => {
 
       const [converted] = getLegacyIntegrations(config);
       expect(() =>
-        GerritConnectionType.configSchema.parse(converted),
+        GerritConnectionType.configSchema.parse(configFields(converted)),
       ).not.toThrow();
     });
   });
@@ -685,7 +694,7 @@ describe('getLegacyIntegrations', () => {
 
       const [converted] = getLegacyIntegrations(config);
       expect(() =>
-        GiteaConnectionType.configSchema.parse(converted),
+        GiteaConnectionType.configSchema.parse(configFields(converted)),
       ).not.toThrow();
     });
   });
@@ -785,7 +794,7 @@ describe('getLegacyIntegrations', () => {
 
       const [converted] = getLegacyIntegrations(config);
       expect(() =>
-        AwsCodeCommitConnectionType.configSchema.parse(converted),
+        AwsCodeCommitConnectionType.configSchema.parse(configFields(converted)),
       ).not.toThrow();
     });
   });
@@ -869,7 +878,7 @@ describe('getLegacyIntegrations', () => {
 
       const [converted] = getLegacyIntegrations(config);
       expect(() =>
-        AwsS3ConnectionType.configSchema.parse(converted),
+        AwsS3ConnectionType.configSchema.parse(configFields(converted)),
       ).not.toThrow();
     });
   });
@@ -940,7 +949,7 @@ describe('getLegacyIntegrations', () => {
 
       const [converted] = getLegacyIntegrations(config);
       expect(() =>
-        GoogleGcsConnectionType.configSchema.parse(converted),
+        GoogleGcsConnectionType.configSchema.parse(configFields(converted)),
       ).not.toThrow();
     });
   });
@@ -1088,7 +1097,9 @@ describe('getLegacyIntegrations', () => {
 
       const [converted] = getLegacyIntegrations(config);
       expect(() =>
-        AzureBlobStorageConnectionType.configSchema.parse(converted),
+        AzureBlobStorageConnectionType.configSchema.parse(
+          configFields(converted),
+        ),
       ).not.toThrow();
     });
   });
@@ -1129,7 +1140,7 @@ describe('getLegacyIntegrations', () => {
 
       const [converted] = getLegacyIntegrations(config);
       expect(() =>
-        HarnessConnectionType.configSchema.parse(converted),
+        HarnessConnectionType.configSchema.parse(configFields(converted)),
       ).not.toThrow();
     });
   });

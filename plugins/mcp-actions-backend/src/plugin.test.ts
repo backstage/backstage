@@ -333,6 +333,49 @@ describe('Mcp Backend', () => {
       expect(response.body.authorization_servers[0]).toContain(
         `${mockExternalBaseUrl}/`,
       );
+      expect(response.body.scopes_supported).toEqual(['openid']);
+    });
+
+    it('should include offline_access in scopes_supported when refresh tokens are enabled', async () => {
+      const mockExternalBaseUrl = 'http://external.local:0/api';
+      const mockDiscovery = mockServices.discovery.mock({
+        getExternalBaseUrl: async pluginId =>
+          `${mockExternalBaseUrl}/${pluginId}`,
+      });
+
+      const { server } = await startTestBackend({
+        features: [
+          mcpPlugin,
+          mockPluginWithActions,
+          mockDiscovery.factory,
+          mockServices.rootConfig.factory({
+            data: {
+              backend: {
+                actions: {
+                  pluginSources: ['local'],
+                },
+              },
+              auth: {
+                experimentalDynamicClientRegistration: {
+                  enabled: true,
+                },
+                experimentalRefreshToken: {
+                  enabled: true,
+                },
+              },
+            },
+          }),
+        ],
+      });
+
+      const response = await request(server).get(
+        '/.well-known/oauth-protected-resource/api/mcp-actions/v1',
+      );
+      expect(response.status).toBe(200);
+      expect(response.body.scopes_supported).toEqual([
+        'openid',
+        'offline_access',
+      ]);
     });
 
     const pathTestCases = [
@@ -391,6 +434,7 @@ describe('Mcp Backend', () => {
         expect(response.body.authorization_servers[0]).toContain(
           `${mockExternalBaseUrl}/`,
         );
+        expect(response.body.scopes_supported).toEqual(['openid']);
       },
     );
 
@@ -423,6 +467,7 @@ describe('Mcp Backend', () => {
       expect(response.body.resource).toMatch(/\/api\/mcp-actions\/v1$/);
       expect(response.body.authorization_servers).toHaveLength(1);
       expect(response.body.authorization_servers[0]).toMatch(/\/api\/auth$/);
+      expect(response.body.scopes_supported).toEqual(['openid']);
     });
 
     it('should support the deprecated experimental CIMD configuration', async () => {

@@ -88,7 +88,7 @@ catalog:
         workspace: workspace-name
 ```
 
-:::note Note
+:::note
 
 It is possible but certainly not recommended to skip the provider ID level.
 

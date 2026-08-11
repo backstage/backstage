@@ -236,7 +236,16 @@ describe.each(databases.eachSupportedId())(
           type: 'memberOf',
           target_entity_ref: 'component:default/foo',
         });
-        expect(updateResult.previous.relations).toEqual([]);
+        expect(updateResult.relationsChange).toEqual({
+          deleted: [],
+          inserted: [
+            {
+              source_entity_ref: 'component:default/foo',
+              type: 'memberOf',
+              target_entity_ref: 'component:default/foo',
+            },
+          ],
+        });
 
         updateResult = await db.transaction(tx =>
           db.updateProcessedEntity(tx, {
@@ -259,14 +268,11 @@ describe.each(databases.eachSupportedId())(
           type: 'memberOf',
           target_entity_ref: 'component:default/foo',
         });
-        expect(updateResult.previous.relations).toEqual([
-          {
-            originating_entity_id: expect.any(String),
-            source_entity_ref: 'component:default/foo',
-            type: 'memberOf',
-            target_entity_ref: 'component:default/foo',
-          },
-        ]);
+        // Same relations as before — no changes
+        expect(updateResult.relationsChange).toEqual({
+          deleted: [],
+          inserted: [],
+        });
       });
 
       it('adds deferred entities to the refresh_state table to be picked up later', async () => {

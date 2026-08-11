@@ -198,14 +198,11 @@ describe('createRouter readonly disabled', () => {
       expect(entitiesCatalog.queryEntities).toHaveBeenCalledTimes(1);
       expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith({
         filter: {
-          anyOf: [
+          $any: [
             {
-              allOf: [
-                { key: 'a', values: ['1', '2'] },
-                { key: 'b', values: ['3'] },
-              ],
+              $all: [{ a: { $in: ['1', '2'] } }, { b: '3' }],
             },
-            { key: 'c', values: ['4'] },
+            { c: '4' },
           ],
         },
         limit: 10000,
@@ -242,14 +239,11 @@ describe('createRouter readonly disabled', () => {
       expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
       expect(entitiesCatalog.entities).toHaveBeenCalledWith({
         filter: {
-          anyOf: [
+          $any: [
             {
-              allOf: [
-                { key: 'a', values: ['1', '2'] },
-                { key: 'b', values: ['3'] },
-              ],
+              $all: [{ a: { $in: ['1', '2'] } }, { b: '3' }],
             },
-            { key: 'c', values: ['4'] },
+            { c: '4' },
           ],
         },
         credentials: mockCredentials.user(),
@@ -294,14 +288,11 @@ describe('createRouter readonly disabled', () => {
       expect(entitiesCatalog.queryEntities).toHaveBeenCalledTimes(1);
       expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith({
         filter: {
-          anyOf: [
+          $any: [
             {
-              allOf: [
-                { key: 'a', values: ['1', '2'] },
-                { key: 'b', values: ['3'] },
-              ],
+              $all: [{ a: { $in: ['1', '2'] } }, { b: '3' }],
             },
-            { key: 'c', values: ['4'] },
+            { c: '4' },
           ],
         },
         orderFields: [
@@ -334,14 +325,11 @@ describe('createRouter readonly disabled', () => {
       expect(entitiesCatalog.queryEntities).toHaveBeenCalledTimes(1);
       expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith({
         filter: {
-          anyOf: [
+          $any: [
             {
-              allOf: [
-                { key: 'a', values: ['1', '2'] },
-                { key: 'b', values: ['3'] },
-              ],
+              $all: [{ a: { $in: ['1', '2'] } }, { b: '3' }],
             },
-            { key: 'c', values: ['4'] },
+            { c: '4' },
           ],
         },
         orderFields: [
@@ -494,7 +482,7 @@ describe('createRouter readonly disabled', () => {
       });
       expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith(
         expect.objectContaining({
-          query: { kind: 'b' },
+          filter: { kind: 'b' },
           limit: 10,
           credentials: mockCredentials.user(),
         }),
@@ -518,7 +506,7 @@ describe('createRouter readonly disabled', () => {
       expect(response.status).toEqual(200);
       expect(entitiesCatalog.queryEntities).toHaveBeenCalledWith(
         expect.objectContaining({
-          query: { kind: 'b' },
+          filter: { kind: 'b' },
           limit: 2,
           offset: 3,
           credentials: mockCredentials.user(),
@@ -710,7 +698,7 @@ describe('createRouter readonly disabled', () => {
         entityRefs: [entityRef],
         fields: expect.any(Function),
         credentials: mockCredentials.user(),
-        filter: { key: 'kind', values: ['Component'] },
+        filter: { kind: 'Component' },
       });
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ items: [entity] });
@@ -744,14 +732,13 @@ describe('createRouter readonly disabled', () => {
         entityRefs: [entityRef],
         fields: undefined,
         credentials: mockCredentials.user(),
-        filter: undefined,
-        query: { kind: 'Component' },
+        filter: { kind: 'Component' },
       });
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ items: [entity] });
     });
 
-    it('forwards both filter query param and body query predicate independently', async () => {
+    it('forwards both filter query param and body query predicate merged', async () => {
       const entity: Entity = {
         apiVersion: 'a',
         kind: 'component',
@@ -776,8 +763,9 @@ describe('createRouter readonly disabled', () => {
         entityRefs: [entityRef],
         fields: undefined,
         credentials: mockCredentials.user(),
-        filter: { key: 'kind', values: ['Component'] },
-        query: { 'metadata.namespace': 'default' },
+        filter: {
+          $all: [{ kind: 'Component' }, { 'metadata.namespace': 'default' }],
+        },
       });
       expect(response.status).toEqual(200);
     });
@@ -954,12 +942,22 @@ describe('createRouter readonly disabled', () => {
         getLocationByEntity: jest.fn(),
       };
       const router = await createRouter({
+        entitiesCatalog: {
+          entities: jest.fn(),
+          entitiesBatch: jest.fn(),
+          queryEntities: jest.fn(),
+          removeEntityByUid: jest.fn(),
+          entityAncestry: jest.fn(),
+          facets: jest.fn(),
+        },
+        locationAnalyzer: { analyzeLocation: jest.fn() },
         locationService,
         logger: mockServices.logger.mock(),
         config: new ConfigReader(undefined),
         auth: mockServices.auth(),
         httpAuth: mockServices.httpAuth(),
         orchestrator: { process: jest.fn() },
+        refreshService: { refresh: jest.fn() },
         permissionsService: mockServices.permissions(),
         auditor: mockServices.auditor.mock(),
       });
@@ -1395,7 +1393,7 @@ describe('createRouter readonly disabled', () => {
       expect(entitiesCatalog.facets).toHaveBeenCalledWith(
         expect.objectContaining({
           facets: ['spec.type'],
-          filter: { key: 'kind', values: ['Component'] },
+          filter: { kind: 'Component' },
         }),
       );
     });
@@ -1421,7 +1419,7 @@ describe('createRouter readonly disabled', () => {
       expect(entitiesCatalog.facets).toHaveBeenCalledWith(
         expect.objectContaining({
           facets: ['spec.type'],
-          query: { kind: 'Component' },
+          filter: { kind: 'Component' },
         }),
       );
     });
@@ -1477,6 +1475,7 @@ describe('createRouter readonly and raw json enabled', () => {
     };
     const router = await createRouter({
       entitiesCatalog,
+      locationAnalyzer: { analyzeLocation: jest.fn() },
       locationService,
       logger: mockServices.logger.mock(),
       config: new ConfigReader({
@@ -1487,6 +1486,7 @@ describe('createRouter readonly and raw json enabled', () => {
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth(),
       orchestrator: { process: jest.fn() },
+      refreshService: { refresh: jest.fn() },
       permissionsService,
       auditor: mockServices.auditor.mock(),
     });
@@ -1711,12 +1711,22 @@ describe.each(databases.eachSupportedId())(
       );
 
       const router = await createRouter({
+        entitiesCatalog: {
+          entities: jest.fn(),
+          entitiesBatch: jest.fn(),
+          queryEntities: jest.fn(),
+          removeEntityByUid: jest.fn(),
+          entityAncestry: jest.fn(),
+          facets: jest.fn(),
+        },
+        locationAnalyzer: { analyzeLocation: jest.fn() },
         locationService,
         logger: mockServices.logger.mock(),
         config: new ConfigReader(undefined),
         auth: mockServices.auth(),
         httpAuth: mockServices.httpAuth(),
         orchestrator: { process: jest.fn() },
+        refreshService: { refresh: jest.fn() },
         permissionsService: mockServices.permissions(),
         auditor: mockServices.auditor.mock(),
       });

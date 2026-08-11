@@ -15,9 +15,11 @@
  */
 import { z } from 'zod/v4';
 import { InputError } from '@backstage/errors';
-import type { JsonObject } from '@backstage/types';
+import type { Expand, JsonObject } from '@backstage/types';
 import type {
   ConnectionType,
+  LookupStrategy,
+  LookupStrategyQuery,
   MatchAuth,
   PortableSchema,
   WithoutReservedAuthMethods,
@@ -38,42 +40,17 @@ type ConfigFromSchema<TConfigSchema extends z.ZodObject> =
     ? Record<never, never>
     : z.infer<TConfigSchema>;
 
+// Expand flattens the intersection into a single object literal so that
+// editor tooltips show each auth method variant as a readable flat shape
+// rather than a chain of truncated intersections.
 type RootConnectionAuthFromSchema<
   TAuthMethod extends ConnectionAuthMethodSchema,
 > = TAuthMethod extends ConnectionAuthMethodSchema<
   infer TMethod,
   infer TConfigSchema
 >
-  ? ConfigFromSchema<TConfigSchema> & {
-      method: TMethod;
-      title?: string;
-      match?: { plugins: string[] };
-    }
+  ? Expand<{ method: TMethod } & ConfigFromSchema<TConfigSchema>>
   : never;
-
-type RootConnectionFromSchemas<
-  TType extends string,
-  TConfigSchema extends z.ZodObject,
-  TAuthMethods extends readonly ConnectionAuthMethodSchema[],
-> = ConfigFromSchema<TConfigSchema> & {
-  type: TType;
-  title?: string;
-  match?: { plugins: string[] };
-  auth: Array<RootConnectionAuthFromSchema<TAuthMethods[number]>>;
-};
-
-type RootConnectionAuthMethodsFromSchemas<
-  TAuthMethods extends readonly ConnectionAuthMethodSchema[],
-> = {
-  readonly [I in keyof TAuthMethods]: RootConnectionAuthFromSchema<
-    TAuthMethods[I]
-  >;
-};
-
-const matchSchema = z
-  .object({ plugins: z.array(z.string()) })
-  .strict()
-  .optional();
 
 function createPortableSchema<TSchema extends z.ZodType>(
   schema: TSchema,
@@ -107,61 +84,46 @@ export function createConnectionType<
   TType extends string,
   TConfigSchema extends z.ZodObject,
   const TAuthMethods extends readonly ConnectionAuthMethodSchema[],
+  TLookupStrategy extends LookupStrategy = 'host',
 >({
   configSchema,
   type,
   title,
+  lookupStrategy,
   authMethods,
   matchAuth,
 }: {
   type: TType;
   title: string;
+  lookupStrategy?: TLookupStrategy;
   configSchema: WithoutReservedFields<TConfigSchema>;
   authMethods: WithoutReservedAuthMethods<TAuthMethods>;
   matchAuth?: MatchAuth<
-    RootConnectionAuthMethodsFromSchemas<TAuthMethods>[number]
+    RootConnectionAuthFromSchema<TAuthMethods[number]>,
+    LookupStrategyQuery[TLookupStrategy]
   >;
-}): ConnectionType<
-  RootConnectionFromSchemas<TType, TConfigSchema, TAuthMethods>
-> {
+}): ConnectionType<{
+  type: TType;
+  lookupStrategy: TLookupStrategy;
+  query: LookupStrategyQuery[TLookupStrategy];
+  configSchema: ConfigFromSchema<TConfigSchema>;
+  auth: readonly RootConnectionAuthFromSchema<TAuthMethods[number]>[];
+}> {
   const validatedAuthMethods = authMethods as TAuthMethods;
   if (validatedAuthMethods.length < 1) {
     throw new InputError(
       `Connection type "${type}" must declare at least one auth method`,
     );
   }
-  const authOptions = validatedAuthMethods.map(am =>
-    am.configSchema
-      .extend({
-        method: z.literal(am.method),
-        title: z.string().min(1).optional(),
-        match: matchSchema,
-      })
-      .strict(),
-  );
-  const validated = configSchema as unknown as TConfigSchema;
-  const schema = validated
-    .extend({
-      type: z.literal(type),
-      title: z.string().min(1).optional(),
-      match: matchSchema,
-      auth: z.array(
-        authOptions.length === 1
-          ? authOptions[0]
-          : z.discriminatedUnion(
-              'method',
-              authOptions as [(typeof authOptions)[0], ...typeof authOptions],
-            ),
-      ),
-    })
-    .strict();
-  const portableSchema = createPortableSchema(
-    schema,
+  const portableConfigSchema = createPortableSchema(
+    (configSchema as unknown as TConfigSchema).strict(),
     `Invalid configuration for connection type "${type}"`,
   );
-  const connectionType = {
+
+  return {
     type,
     title,
+    lookupStrategy: lookupStrategy ?? 'host',
     authMethods: validatedAuthMethods.map(
       ({ method, title: authTitle, configSchema: authConfigSchema }) => ({
         method,
@@ -172,10 +134,13 @@ export function createConnectionType<
         ),
       }),
     ),
-    configSchema: portableSchema,
+    configSchema: portableConfigSchema,
     matchAuth,
-  } as unknown as ConnectionType<
-    RootConnectionFromSchemas<TType, TConfigSchema, TAuthMethods>
-  >;
-  return connectionType;
+  } as unknown as ConnectionType<{
+    type: TType;
+    lookupStrategy: TLookupStrategy;
+    query: LookupStrategyQuery[TLookupStrategy];
+    configSchema: ConfigFromSchema<TConfigSchema>;
+    auth: readonly RootConnectionAuthFromSchema<TAuthMethods[number]>[];
+  }>;
 }

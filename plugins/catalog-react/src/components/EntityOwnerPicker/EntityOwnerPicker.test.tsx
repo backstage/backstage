@@ -28,7 +28,11 @@ import {
   renderInTestApp,
   TestApiRegistry,
 } from '@backstage/test-utils';
-import { catalogApiRef } from '../..';
+import {
+  catalogApiRef,
+  defaultEntityPresentation,
+  entityPresentationApiRef,
+} from '../..';
 import { errorApiRef } from '@backstage/core-plugin-api';
 import { QueryEntitiesCursorRequest } from '@backstage/catalog-client';
 
@@ -611,5 +615,65 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
     expect(updateFilters).toHaveBeenLastCalledWith({
       owners: new EntityOwnerFilter(['group:default/team-b']),
     });
+  });
+
+  it('renders human-readable titles using entity ref string for presentation lookup', async () => {
+    // Regression test for the bug where owners-only mode showed opaque entity
+    // names instead of human-readable titles. The facets endpoint returns only
+    // entity refs, so useFacetsEntities creates stub entities with no title.
+    // Passing the stub entity directly to useEntityPresentation caused the
+    // presentation API to treat it as a complete entity and skip async
+    // resolution. Passing the stringified ref instead lets the presentation API
+    // fetch and cache the full entity with its title.
+    const mockPresentationApi = {
+      forEntity: jest.fn((entityOrRef: Entity | string) => {
+        if (typeof entityOrRef === 'string') {
+          const titlesByRef: Record<string, string> = {
+            'group:default/org-id-12345': 'Engineering Team',
+          };
+          const primaryTitle = titlesByRef[entityOrRef] ?? entityOrRef;
+          const snapshot = { entityRef: entityOrRef, primaryTitle };
+          return { snapshot, promise: Promise.resolve(snapshot) };
+        }
+        // Entity passed directly: use whatever's on the stub (no title → name only)
+        const ref = stringifyEntityRef(entityOrRef);
+        const snapshot = {
+          ...defaultEntityPresentation(entityOrRef),
+          entityRef: ref,
+        };
+        return { snapshot, promise: Promise.resolve(snapshot) };
+      }),
+    };
+
+    mockCatalogApi.getEntityFacets.mockResolvedValue({
+      facets: {
+        'relations.ownedBy': [
+          { count: 1, value: 'group:default/org-id-12345' },
+        ],
+      },
+    });
+
+    const testApis = TestApiRegistry.from(
+      [catalogApiRef, mockCatalogApi],
+      [errorApiRef, mockErrorApi],
+      [entityPresentationApiRef, mockPresentationApi],
+    );
+
+    await renderInTestApp(
+      <ApiProvider apis={testApis}>
+        <MockEntityListContextProvider value={{}}>
+          <EntityOwnerPicker mode="owners-only" />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    fireEvent.click(screen.getByTestId('owner-picker-expand'));
+
+    await waitFor(() =>
+      expect(screen.getByText('Engineering Team')).toBeInTheDocument(),
+    );
+
+    expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledTimes(1);
+    expect(mockCatalogApi.getEntitiesByRefs).not.toHaveBeenCalled();
   });
 });

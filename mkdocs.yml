@@ -31,6 +31,7 @@ nav:
           - Configuring App with plugins: 'getting-started/configure-app-with-plugins.md'
           - Customize the look-and-feel of your App: 'conf/user-interface/index.md'
           - Customizing your Homepage: 'getting-started/homepage.md'
+      - Setting up CI: 'getting-started/ci.md'
       - Deployment:
           - Deploying Backstage: 'deployment/index.md'
           - Scaling: 'deployment/scaling.md'
@@ -91,6 +92,7 @@ nav:
           - Search Architecture: 'features/search/architecture.md'
           - Search Engines: 'features/search/search-engines.md'
           - Collators: 'features/search/collators.md'
+          - Writing Custom Collators: 'features/search/custom-collators.md'
           - HOW TO guides: 'features/search/how-to-guides.md'
       - TechDocs:
           - Overview: 'features/techdocs/README.md'

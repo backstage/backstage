@@ -123,7 +123,7 @@ function getImportInfo(node) {
 module.exports = function visitImports(context, visitor) {
   const packages = getPackages(context.getCwd());
   if (!packages) {
-    return;
+    return {};
   }
 
   /**

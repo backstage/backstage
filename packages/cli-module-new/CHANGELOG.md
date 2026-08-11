@@ -1,5 +1,16 @@
 # @backstage/cli-module-new
 
+## 0.1.6-next.0
+
+### Patch Changes
+
+- 90ef477: Added a new `permission-policy-module` template for scaffolding custom permission policies via `backstage-cli new`. The template generates a backend module that wires a `PermissionPolicy` implementation into the permission backend using the `policyExtensionPoint`, along with a test example.
+- 88b2bbf: Added a `search-collator-module` template for scaffolding new search collator modules via `backstage-cli new`.
+- 2c7cc55: Added a new `catalog-processor-module` template for scaffolding catalog processor modules via `backstage-cli new`.
+- 0e6007f: Updated the `plugin-web-library` template to use `toastApiRef` from `@backstage/frontend-plugin-api` instead of the deprecated `alertApiRef` from `@backstage/core-plugin-api`.
+- 90bbc2e: Added `UserInfoService` to the `permission-policy-module` template so that scaffolded permission policies have the service already wired up for ownership lookups.
+- 10887f4: Fixed generated frontend plugin tables to identify their row header, and added the associated backend plugin package as a development dependency of generated backend plugin modules.
+
 ## 0.1.5
 
 ### Patch Changes

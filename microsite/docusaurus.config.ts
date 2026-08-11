@@ -131,7 +131,6 @@ const config: Config = {
     'https://unpkg.com/medium-zoom@1.0.6/dist/medium-zoom.min.js',
     '/js/medium-zoom.js',
     '/js/dismissable-banner.js',
-    '/js/scroll-nav-to-view-in-docs.js',
     {
       src: 'https://widget.kapa.ai/kapa-widget.bundle.js',
       'data-website-id': '4f3b7b51-4ea6-4a5b-aede-44fbe128c0f2',
@@ -155,22 +154,13 @@ const config: Config = {
     repoUrl: 'https://github.com/backstage/backstage',
   },
   onBrokenLinks: 'log',
+  storage: {
+    type: 'localStorage',
+    namespace: true,
+  },
   future: {
-    v4: {
-      removeLegacyPostBuildHeadAttribute: true,
-    },
-    experimental_faster: {
-      swcJsLoader: true,
-      swcJsMinimizer: true,
-      lightningCssMinimizer: true,
-      rspackBundler: true,
-      mdxCrossCompilerCache: true,
-      rspackPersistentCache: true,
-      // TODO: React has an issue with server rendering here.
-      // ssgWorkerThreads: true,
-      // TODO: This prints extra warnings in the console, add back when we have a fix.
-      // swcHtmlMinimizer: true,
-    },
+    v4: true,
+    faster: true,
   },
   presets: [
     [
@@ -215,7 +205,7 @@ const config: Config = {
           onInlineAuthors: 'ignore',
         },
         theme: {
-          customCss: 'src/theme/customTheme.scss',
+          customCss: require.resolve('./src/theme/customTheme.scss'),
         },
         gtag: {
           trackingID: 'G-KSEVGGNCJW',
@@ -224,25 +214,48 @@ const config: Config = {
     ],
   ],
   markdown: {
-    preprocessor({ fileContent }) {
-      // Replace all HTML comments with empty strings as these are not supported by MDXv2.
-      function removeHtmlComments(input) {
-        let previous;
-        do {
-          previous = input;
-          input = input.replace(/<!--.*?-->/gs, '');
-        } while (input !== previous);
-        return input;
-      }
-      return removeHtmlComments(fileContent);
-    },
     format: 'detect',
     hooks: {
       onBrokenMarkdownLinks: 'log',
     },
   },
   plugins: [
-    'docusaurus-plugin-sass',
+    [
+      'docusaurus-plugin-sass',
+      {
+        sassOptions: {
+          loadPaths: [resolvePath(__dirname)],
+        },
+      },
+    ],
+    // Workaround: postcss-preset-env polyfills @layer by converting it to
+    // :not(#\#) specificity hacks, which breaks useCssCascadeLayers.
+    // Disable the cascade-layers polyfill so native @layer is preserved.
+    // See https://github.com/facebook/docusaurus/pull/11142
+    function disableCascadeLayersPolyfillPlugin() {
+      return {
+        name: 'disable-cascade-layers-polyfill',
+        configurePostCss(postCssOptions) {
+          postCssOptions.plugins = postCssOptions.plugins.map(plugin => {
+            if (
+              Array.isArray(plugin) &&
+              typeof plugin[0] === 'string' &&
+              plugin[0].includes('postcss-preset-env')
+            ) {
+              return [
+                plugin[0],
+                {
+                  ...plugin[1],
+                  features: { ...plugin[1]?.features, 'cascade-layers': false },
+                },
+              ];
+            }
+            return plugin;
+          });
+          return postCssOptions;
+        },
+      };
+    },
     function disableExpensiveBundlerOptimizationPlugin() {
       return {
         name: 'disable-expensive-bundler-optimizations',
@@ -577,13 +590,6 @@ const config: Config = {
       ],
     },
     image: 'img/sharing-opengraph.png',
-    metadata: [
-      {
-        name: 'description',
-        content:
-          'Backstage is an open source developer portal framework that centralizes your software catalog, unifies infrastructure tools, and helps teams ship high-quality code faster.',
-      },
-    ],
     footer: {
       links: [
         {
@@ -660,7 +666,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © ${new Date().getFullYear()} Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: <a href="https://www.linuxfoundation.org/trademark-usage" />https://www.linuxfoundation.org/trademark-usage</a></p>`,
+      copyright: `<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © ${new Date().getFullYear()} Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: <a href="https://www.linuxfoundation.org/trademark-usage">https://www.linuxfoundation.org/trademark-usage</a></p>`,
     },
     algolia: {
       apiKey: '60d2643a9c6306463f15f8c3556e7f2e', // Owned by @Rugvip
@@ -672,7 +678,7 @@ const config: Config = {
       theme: backstageTheme,
       // Supported languages: https://prismjs.com/#supported-languages
       // Default languages: https://github.com/FormidableLabs/prism-react-renderer/blob/master/packages/generate-prism-languages/index.ts#L9-L23
-      additionalLanguages: ['docker', 'bash'],
+      additionalLanguages: ['docker', 'bash', 'log', 'shell-session'],
       magicComments: [
         // Extend the default highlight class name
         {

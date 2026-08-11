@@ -25,6 +25,7 @@ import {
 import path from 'node:path';
 import { examples } from './templateFile.examples';
 import { createTemplateFileActionHandler } from './templateFileActionHandler';
+import { collectActionTemplateCapabilities } from './templateActionHandler';
 
 /**
  * Downloads a single file and templates variables into file.
@@ -38,6 +39,8 @@ export function createFetchTemplateFileAction(options: {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 }) {
+  const templateCapabilities = collectActionTemplateCapabilities(options);
+
   return createTemplateAction({
     id: 'fetch:template:file',
     description: 'Downloads single file and places it in the workspace.',
@@ -118,6 +121,7 @@ export function createFetchTemplateFileAction(options: {
           return tmpFilePath;
         },
         ...options,
+        templateCapabilities,
       }),
   });
 }
