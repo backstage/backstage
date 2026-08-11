@@ -17,6 +17,8 @@ import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import RefreshIcon from '@material-ui/icons/Refresh';
@@ -35,6 +37,12 @@ const useStyles = makeStyles(
     },
     closeButton: {
       marginLeft: 'auto',
+    },
+    loading: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: theme.spacing(1),
+      padding: theme.spacing(1),
     },
   }),
   { name: 'ScaffolderTemplateEditorBrowser' },
@@ -67,6 +75,19 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
     return null;
   }
 
+  let loadingMessage: string | undefined;
+  if (directoryEditor.totalFileCount > 0) {
+    loadingMessage =
+      directoryEditor.loadedFileCount > 0
+        ? t('templateEditorPage.templateEditorBrowser.loadingFilesProgress', {
+            loaded: `${directoryEditor.loadedFileCount}`,
+            total: `${directoryEditor.totalFileCount}`,
+          })
+        : t('templateEditorPage.templateEditorBrowser.loadingFiles', {
+            total: `${directoryEditor.totalFileCount}`,
+          });
+  }
+
   return (
     <>
       <Grid className={classes.grid} container spacing={0} alignItems="center">
@@ -75,7 +96,10 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
         >
           <IconButton
             size="small"
-            disabled={directoryEditor.files.every(file => !file.dirty)}
+            disabled={
+              directoryEditor.loading ||
+              directoryEditor.files.every(file => !file.dirty)
+            }
             onClick={() => directoryEditor.save()}
           >
             <SaveIcon />
@@ -86,7 +110,11 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
             'templateEditorPage.templateEditorBrowser.reloadIconTooltip',
           )}
         >
-          <IconButton size="small" onClick={() => directoryEditor.reload()}>
+          <IconButton
+            size="small"
+            disabled={directoryEditor.loading}
+            onClick={() => directoryEditor.reload()}
+          >
             <RefreshIcon />
           </IconButton>
         </Tooltip>
@@ -103,6 +131,16 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
         </Tooltip>
       </Grid>
       <Divider />
+      {directoryEditor.loading && (
+        <div className={classes.loading}>
+          <CircularProgress size={20} />
+          {loadingMessage && (
+            <Typography variant="body2" color="textSecondary">
+              {loadingMessage}
+            </Typography>
+          )}
+        </div>
+      )}
       <FileBrowser
         selected={directoryEditor.selectedFile?.path ?? ''}
         onSelect={directoryEditor.setSelectedFile}

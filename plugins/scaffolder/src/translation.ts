@@ -300,6 +300,8 @@ export const scaffolderTranslationRef = createTranslationRef({
         saveIconTooltip: 'Save all files',
         reloadIconTooltip: 'Reload directory',
         closeIconTooltip: 'Close directory',
+        loadingFiles: 'Loading {{total}} files...',
+        loadingFilesProgress: 'Loading {{loaded}} of {{total}} files...',
       },
       templateEditorIntro: {
         title: 'Get started by choosing one of the options below',
