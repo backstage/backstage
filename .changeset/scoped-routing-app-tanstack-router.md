@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-tanstack-router-adapter': patch
+'@backstage/plugin-app-tanstack-router': patch
 ---
 
 Added a new package that provides `TanStackPageRouter`, a page router that renders new frontend system pages with TanStack Router. Attach it to a page's `router` input with `PageRouterBlueprint`, or register it as the app-wide default through `pageRouterApiRef`.

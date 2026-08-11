@@ -1,7 +1,7 @@
 {
-  "name": "@backstage/plugin-react-router-v7-adapter",
+  "name": "@backstage/plugin-app-tanstack-router",
   "version": "0.1.0",
-  "description": "React Router v7 adapter for the Backstage router-agnostic plugin routing system",
+  "description": "TanStack Router adapter for the Backstage router-agnostic plugin routing system",
   "backstage": {
     "role": "web-library"
   },
@@ -15,7 +15,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/react-router-v7-adapter"
+    "directory": "plugins/app-tanstack-router"
   },
   "license": "Apache-2.0",
   "sideEffects": false,
@@ -53,22 +53,23 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/frontend-test-utils": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@tanstack/history": "^1.162.0",
+    "@tanstack/react-router": "^1.170.17",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.0.0",
     "@types/react": "^18.0.0",
     "react": "^18.0.2",
-    "react-dom": "^18.0.2",
-    "react-router": "^7.6.2",
-    "react-router-dom": "^7.6.2"
+    "react-dom": "^18.0.2"
   },
   "peerDependencies": {
+    "@tanstack/history": "^1.162.0",
+    "@tanstack/react-router": "^1.170.17",
     "@types/react": "^18.0.0 || ^19.0.0",
     "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0",
-    "react-router": "^7.0.0",
-    "react-router-dom": "^7.0.0"
+    "react-dom": "^18.0.0 || ^19.0.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {

@@ -1,4 +1,4 @@
-# @backstage/plugin-react-router-v7-adapter
+# @backstage/plugin-app-react-router-v7
 
 Renders a page of the [new frontend system](https://backstage.io/docs/frontend-system/)
 with [React Router v7](https://reactrouter.com), so that one page can use
@@ -19,7 +19,7 @@ React Router v7 is a peer dependency, so install it alongside the adapter:
 
 ```sh
 cd <package-dir> # if within a monorepo
-yarn add @backstage/plugin-react-router-v7-adapter react-router@^7 react-router-dom@^7
+yarn add @backstage/plugin-app-react-router-v7 react-router@^7 react-router-dom@^7
 ```
 
 ## Usage
@@ -29,7 +29,7 @@ Attach `ReactRouterV7PageRouter` to a page's `router` input with
 
 ```tsx
 import { PageRouterBlueprint } from '@backstage/frontend-plugin-api';
-import { ReactRouterV7PageRouter } from '@backstage/plugin-react-router-v7-adapter';
+import { ReactRouterV7PageRouter } from '@backstage/plugin-app-react-router-v7';
 
 const toolsPageRouter = PageRouterBlueprint.make({
   attachTo: { id: 'page:tools', input: 'router' },

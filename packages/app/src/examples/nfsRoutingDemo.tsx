@@ -76,12 +76,12 @@ import {
   createRouter,
   useRouterState,
 } from '@tanstack/react-router';
-import { ReactRouterV7PageRouter } from '@backstage/plugin-react-router-v7-adapter';
+import { ReactRouterV7PageRouter } from '@backstage/plugin-app-react-router-v7';
 import {
   TanStackPageContent,
   TanStackPageRouter,
   createTanStackPageRouter,
-} from '@backstage/plugin-tanstack-router-adapter';
+} from '@backstage/plugin-app-tanstack-router';
 import Typography from '@material-ui/core/Typography';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import CallSplitIcon from '@material-ui/icons/CallSplit';

@@ -1,10 +1,10 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: backstage-plugin-react-router-v7-adapter
-  title: '@backstage/plugin-react-router-v7-adapter'
+  name: backstage-plugin-app-tanstack-router
+  title: '@backstage/plugin-app-tanstack-router'
   description: >-
-    React Router v7 adapter for the Backstage router-agnostic plugin routing
+    TanStack Router adapter for the Backstage router-agnostic plugin routing
     system
 spec:
   lifecycle: experimental

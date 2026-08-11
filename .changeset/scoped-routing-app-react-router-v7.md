@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-react-router-v7-adapter': patch
+'@backstage/plugin-app-react-router-v7': patch
 ---
 
 Added a new package that provides `ReactRouterV7PageRouter`, a page router that renders new frontend system pages with React Router v7. Attach it to a page's `router` input with `PageRouterBlueprint`, or register it as the app-wide default through `pageRouterApiRef`.

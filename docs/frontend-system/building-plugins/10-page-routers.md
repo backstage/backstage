@@ -33,7 +33,7 @@ and a named page in the same plugin has the ID `page:tools/reports`.
 Add the adapter package to your plugin:
 
 ```shell
-yarn --cwd plugins/<plugin-name> add @backstage/plugin-react-router-v7-adapter
+yarn --cwd plugins/<plugin-name> add @backstage/plugin-app-react-router-v7
 ```
 
 The package expects `react-router` and `react-router-dom` version 7 as peer
@@ -43,7 +43,7 @@ Attach the router with `PageRouterBlueprint`:
 
 ```tsx title="plugins/tools/src/alpha.tsx"
 import { PageRouterBlueprint } from '@backstage/frontend-plugin-api';
-import { ReactRouterV7PageRouter } from '@backstage/plugin-react-router-v7-adapter';
+import { ReactRouterV7PageRouter } from '@backstage/plugin-app-react-router-v7';
 
 const toolsPageRouter = PageRouterBlueprint.make({
   name: 'react-router-v7',
@@ -62,7 +62,7 @@ the page rather than against the app root.
 Add the adapter package:
 
 ```shell
-yarn --cwd plugins/<plugin-name> add @backstage/plugin-tanstack-router-adapter
+yarn --cwd plugins/<plugin-name> add @backstage/plugin-app-tanstack-router
 ```
 
 This package expects `@tanstack/react-router` and `@tanstack/history` as peer
@@ -78,7 +78,7 @@ page content itself does not declare TanStack routes:
 
 ```tsx title="plugins/tools/src/alpha.tsx"
 import { PageRouterBlueprint } from '@backstage/frontend-plugin-api';
-import { TanStackPageRouter } from '@backstage/plugin-tanstack-router-adapter';
+import { TanStackPageRouter } from '@backstage/plugin-app-tanstack-router';
 
 const toolsPageRouter = PageRouterBlueprint.make({
   name: 'tanstack',
@@ -97,7 +97,7 @@ the tree where the framework's page element belongs:
 import {
   TanStackPageContent,
   createTanStackPageRouter,
-} from '@backstage/plugin-tanstack-router-adapter';
+} from '@backstage/plugin-app-tanstack-router';
 import {
   Outlet,
   createRootRoute,
@@ -161,7 +161,7 @@ import {
   createFrontendModule,
   pageRouterApiRef,
 } from '@backstage/frontend-plugin-api';
-import { TanStackPageRouter } from '@backstage/plugin-tanstack-router-adapter';
+import { TanStackPageRouter } from '@backstage/plugin-app-tanstack-router';
 
 const tanStackDefault = createFrontendModule({
   pluginId: 'app',
@@ -219,4 +219,4 @@ its library's routing context. The component type is `PageRouterComponent` from
   level above the page, has already decided which sub-page is showing.
 
 The packaged adapters are the reference implementations. Their source lives in
-`plugins/react-router-v7-adapter` and `plugins/tanstack-router-adapter`.
+`plugins/app-react-router-v7` and `plugins/app-tanstack-router`.

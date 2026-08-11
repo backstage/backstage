@@ -73,8 +73,6 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/notifications-*                          @backstage/maintainers @backstage/notifications-maintainers
 /plugins/scaffolder-backend-module-notifications  @backstage/maintainers @backstage/notifications-maintainers
 /plugins/permission-*                             @backstage/permission-maintainers
-/plugins/react-router-v7-adapter                  @backstage/framework-maintainers
-/plugins/tanstack-router-adapter                  @backstage/framework-maintainers
 /plugins/scaffolder                               @backstage/maintainers @backstage/scaffolder-maintainers
 /plugins/scaffolder-*                             @backstage/maintainers @backstage/scaffolder-maintainers
 /plugins/search                                   @backstage/search-maintainers
