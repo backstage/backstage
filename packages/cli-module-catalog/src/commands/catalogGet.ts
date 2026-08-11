@@ -16,7 +16,8 @@
 
 import { cli } from 'cleye';
 import type { CliCommandContext } from '@backstage/cli-node';
-import { ActionsClient } from '../lib/ActionsClient';
+import type { FilterPredicate } from '@backstage/filter-predicates';
+import { createCatalogClient } from '../lib/catalogClient';
 import { resolveAuth } from '../lib/resolveAuth';
 import { writeJson } from '../lib/intentFormat';
 
@@ -52,12 +53,34 @@ export default async ({ args, info }: CliCommandContext) => {
   }
 
   const { accessToken, baseUrl } = await resolveAuth(flags.instance);
-  const client = new ActionsClient(baseUrl, accessToken);
+  const client = createCatalogClient(baseUrl);
 
-  const input: Record<string, unknown> = { name: flags.name };
-  if (flags.kind) input.kind = flags.kind;
-  if (flags.namespace) input.namespace = flags.namespace;
+  const filter: Record<string, string> = { 'metadata.name': flags.name };
+  if (flags.kind) filter.kind = flags.kind;
+  if (flags.namespace) filter['metadata.namespace'] = flags.namespace;
 
-  const result = await client.execute('catalog:get-catalog-entity', input);
-  writeJson(result);
+  const { items } = await client.queryEntities(
+    { query: filter as FilterPredicate },
+    { token: accessToken },
+  );
+
+  if (items.length === 0) {
+    throw new Error(`No entity found with name "${flags.name}"`);
+  }
+  if (items.length > 1) {
+    throw new Error(
+      `Multiple entities found with name "${
+        flags.name
+      }", please provide more specific filters. Entities found: ${items
+        .map(
+          item =>
+            `"${item.kind}:${item.metadata.namespace ?? 'default'}/${
+              item.metadata.name
+            }"`,
+        )
+        .join(', ')}`,
+    );
+  }
+
+  writeJson(items[0]);
 };

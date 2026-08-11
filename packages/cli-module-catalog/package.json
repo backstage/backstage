@@ -33,10 +33,14 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@backstage/catalog-client": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
     "@backstage/cli-node": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "@backstage/filter-predicates": "workspace:^",
     "chalk": "^4.0.0",
-    "cleye": "^2.6.0"
+    "cleye": "^2.6.0",
+    "yaml": "^2.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

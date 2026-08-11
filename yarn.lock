@@ -2578,11 +2578,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/cli-module-catalog@workspace:packages/cli-module-catalog"
   dependencies:
+    "@backstage/catalog-client": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/cli-node": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/filter-predicates": "workspace:^"
     chalk: "npm:^4.0.0"
     cleye: "npm:^2.6.0"
+    yaml: "npm:^2.0.0"
   bin:
     cli-module-catalog: bin/backstage-cli-module-catalog
   languageName: unknown
@@ -2748,11 +2752,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/cli-module-scaffolder@workspace:packages/cli-module-scaffolder"
   dependencies:
+    "@backstage/catalog-client": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/cli-node": "workspace:^"
     "@backstage/errors": "workspace:^"
     chalk: "npm:^4.0.0"
     cleye: "npm:^2.6.0"
+    yaml: "npm:^2.0.0"
   bin:
     cli-module-scaffolder: bin/backstage-cli-module-scaffolder
   languageName: unknown

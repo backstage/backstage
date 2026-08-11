@@ -35,7 +35,7 @@ jest.mock('../lib/SearchClient', () => ({
   })),
 }));
 
-import searchCommand from './search';
+import docsSearch from './docsSearch';
 import { cli } from 'cleye';
 
 const mockCli = cli as jest.MockedFunction<typeof cli>;
@@ -43,10 +43,10 @@ const mockCli = cli as jest.MockedFunction<typeof cli>;
 const ctx = (args: string[]): CliCommandContext =>
   ({
     args,
-    info: { name: 'search', usage: 'backstage-cli search' },
+    info: { name: 'docs search', usage: 'backstage-cli docs search' },
   } as unknown as CliCommandContext);
 
-describe('search', () => {
+describe('docs search', () => {
   let stdoutSpy: jest.SpiedFunction<typeof process.stdout.write>;
 
   beforeEach(() => {
@@ -63,37 +63,23 @@ describe('search', () => {
   it('throws when no search term provided', async () => {
     (mockCli as jest.Mock).mockReturnValue({ flags: {} });
 
-    await expect(searchCommand(ctx([]))).rejects.toThrow(
+    await expect(docsSearch(ctx([]))).rejects.toThrow(
       'Search term is required',
     );
   });
 
-  it('queries with term', async () => {
+  it('queries the search backend restricted to techdocs', async () => {
     (mockCli as jest.Mock).mockReturnValue({ flags: {} });
     mockQuery.mockResolvedValue({ results: [] });
 
-    await searchCommand(ctx(['my', 'service']));
+    await docsSearch(ctx(['my', 'service']));
 
     expect(mockQuery).toHaveBeenCalledWith({
       term: 'my service',
-      types: undefined,
-      filters: undefined,
+      types: ['techdocs'],
       pageLimit: undefined,
       pageCursor: undefined,
     });
-  });
-
-  it('passes types filter when provided', async () => {
-    (mockCli as jest.Mock).mockReturnValue({
-      flags: { types: '["techdocs"]' },
-    });
-    mockQuery.mockResolvedValue({ results: [] });
-
-    await searchCommand(ctx(['docs', '--types', '["techdocs"]']));
-
-    expect(mockQuery).toHaveBeenCalledWith(
-      expect.objectContaining({ term: 'docs', types: ['techdocs'] }),
-    );
   });
 
   it('passes pagination flags', async () => {
@@ -102,14 +88,10 @@ describe('search', () => {
     });
     mockQuery.mockResolvedValue({ results: [] });
 
-    await searchCommand(ctx(['term']));
+    await docsSearch(ctx(['term']));
 
     expect(mockQuery).toHaveBeenCalledWith(
-      expect.objectContaining({
-        term: 'term',
-        pageLimit: 5,
-        pageCursor: 'abc',
-      }),
+      expect.objectContaining({ pageLimit: 5, pageCursor: 'abc' }),
     );
   });
 
@@ -118,16 +100,17 @@ describe('search', () => {
     mockQuery.mockResolvedValue({
       results: [{ document: { title: 'Test' } }],
       numberOfResults: 1,
+      nextPageCursor: 'next',
     });
 
-    await searchCommand(ctx(['test']));
+    await docsSearch(ctx(['test']));
 
     const output = stdoutSpy.mock.calls.map(c => c[0]).join('');
     expect(JSON.parse(output)).toEqual({
       results: [{ document: { title: 'Test' } }],
-      nextPageCursor: undefined,
+      nextPageCursor: 'next',
       totalItems: 1,
-      hasMoreResults: false,
+      hasMoreResults: true,
     });
   });
 
@@ -137,19 +120,18 @@ describe('search', () => {
       results: [
         {
           document: {
-            title: 'My Service',
-            location: '/catalog/default/component/my-svc',
-            text: 'A great service',
+            title: 'My Docs',
+            location: '/docs/default/component/my-svc',
+            text: 'Documentation content',
           },
         },
       ],
     });
 
-    await searchCommand(ctx(['service']));
+    await docsSearch(ctx(['docs']));
 
     const output = stdoutSpy.mock.calls.map(c => c[0]).join('');
-    expect(output).toContain('My Service');
-    expect(output).toContain('/catalog/default/component/my-svc');
-    expect(output).toContain('A great service');
+    expect(output).toContain('My Docs');
+    expect(output).toContain('/docs/default/component/my-svc');
   });
 });

@@ -16,7 +16,7 @@
 
 import type { CliCommandContext } from '@backstage/cli-node';
 
-const mockExecute = jest.fn();
+const mockDryRun = jest.fn();
 
 jest.mock('cleye', () => ({
   cli: jest.fn().mockReturnValue({ flags: {} }),
@@ -29,9 +29,9 @@ jest.mock('../lib/resolveAuth', () => ({
     pluginSources: ['scaffolder'],
   }),
 }));
-jest.mock('../lib/ActionsClient', () => ({
-  ActionsClient: jest.fn().mockImplementation(() => ({
-    execute: mockExecute,
+jest.mock('../lib/ScaffolderClient', () => ({
+  ScaffolderClient: jest.fn().mockImplementation(() => ({
+    dryRun: mockDryRun,
   })),
 }));
 
@@ -71,33 +71,71 @@ describe('template dry-run', () => {
     );
   });
 
-  it('calls dry-run-template with template ref only', async () => {
+  it('reports a validation error when the template is not valid YAML', async () => {
     (mockCli as jest.Mock).mockReturnValue({
-      flags: { 'template-ref': 'template:default/my-tpl' },
+      flags: { 'template-ref': '{not: valid: yaml' },
     });
-    mockExecute.mockResolvedValue({ steps: [], output: {} });
 
     await templateDryRun(ctx([]));
 
-    expect(mockExecute).toHaveBeenCalledWith('scaffolder:dry-run-template', {
-      templateYaml: 'template:default/my-tpl',
+    expect(mockDryRun).not.toHaveBeenCalled();
+    const output = stdoutSpy.mock.calls.map(c => c[0]).join('');
+    const result = JSON.parse(output);
+    expect(result.valid).toBe(false);
+    expect(result.message).toBe('Failed to parse YAML template');
+  });
+
+  it('dry-runs the parsed template with default values', async () => {
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: { 'template-ref': 'kind: Template\nmetadata:\n  name: my-tpl' },
+    });
+    mockDryRun.mockResolvedValue({ steps: [], output: {}, log: [] });
+
+    await templateDryRun(ctx([]));
+
+    expect(mockDryRun).toHaveBeenCalledWith({
+      template: { kind: 'Template', metadata: { name: 'my-tpl' } },
+      values: {},
+    });
+
+    const output = stdoutSpy.mock.calls.map(c => c[0]).join('');
+    const result = JSON.parse(output);
+    expect(result).toEqual({
+      valid: true,
+      message: 'Template validation successful',
+      log: [],
+      output: {},
+      steps: [],
     });
   });
 
-  it('passes values when provided', async () => {
+  it('passes values when provided and maps log entries', async () => {
     (mockCli as jest.Mock).mockReturnValue({
       flags: {
-        'template-ref': 'template:default/my-tpl',
+        'template-ref': 'kind: Template\nmetadata:\n  name: my-tpl',
         values: '{"name":"app"}',
       },
     });
-    mockExecute.mockResolvedValue({ steps: [] });
+    mockDryRun.mockResolvedValue({
+      steps: [{ id: 'step-1', name: 'fetch', action: 'fetch:template' }],
+      output: { url: 'https://example.com' },
+      log: [{ body: { message: 'hello', stepId: 'step-1', status: 'ok' } }],
+    });
 
     await templateDryRun(ctx([]));
 
-    expect(mockExecute).toHaveBeenCalledWith('scaffolder:dry-run-template', {
-      templateYaml: 'template:default/my-tpl',
+    expect(mockDryRun).toHaveBeenCalledWith({
+      template: { kind: 'Template', metadata: { name: 'my-tpl' } },
       values: { name: 'app' },
     });
+
+    const output = stdoutSpy.mock.calls.map(c => c[0]).join('');
+    const result = JSON.parse(output);
+    expect(result.log).toEqual([
+      { message: 'hello', stepId: 'step-1', status: 'ok' },
+    ]);
+    expect(result.steps).toEqual([
+      { id: 'step-1', name: 'fetch', action: 'fetch:template' },
+    ]);
   });
 });

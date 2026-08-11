@@ -16,7 +16,7 @@
 
 import { cli } from 'cleye';
 import type { CliCommandContext } from '@backstage/cli-node';
-import { ActionsClient } from '../lib/ActionsClient';
+import { createCatalogClient } from '../lib/catalogClient';
 import { resolveAuth } from '../lib/resolveAuth';
 import { writeJson } from '../lib/intentFormat';
 
@@ -45,11 +45,19 @@ export default async ({ args, info }: CliCommandContext) => {
     );
   }
 
-  const { accessToken, baseUrl } = await resolveAuth(flags.instance);
-  const client = new ActionsClient(baseUrl, accessToken);
+  try {
+    // eslint-disable-next-line no-new
+    new URL(flags['location-url']);
+  } catch {
+    throw new Error(`${flags['location-url']} is an invalid URL`);
+  }
 
-  const result = await client.execute('catalog:register-entity', {
-    locationUrl: flags['location-url'],
-  });
-  writeJson(result);
+  const { accessToken, baseUrl } = await resolveAuth(flags.instance);
+  const client = createCatalogClient(baseUrl);
+
+  const result = await client.addLocation(
+    { type: 'url', target: flags['location-url'] },
+    { token: accessToken },
+  );
+  writeJson({ locationId: result.location.id });
 };

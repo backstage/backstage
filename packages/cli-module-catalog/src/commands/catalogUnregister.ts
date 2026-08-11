@@ -16,7 +16,7 @@
 
 import { cli } from 'cleye';
 import type { CliCommandContext } from '@backstage/cli-node';
-import { ActionsClient } from '../lib/ActionsClient';
+import { createCatalogClient } from '../lib/catalogClient';
 import { resolveAuth } from '../lib/resolveAuth';
 import { writeJson } from '../lib/intentFormat';
 
@@ -50,12 +50,31 @@ export default async ({ args, info }: CliCommandContext) => {
   }
 
   const { accessToken, baseUrl } = await resolveAuth(flags.instance);
-  const client = new ActionsClient(baseUrl, accessToken);
+  const client = createCatalogClient(baseUrl);
+  const options = { token: accessToken };
 
-  const type: Record<string, string> = {};
-  if (flags['location-id']) type.locationId = flags['location-id'];
-  if (flags['location-url']) type.locationUrl = flags['location-url'];
+  if (flags['location-id']) {
+    await client.removeLocationById(flags['location-id'], options);
+  } else {
+    const locationUrl = flags['location-url'];
+    if (!locationUrl) {
+      throw new Error(
+        '--location-id or --location-url is required. Usage: catalog unregister --location-id <id>',
+      );
+    }
+    const { items } = await client.getLocations(undefined, options);
+    const locations = items.filter(
+      location => location.target.toLowerCase() === locationUrl.toLowerCase(),
+    );
 
-  const result = await client.execute('catalog:unregister-entity', { type });
-  writeJson(result);
+    if (locations.length === 0) {
+      throw new Error(`Location with URL ${locationUrl} not found`);
+    }
+
+    for (const location of locations) {
+      await client.removeLocationById(location.id, options);
+    }
+  }
+
+  writeJson({});
 };

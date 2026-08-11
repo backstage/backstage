@@ -29,8 +29,8 @@ jest.mock('../lib/resolveAuth', () => ({
     pluginSources: ['scaffolder'],
   }),
 }));
-jest.mock('../lib/ActionsClient', () => ({
-  ActionsClient: jest.fn().mockImplementation(() => ({
+jest.mock('../lib/ScaffolderClient', () => ({
+  ScaffolderClient: jest.fn().mockImplementation(() => ({
     execute: mockExecute,
   })),
 }));
@@ -92,10 +92,14 @@ describe('template execute', () => {
 
     await templateExecute(ctx([]));
 
-    expect(mockExecute).toHaveBeenCalledWith('scaffolder:execute-template', {
+    expect(mockExecute).toHaveBeenCalledWith({
       templateRef: 'template:default/my-tpl',
       values: { name: 'my-app' },
+      secrets: undefined,
     });
+
+    const output = stdoutSpy.mock.calls.map(c => c[0]).join('');
+    expect(JSON.parse(output)).toEqual({ taskId: 'task-123' });
   });
 
   it('passes secrets when provided', async () => {
@@ -110,7 +114,7 @@ describe('template execute', () => {
 
     await templateExecute(ctx([]));
 
-    expect(mockExecute).toHaveBeenCalledWith('scaffolder:execute-template', {
+    expect(mockExecute).toHaveBeenCalledWith({
       templateRef: 'template:default/my-tpl',
       values: { name: 'app' },
       secrets: { token: 'secret' },

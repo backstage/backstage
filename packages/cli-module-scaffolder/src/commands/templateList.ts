@@ -16,7 +16,7 @@
 
 import { cli } from 'cleye';
 import type { CliCommandContext } from '@backstage/cli-node';
-import { ActionsClient } from '../lib/ActionsClient';
+import { createCatalogClient } from '../lib/catalogClient';
 import { resolveAuth } from '../lib/resolveAuth';
 import {
   parseOutputFlag,
@@ -47,14 +47,22 @@ export default async ({ args, info }: CliCommandContext) => {
 
   const mode = parseOutputFlag(flags as Record<string, unknown>);
   const { accessToken, baseUrl } = await resolveAuth(flags.instance);
-  const client = new ActionsClient(baseUrl, accessToken);
+  const client = createCatalogClient(baseUrl);
 
-  const input: Record<string, unknown> = {
+  const request: Record<string, unknown> = {
     query: { kind: 'Template' },
   };
-  if (flags.limit) input.limit = flags.limit;
+  if (flags.limit) request.limit = flags.limit;
 
-  const result = await client.execute('catalog:query-catalog-entities', input);
+  const response = await client.queryEntities(request, {
+    token: accessToken,
+  });
+  const result = {
+    items: response.items,
+    totalItems: response.totalItems,
+    hasMoreEntities: Boolean(response.pageInfo?.nextCursor),
+    nextPageCursor: response.pageInfo?.nextCursor,
+  };
 
   if (mode === 'json') {
     writeJson(result);

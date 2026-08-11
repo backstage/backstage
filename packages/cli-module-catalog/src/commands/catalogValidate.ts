@@ -15,8 +15,10 @@
  */
 
 import { cli } from 'cleye';
+import yaml from 'yaml';
 import type { CliCommandContext } from '@backstage/cli-node';
-import { ActionsClient } from '../lib/ActionsClient';
+import type { Entity } from '@backstage/catalog-model';
+import { createCatalogClient } from '../lib/catalogClient';
 import { resolveAuth } from '../lib/resolveAuth';
 import { writeJson } from '../lib/intentFormat';
 
@@ -46,12 +48,39 @@ export default async ({ args, info }: CliCommandContext) => {
     );
   }
 
+  let entity: Entity;
+  try {
+    entity = yaml.parse(flags.entity);
+  } catch (yamlError: any) {
+    writeJson({
+      isValid: false,
+      isValidYaml: false,
+      errors: [`YAML parsing error: ${yamlError.message}`],
+    });
+    return;
+  }
+
   const { accessToken, baseUrl } = await resolveAuth(flags.instance);
-  const client = new ActionsClient(baseUrl, accessToken);
+  const client = createCatalogClient(baseUrl);
 
-  const input: Record<string, unknown> = { entity: flags.entity };
-  if (flags.location) input.location = flags.location;
+  try {
+    const resp = await client.validateEntity(
+      entity,
+      flags.location ?? 'url:https://localhost/entity-validator',
+      { token: accessToken },
+    );
 
-  const result = await client.execute('catalog:validate-entity', input);
-  writeJson(result);
+    writeJson({
+      isValid: resp.valid,
+      isValidYaml: true,
+      errors: resp.valid ? [] : resp.errors.map(e => e.message),
+      entity: resp.valid ? entity : undefined,
+    });
+  } catch (error: any) {
+    writeJson({
+      isValid: false,
+      isValidYaml: false,
+      errors: [`Validation error: ${error.message}`],
+    });
+  }
 };

@@ -15,8 +15,9 @@
  */
 
 import { cli } from 'cleye';
+import yaml from 'yaml';
 import type { CliCommandContext } from '@backstage/cli-node';
-import { ActionsClient } from '../lib/ActionsClient';
+import { ScaffolderClient } from '../lib/ScaffolderClient';
 import { resolveAuth } from '../lib/resolveAuth';
 import { writeJson } from '../lib/intentFormat';
 
@@ -28,7 +29,7 @@ export default async ({ args, info }: CliCommandContext) => {
         'template-ref': {
           type: String,
           description:
-            'Template entity ref, e.g. template:default/my-template (required)',
+            'Full template entity YAML content to validate (required)',
         },
         values: {
           type: String,
@@ -46,18 +47,42 @@ export default async ({ args, info }: CliCommandContext) => {
 
   if (!flags['template-ref']) {
     throw new Error(
-      '--template-ref is required. Usage: template dry-run --template-ref template:default/my-template',
+      '--template-ref is required. Usage: template dry-run --template-ref "$(cat template.yaml)"',
     );
   }
 
+  let template: unknown;
+  try {
+    template = yaml.parse(flags['template-ref']);
+  } catch (parseError: any) {
+    writeJson({
+      valid: false,
+      message: 'Failed to parse YAML template',
+      errors: [
+        `YAML parsing error: ${parseError.message}`,
+        parseError.linePos
+          ? `At line ${parseError.linePos[0].line}, column ${parseError.linePos[0].col}`
+          : '',
+      ].filter(Boolean),
+    });
+    return;
+  }
+
   const { accessToken, baseUrl } = await resolveAuth(flags.instance);
-  const client = new ActionsClient(baseUrl, accessToken);
+  const client = new ScaffolderClient(baseUrl, accessToken);
 
-  const input: Record<string, unknown> = {
-    templateYaml: flags['template-ref'],
-  };
-  if (flags.values) input.values = JSON.parse(flags.values);
+  const values = flags.values ? JSON.parse(flags.values) : {};
+  const result = await client.dryRun({ template, values });
 
-  const result = await client.execute('scaffolder:dry-run-template', input);
-  writeJson(result);
+  writeJson({
+    valid: true,
+    message: 'Template validation successful',
+    log: result.log?.map(entry => ({
+      message: entry.body.message,
+      stepId: entry.body.stepId,
+      status: entry.body.status,
+    })),
+    output: result.output,
+    steps: result.steps,
+  });
 };

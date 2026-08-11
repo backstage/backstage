@@ -16,7 +16,7 @@
 
 import { cli } from 'cleye';
 import type { CliCommandContext } from '@backstage/cli-node';
-import { ActionsClient } from '../lib/ActionsClient';
+import { ScaffolderClient } from '../lib/ScaffolderClient';
 import { resolveAuth } from '../lib/resolveAuth';
 import { writeJson } from '../lib/intentFormat';
 
@@ -61,14 +61,12 @@ export default async ({ args, info }: CliCommandContext) => {
   }
 
   const { accessToken, baseUrl } = await resolveAuth(flags.instance);
-  const client = new ActionsClient(baseUrl, accessToken);
+  const client = new ScaffolderClient(baseUrl, accessToken);
 
-  const input: Record<string, unknown> = {
+  const result = await client.execute({
     templateRef: flags['template-ref'],
     values: JSON.parse(flags.values),
-  };
-  if (flags.secrets) input.secrets = JSON.parse(flags.secrets);
-
-  const result = await client.execute('scaffolder:execute-template', input);
+    secrets: flags.secrets ? JSON.parse(flags.secrets) : undefined,
+  });
   writeJson(result);
 };

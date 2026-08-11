@@ -16,7 +16,7 @@
 
 import { cli } from 'cleye';
 import type { CliCommandContext } from '@backstage/cli-node';
-import { ActionsClient } from '../lib/ActionsClient';
+import { SearchClient } from '../lib/SearchClient';
 import { resolveAuth } from '../lib/resolveAuth';
 import {
   parseOutputFlag,
@@ -82,24 +82,24 @@ export default async ({ args, info }: CliCommandContext) => {
 
   const mode = parseOutputFlag(flags as Record<string, unknown>);
   const { accessToken, baseUrl } = await resolveAuth(flags.instance);
-  const client = new ActionsClient(baseUrl, accessToken);
+  const client = new SearchClient(baseUrl, accessToken);
 
-  const input: Record<string, unknown> = {
+  const response = await client.query({
     term,
     types: ['techdocs'],
+    pageLimit: flags['page-limit'],
+    pageCursor: flags['page-cursor'],
+  });
+  const result = {
+    results: response.results,
+    nextPageCursor: response.nextPageCursor,
+    totalItems: response.numberOfResults,
+    hasMoreResults: response.nextPageCursor !== undefined,
   };
-  if (flags['page-limit']) input.pageLimit = flags['page-limit'];
-  if (flags['page-cursor']) input.pageCursor = flags['page-cursor'];
-
-  const result = (await client.execute('search:query', input)) as Record<
-    string,
-    unknown
-  >;
 
   if (mode === 'json') {
     writeJson(result);
   } else {
-    const results = (result?.results ?? []) as Array<Record<string, unknown>>;
-    process.stdout.write(formatSearchResults(results));
+    process.stdout.write(formatSearchResults(result.results));
   }
 };
