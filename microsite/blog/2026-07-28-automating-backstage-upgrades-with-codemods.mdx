@@ -5,7 +5,7 @@ authorURL: https://github.com/schultzp2020
 authorImageURL: https://avatars.githubusercontent.com/u/52387464?v=4
 ---
 
-**TL;DR:** Backstage now publishes official codemod recipes on the [Codemod Registry](https://go.codemod.com/backstage) and in the [backstage/codemods](https://github.com/backstage/codemods) repository. After you bump packages and apply `create-app` diffs, run the *versioned* recipe for your target release. Use *misc* recipes, like Material UI (MUI) to Backstage UI (BUI), when you are ready for a bigger migration.
+**TL;DR:** Backstage now publishes official codemod recipes on the [Codemod Registry](https://go.codemod.com/backstage) and in the [backstage/codemods](https://github.com/backstage/codemods) repository. After you bump packages and apply `create-app` diffs, run the _versioned_ recipe for your target release. Use _misc_ recipes, like Material UI (MUI) to Backstage UI (BUI), when you are ready for a bigger migration.
 
 {/* truncate */}
 
@@ -38,7 +38,7 @@ Make it a standard part of the routine: bump, Upgrade Helper, then codemods. The
 
 ## Misc recipes: opt-in migrations
 
-Not every migration belongs to a single monthly release. *Misc* recipes cover larger, cross-cutting work you schedule when your team is ready. The first misc recipe available is the Material UI 4 to Backstage UI migration:
+Not every migration belongs to a single monthly release. _Misc_ recipes cover larger, cross-cutting work you schedule when your team is ready. The first misc recipe available is the Material UI 4 to Backstage UI migration:
 
 ```shell
 yarn dlx codemod run @backstage/mui4-to-bui-migration-recipe \
