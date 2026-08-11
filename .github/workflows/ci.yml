@@ -197,7 +197,7 @@ jobs:
     name: Test ${{ matrix.node-version }}
     services:
       postgres18:
-        image: postgres:18
+        image: postgres:18@sha256:a02db8cac496f15b094798a38254f14d6e00741f709360e5e00bb6668ea31636
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -208,7 +208,7 @@ jobs:
         ports:
           - 5432/tcp
       postgres14:
-        image: postgres:14
+        image: postgres:14@sha256:2f439458ab6a57a925825ae14f9d06910e4fe4a41c8d4a0ae06397e65b707e1b
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -219,7 +219,7 @@ jobs:
         ports:
           - 5432/tcp
       mysql8:
-        image: mysql:8.4
+        image: mysql:8.4@sha256:b3b90af2a6552ae30c266fdb7d5dd55f3afb72404bb78d37fe8a23eb857fd3fb
         env:
           MYSQL_ROOT_PASSWORD: root
         options: >-
@@ -230,7 +230,7 @@ jobs:
         ports:
           - 3306/tcp
       redis:
-        image: redis:7
+        image: redis:7@sha256:e9b2e45ecd47fbb69b877cf8d045d5cccaaaed52524b6e098b4abe8212994f73
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
