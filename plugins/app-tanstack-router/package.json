@@ -3,7 +3,16 @@
   "version": "0.1.0",
   "description": "TanStack Router adapter for the Backstage router-agnostic plugin routing system",
   "backstage": {
-    "role": "web-library"
+    "role": "web-library",
+    "pluginId": "app",
+    "pluginPackages": [
+      "@backstage/plugin-app",
+      "@backstage/plugin-app-backend",
+      "@backstage/plugin-app-node",
+      "@backstage/plugin-app-react",
+      "@backstage/plugin-app-react-router-v7",
+      "@backstage/plugin-app-tanstack-router"
+    ]
   },
   "publishConfig": {
     "access": "public"
