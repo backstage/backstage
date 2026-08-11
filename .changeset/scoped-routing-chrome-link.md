@@ -2,15 +2,14 @@
 '@backstage/core-components': patch
 ---
 
-`Link`, `Sidebar` and `ErrorPage` now use the app's own navigation when one is available, which fixes several problems in the new frontend system. In apps built with the old frontend system there is no app navigation and behavior is unchanged.
+`Link`, `Sidebar` and `ErrorPage` now use the app's own navigation where one is available. In apps built with the old frontend system there is no app navigation and behavior is unchanged.
 
-- Sidebar items with a relative target, such as `to="catalog"`, highlight correctly again. They previously stopped highlighting altogether once the user navigated below the top level, which affected every app created from the default template.
-- Sidebar items whose target carries a query string, such as `to="/catalog?kind=component"`, match the current location again, so the item the user is actually on is the one that is highlighted.
-- Link hrefs now include the app's deploy basename. Under a sub-path deployment, opening a link in a new tab, copying its address, or letting a crawler follow it now lands on the right page instead of dropping the sub-path.
+In the new frontend system:
+
 - Relative links inside a page that is rendered by a routing library other than the app default now stay inside that page, instead of resolving against the app root and navigating out of it. This holds for a tab or other sub-page that brings its own routing library too, including targets that climb a level, such as `to="../overview"`, which now land on the sibling tab rather than leaving the page.
 - Links to absolute or cross-plugin paths, and the error page "go back" link, keep working from inside a page that has its own router.
-- `Link` renders a plain anchor, rather than failing to render, in an app that has neither app navigation nor React Router — an app whose router component is a passthrough, for example. The href still picks up the app's deploy basename where the app provides one. A plain anchor cannot honor the props that only a router implements, so `replace`, `state`, `relative`, `preventScrollReset` and `reloadDocument` are dropped there, and each one that was passed is named in a console warning during development.
+- `Link` renders a plain anchor, rather than failing to render, in an app that has neither app navigation nor React Router, such as one whose router component is a passthrough. The href still picks up the app's deploy base path where the app provides one. A plain anchor cannot honor the props that only a router implements, so `replace`, `state`, `relative`, `preventScrollReset` and `reloadDocument` are dropped there, and each one that was passed is named in a console warning during development.
 
-`Link` also classifies external targets more accurately, and does so the same way on every render path. Protocol-relative `//` URLs are now treated as external, as are targets whose scheme is upper- or mixed-case, such as `MAILTO:` or `HTTPS://`, or contains digits, such as `s3://`. Targets that begin with a backslash or with whitespace are read the way a browser reads them, so a target such as `\/example.com`, which a browser resolves to another site, is no longer treated as a path inside the app. These were previously resolved as in-app paths, and a target could be classified one way when a router was present and another way when it was not.
+`Link` also classifies external targets more accurately, and does so the same way on every render path. Protocol-relative `//` URLs are now treated as external, as are targets whose scheme is upper or mixed case, such as `MAILTO:` or `HTTPS://`, or contains digits, such as `s3://`. Targets that begin with a backslash or with whitespace are read the way a browser reads them, so a target such as `\/example.com`, which a browser resolves to another site, is no longer treated as a path inside the app. All of these were previously resolved as in-app paths.
 
 `Link` no longer emits its `to` value as an attribute on the rendered anchor.

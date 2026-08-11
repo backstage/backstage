@@ -417,7 +417,39 @@ This would get added to the `features` array as part of your `createApp` options
 
 Many app components are now installed as extensions instead using `createComponentExtension`. See the section on [configuring app components](./01-index.md#configure-your-app) for more information.
 
-The `Router` component is now a built-in extension that you can [override](../architecture/25-extension-overrides.md) using `createRouterExtension`.
+The `Router` component has no replacement, and `convertLegacyAppOptions` throws
+if you pass one. The app owns browser history itself and exposes it as
+`AppHistoryApi`, so a root component that installs its own router would create a
+second history that the app cannot observe. What to do with your old `Router`
+depends on what it actually did:
+
+- If it only rendered `BrowserRouter`, delete it. The app provides history now.
+- If it wrapped the router in global providers, move those providers to
+  `AppRootWrapperBlueprint` from `@backstage/plugin-app-react`.
+- If it installed a different router library, attach that library to the pages
+  that need it with `PageRouterBlueprint`. See
+  [Choose a router for a page](../building-plugins/10-page-routers.md).
+
+Moving a provider to an app root wrapper looks like this:
+
+```tsx
+import { AppRootWrapperBlueprint } from '@backstage/plugin-app-react';
+
+const queryClientWrapper = AppRootWrapperBlueprint.make({
+  name: 'query-client',
+  params: {
+    component: ({ children }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    ),
+  },
+});
+```
+
+In tests, replace a root `MemoryRouter` with `renderInTestApp` or
+`renderTestApp` from `@backstage/frontend-test-utils` and navigate through the
+`appHistory` they return. The old frontend system still accepts
+`components.Router`, so a plugin that has to run under both systems does not
+need to change its own React Router usage.
 
 The Sign-in page is now installed as an extension, created using the `SignInPageBlueprint` instead.
 

@@ -93,7 +93,13 @@ import { createApp } from '@backstage/frontend-defaults';
 
 ### Step 2: Convert `createApp` options
 
-Use `convertLegacyAppOptions` to wrap legacy options (`apis`, `icons`, `featureFlags`, `components`, `themes`) as a feature:
+Use `convertLegacyAppOptions` to wrap legacy options (`apis`, `icons`, `featureFlags`, `components`, `themes`) as a feature.
+
+`components.Router` is the one option it rejects, and it throws rather than
+converting. The app owns browser history now, so drop a plain `BrowserRouter`,
+move any global providers that wrapped it to `AppRootWrapperBlueprint`, and
+attach a different router library per page with `PageRouterBlueprint`. See
+[Choose a router for a page](https://backstage.io/docs/frontend-system/building-plugins/page-routers).
 
 ```tsx
 import { createApp } from '@backstage/frontend-defaults';

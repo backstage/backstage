@@ -477,26 +477,21 @@ function MyInvalidComponent() {
 }
 ```
 
-## Scoped Plugin Routing
+## Scoped plugin routing
 
-In the new frontend system, browser history is owned by the app and exposed as a single `AppHistoryApi`, rather than by a router component at the app root. Each page is then rendered by a page router scoped to that page's own path, using React Router v6 by default, so relative navigation inside a page keeps working the way it does today.
+The app owns browser history and exposes it as a single `AppHistoryApi`. No router component sits at the app root. Each page instead gets a page router scoped to that page's own path, which is React Router v6 unless the page asks for something else, so relative navigation inside a page behaves the way it always has.
 
-This section is for plugin authors outside the Backstage monorepo who need to keep their plugins working under that model. For the design background, see [RFC #33603](https://github.com/backstage/backstage/issues/33603).
+For the design background, see [RFC #33603](https://github.com/backstage/backstage/issues/33603).
 
-### What usually does not need to change
+### What stays the same
 
-If your plugin only navigates within its own page scope, you can keep using React Router APIs as usual:
-
-- `Link`, `useNavigate`, `useParams`, and `<Routes>` from `react-router-dom`
-- Relative paths and in-plugin sub-routes
-
-Under the new frontend system those APIs are provided by the page router. You do not need to adopt a different router library.
+A plugin that only navigates inside its own page can keep using React Router. `Link`, `useNavigate`, `useParams`, and `<Routes>` from `react-router-dom` all work, as do relative paths and in-plugin sub-routes, because the page router is what provides that context. Moving to a different router library is optional.
 
 ### Absolute and cross-plugin navigation
 
-Resolving a route ref to a concrete path and then calling React Router `navigate(...)`, or pointing React Router `Link` at an absolute `to` string, can break under a page-scoped router — a page router only owns navigation within its own page.
+A page router owns navigation within its own page and nothing beyond it. Resolving a route ref to a concrete path and handing it to React Router's `navigate`, or pointing a React Router `Link` at an absolute `to` string, reaches past that boundary and can break.
 
-Prefer the navigation helpers from `@backstage/frontend-plugin-api` so the same plugin works in both the new and old frontend systems. The public navigation surface is the `navigate` and `useHref` pair, deliberately mirroring [React Aria's `RouterProvider`](https://react-spectrum.adobe.com/react-aria/routing.html):
+For navigation that does cross the boundary, `@backstage/frontend-plugin-api` exports `useAppNavigate` and `useHref`. The pair mirrors the `navigate` and `useHref` props of [React Aria's `RouterProvider`](https://react-spectrum.adobe.com/react-aria/routing.html). `useAppNavigate` reads the app's `AppHistoryApi` when one is registered and falls back to React Router when it is not, so the same plugin code runs under both the new and the old frontend system. That fallback is also why the example below imports `useRouteRef` from `@backstage/core-plugin-api`, which resolves route refs in either system.
 
 ```tsx
 import { useRouteRef } from '@backstage/core-plugin-api';
@@ -513,9 +508,9 @@ export function useNavigateToSearchQuery() {
 }
 ```
 
-`useAppNavigate` uses the app's `AppHistoryApi` when one is available, and falls back to React Router when it is not. `useHref` is its counterpart for resolving a path to a browser-ready href, for example for a plain `<a>`, with the same React Router fallback.
+`useHref` is the counterpart that resolves a path to a browser-ready href, for a plain `<a>` for example, with the same React Router fallback.
 
-For declarative cross-plugin links, use `RouteLink` instead of building absolute `to` strings:
+For declarative cross-plugin links, `RouteLink` takes the route ref directly so that no absolute `to` string has to be built:
 
 ```tsx
 import { RouteLink } from '@backstage/frontend-plugin-api';
@@ -541,53 +536,28 @@ export function EntityNameLink(props: {
 }
 ```
 
-For programmatic navigation to a route ref, use `useNavigateRouteRef`. If you already depend on `EntityRefLink` from `@backstage/plugin-catalog-react`, upgrade that package to pick up its `RouteLink`-based implementation.
+`useNavigateRouteRef` is the programmatic equivalent. If your plugin already depends on `EntityRefLink` from `@backstage/plugin-catalog-react`, upgrading that package picks up a `RouteLink`-based implementation.
 
 ### Page routers
 
-Leaving a page's `router` input empty keeps the app default, which is React Router v6. A page's sub-pages (`pages` input / `SubPageBlueprint`) are ordinary routes one level below the page: the app's own route matching registers them and picks the one to show, so a page router never has to know that sub-pages exist.
+A page's `router` input decides which library renders that page's content. Leave it empty and the page uses the app default, React Router v6.
 
-If you want a different page router (for example React Router v7), attach one of the packaged routers with `PageRouterBlueprint`:
+Sub-pages are ordinary routes one level below their page. The app's own route matching registers them and picks which one to show, so a page router never has to know that sub-pages exist. A sub-page can take a `router` of its own, scoped to the sub-page rather than to the page above it. Nothing is inherited, so a sub-page whose content needs a different library has to say so itself.
 
-```tsx
-import { PageRouterBlueprint } from '@backstage/frontend-plugin-api';
-import { ReactRouterV7PageRouter } from '@backstage/plugin-react-router-v7-adapter';
+Whatever the page produces is handed to the page router unchanged, and the router component receives only `children`. First-party adapters read the page mount from a framework-private context, which keeps concrete mount paths and route patterns out of the public adapter contract.
 
-const toolsV7Router = PageRouterBlueprint.make({
-  attachTo: { id: 'page:tools', input: 'router' },
-  params: { component: ReactRouterV7PageRouter },
-});
-```
-
-The page's content is passed to the page router unchanged. The public page router component receives only `children`; first-party adapters read the page mount from a private framework context. This keeps concrete mount paths and route patterns out of the public adapter contract.
-
-Attach a router to a sub-page the same way (for example `attachTo: { id: 'sub-page:tools/overview', input: 'router' }`) to give that sub-page's content a context of its own, scoped to the sub-page rather than to the page above it. Nothing is inherited: a sub-page whose content uses a different routing library than the app default has to say so itself.
-
-The default `TanStackPageRouter` from `@backstage/plugin-tanstack-router-adapter` renders opaque page content through a catch-all route. To bind a plugin-owned nested TanStack route tree, create an adapter with `createTanStackPageRouter` and render `TanStackPageContent` at the point in the tree where the page element belongs. TanStack types remain inside the adapter package and your plugin.
+For the steps to attach one, see [Choose a router for a page](../building-plugins/10-page-routers.md).
 
 ### Testing
 
-When exercising new frontend system navigation, use `renderInTestApp` and `renderTestApp` from `@backstage/frontend-test-utils`. They drive an in-memory `AppHistoryApi` and return it as `appHistory`, so you can call `appHistory.navigate(path)` to move between locations, call `appHistory.navigate(-1)` to traverse history, and assert on `location$` or `createHref`.
+`renderInTestApp` and `renderTestApp` from `@backstage/frontend-test-utils` drive an in-memory `AppHistoryApi` and hand it back as `appHistory`, which is what you navigate and assert against. See [Testing](../building-plugins/02-testing.md#navigation-and-app-history) for the details.
 
-Relative in-plugin tests that only need React Router context can continue to use existing patterns.
+### Limits of the model
 
-### Migrate root router overrides
+The app root still projects React Router v6 context, because third-party chrome written for the new frontend system may read it. First-party chrome does not.
 
-The new frontend system does not support `RouterBlueprint` or a converted legacy `components.Router`. An opaque root component can create a second history that the app cannot observe, so the app root has one fixed history projection instead.
+Backstage UI receives navigation, href resolution, and location as one capability. A custom host that passes its own `router` to `BUIProvider` has to back `navigate`, `useHref`, and `useLocation` with the same routing authority, which the app plugin supplies from `AppHistoryApi`.
 
-- Remove the override when it only installs `BrowserRouter`.
-- Move providers that wrapped the router to `AppRootWrapperBlueprint`.
-- Select a router for a page or sub-page with `PageRouterBlueprint`.
+An app releases its browser history listener when its React root is torn down. Re-running `createApp` during a hot reload builds a new app without tearing down the old one, so the previous listener stays attached until the page reloads.
 
-The old frontend system still supports its `components.Router` option. See [Common Extension Blueprints](../building-plugins/03-common-extension-blueprints.md#migrate-a-root-router-override) for migration examples.
-
-If your plugin mocks `AppHistoryApi` directly, keep to its minimal surface: `navigate`, `location`, `location$`, and `createHref`.
-
-### Known limitations
-
-These are the remaining limits of scoped plugin routing.
-
-- **The root still projects React Router v6 for compatibility.** First-party new frontend system chrome does not depend on that context. Target removal by August 2027. Remove the projection when routerless chrome conformance tests cover the full app shell and the source dependency boundary contains no React Router imports outside the compatibility projection and the React Router v6 page adapter. If those gates are not met by August 2027, re-evaluate the remaining dependencies and set a new removal target. This removal is independent of support for React Router v6 inside a page or inside Backstage UI's old frontend system fallback.
-- **A custom Backstage UI router owns the complete routing capability.** If a custom host passes `router` to `BUIProvider`, its `navigate`, `useHref`, and `useLocation` implementations must observe the same routing authority. The app plugin supplies this capability from `AppHistoryApi`.
-- **Teardown does not cover hot reload.** An app releases its browser history listener when its React root is torn down. Re-running `createApp` during a hot reload builds a new app without tearing down the previous one, so that app's teardown never runs and its listener stays attached until the page reloads.
-- **Navigation blockers are page-local.** A router library can block navigation that starts inside its page. It cannot block navigation initiated elsewhere in the app because `AppHistoryApi` has no shared blocker contract.
+A router library can block navigation that starts inside its own page, but not navigation that starts anywhere else, because `AppHistoryApi` has no shared blocker contract.

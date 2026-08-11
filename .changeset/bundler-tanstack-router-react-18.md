@@ -4,4 +4,4 @@
 
 Apps that depend on `@tanstack/react-router` build again on React 18.
 
-The library reads React 19's `use` through a namespace member lookup rather than importing it, so that on React 18 the reference is absent at runtime and the library takes its React 18 path. The bundler resolved that lookup statically anyway and failed the build with `'use' is not exported from 'react'`, which turned any app that merely depended on the library into one that could not be built. The export presence check is now off for that package alone and stays in force everywhere else, including your own source.
+The library looks up React 19's `use` without importing it, so that the reference is simply absent when it runs on React 18 and the library takes its React 18 path. The bundler resolved that lookup anyway and failed the build with `'use' is not exported from 'react'`, which broke the build of any app that merely depended on the library. The export presence check is now off for that one package and still applies everywhere else, including your own source.

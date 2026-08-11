@@ -1,26 +1,54 @@
 # @backstage/plugin-tanstack-router-adapter
 
-Renders new frontend system pages with [TanStack Router](https://tanstack.com/router), scoped to the page's own path. Part of scoped plugin routing, RFC [#33603](https://github.com/backstage/backstage/issues/33603).
+Renders a page of the [new frontend system](https://backstage.io/docs/frontend-system/)
+with [TanStack Router](https://tanstack.com/router), scoped to the page's own
+path.
 
-Browser history stays owned by the app: this package never writes to `window.history` itself, it only scopes TanStack Router to the page it renders.
+Browser history belongs to the app. This package never writes to
+`window.history`. It only scopes TanStack Router to the page it renders, so
+programmatic back, forward, and `go` traverse the app-owned history.
+
+This package is part of scoped plugin routing,
+[RFC #33603](https://github.com/backstage/backstage/issues/33603).
+
+## Installation
+
+TanStack Router is a peer dependency, so install it alongside the adapter:
+
+```sh
+cd <package-dir> # if within a monorepo
+yarn add @backstage/plugin-tanstack-router-adapter @tanstack/react-router @tanstack/history
+```
 
 ## Usage
 
-Attach `TanStackPageRouter` to a page's `router` input with `PageRouterBlueprint`:
+Attach `TanStackPageRouter` to a page's `router` input with
+`PageRouterBlueprint`:
 
 ```tsx
 import { PageRouterBlueprint } from '@backstage/frontend-plugin-api';
 import { TanStackPageRouter } from '@backstage/plugin-tanstack-router-adapter';
 
-const tanstackRouter = PageRouterBlueprint.make({
-  attachTo: { id: 'page:my-plugin', input: 'router' },
+const toolsPageRouter = PageRouterBlueprint.make({
+  attachTo: { id: 'page:tools', input: 'router' },
   params: {
     component: TanStackPageRouter,
   },
 });
 ```
 
-To use a plugin-owned nested route tree, create the page adapter from that tree:
+`TanStackPageRouter` renders the page content through a catch-all route. That
+covers pages that render the content they are handed without routing inside it.
+
+To scope a TanStack context to a single tab rather than to the whole page,
+attach the adapter to the sub-page instead, for example
+`attachTo: { id: 'sub-page:tools/overview', input: 'router' }`.
+
+### Using a plugin-owned route tree
+
+To route with a nested TanStack tree of your own, build the page router from
+that tree with `createTanStackPageRouter`. Render `TanStackPageContent`
+wherever in the tree the Backstage page element belongs:
 
 ```tsx
 import { PageRouterBlueprint } from '@backstage/frontend-plugin-api';
@@ -34,6 +62,7 @@ import {
   createRoute,
   createRouter,
 } from '@tanstack/react-router';
+import { ToolDetails } from './ToolDetails';
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -46,7 +75,7 @@ const rootRoute = createRootRoute({
 const detailsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/details',
-  component: Details,
+  component: ToolDetails,
 });
 const routeTree = rootRoute.addChildren([detailsRoute]);
 
@@ -54,17 +83,23 @@ const ToolsPageRouter = createTanStackPageRouter({
   createRouter: ({ history }) => createRouter({ routeTree, history }),
 });
 
-const tanstackRouter = PageRouterBlueprint.make({
+const toolsPageRouter = PageRouterBlueprint.make({
   attachTo: { id: 'page:tools', input: 'router' },
   params: { component: ToolsPageRouter },
 });
 ```
 
-The factory keeps TanStack types out of the core `PageRouterComponent` contract. `TanStackPageContent` renders the opaque element supplied by the page blueprint; place it anywhere in your route tree.
+Going through the factory keeps TanStack types out of the core
+`PageRouterComponent` contract, so they stay inside this package and your own
+plugin.
 
-## Limits
+## Limitations
 
-Pages built from sub-pages (tabs) are supported: the framework's own route matching picks the sub-page to show, and this adapter renders whatever it is given. Content is always opaque, whether it comes from a `PageBlueprint` `loader` or from a sub-page — if it routes internally with another library, that is the page author's choice, made alongside their choice of this adapter. Attach this adapter to a sub-page as well to give that sub-page's content a TanStack context scoped to the sub-page itself.
+`useBlocker` only intercepts navigation that starts inside this page. It cannot
+see navigation coming from elsewhere in the app, because the app's history API
+has no shared blocker contract.
 
-- Programmatic back, forward, and `go` traverse the app-owned browser history.
-- `useBlocker` only intercepts navigation started from within this page. It does not see navigation coming from elsewhere in the app.
+## Documentation
+
+- [Scoped plugin routing](https://backstage.io/docs/frontend-system/architecture/routes#scoped-plugin-routing)
+- [Backstage Documentation](https://backstage.io/docs)

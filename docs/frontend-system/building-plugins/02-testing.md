@@ -31,8 +31,6 @@ describe('Entity details component', () => {
 });
 ```
 
-`renderInTestApp` and `renderTestApp` drive navigation through an in-memory app history, and return it as `appHistory` so you can navigate and assert on the current location. Prefer that harness when the behavior under test depends on scoped routing. For absolute and cross-plugin navigation guidance, see [Scoped Plugin Routing](../architecture/36-routes.md#scoped-plugin-routing).
-
 To mock [Utility APIs](../architecture/33-utility-apis.md) that are used by your component, pass API overrides to `renderInTestApp` using the `apis` option. Mock helpers are available from `@backstage/frontend-test-utils` and plugin-specific test utilities. For a deeper look at the available mock APIs and how to create your own, see [Testing with Utility APIs](../utility-apis/05-testing.md).
 
 ```tsx
@@ -274,6 +272,48 @@ describe('MyComponent', () => {
   });
 });
 ```
+
+## Navigation and app history
+
+`renderInTestApp` and `renderTestApp` set up an in-memory app history and return
+it as `appHistory` on the render result. Use it to move the test app between
+locations and to assert on where it ended up:
+
+```tsx
+import { act, screen } from '@testing-library/react';
+import { renderTestApp } from '@backstage/frontend-test-utils';
+import { toolsPage } from './alpha';
+
+describe('Tools page', () => {
+  it('should show the details view when navigating to it', async () => {
+    const { appHistory } = renderTestApp({
+      extensions: [toolsPage],
+      initialRouteEntries: ['/tools'],
+    });
+
+    expect(await screen.findByText('All tools')).toBeInTheDocument();
+
+    await act(async () => {
+      appHistory.navigate('/tools/details');
+    });
+
+    expect(await screen.findByText('Tool details')).toBeInTheDocument();
+  });
+});
+```
+
+`appHistory.navigate` also takes a number, so `appHistory.navigate(-1)` walks
+back through history the way a browser back button does. The current location is
+readable as `appHistory.location`, observable through `appHistory.location$`, and
+`appHistory.createHref` resolves a path the way a rendered link would.
+
+Reach for this harness whenever the behavior under test depends on routing. A
+test that only needs React Router context inside a single component can keep
+using the patterns it already has. If you mock `AppHistoryApi` yourself, keep to
+its four members: `navigate`, `location`, `location$`, and `createHref`.
+
+For guidance on navigation that crosses page or plugin boundaries, see
+[Scoped plugin routing](../architecture/36-routes.md#scoped-plugin-routing).
 
 ## Extension tree snapshots
 
