@@ -281,21 +281,9 @@ export function DependencyGraph<NodeData, EdgeData>(
   const [graphNodes, setGraphNodes] = useState<string[]>([]);
   const [graphEdges, setGraphEdges] = useState<dagre.Edge[]>([]);
   const [settled, setSettled] = useState(false);
-  const [transitionsReady, setTransitionsReady] = useState(false);
   const settledRef = useRef(false);
-  const hasSettledOnceRef = useRef(false);
   const pendingInitialFlush = useRef(false);
   const measurementsDirty = useRef(false);
-
-  useEffect(() => {
-    if (settled && !transitionsReady) {
-      const frame = requestAnimationFrame(() => {
-        setTransitionsReady(true);
-      });
-      return () => cancelAnimationFrame(frame);
-    }
-    return undefined;
-  }, [settled, transitionsReady]);
 
   // Settlement: after each render, useLayoutEffect in Node/Edge fires any
   // measurements (setting measurementsDirty). This useEffect runs afterward.
@@ -316,7 +304,6 @@ export function DependencyGraph<NodeData, EdgeData>(
       });
     if (allMeasured) {
       settledRef.current = true;
-      hasSettledOnceRef.current = true;
       setSettled(true);
     }
   }, [graphNodes, graphEdges]);
@@ -329,7 +316,6 @@ export function DependencyGraph<NodeData, EdgeData>(
       const timeout = setTimeout(() => {
         if (!settledRef.current) {
           settledRef.current = true;
-          hasSettledOnceRef.current = true;
           setSettled(true);
         }
       }, 500);
@@ -492,8 +478,6 @@ export function DependencyGraph<NodeData, EdgeData>(
 
           setGraphNodes(graph.current.nodes());
           setGraphEdges(graph.current.edges());
-
-          // Settlement is handled by a useEffect — see below
         },
         250,
         { leading: true },
@@ -514,33 +498,11 @@ export function DependencyGraph<NodeData, EdgeData>(
       ranker,
     });
 
-    const nodesBefore = new Set(graph.current.nodes());
-    const edgesBefore = graph.current.edges().length;
     setNodesAndEdges();
-    const nodesAfter = new Set(graph.current.nodes());
-    const edgesAfter = graph.current.edges().length;
 
     if (settledRef.current) {
-      const hasUnmeasured =
-        graph.current.nodes().some(id => {
-          const n = graph.current.node(id);
-          return n && n.width === 0 && n.height === 0;
-        }) ||
-        graph.current.edges().some(e => {
-          const edge = graph.current.edge(e);
-          return edge && edge.label && edge.width === 0 && edge.height === 0;
-        });
-      const topologyChanged =
-        hasUnmeasured ||
-        nodesAfter.size !== nodesBefore.size ||
-        edgesAfter !== edgesBefore ||
-        [...nodesAfter].some(id => !nodesBefore.has(id));
-
-      if (topologyChanged) {
-        settledRef.current = false;
-        setSettled(false);
-        setTransitionsReady(false);
-      }
+      settledRef.current = false;
+      setSettled(false);
     }
 
     updateGraph();
@@ -653,9 +615,6 @@ export function DependencyGraph<NodeData, EdgeData>(
             </marker>
             {defs}
           </defs>
-          {!transitionsReady && (
-            <style>{`#${DEPENDENCY_GRAPH_SVG} * { transition: none !important; }`}</style>
-          )}
           <g id={WORKSPACE_ID}>
             <svg
               width={graphWidth}

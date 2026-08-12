@@ -18,7 +18,6 @@ import { useRef, useLayoutEffect, useMemo } from 'react';
 import * as d3Shape from 'd3-shape';
 import isFinite from 'lodash/isFinite';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import useTheme from '@material-ui/core/styles/useTheme';
 import { DependencyGraphTypes as Types } from './types';
 import { ARROW_MARKER_ID, EDGE_TEST_ID, LABEL_TEST_ID } from './constants';
 import { DefaultLabel } from './DefaultLabel';
@@ -47,7 +46,6 @@ const useStyles = makeStyles(
       strokeWidth: 1.3,
       stroke: theme.palette.textSubtle,
       fill: 'none',
-      transition: `${theme.transitions.duration.shortest}ms`,
     },
     label: {},
   }),
@@ -84,7 +82,6 @@ export function Edge<EdgeData>({
   const { x = 0, y = 0, width, height, points } = edge;
   const labelProps: Types.DependencyEdge<EdgeData> = edge;
   const classes = useStyles();
-  const theme = useTheme();
 
   const labelRef = useRef<SVGGElement>(null);
 
@@ -141,9 +138,6 @@ export function Edge<EdgeData>({
           data-testid={LABEL_TEST_ID}
           className={classes.label}
           transform={`translate(${x},${y})`}
-          style={{
-            transition: `transform ${theme.transitions.duration.shortest}ms`,
-          }}
         >
           {render({ edge: labelProps })}
         </g>

@@ -25,11 +25,9 @@ import dagre from '@dagrejs/dagre';
 export type DependencyGraphNodeClassKey = 'node';
 
 const useStyles = makeStyles(
-  theme => ({
-    node: {
-      transition: `${theme.transitions.duration.shortest}ms`,
-    },
-  }),
+  {
+    node: {},
+  },
   { name: 'BackstageDependencyGraphNode' },
 );
 
