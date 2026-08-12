@@ -6144,7 +6144,7 @@ __metadata:
     express: "npm:^4.22.0"
     express-promise-router: "npm:^4.1.0"
     lodash: "npm:^4.17.21"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     supertest: "npm:^7.0.0"
     zod: "npm:^3.25.76 || ^4.0.0"
   languageName: unknown
@@ -6159,7 +6159,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/types": "workspace:^"
     cross-fetch: "npm:^4.0.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     zod: "npm:^3.25.76 || ^4.0.0"
     zod-to-json-schema: "npm:^3.25.1"
   languageName: unknown
@@ -6180,7 +6180,7 @@ __metadata:
     "@types/supertest": "npm:^2.0.8"
     express: "npm:^4.22.0"
     express-promise-router: "npm:^4.1.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     supertest: "npm:^7.0.0"
     zod: "npm:^3.25.76 || ^4.0.0"
     zod-to-json-schema: "npm:^3.25.1"
