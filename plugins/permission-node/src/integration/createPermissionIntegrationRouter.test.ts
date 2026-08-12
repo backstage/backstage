@@ -20,12 +20,12 @@ import {
   createPermission,
   Permission,
 } from '@backstage/plugin-permission-common';
-import { StandardSchemaV1 } from '@standard-schema/spec';
+import type { StandardSchemaV1 } from '@standard-schema/spec';
 import express from 'express';
 import request, { Response } from 'supertest';
 import { z as zodV3 } from 'zod/v3';
 import { z as zodV4 } from 'zod/v4';
-import { PermissionRule } from '../types';
+import type { PermissionRule } from '../types';
 import {
   createPermissionIntegrationRouter,
   CreatePermissionIntegrationRouterResourceOptions,

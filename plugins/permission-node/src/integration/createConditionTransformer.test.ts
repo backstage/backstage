@@ -18,7 +18,7 @@ import {
   PermissionCondition,
   PermissionCriteria,
 } from '@backstage/plugin-permission-common';
-import { StandardSchemaV1 } from '@standard-schema/spec';
+import type { StandardSchemaV1 } from '@standard-schema/spec';
 import { z as zodV3 } from 'zod/v3';
 import { z as zodV4 } from 'zod/v4';
 import { createConditionTransformer } from './createConditionTransformer';
@@ -304,37 +304,55 @@ describe('createConditionTransformer', () => {
   });
 
   it('rejects asynchronous Standard Schema validation', () => {
-    const schema: StandardSchemaV1<{ foo: string }> & {
+    type AsyncSchema = StandardSchemaV1<{ foo: string }> & {
       '~standard': {
         jsonSchema: { input: () => object };
       };
-    } = {
-      '~standard': {
-        version: 1,
-        vendor: 'test',
-        validate: async value => ({ value: value as { foo: string } }),
-        jsonSchema: { input: () => ({ type: 'object' }) },
-      },
     };
-    const transformer = createConditionTransformer([
-      createPermissionRule({
-        name: 'async-rule',
-        description: 'Async rule',
-        resourceType: 'test-resource',
-        params: { schema },
-        apply: () => true,
-        toQuery: ({ foo }) => foo,
-      }),
-    ]);
+    const schemas: AsyncSchema[] = [
+      {
+        '~standard': {
+          version: 1,
+          vendor: 'test',
+          validate: async value => ({ value: value as { foo: string } }),
+          jsonSchema: { input: () => ({ type: 'object' }) },
+        },
+      },
+      {
+        '~standard': {
+          version: 1,
+          vendor: 'test',
+          validate: () =>
+            ({
+              then: () => undefined,
+            } as unknown as Promise<StandardSchemaV1.Result<{ foo: string }>>),
+          jsonSchema: { input: () => ({ type: 'object' }) },
+        },
+      },
+    ];
 
-    expect(() =>
-      transformer({
-        rule: 'async-rule',
-        resourceType: 'test-resource',
-        params: { foo: 'value' },
-      }),
-    ).toThrow(
-      "Permission rule 'async-rule' parameter schema returned a Promise; async schemas are not supported",
-    );
+    for (const [index, schema] of schemas.entries()) {
+      const name = `async-rule-${index}`;
+      const transformer = createConditionTransformer([
+        createPermissionRule({
+          name,
+          description: 'Async rule',
+          resourceType: 'test-resource',
+          params: { schema },
+          apply: () => true,
+          toQuery: ({ foo }) => foo,
+        }),
+      ]);
+
+      expect(() =>
+        transformer({
+          rule: name,
+          resourceType: 'test-resource',
+          params: { foo: 'value' },
+        }),
+      ).toThrow(
+        `Permission rule '${name}' parameter schema returned a Promise; async schemas are not supported`,
+      );
+    }
   });
 });

@@ -36,10 +36,21 @@ type StandardSchemaWithJsonSchemaInput = StandardSchemaV1 & {
 function supportsJsonSchema(
   schema: StandardSchemaV1,
 ): schema is StandardSchemaWithJsonSchemaInput {
-  const standard = schema['~standard'] as unknown as {
-    jsonSchema?: { input?: unknown };
-  };
-  return typeof standard.jsonSchema?.input === 'function';
+  const standard = schema['~standard'] as unknown as
+    | {
+        jsonSchema?: { input?: unknown };
+      }
+    | undefined;
+  return typeof standard?.jsonSchema?.input === 'function';
+}
+
+function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
+  return (
+    value !== null &&
+    (typeof value === 'object' || typeof value === 'function') &&
+    'then' in value &&
+    typeof value.then === 'function'
+  );
 }
 
 /** Ensures that a rule parameter schema can be serialized as permission metadata. */
@@ -65,7 +76,7 @@ export function validatePermissionRuleParams(
 ): void {
   if (rule.params?.schema) {
     const result = rule.params.schema['~standard'].validate(params);
-    if (result instanceof Promise) {
+    if (isPromiseLike(result)) {
       throw new Error(
         `Permission rule '${rule.name}' parameter schema returned a Promise; async schemas are not supported`,
       );

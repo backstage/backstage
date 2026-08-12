@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { StandardSchemaV1 } from '@standard-schema/spec';
+import type { StandardSchemaV1 } from '@standard-schema/spec';
 import { z as zodV3 } from 'zod/v3';
 import { z as zodV4 } from 'zod/v4';
-import { PermissionRule } from '../types';
+import type { PermissionRule } from '../types';
 import {
   createPermissionRule,
-  CreatePermissionRuleOptions,
+  type CreatePermissionRuleOptions,
 } from './createPermissionRule';
 import { createPermissionResourceRef } from './createPermissionResourceRef';
 
@@ -116,6 +116,21 @@ describe('createPermissionRule', () => {
       }),
     ).toThrow(
       "Permission rule 'unsupported' parameter schema does not support JSON Schema conversion",
+    );
+
+    expect(() =>
+      createPermissionRule({
+        name: 'malformed',
+        description: 'malformed',
+        resourceRef,
+        params: {
+          schema: {} as StandardSchemaV1<Record<string, never>>,
+        },
+        apply: () => true,
+        toQuery: () => ({ owner: 'test' }),
+      }),
+    ).toThrow(
+      "Permission rule 'malformed' parameter schema does not support JSON Schema conversion",
     );
   });
 });
