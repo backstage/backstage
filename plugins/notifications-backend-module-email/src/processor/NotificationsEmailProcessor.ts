@@ -61,6 +61,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
   private readonly throttleInterval: number;
   private readonly frontendBaseUrl: string;
   private readonly filter: NotificationProcessorFilters;
+  private readonly allowedEmailDomains?: string[];
   private readonly allowlistEmailAddresses?: string[];
   private readonly denylistEmailAddresses?: string[];
 
@@ -110,6 +111,9 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
         )
       : 3_600_000;
     this.frontendBaseUrl = config.getString('app.baseUrl');
+    this.allowedEmailDomains = emailProcessorConfig
+      .getOptionalStringArray('allowedEmailDomains')
+      ?.map(domain => domain.toLowerCase());
     this.allowlistEmailAddresses = emailProcessorConfig.getOptionalStringArray(
       'allowlistEmailAddresses',
     );
@@ -248,16 +252,43 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       return false;
     });
 
-    if (this.allowlistEmailAddresses) {
-      emails = emails.filter(email =>
-        this.allowlistEmailAddresses?.includes(email),
-      );
-    }
+    emails = emails.filter(email => {
+      const onAllowlist = this.allowlistEmailAddresses?.includes(email);
+
+      // Exact allowlist addresses are accepted even outside allowedEmailDomains.
+      if (onAllowlist) {
+        return true;
+      }
+
+      if (this.allowedEmailDomains) {
+        const domain = email.slice(email.lastIndexOf('@') + 1).toLowerCase();
+        if (this.allowedEmailDomains.includes(domain)) {
+          return true;
+        }
+        this.logger.warn(
+          `Skipping notification email address outside allowedEmailDomains: ${email}`,
+        );
+        return false;
+      }
+
+      // Allowlist-only closed mode when no domain list is configured.
+      if (this.allowlistEmailAddresses) {
+        return false;
+      }
+
+      return true;
+    });
 
     if (this.denylistEmailAddresses) {
-      emails = emails.filter(
-        email => !this.denylistEmailAddresses?.includes(email),
-      );
+      emails = emails.filter(email => {
+        if (this.denylistEmailAddresses?.includes(email)) {
+          this.logger.warn(
+            `Skipping denylisted notification email address: ${email}`,
+          );
+          return false;
+        }
+        return true;
+      });
     }
     return emails;
   }

@@ -569,4 +569,177 @@ describe('NotificationsEmailProcessor', () => {
       );
     }
   });
+
+  it('should apply allowedEmailDomains with allowlist-over-domain precedence', async () => {
+    (createTransport as jest.Mock).mockReturnValue(mockTransport);
+
+    const processor = new NotificationsEmailProcessor(
+      logger,
+      mockServices.rootConfig({
+        data: {
+          ...DEFAULT_SENDMAIL_CONFIG,
+          notifications: {
+            processors: {
+              email: {
+                ...DEFAULT_SENDMAIL_CONFIG.notifications.processors.email,
+                allowedEmailDomains: ['MyCompany.com'] as JsonArray,
+                allowlistEmailAddresses: [
+                  'contractor@gmail.com',
+                  'blocked-contractor@gmail.com',
+                ] as JsonArray,
+                denylistEmailAddresses: [
+                  'blocked-contractor@gmail.com',
+                ] as JsonArray,
+                broadcastConfig: {
+                  receiver: 'config',
+                  receiverEmails: [
+                    'alice@mycompany.com',
+                    'user@mail.mycompany.com',
+                    'bob@evil.com',
+                    'contractor@gmail.com',
+                    'other@gmail.com',
+                    'blocked-contractor@gmail.com',
+                  ] as JsonArray,
+                },
+              },
+            },
+          },
+        },
+      }),
+      catalogServiceMock(),
+      auth,
+    );
+
+    await processor.postProcess(
+      {
+        origin: 'plugin',
+        id: '1234',
+        user: null,
+        created: new Date(),
+        payload: { title: 'notification' },
+      },
+      {
+        recipients: { type: 'broadcast' },
+        payload: { title: 'notification' },
+      },
+    );
+
+    const sentTo = sendmailMock.mock.calls.map(call => call[0].to);
+    expect(sentTo).toEqual(
+      expect.arrayContaining(['alice@mycompany.com', 'contractor@gmail.com']),
+    );
+    expect(sentTo).toHaveLength(2);
+    expect(sentTo).not.toEqual(
+      expect.arrayContaining([
+        'user@mail.mycompany.com',
+        'bob@evil.com',
+        'other@gmail.com',
+        'blocked-contractor@gmail.com',
+      ]),
+    );
+    expect(logger.warn).toHaveBeenCalledWith(
+      'Skipping notification email address outside allowedEmailDomains: bob@evil.com',
+    );
+    expect(logger.warn).toHaveBeenCalledWith(
+      'Skipping denylisted notification email address: blocked-contractor@gmail.com',
+    );
+  });
+
+  it('should keep allowlist-only closed mode when allowedEmailDomains is unset', async () => {
+    (createTransport as jest.Mock).mockReturnValue(mockTransport);
+
+    const processor = new NotificationsEmailProcessor(
+      logger,
+      mockServices.rootConfig({
+        data: {
+          ...DEFAULT_SENDMAIL_CONFIG,
+          notifications: {
+            processors: {
+              email: {
+                ...DEFAULT_SENDMAIL_CONFIG.notifications.processors.email,
+                allowlistEmailAddresses: ['allowed@backstage.io'] as JsonArray,
+                broadcastConfig: {
+                  receiver: 'config',
+                  receiverEmails: [
+                    'allowed@backstage.io',
+                    'other@backstage.io',
+                  ] as JsonArray,
+                },
+              },
+            },
+          },
+        },
+      }),
+      catalogServiceMock(),
+      auth,
+    );
+
+    await processor.postProcess(
+      {
+        origin: 'plugin',
+        id: '1234',
+        user: null,
+        created: new Date(),
+        payload: { title: 'notification' },
+      },
+      {
+        recipients: { type: 'broadcast' },
+        payload: { title: 'notification' },
+      },
+    );
+
+    expect(sendmailMock).toHaveBeenCalledTimes(1);
+    expect(sendmailMock).toHaveBeenCalledWith(
+      expect.objectContaining({ to: 'allowed@backstage.io' }),
+    );
+  });
+
+  it('should not filter by domain when allowedEmailDomains is unset', async () => {
+    (createTransport as jest.Mock).mockReturnValue(mockTransport);
+
+    const processor = new NotificationsEmailProcessor(
+      logger,
+      mockServices.rootConfig({
+        data: {
+          ...DEFAULT_SENDMAIL_CONFIG,
+          notifications: {
+            processors: {
+              email: {
+                ...DEFAULT_SENDMAIL_CONFIG.notifications.processors.email,
+                broadcastConfig: {
+                  receiver: 'config',
+                  receiverEmails: [
+                    'user@evil.com',
+                    'user@mycompany.com',
+                  ] as JsonArray,
+                },
+              },
+            },
+          },
+        },
+      }),
+      catalogServiceMock(),
+      auth,
+    );
+
+    await processor.postProcess(
+      {
+        origin: 'plugin',
+        id: '1234',
+        user: null,
+        created: new Date(),
+        payload: { title: 'notification' },
+      },
+      {
+        recipients: { type: 'broadcast' },
+        payload: { title: 'notification' },
+      },
+    );
+
+    const sentTo = sendmailMock.mock.calls.map(call => call[0].to);
+    expect(sentTo).toEqual(
+      expect.arrayContaining(['user@evil.com', 'user@mycompany.com']),
+    );
+    expect(sentTo).toHaveLength(2);
+  });
 });

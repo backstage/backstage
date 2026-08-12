@@ -102,8 +102,13 @@ notifications:
         # Topics that are excluded from sending email
         excludedTopics:
           - scaffolder
-      # List of allowed email addresses to get notifications via email
+      # Optional list of allowed email domains (exact match, case-insensitive)
+      allowedEmailDomains:
+        - mycompany.com
+        - subsidiary.com
+      # Exact addresses always allowed (even outside allowedEmailDomains)
       allowlistEmailAddresses:
+        - contractor@gmail.com
         - john.doe@backstage.io
       # List of denied email addresses to get notifications via email
       denylistEmailAddresses:
@@ -113,5 +118,22 @@ notifications:
 Recipient addresses from the catalog and from `receiverEmails` are validated before
 send. Addresses that are not a single well-formed email are skipped (with a
 warning in the logs); delivery continues for remaining valid recipients.
+
+When `allowedEmailDomains` is set, addresses whose domain is not listed are
+skipped unless the full address is present in `allowlistEmailAddresses`.
+`denylistEmailAddresses` is applied last and can block an allowlisted address.
+
+## Securing recipient addresses
+
+Notification emails are resolved from user profile data in the catalog. That data
+may come from upstream identity providers (for example LDAP, GitHub, or Azure) or
+from manually registered entity YAML. If someone can influence those sources,
+they may be able to place crafted addresses on user entities and cause
+notifications to be delivered outside your organization.
+
+For production deployments, configure `allowedEmailDomains` and, where needed,
+`allowlistEmailAddresses` / `denylistEmailAddresses` so delivery is limited to
+trusted domains and explicit exceptions. Format validation alone is not a
+substitute for this policy.
 
 See `config.d.ts` for more options for configuration.
