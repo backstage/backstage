@@ -17,7 +17,7 @@
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">GithubMultiOrgEntityProviderOptions</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#alwaysusedefaultnamespace">alwaysUseDefaultNamespace</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#cache">cache</a><span class="tsd-signature-symbol">?:</span> <a href="_backstage_backend-plugin-api.index.CacheService.html" class="tsd-signature-type tsd-kind-interface">CacheService</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#events">events</a><span class="tsd-signature-symbol">?:</span> <a href="_backstage_plugin-events-node.index.EventsService.html" class="tsd-signature-type tsd-kind-interface">EventsService</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#excludesuspendedusers">excludeSuspendedUsers</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#experimental_checkforsuspendeduserswithrest">experimental_checkForSuspendedUsersWithRest</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#githubcredentialsprovider">githubCredentialsProvider</a><span class="tsd-signature-symbol">?:</span> <a href="_backstage_integration.index.GithubCredentialsProvider.html" class="tsd-signature-type tsd-kind-interface">GithubCredentialsProvider</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#githuburl">githubUrl</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#id">id</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#logger">logger</a><span class="tsd-signature-symbol">:</span> <a href="_backstage_backend-plugin-api.index.LoggerService.html" class="tsd-signature-type tsd-kind-interface">LoggerService</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#orgs">orgs</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#pagesizes">pageSizes</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/_backstage_plugin-catalog-backend-module-github.index.GithubPageSizes.html" class="tsd-signature-type tsd-kind-type-alias">GithubPageSizes</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#schedule">schedule</a><span class="tsd-signature-symbol">?:</span> <a href="_backstage_backend-plugin-api.index.SchedulerServiceTaskRunner.html" class="tsd-signature-type tsd-kind-interface">SchedulerServiceTaskRunner</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;manual&quot;</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#teamtransformer">teamTransformer</a><span class="tsd-signature-symbol">?:</span> <a href="../types/_backstage_plugin-catalog-backend-module-github.index.TeamTransformer.html" class="tsd-signature-type tsd-kind-type-alias">TeamTransformer</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#usertransformer">userTransformer</a><span class="tsd-signature-symbol">?:</span> <a href="../types/_backstage_plugin-catalog-backend-module-github.index.UserTransformer.html" class="tsd-signature-type tsd-kind-type-alias">UserTransformer</a><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/f76f21ca6539f64e3c9897763419e552dc8a8b2c/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L106">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:106</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/52071d4971341cf5845b6e48dc15ec9bc3afbeb6/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L106">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:106</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -53,7 +53,7 @@
 <h4 class="tsd-anchor-link" id="remarks">Remarks<a href="#remarks" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>If set to true, groups with the same name across different orgs will be considered the same group.</p>
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/f76f21ca6539f64e3c9897763419e552dc8a8b2c/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L164">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:164</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/52071d4971341cf5845b6e48dc15ec9bc3afbeb6/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L164">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:164</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="cache"><code class="tsd-tag">Optional</code><span>cache</span><a href="#cache" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">cache</span><span class="tsd-signature-symbol">?:</span> <a href="_backstage_backend-plugin-api.index.CacheService.html" class="tsd-signature-type tsd-kind-interface">CacheService</a></div>
@@ -61,14 +61,14 @@
 checking suspended users via the REST API.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/f76f21ca6539f64e3c9897763419e552dc8a8b2c/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L195">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:195</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/52071d4971341cf5845b6e48dc15ec9bc3afbeb6/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L195">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:195</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="events"><code class="tsd-tag">Optional</code><span>events</span><a href="#events" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">events</span><span class="tsd-signature-symbol">?:</span> <a href="_backstage_plugin-events-node.index.EventsService.html" class="tsd-signature-type tsd-kind-interface">EventsService</a></div>
 <div class="tsd-comment tsd-typography"><p>Passing the optional EventsService enables event-based delta updates.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/f76f21ca6539f64e3c9897763419e552dc8a8b2c/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L130">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:130</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/52071d4971341cf5845b6e48dc15ec9bc3afbeb6/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L130">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:130</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="excludesuspendedusers"><code class="tsd-tag">Optional</code><span>exclude<wbr/>Suspended<wbr/>Users</span><a href="#excludesuspendedusers" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">excludeSuspendedUsers</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
@@ -84,7 +84,7 @@ checking suspended users via the REST API.</p>
 <h4 class="tsd-anchor-link" id="remarks-1">Remarks<a href="#remarks-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>Only for GitHub Enterprise instances. Will error if used against <a href="http://GitHub.com">GitHub.com</a> API.</p>
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/f76f21ca6539f64e3c9897763419e552dc8a8b2c/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L189">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:189</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/52071d4971341cf5845b6e48dc15ec9bc3afbeb6/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L189">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:189</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="experimental_checkforsuspendeduserswithrest"><code class="tsd-tag">Optional</code><span>experimental_<wbr/>check<wbr/>For<wbr/>Suspended<wbr/>Users<wbr/>With<wbr/>Rest</span><a href="#experimental_checkforsuspendeduserswithrest" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">experimental_checkForSuspendedUsersWithRest</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
@@ -100,14 +100,14 @@ limit usage.</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/f76f21ca6539f64e3c9897763419e552dc8a8b2c/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L204">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:204</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/52071d4971341cf5845b6e48dc15ec9bc3afbeb6/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L204">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:204</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="githubcredentialsprovider"><code class="tsd-tag">Optional</code><span>github<wbr/>Credentials<wbr/>Provider</span><a href="#githubcredentialsprovider" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">githubCredentialsProvider</span><span class="tsd-signature-symbol">?:</span> <a href="_backstage_integration.index.GithubCredentialsProvider.html" class="tsd-signature-type tsd-kind-interface">GithubCredentialsProvider</a></div>
 <div class="tsd-comment tsd-typography"><p>Optionally supply a custom credentials provider, replacing the default one.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/f76f21ca6539f64e3c9897763419e552dc8a8b2c/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L155">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:155</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/52071d4971341cf5845b6e48dc15ec9bc3afbeb6/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L155">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:155</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="githuburl"><span>github<wbr/>Url</span><a href="#githuburl" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">githubUrl</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
@@ -120,7 +120,7 @@ limit usage.</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/f76f21ca6539f64e3c9897763419e552dc8a8b2c/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L119">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:119</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/52071d4971341cf5845b6e48dc15ec9bc3afbeb6/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L119">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:119</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="id"><span>id</span><a href="#id" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">id</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
@@ -133,14 +133,14 @@ limit usage.</p>
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/f76f21ca6539f64e3c9897763419e552dc8a8b2c/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L112">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:112</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/52071d4971341cf5845b6e48dc15ec9bc3afbeb6/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L112">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:112</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="logger"><span>logger</span><a href="#logger" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">logger</span><span class="tsd-signature-symbol">:</span> <a href="_backstage_backend-plugin-api.index.LoggerService.html" class="tsd-signature-type tsd-kind-interface">LoggerService</a></div>
 <div class="tsd-comment tsd-typography"><p>The logger to use.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/f76f21ca6539f64e3c9897763419e552dc8a8b2c/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L150">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:150</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/52071d4971341cf5845b6e48dc15ec9bc3afbeb6/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L150">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:150</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="orgs"><code class="tsd-tag">Optional</code><span>orgs</span><a href="#orgs" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">orgs</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
@@ -148,7 +148,7 @@ limit usage.</p>
 orgs on the given GitHub instance (support for GitHub App integration only).</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/f76f21ca6539f64e3c9897763419e552dc8a8b2c/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L125">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:125</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/52071d4971341cf5845b6e48dc15ec9bc3afbeb6/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L125">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:125</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="pagesizes"><code class="tsd-tag">Optional</code><span>page<wbr/>Sizes</span><a href="#pagesizes" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">pageSizes</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/_backstage_plugin-catalog-backend-module-github.index.GithubPageSizes.html" class="tsd-signature-type tsd-kind-type-alias">GithubPageSizes</a><span class="tsd-signature-symbol">&gt;</span></div>
@@ -156,7 +156,7 @@ orgs on the given GitHub instance (support for GitHub App integration only).</p>
 Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/f76f21ca6539f64e3c9897763419e552dc8a8b2c/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L181">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:181</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/52071d4971341cf5845b6e48dc15ec9bc3afbeb6/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L181">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:181</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="schedule"><code class="tsd-tag">Optional</code><span>schedule</span><a href="#schedule" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">schedule</span><span class="tsd-signature-symbol">?:</span> <a href="_backstage_backend-plugin-api.index.SchedulerServiceTaskRunner.html" class="tsd-signature-type tsd-kind-interface">SchedulerServiceTaskRunner</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;manual&quot;</span></div>
@@ -176,7 +176,7 @@ manually at some interval.</p>
 to enable automatic scheduling of tasks.</p>
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/f76f21ca6539f64e3c9897763419e552dc8a8b2c/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L145">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:145</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/52071d4971341cf5845b6e48dc15ec9bc3afbeb6/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L145">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:145</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="teamtransformer"><code class="tsd-tag">Optional</code><span>team<wbr/>Transformer</span><a href="#teamtransformer" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">teamTransformer</span><span class="tsd-signature-symbol">?:</span> <a href="../types/_backstage_plugin-catalog-backend-module-github.index.TeamTransformer.html" class="tsd-signature-type tsd-kind-type-alias">TeamTransformer</a></div>
@@ -184,14 +184,14 @@ to enable automatic scheduling of tasks.</p>
 By default, groups will be namespaced according to their GitHub org.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/f76f21ca6539f64e3c9897763419e552dc8a8b2c/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L175">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:175</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/52071d4971341cf5845b6e48dc15ec9bc3afbeb6/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L175">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:175</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="usertransformer"><code class="tsd-tag">Optional</code><span>user<wbr/>Transformer</span><a href="#usertransformer" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">userTransformer</span><span class="tsd-signature-symbol">?:</span> <a href="../types/_backstage_plugin-catalog-backend-module-github.index.UserTransformer.html" class="tsd-signature-type tsd-kind-type-alias">UserTransformer</a></div>
 <div class="tsd-comment tsd-typography"><p>Optionally include a user transformer for transforming from GitHub users to User Entities</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/f76f21ca6539f64e3c9897763419e552dc8a8b2c/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L169">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:169</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/52071d4971341cf5845b6e48dc15ec9bc3afbeb6/plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts#L169">plugins/catalog-backend-module-github/src/providers/GithubMultiOrgEntityProvider.ts:169</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
