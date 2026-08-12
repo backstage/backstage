@@ -26,6 +26,7 @@ const migrationsDir = resolvePackagePath(
   '@backstage/plugin-scaffolder-backend-module-workspace-database',
   'migrations',
 );
+const migrationsTable = 'scaffolder_workspace_database_migrations';
 
 /**
  * @public
@@ -64,6 +65,7 @@ export const workspaceDatabaseModule = createBackendModule({
         if (!database.migrations?.skip) {
           await db.migrate.latest({
             directory: migrationsDir,
+            tableName: migrationsTable,
           });
         }
 

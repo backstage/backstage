@@ -44,12 +44,10 @@ export type CheckpointState = {
  * Context for checkpoint function invocation.
  *
  * The value returned by `fn` will be serialized to JSON for storage.
- * Non-serializable values (functions, symbols, circular references, etc.)
- * will be safely handled - they are stripped or replaced during serialization.
  *
  * @alpha
  */
-export type CheckpointContext<T = unknown> = {
+export type CheckpointContext<T extends JsonValue | void = JsonValue> = {
   /**
    * Unique key for the checkpoint
    */

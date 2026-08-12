@@ -2778,6 +2778,43 @@ describe('NunjucksWorkflowRunner', () => {
       });
     });
 
+    it('serializes the workspace before marking a step completed', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          { id: 'step1', name: 'first', action: 'output-action', input: {} },
+        ],
+      });
+      const callOrder: string[] = [];
+      task.serializeWorkspace = jest.fn(async () => {
+        callOrder.push('serializeWorkspace');
+      });
+      task.updateStepState = jest.fn(async () => {
+        callOrder.push('updateStepState');
+      });
+
+      await runner.execute(task);
+
+      expect(callOrder).toEqual(['serializeWorkspace', 'updateStepState']);
+    });
+
+    it('does not mark a step completed when workspace serialization fails', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          { id: 'step1', name: 'first', action: 'output-action', input: {} },
+        ],
+      });
+      task.serializeWorkspace = jest
+        .fn()
+        .mockRejectedValue(new Error('workspace persistence failed'));
+      task.updateStepState = jest.fn();
+
+      await expect(runner.execute(task)).rejects.toThrow(
+        'workspace persistence failed',
+      );
+      expect(task.serializeWorkspace).toHaveBeenCalledTimes(1);
+      expect(task.updateStepState).not.toHaveBeenCalled();
+    });
+
     it('retries the step that was in progress when execution stopped', async () => {
       const task = createMockTaskWithSpec({
         steps: [

@@ -277,6 +277,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     decision: PolicyDecision,
   ) {
     const stepTrack = await this.tracker.stepStart(task, step);
+    let workspaceSerializationAttempted = false;
 
     if (task.cancelSignal.aborted) {
       throw new Error(
@@ -512,7 +513,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           secrets: task.secrets ?? {},
           logger: taskLogger,
           workspacePath,
-          async checkpoint<T>(opts: CheckpointContext<T>) {
+          async checkpoint<T extends JsonValue | void>(
+            opts: CheckpointContext<T>,
+          ) {
             const { key: checkpointKey, fn } = opts;
             const key = `v1.task.checkpoint.${step.id}.${checkpointKey}`;
 
@@ -592,18 +595,21 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         context.steps[step.id] as unknown as NunjitsuTemplateValue,
       );
 
+      if (task.cancelSignal.aborted) {
+        throw new Error(
+          `Step ${step.id} (${step.name}) of task ${task.taskId} has been cancelled.`,
+        );
+      }
+
+      workspaceSerializationAttempted = true;
+      await task.serializeWorkspace?.({ path: workspacePath });
+
       // Persist step state for recovery
       await task.updateStepState?.({
         stepId: step.id,
         status: 'completed',
         output: stepOutput,
       });
-
-      if (task.cancelSignal.aborted) {
-        throw new Error(
-          `Step ${step.id} (${step.name}) of task ${task.taskId} has been cancelled.`,
-        );
-      }
 
       await stepTrack.markSuccessful();
       return updatedPreparedContext;
@@ -612,7 +618,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       await stepTrack.markFailed();
       throw err;
     } finally {
-      await task.serializeWorkspace?.({ path: workspacePath });
+      if (!workspaceSerializationAttempted) {
+        await task.serializeWorkspace?.({ path: workspacePath });
+      }
     }
   }
 
