@@ -18,19 +18,27 @@ import { Config } from '@backstage/config';
 import { JsonObject, JsonValue } from '@backstage/types';
 
 /**
- * Reads legacy `integrations.*` config and converts each entry to a connection
- * object in the same shape as `connections:` config. The result is a list of
- * unvalidated JsonObjects; the caller is expected to run them through the
- * normal connection-schema validation alongside the rest of the connections
- * config.
+ * Reads legacy `integrations.*` and top-level `aws` config and converts each
+ * entry to a connection object in the same shape as `connections:` config. The
+ * result is a list of unvalidated JsonObjects; the caller is expected to run
+ * them through the normal connection-schema validation alongside the rest of
+ * the connections config.
  */
 export function getLegacyIntegrations(config: RootConfigService): JsonObject[] {
+  const result: JsonObject[] = [];
+
+  const aws = config.getOptionalConfig('aws');
+  if (aws) {
+    result.push(convertAws(aws));
+  }
+
   const integrations = config.getOptionalConfig('integrations');
   if (!integrations) {
-    return [];
+    return result;
   }
 
   return [
+    ...result,
     ...convertAwsCodeCommit(
       integrations.getOptionalConfigArray('awsCodeCommit') ?? [],
     ),
@@ -276,6 +284,57 @@ function convertHarness(entries: Config[]): JsonObject[] {
       host: entry.getOptionalString('host'),
       auth,
     });
+  });
+}
+
+function convertAws(aws: Config): JsonObject {
+  const auth: JsonObject[] = [];
+
+  for (const account of aws.getOptionalConfigArray('accounts') ?? []) {
+    auth.push(
+      omitUndefined({
+        method: 'account',
+        accountId: account.getOptionalString('accountId'),
+        accessKeyId: account.getOptionalString('accessKeyId'),
+        secretAccessKey: account.getOptionalString('secretAccessKey'),
+        profile: account.getOptionalString('profile'),
+        roleName: account.getOptionalString('roleName'),
+        partition: account.getOptionalString('partition'),
+        region: account.getOptionalString('region'),
+        externalId: account.getOptionalString('externalId'),
+        webIdentityTokenFile: account.getOptionalString('webIdentityTokenFile'),
+      }),
+    );
+  }
+
+  // Legacy aws config always provides main account credentials, falling back
+  // to the SDK default chain when nothing is configured, so the converted
+  // connection always carries a mainAccount entry.
+  const mainAccount = aws.getOptionalConfig('mainAccount');
+  auth.push(
+    omitUndefined({
+      method: 'account',
+      mainAccount: true,
+      accessKeyId: mainAccount?.getOptionalString('accessKeyId'),
+      secretAccessKey: mainAccount?.getOptionalString('secretAccessKey'),
+      profile: mainAccount?.getOptionalString('profile'),
+      region: mainAccount?.getOptionalString('region'),
+    }),
+  );
+
+  // The legacy accountDefaults only ever applied to accounts without an
+  // explicit entry, which is what the connection-level fields express.
+  const accountDefaults = aws.getOptionalConfig('accountDefaults');
+  return omitUndefined({
+    type: 'aws',
+    roleName: accountDefaults?.getOptionalString('roleName'),
+    partition: accountDefaults?.getOptionalString('partition'),
+    region: accountDefaults?.getOptionalString('region'),
+    externalId: accountDefaults?.getOptionalString('externalId'),
+    webIdentityTokenFile: accountDefaults?.getOptionalString(
+      'webIdentityTokenFile',
+    ),
+    auth,
   });
 }
 

@@ -224,20 +224,34 @@ export class DefaultConnectionsService {
       ...combineConnectionSources(legacy, fromConfig, this.logger),
     );
 
-    const seen = new Set<string>();
+    // Singleton connection types (e.g. aws) allow at most one connection in
+    // the config. Multiton types (e.g. github) allow many, keyed by their
+    // identity field so each must be unique.
+    const singletonsSeen = new Set<string>();
+    const identitiesSeen = new Set<string>();
     for (const c of this.connections) {
       const connectionType = getConnectionType(c.type as ConnectionTypeKey);
-      const strategy = getLookupStrategy(connectionType.lookupStrategy);
-      const identity = connectionIdentityOf(strategy, c);
-      const key = `${c.type} ${identity ?? ''}`;
-      if (seen.has(key)) {
-        throw new InputError(
-          identity !== undefined
-            ? `Duplicate connection of type "${c.type}" for ${strategy.identityField} "${identity}"`
-            : `Duplicate connection of type "${c.type}"`,
-        );
+
+      if (connectionType.cardinality === 'singleton') {
+        if (singletonsSeen.has(c.type)) {
+          throw new InputError(
+            `Duplicate connection of type "${c.type}"; this is a singleton connection type that only allows one entry`,
+          );
+        }
+        singletonsSeen.add(c.type);
+      } else {
+        const strategy = getLookupStrategy(connectionType.lookupStrategy);
+        const identity = connectionIdentityOf(strategy, c);
+        if (identity !== undefined) {
+          const key = `${c.type} ${identity}`;
+          if (identitiesSeen.has(key)) {
+            throw new InputError(
+              `Duplicate connection of type "${c.type}" for ${strategy.identityField} "${identity}"`,
+            );
+          }
+          identitiesSeen.add(key);
+        }
       }
-      seen.add(key);
     }
 
     this.#assignDefaultTitles();
@@ -266,20 +280,18 @@ export class DefaultConnectionsService {
   }
 
   #validateLegacy(raw: JsonObject[]): RootConnection[] {
-    const result: RootConnection[] = [];
-    for (const v of raw) {
+    return raw.map(v => {
       try {
-        result.push(this.#validateConnection(v));
+        return this.#validateConnection(v);
       } catch (e) {
         const type = typeof v.type === 'string' ? v.type : 'unknown';
-        this.logger.error(
-          `Failed to validate connection of type "${type}":\n${describeError(
+        throw new InputError(
+          `Invalid connection of type "${type}" converted from legacy integrations config:\n${describeError(
             e,
           )}`,
         );
       }
-    }
-    return result;
+    });
   }
 
   #validateConnection(connection: JsonObject): RootConnection {
@@ -325,6 +337,14 @@ export class DefaultConnectionsService {
 
     const { type, auth: _, title, match, ...configFields } = connection;
     const parsed = connectionType.configSchema.parse(configFields);
+
+    // Let the connection type check rules that span the whole connection,
+    // such as uniqueness across auth entries. Entries keep their plugin
+    // `match` so that rules can take scoping into account.
+    const validate = connectionType.validate as
+      | ((connection: { config: unknown; auth: unknown[] }) => void)
+      | undefined;
+    validate?.({ config: parsed, auth });
 
     return {
       ...parsed,
