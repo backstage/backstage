@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 import {
   TemplateDirectoryAccess,
@@ -78,12 +78,38 @@ class DeferredDirectoryAccess implements TemplateDirectoryAccess {
 }
 
 async function flushPromises(): Promise<void> {
-  await new Promise(resolve => {
-    setTimeout(resolve, 0);
+  await act(async () => {
+    await new Promise<void>(resolve => {
+      setTimeout(resolve, 0);
+    });
   });
 }
 
 describe('DirectoryEditorProvider', () => {
+  describe('initial load', () => {
+    it('exposes the manager with loading true before the initial reload completes', async () => {
+      const paths = ['template.yaml', 'skeleton/README.md'];
+      const directory = new DeferredDirectoryAccess(paths);
+
+      const { result } = renderHook(() => useDirectoryEditor(), {
+        wrapper: ({ children }: PropsWithChildren) => (
+          <DirectoryEditorProvider directory={directory}>
+            {children}
+          </DirectoryEditorProvider>
+        ),
+      });
+
+      expect(result.current).toBeDefined();
+
+      await flushPromises();
+
+      expect(result.current).toBeDefined();
+      expect(result.current!.loading).toBe(true);
+      expect(result.current!.totalFileCount).toBe(paths.length);
+      expect(result.current!.files).toHaveLength(0);
+    });
+  });
+
   describe('reload', () => {
     it('reports per-file progress and chunk-level file tree updates', async () => {
       const paths = Array.from({ length: 10 }, (_, index) => {
@@ -100,8 +126,12 @@ describe('DirectoryEditorProvider', () => {
       });
 
       for (const path of paths) {
-        directory.deferredFiles.get(path)!.complete();
-        await flushPromises();
+        await act(async () => {
+          directory.deferredFiles.get(path)!.complete();
+          await new Promise<void>(resolve => {
+            setTimeout(resolve, 0);
+          });
+        });
       }
 
       await waitFor(() => {
@@ -122,8 +152,13 @@ describe('DirectoryEditorProvider', () => {
         });
       });
 
-      const reloadPromise = editor.reload();
-      await flushPromises();
+      let reloadPromise!: Promise<void>;
+      await act(async () => {
+        reloadPromise = editor.reload();
+        await new Promise<void>(resolve => {
+          setTimeout(resolve, 0);
+        });
+      });
 
       expect(directory.listFiles).toHaveBeenCalledTimes(2);
       expect(editor.totalFileCount).toBe(10);
@@ -141,8 +176,12 @@ describe('DirectoryEditorProvider', () => {
         'file-05.txt',
       ];
       for (const path of chunkOneOrder) {
-        directory.deferredFiles.get(path)!.complete();
-        await flushPromises();
+        await act(async () => {
+          directory.deferredFiles.get(path)!.complete();
+          await new Promise<void>(resolve => {
+            setTimeout(resolve, 0);
+          });
+        });
         resolutionOrder.push(path);
         loadedAfterEachResolve.push(editor.loadedFileCount);
       }
@@ -157,13 +196,19 @@ describe('DirectoryEditorProvider', () => {
         'file-09.txt',
       ];
       for (const path of chunkTwoOrder) {
-        directory.deferredFiles.get(path)!.complete();
-        await flushPromises();
+        await act(async () => {
+          directory.deferredFiles.get(path)!.complete();
+          await new Promise<void>(resolve => {
+            setTimeout(resolve, 0);
+          });
+        });
         resolutionOrder.push(path);
         loadedAfterEachResolve.push(editor.loadedFileCount);
       }
 
-      await reloadPromise;
+      await act(async () => {
+        await reloadPromise;
+      });
       unsubscribe();
 
       expect(editor.loading).toBe(false);

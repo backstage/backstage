@@ -15,8 +15,16 @@
  */
 
 import { ErrorPanel } from '@backstage/core-components';
-import { useAsync, useRerender } from '@react-hookz/web';
-import { createContext, ReactNode, useContext, useEffect } from 'react';
+import { useRerender } from '@react-hookz/web';
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   TemplateDirectoryAccess,
   TemplateFileAccess,
@@ -255,34 +263,50 @@ interface DirectoryEditorProviderProps {
 export function DirectoryEditorProvider(props: DirectoryEditorProviderProps) {
   const { directory } = props;
 
-  const [{ result, error }, { execute }] = useAsync(
-    async (dir?: TemplateDirectoryAccess) => {
-      if (!dir) {
-        return undefined;
-      }
-
-      const manager = new DirectoryEditorManager(dir);
-      await manager.reload();
-
-      const firstYaml = manager.files.find(file => file.path.match(/\.ya?ml$/));
-      if (firstYaml) {
-        manager.setSelectedFile(firstYaml.path);
-      }
-
-      return manager;
-    },
+  const manager = useMemo(
+    () => (directory ? new DirectoryEditorManager(directory) : undefined),
+    [directory],
   );
 
+  const [error, setError] = useState<Error>();
+  const generationRef = useRef(0);
+
   useEffect(() => {
-    execute(directory);
-  }, [execute, directory]);
+    if (!manager) {
+      setError(undefined);
+      return;
+    }
+
+    const generation = ++generationRef.current;
+    setError(undefined);
+
+    manager
+      .reload()
+      .then(() => {
+        if (generationRef.current !== generation) {
+          return;
+        }
+        const firstYaml = manager.files.find(file =>
+          file.path.match(/\.ya?ml$/),
+        );
+        if (firstYaml) {
+          manager.setSelectedFile(firstYaml.path);
+        }
+      })
+      .catch(cause => {
+        if (generationRef.current !== generation) {
+          return;
+        }
+        setError(cause instanceof Error ? cause : new Error(String(cause)));
+      });
+  }, [manager]);
 
   if (error) {
     return <ErrorPanel error={error} />;
   }
 
   return (
-    <DirectoryEditorContext.Provider value={result}>
+    <DirectoryEditorContext.Provider value={manager}>
       {props.children}
     </DirectoryEditorContext.Provider>
   );
