@@ -42,6 +42,7 @@ function supportsJsonSchema(
   return typeof standard.jsonSchema?.input === 'function';
 }
 
+/** Ensures that a rule parameter schema can be serialized as permission metadata. */
 export function assertPermissionRuleParamsSchema(
   rule: RuleWithParamsSchema,
 ): asserts rule is RuleWithParamsSchema & {
@@ -54,6 +55,10 @@ export function assertPermissionRuleParamsSchema(
   }
 }
 
+/**
+ * Validates rule parameters using either the Standard Schema or legacy Zod schema.
+ * Standard Schema validation must be synchronous because rule evaluation is synchronous.
+ */
 export function validatePermissionRuleParams(
   rule: RuleWithParamsSchema,
   params: unknown,
@@ -80,6 +85,7 @@ export function validatePermissionRuleParams(
   }
 }
 
+/** Converts a rule parameter schema to JSON Schema for permission metadata. */
 export function permissionRuleParamsToJsonSchema(
   rule: RuleWithParamsSchema,
 ): ReturnType<typeof zodToJsonSchema> {
