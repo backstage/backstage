@@ -18,9 +18,11 @@ import {
   PermissionCriteria,
   PermissionRuleParams,
 } from '@backstage/plugin-permission-common';
+import type { StandardSchemaV1 } from '@standard-schema/spec';
 import { NoInfer, PermissionRule } from '../types';
 import { z } from 'zod/v3';
 import { PermissionResourceRef } from './createPermissionResourceRef';
+import { assertPermissionRuleParamsSchema } from './permissionRuleParams';
 
 /**
  * @public
@@ -36,11 +38,6 @@ export type CreatePermissionRuleOptions<
       resourceRef: TRef;
 
       /**
-       * A ZodSchema that reflects the structure of the parameters that are passed to
-       */
-      paramsSchema?: z.ZodSchema<TParams>;
-
-      /**
        * Apply this rule to a resource already loaded from a backing data source. The params are
        * arguments supplied for the rule; for example, a rule could be `isOwner` with entityRefs as the
        * params.
@@ -53,7 +50,26 @@ export type CreatePermissionRuleOptions<
        * applied.
        */
       toQuery(params: NoInfer<TParams>): PermissionCriteria<IQuery>;
-    }
+    } & (
+      | {
+          /**
+           * A Standard Schema that reflects the structure of the parameters that are passed to the rule.
+           * The schema must support JSON Schema conversion.
+           */
+          params?: { schema: StandardSchemaV1<TParams> };
+          paramsSchema?: never;
+        }
+      | {
+          params?: never;
+
+          /**
+           * A ZodSchema that reflects the structure of the parameters that are passed to the rule.
+           *
+           * @deprecated Use `params.schema` instead.
+           */
+          paramsSchema?: z.ZodSchema<TParams>;
+        }
+    )
   : never;
 
 /**
@@ -97,6 +113,7 @@ export function createPermissionRule<
     | PermissionRule<TResource, TQuery, TResourceType, TParams>
     | CreatePermissionRuleOptions<TRef, TParams>,
 ): PermissionRule<TResource, TQuery, TResourceType, TParams> {
+  assertPermissionRuleParamsSchema(rule);
   if ('resourceRef' in rule) {
     return {
       ...rule,

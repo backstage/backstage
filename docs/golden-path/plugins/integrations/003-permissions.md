@@ -65,7 +65,7 @@ import {
   createPermissionRule,
 } from '@backstage/plugin-permission-node';
 import { TODO_RESOURCE_TYPE } from '@internal/plugin-todo-common';
-import { z } from 'zod/v3';
+import { z } from 'zod';
 import type { TodoItem } from './services/TodoListService';
 
 export const todoResourceRef = createPermissionResourceRef<
@@ -80,9 +80,11 @@ export const isCreator = createPermissionRule({
   name: 'IS_CREATOR',
   description: 'Allow if the todo was created by the current user',
   resourceRef: todoResourceRef,
-  paramsSchema: z.object({
-    userRef: z.string().describe('The entity ref of the user'),
-  }),
+  params: {
+    schema: z.object({
+      userRef: z.string().describe('The entity ref of the user'),
+    }),
+  },
   apply(todo, { userRef }) {
     return todo.createdBy === userRef;
   },

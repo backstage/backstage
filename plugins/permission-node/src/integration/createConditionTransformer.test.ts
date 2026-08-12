@@ -18,7 +18,9 @@ import {
   PermissionCondition,
   PermissionCriteria,
 } from '@backstage/plugin-permission-common';
-import { z } from 'zod/v3';
+import { StandardSchemaV1 } from '@standard-schema/spec';
+import { z as zodV3 } from 'zod/v3';
+import { z as zodV4 } from 'zod/v4';
 import { createConditionTransformer } from './createConditionTransformer';
 import { createPermissionRule } from './createPermissionRule';
 
@@ -27,9 +29,9 @@ const transformConditions = createConditionTransformer([
     name: 'test-rule-1',
     description: 'Test rule 1',
     resourceType: 'test-resource',
-    paramsSchema: z.object({
-      foo: z.string(),
-      bar: z.number(),
+    paramsSchema: zodV3.object({
+      foo: zodV3.string(),
+      bar: zodV3.number(),
     }),
     apply: jest.fn(),
     toQuery: jest.fn(({ foo, bar }) => `test-rule-1:${foo}/${bar}`),
@@ -38,8 +40,8 @@ const transformConditions = createConditionTransformer([
     name: 'test-rule-2',
     description: 'Test rule 2',
     resourceType: 'test-resource',
-    paramsSchema: z.object({
-      foo: z.string(),
+    paramsSchema: zodV3.object({
+      foo: zodV3.string(),
     }),
     apply: jest.fn(),
     toQuery: jest.fn(({ foo }) => `test-rule-2:${foo}`),
@@ -260,4 +262,79 @@ describe('createConditionTransformer', () => {
       expect(transformConditions(conditions)).toEqual(expectedResult);
     },
   );
+
+  it('continues to validate legacy Zod parameter schemas', () => {
+    expect(() =>
+      transformConditions({
+        rule: 'test-rule-1',
+        resourceType: 'test-resource',
+        params: { foo: 'invalid', bar: 'invalid' },
+      }),
+    ).toThrow('Parameters to rule are invalid');
+  });
+
+  it('validates parameters using Standard Schema', () => {
+    const transformer = createConditionTransformer([
+      createPermissionRule({
+        name: 'standard-rule',
+        description: 'Standard Schema rule',
+        resourceType: 'test-resource',
+        params: {
+          schema: zodV4.object({ foo: zodV4.string() }),
+        },
+        apply: () => true,
+        toQuery: ({ foo }) => `standard-rule:${foo}`,
+      }),
+    ]);
+
+    expect(
+      transformer({
+        rule: 'standard-rule',
+        resourceType: 'test-resource',
+        params: { foo: 'valid' },
+      }),
+    ).toBe('standard-rule:valid');
+    expect(() =>
+      transformer({
+        rule: 'standard-rule',
+        resourceType: 'test-resource',
+        params: { foo: 1 },
+      }),
+    ).toThrow('Parameters to rule are invalid');
+  });
+
+  it('rejects asynchronous Standard Schema validation', () => {
+    const schema: StandardSchemaV1<{ foo: string }> & {
+      '~standard': {
+        jsonSchema: { input: () => object };
+      };
+    } = {
+      '~standard': {
+        version: 1,
+        vendor: 'test',
+        validate: async value => ({ value: value as { foo: string } }),
+        jsonSchema: { input: () => ({ type: 'object' }) },
+      },
+    };
+    const transformer = createConditionTransformer([
+      createPermissionRule({
+        name: 'async-rule',
+        description: 'Async rule',
+        resourceType: 'test-resource',
+        params: { schema },
+        apply: () => true,
+        toQuery: ({ foo }) => foo,
+      }),
+    ]);
+
+    expect(() =>
+      transformer({
+        rule: 'async-rule',
+        resourceType: 'test-resource',
+        params: { foo: 'value' },
+      }),
+    ).toThrow(
+      "Permission rule 'async-rule' parameter schema returned a Promise; async schemas are not supported",
+    );
+  });
 });

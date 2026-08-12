@@ -29,6 +29,7 @@ import { PermissionsServiceRequestOptions } from '@backstage/backend-plugin-api'
 import { PolicyDecision } from '@backstage/plugin-permission-common';
 import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
+import type { StandardSchemaV1 } from '@standard-schema/spec';
 import { z } from 'zod/v3';
 
 // @public
@@ -234,10 +235,20 @@ export type CreatePermissionRuleOptions<
       name: string;
       description: string;
       resourceRef: TRef;
-      paramsSchema?: z.ZodSchema<TParams>;
       apply(resource: IResource, params: NoInfer_2<TParams>): boolean;
       toQuery(params: NoInfer_2<TParams>): PermissionCriteria<IQuery>;
-    }
+    } & (
+      | {
+          params?: {
+            schema: StandardSchemaV1<TParams>;
+          };
+          paramsSchema?: never;
+        }
+      | {
+          params?: never;
+          paramsSchema?: z.ZodSchema<TParams>;
+        }
+    )
   : never;
 
 // @public
@@ -343,10 +354,20 @@ export type PermissionRule<
   name: string;
   description: string;
   resourceType: TResourceType;
-  paramsSchema?: z.ZodSchema<TParams>;
   apply(resource: TResource, params: NoInfer_2<TParams>): boolean;
   toQuery(params: NoInfer_2<TParams>): PermissionCriteria<TQuery>;
-};
+} & (
+  | {
+      params?: {
+        schema: StandardSchemaV1<TParams>;
+      };
+      paramsSchema?: never;
+    }
+  | {
+      params?: never;
+      paramsSchema?: z.ZodSchema<TParams>;
+    }
+);
 
 // @public
 export type PermissionRuleset<

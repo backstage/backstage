@@ -18,6 +18,7 @@ import type {
   PermissionCriteria,
   PermissionRuleParams,
 } from '@backstage/plugin-permission-common';
+import type { StandardSchemaV1 } from '@standard-schema/spec';
 import { z } from 'zod/v3';
 
 /**
@@ -56,11 +57,6 @@ export type PermissionRule<
   resourceType: TResourceType;
 
   /**
-   * A ZodSchema that reflects the structure of the parameters that are passed to
-   */
-  paramsSchema?: z.ZodSchema<TParams>;
-
-  /**
    * Apply this rule to a resource already loaded from a backing data source. The params are
    * arguments supplied for the rule; for example, a rule could be `isOwner` with entityRefs as the
    * params.
@@ -73,7 +69,26 @@ export type PermissionRule<
    * applied.
    */
   toQuery(params: NoInfer<TParams>): PermissionCriteria<TQuery>;
-};
+} & (
+  | {
+      /**
+       * A Standard Schema that reflects the structure of the parameters that are passed to the rule.
+       * The schema must support JSON Schema conversion.
+       */
+      params?: { schema: StandardSchemaV1<TParams> };
+      paramsSchema?: never;
+    }
+  | {
+      params?: never;
+
+      /**
+       * A ZodSchema that reflects the structure of the parameters that are passed to the rule.
+       *
+       * @deprecated Use `params.schema` instead.
+       */
+      paramsSchema?: z.ZodSchema<TParams>;
+    }
+);
 
 /**
  * A set of registered rules for a particular resource type.

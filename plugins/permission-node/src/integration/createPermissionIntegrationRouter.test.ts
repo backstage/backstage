@@ -16,12 +16,16 @@
 
 import {
   AuthorizeResult,
+  ConditionalPolicyDecision,
   createPermission,
   Permission,
 } from '@backstage/plugin-permission-common';
+import { StandardSchemaV1 } from '@standard-schema/spec';
 import express from 'express';
 import request, { Response } from 'supertest';
-import { z } from 'zod/v3';
+import { z as zodV3 } from 'zod/v3';
+import { z as zodV4 } from 'zod/v4';
+import { PermissionRule } from '../types';
 import {
   createPermissionIntegrationRouter,
   CreatePermissionIntegrationRouterResourceOptions,
@@ -49,9 +53,9 @@ const testRule1 = createPermissionRule({
   name: 'test-rule-1',
   description: 'Test rule 1',
   resourceType: 'test-resource',
-  paramsSchema: z.object({
-    foo: z.string(),
-    bar: z.number().describe('bar'),
+  paramsSchema: zodV3.object({
+    foo: zodV3.string(),
+    bar: zodV3.number().describe('bar'),
   }),
   apply: mockTestRule1Apply,
   toQuery: _params => ({}),
@@ -899,6 +903,77 @@ describe('createPermissionIntegrationRouter', () => {
   });
 
   describe('GET /.well-known/backstage/permissions/metadata', () => {
+    it('serializes Standard Schema rule parameters', async () => {
+      const rule = createPermissionRule({
+        name: 'standard-rule',
+        description: 'Standard Schema rule',
+        resourceType: 'test-resource',
+        params: {
+          schema: zodV4.object({
+            foo: zodV4.string(),
+            bar: zodV4.number().describe('bar'),
+          }),
+        },
+        apply: () => true,
+        toQuery: () => ({}),
+      });
+      const router = createPermissionIntegrationRouter({
+        permissions: [],
+        resourceType: 'test-resource',
+        rules: [rule],
+      });
+
+      const response = await request(express().use(router)).get(
+        '/.well-known/backstage/permissions/metadata',
+      );
+
+      expect(response.status).toBe(200);
+      expect(response.body.rules).toEqual([
+        {
+          name: 'standard-rule',
+          description: 'Standard Schema rule',
+          resourceType: 'test-resource',
+          paramsSchema: {
+            $schema: 'http://json-schema.org/draft-07/schema#',
+            type: 'object',
+            properties: {
+              foo: { type: 'string' },
+              bar: { type: 'number', description: 'bar' },
+            },
+            required: ['foo', 'bar'],
+          },
+        },
+      ]);
+    });
+
+    it('rejects registered Standard Schemas without JSON Schema conversion', () => {
+      const schema: StandardSchemaV1<Record<string, never>> = {
+        '~standard': {
+          version: 1,
+          vendor: 'test',
+          validate: value => ({ value: value as Record<string, never> }),
+        },
+      };
+      const rule: PermissionRule<
+        unknown,
+        unknown,
+        'test-resource',
+        Record<string, never>
+      > = {
+        name: 'unsupported',
+        description: 'Unsupported schema',
+        resourceType: 'test-resource',
+        params: { schema },
+        apply: () => true,
+        toQuery: () => ({}),
+      };
+      const router = createPermissionIntegrationRouter();
+
+      expect(() => router.addPermissionRules([rule])).toThrow(
+        "Permission rule 'unsupported' parameter schema does not support JSON Schema conversion",
+      );
+    });
+
     it('returns a list of permissions and rules of a single resource type', async () => {
       const response = await request(createApp()).get(
         '/.well-known/backstage/permissions/metadata',
@@ -1237,5 +1312,38 @@ describe('createConditionAuthorizer', () => {
 
     expect(mockTestRule1Apply).toHaveBeenCalledTimes(1);
     expect(mockTestRule2Apply).toHaveBeenCalledTimes(1);
+  });
+
+  it('validates Standard Schema parameters before applying conditions', () => {
+    const rule = createPermissionRule({
+      name: 'standard-rule',
+      description: 'Standard Schema rule',
+      resourceType: 'test-resource',
+      params: {
+        schema: zodV4.object({ owner: zodV4.string() }),
+      },
+      apply: (_resource, { owner }) => owner === 'user:default/test',
+      toQuery: () => ({}),
+    });
+    const isAuthorized = createConditionAuthorizer([rule]);
+    const decision = (params: {
+      owner: string | number;
+    }): ConditionalPolicyDecision => ({
+      pluginId: 'plugin',
+      resourceType: 'test-resource',
+      result: AuthorizeResult.CONDITIONAL,
+      conditions: {
+        rule: 'standard-rule',
+        resourceType: 'test-resource',
+        params,
+      },
+    });
+
+    expect(isAuthorized(decision({ owner: 'user:default/test' }), {})).toBe(
+      true,
+    );
+    expect(() => isAuthorized(decision({ owner: 1 }), {})).toThrow(
+      'Parameters to rule are invalid',
+    );
   });
 });
