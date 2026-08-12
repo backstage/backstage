@@ -25,7 +25,7 @@ import {
   createConditionFactory,
   createPermissionRule,
 } from '@backstage/plugin-permission-node';
-import { z } from 'zod';
+import * as z from 'zod';
 
 export const isInSystemRule = createPermissionRule({
   name: 'IS_IN_SYSTEM',
