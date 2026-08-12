@@ -1,5 +1,12 @@
 # @backstage/create-app
 
+## 0.9.1-next.3
+
+### Patch Changes
+
+- a178067: Added a pre-configured Home page with a customizable widget grid to the default create-app template.
+- ee4a9f6: Fixed the example scaffolder template so the component name field validates against the allowed entity-name format, preventing names with spaces that would fail catalog registration.
+
 ## 0.9.1-next.2
 
 ### Patch Changes

@@ -28,12 +28,13 @@ This tutorial assumes that you're already familiar with the following,
 2. `Express.js` and `Typescript`
 3. OpenAPI 3.1 schemas
 
-:::note OpenAPI Version Support
+:::note[OpenAPI Version Support]
 Backstage supports both OpenAPI 3.0 and 3.1 specifications. If you have existing OpenAPI 3.0 specs, we recommend that you migrate them to 3.1. You can use `oasdiff upgrade spec.yaml` to automate this conversion. The main changes are:
 
 - Replace `nullable: true` with `type: ['string', 'null']` or use `anyOf`/`oneOf`
 - Remove `allowReserved` from path parameters (only valid on query/cookie parameters in 3.1)
-  :::
+
+:::
 
 ### Setting up
 

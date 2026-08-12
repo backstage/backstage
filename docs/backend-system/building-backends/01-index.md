@@ -5,7 +5,7 @@ sidebar_label: Overview
 description: Building backends using the backend system
 ---
 
-:::note Note
+:::note
 
 If you have an existing backend that is not yet using the new backend
 system, see [migrating](./08-migrating.md).

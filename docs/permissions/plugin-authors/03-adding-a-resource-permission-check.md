@@ -160,7 +160,7 @@ export const rules = { isOwner };
 
 The `todoListPermissionResourceRef` is a utility that encapsulates the types and constants related to the resource type. It ensures that the resource and query types are consistent across all rules created for this resource.
 
-:::note Note
+:::note
 
 To support custom rules defined by Backstage integrators, you must export `todoListPermissionResourceRef` from the backend package, or a `*-node` package if you want to enable the creation of third-party modules.
 

@@ -103,7 +103,7 @@ export class CustomPolicy implements PermissionPolicy {
 
 Now that we have a custom rule defined and added to our policy, we need provide it to the catalog plugin. This step is important because the catalog plugin will use the rule's `toQuery` and `apply` methods while evaluating conditional authorize results. There's no guarantee that the catalog and permission backends are running on the same server, so we must explicitly link the rule to ensure that it's available at runtime.
 
-:::warning Warning
+:::warning
 
 The `PermissionsRegistryService` is a fairly new addition and not yet supported by all plugins as they might still be using the old `createPermissionIntegrationRouter` that cannot be extended. If you encounter errors when installing custom rules for a plugin, the plugin may need to be switched to using the `PermissionsRegistryService` first.
 

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 import { mockServices } from '@backstage/backend-test-utils';
+import { connectionTypes } from '@backstage/connections';
 import { DefaultConnectionsService } from './DefaultConnectionsService';
-import { JsonArray } from '@backstage/types';
+import { JsonArray, JsonObject } from '@backstage/types';
 
 const mockConnectionsConfig = (connections: JsonArray) =>
   mockServices.rootConfig({ data: { connections } });
@@ -550,6 +551,262 @@ describe('DefaultConnectionsService', () => {
     });
   });
 
+  describe('aws lookup strategy', () => {
+    const awsService = () =>
+      DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockConnectionsConfig([
+          {
+            type: 'aws',
+            roleName: 'wildcard-role',
+            auth: [
+              {
+                method: 'account',
+                accountId: '111111111111',
+                roleName: 'first-role',
+              },
+              {
+                method: 'account',
+                accountId: '222222222222',
+                accessKeyId: 'second-key',
+                secretAccessKey: 'second-secret',
+              },
+              { method: 'account', mainAccount: true, profile: 'main-profile' },
+            ],
+          },
+        ]),
+      });
+
+    it('selects the account matching an account ID or ARN', async () => {
+      const connections = awsService().forPlugin('catalog');
+
+      const byAccountId = await connections.find({
+        type: 'aws',
+        query: { accountId: '111111111111' },
+        authMethods: ['account'],
+      });
+      expect(byAccountId.auth).toMatchObject({
+        method: 'account',
+        accountId: '111111111111',
+        roleName: 'first-role',
+      });
+
+      const byArn = await connections.find({
+        type: 'aws',
+        query: { arn: 'arn:aws:iam::222222222222:role/some-role' },
+        authMethods: ['account'],
+      });
+      expect(byArn.auth).toMatchObject({
+        method: 'account',
+        accountId: '222222222222',
+        accessKeyId: 'second-key',
+      });
+    });
+
+    it('falls back to the main account when no account matches', async () => {
+      const connections = awsService().forPlugin('catalog');
+
+      const unknownAccount = await connections.find({
+        type: 'aws',
+        query: { accountId: '999999999999' },
+        authMethods: ['account'],
+      });
+      expect(unknownAccount.auth).toMatchObject({
+        method: 'account',
+        mainAccount: true,
+        profile: 'main-profile',
+      });
+      // The connection-level roleName is returned alongside the fallback
+      // entry, letting consumers assume that role in the requested account.
+      expect(unknownAccount.roleName).toBe('wildcard-role');
+
+      const noQuery = await connections.find({
+        type: 'aws',
+        query: {},
+        authMethods: ['account'],
+      });
+      expect(noQuery.auth).toMatchObject({ mainAccount: true });
+    });
+
+    it('rejects invalid credential combinations in auth entries', () => {
+      expect(() =>
+        DefaultConnectionsService.create({
+          logger: mockServices.logger.mock(),
+          config: mockConnectionsConfig([
+            {
+              type: 'aws',
+              auth: [
+                {
+                  method: 'account',
+                  accountId: '111111111111',
+                  accessKeyId: 'key-without-secret',
+                },
+              ],
+            },
+          ]),
+        }),
+      ).toThrow(/Invalid connection of type "aws"/);
+    });
+
+    it('rejects connections that violate cross-entry rules', () => {
+      const serviceWithAuth = (auth: JsonObject[], config?: JsonObject) => () =>
+        DefaultConnectionsService.create({
+          logger: mockServices.logger.mock(),
+          config: mockConnectionsConfig([{ type: 'aws', ...config, auth }]),
+        });
+
+      expect(
+        serviceWithAuth([
+          { method: 'account', mainAccount: true },
+          { method: 'account', mainAccount: true, profile: 'other' },
+        ]),
+      ).toThrow(/Multiple auth entries are marked as mainAccount/);
+
+      expect(
+        serviceWithAuth([
+          { method: 'account', accountId: '111111111111' },
+          { method: 'account', accountId: '111111111111', profile: 'other' },
+        ]),
+      ).toThrow(/Multiple auth entries for AWS account "111111111111"/);
+
+      expect(
+        serviceWithAuth([{ method: 'account', accountId: '111111111111' }], {
+          roleName: 'wildcard-role',
+        }),
+      ).toThrow(/requires an auth entry marked as mainAccount/);
+    });
+
+    it('passes plugin match along to cross-entry validation', () => {
+      const aws = connectionTypes.aws as Required<typeof connectionTypes.aws>;
+      const validateSpy = jest.spyOn(aws, 'validate');
+
+      DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockConnectionsConfig([
+          {
+            type: 'aws',
+            auth: [
+              {
+                method: 'account',
+                mainAccount: true,
+                match: { plugins: ['catalog'] },
+              },
+            ],
+          },
+        ]),
+      });
+
+      expect(validateSpy).toHaveBeenCalledWith({
+        config: {},
+        auth: [
+          expect.objectContaining({
+            method: 'account',
+            mainAccount: true,
+            match: { plugins: ['catalog'] },
+          }),
+        ],
+      });
+      validateSpy.mockRestore();
+    });
+
+    it('rejects multiple aws connections because aws has singleton cardinality', () => {
+      expect(() =>
+        DefaultConnectionsService.create({
+          logger: mockServices.logger.mock(),
+          config: mockConnectionsConfig([
+            {
+              type: 'aws',
+              auth: [{ method: 'account', mainAccount: true }],
+            },
+            {
+              type: 'aws',
+              auth: [
+                { method: 'account', mainAccount: true, profile: 'other' },
+              ],
+            },
+          ]),
+        }),
+      ).toThrow(/singleton connection type that only allows one entry/);
+    });
+
+    it('resolves legacy top-level aws config through connections', async () => {
+      const service = DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockServices.rootConfig({
+          data: {
+            aws: {
+              accountDefaults: { roleName: 'backstage-role' },
+              mainAccount: { profile: 'main-profile' },
+              accounts: [
+                { accountId: '111111111111', roleName: 'legacy-role' },
+              ],
+            },
+          },
+        }),
+      });
+      const connections = service.forPlugin('catalog');
+
+      const byAccountId = await connections.find({
+        type: 'aws',
+        query: { accountId: '111111111111' },
+        authMethods: ['account'],
+      });
+      expect(byAccountId.roleName).toBe('backstage-role');
+      expect(byAccountId.auth).toMatchObject({
+        accountId: '111111111111',
+        roleName: 'legacy-role',
+      });
+
+      const fallback = await connections.find({
+        type: 'aws',
+        query: { accountId: '999999999999' },
+        authMethods: ['account'],
+      });
+      expect(fallback.auth).toMatchObject({
+        mainAccount: true,
+        profile: 'main-profile',
+      });
+    });
+
+    it('prefers explicit aws connections config over legacy aws config', async () => {
+      const logger = mockServices.logger.mock();
+      const service = DefaultConnectionsService.create({
+        logger,
+        config: mockServices.rootConfig({
+          data: {
+            aws: {
+              mainAccount: { profile: 'legacy-profile' },
+            },
+            connections: [
+              {
+                type: 'aws',
+                auth: [
+                  {
+                    method: 'account',
+                    mainAccount: true,
+                    profile: 'explicit-profile',
+                  },
+                ],
+              },
+            ],
+          },
+        }),
+      });
+
+      const fallback = await service.forPlugin('catalog').find({
+        type: 'aws',
+        query: {},
+        authMethods: ['account'],
+      });
+      expect(fallback.auth).toMatchObject({ profile: 'explicit-profile' });
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'defined in both legacy integrations and connections config',
+        ),
+      );
+    });
+  });
+
   describe('title', () => {
     it('uses the configured title when provided', async () => {
       const service = DefaultConnectionsService.create({
@@ -802,6 +1059,67 @@ describe('DefaultConnectionsService', () => {
       ).toThrow(
         /Invalid connection of type "github".*Unrecognized key: "host2"/s,
       );
+    });
+  });
+
+  describe('cardinality', () => {
+    it('allows multiple multiton connections with different identities', () => {
+      const service = DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockConnectionsConfig([
+          {
+            type: 'github',
+            host: 'github.com',
+            auth: [{ method: 'token', token: 'public' }],
+          },
+          {
+            type: 'github',
+            host: 'ghe.acme.com',
+            auth: [{ method: 'token', token: 'enterprise' }],
+          },
+        ]),
+      });
+      expect(service).toBeDefined();
+    });
+
+    it('rejects duplicate multiton connections with the same identity', () => {
+      expect(() =>
+        DefaultConnectionsService.create({
+          logger: mockServices.logger.mock(),
+          config: mockConnectionsConfig([
+            {
+              type: 'github',
+              host: 'github.com',
+              auth: [{ method: 'token', token: 'first' }],
+            },
+            {
+              type: 'github',
+              host: 'github.com',
+              auth: [{ method: 'token', token: 'second' }],
+            },
+          ]),
+        }),
+      ).toThrow(/Duplicate connection of type "github" for host "github.com"/);
+    });
+
+    it('rejects duplicate singleton connections', () => {
+      expect(() =>
+        DefaultConnectionsService.create({
+          logger: mockServices.logger.mock(),
+          config: mockConnectionsConfig([
+            {
+              type: 'aws',
+              auth: [{ method: 'account', mainAccount: true }],
+            },
+            {
+              type: 'aws',
+              auth: [
+                { method: 'account', mainAccount: true, profile: 'other' },
+              ],
+            },
+          ]),
+        }),
+      ).toThrow(/singleton connection type that only allows one entry/);
     });
   });
 });

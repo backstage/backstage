@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 import { InputError } from '@backstage/errors';
+import type { LookupStrategy } from '@backstage/connections';
+
+// The concrete strategy is only known at runtime, so definitions receive the
+// query with its type erased and narrow it to their own query shape.
+type LookupStrategyDefinition = {
+  identityField?: string;
+  identityFromQuery(query: unknown): string | undefined;
+};
 
 /**
  * The definitions of all lookup strategies, keyed by the `lookupStrategy` of
@@ -22,24 +30,28 @@ import { InputError } from '@backstage/errors';
  *
  * @internal
  */
-export const lookupStrategies = {
+export const lookupStrategies: Record<
+  LookupStrategy,
+  LookupStrategyDefinition
+> = {
   host: {
-    identityField: 'host' as const,
-    identityFromQuery(query: { url: string }): string | undefined {
+    identityField: 'host',
+    identityFromQuery(query) {
+      const { url } = query as { url: string };
       try {
-        return new URL(query.url).host;
+        return new URL(url).host;
       } catch {
         throw new InputError(
-          `Invalid url "${query.url}" passed to ConnectionsService.find`,
+          `Invalid url "${url}" passed to ConnectionsService.find`,
         );
       }
     },
   },
+  // AWS has no identity field to match against — all accounts live under a
+  // single connection. Account selection is handled entirely by the
+  // connection type's matchAuth implementation.
   aws: {
-    identityFromQuery(_query: {
-      accountId?: string;
-      arn?: string;
-    }): string | undefined {
+    identityFromQuery() {
       return undefined;
     },
   },

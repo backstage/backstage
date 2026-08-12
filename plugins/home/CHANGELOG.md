@@ -1,5 +1,15 @@
 # @backstage/plugin-home
 
+## 0.9.9-next.2
+
+### Patch Changes
+
+- a178067: Added new frontend system widget blueprints for Most Visited, Recently Visited, World Clocks, and a configurable Toolkit. The home page now supports a `defaultConfig` for defining the initial grid layout via app-config.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9-next.1
+  - @backstage/plugin-catalog-react@3.2.1-next.3
+  - @backstage/plugin-home-react@0.1.41-next.2
+
 ## 0.9.9-next.1
 
 ### Patch Changes

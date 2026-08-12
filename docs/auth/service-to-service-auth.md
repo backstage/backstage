@@ -244,7 +244,7 @@ make access with the CICD token, they will be rejected if they try to contact
 anything but the `events` backend plugin. You could add additional entries to
 the array that allow targeting more plugins if that's what you want.
 
-:::note Note
+:::note
 
 If no `accessRestrictions` are added, the access method has unlimited access to
 all functionality of all plugins. It is recommended that you try to specify
@@ -353,7 +353,7 @@ The `externalTokenHandlersServiceRef` can be used to add custom external token h
 
 Your service factory must return an object with a `type` property that matches the token type in your configuration (e.g., 'custom', 'api-key'). When Backstage encounters tokens of this type, it calls your `initialize` method with all the configuration entries that match this type. Your factory can return either a single token handler or an array of handlers to process and validate these tokens.
 
-:::note Note
+:::note
 
 During token verification, all the token handlers are tested. Consider this when adding many token handlers, as it may impact performance.
 

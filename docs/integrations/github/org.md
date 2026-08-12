@@ -12,7 +12,7 @@ is a hierarchy of
 [`Group`](../../features/software-catalog/descriptor-format.md#kind-group) kind
 entities that mirror your org setup.
 
-:::note Note
+:::note
 
 This adds `User` and `Group` entities to the catalog, but does not
 provide authentication. See the
