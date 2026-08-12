@@ -23,7 +23,6 @@ import {
 import { ExternalDependency } from '@backstage/plugin-devtools-common';
 import {
   Alert,
-  Box,
   Cell,
   CellText,
   ColumnConfig,
@@ -86,49 +85,44 @@ export const ExternalDependenciesContent = () => {
     },
   });
 
-  const columns: ColumnConfig<ExternalDependencyRow>[] = [
-    {
-      id: 'name',
-      label: 'Name',
-      isRowHeader: true,
-      cell: item => <CellText title={item.name} />,
-    },
-    {
-      id: 'target',
-      label: 'Target',
-      cell: item => <CellText title={item.target} />,
-    },
-    {
-      id: 'type',
-      label: 'Type',
-      cell: item => <CellText title={item.type} />,
-    },
-    {
-      id: 'status',
-      label: 'Status',
-      cell: item => (
-        <Cell>
-          <Flex direction="column" gap="0.5">
-            <Text as="span">{getExternalDependencyStatus(item)}</Text>
-            {item.error && <Text as="span">{item.error}</Text>}
-          </Flex>
-        </Cell>
-      ),
-    },
-  ];
+  const columns = useMemo<ColumnConfig<ExternalDependencyRow>[]>(
+    () => [
+      {
+        id: 'name',
+        label: 'Name',
+        isRowHeader: true,
+        cell: item => <CellText title={item.name} />,
+      },
+      {
+        id: 'target',
+        label: 'Target',
+        cell: item => <CellText title={item.target} />,
+      },
+      {
+        id: 'type',
+        label: 'Type',
+        cell: item => <CellText title={item.type} />,
+      },
+      {
+        id: 'status',
+        label: 'Status',
+        cell: item => (
+          <Cell>
+            <Flex direction="column" gap="0.5">
+              {getExternalDependencyStatus(item)}
+              {item.error && <Text as="span">{item.error}</Text>}
+            </Flex>
+          </Cell>
+        ),
+      },
+    ],
+    [],
+  );
 
   if (loading) {
     return <Progress />;
   } else if (error) {
     return <Alert status="danger" description={error.message} />;
-  }
-
-  if (!externalDependencies || externalDependencies.length === 0) {
-    return (
-      <Box p="4">
-        <Text as="p">No external dependencies found</Text>
-      </Box>
-    );
   }
 
   return (
