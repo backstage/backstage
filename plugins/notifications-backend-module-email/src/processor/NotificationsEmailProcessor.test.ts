@@ -506,4 +506,67 @@ describe('NotificationsEmailProcessor', () => {
       'sourceArn is not supported in SESv2 and will be ignored',
     );
   });
+
+  it('should skip invalid recipient email addresses and still send to valid ones', async () => {
+    (createTransport as jest.Mock).mockReturnValue(mockTransport);
+
+    const invalidEmails = [
+      '"attacker@evil.com x"@internal.domain',
+      'alice@mycompany.com,evil@x.com',
+      'not-an-email',
+      'has spaces@example.com',
+    ];
+
+    const processor = new NotificationsEmailProcessor(
+      logger,
+      mockServices.rootConfig({
+        data: {
+          ...DEFAULT_SENDMAIL_CONFIG,
+          notifications: {
+            processors: {
+              email: {
+                ...DEFAULT_SENDMAIL_CONFIG.notifications.processors.email,
+                broadcastConfig: {
+                  receiver: 'config',
+                  receiverEmails: [
+                    ...invalidEmails,
+                    'valid@backstage.io',
+                  ] as JsonArray,
+                },
+              },
+            },
+          },
+        },
+      }),
+      catalogServiceMock(),
+      auth,
+    );
+
+    await processor.postProcess(
+      {
+        origin: 'plugin',
+        id: '1234',
+        user: null,
+        created: new Date(),
+        payload: { title: 'notification' },
+      },
+      {
+        recipients: { type: 'broadcast' },
+        payload: { title: 'notification' },
+      },
+    );
+
+    expect(sendmailMock).toHaveBeenCalledTimes(1);
+    expect(sendmailMock).toHaveBeenCalledWith(
+      expect.objectContaining({ to: 'valid@backstage.io' }),
+    );
+    for (const email of invalidEmails) {
+      expect(sendmailMock).not.toHaveBeenCalledWith(
+        expect.objectContaining({ to: email }),
+      );
+      expect(logger.warn).toHaveBeenCalledWith(
+        `Skipping invalid notification email address for delivery: ${email}`,
+      );
+    }
+  });
 });

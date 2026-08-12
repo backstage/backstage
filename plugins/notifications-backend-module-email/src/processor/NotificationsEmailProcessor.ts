@@ -46,6 +46,7 @@ import { NotificationTemplateRenderer } from '../extensions';
 import Mail from 'nodemailer/lib/mailer';
 import pThrottle from 'p-throttle';
 import { SendEmailCommandInput } from '@aws-sdk/client-sesv2';
+import { isValidNotificationEmail } from './isValidNotificationEmail';
 
 export class NotificationsEmailProcessor implements NotificationProcessor {
   private transporter: any;
@@ -236,6 +237,16 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       );
       return [];
     }
+
+    emails = emails.filter(email => {
+      if (isValidNotificationEmail(email)) {
+        return true;
+      }
+      this.logger.warn(
+        `Skipping invalid notification email address for delivery: ${email}`,
+      );
+      return false;
+    });
 
     if (this.allowlistEmailAddresses) {
       emails = emails.filter(email =>

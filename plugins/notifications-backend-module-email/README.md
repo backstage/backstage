@@ -110,4 +110,8 @@ notifications:
         - jane.doe@backstage.io
 ```
 
+Recipient addresses from the catalog and from `receiverEmails` are validated before
+send. Addresses that are not a single well-formed email are skipped (with a
+warning in the logs); delivery continues for remaining valid recipients.
+
 See `config.d.ts` for more options for configuration.
