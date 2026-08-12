@@ -21,6 +21,7 @@ import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
 import { JSX as JSX_3 } from 'react/jsx-runtime';
 import { Observable } from '@backstage/types';
+import { PageRouterComponent as PageRouterComponent_2 } from '@backstage/frontend-plugin-api';
 import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
 import { StandardSchemaV1 } from '@standard-schema/spec';
@@ -1918,6 +1919,13 @@ export const PageBlueprint: ExtensionBlueprint_2<{
           {
             optional: true;
           }
+        >
+      | ConfigurableExtensionDataRef_2<
+          PageRouterComponent,
+          'core.page.router',
+          {
+            optional: true;
+          }
         >,
       {
         singleton: false;
@@ -2285,11 +2293,18 @@ export const SubPageBlueprint: ExtensionBlueprint_2<{
         {
           optional: true;
         }
+      >
+    | ExtensionDataRef_2<
+        PageRouterComponent_2,
+        'core.page.router',
+        {
+          optional: true;
+        }
       >;
   inputs: {
     router: ExtensionInput_2<
       ConfigurableExtensionDataRef_2<
-        PageRouterComponent,
+        PageRouterComponent_2,
         'core.page.router',
         {}
       >,

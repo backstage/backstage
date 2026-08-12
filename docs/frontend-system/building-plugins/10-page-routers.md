@@ -6,27 +6,34 @@ description: Render a page with React Router v7, TanStack Router, or another rou
 ---
 
 Every page in the new frontend system renders inside a _page router_, a component
-that supplies routing context scoped to that page's own path. The default is
-React Router v6, so a page that does nothing special keeps working with the
-React Router APIs it already uses.
+that supplies routing context scoped to that page's own path. The framework
+mounts one router around the active page content. The default is React Router
+v6, so a page that does nothing special keeps working with the React Router APIs
+it already uses.
 
-This guide covers the case where you want something else: a page built on React
-Router v7, or on TanStack Router, or on a library you adapt yourself. For the
-reasoning behind page-scoped routing, see
+Use a page router adapter when a page is built on React Router v7, TanStack
+Router, or another library. For the reasoning behind page-scoped routing, see
 [Scoped plugin routing](../architecture/36-routes.md#scoped-plugin-routing).
 
 :::note
-Picking a different page router changes only the library that renders one page's
-content. The app still owns browser history, and navigation between plugins
-still goes through `AppHistoryApi`.
+Selecting a different page router changes only the library that renders the
+selected page or sub-page content. The app still owns browser history, and
+navigation between plugins still goes through `AppHistoryApi`.
 :::
+
+The framework selects the router before it renders the active content. An
+explicit sub-page router takes priority over the page router, which takes
+priority over the app default. This selection keeps adapters from nesting: an
+override replaces the adapter that would otherwise render the content.
 
 ## Before you start
 
-You need a page extension to attach the router to. Note its extension ID, which
-follows the [naming patterns](../architecture/50-naming-patterns.md) for
-extensions: an index page in a plugin called `tools` has the ID `page:tools`,
-and a named page in the same plugin has the ID `page:tools/reports`.
+You need a page or sub-page extension to attach the router to. Note its extension
+ID, which follows the
+[naming patterns](../architecture/50-naming-patterns.md) for extensions: an
+index page in a plugin called `tools` has the ID `page:tools`, a named page in
+the same plugin has the ID `page:tools/reports`, and an `overview` sub-page has
+the ID `sub-page:tools/overview`.
 
 ## Use React Router v7
 
@@ -133,11 +140,24 @@ timeline. Attach `ToolsPageRouter` with `PageRouterBlueprint` the same way as
 above. TanStack types stay inside the adapter package and your plugin, so
 nothing leaks into the framework's public contract.
 
-## Attach a router to a sub-page
+## Choose a router for a sub-page
 
-Sub-pages take a `router` input of their own. Attaching one gives that
-sub-page's content a context scoped to the sub-page rather than to the page
-above it:
+Sub-pages inherit their page's router when their `router` input is empty. The
+page router stays mounted at page scope across those sub-pages and keeps its
+router state when the active tab changes.
+
+The inherited router's native APIs remain page-scoped too. For example, a
+React Router `<Routes>` tree inside an `overview` sub-page must include the
+`overview` path, and a relative React Router `Link` resolves from the page
+route. Use `useHref` or `RouteLink` from `@backstage/frontend-plugin-api` for
+links that should resolve from the selected sub-page. If the content needs its
+routing library's native APIs to use the sub-page as their root, attach an
+explicit adapter to that sub-page instead.
+
+Attach an adapter to a sub-page when it needs a different router library or a
+new instance of the page's router scoped to the sub-page. The sub-page adapter
+replaces the page adapter around the active content; the two adapters are not
+nested:
 
 ```tsx
 const overviewRouter = PageRouterBlueprint.make({
@@ -147,13 +167,16 @@ const overviewRouter = PageRouterBlueprint.make({
 });
 ```
 
-A sub-page inherits nothing from its parent page, so a sub-page that needs a
-different library has to attach its own router.
+For example, selecting this sub-page on a React Router v6 page mounts React
+Router v7 around the sub-page content. Returning to a sibling with no override
+mounts the page's React Router v6 adapter again. Router-owned state resets when
+the page adapter is mounted again; the surrounding page shell stays mounted.
 
 ## Change the app-wide default
 
 App integrators can replace the default page router for every page at once by
-overriding `pageRouterApiRef`. Pages that attach their own router still win.
+overriding `pageRouterApiRef`. Page overrides take priority over that default,
+and explicit sub-page overrides take priority over the page.
 
 ```tsx title="packages/app/src/App.tsx"
 import {
@@ -217,6 +240,11 @@ its library's routing context. The component type is `PageRouterComponent` from
   `replaceState` from the adapter.
 - Build no routes of its own for sub-pages. The framework's route matching, one
   level above the page, has already decided which sub-page is showing.
+
+The page and sub-page `router` inputs let the framework select an adapter before
+it renders the content. A wrapper inside page content cannot replace the default
+adapter because that adapter is already mounted by the time the wrapper
+renders.
 
 The packaged adapters are the reference implementations. Their source lives in
 `plugins/app-react-router-v7` and `plugins/app-tanstack-router`.

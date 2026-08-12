@@ -104,8 +104,8 @@ This is the extension that creates the app root element, so it renders root leve
 
 :::note
 The app root takes no router input. The app owns browser history and exposes it
-as `AppHistoryApi`, and each page selects the library that renders its own
-content. See [Scoped plugin routing](../architecture/36-routes.md#scoped-plugin-routing).
+as `AppHistoryApi`, and the active page content renders inside one selected page
+router. See [Scoped plugin routing](../architecture/36-routes.md#scoped-plugin-routing).
 :::
 
 #### Default app root elements extensions
@@ -182,7 +182,11 @@ Renders a route element for each route received as input and a `NotFoundErrorPag
 
 Be careful when overriding this extension, as to do so correctly you must consider these implementation requirements:
 
-- This extension matches the app's top-level routes and resolves route refs to paths. It does not render page content, so replacing it does not let you change the router library a page uses. Attach a [page router](../building-plugins/10-page-routers.md) to the page instead;
+- This extension matches the app's top-level routes and resolves route refs to
+  paths. It does not render page content, so replacing it does not let you
+  change the router library used by a page or sub-page. Attach a
+  [page router](../building-plugins/10-page-routers.md) to the corresponding
+  `router` input instead;
 - Don't remove configs or inputs, just extend these things yourself with optional new options, otherwise it will cause breaking changes for extensions like `createPageExtension` that depend on this type of inputs;
 - Remember to user the route refs for getting paths dynamically, otherwise if an adopter modifies a path through configuration, the route is not going to point to the configured path;
 - Adopters expect to be able to customize the `NotFoundErrorPage` component via Components API, you should render this component for routes not configured.

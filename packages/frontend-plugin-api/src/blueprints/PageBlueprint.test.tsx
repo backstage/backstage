@@ -30,6 +30,7 @@ import { useState } from 'react';
 import { SubPageBlueprint } from './SubPageBlueprint';
 import { PageRouterBlueprint } from './PageRouterBlueprint';
 import type { PageRouterComponent } from '../apis/definitions/PageRouterApi';
+import { usePageMount } from '@internal/frontend';
 
 describe('PageBlueprint', () => {
   const mockRouteRef = createRouteRef();
@@ -99,6 +100,15 @@ describe('PageBlueprint', () => {
                   "optional": true,
                 },
                 "id": "core.icon",
+                "optional": [Function],
+                "toString": [Function],
+              },
+              {
+                "$$type": "@backstage/ExtensionDataRef",
+                "config": {
+                  "optional": true,
+                },
+                "id": "core.page.router",
                 "optional": [Function],
                 "toString": [Function],
               },
@@ -363,6 +373,62 @@ describe('PageBlueprint', () => {
     await waitFor(() =>
       expect(screen.getByTestId('info-page')).toBeInTheDocument(),
     );
+  });
+
+  it('should preserve a first sub-page router override in an isolated render', async () => {
+    const PageRouter: PageRouterComponent = ({ children }) => (
+      <div data-testid="page-router">{children}</div>
+    );
+    const SubPageRouter: PageRouterComponent = ({ children }) => (
+      <div data-testid="sub-page-router" data-mount={usePageMount()?.basePath}>
+        {children}
+      </div>
+    );
+    const FirstSubPage = () => (
+      <div data-testid="first-page" data-mount={usePageMount()?.basePath} />
+    );
+    const parentPage = PageBlueprint.make({
+      name: 'isolated',
+      params: { path: '/isolated', title: 'Isolated' },
+    });
+    const pageRouter = PageRouterBlueprint.make({
+      name: 'page-router',
+      attachTo: { id: 'page:isolated', input: 'router' },
+      params: { component: PageRouter },
+    });
+    const firstSubPage = SubPageBlueprint.make({
+      name: 'first',
+      attachTo: { id: 'page:isolated', input: 'pages' },
+      params: {
+        path: 'first',
+        title: 'First',
+        loader: async () => <FirstSubPage />,
+      },
+    });
+    const subPageRouter = PageRouterBlueprint.make({
+      name: 'sub-page-router',
+      attachTo: { id: 'sub-page:first', input: 'router' },
+      params: { component: SubPageRouter },
+    });
+    const tester = createExtensionTester(parentPage)
+      .add(pageRouter)
+      .add(firstSubPage)
+      .add(subPageRouter);
+
+    renderInTestApp(tester.reactElement(), {
+      mountPath: '/isolated',
+      initialRouteEntries: ['/isolated'],
+    });
+
+    expect(await screen.findByTestId('first-page')).toHaveAttribute(
+      'data-mount',
+      '/isolated/first',
+    );
+    expect(screen.getByTestId('sub-page-router')).toHaveAttribute(
+      'data-mount',
+      '/isolated/first',
+    );
+    expect(screen.queryByTestId('page-router')).not.toBeInTheDocument();
   });
 
   it('should hand the selected sub-page to the router adapter as opaque content', async () => {

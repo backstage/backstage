@@ -85,6 +85,13 @@ const visualizerPlugin: OverridableFrontendPlugin<
               {
                 optional: true;
               }
+            >
+          | ConfigurableExtensionDataRef<
+              PageRouterComponent,
+              'core.page.router',
+              {
+                optional: true;
+              }
             >,
           {
             singleton: false;
@@ -153,6 +160,13 @@ const visualizerPlugin: OverridableFrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ExtensionDataRef<
+            PageRouterComponent,
+            'core.page.router',
+            {
+              optional: true;
+            }
           >;
       inputs: {
         router: ExtensionInput<
@@ -204,6 +218,13 @@ const visualizerPlugin: OverridableFrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ExtensionDataRef<
+            PageRouterComponent,
+            'core.page.router',
+            {
+              optional: true;
+            }
           >;
       inputs: {
         router: ExtensionInput<
@@ -252,6 +273,13 @@ const visualizerPlugin: OverridableFrontendPlugin<
         | ExtensionDataRef<
             IconElement,
             'core.icon',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            PageRouterComponent,
+            'core.page.router',
             {
               optional: true;
             }

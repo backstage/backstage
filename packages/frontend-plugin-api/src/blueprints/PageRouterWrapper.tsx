@@ -33,8 +33,8 @@ export interface PageRouterWrapperProps {
 }
 
 /**
- * Renders a page's or sub-page's content region with its own router input
- * override, or the app-plugin default from {@link pageRouterApiRef}.
+ * Renders one content region with the adapter selected by its caller, or the
+ * app-plugin default from {@link pageRouterApiRef}.
  *
  * The content is opaque to the adapter: which sub-page of a page is showing is
  * decided by top-level route matching, so no adapter ever has to build routes
@@ -44,11 +44,18 @@ export interface PageRouterWrapperProps {
  * mount and the route resolution API, so it must not require any particular
  * routing library to be in context.
  *
+ * Adapter precedence is resolved by the page before this component is
+ * rendered: selected subpage override, page override, then app-wide default.
+ * For an inherited adapter this wrapper sits at the page mount and the
+ * selected subpage's mount provider sits inside it. For an explicit subpage
+ * override, that provider instead sits outside this wrapper so both the
+ * adapter and its content observe the subpage mount. This ordering keeps one
+ * adapter active without losing the subpage mount seen by its content.
+ *
  * The mount is read from the framework context rather than passed through the
  * public router component. When there is no mount (for example, isolated
- * `renderInTestApp` without
- * `AppRouteSwitch`) there is nothing to scope an adapter to, so the content
- * renders without one.
+ * `renderInTestApp` without `AppRouteSwitch`) there is nothing to scope an
+ * adapter to, so the content renders without one.
  */
 export function PageRouterWrapper(props: PageRouterWrapperProps) {
   const { RouterOverride, children } = props;

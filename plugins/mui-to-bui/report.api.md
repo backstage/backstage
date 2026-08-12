@@ -101,6 +101,13 @@ const _default: OverridableFrontendPlugin<
               {
                 optional: true;
               }
+            >
+          | ConfigurableExtensionDataRef<
+              PageRouterComponent,
+              'core.page.router',
+              {
+                optional: true;
+              }
             >,
           {
             singleton: false;

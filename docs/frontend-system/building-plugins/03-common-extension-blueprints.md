@@ -27,7 +27,13 @@ Sub-page extensions create tabbed content within a parent page. They are attache
 
 ### PageRouter - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.PageRouterBlueprint.html)
 
-Page router extensions choose the router library that renders a page's content. They attach to the `router` input of a page or sub-page extension, and take a single `component` param. A page with no page router attached uses the app default, React Router v6. For the available adapters and how to attach one, see [Choose a router for a page](./10-page-routers.md).
+Page router extensions choose the router library that renders active page
+content. They attach to the `router` input of a page or sub-page extension, and
+take a single `component` param. The framework mounts one adapter: an explicit
+sub-page override takes priority over the page override, followed by the app
+default, React Router v6. Sub-pages without an override inherit the page router
+at page scope. For the available adapters and how to attach one, see
+[Choose a router for a page](./10-page-routers.md).
 
 ### PluginHeaderAction - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.PluginHeaderActionBlueprint.html)
 

@@ -40,9 +40,18 @@ const toolsPageRouter = PageRouterBlueprint.make({
 `TanStackPageRouter` renders the page content through a catch-all route. That
 covers pages that render the content they are handed without routing inside it.
 
-To scope a TanStack context to a single tab rather than to the whole page,
-attach the adapter to the sub-page instead, for example
-`attachTo: { id: 'sub-page:tools/overview', input: 'router' }`.
+Sub-pages with no router override inherit the page's TanStack adapter at page
+scope, so the same adapter remains mounted while users move between sibling
+tabs. To give one sub-page its own TanStack context, attach the adapter to that
+sub-page, for example
+`attachTo: { id: 'sub-page:tools/overview', input: 'router' }`. This can replace
+another router library or create a sub-page-scoped TanStack instance. The
+explicit sub-page adapter replaces the page adapter around the active content;
+the two routers are not nested.
+
+The framework reads the `PageRouterBlueprint` attachment before it renders the
+content. It can therefore replace the default React Router v6 adapter instead
+of mounting TanStack Router inside it.
 
 ### Using a plugin-owned route tree
 

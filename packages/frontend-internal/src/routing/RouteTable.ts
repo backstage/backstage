@@ -128,7 +128,7 @@ type RankedRoute = {
  * retries an unanchored trailing pattern from every position in that run,
  * which is quadratic in its length. Scanning answers the same for every input.
  */
-function joinRoutePath(parent: string, child: string): string {
+export function joinRoutePath(parent: string, child: string): string {
   const withoutSplat = parent.endsWith('/*') ? parent.slice(0, -2) : parent;
   let end = withoutSplat.length;
   while (end > 0 && withoutSplat[end - 1] === '/') {

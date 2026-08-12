@@ -23,23 +23,23 @@
  *
  * | Page (host adapter)                          | Tab            | Combination proved                       |
  * | -------------------------------------------- | -------------- | ---------------------------------------- |
- * | `/nfs-routing-demo` (React Router v6)         | `nested-v6`    | React Router v6 nested inside v6         |
- * |                                               | `tanstack`     | a TanStack sub-page inside a v6 page     |
+ * | `/nfs-routing-demo` (React Router v6)         | `nested-v6`    | nested routes under inherited v6         |
+ * |                                               | `tanstack`     | TanStack replaces v6 for one sub-page    |
  * |                                               | `deep-link`    | links 3 segments below the page base     |
- * | `/nfs-routing-demo-tanstack` (TanStack)       | `tanstack`     | a plugin-owned nested TanStack tree       |
- * |                                               | `v6-guest`     | a React Router v6 sub-page inside it     |
- * | `/nfs-routing-demo-v7` (React Router v7)      | `v6-guest`     | v6 and v7 route trees in one app         |
- * |                                               | `v7-only`      | framework chrome with no v6 in context   |
+ * | `/nfs-routing-demo-tanstack` (TanStack)       | `tanstack`     | a plugin-owned nested TanStack tree      |
+ * |                                               | `v6-guest`     | v6 content on a TanStack page            |
+ * | `/nfs-routing-demo-v7` (React Router v7)      | `v6-guest`     | v6 content on a v7 page                  |
+ * |                                               | `v7-only`      | v7 content with no v6 in context         |
  *
  * Every panel prints the resolved app-absolute URL and the resolved `href` of
  * each link it renders, so a doubled base path (`/page/page/sub`) is visible
  * on screen instead of only in devtools.
  *
- * The three host adapters are attached individually via `PageRouterBlueprint`;
- * there is no app-wide default router swap. Sub-pages that attach their own
- * `router` input run their content under that adapter, and sub-pages that do
- * not fall back to the app-plugin default (React Router v6) — which is how a
- * TanStack or v7 page ends up hosting a v6 guest.
+ * The TanStack and v7 host adapters are attached individually via
+ * `PageRouterBlueprint`; the v6 page uses the app's registered default. A
+ * sub-page without an override inherits its page adapter. An explicit sub-page
+ * override replaces that adapter around the active content, including the two
+ * v6 guests below that explicitly reselect the registered app default.
  *
  * See https://github.com/backstage/backstage/issues/33603
  */
@@ -59,7 +59,9 @@ import {
   SubPageBlueprint,
   appHistoryApiRef,
   createRouteRef,
+  pageRouterApiRef,
   useApi,
+  type PageRouterComponent,
 } from '@backstage/frontend-plugin-api';
 import { Link } from '@backstage/core-components';
 import {
@@ -101,6 +103,23 @@ const nestedV6RouteRef = createRouteRef();
 const deepLinkRouteRef = createRouteRef();
 const tanstackV6GuestRouteRef = createRouteRef();
 const v7V6GuestRouteRef = createRouteRef();
+
+/**
+ * Explicitly selects the page router registered as the app default, which is
+ * React Router v6 in this example app.
+ *
+ * The app plugin registers `pageRouterApiRef` directly to its concrete v6
+ * adapter, rather than to this demo component, so rendering it cannot recurse
+ * back into this selector.
+ */
+const RegisteredAppDefaultV6PageRouter: PageRouterComponent = ({
+  children,
+}) => {
+  const RegisteredAppDefaultPageRouter = useApi(pageRouterApiRef);
+  return (
+    <RegisteredAppDefaultPageRouter>{children}</RegisteredAppDefaultPageRouter>
+  );
+};
 
 /**
  * The current app-absolute location, read straight from the framework's app
@@ -235,10 +254,10 @@ function NestedV6Index() {
   return (
     <>
       <Typography paragraph>
-        This tab owns a <code style={codeStyle}>&lt;Routes&gt;</code> tree of
-        its own, mounted inside the sub-page's React Router v6 adapter, which is
-        itself mounted inside the page's React Router v6 adapter. Two scoped v6
-        routers are stacked here, and neither one writes browser history.
+        This tab inherits the page's React Router v6 adapter and owns a{' '}
+        <code style={codeStyle}>&lt;Routes&gt;</code> tree of its own. One
+        adapter stays mounted at page scope while the nested routes select the
+        content, and the adapter never writes browser history.
       </Typography>
       <ul>
         <HrefReadout
@@ -287,13 +306,15 @@ function NestedV6Widget() {
 function NestedV6Panel() {
   return (
     <Panel
-      title="React Router v6 inside React Router v6"
-      proves="a v6 page can host a v6 sub-page that runs its own nested route tree, without the page base being applied twice"
+      title="Nested routes under React Router v6"
+      proves="a v6 sub-page can inherit its page adapter and run a nested route tree without the page base being applied twice"
       base={V6_PAGE_PATH}
     >
       <Routes>
-        <Route index element={<NestedV6Index />} />
-        <Route path="widget/:widgetId" element={<NestedV6Widget />} />
+        <Route path="nested-v6">
+          <Route index element={<NestedV6Index />} />
+          <Route path="widget/:widgetId" element={<NestedV6Widget />} />
+        </Route>
       </Routes>
     </Panel>
   );
@@ -311,9 +332,10 @@ function TanStackGuestPanel() {
       base={V6_PAGE_PATH}
     >
       <Typography paragraph>
-        The page above is React Router v6. This tab attached a{' '}
-        <code style={codeStyle}>PageRouterBlueprint</code> of its own, so its
-        content runs under a live TanStack router.
+        The page uses React Router v6. This tab attached a{' '}
+        <code style={codeStyle}>PageRouterBlueprint</code> of its own, so
+        TanStack replaces v6 around the active content instead of nesting inside
+        it.
       </Typography>
       <Typography paragraph>
         TanStack's <code style={codeStyle}>useRouterState()</code> reports{' '}
@@ -425,8 +447,10 @@ function DeepLinkPanel() {
       base={V6_PAGE_PATH}
     >
       <Routes>
-        <Route index element={<DeepLinkIndex />} />
-        <Route path="area/:area/item/:item" element={<DeepLinkLeaf />} />
+        <Route path="deep-link">
+          <Route index element={<DeepLinkIndex />} />
+          <Route path="area/:area/item/:item" element={<DeepLinkLeaf />} />
+        </Route>
       </Routes>
     </Panel>
   );
@@ -513,15 +537,14 @@ function TanStackV6GuestIndex() {
   return (
     <>
       <Typography paragraph>
-        This tab attached no router of its own, so it fell back to the
-        app-plugin default — React Router v6 — even though the page hosting it
-        is TanStack. The framework selected the tab, and its <em>content</em> is
-        running v6.
+        React Router v6 content on a TanStack page needs an explicit sub-page
+        override. This one selects the app's registered default adapter, which
+        is React Router v6 here, and replaces TanStack while the tab is active.
       </Typography>
       <ul>
         <HrefReadout
           expected={`${TANSTACK_V6_GUEST_BASE}/report/q3`}
-          note="react-router-dom Link inside a tab whose route TanStack created"
+          note="react-router-dom Link inside a framework-selected tab rendered by v6"
         >
           <RouterLink to="report/q3">report/q3</RouterLink>
         </HrefReadout>
@@ -538,10 +561,9 @@ function TanStackV6GuestReport() {
     <Typography paragraph>
       React Router v6 matched <code style={codeStyle}>report/:reportId</code>{' '}
       with reportId = <strong>{reportId}</strong> at{' '}
-      <code style={codeStyle}>{pathname}</code>, inside a page whose tab routing
-      is TanStack's. The v6 tree sees the real app location, so the TanStack
-      page above and the v6 content below never disagree about where the browser
-      is.
+      <code style={codeStyle}>{pathname}</code>, inside a page whose other tabs
+      inherit TanStack Router. The v6 tree sees the real app location, so
+      switching adapters does not create a second browser history.
     </Typography>
   );
 }
@@ -567,16 +589,17 @@ function V7V6GuestIndex() {
   return (
     <>
       <Typography paragraph>
-        The page's tabs are React Router <strong>v7</strong> routes. This tab's
-        content is React Router <strong>v6</strong>, from a different copy of
-        the library with its own contexts. Both are projections of the same app
-        history, so neither owns <code style={codeStyle}>window.history</code>{' '}
-        and neither can fight the other for it.
+        The page uses React Router <strong>v7</strong>, and its other tabs
+        inherit that adapter. React Router <strong>v6</strong> content on this
+        tab uses an explicit sub-page override to select the app's registered
+        default, which is v6 here. Only one adapter surrounds the active
+        content, and both versions project the same app history rather than
+        owning <code style={codeStyle}>window.history</code> themselves.
       </Typography>
       <ul>
         <HrefReadout
           expected={`${V7_V6_GUEST_BASE}/release/1-42`}
-          note="react-router-dom v6 Link inside a v7-routed tab"
+          note="react-router-dom v6 Link inside an overridden tab on a v7 page"
         >
           <RouterLink to="release/1-42">release/1-42</RouterLink>
         </HrefReadout>
@@ -593,7 +616,8 @@ function V7V6GuestRelease() {
     <Typography paragraph>
       React Router v6 matched <code style={codeStyle}>release/:releaseId</code>{' '}
       with releaseId = <strong>{releaseId}</strong> at{' '}
-      <code style={codeStyle}>{pathname}</code>, two React Router majors deep.
+      <code style={codeStyle}>{pathname}</code>, on a page whose other tabs use
+      React Router v7.
     </Typography>
   );
 }
@@ -601,8 +625,8 @@ function V7V6GuestRelease() {
 function V7V6GuestPanel() {
   return (
     <Panel
-      title="React Router v6 inside React Router v7"
-      proves="two React Router majors coexisting in one app, on one page"
+      title="React Router v6 on a React Router v7 page"
+      proves="one page can select v6 for one tab and v7 for its siblings without nesting the adapters"
       base={V7_PAGE_PATH}
     >
       <Routes>
@@ -621,10 +645,12 @@ function V7OnlyPanel() {
       base={V7_PAGE_PATH}
     >
       <Typography paragraph>
-        This tab attached the v7 adapter, so the only React Router context here
-        is v7's. The <code style={codeStyle}>react-router-dom</code> v6 hooks
-        the rest of this app uses would throw in this subtree — deliberately,
-        none are used below.
+        This content needs only the page's v7 adapter. A sub-page like this can
+        leave its router input empty and inherit v7, so the only React Router
+        context here is v7's. The{' '}
+        <code style={codeStyle}>react-router-dom</code> v6 hooks the rest of
+        this app uses would throw in this subtree — deliberately, none are used
+        below.
       </Typography>
       <Typography paragraph>
         The page header, the tab strip, the breadcrumbs and the links below
@@ -765,6 +791,15 @@ const TanStackHostV6SubPage = SubPageBlueprint.make({
   },
 });
 
+const TanStackHostV6SubPageRouter = PageRouterBlueprint.make({
+  name: 'nfsRoutingDemoTanstack-v6-guest',
+  attachTo: {
+    id: 'sub-page:pages/nfsRoutingDemoTanstack-v6-guest',
+    input: 'router',
+  },
+  params: { component: RegisteredAppDefaultV6PageRouter },
+});
+
 /** `/nfs-routing-demo-v7` — hosted by the React Router v7 adapter. */
 const V7HostPage = PageBlueprint.make({
   name: 'nfsRoutingDemoV7',
@@ -793,6 +828,12 @@ const V7HostV6SubPage = SubPageBlueprint.make({
   },
 });
 
+const V7HostV6SubPageRouter = PageRouterBlueprint.make({
+  name: 'nfsRoutingDemoV7-v6-guest',
+  attachTo: { id: 'sub-page:pages/nfsRoutingDemoV7-v6-guest', input: 'router' },
+  params: { component: RegisteredAppDefaultV6PageRouter },
+});
+
 const V7HostV7SubPage = SubPageBlueprint.make({
   name: 'nfsRoutingDemoV7-v7-only',
   attachTo: { id: 'page:pages/nfsRoutingDemoV7', input: 'pages' },
@@ -801,12 +842,6 @@ const V7HostV7SubPage = SubPageBlueprint.make({
     title: 'v7 only',
     loader: async () => <V7OnlyPanel />,
   },
-});
-
-const V7HostV7SubPageRouter = PageRouterBlueprint.make({
-  name: 'nfsRoutingDemoV7-v7-only',
-  attachTo: { id: 'sub-page:pages/nfsRoutingDemoV7-v7-only', input: 'router' },
-  params: { component: ReactRouterV7PageRouter },
 });
 
 /**
@@ -823,9 +858,10 @@ export const nfsRoutingDemoExtensions = [
   TanStackHostTanStackSubPage,
   TanStackHostTanStackSubPageRouter,
   TanStackHostV6SubPage,
+  TanStackHostV6SubPageRouter,
   V7HostPage,
   V7HostPageRouter,
   V7HostV6SubPage,
+  V7HostV6SubPageRouter,
   V7HostV7SubPage,
-  V7HostV7SubPageRouter,
 ];

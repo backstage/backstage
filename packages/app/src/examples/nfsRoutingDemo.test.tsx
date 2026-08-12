@@ -42,11 +42,11 @@ function expectNoPathProblems() {
 }
 
 describe('nfsRoutingDemo', () => {
-  it('should nest React Router v6 inside a React Router v6 page and resolve deep links without doubling the base', async () => {
+  it('should inherit React Router v6 for nested routes and resolve deep links without doubling the base', async () => {
     const { unmount } = renderDemoAt('/nfs-routing-demo/nested-v6');
 
     expect(
-      await screen.findByText('React Router v6 inside React Router v6'),
+      await screen.findByText('Nested routes under React Router v6'),
     ).toBeInTheDocument();
     expect(screen.getByText('/nfs-routing-demo/nested-v6')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'widget/blue' })).toHaveAttribute(
@@ -116,7 +116,7 @@ describe('nfsRoutingDemo', () => {
     expectNoPathProblems();
   });
 
-  it('should let TanStack own the tab route tree and still host a React Router v6 sub-page', async () => {
+  it('should let a custom TanStack adapter own one tab and explicitly select the app default v6 adapter for its sibling', async () => {
     const { unmount } = renderDemoAt('/nfs-routing-demo-tanstack/tanstack');
 
     expect(
@@ -141,20 +141,20 @@ describe('nfsRoutingDemo', () => {
     expectNoPathProblems();
   });
 
-  it('should run React Router v6 and v7 route trees on the same page', async () => {
+  it('should explicitly select the app default v6 adapter for one v7-host tab and inherit v7 for its sibling', async () => {
     const { unmount } = renderDemoAt(
       '/nfs-routing-demo-v7/v6-guest/release/1-42',
     );
 
     expect(
-      await screen.findByText('React Router v6 inside React Router v7'),
+      await screen.findByText('React Router v6 on a React Router v7 page'),
     ).toBeInTheDocument();
     expect(screen.getByText('1-42')).toBeInTheDocument();
     expectNoPathProblems();
     unmount();
 
-    // The v7-only tab has no React Router v6 context, yet framework links
-    // still resolve from the page mount.
+    // With no sub-page override, this sibling automatically inherits the
+    // page's React Router v7 adapter and has no React Router v6 context.
     renderDemoAt('/nfs-routing-demo-v7/v7-only');
     expect(await screen.findByText('React Router v7 only')).toBeInTheDocument();
     expect(

@@ -17,19 +17,22 @@
 import { act, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import {
-  Link,
   Route,
   Routes,
   useLocation,
   useParams,
   useResolvedPath,
 } from 'react-router-dom';
-import type { PageRouterComponent } from '../apis/definitions/PageRouterApi';
+import {
+  pageRouterApiRef,
+  type PageRouterComponent,
+} from '../apis/definitions/PageRouterApi';
 import { useHref } from '../routing';
 import { PageBlueprint } from './PageBlueprint';
 import { PageRouterBlueprint } from './PageRouterBlueprint';
 import { SubPageBlueprint } from './SubPageBlueprint';
 import { usePageMount } from '@internal/frontend';
+import { createContext, useContext, useState } from 'react';
 
 describe('SubPageBlueprint', () => {
   it('should expose an optional singleton router input', () => {
@@ -173,6 +176,240 @@ describe('SubPageBlueprint', () => {
     });
   });
 
+  it('should inherit one page router while giving ordinary subpage content its own mount', async () => {
+    const RouterStack = createContext<readonly string[]>([]);
+
+    const createRouter = (name: string): PageRouterComponent => {
+      return ({ children }) => {
+        const stack = useContext(RouterStack);
+        const mount = usePageMount();
+        const [state, setState] = useState(0);
+        return (
+          <RouterStack.Provider value={[...stack, name]}>
+            <div data-testid={`${name}-router`}>
+              <span data-testid={`${name}-router-mount`}>
+                {mount?.basePath}
+              </span>
+              <span data-testid={`${name}-router-state`}>{state}</span>
+              <button
+                type="button"
+                onClick={() => setState(value => value + 1)}
+              >
+                Bump {name}
+              </button>
+              {children}
+            </div>
+          </RouterStack.Provider>
+        );
+      };
+    };
+
+    const DefaultRouter = createRouter('default');
+    const PageRouter = createRouter('page');
+    const page = PageBlueprint.make({
+      params: { path: '/inherit', title: 'Inheritance' },
+    });
+    const pageRouter = PageRouterBlueprint.make({
+      name: 'page-router',
+      attachTo: { id: 'page:test', input: 'router' },
+      params: { component: PageRouter },
+    });
+    const createSubPage = (name: string) =>
+      SubPageBlueprint.make({
+        name,
+        params: {
+          path: name,
+          title: name,
+          loader: async () => {
+            const Probe = () => (
+              <div data-testid={`${name}-page`}>
+                <span data-testid="router-stack">
+                  {useContext(RouterStack).join('>')}
+                </span>
+                <span data-testid="content-mount">
+                  {usePageMount()?.basePath}
+                </span>
+              </div>
+            );
+            return <Probe />;
+          },
+        },
+      });
+
+    const { appHistory } = renderTestApp({
+      apis: [[pageRouterApiRef, DefaultRouter]],
+      extensions: [
+        page,
+        pageRouter,
+        createSubPage('overview'),
+        createSubPage('settings'),
+      ],
+      initialRouteEntries: ['/inherit/overview'],
+    });
+
+    expect(await screen.findByTestId('overview-page')).toBeInTheDocument();
+    expect(screen.getByTestId('router-stack').textContent).toBe('page');
+    expect(screen.getByTestId('page-router-mount').textContent).toBe(
+      '/inherit',
+    );
+    expect(screen.getByTestId('content-mount').textContent).toBe(
+      '/inherit/overview',
+    );
+    expect(screen.queryByTestId('default-router')).not.toBeInTheDocument();
+
+    await act(async () => {
+      screen.getByRole('button', { name: 'Bump page' }).click();
+      screen.getByRole('button', { name: 'Bump page' }).click();
+    });
+    expect(screen.getByTestId('page-router-state')).toHaveTextContent('2');
+
+    await act(async () => {
+      appHistory.navigate('/inherit/settings');
+    });
+
+    expect(await screen.findByTestId('settings-page')).toBeInTheDocument();
+    expect(screen.getByTestId('router-stack').textContent).toBe('page');
+    expect(screen.getByTestId('page-router-mount').textContent).toBe(
+      '/inherit',
+    );
+    expect(screen.getByTestId('content-mount').textContent).toBe(
+      '/inherit/settings',
+    );
+    expect(screen.getByTestId('page-router-state')).toHaveTextContent('2');
+  });
+
+  it('should keep native React Router APIs at page scope for an inherited subpage', async () => {
+    const NativeRoutingProbe = () => {
+      const nativeSibling = useResolvedPath('../sibling');
+      const frameworkSibling = useHref('../sibling');
+      const params = useParams();
+      return (
+        <div data-testid="native-routing-probe">
+          <span data-testid="native-sibling">{nativeSibling.pathname}</span>
+          <span data-testid="framework-sibling">{frameworkSibling}</span>
+          <span data-testid="native-splat">{params['*']}</span>
+          <Routes>
+            <Route
+              path="first/*"
+              element={<span data-testid="nested-route">Nested route</span>}
+            />
+          </Routes>
+        </div>
+      );
+    };
+    const page = PageBlueprint.make({
+      params: { path: '/native', title: 'Native routing' },
+    });
+    const firstSubPage = SubPageBlueprint.make({
+      name: 'first',
+      params: {
+        path: 'first',
+        title: 'First',
+        loader: async () => <NativeRoutingProbe />,
+      },
+    });
+
+    renderTestApp({
+      extensions: [page, firstSubPage],
+      initialRouteEntries: ['/native/first/deep'],
+    });
+
+    expect(await screen.findByTestId('nested-route')).toBeInTheDocument();
+    expect(screen.getByTestId('native-sibling').textContent).toBe('/sibling');
+    expect(screen.getByTestId('framework-sibling').textContent).toBe(
+      '/native/sibling',
+    );
+    expect(screen.getByTestId('native-splat').textContent).toBe('first/deep');
+  });
+
+  it('should replace the page router with one explicit subpage router without remounting the page shell', async () => {
+    const RouterStack = createContext<readonly string[]>([]);
+    const createRouter = (name: string): PageRouterComponent => {
+      return ({ children }) => {
+        const stack = useContext(RouterStack);
+        const mount = usePageMount();
+        return (
+          <RouterStack.Provider value={[...stack, name]}>
+            <div data-testid={`${name}-router`}>
+              <span data-testid={`${name}-router-mount`}>
+                {mount?.basePath}
+              </span>
+              {children}
+            </div>
+          </RouterStack.Provider>
+        );
+      };
+    };
+    const ContentProbe = ({ name }: { name: string }) => (
+      <div data-testid={`${name}-page`}>
+        <span data-testid="router-stack">
+          {useContext(RouterStack).join('>')}
+        </span>
+        <span data-testid="content-mount">{usePageMount()?.basePath}</span>
+      </div>
+    );
+
+    const page = PageBlueprint.make({
+      params: { path: '/switch', title: 'Switcher' },
+    });
+    const pageRouter = PageRouterBlueprint.make({
+      name: 'page-router',
+      attachTo: { id: 'page:test', input: 'router' },
+      params: { component: createRouter('page') },
+    });
+    const inheritedSubPage = SubPageBlueprint.make({
+      name: 'inherited',
+      params: {
+        path: 'inherited',
+        title: 'Inherited',
+        loader: async () => <ContentProbe name="inherited" />,
+      },
+    });
+    const overriddenSubPage = SubPageBlueprint.make({
+      name: 'overridden',
+      params: {
+        path: 'overridden',
+        title: 'Overridden',
+        loader: async () => <ContentProbe name="overridden" />,
+      },
+    });
+    const subPageRouter = PageRouterBlueprint.make({
+      name: 'subpage-router',
+      attachTo: { id: 'sub-page:test/overridden', input: 'router' },
+      params: { component: createRouter('subpage') },
+    });
+
+    const { appHistory } = renderTestApp({
+      extensions: [
+        page,
+        pageRouter,
+        inheritedSubPage,
+        overriddenSubPage,
+        subPageRouter,
+      ],
+      initialRouteEntries: ['/switch/inherited'],
+    });
+
+    expect(await screen.findByTestId('inherited-page')).toBeInTheDocument();
+    expect(screen.getByTestId('router-stack').textContent).toBe('page');
+    const shellTab = screen.getByRole('tab', { name: 'Inherited' });
+
+    await act(async () => {
+      appHistory.navigate('/switch/overridden');
+    });
+
+    expect(await screen.findByTestId('overridden-page')).toBeInTheDocument();
+    expect(screen.getByTestId('router-stack').textContent).toBe('subpage');
+    expect(screen.queryByTestId('page-router')).not.toBeInTheDocument();
+    expect(screen.getByTestId('subpage-router-mount').textContent).toBe(
+      '/switch/overridden',
+    );
+    expect(screen.getByTestId('content-mount').textContent).toBe(
+      '/switch/overridden',
+    );
+    expect(screen.getByRole('tab', { name: 'Inherited' })).toBe(shellTab);
+  });
+
   it('should allow a subpage router override while the parent stays on the default', async () => {
     const CustomSubpageRouter: PageRouterComponent = ({ children }) => (
       <div data-testid="custom-subpage-router">{children}</div>
@@ -263,75 +500,7 @@ describe('SubPageBlueprint', () => {
     });
   });
 
-  it('should give a subpage of a parameterized page its own params and nested routes', async () => {
-    const entityPage = PageBlueprint.make({
-      name: 'entity',
-      params: {
-        path: '/entities/:namespace/:kind/:name',
-        title: 'Entity',
-      },
-    });
-
-    const overviewSubPage = SubPageBlueprint.make({
-      name: 'overview',
-      attachTo: { id: 'page:test/entity', input: 'pages' },
-      params: {
-        path: 'overview',
-        title: 'Overview',
-        loader: async () => {
-          const Probe = () => {
-            const mount = usePageMount();
-            return (
-              <div data-testid="overview-page">
-                <div data-testid="params">{JSON.stringify(useParams())}</div>
-                <div data-testid="mount-base">{mount?.basePath}</div>
-                <Routes>
-                  <Route
-                    path="deep/:section"
-                    element={<span data-testid="deep">deep</span>}
-                  />
-                </Routes>
-              </div>
-            );
-          };
-          return <Probe />;
-        },
-      },
-    });
-
-    const { appHistory } = renderTestApp({
-      extensions: [entityPage, overviewSubPage],
-      initialRouteEntries: ['/entities/default/component/foo/overview'],
-    });
-
-    expect(await screen.findByTestId('overview-page')).toBeInTheDocument();
-    expect(screen.getByTestId('mount-base')).toHaveTextContent(
-      '/entities/default/component/foo/overview',
-    );
-    // The page's params reach the subpage, and the tail below the subpage is
-    // the subpage's own splat rather than the page's.
-    expect(JSON.parse(screen.getByTestId('params').textContent!)).toEqual({
-      namespace: 'default',
-      kind: 'component',
-      name: 'foo',
-      '*': '',
-    });
-    expect(screen.queryByTestId('deep')).not.toBeInTheDocument();
-
-    await act(async () => {
-      appHistory.navigate('/entities/default/component/foo/overview/deep/spec');
-    });
-
-    expect(await screen.findByTestId('deep')).toBeInTheDocument();
-    expect(JSON.parse(screen.getByTestId('params').textContent!)).toEqual({
-      namespace: 'default',
-      kind: 'component',
-      name: 'foo',
-      '*': 'deep/spec',
-    });
-  });
-
-  it('should keep relative subpage routes and tabbed layouts working under parent/child scopes', async () => {
+  it('should keep framework hrefs and tabbed layouts scoped to the selected subpage', async () => {
     const parentPage = PageBlueprint.make({
       params: {
         path: '/create',
@@ -352,9 +521,9 @@ describe('SubPageBlueprint', () => {
               <div data-testid="templates-page">
                 <div data-testid="pathname">{location.pathname}</div>
                 <div data-testid="mount-base">{mount?.basePath}</div>
-                <Link to="./actions" data-testid="relative-link">
+                <a href={useHref('./actions')} data-testid="relative-link">
                   Actions
-                </Link>
+                </a>
               </div>
             );
           };
@@ -405,247 +574,6 @@ describe('SubPageBlueprint', () => {
     });
   });
 
-  /**
-   * `../sibling` is the tab-to-tab idiom in a sub-page, and `..` means "up one
-   * route match" — so a sub-page has to sit one match below its parent page,
-   * the same as content composed with a plain nested `<Routes>`. A sub-page
-   * that published a single match of its own instead would send every `..` to
-   * the app root.
-   */
-  const RelativeTargetsProbe = () => (
-    <div data-testid="templates-page">
-      <div data-testid="up">{useResolvedPath('..').pathname}</div>
-      <div data-testid="self">{useResolvedPath('.').pathname}</div>
-      <Link to="..">Parent page</Link>
-      <Link to="../tasks">Tasks tab</Link>
-      <Link to="./actions">Actions</Link>
-      <Routes>
-        <Route
-          path="actions/:name"
-          element={<Link to="../preview">Up from a nested route</Link>}
-        />
-      </Routes>
-    </div>
-  );
-
-  const relativeTargetsPage = PageBlueprint.make({
-    params: { path: '/create', title: 'Scaffolder' },
-  });
-  const relativeTargetsSubPage = SubPageBlueprint.make({
-    name: 'templates',
-    params: {
-      path: 'templates',
-      title: 'Templates',
-      loader: async () => <RelativeTargetsProbe />,
-    },
-  });
-  const relativeTargetsSiblingSubPage = SubPageBlueprint.make({
-    name: 'tasks',
-    params: {
-      path: 'tasks',
-      title: 'Tasks',
-      loader: async () => <div data-testid="tasks-page">Tasks</div>,
-    },
-  });
-  const relativeTargetsSoloPage = PageBlueprint.make({
-    name: 'solo',
-    params: {
-      path: '/solo',
-      title: 'Solo',
-      loader: async () => {
-        const Solo = () => (
-          <div data-testid="solo-page">
-            <div data-testid="solo-up">{useResolvedPath('..').pathname}</div>
-            <Link to="..">Above the page</Link>
-          </div>
-        );
-        return <Solo />;
-      },
-    },
-  });
-  const relativeTargetsExtensions = [
-    relativeTargetsPage,
-    relativeTargetsSubPage,
-    relativeTargetsSiblingSubPage,
-    relativeTargetsSoloPage,
-  ];
-
-  it('should resolve relative targets in a subpage against the subpage, and `..` against the parent page', async () => {
-    const { appHistory } = renderTestApp({
-      extensions: relativeTargetsExtensions,
-      initialRouteEntries: ['/create/templates'],
-    });
-
-    expect(await screen.findByTestId('templates-page')).toBeInTheDocument();
-    expect(screen.getByTestId('up')).toHaveTextContent('/create');
-    expect(screen.getByTestId('self')).toHaveTextContent('/create/templates');
-    expect(screen.getByRole('link', { name: 'Parent page' })).toHaveAttribute(
-      'href',
-      '/create',
-    );
-    expect(screen.getByRole('link', { name: 'Tasks tab' })).toHaveAttribute(
-      'href',
-      '/create/tasks',
-    );
-    expect(screen.getByRole('link', { name: 'Actions' })).toHaveAttribute(
-      'href',
-      '/create/templates/actions',
-    );
-
-    // One match deeper again, `..` lands back on the sub-page rather than on
-    // the page above it.
-    await act(async () => {
-      appHistory.navigate('/create/templates/actions/build');
-    });
-    expect(
-      await screen.findByRole('link', { name: 'Up from a nested route' }),
-    ).toHaveAttribute('href', '/create/templates/preview');
-
-    // The href is not just decoration — following it has to land on the tab.
-    await act(async () => {
-      appHistory.navigate('/create/templates');
-    });
-    await act(async () => {
-      screen.getByRole('link', { name: 'Tasks tab' }).click();
-    });
-    expect(await screen.findByTestId('tasks-page')).toBeInTheDocument();
-    expect(appHistory.location.pathname).toBe('/create/tasks');
-
-    // A page is the root of its own match stack, so its own `..` still leaves
-    // the page entirely.
-    await act(async () => {
-      appHistory.navigate('/solo');
-    });
-    expect(await screen.findByTestId('solo-page')).toBeInTheDocument();
-    expect(screen.getByTestId('solo-up')).toHaveTextContent('/');
-    expect(
-      screen.getByRole('link', { name: 'Above the page' }),
-    ).toHaveAttribute('href', '/');
-  });
-
-  it('should include the app deploy basename in targets resolved from a subpage', async () => {
-    renderTestApp({
-      extensions: relativeTargetsExtensions,
-      initialRouteEntries: ['/create/templates'],
-      config: {
-        app: { baseUrl: 'http://localhost:3000/backstage' },
-        backend: { baseUrl: 'http://localhost:7007' },
-      },
-    });
-
-    expect(await screen.findByTestId('templates-page')).toBeInTheDocument();
-    // Relative resolution happens in app-relative space, and only the href
-    // carries the deploy basename — so it appears exactly once.
-    expect(screen.getByTestId('up')).toHaveTextContent('/create');
-    expect(screen.getByRole('link', { name: 'Tasks tab' })).toHaveAttribute(
-      'href',
-      '/backstage/create/tasks',
-    );
-    expect(screen.getByRole('link', { name: 'Actions' })).toHaveAttribute(
-      'href',
-      '/backstage/create/templates/actions',
-    );
-  });
-
-  /**
-   * The same relative targets, with the page above the sub-page routed by a
-   * different library.
-   *
-   * A sub-page's own adapter publishes a match for the sub-page mount, and how
-   * far `..` climbs is decided by how deep that match sits. Reading the depth
-   * out of the surrounding library context only answers while the page above
-   * happens to use the same library — under a TanStack or React Router v7
-   * parent there is no v6 context to read, and the sub-page would look like the
-   * only match there is. The nesting itself is the framework's, not the
-   * library's, so it has to hold whichever adapter the page above picked.
-   *
-   * The stand-in parent adapter is deliberately not another real router: what
-   * the sub-page must survive is the *absence* of its own library's context,
-   * which is exactly what any foreign adapter leaves behind.
-   */
-  const ForeignPageRouter: PageRouterComponent = ({ children }) => (
-    <div data-testid="foreign-page-router">{children}</div>
-  );
-  const foreignParentPage = PageBlueprint.make({
-    name: 'foreign',
-    params: { path: '/mixed', title: 'Mixed' },
-  });
-  const foreignPageRouter = PageRouterBlueprint.make({
-    name: 'foreign',
-    attachTo: { id: 'page:test/foreign', input: 'router' },
-    params: { component: ForeignPageRouter },
-  });
-  const foreignParentSubPage = SubPageBlueprint.make({
-    name: 'mixed-templates',
-    attachTo: { id: 'page:test/foreign', input: 'pages' },
-    params: {
-      path: 'templates',
-      title: 'Templates',
-      loader: async () => <RelativeTargetsProbe />,
-    },
-  });
-  const foreignParentSiblingSubPage = SubPageBlueprint.make({
-    name: 'mixed-tasks',
-    attachTo: { id: 'page:test/foreign', input: 'pages' },
-    params: {
-      path: 'tasks',
-      title: 'Tasks',
-      loader: async () => <div data-testid="tasks-page">Tasks</div>,
-    },
-  });
-
-  it('should resolve relative targets in a subpage against the subpage when the page above it uses another routing library', async () => {
-    const { appHistory } = renderTestApp({
-      extensions: [
-        foreignParentPage,
-        foreignPageRouter,
-        foreignParentSubPage,
-        foreignParentSiblingSubPage,
-      ],
-      initialRouteEntries: ['/mixed/templates'],
-    });
-
-    expect(await screen.findByTestId('templates-page')).toBeInTheDocument();
-    // The page really is routed by the foreign adapter, so the sub-page below
-    // it has no context of its own library to inherit.
-    expect(screen.getByTestId('foreign-page-router')).toContainElement(
-      screen.getByTestId('templates-page'),
-    );
-    expect(screen.getByTestId('up').textContent).toBe('/mixed');
-    expect(screen.getByTestId('self').textContent).toBe('/mixed/templates');
-    expect(screen.getByRole('link', { name: 'Parent page' })).toHaveAttribute(
-      'href',
-      '/mixed',
-    );
-    expect(screen.getByRole('link', { name: 'Tasks tab' })).toHaveAttribute(
-      'href',
-      '/mixed/tasks',
-    );
-    expect(screen.getByRole('link', { name: 'Actions' })).toHaveAttribute(
-      'href',
-      '/mixed/templates/actions',
-    );
-
-    // A route the sub-page composed itself is a match deeper again, and `..`
-    // from there lands back on the sub-page.
-    await act(async () => {
-      appHistory.navigate('/mixed/templates/actions/build');
-    });
-    expect(
-      await screen.findByRole('link', { name: 'Up from a nested route' }),
-    ).toHaveAttribute('href', '/mixed/templates/preview');
-
-    // Following the sibling href has to land on the sibling tab.
-    await act(async () => {
-      appHistory.navigate('/mixed/templates');
-    });
-    await act(async () => {
-      screen.getByRole('link', { name: 'Tasks tab' }).click();
-    });
-    expect(await screen.findByTestId('tasks-page')).toBeInTheDocument();
-    expect(appHistory.location.pathname).toBe('/mixed/tasks');
-  });
-
   it('should mount a subpage of a splat page where routing matched it, from a location below the subpage', async () => {
     // A splat page says "everything below here is mine", and a sub-page claims
     // a piece of exactly that. Appending the sub-path to the page's *pattern*
@@ -661,17 +589,9 @@ describe('SubPageBlueprint', () => {
         <div data-testid="intro-page">
           <div data-testid="mount-base">{mount?.basePath}</div>
           <div data-testid="mount-pattern">{mount?.routePattern}</div>
-          {/* The framework's own resolution, which every `Link` and `useHref`
-              written in this sub-page goes through. */}
+          {/* Framework href resolution uses the selected subpage mount even
+              though an inherited adapter remains mounted at the page. */}
           <div data-testid="framework-href">{useHref('detail')}</div>
-          <div data-testid="self">{useResolvedPath('.').pathname}</div>
-          <Link to="./chapter-2">Next chapter</Link>
-          <Routes>
-            <Route
-              path="chapter-1"
-              element={<span data-testid="chapter">chapter one</span>}
-            />
-          </Routes>
         </div>
       );
     };
@@ -703,13 +623,5 @@ describe('SubPageBlueprint', () => {
     expect(screen.getByTestId('framework-href').textContent).toBe(
       '/docs/intro/detail',
     );
-    expect(screen.getByTestId('self').textContent).toBe('/docs/intro');
-    expect(screen.getByRole('link', { name: 'Next chapter' })).toHaveAttribute(
-      'href',
-      '/docs/intro/chapter-2',
-    );
-    // The tail below the sub-page belongs to the sub-page, not to the splat
-    // page above it.
-    expect(screen.getByTestId('chapter')).toBeInTheDocument();
   });
 });

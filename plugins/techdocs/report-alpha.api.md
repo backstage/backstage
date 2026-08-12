@@ -327,6 +327,13 @@ const _default: OverridableFrontendPlugin<
               {
                 optional: true;
               }
+            >
+          | ConfigurableExtensionDataRef<
+              PageRouterComponent,
+              'core.page.router',
+              {
+                optional: true;
+              }
             >,
           {
             singleton: false;
@@ -423,6 +430,13 @@ const _default: OverridableFrontendPlugin<
           | ConfigurableExtensionDataRef<
               IconElement,
               'core.icon',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              PageRouterComponent,
+              'core.page.router',
               {
                 optional: true;
               }

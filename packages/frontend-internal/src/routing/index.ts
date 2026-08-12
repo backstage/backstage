@@ -65,6 +65,7 @@ export {
   type PathMatch,
 } from './routePattern';
 export {
+  joinRoutePath,
   RouteTable,
   type RouteTableEntry,
   type RouteTableMatch,

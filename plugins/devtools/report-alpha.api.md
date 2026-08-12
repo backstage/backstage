@@ -104,6 +104,13 @@ const _default: OverridableFrontendPlugin<
               {
                 optional: true;
               }
+            >
+          | ConfigurableExtensionDataRef<
+              PageRouterComponent,
+              'core.page.router',
+              {
+                optional: true;
+              }
             >,
           {
             singleton: false;
@@ -163,6 +170,13 @@ const _default: OverridableFrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ExtensionDataRef<
+            PageRouterComponent,
+            'core.page.router',
+            {
+              optional: true;
+            }
           >;
       inputs: {
         router: ExtensionInput<
@@ -214,6 +228,13 @@ const _default: OverridableFrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ExtensionDataRef<
+            PageRouterComponent,
+            'core.page.router',
+            {
+              optional: true;
+            }
           >;
       inputs: {
         router: ExtensionInput<
@@ -262,6 +283,13 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<
             IconElement,
             'core.icon',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            PageRouterComponent,
+            'core.page.router',
             {
               optional: true;
             }

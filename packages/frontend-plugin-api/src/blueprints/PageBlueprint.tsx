@@ -17,7 +17,14 @@
 import { JSX, ReactNode } from 'react';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
-import { useSubPageSelection, type SubPageSelection } from '@internal/frontend';
+import {
+  PageMountProvider,
+  joinRoutePath,
+  usePageMount,
+  useSubPageSelection,
+  type PageMount,
+  type SubPageSelection,
+} from '@internal/frontend';
 import {
   coreExtensionData,
   createExtensionBlueprint,
@@ -53,6 +60,8 @@ interface PageSubPage {
   icon?: IconElement;
   /** The fully rendered sub-page content, framework concerns already applied. */
   element: ReactNode;
+  /** Optional adapter selected specifically for this sub-page. */
+  RouterOverride?: PageRouterComponent;
 }
 
 /**
@@ -89,15 +98,70 @@ function resolveTitleLink(
  * (e.g. an isolated `renderInTestApp`), where the first sub-page stands in for
  * the list — that is where the page root would have led anyway.
  */
-function selectSubPageContent(
+function selectSubPage(
   subPages: readonly PageSubPage[],
   selection: SubPageSelection | undefined,
-): ReactNode {
+): PageSubPage | undefined {
   if (!selection) {
-    return subPages[0]?.element;
+    return subPages[0];
   }
   const selectedPath = selection.selected?.path;
-  return subPages.find(subPage => subPage.path === selectedPath)?.element;
+  return subPages.find(subPage => subPage.path === selectedPath);
+}
+
+function getSelectedMount(
+  subPage: PageSubPage | undefined,
+  selection: SubPageSelection | undefined,
+  pageMount: PageMount | undefined,
+): PageMount | undefined {
+  const selected = selection?.selected;
+  if (selected && selected.path === subPage?.path) {
+    return selected.mount;
+  }
+  if (!selection && subPage && pageMount) {
+    return {
+      basePath: joinRoutePath(pageMount.basePath, subPage.path),
+      routePattern: joinRoutePath(pageMount.routePattern, subPage.path),
+    };
+  }
+  return undefined;
+}
+
+function PageContentRouterSlot(props: {
+  PageRouterOverride?: PageRouterComponent;
+  selectedSubPage?: PageSubPage;
+  subPageSelection?: SubPageSelection;
+  children?: ReactNode;
+}) {
+  const { PageRouterOverride, selectedSubPage, subPageSelection, children } =
+    props;
+  const pageMount = usePageMount();
+  const selectedMount = getSelectedMount(
+    selectedSubPage,
+    subPageSelection,
+    pageMount,
+  );
+  const content = selectedSubPage?.element ?? children;
+
+  if (selectedSubPage?.RouterOverride && selectedMount) {
+    return (
+      <PageMountProvider mount={selectedMount}>
+        <PageRouterWrapper RouterOverride={selectedSubPage.RouterOverride}>
+          {content}
+        </PageRouterWrapper>
+      </PageMountProvider>
+    );
+  }
+
+  return (
+    <PageRouterWrapper RouterOverride={PageRouterOverride}>
+      {selectedMount ? (
+        <PageMountProvider mount={selectedMount}>{content}</PageMountProvider>
+      ) : (
+        content
+      )}
+    </PageRouterWrapper>
+  );
 }
 
 function PluginPageShell(props: {
@@ -130,10 +194,9 @@ function PluginPageShell(props: {
   const headerActionsApi = useApi(pluginHeaderActionsApiRef);
   const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
 
-  const content = subPages
-    ? selectSubPageContent(subPages, subPageSelection)
-    : children;
-
+  const selectedSubPage = subPages
+    ? selectSubPage(subPages, subPageSelection)
+    : undefined;
   return (
     <ExtensionBoundary node={node}>
       <PageLayout
@@ -144,9 +207,13 @@ function PluginPageShell(props: {
         titleLink={titleLink}
         headerActions={headerActions}
       >
-        <PageRouterWrapper RouterOverride={RouterOverride}>
-          {content}
-        </PageRouterWrapper>
+        <PageContentRouterSlot
+          PageRouterOverride={RouterOverride}
+          selectedSubPage={selectedSubPage}
+          subPageSelection={subPageSelection}
+        >
+          {children}
+        </PageContentRouterSlot>
       </PageLayout>
     </ExtensionBoundary>
   );
@@ -156,8 +223,10 @@ function PluginPageShell(props: {
  * Creates extensions that are routable React page components.
  *
  * Pages may optionally attach a `router` input (via {@link PageRouterBlueprint})
- * to override the default React Router v6 adapter registered by the app plugin.
- * When the input is empty, the default is resolved from {@link pageRouterApiRef}.
+ * to override the app-wide default registered through
+ * {@link pageRouterApiRef}. A selected subpage's own override takes priority,
+ * followed by the page override and then the default. Only that one adapter is
+ * mounted around active content.
  *
  * Sub-pages attached to the `pages` input (e.g. via `SubPageBlueprint`) become
  * ordinary routes one level below the page: their paths are published so that
@@ -165,7 +234,12 @@ function PluginPageShell(props: {
  * to show. Tabbed sub-pages therefore work under any adapter, since no adapter
  * ever builds a route. Whatever content the page ends up showing — a
  * `loader`'s element or the selected sub-page — is opaque to the adapter and
- * simply rendered inside its context.
+ * simply rendered inside its context. A subpage without an override inherits
+ * the page adapter at the page mount, so that adapter and its state stay
+ * mounted across sibling subpage navigation. The subpage content is wrapped
+ * in its own `PageMount` inside that adapter. An explicit subpage override is
+ * instead mounted at the subpage mount, replacing the page adapter for that
+ * active content while leaving the page layout outside the router slot.
  *
  * @public
  */
@@ -179,6 +253,7 @@ export const PageBlueprint = createExtensionBlueprint({
       coreExtensionData.reactElement,
       coreExtensionData.title.optional(),
       coreExtensionData.icon.optional(),
+      PageRouterBlueprint.dataRefs.component.optional(),
     ]),
     router: createExtensionInput([PageRouterBlueprint.dataRefs.component], {
       singleton: true,
@@ -286,6 +361,7 @@ function collectSubPages(
           {page.get(coreExtensionData.reactElement)}
         </BreadcrumbEntry>
       ),
+      RouterOverride: page.get(PageRouterBlueprint.dataRefs.component),
     };
   });
 }

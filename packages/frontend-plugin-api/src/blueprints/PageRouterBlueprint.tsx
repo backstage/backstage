@@ -22,11 +22,12 @@ const componentDataRef = createExtensionDataRef<PageRouterComponent>().with({
 });
 
 /**
- * Creates an extension that replaces the router adapter for a page (or
- * subpage). By default attaches to a page's optional `router` input; override
- * `attachTo` to target a sub-page (for example
- * `id: 'sub-page:my-plugin/overview', input: 'router'`) to override the
- * app-plugin default (React Router v6).
+ * Creates an extension that replaces the router adapter for a page or
+ * subpage. A selected subpage override takes precedence over its page's
+ * override, which in turn takes precedence over the app-wide default. A
+ * subpage without an override inherits the page adapter at the page mount;
+ * adapters are selected as alternatives and are never nested by the
+ * blueprints.
  *
  * @public
  * @example

@@ -479,7 +479,11 @@ function MyInvalidComponent() {
 
 ## Scoped plugin routing
 
-The app owns browser history and exposes it as a single `AppHistoryApi`. No router component sits at the app root. Each page instead gets a page router scoped to that page's own path, which is React Router v6 unless the page asks for something else, so relative navigation inside a page behaves the way it always has.
+The app owns browser history and exposes it as a single `AppHistoryApi`. No
+router component sits at the app root. The framework mounts one page router
+around the active page content, scoped to that page's own path. The default is
+React Router v6, so relative navigation inside a page behaves the way it always
+has unless the page selects another adapter.
 
 For the design background, see [RFC #33603](https://github.com/backstage/backstage/issues/33603).
 
@@ -542,9 +546,33 @@ export function EntityNameLink(props: {
 
 A page's `router` input decides which library renders that page's content. Leave it empty and the page uses the app default, React Router v6.
 
-Sub-pages are ordinary routes one level below their page. The app's own route matching registers them and picks which one to show, so a page router never has to know that sub-pages exist. A sub-page can take a `router` of its own, scoped to the sub-page rather than to the page above it. Nothing is inherited, so a sub-page whose content needs a different library has to say so itself.
+Sub-pages are ordinary routes one level below their page. The app's own route
+matching registers them and picks which one to show, so a page router never has
+to know that sub-pages exist. A sub-page with no router override inherits the
+page router at page scope. The adapter stays mounted across those sibling
+sub-pages, so it keeps its state.
 
-Whatever the page produces is handed to the page router unchanged, and the router component receives only `children`. First-party adapters read the page mount from a framework-private context, which keeps concrete mount paths and route patterns out of the public adapter contract.
+Native APIs from an inherited router also remain page-scoped. In React Router,
+relative `Link` targets and nested `<Routes>` inside a sub-page resolve against
+the page route. Framework links created with `useHref` or `RouteLink` resolve
+against the selected sub-page instead. Attach an explicit adapter to the
+sub-page when its content needs native router APIs scoped to that sub-page.
+
+A sub-page can select a different adapter through its own `router` input. The
+framework mounts exactly one adapter around the active content, using the
+explicit sub-page override first, then the page override, then the app default.
+A sub-page override therefore replaces the page adapter for that content
+instead of nesting another router inside it.
+
+The framework selects the adapter before it renders the content.
+`PageRouterBlueprint` and the page and sub-page `router` inputs tell the
+framework which adapter to select. A wrapper inside the content cannot remove a
+default router that is already mounted.
+
+Whatever the active page or sub-page produces is handed to the selected router
+unchanged, and the router component receives only `children`. First-party
+adapters read the page mount from a framework-private context, which keeps
+concrete mount paths and route patterns out of the public adapter contract.
 
 For the steps to attach one, see [Choose a router for a page](../building-plugins/10-page-routers.md).
 

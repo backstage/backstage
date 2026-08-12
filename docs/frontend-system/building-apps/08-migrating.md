@@ -427,7 +427,8 @@ depends on what it actually did:
 - If it wrapped the router in global providers, move those providers to
   `AppRootWrapperBlueprint` from `@backstage/plugin-app-react`.
 - If it installed a different router library, attach that library to the pages
-  that need it with `PageRouterBlueprint`. See
+  that need it with `PageRouterBlueprint`. Their sub-pages inherit the page
+  router unless they declare an override of their own. See
   [Choose a router for a page](../building-plugins/10-page-routers.md).
 
 Moving a provider to an app root wrapper looks like this:

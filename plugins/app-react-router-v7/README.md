@@ -43,9 +43,17 @@ The page keeps composing its own content. A `<Routes>` tree the page builds
 itself works as usual, as do relative `Link`s, nested `<Routes>`, and
 `useParams`.
 
-To scope a v7 context to a single tab rather than to the whole page, attach the
-adapter to the sub-page instead, for example
-`attachTo: { id: 'sub-page:tools/overview', input: 'router' }`.
+Sub-pages with no router override inherit the page's v7 adapter at page scope,
+so the same adapter remains mounted while users move between sibling tabs. To
+give one sub-page its own v7 context, attach the adapter to that sub-page, for
+example `attachTo: { id: 'sub-page:tools/overview', input: 'router' }`. This can
+replace another router library or create a sub-page-scoped v7 instance. The
+explicit sub-page adapter replaces the page adapter around the active content;
+the two routers are not nested.
+
+The framework reads the `PageRouterBlueprint` attachment before it renders the
+content. It can therefore replace the default React Router v6 adapter instead
+of mounting v7 inside it.
 
 ## Documentation
 
