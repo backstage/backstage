@@ -47,7 +47,7 @@ const defaultConfig = [
     height: 4,
   },
   {
-    component: 'HomePageTopVisited',
+    component: 'HomePageMostVisited',
     x: 5,
     y: 1,
     width: 5,
