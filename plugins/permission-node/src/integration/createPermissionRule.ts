@@ -54,7 +54,7 @@ export type CreatePermissionRuleOptions<
       | {
           /**
            * A Standard Schema that reflects the structure of the parameters that are passed to the rule.
-           * The schema must support JSON Schema conversion.
+           * The schema must validate synchronously and support JSON Schema conversion.
            */
           params?: { schema: StandardSchemaV1<TParams> };
           paramsSchema?: never;
