@@ -71,7 +71,7 @@ export const ExternalDependenciesContent = () => {
     () =>
       (externalDependencies ?? []).map(dependency => ({
         ...dependency,
-        id: dependency.name,
+        id: `${dependency.name}:${dependency.type}:${dependency.target}`,
       })),
     [externalDependencies],
   );
