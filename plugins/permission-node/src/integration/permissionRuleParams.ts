@@ -15,6 +15,7 @@
  */
 
 import { InputError } from '@backstage/errors';
+import { isPromise } from '@internal/backend';
 import type { StandardSchemaV1 } from '@standard-schema/spec';
 import { z } from 'zod/v3';
 import zodToJsonSchema from 'zod-to-json-schema';
@@ -44,15 +45,6 @@ function supportsJsonSchema(
   return typeof standard?.jsonSchema?.input === 'function';
 }
 
-function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
-  return (
-    value !== null &&
-    (typeof value === 'object' || typeof value === 'function') &&
-    'then' in value &&
-    typeof value.then === 'function'
-  );
-}
-
 /** Ensures that a rule parameter schema can be serialized as permission metadata. */
 export function assertPermissionRuleParamsSchema(
   rule: RuleWithParamsSchema,
@@ -76,7 +68,7 @@ export function validatePermissionRuleParams(
 ): void {
   if (rule.params?.schema) {
     const result = rule.params.schema['~standard'].validate(params);
-    if (isPromiseLike(result)) {
+    if (isPromise(result)) {
       throw new Error(
         `Permission rule '${rule.name}' parameter schema returned a Promise; async schemas are not supported`,
       );
