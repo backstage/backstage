@@ -280,20 +280,18 @@ export class DefaultConnectionsService {
   }
 
   #validateLegacy(raw: JsonObject[]): RootConnection[] {
-    const result: RootConnection[] = [];
-    for (const v of raw) {
+    return raw.map(v => {
       try {
-        result.push(this.#validateConnection(v));
+        return this.#validateConnection(v);
       } catch (e) {
         const type = typeof v.type === 'string' ? v.type : 'unknown';
-        this.logger.error(
-          `Failed to validate connection of type "${type}":\n${describeError(
+        throw new InputError(
+          `Invalid connection of type "${type}" converted from legacy integrations config:\n${describeError(
             e,
           )}`,
         );
       }
-    }
-    return result;
+    });
   }
 
   #validateConnection(connection: JsonObject): RootConnection {
