@@ -29,7 +29,7 @@ export type AutocompleteHandler = (input: {
 }>;
 
 // @alpha
-export type CheckpointContext<T extends JsonValue | void = JsonValue> = {
+export type CheckpointContext<T = unknown> = {
   key: string;
   fn: () => Promise<T> | T;
 };

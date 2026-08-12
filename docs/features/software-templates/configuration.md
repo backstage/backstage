@@ -107,6 +107,78 @@ Default secrets are resolved from environment variables and accessible via `${{ 
 
 **Security Note:** Secrets are automatically masked in logs and are only available to backend actions, never exposed to the frontend.
 
+## Task Recovery
+
+The scaffolder supports automatic task recovery when workers restart or crash. When enabled, tasks that were in a `processing` state will be recovered and can be resumed from where they left off.
+
+```yaml
+scaffolder:
+  taskRecovery:
+    enabled: true
+    staleTimeout: { seconds: 30 } # Optional, defaults to 30 seconds
+```
+
+When task recovery is enabled:
+
+- Tasks in `processing` state with stale heartbeats are automatically recovered to `open` state
+- Secrets are preserved until the task reaches a terminal state (completed/failed)
+- Completed steps are skipped on retry, resuming from the last incomplete step
+- Step outputs are restored so subsequent steps can access previous results
+
+Actions used in recoverable templates should be idempotent. You can use [checkpoints](./writing-custom-actions.md#using-checkpoints-in-custom-actions) in custom actions to achieve this.
+
+### Workspace Serialization
+
+By default, task recovery does not persist the task workspace (filesystem). If your tasks work with files and you want workspaces to survive restarts, you need to install a workspace provider module and configure it separately.
+
+Workspace serialization is **not enabled by default** — you must explicitly opt in by setting `workspaceProvider`.
+
+```yaml
+scaffolder:
+  taskRecovery:
+    enabled: true
+    workspaceProvider: database # or 'gcpBucket' for GCS
+```
+
+Available workspace providers:
+
+- **`database`** — Stores workspaces in the database via `@backstage/plugin-scaffolder-backend-module-workspace-database`. Has a 5MB limit and is not recommended for production use.
+- **`gcpBucket`** — Stores workspaces in a GCS bucket via `@backstage/plugin-scaffolder-backend-module-gcp`. Requires [workload identity](https://cloud.google.com/iam/docs/workload-identity-federation) to be configured. Bucket name is configured via `scaffolder.taskRecovery.gcsBucket.name`.
+
+To use a provider, install the corresponding module in your backend:
+
+```bash
+# For database storage (development only)
+yarn --cwd packages/backend add @backstage/plugin-scaffolder-backend-module-workspace-database
+
+# For GCS storage (production)
+yarn --cwd packages/backend add @backstage/plugin-scaffolder-backend-module-gcp
+```
+
+Then add the module to your backend in `packages/backend/src/index.ts`:
+
+```ts
+backend.add(
+  import('@backstage/plugin-scaffolder-backend-module-workspace-database'),
+);
+```
+
+### Migrating from Experimental Flags
+
+If you were using the previous experimental configuration, the new config replaces it:
+
+| Old (Experimental)                                            | New                                         |
+| ------------------------------------------------------------- | ------------------------------------------- |
+| `scaffolder.EXPERIMENTAL_recoverTasks`                        | `scaffolder.taskRecovery.enabled`           |
+| `scaffolder.EXPERIMENTAL_recoverTasksTimeout`                 | `scaffolder.taskRecovery.staleTimeout`      |
+| `scaffolder.EXPERIMENTAL_workspaceSerialization`              | `scaffolder.taskRecovery.workspaceProvider` |
+| `scaffolder.EXPERIMENTAL_workspaceSerializationProvider`      | `scaffolder.taskRecovery.workspaceProvider` |
+| `scaffolder.EXPERIMENTAL_workspaceSerializationGcpBucketName` | `scaffolder.taskRecovery.gcsBucket.name`    |
+
+The per-template `spec.EXPERIMENTAL_recovery` field is no longer required. When `taskRecovery.enabled` is set to `true`, all tasks are eligible for recovery.
+
+The old experimental flags are still supported as fallbacks but are deprecated and will be removed in a future release.
+
 ## Customizing the ScaffolderPage with Grouping and Filtering
 
 The sections below cover the legacy (JSX) frontend system. For the new

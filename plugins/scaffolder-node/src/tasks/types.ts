@@ -17,7 +17,7 @@
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { JsonObject, Observable } from '@backstage/types';
+import { JsonObject, JsonValue, Observable } from '@backstage/types';
 import { UpdateTaskCheckpointOptions } from '@backstage/plugin-scaffolder-node/alpha';
 
 /**
@@ -185,6 +185,12 @@ export interface TaskContext {
   rehydrateWorkspace?(options: {
     taskId: string;
     targetPath: string;
+  }): Promise<void>;
+
+  updateStepState?(options: {
+    stepId: string;
+    status: 'completed' | 'failed';
+    output: { [name: string]: JsonValue };
   }): Promise<void>;
 
   getWorkspaceName(): Promise<string>;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,23 @@
  * limitations under the License.
  */
 
-import { SerializedTaskEvent } from '@backstage/plugin-scaffolder-node';
-
-export const trimEventsTillLastRecovery = (
-  events: SerializedTaskEvent[],
-): { events: SerializedTaskEvent[] } => {
-  // For resume-based recovery, we keep all events
-  // The 'recovered' event is informational only
-  return { events };
-};
+export interface Config {
+  /** Configuration options for the scaffolder plugin */
+  scaffolder?: {
+    /**
+     * Task recovery configuration
+     */
+    taskRecovery?: {
+      /**
+       * Database workspace provider configuration.
+       */
+      database?: {
+        /**
+         * Dangerously enable the database workspace provider in production.
+         * @visibility backend
+         */
+        dangerouslyEnableInProduction: boolean;
+      };
+    };
+  };
+}

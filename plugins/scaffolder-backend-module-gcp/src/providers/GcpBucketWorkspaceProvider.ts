@@ -94,12 +94,17 @@ export class GcpBucketWorkspaceProvider implements WorkspaceProvider {
   }
 
   private getGcpBucketName(): string {
-    const bucketName = this.config?.getOptionalString(
-      'scaffolder.EXPERIMENTAL_workspaceSerializationGcpBucketName',
-    );
+    // New config path with fallback to old experimental flag
+    const bucketName =
+      this.config?.getOptionalString(
+        'scaffolder.taskRecovery.gcsBucket.name',
+      ) ??
+      this.config?.getOptionalString(
+        'scaffolder.EXPERIMENTAL_workspaceSerializationGcpBucketName',
+      );
     if (!bucketName) {
       throw new Error(
-        `You've missed to configure scaffolder.EXPERIMENTAL_workspaceSerializationGcpBucketName in app-config.yaml file`,
+        `Missing GCS bucket configuration. Set scaffolder.taskRecovery.gcsBucket.name in app-config.yaml`,
       );
     }
     return bucketName;

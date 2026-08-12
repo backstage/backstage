@@ -18,7 +18,25 @@ export interface Config {
   /** Configuration options for the scaffolder plugin */
   scaffolder?: {
     /**
+     * Task recovery configuration
+     */
+    taskRecovery?: {
+      /**
+       * GCS bucket configuration for workspace serialization.
+       * Only used when workspaceProvider is set to 'gcpBucket'.
+       */
+      gcsBucket?: {
+        /**
+         * The GCS bucket name to store serialized workspaces.
+         * @visibility backend
+         */
+        name: string;
+      };
+    };
+
+    /**
      * Sets GCP bucket name to store serialized workspace for scaffolder tasks.
+     * @deprecated Use scaffolder.taskRecovery.gcsBucket.name instead
      */
     EXPERIMENTAL_workspaceSerializationGcpBucketName?: string;
   };

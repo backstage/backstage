@@ -17,31 +17,27 @@
 import { trimEventsTillLastRecovery } from './taskRecoveryHelper';
 import { SerializedTaskEvent } from '@backstage/plugin-scaffolder-node';
 
-const toLogEvent = (stepId: string) =>
-  ({
-    type: 'log',
-    body: { stepId },
-  } as unknown as SerializedTaskEvent);
-
-const toRecoveredEvent = (recoverStrategy: string) =>
-  ({
-    type: 'recovered',
-    body: { recoverStrategy },
-  } as unknown as SerializedTaskEvent);
-
 describe('taskRecoveryHelper', () => {
-  describe('compactEvents', () => {
-    it('should return only events related to a restarted task. Recover strategy: "startOver"', () => {
+  describe('trimEventsTillLastRecovery', () => {
+    it('should return all events for resume-based recovery', () => {
       const logEvents = [
-        'fetch',
-        'mock-step-1',
-        'mock-step-2',
-        'mock-step-3',
-      ].map(toLogEvent);
+        { type: 'log', body: { message: 'Step 1 started' } },
+        { type: 'log', body: { message: 'Step 1 completed' } },
+      ] as SerializedTaskEvent[];
 
-      const events = [...logEvents, toRecoveredEvent('startOver')];
+      const recoveredEvent = {
+        type: 'recovered',
+        body: {},
+      } as SerializedTaskEvent;
 
-      expect(trimEventsTillLastRecovery(events)).toEqual({ events: [] });
+      const events = [...logEvents, recoveredEvent];
+
+      // All events are preserved
+      expect(trimEventsTillLastRecovery(events)).toEqual({ events });
+    });
+
+    it('should return empty array when no events', () => {
+      expect(trimEventsTillLastRecovery([])).toEqual({ events: [] });
     });
   });
 });

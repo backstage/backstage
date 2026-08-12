@@ -43,10 +43,6 @@ import { DateTime, Duration } from 'luxon';
 import { TaskRecovery, TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { trimEventsTillLastRecovery } from './taskRecoveryHelper';
 import { intervalFromNowTill } from './dbUtil';
-import {
-  restoreWorkspace,
-  serializeWorkspace,
-} from '@backstage/plugin-scaffolder-node/alpha';
 import { flattenParams } from '../../service/helpers';
 import { EventsService } from '@backstage/plugin-events-node';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
@@ -130,12 +126,6 @@ export class DatabaseTaskStore implements TaskStore {
     await this.runMigrations(database, client);
 
     return new DatabaseTaskStore(client, options.events);
-  }
-
-  private isRecoverableTask(spec: TaskSpec): boolean {
-    return ['startOver'].includes(
-      spec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ?? 'none',
-    );
   }
 
   private parseSpec({ spec, id }: { spec: string; id: string }): TaskSpec {
@@ -416,8 +406,6 @@ export class DatabaseTaskStore implements TaskStore {
         .update({
           status: 'processing',
           last_heartbeat_at: this.db.fn.now(),
-          // remove the secrets for non-recoverable tasks when moving to processing state.
-          secrets: this.isRecoverableTask(spec) ? task.secrets : null,
         });
 
       if (updateCount < 1) {
@@ -603,7 +591,7 @@ export class DatabaseTaskStore implements TaskStore {
   async listEvents(
     options: TaskStoreListEventsOptions,
   ): Promise<{ events: SerializedTaskEvent[] }> {
-    const { isTaskRecoverable, taskId, after } = options;
+    const { taskId, after, isTaskRecoverable } = options;
     const rawEvents = await this.db<RawDbTaskEventRow>('task_events')
       .where({
         task_id: taskId,
@@ -674,40 +662,6 @@ export class DatabaseTaskStore implements TaskStore {
         message,
       },
     });
-  }
-
-  async rehydrateWorkspace(options: {
-    taskId: string;
-    targetPath: string;
-  }): Promise<void> {
-    const [result] = await this.db<RawDbTaskRow>('tasks')
-      .where({ id: options.taskId })
-      .select('workspace');
-
-    await restoreWorkspace({
-      path: options.targetPath,
-      buffer: result.workspace,
-    });
-  }
-
-  async cleanWorkspace({ taskId }: { taskId: string }): Promise<void> {
-    await this.db('tasks').where({ id: taskId }).update({
-      workspace: null,
-    });
-  }
-
-  async serializeWorkspace(options: {
-    path: string;
-    taskId: string;
-  }): Promise<void> {
-    if (options.path) {
-      const workspace = (await serializeWorkspace(options)).contents;
-      await this.db<RawDbTaskRow>('tasks')
-        .where({ id: options.taskId })
-        .update({
-          workspace,
-        });
-    }
   }
 
   async cancelTask(

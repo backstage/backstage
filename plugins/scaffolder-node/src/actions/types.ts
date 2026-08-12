@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JsonObject, JsonValue } from '@backstage/types';
+import { JsonObject } from '@backstage/types';
 import { TaskSecrets } from '../tasks';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { UserEntity } from '@backstage/catalog-model';
@@ -38,9 +38,12 @@ export type ActionContext<
   secrets?: TaskSecrets;
   workspacePath: string;
   input: TActionInput;
-  checkpoint<T extends JsonValue | void>(
-    opts: CheckpointContext<T>,
-  ): Promise<T>;
+  /**
+   * Execute a function with checkpoint support for recovery.
+   * The return value is serialized to JSON for storage - non-serializable
+   * values (functions, circular refs, etc.) are safely stripped.
+   */
+  checkpoint<T>(opts: CheckpointContext<T>): Promise<T>;
   output(
     name: keyof TActionOutput,
     value: TActionOutput[keyof TActionOutput],

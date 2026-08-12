@@ -15,6 +15,8 @@
  */
 
 import { InputError, NotAllowedError, stringifyError } from '@backstage/errors';
+import safeStringify from 'safe-stable-stringify';
+
 import { ScmIntegrations } from '@backstage/integration';
 import {
   TaskRecovery,
@@ -41,7 +43,12 @@ import {
   generateExampleOutput,
   isTruthy,
 } from './helper';
-import { TaskTrackType, WorkflowResponse, WorkflowRunner } from './types';
+import {
+  TaskTrackType,
+  TaskState,
+  WorkflowResponse,
+  WorkflowRunner,
+} from './types';
 
 import type {
   AuditorService,
@@ -505,9 +512,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           secrets: task.secrets ?? {},
           logger: taskLogger,
           workspacePath,
-          async checkpoint<T extends JsonValue | void>(
-            opts: CheckpointContext<T>,
-          ) {
+          async checkpoint<T>(opts: CheckpointContext<T>) {
             const { key: checkpointKey, fn } = opts;
             const key = `v1.task.checkpoint.${step.id}.${checkpointKey}`;
 
@@ -527,10 +532,14 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
               const value = prevValue ? prevValue : await fn();
 
               if (!prevValue) {
+                // Safely serialize the value, handling circular refs, functions, etc.
+                const serializedValue = JSON.parse(
+                  safeStringify(value) ?? '{}',
+                );
                 task.updateCheckpoint?.({
                   key,
                   status: 'success',
-                  value: value ?? {},
+                  value: serializedValue,
                 });
               }
               return value;
@@ -582,6 +591,13 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         ['steps', step.id],
         context.steps[step.id] as unknown as NunjitsuTemplateValue,
       );
+
+      // Persist step state for recovery
+      await task.updateStepState?.({
+        stepId: step.id,
+        status: 'completed',
+        output: stepOutput,
+      });
 
       if (task.cancelSignal.aborted) {
         throw new Error(
@@ -670,10 +686,32 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             )
           : [{ result: AuthorizeResult.ALLOW }];
 
+      const prevTaskState = await task.getTaskState?.();
+      const recoveredTaskState = prevTaskState?.state as TaskState | undefined;
+      const savedSteps = recoveredTaskState?.steps ?? {};
+      const completedStepIds = Object.keys(savedSteps).filter(
+        id => savedSteps[id]?.status === 'completed',
+      );
+      if (completedStepIds.length > 0) {
+        await task.emitLog(
+          `Task recovered - resuming from last known good state. ${completedStepIds.length} step(s) already completed.`,
+        );
+      }
+
       let firstError: Error | undefined;
       const allErrors: Array<{ step: TaskStep; error: Error }> = [];
 
       for (const step of task.spec.steps) {
+        const savedStepState = savedSteps[step.id];
+        if (savedStepState?.status === 'completed') {
+          context.steps[step.id] = { output: savedStepState.output };
+          preparedContext = preparedContext.withValue(
+            ['steps', step.id],
+            context.steps[step.id] as unknown as NunjitsuTemplateValue,
+          );
+          continue;
+        }
+
         // If a previous step failed, only run steps whose `if` condition
         // invokes a status check global (${{ always() }} or ${{ failure() }})
         if (taskState.failed) {

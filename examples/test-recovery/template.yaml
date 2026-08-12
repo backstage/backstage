@@ -1,0 +1,77 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: test-recovery-template
+  title: Test Recovery Template
+  description: |
+    A template for testing task recovery.
+    Start this template, then kill the backend server during the delay step.
+    Restart the server and the task should resume from where it left off.
+spec:
+  owner: backstage/maintainers
+  type: test
+
+  parameters:
+    - title: Test Configuration
+      properties:
+        testName:
+          title: Test Name
+          type: string
+          description: A name for this test run
+          default: recovery-test
+        delaySeconds:
+          title: Delay Duration (seconds)
+          type: number
+          description: How long to wait (gives you time to kill the server)
+          default: 30
+
+  steps:
+    # Step 1: Produce an output that should survive recovery
+    - id: step1-output
+      name: Step 1 - Produce Output
+      action: test:produce-output
+      input:
+        name: testResult
+        value: 'produced-by-step-1-${{ parameters.testName }}'
+
+    # Step 2: Log that we're about to start the delay
+    - id: step2-log
+      name: Step 2 - Pre-delay Log
+      action: debug:log
+      input:
+        message: 'About to start delay. Step 1 output was: ${{ steps["step1-output"].output.result }}'
+
+    # Step 3: Long delay - KILL THE SERVER DURING THIS STEP
+    - id: step3-delay
+      name: Step 3 - Long Delay (KILL SERVER NOW)
+      action: test:delay
+      input:
+        seconds: ${{ parameters.delaySeconds }}
+        message: '>>> KILL THE SERVER NOW to test recovery! <<<'
+
+    # Step 4: Consume the output from step 1 (verifies step output restoration)
+    - id: step4-consume
+      name: Step 4 - Verify Step 1 Output
+      action: test:consume-output
+      input:
+        expectedValue: ${{ steps["step1-output"].output.result }}
+
+    # Step 5: Final log
+    - id: step5-done
+      name: Step 5 - Complete
+      action: debug:log
+      input:
+        message: |
+          SUCCESS! Task completed after recovery.
+          Step 1 output: ${{ steps["step1-output"].output.result }}
+          Step 3 waited: ${{ steps["step3-delay"].output.waited }} seconds
+
+  output:
+    text:
+      - title: Test Complete
+        content: |
+          **Recovery Test Completed Successfully!**
+
+          - Test Name: ${{ parameters.testName }}
+          - Step 1 Output: ${{ steps["step1-output"].output.result }}
+          - Delay waited: ${{ steps["step3-delay"].output.waited }} seconds

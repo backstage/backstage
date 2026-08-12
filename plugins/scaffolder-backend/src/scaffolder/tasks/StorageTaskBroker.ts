@@ -34,20 +34,25 @@ import {
   TaskStatus,
 } from '@backstage/plugin-scaffolder-node';
 import {
-  CheckpointState,
   WorkspaceProvider,
   UpdateTaskCheckpointOptions,
 } from '@backstage/plugin-scaffolder-node/alpha';
-import { JsonObject, Observable, createDeferred } from '@backstage/types';
+import {
+  HumanDuration,
+  JsonObject,
+  Observable,
+  createDeferred,
+} from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 import { DefaultWorkspaceService, WorkspaceService } from './WorkspaceService';
 import { readDuration } from './helper';
-import { InternalTaskSecrets, TaskStore } from './types';
+import {
+  InternalTaskSecrets,
+  TaskStore,
+  UpdateStepStateOptions,
+  TaskState,
+} from './types';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
-
-type TaskState = {
-  checkpoints: CheckpointState;
-};
 /**
  * TaskManager
  */
@@ -67,9 +72,9 @@ export class TaskManager implements TaskContext {
   ) {
     const workspaceService = DefaultWorkspaceService.create(
       task,
-      storage,
       additionalWorkspaceProviders,
       config,
+      logger,
     );
 
     const agent = new TaskManager(
@@ -162,12 +167,26 @@ export class TaskManager implements TaskContext {
   async updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void> {
     const { key, ...value } = options;
 
-    if (this.task.state) {
-      (this.task.state as TaskState).checkpoints[key] = value;
-    } else {
-      this.task.state = { checkpoints: { [key]: value } };
-    }
+    // Initialize state structure if needed
+    this.task.state ??= { checkpoints: {}, steps: {} };
+    this.task.state.checkpoints ??= {};
+    this.task.state.checkpoints[key] = value;
+
     await this.storage.saveTaskState?.({
+      taskId: this.task.taskId,
+      state: this.task.state,
+    });
+  }
+
+  async updateStepState?(options: UpdateStepStateOptions): Promise<void> {
+    const { stepId, status, output } = options;
+
+    // Initialize state structure if needed
+    this.task.state ??= { checkpoints: {}, steps: {} };
+    this.task.state.steps ??= {};
+    this.task.state.steps[stepId] = { status, output };
+
+    await this.storage.saveTaskState({
       taskId: this.task.taskId,
       state: this.task.state,
     });
@@ -196,6 +215,19 @@ export class TaskManager implements TaskContext {
     this.isDone = true;
     if (this.heartbeatTimeoutId) {
       clearTimeout(this.heartbeatTimeoutId);
+    }
+
+    // Clean up serialized workspace on success only
+    // Failed tasks may be retried later, so keep their workspace
+    if (result === 'completed') {
+      try {
+        await this.workspaceService.cleanWorkspace();
+      } catch (error) {
+        this.logger.warn(
+          `Failed to clean workspace for task ${this.task.taskId}`,
+          error,
+        );
+      }
     }
   }
 
@@ -251,7 +283,7 @@ export interface CurrentClaimedTask {
   /**
    * The state of checkpoints of the task.
    */
-  state?: JsonObject;
+  state?: TaskState;
   /**
    * The creator of the task.
    */
@@ -342,22 +374,31 @@ export class StorageTaskBroker implements TaskBroker {
 
   public async recoverTasks(): Promise<void> {
     const enabled =
+      this.config?.getOptionalBoolean('scaffolder.taskRecovery.enabled') ??
       this.config?.getOptionalBoolean('scaffolder.EXPERIMENTAL_recoverTasks') ??
       false;
 
-    if (enabled) {
-      const defaultTimeout = { seconds: 30 };
-      const timeout = readDuration(
+    if (!enabled) {
+      return;
+    }
+
+    const defaultTimeout: HumanDuration = { seconds: 30 };
+    const timeout = readDuration(
+      this.config,
+      'scaffolder.taskRecovery.staleTimeout',
+      readDuration(
         this.config,
         'scaffolder.EXPERIMENTAL_recoverTasksTimeout',
         defaultTimeout,
-      );
-      const { ids: recoveredTaskIds } = (await this.storage.recoverTasks?.({
-        timeout,
-      })) ?? { ids: [] };
-      if (recoveredTaskIds.length > 0) {
-        this.signalDispatch();
-      }
+      ),
+    );
+
+    const { ids: recoveredTaskIds } = (await this.storage.recoverTasks?.({
+      timeout,
+    })) ?? { ids: [] };
+
+    if (recoveredTaskIds.length > 0) {
+      this.signalDispatch();
     }
   }
 
@@ -432,9 +473,9 @@ export class StorageTaskBroker implements TaskBroker {
 
         while (!cancelled) {
           const result = await this.storage.listEvents({
-            isTaskRecoverable,
             taskId,
             after,
+            isTaskRecoverable,
           });
           const { events } = result;
           if (events.length) {

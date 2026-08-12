@@ -6348,6 +6348,7 @@ __metadata:
   resolution: "@backstage/plugin-scaffolder-backend-module-gcp@workspace:plugins/scaffolder-backend-module-gcp"
   dependencies:
     "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
@@ -6496,6 +6497,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-scaffolder-backend-module-workspace-database@workspace:plugins/scaffolder-backend-module-workspace-database":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-scaffolder-backend-module-workspace-database@workspace:plugins/scaffolder-backend-module-workspace-database"
+  dependencies:
+    "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    fs-extra: "npm:^11.0.0"
+    knex: "npm:^3.0.0"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-scaffolder-backend-module-yeoman@workspace:plugins/scaffolder-backend-module-yeoman":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-yeoman@workspace:plugins/scaffolder-backend-module-yeoman"
@@ -6549,6 +6566,7 @@ __metadata:
     nunjitsu: "npm:^0.5.0"
     p-queue: "npm:^6.6.2"
     prom-client: "npm:^15.0.0"
+    safe-stable-stringify: "npm:^2.5.0"
     strip-ansi: "npm:^7.1.0"
     supertest: "npm:^7.0.0"
     triple-beam: "npm:^1.4.1"
@@ -28263,6 +28281,7 @@ __metadata:
     "@backstage/plugin-scaffolder-backend": "workspace:^"
     "@backstage/plugin-scaffolder-backend-module-github": "workspace:^"
     "@backstage/plugin-scaffolder-backend-module-notifications": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-search-backend": "workspace:^"
     "@backstage/plugin-search-backend-module-catalog": "workspace:^"
     "@backstage/plugin-search-backend-module-elasticsearch": "workspace:^"

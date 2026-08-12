@@ -47,6 +47,35 @@ export interface Config {
     concurrentTasksLimit?: number;
 
     /**
+     * Task recovery configuration
+     * @visibility backend
+     */
+    taskRecovery?: {
+      /**
+       * Enable automatic task recovery. When enabled:
+       * - Secrets are preserved until task completion
+       * - Step state is saved after each step
+       * - Crashed tasks resume from last completed step
+       * @visibility backend
+       */
+      enabled?: boolean;
+      /**
+       * How long before a task is considered stale and eligible for recovery.
+       * Default: 30 seconds
+       * @visibility backend
+       */
+      staleTimeout?: HumanDuration | string;
+      /**
+       * The workspace provider to use for serializing and restoring workspaces.
+       * Setting this value enables workspace serialization.
+       * If not set, workspace serialization is disabled.
+       * Common values: 'database'
+       * @visibility backend
+       */
+      workspaceProvider?: string;
+    };
+
+    /**
      * Tries to wait for tasks to finish during SIGTERM before shutting down the TaskWorker.
      */
     EXPERIMENTAL_gracefulShutdown?: boolean;
