@@ -17,7 +17,6 @@ import { z } from 'zod/v4';
 import { InputError } from '@backstage/errors';
 import type { Expand, JsonObject } from '@backstage/types';
 import type {
-  Cardinality,
   ConnectionAuthMatch,
   ConnectionType,
   LookupStrategy,
@@ -87,7 +86,7 @@ export function createConnectionType<
   TConfigSchema extends z.ZodObject,
   const TAuthMethods extends readonly ConnectionAuthMethodSchema[],
   TLookupStrategy extends LookupStrategy = 'host',
-  TCardinality extends Cardinality = 'multiton',
+  TCardinality extends 'singleton' | 'multiton' = 'multiton',
 >({
   configSchema,
   type,

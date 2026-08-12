@@ -18,9 +18,6 @@ import type { Expand, JsonObject } from '@backstage/types';
 import type { ConnectionTypeKey, LookupConnectionType } from '../definitions';
 
 /** @public */
-export type Cardinality = 'singleton' | 'multiton';
-
-/** @public */
 export type LookupStrategy = 'host' | 'aws';
 
 export type LookupStrategyQuery = {
@@ -146,7 +143,7 @@ export type PortableSchema<TOutput = unknown, TInput = TOutput> = {
 export type ConnectionType<
   T extends {
     type: string;
-    cardinality: Cardinality;
+    cardinality: 'singleton' | 'multiton';
     lookupStrategy: LookupStrategy;
     query: unknown;
     configSchema: unknown;
@@ -155,7 +152,7 @@ export type ConnectionType<
     }[];
   } = {
     type: string;
-    cardinality: Cardinality;
+    cardinality: 'singleton' | 'multiton';
     lookupStrategy: LookupStrategy;
     query: unknown;
     configSchema: unknown;

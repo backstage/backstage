@@ -67,6 +67,7 @@ export interface ConnectionsService {
 export type ConnectionType<
   T extends {
     type: string;
+    cardinality: 'singleton' | 'multiton';
     lookupStrategy: LookupStrategy;
     query: unknown;
     configSchema: unknown;
@@ -75,6 +76,7 @@ export type ConnectionType<
     }[];
   } = {
     type: string;
+    cardinality: 'singleton' | 'multiton';
     lookupStrategy: LookupStrategy;
     query: unknown;
     configSchema: unknown;
@@ -85,6 +87,7 @@ export type ConnectionType<
 > = {
   type: T['type'];
   title: string;
+  cardinality: T['cardinality'];
   lookupStrategy: T['lookupStrategy'];
   configSchema: PortableSchema<T['configSchema'], unknown>;
   authMethods: readonly (T['auth'][number] extends infer TAuth
@@ -121,6 +124,7 @@ export type ConnectionTypeKey = keyof typeof connectionTypes;
 export const connectionTypes: {
   readonly aws: ConnectionType<{
     type: 'aws';
+    cardinality: 'singleton';
     lookupStrategy: 'aws';
     query: {
       accountId?: string;
@@ -149,6 +153,7 @@ export const connectionTypes: {
   }>;
   readonly 'aws-codecommit': ConnectionType<{
     type: 'aws-codecommit';
+    cardinality: 'multiton';
     lookupStrategy: 'host';
     query: {
       url: string;
@@ -172,6 +177,7 @@ export const connectionTypes: {
   }>;
   readonly 'aws-s3': ConnectionType<{
     type: 'aws-s3';
+    cardinality: 'multiton';
     lookupStrategy: 'host';
     query: {
       url: string;
@@ -199,6 +205,7 @@ export const connectionTypes: {
   }>;
   readonly 'azure-blob-storage': ConnectionType<{
     type: 'azure-blob-storage';
+    cardinality: 'multiton';
     lookupStrategy: 'host';
     query: {
       url: string;
@@ -235,6 +242,7 @@ export const connectionTypes: {
   }>;
   readonly azure: ConnectionType<{
     type: 'azure';
+    cardinality: 'multiton';
     lookupStrategy: 'host';
     query: {
       url: string;
@@ -269,6 +277,7 @@ export const connectionTypes: {
   }>;
   readonly 'bitbucket-cloud': ConnectionType<{
     type: 'bitbucket-cloud';
+    cardinality: 'multiton';
     lookupStrategy: 'host';
     query: {
       url: string;
@@ -299,6 +308,7 @@ export const connectionTypes: {
   }>;
   readonly 'bitbucket-server': ConnectionType<{
     type: 'bitbucket-server';
+    cardinality: 'multiton';
     lookupStrategy: 'host';
     query: {
       url: string;
@@ -324,6 +334,7 @@ export const connectionTypes: {
   }>;
   readonly gerrit: ConnectionType<{
     type: 'gerrit';
+    cardinality: 'multiton';
     lookupStrategy: 'host';
     query: {
       url: string;
@@ -347,6 +358,7 @@ export const connectionTypes: {
   }>;
   readonly gitea: ConnectionType<{
     type: 'gitea';
+    cardinality: 'multiton';
     lookupStrategy: 'host';
     query: {
       url: string;
@@ -368,6 +380,7 @@ export const connectionTypes: {
   }>;
   readonly github: ConnectionType<{
     type: 'github';
+    cardinality: 'multiton';
     lookupStrategy: 'host';
     query: {
       url: string;
@@ -399,6 +412,7 @@ export const connectionTypes: {
   }>;
   readonly gitlab: ConnectionType<{
     type: 'gitlab';
+    cardinality: 'multiton';
     lookupStrategy: 'host';
     query: {
       url: string;
@@ -420,6 +434,7 @@ export const connectionTypes: {
   }>;
   readonly 'google-gcs': ConnectionType<{
     type: 'google-gcs';
+    cardinality: 'multiton';
     lookupStrategy: 'host';
     query: {
       url: string;
@@ -440,6 +455,7 @@ export const connectionTypes: {
   }>;
   readonly harness: ConnectionType<{
     type: 'harness';
+    cardinality: 'multiton';
     lookupStrategy: 'host';
     query: {
       url: string;
