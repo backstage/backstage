@@ -91,10 +91,16 @@ Conventions to follow:
 Validate the spec is well-formed:
 
 ```
+yarn --cwd <plugin-dir> backstage-repo-tools package schema openapi validate
+```
+
+Then lint for style and best-practice issues:
+
+```
 yarn backstage-repo-tools repo schema openapi lint <plugin-dir>/src/schema/openapi.yaml
 ```
 
-Iterate on lint output until clean.
+Iterate on validation and lint output until clean.
 
 ### Step 4 — Wire up dependencies and the `generate` script
 

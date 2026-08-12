@@ -138,6 +138,7 @@ Commands:
   fuzz [options]
   generate [options]
   help [command]
+  validate
 ```
 
 ### `backstage-repo-tools package schema openapi fuzz`
@@ -164,6 +165,15 @@ Options:
   --server
   --server-additional-properties [properties]
   --watch
+  -h, --help
+```
+
+### `backstage-repo-tools package schema openapi validate`
+
+```
+Usage: backstage-repo-tools package schema openapi validate [options]
+
+Options:
   -h, --help
 ```
 

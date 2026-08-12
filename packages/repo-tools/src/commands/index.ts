@@ -59,6 +59,13 @@ function registerPackageCommand(program: Command) {
     .action(lazy(() => import('./package/schema/openapi/generate'), 'command'));
 
   openApiCommand
+    .command('validate')
+    .description(
+      'Validate that the OpenAPI spec is a valid OpenAPI 3.x document.',
+    )
+    .action(lazy(() => import('./package/schema/openapi/validate'), 'command'));
+
+  openApiCommand
     .command('fuzz')
     .description(
       'Fuzz an OpenAPI schema by generating random data and sending it to the server.',
