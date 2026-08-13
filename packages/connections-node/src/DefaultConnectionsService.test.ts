@@ -412,6 +412,112 @@ describe('DefaultConnectionsService', () => {
       );
     });
 
+    it('merges legacy entries that resolve to the same connection', async () => {
+      const logger = mockServices.logger.mock();
+      const service = DefaultConnectionsService.create({
+        logger,
+        config: mockServices.rootConfig({
+          data: {
+            integrations: {
+              // Both entries hardcode the bitbucket.org host, e.g. an adopter
+              // migrating from app passwords to OAuth.
+              bitbucketCloud: [
+                { username: 'ci-bot', appPassword: 'old-secret' },
+                { clientId: 'oauth-id', clientSecret: 'oauth-secret' },
+              ],
+            },
+          },
+        }),
+      });
+
+      // The first entry's auth method still takes precedence after the merge.
+      const connection = await service.forPlugin('catalog').find({
+        type: 'bitbucket-cloud',
+        query: { url: 'https://bitbucket.org/my-workspace/my-repo' },
+        authMethods: ['appPassword', 'oauth'],
+      });
+      expect(connection?.host).toBe('bitbucket.org');
+      expect(connection?.auth).toMatchObject({
+        method: 'appPassword',
+        username: 'ci-bot',
+      });
+      expect(logger.warn).not.toHaveBeenCalled();
+    });
+
+    it('makes all merged auth methods available to auth selection', async () => {
+      const service = DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockServices.rootConfig({
+          data: {
+            integrations: {
+              github: [
+                { host: 'github.com', token: 'gh-token' },
+                {
+                  host: 'github.com',
+                  apps: [
+                    {
+                      appId: 1,
+                      privateKey: 'pk',
+                      clientId: 'client',
+                      clientSecret: 'secret',
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        }),
+      });
+
+      // The app from the second entry wins the auth selection, since the
+      // github matchAuth priority chain prefers apps over tokens.
+      const connection = await service.forPlugin('catalog').find({
+        type: 'github',
+        query: { url: 'https://github.com/my-org/my-repo' },
+        authMethods: ['token', 'app'],
+      });
+      expect(connection?.auth.method).toBe('app');
+    });
+
+    it('keeps the first value and warns when merged legacy entries have conflicting fields', async () => {
+      const logger = mockServices.logger.mock();
+      const service = DefaultConnectionsService.create({
+        logger,
+        config: mockServices.rootConfig({
+          data: {
+            integrations: {
+              github: [
+                {
+                  host: 'ghe.example.com',
+                  apiBaseUrl: 'https://ghe.example.com/api/v3',
+                  token: 'first-token',
+                },
+                {
+                  host: 'ghe.example.com',
+                  apiBaseUrl: 'https://other.example.com/api/v3',
+                  token: 'second-token',
+                },
+              ],
+            },
+          },
+        }),
+      });
+
+      const connection = await service.forPlugin('catalog').find({
+        type: 'github',
+        query: { url: 'https://ghe.example.com/my-org/my-repo' },
+        authMethods: ['token'],
+      });
+      expect(connection?.apiBaseUrl).toBe('https://ghe.example.com/api/v3');
+      expect(connection?.auth).toMatchObject({
+        method: 'token',
+        token: 'first-token',
+      });
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining('apiBaseUrl'),
+      );
+    });
+
     it('wraps errors thrown during conversion with legacy integrations context', () => {
       expect(() =>
         DefaultConnectionsService.create({

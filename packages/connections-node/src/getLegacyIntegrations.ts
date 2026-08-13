@@ -297,11 +297,21 @@ function convertHarness(entries: Config[]): JsonObject[] {
 function convertAws(aws: Config): JsonObject {
   const auth: JsonObject[] = [];
 
+  // Legacy config allowed duplicate account IDs, resolving lookups with the
+  // first matching entry, so later duplicates are dropped.
+  const seenAccountIds = new Set<string>();
   for (const account of aws.getOptionalConfigArray('accounts') ?? []) {
+    const accountId = account.getOptionalString('accountId');
+    if (accountId !== undefined) {
+      if (seenAccountIds.has(accountId)) {
+        continue;
+      }
+      seenAccountIds.add(accountId);
+    }
     auth.push(
       omitUndefined({
         method: 'account',
-        accountId: account.getOptionalString('accountId'),
+        accountId,
         accessKeyId: account.getOptionalString('accessKeyId'),
         secretAccessKey: account.getOptionalString('secretAccessKey'),
         profile: account.getOptionalString('profile'),

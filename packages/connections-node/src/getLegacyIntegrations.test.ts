@@ -825,6 +825,40 @@ describe('getLegacyIntegrations', () => {
       ]);
     });
 
+    it('keeps the first entry when accounts duplicate an account ID, matching the legacy lookup behavior', () => {
+      const config = mockServices.rootConfig({
+        data: {
+          aws: {
+            accounts: [
+              {
+                accountId: '111111111111',
+                accessKeyId: 'first-key',
+                secretAccessKey: 'first-secret',
+              },
+              {
+                accountId: '111111111111',
+                accessKeyId: 'second-key',
+                secretAccessKey: 'second-secret',
+              },
+            ],
+          },
+        },
+      });
+
+      const [converted] = getLegacyIntegrations(config);
+      const accounts = (converted.auth as { accountId?: string }[]).filter(
+        a => a.accountId === '111111111111',
+      );
+      expect(accounts).toEqual([
+        {
+          method: 'account',
+          accountId: '111111111111',
+          accessKeyId: 'first-key',
+          secretAccessKey: 'first-secret',
+        },
+      ]);
+    });
+
     it('produces output that validates against the aws connection schema', () => {
       const config = mockServices.rootConfig({
         data: {
