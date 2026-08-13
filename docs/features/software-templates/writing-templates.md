@@ -490,7 +490,7 @@ The `when` field supports:
 When a step becomes hidden because its condition evaluates to false, any values previously entered in that step are preserved but excluded from the final parameters passed to `spec.steps`. If the user goes back and changes an earlier answer so that the step becomes visible again, their previously entered values are restored. Any field referenced in a `when` condition should be validated by an earlier unconditional step — because `when` conditions also control which steps are validated on the backend, a field that is not itself validated could allow users to skip conditional steps unexpectedly.
 
 :::note
-The `when` field controls the visibility of wizard steps in the frontend. It uses a different keyword from the `if` field on `spec.steps` to avoid colliding with JSON Schema's `if`/`then`/`else` keywords.
+The `when` field controls the visibility of wizard steps in the frontend. It uses a different keyword from the `if` field on `spec.steps` to avoid colliding with the `if`/`then`/`else` keywords in JSON Schema.
 :::
 
 ### The Repository Picker
