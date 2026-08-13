@@ -43,6 +43,7 @@ import {
   generateExampleOutput,
   isTruthy,
 } from './helper';
+import { isTaskRecoveryEnabled } from './taskRecoveryHelper';
 import {
   TaskTrackType,
   TaskState,
@@ -218,6 +219,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
   } = { parameters: {}, secrets: {} };
 
   private readonly tracker: ReturnType<typeof scaffoldingTracker>;
+  private readonly recoveryEnabled: boolean;
 
   constructor(options: NunjucksWorkflowRunnerOptions) {
     this.options = options;
@@ -229,6 +231,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       ),
     });
     this.tracker = scaffoldingTracker(options.metrics);
+    this.recoveryEnabled = isTaskRecoveryEnabled(options.config);
   }
 
   async getEnvironmentConfig(): Promise<{
@@ -604,12 +607,15 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       workspaceSerializationAttempted = true;
       await task.serializeWorkspace?.({ path: workspacePath });
 
-      // Persist step state for recovery
-      await task.updateStepState?.({
-        stepId: step.id,
-        status: 'completed',
-        output: stepOutput,
-      });
+      // Persist step state so a recovered task can resume from here. Only done
+      // when recovery is enabled to keep the default retry lifecycle unchanged.
+      if (this.recoveryEnabled) {
+        await task.updateStepState?.({
+          stepId: step.id,
+          status: 'completed',
+          output: stepOutput,
+        });
+      }
 
       await stepTrack.markSuccessful();
       return updatedPreparedContext;
@@ -694,7 +700,12 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             )
           : [{ result: AuthorizeResult.ALLOW }];
 
-      const prevTaskState = await task.getTaskState?.();
+      // Only resume from persisted step state when recovery is enabled.
+      // Otherwise ignore any saved state so retries always re-run every step,
+      // matching the behavior when recovery is disabled.
+      const prevTaskState = this.recoveryEnabled
+        ? await task.getTaskState?.()
+        : undefined;
       const recoveredTaskState = prevTaskState?.state as TaskState | undefined;
       const savedSteps = recoveredTaskState?.steps ?? {};
       const completedStepIds = Object.keys(savedSteps).filter(
@@ -716,6 +727,15 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           preparedContext = preparedContext.withValue(
             ['steps', step.id],
             context.steps[step.id] as unknown as NunjitsuTemplateValue,
+          );
+          // Re-emit the completion status event for the skipped step so the
+          // frontend, which reconstructs step status from log events, does not
+          // show a recovered step as stuck in `processing`. This also covers
+          // the crash window between persisting the step state and emitting the
+          // original completion event.
+          await task.emitLog(
+            `Skipping step ${step.id} because it was already completed in a previous run`,
+            { stepId: step.id, status: 'completed' },
           );
           continue;
         }

@@ -25,7 +25,10 @@ import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { TaskFilters } from '@backstage/plugin-scaffolder-node';
 import { TaskState } from './types';
 
-const createStore = async (events?: EventsService) => {
+const createStore = async (
+  events?: EventsService,
+  recoverTasksEnabled?: boolean,
+) => {
   const manager = DatabaseManager.fromConfig(
     new ConfigReader({
       backend: {
@@ -42,6 +45,7 @@ const createStore = async (events?: EventsService) => {
   const store = await DatabaseTaskStore.create({
     database: manager,
     events,
+    recoverTasksEnabled,
   });
   return { store, manager };
 };
@@ -556,8 +560,29 @@ describe('DatabaseTaskStore', () => {
   });
 
   describe('secrets persistence for recovery', () => {
-    it('should preserve secrets in DB when claiming a task', async () => {
+    it('should clear secrets on claim when recovery is disabled', async () => {
       const { store } = await createStore();
+      const secrets = { token: 'super-secret' };
+
+      const { taskId } = await store.createTask({
+        spec: {} as TaskSpec,
+        createdBy: 'me',
+        secrets,
+      });
+
+      // Claim task - secrets ARE still returned to the worker
+      const claimedTask = await store.claimTask();
+      expect(claimedTask).toBeDefined();
+      expect(claimedTask?.secrets).toEqual(secrets);
+
+      // But with recovery disabled they are cleared from the DB on claim,
+      // preserving the default security lifecycle.
+      const taskFromDb = await store.getTask(taskId);
+      expect(taskFromDb.secrets).toBeUndefined();
+    });
+
+    it('should preserve secrets in DB on claim when recovery is enabled', async () => {
+      const { store } = await createStore(undefined, true);
       const secrets = { token: 'super-secret' };
 
       const { taskId } = await store.createTask({
@@ -576,7 +601,7 @@ describe('DatabaseTaskStore', () => {
       expect(taskFromDb.secrets).toEqual(secrets);
     });
 
-    it('should preserve secrets for tasks with EXPERIMENTAL_recovery opt-in', async () => {
+    it('should preserve secrets for tasks with EXPERIMENTAL_recovery opt-in even when recovery is disabled', async () => {
       const { store } = await createStore();
       const secrets = { token: 'super-secret' };
 
@@ -597,7 +622,7 @@ describe('DatabaseTaskStore', () => {
     });
 
     it('should have secrets available after recovery', async () => {
-      const { store } = await createStore();
+      const { store } = await createStore(undefined, true);
       const secrets = { token: 'super-secret' };
 
       const { taskId } = await store.createTask({
@@ -651,8 +676,8 @@ describe('DatabaseTaskStore', () => {
       expect(reclaimedTask?.secrets).toBeUndefined();
     });
 
-    it('should preserve secrets for recovery without per-template opt-in', async () => {
-      const { store } = await createStore();
+    it('should preserve secrets for recovery without per-template opt-in when recovery is enabled', async () => {
+      const { store } = await createStore(undefined, true);
       const secrets = { token: 'super-secret' };
 
       // Create task without per-template opt-in
@@ -680,7 +705,7 @@ describe('DatabaseTaskStore', () => {
 
   describe('secrets lifecycle for task completion', () => {
     it('should preserve secrets in DB when claiming a task (for recovery)', async () => {
-      const { store } = await createStore();
+      const { store } = await createStore(undefined, true);
       const secrets = { gheAccessToken: 'secret-token' };
       const { taskId } = await store.createTask({
         spec: {} as TaskSpec,
@@ -698,7 +723,7 @@ describe('DatabaseTaskStore', () => {
     });
 
     it('should delete secrets only when task reaches terminal state (completed)', async () => {
-      const { store } = await createStore();
+      const { store } = await createStore(undefined, true);
       const secrets = { token: 'secret' };
       const { taskId } = await store.createTask({
         spec: {} as TaskSpec,
@@ -718,7 +743,7 @@ describe('DatabaseTaskStore', () => {
     });
 
     it('should delete secrets when task fails', async () => {
-      const { store } = await createStore();
+      const { store } = await createStore(undefined, true);
       const secrets = { token: 'secret' };
       const { taskId } = await store.createTask({
         spec: {} as TaskSpec,
@@ -738,7 +763,7 @@ describe('DatabaseTaskStore', () => {
     });
 
     it('should preserve secrets through multiple recovery cycles', async () => {
-      const { store } = await createStore();
+      const { store } = await createStore(undefined, true);
       const secrets = { token: 'secret' };
       await store.createTask({
         spec: {} as TaskSpec,
@@ -762,7 +787,7 @@ describe('DatabaseTaskStore', () => {
 
   describe('recovery without template opt-in', () => {
     it('should recover tasks regardless of EXPERIMENTAL_recovery setting', async () => {
-      const { store } = await createStore();
+      const { store } = await createStore(undefined, true);
       const secrets = { token: 'secret' };
 
       // Task WITHOUT any EXPERIMENTAL_recovery setting
@@ -787,7 +812,7 @@ describe('DatabaseTaskStore', () => {
 
   describe('end-to-end recovery flow', () => {
     it('should recover a stale task with secrets and step state intact', async () => {
-      const { store } = await createStore();
+      const { store } = await createStore(undefined, true);
       const secrets = { gheAccessToken: 'secret-token' };
       const { taskId } = await store.createTask({
         spec: {
@@ -838,7 +863,7 @@ describe('DatabaseTaskStore', () => {
     });
 
     it('should handle multiple recovery cycles', async () => {
-      const { store } = await createStore();
+      const { store } = await createStore(undefined, true);
       const secrets = { token: 'secret' };
       await store.createTask({
         spec: {} as TaskSpec,
@@ -905,7 +930,7 @@ describe('DatabaseTaskStore', () => {
     });
 
     it('should clean up secrets only on final completion', async () => {
-      const { store } = await createStore();
+      const { store } = await createStore(undefined, true);
       const secrets = { token: 'secret' };
       const { taskId } = await store.createTask({
         spec: {} as TaskSpec,

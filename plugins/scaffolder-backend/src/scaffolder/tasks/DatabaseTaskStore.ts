@@ -85,6 +85,13 @@ export type RawDbTaskEventRow = {
 export type DatabaseTaskStoreOptions = {
   database: DatabaseService | Knex;
   events?: EventsService;
+  /**
+   * Whether automatic task recovery is enabled. When enabled, task secrets are
+   * retained until the task reaches a terminal state so that a recovered task
+   * can resume. When disabled (the default), secrets are cleared as soon as the
+   * task is claimed, preserving the original security lifecycle.
+   */
+  recoverTasksEnabled?: boolean;
 };
 
 /**
@@ -116,6 +123,7 @@ const parseSqlDateToIsoString = <T>(input: T): T | string => {
 export class DatabaseTaskStore implements TaskStore {
   private readonly db: Knex;
   private readonly events?: EventsService;
+  private readonly recoverTasksEnabled: boolean;
 
   static async create(
     options: DatabaseTaskStoreOptions,
@@ -125,7 +133,17 @@ export class DatabaseTaskStore implements TaskStore {
 
     await this.runMigrations(database, client);
 
-    return new DatabaseTaskStore(client, options.events);
+    return new DatabaseTaskStore(
+      client,
+      options.events,
+      options.recoverTasksEnabled ?? false,
+    );
+  }
+
+  private isRecoverableTask(spec: TaskSpec): boolean {
+    return ['startOver'].includes(
+      spec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ?? 'none',
+    );
   }
 
   private parseSpec({ spec, id }: { spec: string; id: string }): TaskSpec {
@@ -175,9 +193,14 @@ export class DatabaseTaskStore implements TaskStore {
     }
   }
 
-  private constructor(client: Knex, events?: EventsService) {
+  private constructor(
+    client: Knex,
+    events: EventsService | undefined,
+    recoverTasksEnabled: boolean,
+  ) {
     this.db = client;
     this.events = events;
+    this.recoverTasksEnabled = recoverTasksEnabled;
   }
 
   private getState(task: RawDbTaskRow) {
@@ -406,6 +429,14 @@ export class DatabaseTaskStore implements TaskStore {
         .update({
           status: 'processing',
           last_heartbeat_at: this.db.fn.now(),
+          // Retain secrets only when recovery is enabled (globally or via the
+          // legacy per-template strategy) so recovered tasks can resume.
+          // Otherwise clear them on claim to preserve the default security
+          // lifecycle.
+          secrets:
+            this.recoverTasksEnabled || this.isRecoverableTask(spec)
+              ? task.secrets
+              : null,
         });
 
       if (updateCount < 1) {

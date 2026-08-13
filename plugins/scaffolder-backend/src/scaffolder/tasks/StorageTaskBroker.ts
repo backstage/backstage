@@ -46,6 +46,7 @@ import {
 import ObservableImpl from 'zen-observable';
 import { DefaultWorkspaceService, WorkspaceService } from './WorkspaceService';
 import { readDuration } from './helper';
+import { isTaskRecoveryEnabled } from './taskRecoveryHelper';
 import {
   InternalTaskSecrets,
   TaskStore,
@@ -373,10 +374,7 @@ export class StorageTaskBroker implements TaskBroker {
   }
 
   public async recoverTasks(): Promise<void> {
-    const enabled =
-      this.config?.getOptionalBoolean('scaffolder.taskRecovery.enabled') ??
-      this.config?.getOptionalBoolean('scaffolder.EXPERIMENTAL_recoverTasks') ??
-      false;
+    const enabled = isTaskRecoveryEnabled(this.config);
 
     if (!enabled) {
       return;

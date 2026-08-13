@@ -2701,6 +2701,25 @@ describe('NunjucksWorkflowRunner', () => {
   });
 
   describe('task recovery - step resumption', () => {
+    // Recovery behavior (persistence + resumption) is gated behind
+    // `scaffolder.taskRecovery.enabled`, so these tests use a runner with
+    // recovery turned on.
+    let recoveryRunner: NunjucksWorkflowRunner;
+
+    beforeEach(() => {
+      recoveryRunner = new NunjucksWorkflowRunner({
+        actionRegistry,
+        integrations,
+        workingDirectory: mockDir.path,
+        logger,
+        permissions: mockedPermissionApi,
+        config: new ConfigReader({
+          scaffolder: { taskRecovery: { enabled: true } },
+        }),
+        metrics: metricsServiceMock.mock(),
+      });
+    });
+
     it('skips completed steps and restores their outputs', async () => {
       const task = createMockTaskWithSpec({
         steps: [
@@ -2728,7 +2747,7 @@ describe('NunjucksWorkflowRunner', () => {
       });
       task.updateStepState = jest.fn();
 
-      const result = await runner.execute(task);
+      const result = await recoveryRunner.execute(task);
 
       expect(fakeActionHandler).toHaveBeenCalledTimes(1);
       expect(result.output.fromStep1).toBe('recovered-value');
@@ -2755,7 +2774,7 @@ describe('NunjucksWorkflowRunner', () => {
       task.getTaskState = jest.fn().mockResolvedValue(undefined);
       task.updateStepState = jest.fn();
 
-      await runner.execute(task);
+      await recoveryRunner.execute(task);
 
       expect(fakeActionHandler).toHaveBeenCalledTimes(2);
       expect(task.updateStepState).toHaveBeenCalledTimes(2);
@@ -2769,7 +2788,7 @@ describe('NunjucksWorkflowRunner', () => {
       });
       task.updateStepState = jest.fn();
 
-      await runner.execute(task);
+      await recoveryRunner.execute(task);
 
       expect(task.updateStepState).toHaveBeenCalledWith({
         stepId: 'step1',
@@ -2792,7 +2811,7 @@ describe('NunjucksWorkflowRunner', () => {
         callOrder.push('updateStepState');
       });
 
-      await runner.execute(task);
+      await recoveryRunner.execute(task);
 
       expect(callOrder).toEqual(['serializeWorkspace', 'updateStepState']);
     });
@@ -2808,7 +2827,7 @@ describe('NunjucksWorkflowRunner', () => {
         .mockRejectedValue(new Error('workspace persistence failed'));
       task.updateStepState = jest.fn();
 
-      await expect(runner.execute(task)).rejects.toThrow(
+      await expect(recoveryRunner.execute(task)).rejects.toThrow(
         'workspace persistence failed',
       );
       expect(task.serializeWorkspace).toHaveBeenCalledTimes(1);
@@ -2840,7 +2859,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       });
 
-      await runner.execute(task);
+      await recoveryRunner.execute(task);
 
       expect(fakeActionHandler).toHaveBeenCalledTimes(1);
     });
@@ -2865,11 +2884,87 @@ describe('NunjucksWorkflowRunner', () => {
       });
       task.emitLog = jest.fn();
 
-      await runner.execute(task);
+      await recoveryRunner.execute(task);
 
       expect(task.emitLog).toHaveBeenCalledWith(
         expect.stringContaining('1 step(s) already completed'),
       );
+    });
+
+    it('emits a completed status event for skipped steps so the UI stays consistent', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'step1',
+            name: 'completed step',
+            action: 'jest-mock-action',
+            input: {},
+          },
+          {
+            id: 'step2',
+            name: 'pending step',
+            action: 'jest-mock-action',
+            input: {},
+          },
+        ],
+      });
+      task.getTaskState = jest.fn().mockResolvedValue({
+        state: {
+          steps: {
+            step1: { status: 'completed', output: { mock: 'value' } },
+          },
+        },
+      });
+      task.emitLog = jest.fn();
+
+      await recoveryRunner.execute(task);
+
+      expect(task.emitLog).toHaveBeenCalledWith(expect.any(String), {
+        stepId: 'step1',
+        status: 'completed',
+      });
+    });
+
+    it('does not persist step state when recovery is disabled', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          { id: 'step1', name: 'first', action: 'jest-mock-action', input: {} },
+        ],
+      });
+      task.updateStepState = jest.fn();
+
+      // The default `runner` is configured without task recovery enabled.
+      await runner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledTimes(1);
+      expect(task.updateStepState).not.toHaveBeenCalled();
+    });
+
+    it('ignores saved step state and re-runs all steps when recovery is disabled', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          { id: 'step1', name: 'first', action: 'jest-mock-action', input: {} },
+          {
+            id: 'step2',
+            name: 'second',
+            action: 'jest-mock-action',
+            input: {},
+          },
+        ],
+      });
+      task.getTaskState = jest.fn().mockResolvedValue({
+        state: {
+          steps: {
+            step1: { status: 'completed', output: { mock: 'value' } },
+          },
+        },
+      });
+
+      await runner.execute(task);
+
+      // Both steps run again; the persisted completed state is ignored so no
+      // step is skipped.
+      expect(fakeActionHandler).toHaveBeenCalledTimes(2);
     });
   });
 });

@@ -27,7 +27,9 @@ import { mockServices } from '@backstage/backend-test-utils';
 import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
 import { TaskState } from './types';
 
-async function createStore(): Promise<DatabaseTaskStore> {
+async function createStore(
+  recoverTasksEnabled?: boolean,
+): Promise<DatabaseTaskStore> {
   const manager = DatabaseManager.fromConfig(
     new ConfigReader({
       backend: {
@@ -44,6 +46,7 @@ async function createStore(): Promise<DatabaseTaskStore> {
 
   return await DatabaseTaskStore.create({
     database: manager,
+    recoverTasksEnabled,
   });
 }
 
@@ -130,19 +133,24 @@ describe('StorageTaskBroker', () => {
   }, 10000);
 
   it('should preserve secrets until terminal state for recovery', async () => {
-    const broker = new StorageTaskBroker(storage, logger);
+    const recoveryStorage = await createStore(true);
+    const broker = new StorageTaskBroker(recoveryStorage, logger);
     const dispatchResult = await broker.dispatch(emptyTaskWithFakeSecretsSpec);
     const task = await broker.claim();
 
     // Secrets should be preserved after claiming (for potential recovery)
-    const taskRowAfterClaim = await storage.getTask(dispatchResult.taskId);
+    const taskRowAfterClaim = await recoveryStorage.getTask(
+      dispatchResult.taskId,
+    );
     expect(taskRowAfterClaim.secrets).toEqual(fakeSecrets);
 
     // Complete the task
     await task.complete('completed');
 
     // Secrets should be removed after reaching terminal state
-    const taskRowAfterComplete = await storage.getTask(dispatchResult.taskId);
+    const taskRowAfterComplete = await recoveryStorage.getTask(
+      dispatchResult.taskId,
+    );
     expect(taskRowAfterComplete.secrets).toBeUndefined();
   }, 10000);
 
@@ -283,7 +291,7 @@ describe('StorageTaskBroker', () => {
           id: taskId,
         }),
       ]),
-      totalTasks: 15,
+      totalTasks: 14,
     });
   });
 

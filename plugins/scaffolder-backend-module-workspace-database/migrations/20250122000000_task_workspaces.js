@@ -26,8 +26,10 @@ exports.up = async function up(knex) {
       .primary()
       .notNullable()
       .comment('The task this workspace belongs to');
-    table
-      .binary('workspace')
+    const workspace = knex.client.config.client.includes('mysql')
+      ? table.specificType('workspace', 'LONGBLOB')
+      : table.binary('workspace');
+    workspace
       .notNullable()
       .comment('Serialized workspace contents (tar archive)');
     table
