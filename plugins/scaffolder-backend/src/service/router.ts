@@ -214,6 +214,7 @@ const conditionRenderer = createTemplateRenderer();
 function evaluateIfCondition(
   condition: string | boolean | undefined,
   formState: Record<string, JsonValue>,
+  logger?: LoggerService,
 ): boolean {
   if (condition === undefined || condition === null) return true;
   if (typeof condition === 'boolean') return condition;
@@ -228,9 +229,19 @@ function evaluateIfCondition(
   const negated = inner.startsWith('!');
   const expr = negated ? inner.slice(1).trim() : inner;
 
-  const result = conditionRenderer.renderValue(`\${{ ${expr} }}`, {
-    parameters: formState,
-  } as TemplateContext);
+  let result: unknown;
+  try {
+    result = conditionRenderer.renderValue(`\${{ ${expr} }}`, {
+      parameters: formState,
+    } as TemplateContext);
+  } catch (error) {
+    logger?.warn(
+      `Failed to evaluate parameter step condition "${condition}": ${
+        error instanceof Error ? error.message : 'unknown error'
+      }`,
+    );
+    return true;
+  }
 
   const truthy = Array.isArray(result) ? result.length > 0 : !!result;
   return negated ? !truthy : truthy;
@@ -663,6 +674,7 @@ export async function createRouter(
             !evaluateIfCondition(
               condition as string | boolean,
               values as Record<string, JsonValue>,
+              logger,
             )
           ) {
             for (const key of collectPropertyKeys(param)) {
@@ -1171,6 +1183,7 @@ export async function createRouter(
             !evaluateIfCondition(
               condition as string | boolean,
               body.values as Record<string, JsonValue>,
+              logger,
             )
           ) {
             for (const key of collectPropertyKeys(param)) {

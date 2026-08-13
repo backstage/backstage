@@ -172,5 +172,17 @@ describe('evaluateCondition', () => {
         evaluateCondition('${{ parameters.items }}', { items: ['a'] }),
       ).toBe(true);
     });
+
+    it('blocks prototype chain access', () => {
+      expect(
+        evaluateCondition('${{ parameters.constructor }}', { a: 'b' }),
+      ).toBe(false);
+      expect(evaluateCondition('${{ parameters.__proto__ }}', { a: 'b' })).toBe(
+        false,
+      );
+      expect(
+        evaluateCondition('${{ parameters.a.prototype }}', { a: { x: 1 } }),
+      ).toBe(false);
+    });
   });
 });

@@ -36,8 +36,10 @@ function resolveValue(
   const parts = token.split('.');
   if (parts[0] !== 'parameters') return undefined;
 
+  const BLOCKED_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
   let current: JsonValue | undefined = formState;
   for (const part of parts.slice(1)) {
+    if (BLOCKED_KEYS.has(part)) return undefined;
     if (
       current === undefined ||
       current === null ||
