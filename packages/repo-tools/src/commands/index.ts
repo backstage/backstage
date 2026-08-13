@@ -113,6 +113,17 @@ function registerRepoCommand(program: Command) {
     );
 
   openApiCommand
+    .command('verify', { hidden: true })
+    .description('Deprecated: use validate instead.')
+    .action(async () => {
+      exitWithError(
+        new Error(
+          `This command has been removed, use 'repo schema openapi validate' instead`,
+        ),
+      );
+    });
+
+  openApiCommand
     .command('lint [paths...]')
     .description('Lint OpenAPI schemas.')
     .option(
