@@ -176,6 +176,33 @@ A set of built-in excludes is always applied regardless of configuration:
 `.git/`, `node_modules/`, `__pycache__/`, `.venv/`, and `*.pyc`.
 Adopter-provided `excludes` extend the built-in list.
 
+:::caution Why `mkdocs.yml` is not included by default
+
+Source storage is designed to be build-tool agnostic — it captures
+documentation content, not build configuration. The `mkdocs.yml` file
+can also contain plugin configurations, environment variable
+references, or custom hook paths that may expose internal details
+about your infrastructure.
+
+If your use case requires storing `mkdocs.yml` alongside the source
+files, you can add it to `additionalFiles`:
+
+```yaml
+techdocs:
+  generator:
+    preserveSources:
+      enabled: true
+      additionalFiles:
+        - README.md
+        - mkdocs.yml
+```
+
+This applies to any file added through `additionalFiles` — by
+including files explicitly, you accept responsibility for reviewing
+their contents and ensuring they do not expose sensitive information.
+
+:::
+
 Use `additionalFiles` to include files from the input directory root
 alongside the docs directory. By default, `README.md` is included
 automatically if it exists in the input directory root. To include
