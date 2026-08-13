@@ -66,7 +66,7 @@ describe('generate', () => {
         inputDir: resolve('.'),
         outputDir: resolve('./site'),
         preserveSources: true,
-        sourceExcludes: [],
+        sourceExcludes: undefined,
       }),
     );
   });
@@ -84,7 +84,7 @@ describe('generate', () => {
     expect(mockRun).toHaveBeenCalledWith(
       expect.objectContaining({
         preserveSources: false,
-        sourceExcludes: [],
+        sourceExcludes: undefined,
       }),
     );
   });

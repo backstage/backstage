@@ -104,8 +104,12 @@ export default async function generate(opts: OptionValues) {
     siteOptions: { name: opts.siteName },
     runAsDefaultUser: opts.runAsDefaultUser,
     preserveSources: opts.includeSources,
-    sourceExcludes: opts.sourceExcludes,
-    sourceAdditionalFiles: opts.sourceAdditionalFiles,
+    sourceExcludes: opts.sourceExcludes?.length
+      ? opts.sourceExcludes
+      : undefined,
+    sourceAdditionalFiles: opts.sourceAdditionalFiles?.length
+      ? opts.sourceAdditionalFiles
+      : undefined,
   });
 
   if (configIsTemporary) {
