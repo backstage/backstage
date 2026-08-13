@@ -448,7 +448,7 @@ spec:
 
 When `spec.parameters` is an array of steps, you can use the `if` field to conditionally show or hide entire steps based on values from earlier steps. This is useful when different inputs require different follow-up configuration, such as cloud-provider-specific settings.
 
-The `if` field uses the `${{ }}` delimiter syntax and supports a subset of expressions for comparing parameter values:
+The `if` field uses the same `${{ }}` expression syntax used elsewhere in templates, powered by [Nunjitsu](https://github.com/Rugvip/nunjitsu). This means you can use the same operators and expressions you already use in `spec.steps`:
 
 ```yaml
 spec:
@@ -482,8 +482,7 @@ In this example, only the step matching the selected provider is shown in the wi
 
 The `if` field supports:
 
-- **Strict equality:** `${{ parameters.field === 'value' }}` and `${{ parameters.field !== 'value' }}`
-- **Loose equality:** `${{ parameters.field == 'value' }}` and `${{ parameters.field != 'value' }}` (uses JavaScript loose comparison, where e.g. `null == undefined` is true)
+- **Equality:** `${{ parameters.field === 'value' }}` and `${{ parameters.field !== 'value' }}`
 - **Truthiness checks:** `${{ parameters.field }}` evaluates to true when the field is set and non-empty
 - **Negation:** `${{ !parameters.field }}`
 - **Boolean values:** `if: true` or `if: false`

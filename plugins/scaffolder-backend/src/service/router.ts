@@ -51,8 +51,8 @@ import {
   TaskSpec,
   TemplateEntityV1beta3,
   templateEntityV1beta3Validator,
-  evaluateCondition,
 } from '@backstage/plugin-scaffolder-common';
+import { createTemplateRenderer, TemplateContext } from 'nunjitsu';
 import {
   scaffolderActionPermissions,
   scaffolderTaskPermissions,
@@ -203,6 +203,33 @@ function formatSecretsValidationErrors(result: ValidatorResult) {
       instance: {},
     };
   });
+}
+
+const conditionRenderer = createTemplateRenderer();
+
+function evaluateIfCondition(
+  condition: string | boolean | undefined,
+  formState: Record<string, JsonValue>,
+): boolean {
+  if (condition === undefined || condition === null) return true;
+  if (typeof condition === 'boolean') return condition;
+
+  const trimmed = condition.trim();
+  if (!trimmed) return true;
+
+  const match = trimmed.match(/^\$\{\{([\s\S]*)\}\}$/);
+  const inner = match ? match[1].trim() : trimmed;
+  if (!inner) return true;
+
+  const negated = inner.startsWith('!');
+  const expr = negated ? inner.slice(1).trim() : inner;
+
+  const result = conditionRenderer.renderValue(`\${{ ${expr} }}`, {
+    parameters: formState,
+  } as TemplateContext);
+
+  const truthy = Array.isArray(result) ? result.length > 0 : !!result;
+  return negated ? !truthy : truthy;
 }
 
 function collectPropertyKeys(schema: Record<string, unknown>): string[] {
@@ -631,7 +658,7 @@ export async function createRouter(
             typeof condition === 'string' || typeof condition === 'boolean';
           if (
             isStepCondition &&
-            !evaluateCondition(
+            !evaluateIfCondition(
               condition as string | boolean,
               values as Record<string, JsonValue>,
             )
@@ -1139,7 +1166,7 @@ export async function createRouter(
             typeof condition === 'string' || typeof condition === 'boolean';
           if (
             isStepCondition &&
-            !evaluateCondition(
+            !evaluateIfCondition(
               condition as string | boolean,
               body.values as Record<string, JsonValue>,
             )
