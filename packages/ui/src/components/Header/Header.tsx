@@ -88,6 +88,7 @@ export const Header = (props: HeaderProps) => {
     title,
     tabs,
     activeTabId,
+    replaceTabNavigation,
     customActions,
     breadcrumbs,
     description,
@@ -282,7 +283,11 @@ export const Header = (props: HeaderProps) => {
         )}
         {tabs && (
           <div className={classes.tabsWrapper}>
-            <HeaderNav tabs={tabs} activeTabId={activeTabId} />
+            <HeaderNav
+              tabs={tabs}
+              activeTabId={activeTabId}
+              replaceNavigation={replaceTabNavigation}
+            />
           </div>
         )}
       </Container>

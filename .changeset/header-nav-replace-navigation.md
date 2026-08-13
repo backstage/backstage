@@ -1,5 +1,5 @@
 ---
-'@backstage/ui': patch
+'@backstage/ui': minor
 ---
 
-Tab navigation in the header now replaces the current browser history entry instead of pushing a new one. This prevents the back button from cycling through previously selected tabs, so it returns to the actual previous page instead.
+Added an opt-in `replaceTabNavigation` prop to the `Header` component. When enabled, tab navigation replaces the current browser history entry instead of pushing a new one, preventing the back button from cycling through previously selected tabs.

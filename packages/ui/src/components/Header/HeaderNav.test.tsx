@@ -86,7 +86,31 @@ describe('HeaderNav', () => {
     );
   });
 
-  it('uses replace navigation when clicking a tab', () => {
+  it('uses replace navigation when replaceNavigation is enabled', () => {
+    render(
+      <MemoryRouter basename="/app" initialEntries={['/app/catalog']}>
+        <BUIProvider>
+          <NavigationTypeSpy />
+          <HeaderNav
+            tabs={[
+              { id: 'overview', label: 'Overview', href: '/catalog/overview' },
+              { id: 'settings', label: 'Settings', href: '/catalog/settings' },
+            ]}
+            activeTabId={null}
+            replaceNavigation
+          />
+        </BUIProvider>
+      </MemoryRouter>,
+    );
+
+    expect(lastNavigationType).toBe('POP');
+
+    fireEvent.click(screen.getByRole('link', { name: 'Settings' }));
+
+    expect(lastNavigationType).toBe('REPLACE');
+  });
+
+  it('uses push navigation by default', () => {
     render(
       <MemoryRouter basename="/app" initialEntries={['/app/catalog']}>
         <BUIProvider>
@@ -106,7 +130,7 @@ describe('HeaderNav', () => {
 
     fireEvent.click(screen.getByRole('link', { name: 'Settings' }));
 
-    expect(lastNavigationType).toBe('REPLACE');
+    expect(lastNavigationType).toBe('PUSH');
   });
 
   it('includes the router basename in grouped tab hrefs', async () => {

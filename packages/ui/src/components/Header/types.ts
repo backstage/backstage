@@ -105,6 +105,12 @@ export interface HeaderOwnProps {
   tabs?: HeaderNavTabItem[];
   activeTabId?: string | null;
   /**
+   * When true, tab navigation replaces the current browser history entry
+   * instead of pushing a new one. This prevents the back button from
+   * cycling through previously selected tabs.
+   */
+  replaceTabNavigation?: boolean;
+  /**
    * @deprecated The breadcrumbs prop will be removed in a future release.
    */
   breadcrumbs?: HeaderBreadcrumb[];

@@ -51,6 +51,7 @@ export const HeaderDefinition = defineComponent<HeaderOwnProps>()({
     customActions: {},
     tabs: {},
     activeTabId: {},
+    replaceTabNavigation: {},
     breadcrumbs: {},
     description: {},
     tags: {},
