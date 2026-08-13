@@ -220,8 +220,6 @@ export interface ParsedTemplateSchema {
   // (undocumented)
   description?: string;
   // (undocumented)
-  if?: string | boolean;
-  // (undocumented)
   mergedSchema: JsonObject;
   // (undocumented)
   schema: JsonObject;
@@ -229,6 +227,8 @@ export interface ParsedTemplateSchema {
   title: string;
   // (undocumented)
   uiSchema: UiSchema;
+  // (undocumented)
+  when?: string | boolean;
 }
 
 // @alpha
@@ -328,10 +328,10 @@ export const scaffolderReactTranslationRef: TranslationRef<
     readonly 'scaffolderPageContextMenu.tasksLabel': 'Task List';
     readonly 'scaffolderPageContextMenu.templatingExtensionsLabel': 'Templating Extensions';
     readonly 'stepper.backButtonText': 'Back';
-    readonly 'stepper.nextButtonText': 'Next';
     readonly 'stepper.createButtonText': 'Create';
     readonly 'stepper.reviewButtonText': 'Review';
     readonly 'stepper.stepIndexLabel': 'Step {{index, number}}';
+    readonly 'stepper.nextButtonText': 'Next';
     readonly 'templateCategoryPicker.title': 'Categories';
     readonly 'templateCard.noDescription': 'No description';
     readonly 'templateCard.chooseButtonText': 'Choose';

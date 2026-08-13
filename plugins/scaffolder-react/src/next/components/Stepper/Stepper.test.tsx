@@ -840,8 +840,8 @@ describe('Stepper', () => {
     });
   });
 
-  describe('conditional steps with if', () => {
-    it('should hide steps whose if condition evaluates to false', async () => {
+  describe('conditional steps with when', () => {
+    it('should hide steps whose when condition evaluates to false', async () => {
       const manifest: TemplateParameterSchema = {
         title: 'Conditional Steps',
         steps: [
@@ -858,7 +858,7 @@ describe('Stepper', () => {
           },
           {
             title: 'AWS Config',
-            if: "${{ parameters.cloudProvider === 'AWS' }}",
+            when: "${{ parameters.cloudProvider === 'AWS' }}",
             schema: {
               properties: {
                 awsRegion: { type: 'string' },
@@ -867,7 +867,7 @@ describe('Stepper', () => {
           },
           {
             title: 'GCP Config',
-            if: "${{ parameters.cloudProvider === 'GCP' }}",
+            when: "${{ parameters.cloudProvider === 'GCP' }}",
             schema: {
               properties: {
                 gcpProjectId: { type: 'string' },
@@ -904,7 +904,7 @@ describe('Stepper', () => {
           },
           {
             title: 'AWS Config',
-            if: "${{ parameters.cloudProvider === 'AWS' }}",
+            when: "${{ parameters.cloudProvider === 'AWS' }}",
             schema: {
               properties: {
                 awsRegion: { type: 'string' },
@@ -947,7 +947,7 @@ describe('Stepper', () => {
           },
           {
             title: 'AWS Config',
-            if: "${{ parameters.cloudProvider === 'AWS' }}",
+            when: "${{ parameters.cloudProvider === 'AWS' }}",
             schema: {
               properties: {
                 awsRegion: { type: 'string' },
@@ -986,18 +986,18 @@ describe('Stepper', () => {
       );
     });
 
-    it('should show steps with boolean if: true', async () => {
+    it('should show steps with boolean when: true', async () => {
       const manifest: TemplateParameterSchema = {
         title: 'Boolean Condition',
         steps: [
           {
             title: 'Always Shown',
-            if: true,
+            when: true,
             schema: { properties: { name: { type: 'string' } } },
           },
           {
             title: 'Never Shown',
-            if: false,
+            when: false,
             schema: { properties: { hidden: { type: 'string' } } },
           },
         ],
@@ -1013,7 +1013,7 @@ describe('Stepper', () => {
       expect(queryByText('Never Shown')).not.toBeInTheDocument();
     });
 
-    it('should show steps without an if condition', async () => {
+    it('should show steps without a when condition', async () => {
       const manifest: TemplateParameterSchema = {
         title: 'Mixed Steps',
         steps: [
@@ -1023,7 +1023,7 @@ describe('Stepper', () => {
           },
           {
             title: 'Conditional Step',
-            if: false,
+            when: false,
             schema: { properties: { other: { type: 'string' } } },
           },
         ],

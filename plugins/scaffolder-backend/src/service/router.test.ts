@@ -1048,7 +1048,7 @@ describe('scaffolder router', () => {
           },
           {
             type: 'object',
-            if: "${{ parameters.provider === 'AWS' }}",
+            when: "${{ parameters.provider === 'AWS' }}",
             required: ['awsRegion'],
             properties: {
               awsRegion: {
@@ -1094,7 +1094,7 @@ describe('scaffolder router', () => {
           },
           {
             type: 'object',
-            if: "${{ parameters.provider === 'AWS' }}",
+            when: "${{ parameters.provider === 'AWS' }}",
             required: ['awsRegion'],
             properties: {
               awsRegion: {
@@ -1150,7 +1150,7 @@ describe('scaffolder router', () => {
           },
           {
             type: 'object',
-            if: "${{ parameters.provider === 'AWS' }}",
+            when: "${{ parameters.provider === 'AWS' }}",
             required: ['awsRegion'],
             properties: {
               awsRegion: {

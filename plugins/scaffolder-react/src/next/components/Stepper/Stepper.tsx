@@ -135,7 +135,7 @@ export const Stepper = (stepperProps: StepperProps) => {
     useState<Record<string, JsonValue>>(initialState);
 
   const visibleSteps = useMemo(
-    () => steps.filter(step => evaluateCondition(step.if, stepsState)),
+    () => steps.filter(step => evaluateCondition(step.when, stepsState)),
     [steps, stepsState],
   );
 
@@ -147,7 +147,8 @@ export const Stepper = (stepperProps: StepperProps) => {
 
   const filteredFormState = useMemo(() => {
     const hiddenSteps = steps.filter(
-      step => step.if !== undefined && !evaluateCondition(step.if, stepsState),
+      step =>
+        step.when !== undefined && !evaluateCondition(step.when, stepsState),
     );
     if (hiddenSteps.length === 0) return stepsState;
 

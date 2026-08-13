@@ -129,9 +129,9 @@
                     "type": "object",
                     "description": "The JSONSchema describing the inputs for the template.",
                     "properties": {
-                      "if": {
-                        "type": ["string", "boolean", "object"],
-                        "description": "When a string or boolean, this is a step-level visibility condition that controls whether this parameter step is shown in the wizard. Supports ${{ parameters.fieldName === 'value' }} syntax to reference values from earlier steps. When an object, it is treated as the standard JSON Schema `if` keyword used with `then`/`else` for conditional validation."
+                      "when": {
+                        "type": ["string", "boolean"],
+                        "description": "A step-level visibility condition that controls whether this parameter step is shown in the wizard. Supports ${{ parameters.fieldName === 'value' }} syntax to reference values from earlier steps."
                       },
                       "backstage:permissions": {
                         "type": "object",

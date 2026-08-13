@@ -446,9 +446,9 @@ spec:
 
 ### Conditionally showing parameter steps
 
-When `spec.parameters` is an array of steps, you can use the `if` field to conditionally show or hide entire steps based on values from earlier steps. This is useful when different inputs require different follow-up configuration, such as cloud-provider-specific settings.
+When `spec.parameters` is an array of steps, you can use the `when` field to conditionally show or hide entire steps based on values from earlier steps. This is useful when different inputs require different follow-up configuration, such as cloud-provider-specific settings.
 
-The `if` field uses the `${{ }}` delimiter syntax and supports expressions for comparing parameter values:
+The `when` field uses the `${{ }}` delimiter syntax and supports expressions for comparing parameter values:
 
 ```yaml
 spec:
@@ -460,19 +460,19 @@ spec:
           enum: [AWS, GCP, Azure]
 
     - title: AWS Configuration
-      if: ${{ parameters.cloudProvider === 'AWS' }}
+      when: ${{ parameters.cloudProvider === 'AWS' }}
       properties:
         awsRegion:
           type: string
 
     - title: GCP Configuration
-      if: ${{ parameters.cloudProvider === 'GCP' }}
+      when: ${{ parameters.cloudProvider === 'GCP' }}
       properties:
         gcpProjectId:
           type: string
 
     - title: Azure Configuration
-      if: ${{ parameters.cloudProvider === 'Azure' }}
+      when: ${{ parameters.cloudProvider === 'Azure' }}
       properties:
         azureSubscriptionId:
           type: string
@@ -480,17 +480,17 @@ spec:
 
 In this example, only the step matching the selected provider is shown in the wizard. The other steps are hidden, and their fields are excluded from the submitted parameters.
 
-The `if` field supports:
+The `when` field supports:
 
 - **Equality:** `${{ parameters.field === 'value' }}` and `${{ parameters.field !== 'value' }}`
 - **Truthiness checks:** `${{ parameters.field }}` evaluates to true when the field is set and non-empty
 - **Negation:** `${{ !parameters.field }}`
-- **Boolean values:** `if: true` or `if: false`
+- **Boolean values:** `when: true` or `when: false`
 
 When a step becomes hidden because its condition evaluates to false, any values previously entered in that step are preserved but excluded from the final parameters passed to `spec.steps`. If the user goes back and changes an earlier answer so that the step becomes visible again, their previously entered values are restored.
 
 :::note
-This `if` field controls the visibility of wizard steps in the frontend. It is different from the `if` field on `spec.steps`, which controls whether a backend action is executed.
+The `when` field controls the visibility of wizard steps in the frontend. It uses a different keyword from the `if` field on `spec.steps` to avoid colliding with JSON Schema's `if`/`then`/`else` keywords.
 :::
 
 ### The Repository Picker

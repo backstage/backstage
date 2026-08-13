@@ -30,7 +30,7 @@ export interface ParsedTemplateSchema {
   schema: JsonObject;
   title: string;
   description?: string;
-  if?: string | boolean;
+  when?: string | boolean;
 }
 
 /**
@@ -49,7 +49,7 @@ export const useTemplateSchema = (
   const steps = manifest.steps.map(step => ({
     title: step.title,
     description: step.description,
-    ...(step.if !== undefined ? { if: step.if } : {}),
+    ...(step.when !== undefined ? { when: step.when } : {}),
     mergedSchema: step.schema,
     ...extractSchemaFromStep(step.schema),
   }));

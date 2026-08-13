@@ -21,4 +21,4 @@
 /**
  * @public
  */
-export type TemplateParameterSchemaStepsInnerIf = boolean | string;
+export type TemplateParameterSchemaStepsInnerWhen = boolean | string;

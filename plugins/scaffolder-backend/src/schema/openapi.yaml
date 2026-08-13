@@ -466,7 +466,7 @@ components:
                 type: string
               description:
                 type: string
-              if:
+              when:
                 oneOf:
                   - type: string
                   - type: boolean

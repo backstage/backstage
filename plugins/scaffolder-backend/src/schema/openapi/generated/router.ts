@@ -667,7 +667,7 @@ export const spec = {
                 description: {
                   type: 'string',
                 },
-                if: {
+                when: {
                   oneOf: [
                     {
                       type: 'string',

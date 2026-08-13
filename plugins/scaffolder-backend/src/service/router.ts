@@ -554,18 +554,16 @@ export async function createRouter(
             description: template.metadata.description,
             'ui:options': template.metadata['ui:options'],
             steps: parameters.map(param => {
-              const condition = param.if;
-              // This `if` is a step-level visibility condition (string or boolean),
-              // not the JSON Schema `if` keyword (which is an object used with `then`/`else`).
+              const condition = (param as Record<string, unknown>).when;
               const isStepCondition =
                 typeof condition === 'string' || typeof condition === 'boolean';
-              const { if: _, ...schema } = param as Record<string, unknown>;
+              const { when: _, ...schema } = param as Record<string, unknown>;
               return {
                 title:
                   (param.title as string) ??
                   'Please enter the following information',
                 description: param.description as string,
-                ...(isStepCondition ? { if: condition } : {}),
+                ...(isStepCondition ? { when: condition } : {}),
                 schema: isStepCondition ? schema : param,
               };
             }),
@@ -657,7 +655,7 @@ export async function createRouter(
 
         for (const parameters of [template.spec.parameters ?? []].flat()) {
           const param = parameters as Record<string, unknown>;
-          const condition = param.if;
+          const condition = param.when;
           const isStepCondition =
             typeof condition === 'string' || typeof condition === 'boolean';
           if (
@@ -675,7 +673,7 @@ export async function createRouter(
           for (const key of collectPropertyKeys(param)) {
             visibleStepKeys.add(key);
           }
-          const { if: _, ...rest } = param;
+          const { when: _, ...rest } = param;
           const schema = isStepCondition ? rest : param;
           const result = validate(values, schema);
 
@@ -1165,7 +1163,7 @@ export async function createRouter(
 
         for (const parameters of [template.spec.parameters ?? []].flat()) {
           const param = parameters as Record<string, unknown>;
-          const condition = param.if;
+          const condition = param.when;
           const isStepCondition =
             typeof condition === 'string' || typeof condition === 'boolean';
           if (
@@ -1183,7 +1181,7 @@ export async function createRouter(
           for (const key of collectPropertyKeys(param)) {
             dryRunVisibleKeys.add(key);
           }
-          const { if: _, ...rest } = param;
+          const { when: _, ...rest } = param;
           const schema = isStepCondition ? rest : param;
           const result = validate(body.values, schema);
           if (!result.valid) {

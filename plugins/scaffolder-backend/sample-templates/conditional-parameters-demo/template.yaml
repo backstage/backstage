@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: conditional-parameters-demo
   title: Conditional Parameters Demo
-  description: Demonstrates conditional if on parameter steps to show or hide wizard pages based on earlier answers
+  description: Demonstrates conditional when on parameter steps to show or hide wizard pages based on earlier answers
 spec:
   owner: backstage/techdocs-core
   type: service
@@ -29,7 +29,7 @@ spec:
           description: Select the cloud provider for deployment
 
     - title: AWS Configuration
-      if: ${{ parameters.cloudProvider === 'AWS' }}
+      when: ${{ parameters.cloudProvider === 'AWS' }}
       required:
         - awsRegion
       properties:
@@ -48,7 +48,7 @@ spec:
           description: The AWS account ID (optional)
 
     - title: GCP Configuration
-      if: ${{ parameters.cloudProvider === 'GCP' }}
+      when: ${{ parameters.cloudProvider === 'GCP' }}
       required:
         - gcpProjectId
       properties:
@@ -66,7 +66,7 @@ spec:
           default: us-central1
 
     - title: Azure Configuration
-      if: ${{ parameters.cloudProvider === 'Azure' }}
+      when: ${{ parameters.cloudProvider === 'Azure' }}
       required:
         - azureSubscriptionId
       properties:
@@ -92,7 +92,7 @@ spec:
           description: Set up monitoring dashboards
 
     - title: Monitoring Configuration
-      if: ${{ parameters.enableMonitoring }}
+      when: ${{ parameters.enableMonitoring }}
       properties:
         alertEmail:
           title: Alert Email

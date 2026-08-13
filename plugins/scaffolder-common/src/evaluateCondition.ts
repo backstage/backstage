@@ -92,7 +92,7 @@ function evaluateExpression(
 }
 
 /**
- * Evaluates a step-level `if` condition against the current form state.
+ * Evaluates a step-level `when` condition against the current form state.
  * Supports `${{ parameters.field === 'value' }}` syntax for comparisons,
  * simple truthiness checks, and boolean/negation expressions.
  *
