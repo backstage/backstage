@@ -152,6 +152,7 @@ export function EntityLayoutBui(props: {
   defaultContentOrder: 'title' | 'natural';
   contextMenuItems?: ComponentProps<typeof EntityHeaderBui>['contextMenuItems'];
   HeaderComponent?: ComponentType<EntityHeaderLayoutProps>;
+  showBackButton?: boolean;
 }) {
   const {
     routes,
@@ -160,6 +161,7 @@ export function EntityLayoutBui(props: {
     defaultContentOrder,
     contextMenuItems,
     HeaderComponent,
+    showBackButton,
   } = props;
   const { entity } = useAsyncEntity();
   const visibleRoutes = filterEntityLayoutRoutes(routes, entity);
@@ -179,6 +181,7 @@ export function EntityLayoutBui(props: {
           tabs={tabs.tabs}
           activeTabId={tabs.activeTabId}
           contextMenuItems={contextMenuItems}
+          showBackButton={showBackButton}
         />
       )}
       <EntityLayoutContent
