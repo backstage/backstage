@@ -466,6 +466,10 @@ components:
                 type: string
               description:
                 type: string
+              if:
+                oneOf:
+                  - type: string
+                  - type: boolean
               schema:
                 type: object
             required:

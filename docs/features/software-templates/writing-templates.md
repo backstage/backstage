@@ -448,7 +448,7 @@ spec:
 
 When `spec.parameters` is an array of steps, you can use the `if` field to conditionally show or hide entire steps based on values from earlier steps. This is useful when different inputs require different follow-up configuration, such as cloud-provider-specific settings.
 
-The `if` field uses the same `${{ }}` expression syntax used elsewhere in templates, powered by [Nunjitsu](https://github.com/Rugvip/nunjitsu). This means you can use the same operators and expressions you already use in `spec.steps`:
+The `if` field uses the `${{ }}` delimiter syntax and supports expressions for comparing parameter values:
 
 ```yaml
 spec:

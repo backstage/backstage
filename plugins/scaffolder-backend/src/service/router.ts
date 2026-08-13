@@ -207,6 +207,10 @@ function formatSecretsValidationErrors(result: ValidatorResult) {
 
 const conditionRenderer = createTemplateRenderer();
 
+// The frontend wizard uses a lighter evaluator from @backstage/plugin-scaffolder-common
+// that supports the same documented subset (equality, truthiness, negation).
+// Nunjitsu can't run in the browser, so the two evaluators must stay in sync
+// for the expressions we document.
 function evaluateIfCondition(
   condition: string | boolean | undefined,
   formState: Record<string, JsonValue>,
