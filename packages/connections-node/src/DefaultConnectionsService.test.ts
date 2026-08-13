@@ -411,6 +411,23 @@ describe('DefaultConnectionsService', () => {
         expect.stringContaining('github'),
       );
     });
+
+    it('wraps errors thrown during conversion with legacy integrations context', () => {
+      expect(() =>
+        DefaultConnectionsService.create({
+          logger: mockServices.logger.mock(),
+          config: mockServices.rootConfig({
+            data: {
+              integrations: {
+                awsS3: [{ endpoint: 'not a url' }],
+              },
+            },
+          }),
+        }),
+      ).toThrow(
+        /Failed to convert legacy integrations config:[\s\S]*Invalid endpoint URL "not a url"/,
+      );
+    });
   });
 
   describe('authMethods as capability declaration', () => {

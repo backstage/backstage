@@ -195,7 +195,17 @@ export class DefaultConnectionsService {
   }
 
   #registerConnectionsFromConfig(): void {
-    const legacy = this.#validateLegacy(getLegacyIntegrations(this.config));
+    // Conversion itself can throw, e.g. for config values of an unexpected
+    // type, so it gets the same error context as the validation below.
+    let rawLegacy: JsonObject[];
+    try {
+      rawLegacy = getLegacyIntegrations(this.config);
+    } catch (e) {
+      throw new InputError(
+        `Failed to convert legacy integrations config:\n${describeError(e)}`,
+      );
+    }
+    const legacy = this.#validateLegacy(rawLegacy);
 
     const rawConnections = this.config.getOptional('connections');
     if (rawConnections !== undefined && !Array.isArray(rawConnections)) {
