@@ -129,8 +129,8 @@ jobs:
       - name: lint openapi yaml files
         run: yarn backstage-repo-tools repo schema openapi lint
 
-      - name: verify openapi yaml file matches generated ts file
-        run: yarn backstage-repo-tools repo schema openapi verify
+      - name: validate openapi yaml file matches generated ts file
+        run: yarn backstage-repo-tools repo schema openapi validate
 
       - name: verify doc links
         run: node scripts/verify-links.js

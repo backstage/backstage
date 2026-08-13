@@ -97,7 +97,7 @@ yarn --cwd <plugin-dir> backstage-repo-tools package schema openapi validate
 Then lint for style and best-practice issues:
 
 ```
-yarn backstage-repo-tools repo schema openapi lint <plugin-dir>/src/schema/openapi.yaml
+yarn backstage-repo-tools repo schema openapi lint <plugin-dir>
 ```
 
 Iterate on validation and lint output until clean.

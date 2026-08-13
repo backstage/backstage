@@ -104,11 +104,13 @@ function registerRepoCommand(program: Command) {
     .description('Tooling for OpenApi schema');
 
   openApiCommand
-    .command('verify [paths...]')
+    .command('validate [paths...]')
     .description(
-      'Verify that all OpenAPI schemas are valid and set up correctly.',
+      'Validate that all OpenAPI schemas are valid and set up correctly.',
     )
-    .action(lazy(() => import('./repo/schema/openapi/verify'), 'bulkCommand'));
+    .action(
+      lazy(() => import('./repo/schema/openapi/validate'), 'bulkCommand'),
+    );
 
   openApiCommand
     .command('lint [paths...]')

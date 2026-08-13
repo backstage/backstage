@@ -21,9 +21,8 @@ import {
 } from '../../../../lib/openapi/helpers';
 
 export async function command() {
-  const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
-
   try {
+    const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
     await loadAndValidateOpenApiYaml(resolvedOpenapiPath);
     console.log(chalk.green('OpenAPI spec is valid.'));
   } catch (err) {
