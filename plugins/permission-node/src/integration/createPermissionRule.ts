@@ -41,6 +41,12 @@ export type CreatePermissionRuleOptions<
       resourceRef: TRef;
 
       /**
+       * A Standard Schema that reflects the structure of the parameters that are passed to the rule.
+       * The schema must validate synchronously and support JSON Schema conversion.
+       */
+      paramsSchema?: StandardSchemaV1<TParams> & StandardJSONSchemaV1<TParams>;
+
+      /**
        * Apply this rule to a resource already loaded from a backing data source. The params are
        * arguments supplied for the rule; for example, a rule could be `isOwner` with entityRefs as the
        * params.
@@ -53,12 +59,6 @@ export type CreatePermissionRuleOptions<
        * applied.
        */
       toQuery(params: NoInfer<TParams>): PermissionCriteria<IQuery>;
-    } & {
-      /**
-       * A Standard Schema that reflects the structure of the parameters that are passed to the rule.
-       * The schema must validate synchronously and support JSON Schema conversion.
-       */
-      paramsSchema?: StandardSchemaV1<TParams> & StandardJSONSchemaV1<TParams>;
     }
   : never;
 

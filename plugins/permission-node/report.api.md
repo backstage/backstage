@@ -254,10 +254,9 @@ export type CreatePermissionRuleOptions<
       name: string;
       description: string;
       resourceRef: TRef;
+      paramsSchema?: StandardSchemaV1<TParams> & StandardJSONSchemaV1<TParams>;
       apply(resource: IResource, params: NoInfer_2<TParams>): boolean;
       toQuery(params: NoInfer_2<TParams>): PermissionCriteria<IQuery>;
-    } & {
-      paramsSchema?: StandardSchemaV1<TParams> & StandardJSONSchemaV1<TParams>;
     }
   : never;
 
