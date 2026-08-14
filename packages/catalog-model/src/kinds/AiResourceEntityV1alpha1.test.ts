@@ -256,6 +256,11 @@ describe('AiResourceV1alpha1 skill validator', () => {
     await expect(skillValidator.check(entity)).rejects.toThrow(/compatibility/);
   });
 
+  it('rejects compatibility longer than 500 characters', async () => {
+    (entity as any).spec.compatibility = 'a'.repeat(501);
+    await expect(skillValidator.check(entity)).rejects.toThrow(/compatibility/);
+  });
+
   it('rejects wrong compatibility type', async () => {
     (entity as any).spec.compatibility = 42;
     await expect(skillValidator.check(entity)).rejects.toThrow(/compatibility/);

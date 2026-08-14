@@ -112,7 +112,8 @@
               "type": "string",
               "description": "Intended product, system packages, network access, or other environmental requirements, as defined by the agentskills.io specification.",
               "examples": ["Node.js 20+, macOS/Linux", "Python 3.11+, Docker"],
-              "minLength": 1
+              "minLength": 1,
+              "maxLength": 500
             }
           }
         }
