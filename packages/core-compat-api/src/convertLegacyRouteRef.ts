@@ -191,14 +191,15 @@ function convertNewToOld(
   }
   if (ref.$$type === '@backstage/SubRouteRef') {
     const newRef = OpaqueSubRouteRef.toInternal(ref);
-    const legacyParent = (
-      convertLegacyRouteRef as (
-        parent: RouteRef | SubRouteRef,
-      ) => LegacyRouteRef | LegacySubRouteRef
-    )(newRef.getParent());
+    const parent = newRef.getParent();
+    if (OpaqueSubRouteRef.isType(parent)) {
+      throw new Error(
+        'Nested SubRouteRefs cannot be converted to the legacy routing system',
+      );
+    }
     return Object.assign(ref, {
       [routeRefType]: 'sub',
-      parent: legacyParent,
+      parent: convertLegacyRouteRef(parent),
       params: newRef.getParams(),
     } as Omit<LegacySubRouteRef, '$$routeRefType' | keyof SubRouteRef>) as unknown as LegacySubRouteRef;
   }
@@ -250,15 +251,10 @@ function convertOldToNew(
   if (type === 'sub') {
     const legacyRef = ref as LegacySubRouteRef;
     const legacyRefStr = String(legacyRef);
-    const newParent = (
-      convertLegacyRouteRef as (
-        parent: LegacyRouteRef | LegacySubRouteRef,
-      ) => RouteRef | SubRouteRef
-    )(legacyRef.parent);
     const newRef = OpaqueSubRouteRef.toInternal(
       createSubRouteRef({
         path: legacyRef.path,
-        parent: newParent,
+        parent: convertLegacyRouteRef(legacyRef.parent),
       }),
     );
     return Object.assign(legacyRef, {

@@ -171,45 +171,6 @@ describe('RouteResolver', () => {
     ).toBe('/packages/example/1.0.0/attachments/license');
   });
 
-  it('should reject malformed sub route parent chains', () => {
-    const cyclicRef = createLegacySubRouteRef({
-      id: 'cyclic',
-      parent: createLegacyRouteRef({ id: 'root' }),
-      path: '/cyclic',
-    });
-    Object.assign(cyclicRef, {
-      parent: cyclicRef,
-      getResolvedParent: () => cyclicRef,
-    });
-
-    const malformedRef = createLegacySubRouteRef({
-      id: 'malformed',
-      parent: createLegacyRouteRef({ id: 'root' }),
-      path: '/malformed',
-    });
-    Object.assign(malformedRef, {
-      parent: undefined,
-      getResolvedParent: undefined,
-    });
-
-    const r = new RouteResolver(
-      new Map(),
-      new Map(),
-      [],
-      new Map(),
-      '',
-      emptyResolver,
-      new Map(),
-    );
-
-    expect(() => r.resolve(cyclicRef, src('/'))).toThrow(
-      'Invalid SubRouteRef parent chain, expected a RouteRef at the root',
-    );
-    expect(() => r.resolve(malformedRef, src('/'))).toThrow(
-      'Invalid SubRouteRef parent chain, expected a RouteRef at the root',
-    );
-  });
-
   it('should resolve an absolute route with a param and with a parent', () => {
     const r = new RouteResolver(
       new Map<RouteRef, string>([

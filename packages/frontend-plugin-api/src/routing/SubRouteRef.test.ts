@@ -113,6 +113,22 @@ describe('SubRouteRef', () => {
         path: '/:name',
       }),
     ).toThrow('SubRouteRef may not have params that overlap with its parent');
+
+    const malformedParent = createSubRouteRef({
+      parent,
+      path: '/malformed',
+    });
+    Object.assign(OpaqueSubRouteRef.toInternal(malformedParent), {
+      getResolvedParent: () => malformedParent,
+    });
+    expect(() =>
+      createSubRouteRef({
+        parent: malformedParent,
+        path: '/child',
+      }),
+    ).toThrow(
+      'Invalid SubRouteRef parent chain, expected a RouteRef at the root',
+    );
   });
 
   it.each([

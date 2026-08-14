@@ -424,10 +424,10 @@ the future if needed.
 ### Subroutes
 
 The last kind of route refs that can be created are `SubRouteRef`s, which can be
-used to create a route ref with a fixed path relative to an absolute `RouteRef`
-or another `SubRouteRef`. They are useful if you have a page that internally is
-mounted at a sub route of a routable extension component, and you want other
-plugins to be able to route to that page.
+used to create a route ref with a fixed path relative to an absolute `RouteRef`.
+They are useful if you have a page that internally is mounted at a sub route of
+a routable extension component, and you want other plugins to be able to route
+to that page.
 
 For example:
 
@@ -467,20 +467,6 @@ const MyPage = () => (
   </Routes>
 );
 ```
-
-A `SubRouteRef` can also be the parent of another `SubRouteRef`:
-
-```tsx
-const historyRouteRef = createSubRouteRef({
-  id: 'root-sub-history',
-  parent: detailsRouteRef,
-  path: '/:version/history',
-});
-```
-
-Each sub-route path is relative to its immediate parent. Nested sub-routes
-inherit all parameters from their ancestors, and parameter names must be unique
-across the entire parent chain.
 
 ### Catalog Components
 

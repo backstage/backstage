@@ -56,11 +56,6 @@ describe('convertLegacyRouteRef', () => {
       parent: ref2,
       path: '/sub1/:p3',
     });
-    const ref2sub2 = createOldSubRouteRef({
-      id: 'sub2',
-      parent: ref2sub1,
-      path: '/sub2/:p4',
-    });
     const ref3 = createOldExternalRouteRef({
       id: 'ref3',
     });
@@ -76,7 +71,6 @@ describe('convertLegacyRouteRef', () => {
     const ref1sub1Converted: NewSubRouteRef = convertLegacyRouteRef(ref1sub1);
     const ref1sub2Converted: NewSubRouteRef = convertLegacyRouteRef(ref1sub2);
     const ref2sub1Converted: NewSubRouteRef = convertLegacyRouteRef(ref2sub1);
-    const ref2sub2Converted: NewSubRouteRef = convertLegacyRouteRef(ref2sub2);
     const ref3Converted: NewExternalRouteRef = convertLegacyRouteRef(ref3);
     const ref4Converted: NewExternalRouteRef = convertLegacyRouteRef(ref4);
 
@@ -86,7 +80,6 @@ describe('convertLegacyRouteRef', () => {
     expect(ref1sub1).toBe(ref1sub1Converted);
     expect(ref1sub2).toBe(ref1sub2Converted);
     expect(ref2sub1).toBe(ref2sub1Converted);
-    expect(ref2sub2).toBe(ref2sub2Converted);
     expect(ref3).toBe(ref3Converted);
     expect(ref4).toBe(ref4Converted);
 
@@ -95,7 +88,6 @@ describe('convertLegacyRouteRef', () => {
     const ref1sub1Internal = OpaqueSubRouteRef.toInternal(ref1sub1Converted);
     const ref1sub2Internal = OpaqueSubRouteRef.toInternal(ref1sub2Converted);
     const ref2sub1Internal = OpaqueSubRouteRef.toInternal(ref2sub1Converted);
-    const ref2sub2Internal = OpaqueSubRouteRef.toInternal(ref2sub2Converted);
     const ref3Internal = OpaqueExternalRouteRef.toInternal(ref3Converted);
     const ref4Internal = OpaqueExternalRouteRef.toInternal(ref4Converted);
 
@@ -119,8 +111,6 @@ describe('convertLegacyRouteRef', () => {
     );
     expect(ref2sub1Internal.getParams()).toEqual(['p1', 'p2', 'p3']);
     expect(ref2sub1Internal.getParent()).toBe(ref2);
-    expect(ref2sub2Internal.getParams()).toEqual(['p1', 'p2', 'p3', 'p4']);
-    expect(ref2sub2Internal.getParent()).toBe(ref2sub1);
 
     expect(ref3Internal.getDefaultTarget()).toBe(undefined);
     expect(ref3Internal.getDescription()).toBe('ref3');
@@ -155,12 +145,15 @@ describe('convertLegacyRouteRef', () => {
       params: ['p1', 'p2'],
     });
 
+    expect(() => convertLegacyRouteRef(ref2sub2)).toThrow(
+      'Nested SubRouteRefs cannot be converted to the legacy routing system',
+    );
+
     const ref1Converted: OldRouteRef = convertLegacyRouteRef(ref1);
     const ref2Converted: OldRouteRef = convertLegacyRouteRef(ref2);
     const ref1sub1Converted: OldSubRouteRef = convertLegacyRouteRef(ref1sub1);
     const ref1sub2Converted: OldSubRouteRef = convertLegacyRouteRef(ref1sub2);
     const ref2sub1Converted: OldSubRouteRef = convertLegacyRouteRef(ref2sub1);
-    const ref2sub2Converted: OldSubRouteRef = convertLegacyRouteRef(ref2sub2);
     const ref3Converted: OldExternalRouteRef = convertLegacyRouteRef(ref3);
     const ref4Converted: OldExternalRouteRef = convertLegacyRouteRef(ref4);
 
@@ -170,7 +163,6 @@ describe('convertLegacyRouteRef', () => {
     expect(ref1sub1).toBe(ref1sub1Converted);
     expect(ref1sub2).toBe(ref1sub2Converted);
     expect(ref2sub1).toBe(ref2sub1Converted);
-    expect(ref2sub2).toBe(ref2sub2Converted);
     expect(ref3).toBe(ref3Converted);
     expect(ref4).toBe(ref4Converted);
 
@@ -194,8 +186,6 @@ describe('convertLegacyRouteRef', () => {
     );
     expect(ref2sub1Converted.params).toEqual(['p1', 'p2', 'p3']);
     expect(ref2sub1Converted.parent).toBe(ref2);
-    expect(ref2sub2Converted.params).toEqual(['p1', 'p2', 'p3', 'p4']);
-    expect(ref2sub2Converted.parent).toBe(ref2sub1);
 
     expect(String(ref3Converted)).toMatch(
       /^externalRouteRef\{id=undefined,at='.*'\}$/,

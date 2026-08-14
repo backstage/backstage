@@ -106,7 +106,7 @@ export type RouteRef<Params extends AnyParams = any> = {
 };
 
 /**
- * Descriptor of a route relative to a {@link RouteRef} or another sub-route.
+ * Descriptor of a route relative to an absolute {@link RouteRef}.
  *
  * @remarks
  *
@@ -119,7 +119,7 @@ export type SubRouteRef<Params extends AnyParams = any> = {
   $$routeRefType: 'sub'; // See routeRefType above
 
   /** @deprecated access to this property will be removed in the future */
-  parent: RouteRef | SubRouteRef;
+  parent: RouteRef;
 
   path: string;
 

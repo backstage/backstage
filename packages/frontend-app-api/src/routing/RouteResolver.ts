@@ -47,7 +47,7 @@ function resolveTargetRef(
 ): readonly [RouteRef | undefined, string] {
   // First we figure out which absolute route ref we're dealing with and the
   // sub-route path to append. External routes use their bound route.
-  let ref: AnyRouteRef | undefined = targetRouteRef;
+  let ref: AnyRouteRef = targetRouteRef;
   let path = '';
 
   if (OpaqueExternalRouteRef.isType(ref)) {
@@ -65,13 +65,13 @@ function resolveTargetRef(
     ref = resolvedRoute;
   }
 
-  if (ref && OpaqueSubRouteRef.isType(ref)) {
+  if (OpaqueSubRouteRef.isType(ref)) {
     const internal = OpaqueSubRouteRef.toInternal(ref);
     path = internal.getResolvedPath?.() ?? ref.path;
     ref = internal.getResolvedParent?.() ?? internal.getParent();
   }
 
-  if (!ref || !OpaqueRouteRef.isType(ref)) {
+  if (!OpaqueRouteRef.isType(ref)) {
     if (path) {
       throw new Error(
         'Invalid SubRouteRef parent chain, expected a RouteRef at the root',
