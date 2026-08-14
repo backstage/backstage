@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { LoggerService } from '@backstage/backend-plugin-api';
-import type { RootConnection } from './types';
+import type { ConfiguredConnection } from './types';
 
 /**
  * Merges connections derived from legacy `integrations.*` config with
@@ -25,22 +24,22 @@ import type { RootConnection } from './types';
  * over for that type. A single warning is logged per discarded type.
  */
 export function combineConnectionSources(
-  legacy: RootConnection[],
-  fromConfig: RootConnection[],
-  logger: LoggerService,
-): RootConnection[] {
-  const typeOf = (c: RootConnection) => c.type as string;
+  legacy: ConfiguredConnection[],
+  fromConfig: ConfiguredConnection[],
+  logger?: { warn(message: string): void },
+): ConfiguredConnection[] {
+  const typeOf = (c: ConfiguredConnection) => c.type as string;
   const typesInConfig = new Set(fromConfig.map(typeOf));
 
   const warned = new Set<string>();
-  const result: RootConnection[] = [];
+  const result: ConfiguredConnection[] = [];
 
   for (const legacyConn of legacy) {
     const type = typeOf(legacyConn);
     if (typesInConfig.has(type)) {
       if (!warned.has(type)) {
         warned.add(type);
-        logger.warn(
+        logger?.warn(
           `Connection type "${type}" is defined in both legacy integrations and connections config; legacy integrations of this type are ignored.`,
         );
       }

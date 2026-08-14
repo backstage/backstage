@@ -33,11 +33,9 @@
   },
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/config": "workspace:^",
     "@backstage/connections": "workspace:^",
     "@backstage/errors": "workspace:^",
-    "@backstage/types": "workspace:^",
-    "zod": "^3.25.76 || ^4.0.0"
+    "@backstage/types": "workspace:^"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
