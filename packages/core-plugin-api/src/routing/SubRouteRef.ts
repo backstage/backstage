@@ -40,17 +40,23 @@ export class SubRouteRefImpl<Params extends AnyParams>
   readonly path: string;
   readonly parent: RouteRef | SubRouteRef;
   readonly params: ParamKeys<Params>;
+  private readonly resolvedParent: RouteRef;
+  private readonly resolvedPath: string;
 
   constructor(
     id: string,
     path: string,
     parent: RouteRef | SubRouteRef,
     params: ParamKeys<Params>,
+    resolvedParent: RouteRef,
+    resolvedPath: string,
   ) {
     this.id = id;
     this.path = path;
     this.parent = parent;
     this.params = params;
+    this.resolvedParent = resolvedParent;
+    this.resolvedPath = resolvedPath;
   }
 
   toString() {
@@ -67,6 +73,12 @@ export class SubRouteRefImpl<Params extends AnyParams>
   }
   getParent(): RouteRef | SubRouteRef {
     return this.parent;
+  }
+  getResolvedParent(): RouteRef {
+    return this.resolvedParent;
+  }
+  getResolvedPath(): string {
+    return this.resolvedPath;
   }
   getDescription(): string {
     return `at ${this.path} with parent ${this.parent}`;
@@ -140,6 +152,32 @@ export function createSubRouteRef<
   const { id, path, parent } = config;
   type Params = PathParams<Path>;
 
+  let resolvedParent: RouteRef;
+  let resolvedPath: string;
+  if ((parent as any)[routeRefType] === 'absolute') {
+    resolvedParent = parent as RouteRef;
+    resolvedPath = path;
+  } else {
+    const internalParent = parent as SubRouteRef & {
+      getResolvedParent?(): RouteRef;
+      getResolvedPath?(): string;
+    };
+    const parentRouteRef =
+      internalParent.getResolvedParent?.() ?? internalParent.parent;
+    if (
+      !parentRouteRef ||
+      (parentRouteRef as any)[routeRefType] !== 'absolute'
+    ) {
+      throw new Error(
+        'Invalid SubRouteRef parent chain, expected an absolute RouteRef at the root',
+      );
+    }
+    resolvedParent = parentRouteRef as RouteRef;
+    resolvedPath = `${
+      internalParent.getResolvedPath?.() ?? internalParent.path
+    }${path}`;
+  }
+
   // Collect runtime parameters from the path, e.g. ['bar', 'baz'] from '/foo/:bar/:baz'
   const pathParams = path
     .split('/')
@@ -170,6 +208,8 @@ export function createSubRouteRef<
     path,
     parent,
     params as ParamKeys<MergeParams<Params, ParentParams>>,
+    resolvedParent,
+    resolvedPath,
   );
 
   // But skip type checking of the return value itself, because the conditional

@@ -48,6 +48,8 @@ export interface InternalSubRouteRef<
 
   getParams(): string[];
   getParent(): RouteRef | SubRouteRef;
+  getResolvedParent?(): RouteRef;
+  getResolvedPath?(): string;
   getDescription(): string;
 }
 
@@ -118,14 +120,29 @@ export function createSubRouteRef<
 
   let parentParams: string[];
   let parentDescription: string;
+  let resolvedParent: RouteRef;
+  let resolvedPath: string;
   if (OpaqueRouteRef.isType(parent)) {
     const internalParent = OpaqueRouteRef.toInternal(parent);
     parentParams = internalParent.getParams();
     parentDescription = internalParent.getDescription();
+    resolvedParent = parent;
+    resolvedPath = path;
   } else if (OpaqueSubRouteRef.isType(parent)) {
     const internalParent = OpaqueSubRouteRef.toInternal(parent);
     parentParams = internalParent.getParams();
     parentDescription = internalParent.getDescription();
+    const parentRouteRef =
+      internalParent.getResolvedParent?.() ?? internalParent.getParent();
+    if (!OpaqueRouteRef.isType(parentRouteRef)) {
+      throw new Error(
+        'Invalid SubRouteRef parent chain, expected a RouteRef at the root',
+      );
+    }
+    resolvedParent = parentRouteRef;
+    resolvedPath = `${
+      internalParent.getResolvedPath?.() ?? parent.path
+    }${path}`;
   } else {
     throw new Error(
       'SubRouteRef parent must be a RouteRef or another SubRouteRef',
@@ -166,6 +183,12 @@ export function createSubRouteRef<
     },
     getParent() {
       return parent;
+    },
+    getResolvedParent() {
+      return resolvedParent;
+    },
+    getResolvedPath() {
+      return resolvedPath;
     },
     getDescription() {
       return `at ${path} with parent ${parentDescription}`;

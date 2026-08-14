@@ -24,6 +24,8 @@ export const OpaqueSubRouteRef = OpaqueType.create<{
 
     getParams(): string[];
     getParent(): RouteRef | SubRouteRef;
+    getResolvedParent?(): RouteRef;
+    getResolvedPath?(): string;
     getDescription(): string;
   };
 }>({

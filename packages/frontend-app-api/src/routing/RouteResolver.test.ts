@@ -177,14 +177,20 @@ describe('RouteResolver', () => {
       parent: createLegacyRouteRef({ id: 'root' }),
       path: '/cyclic',
     });
-    Object.assign(cyclicRef, { parent: cyclicRef });
+    Object.assign(cyclicRef, {
+      parent: cyclicRef,
+      getResolvedParent: () => cyclicRef,
+    });
 
     const malformedRef = createLegacySubRouteRef({
       id: 'malformed',
       parent: createLegacyRouteRef({ id: 'root' }),
       path: '/malformed',
     });
-    Object.assign(malformedRef, { parent: undefined });
+    Object.assign(malformedRef, {
+      parent: undefined,
+      getResolvedParent: undefined,
+    });
 
     const r = new RouteResolver(
       new Map(),
@@ -197,7 +203,7 @@ describe('RouteResolver', () => {
     );
 
     expect(() => r.resolve(cyclicRef, src('/'))).toThrow(
-      'Invalid SubRouteRef parent chain, cycle detected',
+      'Invalid SubRouteRef parent chain, expected a RouteRef at the root',
     );
     expect(() => r.resolve(malformedRef, src('/'))).toThrow(
       'Invalid SubRouteRef parent chain, expected a RouteRef at the root',

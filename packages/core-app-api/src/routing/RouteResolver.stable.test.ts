@@ -182,19 +182,25 @@ describe('RouteResolver', () => {
       parent: createRouteRef({ id: 'root' }),
       path: '/cyclic',
     });
-    Object.assign(cyclicRef, { parent: cyclicRef });
+    Object.assign(cyclicRef, {
+      parent: cyclicRef,
+      getResolvedParent: () => cyclicRef,
+    });
 
     const malformedRef = createSubRouteRef({
       id: 'malformed',
       parent: createRouteRef({ id: 'root' }),
       path: '/malformed',
     });
-    Object.assign(malformedRef, { parent: undefined });
+    Object.assign(malformedRef, {
+      parent: undefined,
+      getResolvedParent: undefined,
+    });
 
     const r = new RouteResolver(new Map(), new Map(), [], new Map(), '');
 
     expect(() => r.resolve(cyclicRef, '/')).toThrow(
-      'Invalid SubRouteRef parent chain, cycle detected',
+      'Invalid SubRouteRef parent chain, expected an absolute RouteRef at the root',
     );
     expect(() => r.resolve(malformedRef, '/')).toThrow(
       'Invalid SubRouteRef parent chain, expected an absolute RouteRef at the root',

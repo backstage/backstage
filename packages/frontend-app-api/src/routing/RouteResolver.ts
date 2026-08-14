@@ -45,10 +45,10 @@ function resolveTargetRef(
   routeBindings: Map<AnyRouteRef, AnyRouteRef | undefined>,
   routeRefsById: Map<string, RouteRef | SubRouteRef>,
 ): readonly [RouteRef | undefined, string] {
-  // First we figure out which absolute route ref we're dealing with and collect
-  // the sub-route paths to append. External routes use their bound route.
+  // First we figure out which absolute route ref we're dealing with and the
+  // sub-route path to append. External routes use their bound route.
   let ref: AnyRouteRef | undefined = targetRouteRef;
-  const subRoutePaths = new Array<string>();
+  let path = '';
 
   if (OpaqueExternalRouteRef.isType(ref)) {
     let resolvedRoute = routeBindings.get(ref);
@@ -65,20 +65,14 @@ function resolveTargetRef(
     ref = resolvedRoute;
   }
 
-  const seenSubRouteRefs = new Set<SubRouteRef>();
-  while (ref && OpaqueSubRouteRef.isType(ref)) {
-    if (seenSubRouteRefs.has(ref)) {
-      throw new Error('Invalid SubRouteRef parent chain, cycle detected');
-    }
-    seenSubRouteRefs.add(ref);
-
+  if (ref && OpaqueSubRouteRef.isType(ref)) {
     const internal = OpaqueSubRouteRef.toInternal(ref);
-    subRoutePaths.unshift(ref.path);
-    ref = internal.getParent();
+    path = internal.getResolvedPath?.() ?? ref.path;
+    ref = internal.getResolvedParent?.() ?? internal.getParent();
   }
 
   if (!ref || !OpaqueRouteRef.isType(ref)) {
-    if (subRoutePaths.length > 0) {
+    if (path) {
       throw new Error(
         'Invalid SubRouteRef parent chain, expected a RouteRef at the root',
       );
@@ -94,7 +88,7 @@ function resolveTargetRef(
     return [undefined, ''];
   }
 
-  return [ref, joinPaths(resolvedPath, ...subRoutePaths)];
+  return [ref, path ? joinPaths(resolvedPath, path) : resolvedPath];
 }
 
 /**

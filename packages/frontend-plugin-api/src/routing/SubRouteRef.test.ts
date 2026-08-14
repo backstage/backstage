@@ -33,6 +33,8 @@ describe('SubRouteRef', () => {
     expect(internal.path).toBe('/foo');
     expect(internal.T).toBe(undefined);
     expect(internal.getParent()).toBe(internalParent);
+    expect(internal.getResolvedParent?.()).toBe(internalParent);
+    expect(internal.getResolvedPath?.()).toBe('/foo');
     expect(internal.getParams()).toEqual([]);
     expect(String(internal)).toMatch(
       /^subRouteRef\{path='\/foo',parent=routeRef\{id=undefined,at='.*SubRouteRef\.test\.ts.*'\}\}$/,
@@ -100,6 +102,10 @@ describe('SubRouteRef', () => {
 
     const internal = OpaqueSubRouteRef.toInternal(attachmentRouteRef);
     expect(internal.getParent()).toBe(attachmentsRouteRef);
+    expect(internal.getResolvedParent?.()).toBe(parent);
+    expect(internal.getResolvedPath?.()).toBe(
+      '/:name/:revision/attachments/:attachmentId',
+    );
     expect(internal.getParams()).toEqual(['name', 'revision', 'attachmentId']);
     expect(() =>
       createSubRouteRef({
