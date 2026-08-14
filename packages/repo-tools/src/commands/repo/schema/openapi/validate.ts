@@ -31,7 +31,7 @@ import {
   loadAndValidateOpenApiYaml,
 } from '../../../../lib/openapi/helpers';
 
-async function verify(directoryPath: string) {
+async function validate(directoryPath: string) {
   let openapiPath = '';
   try {
     openapiPath = await getPathToOpenApiSpec(directoryPath);
@@ -68,7 +68,7 @@ async function verify(directoryPath: string) {
 }
 
 export async function bulkCommand(paths: string[] = []): Promise<void> {
-  const resultsList = await runner(paths, dir => verify(dir));
+  const resultsList = await runner(paths, dir => validate(dir));
 
   let failed = false;
   for (const { relativeDir, resultText } of resultsList) {
@@ -84,6 +84,6 @@ export async function bulkCommand(paths: string[] = []): Promise<void> {
   if (failed) {
     process.exit(1);
   } else {
-    console.log(chalk.green('Verified all files.'));
+    console.log(chalk.green('Validated all files.'));
   }
 }
