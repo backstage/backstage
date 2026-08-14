@@ -726,7 +726,7 @@ export function compileCatalogModel(
   ].map(r => {
     const reverseEntry = relations.get(r.reverse.type);
     const toKinds = new Set(
-      [...r.kindPairs.values()].flatMap(kinds => [...kinds]),
+      [...r.kindPairs.values()].flatMap(targetKinds => [...targetKinds]),
     );
     return {
       fromKind: [...r.kindPairs.keys()],
