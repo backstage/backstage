@@ -17,6 +17,7 @@
 import Ajv from 'ajv';
 import { createCatalogModelLayer } from './createCatalogModelLayer';
 import { compileCatalogModel } from './compileCatalogModel';
+import { defaultCatalogEntityModel } from './defaultCatalogEntityModel';
 
 const layer = createCatalogModelLayer({
   layerId: 'Test',
@@ -756,5 +757,48 @@ describe('compileCatalogModel integration', () => {
       }),
     ).toBeUndefined();
     expect(model4.getRelations({ kind: 'Widget' })).toBeUndefined();
+  });
+});
+
+describe('compileCatalogModel relation pairs', () => {
+  it('preserves exact kind pairs when extending a relation', () => {
+    const extension = createCatalogModelLayer({
+      layerId: 'example.com/extended-part-of',
+      builder: model => {
+        model.updateRelationPair({
+          fromKind: 'User',
+          toKind: 'Location',
+          forward: { type: 'partOf' },
+          reverse: { type: 'hasPart' },
+        });
+      },
+    });
+
+    const model = compileCatalogModel([defaultCatalogEntityModel, extension]);
+
+    expect(
+      model
+        .getRelations({ kind: 'Component' })
+        ?.find(r => r.forward.type === 'partOf')?.toKind,
+    ).toEqual(['Component', 'System']);
+    expect(
+      model
+        .getRelations({ kind: 'User' })
+        ?.find(r => r.forward.type === 'partOf')?.toKind,
+    ).toEqual(['Location']);
+    expect(
+      model
+        .getRelations({ kind: 'Location' })
+        ?.find(r => r.forward.type === 'hasPart')?.toKind,
+    ).toEqual(['User']);
+
+    expect(
+      model.listRelations().find(r => r.forward.type === 'partOf'),
+    ).toEqual(
+      expect.objectContaining({
+        fromKind: ['Component', 'API', 'Resource', 'System', 'Domain', 'User'],
+        toKind: ['Component', 'System', 'Domain', 'Location'],
+      }),
+    );
   });
 });
