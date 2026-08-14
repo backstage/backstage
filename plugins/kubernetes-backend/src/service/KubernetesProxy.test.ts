@@ -34,7 +34,8 @@ import express from 'express';
 import * as httpProxyMiddleware from 'http-proxy-middleware';
 import Router from 'express-promise-router';
 import { Server } from 'node:http';
-import { rest } from 'msw';
+import https from 'node:https';
+import { http, HttpResponse, passthrough } from 'msw';
 import { setupServer } from 'msw/node';
 import request from 'supertest';
 import { AddressInfo, WebSocket, WebSocketServer } from 'ws';
@@ -150,7 +151,12 @@ describe('KubernetesProxy', () => {
     }
 
     // Let this request through so it reaches the express router above
-    worker.use(rest.all(requestPromise.url, (req: any) => req.passthrough()));
+    const requestUrl = new URL(requestPromise.url);
+    worker.use(
+      http.all(`${requestUrl.origin}${requestUrl.pathname}`, () =>
+        passthrough(),
+      ),
+    );
 
     return requestPromise;
   };
@@ -194,8 +200,8 @@ describe('KubernetesProxy', () => {
       ]);
 
       worker.use(
-        rest.get('https://localhost:9999/api', (_: any, res: any, ctx: any) =>
-          res(ctx.status(200), ctx.json({ ok: true })),
+        http.get('https://localhost:9999/api', () =>
+          HttpResponse.json({ ok: true }),
         ),
       );
 
@@ -267,8 +273,8 @@ describe('KubernetesProxy', () => {
       ]);
 
       worker.use(
-        rest.get('https://localhost:9999/api', (_: any, res: any, ctx: any) =>
-          res(ctx.status(200), ctx.json({ ok: true })),
+        http.get('https://localhost:9999/api', () =>
+          HttpResponse.json({ ok: true }),
         ),
       );
 
@@ -294,8 +300,8 @@ describe('KubernetesProxy', () => {
       ]);
 
       worker.use(
-        rest.get('https://localhost:9999/api', (_: any, res: any, ctx: any) =>
-          res(ctx.status(401), ctx.json({ message: 'Unauthorized' })),
+        http.get('https://localhost:9999/api', () =>
+          HttpResponse.json({ message: 'Unauthorized' }, { status: 401 }),
         ),
       );
 
@@ -326,8 +332,8 @@ describe('KubernetesProxy', () => {
       ]);
 
       worker.use(
-        rest.get('https://localhost:9999/api', (_: any, res: any, ctx: any) =>
-          res(ctx.status(403), ctx.json({ message: 'Forbidden' })),
+        http.get('https://localhost:9999/api', () =>
+          HttpResponse.json({ message: 'Forbidden' }, { status: 403 }),
         ),
       );
 
@@ -369,7 +375,7 @@ describe('KubernetesProxy', () => {
         },
       ]);
 
-      worker.use(rest.all('*', (req: any) => req.passthrough()));
+      worker.use(http.all('*', () => passthrough()));
 
       const app = express().use(
         Router()
@@ -438,8 +444,8 @@ describe('KubernetesProxy', () => {
       ]);
 
       worker.use(
-        rest.get('https://localhost:9999/api', (_: any, res: any, ctx: any) =>
-          res(ctx.status(200), ctx.json({ ok: true })),
+        http.get('https://localhost:9999/api', () =>
+          HttpResponse.json({ ok: true }),
         ),
       );
 
@@ -497,8 +503,8 @@ describe('KubernetesProxy', () => {
       ]);
 
       worker.use(
-        rest.get('https://localhost:9999/api', (_: any, res: any, ctx: any) =>
-          res(ctx.status(200), ctx.json({ ok: true })),
+        http.get('https://localhost:9999/api', () =>
+          HttpResponse.json({ ok: true }),
         ),
       );
 
@@ -511,7 +517,12 @@ describe('KubernetesProxy', () => {
       const proxyRequest = request(app)
         .get(`/mountpath/api?command=${sentinel}`)
         .set(HEADER_KUBERNETES_CLUSTER, 'cluster1');
-      worker.use(rest.all(proxyRequest.url, (r: any) => r.passthrough()));
+      const proxyRequestUrl = new URL(proxyRequest.url);
+      worker.use(
+        http.all(`${proxyRequestUrl.origin}${proxyRequestUrl.pathname}`, () =>
+          passthrough(),
+        ),
+      );
 
       await proxyRequest;
 
@@ -545,7 +556,7 @@ describe('KubernetesProxy', () => {
     });
 
     it('recognizes websocket upgrade with comma-separated Connection header', async () => {
-      worker.use(rest.all('*', (req: any) => req.passthrough()));
+      worker.use(http.all('*', () => passthrough()));
 
       const wsServer = new WebSocketServer({ port: 0, path: '/ws' });
       const wsServerPort = (wsServer.address() as AddressInfo).port;
@@ -606,8 +617,8 @@ describe('KubernetesProxy', () => {
       ]);
 
       worker.use(
-        rest.get('https://localhost:9999/api', (_: any, res: any, ctx: any) =>
-          res(ctx.status(200), ctx.json({ ok: true })),
+        http.get('https://localhost:9999/api', () =>
+          HttpResponse.json({ ok: true }),
         ),
       );
 
@@ -633,7 +644,7 @@ describe('KubernetesProxy', () => {
         new Error('auditor transport unavailable'),
       );
 
-      worker.use(rest.all('*', (req: any) => req.passthrough()));
+      worker.use(http.all('*', () => passthrough()));
 
       const app = express().use(
         Router()
@@ -645,8 +656,8 @@ describe('KubernetesProxy', () => {
       });
       const port = (server.address() as AddressInfo).port;
 
-      const http = await import('node:http');
-      const agent = new http.Agent({ keepAlive: true, maxSockets: 1 });
+      const nodeHttp = await import('node:http');
+      const agent = new nodeHttp.Agent({ keepAlive: true, maxSockets: 1 });
 
       let serverSocket: import('net').Socket | undefined;
       server.on('connection', (s: import('net').Socket) => {
@@ -655,7 +666,7 @@ describe('KubernetesProxy', () => {
 
       const doRequest = () =>
         new Promise<number>(resolve => {
-          const r = http.get(
+          const r = nodeHttp.get(
             `http://127.0.0.1:${port}/mountpath/api`,
             { agent, headers: { [HEADER_KUBERNETES_CLUSTER]: 'cluster1' } },
             res => {
@@ -710,8 +721,8 @@ describe('KubernetesProxy', () => {
       ]);
 
       worker.use(
-        rest.get('https://localhost:9999/api', (_: any, res: any, ctx: any) =>
-          res(ctx.status(200), ctx.json({ ok: true })),
+        http.get('https://localhost:9999/api', () =>
+          HttpResponse.json({ ok: true }),
         ),
       );
 
@@ -802,8 +813,8 @@ describe('KubernetesProxy', () => {
     ]);
 
     worker.use(
-      rest.get('https://localhost:9999/api', (_: any, res: any, ctx: any) =>
-        res(ctx.status(299), ctx.json(apiResponse)),
+      http.get('https://localhost:9999/api', () =>
+        HttpResponse.json(apiResponse, { status: 299 }),
       ),
     );
 
@@ -831,10 +842,8 @@ describe('KubernetesProxy', () => {
     ]);
 
     worker.use(
-      rest.get(
-        'https://localhost:9999/api/v1/pods',
-        (_: any, res: any, ctx: any) =>
-          res(ctx.status(200), ctx.json(apiResponse)),
+      http.get('https://localhost:9999/api/v1/pods', () =>
+        HttpResponse.json(apiResponse),
       ),
     );
 
@@ -871,8 +880,8 @@ describe('KubernetesProxy', () => {
     ]);
 
     worker.use(
-      rest.get('https://localhost:9999/api', (_: any, res: any, ctx: any) =>
-        res(ctx.status(299), ctx.json(apiResponse)),
+      http.get('https://localhost:9999/api', () =>
+        HttpResponse.json(apiResponse, { status: 299 }),
       ),
     );
 
@@ -889,13 +898,13 @@ describe('KubernetesProxy', () => {
 
   it('sets host header to support clusters behind name-based virtual hosts', async () => {
     worker.use(
-      rest.get(
+      http.get(
         'http://localhost:9999/api/v1/namespaces',
-        (req: any, res: any, ctx: any) => {
-          const host = req.headers.get('Host');
+        ({ request: mswRequest }) => {
+          const host = mswRequest.headers.get('Host');
           return host === 'localhost:9999'
-            ? res(ctx.status(200))
-            : res.networkError(`Host '${host}' is not in the cert's altnames`);
+            ? new HttpResponse(null, { status: 200 })
+            : HttpResponse.error();
         },
       ),
     );
@@ -922,28 +931,25 @@ describe('KubernetesProxy', () => {
 
   it('should default to using a strategy-provided bearer token as authorization headers to kubeapi when backstage-kubernetes-auth field is not provided', async () => {
     worker.use(
-      rest.get(
+      http.get(
         'https://localhost:9999/api/v1/namespaces',
-        (req: any, res: any, ctx: any) => {
-          if (!req.headers.get('Authorization')) {
-            return res(ctx.status(401));
+        ({ request: mswRequest }) => {
+          if (!mswRequest.headers.get('Authorization')) {
+            return new HttpResponse(null, { status: 401 });
           }
 
           if (
-            req.headers.get('Authorization') !==
+            mswRequest.headers.get('Authorization') !==
             'Bearer strategy-provided-token'
           ) {
-            return res(ctx.status(403));
+            return new HttpResponse(null, { status: 403 });
           }
 
-          return res(
-            ctx.status(200),
-            ctx.json({
-              kind: 'NamespaceList',
-              apiVersion: 'v1',
-              items: [],
-            }),
-          );
+          return HttpResponse.json({
+            kind: 'NamespaceList',
+            apiVersion: 'v1',
+            items: [],
+          });
         },
       ),
     );
@@ -975,24 +981,24 @@ describe('KubernetesProxy', () => {
 
   it('should add an authStrategy-provided serviceAccountToken as authorization headers to kubeapi if one isnt provided in request and one isnt set up in cluster details', async () => {
     worker.use(
-      rest.get('https://localhost:9999/api/v1/namespaces', (req, res, ctx) => {
-        if (!req.headers.get('Authorization')) {
-          return res(ctx.status(401));
-        }
+      http.get(
+        'https://localhost:9999/api/v1/namespaces',
+        ({ request: mswRequest }) => {
+          if (!mswRequest.headers.get('Authorization')) {
+            return new HttpResponse(null, { status: 401 });
+          }
 
-        if (req.headers.get('Authorization') !== 'Bearer my-token') {
-          return res(ctx.status(403));
-        }
+          if (mswRequest.headers.get('Authorization') !== 'Bearer my-token') {
+            return new HttpResponse(null, { status: 403 });
+          }
 
-        return res(
-          ctx.status(200),
-          ctx.json({
+          return HttpResponse.json({
             kind: 'NamespaceList',
             apiVersion: 'v1',
             items: [],
-          }),
-        );
-      }),
+          });
+        },
+      ),
     );
 
     clusterSupplier.getClusters.mockResolvedValue([
@@ -1027,24 +1033,24 @@ describe('KubernetesProxy', () => {
 
   it('should append the Backstage-Kubernetes-Auth field to the requests authorization header if one is provided', async () => {
     worker.use(
-      rest.get('https://localhost:9999/api/v1/namespaces', (req, res, ctx) => {
-        if (!req.headers.get('Authorization')) {
-          return res(ctx.status(401));
-        }
+      http.get(
+        'https://localhost:9999/api/v1/namespaces',
+        ({ request: mswRequest }) => {
+          if (!mswRequest.headers.get('Authorization')) {
+            return new HttpResponse(null, { status: 401 });
+          }
 
-        if (req.headers.get('Authorization') !== 'tokenB') {
-          return res(ctx.status(403));
-        }
+          if (mswRequest.headers.get('Authorization') !== 'tokenB') {
+            return new HttpResponse(null, { status: 403 });
+          }
 
-        return res(
-          ctx.status(200),
-          ctx.json({
+          return HttpResponse.json({
             kind: 'NamespaceList',
             apiVersion: 'v1',
             items: [],
-          }),
-        );
-      }),
+          });
+        },
+      ),
     );
 
     clusterSupplier.getClusters.mockResolvedValue([
@@ -1082,24 +1088,24 @@ describe('KubernetesProxy', () => {
 
   it('should not invoke authStrategy if Backstage-Kubernetes-Authorization field is provided', async () => {
     worker.use(
-      rest.get('https://localhost:9999/api/v1/namespaces', (req, res, ctx) => {
-        if (!req.headers.get('Authorization')) {
-          return res(ctx.status(401));
-        }
+      http.get(
+        'https://localhost:9999/api/v1/namespaces',
+        ({ request: mswRequest }) => {
+          if (!mswRequest.headers.get('Authorization')) {
+            return new HttpResponse(null, { status: 401 });
+          }
 
-        if (req.headers.get('Authorization') !== 'tokenB') {
-          return res(ctx.status(403));
-        }
+          if (mswRequest.headers.get('Authorization') !== 'tokenB') {
+            return new HttpResponse(null, { status: 403 });
+          }
 
-        return res(
-          ctx.status(200),
-          ctx.json({
+          return HttpResponse.json({
             kind: 'NamespaceList',
             apiVersion: 'v1',
             items: [],
-          }),
-        );
-      }),
+          });
+        },
+      ),
     );
 
     clusterSupplier.getClusters.mockResolvedValue([
@@ -1150,24 +1156,24 @@ describe('KubernetesProxy', () => {
     });
 
     worker.use(
-      rest.get('https://localhost:9999/api/v1/namespaces', (req, res, ctx) => {
-        if (!req.headers.get('Authorization')) {
-          return res(ctx.status(401));
-        }
+      http.get(
+        'https://localhost:9999/api/v1/namespaces',
+        ({ request: mswRequest }) => {
+          if (!mswRequest.headers.get('Authorization')) {
+            return new HttpResponse(null, { status: 401 });
+          }
 
-        if (req.headers.get('Authorization') !== 'Bearer MY_TOKEN3') {
-          return res(ctx.status(403));
-        }
+          if (mswRequest.headers.get('Authorization') !== 'Bearer MY_TOKEN3') {
+            return new HttpResponse(null, { status: 403 });
+          }
 
-        return res(
-          ctx.status(200),
-          ctx.json({
+          return HttpResponse.json({
             kind: 'NamespaceList',
             apiVersion: 'v1',
             items: [],
-          }),
-        );
-      }),
+          });
+        },
+      ),
     );
 
     clusterSupplier.getClusters.mockResolvedValue([
@@ -1217,15 +1223,12 @@ describe('KubernetesProxy', () => {
 
   it('should invoke the Auth strategy with an empty auth object when no Backstage-Kubernetes-Authorization-X-X are provided', async () => {
     worker.use(
-      rest.get('https://localhost:9999/api/v1/namespaces', (_, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            kind: 'NamespaceList',
-            apiVersion: 'v1',
-            items: [],
-          }),
-        );
+      http.get('https://localhost:9999/api/v1/namespaces', () => {
+        return HttpResponse.json({
+          kind: 'NamespaceList',
+          apiVersion: 'v1',
+          items: [],
+        });
       }),
     );
 
@@ -1274,18 +1277,18 @@ describe('KubernetesProxy', () => {
     });
 
     worker.use(
-      rest.get('http://127.0.0.1:8001/api/v1/namespaces', (req, res, ctx) => {
-        return req.headers.get('Authorization')
-          ? res(ctx.status(401))
-          : res(
-              ctx.status(200),
-              ctx.json({
+      http.get(
+        'http://127.0.0.1:8001/api/v1/namespaces',
+        ({ request: mswRequest }) => {
+          return mswRequest.headers.get('Authorization')
+            ? new HttpResponse(null, { status: 401 })
+            : HttpResponse.json({
                 kind: 'NamespaceList',
                 apiVersion: 'v1',
                 items: [],
-              }),
-            );
-      }),
+              });
+        },
+      ),
     );
 
     const requestPromise = setupProxyPromise({
@@ -1309,24 +1312,24 @@ describe('KubernetesProxy', () => {
 
   it('returns a 500 error if authStrategy errors out and Backstage-Kubernetes-Authorization field is not provided', async () => {
     worker.use(
-      rest.get('https://localhost:9999/api/v1/namespaces', (req, res, ctx) => {
-        if (!req.headers.get('Authorization')) {
-          return res(ctx.status(401));
-        }
+      http.get(
+        'https://localhost:9999/api/v1/namespaces',
+        ({ request: mswRequest }) => {
+          if (!mswRequest.headers.get('Authorization')) {
+            return new HttpResponse(null, { status: 401 });
+          }
 
-        if (req.headers.get('Authorization') !== 'tokenB') {
-          return res(ctx.status(403));
-        }
+          if (mswRequest.headers.get('Authorization') !== 'tokenB') {
+            return new HttpResponse(null, { status: 403 });
+          }
 
-        return res(
-          ctx.status(200),
-          ctx.json({
+          return HttpResponse.json({
             kind: 'NamespaceList',
             apiVersion: 'v1',
             items: [],
-          }),
-        );
-      }),
+          });
+        },
+      ),
     );
 
     clusterSupplier.getClusters.mockResolvedValue([
@@ -1355,19 +1358,13 @@ describe('KubernetesProxy', () => {
 
   it('should get res through proxy with cluster url has sub path', async () => {
     worker.use(
-      rest.get(
-        'http://localhost:9999/subpath/api/v1/namespaces',
-        (_req, res, ctx) => {
-          return res(
-            ctx.status(200),
-            ctx.json({
-              kind: 'NamespaceList',
-              apiVersion: 'v1',
-              items: [],
-            }),
-          );
-        },
-      ),
+      http.get('http://localhost:9999/subpath/api/v1/namespaces', () => {
+        return HttpResponse.json({
+          kind: 'NamespaceList',
+          apiVersion: 'v1',
+          items: [],
+        });
+      }),
     );
 
     clusterSupplier.getClusters.mockResolvedValue([
@@ -1394,18 +1391,15 @@ describe('KubernetesProxy', () => {
 
   describe('when server uses TLS', () => {
     let httpsRequest: jest.SpyInstance;
+
     beforeAll(() => {
-      httpsRequest = jest.spyOn(
-        // this is pretty egregious reverse engineering of msw.
-        // If the SetupServerApi constructor was exported, we wouldn't need
-        // to be quite so hacky here
-        (worker as any).interceptor.interceptors[0].modules.get('https'),
-        'request',
-      );
+      httpsRequest = jest.spyOn(https, 'request');
     });
+
     beforeEach(() => {
       httpsRequest.mockClear();
     });
+
     describe('should pass the exact response from Kubernetes using the CA file', () => {
       it('should trust contents of specified caFile', async () => {
         const apiResponse = {
@@ -1429,8 +1423,8 @@ describe('KubernetesProxy', () => {
         ] as ClusterDetails[]);
 
         worker.use(
-          rest.get('https://localhost:9999/api', (_: any, res: any, ctx: any) =>
-            res(ctx.status(299), ctx.json(apiResponse)),
+          http.get('https://localhost:9999/api', () =>
+            HttpResponse.json(apiResponse, { status: 299 }),
           ),
         );
 
@@ -1445,29 +1439,28 @@ describe('KubernetesProxy', () => {
         expect(response.status).toEqual(299);
         expect(response.body).toStrictEqual(apiResponse);
 
-        expect(httpsRequest).toHaveBeenCalledTimes(1);
-        const [[{ ca }]] = httpsRequest.mock.calls;
-        expect(ca).toMatch('MOCKCA');
+        expect(httpsRequest).toHaveBeenCalledWith(
+          expect.objectContaining({
+            ca: 'MOCKCA\n',
+          }),
+        );
       });
     });
 
     it('should use a x509 client cert authentication strategy to consume kubeapi when backstage-kubernetes-auth field is not provided and the authStrategy enables x509 client cert authentication', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://localhost:9999/api/v1/namespaces',
-          (req: any, res: any, ctx: any) => {
-            if (req.headers.get('Authorization')) {
-              return res(ctx.status(403));
+          ({ request: mswRequest }) => {
+            if (mswRequest.headers.get('Authorization')) {
+              return new HttpResponse(null, { status: 403 });
             }
 
-            return res(
-              ctx.status(200),
-              ctx.json({
-                kind: 'NamespaceList',
-                apiVersion: 'v1',
-                items: [],
-              }),
-            );
+            return HttpResponse.json({
+              kind: 'NamespaceList',
+              apiVersion: 'v1',
+              items: [],
+            });
           },
         ),
       );
@@ -1504,12 +1497,14 @@ describe('KubernetesProxy', () => {
         {},
       );
 
-      const [[{ key, cert }]] = httpsRequest.mock.calls;
-      expect(cert).toEqual(myCert);
-      expect(key).toEqual(myKey);
+      expect(httpsRequest).toHaveBeenCalledWith(
+        expect.objectContaining({
+          cert: myCert,
+          key: myKey,
+        }),
+      );
 
-      // 500 Since the key and cert are fake
-      expect(response.status).toEqual(500);
+      expect(response.status).toEqual(200);
     });
   });
 
@@ -1528,6 +1523,8 @@ describe('KubernetesProxy', () => {
     ) => new Promise(resolve => ws.once(event, x => resolve(x?.toString())));
 
     beforeEach(async () => {
+      worker.close();
+
       await new Promise(resolve => {
         expressServer = express()
           .use(
@@ -1558,9 +1555,16 @@ describe('KubernetesProxy', () => {
       wsEchoServer.on('error', console.error);
     });
 
-    afterEach(() => {
-      wsEchoServer.close();
-      expressServer.close();
+    afterEach(async () => {
+      wsEchoServer.clients.forEach(client => client.terminate());
+      expressServer.closeAllConnections?.();
+
+      await Promise.all([
+        new Promise<void>(resolve => wsEchoServer.close(() => resolve())),
+        new Promise<void>(resolve => expressServer.close(() => resolve())),
+      ]);
+
+      worker.listen({ onUnhandledRequest: 'error' });
     });
 
     it('should proxy websocket connections', async () => {
@@ -1573,17 +1577,6 @@ describe('KubernetesProxy', () => {
       ]);
 
       const wsProxyAddress = `ws://127.0.0.1:${proxyPort}${proxyPath}${wsPath}`;
-      const wsAddress = `ws://localhost:${wsPort}${wsPath}`;
-
-      // Let this request through so it reaches the express router above
-      worker.use(
-        rest.all(wsAddress.replace('ws', 'http'), (req: any) =>
-          req.passthrough(),
-        ),
-        rest.all(wsProxyAddress.replace('ws', 'http'), (req: any) =>
-          req.passthrough(),
-        ),
-      );
 
       const webSocket = new WebSocket(wsProxyAddress);
 
@@ -1622,8 +1615,6 @@ describe('KubernetesProxy', () => {
     });
 
     it('emits failed audit event when websocket upgrade fails', async () => {
-      worker.use(rest.all('*', req => req.passthrough()));
-
       clusterSupplier.getClusters.mockResolvedValue([
         {
           name: 'unreachable',
@@ -1644,8 +1635,6 @@ describe('KubernetesProxy', () => {
     });
 
     it('emits exactly one failed audit event when client closes during delayed upstream handshake', async () => {
-      worker.use(rest.all('*', (req: any) => req.passthrough()));
-
       // TCP server that accepts connections but never completes the
       // WebSocket handshake, simulating a slow upstream.
       const net = require('node:net');
@@ -1729,20 +1718,17 @@ describe('KubernetesProxy', () => {
       });
 
       worker.use(
-        rest.get(
+        http.get(
           'https://10.10.10.10/api/v1/namespaces',
-          (req: any, res: any, ctx: any) => {
-            if (req.headers.get('Authorization') === 'Bearer SA_token') {
-              return res(
-                ctx.status(200),
-                ctx.json({
-                  kind: 'NamespaceList',
-                  apiVersion: 'v1',
-                  items: [],
-                }),
-              );
+          ({ request: mswRequest }) => {
+            if (mswRequest.headers.get('Authorization') === 'Bearer SA_token') {
+              return HttpResponse.json({
+                kind: 'NamespaceList',
+                apiVersion: 'v1',
+                items: [],
+              });
             }
-            return res(ctx.status(403));
+            return new HttpResponse(null, { status: 403 });
           },
         ),
       );
