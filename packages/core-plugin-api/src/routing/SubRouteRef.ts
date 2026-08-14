@@ -38,13 +38,13 @@ export class SubRouteRefImpl<Params extends AnyParams>
 
   private readonly id: string;
   readonly path: string;
-  readonly parent: RouteRef;
+  readonly parent: RouteRef | SubRouteRef;
   readonly params: ParamKeys<Params>;
 
   constructor(
     id: string,
     path: string,
-    parent: RouteRef,
+    parent: RouteRef | SubRouteRef,
     params: ParamKeys<Params>,
   ) {
     this.id = id;
@@ -65,7 +65,7 @@ export class SubRouteRefImpl<Params extends AnyParams>
   getParams(): string[] {
     return this.params as string[];
   }
-  getParent(): RouteRef {
+  getParent(): RouteRef | SubRouteRef {
     return this.parent;
   }
   getDescription(): string {
@@ -135,7 +135,7 @@ export function createSubRouteRef<
 >(config: {
   id: string;
   path: Path;
-  parent: RouteRef<ParentParams>;
+  parent: RouteRef<ParentParams> | SubRouteRef<ParentParams>;
 }): MakeSubRouteRef<PathParams<Path>, ParentParams> {
   const { id, path, parent } = config;
   type Params = PathParams<Path>;

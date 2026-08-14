@@ -321,7 +321,7 @@ export function createSubRouteRef<
 >(config: {
   id: string;
   path: Path;
-  parent: RouteRef<ParentParams>;
+  parent: RouteRef<ParentParams> | SubRouteRef<ParentParams>;
 }): MakeSubRouteRef<PathParams<Path>, ParentParams>;
 
 export { DiscoveryApi };
@@ -538,7 +538,7 @@ export { StorageValueSnapshot };
 // @public
 export type SubRouteRef<Params extends AnyParams = any> = {
   $$routeRefType: 'sub';
-  parent: RouteRef;
+  parent: RouteRef | SubRouteRef;
   path: string;
   params: ParamKeys<Params>;
   readonly $$type: '@backstage/SubRouteRef';

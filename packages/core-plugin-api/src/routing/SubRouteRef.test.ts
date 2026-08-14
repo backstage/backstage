@@ -72,6 +72,42 @@ describe('SubRouteRef', () => {
     expect(routeRef.params).toEqual(['x']);
   });
 
+  it('should be created with params from nested parents', () => {
+    const revisionRouteRef = createSubRouteRef({
+      id: 'revision',
+      parent,
+      path: '/:name/:revision',
+    });
+    const attachmentsRouteRef = createSubRouteRef({
+      id: 'attachments',
+      parent: revisionRouteRef,
+      path: '/attachments',
+    });
+    const attachmentRouteRef: SubRouteRef<{
+      name: string;
+      revision: string;
+      attachmentId: string;
+    }> = createSubRouteRef({
+      id: 'attachment',
+      parent: attachmentsRouteRef,
+      path: '/:attachmentId',
+    });
+
+    expect(attachmentRouteRef.parent).toBe(attachmentsRouteRef);
+    expect(attachmentRouteRef.params).toEqual([
+      'name',
+      'revision',
+      'attachmentId',
+    ]);
+    expect(() =>
+      createSubRouteRef({
+        id: 'overlap',
+        parent: attachmentsRouteRef,
+        path: '/:name',
+      }),
+    ).toThrow('SubRouteRef may not have params that overlap with its parent');
+  });
+
   it.each([
     ['foo', "SubRouteRef path must start with '/', got 'foo'"],
     [':foo', "SubRouteRef path must start with '/', got ':foo'"],
@@ -123,8 +159,15 @@ describe('SubRouteRef', () => {
     validateType<{ y: string }>(_4);
     validateType<{ x: string; y: string }>(_4);
 
+    const _5 = createSubRouteRef({ id: '5', parent: _4, path: '/:z' });
+    // @ts-expect-error
+    validateType<{ x: string; y: string }>(_5);
+    // @ts-expect-error
+    validateType<{ x: string; z: string }>(_5);
+    validateType<{ x: string; y: string; z: string }>(_5);
+
     // To avoid complains about missing expectations and unused vars
-    expect([_1, _2, _3, _4].join('')).toEqual(expect.any(String));
+    expect([_1, _2, _3, _4, _5].join('')).toEqual(expect.any(String));
   });
 
   describe('with new frontend system', () => {
@@ -167,6 +210,21 @@ describe('SubRouteRef', () => {
       expectType<RouteFunc<{ x: string; y: string; z: string }> | undefined>()(
         routeResolutionApi.resolve(
           createSubRouteRef({ id: '1', parent: parentX, path: '/:y/:z' }),
+        ),
+      ).ok();
+
+      const parentRef = createSubRouteRef({
+        id: 'parent',
+        parent: parentX,
+        path: '/:y',
+      });
+      expectType<RouteFunc<{ x: string; y: string; z: string }> | undefined>()(
+        routeResolutionApi.resolve(
+          createSubRouteRef({
+            id: 'nested',
+            parent: parentRef,
+            path: '/:z',
+          }),
         ),
       ).ok();
 

@@ -23,7 +23,7 @@ export const OpaqueSubRouteRef = OpaqueType.create<{
     readonly version: 'v1';
 
     getParams(): string[];
-    getParent(): RouteRef;
+    getParent(): RouteRef | SubRouteRef;
     getDescription(): string;
   };
 }>({

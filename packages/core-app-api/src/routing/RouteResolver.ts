@@ -44,42 +44,48 @@ function resolveTargetRef(
   routePaths: Map<RouteRef, string>,
   routeBindings: Map<AnyRouteRef, AnyRouteRef | undefined>,
 ): readonly [RouteRef | undefined, string] {
-  // First we figure out which absolute route ref we're dealing with, an if there was an sub route path to append.
-  // For sub routes it will be the parent path, while for external routes it will be the bound route.
-  let targetRef: RouteRef;
-  let subRoutePath = '';
-  if (isRouteRef(anyRouteRef)) {
-    targetRef = anyRouteRef;
-  } else if (isSubRouteRef(anyRouteRef)) {
-    targetRef = anyRouteRef.parent;
-    subRoutePath = anyRouteRef.path;
-  } else if (isExternalRouteRef(anyRouteRef)) {
-    const resolvedRoute = routeBindings.get(anyRouteRef);
-    if (!resolvedRoute) {
+  // First we figure out which absolute route ref we're dealing with and collect
+  // the sub-route paths to append. External routes use their bound route.
+  let resolvedRoute: AnyRouteRef | undefined = anyRouteRef;
+  if (isExternalRouteRef(anyRouteRef)) {
+    const boundRoute = routeBindings.get(anyRouteRef);
+    if (!boundRoute) {
       return [undefined, ''];
     }
-    if (isRouteRef(resolvedRoute)) {
-      targetRef = resolvedRoute;
-    } else if (isSubRouteRef(resolvedRoute)) {
-      targetRef = resolvedRoute.parent;
-      subRoutePath = resolvedRoute.path;
-    } else {
+    if (isExternalRouteRef(boundRoute)) {
       throw new Error(
-        `ExternalRouteRef was bound to invalid target, ${resolvedRoute}`,
+        `ExternalRouteRef was bound to invalid target, ${boundRoute}`,
       );
     }
-  } else if (anyRouteRef[routeRefType]) {
-    throw new Error(
-      `Unknown or invalid route ref type, ${anyRouteRef[routeRefType]}`,
-    );
-  } else {
+    resolvedRoute = boundRoute;
+  } else if (!isRouteRef(anyRouteRef) && !isSubRouteRef(anyRouteRef)) {
+    if (anyRouteRef[routeRefType]) {
+      throw new Error(
+        `Unknown or invalid route ref type, ${anyRouteRef[routeRefType]}`,
+      );
+    }
     throw new Error(`Unknown object passed to useRouteRef, got ${anyRouteRef}`);
   }
 
-  // Bail if no absolute path could be resolved
-  if (!targetRef) {
-    return [undefined, ''];
+  const subRoutePaths = new Array<string>();
+  const seenSubRouteRefs = new Set<SubRouteRef>();
+  while (resolvedRoute && isSubRouteRef(resolvedRoute)) {
+    if (seenSubRouteRefs.has(resolvedRoute)) {
+      throw new Error('Invalid SubRouteRef parent chain, cycle detected');
+    }
+    seenSubRouteRefs.add(resolvedRoute);
+
+    subRoutePaths.unshift(resolvedRoute.path);
+    resolvedRoute = resolvedRoute.parent;
   }
+
+  if (!resolvedRoute || !isRouteRef(resolvedRoute)) {
+    throw new Error(
+      'Invalid SubRouteRef parent chain, expected an absolute RouteRef at the root',
+    );
+  }
+
+  const targetRef = resolvedRoute;
 
   // Find the path that our target route is bound to
   const resolvedPath = routePaths.get(targetRef);
@@ -87,8 +93,8 @@ function resolveTargetRef(
     return [undefined, ''];
   }
 
-  // SubRouteRefs join the path from the parent route with its own path
-  const targetPath = joinPaths(resolvedPath, subRoutePath);
+  // SubRouteRefs join each path from the absolute parent to the leaf.
+  const targetPath = joinPaths(resolvedPath, ...subRoutePaths);
   return [targetRef, targetPath];
 }
 

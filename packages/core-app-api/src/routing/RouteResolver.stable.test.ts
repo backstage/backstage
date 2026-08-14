@@ -110,6 +110,97 @@ describe('RouteResolver', () => {
     expect(r.resolve(externalRef4, '/')?.({ x: '6x' })).toBe(undefined);
   });
 
+  it('should resolve nested sub routes directly and as external targets', () => {
+    const packagesRouteRef = createRouteRef({ id: 'packages' });
+    const revisionRouteRef = createSubRouteRef({
+      id: 'revision',
+      parent: packagesRouteRef,
+      path: '/:name/:revision',
+    });
+    const attachmentsRouteRef = createSubRouteRef({
+      id: 'attachments',
+      parent: revisionRouteRef,
+      path: '/attachments',
+    });
+    const attachmentRouteRef = createSubRouteRef({
+      id: 'attachment',
+      parent: attachmentsRouteRef,
+      path: '/:attachmentId',
+    });
+    const attachmentExternalRouteRef = createExternalRouteRef({
+      id: 'attachment-external',
+      params: ['name', 'revision', 'attachmentId'],
+    });
+    const r = new RouteResolver(
+      new Map([[packagesRouteRef, 'packages']]),
+      new Map(),
+      [
+        {
+          routeRefs: new Set([packagesRouteRef]),
+          path: 'packages',
+          ...rest,
+        },
+      ],
+      new Map([[attachmentExternalRouteRef, attachmentRouteRef]]),
+      '/base',
+    );
+
+    expect(
+      r.resolve(
+        attachmentsRouteRef,
+        '/',
+      )?.({
+        name: 'example',
+        revision: '1.0.0',
+      }),
+    ).toBe('/base/packages/example/1.0.0/attachments');
+    expect(
+      r.resolve(
+        attachmentRouteRef,
+        '/base/other',
+      )?.({
+        name: 'example',
+        revision: '1.0.0',
+        attachmentId: 'readme',
+      }),
+    ).toBe('/base/packages/example/1.0.0/attachments/readme');
+    expect(
+      r.resolve(
+        attachmentExternalRouteRef,
+        '/base',
+      )?.({
+        name: 'example',
+        revision: '1.0.0',
+        attachmentId: 'license',
+      }),
+    ).toBe('/base/packages/example/1.0.0/attachments/license');
+  });
+
+  it('should reject malformed sub route parent chains', () => {
+    const cyclicRef = createSubRouteRef({
+      id: 'cyclic',
+      parent: createRouteRef({ id: 'root' }),
+      path: '/cyclic',
+    });
+    Object.assign(cyclicRef, { parent: cyclicRef });
+
+    const malformedRef = createSubRouteRef({
+      id: 'malformed',
+      parent: createRouteRef({ id: 'root' }),
+      path: '/malformed',
+    });
+    Object.assign(malformedRef, { parent: undefined });
+
+    const r = new RouteResolver(new Map(), new Map(), [], new Map(), '');
+
+    expect(() => r.resolve(cyclicRef, '/')).toThrow(
+      'Invalid SubRouteRef parent chain, cycle detected',
+    );
+    expect(() => r.resolve(malformedRef, '/')).toThrow(
+      'Invalid SubRouteRef parent chain, expected an absolute RouteRef at the root',
+    );
+  });
+
   it('should resolve an absolute route and sub route with an app base path', () => {
     const r = new RouteResolver(
       new Map<RouteRef, string>([

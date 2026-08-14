@@ -22,7 +22,7 @@ import { AnyRouteRefParams } from './types';
 const PARAM_PATTERN = /^\w+$/;
 
 /**
- * Descriptor of a route relative to an absolute {@link RouteRef}.
+ * Descriptor of a route relative to a {@link RouteRef} or another sub-route.
  *
  * @remarks
  *
@@ -47,7 +47,7 @@ export interface InternalSubRouteRef<
   readonly version: 'v1';
 
   getParams(): string[];
-  getParent(): RouteRef;
+  getParent(): RouteRef | SubRouteRef;
   getDescription(): string;
 }
 
@@ -111,14 +111,26 @@ export function createSubRouteRef<
   ParentParams extends AnyRouteRefParams = never,
 >(config: {
   path: Path;
-  parent: RouteRef<ParentParams>;
+  parent: RouteRef<ParentParams> | SubRouteRef<ParentParams>;
 }): MakeSubRouteRef<PathParams<Path>, ParentParams> {
   const { path, parent } = config;
   type Params = PathParams<Path>;
 
-  const internalParent = OpaqueRouteRef.toInternal(parent);
-  const parentParams = internalParent.getParams();
-  const parentDescription = internalParent.getDescription();
+  let parentParams: string[];
+  let parentDescription: string;
+  if (OpaqueRouteRef.isType(parent)) {
+    const internalParent = OpaqueRouteRef.toInternal(parent);
+    parentParams = internalParent.getParams();
+    parentDescription = internalParent.getDescription();
+  } else if (OpaqueSubRouteRef.isType(parent)) {
+    const internalParent = OpaqueSubRouteRef.toInternal(parent);
+    parentParams = internalParent.getParams();
+    parentDescription = internalParent.getDescription();
+  } else {
+    throw new Error(
+      'SubRouteRef parent must be a RouteRef or another SubRouteRef',
+    );
+  }
 
   // Collect runtime parameters from the path, e.g. ['bar', 'baz'] from '/foo/:bar/:baz'
   const pathParams = path

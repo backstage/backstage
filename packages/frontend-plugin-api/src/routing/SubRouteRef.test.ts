@@ -80,6 +80,35 @@ describe('SubRouteRef', () => {
     expect(internal.getParams()).toEqual(['x']);
   });
 
+  it('should be created with params from nested parents', () => {
+    const revisionRouteRef = createSubRouteRef({
+      parent,
+      path: '/:name/:revision',
+    });
+    const attachmentsRouteRef = createSubRouteRef({
+      parent: revisionRouteRef,
+      path: '/attachments',
+    });
+    const attachmentRouteRef: SubRouteRef<{
+      name: string;
+      revision: string;
+      attachmentId: string;
+    }> = createSubRouteRef({
+      parent: attachmentsRouteRef,
+      path: '/:attachmentId',
+    });
+
+    const internal = OpaqueSubRouteRef.toInternal(attachmentRouteRef);
+    expect(internal.getParent()).toBe(attachmentsRouteRef);
+    expect(internal.getParams()).toEqual(['name', 'revision', 'attachmentId']);
+    expect(() =>
+      createSubRouteRef({
+        parent: attachmentsRouteRef,
+        path: '/:name',
+      }),
+    ).toThrow('SubRouteRef may not have params that overlap with its parent');
+  });
+
   it.each([
     ['foo', "SubRouteRef path must start with '/', got 'foo'"],
     [':foo', "SubRouteRef path must start with '/', got ':foo'"],
@@ -132,7 +161,14 @@ describe('SubRouteRef', () => {
     checkSubRouteRef(_4, { y: '' });
     checkSubRouteRef(_4, { x: '', y: '' });
 
+    const _5 = createSubRouteRef({ parent: _4, path: '/:z' });
+    // @ts-expect-error
+    checkSubRouteRef(_5, { x: '', y: '' });
+    // @ts-expect-error
+    checkSubRouteRef(_5, { x: '', z: '' });
+    checkSubRouteRef(_5, { x: '', y: '', z: '' });
+
     // To avoid complains about missing expectations and unused vars
-    expect([_1, _2, _3, _4].join('')).toEqual(expect.any(String));
+    expect([_1, _2, _3, _4, _5].join('')).toEqual(expect.any(String));
   });
 });
