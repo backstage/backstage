@@ -612,6 +612,28 @@ If the configuration-based cluster locators do not work for your use-case,
 it is also possible to implement a
 [custom `KubernetesClustersSupplier`](installation.md#custom-cluster-discovery).
 
+### `proxy` (optional)
+
+Options for the Kubernetes API proxy (`/api/kubernetes/proxy`).
+
+#### `proxy.middlewareCache` (optional)
+
+The proxy caches one `http-proxy-middleware` instance per cluster. Entries are refreshed when cluster details change, after a configurable TTL, or when the cache reaches its size limit.
+
+Clusters from **config** are loaded when the backend starts; changing `app-config` still requires a restart for those values to refresh. Catalog and other dynamic cluster sources can pick up cluster detail changes without a restart once the cluster supplier returns new details.
+
+```yaml
+kubernetes:
+  proxy:
+    middlewareCache:
+      maxSize: 100
+      ttl:
+        milliseconds: 60000
+```
+
+- `maxSize` — maximum cached middleware instances (default `100`).
+- `ttl.milliseconds` — cache entry lifetime in milliseconds (default `60000`).
+
 ### `customResources` (optional)
 
 Configures which [custom resources][3] to look for by default when returning an entity's

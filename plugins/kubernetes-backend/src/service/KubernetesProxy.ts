@@ -37,6 +37,11 @@ import {
   KubernetesClustersSupplier,
 } from '@backstage/plugin-kubernetes-node';
 
+import {
+  ProxyMiddlewareCache,
+  resolveProxyMiddlewareCacheOptions,
+} from './ProxyMiddlewareCache';
+
 import type { NextFunction, Request, Response } from 'express';
 import { IncomingHttpHeaders } from 'node:http';
 import {
@@ -92,6 +97,10 @@ export type KubernetesProxyOptions = {
   discovery: DiscoveryService;
   httpAuth: HttpAuthService;
   auditor?: AuditorService;
+  middlewareCache?: {
+    ttlMs?: number;
+    maxSize?: number;
+  };
 };
 
 /**
@@ -100,7 +109,7 @@ export type KubernetesProxyOptions = {
  * @public
  */
 export class KubernetesProxy {
-  private readonly middlewareForClusterName = new Map<string, RequestHandler>();
+  private readonly middlewareCache: ProxyMiddlewareCache;
   private readonly logger: LoggerService;
   private readonly clusterSupplier: KubernetesClustersSupplier;
   private readonly authStrategy: AuthenticationStrategy;
@@ -113,6 +122,9 @@ export class KubernetesProxy {
     this.authStrategy = options.authStrategy;
     this.httpAuth = options.httpAuth;
     this.auditor = options.auditor;
+    this.middlewareCache = new ProxyMiddlewareCache(
+      resolveProxyMiddlewareCacheOptions(options.middlewareCache),
+    );
   }
 
   public createRequestHandler(
@@ -265,7 +277,9 @@ export class KubernetesProxy {
 
     const requestPath = req.originalUrl || req.url || '';
     const rewrittenPath = requestPath.replace(
-      new RegExp(`^${req.baseUrl || ''}`),
+      new RegExp(
+        `^${(req.baseUrl || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`,
+      ),
       url.pathname || '',
     );
 
@@ -274,11 +288,12 @@ export class KubernetesProxy {
 
   // We create one middleware per remote cluster and hold on to them, because
   // the secure property isn't possible to decide on a per-request basis with a
-  // single middleware instance - and we don't expect it to change over time.
-  // Target resolution and path rewriting are handled per-request via the
-  // PROXY_PREPARED_TARGET symbol stashed on each req by prepareProxyTarget.
+  // single middleware instance. Target resolution and path rewriting are handled
+  // per-request via the PROXY_PREPARED_TARGET symbol stashed on each req by
+  // prepareProxyTarget. Entries are refreshed after a TTL or when cluster details
+  // change.
   private getOrCreateMiddleware(cluster: ClusterDetails): RequestHandler {
-    let middleware = this.middlewareForClusterName.get(cluster.name);
+    let middleware = this.middlewareCache.get(cluster);
     if (!middleware) {
       const logger = this.logger.child({ cluster: cluster.name });
       middleware = createProxyMiddleware({
@@ -324,7 +339,7 @@ export class KubernetesProxy {
         },
         onProxyReqWs: ProxyAuditSession.handleWebSocketProxyReq,
       });
-      this.middlewareForClusterName.set(cluster.name, middleware);
+      this.middlewareCache.set(cluster, middleware);
     }
     return middleware;
   }
