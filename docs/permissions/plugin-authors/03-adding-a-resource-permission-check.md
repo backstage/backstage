@@ -141,11 +141,9 @@ export const isOwner = createPermissionRule({
   name: 'IS_OWNER',
   description: 'Should allow only if the todo belongs to the user',
   resourceRef: todoListPermissionResourceRef,
-  params: {
-    schema: z.object({
-      userId: z.string().describe('User ID to match on the resource'),
-    }),
-  },
+  paramsSchema: z.object({
+    userId: z.string().describe('User ID to match on the resource'),
+  }),
   apply: (resource: Todo, { userId }) => {
     return resource.author === userId;
   },

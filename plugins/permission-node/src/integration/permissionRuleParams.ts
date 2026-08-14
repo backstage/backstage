@@ -22,8 +22,7 @@ import zodToJsonSchema from 'zod-to-json-schema';
 
 type RuleWithParamsSchema = {
   name: string;
-  params?: { schema: StandardSchemaV1 };
-  paramsSchema?: z.ZodSchema<any>;
+  paramsSchema?: unknown;
 };
 
 type StandardSchemaWithJsonSchemaInput = StandardSchemaV1 & {
@@ -35,23 +34,41 @@ type StandardSchemaWithJsonSchemaInput = StandardSchemaV1 & {
 };
 
 function supportsJsonSchema(
-  schema: StandardSchemaV1,
+  schema: unknown,
 ): schema is StandardSchemaWithJsonSchemaInput {
-  const standard = schema['~standard'] as unknown as
+  const standard = (schema as StandardSchemaV1 | undefined)?.[
+    '~standard'
+  ] as unknown as
     | {
+        validate?: unknown;
         jsonSchema?: { input?: unknown };
       }
     | undefined;
-  return typeof standard?.jsonSchema?.input === 'function';
+  return (
+    typeof standard?.validate === 'function' &&
+    typeof standard.jsonSchema?.input === 'function'
+  );
+}
+
+function isZodSchema(schema: unknown): schema is z.ZodSchema<any> {
+  return (
+    typeof schema === 'object' &&
+    schema !== null &&
+    '_def' in schema &&
+    typeof (schema as { _parse?: unknown })._parse === 'function' &&
+    typeof (schema as { safeParse?: unknown }).safeParse === 'function'
+  );
 }
 
 /** Ensures that a rule parameter schema can be serialized as permission metadata. */
 export function assertPermissionRuleParamsSchema(
   rule: RuleWithParamsSchema,
-): asserts rule is RuleWithParamsSchema & {
-  params?: { schema: StandardSchemaWithJsonSchemaInput };
-} {
-  if (rule.params?.schema && !supportsJsonSchema(rule.params.schema)) {
+): void {
+  if (
+    rule.paramsSchema &&
+    !supportsJsonSchema(rule.paramsSchema) &&
+    !isZodSchema(rule.paramsSchema)
+  ) {
     throw new Error(
       `Permission rule '${rule.name}' parameter schema does not support JSON Schema conversion`,
     );
@@ -66,8 +83,8 @@ export function validatePermissionRuleParams(
   rule: RuleWithParamsSchema,
   params: unknown,
 ): void {
-  if (rule.params?.schema) {
-    const result = rule.params.schema['~standard'].validate(params);
+  if (supportsJsonSchema(rule.paramsSchema)) {
+    const result = rule.paramsSchema['~standard'].validate(params);
     if (isPromise(result)) {
       throw new Error(
         `Permission rule '${rule.name}' parameter schema returned a Promise; async schemas are not supported`,
@@ -82,9 +99,13 @@ export function validatePermissionRuleParams(
     return;
   }
 
-  const result = rule.paramsSchema?.safeParse(params);
-  if (result && !result.success) {
-    throw new InputError('Parameters to rule are invalid', result.error);
+  if (isZodSchema(rule.paramsSchema)) {
+    const result = rule.paramsSchema.safeParse(params);
+    if (!result.success) {
+      throw new InputError('Parameters to rule are invalid', result.error);
+    }
+  } else if (rule.paramsSchema) {
+    assertPermissionRuleParamsSchema(rule);
   }
 }
 
@@ -92,12 +113,16 @@ export function validatePermissionRuleParams(
 export function permissionRuleParamsToJsonSchema(
   rule: RuleWithParamsSchema,
 ): ReturnType<typeof zodToJsonSchema> {
-  if (rule.params?.schema) {
-    assertPermissionRuleParamsSchema(rule);
-    return rule.params.schema['~standard'].jsonSchema.input({
+  if (supportsJsonSchema(rule.paramsSchema)) {
+    return rule.paramsSchema['~standard'].jsonSchema.input({
       target: 'draft-07',
     }) as ReturnType<typeof zodToJsonSchema>;
   }
 
-  return zodToJsonSchema(rule.paramsSchema ?? z.object({}));
+  if (isZodSchema(rule.paramsSchema)) {
+    return zodToJsonSchema(rule.paramsSchema);
+  }
+
+  assertPermissionRuleParamsSchema(rule);
+  return zodToJsonSchema(z.object({}));
 }

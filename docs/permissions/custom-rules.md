@@ -32,13 +32,11 @@ export const isInSystemRule = createPermissionRule({
   name: 'IS_IN_SYSTEM',
   description: 'Checks if an entity is part of the system provided',
   resourceRef: catalogEntityPermissionResourceRef,
-  params: {
-    schema: z.object({
-      systemRef: z
-        .string()
-        .describe('SystemRef to check the resource is part of'),
-    }),
-  },
+  paramsSchema: z.object({
+    systemRef: z
+      .string()
+      .describe('SystemRef to check the resource is part of'),
+  }),
   apply: (resource: Entity, { systemRef }) => {
     if (!resource.relations) {
       return false;

@@ -29,6 +29,7 @@ import { PermissionsServiceRequestOptions } from '@backstage/backend-plugin-api'
 import { PolicyDecision } from '@backstage/plugin-permission-common';
 import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
+import type { StandardJSONSchemaV1 } from '@standard-schema/spec';
 import type { StandardSchemaV1 } from '@standard-schema/spec';
 import { z } from 'zod/v3';
 
@@ -216,6 +217,24 @@ export function createPermissionRule<
   TParams
 >;
 
+// @public @deprecated (undocumented)
+export function createPermissionRule<
+  TRef extends PermissionResourceRef,
+  TParams extends PermissionRuleParams = undefined,
+>(rule: {
+  name: string;
+  description: string;
+  resourceRef: TRef;
+  paramsSchema: z.ZodSchema<TParams>;
+  apply(resource: TRef['TResource'], params: NoInfer_2<TParams>): boolean;
+  toQuery(params: NoInfer_2<TParams>): PermissionCriteria<TRef['TQuery']>;
+}): PermissionRule<
+  TRef['TResource'],
+  TRef['TQuery'],
+  TRef['resourceType'],
+  TParams
+>;
+
 // @public @deprecated
 export function createPermissionRule<
   TResource,
@@ -237,18 +256,9 @@ export type CreatePermissionRuleOptions<
       resourceRef: TRef;
       apply(resource: IResource, params: NoInfer_2<TParams>): boolean;
       toQuery(params: NoInfer_2<TParams>): PermissionCriteria<IQuery>;
-    } & (
-      | {
-          params?: {
-            schema: StandardSchemaV1<TParams>;
-          };
-          paramsSchema?: never;
-        }
-      | {
-          params?: never;
-          paramsSchema?: z.ZodSchema<TParams>;
-        }
-    )
+    } & {
+      paramsSchema?: StandardSchemaV1<TParams> & StandardJSONSchemaV1<TParams>;
+    }
   : never;
 
 // @public
@@ -358,14 +368,10 @@ export type PermissionRule<
   toQuery(params: NoInfer_2<TParams>): PermissionCriteria<TQuery>;
 } & (
   | {
-      params?: {
-        schema: StandardSchemaV1<TParams>;
-      };
-      paramsSchema?: never;
+      paramsSchema?: StandardSchemaV1<TParams> & StandardJSONSchemaV1<TParams>;
     }
   | {
-      params?: never;
-      paramsSchema?: z.ZodSchema<TParams>;
+      paramsSchema: z.ZodSchema<TParams>;
     }
 );
 

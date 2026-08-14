@@ -18,7 +18,10 @@ import type {
   PermissionCriteria,
   PermissionRuleParams,
 } from '@backstage/plugin-permission-common';
-import type { StandardSchemaV1 } from '@standard-schema/spec';
+import type {
+  StandardJSONSchemaV1,
+  StandardSchemaV1,
+} from '@standard-schema/spec';
 import { z } from 'zod/v3';
 
 /**
@@ -75,18 +78,15 @@ export type PermissionRule<
        * A Standard Schema that reflects the structure of the parameters that are passed to the rule.
        * The schema must validate synchronously and support JSON Schema conversion.
        */
-      params?: { schema: StandardSchemaV1<TParams> };
-      paramsSchema?: never;
+      paramsSchema?: StandardSchemaV1<TParams> & StandardJSONSchemaV1<TParams>;
     }
   | {
-      params?: never;
-
       /**
        * A ZodSchema that reflects the structure of the parameters that are passed to the rule.
        *
-       * @deprecated Use `params.schema` instead.
+       * @deprecated Zod v3 is deprecated, switch to a JSON Schema-compatible Standard Schema instead, such as Zod v4.
        */
-      paramsSchema?: z.ZodSchema<TParams>;
+      paramsSchema: z.ZodSchema<TParams>;
     }
 );
 

@@ -18,7 +18,10 @@ import {
   PermissionCondition,
   PermissionCriteria,
 } from '@backstage/plugin-permission-common';
-import type { StandardSchemaV1 } from '@standard-schema/spec';
+import type {
+  StandardJSONSchemaV1,
+  StandardSchemaV1,
+} from '@standard-schema/spec';
 import { z as zodV3 } from 'zod/v3';
 import { z as zodV4 } from 'zod/v4';
 import { createConditionTransformer } from './createConditionTransformer';
@@ -279,9 +282,7 @@ describe('createConditionTransformer', () => {
         name: 'standard-rule',
         description: 'Standard Schema rule',
         resourceType: 'test-resource',
-        params: {
-          schema: zodV4.object({ foo: zodV4.string() }),
-        },
+        paramsSchema: zodV4.object({ foo: zodV4.string() }),
         apply: () => true,
         toQuery: ({ foo }) => `standard-rule:${foo}`,
       }),
@@ -304,18 +305,18 @@ describe('createConditionTransformer', () => {
   });
 
   it('rejects asynchronous Standard Schema validation', () => {
-    type AsyncSchema = StandardSchemaV1<{ foo: string }> & {
-      '~standard': {
-        jsonSchema: { input: () => object };
-      };
-    };
+    type AsyncSchema = StandardSchemaV1<{ foo: string }> &
+      StandardJSONSchemaV1<{ foo: string }>;
     const schemas: AsyncSchema[] = [
       {
         '~standard': {
           version: 1,
           vendor: 'test',
           validate: async value => ({ value: value as { foo: string } }),
-          jsonSchema: { input: () => ({ type: 'object' }) },
+          jsonSchema: {
+            input: () => ({ type: 'object' }),
+            output: () => ({ type: 'object' }),
+          },
         },
       },
       {
@@ -326,7 +327,10 @@ describe('createConditionTransformer', () => {
             ({
               then: () => undefined,
             } as unknown as Promise<StandardSchemaV1.Result<{ foo: string }>>),
-          jsonSchema: { input: () => ({ type: 'object' }) },
+          jsonSchema: {
+            input: () => ({ type: 'object' }),
+            output: () => ({ type: 'object' }),
+          },
         },
       },
     ];
@@ -338,7 +342,7 @@ describe('createConditionTransformer', () => {
           name,
           description: 'Async rule',
           resourceType: 'test-resource',
-          params: { schema },
+          paramsSchema: schema,
           apply: () => true,
           toQuery: ({ foo }) => foo,
         }),

@@ -908,12 +908,10 @@ describe('createPermissionIntegrationRouter', () => {
         name: 'standard-rule',
         description: 'Standard Schema rule',
         resourceType: 'test-resource',
-        params: {
-          schema: zodV4.object({
-            foo: zodV4.string(),
-            bar: zodV4.number().describe('bar'),
-          }),
-        },
+        paramsSchema: zodV4.object({
+          foo: zodV4.string(),
+          bar: zodV4.number().describe('bar'),
+        }),
         apply: () => true,
         toQuery: () => ({}),
       });
@@ -963,7 +961,7 @@ describe('createPermissionIntegrationRouter', () => {
         name: 'unsupported',
         description: 'Unsupported schema',
         resourceType: 'test-resource',
-        params: { schema },
+        paramsSchema: schema as any,
         apply: () => true,
         toQuery: () => ({}),
       };
@@ -1319,9 +1317,7 @@ describe('createConditionAuthorizer', () => {
       name: 'standard-rule',
       description: 'Standard Schema rule',
       resourceType: 'test-resource',
-      params: {
-        schema: zodV4.object({ owner: zodV4.string() }),
-      },
+      paramsSchema: zodV4.object({ owner: zodV4.string() }),
       apply: (_resource, { owner }) => owner === 'user:default/test',
       toQuery: () => ({}),
     });

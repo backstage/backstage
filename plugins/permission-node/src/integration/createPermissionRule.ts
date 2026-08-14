@@ -18,7 +18,10 @@ import {
   PermissionCriteria,
   PermissionRuleParams,
 } from '@backstage/plugin-permission-common';
-import type { StandardSchemaV1 } from '@standard-schema/spec';
+import type {
+  StandardJSONSchemaV1,
+  StandardSchemaV1,
+} from '@standard-schema/spec';
 import { NoInfer, PermissionRule } from '../types';
 import { z } from 'zod/v3';
 import { PermissionResourceRef } from './createPermissionResourceRef';
@@ -50,26 +53,13 @@ export type CreatePermissionRuleOptions<
        * applied.
        */
       toQuery(params: NoInfer<TParams>): PermissionCriteria<IQuery>;
-    } & (
-      | {
-          /**
-           * A Standard Schema that reflects the structure of the parameters that are passed to the rule.
-           * The schema must validate synchronously and support JSON Schema conversion.
-           */
-          params?: { schema: StandardSchemaV1<TParams> };
-          paramsSchema?: never;
-        }
-      | {
-          params?: never;
-
-          /**
-           * A ZodSchema that reflects the structure of the parameters that are passed to the rule.
-           *
-           * @deprecated Use `params.schema` instead.
-           */
-          paramsSchema?: z.ZodSchema<TParams>;
-        }
-    )
+    } & {
+      /**
+       * A Standard Schema that reflects the structure of the parameters that are passed to the rule.
+       * The schema must validate synchronously and support JSON Schema conversion.
+       */
+      paramsSchema?: StandardSchemaV1<TParams> & StandardJSONSchemaV1<TParams>;
+    }
   : never;
 
 /**
@@ -83,6 +73,26 @@ export function createPermissionRule<
 >(
   rule: CreatePermissionRuleOptions<TRef, TParams>,
 ): PermissionRule<
+  TRef['TResource'],
+  TRef['TQuery'],
+  TRef['resourceType'],
+  TParams
+>;
+/**
+ * @public
+ * @deprecated Zod v3 parameter schemas are deprecated, switch to a JSON Schema-compatible Standard Schema instead, such as Zod v4.
+ */
+export function createPermissionRule<
+  TRef extends PermissionResourceRef,
+  TParams extends PermissionRuleParams = undefined,
+>(rule: {
+  name: string;
+  description: string;
+  resourceRef: TRef;
+  paramsSchema: z.ZodSchema<TParams>;
+  apply(resource: TRef['TResource'], params: NoInfer<TParams>): boolean;
+  toQuery(params: NoInfer<TParams>): PermissionCriteria<TRef['TQuery']>;
+}): PermissionRule<
   TRef['TResource'],
   TRef['TQuery'],
   TRef['resourceType'],
@@ -111,7 +121,15 @@ export function createPermissionRule<
 >(
   rule:
     | PermissionRule<TResource, TQuery, TResourceType, TParams>
-    | CreatePermissionRuleOptions<TRef, TParams>,
+    | CreatePermissionRuleOptions<TRef, TParams>
+    | {
+        name: string;
+        description: string;
+        resourceRef: TRef;
+        paramsSchema: z.ZodSchema<TParams>;
+        apply(resource: TRef['TResource'], params: NoInfer<TParams>): boolean;
+        toQuery(params: NoInfer<TParams>): PermissionCriteria<TRef['TQuery']>;
+      },
 ): PermissionRule<TResource, TQuery, TResourceType, TParams> {
   assertPermissionRuleParamsSchema(rule);
   if ('resourceRef' in rule) {

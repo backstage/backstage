@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { StandardSchemaV1 } from '@standard-schema/spec';
+import type {
+  StandardJSONSchemaV1,
+  StandardSchemaV1,
+} from '@standard-schema/spec';
 import { z as zodV3 } from 'zod/v3';
 import { z as zodV4 } from 'zod/v4';
 import type { PermissionRule } from '../types';
@@ -23,6 +26,7 @@ import {
   type CreatePermissionRuleOptions,
 } from './createPermissionRule';
 import { createPermissionResourceRef } from './createPermissionResourceRef';
+import { permissionRuleParamsToJsonSchema } from './permissionRuleParams';
 
 const resourceRef = createPermissionResourceRef<
   unknown,
@@ -38,18 +42,39 @@ describe('createPermissionRule', () => {
       name: 'test',
       description: 'test',
       resourceRef,
-      params: {
-        schema: zodV4.object({ owner: zodV4.string() }),
-      },
+      paramsSchema: zodV4.object({ owner: zodV4.string() }),
       apply: (_resource, params) => params.owner.length > 0,
       toQuery: params => ({ owner: params.owner }),
     });
 
-    expect(rule.params?.schema).toBeDefined();
+    expect(rule.paramsSchema).toBeDefined();
   });
 
-  it('keeps the legacy schema form but rejects combining both forms', () => {
-    createPermissionRule({
+  it('accepts resource ref rules without a parameter schema', () => {
+    const rule = createPermissionRule({
+      name: 'parameterless',
+      description: 'parameterless',
+      resourceRef,
+      apply: (_resource, params) => {
+        const noParams: undefined = params;
+        return noParams === undefined;
+      },
+      toQuery: params => {
+        const noParams: undefined = params;
+        return { owner: String(noParams) };
+      },
+    });
+
+    expect(permissionRuleParamsToJsonSchema(rule)).toEqual({
+      $schema: 'http://json-schema.org/draft-07/schema#',
+      additionalProperties: false,
+      properties: {},
+      type: 'object',
+    });
+  });
+
+  it('keeps the legacy Zod schema overload and supports both rule types', () => {
+    const legacyRule = createPermissionRule({
       name: 'legacy',
       description: 'legacy',
       resourceRef,
@@ -58,42 +83,56 @@ describe('createPermissionRule', () => {
       toQuery: params => ({ owner: params.owner }),
     });
 
-    // @ts-expect-error params.schema and paramsSchema are mutually exclusive
-    const invalidRule: CreatePermissionRuleOptions<
+    const standardOptions: CreatePermissionRuleOptions<
       typeof resourceRef,
       { owner: string }
     > = {
-      name: 'invalid',
-      description: 'invalid',
+      name: 'standard',
+      description: 'standard',
       resourceRef,
-      params: {
-        schema: zodV4.object({ owner: zodV4.string() }),
-      },
-      paramsSchema: zodV3.object({ owner: zodV3.string() }),
+      paramsSchema: zodV4.object({ owner: zodV4.string() }),
       apply: () => true,
       toQuery: params => ({ owner: params.owner }),
     };
 
-    // @ts-expect-error params.schema and paramsSchema are mutually exclusive
-    const invalidPermissionRule: PermissionRule<
+    const standardPermissionRule: PermissionRule<
       unknown,
       { owner: string },
       'test-resource',
       { owner: string }
     > = {
-      name: 'invalid',
-      description: 'invalid',
+      name: 'standard',
+      description: 'standard',
       resourceType: 'test-resource',
-      params: {
-        schema: zodV4.object({ owner: zodV4.string() }),
-      },
+      paramsSchema: zodV4.object({ owner: zodV4.string() }),
+      apply: () => true,
+      toQuery: params => ({ owner: params.owner }),
+    };
+
+    const legacyPermissionRule: PermissionRule<
+      unknown,
+      { owner: string },
+      'test-resource',
+      { owner: string }
+    > = legacyRule;
+
+    const legacyOptions: CreatePermissionRuleOptions<
+      typeof resourceRef,
+      { owner: string }
+    > = {
+      name: 'legacy',
+      description: 'legacy',
+      resourceRef,
+      // @ts-expect-error Zod v3 is only accepted by the deprecated function overload
       paramsSchema: zodV3.object({ owner: zodV3.string() }),
       apply: () => true,
       toQuery: params => ({ owner: params.owner }),
     };
 
-    expect(invalidRule).toBeDefined();
-    expect(invalidPermissionRule).toBeDefined();
+    expect(standardOptions.paramsSchema).toBeDefined();
+    expect(standardPermissionRule.paramsSchema).toBeDefined();
+    expect(legacyPermissionRule.paramsSchema).toBeDefined();
+    expect(legacyOptions.paramsSchema).toBeDefined();
   });
 
   it('rejects Standard Schemas without JSON Schema conversion', () => {
@@ -110,7 +149,8 @@ describe('createPermissionRule', () => {
         name: 'unsupported',
         description: 'unsupported',
         resourceRef,
-        params: { schema },
+        paramsSchema: schema as StandardSchemaV1<Record<string, never>> &
+          StandardJSONSchemaV1<Record<string, never>>,
         apply: () => true,
         toQuery: () => ({ owner: 'test' }),
       }),
@@ -123,14 +163,29 @@ describe('createPermissionRule', () => {
         name: 'malformed',
         description: 'malformed',
         resourceRef,
-        params: {
-          schema: {} as StandardSchemaV1<Record<string, never>>,
-        },
+        paramsSchema: {} as StandardSchemaV1<Record<string, never>> &
+          StandardJSONSchemaV1<Record<string, never>>,
         apply: () => true,
         toQuery: () => ({ owner: 'test' }),
       }),
     ).toThrow(
       "Permission rule 'malformed' parameter schema does not support JSON Schema conversion",
+    );
+
+    expect(() =>
+      createPermissionRule({
+        name: 'not-zod',
+        description: 'not-zod',
+        resourceRef,
+        paramsSchema: {
+          safeParse: () => ({ success: true }),
+        } as unknown as StandardSchemaV1<Record<string, never>> &
+          StandardJSONSchemaV1<Record<string, never>>,
+        apply: () => true,
+        toQuery: () => ({ owner: 'test' }),
+      }),
+    ).toThrow(
+      "Permission rule 'not-zod' parameter schema does not support JSON Schema conversion",
     );
   });
 });

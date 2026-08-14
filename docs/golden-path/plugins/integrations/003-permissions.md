@@ -80,11 +80,9 @@ export const isCreator = createPermissionRule({
   name: 'IS_CREATOR',
   description: 'Allow if the todo was created by the current user',
   resourceRef: todoResourceRef,
-  params: {
-    schema: z.object({
-      userRef: z.string().describe('The entity ref of the user'),
-    }),
-  },
+  paramsSchema: z.object({
+    userRef: z.string().describe('The entity ref of the user'),
+  }),
   apply(todo, { userRef }) {
     return todo.createdBy === userRef;
   },
