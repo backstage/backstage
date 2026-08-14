@@ -5948,6 +5948,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
+    "@standard-schema/spec": "npm:^1.1.0"
     "@types/express": "npm:^4.17.6"
     "@types/supertest": "npm:^2.0.8"
     express: "npm:^4.22.0"
