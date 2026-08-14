@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { RootConfigService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import { JsonObject, JsonValue } from '@backstage/types';
@@ -25,7 +24,7 @@ import { JsonObject, JsonValue } from '@backstage/types';
  * them through the normal connection-schema validation alongside the rest of
  * the connections config.
  */
-export function getLegacyIntegrations(config: RootConfigService): JsonObject[] {
+export function getLegacyIntegrations(config: Config): JsonObject[] {
   const result: JsonObject[] = [];
 
   const aws = config.getOptionalConfig('aws');

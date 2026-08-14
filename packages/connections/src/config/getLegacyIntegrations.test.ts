@@ -13,9 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { mockServices } from '@backstage/backend-test-utils';
-import { connectionTypes } from '@backstage/connections';
+import { ConfigReader } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
+import { connectionTypes } from '../definitions/types';
 import { getLegacyIntegrations } from './getLegacyIntegrations';
+
+function rootConfig(options: { data: JsonObject }) {
+  return new ConfigReader(options.data);
+}
 
 function configFields(connection: Record<string, unknown>) {
   const { type, auth, title, match, ...config } = connection;
@@ -38,13 +43,13 @@ const HarnessConnectionType = connectionTypes.harness;
 
 describe('getLegacyIntegrations', () => {
   it('returns an empty list when no integrations are configured', () => {
-    const config = mockServices.rootConfig({ data: {} });
+    const config = rootConfig({ data: {} });
     expect(getLegacyIntegrations(config)).toEqual([]);
   });
 
   describe('github', () => {
     it('converts a token-only integration to a connection with a single token auth method', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             github: [
@@ -67,7 +72,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('converts apiBaseUrl and rawBaseUrl when present', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             github: [
@@ -94,7 +99,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('merges a top-level token and multiple apps into a single connection', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             github: [
@@ -153,7 +158,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('emits one connection per legacy entry, preserving order', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             github: [
@@ -172,7 +177,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('uses none auth when neither token nor apps are configured', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             github: [{ host: 'github.com' }],
@@ -186,7 +191,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('defaults the host to github.com like the legacy reader', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             github: [{ token: 'gh-token' }],
@@ -204,7 +209,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('produces output that validates against the github connection schema', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             github: [
@@ -236,7 +241,7 @@ describe('getLegacyIntegrations', () => {
 
   describe('gitlab', () => {
     it('converts a token-only integration to a connection with a single token auth method', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             gitlab: [
@@ -259,7 +264,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('carries apiBaseUrl and baseUrl through when present', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             gitlab: [
@@ -286,7 +291,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('drops commitSigningKey and retry config during conversion', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             gitlab: [
@@ -315,7 +320,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('uses none auth when no token is configured', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             gitlab: [{ host: 'gitlab.com' }],
@@ -329,7 +334,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('produces output that validates against the gitlab connection schema', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             gitlab: [
@@ -353,7 +358,7 @@ describe('getLegacyIntegrations', () => {
 
   describe('bitbucket-cloud', () => {
     it('hardcodes the host to bitbucket.org and emits one auth method per credential pair', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             bitbucketCloud: [
@@ -383,7 +388,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('skips token/appPassword auth when username is missing', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             bitbucketCloud: [
@@ -405,7 +410,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('produces output that validates against the bitbucket-cloud connection schema', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             bitbucketCloud: [
@@ -431,7 +436,7 @@ describe('getLegacyIntegrations', () => {
 
   describe('bitbucket-server', () => {
     it('emits separate token and basic auth methods', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             bitbucketServer: [
@@ -461,7 +466,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('drops commitSigningKey during conversion', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             bitbucketServer: [
@@ -485,7 +490,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('produces output that validates against the bitbucket-server connection schema', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             bitbucketServer: [
@@ -511,7 +516,7 @@ describe('getLegacyIntegrations', () => {
 
   describe('azure', () => {
     it('emits one auth method per credentials[] entry, picking the type by which fields are set', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             azure: [
@@ -574,7 +579,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('drops credential entries with no recognisable auth fields and drops commitSigningKey', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             azure: [
@@ -594,7 +599,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('defaults the host to dev.azure.com like the legacy reader', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             azure: [{ credentials: [{ personalAccessToken: 'pat' }] }],
@@ -612,7 +617,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('produces output that validates against the azure connection schema', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             azure: [
@@ -634,7 +639,7 @@ describe('getLegacyIntegrations', () => {
 
   describe('gerrit', () => {
     it('keeps addressing fields and emits a basic auth method', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             gerrit: [
@@ -665,7 +670,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('produces output that validates against the gerrit connection schema', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             gerrit: [
@@ -689,7 +694,7 @@ describe('getLegacyIntegrations', () => {
 
   describe('gitea', () => {
     it('keeps host/baseUrl and emits a basic auth method', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             gitea: [
@@ -715,7 +720,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('produces output that validates against the gitea connection schema', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             gitea: [
@@ -738,7 +743,7 @@ describe('getLegacyIntegrations', () => {
 
   describe('aws', () => {
     it('converts accounts, mainAccount, and accountDefaults from top-level aws config', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           aws: {
             accountDefaults: {
@@ -799,7 +804,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('always emits a main account entry, matching the implicit legacy default credentials chain', () => {
-      const emptyAws = mockServices.rootConfig({ data: { aws: {} } });
+      const emptyAws = rootConfig({ data: { aws: {} } });
       expect(getLegacyIntegrations(emptyAws)).toEqual([
         {
           type: 'aws',
@@ -807,7 +812,7 @@ describe('getLegacyIntegrations', () => {
         },
       ]);
 
-      const accountsOnly = mockServices.rootConfig({
+      const accountsOnly = rootConfig({
         data: {
           aws: {
             accounts: [{ accountId: '111111111111', profile: 'other' }],
@@ -826,7 +831,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('keeps the first entry when accounts duplicate an account ID, matching the legacy lookup behavior', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           aws: {
             accounts: [
@@ -860,7 +865,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('produces output that validates against the aws connection schema', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           aws: {
             accountDefaults: { roleName: 'backstage-role' },
@@ -901,7 +906,7 @@ describe('getLegacyIntegrations', () => {
 
   describe('awsCodeCommit', () => {
     it('emits separate accessKey and assumeRole auth methods', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             awsCodeCommit: [
@@ -939,7 +944,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('omits externalId when not set', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             awsCodeCommit: [
@@ -959,7 +964,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('emits an empty auth array when aws-codecommit credentials are not configured', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             awsCodeCommit: [{ region: 'us-west-2' }],
@@ -978,7 +983,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('produces output that validates against the aws-codecommit connection schema', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             awsCodeCommit: [
@@ -1001,7 +1006,7 @@ describe('getLegacyIntegrations', () => {
 
   describe('awsS3', () => {
     it('emits accessKey and assumeRole auth methods', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             awsS3: [
@@ -1037,7 +1042,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('carries endpoint and s3ForcePathStyle through when present', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             awsS3: [
@@ -1062,7 +1067,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('throws a friendly error for an invalid endpoint URL', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             awsS3: [{ endpoint: 'not a url' }],
@@ -1076,7 +1081,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('produces output that validates against the aws-s3 connection schema', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             awsS3: [
@@ -1099,7 +1104,7 @@ describe('getLegacyIntegrations', () => {
 
   describe('googleGcs', () => {
     it('converts the single googleGcs object to a connection with a serviceAccount auth method', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             googleGcs: {
@@ -1128,7 +1133,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('restores escaped newlines in the private key like the legacy reader', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             googleGcs: {
@@ -1147,7 +1152,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('uses none auth when no explicit credentials are configured', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             googleGcs: {},
@@ -1165,7 +1170,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('produces output that validates against the google-gcs connection schema', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             googleGcs: {
@@ -1185,7 +1190,7 @@ describe('getLegacyIntegrations', () => {
 
   describe('azureBlobStorage', () => {
     it('emits one auth method per credential type present', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             azureBlobStorage: [
@@ -1209,7 +1214,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('converts a sasToken credential', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             azureBlobStorage: [
@@ -1230,7 +1235,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('converts a connectionString credential', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             azureBlobStorage: [
@@ -1250,7 +1255,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('converts an aadCredential', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             azureBlobStorage: [
@@ -1285,7 +1290,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('carries endpoint and endpointSuffix through when present', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             azureBlobStorage: [
@@ -1307,7 +1312,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('throws a friendly error for an invalid endpoint URL', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             azureBlobStorage: [{ endpoint: 'not a url' }],
@@ -1321,7 +1326,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('produces output that validates against the azure-blob-storage connection schema', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             azureBlobStorage: [
@@ -1349,7 +1354,7 @@ describe('getLegacyIntegrations', () => {
 
   describe('harness', () => {
     it('emits a token auth method carrying the optional apiKey', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             harness: [
@@ -1373,7 +1378,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('skips entries without a token, which cannot be represented as a connection', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             harness: [
@@ -1395,7 +1400,7 @@ describe('getLegacyIntegrations', () => {
     });
 
     it('produces output that validates against the harness connection schema', () => {
-      const config = mockServices.rootConfig({
+      const config = rootConfig({
         data: {
           integrations: {
             harness: [{ host: 'app.harness.io', token: 'tok', apiKey: 'ak' }],

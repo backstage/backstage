@@ -92,7 +92,7 @@ export type ConnectionAuthMatch = {
  *
  * @public
  */
-export type RootConnectionAuth<M> = M extends {
+export type ConfiguredConnectionAuth<M> = M extends {
   method: infer TMethod extends string;
   configSchema: { parse: (...args: any[]) => infer TConfig };
 }

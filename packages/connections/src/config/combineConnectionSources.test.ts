@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { mockServices } from '@backstage/backend-test-utils';
 import { combineConnectionSources } from './combineConnectionSources';
-import type { RootConnection } from './types';
+import type { ConfiguredConnection } from './types';
 
 const githubTokenAuth = (token: string) =>
-  ({ method: 'token', token } as unknown as RootConnection['auth'][number]);
+  ({
+    method: 'token',
+    token,
+  } as unknown as ConfiguredConnection['auth'][number]);
 
 const githubAppAuth = (appId: number) =>
   ({
@@ -27,26 +29,26 @@ const githubAppAuth = (appId: number) =>
     privateKey: `pk-${appId}`,
     clientId: `client-${appId}`,
     clientSecret: `secret-${appId}`,
-  } as unknown as RootConnection['auth'][number]);
+  } as unknown as ConfiguredConnection['auth'][number]);
 
 const connection = (
   type: string,
   host: string,
-  auth: RootConnection['auth'],
-  extras: Partial<RootConnection> = {},
-): RootConnection =>
+  auth: ConfiguredConnection['auth'],
+  extras: Partial<ConfiguredConnection> = {},
+): ConfiguredConnection =>
   ({
     type,
     host,
     auth,
     ...extras,
-  } as unknown as RootConnection);
+  } as unknown as ConfiguredConnection);
 
 describe('combineConnectionSources', () => {
-  let logger: ReturnType<typeof mockServices.logger.mock>;
+  let logger: { warn: jest.Mock };
 
   beforeEach(() => {
-    logger = mockServices.logger.mock();
+    logger = { warn: jest.fn() };
   });
 
   it('returns an empty array when both inputs are empty', () => {

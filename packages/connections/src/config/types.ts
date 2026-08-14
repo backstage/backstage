@@ -15,17 +15,28 @@
  */
 import type {
   ConnectionType,
+  ConfiguredConnectionAuth,
+} from '../api/ConnectionType';
+import type {
   ConnectionTypeKey,
   LookupConnectionType,
-  RootConnectionAuth,
-} from '@backstage/connections';
+} from '../definitions/types';
 
-/** The shape of a connection before plugin filtering. */
-export type RootConnection<
+/**
+ * The shape of a fully validated connection as read from configuration,
+ * before any plugin filtering has been applied: the fields declared by the
+ * connection type's config schema plus the framework-managed `type`, `title`,
+ * `match`, and `auth` fields.
+ *
+ * @public
+ */
+export type ConfiguredConnection<
   T extends ConnectionType | ConnectionTypeKey = ConnectionType,
 > = ReturnType<LookupConnectionType<T>['configSchema']['parse']> & {
   type: LookupConnectionType<T>['type'];
   title?: string;
   match?: { plugins: string[] };
-  auth: RootConnectionAuth<LookupConnectionType<T>['authMethods'][number]>[];
+  auth: ConfiguredConnectionAuth<
+    LookupConnectionType<T>['authMethods'][number]
+  >[];
 };
