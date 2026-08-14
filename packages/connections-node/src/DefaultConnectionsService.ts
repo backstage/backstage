@@ -205,7 +205,7 @@ export class DefaultConnectionsService {
         `Failed to convert legacy integrations config:\n${describeError(e)}`,
       );
     }
-    const legacy = this.#mergeLegacy(this.#validateLegacy(rawLegacy));
+    const legacy = this.#dedupeLegacy(this.#validateLegacy(rawLegacy));
 
     const rawConnections = this.config.getOptional('connections');
     if (rawConnections !== undefined && !Array.isArray(rawConnections)) {
@@ -305,14 +305,12 @@ export class DefaultConnectionsService {
   }
 
   // Legacy integrations never had a uniqueness requirement — multiple entries
-  // could resolve to the same host, with lookups using the first match.
-  // Rather than rejecting such config, entries that resolve to the same
-  // connection identity are merged into a single connection that combines
-  // their auth methods in order. Missing connection-level fields are filled
-  // in from later entries, while conflicting values keep the first entry's
-  // value with a warning.
-  #mergeLegacy(legacy: RootConnection[]): RootConnection[] {
-    const merged = new Map<string, RootConnection>();
+  // could resolve to the same host, with lookups always returning the first
+  // match and effectively ignoring the rest. Conversion follows suit: the
+  // first entry that resolves to a given connection identity wins, and later
+  // duplicates are dropped with a warning rather than rejected at startup.
+  #dedupeLegacy(legacy: RootConnection[]): RootConnection[] {
+    const seen = new Set<string>();
     const result: RootConnection[] = [];
 
     for (const connection of legacy) {
@@ -331,34 +329,14 @@ export class DefaultConnectionsService {
         key = `${connection.type} ${identity}`;
       }
 
-      const existing = merged.get(key);
-      if (!existing) {
-        const copy = { ...connection, auth: [...connection.auth] };
-        merged.set(key, copy);
-        result.push(copy);
+      if (seen.has(key)) {
+        this.logger.warn(
+          `Multiple legacy integrations resolve to the "${key}" connection; ignoring all but the first entry, matching the legacy lookup behavior`,
+        );
         continue;
       }
-
-      this.logger.debug(
-        `Merging multiple legacy integrations into the "${key}" connection`,
-      );
-      existing.auth.push(...connection.auth);
-
-      const existingFields = existing as Record<string, unknown>;
-      for (const [field, value] of Object.entries(connection)) {
-        if (field === 'type' || field === 'auth') {
-          continue;
-        }
-        if (!(field in existingFields)) {
-          existingFields[field] = value;
-        } else if (
-          JSON.stringify(existingFields[field]) !== JSON.stringify(value)
-        ) {
-          this.logger.warn(
-            `Conflicting values for "${field}" across legacy integrations merged into the "${key}" connection; keeping the first value`,
-          );
-        }
-      }
+      seen.add(key);
+      result.push(connection);
     }
 
     return result;

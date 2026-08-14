@@ -412,15 +412,15 @@ describe('DefaultConnectionsService', () => {
       );
     });
 
-    it('merges legacy entries that resolve to the same connection', async () => {
+    it('keeps the first legacy entry when multiple resolve to the same connection', async () => {
       const logger = mockServices.logger.mock();
       const service = DefaultConnectionsService.create({
         logger,
         config: mockServices.rootConfig({
           data: {
             integrations: {
-              // Both entries hardcode the bitbucket.org host, e.g. an adopter
-              // migrating from app passwords to OAuth.
+              // Both entries hardcode the bitbucket.org host; legacy lookups
+              // always returned the first matching entry.
               bitbucketCloud: [
                 { username: 'ci-bot', appPassword: 'old-secret' },
                 { clientId: 'oauth-id', clientSecret: 'oauth-secret' },
@@ -430,7 +430,6 @@ describe('DefaultConnectionsService', () => {
         }),
       });
 
-      // The first entry's auth method still takes precedence after the merge.
       const connection = await service.forPlugin('catalog').find({
         type: 'bitbucket-cloud',
         query: { url: 'https://bitbucket.org/my-workspace/my-repo' },
@@ -441,19 +440,26 @@ describe('DefaultConnectionsService', () => {
         method: 'appPassword',
         username: 'ci-bot',
       });
-      expect(logger.warn).not.toHaveBeenCalled();
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining('bitbucket-cloud'),
+      );
     });
 
-    it('makes all merged auth methods available to auth selection', async () => {
+    it('ignores auth methods and settings from dropped duplicate legacy entries', async () => {
       const service = DefaultConnectionsService.create({
         logger: mockServices.logger.mock(),
         config: mockServices.rootConfig({
           data: {
             integrations: {
               github: [
-                { host: 'github.com', token: 'gh-token' },
                 {
-                  host: 'github.com',
+                  host: 'ghe.example.com',
+                  apiBaseUrl: 'https://ghe.example.com/api/v3',
+                  token: 'first-token',
+                },
+                {
+                  host: 'ghe.example.com',
+                  apiBaseUrl: 'https://other.example.com/api/v3',
                   apps: [
                     {
                       appId: 1,
@@ -469,53 +475,19 @@ describe('DefaultConnectionsService', () => {
         }),
       });
 
-      // The app from the second entry wins the auth selection, since the
-      // github matchAuth priority chain prefers apps over tokens.
-      const connection = await service.forPlugin('catalog').find({
-        type: 'github',
-        query: { url: 'https://github.com/my-org/my-repo' },
-        authMethods: ['token', 'app'],
-      });
-      expect(connection?.auth.method).toBe('app');
-    });
-
-    it('keeps the first value and warns when merged legacy entries have conflicting fields', async () => {
-      const logger = mockServices.logger.mock();
-      const service = DefaultConnectionsService.create({
-        logger,
-        config: mockServices.rootConfig({
-          data: {
-            integrations: {
-              github: [
-                {
-                  host: 'ghe.example.com',
-                  apiBaseUrl: 'https://ghe.example.com/api/v3',
-                  token: 'first-token',
-                },
-                {
-                  host: 'ghe.example.com',
-                  apiBaseUrl: 'https://other.example.com/api/v3',
-                  token: 'second-token',
-                },
-              ],
-            },
-          },
-        }),
-      });
-
+      // The github matchAuth priority chain prefers apps over tokens, so the
+      // second entry's app would have won the auth selection if it were not
+      // dropped along with the rest of that entry.
       const connection = await service.forPlugin('catalog').find({
         type: 'github',
         query: { url: 'https://ghe.example.com/my-org/my-repo' },
-        authMethods: ['token'],
+        authMethods: ['token', 'app'],
       });
       expect(connection?.apiBaseUrl).toBe('https://ghe.example.com/api/v3');
       expect(connection?.auth).toMatchObject({
         method: 'token',
         token: 'first-token',
       });
-      expect(logger.warn).toHaveBeenCalledWith(
-        expect.stringContaining('apiBaseUrl'),
-      );
     });
 
     it('wraps errors thrown during conversion with legacy integrations context', () => {
