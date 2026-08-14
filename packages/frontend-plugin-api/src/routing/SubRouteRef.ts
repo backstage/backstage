@@ -47,9 +47,7 @@ export interface InternalSubRouteRef<
   readonly version: 'v1';
 
   getParams(): string[];
-  getParent(): RouteRef | SubRouteRef;
-  getResolvedParent?(): RouteRef;
-  getResolvedPath?(): string;
+  getParent(): RouteRef;
   getDescription(): string;
 }
 
@@ -118,36 +116,14 @@ export function createSubRouteRef<
   const { path, parent } = config;
   type Params = PathParams<Path>;
 
-  let parentParams: string[];
-  let parentDescription: string;
-  let resolvedParent: RouteRef;
-  let resolvedPath: string;
-  if (OpaqueRouteRef.isType(parent)) {
-    const internalParent = OpaqueRouteRef.toInternal(parent);
-    parentParams = internalParent.getParams();
-    parentDescription = internalParent.getDescription();
-    resolvedParent = parent;
-    resolvedPath = path;
-  } else if (OpaqueSubRouteRef.isType(parent)) {
-    const internalParent = OpaqueSubRouteRef.toInternal(parent);
-    parentParams = internalParent.getParams();
-    parentDescription = internalParent.getDescription();
-    const parentRouteRef =
-      internalParent.getResolvedParent?.() ?? internalParent.getParent();
-    if (!OpaqueRouteRef.isType(parentRouteRef)) {
-      throw new Error(
-        'Invalid SubRouteRef parent chain, expected a RouteRef at the root',
-      );
-    }
-    resolvedParent = parentRouteRef;
-    resolvedPath = `${
-      internalParent.getResolvedPath?.() ?? parent.path
-    }${path}`;
-  } else {
-    throw new Error(
-      'SubRouteRef parent must be a RouteRef or another SubRouteRef',
-    );
-  }
+  const subRouteParent = OpaqueSubRouteRef.isType(parent)
+    ? OpaqueSubRouteRef.toInternal(parent)
+    : undefined;
+  const parentRef = subRouteParent?.getParent() ?? (parent as RouteRef);
+  const internalParent = OpaqueRouteRef.toInternal(parentRef);
+  const parentParams =
+    subRouteParent?.getParams() ?? internalParent.getParams();
+  const subPath = subRouteParent ? `${subRouteParent.path}${path}` : path;
 
   // Collect runtime parameters from the path, e.g. ['bar', 'baz'] from '/foo/:bar/:baz'
   const pathParams = path
@@ -177,24 +153,18 @@ export function createSubRouteRef<
     T: undefined as unknown as TrimEmptyParams<
       MergeParams<Params, ParentParams>
     >,
-    path,
+    path: subPath,
     getParams() {
       return params;
     },
     getParent() {
-      return parent;
-    },
-    getResolvedParent() {
-      return resolvedParent;
-    },
-    getResolvedPath() {
-      return resolvedPath;
+      return parentRef;
     },
     getDescription() {
-      return `at ${path} with parent ${parentDescription}`;
+      return `at ${subPath} with parent ${internalParent.getDescription()}`;
     },
     toString() {
-      return `subRouteRef{path='${path}',parent=${parent}}`;
+      return `subRouteRef{path='${subPath}',parent=${parentRef}}`;
     },
   });
 }

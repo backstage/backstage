@@ -33,8 +33,6 @@ describe('SubRouteRef', () => {
     expect(internal.path).toBe('/foo');
     expect(internal.T).toBe(undefined);
     expect(internal.getParent()).toBe(internalParent);
-    expect(internal.getResolvedParent?.()).toBe(internalParent);
-    expect(internal.getResolvedPath?.()).toBe('/foo');
     expect(internal.getParams()).toEqual([]);
     expect(String(internal)).toMatch(
       /^subRouteRef\{path='\/foo',parent=routeRef\{id=undefined,at='.*SubRouteRef\.test\.ts.*'\}\}$/,
@@ -100,13 +98,21 @@ describe('SubRouteRef', () => {
       path: '/:attachmentId',
     });
 
-    const internal = OpaqueSubRouteRef.toInternal(attachmentRouteRef);
-    expect(internal.getParent()).toBe(attachmentsRouteRef);
-    expect(internal.getResolvedParent?.()).toBe(parent);
-    expect(internal.getResolvedPath?.()).toBe(
+    const attachmentsInternal =
+      OpaqueSubRouteRef.toInternal(attachmentsRouteRef);
+    expect(attachmentsInternal.path).toBe('/:name/:revision/attachments');
+    expect(attachmentsInternal.getParent()).toBe(parent);
+
+    const attachmentInternal = OpaqueSubRouteRef.toInternal(attachmentRouteRef);
+    expect(attachmentInternal.path).toBe(
       '/:name/:revision/attachments/:attachmentId',
     );
-    expect(internal.getParams()).toEqual(['name', 'revision', 'attachmentId']);
+    expect(attachmentInternal.getParent()).toBe(parent);
+    expect(attachmentInternal.getParams()).toEqual([
+      'name',
+      'revision',
+      'attachmentId',
+    ]);
     expect(() =>
       createSubRouteRef({
         parent: attachmentsRouteRef,
@@ -119,16 +125,14 @@ describe('SubRouteRef', () => {
       path: '/malformed',
     });
     Object.assign(OpaqueSubRouteRef.toInternal(malformedParent), {
-      getResolvedParent: () => malformedParent,
+      getParent: () => malformedParent,
     });
     expect(() =>
       createSubRouteRef({
         parent: malformedParent,
         path: '/child',
       }),
-    ).toThrow(
-      'Invalid SubRouteRef parent chain, expected a RouteRef at the root',
-    );
+    ).toThrow();
   });
 
   it.each([

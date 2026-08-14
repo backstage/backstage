@@ -135,19 +135,11 @@ describe('convertLegacyRouteRef', () => {
       parent: ref2,
       path: '/sub1/:p3',
     });
-    const ref2sub2 = createNewSubRouteRef({
-      parent: ref2sub1,
-      path: '/sub2/:p4',
-    });
     const ref3 = createNewExternalRouteRef();
     const ref4 = createNewExternalRouteRef({
       defaultTarget: 'ref2',
       params: ['p1', 'p2'],
     });
-
-    expect(() => convertLegacyRouteRef(ref2sub2)).toThrow(
-      'Nested SubRouteRefs cannot be converted to the legacy routing system',
-    );
 
     const ref1Converted: OldRouteRef = convertLegacyRouteRef(ref1);
     const ref2Converted: OldRouteRef = convertLegacyRouteRef(ref2);

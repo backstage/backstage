@@ -337,10 +337,10 @@ export const revisionAttachmentsSubRouteRef = createSubRouteRef({
 });
 ```
 
-Each `path` is relative to its immediate parent. The nested route inherits all
-parameters from its ancestors, so `useRouteRef(revisionAttachmentsSubRouteRef)`
-requires both `name` and `revision`. Parameter names must be unique across the
-entire parent chain.
+Each `path` passed to `createSubRouteRef` is relative to its immediate parent.
+The nested route inherits all parameters from its ancestors, so
+`useRouteRef(revisionAttachmentsSubRouteRef)` requires both `name` and
+`revision`. Parameter names must be unique across the entire parent chain.
 
 Using subroutes in a page extension is as simple as this:
 
