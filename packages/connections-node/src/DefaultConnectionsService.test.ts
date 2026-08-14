@@ -411,6 +411,101 @@ describe('DefaultConnectionsService', () => {
         expect.stringContaining('github'),
       );
     });
+
+    it('keeps the first legacy entry when multiple resolve to the same connection', async () => {
+      const logger = mockServices.logger.mock();
+      const service = DefaultConnectionsService.create({
+        logger,
+        config: mockServices.rootConfig({
+          data: {
+            integrations: {
+              // Both entries hardcode the bitbucket.org host; legacy lookups
+              // always returned the first matching entry.
+              bitbucketCloud: [
+                { username: 'ci-bot', appPassword: 'old-secret' },
+                { clientId: 'oauth-id', clientSecret: 'oauth-secret' },
+              ],
+            },
+          },
+        }),
+      });
+
+      const connection = await service.forPlugin('catalog').find({
+        type: 'bitbucket-cloud',
+        query: { url: 'https://bitbucket.org/my-workspace/my-repo' },
+        authMethods: ['appPassword', 'oauth'],
+      });
+      expect(connection?.host).toBe('bitbucket.org');
+      expect(connection?.auth).toMatchObject({
+        method: 'appPassword',
+        username: 'ci-bot',
+      });
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining('bitbucket-cloud'),
+      );
+    });
+
+    it('ignores auth methods and settings from dropped duplicate legacy entries', async () => {
+      const service = DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockServices.rootConfig({
+          data: {
+            integrations: {
+              github: [
+                {
+                  host: 'ghe.example.com',
+                  apiBaseUrl: 'https://ghe.example.com/api/v3',
+                  token: 'first-token',
+                },
+                {
+                  host: 'ghe.example.com',
+                  apiBaseUrl: 'https://other.example.com/api/v3',
+                  apps: [
+                    {
+                      appId: 1,
+                      privateKey: 'pk',
+                      clientId: 'client',
+                      clientSecret: 'secret',
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        }),
+      });
+
+      // The github matchAuth priority chain prefers apps over tokens, so the
+      // second entry's app would have won the auth selection if it were not
+      // dropped along with the rest of that entry.
+      const connection = await service.forPlugin('catalog').find({
+        type: 'github',
+        query: { url: 'https://ghe.example.com/my-org/my-repo' },
+        authMethods: ['token', 'app'],
+      });
+      expect(connection?.apiBaseUrl).toBe('https://ghe.example.com/api/v3');
+      expect(connection?.auth).toMatchObject({
+        method: 'token',
+        token: 'first-token',
+      });
+    });
+
+    it('wraps errors thrown during conversion with legacy integrations context', () => {
+      expect(() =>
+        DefaultConnectionsService.create({
+          logger: mockServices.logger.mock(),
+          config: mockServices.rootConfig({
+            data: {
+              integrations: {
+                awsS3: [{ endpoint: 'not a url' }],
+              },
+            },
+          }),
+        }),
+      ).toThrow(
+        /Failed to convert legacy integrations config:[\s\S]*Invalid endpoint URL "not a url"/,
+      );
+    });
   });
 
   describe('authMethods as capability declaration', () => {

@@ -195,7 +195,17 @@ export class DefaultConnectionsService {
   }
 
   #registerConnectionsFromConfig(): void {
-    const legacy = this.#validateLegacy(getLegacyIntegrations(this.config));
+    // Conversion itself can throw, e.g. for config values of an unexpected
+    // type, so it gets the same error context as the validation below.
+    let rawLegacy: JsonObject[];
+    try {
+      rawLegacy = getLegacyIntegrations(this.config);
+    } catch (e) {
+      throw new InputError(
+        `Failed to convert legacy integrations config:\n${describeError(e)}`,
+      );
+    }
+    const legacy = this.#dedupeLegacy(this.#validateLegacy(rawLegacy));
 
     const rawConnections = this.config.getOptional('connections');
     if (rawConnections !== undefined && !Array.isArray(rawConnections)) {
@@ -292,6 +302,44 @@ export class DefaultConnectionsService {
         );
       }
     });
+  }
+
+  // Legacy integrations never had a uniqueness requirement — multiple entries
+  // could resolve to the same host, with lookups always returning the first
+  // match and effectively ignoring the rest. Conversion follows suit: the
+  // first entry that resolves to a given connection identity wins, and later
+  // duplicates are dropped with a warning rather than rejected at startup.
+  #dedupeLegacy(legacy: RootConnection[]): RootConnection[] {
+    const seen = new Set<string>();
+    const result: RootConnection[] = [];
+
+    for (const connection of legacy) {
+      const connectionType = getConnectionType(
+        connection.type as ConnectionTypeKey,
+      );
+
+      let key = connection.type as string;
+      if (connectionType.cardinality !== 'singleton') {
+        const strategy = getLookupStrategy(connectionType.lookupStrategy);
+        const identity = connectionIdentityOf(strategy, connection);
+        if (identity === undefined) {
+          result.push(connection);
+          continue;
+        }
+        key = `${connection.type} ${identity}`;
+      }
+
+      if (seen.has(key)) {
+        this.logger.warn(
+          `Multiple legacy integrations resolve to the "${key}" connection; ignoring all but the first entry, matching the legacy lookup behavior`,
+        );
+        continue;
+      }
+      seen.add(key);
+      result.push(connection);
+    }
+
+    return result;
   }
 
   #validateConnection(connection: JsonObject): RootConnection {

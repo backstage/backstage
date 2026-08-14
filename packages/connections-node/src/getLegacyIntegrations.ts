@@ -15,6 +15,7 @@
  */
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
+import { InputError } from '@backstage/errors';
 import { JsonObject, JsonValue } from '@backstage/types';
 
 /**
@@ -57,7 +58,7 @@ export function getLegacyIntegrations(config: RootConfigService): JsonObject[] {
     ...convertGitea(integrations.getOptionalConfigArray('gitea') ?? []),
     ...convertGithub(integrations.getOptionalConfigArray('github') ?? []),
     ...convertGitlab(integrations.getOptionalConfigArray('gitlab') ?? []),
-    ...convertGoogleGcs(integrations.getOptionalConfigArray('googleGcs') ?? []),
+    ...convertGoogleGcs(integrations.getOptionalConfig('googleGcs')),
     ...convertHarness(integrations.getOptionalConfigArray('harness') ?? []),
   ];
 }
@@ -77,7 +78,8 @@ function convertGithub(entries: Config[]): JsonObject[] {
 
     return omitUndefined({
       type: 'github',
-      host: entry.getOptionalString('host'),
+      // The legacy reader defaults the host in the same way
+      host: entry.getOptionalString('host') ?? 'github.com',
       apiBaseUrl: entry.getOptionalString('apiBaseUrl'),
       rawBaseUrl: entry.getOptionalString('rawBaseUrl'),
       auth: withNoneAuthFallback(auth),
@@ -130,7 +132,8 @@ function convertAzure(entries: Config[]): JsonObject[] {
 
     return omitUndefined({
       type: 'azure',
-      host: entry.getOptionalString('host'),
+      // The legacy reader defaults the host in the same way
+      host: entry.getOptionalString('host') ?? 'dev.azure.com',
       auth: withNoneAuthFallback(auth),
     });
   });
@@ -270,31 +273,45 @@ function convertGitea(entries: Config[]): JsonObject[] {
 }
 
 function convertHarness(entries: Config[]): JsonObject[] {
-  return entries.map(entry => {
-    const auth: JsonObject[] = [];
-
+  return entries.flatMap(entry => {
+    // The harness connection type has no anonymous or apiKey-only auth
+    // method, so entries without a token cannot be represented and are
+    // skipped rather than converted into an invalid connection.
     const token = entry.getOptionalString('token');
-    if (token !== undefined) {
-      const apiKey = entry.getOptionalString('apiKey');
-      auth.push(omitUndefined({ method: 'token', token, apiKey }));
+    if (token === undefined) {
+      return [];
     }
 
-    return omitUndefined({
-      type: 'harness',
-      host: entry.getOptionalString('host'),
-      auth,
-    });
+    const apiKey = entry.getOptionalString('apiKey');
+
+    return [
+      omitUndefined({
+        type: 'harness',
+        host: entry.getOptionalString('host'),
+        auth: [omitUndefined({ method: 'token', token, apiKey })],
+      }),
+    ];
   });
 }
 
 function convertAws(aws: Config): JsonObject {
   const auth: JsonObject[] = [];
 
+  // Legacy config allowed duplicate account IDs, resolving lookups with the
+  // first matching entry, so later duplicates are dropped.
+  const seenAccountIds = new Set<string>();
   for (const account of aws.getOptionalConfigArray('accounts') ?? []) {
+    const accountId = account.getOptionalString('accountId');
+    if (accountId !== undefined) {
+      if (seenAccountIds.has(accountId)) {
+        continue;
+      }
+      seenAccountIds.add(accountId);
+    }
     auth.push(
       omitUndefined({
         method: 'account',
-        accountId: account.getOptionalString('accountId'),
+        accountId,
         accessKeyId: account.getOptionalString('accessKeyId'),
         secretAccessKey: account.getOptionalString('secretAccessKey'),
         profile: account.getOptionalString('profile'),
@@ -389,7 +406,9 @@ function convertAwsS3(entries: Config[]): JsonObject[] {
     }
 
     const endpoint = entry.getOptionalString('endpoint');
-    const host = endpoint ? new URL(endpoint).host : 'amazonaws.com';
+    const host = endpoint
+      ? parseEndpointHost(endpoint, 'integrations.awsS3')
+      : 'amazonaws.com';
 
     return omitUndefined({
       type: 'aws-s3',
@@ -431,7 +450,7 @@ function convertAzureBlobStorage(entries: Config[]): JsonObject[] {
 
     const endpoint = entry.getOptionalString('endpoint');
     const host = endpoint
-      ? new URL(endpoint).host
+      ? parseEndpointHost(endpoint, 'integrations.azureBlobStorage')
       : entry.getOptionalString('host') ?? 'blob.core.windows.net';
 
     return omitUndefined({
@@ -445,26 +464,46 @@ function convertAzureBlobStorage(entries: Config[]): JsonObject[] {
   });
 }
 
-function convertGoogleGcs(entries: Config[]): JsonObject[] {
-  return entries.map(entry => {
-    const auth: JsonObject[] = [];
+// Unlike the other legacy integrations, googleGcs is a single object rather
+// than an array of entries.
+function convertGoogleGcs(gcs: Config | undefined): JsonObject[] {
+  if (!gcs) {
+    return [];
+  }
 
-    const clientEmail = entry.getOptionalString('clientEmail');
-    const privateKey = entry.getOptionalString('privateKey');
-    if (clientEmail !== undefined && privateKey !== undefined) {
-      auth.push({ method: 'serviceAccount', clientEmail, privateKey });
-    }
+  const auth: JsonObject[] = [];
 
-    return {
+  const clientEmail = gcs.getOptionalString('clientEmail');
+  const privateKey = gcs.getOptionalString('privateKey');
+  if (clientEmail !== undefined && privateKey !== undefined) {
+    auth.push({
+      method: 'serviceAccount',
+      clientEmail,
+      // The legacy reader restores escaped newlines to support single-line
+      // private keys from environment variables.
+      privateKey: privateKey.split('\\n').join('\n'),
+    });
+  }
+
+  return [
+    {
       type: 'google-gcs',
       host: 'storage.cloud.google.com',
       auth: withNoneAuthFallback(auth),
-    };
-  });
+    },
+  ];
 }
 
 function withNoneAuthFallback(auth: JsonObject[]): JsonObject[] {
   return auth.length > 0 ? auth : [{ method: 'none' }];
+}
+
+function parseEndpointHost(endpoint: string, key: string): string {
+  try {
+    return new URL(endpoint).host;
+  } catch {
+    throw new InputError(`Invalid endpoint URL "${endpoint}" in ${key} config`);
+  }
 }
 
 function omitUndefined(

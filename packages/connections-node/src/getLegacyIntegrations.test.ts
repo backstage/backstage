@@ -185,6 +185,24 @@ describe('getLegacyIntegrations', () => {
       ]);
     });
 
+    it('defaults the host to github.com like the legacy reader', () => {
+      const config = mockServices.rootConfig({
+        data: {
+          integrations: {
+            github: [{ token: 'gh-token' }],
+          },
+        },
+      });
+
+      expect(getLegacyIntegrations(config)).toEqual([
+        {
+          type: 'github',
+          host: 'github.com',
+          auth: [{ method: 'token', token: 'gh-token' }],
+        },
+      ]);
+    });
+
     it('produces output that validates against the github connection schema', () => {
       const config = mockServices.rootConfig({
         data: {
@@ -575,6 +593,24 @@ describe('getLegacyIntegrations', () => {
       ]);
     });
 
+    it('defaults the host to dev.azure.com like the legacy reader', () => {
+      const config = mockServices.rootConfig({
+        data: {
+          integrations: {
+            azure: [{ credentials: [{ personalAccessToken: 'pat' }] }],
+          },
+        },
+      });
+
+      expect(getLegacyIntegrations(config)).toEqual([
+        {
+          type: 'azure',
+          host: 'dev.azure.com',
+          auth: [{ method: 'pat', personalAccessToken: 'pat' }],
+        },
+      ]);
+    });
+
     it('produces output that validates against the azure connection schema', () => {
       const config = mockServices.rootConfig({
         data: {
@@ -789,6 +825,40 @@ describe('getLegacyIntegrations', () => {
       ]);
     });
 
+    it('keeps the first entry when accounts duplicate an account ID, matching the legacy lookup behavior', () => {
+      const config = mockServices.rootConfig({
+        data: {
+          aws: {
+            accounts: [
+              {
+                accountId: '111111111111',
+                accessKeyId: 'first-key',
+                secretAccessKey: 'first-secret',
+              },
+              {
+                accountId: '111111111111',
+                accessKeyId: 'second-key',
+                secretAccessKey: 'second-secret',
+              },
+            ],
+          },
+        },
+      });
+
+      const [converted] = getLegacyIntegrations(config);
+      const accounts = (converted.auth as { accountId?: string }[]).filter(
+        a => a.accountId === '111111111111',
+      );
+      expect(accounts).toEqual([
+        {
+          method: 'account',
+          accountId: '111111111111',
+          accessKeyId: 'first-key',
+          secretAccessKey: 'first-secret',
+        },
+      ]);
+    });
+
     it('produces output that validates against the aws connection schema', () => {
       const config = mockServices.rootConfig({
         data: {
@@ -991,6 +1061,20 @@ describe('getLegacyIntegrations', () => {
       ]);
     });
 
+    it('throws a friendly error for an invalid endpoint URL', () => {
+      const config = mockServices.rootConfig({
+        data: {
+          integrations: {
+            awsS3: [{ endpoint: 'not a url' }],
+          },
+        },
+      });
+
+      expect(() => getLegacyIntegrations(config)).toThrow(
+        'Invalid endpoint URL "not a url" in integrations.awsS3 config',
+      );
+    });
+
     it('produces output that validates against the aws-s3 connection schema', () => {
       const config = mockServices.rootConfig({
         data: {
@@ -1014,17 +1098,15 @@ describe('getLegacyIntegrations', () => {
   });
 
   describe('googleGcs', () => {
-    it('emits a serviceAccount auth method when clientEmail and privateKey are both present', () => {
+    it('converts the single googleGcs object to a connection with a serviceAccount auth method', () => {
       const config = mockServices.rootConfig({
         data: {
           integrations: {
-            googleGcs: [
-              {
-                clientEmail: 'sa@project.iam.gserviceaccount.com',
-                privateKey:
-                  '-----BEGIN RSA PRIVATE KEY-----\nkey\n-----END RSA PRIVATE KEY-----',
-              },
-            ],
+            googleGcs: {
+              clientEmail: 'sa@project.iam.gserviceaccount.com',
+              privateKey:
+                '-----BEGIN RSA PRIVATE KEY-----\nkey\n-----END RSA PRIVATE KEY-----',
+            },
           },
         },
       });
@@ -1045,11 +1127,30 @@ describe('getLegacyIntegrations', () => {
       ]);
     });
 
+    it('restores escaped newlines in the private key like the legacy reader', () => {
+      const config = mockServices.rootConfig({
+        data: {
+          integrations: {
+            googleGcs: {
+              clientEmail: 'sa@project.iam.gserviceaccount.com',
+              privateKey:
+                '-----BEGIN RSA PRIVATE KEY-----\\nkey\\n-----END RSA PRIVATE KEY-----',
+            },
+          },
+        },
+      });
+
+      const [converted] = getLegacyIntegrations(config);
+      expect((converted.auth as [{ privateKey: string }])[0].privateKey).toBe(
+        '-----BEGIN RSA PRIVATE KEY-----\nkey\n-----END RSA PRIVATE KEY-----',
+      );
+    });
+
     it('uses none auth when no explicit credentials are configured', () => {
       const config = mockServices.rootConfig({
         data: {
           integrations: {
-            googleGcs: [{}],
+            googleGcs: {},
           },
         },
       });
@@ -1067,12 +1168,10 @@ describe('getLegacyIntegrations', () => {
       const config = mockServices.rootConfig({
         data: {
           integrations: {
-            googleGcs: [
-              {
-                clientEmail: 'sa@project.iam.gserviceaccount.com',
-                privateKey: 'pk',
-              },
-            ],
+            googleGcs: {
+              clientEmail: 'sa@project.iam.gserviceaccount.com',
+              privateKey: 'pk',
+            },
           },
         },
       });
@@ -1207,6 +1306,20 @@ describe('getLegacyIntegrations', () => {
       });
     });
 
+    it('throws a friendly error for an invalid endpoint URL', () => {
+      const config = mockServices.rootConfig({
+        data: {
+          integrations: {
+            azureBlobStorage: [{ endpoint: 'not a url' }],
+          },
+        },
+      });
+
+      expect(() => getLegacyIntegrations(config)).toThrow(
+        'Invalid endpoint URL "not a url" in integrations.azureBlobStorage config',
+      );
+    });
+
     it('produces output that validates against the azure-blob-storage connection schema', () => {
       const config = mockServices.rootConfig({
         data: {
@@ -1235,7 +1348,7 @@ describe('getLegacyIntegrations', () => {
   });
 
   describe('harness', () => {
-    it('emits separate apiKey and token auth methods', () => {
+    it('emits a token auth method carrying the optional apiKey', () => {
       const config = mockServices.rootConfig({
         data: {
           integrations: {
@@ -1255,6 +1368,28 @@ describe('getLegacyIntegrations', () => {
           type: 'harness',
           host: 'app.harness.io',
           auth: [{ method: 'token', token: 'tok', apiKey: 'ak' }],
+        },
+      ]);
+    });
+
+    it('skips entries without a token, which cannot be represented as a connection', () => {
+      const config = mockServices.rootConfig({
+        data: {
+          integrations: {
+            harness: [
+              { host: 'app.harness.io', apiKey: 'ak' },
+              { host: 'other.harness.io' },
+              { host: 'kept.harness.io', token: 'tok' },
+            ],
+          },
+        },
+      });
+
+      expect(getLegacyIntegrations(config)).toEqual([
+        {
+          type: 'harness',
+          host: 'kept.harness.io',
+          auth: [{ method: 'token', token: 'tok' }],
         },
       ]);
     });
