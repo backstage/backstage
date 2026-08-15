@@ -161,7 +161,7 @@ export default ({ theme }: RuleOptions) => `
       : alpha(theme.palette.warning.light, 0.5)
   };
   --md-typeset-kbd-color: var(--md-code-bg-color);
-  --md-typeset-kbd-accent-color var(--md-code-bg-color);
+  --md-typeset-kbd-accent-color: var(--md-code-bg-color);
   --md-typeset-kbd-border-color: var(--md-default-fg-color--light);
 }
 
@@ -178,7 +178,4 @@ export default ({ theme }: RuleOptions) => `
     --md-typeset-font-size: .7rem;
   }
 }
-
-  --md-footer-bg-color: var(--md-default-bg-color);
-  --md-footer-bg-color--dark: var(--md-default-bg-color);
 `;
