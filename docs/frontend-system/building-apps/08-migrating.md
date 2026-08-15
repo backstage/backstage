@@ -902,6 +902,17 @@ Once the cleanup is complete you should be left with clean entity pages that are
 
 Migrating across the tabs for the Entity Pages should be as simple as removing the `EntityLayout.Route` for each of the plugins that provide tab content, and then this tab should be sourced from the `EntityContent` extensions created by the plugins themselves which will be automatically detected and added to the App.
 
+##### Adding custom cards and tabs
+
+To add new content to an entity page, use `EntityCardBlueprint` for overview
+cards and `EntityContentBlueprint` for tab content. These extensions are
+discovered by the catalog plugin and avoid adding new components to the legacy
+`EntityPage` tree. `EntityContentBlueprint` also supports grouping tab content
+through its `group` configuration. See [Plugin specific
+extensions](../building-plugins/01-index.md#plugin-specific-extensions) for an
+entity content example and [the Catalog extension blueprints](../building-plugins/03-common-extension-blueprints.md)
+for card, content, and tab configuration details.
+
 ## Enable the new templates for `yarn new`
 
 It's encouraged that once you switch over to using the new frontend system, that new plugins that you create are using the new frontend system. This means that you're not instantly creating legacy plugins that will eventually need migration.
