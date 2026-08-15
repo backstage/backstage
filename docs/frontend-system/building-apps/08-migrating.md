@@ -273,6 +273,24 @@ If your app starts and works in hybrid mode, you’re ready to begin Phase 2. If
 
 At this point, the contents of your app should have moved past the initial migration stage. Let's continue by gradually removing legacy code and helpers to fully adopt the new system.
 
+### Choose a customization mechanism
+
+During Phase 2, prefer the least invasive mechanism that meets your needs.
+This keeps your app closer to the default frontend system and reduces the
+amount of migration code that you need to maintain.
+
+| When you need to... | Use... |
+| :------------------ | :----- |
+| Change behavior that an extension already exposes as a setting. | The extension's configuration. |
+| Add a new page, app root element, theme, API, or other independent extension. | An extension blueprint and a frontend module. |
+| Change an existing extension in a way that its configuration and inputs do not support. | An extension override. Keep the override focused on the missing customization. |
+| Preserve existing legacy app code while you migrate it. | The compatibility helpers in Phase 1, then remove them as the corresponding code is migrated. |
+
+For an overview of available blueprints, look for `*Blueprint` exports in the
+relevant frontend package. Before adding an override, check the extension's
+configuration and inputs. Those mechanisms are intended for common
+customizations and avoid replacing extension behavior.
+
 ### Migrating `createApp` options
 
 Many of the `createApp` options have been migrated to use extensions instead. Each will have their own [extension blueprint](../architecture/23-extension-blueprints.md) that you use to create a custom extension. To add these standalone extensions to the app they need to be passed to `createFrontendModule`, which bundles them into a _feature_ that you can install in the app. See the [frontend module](../architecture/25-extension-overrides.md#creating-a-frontend-module) section for more information.
