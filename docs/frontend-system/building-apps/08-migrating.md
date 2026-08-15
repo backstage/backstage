@@ -962,5 +962,7 @@ If you have a use case where these are required, please reach out to us either t
 
 ## Next Steps
 
+- Explore the [Backstage demo repository](https://github.com/backstage/demo),
+  which uses the new frontend system, for a complete app reference.
 - See [architecture docs](../architecture/00-index.md) for more on the new system.
 - If you encounter issues, check [GitHub issues](https://github.com/backstage/backstage/issues) or ask in [Discord](https://discord.gg/backstage-687207715902193673).
