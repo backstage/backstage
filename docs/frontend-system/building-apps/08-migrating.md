@@ -279,12 +279,12 @@ During Phase 2, prefer the least invasive mechanism that meets your needs.
 This keeps your app closer to the default frontend system and reduces the
 amount of migration code that you need to maintain.
 
-| When you need to... | Use... |
-| :------------------ | :----- |
-| Change behavior that an extension already exposes as a setting. | The extension's configuration. |
-| Add a new page, app root element, theme, API, or other independent extension. | An extension blueprint and a frontend module. |
-| Change an existing extension in a way that its configuration and inputs do not support. | An extension override. Keep the override focused on the missing customization. |
-| Preserve existing legacy app code while you migrate it. | The compatibility helpers in Phase 1, then remove them as the corresponding code is migrated. |
+| When you need to...                                                                     | Use...                                                                                        |
+| :-------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------- |
+| Change behavior that an extension already exposes as a setting.                         | The extension's configuration.                                                                |
+| Add a new page, app root element, theme, API, or other independent extension.           | An extension blueprint and a frontend module.                                                 |
+| Change an existing extension in a way that its configuration and inputs do not support. | An extension override. Keep the override focused on the missing customization.                |
+| Preserve existing legacy app code while you migrate it.                                 | The compatibility helpers in Phase 1, then remove them as the corresponding code is migrated. |
 
 For an overview of available blueprints, look for `*Blueprint` exports in the
 relevant frontend package. Before adding an override, check the extension's
