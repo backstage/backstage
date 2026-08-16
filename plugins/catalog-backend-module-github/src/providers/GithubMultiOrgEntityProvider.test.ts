@@ -958,6 +958,94 @@ describe('GithubMultiOrgEntityProvider', () => {
       });
     });
 
+    it('should skip an org and log a warning when no GitHub App installation is found for it', async () => {
+      entityProvider = new GithubMultiOrgEntityProvider({
+        id: 'my-id',
+        gitHubConfig,
+        githubCredentialsProvider: {
+          getCredentials: mockGetCredentials,
+        },
+        githubUrl: 'https://github.com',
+        logger,
+        orgs: ['orgA', 'orgB'],
+      });
+
+      await entityProvider.connect(entityProviderConnection);
+
+      const notFoundError = new Error(
+        'No app installation found for orgA in 12345',
+      );
+      notFoundError.name = 'NotFoundError';
+
+      mockGetCredentials
+        .mockRejectedValueOnce(notFoundError)
+        .mockResolvedValueOnce({
+          headers: { token: 'blah' },
+          type: 'app',
+        });
+
+      mockClient
+        .mockResolvedValueOnce({
+          organization: {
+            membersWithRole: {
+              pageInfo: { hasNextPage: false },
+              nodes: [],
+            },
+          },
+        })
+        .mockResolvedValueOnce({
+          organization: {
+            teams: {
+              pageInfo: { hasNextPage: false },
+              nodes: [],
+            },
+          },
+        });
+
+      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+
+      await entityProvider.read();
+
+      expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('orgA'));
+
+      expect(mockGetCredentials).toHaveBeenCalledWith({
+        url: 'https://github.com/orgA',
+      });
+      expect(mockGetCredentials).toHaveBeenCalledWith({
+        url: 'https://github.com/orgB',
+      });
+
+      // Only orgB should have actually been queried via the GraphQL client
+      expect(mockClient).toHaveBeenCalledTimes(2);
+
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+        entities: [],
+        type: 'full',
+      });
+    });
+
+    it('should rethrow non-NotFoundError errors from getCredentials', async () => {
+      entityProvider = new GithubMultiOrgEntityProvider({
+        id: 'my-id',
+        gitHubConfig,
+        githubCredentialsProvider: {
+          getCredentials: mockGetCredentials,
+        },
+        githubUrl: 'https://github.com',
+        logger,
+        orgs: ['orgA'],
+      });
+
+      await entityProvider.connect(entityProviderConnection);
+
+      mockGetCredentials.mockRejectedValueOnce(new Error('Some other error'));
+
+      await expect(entityProvider.read()).rejects.toThrow('Some other error');
+
+      expect(logger.warn).not.toHaveBeenCalled();
+      expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
+    });
+
     it('should not call applyMutation if an error is thrown', async () => {
       entityProvider = new GithubMultiOrgEntityProvider({
         id: 'my-id',

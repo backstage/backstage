@@ -28,6 +28,7 @@ import { Config } from '@backstage/config';
 import {
   DefaultGithubCredentialsProvider,
   GithubAppCredentialsMux,
+  GithubCredentials,
   GithubCredentialsProvider,
   GithubIntegrationConfig,
   ScmIntegrations,
@@ -97,6 +98,12 @@ const EVENT_TOPICS = [
   'github.organization',
   'github.team',
 ];
+
+// The credentials provider throws an `Error` named `NotFoundError` when a
+// GitHub App is not installed for the requested org/owner.
+function isNotFoundError(error: unknown): boolean {
+  return error instanceof Error && error.name === 'NotFoundError';
+}
 
 /**
  * Options for {@link GithubMultiOrgEntityProvider}.
@@ -361,10 +368,22 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       : await this.getAllOrgs(this.options.gitHubConfig);
 
     for (const org of orgsToProcess) {
-      const { headers, type: tokenType } =
-        await this.options.githubCredentialsProvider.getCredentials({
-          url: `${this.options.githubUrl}/${org}`,
-        });
+      let headers: GithubCredentials['headers'];
+      let tokenType: GithubCredentials['type'];
+      try {
+        ({ headers, type: tokenType } =
+          await this.options.githubCredentialsProvider.getCredentials({
+            url: `${this.options.githubUrl}/${org}`,
+          }));
+      } catch (error) {
+        if (isNotFoundError(error)) {
+          logger.warn(
+            `Skipping org '${org}' as no GitHub App installation was found for it. This usually means the GitHub App has not been installed for this organization, or was installed by a user without owner permissions. See https://backstage.io/docs/integrations/github/github-apps for more details.`,
+          );
+          continue;
+        }
+        throw error;
+      }
       const client = graphql.defaults({
         baseUrl: this.options.gitHubConfig.apiBaseUrl,
         headers,
