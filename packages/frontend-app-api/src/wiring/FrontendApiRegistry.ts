@@ -25,8 +25,6 @@ import {
 export class FrontendApiRegistry {
   private readonly factories = new Map<string, AnyApiFactory>();
 
-  // First write wins; use set/setAll if a later factory should override an
-  // earlier one for the same API ref.
   register(factory: AnyApiFactory) {
     if (this.factories.has(factory.api.id)) {
       return false;
