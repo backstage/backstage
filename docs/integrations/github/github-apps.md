@@ -180,3 +180,15 @@ is the result of not installing the app in your organization. Even if created vi
 as a member and app manager of your organization, the app will not automatically install. You
 must possess the `Owner` role in the organization to see the `Install` menu under your
 app settings, then manually press `Install` to authorize the application.
+
+If you're using `GithubMultiOrgEntityProvider` to ingest from multiple orgs, a missing
+installation for one org no longer aborts ingestion for the rest. Instead, that org is skipped
+and a warning is logged:
+
+```text
+Skipping org 'my-org' as no GitHub App installation was found for it. This usually means the
+GitHub App has not been installed for this organization, or was installed by a user without
+owner permissions. See https://backstage.io/docs/integrations/github/github-apps for more details.
+```
+
+If you see this warning, follow the steps above to install the app for that organization.
