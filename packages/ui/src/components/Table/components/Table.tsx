@@ -134,12 +134,28 @@ export function Table<T extends TableItem>({
 
   const {
     mode: selectionMode,
-    selected: selectedKeys,
+    selected,
     behavior: selectionBehavior,
     onSelectionChange,
   } = selection || {};
 
+  // Rows are keyed by `String(item.id)`, so normalize selected keys to
+  // strings to also match items with numeric ids.
+  const selectedKeys = useMemo(() => {
+    if (selected === undefined || selected === 'all') {
+      return selected;
+    }
+    return new Set<Key>(Array.from(selected, key => String(key)));
+  }, [selected]);
+
   const isInitialLoading = pending && !data;
+
+  const liveRegionLabel = useLiveRegionLabel(
+    pagination,
+    isStale,
+    isInitialLoading,
+    data !== undefined,
+  );
 
   if (error) {
     return (
@@ -148,13 +164,6 @@ export function Table<T extends TableItem>({
       </div>
     );
   }
-
-  const liveRegionLabel = useLiveRegionLabel(
-    pagination,
-    isStale,
-    isInitialLoading,
-    data !== undefined,
-  );
 
   const manualColumnSizing = columnConfig.some(
     col =>
