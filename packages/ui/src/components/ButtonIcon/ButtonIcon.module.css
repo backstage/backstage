@@ -78,8 +78,8 @@
       outline-offset: 2px;
     }
   }
-  
-.bui-ButtonIcon[data-variant='primary'][data-destructive='true'] {
+
+  .bui-ButtonIcon[data-variant='primary'][data-destructive='true'] {
     --bg-solid-danger: #dc2626;
     --bg-solid-danger-hover: #b91c1c;
     --bg-solid-danger-pressed: #991b1b;
@@ -149,7 +149,7 @@
     }
   }
 
-.bui-ButtonIcon[data-variant='secondary'][data-destructive='true'] {
+  .bui-ButtonIcon[data-variant='secondary'][data-destructive='true'] {
     --bg-danger-hover: #fecaca;
     --bg-danger-pressed: #fca5a5;
 
@@ -209,7 +209,7 @@
     }
   }
 
-.bui-ButtonIcon[data-variant='tertiary'][data-destructive='true'] {
+  .bui-ButtonIcon[data-variant='tertiary'][data-destructive='true'] {
     --bg-danger-hover: #fecaca;
     --bg-danger-pressed: #fca5a5;
 
