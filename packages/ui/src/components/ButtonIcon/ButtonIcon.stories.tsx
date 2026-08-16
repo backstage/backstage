@@ -49,6 +49,69 @@ export const Variants = meta.story({
   ),
 });
 
+export const Destructive = meta.story({
+  render: () => (
+    <Flex direction="column" gap="4">
+      <Flex direction="column" gap="4">
+        <Text>Primary Destructive</Text>
+        <Flex align="center" gap="4">
+          <ButtonIcon variant="primary" destructive icon={<RiCloudLine />} />
+          <ButtonIcon
+            variant="primary"
+            destructive
+            isDisabled
+            icon={<RiCloudLine />}
+          />
+          <ButtonIcon
+            variant="primary"
+            destructive
+            isPending
+            icon={<RiCloudLine />}
+          />
+        </Flex>
+      </Flex>
+
+      <Flex direction="column" gap="4">
+        <Text>Secondary Destructive</Text>
+        <Flex align="center" gap="4">
+          <ButtonIcon variant="secondary" destructive icon={<RiCloudLine />} />
+          <ButtonIcon
+            variant="secondary"
+            destructive
+            isDisabled
+            icon={<RiCloudLine />}
+          />
+          <ButtonIcon
+            variant="secondary"
+            destructive
+            isPending
+            icon={<RiCloudLine />}
+          />
+        </Flex>
+      </Flex>
+
+      <Flex direction="column" gap="4">
+        <Text>Tertiary Destructive</Text>
+        <Flex align="center" gap="4">
+          <ButtonIcon variant="tertiary" destructive icon={<RiCloudLine />} />
+          <ButtonIcon
+            variant="tertiary"
+            destructive
+            isDisabled
+            icon={<RiCloudLine />}
+          />
+          <ButtonIcon
+            variant="tertiary"
+            destructive
+            isPending
+            icon={<RiCloudLine />}
+          />
+        </Flex>
+      </Flex>
+    </Flex>
+  ),
+});
+
 export const Sizes = meta.story({
   render: () => (
     <Flex align="center" gap="2">
