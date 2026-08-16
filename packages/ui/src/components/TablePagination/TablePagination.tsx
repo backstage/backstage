@@ -74,24 +74,37 @@ export function TablePagination(props: TablePaginationProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const previousButtonRef = useRef<HTMLButtonElement>(null);
   const nextButtonRef = useRef<HTMLButtonElement>(null);
+  const focusedButtonRef = useRef<'previous' | 'next' | null>(null);
 
   // When the focused navigation button becomes disabled (for example after
   // reaching the last page, or while a page is loading), browsers drop focus
   // to the document body. Keep keyboard users in place by moving focus to
   // the other navigation button, or to the pagination container as a
-  // fallback. A layout effect is used so focus is moved before the browser's
-  // focus fixup runs for the newly disabled element.
+  // fallback. Browsers blur a button synchronously when it becomes disabled,
+  // so track which button was focused via focus/blur events instead of
+  // reading `document.activeElement` after the fact.
+  const trackFocus = (button: 'previous' | 'next') => ({
+    onFocus: () => {
+      focusedButtonRef.current = button;
+    },
+    onBlur: (event: React.FocusEvent) => {
+      // A blur without a relatedTarget means focus was lost (e.g. the button
+      // became disabled) rather than moved elsewhere by the user.
+      if (event.relatedTarget !== null) {
+        focusedButtonRef.current = null;
+      }
+    },
+  });
+
   useIsomorphicLayoutEffect(() => {
-    if (typeof document === 'undefined') {
-      return;
-    }
-    const active = document.activeElement;
+    const focused = focusedButtonRef.current;
     const focusedDisabled =
-      (!hasNextPage && active === nextButtonRef.current) ||
-      (!hasPreviousPage && active === previousButtonRef.current);
+      (focused === 'next' && !hasNextPage) ||
+      (focused === 'previous' && !hasPreviousPage);
     if (!focusedDisabled) {
       return;
     }
+    focusedButtonRef.current = null;
     if (hasNextPage && nextButtonRef.current) {
       nextButtonRef.current.focus();
     } else if (hasPreviousPage && previousButtonRef.current) {
@@ -100,6 +113,7 @@ export function TablePagination(props: TablePaginationProps) {
       rootRef.current?.focus();
     }
   }, [hasNextPage, hasPreviousPage]);
+
   const normalizedOptions = useMemo(
     () => normalizePageSizeOptions(pageSizeOptions),
     [pageSizeOptions],
@@ -161,6 +175,7 @@ export function TablePagination(props: TablePaginationProps) {
         )}
         <ButtonIcon
           ref={previousButtonRef}
+          {...trackFocus('previous')}
           variant="secondary"
           size="small"
           onClick={onPreviousPage}
@@ -171,6 +186,7 @@ export function TablePagination(props: TablePaginationProps) {
         />
         <ButtonIcon
           ref={nextButtonRef}
+          {...trackFocus('next')}
           variant="secondary"
           size="small"
           onClick={onNextPage}

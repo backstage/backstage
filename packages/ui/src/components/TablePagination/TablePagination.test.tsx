@@ -205,6 +205,24 @@ describe('TablePagination', () => {
         </BUIProvider>
       );
     }
+    // Browsers synchronously blur a focused element the moment it becomes
+    // disabled (relatedTarget: null); jsdom does not, so emulate it at the
+    // point React sets the attribute, before layout effects run.
+    const originalSetAttribute = Element.prototype.setAttribute;
+    jest
+      .spyOn(Element.prototype, 'setAttribute')
+      .mockImplementation(function setAttribute(this: Element, name, value) {
+        originalSetAttribute.call(this, name, value);
+        if (name === 'disabled' && document.activeElement === this) {
+          (this as HTMLElement).blur();
+          this.dispatchEvent(
+            new FocusEvent('blur', { relatedTarget: null, bubbles: false }),
+          );
+          this.dispatchEvent(
+            new FocusEvent('focusout', { relatedTarget: null, bubbles: true }),
+          );
+        }
+      });
     render(<Harness />);
 
     act(() => nextButton().focus());
@@ -219,5 +237,6 @@ describe('TablePagination', () => {
     fireEvent.click(previousButton());
     expect(previousButton()).toBeDisabled();
     expect(nextButton()).toHaveFocus();
+    jest.restoreAllMocks();
   });
 });
