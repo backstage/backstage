@@ -8,19 +8,19 @@ Frontend plugin to view unprocessed entities.
 
 You can see entities that are in a failed state:
 
-![Example of failed entities tab](./docs/catalog-unprocessed-entities-failed.png)
+![Example of failed entities tab](https://raw.githubusercontent.com/backstage/backstage/master/plugins/catalog-unprocessed-entities/docs/catalog-unprocessed-entities-failed.png)
 
 ### Pending Entities
 
 You can see entities that are in a pending state:
 
-![Example of pending entities tab](./docs/catalog-unprocessed-entities-pending.png)
+![Example of pending entities tab](https://raw.githubusercontent.com/backstage/backstage/master/plugins/catalog-unprocessed-entities/docs/catalog-unprocessed-entities-pending.png)
 
 ### Raw View
 
 In either of the failed or pending tabs you have the option to see the raw entity as JSON:
 
-![Example of raw entity](./docs/catalog-unprocessed-entities-raw.png)
+![Example of raw entity](https://raw.githubusercontent.com/backstage/backstage/master/plugins/catalog-unprocessed-entities/docs/catalog-unprocessed-entities-raw.png)
 
 ## Requirements
 
