@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 import { renderInTestApp } from '@backstage/test-utils';
-import { screen } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import {
+  TemplateDirectoryAccess,
+  TemplateFileAccess,
+} from '../../../lib/filesystem';
 import { MockFileSystemAccess } from '../../../lib/filesystem/MockFileSystemAccess';
 import { DirectoryEditorProvider } from './DirectoryEditorContext';
 import { TemplateEditorBrowser } from './TemplateEditorBrowser';
@@ -42,5 +46,42 @@ describe('TemplateEditorBrowser', () => {
     await userEvent.click(screen.getByText('dir'));
     expect(screen.getByText('bar.txt')).toBeInTheDocument();
     expect(screen.getByText('baz.txt')).toBeInTheDocument();
+  });
+
+  it('does not render a stale error if the directory is cleared mid-reload', async () => {
+    let rejectFilePromise!: (reason: Error) => void;
+    const pendingFilePromise = new Promise<File>((_, reject) => {
+      rejectFilePromise = reject;
+    });
+
+    const mockFileAccess: TemplateFileAccess = {
+      path: 'template.yaml',
+      file: () => pendingFilePromise,
+      save: jest.fn(),
+    };
+
+    const mockDirectory: TemplateDirectoryAccess = {
+      listFiles: jest.fn().mockResolvedValue([mockFileAccess]),
+      createFile: jest.fn(),
+    };
+
+    const { rerender } = await renderInTestApp(
+      <DirectoryEditorProvider directory={mockDirectory}>
+        <TemplateEditorBrowser />
+      </DirectoryEditorProvider>,
+    );
+
+    rerender(
+      <DirectoryEditorProvider directory={undefined}>
+        <TemplateEditorBrowser />
+      </DirectoryEditorProvider>,
+    );
+
+    await act(async () => {
+      rejectFilePromise(new Error('Stale reload error'));
+      await new Promise<void>(resolve => setTimeout(resolve, 0));
+    });
+
+    expect(screen.queryByText('Stale reload error')).not.toBeInTheDocument();
   });
 });
