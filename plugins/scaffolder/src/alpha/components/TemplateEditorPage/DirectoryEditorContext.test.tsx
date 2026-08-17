@@ -39,6 +39,7 @@ class DeferredFileAccess implements TemplateFileAccess {
   readonly save = jest.fn().mockResolvedValue(undefined);
 
   #resolveFile!: (file: File) => void;
+  #rejectFile!: (error: Error) => void;
   #filePromise: Promise<File>;
 
   constructor(path: string) {
@@ -54,13 +55,18 @@ class DeferredFileAccess implements TemplateFileAccess {
     this.#resolveFile(createMockFile(this.path, content));
   }
 
+  reject(error: Error): void {
+    this.#rejectFile(error);
+  }
+
   reset(): void {
     this.#filePromise = this.createPendingPromise();
   }
 
   private createPendingPromise(): Promise<File> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       this.#resolveFile = resolve;
+      this.#rejectFile = reject;
     });
   }
 }
@@ -246,6 +252,103 @@ describe('DirectoryEditorProvider', () => {
       expect(loadedAheadOfTree.every(snapshot => snapshot.loaded <= 10)).toBe(
         true,
       );
+    });
+
+    it('resets loading to false and propagates error when listFiles rejects', async () => {
+      const paths = ['file1.txt'];
+      const directory = new DeferredDirectoryAccess(paths);
+
+      const { result } = renderHook(() => useDirectoryEditor(), {
+        wrapper: ({ children }: PropsWithChildren) => (
+          <DirectoryEditorProvider directory={directory}>
+            {children}
+          </DirectoryEditorProvider>
+        ),
+      });
+
+      await act(async () => {
+        directory.deferredFiles.get('file1.txt')!.complete();
+        await new Promise<void>(resolve => setTimeout(resolve, 0));
+      });
+
+      await waitFor(() => {
+        expect(result.current!.files).toHaveLength(1);
+      });
+
+      const editor = result.current!;
+      directory.listFiles.mockRejectedValueOnce(new Error('listFiles error'));
+
+      let error: Error | undefined;
+      await act(async () => {
+        try {
+          await editor.reload();
+        } catch (err) {
+          error = err as Error;
+        }
+      });
+
+      expect(error).toBeDefined();
+      expect(error?.message).toBe('listFiles error');
+      expect(editor.loading).toBe(false);
+    });
+
+    it('resets loading to false and propagates error when a file read rejects inside a chunk', async () => {
+      const paths = ['file1.txt', 'file2.txt'];
+      const directory = new DeferredDirectoryAccess(paths);
+
+      const { result } = renderHook(() => useDirectoryEditor(), {
+        wrapper: ({ children }: PropsWithChildren) => (
+          <DirectoryEditorProvider directory={directory}>
+            {children}
+          </DirectoryEditorProvider>
+        ),
+      });
+
+      for (const path of paths) {
+        await act(async () => {
+          directory.deferredFiles.get(path)!.complete();
+          await new Promise<void>(resolve => setTimeout(resolve, 0));
+        });
+      }
+
+      await waitFor(() => {
+        expect(result.current!.files).toHaveLength(2);
+      });
+
+      for (const deferredFile of directory.deferredFiles.values()) {
+        deferredFile.reset();
+      }
+
+      const editor = result.current!;
+      let reloadPromise!: Promise<void>;
+      await act(async () => {
+        reloadPromise = editor.reload();
+        await new Promise<void>(resolve => setTimeout(resolve, 0));
+      });
+
+      expect(editor.loading).toBe(true);
+
+      await act(async () => {
+        directory.deferredFiles.get('file1.txt')!.complete('content 1');
+        directory.deferredFiles
+          .get('file2.txt')!
+          .reject(new Error('Read failed'));
+        await new Promise<void>(resolve => setTimeout(resolve, 0));
+      });
+
+      let error: Error | undefined;
+      await act(async () => {
+        try {
+          await reloadPromise;
+        } catch (err) {
+          error = err as Error;
+        }
+      });
+
+      expect(error).toBeDefined();
+      expect(error?.message).toBe('Read failed');
+      expect(editor.loading).toBe(false);
+      expect(editor.files).toHaveLength(0);
     });
   });
 });

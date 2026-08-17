@@ -201,33 +201,36 @@ class DirectoryEditorManager implements DirectoryEditor {
     this.#totalFileCount = 0;
     this.#signalUpdate();
 
-    const fileAccesses = await this.#access.listFiles();
+    try {
+      const fileAccesses = await this.#access.listFiles();
 
-    this.#files.length = 0;
-    this.#totalFileCount = fileAccesses.length;
-    this.#signalUpdate();
+      this.#files.length = 0;
+      this.#totalFileCount = fileAccesses.length;
+      this.#signalUpdate();
 
-    for (let i = 0; i < fileAccesses.length; i += FILE_READ_CONCURRENCY) {
-      const chunk = fileAccesses.slice(i, i + FILE_READ_CONCURRENCY);
-      const managers = await Promise.all(
-        chunk.map(async fileAccess => {
-          const manager = new DirectoryEditorFileManager(
-            fileAccess,
-            this.#signalUpdate,
-          );
-          await manager.reload({ silent: true });
-          this.#loadedFileCount++;
-          this.#signalUpdate();
-          return manager;
-        }),
-      );
-      this.#files.push(...managers);
+      for (let i = 0; i < fileAccesses.length; i += FILE_READ_CONCURRENCY) {
+        const chunk = fileAccesses.slice(i, i + FILE_READ_CONCURRENCY);
+        const managers = await Promise.all(
+          chunk.map(async fileAccess => {
+            const manager = new DirectoryEditorFileManager(
+              fileAccess,
+              this.#signalUpdate,
+            );
+            await manager.reload({ silent: true });
+            this.#loadedFileCount++;
+            this.#signalUpdate();
+            return manager;
+          }),
+        );
+        this.#files.push(...managers);
+        this.#signalUpdate();
+      }
+
+      this.setSelectedFile(selectedPath);
+    } finally {
+      this.#loading = false;
       this.#signalUpdate();
     }
-
-    this.#loading = false;
-    this.setSelectedFile(selectedPath);
-    this.#signalUpdate();
   }
 
   subscribe(listener: () => void): () => void {
@@ -272,12 +275,12 @@ export function DirectoryEditorProvider(props: DirectoryEditorProviderProps) {
   const generationRef = useRef(0);
 
   useEffect(() => {
+    const generation = ++generationRef.current;
     if (!manager) {
       setError(undefined);
       return;
     }
 
-    const generation = ++generationRef.current;
     setError(undefined);
 
     manager
