@@ -15,11 +15,13 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { DefaultWorkspaceService } from './WorkspaceService';
+import {
+  DefaultWorkspaceService,
+  resolveWorkspaceProvider,
+} from './WorkspaceService';
 import { CurrentClaimedTask } from './StorageTaskBroker';
 import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { mockServices } from '@backstage/backend-test-utils';
 
 describe('DefaultWorkspaceService', () => {
   const mockTask: CurrentClaimedTask = {
@@ -29,13 +31,20 @@ describe('DefaultWorkspaceService', () => {
     createdBy: 'user:default/test',
   };
 
-  const mockLogger = mockServices.logger.mock();
-
   const createMockProvider = (): WorkspaceProvider => ({
     serializeWorkspace: jest.fn(),
     rehydrateWorkspace: jest.fn(),
     cleanWorkspace: jest.fn(),
   });
+
+  const createService = (
+    config: ConfigReader,
+    workspaceProviders: Record<string, WorkspaceProvider>,
+  ) =>
+    DefaultWorkspaceService.create(
+      mockTask,
+      resolveWorkspaceProvider(workspaceProviders, config),
+    );
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -46,12 +55,7 @@ describe('DefaultWorkspaceService', () => {
       const config = new ConfigReader({});
       const mockProvider = createMockProvider();
 
-      const service = DefaultWorkspaceService.create(
-        mockTask,
-        { database: mockProvider },
-        config,
-        mockLogger,
-      );
+      const service = createService(config, { database: mockProvider });
 
       await service.serializeWorkspace({ path: '/tmp/test' });
       expect(mockProvider.serializeWorkspace).not.toHaveBeenCalled();
@@ -67,12 +71,7 @@ describe('DefaultWorkspaceService', () => {
       });
       const mockProvider = createMockProvider();
 
-      const service = DefaultWorkspaceService.create(
-        mockTask,
-        { database: mockProvider },
-        config,
-        mockLogger,
-      );
+      const service = createService(config, { database: mockProvider });
 
       await service.serializeWorkspace({ path: '/tmp/test' });
       expect(mockProvider.serializeWorkspace).toHaveBeenCalledWith({
@@ -92,19 +91,17 @@ describe('DefaultWorkspaceService', () => {
       const customProvider = createMockProvider();
       const databaseProvider = createMockProvider();
 
-      const service = DefaultWorkspaceService.create(
-        mockTask,
-        { database: databaseProvider, custom: customProvider },
-        config,
-        mockLogger,
-      );
+      const service = createService(config, {
+        database: databaseProvider,
+        custom: customProvider,
+      });
 
       await service.serializeWorkspace({ path: '/tmp/test' });
       expect(customProvider.serializeWorkspace).toHaveBeenCalled();
       expect(databaseProvider.serializeWorkspace).not.toHaveBeenCalled();
     });
 
-    it('should fallback to EXPERIMENTAL_workspaceSerializationProvider', async () => {
+    it('should not enable serialization from the legacy provider setting alone', async () => {
       const config = new ConfigReader({
         scaffolder: {
           EXPERIMENTAL_workspaceSerializationProvider: 'database',
@@ -112,15 +109,33 @@ describe('DefaultWorkspaceService', () => {
       });
       const mockProvider = createMockProvider();
 
-      const service = DefaultWorkspaceService.create(
-        mockTask,
-        { database: mockProvider },
-        config,
-        mockLogger,
-      );
+      const service = createService(config, { database: mockProvider });
 
       await service.serializeWorkspace({ path: '/tmp/test' });
-      expect(mockProvider.serializeWorkspace).toHaveBeenCalled();
+      expect(mockProvider.serializeWorkspace).not.toHaveBeenCalled();
+    });
+
+    it('should use the legacy provider when legacy serialization is enabled', async () => {
+      const config = new ConfigReader({
+        scaffolder: {
+          EXPERIMENTAL_workspaceSerialization: true,
+          EXPERIMENTAL_workspaceSerializationProvider: 'custom',
+        },
+      });
+      const customProvider = createMockProvider();
+      const databaseProvider = createMockProvider();
+
+      const service = createService(config, {
+        database: databaseProvider,
+        custom: customProvider,
+      });
+
+      await service.serializeWorkspace({ path: '/tmp/test' });
+      expect(customProvider.serializeWorkspace).toHaveBeenCalledWith({
+        path: '/tmp/test',
+        taskId: 'test-task-id',
+      });
+      expect(databaseProvider.serializeWorkspace).not.toHaveBeenCalled();
     });
 
     it('should fallback to EXPERIMENTAL_workspaceSerialization boolean', async () => {
@@ -131,12 +146,7 @@ describe('DefaultWorkspaceService', () => {
       });
       const mockProvider = createMockProvider();
 
-      const service = DefaultWorkspaceService.create(
-        mockTask,
-        { database: mockProvider },
-        config,
-        mockLogger,
-      );
+      const service = createService(config, { database: mockProvider });
 
       await service.serializeWorkspace({ path: '/tmp/test' });
       expect(mockProvider.serializeWorkspace).toHaveBeenCalled();
@@ -154,16 +164,28 @@ describe('DefaultWorkspaceService', () => {
       const customProvider = createMockProvider();
       const databaseProvider = createMockProvider();
 
-      const service = DefaultWorkspaceService.create(
-        mockTask,
-        { database: databaseProvider, custom: customProvider },
-        config,
-        mockLogger,
-      );
+      const service = createService(config, {
+        database: databaseProvider,
+        custom: customProvider,
+      });
 
       await service.serializeWorkspace({ path: '/tmp/test' });
       expect(customProvider.serializeWorkspace).toHaveBeenCalled();
       expect(databaseProvider.serializeWorkspace).not.toHaveBeenCalled();
+    });
+
+    it('should reject a configured provider that is not registered', () => {
+      const config = new ConfigReader({
+        scaffolder: {
+          taskRecovery: {
+            workspaceProvider: 'missing',
+          },
+        },
+      });
+
+      expect(() =>
+        resolveWorkspaceProvider({ database: createMockProvider() }, config),
+      ).toThrow("Workspace provider 'missing' is configured but not available");
     });
   });
 
@@ -178,12 +200,7 @@ describe('DefaultWorkspaceService', () => {
       });
       const mockProvider = createMockProvider();
 
-      const service = DefaultWorkspaceService.create(
-        mockTask,
-        { database: mockProvider },
-        config,
-        mockLogger,
-      );
+      const service = createService(config, { database: mockProvider });
 
       await service.cleanWorkspace();
       expect(mockProvider.cleanWorkspace).toHaveBeenCalledWith({
@@ -195,12 +212,7 @@ describe('DefaultWorkspaceService', () => {
       const config = new ConfigReader({});
       const mockProvider = createMockProvider();
 
-      const service = DefaultWorkspaceService.create(
-        mockTask,
-        { database: mockProvider },
-        config,
-        mockLogger,
-      );
+      const service = createService(config, { database: mockProvider });
 
       await service.cleanWorkspace();
       expect(mockProvider.cleanWorkspace).not.toHaveBeenCalled();
@@ -218,12 +230,7 @@ describe('DefaultWorkspaceService', () => {
       });
       const mockProvider = createMockProvider();
 
-      const service = DefaultWorkspaceService.create(
-        mockTask,
-        { database: mockProvider },
-        config,
-        mockLogger,
-      );
+      const service = createService(config, { database: mockProvider });
 
       await service.rehydrateWorkspace({
         taskId: 'test-task-id',
@@ -239,12 +246,7 @@ describe('DefaultWorkspaceService', () => {
       const config = new ConfigReader({});
       const mockProvider = createMockProvider();
 
-      const service = DefaultWorkspaceService.create(
-        mockTask,
-        { database: mockProvider },
-        config,
-        mockLogger,
-      );
+      const service = createService(config, { database: mockProvider });
 
       await service.rehydrateWorkspace({
         taskId: 'test-task-id',

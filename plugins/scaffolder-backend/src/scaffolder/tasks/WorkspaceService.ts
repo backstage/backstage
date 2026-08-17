@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
-import { CurrentClaimedTask } from './StorageTaskBroker';
-import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
+import type { Config } from '@backstage/config';
+import type { CurrentClaimedTask } from './StorageTaskBroker';
+import type { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
 import fs from 'fs-extra';
-import { LoggerService } from '@backstage/backend-plugin-api';
 
 export interface WorkspaceService {
   serializeWorkspace(options: { path: string }): Promise<void>;
@@ -31,41 +30,48 @@ export interface WorkspaceService {
   }): Promise<void>;
 }
 
+export function resolveWorkspaceProvider(
+  workspaceProviders?: Record<string, WorkspaceProvider>,
+  config?: Config,
+): WorkspaceProvider | undefined {
+  const legacySerializationEnabled =
+    config?.getOptionalBoolean(
+      'scaffolder.EXPERIMENTAL_workspaceSerialization',
+    ) ?? false;
+  const providerName =
+    config?.getOptionalString('scaffolder.taskRecovery.workspaceProvider') ??
+    (legacySerializationEnabled
+      ? config?.getOptionalString(
+          'scaffolder.EXPERIMENTAL_workspaceSerializationProvider',
+        ) ?? 'database'
+      : undefined);
+
+  if (!providerName) {
+    return undefined;
+  }
+
+  const workspaceProvider =
+    workspaceProviders &&
+    Object.prototype.hasOwnProperty.call(workspaceProviders, providerName)
+      ? workspaceProviders[providerName]
+      : undefined;
+
+  if (!workspaceProvider) {
+    throw new Error(
+      `Workspace provider '${providerName}' is configured but not available. ` +
+        `Make sure to install and register the corresponding module. ` +
+        `For database storage, add '@backstage/plugin-scaffolder-backend-module-workspace-database'.`,
+    );
+  }
+
+  return workspaceProvider;
+}
+
 export class DefaultWorkspaceService implements WorkspaceService {
   static create(
     task: CurrentClaimedTask,
-    workspaceProviders?: Record<string, WorkspaceProvider>,
-    config?: Config,
-    logger?: LoggerService,
+    workspaceProvider?: WorkspaceProvider,
   ) {
-    // New config path with fallback to old experimental flags
-    const providerName =
-      config?.getOptionalString('scaffolder.taskRecovery.workspaceProvider') ??
-      config?.getOptionalString(
-        'scaffolder.EXPERIMENTAL_workspaceSerializationProvider',
-      ) ??
-      (config?.getOptionalBoolean(
-        'scaffolder.EXPERIMENTAL_workspaceSerialization',
-      )
-        ? 'database'
-        : undefined);
-
-    if (!providerName) {
-      return new DefaultWorkspaceService(task, undefined);
-    }
-
-    const workspaceProvider = workspaceProviders?.[providerName];
-
-    if (!workspaceProvider) {
-      logger?.warn(
-        `Workspace provider '${providerName}' is configured but not available. ` +
-          `Make sure to install the corresponding module. ` +
-          `For database storage, add '@backstage/plugin-scaffolder-backend-module-workspace-database'. ` +
-          `Workspace serialization will be disabled.`,
-      );
-      return new DefaultWorkspaceService(task, undefined);
-    }
-
     return new DefaultWorkspaceService(task, workspaceProvider);
   }
 

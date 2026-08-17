@@ -16,6 +16,8 @@ Please leave feedback on these features in the [Backstage Discord](https://disco
 
 Task recovery has been promoted from experimental to a stable feature. See the [Task Recovery configuration docs](./configuration.md#task-recovery) for the current setup guide.
 
+The workspace provider extension point remains an alpha API.
+
 The experimental flags (`EXPERIMENTAL_recoverTasks`, `EXPERIMENTAL_workspaceSerialization`, etc.) and the per-template `EXPERIMENTAL_recovery` field are still supported as fallbacks but are deprecated and will be removed in a future release.
 
 :::

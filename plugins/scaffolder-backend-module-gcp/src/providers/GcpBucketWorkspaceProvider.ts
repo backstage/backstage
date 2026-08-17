@@ -64,17 +64,9 @@ export class GcpBucketWorkspaceProvider implements WorkspaceProvider {
       .bucket(this.getGcpBucketName())
       .file(options.taskId);
     const { contents: workspace } = await serializeWorkspace(options);
-    try {
-      await fileCloud.save(workspace, {
-        contentType: 'application/x-tar',
-      });
-    } catch (err) {
-      this.logger.error(
-        `An error occurred during uploading the workspace of task ${
-          options.taskId
-        } into GCP bucket ${this.getGcpBucketName()}`,
-      );
-    }
+    await fileCloud.save(workspace, {
+      contentType: 'application/x-tar',
+    });
     this.logger.info(
       `Workspace for task ${options.taskId} has been serialized.`,
     );

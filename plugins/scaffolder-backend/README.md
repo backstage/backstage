@@ -144,6 +144,6 @@ When task recovery is enabled:
 - Completed steps are skipped on retry, resuming from the last incomplete step
 - Step outputs are restored so subsequent steps can access previous results
 
-**Note:** `workspaceProvider` is a separate option from `enabled`. Setting `enabled: true` activates task recovery (secrets preservation, step skipping), but workspace serialization only happens if you also set `workspaceProvider`. The `workspaceProvider` value specifies which storage backend to use (e.g., `database` for the built-in database provider, or `gcpBucket` for GCS).
+**Note:** `workspaceProvider` is a separate option from `enabled`. Setting `enabled: true` activates task recovery (secrets preservation, step skipping), but workspace serialization only happens if you also set `workspaceProvider`. The `workspaceProvider` value specifies which storage backend to use (for example, `database` from `@backstage/plugin-scaffolder-backend-module-workspace-database`, or `gcpBucket` from `@backstage/plugin-scaffolder-backend-module-gcp`). Install and register the corresponding module before selecting a provider.
 
-This replaces the previous experimental flags (`EXPERIMENTAL_recoverTasks`, `EXPERIMENTAL_workspaceSerialization`, `EXPERIMENTAL_recoverTasksTimeout`) which are still supported as fallbacks.
+This replaces the previous experimental flags (`EXPERIMENTAL_recoverTasks`, `EXPERIMENTAL_workspaceSerialization`, `EXPERIMENTAL_recoverTasksTimeout`) which are still supported as fallbacks. Legacy workspace serialization also requires a separately installed provider module.

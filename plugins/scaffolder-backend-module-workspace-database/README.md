@@ -28,8 +28,17 @@ scaffolder:
     workspaceProvider: database
 ```
 
+The module does not register the provider in production by default. Although it is not recommended, you can explicitly enable it with the following configuration:
+
+```yaml
+scaffolder:
+  taskRecovery:
+    database:
+      dangerouslyEnableInProduction: true
+```
+
 ## Limitations
 
-- 5MB maximum workspace size
-- Logs a warning when used in production environments
-- Not recommended for high-volume or large workspace scenarios
+- 5 MB maximum workspace size.
+- Disabled in production unless you set `dangerouslyEnableInProduction` to `true`.
+- Not recommended for high-volume or large workspace scenarios.

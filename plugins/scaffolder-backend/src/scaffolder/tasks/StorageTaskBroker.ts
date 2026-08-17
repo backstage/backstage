@@ -44,7 +44,11 @@ import {
   createDeferred,
 } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
-import { DefaultWorkspaceService, WorkspaceService } from './WorkspaceService';
+import {
+  DefaultWorkspaceService,
+  resolveWorkspaceProvider,
+  WorkspaceService,
+} from './WorkspaceService';
 import { readDuration } from './helper';
 import { isTaskRecoveryEnabled } from './taskRecoveryHelper';
 import {
@@ -68,14 +72,11 @@ export class TaskManager implements TaskContext {
     abortSignal: AbortSignal,
     logger: LoggerService,
     auth?: AuthService,
-    config?: Config,
-    additionalWorkspaceProviders?: Record<string, WorkspaceProvider>,
+    workspaceProvider?: WorkspaceProvider,
   ) {
     const workspaceService = DefaultWorkspaceService.create(
       task,
-      additionalWorkspaceProviders,
-      config,
-      logger,
+      workspaceProvider,
     );
 
     const agent = new TaskManager(
@@ -300,10 +301,7 @@ export class StorageTaskBroker implements TaskBroker {
   private readonly logger: LoggerService;
   private readonly config?: Config;
   private readonly auth?: AuthService;
-  private readonly additionalWorkspaceProviders?: Record<
-    string,
-    WorkspaceProvider
-  >;
+  private readonly workspaceProvider?: WorkspaceProvider;
   private readonly auditor?: AuditorService;
 
   constructor(
@@ -318,7 +316,10 @@ export class StorageTaskBroker implements TaskBroker {
     this.logger = logger;
     this.config = config;
     this.auth = auth;
-    this.additionalWorkspaceProviders = additionalWorkspaceProviders;
+    this.workspaceProvider = resolveWorkspaceProvider(
+      additionalWorkspaceProviders,
+      config,
+    );
     this.auditor = auditor;
   }
 
@@ -421,8 +422,7 @@ export class StorageTaskBroker implements TaskBroker {
           abortController.signal,
           this.logger,
           this.auth,
-          this.config,
-          this.additionalWorkspaceProviders,
+          this.workspaceProvider,
         );
       }
 

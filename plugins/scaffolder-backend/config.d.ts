@@ -84,18 +84,21 @@ export interface Config {
      * Sets the tasks recoverability on system start up.
      *
      * If not specified, the default value is false.
+     * @deprecated Use scaffolder.taskRecovery.enabled instead.
      */
     EXPERIMENTAL_recoverTasks?: boolean;
 
     /**
      * Sets the serialization of the workspace to have an ability to rerun the failed task.
+     * @deprecated Use scaffolder.taskRecovery.workspaceProvider instead.
      */
     EXPERIMENTAL_workspaceSerialization?: boolean;
 
     /**
      * Sets the provider for workspace serialization.
      *
-     * By default, it is your database.
+     * Defaults to the database provider when workspace serialization is enabled.
+     * @deprecated Use scaffolder.taskRecovery.workspaceProvider instead.
      */
     EXPERIMENTAL_workspaceSerializationProvider?: string;
 
@@ -104,6 +107,7 @@ export interface Config {
      * be attempted to recover.
      *
      * If not specified, the default value is 5 seconds.
+     * @deprecated Use scaffolder.taskRecovery.staleTimeout instead.
      */
     EXPERIMENTAL_recoverTasksTimeout?: HumanDuration | string;
 

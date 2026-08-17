@@ -16,7 +16,13 @@
 
 import { ConfigReader } from '@backstage/config';
 import { GcpBucketWorkspaceProvider } from './GcpBucketWorkspaceProvider';
-import { mockServices } from '@backstage/backend-test-utils';
+import {
+  createMockDirectory,
+  mockServices,
+} from '@backstage/backend-test-utils';
+import * as GoogleCloud from '@google-cloud/storage';
+
+const mockDir = createMockDirectory();
 
 describe('GcpBucketWorkspaceProvider', () => {
   const logger = mockServices.logger.mock();
@@ -80,6 +86,38 @@ describe('GcpBucketWorkspaceProvider', () => {
       ).rejects.toThrow(
         'Missing GCS bucket configuration. Set scaffolder.taskRecovery.gcsBucket.name in app-config.yaml',
       );
+    });
+  });
+
+  describe('serializeWorkspace', () => {
+    it('propagates workspace upload errors', async () => {
+      const uploadError = new Error('GCS upload failed');
+      jest.spyOn(GoogleCloud, 'Storage').mockReturnValue({
+        bucket: () => ({
+          file: () => ({
+            save: jest.fn().mockRejectedValue(uploadError),
+          }),
+        }),
+      } as never);
+      const provider = GcpBucketWorkspaceProvider.create(
+        logger,
+        new ConfigReader({
+          scaffolder: {
+            taskRecovery: {
+              gcsBucket: {
+                name: 'test-bucket',
+              },
+            },
+          },
+        }),
+      );
+
+      await expect(
+        provider.serializeWorkspace({
+          path: mockDir.path,
+          taskId: 'test-task',
+        }),
+      ).rejects.toBe(uploadError);
     });
   });
 });

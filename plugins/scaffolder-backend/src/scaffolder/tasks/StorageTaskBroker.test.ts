@@ -73,6 +73,28 @@ describe('StorageTaskBroker', () => {
     );
   });
 
+  it('rejects an unavailable workspace provider before claiming tasks', async () => {
+    const isolatedStorage = await createStore();
+    const { taskId } = await isolatedStorage.createTask(emptyTaskSpec);
+    const config = new ConfigReader({
+      scaffolder: {
+        taskRecovery: {
+          workspaceProvider: 'constructor',
+        },
+      },
+    });
+
+    expect(
+      () =>
+        new StorageTaskBroker(isolatedStorage, logger, config, undefined, {}),
+    ).toThrow(
+      "Workspace provider 'constructor' is configured but not available",
+    );
+    await expect(isolatedStorage.getTask(taskId)).resolves.toMatchObject({
+      status: 'open',
+    });
+  });
+
   it('should wait for a dispatched work item', async () => {
     const broker = new StorageTaskBroker(storage, logger);
     const promise = broker.claim();

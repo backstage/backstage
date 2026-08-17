@@ -16,12 +16,28 @@
 
 import { SerializedTaskEvent } from '@backstage/plugin-scaffolder-node';
 import { Config } from '@backstage/config';
+import { TaskRecoverStrategy } from '@backstage/plugin-scaffolder-common';
 
 export const trimEventsTillLastRecovery = (
   events: SerializedTaskEvent[],
 ): { events: SerializedTaskEvent[] } => {
-  // For resume-based recovery, we keep all events
-  // The 'recovered' event is informational only
+  const recoveredEventInd = events
+    .slice()
+    .reverse()
+    .findIndex(event => event.type === 'recovered');
+
+  if (recoveredEventInd >= 0) {
+    const ind = events.length - recoveredEventInd - 1;
+    const { recoverStrategy } = events[ind].body as {
+      recoverStrategy?: TaskRecoverStrategy;
+    };
+    if (recoverStrategy === 'startOver') {
+      return {
+        events: recoveredEventInd === 0 ? [] : events.slice(ind),
+      };
+    }
+  }
+
   return { events };
 };
 
