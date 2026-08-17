@@ -23,6 +23,7 @@ import defaultJsonSchema from '../schema/kinds/AiResource.v1alpha1.schema.json';
 import skillJsonSchema from '../schema/kinds/AiResource.v1alpha1.skill.schema.json';
 import ruleJsonSchema from '../schema/kinds/AiResource.v1alpha1.rule.schema.json';
 import pluginJsonSchema from '../schema/kinds/AiResource.v1alpha1.plugin.schema.json';
+import marketplaceJsonSchema from '../schema/kinds/AiResource.v1alpha1.marketplace.schema.json';
 
 /**
  * Default AiResource entity for types that don't have a structured spec.
@@ -108,6 +109,24 @@ export interface PluginAiResourceEntityV1alpha1
 }
 
 /**
+ * AiResource entity with spec.type 'marketplace'. Represents a curated
+ * registry of plugins for discovery and distribution.
+ *
+ * @alpha
+ */
+export interface MarketplaceAiResourceEntityV1alpha1
+  extends AiResourceEntityV1alpha1Default {
+  spec: {
+    type: 'marketplace';
+    lifecycle: string;
+    owner: string;
+    system?: string;
+    plugins: string[];
+    version?: string;
+  };
+}
+
+/**
  * Backstage catalog AiResource kind Entity. Represents contextual information
  * consumed by AI coding tools, such as skills and rules.
  *
@@ -117,7 +136,8 @@ export type AiResourceEntityV1alpha1 =
   | AiResourceEntityV1alpha1Default
   | SkillAiResourceEntityV1alpha1
   | RuleAiResourceEntityV1alpha1
-  | PluginAiResourceEntityV1alpha1;
+  | PluginAiResourceEntityV1alpha1
+  | MarketplaceAiResourceEntityV1alpha1;
 
 const defaultValidator = entityKindSchemaValidator(defaultJsonSchema);
 
@@ -185,6 +205,16 @@ export const isPluginAiResourceEntity = (
 ): entity is PluginAiResourceEntityV1alpha1 =>
   isAiResourceEntity(entity) && entity.spec?.type === 'plugin';
 
+/**
+ * Type guard for {@link MarketplaceAiResourceEntityV1alpha1}.
+ *
+ * @alpha
+ */
+export const isMarketplaceAiResourceEntity = (
+  entity: Entity,
+): entity is MarketplaceAiResourceEntityV1alpha1 =>
+  isAiResourceEntity(entity) && entity.spec?.type === 'marketplace';
+
 const ruleValidator = entityKindSchemaValidator(ruleJsonSchema);
 
 /**
@@ -208,6 +238,19 @@ const pluginValidator = entityKindSchemaValidator(pluginJsonSchema);
 export const pluginAiResourceEntityV1alpha1Validator: KindValidator = {
   async check(data: Entity) {
     return pluginValidator(data) === data;
+  },
+};
+
+const marketplaceValidator = entityKindSchemaValidator(marketplaceJsonSchema);
+
+/**
+ * Entity data validator for {@link MarketplaceAiResourceEntityV1alpha1}.
+ *
+ * @alpha
+ */
+export const marketplaceAiResourceEntityV1alpha1Validator: KindValidator = {
+  async check(data: Entity) {
+    return marketplaceValidator(data) === data;
   },
 };
 
@@ -293,6 +336,23 @@ export const aiResourceEntityModel = createCatalogModelLayer({
           ],
           schema: {
             jsonSchema: pluginJsonSchema as JsonObject,
+          },
+        },
+        {
+          name: 'v1alpha1',
+          specType: 'marketplace',
+          relationFields: [
+            ...baseRelationFields,
+            {
+              selector: { path: 'spec.plugins' },
+              relation: 'hasPart',
+              defaultKind: 'AiResource',
+              defaultNamespace: 'inherit' as const,
+              allowedKinds: ['AiResource'],
+            },
+          ],
+          schema: {
+            jsonSchema: marketplaceJsonSchema as JsonObject,
           },
         },
       ],

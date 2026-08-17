@@ -33,16 +33,19 @@ export type {
   SkillAiResourceEntityV1alpha1,
   RuleAiResourceEntityV1alpha1,
   PluginAiResourceEntityV1alpha1,
+  MarketplaceAiResourceEntityV1alpha1,
 } from './kinds/AiResourceEntityV1alpha1';
 export {
   aiResourceEntityV1alpha1Validator,
   skillAiResourceEntityV1alpha1Validator,
   ruleAiResourceEntityV1alpha1Validator,
   pluginAiResourceEntityV1alpha1Validator,
+  marketplaceAiResourceEntityV1alpha1Validator,
   isAiResourceEntity,
   isSkillAiResourceEntity,
   isRuleAiResourceEntity,
   isPluginAiResourceEntity,
+  isMarketplaceAiResourceEntity,
   aiResourceEntityModel,
 } from './kinds/AiResourceEntityV1alpha1';
 export type {

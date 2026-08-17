@@ -22,15 +22,18 @@ import {
   type SkillAiResourceEntityV1alpha1,
   type RuleAiResourceEntityV1alpha1,
   type PluginAiResourceEntityV1alpha1,
+  type MarketplaceAiResourceEntityV1alpha1,
   aiResourceEntityModel,
   aiResourceEntityV1alpha1Validator as defaultValidator,
   skillAiResourceEntityV1alpha1Validator as skillValidator,
   ruleAiResourceEntityV1alpha1Validator as ruleValidator,
   pluginAiResourceEntityV1alpha1Validator as pluginValidator,
+  marketplaceAiResourceEntityV1alpha1Validator as marketplaceValidator,
   isAiResourceEntity,
   isSkillAiResourceEntity,
   isRuleAiResourceEntity,
   isPluginAiResourceEntity,
+  isMarketplaceAiResourceEntity,
 } from './AiResourceEntityV1alpha1';
 
 describe('AiResourceV1alpha1 default validator', () => {
@@ -577,6 +580,100 @@ describe('AiResourceV1alpha1 plugin validator', () => {
   });
 });
 
+describe('AiResourceV1alpha1 marketplace validator', () => {
+  let entity: MarketplaceAiResourceEntityV1alpha1;
+
+  beforeEach(() => {
+    entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'AiResource',
+      metadata: {
+        name: 'company-ai-tools',
+      },
+      spec: {
+        type: 'marketplace',
+        lifecycle: 'production',
+        owner: 'ai-platform-team',
+        system: 'ai-tooling',
+        plugins: ['airesource:default/code-review-plugin'],
+        version: '1.0.0',
+      },
+    };
+  });
+
+  it('accepts valid marketplace data with all fields', async () => {
+    await expect(marketplaceValidator.check(entity)).resolves.toBe(true);
+  });
+
+  it('accepts marketplace with only required fields', async () => {
+    entity.spec = {
+      type: 'marketplace',
+      lifecycle: 'production',
+      owner: 'team-a',
+      plugins: ['airesource:default/some-plugin'],
+    };
+    await expect(marketplaceValidator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects non-marketplace type', async () => {
+    (entity as any).spec.type = 'skill';
+    await expect(marketplaceValidator.check(entity)).rejects.toThrow(/type/);
+  });
+
+  it('rejects missing lifecycle', async () => {
+    delete (entity as any).spec.lifecycle;
+    await expect(marketplaceValidator.check(entity)).rejects.toThrow(
+      /lifecycle/,
+    );
+  });
+
+  it('rejects missing owner', async () => {
+    delete (entity as any).spec.owner;
+    await expect(marketplaceValidator.check(entity)).rejects.toThrow(/owner/);
+  });
+
+  it('rejects missing plugins', async () => {
+    delete (entity as any).spec.plugins;
+    await expect(marketplaceValidator.check(entity)).rejects.toThrow(/plugins/);
+  });
+
+  it('accepts empty plugins array', async () => {
+    entity.spec.plugins = [];
+    await expect(marketplaceValidator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects plugins with empty strings', async () => {
+    (entity as any).spec.plugins = [''];
+    await expect(marketplaceValidator.check(entity)).rejects.toThrow(/plugins/);
+  });
+
+  it('rejects plugins with wrong type', async () => {
+    (entity as any).spec.plugins = 'not-an-array';
+    await expect(marketplaceValidator.check(entity)).rejects.toThrow(/plugins/);
+  });
+
+  it('rejects plugins with wrong item type', async () => {
+    (entity as any).spec.plugins = [42];
+    await expect(marketplaceValidator.check(entity)).rejects.toThrow(/plugins/);
+  });
+
+  it('accepts missing optional fields', async () => {
+    delete (entity as any).spec.system;
+    delete (entity as any).spec.version;
+    await expect(marketplaceValidator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects empty version', async () => {
+    (entity as any).spec.version = '';
+    await expect(marketplaceValidator.check(entity)).rejects.toThrow(/version/);
+  });
+
+  it('rejects wrong version type', async () => {
+    (entity as any).spec.version = 42;
+    await expect(marketplaceValidator.check(entity)).rejects.toThrow(/version/);
+  });
+});
+
 describe('isPluginAiResourceEntity', () => {
   it('returns true for a plugin AiResource', () => {
     const entity: Entity = {
@@ -606,5 +703,37 @@ describe('isPluginAiResourceEntity', () => {
       spec: { type: 'plugin' },
     };
     expect(isPluginAiResourceEntity(entity)).toBe(false);
+  });
+});
+
+describe('isMarketplaceAiResourceEntity', () => {
+  it('returns true for a marketplace AiResource', () => {
+    const entity: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'AiResource',
+      metadata: { name: 'test' },
+      spec: { type: 'marketplace' },
+    };
+    expect(isMarketplaceAiResourceEntity(entity)).toBe(true);
+  });
+
+  it('returns false for a non-marketplace AiResource', () => {
+    const entity: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'AiResource',
+      metadata: { name: 'test' },
+      spec: { type: 'skill' },
+    };
+    expect(isMarketplaceAiResourceEntity(entity)).toBe(false);
+  });
+
+  it('returns false for a different kind', () => {
+    const entity: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: { name: 'test' },
+      spec: { type: 'marketplace' },
+    };
+    expect(isMarketplaceAiResourceEntity(entity)).toBe(false);
   });
 });
