@@ -178,6 +178,7 @@ const baseRelationFields = [
     relation: 'partOf',
     defaultKind: 'System',
     defaultNamespace: 'inherit' as const,
+    allowedKinds: ['System'],
   },
 ];
 
@@ -216,6 +217,7 @@ export const aiResourceEntityModel = createCatalogModelLayer({
               relation: 'dependsOn',
               defaultKind: 'AiResource',
               defaultNamespace: 'inherit' as const,
+              allowedKinds: ['AiResource'],
             },
           ],
           schema: {
@@ -231,6 +233,24 @@ export const aiResourceEntityModel = createCatalogModelLayer({
           },
         },
       ],
+    });
+    model.updateRelationPair({
+      fromKind: 'AiResource',
+      toKind: ['Group', 'User'],
+      forward: { type: 'ownedBy' },
+      reverse: { type: 'ownerOf' },
+    });
+    model.updateRelationPair({
+      fromKind: 'AiResource',
+      toKind: 'System',
+      forward: { type: 'partOf' },
+      reverse: { type: 'hasPart' },
+    });
+    model.updateRelationPair({
+      fromKind: 'AiResource',
+      toKind: 'AiResource',
+      forward: { type: 'dependsOn' },
+      reverse: { type: 'dependencyOf' },
     });
   },
 });
