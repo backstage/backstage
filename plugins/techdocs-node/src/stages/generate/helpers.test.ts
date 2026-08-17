@@ -704,6 +704,22 @@ describe('helpers', () => {
         /The specified file .* does not exist/,
       );
     });
+
+    it('prefers .yaml over .yml when both files exist', async () => {
+      mockDir.setContent({
+        'mkdocs.yaml': mkdocsYml,
+        'mkdocs.yml': mkdocsYml,
+      });
+      const {
+        path: mkdocsPath,
+        content,
+        configIsTemporary,
+      } = await getMkdocsYml(mockDir.path, defaultOptions);
+
+      expect(mkdocsPath).toBe(mockDir.resolve('mkdocs.yaml'));
+      expect(content).toBe(mkdocsYml.toString());
+      expect(configIsTemporary).toBe(false);
+    });
   });
 
   describe('validateMkdocsYaml', () => {

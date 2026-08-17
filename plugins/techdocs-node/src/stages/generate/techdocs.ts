@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import fs from 'fs-extra';
 import path from 'node:path';
 import {
   ScmIntegrationRegistry,
@@ -111,6 +112,20 @@ export class TechdocsGenerator implements GeneratorBase {
       siteOptions,
     );
 
+    // Warn if both config files exist — MkDocs and Backstage resolve them in
+    // different order, so a second file would be silently ignored by one side.
+    const alternateConfigName =
+      path.basename(mkdocsYmlPath) === 'mkdocs.yaml'
+        ? 'mkdocs.yml'
+        : 'mkdocs.yaml';
+    if (await fs.pathExists(path.join(inputDir, alternateConfigName))) {
+      childLogger.warn(
+        `Both mkdocs.yml and mkdocs.yaml found in ${inputDir}; using ${path.basename(
+          mkdocsYmlPath,
+        )}. The other file will be ignored.`,
+      );
+    }
+
     // validate the docs_dir first
     const docsDir = await validateMkdocsYaml(inputDir, content);
 
@@ -162,7 +177,7 @@ export class TechdocsGenerator implements GeneratorBase {
         case 'local':
           await runCommand({
             command: 'mkdocs',
-            args: ['build', '-d', outputDir, '-v'],
+            args: ['build', '-f', mkdocsYmlPath, '-d', outputDir, '-v'],
             options: {
               cwd: inputDir,
             },
@@ -178,7 +193,13 @@ export class TechdocsGenerator implements GeneratorBase {
           await containerRunner.runContainer({
             imageName:
               this.options.dockerImage ?? TechdocsGenerator.defaultDockerImage,
-            args: ['build', '-d', '/output'],
+            args: [
+              'build',
+              '-f',
+              `/input/${path.basename(mkdocsYmlPath)}`,
+              '-d',
+              '/output',
+            ],
             logStream,
             mountDirs,
             workingDir: '/input',
