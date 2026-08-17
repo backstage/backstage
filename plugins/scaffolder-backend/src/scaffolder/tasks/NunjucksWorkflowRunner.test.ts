@@ -999,6 +999,57 @@ describe('NunjucksWorkflowRunner', () => {
       });
     });
 
+    it('restores successful checkpoints with falsy values', async () => {
+      const checkpointCallback = jest.fn(async () => 'rerun');
+      const restoredValues: unknown[] = [];
+      actionRegistry.register(
+        createTemplateAction({
+          id: 'falsy-checkpoint-action',
+          handler: async ctx => {
+            for (const key of ['false', 'zero', 'empty']) {
+              restoredValues.push(
+                await ctx.checkpoint({ key, fn: checkpointCallback }),
+              );
+            }
+          },
+        }),
+      );
+
+      const updateCheckpoint = jest.fn();
+      const task = {
+        ...createMockTaskWithSpec({
+          steps: [
+            { id: 'test', name: 'name', action: 'falsy-checkpoint-action' },
+          ],
+        }),
+        getTaskState: async () => ({
+          state: {
+            checkpoints: {
+              'v1.task.checkpoint.test.false': {
+                status: 'success',
+                value: false,
+              },
+              'v1.task.checkpoint.test.zero': {
+                status: 'success',
+                value: 0,
+              },
+              'v1.task.checkpoint.test.empty': {
+                status: 'success',
+                value: '',
+              },
+            },
+          },
+        }),
+        updateCheckpoint,
+      };
+
+      await runner.execute(task);
+
+      expect(restoredValues).toEqual([false, 0, '']);
+      expect(checkpointCallback).not.toHaveBeenCalled();
+      expect(updateCheckpoint).not.toHaveBeenCalled();
+    });
+
     it('waits for failed checkpoint state to be persisted', async () => {
       const checkpointError = new Error('checkpoint failed');
       registerCheckpointAction(
@@ -1031,6 +1082,28 @@ describe('NunjucksWorkflowRunner', () => {
       pendingUpdate.resolve();
       await expect(execution).resolves.toEqual({ error: checkpointError });
       expect(serializeWorkspace).toHaveBeenCalled();
+    });
+
+    it('preserves callback and persistence errors for failed checkpoints', async () => {
+      const checkpointError = new Error('checkpoint failed');
+      registerCheckpointAction(
+        'failed-checkpoint-persistence-rejection-action',
+        async () => {
+          throw checkpointError;
+        },
+      );
+
+      const persistenceError = new Error('checkpoint persistence failed');
+      const task = createCheckpointTask(
+        'failed-checkpoint-persistence-rejection-action',
+        jest.fn().mockRejectedValue(persistenceError),
+      );
+
+      const execution = runner.execute(task);
+      await expect(execution).rejects.toBeInstanceOf(AggregateError);
+      await expect(execution).rejects.toMatchObject({
+        errors: [checkpointError, persistenceError],
+      });
     });
 
     it('should template the output from simple actions', async () => {

@@ -526,17 +526,24 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
                   }
                 }
 
-                value = prevValue ? prevValue : await fn();
+                value = prevValue !== undefined ? prevValue : await fn();
               } catch (err) {
-                await task.updateCheckpoint?.({
-                  key,
-                  status: 'failed',
-                  reason: stringifyError(err),
-                });
+                try {
+                  await task.updateCheckpoint?.({
+                    key,
+                    status: 'failed',
+                    reason: stringifyError(err),
+                  });
+                } catch (persistenceError) {
+                  throw new AggregateError(
+                    [err, persistenceError],
+                    `Checkpoint '${checkpointKey}' failed and its failure state could not be persisted`,
+                  );
+                }
                 throw err;
               }
 
-              if (!prevValue) {
+              if (prevValue === undefined) {
                 await task.updateCheckpoint?.({
                   key,
                   status: 'success',
