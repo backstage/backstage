@@ -1,0 +1,40 @@
+.wrapper {
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+.controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.label {
+  font-size: 0.875rem;
+  color: var(--bui-fg-primary);
+}
+
+.select {
+  appearance: auto;
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--bui-fg-primary);
+  background-color: var(--bui-bg-neutral-1);
+  border: 1px solid var(--bui-border-1);
+  border-radius: var(--bui-radius-2);
+  padding: 0.375rem 0.5rem;
+  cursor: pointer;
+}
+
+.select:focus-visible {
+  outline: 2px solid var(--bui-ring);
+  outline-offset: 1px;
+}
+
+.description {
+  color: var(--bui-fg-secondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-top: 0.75rem;
+  margin-bottom: 1rem;
+}
