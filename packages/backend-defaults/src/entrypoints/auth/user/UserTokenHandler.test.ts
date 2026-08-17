@@ -345,7 +345,11 @@ describe('UserTokenHandler', () => {
 
       expect(() =>
         userTokenHandler.createLimitedUserToken(backstageToken),
-      ).toThrow(/payload\.uip/i);
+      ).toThrow(
+        new AuthenticationError(
+          'Failed to create limited user token, missing user identity proof',
+        ),
+      );
     });
 
     it('should create a limited user token from a user token', async () => {

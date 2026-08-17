@@ -135,8 +135,8 @@ export class UserTokenHandler {
     }
 
     if (!payload.uip) {
-      throw new Error(
-        'Cannot create limited user token: payload.uip is missing',
+      throw new AuthenticationError(
+        'Failed to create limited user token, missing user identity proof',
       );
     }
 
