@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ type RawDbTaskWorkspaceRow = {
  */
 export class DatabaseWorkspaceProvider implements WorkspaceProvider {
   private readonly db: Knex;
+  private legacyWorkspaceColumn?: Promise<boolean>;
 
   static create(options: { db: Knex }) {
     return new DatabaseWorkspaceProvider(options.db);
@@ -47,6 +48,14 @@ export class DatabaseWorkspaceProvider implements WorkspaceProvider {
 
   private constructor(db: Knex) {
     this.db = db;
+  }
+
+  private hasLegacyWorkspaceColumn(): Promise<boolean> {
+    this.legacyWorkspaceColumn ??= this.db.schema.hasColumn(
+      'tasks',
+      'workspace',
+    );
+    return this.legacyWorkspaceColumn;
   }
 
   public async serializeWorkspace(options: {
@@ -67,37 +76,71 @@ export class DatabaseWorkspaceProvider implements WorkspaceProvider {
       );
     }
 
-    // Upsert - insert or update if exists
-    await this.db<RawDbTaskWorkspaceRow>('scaffolder_task_workspaces')
-      .insert({
-        task_id: options.taskId,
-        workspace,
-      })
-      .onConflict('task_id')
-      .merge(['workspace']);
+    const hasLegacyWorkspaceColumn = await this.hasLegacyWorkspaceColumn();
+    await this.db.transaction(async tx => {
+      await tx<RawDbTaskWorkspaceRow>('scaffolder_task_workspaces')
+        .insert({
+          task_id: options.taskId,
+          workspace,
+        })
+        .onConflict('task_id')
+        .merge(['workspace']);
+
+      if (hasLegacyWorkspaceColumn) {
+        await tx('tasks')
+          .where({ id: options.taskId })
+          .whereNotNull('workspace')
+          .update({ workspace });
+      }
+    });
   }
 
   public async rehydrateWorkspace(options: {
     taskId: string;
     targetPath: string;
   }): Promise<void> {
-    const row = await this.db<RawDbTaskWorkspaceRow>(
-      'scaffolder_task_workspaces',
-    )
-      .where({ task_id: options.taskId })
-      .first();
+    let workspace: Buffer | undefined;
+    if (await this.hasLegacyWorkspaceColumn()) {
+      const legacyRow = await this.db('tasks')
+        .where({ id: options.taskId })
+        .select('workspace')
+        .first();
+      workspace = legacyRow?.workspace ?? undefined;
+    }
 
-    if (row?.workspace) {
+    if (workspace) {
+      await this.db<RawDbTaskWorkspaceRow>('scaffolder_task_workspaces')
+        .insert({ task_id: options.taskId, workspace })
+        .onConflict('task_id')
+        .merge(['workspace']);
+    } else {
+      const row = await this.db<RawDbTaskWorkspaceRow>(
+        'scaffolder_task_workspaces',
+      )
+        .where({ task_id: options.taskId })
+        .first();
+      workspace = row?.workspace;
+    }
+
+    if (workspace) {
       await restoreWorkspace({
         path: options.targetPath,
-        buffer: row.workspace,
+        buffer: workspace,
       });
     }
   }
 
   public async cleanWorkspace(options: { taskId: string }): Promise<void> {
-    await this.db<RawDbTaskWorkspaceRow>('scaffolder_task_workspaces')
-      .where({ task_id: options.taskId })
-      .delete();
+    const hasLegacyWorkspaceColumn = await this.hasLegacyWorkspaceColumn();
+    await this.db.transaction(async tx => {
+      await tx<RawDbTaskWorkspaceRow>('scaffolder_task_workspaces')
+        .where({ task_id: options.taskId })
+        .delete();
+      if (hasLegacyWorkspaceColumn) {
+        await tx('tasks')
+          .where({ id: options.taskId })
+          .update({ workspace: null });
+      }
+    });
   }
 }

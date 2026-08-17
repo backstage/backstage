@@ -106,7 +106,7 @@ export interface Config {
      * Every task which is in progress state and having a last heartbeat longer than a specified timeout is going to
      * be attempted to recover.
      *
-     * If not specified, the default value is 5 seconds.
+     * If not specified, the default value is 30 seconds.
      * @deprecated Use scaffolder.taskRecovery.staleTimeout instead.
      */
     EXPERIMENTAL_recoverTasksTimeout?: HumanDuration | string;

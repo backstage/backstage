@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,10 @@ import {
   createMockDirectory,
 } from '@backstage/backend-test-utils';
 import { DatabaseWorkspaceProvider } from './DatabaseWorkspaceProvider';
+import {
+  restoreWorkspace,
+  serializeWorkspace,
+} from '@backstage/plugin-scaffolder-node/alpha';
 import { Knex } from 'knex';
 import fs from 'fs-extra';
 import path from 'node:path';
@@ -58,6 +62,10 @@ app:
         lifecycle: mockServices.lifecycle.mock(),
       })
       .getClient();
+    await db.schema.createTable('tasks', table => {
+      table.string('id').primary();
+      table.binary('workspace').nullable();
+    });
     await db.migrate.latest({
       directory: migrationsDir,
     });
@@ -109,6 +117,29 @@ app:
       });
 
       expect(rows).toHaveLength(1);
+    });
+
+    it('keeps legacy tasks readable by an application rollback', async () => {
+      const taskId = 'test-task-rollback';
+      await db('tasks').insert({
+        id: taskId,
+        workspace: Buffer.from('legacy placeholder'),
+      });
+
+      await provider.serializeWorkspace({
+        path: workspaceDir.path,
+        taskId,
+      });
+
+      const legacy = await db('tasks').where({ id: taskId }).first();
+      const rollbackDir = createMockDirectory();
+      await restoreWorkspace({
+        path: rollbackDir.path,
+        buffer: legacy.workspace,
+      });
+      expect(
+        fs.existsSync(path.join(rollbackDir.path, 'app-config.yaml')),
+      ).toBe(true);
     });
 
     it('should throw if workspace exceeds 5MB', async () => {
@@ -170,11 +201,48 @@ app:
       const files = fs.readdirSync(targetDir.path);
       expect(files).toHaveLength(0);
     });
+
+    it('prefers a legacy workspace written during a rolling upgrade', async () => {
+      const taskId = 'test-task-rolling-upgrade';
+      await provider.serializeWorkspace({
+        path: workspaceDir.path,
+        taskId,
+      });
+
+      const legacyDir = createMockDirectory({
+        content: { 'written-by-old-worker.txt': 'latest workspace' },
+      });
+      const { contents: legacyWorkspace } = await serializeWorkspace({
+        path: legacyDir.path,
+      });
+      await db('tasks').insert({
+        id: taskId,
+        workspace: legacyWorkspace,
+      });
+
+      const targetDir = createMockDirectory();
+      await provider.rehydrateWorkspace({
+        taskId,
+        targetPath: targetDir.path,
+      });
+
+      expect(
+        fs.readFileSync(
+          path.join(targetDir.path, 'written-by-old-worker.txt'),
+          'utf8',
+        ),
+      ).toBe('latest workspace');
+    });
   });
 
   describe('cleanWorkspace', () => {
     it('should delete workspace from database', async () => {
       const taskId = 'test-task-4';
+
+      await db('tasks').insert({
+        id: taskId,
+        workspace: Buffer.from('legacy workspace'),
+      });
 
       await provider.serializeWorkspace({
         path: workspaceDir.path,
@@ -195,13 +263,16 @@ app:
         .where({ task_id: taskId })
         .first();
       expect(row).toBeUndefined();
+      const legacy = await db('tasks').where({ id: taskId }).first();
+      expect(legacy.workspace).toBeNull();
     });
 
     it('should not throw if workspace does not exist', async () => {
       const taskId = 'nonexistent-task';
 
-      // Should not throw
-      await provider.cleanWorkspace({ taskId });
+      await expect(
+        provider.cleanWorkspace({ taskId }),
+      ).resolves.toBeUndefined();
     });
   });
 });

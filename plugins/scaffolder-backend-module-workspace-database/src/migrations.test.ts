@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { Knex } from 'knex';
+import createKnexClient, { Knex } from 'knex';
 
 const migration = jest.requireActual<{
   up(knex: Knex): Promise<void>;
+  down(knex: Knex): Promise<void>;
 }>('../migrations/20250122000000_task_workspaces');
 
 function createKnexMock(client: string) {
@@ -37,6 +38,7 @@ function createKnexMock(client: string) {
     client: { config: { client } },
     fn: { now: jest.fn() },
     schema: {
+      hasColumn: jest.fn().mockResolvedValue(false),
       createTable: jest.fn(
         async (
           _name: string,
@@ -52,6 +54,79 @@ function createKnexMock(client: string) {
 }
 
 describe('task workspaces migration', () => {
+  it('migrates legacy task workspace rows', async () => {
+    const db = createKnexClient({
+      client: 'better-sqlite3',
+      connection: ':memory:',
+      useNullAsDefault: true,
+    });
+    const workspace = Buffer.from('legacy workspace');
+
+    try {
+      await db.schema.createTable('tasks', table => {
+        table.string('id').primary();
+        table.binary('workspace').nullable();
+      });
+      await db('tasks').insert({ id: 'task-1', workspace });
+
+      await migration.up(db);
+
+      const migrated = await db('scaffolder_task_workspaces')
+        .where({ task_id: 'task-1' })
+        .first();
+      expect(migrated.workspace).toEqual(workspace);
+
+      const legacy = await db('tasks').where({ id: 'task-1' }).first();
+      expect(legacy.workspace).toEqual(workspace);
+    } finally {
+      await db.destroy();
+    }
+  });
+
+  it('restores current workspace rows to legacy storage on rollback', async () => {
+    const db = createKnexClient({
+      client: 'better-sqlite3',
+      connection: ':memory:',
+      useNullAsDefault: true,
+    });
+    const currentWorkspace = Buffer.from('current workspace');
+    const lateLegacyWorkspace = Buffer.from('late legacy workspace');
+
+    try {
+      await db.schema.createTable('tasks', table => {
+        table.string('id').primary();
+        table.binary('workspace').nullable();
+      });
+      await db('tasks').insert([
+        { id: 'task-1', workspace: null },
+        { id: 'task-2', workspace: lateLegacyWorkspace },
+      ]);
+      await migration.up(db);
+      await db('scaffolder_task_workspaces')
+        .insert({
+          task_id: 'task-1',
+          workspace: currentWorkspace,
+        })
+        .onConflict('task_id')
+        .merge(['workspace']);
+      await db('scaffolder_task_workspaces')
+        .where({ task_id: 'task-2' })
+        .update({ workspace: Buffer.from('older copied workspace') });
+
+      await migration.down(db);
+
+      const legacy = await db('tasks').where({ id: 'task-1' }).first();
+      expect(legacy.workspace).toEqual(currentWorkspace);
+      const lateLegacy = await db('tasks').where({ id: 'task-2' }).first();
+      expect(lateLegacy.workspace).toEqual(lateLegacyWorkspace);
+      await expect(
+        db.schema.hasTable('scaffolder_task_workspaces'),
+      ).resolves.toBe(false);
+    } finally {
+      await db.destroy();
+    }
+  });
+
   it('uses LONGBLOB for MySQL workspace data', async () => {
     const { knex, table } = createKnexMock('mysql2');
 

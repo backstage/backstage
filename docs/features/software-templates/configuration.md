@@ -177,7 +177,7 @@ If you were using the previous experimental configuration, the new config replac
 
 The per-template `spec.EXPERIMENTAL_recovery` field is no longer required. When `taskRecovery.enabled` is set to `true`, all tasks are eligible for recovery.
 
-The old experimental flags are still supported as fallbacks but are deprecated and will be removed in a future release. If you use `EXPERIMENTAL_workspaceSerialization`, install and register the corresponding workspace provider module. The `EXPERIMENTAL_workspaceSerializationProvider` setting continues to select a provider only when `EXPERIMENTAL_workspaceSerialization` is set to `true`.
+The old experimental flags are still supported as fallbacks but are deprecated and will be removed in a future release. If you use `EXPERIMENTAL_workspaceSerialization`, install and register the corresponding workspace provider module. The database provider module migrates existing database workspace snapshots from the legacy task storage when it starts for the first time. The `EXPERIMENTAL_workspaceSerializationProvider` setting continues to select a provider only when `EXPERIMENTAL_workspaceSerialization` is set to `true`.
 
 ## Customizing the ScaffolderPage with Grouping and Filtering
 

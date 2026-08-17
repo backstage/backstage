@@ -36,7 +36,7 @@ export interface Config {
 
     /**
      * Sets GCP bucket name to store serialized workspace for scaffolder tasks.
-     * @deprecated Use scaffolder.taskRecovery.gcsBucket.name instead
+     * @deprecated Use scaffolder.taskRecovery.gcsBucket.name instead.
      */
     EXPERIMENTAL_workspaceSerializationGcpBucketName?: string;
   };
