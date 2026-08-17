@@ -23,12 +23,14 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import GetApp from '@material-ui/icons/GetApp';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 import ToolTip from '@material-ui/core/Tooltip';
 import { coreComponentsTranslationRef } from '../../translation';
 import { LogViewerSearch } from './useLogViewerSearch';
 
 export interface LogViewerControlsProps extends LogViewerSearch {
   onDownloadLog?: () => void;
+  onCopyLog?: () => void;
 }
 
 export function LogViewerControls(props: LogViewerControlsProps) {
@@ -78,8 +80,23 @@ export function LogViewerControls(props: LogViewerControlsProps) {
       </IconButton>
       {Boolean(props?.onDownloadLog) ? (
         <ToolTip title={t('logViewer.downloadBtn.tooltip')}>
-          <IconButton size="small" onClick={props.onDownloadLog}>
+          <IconButton
+            aria-label={t('logViewer.downloadBtn.tooltip')}
+            size="small"
+            onClick={props.onDownloadLog}
+          >
             <GetApp />
+          </IconButton>
+        </ToolTip>
+      ) : null}
+      {Boolean(props?.onCopyLog) ? (
+        <ToolTip title={t('logViewer.copyBtn.tooltip')}>
+          <IconButton
+            aria-label={t('logViewer.copyBtn.tooltip')}
+            size="small"
+            onClick={props.onCopyLog}
+          >
+            <FileCopyIcon />
           </IconButton>
         </ToolTip>
       ) : null}
