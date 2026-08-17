@@ -513,34 +513,44 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
             try {
               let prevValue: T | undefined;
+              let value: T;
 
-              if (prevTaskState) {
-                const prevState = (
-                  prevTaskState.state?.checkpoints as CheckpointState
-                )?.[key];
+              try {
+                if (prevTaskState) {
+                  const prevState = (
+                    prevTaskState.state?.checkpoints as CheckpointState
+                  )?.[key];
 
-                if (prevState && prevState.status === 'success') {
-                  prevValue = prevState.value as T;
+                  if (prevState && prevState.status === 'success') {
+                    prevValue = prevState.value as T;
+                  }
                 }
+
+                value = prevValue !== undefined ? prevValue : await fn();
+              } catch (err) {
+                try {
+                  await task.updateCheckpoint?.({
+                    key,
+                    status: 'failed',
+                    reason: stringifyError(err),
+                  });
+                } catch (persistenceError) {
+                  throw new AggregateError(
+                    [err, persistenceError],
+                    `Checkpoint '${checkpointKey}' failed and its failure state could not be persisted`,
+                  );
+                }
+                throw err;
               }
 
-              const value = prevValue ? prevValue : await fn();
-
-              if (!prevValue) {
-                task.updateCheckpoint?.({
+              if (prevValue === undefined) {
+                await task.updateCheckpoint?.({
                   key,
                   status: 'success',
                   value: value ?? {},
                 });
               }
               return value;
-            } catch (err) {
-              task.updateCheckpoint?.({
-                key,
-                status: 'failed',
-                reason: stringifyError(err),
-              });
-              throw err;
             } finally {
               await task.serializeWorkspace?.({ path: workspacePath });
             }
