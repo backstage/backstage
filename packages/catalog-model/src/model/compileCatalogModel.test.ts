@@ -801,4 +801,47 @@ describe('compileCatalogModel relation pairs', () => {
       }),
     );
   });
+
+  it('preserves relation summary kind order when extending a relation', () => {
+    const base = createCatalogModelLayer({
+      layerId: 'example.com/base-related-to',
+      builder: model => {
+        model.addRelationPair({
+          fromKind: 'A',
+          toKind: 'X',
+          description: 'A relation used to verify summary ordering.',
+          forward: { type: 'relatedTo', title: 'related to' },
+          reverse: { type: 'relatedFrom', title: 'related from' },
+        });
+      },
+    });
+    const extension = createCatalogModelLayer({
+      layerId: 'example.com/extended-related-to',
+      builder: model => {
+        model.updateRelationPair({
+          fromKind: 'B',
+          toKind: 'Y',
+          forward: { type: 'relatedTo' },
+          reverse: { type: 'relatedFrom' },
+        });
+        model.updateRelationPair({
+          fromKind: 'A',
+          toKind: 'Z',
+          forward: { type: 'relatedTo' },
+          reverse: { type: 'relatedFrom' },
+        });
+      },
+    });
+
+    expect(
+      compileCatalogModel([base, extension])
+        .listRelations()
+        .find(r => r.forward.type === 'relatedTo'),
+    ).toEqual(
+      expect.objectContaining({
+        fromKind: ['A', 'B'],
+        toKind: ['X', 'Y', 'Z'],
+      }),
+    );
+  });
 });

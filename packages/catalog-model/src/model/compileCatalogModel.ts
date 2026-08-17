@@ -72,6 +72,7 @@ interface SpecTypeState {
 
 interface RelationState {
   kindPairs: Map<string, Set<string>>;
+  toKinds: Set<string>;
   description: string;
   forward: { type: string; title: string };
   reverse: { type: string; title: string };
@@ -174,6 +175,7 @@ function addRelationKindPair(
     relation.kindPairs.set(fromKind, toKinds);
   }
   toKinds.add(toKind);
+  relation.toKinds.add(toKind);
 }
 
 function applyDeclareRelation(
@@ -186,6 +188,7 @@ function applyDeclareRelation(
   } else {
     const relation: RelationState = {
       kindPairs: new Map(),
+      toKinds: new Set(),
       description: op.properties.description,
       forward: {
         type: op.type,
@@ -725,12 +728,9 @@ export function compileCatalogModel(
     ...relations.values(),
   ].map(r => {
     const reverseEntry = relations.get(r.reverse.type);
-    const toKinds = new Set(
-      [...r.kindPairs.values()].flatMap(targetKinds => [...targetKinds]),
-    );
     return {
       fromKind: [...r.kindPairs.keys()],
-      toKind: [...toKinds],
+      toKind: [...r.toKinds],
       description: r.description,
       forward: r.forward,
       reverse: {
