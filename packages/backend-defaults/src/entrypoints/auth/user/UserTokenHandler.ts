@@ -134,6 +134,12 @@ export class UserTokenHandler {
       );
     }
 
+    if (!payload.uip) {
+      throw new Error(
+        'Cannot create limited user token: payload.uip is missing',
+      );
+    }
+
     // NOTE: The order and properties in both the header and payload must match
     //       the usage in plugins/auth-backend/src/identity/TokenFactory.ts
     const limitedUserToken = [
