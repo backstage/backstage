@@ -7,3 +7,4 @@ spec:
   targets:
     - ./ai-resources/frontend-design-skill.yaml
     - ./ai-resources/use-internal-apis-rule.yaml
+    - ./ai-resources/code-review-plugin.yaml

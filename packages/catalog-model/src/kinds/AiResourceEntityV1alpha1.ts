@@ -22,6 +22,7 @@ import type { JsonObject } from '@backstage/types';
 import defaultJsonSchema from '../schema/kinds/AiResource.v1alpha1.schema.json';
 import skillJsonSchema from '../schema/kinds/AiResource.v1alpha1.skill.schema.json';
 import ruleJsonSchema from '../schema/kinds/AiResource.v1alpha1.rule.schema.json';
+import pluginJsonSchema from '../schema/kinds/AiResource.v1alpha1.plugin.schema.json';
 
 /**
  * Default AiResource entity for types that don't have a structured spec.
@@ -89,6 +90,24 @@ export interface RuleAiResourceEntityV1alpha1
 }
 
 /**
+ * AiResource entity with spec.type 'plugin'. Represents a packaged collection
+ * of skills distributed as a unit.
+ *
+ * @alpha
+ */
+export interface PluginAiResourceEntityV1alpha1
+  extends AiResourceEntityV1alpha1Default {
+  spec: {
+    type: 'plugin';
+    lifecycle: string;
+    owner: string;
+    system?: string;
+    skills: string[];
+    version?: string;
+  };
+}
+
+/**
  * Backstage catalog AiResource kind Entity. Represents contextual information
  * consumed by AI coding tools, such as skills and rules.
  *
@@ -97,7 +116,8 @@ export interface RuleAiResourceEntityV1alpha1
 export type AiResourceEntityV1alpha1 =
   | AiResourceEntityV1alpha1Default
   | SkillAiResourceEntityV1alpha1
-  | RuleAiResourceEntityV1alpha1;
+  | RuleAiResourceEntityV1alpha1
+  | PluginAiResourceEntityV1alpha1;
 
 const defaultValidator = entityKindSchemaValidator(defaultJsonSchema);
 
@@ -155,6 +175,16 @@ export const isRuleAiResourceEntity = (
 ): entity is RuleAiResourceEntityV1alpha1 =>
   isAiResourceEntity(entity) && entity.spec?.type === 'rule';
 
+/**
+ * Type guard for {@link PluginAiResourceEntityV1alpha1}.
+ *
+ * @alpha
+ */
+export const isPluginAiResourceEntity = (
+  entity: Entity,
+): entity is PluginAiResourceEntityV1alpha1 =>
+  isAiResourceEntity(entity) && entity.spec?.type === 'plugin';
+
 const ruleValidator = entityKindSchemaValidator(ruleJsonSchema);
 
 /**
@@ -165,6 +195,19 @@ const ruleValidator = entityKindSchemaValidator(ruleJsonSchema);
 export const ruleAiResourceEntityV1alpha1Validator: KindValidator = {
   async check(data: Entity) {
     return ruleValidator(data) === data;
+  },
+};
+
+const pluginValidator = entityKindSchemaValidator(pluginJsonSchema);
+
+/**
+ * Entity data validator for {@link PluginAiResourceEntityV1alpha1}.
+ *
+ * @alpha
+ */
+export const pluginAiResourceEntityV1alpha1Validator: KindValidator = {
+  async check(data: Entity) {
+    return pluginValidator(data) === data;
   },
 };
 
@@ -235,6 +278,23 @@ export const aiResourceEntityModel = createCatalogModelLayer({
             jsonSchema: ruleJsonSchema as JsonObject,
           },
         },
+        {
+          name: 'v1alpha1',
+          specType: 'plugin',
+          relationFields: [
+            ...baseRelationFields,
+            {
+              selector: { path: 'spec.skills' },
+              relation: 'hasPart',
+              defaultKind: 'AiResource',
+              defaultNamespace: 'inherit' as const,
+              allowedKinds: ['AiResource'],
+            },
+          ],
+          schema: {
+            jsonSchema: pluginJsonSchema as JsonObject,
+          },
+        },
       ],
     });
     model.updateRelationPair({
@@ -254,6 +314,12 @@ export const aiResourceEntityModel = createCatalogModelLayer({
       toKind: 'AiResource',
       forward: { type: 'dependsOn' },
       reverse: { type: 'dependencyOf' },
+    });
+    model.updateRelationPair({
+      fromKind: 'AiResource',
+      toKind: 'AiResource',
+      forward: { type: 'hasPart' },
+      reverse: { type: 'partOf' },
     });
   },
 });
