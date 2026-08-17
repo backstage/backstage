@@ -28,6 +28,7 @@ import {
   createLogger,
   getLogStream,
 } from '../../lib/utility';
+import { computeDirectoryEtag } from '../../lib/etag';
 
 export default async function generate(opts: OptionValues) {
   // Use techdocs-node package to generate docs. Keep consistency between Backstage and CI generating docs.
@@ -83,6 +84,13 @@ export default async function generate(opts: OptionValues) {
     }
   }
 
+  // Resolve etag: if "sha256" is passed, compute a content hash of the source directory.
+  let etag = opts.etag;
+  if (etag === 'sha256') {
+    etag = await computeDirectoryEtag(sourceDir);
+    logger.info(`Computed source directory content hash: ${etag}`);
+  }
+
   // Generate docs using @backstage/plugin-techdocs-node
   const techdocsGenerator = await TechdocsGenerator.fromConfig(config, {
     logger,
@@ -99,7 +107,7 @@ export default async function generate(opts: OptionValues) {
         }
       : {}),
     logger,
-    etag: opts.etag,
+    etag,
     logStream: getLogStream(logger),
     siteOptions: { name: opts.siteName },
     runAsDefaultUser: opts.runAsDefaultUser,
