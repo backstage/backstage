@@ -142,5 +142,19 @@ export interface Config {
       statefulsets?: string;
       daemonsets?: string;
     } & { [pluralKind: string]: string };
+
+    /**
+     * Options for the Kubernetes API proxy middleware cache.
+     */
+    proxy?: {
+      middlewareCache?: {
+        /** Maximum number of cached middleware instances. Defaults to 100. */
+        maxSize?: number;
+        ttl?: {
+          /** Time-to-live for cached middleware in milliseconds. Defaults to 60000. */
+          milliseconds?: number;
+        };
+      };
+    };
   };
 }

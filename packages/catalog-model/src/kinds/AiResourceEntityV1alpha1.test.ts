@@ -15,10 +15,13 @@
  */
 
 import type { Entity } from '../entity/Entity';
+import { compileCatalogModel } from '../model/compileCatalogModel';
+import { defaultCatalogEntityModel } from '../model/defaultCatalogEntityModel';
 import {
   type AiResourceEntityV1alpha1Default,
   type SkillAiResourceEntityV1alpha1,
   type RuleAiResourceEntityV1alpha1,
+  aiResourceEntityModel,
   aiResourceEntityV1alpha1Validator as defaultValidator,
   skillAiResourceEntityV1alpha1Validator as skillValidator,
   ruleAiResourceEntityV1alpha1Validator as ruleValidator,
@@ -355,5 +358,60 @@ describe('isRuleAiResourceEntity', () => {
       spec: { type: 'skill' },
     };
     expect(isRuleAiResourceEntity(entity)).toBe(false);
+  });
+});
+
+describe('aiResourceEntityModel', () => {
+  it('declares and restricts all existing relation fields', () => {
+    const model = compileCatalogModel([
+      defaultCatalogEntityModel,
+      aiResourceEntityModel,
+    ]);
+    const skill = model.getKind({
+      kind: 'AiResource',
+      apiVersion: 'backstage.io/v1alpha1',
+      spec: { type: 'skill' },
+    });
+
+    expect(skill?.relationFields).toEqual([
+      expect.objectContaining({
+        path: 'spec.owner',
+        relation: 'ownedBy',
+        allowedKinds: ['Group', 'User'],
+      }),
+      expect.objectContaining({
+        path: 'spec.system',
+        relation: 'partOf',
+        allowedKinds: ['System'],
+      }),
+      expect.objectContaining({
+        path: 'spec.dependsOn',
+        relation: 'dependsOn',
+        allowedKinds: ['AiResource'],
+      }),
+    ]);
+
+    const relations = model.getRelations({ kind: 'AiResource' });
+    expect(relations?.find(r => r.forward.type === 'ownedBy')?.toKind).toEqual([
+      'Group',
+      'User',
+    ]);
+    expect(relations?.find(r => r.forward.type === 'partOf')?.toKind).toEqual([
+      'System',
+    ]);
+    expect(
+      relations?.find(r => r.forward.type === 'dependsOn')?.toKind,
+    ).toEqual(['AiResource']);
+
+    expect(
+      model
+        .getRelations({ kind: 'System' })
+        ?.find(r => r.forward.type === 'hasPart')?.toKind,
+    ).toContain('AiResource');
+    expect(
+      model
+        .getRelations({ kind: 'AiResource' })
+        ?.find(r => r.forward.type === 'dependencyOf')?.toKind,
+    ).toEqual(['AiResource']);
   });
 });

@@ -2,7 +2,7 @@
 id: configuration
 title: Configuring Kubernetes integration
 sidebar_label: Configuration
-description: Configuring the Kubernetes integration for Backstage expose your entity's objects
+description: Configuring the Kubernetes integration for Backstage to expose your entity's objects
 ---
 
 Configuring the Backstage Kubernetes integration involves two steps:
@@ -124,9 +124,9 @@ Valid values are:
 - `multiTenant` - This configuration assumes that all components run on all the
   provided clusters.
 
-- `singleTenant` - This configuration assumes that current component run on one cluster in provided clusters.
+- `singleTenant` - This configuration assumes that the current component runs on one cluster in the provided clusters.
 
-- `catalogRelation` - This configuration assumes that the current component runs only on all clusters it is dependant on.
+- `catalogRelation` - This configuration assumes that the current component runs only on all clusters it is dependent on.
 
 ### `clusterLocatorContinueOnError` (optional)
 
@@ -373,7 +373,7 @@ application whose `clientId` is used by the auth provider should be granted the
 `openid` scope), `google`, `microsoft`, `okta`, `onelogin`.
 
 Take note that `oidcTokenProvider` is just the issuer for the token, you can use any
-of these with an OIDC enabled cluster, like using `microsoft` as the issuer for a EKS
+of these with an OIDC enabled cluster, like using `microsoft` as the issuer for an EKS
 cluster.
 
 ##### `clusters.\*.dashboardUrl` (optional)
@@ -612,6 +612,28 @@ If the configuration-based cluster locators do not work for your use-case,
 it is also possible to implement a
 [custom `KubernetesClustersSupplier`](installation.md#custom-cluster-discovery).
 
+### `proxy` (optional)
+
+Options for the Kubernetes API proxy (`/api/kubernetes/proxy`).
+
+#### `proxy.middlewareCache` (optional)
+
+The proxy caches one `http-proxy-middleware` instance per cluster. Entries are refreshed when cluster details change, after a configurable TTL, or when the cache reaches its size limit.
+
+Clusters from **config** are loaded when the backend starts; changing `app-config` still requires a restart for those values to refresh. Catalog and other dynamic cluster sources can pick up cluster detail changes without a restart once the cluster supplier returns new details.
+
+```yaml
+kubernetes:
+  proxy:
+    middlewareCache:
+      maxSize: 100
+      ttl:
+        milliseconds: 60000
+```
+
+- `maxSize` — maximum cached middleware instances (default `100`).
+- `ttl.milliseconds` — cache entry lifetime in milliseconds (default `60000`).
+
 ### `customResources` (optional)
 
 Configures which [custom resources][3] to look for by default when returning an entity's
@@ -619,7 +641,7 @@ Kubernetes resources.
 
 **Notes:**
 
-- The optional `kubernetes.customResources` property is overrode by `customResources` at the [clusters level](#clusterscustomresources-optional).
+- The optional `kubernetes.customResources` property is overridden by `customResources` at the [clusters level](#clusterscustomresources-optional).
 
 Defaults to empty array. Example:
 

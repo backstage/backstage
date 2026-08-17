@@ -50,6 +50,22 @@ You should create a new folder, `src/schema` in your backend plugin to store you
 
 > Currently, only the `.yaml` extension is supported, not `.yml`.
 
+## Validating your spec
+
+After writing your `openapi.yaml`, you can validate that it is a structurally valid OpenAPI 3.x document by running the following command from your plugin directory:
+
+```bash
+yarn backstage-repo-tools package schema openapi validate
+```
+
+This checks that the spec parses correctly and conforms to the OpenAPI specification. It is a good idea to run this before generating any code from the spec.
+
+For style and best-practice linting, you can additionally run:
+
+```bash
+yarn backstage-repo-tools repo schema openapi lint
+```
+
 ## Generating a typed express router from a spec
 
 Run `yarn backstage-repo-tools package schema openapi generate --server` from the directory with your plugin. This will create a `router.ts` file in the `src/schema/openapi/generated` directory that contains the OpenAPI schema as well as a factory function for a generated express router with types that match your schema.
