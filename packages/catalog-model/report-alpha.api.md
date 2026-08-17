@@ -585,6 +585,9 @@ export interface SkillAiResourceEntityV1alpha1
     categories?: string[];
     agents?: string[];
     dependsOn?: string[];
+    allowedTools?: string;
+    license?: string;
+    compatibility?: string;
   };
 }
 
