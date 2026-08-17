@@ -33,7 +33,7 @@ describe('packageVersions', () => {
           walk(fullPath);
         } else if (entry.name.endsWith('.hbs')) {
           const content = fs.readFileSync(fullPath, 'utf8');
-          const re = /\{\{versionQuery '([^']+)'\s*\}\}/g;
+          const re = /\{\{\s*versionQuery\s+'([^']+)'\s*\}\}/g;
           for (const m of content.matchAll(re)) {
             const pkg = m[1];
             if (pkg.startsWith('@backstage/') && !packageVersions[pkg]) {
