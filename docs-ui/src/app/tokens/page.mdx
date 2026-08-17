@@ -134,6 +134,88 @@ the value, you add an object with the value and the breakpoint prefix.
   </Table.Body>
 </Table.Root>
 
+## Gray scale
+
+A raw neutral gray scale, from lightest to darkest, that the semantic color
+tokens are built on top of.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-gray-1</Chip>
+      </Table.Cell>
+      <Table.Cell>Gray scale step 1 (lightest).</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-gray-2</Chip>
+      </Table.Cell>
+      <Table.Cell>Gray scale step 2.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-gray-3</Chip>
+      </Table.Cell>
+      <Table.Cell>Gray scale step 3.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-gray-4</Chip>
+      </Table.Cell>
+      <Table.Cell>Gray scale step 4.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-gray-5</Chip>
+      </Table.Cell>
+      <Table.Cell>Gray scale step 5.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-gray-6</Chip>
+      </Table.Cell>
+      <Table.Cell>Gray scale step 6.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-gray-7</Chip>
+      </Table.Cell>
+      <Table.Cell>Gray scale step 7.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-gray-8</Chip>
+      </Table.Cell>
+      <Table.Cell>Gray scale step 8.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-gray-9</Chip>
+      </Table.Cell>
+      <Table.Cell>Gray scale step 9.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-gray-10</Chip>
+      </Table.Cell>
+      <Table.Cell>Gray scale step 10.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-gray-11</Chip>
+      </Table.Cell>
+      <Table.Cell>Gray scale step 11 (darkest).</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
 ## Neutral background colors
 
 These colors form a layered neutral scale for your application backgrounds.
@@ -422,6 +504,14 @@ are prefixed with `fg` to make it easier to identify.
     </Table.Row>
     <Table.Row>
       <Table.Cell>
+        <Chip head>--bui-fg-solid-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        It should be used on top of disabled solid background colors.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
         <Chip head>--bui-fg-danger</Chip>
       </Table.Cell>
       <Table.Cell>Used for error states and destructive actions.</Table.Cell>
@@ -480,6 +570,24 @@ are prefixed with `fg` to make it easier to identify.
         It should be used on top of info background colors.
       </Table.Cell>
     </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-fg-positive</Chip>
+      </Table.Cell>
+      <Table.Cell>Used for positive states and feedback.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-fg-negative</Chip>
+      </Table.Cell>
+      <Table.Cell>Used for negative states and errors.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-fg-announcement</Chip>
+      </Table.Cell>
+      <Table.Cell>Used for announcements and informational states.</Table.Cell>
+    </Table.Row>
   </Table.Body>
 </Table.Root>
 
@@ -531,6 +639,415 @@ low contrast to help as a separator with the different background colors.
         <Chip head>--bui-border-info</Chip>
       </Table.Cell>
       <Table.Cell>It should be used on top of `--bui-bg-info`.</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+## Accent
+
+The accent color is the primary brand color, used for the most prominent
+interactive elements such as primary buttons.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-accent-bg</Chip>
+      </Table.Cell>
+      <Table.Cell>Accent background color.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-accent-bg-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>Accent background color when hovered.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-accent-bg-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>Accent background color when disabled.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-accent-fg</Chip>
+      </Table.Cell>
+      <Table.Cell>Foreground color on top of the accent background.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-accent-fg-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Foreground color on top of the disabled accent background.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+## Announcement
+
+The announcement color family is used for informational content and neutral
+status. It provides a base and a subdued variant.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-announcement-bg</Chip>
+      </Table.Cell>
+      <Table.Cell>Base announcement background color.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-announcement-bg-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>Base announcement background color when hovered.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-announcement-bg-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>Base announcement background color when disabled.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-announcement-bg-subdued</Chip>
+      </Table.Cell>
+      <Table.Cell>Subdued announcement background color.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-announcement-bg-subdued-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Subdued announcement background color when hovered.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-announcement-bg-subdued-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Subdued announcement background color when disabled.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-announcement-border</Chip>
+      </Table.Cell>
+      <Table.Cell>Border color for announcement surfaces.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-announcement-fg</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Foreground color on top of the base announcement background.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-announcement-fg-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Foreground color on top of the disabled base announcement background.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-announcement-fg-subdued</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Foreground color on top of the subdued announcement background.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-announcement-fg-subdued-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Foreground color on top of the disabled subdued announcement background.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+## Warning
+
+The warning color family is used for cautionary states and information.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-warning-bg</Chip>
+      </Table.Cell>
+      <Table.Cell>Base warning background color.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-warning-bg-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>Base warning background color when hovered.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-warning-bg-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>Base warning background color when disabled.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-warning-bg-subdued</Chip>
+      </Table.Cell>
+      <Table.Cell>Subdued warning background color.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-warning-bg-subdued-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>Subdued warning background color when hovered.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-warning-bg-subdued-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>Subdued warning background color when disabled.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-warning-border</Chip>
+      </Table.Cell>
+      <Table.Cell>Border color for warning surfaces.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-warning-fg</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Foreground color on top of the base warning background.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-warning-fg-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Foreground color on top of the disabled base warning background.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-warning-fg-subdued</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Foreground color on top of the subdued warning background.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-warning-fg-subdued-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Foreground color on top of the disabled subdued warning background.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+## Negative
+
+The negative color family is used for errors and destructive actions.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-negative-bg</Chip>
+      </Table.Cell>
+      <Table.Cell>Base negative background color.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-negative-bg-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>Base negative background color when hovered.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-negative-bg-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>Base negative background color when disabled.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-negative-bg-subdued</Chip>
+      </Table.Cell>
+      <Table.Cell>Subdued negative background color.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-negative-bg-subdued-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>Subdued negative background color when hovered.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-negative-bg-subdued-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>Subdued negative background color when disabled.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-negative-border</Chip>
+      </Table.Cell>
+      <Table.Cell>Border color for negative surfaces.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-negative-fg</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Foreground color on top of the base negative background.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-negative-fg-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Foreground color on top of the disabled base negative background.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-negative-fg-subdued</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Foreground color on top of the subdued negative background.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-negative-fg-subdued-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Foreground color on top of the disabled subdued negative background.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+## Positive
+
+The positive color family is used for success states and positive feedback.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-positive-bg</Chip>
+      </Table.Cell>
+      <Table.Cell>Base positive background color.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-positive-bg-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>Base positive background color when hovered.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-positive-bg-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>Base positive background color when disabled.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-positive-bg-subdued</Chip>
+      </Table.Cell>
+      <Table.Cell>Subdued positive background color.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-positive-bg-subdued-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>Subdued positive background color when hovered.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-positive-bg-subdued-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>Subdued positive background color when disabled.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-positive-border</Chip>
+      </Table.Cell>
+      <Table.Cell>Border color for positive surfaces.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-positive-fg</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Foreground color on top of the base positive background.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-positive-fg-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Foreground color on top of the disabled base positive background.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-positive-fg-subdued</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Foreground color on top of the subdued positive background.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-positive-fg-subdued-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Foreground color on top of the disabled subdued positive background.
+      </Table.Cell>
     </Table.Row>
   </Table.Body>
 </Table.Root>
@@ -620,6 +1137,81 @@ We have two font weights that we use across Backstage UI. Regular or Bold.
         <Chip head>--bui-font-weight-bold</Chip>
       </Table.Cell>
       <Table.Cell>The bold font weight for the theme.</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+## Font sizes
+
+A scale of font sizes used across Backstage UI for text and headings.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-font-size-1</Chip>
+      </Table.Cell>
+      <Table.Cell>Font size of `0.625rem`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-font-size-2</Chip>
+      </Table.Cell>
+      <Table.Cell>Font size of `0.75rem`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-font-size-3</Chip>
+      </Table.Cell>
+      <Table.Cell>Font size of `0.875rem`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-font-size-4</Chip>
+      </Table.Cell>
+      <Table.Cell>Font size of `1rem`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-font-size-5</Chip>
+      </Table.Cell>
+      <Table.Cell>Font size of `1.25rem`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-font-size-6</Chip>
+      </Table.Cell>
+      <Table.Cell>Font size of `1.5rem`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-font-size-7</Chip>
+      </Table.Cell>
+      <Table.Cell>Font size of `2rem`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-font-size-8</Chip>
+      </Table.Cell>
+      <Table.Cell>Font size of `3rem`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-font-size-9</Chip>
+      </Table.Cell>
+      <Table.Cell>Font size of `4rem`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-font-size-10</Chip>
+      </Table.Cell>
+      <Table.Cell>Font size of `5.75rem`.</Table.Cell>
     </Table.Row>
   </Table.Body>
 </Table.Root>
@@ -829,6 +1421,48 @@ We use a radius system to make sure that the components have a consistent look a
       </Table.Cell>
       <Table.Cell>
         The radius of the component. Default value is `9999px`.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+## Animations
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-animate-pulse</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Pulsing animation used for loading and skeleton states.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+## Shadow
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-shadow</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Elevation shadow for floating surfaces such as popovers and menus.
       </Table.Cell>
     </Table.Row>
   </Table.Body>
