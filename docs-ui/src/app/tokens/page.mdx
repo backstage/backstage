@@ -263,8 +263,7 @@ tokens are built on top of.
 
 These colors form a layered neutral scale for your application backgrounds.
 `--bui-bg-app` is the base background color of your app. Each subsequent level
-(1 through 4) represents an elevated layer on top of the previous one, with hover,
-pressed, and disabled variants for interactive states.
+(1 through 4) represents an elevated layer on top of the previous one.
 
 <Table.Root>
   <Table.Header>
@@ -299,33 +298,6 @@ pressed, and disabled variants for interactive states.
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <TokenPreview token="--bui-bg-neutral-1-hover" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-bg-neutral-1-hover</Chip>
-      </Table.Cell>
-      <Table.Cell>Hover state for elements on neutral-1.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-bg-neutral-1-pressed" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-bg-neutral-1-pressed</Chip>
-      </Table.Cell>
-      <Table.Cell>Pressed state for elements on neutral-1.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-bg-neutral-1-disabled" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-bg-neutral-1-disabled</Chip>
-      </Table.Cell>
-      <Table.Cell>Disabled state for elements on neutral-1.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
         <TokenPreview token="--bui-bg-neutral-2" kind="color" />
       </Table.Cell>
       <Table.Cell>
@@ -334,33 +306,6 @@ pressed, and disabled variants for interactive states.
       <Table.Cell>
         Second elevated layer. Use for elements on top of neutral-1.
       </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-bg-neutral-2-hover" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-bg-neutral-2-hover</Chip>
-      </Table.Cell>
-      <Table.Cell>Hover state for elements on neutral-2.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-bg-neutral-2-pressed" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-bg-neutral-2-pressed</Chip>
-      </Table.Cell>
-      <Table.Cell>Pressed state for elements on neutral-2.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-bg-neutral-2-disabled" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-bg-neutral-2-disabled</Chip>
-      </Table.Cell>
-      <Table.Cell>Disabled state for elements on neutral-2.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
@@ -375,33 +320,6 @@ pressed, and disabled variants for interactive states.
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <TokenPreview token="--bui-bg-neutral-3-hover" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-bg-neutral-3-hover</Chip>
-      </Table.Cell>
-      <Table.Cell>Hover state for elements on neutral-3.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-bg-neutral-3-pressed" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-bg-neutral-3-pressed</Chip>
-      </Table.Cell>
-      <Table.Cell>Pressed state for elements on neutral-3.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-bg-neutral-3-disabled" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-bg-neutral-3-disabled</Chip>
-      </Table.Cell>
-      <Table.Cell>Disabled state for elements on neutral-3.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
         <TokenPreview token="--bui-bg-neutral-4" kind="color" />
       </Table.Cell>
       <Table.Cell>
@@ -410,33 +328,6 @@ pressed, and disabled variants for interactive states.
       <Table.Cell>
         Fourth elevated layer. Use for elements on top of neutral-3.
       </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-bg-neutral-4-hover" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-bg-neutral-4-hover</Chip>
-      </Table.Cell>
-      <Table.Cell>Hover state for elements on neutral-4.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-bg-neutral-4-pressed" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-bg-neutral-4-pressed</Chip>
-      </Table.Cell>
-      <Table.Cell>Pressed state for elements on neutral-4.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-bg-neutral-4-disabled" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-bg-neutral-4-disabled</Chip>
-      </Table.Cell>
-      <Table.Cell>Disabled state for elements on neutral-4.</Table.Cell>
     </Table.Row>
   </Table.Body>
 </Table.Root>
@@ -477,106 +368,6 @@ overlapping element needs to match its surrounding bg without hardcoding a level
         Resolves to the bg color of the nearest enclosing `data-bg` ancestor,
         falling back to `--bui-bg-app`.
       </Table.Cell>
-    </Table.Row>
-  </Table.Body>
-</Table.Root>
-
-## Solid background colors
-
-<Table.Root>
-  <Table.Header>
-    <Table.HeaderRow>
-      <Table.HeaderCell>Preview</Table.HeaderCell>
-      <Table.HeaderCell>Prop</Table.HeaderCell>
-      <Table.HeaderCell>Description</Table.HeaderCell>
-    </Table.HeaderRow>
-  </Table.Header>
-  <Table.Body>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-bg-solid" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-bg-solid</Chip>
-      </Table.Cell>
-      <Table.Cell>Used for solid background colors.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-bg-solid-hover" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-bg-solid-hover</Chip>
-      </Table.Cell>
-      <Table.Cell>Used for solid background colors when hovered.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-bg-solid-pressed" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-bg-solid-pressed</Chip>
-      </Table.Cell>
-      <Table.Cell>Used for solid background colors when pressed.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-bg-solid-disabled" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-bg-solid-disabled</Chip>
-      </Table.Cell>
-      <Table.Cell>Used for solid background colors when disabled.</Table.Cell>
-    </Table.Row>
-  </Table.Body>
-</Table.Root>
-
-## Status background colors
-
-<Table.Root>
-  <Table.Header>
-    <Table.HeaderRow>
-      <Table.HeaderCell>Preview</Table.HeaderCell>
-      <Table.HeaderCell>Prop</Table.HeaderCell>
-      <Table.HeaderCell>Description</Table.HeaderCell>
-    </Table.HeaderRow>
-  </Table.Header>
-  <Table.Body>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-bg-danger" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-bg-danger</Chip>
-      </Table.Cell>
-      <Table.Cell>Used to show errors information.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-bg-warning" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-bg-warning</Chip>
-      </Table.Cell>
-      <Table.Cell>Used to show warnings information.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-bg-success" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-bg-success</Chip>
-      </Table.Cell>
-      <Table.Cell>Used to show success information.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-bg-info" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-bg-info</Chip>
-      </Table.Cell>
-      <Table.Cell>Used to show informational content.</Table.Cell>
     </Table.Row>
   </Table.Body>
 </Table.Root>
@@ -631,37 +422,6 @@ are prefixed with `fg` to make it easier to identify.
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <TokenPreview token="--bui-fg-solid" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-fg-solid</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        It should be used on top of solid background colors.
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-fg-solid-disabled" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-fg-solid-disabled</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        It should be used on top of disabled solid background colors.
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-fg-danger" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-fg-danger</Chip>
-      </Table.Cell>
-      <Table.Cell>Used for error states and destructive actions.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
         <TokenPreview token="--bui-fg-warning" kind="color" />
       </Table.Cell>
       <Table.Cell>
@@ -669,70 +429,6 @@ are prefixed with `fg` to make it easier to identify.
       </Table.Cell>
       <Table.Cell>
         Used for warning states and cautionary information.
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-fg-success" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-fg-success</Chip>
-      </Table.Cell>
-      <Table.Cell>Used for success states and positive feedback.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-fg-info" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-fg-info</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        Used for informational content and neutral status.
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-fg-danger-on-bg" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-fg-danger-on-bg</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        It should be used on top of danger background colors.
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-fg-warning-on-bg" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-fg-warning-on-bg</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        It should be used on top of warning background colors.
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-fg-success-on-bg" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-fg-success-on-bg</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        It should be used on top of success background colors.
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-fg-info-on-bg" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-fg-info-on-bg</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        It should be used on top of info background colors.
       </Table.Cell>
     </Table.Row>
     <Table.Row>
@@ -796,42 +492,6 @@ low contrast to help as a separator with the different background colors.
         <Chip head>--bui-border-2</Chip>
       </Table.Cell>
       <Table.Cell>It should be used on top of `--bui-bg-neutral-1`.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-border-danger" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-border-danger</Chip>
-      </Table.Cell>
-      <Table.Cell>It should be used on top of `--bui-bg-danger`.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-border-warning" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-border-warning</Chip>
-      </Table.Cell>
-      <Table.Cell>It should be used on top of `--bui-bg-warning`.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-border-success" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-border-success</Chip>
-      </Table.Cell>
-      <Table.Cell>It should be used on top of `--bui-bg-success`.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <TokenPreview token="--bui-border-info" kind="color" />
-      </Table.Cell>
-      <Table.Cell>
-        <Chip head>--bui-border-info</Chip>
-      </Table.Cell>
-      <Table.Cell>It should be used on top of `--bui-bg-info`.</Table.Cell>
     </Table.Row>
   </Table.Body>
 </Table.Root>
@@ -1395,6 +1055,361 @@ We use a radius system to make sure that the components have a consistent look a
       <Table.Cell>
         Elevation shadow for floating surfaces such as popovers and menus.
       </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+## Deprecated
+
+These tokens are kept for backwards compatibility but are deprecated and
+will be removed in a future release. Use the replacement listed for each
+token; see the [changelog](/changelog) for the full migration notes.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Preview</Table.HeaderCell>
+      <Table.HeaderCell>Token</Table.HeaderCell>
+      <Table.HeaderCell>Replacement</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-bg-solid" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-bg-solid</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-accent-bg</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-bg-solid-hover" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-bg-solid-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-accent-bg-hover</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-bg-solid-pressed" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-bg-solid-pressed</Chip>
+      </Table.Cell>
+      <Table.Cell>None — remove usage.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-bg-solid-disabled" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-bg-solid-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-accent-bg-disabled</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-fg-solid" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-fg-solid</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-accent-fg</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-fg-solid-disabled" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-fg-solid-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-accent-fg-disabled</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-fg-danger" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-fg-danger</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-fg-negative</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-fg-success" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-fg-success</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-fg-positive</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-fg-info" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-fg-info</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-fg-announcement</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-bg-danger" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-bg-danger</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-negative-bg-subdued</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-bg-warning" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-bg-warning</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-warning-bg-subdued</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-bg-success" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-bg-success</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-positive-bg-subdued</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-bg-info" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-bg-info</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-announcement-bg-subdued</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-fg-danger-on-bg" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-fg-danger-on-bg</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-negative-fg-subdued</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-fg-warning-on-bg" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-fg-warning-on-bg</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-warning-fg-subdued</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-fg-success-on-bg" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-fg-success-on-bg</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-positive-fg-subdued</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-fg-info-on-bg" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-fg-info-on-bg</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-announcement-fg-subdued</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-border-danger" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-border-danger</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-negative-border</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-border-warning" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-border-warning</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-warning-border</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-border-success" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-border-success</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-positive-border</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-border-info" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-border-info</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-announcement-border</Chip>
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-bg-neutral-1-hover" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-1-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>None — remove usage.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-bg-neutral-1-pressed" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-1-pressed</Chip>
+      </Table.Cell>
+      <Table.Cell>None — remove usage.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-bg-neutral-1-disabled" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-1-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>None — remove usage.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-bg-neutral-2-hover" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-2-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>None — remove usage.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-bg-neutral-2-pressed" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-2-pressed</Chip>
+      </Table.Cell>
+      <Table.Cell>None — remove usage.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-bg-neutral-2-disabled" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-2-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>None — remove usage.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-bg-neutral-3-hover" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-3-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>None — remove usage.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-bg-neutral-3-pressed" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-3-pressed</Chip>
+      </Table.Cell>
+      <Table.Cell>None — remove usage.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-bg-neutral-3-disabled" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-3-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>None — remove usage.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-bg-neutral-4-hover" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-4-hover</Chip>
+      </Table.Cell>
+      <Table.Cell>None — remove usage.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-bg-neutral-4-pressed" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-4-pressed</Chip>
+      </Table.Cell>
+      <Table.Cell>None — remove usage.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-bg-neutral-4-disabled" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-bg-neutral-4-disabled</Chip>
+      </Table.Cell>
+      <Table.Cell>None — remove usage.</Table.Cell>
     </Table.Row>
   </Table.Body>
 </Table.Root>
