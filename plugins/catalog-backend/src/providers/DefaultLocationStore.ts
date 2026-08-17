@@ -405,6 +405,24 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     const exactLocationsToCreate = new Set<string>();
     const locationPrefixesToMove = new Map<string, string>();
 
+    const movedFromUrls = new Set<string>();
+    for (const event of events) {
+      if (event.type === 'location.moved' && this.scmEventHandlingConfig.move) {
+        movedFromUrls.add(event.fromUrl);
+      }
+    }
+
+    const trackedFromUrls = new Set<string>();
+    if (movedFromUrls.size > 0) {
+      const existing = await this.db<DbLocationsRow>('locations')
+        .where('type', '=', 'url')
+        .whereIn('target', Array.from(movedFromUrls))
+        .select('target');
+      for (const row of existing) {
+        trackedFromUrls.add(row.target);
+      }
+    }
+
     for (const event of events) {
       if (
         event.type === 'location.deleted' &&
@@ -415,10 +433,12 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
         event.type === 'location.moved' &&
         this.scmEventHandlingConfig.move
       ) {
-        // Since Location entities are named after their target URL, these
-        // unfortunately have to be translated into deletion and creation
-        exactLocationsToDelete.add(event.fromUrl);
-        exactLocationsToCreate.add(event.toUrl);
+        if (trackedFromUrls.has(event.fromUrl)) {
+          // Since Location entities are named after their target URL, these
+          // unfortunately have to be translated into deletion and creation
+          exactLocationsToDelete.add(event.fromUrl);
+          exactLocationsToCreate.add(event.toUrl);
+        }
       } else if (
         event.type === 'repository.deleted' &&
         this.scmEventHandlingConfig.unregister

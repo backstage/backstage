@@ -27,9 +27,11 @@ import express from 'express';
 import Router from 'express-promise-router';
 
 import { DispatchStrategy } from '../auth';
+import { NotAllowedError, toError } from '@backstage/errors';
 
 import {
   AuthService,
+  AuditorService,
   BackstageCredentials,
   DiscoveryService,
   HttpAuthService,
@@ -49,6 +51,8 @@ import { ObjectsByEntityRequest } from '../types/types';
 import { KubernetesProxy } from './KubernetesProxy';
 import { requirePermission } from '../auth/requirePermission';
 import { CatalogService } from '@backstage/plugin-catalog-node';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import { resolveProxyMiddlewareCacheOptions } from './ProxyMiddlewareCache';
 
 export interface KubernetesEnvironment {
   logger: LoggerService;
@@ -58,6 +62,7 @@ export interface KubernetesEnvironment {
   permissions: PermissionEvaluator;
   auth: AuthService;
   httpAuth: HttpAuthService;
+  auditor: AuditorService;
   authStrategyMap: { [key: string]: AuthenticationStrategy };
   fetcher: KubernetesFetcher;
   clusterSupplier: KubernetesClustersSupplier;
@@ -102,6 +107,8 @@ export class KubernetesRouter {
       );
       return Router();
     }
+
+    await this.warnForClustersWithSkipTLSVerify(logger, clusterSupplier);
 
     const proxy = this.buildProxy(
       logger,
@@ -149,12 +156,22 @@ export class KubernetesRouter {
     const authStrategy = new DispatchStrategy({
       authStrategyMap,
     });
+    const middlewareCacheConfig = this.env.config.getOptionalConfig(
+      'kubernetes.proxy.middlewareCache',
+    );
+    const { ttlMs, maxSize } = resolveProxyMiddlewareCacheOptions({
+      ttlMs: middlewareCacheConfig?.getOptionalNumber('ttl.milliseconds'),
+      maxSize: middlewareCacheConfig?.getOptionalNumber('maxSize'),
+    });
+
     return new KubernetesProxy({
       logger,
       clusterSupplier,
       authStrategy,
       discovery,
       httpAuth,
+      auditor: this.env.auditor,
+      middlewareCache: { ttlMs, maxSize },
     });
   }
 
@@ -168,6 +185,7 @@ export class KubernetesRouter {
     authStrategyMap: { [key: string]: AuthenticationStrategy },
   ): express.Router {
     const logger = this.env.logger;
+    const auditor = this.env.auditor;
     const router = Router();
     router.use('/proxy', proxy.createRequestHandler({ permissionApi }));
     router.use(express.json());
@@ -179,64 +197,114 @@ export class KubernetesRouter {
 
     // @deprecated
     router.post('/services/:serviceId', async (req, res) => {
-      await requirePermission(
-        permissionApi,
-        kubernetesResourcesReadPermission,
-        httpAuth,
-        req,
-      );
       const serviceId = req.params.serviceId;
       const requestBody: ObjectsByEntityRequest = req.body;
+      let entityRef: string | undefined;
+      if (requestBody?.entity) {
+        try {
+          entityRef = stringifyEntityRef(requestBody.entity);
+        } catch {
+          entityRef = undefined;
+        }
+      }
+
+      const auditorEvent = await auditor.createEvent({
+        eventId: 'resource-fetch',
+        request: req,
+        meta: { queryType: 'services', entityRef, serviceId },
+      });
+
       try {
+        await requirePermission(
+          permissionApi,
+          kubernetesResourcesReadPermission,
+          httpAuth,
+          req,
+        );
         const response = await objectsProvider.getKubernetesObjectsByEntity(
           {
-            entity: requestBody.entity,
-            auth: requestBody.auth || {},
+            entity: requestBody?.entity,
+            auth: requestBody?.auth || {},
           },
           { credentials: await httpAuth.credentials(req) },
         );
         res.json(response);
+        auditorEvent
+          .success()
+          .catch(error =>
+            logger.error(
+              'Failed to emit audit event resource-fetch (services)',
+              error,
+            ),
+          );
       } catch (e) {
+        const err = e instanceof Error ? e : new Error(String(e));
+        await auditorEvent.fail({ error: err });
+        if (e instanceof NotAllowedError) {
+          throw e;
+        }
         logger.error(
-          `action=retrieveObjectsByServiceId service=${serviceId}, error=${e}`,
+          `action=retrieveObjectsByServiceId service=${serviceId}, error: ${err}`,
         );
-        res.status(500).json({ error: e.message });
+        if (!res.headersSent) {
+          res.status(500).json({ error: err.message });
+        }
       }
     });
 
     router.get('/clusters', async (req, res) => {
-      await requirePermission(
-        permissionApi,
-        kubernetesClustersReadPermission,
-        httpAuth,
-        req,
-      );
-      const credentials = await httpAuth.credentials(req);
-      const clusterDetails = await this.fetchClusterDetails(clusterSupplier, {
-        credentials,
+      const auditorEvent = await auditor.createEvent({
+        eventId: 'cluster-fetch',
+        request: req,
+        meta: { queryType: 'list' },
       });
-      res.json({
-        items: clusterDetails.map(cd => {
-          const oidcTokenProvider =
-            cd.authMetadata[ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER];
-          const authProvider =
-            cd.authMetadata[ANNOTATION_KUBERNETES_AUTH_PROVIDER];
-          const strategy = authStrategyMap[authProvider];
-          let auth: AuthMetadata = {};
-          if (strategy) {
-            auth = strategy.presentAuthMetadata(cd.authMetadata);
-          }
 
-          return {
-            name: cd.name,
-            title: cd.title,
-            dashboardUrl: cd.dashboardUrl,
-            authProvider,
-            ...(oidcTokenProvider && { oidcTokenProvider }),
-            ...(auth && Object.keys(auth).length !== 0 && { auth }),
-          };
-        }),
-      });
+      try {
+        await requirePermission(
+          permissionApi,
+          kubernetesClustersReadPermission,
+          httpAuth,
+          req,
+        );
+        const credentials = await httpAuth.credentials(req);
+        const clusterDetails = await this.fetchClusterDetails(clusterSupplier, {
+          credentials,
+        });
+        res.json({
+          items: clusterDetails.map(cd => {
+            const oidcTokenProvider =
+              cd.authMetadata[ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER];
+            const authProvider =
+              cd.authMetadata[ANNOTATION_KUBERNETES_AUTH_PROVIDER];
+            const strategy = authStrategyMap[authProvider];
+            let auth: AuthMetadata = {};
+            if (strategy) {
+              auth = strategy.presentAuthMetadata(cd.authMetadata);
+            }
+
+            return {
+              name: cd.name,
+              title: cd.title,
+              dashboardUrl: cd.dashboardUrl,
+              authProvider,
+              ...(oidcTokenProvider && { oidcTokenProvider }),
+              ...(auth && Object.keys(auth).length !== 0 && { auth }),
+            };
+          }),
+        });
+        auditorEvent
+          .success()
+          .catch(error =>
+            logger.error(
+              'Failed to emit audit event cluster-fetch (list)',
+              error,
+            ),
+          );
+      } catch (e) {
+        const err = e instanceof Error ? e : new Error(String(e));
+        await auditorEvent.fail({ error: err });
+        throw e;
+      }
     });
 
     addResourceRoutesToRouter(
@@ -245,6 +313,8 @@ export class KubernetesRouter {
       objectsProvider,
       httpAuth,
       permissionApi,
+      auditor,
+      logger,
     );
 
     return router;
@@ -261,5 +331,29 @@ export class KubernetesRouter {
     );
 
     return clusterDetails;
+  }
+
+  private async warnForClustersWithSkipTLSVerify(
+    logger: LoggerService,
+    clusterSupplier: KubernetesClustersSupplier,
+  ): Promise<void> {
+    try {
+      const credentials = await this.env.auth.getOwnServiceCredentials();
+      const clusters = await clusterSupplier.getClusters({ credentials });
+
+      for (const cluster of clusters) {
+        if (cluster.skipTLSVerify) {
+          logger.warn(
+            `Cluster '${cluster.name}' is configured with skipTLSVerify: true; TLS certificate verification is disabled for Kubernetes API traffic to this cluster`,
+          );
+        }
+      }
+    } catch (error) {
+      logger.warn(
+        `Failed to log skipTLSVerify warnings at startup: ${
+          toError(error).message
+        }`,
+      );
+    }
   }
 }

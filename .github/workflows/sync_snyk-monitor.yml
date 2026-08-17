@@ -29,9 +29,9 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
       - name: Monitor and Synchronize Snyk Policies
-        uses: snyk/actions/node@9cf6ca713d71123d2d229cc3d7f145b96ea3c518 # master
+        uses: snyk/actions/node@12140f4059e244892ae643824a95459a102120dd # master
         with:
           command: monitor
           args: >
@@ -46,7 +46,7 @@ jobs:
       # Above we run the `monitor` command, this runs the `test` command which is
       # the one that generates the SARIF report that we can upload to GitHub.
       - name: Create Snyk report
-        uses: snyk/actions/node@9cf6ca713d71123d2d229cc3d7f145b96ea3c518 # master
+        uses: snyk/actions/node@12140f4059e244892ae643824a95459a102120dd # master
         continue-on-error: true # To make sure that SARIF upload gets called
         with:
           args: >

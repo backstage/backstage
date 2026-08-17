@@ -21,7 +21,7 @@ import {
   EntityRelationSpec,
   DeferredEntity,
 } from '@backstage/plugin-catalog-node';
-import { DbRelationsRow } from './tables';
+import { SyncRelationsResult } from './operations/relations/syncRelations';
 import { RefreshKeyData } from '../processing/types';
 import { Knex } from 'knex';
 
@@ -125,7 +125,7 @@ export interface ProcessingDatabase {
   updateProcessedEntity(
     txOpaque: Transaction,
     options: UpdateProcessedEntityOptions,
-  ): Promise<{ previous: { relations: DbRelationsRow[] } }>;
+  ): Promise<{ relationsChange: SyncRelationsResult }>;
 
   /**
    * Updates the cache associated with an entity.

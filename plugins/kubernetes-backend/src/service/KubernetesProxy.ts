@@ -37,14 +37,29 @@ import {
   KubernetesClustersSupplier,
 } from '@backstage/plugin-kubernetes-node';
 
-import type { Request } from 'express';
+import {
+  ProxyMiddlewareCache,
+  resolveProxyMiddlewareCacheOptions,
+} from './ProxyMiddlewareCache';
+
+import type { NextFunction, Request, Response } from 'express';
 import { IncomingHttpHeaders } from 'node:http';
 import {
+  AuditorService,
   DiscoveryService,
   HttpAuthService,
   LoggerService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
+import { ProxyAuditSession } from './ProxyAuditSession';
+
+const PROXY_PREPARED_TARGET = Symbol('kubernetesProxyPreparedTarget');
+
+type PreparedProxyTarget = {
+  proxyTarget: any;
+  rewrittenPath: string;
+  cluster: ClusterDetails;
+};
 
 /**
  * The header that is used to specify the cluster name.
@@ -81,6 +96,11 @@ export type KubernetesProxyOptions = {
   authStrategy: AuthenticationStrategy;
   discovery: DiscoveryService;
   httpAuth: HttpAuthService;
+  auditor?: AuditorService;
+  middlewareCache?: {
+    ttlMs?: number;
+    maxSize?: number;
+  };
 };
 
 /**
@@ -89,17 +109,22 @@ export type KubernetesProxyOptions = {
  * @public
  */
 export class KubernetesProxy {
-  private readonly middlewareForClusterName = new Map<string, RequestHandler>();
+  private readonly middlewareCache: ProxyMiddlewareCache;
   private readonly logger: LoggerService;
   private readonly clusterSupplier: KubernetesClustersSupplier;
   private readonly authStrategy: AuthenticationStrategy;
   private readonly httpAuth: HttpAuthService;
+  private readonly auditor?: AuditorService;
 
   constructor(options: KubernetesProxyOptions) {
     this.logger = options.logger;
     this.clusterSupplier = options.clusterSupplier;
     this.authStrategy = options.authStrategy;
     this.httpAuth = options.httpAuth;
+    this.auditor = options.auditor;
+    this.middlewareCache = new ProxyMiddlewareCache(
+      resolveProxyMiddlewareCacheOptions(options.middlewareCache),
+    );
   }
 
   public createRequestHandler(
@@ -107,42 +132,170 @@ export class KubernetesProxy {
   ): RequestHandler {
     const { permissionApi } = options;
     return async (req, res, next) => {
-      const authorizeResponse = await permissionApi.authorize(
-        [{ permission: kubernetesProxyPermission }],
-        {
-          credentials: await this.httpAuth.credentials(req),
-        },
-      );
-      const auth = authorizeResponse[0];
+      const clusterNameHeader =
+        req.headers[HEADER_KUBERNETES_CLUSTER.toLowerCase()];
+      const clusterName =
+        typeof clusterNameHeader === 'string' && clusterNameHeader.length > 0
+          ? clusterNameHeader
+          : 'unknown';
+      const path = req.path || req.url.split('?')[0] || '';
 
-      if (auth.result === AuthorizeResult.DENY) {
-        res.status(403).json({ error: new NotAllowedError('Unauthorized') });
-        return;
-      }
+      let clientDisconnected = false;
+      const onSocketClose = () => {
+        clientDisconnected = true;
+      };
+      req.socket.once('close', onSocketClose);
 
-      const middleware = await this.getMiddleware(req);
+      let auditSession: ProxyAuditSession | undefined;
+      let finishListenerAttached = false;
+      try {
+        auditSession = await ProxyAuditSession.start(this.auditor, {
+          req,
+          clusterName,
+          method: req.method,
+          path,
+          logger: this.logger,
+        });
 
-      // If req is an upgrade handshake, use middleware upgrade instead of http request handler https://github.com/chimurai/http-proxy-middleware#external-websocket-upgrade
-      if (
-        req.header('connection')?.toLowerCase() === 'upgrade' &&
-        req.header('upgrade')?.toLowerCase() === 'websocket'
-      ) {
-        // Missing the `head`, since it's optional we pass undefined to avoid type issues
-        middleware.upgrade!(req, req.socket, undefined);
-      } else {
-        middleware(req, res, next);
+        finishListenerAttached = await this.authorizeAndDispatch(
+          req,
+          res,
+          next,
+          permissionApi,
+          auditSession,
+          onSocketClose,
+          () => clientDisconnected,
+        );
+      } catch (error) {
+        req.socket.removeListener('close', onSocketClose);
+        const err = error instanceof Error ? error : new Error(String(error));
+        if (auditSession && !finishListenerAttached) {
+          auditSession.finalize(err);
+        }
+        throw error;
       }
     };
   }
 
+  /**
+   * Authorizes the request, resolves the target cluster, and dispatches
+   * to either the HTTP or WebSocket proxy path. Returns `true` when
+   * HTTP finish listeners have been attached.
+   */
+  private async authorizeAndDispatch(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+    permissionApi: PermissionsService,
+    auditSession: ProxyAuditSession,
+    onSocketClose: () => void,
+    isClientDisconnected: () => boolean,
+  ): Promise<boolean> {
+    const authorizeResponse = await permissionApi.authorize(
+      [{ permission: kubernetesProxyPermission }],
+      { credentials: await this.httpAuth.credentials(req) },
+    );
+
+    if (authorizeResponse[0].result === AuthorizeResult.DENY) {
+      req.socket.removeListener('close', onSocketClose);
+      auditSession.finalize(new NotAllowedError('Unauthorized'));
+      res.status(403).json({
+        error: serializeError(new NotAllowedError('Unauthorized')),
+      });
+      return false;
+    }
+
+    if (isClientDisconnected()) {
+      auditSession.finalize(
+        new Error('Client disconnected before proxy dispatch'),
+      );
+      return false;
+    }
+
+    const prepared = await this.prepareProxyTarget(req);
+    auditSession.setResolvedClusterName(prepared.cluster.name);
+    (req as any)[PROXY_PREPARED_TARGET] = prepared;
+    const middleware = this.getOrCreateMiddleware(prepared.cluster);
+
+    if (isClientDisconnected()) {
+      auditSession.finalize(
+        new Error('Client disconnected before proxy dispatch'),
+      );
+      return false;
+    }
+
+    return KubernetesProxy.dispatchToProxy(
+      req,
+      res,
+      next,
+      middleware,
+      auditSession,
+      onSocketClose,
+    );
+  }
+
+  /**
+   * Resolves the cluster, credentials, and target URL for a proxy request
+   * before dispatching to the middleware. This ensures all async preparation
+   * completes under the caller's try/catch, avoiding unhandled rejections
+   * from http-proxy-middleware's fire-and-forget upgrade() path.
+   */
+  private async prepareProxyTarget(req: Request): Promise<PreparedProxyTarget> {
+    const cluster = await this.getClusterForRequest(req);
+    const url = new URL(cluster.url);
+
+    const { bufferFromFileOrString } = await import('@kubernetes/client-node');
+
+    const target: any = {
+      protocol: url.protocol,
+      host: url.hostname,
+      port: url.port,
+      ca: bufferFromFileOrString(cluster.caFile, cluster.caData)?.toString(),
+    };
+
+    const authHeader =
+      req.headers[HEADER_KUBERNETES_AUTH.toLocaleLowerCase('en-US')];
+    if (typeof authHeader === 'string') {
+      req.headers.authorization = authHeader;
+    } else {
+      const authObj = KubernetesProxy.authHeadersToKubernetesRequestAuth(
+        req.headers,
+      );
+
+      const credential = await this.authStrategy.getCredential(
+        cluster,
+        authObj,
+      );
+
+      if (credential.type === 'bearer token') {
+        req.headers.authorization = `Bearer ${credential.token}`;
+      } else if (credential.type === 'x509 client certificate') {
+        target.key = credential.key;
+        target.cert = credential.cert;
+      }
+    }
+
+    const requestPath = req.originalUrl || req.url || '';
+    const rewrittenPath = requestPath.replace(
+      new RegExp(
+        `^${(req.baseUrl || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`,
+      ),
+      url.pathname || '',
+    );
+
+    return { proxyTarget: target, rewrittenPath, cluster };
+  }
+
   // We create one middleware per remote cluster and hold on to them, because
   // the secure property isn't possible to decide on a per-request basis with a
-  // single middleware instance - and we don't expect it to change over time.
-  private async getMiddleware(originalReq: Request): Promise<RequestHandler> {
-    const originalCluster = await this.getClusterForRequest(originalReq);
-    let middleware = this.middlewareForClusterName.get(originalCluster.name);
+  // single middleware instance. Target resolution and path rewriting are handled
+  // per-request via the PROXY_PREPARED_TARGET symbol stashed on each req by
+  // prepareProxyTarget. Entries are refreshed after a TTL or when cluster details
+  // change.
+  private getOrCreateMiddleware(cluster: ClusterDetails): RequestHandler {
+    let middleware = this.middlewareCache.get(cluster);
     if (!middleware) {
-      const logger = this.logger.child({ cluster: originalCluster.name });
+      const logger = this.logger.child({ cluster: cluster.name });
       middleware = createProxyMiddleware({
         logProvider: () => ({
           log: logger.info.bind(logger),
@@ -151,68 +304,29 @@ export class KubernetesProxy {
           warn: logger.warn.bind(logger),
           error: logger.error.bind(logger),
         }),
-        ws: true,
-        secure: !originalCluster.skipTLSVerify,
+        // ws must be false to prevent http-proxy-middleware from auto-subscribing
+        // to the server's 'upgrade' event, which would bypass Express routing and
+        // skip audit event creation for WebSocket requests.
+        ws: false,
+        secure: !cluster.skipTLSVerify,
         changeOrigin: true,
-        pathRewrite: async (path, req) => {
-          // Re-evaluate the cluster on each request, in case it has changed
-          const cluster = await this.getClusterForRequest(req);
-          const url = new URL(cluster.url);
-          return path.replace(
-            new RegExp(`^${originalReq.baseUrl}`),
-            url.pathname || '',
-          );
+        router: req => {
+          return (req as any)[PROXY_PREPARED_TARGET]?.proxyTarget;
         },
-        router: async req => {
-          // Re-evaluate the cluster on each request, in case it has changed
-          const cluster = await this.getClusterForRequest(req);
-          const url = new URL(cluster.url);
-
-          const { bufferFromFileOrString } = await import(
-            '@kubernetes/client-node'
-          );
-
-          const target: any = {
-            protocol: url.protocol,
-            host: url.hostname,
-            port: url.port,
-            ca: bufferFromFileOrString(
-              cluster.caFile,
-              cluster.caData,
-            )?.toString(),
-          };
-
-          const authHeader =
-            req.headers[HEADER_KUBERNETES_AUTH.toLocaleLowerCase('en-US')];
-          if (typeof authHeader === 'string') {
-            req.headers.authorization = authHeader;
-          } else {
-            // Map Backstage-Kubernetes-Authorization-X-X headers to a KubernetesRequestAuth object
-            const authObj = KubernetesProxy.authHeadersToKubernetesRequestAuth(
-              req.headers,
-            );
-
-            const credential = await this.getClusterForRequest(req).then(cd => {
-              return this.authStrategy.getCredential(cd, authObj);
-            });
-
-            if (credential.type === 'bearer token') {
-              req.headers.authorization = `Bearer ${credential.token}`;
-            } else if (credential.type === 'x509 client certificate') {
-              target.key = credential.key;
-              target.cert = credential.cert;
-            }
-          }
-
-          return target;
+        pathRewrite: (_path, req) => {
+          return (req as any)[PROXY_PREPARED_TARGET]?.rewrittenPath ?? _path;
         },
         onError: (error, req, res) => {
           const wrappedError = new ForwardedError(
-            `Cluster '${originalCluster.name}' request error`,
+            `Cluster '${cluster.name}' request error`,
             error,
           );
 
           logger.error('Kubernetes proxy error', wrappedError);
+
+          if (typeof (res as { status?: unknown }).status !== 'function') {
+            return;
+          }
 
           const body: ErrorResponseBody = {
             error: serializeError(wrappedError, {
@@ -223,10 +337,55 @@ export class KubernetesProxy {
           };
           res.status(500).json(body);
         },
+        onProxyReqWs: ProxyAuditSession.handleWebSocketProxyReq,
       });
-      this.middlewareForClusterName.set(originalCluster.name, middleware);
+      this.middlewareCache.set(cluster, middleware);
     }
     return middleware;
+  }
+
+  /**
+   * Branches to WebSocket upgrade or HTTP middleware dispatch and wires
+   * up the appropriate audit listeners. Returns `true` when HTTP finish
+   * listeners have been attached (used by the caller's catch block to
+   * avoid double-finalizing).
+   */
+  private static dispatchToProxy(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+    middleware: RequestHandler,
+    auditSession: ProxyAuditSession,
+    onSocketClose: () => void,
+  ): boolean {
+    const isWebSocketUpgrade =
+      (req.header('connection') ?? '')
+        .toLowerCase()
+        .split(',')
+        .some(t => t.trim() === 'upgrade') &&
+      req.header('upgrade')?.toLowerCase() === 'websocket';
+
+    if (isWebSocketUpgrade) {
+      auditSession.prepareForWebSocketUpgrade(req, onSocketClose);
+
+      try {
+        middleware.upgrade!(req, req.socket, undefined);
+      } catch (error) {
+        req.socket.removeListener('close', onSocketClose);
+        auditSession.finalize(
+          error instanceof Error ? error : new Error(String(error)),
+        );
+        throw error;
+      }
+      return false;
+    }
+
+    // HTTP path: remove the early close listener; HTTP audit listeners
+    // on the response take over from here.
+    req.socket.removeListener('close', onSocketClose);
+    auditSession.attachToHttpResponse(res);
+    middleware(req, res, next);
+    return true;
   }
 
   private async getClusterForRequest(req: Request): Promise<ClusterDetails> {

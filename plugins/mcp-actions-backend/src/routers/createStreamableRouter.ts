@@ -19,12 +19,14 @@ import { performance } from 'node:perf_hooks';
 import { McpService } from '../services/McpService';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { LATEST_PROTOCOL_VERSION } from '@modelcontextprotocol/sdk/types.js';
-import { HttpAuthService, LoggerService } from '@backstage/backend-plugin-api';
 import { toError } from '@backstage/errors';
+import { TracingService } from '@backstage/backend-plugin-api/alpha';
 import {
-  MetricsService,
-  TracingService,
-} from '@backstage/backend-plugin-api/alpha';
+  AuditorService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import { bucketBoundaries, McpServerSessionAttributes } from '../metrics';
 import { McpServerConfig } from '../config';
 
@@ -34,6 +36,7 @@ export const createStreamableRouter = ({
   logger,
   metrics,
   tracing,
+  auditor,
   serverConfig,
 }: {
   mcpService: McpService;
@@ -41,6 +44,7 @@ export const createStreamableRouter = ({
   httpAuth: HttpAuthService;
   metrics: MetricsService;
   tracing: TracingService;
+  auditor: AuditorService;
   serverConfig?: McpServerConfig;
 }): Router => {
   const router = PromiseRouter();
@@ -64,10 +68,17 @@ export const createStreamableRouter = ({
       'network.protocol.name': 'http',
     };
 
+    const connectionEvent = await auditor.createEvent({
+      eventId: 'connection',
+      request: req,
+      meta: { transport: 'streamable', actionType: 'established' },
+    });
+
     try {
       const server = mcpService.getServer({
         credentials: await httpAuth.credentials(req),
         serverConfig,
+        req,
       });
 
       const transport = new StreamableHTTPServerTransport({
@@ -77,6 +88,7 @@ export const createStreamableRouter = ({
       });
 
       await server.connect(transport);
+
       const ctx = tracing.propagation.extract(
         tracing.context.active(),
         req.headers,
@@ -85,13 +97,22 @@ export const createStreamableRouter = ({
         transport.handleRequest(req, res, req.body),
       );
 
-      res.on('close', () => {
+      await connectionEvent.success();
+
+      res.on('close', async () => {
         transport.close();
         server.close();
 
         const durationSeconds = (performance.now() - sessionStart) / 1000;
 
         sessionDuration.record(durationSeconds, baseAttributes);
+
+        const e = await auditor.createEvent({
+          eventId: 'connection',
+          request: req,
+          meta: { transport: 'streamable', actionType: 'closed' },
+        });
+        await e.success();
       });
     } catch (error) {
       const err = toError(error);
@@ -116,6 +137,8 @@ export const createStreamableRouter = ({
         ...baseAttributes,
         'error.type': errorType,
       });
+
+      await connectionEvent.fail({ error: toError(error) });
     }
   });
 

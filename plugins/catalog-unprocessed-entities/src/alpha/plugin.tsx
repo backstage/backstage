@@ -23,13 +23,11 @@ import {
   SubPageBlueprint,
 } from '@backstage/frontend-plugin-api';
 
-import {
-  catalogUnprocessedEntitiesApiRef,
-  CatalogUnprocessedEntitiesClient,
-} from '../api';
-import QueueIcon from '@material-ui/icons/Queue';
+import { catalogUnprocessedEntitiesApiRef } from '../api';
+import { RiStackLine } from '@remixicon/react';
 import { rootRouteRef } from '../routes';
 import { Container } from '@backstage/ui';
+import { CatalogUnprocessedEntitiesClient } from '@backstage/plugin-catalog-unprocessed-entities-common';
 
 /** @alpha */
 export const catalogUnprocessedEntitiesApi = ApiBlueprint.make({
@@ -52,7 +50,7 @@ export const catalogUnprocessedEntitiesPage = PageBlueprint.make({
     path: '/catalog-unprocessed-entities',
     routeRef: rootRouteRef,
     title: 'Unprocessed Entities',
-    icon: <QueueIcon fontSize="inherit" />,
+    icon: <RiStackLine />,
     loader: () =>
       import('../components/UnprocessedEntities').then(m => (
         <m.NfsUnprocessedEntities />
@@ -83,7 +81,7 @@ export const unprocessedEntitiesDevToolsContent = SubPageBlueprint.make({
 export default createFrontendPlugin({
   pluginId: 'catalog-unprocessed-entities',
   title: 'Unprocessed Entities',
-  icon: <QueueIcon fontSize="inherit" />,
+  icon: <RiStackLine />,
   info: { packageJson: () => import('../../package.json') },
   routes: {
     root: rootRouteRef,

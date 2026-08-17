@@ -1,5 +1,16 @@
 # @backstage/cli-module-build
 
+## 0.1.7-next.0
+
+### Patch Changes
+
+- 943687f: Stopped disabling the Node.js snapshot by default when starting backends or running tests.
+- 4d7b153: chore(deps): bump `shell-quote` from 1.8.4 to 1.9.0
+- 78bf918: chore(deps): bump `tar` from 7.5.15 to 7.5.21
+- bb98419: Package preparation for publishing validates TypeScript configuration schemas strictly, preventing invalid schemas from being published. Other build and bundle paths report schema errors as warnings.
+- Updated dependencies
+  - @backstage/config-loader@1.11.2-next.0
+
 ## 0.1.5
 
 ### Patch Changes

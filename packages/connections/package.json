@@ -1,6 +1,6 @@
 {
   "name": "@backstage/connections",
-  "version": "0.2.0",
+  "version": "0.3.0-next.2",
   "description": "Connections framework used by Backstage to better manage external connections used by integrations and plugins",
   "backstage": {
     "role": "common-library"
@@ -37,6 +37,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/types": "workspace:^",
     "zod": "^4.0.0"

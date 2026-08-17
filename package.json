@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.53.0",
+  "version": "1.54.0-next.3",
   "backstage": {
     "cli": {
       "new": {
@@ -60,9 +60,9 @@
     "sync-issue-templates": "node ./.github/ISSUE_TEMPLATE/sync.js",
     "techdocs-cli": "node scripts/techdocs-cli.js",
     "techdocs-cli:dev": "cross-env TECHDOCS_CLI_DEV_MODE=true node scripts/techdocs-cli.js",
-    "test": "NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules' backstage-cli repo test",
-    "test:all": "NODE_OPTIONS='--no-node-snapshot --experimental-vm-modules' backstage-cli repo test --coverage",
-    "test:e2e": "NODE_OPTIONS=--no-node-snapshot playwright test",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' backstage-cli repo test",
+    "test:all": "NODE_OPTIONS='--experimental-vm-modules' backstage-cli repo test --coverage",
+    "test:e2e": "playwright test",
     "tsc": "NODE_OPTIONS='--max-old-space-size=8192' tsc",
     "tsc:full": "backstage-cli repo clean && NODE_OPTIONS='--max-old-space-size=8192' tsc --skipLibCheck false --incremental false"
   },
@@ -125,7 +125,6 @@
   "devDependencies": {
     "@backstage/cli": "workspace:*",
     "@backstage/cli-defaults": "workspace:*",
-    "@backstage/codemods": "workspace:*",
     "@backstage/create-app": "workspace:*",
     "@backstage/e2e-test-utils": "workspace:*",
     "@backstage/eslint-plugin": "workspace:*",
@@ -161,7 +160,7 @@
     "fs-extra": "^11.2.0",
     "husky": "^9.0.0",
     "jest": "~30.2.0",
-    "js-yaml": "^4.2.0",
+    "js-yaml": "^4.3.0",
     "jsdom": "^27",
     "lint-staged": "^16.0.0",
     "madge": "^8.0.0",

@@ -1,5 +1,39 @@
 # @backstage/connections
 
+## 0.3.0-next.2
+
+### Minor Changes
+
+- dba1eed: **BREAKING**: Connection lookups now take a `query` object instead of a `url`. Every connection type declares which query it accepts, so types that are not identified by a URL can be looked up by other identifiers. All built-in connection types are still matched by URL, so existing lookups just move the URL into the query:
+
+  ```ts
+  const connection = await connections.find({
+    type: 'github',
+    query: { url },
+    authMethods: ['app', 'token'],
+  });
+  ```
+
+  Connections returned from a lookup now also include their `type`.
+
+## 0.3.0-next.1
+
+### Patch Changes
+
+- b9e11d2: Updated GitHub authentication selection to prefer an organization-specific App, then an unrestricted App, and finally the only configured App before falling back to token or anonymous authentication.
+
+## 0.3.0-next.0
+
+### Minor Changes
+
+- 64cea29: **BREAKING**: Changed `@backstage/connections` into a common library so its connection types, schemas, and service contract can be used by isomorphic packages. The Node.js service implementation is now internal. Backend-only APIs and configuration types, including `connectionsServiceRef`, `connectionsServiceFactory`, `DefaultConnectionsService`, `declareConnection`, `RootConnection`, and `AnyRootConnection`, are no longer exported from this package.
+- 1bfed76: **BREAKING**: Changed connection types to use portable configuration schemas as the source of root connection types, with JSON Schema generation and strongly typed parsing that do not expose the underlying Zod schemas.
+
+### Patch Changes
+
+- f60a23a: Require every connection to configure at least one auth method. Use the `none` auth method for unauthenticated connections.
+- c0f9a7d: Removed the unsupported unauthenticated AWS CodeCommit auth option. AWS CodeCommit connections now only expose access key or assume role authentication.
+
 ## 0.2.0
 
 ### Minor Changes

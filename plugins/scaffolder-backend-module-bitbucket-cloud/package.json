@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-bitbucket-cloud",
-  "version": "0.3.8",
+  "version": "0.3.9-next.1",
   "description": "The Bitbucket Cloud module for @backstage/plugin-scaffolder-backend",
   "backstage": {
     "role": "backend-plugin-module",
@@ -57,6 +57,6 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^",
-    "msw": "^1.0.0"
+    "msw": "^2.0.0"
   }
 }

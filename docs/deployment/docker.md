@@ -37,6 +37,10 @@ The required steps in the host build are to install dependencies with
 `yarn install`, generate type definitions using `yarn tsc`, and build the backend
 package with `yarn build:backend`.
 
+:::note
+Run these commands with the same Node version as the Docker base image. Using a different version will cause native modules to fail at runtime.
+:::
+
 In a CI workflow it might look something like this, from the root:
 
 ```bash
@@ -54,16 +58,6 @@ Once the host build is complete, we are ready to build our image. The following
 
 ```dockerfile
 FROM node:24-trixie-slim
-
-# Set Python interpreter for `node-gyp` to use
-ENV PYTHON=/usr/bin/python3
-
-# Install isolate-vm dependencies, these are needed by the @backstage/plugin-scaffolder-backend.
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    apt-get update && \
-    apt-get install -y --no-install-recommends python3 g++ build-essential && \
-    rm -rf /var/lib/apt/lists/*
 
 # Install sqlite3 dependencies. You can skip this if you don't use sqlite3 in the image,
 # in which case you should also move better-sqlite3 to "devDependencies" in package.json.
@@ -89,9 +83,6 @@ COPY --chown=node:node backstage.json ./
 # This switches many Node.js dependencies to production mode.
 ENV NODE_ENV=production
 
-# This disables node snapshot for Node 20 to work with the Scaffolder
-ENV NODE_OPTIONS="--no-node-snapshot"
-
 # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
 # The skeleton contains the package.json of each package in the monorepo,
 # and along with yarn.lock and the root package.json, that's enough to run yarn install.
@@ -113,7 +104,7 @@ CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app
 
 For more details on how the `backend:bundle` command and the `skeleton.tar.gz`
 file works, see the
-[`backend:bundle` command docs](../tooling/cli/03-commands.md#package-bundle).
+[`backend:bundle` command docs](../tooling/cli/module-build.md#package-bundle).
 
 The `Dockerfile` is located at `packages/backend/Dockerfile`, but needs to be
 executed with the root of the repo as the build context, in order to get access
@@ -153,7 +144,7 @@ browser at `http://localhost:7007`
 
 ## Multi-stage Build
 
-:::note Note
+:::note
 
 The `.dockerignore` is different in this setup, read on for more
 details.
@@ -195,16 +186,6 @@ RUN find packages \! -name "package.json" -mindepth 2 -maxdepth 2 -exec rm -rf {
 # Stage 2 - Install dependencies and build packages
 FROM node:24-trixie-slim AS build
 
-# Set Python interpreter for `node-gyp` to use
-ENV PYTHON=/usr/bin/python3
-
-# Install isolate-vm dependencies, these are needed by the @backstage/plugin-scaffolder-backend.
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    apt-get update && \
-    apt-get install -y --no-install-recommends python3 g++ build-essential && \
-    rm -rf /var/lib/apt/lists/*
-
 # Install sqlite3 dependencies. You can skip this if you don't use sqlite3 in the image,
 # in which case you should also move better-sqlite3 to "devDependencies" in package.json.
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
@@ -232,16 +213,6 @@ RUN mkdir packages/backend/dist/skeleton packages/backend/dist/bundle \
 
 # Stage 3 - Build the actual backend image and install production dependencies
 FROM node:24-trixie-slim
-
-# Set Python interpreter for `node-gyp` to use
-ENV PYTHON=/usr/bin/python3
-
-# Install isolate-vm dependencies, these are needed by the @backstage/plugin-scaffolder-backend.
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    apt-get update && \
-    apt-get install -y --no-install-recommends python3 g++ build-essential && \
-    rm -rf /var/lib/apt/lists/*
 
 # Install sqlite3 dependencies. You can skip this if you don't use sqlite3 in the image,
 # in which case you should also move better-sqlite3 to "devDependencies" in package.json.
@@ -286,9 +257,6 @@ COPY --chown=node:node examples ./examples
 # This switches many Node.js dependencies to production mode.
 ENV NODE_ENV=production
 
-# This disables node snapshot for Node 20 to work with the Scaffolder
-ENV NODE_OPTIONS="--no-node-snapshot"
-
 CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app-config.production.yaml"]
 ```
 
@@ -331,7 +299,7 @@ browser at `http://localhost:7007`
 
 ## Separate Frontend
 
-:::note Note
+:::note
 
 This is an optional step, and you will lose out on the features of the
 `@backstage/plugin-app-backend` plugin. Most notably the frontend configuration

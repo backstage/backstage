@@ -1,5 +1,21 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.5.23-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9-next.0
+  - @backstage/core-components@0.18.13-next.2
+
+## 0.5.23-next.0
+
+### Patch Changes
+
+- 226817d: chore(deps): bump `js-yaml` from 4.2.0 to 4.3.0
+- Updated dependencies
+  - @backstage/core-components@0.18.13-next.0
+
 ## 0.5.22
 
 ### Patch Changes

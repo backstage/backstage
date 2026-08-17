@@ -19,6 +19,7 @@ import npmPackList from 'npm-packlist';
 import { resolve as resolvePath, posix as posixPath } from 'node:path';
 import { BackstagePackageJson, PackageGraphNode } from '@backstage/cli-node';
 import { loadConfigSchema } from '@backstage/config-loader';
+import type { ConfigSchemaError } from '@backstage/config-loader';
 import { readEntryPoints } from '../entryPoints';
 import { getEntryPointDefaultFeatureType } from '../typeDistProject';
 import { Project } from 'ts-morph';
@@ -42,6 +43,10 @@ interface ProductionPackOptions {
 
 type ConfigSchemaValue = Record<string, unknown>;
 
+type CompilePackageConfigSchemasOptions = {
+  onSchemaError?: (error: ConfigSchemaError) => void;
+};
+
 type PackageJsonWithConfigSchema = BackstagePackageJson & {
   configSchema?: string | ConfigSchemaValue;
 };
@@ -55,6 +60,7 @@ function getTypeScriptConfigSchemaPath(pkg: BackstagePackageJson) {
 
 export async function compilePackageConfigSchemas(
   packages: Pick<PackageGraphNode, 'name' | 'dir' | 'packageJson'>[],
+  options: CompilePackageConfigSchemasOptions = {},
 ) {
   const schemaPackages = packages.flatMap(pkg => {
     const schemaPath = getTypeScriptConfigSchemaPath(pkg.packageJson);
@@ -70,6 +76,7 @@ export async function compilePackageConfigSchemas(
       resolvePath(pkg.dir, 'package.json'),
     ),
     excludePackageDependencies: true,
+    onSchemaError: options.onSchemaError,
   });
   const serialized = schema.serialize() as {
     schemas: Array<{
@@ -88,6 +95,14 @@ export async function compilePackageConfigSchemas(
       resolvePath(process.cwd(), entry.path)
     ) {
       result.set(entry.packageName, entry.value);
+    }
+  }
+  // Use an unconstrained fallback so productionPack doesn't retry omitted schemas in strict mode.
+  if (options.onSchemaError) {
+    for (const { name } of schemaPackages) {
+      if (!result.has(name)) {
+        result.set(name, {});
+      }
     }
   }
   return result;

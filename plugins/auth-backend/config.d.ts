@@ -197,6 +197,10 @@ export interface Config {
        * Defaults to `['https://claude.ai/*', 'https://vscode.dev/*', '{baseUrl}/.well-known/oauth-client/cli.json']`
        * where `{baseUrl}` is the auth backend's base URL.
        *
+       * Setting this replaces the Claude and VS Code defaults. The built-in
+       * CLI client is always allowed, since this backend serves its metadata
+       * document itself.
+       *
        * @example ['https://example.com/*', 'https://*.trusted-domain.com/*']
        */
       allowedClientIdPatterns?: string[];
@@ -231,6 +235,10 @@ export interface Config {
        *
        * Defaults to `['https://claude.ai/*', 'https://vscode.dev/*', '{baseUrl}/.well-known/oauth-client/cli.json']`
        * where `{baseUrl}` is the auth backend's base URL.
+       *
+       * Setting this replaces the Claude and VS Code defaults. The built-in
+       * CLI client is always allowed, since this backend serves its metadata
+       * document itself.
        *
        * @example ['https://example.com/*', 'https://*.trusted-domain.com/*']
        */

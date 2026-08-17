@@ -26,7 +26,6 @@ import { DefaultAwsCredentialsManager } from '@backstage/integration-aws-node';
 import { UrlReaderPredicateTuple } from './types';
 import path from 'node:path';
 import { NotModifiedError } from '@backstage/errors';
-import { mockClient } from 'aws-sdk-client-mock';
 import {
   S3Client,
   ListObjectsV2Command,
@@ -37,6 +36,8 @@ import {
 import { sdkStreamMixin } from '@aws-sdk/util-stream-node';
 import fs from 'node:fs';
 import { mockServices } from '@backstage/backend-test-utils';
+
+const s3SendMock = jest.fn();
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
@@ -269,7 +270,10 @@ describe('parseUrl', () => {
 });
 
 describe('AwsS3UrlReader', () => {
-  const s3Client = mockClient(S3Client);
+  afterEach(() => {
+    jest.restoreAllMocks();
+    s3SendMock.mockReset();
+  });
 
   const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
     return AwsS3UrlReader.factory({
@@ -378,18 +382,22 @@ describe('AwsS3UrlReader', () => {
     });
 
     beforeEach(() => {
-      s3Client.reset();
-
-      s3Client.on(GetObjectCommand).resolves({
-        Body: sdkStreamMixin(
-          fs.createReadStream(
-            path.resolve(
-              __dirname,
-              '__fixtures__/awsS3/awsS3-mock-object.yaml',
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          return {
+            Body: sdkStreamMixin(
+              fs.createReadStream(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                ),
+              ),
             ),
-          ),
-        ),
-        ETag: '123abc',
+            ETag: '123abc',
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
       });
     });
 
@@ -426,19 +434,23 @@ describe('AwsS3UrlReader', () => {
     });
 
     beforeEach(() => {
-      s3Client.reset();
-
-      s3Client.on(GetObjectCommand).resolves({
-        Body: sdkStreamMixin(
-          fs.createReadStream(
-            path.resolve(
-              __dirname,
-              '__fixtures__/awsS3/awsS3-mock-object.yaml',
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          return {
+            Body: sdkStreamMixin(
+              fs.createReadStream(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                ),
+              ),
             ),
-          ),
-        ),
-        ETag: '123abc',
-        LastModified: new Date('2020-01-01T00:00:00Z'),
+            ETag: '123abc',
+            LastModified: new Date('2020-01-01T00:00:00Z'),
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
       });
     });
 
@@ -489,16 +501,22 @@ describe('AwsS3UrlReader', () => {
     });
 
     beforeEach(() => {
-      s3Client.on(GetObjectCommand).resolves({
-        Body: sdkStreamMixin(
-          fs.createReadStream(
-            path.resolve(
-              __dirname,
-              '__fixtures__/awsS3/awsS3-mock-object.yaml',
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          return {
+            Body: sdkStreamMixin(
+              fs.createReadStream(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                ),
+              ),
             ),
-          ),
-        ),
-        ETag: '123abc',
+            ETag: '123abc',
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
       });
     });
 
@@ -526,13 +544,18 @@ describe('AwsS3UrlReader', () => {
     });
 
     beforeEach(() => {
-      s3Client.reset();
       const t = new S3ServiceException({
         name: '304',
         $fault: 'client',
         $metadata: { httpStatusCode: 304 },
       });
-      s3Client.on(GetObjectCommand).rejects(t);
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          throw t;
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
+      });
     });
 
     it('returns contents of an object in a bucket', async () => {
@@ -561,13 +584,18 @@ describe('AwsS3UrlReader', () => {
     });
 
     beforeEach(() => {
-      s3Client.reset();
       const t = new S3ServiceException({
         name: '304',
         $fault: 'client',
         $metadata: { httpStatusCode: 304 },
       });
-      s3Client.on(GetObjectCommand).rejects(t);
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          throw t;
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
+      });
     });
 
     it('returns contents of an object in a bucket', async () => {
@@ -586,7 +614,7 @@ describe('AwsS3UrlReader', () => {
     let awsS3UrlReader: AwsS3UrlReader;
 
     beforeEach(() => {
-      s3Client.reset();
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
 
       const object: Object = {
         Key: 'awsS3-mock-object.yaml',
@@ -597,17 +625,23 @@ describe('AwsS3UrlReader', () => {
         Contents: objectList,
       };
 
-      s3Client.on(ListObjectsV2Command).resolves(output);
-
-      s3Client.on(GetObjectCommand).resolves({
-        Body: sdkStreamMixin(
-          fs.createReadStream(
-            path.resolve(
-              __dirname,
-              '__fixtures__/awsS3/awsS3-mock-object.yaml',
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof ListObjectsV2Command) {
+          return output;
+        }
+        if (command instanceof GetObjectCommand) {
+          return {
+            Body: sdkStreamMixin(
+              fs.createReadStream(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                ),
+              ),
             ),
-          ),
-        ),
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
       });
 
       const config = new ConfigReader({
@@ -650,19 +684,23 @@ describe('AwsS3UrlReader', () => {
     });
 
     beforeEach(() => {
-      s3Client.reset();
-
-      s3Client.on(GetObjectCommand).resolves({
-        Body: sdkStreamMixin(
-          fs.createReadStream(
-            path.resolve(
-              __dirname,
-              '__fixtures__/awsS3/awsS3-mock-object.yaml',
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          return {
+            Body: sdkStreamMixin(
+              fs.createReadStream(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                ),
+              ),
             ),
-          ),
-        ),
-        ETag: '123abc',
-        LastModified: new Date('2020-01-01T00:00:00Z'),
+            ETag: '123abc',
+            LastModified: new Date('2020-01-01T00:00:00Z'),
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
       });
     });
 

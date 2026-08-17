@@ -63,6 +63,8 @@ import { version as pluginAuthBackend } from '../../../../plugins/auth-backend/p
 import { version as pluginAuthBackendModuleGithubProvider } from '../../../../plugins/auth-backend-module-github-provider/package.json';
 import { version as pluginAuthBackendModuleGuestProvider } from '../../../../plugins/auth-backend-module-guest-provider/package.json';
 import { version as pluginAuthNode } from '../../../../plugins/auth-node/package.json';
+import { version as pluginHome } from '../../../../plugins/home/package.json';
+import { version as pluginHomeReact } from '../../../../plugins/home-react/package.json';
 import { version as pluginCatalog } from '../../../../plugins/catalog/package.json';
 import { version as pluginCatalogCommon } from '../../../../plugins/catalog-common/package.json';
 import { version as pluginCatalogReact } from '../../../../plugins/catalog-react/package.json';
@@ -136,6 +138,8 @@ export const packageVersions = {
   '@backstage/plugin-auth-backend-module-guest-provider':
     pluginAuthBackendModuleGuestProvider,
   '@backstage/plugin-auth-node': pluginAuthNode,
+  '@backstage/plugin-home': pluginHome,
+  '@backstage/plugin-home-react': pluginHomeReact,
   '@backstage/plugin-catalog': pluginCatalog,
   '@backstage/plugin-catalog-common': pluginCatalogCommon,
   '@backstage/plugin-catalog-react': pluginCatalogReact,

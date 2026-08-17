@@ -4,7 +4,7 @@ title: Observability
 description: Adding Observability to Your Plugin
 ---
 
-:::caution Legacy Documentation
+:::caution[Legacy Documentation]
 
 This section is part of the legacy plugins documentation. For new backend system logging, see the [Logger](../backend-system/core-services/logger.md) and [Root Logger](../backend-system/core-services/root-logger.md) core service documentation. For health checks, see [Root Health](../backend-system/core-services/root-health.md).
 

@@ -37,3 +37,14 @@ The Backstage CLI intentionally does not provide many hooks for overriding or
 customizing the build process. This is to allow for evolution of the CLI without
 having to take a wide API surface into account. This allows us to iterate and
 improve the tooling, as well as to more easily keep the system up to date.
+
+## Modular architecture
+
+The CLI is built from a set of independent **CLI modules**, each providing a
+group of related commands. The
+[CLI Modules](./05-modules.md) page lists the default modules and explains
+how module discovery works. You can also
+[customize the defaults](./05-modules.md#customizing-the-default-modules) by
+overriding or removing modules, or
+[build your own](./building-cli-modules.md) to add custom commands for your
+organization.

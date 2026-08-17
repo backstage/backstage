@@ -1,5 +1,20 @@
 # @backstage/plugin-techdocs-node
 
+## 1.15.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.0-next.0
+
+## 1.15.3-next.0
+
+### Patch Changes
+
+- 226817d: chore(deps): bump `js-yaml` from 4.2.0 to 4.3.0
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+
 ## 1.15.2
 
 ### Patch Changes
