@@ -762,6 +762,33 @@ describe('DatabaseTaskStore', () => {
       expect(task.secrets).toBeUndefined();
     });
 
+    it('should delete secrets when task is cancelled', async () => {
+      const { store } = await createStore(undefined, true);
+      const secrets = { token: 'secret' };
+      const { taskId } = await store.createTask({
+        spec: {} as TaskSpec,
+        createdBy: 'me',
+        secrets,
+      });
+
+      await store.claimTask();
+      await store.cancelTask({
+        taskId,
+        body: { message: 'cancelled', status: 'cancelled' },
+      });
+
+      const task = await store.getTask(taskId);
+      const { events } = await store.listEvents({ taskId });
+      expect(task.secrets).toBeUndefined();
+      expect(events).toEqual([
+        expect.objectContaining({
+          taskId,
+          type: 'cancelled',
+          body: { message: 'cancelled', status: 'cancelled' },
+        }),
+      ]);
+    });
+
     it('should preserve secrets through multiple recovery cycles', async () => {
       const { store } = await createStore(undefined, true);
       const secrets = { token: 'secret' };

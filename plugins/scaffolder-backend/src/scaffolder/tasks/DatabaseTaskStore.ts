@@ -700,13 +700,21 @@ export class DatabaseTaskStore implements TaskStore {
   ): Promise<void> {
     const { taskId, body } = options;
     const serializedBody = JSON.stringify(body);
-    const [ret] = await this.db<RawDbTaskEventRow>('task_events')
-      .insert({
-        task_id: taskId,
-        event_type: 'cancelled',
-        body: serializedBody,
-      })
-      .returning('id');
+    const ret = await this.db.transaction(async tx => {
+      await tx<RawDbTaskRow>('tasks')
+        .where({ id: taskId })
+        .update({ secrets: null });
+
+      const [event] = await tx<RawDbTaskEventRow>('task_events')
+        .insert({
+          task_id: taskId,
+          event_type: 'cancelled',
+          body: serializedBody,
+        })
+        .returning('id');
+
+      return event;
+    });
 
     this.events?.publish({
       topic: 'scaffolder.task',
