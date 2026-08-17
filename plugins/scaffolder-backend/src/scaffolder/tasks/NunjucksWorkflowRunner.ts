@@ -513,34 +513,37 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
             try {
               let prevValue: T | undefined;
+              let value: T;
 
-              if (prevTaskState) {
-                const prevState = (
-                  prevTaskState.state?.checkpoints as CheckpointState
-                )?.[key];
+              try {
+                if (prevTaskState) {
+                  const prevState = (
+                    prevTaskState.state?.checkpoints as CheckpointState
+                  )?.[key];
 
-                if (prevState && prevState.status === 'success') {
-                  prevValue = prevState.value as T;
+                  if (prevState && prevState.status === 'success') {
+                    prevValue = prevState.value as T;
+                  }
                 }
+
+                value = prevValue ? prevValue : await fn();
+              } catch (err) {
+                await task.updateCheckpoint?.({
+                  key,
+                  status: 'failed',
+                  reason: stringifyError(err),
+                });
+                throw err;
               }
 
-              const value = prevValue ? prevValue : await fn();
-
               if (!prevValue) {
-                task.updateCheckpoint?.({
+                await task.updateCheckpoint?.({
                   key,
                   status: 'success',
                   value: value ?? {},
                 });
               }
               return value;
-            } catch (err) {
-              task.updateCheckpoint?.({
-                key,
-                status: 'failed',
-                reason: stringifyError(err),
-              });
-              throw err;
             } finally {
               await task.serializeWorkspace?.({ path: workspacePath });
             }

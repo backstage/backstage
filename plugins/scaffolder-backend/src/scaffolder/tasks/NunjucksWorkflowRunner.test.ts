@@ -650,6 +650,42 @@ describe('NunjucksWorkflowRunner', () => {
   });
 
   describe('templating', () => {
+    const createDeferred = () => {
+      let resolve!: () => void;
+      const promise = new Promise<void>(promiseResolve => {
+        resolve = promiseResolve;
+      });
+      return { promise, resolve };
+    };
+
+    const registerCheckpointAction = (
+      id: string,
+      fn: () => Promise<string>,
+      afterCheckpoint?: () => void,
+    ) => {
+      actionRegistry.register(
+        createTemplateAction({
+          id,
+          handler: async ctx => {
+            await ctx.checkpoint({ key: 'key', fn });
+            afterCheckpoint?.();
+          },
+        }),
+      );
+    };
+
+    const createCheckpointTask = (
+      action: string,
+      updateCheckpoint: jest.Mock,
+      serializeWorkspace?: jest.Mock,
+    ) => ({
+      ...createMockTaskWithSpec({
+        steps: [{ id: 'test', name: 'name', action }],
+      }),
+      updateCheckpoint,
+      ...(serializeWorkspace && { serializeWorkspace }),
+    });
+
     it('should template the input to an action', async () => {
       const task = createMockTaskWithSpec({
         steps: [
@@ -908,6 +944,93 @@ describe('NunjucksWorkflowRunner', () => {
       expect(result.output.key3).toEqual('updated');
       expect(result.output.key4).toEqual(undefined);
       expect(result.output.key5).toEqual(undefined);
+    });
+
+    it('waits for successful checkpoint state to be persisted', async () => {
+      let actionContinued = false;
+      registerCheckpointAction(
+        'checkpoint-persistence-action',
+        async () => 'value',
+        () => {
+          actionContinued = true;
+        },
+      );
+
+      const updateStarted = createDeferred();
+      const pendingUpdate = createDeferred();
+      const task = createCheckpointTask(
+        'checkpoint-persistence-action',
+        jest.fn(() => {
+          updateStarted.resolve();
+          return pendingUpdate.promise;
+        }),
+      );
+
+      const execution = runner.execute(task);
+      await updateStarted.promise;
+      await new Promise(resolve => setImmediate(resolve));
+
+      expect(actionContinued).toBe(false);
+
+      pendingUpdate.resolve();
+      await execution;
+      expect(actionContinued).toBe(true);
+    });
+
+    it('does not record callback failure when successful persistence fails', async () => {
+      registerCheckpointAction(
+        'checkpoint-persistence-rejection-action',
+        async () => 'value',
+      );
+
+      const persistenceError = new Error('checkpoint persistence failed');
+      const updateCheckpoint = jest.fn().mockRejectedValue(persistenceError);
+      const task = createCheckpointTask(
+        'checkpoint-persistence-rejection-action',
+        updateCheckpoint,
+      );
+
+      await expect(runner.execute(task)).rejects.toBe(persistenceError);
+      expect(updateCheckpoint).toHaveBeenCalledTimes(1);
+      expect(updateCheckpoint).toHaveBeenCalledWith({
+        key: 'v1.task.checkpoint.test.key',
+        status: 'success',
+        value: 'value',
+      });
+    });
+
+    it('waits for failed checkpoint state to be persisted', async () => {
+      const checkpointError = new Error('checkpoint failed');
+      registerCheckpointAction(
+        'failed-checkpoint-persistence-action',
+        async () => {
+          throw checkpointError;
+        },
+      );
+
+      const updateStarted = createDeferred();
+      const pendingUpdate = createDeferred();
+      const serializeWorkspace = jest.fn();
+      const task = createCheckpointTask(
+        'failed-checkpoint-persistence-action',
+        jest.fn(() => {
+          updateStarted.resolve();
+          return pendingUpdate.promise;
+        }),
+        serializeWorkspace,
+      );
+
+      const execution = runner.execute(task).then(
+        () => ({ error: undefined }),
+        error => ({ error }),
+      );
+
+      await updateStarted.promise;
+      expect(serializeWorkspace).not.toHaveBeenCalled();
+
+      pendingUpdate.resolve();
+      await expect(execution).resolves.toEqual({ error: checkpointError });
+      expect(serializeWorkspace).toHaveBeenCalled();
     });
 
     it('should template the output from simple actions', async () => {
