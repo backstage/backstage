@@ -108,6 +108,47 @@ describe('RouteTracker', () => {
     });
   });
 
+  it('should normalize the TechDocs entity kind', async () => {
+    const techDocsRouteObjects: BackstageRouteObject[] = [
+      {
+        path: '/docs/:namespace/:kind/:name',
+        element: <div>docs</div>,
+        routeRefs: new Set([createRouteRef()]),
+        caseSensitive: false,
+        children: [MATCH_ALL_ROUTE],
+        appNode: {
+          spec: {
+            extension: { id: 'page:techdocs/reader' },
+            plugin: { id: 'techdocs' },
+          },
+        } as AppNode,
+      },
+    ];
+
+    render(
+      <MemoryRouter initialEntries={['/docs/default/Component/My-Service']}>
+        <TestApiProvider apis={[[analyticsApiRef, mockedAnalytics]]}>
+          <RouteTracker routeObjects={techDocsRouteObjects} />
+        </TestApiProvider>
+      </MemoryRouter>,
+    );
+
+    expect(mockedAnalytics.captureEvent).toHaveBeenCalledWith({
+      action: 'navigate',
+      attributes: {
+        namespace: 'default',
+        kind: 'component',
+        name: 'My-Service',
+      },
+      context: {
+        extensionId: 'page:techdocs/reader',
+        pluginId: 'techdocs',
+      },
+      subject: '/docs/default/Component/My-Service',
+      value: undefined,
+    });
+  });
+
   it('should capture the navigate event on route change', async () => {
     const { getByText } = render(
       <MemoryRouter initialEntries={['/path/foo/bar']}>
