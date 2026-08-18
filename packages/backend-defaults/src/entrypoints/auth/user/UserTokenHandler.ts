@@ -58,7 +58,7 @@ export class UserTokenHandler {
       return undefined;
     }
 
-    await this.jwksClient.refreshKeyStore(token);
+    await this.jwksClient.refreshKeyStore();
 
     // Verify a limited token, ensuring the necessarily claims are present and token type is correct
     const { payload } = await jwtVerify(

@@ -17,18 +17,22 @@
 import { AuthenticationError } from '@backstage/errors';
 import {
   createRemoteJWKSet,
-  decodeJwt,
-  decodeProtectedHeader,
+  errors,
   FlattenedJWSInput,
+  GetKeyFunction,
   JWSHeaderParameters,
 } from 'jose';
-import { GetKeyFunction } from 'jose';
 
-const CLOCK_MARGIN_S = 10;
+const FORCED_RELOAD_LIMIT = 10;
+const FORCED_RELOAD_WINDOW_MS = 60_000;
+
+type RemoteJWKSet = ReturnType<typeof createRemoteJWKSet>;
 
 export class JwksClient {
-  #keyStore?: GetKeyFunction<JWSHeaderParameters, FlattenedJWSInput>;
-  #keyStoreUpdated: number = 0;
+  #keyStore?: RemoteJWKSet;
+  #keyStoreUrl?: string;
+  #forcedReloads: number[] = [];
+  #forcedReload?: Promise<void>;
 
   private readonly getEndpoint: () => Promise<URL>;
 
@@ -42,38 +46,91 @@ export class JwksClient {
         'refreshKeyStore must be called before jwksClient.getKey',
       );
     }
-    return this.#keyStore;
+    return this.#getKey;
   }
 
   /**
-   * If the last keystore refresh is stale, update the keystore URL to the latest
+   * Initializes the remote key store using the latest endpoint.
    */
-  async refreshKeyStore(rawJwtToken: string): Promise<void> {
-    const payload = await decodeJwt(rawJwtToken);
-    const header = await decodeProtectedHeader(rawJwtToken);
-
-    // Refresh public keys if needed
-    let keyStoreHasKey;
-    try {
-      if (this.#keyStore) {
-        // Check if the key is present in the keystore
-        const [_, rawPayload, rawSignature] = rawJwtToken.split('.');
-        keyStoreHasKey = await this.#keyStore(header, {
-          payload: rawPayload,
-          signature: rawSignature,
-        });
-      }
-    } catch (error) {
-      keyStoreHasKey = false;
-    }
-    // Refresh public key URL if needed
-    // Add a small margin in case clocks are out of sync
-    const issuedAfterLastRefresh =
-      payload?.iat && payload.iat > this.#keyStoreUpdated - CLOCK_MARGIN_S;
-    if (!this.#keyStore || (!keyStoreHasKey && issuedAfterLastRefresh)) {
+  async refreshKeyStore(): Promise<void> {
+    if (!this.#keyStore) {
       const endpoint = await this.getEndpoint();
-      this.#keyStore = createRemoteJWKSet(endpoint);
-      this.#keyStoreUpdated = Date.now() / 1000;
+      if (!this.#keyStore) {
+        this.#keyStore = createRemoteJWKSet(endpoint);
+        this.#keyStoreUrl = endpoint.href;
+      }
+    }
+  }
+
+  #getKey: GetKeyFunction<JWSHeaderParameters, FlattenedJWSInput> = async (
+    protectedHeader,
+    token,
+  ) => {
+    const keyStore = this.#keyStore!;
+    const coolingDown = keyStore.coolingDown;
+
+    try {
+      return await keyStore(protectedHeader, token);
+    } catch (error) {
+      if (!(error instanceof errors.JWKSNoMatchingKey)) {
+        throw error;
+      }
+      if (this.#keyStore !== keyStore) {
+        return this.#keyStore!(protectedHeader, token);
+      }
+
+      let endpoint: URL | undefined;
+      if (!coolingDown) {
+        endpoint = await this.getEndpoint();
+        if (this.#keyStore !== keyStore) {
+          return this.#keyStore!(protectedHeader, token);
+        }
+        if (endpoint.href === this.#keyStoreUrl) {
+          throw error;
+        }
+      }
+      if (!(await this.#forceReload(endpoint))) {
+        throw error;
+      }
+
+      return this.#keyStore!(protectedHeader, token);
+    }
+  };
+
+  async #forceReload(endpoint?: URL): Promise<boolean> {
+    if (this.#forcedReload) {
+      await this.#forcedReload;
+      return true;
+    }
+
+    const windowStart = Date.now() - FORCED_RELOAD_WINDOW_MS;
+    this.#forcedReloads = this.#forcedReloads.filter(
+      timestamp => timestamp > windowStart,
+    );
+    if (this.#forcedReloads.length >= FORCED_RELOAD_LIMIT) {
+      return false;
+    }
+
+    const forcedReload = (async () => {
+      const latestEndpoint = endpoint ?? (await this.getEndpoint());
+      if (latestEndpoint.href !== this.#keyStoreUrl) {
+        this.#keyStore = createRemoteJWKSet(latestEndpoint);
+        this.#keyStoreUrl = latestEndpoint.href;
+      }
+
+      const keyStore = this.#keyStore!;
+      if (!keyStore.reloading) {
+        this.#forcedReloads.push(Date.now());
+      }
+      await keyStore.reload();
+    })();
+    this.#forcedReload = forcedReload;
+
+    try {
+      await forcedReload;
+      return true;
+    } finally {
+      this.#forcedReload = undefined;
     }
   }
 }

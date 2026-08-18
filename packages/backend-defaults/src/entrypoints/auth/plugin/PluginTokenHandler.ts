@@ -123,7 +123,7 @@ export class DefaultPluginTokenHandler implements PluginTokenHandler {
     }
 
     const jwksClient = await this.getJwksClient(pluginId);
-    await jwksClient.refreshKeyStore(token); // TODO(Rugvip): Refactor so that this isn't needed
+    await jwksClient.refreshKeyStore(); // TODO(Rugvip): Refactor so that this isn't needed
 
     const { payload } = await jwtVerify<{ sub: string; obo?: string }>(
       token,
