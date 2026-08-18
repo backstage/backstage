@@ -54,17 +54,19 @@ const getExtensionContext = (
       return undefined;
     }
 
+    const plugin = routeObject.appNode?.spec.plugin;
+    const extension = routeObject.appNode?.spec.extension;
     const params = Object.entries(
       routeMatch?.params || {},
     ).reduce<AnalyticsEventAttributes>((acc, [key, value]) => {
       if (value !== undefined && key !== '*') {
-        acc[key] = value;
+        acc[key] =
+          extension?.id === 'page:techdocs/reader' && key === 'kind'
+            ? value.toLocaleLowerCase('en-US')
+            : value;
       }
       return acc;
     }, {});
-
-    const plugin = routeObject.appNode?.spec.plugin;
-    const extension = routeObject.appNode?.spec.extension;
 
     return {
       params,
