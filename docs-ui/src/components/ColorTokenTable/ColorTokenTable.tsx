@@ -16,47 +16,50 @@ type Family = {
 
 // Builds the shared 11-token variant list for a semantic color family that
 // exposes both a base and a subdued variant.
-const variantTokens = (family: string, word: string): TokenRow[] => [
-  { name: `--bui-${family}-bg`, description: `Base ${word} background color.` },
+const variantTokens = (family: string): TokenRow[] => [
+  {
+    name: `--bui-${family}-bg`,
+    description: `Base ${family} background color.`,
+  },
   {
     name: `--bui-${family}-bg-hover`,
-    description: `Base ${word} background color when hovered.`,
+    description: `Base ${family} background color when hovered.`,
   },
   {
     name: `--bui-${family}-bg-disabled`,
-    description: `Base ${word} background color when disabled.`,
+    description: `Base ${family} background color when disabled.`,
   },
   {
     name: `--bui-${family}-bg-subdued`,
-    description: `Subdued ${word} background color.`,
+    description: `Subdued ${family} background color.`,
   },
   {
     name: `--bui-${family}-bg-subdued-hover`,
-    description: `Subdued ${word} background color when hovered.`,
+    description: `Subdued ${family} background color when hovered.`,
   },
   {
     name: `--bui-${family}-bg-subdued-disabled`,
-    description: `Subdued ${word} background color when disabled.`,
+    description: `Subdued ${family} background color when disabled.`,
   },
   {
     name: `--bui-${family}-border`,
-    description: `Border color for ${word} surfaces.`,
+    description: `Border color for ${family} surfaces.`,
   },
   {
     name: `--bui-${family}-fg`,
-    description: `Foreground color on top of the base ${word} background.`,
+    description: `Foreground color on top of the base ${family} background.`,
   },
   {
     name: `--bui-${family}-fg-disabled`,
-    description: `Foreground color on top of the disabled base ${word} background.`,
+    description: `Foreground color on top of the disabled base ${family} background.`,
   },
   {
     name: `--bui-${family}-fg-subdued`,
-    description: `Foreground color on top of the subdued ${word} background.`,
+    description: `Foreground color on top of the subdued ${family} background.`,
   },
   {
     name: `--bui-${family}-fg-subdued-disabled`,
-    description: `Foreground color on top of the disabled subdued ${word} background.`,
+    description: `Foreground color on top of the disabled subdued ${family} background.`,
   },
 ];
 
@@ -92,25 +95,25 @@ const FAMILIES: Family[] = [
     label: 'Announcement',
     description:
       'Used for informational content and neutral status. Provides a base and a subdued variant.',
-    tokens: variantTokens('announcement', 'announcement'),
+    tokens: variantTokens('announcement'),
   },
   {
     key: 'warning',
     label: 'Warning',
     description: 'Used for cautionary states and information.',
-    tokens: variantTokens('warning', 'warning'),
+    tokens: variantTokens('warning'),
   },
   {
     key: 'negative',
     label: 'Negative',
     description: 'Used for errors and destructive actions.',
-    tokens: variantTokens('negative', 'negative'),
+    tokens: variantTokens('negative'),
   },
   {
     key: 'positive',
     label: 'Positive',
     description: 'Used for success states and positive feedback.',
-    tokens: variantTokens('positive', 'positive'),
+    tokens: variantTokens('positive'),
   },
 ];
 
