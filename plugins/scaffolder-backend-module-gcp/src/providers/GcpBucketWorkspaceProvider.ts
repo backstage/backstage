@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { ForwardedError } from '@backstage/errors';
 import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
 
 import getRawBody from 'raw-body';
@@ -64,9 +65,16 @@ export class GcpBucketWorkspaceProvider implements WorkspaceProvider {
       .bucket(this.getGcpBucketName())
       .file(options.taskId);
     const { contents: workspace } = await serializeWorkspace(options);
-    await fileCloud.save(workspace, {
-      contentType: 'application/x-tar',
-    });
+    try {
+      await fileCloud.save(workspace, {
+        contentType: 'application/x-tar',
+      });
+    } catch (error) {
+      throw new ForwardedError(
+        `Failed to upload workspace for task '${options.taskId}' to GCS`,
+        error,
+      );
+    }
     this.logger.info(
       `Workspace for task ${options.taskId} has been serialized.`,
     );

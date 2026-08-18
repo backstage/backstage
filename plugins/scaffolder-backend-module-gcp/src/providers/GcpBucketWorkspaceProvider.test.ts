@@ -90,7 +90,7 @@ describe('GcpBucketWorkspaceProvider', () => {
   });
 
   describe('serializeWorkspace', () => {
-    it('propagates workspace upload errors', async () => {
+    it('adds upload context while preserving the original error', async () => {
       const uploadError = new Error('GCS upload failed');
       jest.spyOn(GoogleCloud, 'Storage').mockReturnValue({
         bucket: () => ({
@@ -117,7 +117,11 @@ describe('GcpBucketWorkspaceProvider', () => {
           path: mockDir.path,
           taskId: 'test-task',
         }),
-      ).rejects.toBe(uploadError);
+      ).rejects.toMatchObject({
+        message:
+          "Failed to upload workspace for task 'test-task' to GCS; caused by Error: GCS upload failed",
+        cause: uploadError,
+      });
     });
   });
 });
