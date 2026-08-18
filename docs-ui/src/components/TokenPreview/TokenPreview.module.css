@@ -40,7 +40,7 @@
   display: inline-block;
   height: 12px;
   border-radius: 3px;
-  background-color: var(--bui-accent-bg, #1f5493);
+  background-color: var(--bui-accent-bg);
 }
 
 /* Radius box: shows the corner rounding of the token */
@@ -49,7 +49,7 @@
   width: 3rem;
   height: 3rem;
   vertical-align: middle;
-  border: 0.25rem solid var(--bui-accent-bg, #1f5493);
+  border: 0.25rem solid var(--bui-accent-bg);
 }
 
 /* Shadow box */
@@ -59,7 +59,7 @@
   height: 28px;
   border-radius: 6px;
   vertical-align: middle;
-  background-color: var(--bui-bg-neutral-1, #fff);
+  background-color: var(--bui-bg-neutral-1);
 }
 
 /* Animation preview dot (pulses via the token) */
@@ -69,7 +69,7 @@
   height: 20px;
   border-radius: 9999px;
   vertical-align: middle;
-  background-color: var(--bui-accent-bg, #1f5493);
+  background-color: var(--bui-accent-bg);
 }
 
 /* Typography sample */
@@ -78,6 +78,6 @@
   align-items: center;
   min-height: 28px;
   line-height: 1;
-  color: var(--bui-fg-primary, #000);
+  color: var(--bui-fg-primary);
   vertical-align: middle;
 }

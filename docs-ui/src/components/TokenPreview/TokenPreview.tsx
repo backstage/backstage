@@ -30,7 +30,9 @@ const READ_PROPERTY: Record<TokenPreviewKind, string> = {
  * The preview renders using the token's real CSS custom property, so it
  * reflects the currently selected theme and updates when the theme is toggled.
  * Hovering the preview resolves the token to its computed value and exposes it
- * as a native tooltip.
+ * as a native tooltip — a mouse-only convenience. The preview itself is
+ * `aria-hidden` and purely decorative; the token's identity is always available
+ * as text in the adjacent table cell.
  */
 export const TokenPreview = ({
   token,
@@ -44,9 +46,10 @@ export const TokenPreview = ({
   const showValue = useCallback(() => {
     const el = ref.current;
     if (!el) return;
-    const computed = getComputedStyle(el).getPropertyValue(READ_PROPERTY[kind]);
-    const declared = getComputedStyle(el).getPropertyValue(token).trim();
-    const value = computed?.trim() || declared;
+    const cs = getComputedStyle(el);
+    const computed = cs.getPropertyValue(READ_PROPERTY[kind]).trim();
+    const declared = cs.getPropertyValue(token).trim();
+    const value = computed || declared;
     el.setAttribute('title', value ? `${token} → ${value}` : token);
   }, [kind, token]);
 
