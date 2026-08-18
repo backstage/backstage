@@ -25,6 +25,7 @@ import { toError, ForwardedError, NotModifiedError } from '@backstage/errors';
 import { Readable } from 'node:stream';
 import { relative } from 'node:path/posix';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
+import { hasDotPathSegments } from './util';
 import {
   AzureBlobStorageIntegration,
   AzureCredentialsManager,
@@ -210,6 +211,9 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
       const responses = [];
 
       for await (const blob of blobs) {
+        if (hasDotPathSegments(blob.name)) {
+          continue;
+        }
         const blobClient = containerClient.getBlobClient(blob.name);
 
         const downloadBlockBlobResponse = await blobClient.download(

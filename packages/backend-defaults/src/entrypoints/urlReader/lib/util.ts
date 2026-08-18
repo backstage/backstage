@@ -17,6 +17,17 @@
 import { PassThrough, Readable } from 'node:stream';
 import { ReadableStream as WebReadableStream } from 'node:stream/web';
 
+export function hasDotPathSegments(name: string): boolean {
+  return name.split(/[/\\]/).some(segment => {
+    try {
+      const decoded = decodeURIComponent(segment);
+      return decoded === '..' || decoded === '.';
+    } catch {
+      return false;
+    }
+  });
+}
+
 export function parseLastModified(
   value: string | null | undefined,
 ): Date | undefined {
