@@ -5441,6 +5441,7 @@ __metadata:
     node-fetch: "npm:^2.7.0"
     supertest: "npm:^7.0.0"
     ws: "npm:^8.20.1"
+    zod: "npm:^3.25.76 || ^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -5507,6 +5508,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-kubernetes-backend": "workspace:^"
     "@backstage/plugin-kubernetes-common": "workspace:^"
+    "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@kubernetes/client-node": "npm:1.4.0"
     "@types/express": "npm:^4.17.6"

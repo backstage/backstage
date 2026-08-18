@@ -84,6 +84,11 @@ describe('KubernetesProxy', () => {
   };
 
   const permissionApi = mockServices.permissions();
+  const permissionsRegistry = mockServices.permissionsRegistry.mock({
+    getPermissionRuleset: jest.fn().mockReturnValue({
+      getRuleByName: jest.fn(),
+    }),
+  });
   const mockDiscoveryApi = mockServices.discovery.mock();
 
   registerMswTestHooks(worker);
@@ -137,7 +142,13 @@ describe('KubernetesProxy', () => {
     const activeProxy = proxyOverride ?? proxy;
     const app = express().use(
       Router()
-        .use(proxyPath, activeProxy.createRequestHandler({ permissionApi }))
+        .use(
+          proxyPath,
+          activeProxy.createRequestHandler({
+            permissionApi,
+            permissionsRegistry,
+          }),
+        )
         .use(middleware.error()),
     );
 
@@ -224,18 +235,17 @@ describe('KubernetesProxy', () => {
 
     it('emits failed audit events on permission denial with unknown cluster name', async () => {
       const deniedPermissionApi = mockServices.permissions.mock();
-      deniedPermissionApi.authorize.mockResolvedValue([
+      deniedPermissionApi.authorizeConditional.mockResolvedValue([
         { result: AuthorizeResult.DENY },
       ]);
 
       const req = buildMockRequest(undefined, 'api');
       const { res, next } = getMockRes();
 
-      await proxy.createRequestHandler({ permissionApi: deniedPermissionApi })(
-        req,
-        res,
-        next,
-      );
+      await proxy.createRequestHandler({
+        permissionApi: deniedPermissionApi,
+        permissionsRegistry,
+      })(req, res, next);
 
       expect(auditor.createEvent).toHaveBeenCalledWith({
         eventId: 'cluster-fetch',
@@ -373,7 +383,10 @@ describe('KubernetesProxy', () => {
 
       const app = express().use(
         Router()
-          .use('/mountpath', proxy.createRequestHandler({ permissionApi }))
+          .use(
+            '/mountpath',
+            proxy.createRequestHandler({ permissionApi, permissionsRegistry }),
+          )
           .use(middleware.error()),
       );
       const proxyServer = await new Promise<Server>(resolve => {
@@ -421,7 +434,11 @@ describe('KubernetesProxy', () => {
       const { res, next } = getMockRes();
 
       await expect(
-        proxy.createRequestHandler({ permissionApi })(req, res, next),
+        proxy.createRequestHandler({ permissionApi, permissionsRegistry })(
+          req,
+          res,
+          next,
+        ),
       ).rejects.toThrow(NotFoundError);
 
       expect(auditEvent.fail).toHaveBeenCalled();
@@ -504,7 +521,13 @@ describe('KubernetesProxy', () => {
 
       const app = express().use(
         Router()
-          .use('/mountpath', realProxy.createRequestHandler({ permissionApi }))
+          .use(
+            '/mountpath',
+            realProxy.createRequestHandler({
+              permissionApi,
+              permissionsRegistry,
+            }),
+          )
           .use(middleware.error()),
       );
 
@@ -561,7 +584,10 @@ describe('KubernetesProxy', () => {
 
       const app = express().use(
         Router()
-          .use('/proxy', proxy.createRequestHandler({ permissionApi }))
+          .use(
+            '/proxy',
+            proxy.createRequestHandler({ permissionApi, permissionsRegistry }),
+          )
           .use(middleware.error()),
       );
       const proxyServer = await new Promise<Server>(resolve => {
@@ -637,7 +663,10 @@ describe('KubernetesProxy', () => {
 
       const app = express().use(
         Router()
-          .use('/mountpath', proxy.createRequestHandler({ permissionApi }))
+          .use(
+            '/mountpath',
+            proxy.createRequestHandler({ permissionApi, permissionsRegistry }),
+          )
           .use(middleware.error()),
       );
       const server = await new Promise<Server>(resolve => {
@@ -737,7 +766,11 @@ describe('KubernetesProxy', () => {
     const { res, next } = getMockRes();
 
     await expect(
-      proxy.createRequestHandler({ permissionApi })(req, res, next),
+      proxy.createRequestHandler({ permissionApi, permissionsRegistry })(
+        req,
+        res,
+        next,
+      ),
     ).rejects.toThrow(NotFoundError);
   });
 
@@ -760,7 +793,11 @@ describe('KubernetesProxy', () => {
     const { res, next } = getMockRes();
 
     await expect(
-      proxy.createRequestHandler({ permissionApi })(req, res, next),
+      proxy.createRequestHandler({ permissionApi, permissionsRegistry })(
+        req,
+        res,
+        next,
+      ),
     ).rejects.toThrow(NotFoundError);
   });
 
@@ -777,7 +814,11 @@ describe('KubernetesProxy', () => {
     const { res, next } = getMockRes();
 
     await expect(
-      proxy.createRequestHandler({ permissionApi })(req, res, next),
+      proxy.createRequestHandler({ permissionApi, permissionsRegistry })(
+        req,
+        res,
+        next,
+      ),
     ).rejects.toThrow(NotFoundError);
   });
 
@@ -1532,7 +1573,13 @@ describe('KubernetesProxy', () => {
         expressServer = express()
           .use(
             Router()
-              .use(proxyPath, proxy.createRequestHandler({ permissionApi }))
+              .use(
+                proxyPath,
+                proxy.createRequestHandler({
+                  permissionApi,
+                  permissionsRegistry,
+                }),
+              )
               .use(middleware.error()),
           )
           .listen(0, '0.0.0.0', () => {

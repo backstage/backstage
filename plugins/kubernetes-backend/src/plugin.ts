@@ -43,9 +43,16 @@ import {
   kubernetesServiceLocatorExtensionPoint,
   type KubernetesServiceLocatorExtensionPoint,
   KubernetesServiceLocatorFactory,
+  kubernetesProxyPermissionResourceRef,
 } from '@backstage/plugin-kubernetes-node';
+import {
+  kubernetesClustersReadPermission,
+  kubernetesProxyPermission,
+  kubernetesResourcesReadPermission,
+} from '@backstage/plugin-kubernetes-common';
 import { KubernetesRouter } from './service/KubernetesRouter';
 import { KubernetesInitializer } from './service/KubernetesInitializer';
+import { kubernetesProxyPermissionRules } from './permissions/rules';
 
 class ObjectsProvider implements KubernetesObjectsProviderExtensionPoint {
   private objectsProvider: KubernetesObjectsProviderFactory | undefined;
@@ -222,6 +229,7 @@ export const kubernetesPlugin = createBackendPlugin({
         discovery: coreServices.discovery,
         catalog: catalogServiceRef,
         permissions: coreServices.permissions,
+        permissionsRegistry: coreServices.permissionsRegistry,
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
         auditor: coreServices.auditor,
@@ -233,10 +241,20 @@ export const kubernetesPlugin = createBackendPlugin({
         discovery,
         catalog,
         permissions,
+        permissionsRegistry,
         auth,
         httpAuth,
         auditor,
       }) {
+        permissionsRegistry.addResourceType({
+          resourceRef: kubernetesProxyPermissionResourceRef,
+          rules: kubernetesProxyPermissionRules,
+          permissions: [kubernetesProxyPermission],
+        });
+        permissionsRegistry.addPermissions([
+          kubernetesResourcesReadPermission,
+          kubernetesClustersReadPermission,
+        ]);
         // TODO: this could do with a cleanup and push some of this initialization somewhere else
         if (config.has('kubernetes')) {
           const initializer = KubernetesInitializer.create({
@@ -264,6 +282,7 @@ export const kubernetesPlugin = createBackendPlugin({
             config,
             catalog,
             permissions,
+            permissionsRegistry,
             discovery,
             auth,
             httpAuth,

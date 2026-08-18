@@ -18,11 +18,9 @@ import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
   kubernetesClustersReadPermission,
-  kubernetesPermissions,
   kubernetesResourcesReadPermission,
 } from '@backstage/plugin-kubernetes-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import express from 'express';
 import Router from 'express-promise-router';
 
@@ -36,6 +34,7 @@ import {
   DiscoveryService,
   HttpAuthService,
   LoggerService,
+  PermissionsRegistryService,
 } from '@backstage/backend-plugin-api';
 import {
   AuthenticationStrategy,
@@ -60,6 +59,7 @@ export interface KubernetesEnvironment {
   catalog: CatalogService;
   discovery: DiscoveryService;
   permissions: PermissionEvaluator;
+  permissionsRegistry: PermissionsRegistryService;
   auth: AuthService;
   httpAuth: HttpAuthService;
   auditor: AuditorService;
@@ -187,13 +187,14 @@ export class KubernetesRouter {
     const logger = this.env.logger;
     const auditor = this.env.auditor;
     const router = Router();
-    router.use('/proxy', proxy.createRequestHandler({ permissionApi }));
-    router.use(express.json());
     router.use(
-      createPermissionIntegrationRouter({
-        permissions: kubernetesPermissions,
+      '/proxy',
+      proxy.createRequestHandler({
+        permissionApi,
+        permissionsRegistry: this.env.permissionsRegistry,
       }),
     );
+    router.use(express.json());
 
     // @deprecated
     router.post('/services/:serviceId', async (req, res) => {

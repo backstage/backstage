@@ -53,6 +53,8 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'fixDialog.ariaLabels.close': 'close';
     readonly 'fixDialog.ariaLabels.fixIssue': 'fix issue';
     readonly 'podDrawer.buttons.delete': 'Delete Pod';
+    readonly 'podDrawer.errors.deletePermissionDenied': 'You are not allowed to delete this pod. Contact your portal administrator if you need access.';
+    readonly 'podDrawer.errors.deleteFailed': 'Could not delete the pod. Please try again later.';
     readonly 'podDrawer.cpuRequests': 'CPU requests';
     readonly 'podDrawer.cpuLimits': 'CPU limits';
     readonly 'podDrawer.memoryRequests': 'Memory requests';
@@ -76,9 +78,13 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'podLogs.buttonText': 'Logs';
     readonly 'podLogs.titleTemplate': '{{podName}} - {{containerName}} logs on cluster {{clusterName}}';
     readonly 'podLogs.buttonAriaLabel': 'get logs';
+    readonly 'podExecTerminal.errors.permissionDenied': 'You are not allowed to open a terminal for this pod. Contact your portal administrator if you need access.';
+    readonly 'podExecTerminal.errors.connectionFailed': 'Could not connect to the pod terminal. Please try again later.';
+    readonly 'podExecTerminal.errors.connectionClosed': 'Terminal connection closed.';
     readonly 'podExecTerminal.buttonText': 'Terminal';
     readonly 'podExecTerminal.titleTemplate': '{{podName}} - {{containerName}} terminal shell on cluster {{clusterName}}';
     readonly 'podExecTerminal.buttonAriaLabel': 'open terminal';
+    readonly 'podExecTerminal.starting': 'Starting terminal, please wait...';
     readonly 'kubernetesDrawer.yaml': 'YAML';
     readonly 'kubernetesDrawer.closeDrawer': 'Close the drawer';
     readonly 'kubernetesDrawer.managedFields': 'Managed Fields';

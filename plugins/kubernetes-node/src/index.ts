@@ -26,3 +26,7 @@
 export * from './extensions';
 export * from './types';
 export * from './auth';
+export {
+  kubernetesProxyPermissionResourceRef,
+  type KubernetesProxyFilter,
+} from './permissions';
