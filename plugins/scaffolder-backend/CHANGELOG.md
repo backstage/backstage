@@ -1,5 +1,24 @@
 # @backstage/plugin-scaffolder-backend
 
+## 4.0.3
+
+### Patch Changes
+
+- 4bbc088: Fixed the stale task janitor not being set up by passing the scheduler service to the router.
+- 943687f: Removed the native addon requirement from scaffolder template rendering. Templates now run through a TypeScript interpreter, and the backend no longer needs the `--no-node-snapshot` Node.js option.
+- 7ca434e: Scaffolder tasks now wait for recovery checkpoint state to be persisted before continuing, preventing later execution from racing ahead of stored recovery state. Restored checkpoints also preserve falsy values without re-running their callbacks.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/plugin-scaffolder-node@0.13.6
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/integration@2.1.0
+  - @backstage/plugin-permission-common@0.9.10
+  - @backstage/plugin-permission-node@0.11.3
+  - @backstage/plugin-scaffolder-common@2.2.2
+  - @backstage/backend-openapi-utils@0.7.1
+  - @backstage/plugin-catalog-node@2.2.4
+  - @backstage/plugin-events-node@0.4.25
+
 ## 4.0.3-next.2
 
 ### Patch Changes

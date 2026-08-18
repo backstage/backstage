@@ -1,5 +1,16 @@
 # @backstage/test-utils
 
+## 1.7.21
+
+### Patch Changes
+
+- a4759e6: Migrated tests from MSW v1 to MSW v2.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/core-app-api@1.20.4
+  - @backstage/plugin-permission-common@0.9.10
+  - @backstage/plugin-permission-react@0.5.4
+
 ## 1.7.21-next.1
 
 ### Patch Changes

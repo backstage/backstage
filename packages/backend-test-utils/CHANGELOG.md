@@ -1,5 +1,19 @@
 # @backstage/backend-test-utils
 
+## 1.11.6
+
+### Patch Changes
+
+- b1b6c80: Aligned mocked action attributes so read-only actions default to non-destructive.
+- 5ae46fc: Added `mockServices.rootSystemMetadata` mock implementation to support the new stable `coreServices.rootSystemMetadata` service in tests.
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.7
+  - @backstage/backend-app-api@1.7.3
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-auth-node@0.7.4
+  - @backstage/plugin-permission-common@0.9.10
+  - @backstage/plugin-events-node@0.4.25
+
 ## 1.11.6-next.1
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/create-app
 
+## 0.9.1
+
+### Patch Changes
+
+- 943687f: Generated backend Dockerfiles no longer disable the Node.js snapshot or install native build dependencies for the Scaffolder.
+- 97bd51f: Bumped create-app version.
+- 9138f34: Added a GitHub Actions CI workflow to the default app template. New Backstage instances created with `create-app` now include a `.github/workflows/ci.yml` that runs lint, type checking, tests, configuration validation, and a Docker image build on every pull request.
+- a178067: Added a pre-configured Home page with a customizable widget grid to the default create-app template.
+- 0b8573f: Clarified that the host build steps must use the same Node version as the Docker base image in the Dockerfile.
+- 2828e31: Added a prerequisites check when creating a new app that validates Node.js LTS version and Yarn availability before proceeding, and warns if Python is not found.
+- ee4a9f6: Fixed the example scaffolder template so the component name field validates against the allowed entity-name format, preventing names with spaces that would fail catalog registration.
+
 ## 0.9.1-next.3
 
 ### Patch Changes

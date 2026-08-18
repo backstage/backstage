@@ -1,5 +1,27 @@
 # @backstage/plugin-techdocs
 
+## 1.18.0
+
+### Minor Changes
+
+- 4f9ce5e: Add `initialFilter` config for `page:techdocs`. Valid options are `all`, `owned` and `starred`. Defaults to `owned`.
+
+### Patch Changes
+
+- e06a951: chore(deps): bump `dompurify` from 3.4.11 to 3.4.12
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/plugin-catalog-react@3.2.1
+  - @backstage/ui@0.17.1
+  - @backstage/integration@2.1.0
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/integration-react@1.2.21
+  - @backstage/plugin-auth-react@0.1.30
+  - @backstage/plugin-search-react@1.11.7
+  - @backstage/plugin-techdocs-react@1.3.14
+
 ## 1.18.0-next.2
 
 ### Patch Changes

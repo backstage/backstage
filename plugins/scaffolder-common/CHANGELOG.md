@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-common
 
+## 2.2.2
+
+### Patch Changes
+
+- 4e8d763: Migrated tests from MSW v1 to MSW v2.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/integration@2.1.0
+  - @backstage/plugin-permission-common@0.9.10
+
 ## 2.2.2-next.0
 
 ### Patch Changes

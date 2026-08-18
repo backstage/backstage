@@ -1,5 +1,20 @@
 # @backstage/repo-tools
 
+## 0.19.0
+
+### Minor Changes
+
+- 0804116: **BREAKING**: Renamed the `repo schema openapi verify` command to `repo schema openapi validate`. Added a new `package schema openapi validate` command to validate that an OpenAPI spec is a valid OpenAPI 3.x document.
+
+### Patch Changes
+
+- 226817d: chore(deps): bump `js-yaml` from 4.2.0 to 4.3.0
+- 78bf918: chore(deps): bump `tar` from 7.5.15 to 7.5.21
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/config-loader@1.11.2
+  - @backstage/backend-plugin-api@1.10.0
+
 ## 0.18.1-next.1
 
 ### Patch Changes

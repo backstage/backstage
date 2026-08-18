@@ -1,5 +1,21 @@
 # @backstage/plugin-api-docs
 
+## 0.14.4
+
+### Patch Changes
+
+- b7085d1: Fixed deep linking in OpenAPI definition widget.
+- a8b5ba6: Updated dependencies.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/core-components@0.18.13
+  - @backstage/plugin-catalog@2.0.8
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/plugin-catalog-react@3.2.1
+  - @backstage/ui@0.17.1
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/plugin-permission-react@0.5.4
+
 ## 0.14.4-next.2
 
 ### Patch Changes
