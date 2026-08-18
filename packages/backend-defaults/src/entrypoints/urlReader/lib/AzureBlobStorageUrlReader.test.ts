@@ -258,6 +258,43 @@ describe('AzureBlobStorageUrlReader', () => {
       const files = await response.files();
       expect(files).toHaveLength(2);
     });
+
+    it.each([
+      ['literal dot-dot', 'prefix/uploads/../legitimate.yaml'],
+      ['deep traversal', 'prefix/uploads/../../etc/passwd'],
+      ['backslash', 'prefix/uploads\\../legitimate.yaml'],
+      ['encoded dot-dot', 'prefix/uploads/%2e%2e/legitimate.yaml'],
+      ['mixed encoded', 'prefix/uploads/.%2e/legitimate.yaml'],
+      ['uppercase encoded', 'prefix/uploads/%2E%2E/legitimate.yaml'],
+    ])(
+      'filters out blobs with %s path traversal segments',
+      async (_label, maliciousName) => {
+        mockListBlobsFlat.mockReturnValue(
+          (async function* mockIterator() {
+            yield {
+              name: 'prefix/legitimate.yaml',
+              properties: { lastModified: new Date('2025-01-01T00:00:00Z') },
+            };
+            yield {
+              name: maliciousName,
+              properties: { lastModified: new Date('2025-01-02T00:00:00Z') },
+            };
+          })(),
+        );
+
+        mockBlobDownload.mockResolvedValue({
+          readableStreamBody: Readable.from(Buffer.from('test content')),
+        });
+
+        const response = await reader.readTree(
+          'https://test-account.blob.core.windows.net/test-container/prefix/',
+        );
+        const files = await response.files();
+
+        expect(files).toHaveLength(1);
+        expect(files[0].path).toBe('legitimate.yaml');
+      },
+    );
   });
 
   describe('search', () => {

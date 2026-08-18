@@ -668,6 +668,51 @@ describe('AwsS3UrlReader', () => {
 
       expect(body.toString().trim()).toBe('site_name: Test');
     });
+
+    it.each([
+      ['literal dot-dot', 'prefix/uploads/../legitimate.yaml'],
+      ['deep traversal', 'prefix/uploads/../../etc/passwd'],
+      ['backslash', 'prefix/uploads\\../legitimate.yaml'],
+      ['encoded dot-dot', 'prefix/uploads/%2e%2e/legitimate.yaml'],
+      ['mixed encoded', 'prefix/uploads/.%2e/legitimate.yaml'],
+      ['uppercase encoded', 'prefix/uploads/%2E%2E/legitimate.yaml'],
+    ])(
+      'filters out objects with %s path traversal segments',
+      async (_label, maliciousKey) => {
+        const objectList: Object[] = [
+          { Key: 'prefix/legitimate.yaml' },
+          { Key: maliciousKey },
+        ];
+        const output: ListObjectsV2Output = { Contents: objectList };
+
+        s3SendMock.mockImplementation(async command => {
+          if (command instanceof ListObjectsV2Command) {
+            return output;
+          }
+          if (command instanceof GetObjectCommand) {
+            return {
+              Body: sdkStreamMixin(
+                fs.createReadStream(
+                  path.resolve(
+                    __dirname,
+                    '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                  ),
+                ),
+              ),
+            };
+          }
+          throw new Error(`No mock for ${command.constructor.name}`);
+        });
+
+        const response = await awsS3UrlReader.readTree(
+          'https://test.s3.us-east-2.amazonaws.com/prefix/',
+        );
+        const files = await response.files();
+
+        expect(files).toHaveLength(1);
+        expect(files[0].path).toBe('legitimate.yaml');
+      },
+    );
   });
 
   describe('search', () => {
