@@ -1,5 +1,6 @@
 import { changelog } from '@/utils/changelog';
 import { MDXRemote } from 'next-mdx-remote-client/rsc';
+import remarkGfm from 'remark-gfm';
 import { formattedMDXComponents } from '@/mdx-components';
 import type { AtLeastOne, Component, Hook } from '@/utils/changelog';
 import {
@@ -39,6 +40,7 @@ ${generateChangelogMarkdown(componentChangelog, {
         Badge,
         BreakingBadge,
       }}
+      options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }}
       source={content}
     />
   );
