@@ -31,3 +31,4 @@ export type {
 } from './definitions/types';
 export { buildConnectionsFromConfig } from './config/buildConnectionsFromConfig';
 export type { ConfiguredConnection } from './config/types';
+export { declareConnection } from './declareConnection';

@@ -17,10 +17,8 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import {
-  connectionsServiceRef,
-  declareConnection,
-} from '@backstage/connections-node';
+import { connectionsServiceRef } from '@backstage/connections-node';
+import { declareConnection } from '@backstage/connections';
 import { NotFoundError } from '@backstage/errors';
 
 /**

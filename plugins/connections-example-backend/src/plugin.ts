@@ -18,10 +18,8 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './router';
-import {
-  connectionsServiceRef,
-  declareConnection,
-} from '@backstage/connections-node';
+import { connectionsServiceRef } from '@backstage/connections-node';
+import { declareConnection } from '@backstage/connections';
 
 /**
  * connectionsExampleBackendPlugin backend plugin

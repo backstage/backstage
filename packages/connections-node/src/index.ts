@@ -22,4 +22,4 @@
 
 export { connectionsServiceRef, connectionsServiceFactory } from './service';
 export { DefaultConnectionsService } from './DefaultConnectionsService';
-export { declareConnection } from './declareConnection';
+export { declareConnection } from '@backstage/connections';
