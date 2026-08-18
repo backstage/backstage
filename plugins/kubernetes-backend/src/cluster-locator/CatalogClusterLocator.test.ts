@@ -107,4 +107,31 @@ describe('CatalogClusterLocator', () => {
     expect(result).toHaveLength(2);
     expect(result[1]).toMatchSnapshot();
   });
+
+  it('rejects all catalog clusters when one uses service account authentication', async () => {
+    const credentials = mockCredentials.user();
+    const clusterSupplier = CatalogClusterLocator.fromConfig(
+      catalogServiceMock({
+        entities: [
+          entities[0],
+          {
+            ...entities[0],
+            metadata: {
+              ...entities[0].metadata,
+              name: 'sa-cluster',
+              annotations: {
+                ...entities[0].metadata.annotations!,
+                [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
+              },
+            },
+          },
+        ],
+      }),
+      mockServices.auth(),
+    );
+
+    await expect(
+      clusterSupplier.getClusters({ credentials }),
+    ).rejects.toThrow(/serviceAccount/);
+  });
 });
