@@ -36,6 +36,8 @@ describe('loadTemplate', () => {
         `,
       },
       'path/to/hello.txt': 'hello world',
+      'path/to/nested/file.txt': 'nested content',
+      'path/to/nested/template.txt.hbs': 'id={{ pluginId }}',
     });
 
     await expect(
@@ -46,7 +48,15 @@ describe('loadTemplate', () => {
     ).resolves.toEqual({
       name: 'template1',
       role: 'frontend-plugin',
-      files: [{ path: 'hello.txt', content: 'hello world' }],
+      files: expect.arrayContaining([
+        { path: 'hello.txt', content: 'hello world' },
+        { path: 'nested/file.txt', content: 'nested content' },
+        {
+          path: 'nested/template.txt',
+          content: 'id={{ pluginId }}',
+          syntax: 'handlebars',
+        },
+      ]),
       values: { foo: 'bar' },
     });
   });
