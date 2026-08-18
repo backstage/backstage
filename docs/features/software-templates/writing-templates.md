@@ -713,7 +713,7 @@ template. These follow the same standard format:
       name: ${{ parameters.name }}
 ```
 
-:::warning Action ID Naming
+:::warning[Action ID Naming]
 
 When using custom actions, **use camelCase for action IDs** to avoid issues with template expressions. Action IDs with dashes will cause expressions like `${{ steps.my-action.output.value }}` to return `NaN` instead of the expected value.
 

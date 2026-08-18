@@ -196,7 +196,7 @@ export class CustomPolicy implements PermissionPolicy {
 
 In this example, we use [`isResourcePermission`](https://backstage.io/api/stable/functions/_backstage_plugin-permission-common.isResourcePermission.html) to match all permissions with a resource type of `catalog-entity`. Just like `isPermission`, this helper will "narrow" the type of `request.permission` and enable the use of `createCatalogConditionalDecision`. In addition to the behavior you observed before, you should also see that catalog entities are no longer visible unless you are the owner - success!
 
-:::note Note
+:::note
 
 Some catalog permissions do not have the `'catalog-entity'` resource type, such as [`catalogEntityCreatePermission`](https://github.com/backstage/backstage/blob/1e5e9fb9de9856a49e60fc70c38a4e4e94c69570/plugins/catalog-common/src/permissions.ts#L49). In those cases, a definitive decision is required because conditions can't be applied to an entity that does not exist yet.
 

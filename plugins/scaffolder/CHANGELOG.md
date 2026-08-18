@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder
 
+## 1.38.2-next.3
+
+### Patch Changes
+
+- 9e773ee: Improves scaffolder entity pickers by using the catalog POST endpoint so large template filters are sent in the request body instead of the URL, helping avoid 431 errors and empty option lists.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9-next.1
+  - @backstage/plugin-catalog-react@3.2.1-next.3
+  - @backstage/integration@2.1.0-next.1
+
 ## 1.38.2-next.2
 
 ### Patch Changes

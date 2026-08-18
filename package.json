@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.54.0-next.2",
+  "version": "1.54.0-next.3",
   "backstage": {
     "cli": {
       "new": {
@@ -125,7 +125,6 @@
   "devDependencies": {
     "@backstage/cli": "workspace:*",
     "@backstage/cli-defaults": "workspace:*",
-    "@backstage/codemods": "workspace:*",
     "@backstage/create-app": "workspace:*",
     "@backstage/e2e-test-utils": "workspace:*",
     "@backstage/eslint-plugin": "workspace:*",

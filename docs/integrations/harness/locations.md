@@ -26,7 +26,7 @@ integrations:
 Directly under the `harness` key is a list of provider configurations, where you
 can list the Harness instances you want to be able to fetch
 
-check out https://developer.harness.io/docs/platform/automation/api/add-and-manage-api-keys/ for more information
+check out <https://developer.harness.io/docs/platform/automation/api/add-and-manage-api-keys/> for more information
 
 - `host`: The host of the Harness Code instance that you want to match on.
 - `token` (optional): The password or api token to authenticate with.

@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-react
 
+## 3.2.1-next.3
+
+### Patch Changes
+
+- 9fcfbc9: Fixed a performance issue where all components reading the entity context on an entity page would rerender unnecessarily whenever the page rendered again without the entity data having changed, for example when a URL query parameter changed. This was particularly noticeable when switching tabs in the entity inspector dialog, which caused the entire underlying page to rerender.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9-next.1
+
 ## 3.2.1-next.2
 
 ### Patch Changes

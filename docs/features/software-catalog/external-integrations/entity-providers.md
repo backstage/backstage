@@ -37,7 +37,7 @@ yarn new --select catalog-provider-module
 The CLI prompts for a module ID (for example, `frobs`). This generates a
 backend module package in the `plugins` folder with the following structure:
 
-```
+```text
 plugins/catalog-backend-module-frobs-provider/
 ├── config.d.ts
 ├── package.json

@@ -24,34 +24,12 @@ import type {
   ConnectionTypeKey,
   LookupConnectionType,
   LookupStrategy,
+  ConfiguredConnection,
 } from '@backstage/connections';
-import { getConnectionType, isConnectionTypeKey } from './lookup';
+import { buildConnectionsFromConfig } from '@backstage/connections';
+import { getConnectionType } from './lookup';
 import { lookupStrategies } from './lookupStrategies';
-import type { RootConnection } from './types';
-import { JsonObject } from '@backstage/types';
-import {
-  InputError,
-  NotAllowedError,
-  NotFoundError,
-  toError,
-} from '@backstage/errors';
-import { z } from 'zod/v4';
-import { getLegacyIntegrations } from './getLegacyIntegrations';
-import { combineConnectionSources } from './combineConnectionSources';
-
-function describeError(error: unknown): string {
-  const e = toError(error);
-  if (e.name === 'ZodError') {
-    return z.prettifyError(e as unknown as z.ZodError);
-  }
-  if (e.cause !== undefined) {
-    const cause = toError(e.cause);
-    if (cause.name === 'ZodError') {
-      return z.prettifyError(cause as unknown as z.ZodError);
-    }
-  }
-  return e.message;
-}
+import { NotAllowedError, NotFoundError } from '@backstage/errors';
 
 function getLookupStrategy<K extends LookupStrategy>(
   name: K,
@@ -177,7 +155,7 @@ class PluginConnectionsService implements ConnectionsService {
 /** @public */
 export class DefaultConnectionsService {
   private readonly logger: LoggerService;
-  private readonly connections: RootConnection[];
+  private readonly connections: ConfiguredConnection[];
   private readonly config: RootConfigService;
 
   private constructor(logger: LoggerService, config: RootConfigService) {
@@ -195,187 +173,22 @@ export class DefaultConnectionsService {
   }
 
   #registerConnectionsFromConfig(): void {
-    const legacy = this.#validateLegacy(getLegacyIntegrations(this.config));
-
-    const rawConnections = this.config.getOptional('connections');
-    if (rawConnections !== undefined && !Array.isArray(rawConnections)) {
-      throw new InputError(
-        'Expected "connections" config to be an array of connection objects',
-      );
-    }
-
-    const fromConfig = this.#validateConfig(
-      (rawConnections as JsonObject[] | undefined) ?? [],
+    this.connections.push(
+      ...buildConnectionsFromConfig({
+        config: this.config,
+        logger: this.logger,
+      }),
     );
 
-    this.logger.debug(
-      `Connections configuration resolved ${legacy.length} connection${
-        legacy.length === 1 ? '' : 's'
-      } from legacy integrations and ${fromConfig.length} explicit connection${
-        fromConfig.length === 1 ? '' : 's'
-      }`,
-    );
-
-    if (legacy.length === 0 && fromConfig.length === 0) {
+    if (this.connections.length === 0) {
       return;
     }
-
-    this.connections.push(
-      ...combineConnectionSources(legacy, fromConfig, this.logger),
-    );
-
-    const seen = new Set<string>();
-    for (const c of this.connections) {
-      const connectionType = getConnectionType(c.type as ConnectionTypeKey);
-      const strategy = getLookupStrategy(connectionType.lookupStrategy);
-      const identity = connectionIdentityOf(strategy, c);
-      const key = `${c.type} ${identity ?? ''}`;
-      if (seen.has(key)) {
-        throw new InputError(
-          identity !== undefined
-            ? `Duplicate connection of type "${c.type}" for ${strategy.identityField} "${identity}"`
-            : `Duplicate connection of type "${c.type}"`,
-        );
-      }
-      seen.add(key);
-    }
-
-    this.#assignDefaultTitles();
-    this.#assignDefaultAuthTitles();
 
     this.logger.info(
       `Loaded ${this.connections.length} connection${
         this.connections.length === 1 ? '' : 's'
       } from configuration`,
     );
-  }
-
-  #validateConfig(raw: JsonObject[]): RootConnection[] {
-    return raw.map(v => {
-      try {
-        return this.#validateConnection(v);
-      } catch (e) {
-        const type = typeof v.type === 'string' ? v.type : 'unknown';
-        throw new InputError(
-          `Invalid connection of type "${type}" in connections config:\n${describeError(
-            e,
-          )}`,
-        );
-      }
-    });
-  }
-
-  #validateLegacy(raw: JsonObject[]): RootConnection[] {
-    const result: RootConnection[] = [];
-    for (const v of raw) {
-      try {
-        result.push(this.#validateConnection(v));
-      } catch (e) {
-        const type = typeof v.type === 'string' ? v.type : 'unknown';
-        this.logger.error(
-          `Failed to validate connection of type "${type}":\n${describeError(
-            e,
-          )}`,
-        );
-      }
-    }
-    return result;
-  }
-
-  #validateConnection(connection: JsonObject): RootConnection {
-    if (typeof connection.type !== 'string') {
-      throw new InputError(`Unrecognised connection type ${connection.type}`);
-    }
-
-    if (!isConnectionTypeKey(connection.type)) {
-      throw new InputError(`Unrecognised connection type ${connection.type}`);
-    }
-
-    const connectionType = getConnectionType(connection.type);
-
-    const rawAuth = connection.auth;
-    if (!Array.isArray(rawAuth) || rawAuth.length === 0) {
-      throw new InputError(
-        `Connection of type "${connection.type}" must configure at least one auth method`,
-      );
-    }
-
-    const auth = (rawAuth as JsonObject[]).map(entry => {
-      if (typeof entry.method !== 'string') {
-        throw new InputError(
-          `Auth entry for connection type "${connection.type}" is missing a "method" field`,
-        );
-      }
-      const authMethod = connectionType.authMethods.find(
-        am => am.method === entry.method,
-      );
-      if (!authMethod) {
-        throw new InputError(
-          `Unknown auth method "${entry.method}" for connection type "${connection.type}"`,
-        );
-      }
-      const { method, title, match, ...rest } = entry;
-      return {
-        ...authMethod.configSchema.parse(rest),
-        method,
-        title: title as string | undefined,
-        match: match as { plugins: string[] } | undefined,
-      } as RootConnection['auth'][number];
-    });
-
-    const { type, auth: _, title, match, ...configFields } = connection;
-    const parsed = connectionType.configSchema.parse(configFields);
-
-    return {
-      ...parsed,
-      type: connection.type,
-      title: title as string | undefined,
-      match: match as { plugins: string[] } | undefined,
-      auth,
-    } as RootConnection;
-  }
-
-  #assignDefaultTitles(): void {
-    const typeCounts = new Map<string, number>();
-    for (const c of this.connections) {
-      const type = c.type as ConnectionTypeKey;
-      typeCounts.set(type, (typeCounts.get(type) ?? 0) + 1);
-    }
-    for (const c of this.connections) {
-      if (!c.title) {
-        const type = c.type as ConnectionTypeKey;
-        const connectionType = getConnectionType(type);
-        const displayName = connectionType.title;
-        const identity = connectionIdentityOf(
-          getLookupStrategy(connectionType.lookupStrategy),
-          c,
-        );
-        (c as { title?: string }).title =
-          typeCounts.get(type)! > 1 && identity
-            ? `${displayName} (${identity})`
-            : displayName;
-      }
-    }
-  }
-
-  #assignDefaultAuthTitles(): void {
-    for (const c of this.connections) {
-      const type = c.type as ConnectionTypeKey;
-      const connectionType = getConnectionType(type);
-      for (const auth of c.auth) {
-        const authMethod = connectionType.authMethods.find(
-          am => am.method === auth.method,
-        );
-        // The config schema only allows methods declared by the connection
-        // type, so failing to find one means that invariant has been broken.
-        if (!authMethod) {
-          throw new Error(
-            `Unknown auth method "${auth.method}" for connection type "${type}"`,
-          );
-        }
-        auth.title ??= authMethod.title;
-      }
-    }
   }
 
   #getConnectionsForPlugin(pluginId: string): Connection[] {

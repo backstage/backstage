@@ -27,7 +27,7 @@ import express from 'express';
 import Router from 'express-promise-router';
 
 import { DispatchStrategy } from '../auth';
-import { NotAllowedError } from '@backstage/errors';
+import { NotAllowedError, toError } from '@backstage/errors';
 
 import {
   AuthService,
@@ -52,6 +52,7 @@ import { KubernetesProxy } from './KubernetesProxy';
 import { requirePermission } from '../auth/requirePermission';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 import { stringifyEntityRef } from '@backstage/catalog-model';
+import { resolveProxyMiddlewareCacheOptions } from './ProxyMiddlewareCache';
 
 export interface KubernetesEnvironment {
   logger: LoggerService;
@@ -107,6 +108,8 @@ export class KubernetesRouter {
       return Router();
     }
 
+    await this.warnForClustersWithSkipTLSVerify(logger, clusterSupplier);
+
     const proxy = this.buildProxy(
       logger,
       clusterSupplier,
@@ -153,6 +156,14 @@ export class KubernetesRouter {
     const authStrategy = new DispatchStrategy({
       authStrategyMap,
     });
+    const middlewareCacheConfig = this.env.config.getOptionalConfig(
+      'kubernetes.proxy.middlewareCache',
+    );
+    const { ttlMs, maxSize } = resolveProxyMiddlewareCacheOptions({
+      ttlMs: middlewareCacheConfig?.getOptionalNumber('ttl.milliseconds'),
+      maxSize: middlewareCacheConfig?.getOptionalNumber('maxSize'),
+    });
+
     return new KubernetesProxy({
       logger,
       clusterSupplier,
@@ -160,6 +171,7 @@ export class KubernetesRouter {
       discovery,
       httpAuth,
       auditor: this.env.auditor,
+      middlewareCache: { ttlMs, maxSize },
     });
   }
 
@@ -319,5 +331,29 @@ export class KubernetesRouter {
     );
 
     return clusterDetails;
+  }
+
+  private async warnForClustersWithSkipTLSVerify(
+    logger: LoggerService,
+    clusterSupplier: KubernetesClustersSupplier,
+  ): Promise<void> {
+    try {
+      const credentials = await this.env.auth.getOwnServiceCredentials();
+      const clusters = await clusterSupplier.getClusters({ credentials });
+
+      for (const cluster of clusters) {
+        if (cluster.skipTLSVerify) {
+          logger.warn(
+            `Cluster '${cluster.name}' is configured with skipTLSVerify: true; TLS certificate verification is disabled for Kubernetes API traffic to this cluster`,
+          );
+        }
+      }
+    } catch (error) {
+      logger.warn(
+        `Failed to log skipTLSVerify warnings at startup: ${
+          toError(error).message
+        }`,
+      );
+    }
   }
 }

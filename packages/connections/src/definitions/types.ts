@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { AwsConnectionType } from '../schema/aws';
 import { AwsCodeCommitConnectionType } from '../schema/awsCodeCommit';
 import { AwsS3ConnectionType } from '../schema/awsS3';
 import { AzureBlobStorageConnectionType } from '../schema/azureBlobStorage';
@@ -37,6 +38,7 @@ function createConnectionTypes<
 
 /** @public */
 export const connectionTypes = createConnectionTypes({
+  aws: AwsConnectionType,
   'aws-codecommit': AwsCodeCommitConnectionType,
   'aws-s3': AwsS3ConnectionType,
   'azure-blob-storage': AzureBlobStorageConnectionType,

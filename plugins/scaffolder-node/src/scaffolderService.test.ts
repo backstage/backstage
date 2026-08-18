@@ -26,7 +26,7 @@ import {
   registerMswTestHooks,
   startTestBackend,
 } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { scaffolderServiceRef } from './scaffolderService';
 
@@ -60,21 +60,19 @@ describe('scaffolderServiceRef', () => {
     expect.assertions(1);
 
     server.use(
-      rest.get('*/api/scaffolder/v2/tasks/:taskId', (req, res, ctx) => {
-        expect(req.headers.get('authorization')).toBe(
+      http.get('*/api/scaffolder/v2/tasks/:taskId', ({ request }) => {
+        expect(request.headers.get('authorization')).toBe(
           mockCredentials.service.header({
             onBehalfOf: mockCredentials.user(),
             targetPluginId: 'scaffolder',
           }),
         );
-        return res(
-          ctx.json({
-            id: 'task-1',
-            spec: {},
-            status: 'completed',
-            createdAt: '2025-01-01T00:00:00Z',
-          }),
-        );
+        return HttpResponse.json({
+          id: 'task-1',
+          spec: {},
+          status: 'completed',
+          createdAt: '2025-01-01T00:00:00Z',
+        });
       }),
     );
 
@@ -101,21 +99,19 @@ describe('scaffolderServiceRef', () => {
     expect.assertions(1);
 
     server.use(
-      rest.get('*/api/scaffolder/v2/tasks/:taskId', (req, res, ctx) => {
-        expect(req.headers.get('authorization')).toBe(
+      http.get('*/api/scaffolder/v2/tasks/:taskId', ({ request }) => {
+        expect(request.headers.get('authorization')).toBe(
           mockCredentials.service.header({
             onBehalfOf: mockCredentials.service(),
             targetPluginId: 'scaffolder',
           }),
         );
-        return res(
-          ctx.json({
-            id: 'task-1',
-            spec: {},
-            status: 'completed',
-            createdAt: '2025-01-01T00:00:00Z',
-          }),
-        );
+        return HttpResponse.json({
+          id: 'task-1',
+          spec: {},
+          status: 'completed',
+          createdAt: '2025-01-01T00:00:00Z',
+        });
       }),
     );
 
@@ -142,14 +138,14 @@ describe('scaffolderServiceRef', () => {
     expect.assertions(1);
 
     server.use(
-      rest.get('*/api/scaffolder/v2/tasks/:taskId/events', (req, res, ctx) => {
-        expect(req.headers.get('authorization')).toBe(
+      http.get('*/api/scaffolder/v2/tasks/:taskId/events', ({ request }) => {
+        expect(request.headers.get('authorization')).toBe(
           mockCredentials.service.header({
             onBehalfOf: mockCredentials.user(),
             targetPluginId: 'scaffolder',
           }),
         );
-        return res(ctx.json([]));
+        return HttpResponse.json([]);
       }),
     );
 
@@ -174,13 +170,12 @@ describe('scaffolderServiceRef', () => {
     expect.assertions(4);
 
     server.use(
-      rest.get('*/api/scaffolder/v2/tasks', (req, res, ctx) => {
-        expect(req.url.searchParams.get('createdBy')).toBe(
-          'user:default/guest',
-        );
-        expect(req.url.searchParams.get('limit')).toBe('10');
-        expect(req.url.searchParams.get('offset')).toBe('5');
-        return res(ctx.json({ tasks: [], totalTasks: 0 }));
+      http.get('*/api/scaffolder/v2/tasks', ({ request }) => {
+        const req = new URL(request.url);
+        expect(req.searchParams.get('createdBy')).toBe('user:default/guest');
+        expect(req.searchParams.get('limit')).toBe('10');
+        expect(req.searchParams.get('offset')).toBe('5');
+        return HttpResponse.json({ tasks: [], totalTasks: 0 });
       }),
     );
 
@@ -207,9 +202,11 @@ describe('scaffolderServiceRef', () => {
     expect.assertions(1);
 
     server.use(
-      rest.get('*/api/scaffolder/v2/tasks', (req, res, ctx) => {
-        expect(req.url.searchParams.getAll('status')).toEqual(['completed']);
-        return res(ctx.json({ tasks: [], totalTasks: 0 }));
+      http.get('*/api/scaffolder/v2/tasks', ({ request }) => {
+        expect(new URL(request.url).searchParams.getAll('status')).toEqual([
+          'completed',
+        ]);
+        return HttpResponse.json({ tasks: [], totalTasks: 0 });
       }),
     );
 
@@ -234,12 +231,12 @@ describe('scaffolderServiceRef', () => {
     expect.assertions(1);
 
     server.use(
-      rest.get('*/api/scaffolder/v2/tasks', (req, res, ctx) => {
-        expect(req.url.searchParams.getAll('status')).toEqual([
+      http.get('*/api/scaffolder/v2/tasks', ({ request }) => {
+        expect(new URL(request.url).searchParams.getAll('status')).toEqual([
           'completed',
           'failed',
         ]);
-        return res(ctx.json({ tasks: [], totalTasks: 0 }));
+        return HttpResponse.json({ tasks: [], totalTasks: 0 });
       }),
     );
 

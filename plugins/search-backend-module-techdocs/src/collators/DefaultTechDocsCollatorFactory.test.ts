@@ -22,7 +22,7 @@ import {
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { Readable } from 'node:stream';
 import { DefaultTechDocsCollatorFactory } from './DefaultTechDocsCollatorFactory';
@@ -111,9 +111,9 @@ describe('DefaultTechDocsCollatorFactory', () => {
       collator = await factory.getCollator();
 
       worker.use(
-        rest.get(
+        http.get(
           'http://test-backend/static/docs/default/Component/test-entity-with-docs/search/search_index.json',
-          (_, res, ctx) => res(ctx.status(200), ctx.json(mockSearchDocIndex)),
+          () => HttpResponse.json(mockSearchDocIndex),
         ),
       );
     });

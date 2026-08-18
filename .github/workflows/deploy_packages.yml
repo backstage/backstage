@@ -80,10 +80,12 @@ jobs:
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
+      # Only the tree of the previous commit is needed to diff package versions,
+      # so keep this shallow rather than fetching its entire ancestry.
       - name: Fetch previous commit for release check
         env:
           GH_EVENT_BEFORE: ${{ github.event.before }}
-        run: git fetch origin "$GH_EVENT_BEFORE"
+        run: git fetch --depth 1 origin "$GH_EVENT_BEFORE"
 
       - name: Check if release
         if: inputs.force_release != true

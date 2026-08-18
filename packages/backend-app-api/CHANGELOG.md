@@ -1,5 +1,13 @@
 # @backstage/backend-app-api
 
+## 1.7.3-next.1
+
+### Patch Changes
+
+- 03133fc: Hardened backend startup against malformed installed backend features, with contextual input errors and configured boot-failure handling when invalid registrations can be attributed to a plugin or module.
+- Updated dependencies
+  - @backstage/connections@0.3.0-next.2
+
 ## 1.7.3-next.0
 
 ### Patch Changes

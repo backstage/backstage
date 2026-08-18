@@ -129,8 +129,8 @@ jobs:
       - name: lint openapi yaml files
         run: yarn backstage-repo-tools repo schema openapi lint
 
-      - name: verify openapi yaml file matches generated ts file
-        run: yarn backstage-repo-tools repo schema openapi verify
+      - name: validate openapi yaml file matches generated ts file
+        run: yarn backstage-repo-tools repo schema openapi validate
 
       - name: verify doc links
         run: node scripts/verify-links.js
@@ -249,13 +249,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+
+        # Only trees and paths are needed here, to check the release and to scope
+        # linting and testing to changed packages, so skip historical blob
+        # content rather than transferring the whole branch.
       - name: fetch master branch
-        run: git fetch origin master
+        run: git fetch --filter=blob:none origin master
 
         # Need to fetch the base branch to be able to verify the release
       - name: fetch base branch
         if: github.event.pull_request.base.ref != 'master'
-        run: git fetch origin ${{ github.event.pull_request.base.ref }}
+        run: git fetch --filter=blob:none origin ${{ github.event.pull_request.base.ref }}
 
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
