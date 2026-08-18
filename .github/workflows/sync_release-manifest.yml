@@ -55,12 +55,12 @@ jobs:
           wget -O scripts/assemble-manifest.js https://raw.githubusercontent.com/backstage/backstage/master/scripts/assemble-manifest.js
           node scripts/assemble-manifest.js "$CLIENT_PAYLOAD_VERSION"
 
-          echo "CLIENT_PAYLOAD_VERSION=$CLIENT_PAYLOAD_VERSION" >> "$GITHUB_ENV"
-
       # Copies the build output of the yarn-plugin package to the appropriate
       # directory, allowing the plugin to be installed with a command like
       # `yarn plugin import https://versions.backstage.io/v1/tags/main/yarn-plugin`
       - name: Add yarn plugin to release
+        env:
+          CLIENT_PAYLOAD_VERSION: ${{ github.event.client_payload.version }}
         working-directory: packages/yarn-plugin
         run: >-
           cp
@@ -68,6 +68,8 @@ jobs:
           "../../versions/v1/releases/$CLIENT_PAYLOAD_VERSION/yarn-plugin"
 
       - name: Commit to versions repo
+        env:
+          CLIENT_PAYLOAD_VERSION: ${{ github.event.client_payload.version }}
         working-directory: versions
         run: |
           git add .
