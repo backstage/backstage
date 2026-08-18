@@ -202,14 +202,15 @@ describe('CatalogClusterLocator', () => {
     expect(result[0].url).toBe('http://127.0.0.1:6443');
   });
 
-  it('ignores serviceAccount auth provider clusters', async () => {
+  it('rejects all catalog clusters when one uses service account authentication', async () => {
     const credentials = mockCredentials.user();
-    const { logger, clusterSupplier } = createLocator([
+    const { clusterSupplier } = createLocator([
+      entities[0],
       {
         ...entities[0],
         metadata: {
           ...entities[0].metadata,
-          name: 'sa-cluster',
+          name: 'service-account-cluster',
           annotations: {
             ...entities[0].metadata.annotations!,
             [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
@@ -218,11 +219,8 @@ describe('CatalogClusterLocator', () => {
       },
     ]);
 
-    const warn = jest.spyOn(logger, 'warn');
-    const result = await clusterSupplier.getClusters({ credentials });
-    expect(result).toHaveLength(0);
-    expect(warn).toHaveBeenCalledWith(
-      expect.stringContaining('serviceAccount auth provider'),
+    await expect(clusterSupplier.getClusters({ credentials })).rejects.toThrow(
+      "Invalid cluster 'service-account-cluster': authProvider 'serviceAccount' is not supported by the catalog cluster locator",
     );
   });
 

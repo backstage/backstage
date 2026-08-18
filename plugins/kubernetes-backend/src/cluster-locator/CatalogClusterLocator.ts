@@ -129,10 +129,9 @@ export class CatalogClusterLocator implements KubernetesClustersSupplier {
 
     const authProvider = annotations[ANNOTATION_KUBERNETES_AUTH_PROVIDER];
     if (authProvider === 'serviceAccount') {
-      this.logger.warn(
-        `Ignoring kubernetes-cluster Resource "${name}": catalog cluster locator does not support the serviceAccount auth provider`,
+      throw new Error(
+        `Invalid cluster '${name}': authProvider 'serviceAccount' is not supported by the catalog cluster locator`,
       );
-      return undefined;
     }
 
     const apiServerUrl = annotations[ANNOTATION_KUBERNETES_API_SERVER];
