@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { DEFAULT_NAMESPACE, Entity } from '@backstage/catalog-model';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { toError } from '@backstage/errors';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
-import {
-  catalogApiRef,
-  entityPresentationApiRef,
-} from '@backstage/plugin-catalog-react';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import Box from '@material-ui/core/Box';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Grid from '@material-ui/core/Grid';
@@ -121,6 +118,19 @@ export function generateEntities(
 }
 
 /**
+ * Builds the owner option for a group entity.
+ *
+ * The selected option is written verbatim to `spec.owner` of the generated
+ * entity, so it has to be an entity reference rather than a display name.
+ */
+function groupOwnerRef(entity: Entity): string {
+  const namespace = entity.metadata.namespace || DEFAULT_NAMESPACE;
+  return namespace === DEFAULT_NAMESPACE
+    ? entity.metadata.name
+    : `${namespace}/${entity.metadata.name}`;
+}
+
+/**
  * Prepares a pull request.
  *
  * @public
@@ -133,7 +143,6 @@ export const StepPrepareCreatePullRequest = (
   const { t } = useTranslationRef(catalogImportTranslationRef);
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
-  const entityPresentationApi = useApi(entityPresentationApiRef);
   const catalogImportApi = useApi(catalogImportApiRef);
   const errorApi = useApi(errorApiRef);
 
@@ -162,13 +171,7 @@ export const StepPrepareCreatePullRequest = (
       filter: { kind: 'group' },
     });
 
-    const presentations = await Promise.all(
-      groupEntities.items.map(
-        e =>
-          entityPresentationApi.forEntity(e, { defaultKind: 'group' }).promise,
-      ),
-    );
-    return presentations.map(p => p.primaryTitle).sort();
+    return groupEntities.items.map(groupOwnerRef).sort();
   });
 
   const handleResult = useCallback(

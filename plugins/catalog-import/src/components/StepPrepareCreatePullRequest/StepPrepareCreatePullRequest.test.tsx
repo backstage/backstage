@@ -15,11 +15,7 @@
  */
 
 import { configApiRef, errorApiRef } from '@backstage/core-plugin-api';
-import {
-  catalogApiRef,
-  defaultEntityPresentation,
-  entityPresentationApiRef,
-} from '@backstage/plugin-catalog-react';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import {
   mockApis,
@@ -46,17 +42,6 @@ describe('<StepPrepareCreatePullRequest />', () => {
 
   const catalogApi = catalogApiMock.mock();
 
-  const entityPresentationApi: typeof entityPresentationApiRef.T = {
-    forEntity(entityOrRef, context) {
-      const presentation = defaultEntityPresentation(entityOrRef, context);
-      return {
-        snapshot: presentation,
-        update$: { subscribe: () => ({ unsubscribe: () => {} }) } as any,
-        promise: Promise.resolve(presentation),
-      };
-    },
-  };
-
   const errorApi: jest.Mocked<typeof errorApiRef.T> = {
     error$: jest.fn(),
     post: jest.fn(),
@@ -69,7 +54,6 @@ describe('<StepPrepareCreatePullRequest />', () => {
       apis={[
         [catalogImportApiRef, catalogImportApi],
         [catalogApiRef, catalogApi],
-        [entityPresentationApiRef, entityPresentationApi],
         [errorApiRef, errorApi],
         [configApiRef, configApi],
       ]}
@@ -269,6 +253,27 @@ spec:
               name: 'my-group',
             },
           },
+          {
+            apiVersion: '1',
+            kind: 'Group',
+            metadata: {
+              name: 'my-team',
+              title: 'My Team',
+            },
+            spec: {
+              profile: {
+                displayName: 'My Displayed Team',
+              },
+            },
+          },
+          {
+            apiVersion: '1',
+            kind: 'Group',
+            metadata: {
+              name: 'other-group',
+              namespace: 'other-namespace',
+            },
+          },
         ],
       }),
     );
@@ -289,7 +294,7 @@ spec:
 
     expect(renderFormFieldsFn).toHaveBeenCalled();
     expect(renderFormFieldsFn.mock.calls[0][0]).toMatchObject({
-      groups: ['my-group'],
+      groups: ['my-group', 'my-team', 'other-namespace/other-group'],
       groupsLoading: false,
     });
   });
