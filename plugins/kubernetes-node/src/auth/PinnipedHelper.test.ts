@@ -51,6 +51,10 @@ describe('Pinniped - tokenCredentialRequest', () => {
     httpsRequest = jest.spyOn(https, 'request');
   });
 
+  afterAll(() => {
+    httpsRequest.mockRestore();
+  });
+
   beforeEach(async () => {
     httpsRequest.mockClear();
     const clusterSupplierMock = {

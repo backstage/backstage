@@ -53,13 +53,21 @@ export type ConnectionResult =
 
 export class KubernetesConnection {
   private readonly logger: LoggerService;
+  private readonly agentFactory: (options: https.AgentOptions) => https.Agent;
   private readonly agentCache = new Map<string, https.Agent>();
   private inClusterCache:
     | { url: URL; agent: https.Agent | undefined }
     | undefined;
 
-  constructor({ logger }: { logger: LoggerService }) {
+  constructor({
+    logger,
+    agentFactory,
+  }: {
+    logger: LoggerService;
+    agentFactory?: (options: https.AgentOptions) => https.Agent;
+  }) {
     this.logger = logger;
+    this.agentFactory = agentFactory ?? (options => new https.Agent(options));
   }
 
   buildResourcePath(
@@ -208,7 +216,7 @@ export class KubernetesConnection {
       const url = new URL(cluster.server);
       const agent =
         url.protocol === 'https:'
-          ? new https.Agent({
+          ? this.agentFactory({
               ca: fs.readFileSync(cluster.caFile as string),
               keepAlive: true,
             })
@@ -247,7 +255,7 @@ export class KubernetesConnection {
 
     let agent = this.agentCache.get(key);
     if (!agent) {
-      agent = new https.Agent({
+      agent = this.agentFactory({
         ca,
         rejectUnauthorized: !clusterDetails.skipTLSVerify,
         keepAlive: true,

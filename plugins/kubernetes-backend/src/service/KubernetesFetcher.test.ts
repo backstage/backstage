@@ -17,6 +17,7 @@
 import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernetes-common';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { ObjectToFetch } from '@backstage/plugin-kubernetes-node';
+import * as https from 'node:https';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import {
@@ -663,13 +664,30 @@ describe('KubernetesFetcher', () => {
     });
     describe('when server uses TLS', () => {
       const initialCAPath = process.env.KUBERNETES_CA_FILE_PATH;
+      const agentFactory = jest.fn(
+        (options: https.AgentOptions) => new https.Agent(options),
+      );
+
       beforeEach(() => {
+        agentFactory.mockClear();
+        sut = new KubernetesClientBasedFetcher({
+          logger,
+          connection: new KubernetesConnection({ logger, agentFactory }),
+        });
         process.env.KUBERNETES_CA_FILE_PATH = mockCertDir.resolve('ca.crt');
       });
 
       afterEach(() => {
         process.env.KUBERNETES_CA_FILE_PATH = initialCAPath;
       });
+
+      const getAgentOptions = (): https.AgentOptions => {
+        const options = agentFactory.mock.calls[0]?.[0];
+        if (!options) {
+          throw new Error('Expected an HTTPS agent options argument');
+        }
+        return options;
+      };
 
       it('should trust specified caData', async () => {
         worker.use(
@@ -704,8 +722,8 @@ describe('KubernetesFetcher', () => {
           customResources: [],
         });
 
-        const options = [...(sut as any).agentCache.values()][0].options;
-        expect(options.ca.toString('base64')).toMatch('MOCKCA');
+        const options = getAgentOptions();
+        expect(options.ca!.toString('base64')).toMatch('MOCKCA');
       });
       it('should use default chain of trust when caData is unspecified', async () => {
         worker.use(
@@ -739,7 +757,7 @@ describe('KubernetesFetcher', () => {
           customResources: [],
         });
 
-        const options = [...(sut as any).agentCache.values()][0].options;
+        const options = getAgentOptions();
         expect(options.ca).toBeUndefined();
       });
       describe('with a CA file on disk', () => {
@@ -776,8 +794,8 @@ describe('KubernetesFetcher', () => {
             customResources: [],
           });
 
-          const options = [...(sut as any).agentCache.values()][0].options;
-          expect(options.ca.toString()).toEqual('MOCKCA');
+          const options = getAgentOptions();
+          expect(options.ca!.toString()).toEqual('MOCKCA');
         });
       });
       it('should accept unauthorized certs when skipTLSVerify is set', async () => {
@@ -813,7 +831,7 @@ describe('KubernetesFetcher', () => {
           customResources: [],
         });
 
-        const options = [...(sut as any).agentCache.values()][0].options;
+        const options = getAgentOptions();
         expect(options.rejectUnauthorized).toBe(false);
       });
 
@@ -859,8 +877,8 @@ describe('KubernetesFetcher', () => {
 
         await expect(result).resolves.toBeDefined();
 
-        const options = [...(sut as any).agentCache.values()][0].options;
-        expect(options.ca.toString('base64')).toMatch('MOCKCA');
+        const options = getAgentOptions();
+        expect(options.ca!.toString('base64')).toMatch('MOCKCA');
         expect(options.cert).toEqual(myCert);
         expect(options.key).toEqual(myKey);
       });
@@ -932,8 +950,8 @@ describe('KubernetesFetcher', () => {
 
         await expect(result).resolves.toBeDefined();
 
-        const options = [...(sut as any).agentCache.values()][0].options;
-        expect(options.ca.toString('base64')).toMatch('MOCKCA');
+        const options = getAgentOptions();
+        expect(options.ca!.toString('base64')).toMatch('MOCKCA');
         expect(options.cert).toEqual(myCert);
         expect(options.key).toEqual(myKey);
       });

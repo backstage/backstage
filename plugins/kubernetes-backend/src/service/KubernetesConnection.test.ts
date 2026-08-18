@@ -19,7 +19,8 @@ import {
   KubernetesConnection,
   statusCodeToErrorType,
 } from './KubernetesConnection';
-import { rest } from 'msw';
+import * as https from 'node:https';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   createMockDirectory,
@@ -154,8 +155,8 @@ describe('KubernetesConnection', () => {
   describe('fetchWithConnection', () => {
     it('fetches a resource and returns the response', async () => {
       worker.use(
-        rest.get('http://localhost:9999/api/v1/pods', (_req, res, ctx) =>
-          res(ctx.status(200), ctx.json({ items: [] })),
+        http.get('http://localhost:9999/api/v1/pods', () =>
+          HttpResponse.json({ items: [] }),
         ),
       );
 
@@ -172,9 +173,8 @@ describe('KubernetesConnection', () => {
 
     it('appends resource path to cluster URL with base path', async () => {
       worker.use(
-        rest.get(
-          'http://localhost:9999/k8s/clusters/123/api/v1/pods',
-          (_req, res, ctx) => res(ctx.status(200), ctx.json({ items: [] })),
+        http.get('http://localhost:9999/k8s/clusters/123/api/v1/pods', () =>
+          HttpResponse.json({ items: [] }),
         ),
       );
 
@@ -194,9 +194,10 @@ describe('KubernetesConnection', () => {
     it('includes labelSelector as query parameter', async () => {
       let capturedSelector = '';
       worker.use(
-        rest.get('http://localhost:9999/api/v1/pods', (req, res, ctx) => {
-          capturedSelector = req.url.searchParams.get('labelSelector') || '';
-          return res(ctx.status(200), ctx.json({ items: [] }));
+        http.get('http://localhost:9999/api/v1/pods', ({ request }) => {
+          capturedSelector =
+            new URL(request.url).searchParams.get('labelSelector') || '';
+          return HttpResponse.json({ items: [] });
         }),
       );
 
@@ -229,9 +230,9 @@ describe('KubernetesConnection', () => {
     it('sends Authorization header with bearer token', async () => {
       let capturedAuth = '';
       worker.use(
-        rest.get('http://localhost:9999/api/v1/pods', (req, res, ctx) => {
-          capturedAuth = req.headers.get('Authorization') || '';
-          return res(ctx.status(200), ctx.json({ items: [] }));
+        http.get('http://localhost:9999/api/v1/pods', ({ request }) => {
+          capturedAuth = request.headers.get('Authorization') || '';
+          return HttpResponse.json({ items: [] });
         }),
       );
 
@@ -247,9 +248,9 @@ describe('KubernetesConnection', () => {
     it('does not send Authorization header for anonymous credential with localKubectlProxy', async () => {
       let capturedAuth: string | null = '';
       worker.use(
-        rest.get('http://localhost:9999/api/v1/pods', (req, res, ctx) => {
-          capturedAuth = req.headers.get('Authorization');
-          return res(ctx.status(200), ctx.json({ items: [] }));
+        http.get('http://localhost:9999/api/v1/pods', ({ request }) => {
+          capturedAuth = request.headers.get('Authorization');
+          return HttpResponse.json({ items: [] });
         }),
       );
 
@@ -274,8 +275,8 @@ describe('KubernetesConnection', () => {
       const warn = jest.spyOn(logger, 'warn');
 
       worker.use(
-        rest.get('http://localhost:9999/api/v1/pods', (_req, res, ctx) =>
-          res(ctx.status(404), ctx.text('not found')),
+        http.get('http://localhost:9999/api/v1/pods', () =>
+          HttpResponse.text('not found', { status: 404 }),
         ),
       );
 
@@ -302,18 +303,18 @@ describe('KubernetesConnection', () => {
   });
 
   describe('TLS and agent caching', () => {
-    let httpsRequest: jest.SpyInstance;
+    const agentFactory = jest.fn((options: https.AgentOptions) => {
+      // MSW intercepts the request before Node validates this intentionally invalid certificate.
+      if (options.cert === 'MOCKCERT') {
+        throw new Error('PEM');
+      }
+      return new https.Agent(options);
+    });
     const initialCAPath = process.env.KUBERNETES_CA_FILE_PATH;
 
-    beforeAll(() => {
-      httpsRequest = jest.spyOn(
-        (worker as any).interceptor.interceptors[0].modules.get('https'),
-        'request',
-      );
-    });
-
     beforeEach(() => {
-      httpsRequest.mockClear();
+      agentFactory.mockClear();
+      connection = new KubernetesConnection({ logger, agentFactory });
       process.env.KUBERNETES_CA_FILE_PATH = mockCertDir.resolve('ca.crt');
     });
 
@@ -323,8 +324,8 @@ describe('KubernetesConnection', () => {
 
     it('creates agent with caData', async () => {
       worker.use(
-        rest.get('https://localhost:9999/api/v1/pods', (_req, res, ctx) =>
-          res(ctx.status(200), ctx.json({ items: [] })),
+        http.get('https://localhost:9999/api/v1/pods', () =>
+          HttpResponse.json({ items: [] }),
         ),
       );
 
@@ -339,15 +340,15 @@ describe('KubernetesConnection', () => {
         '/api/v1/pods',
       );
 
-      expect(httpsRequest).toHaveBeenCalledTimes(1);
-      const [[{ agent }]] = httpsRequest.mock.calls;
-      expect(agent.options.ca.toString('base64')).toMatch('MOCKCA');
+      expect(agentFactory).toHaveBeenCalledTimes(1);
+      const options = agentFactory.mock.calls[0][0];
+      expect(options.ca?.toString('base64')).toMatch('MOCKCA');
     });
 
     it('reuses cached agent for same cluster config', async () => {
       worker.use(
-        rest.get('https://localhost:9999/*', (_req, res, ctx) =>
-          res(ctx.status(200), ctx.json({ items: [] })),
+        http.get('https://localhost:9999/*', () =>
+          HttpResponse.json({ items: [] }),
         ),
       );
 
@@ -362,16 +363,13 @@ describe('KubernetesConnection', () => {
       await connection.fetchWithConnection(cluster, cred, '/api/v1/pods');
       await connection.fetchWithConnection(cluster, cred, '/api/v1/services');
 
-      expect(httpsRequest).toHaveBeenCalledTimes(2);
-      const agent1 = httpsRequest.mock.calls[0][0].agent;
-      const agent2 = httpsRequest.mock.calls[1][0].agent;
-      expect(agent1).toBe(agent2);
+      expect(agentFactory).toHaveBeenCalledTimes(1);
     });
 
     it('sets rejectUnauthorized to false when skipTLSVerify is true', async () => {
       worker.use(
-        rest.get('https://localhost:9999/api/v1/pods', (_req, res, ctx) =>
-          res(ctx.status(200), ctx.json({ items: [] })),
+        http.get('https://localhost:9999/api/v1/pods', () =>
+          HttpResponse.json({ items: [] }),
         ),
       );
 
@@ -386,15 +384,15 @@ describe('KubernetesConnection', () => {
         '/api/v1/pods',
       );
 
-      expect(httpsRequest).toHaveBeenCalledTimes(1);
-      const [[{ agent }]] = httpsRequest.mock.calls;
-      expect(agent.options.rejectUnauthorized).toBe(false);
+      expect(agentFactory).toHaveBeenCalledTimes(1);
+      const options = agentFactory.mock.calls[0][0];
+      expect(options.rejectUnauthorized).toBe(false);
     });
 
     it('configures agent with x509 client certificate', async () => {
       worker.use(
-        rest.get('https://localhost:9999/api/v1/pods', (_req, res, ctx) =>
-          res(ctx.status(200), ctx.json({ items: [] })),
+        http.get('https://localhost:9999/api/v1/pods', () =>
+          HttpResponse.json({ items: [] }),
         ),
       );
 
@@ -411,16 +409,16 @@ describe('KubernetesConnection', () => {
 
       await expect(result).rejects.toThrow(/PEM/);
 
-      expect(httpsRequest).toHaveBeenCalledTimes(1);
-      const [[{ agent }]] = httpsRequest.mock.calls;
-      expect(agent.options.cert).toBe('MOCKCERT');
-      expect(agent.options.key).toBe('MOCKKEY');
+      expect(agentFactory).toHaveBeenCalledTimes(1);
+      const options = agentFactory.mock.calls[0][0];
+      expect(options.cert).toBe('MOCKCERT');
+      expect(options.key).toBe('MOCKKEY');
     });
 
     it('reads caFile from disk', async () => {
       worker.use(
-        rest.get('https://localhost:9999/api/v1/pods', (_req, res, ctx) =>
-          res(ctx.status(200), ctx.json({ items: [] })),
+        http.get('https://localhost:9999/api/v1/pods', () =>
+          HttpResponse.json({ items: [] }),
         ),
       );
 
@@ -435,9 +433,9 @@ describe('KubernetesConnection', () => {
         '/api/v1/pods',
       );
 
-      expect(httpsRequest).toHaveBeenCalledTimes(1);
-      const [[{ agent }]] = httpsRequest.mock.calls;
-      expect(agent.options.ca.toString()).toEqual('MOCKCA');
+      expect(agentFactory).toHaveBeenCalledTimes(1);
+      const options = agentFactory.mock.calls[0][0];
+      expect(options.ca?.toString()).toEqual('MOCKCA');
     });
   });
 

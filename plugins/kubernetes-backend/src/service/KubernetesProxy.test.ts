@@ -1396,6 +1396,10 @@ describe('KubernetesProxy', () => {
       httpsRequest = jest.spyOn(https, 'request');
     });
 
+    afterAll(() => {
+      httpsRequest.mockRestore();
+    });
+
     beforeEach(() => {
       httpsRequest.mockClear();
     });
