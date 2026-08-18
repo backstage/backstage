@@ -77,11 +77,11 @@ jobs:
             text="**$CHROMATIC_CHANGE_COUNT** visual changes are waiting for review - [**Review changes in Chromatic**]($CHROMATIC_BUILD_URL)"
           fi
 
-          echo "changes-text=$text" >> "$GITHUB_OUTPUT"
+          echo "changesText=$text" >> "$GITHUB_OUTPUT"
 
       - name: Post Chromatic Results to Job Summary
         env:
-          CHANGES_TEXT: ${{ steps.prepareMessage.outputs.changes-text }}
+          CHANGES_TEXT: ${{ steps.prepareMessage.outputs.changesText }}
           CHROMATIC_COMPONENT_COUNT: ${{ steps.chromatic.outputs.componentCount }}
           CHROMATIC_SPEC_COUNT: ${{ steps.chromatic.outputs.specCount }}
           CHROMATIC_STORYBOOK_URL: ${{ steps.chromatic.outputs.storybookUrl }}
@@ -101,6 +101,6 @@ jobs:
           message: |
             ## 🎨 Visual Testing with Chromatic
 
-            - ${{ steps.prepareMessage.outputs.changes-text }}
+            - ${{ steps.prepareMessage.outputs.changesText }}
             - **${{ steps.chromatic.outputs.specCount}}** stories for **${{ steps.chromatic.outputs.componentCount}}** Components - [**Preview changes in Storybook**](${{ steps.chromatic.outputs.storybookUrl }})
           repo-token: ${{ secrets.GITHUB_TOKEN }}
