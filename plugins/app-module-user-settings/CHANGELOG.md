@@ -1,5 +1,14 @@
 # @backstage/plugin-app-module-user-settings
 
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-user-settings@0.9.6
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/plugin-signals-react@0.0.25
+
 ## 0.1.1-next.1
 
 ### Patch Changes

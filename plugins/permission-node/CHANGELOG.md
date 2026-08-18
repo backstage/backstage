@@ -1,5 +1,15 @@
 # @backstage/plugin-permission-node
 
+## 0.11.3
+
+### Patch Changes
+
+- b754e32: Migrated tests from MSW v1 to MSW v2.
+- 2c99b29: Permission rule parameter schemas now accept JSON Schema-compatible Standard Schema implementations, such as Zod v4. Zod v3 schemas remain supported but are deprecated.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-permission-common@0.9.10
+
 ## 0.11.3-next.0
 
 ### Patch Changes

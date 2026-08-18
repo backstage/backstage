@@ -1,5 +1,25 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.8.6
+
+### Patch Changes
+
+- bb98419: TypeScript configuration schema warnings discovered while setting up secret redaction are now reported through the Backstage logger.
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.7
+  - @backstage/plugin-catalog-backend@3.9.0
+  - @backstage/config-loader@1.11.2
+  - @backstage/plugin-scaffolder-node@0.13.6
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-auth-node@0.7.4
+  - @backstage/plugin-permission-common@0.9.10
+  - @backstage/plugin-permission-node@0.11.3
+  - @backstage/plugin-events-backend@0.6.5
+  - @backstage/backend-openapi-utils@0.7.1
+  - @backstage/plugin-app-node@0.1.48
+  - @backstage/plugin-events-node@0.4.25
+  - @backstage/plugin-search-backend-node@1.4.7
+
 ## 0.8.6-next.1
 
 ### Patch Changes

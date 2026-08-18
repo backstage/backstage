@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-graph
 
+## 0.6.7
+
+### Patch Changes
+
+- 8babce3: Fixed the catalog graph page so configured filter and graph defaults are applied when the page opens.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/plugin-catalog-react@3.2.1
+  - @backstage/ui@0.17.1
+  - @backstage/frontend-plugin-api@0.18.0
+
 ## 0.6.7-next.2
 
 ### Patch Changes

@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.7.15
+
+### Patch Changes
+
+- 870acb3: Moved detailed documentation from the README to the Backstage docs site. The README now contains installation instructions and links to the full documentation.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-defaults@0.17.7
+  - @backstage/plugin-catalog-backend@3.9.0
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-catalog-node@2.2.4
+  - @backstage/plugin-events-node@0.4.25
+
 ## 0.7.15-next.2
 
 ### Patch Changes

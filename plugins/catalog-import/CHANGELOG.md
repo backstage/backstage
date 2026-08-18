@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-import
 
+## 0.13.16
+
+### Patch Changes
+
+- 74fb85d: Remove obsolete location import error handling in StepReviewLocation.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/plugin-catalog-react@3.2.1
+  - @backstage/integration@2.1.0
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/integration-react@1.2.21
+  - @backstage/plugin-permission-react@0.5.4
+
 ## 0.13.16-next.2
 
 ### Patch Changes

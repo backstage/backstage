@@ -1,5 +1,13 @@
 # @backstage/cli-module-migrate
 
+## 0.2.1
+
+### Patch Changes
+
+- cf59370: Migrated tests from MSW v1 to MSW v2.
+- Updated dependencies
+  - @backstage/release-manifests@0.0.14
+
 ## 0.2.0
 
 ### Minor Changes

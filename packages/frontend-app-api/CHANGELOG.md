@@ -1,5 +1,17 @@
 # @backstage/frontend-app-api
 
+## 0.16.7
+
+### Patch Changes
+
+- 6497d0f: Respect explicit API reference plugin ownership when resolving conflicting API factories.
+- a8b5ba6: Updated dependencies.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/core-app-api@1.20.4
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/frontend-defaults@0.5.5
+
 ## 0.16.7-next.1
 
 ### Patch Changes
