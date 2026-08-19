@@ -187,6 +187,18 @@ describe('DefaultWorkspaceService', () => {
         resolveWorkspaceProvider({ database: createMockProvider() }, config),
       ).toThrow("Workspace provider 'missing' is configured but not available");
     });
+
+    it('should explain how to enable an unavailable database provider in production', () => {
+      const config = new ConfigReader({
+        scaffolder: {
+          EXPERIMENTAL_workspaceSerialization: true,
+        },
+      });
+
+      expect(() => resolveWorkspaceProvider({}, config)).toThrow(
+        "set 'scaffolder.taskRecovery.database.dangerouslyEnableInProduction' to true",
+      );
+    });
   });
 
   describe('cleanWorkspace', () => {

@@ -125,7 +125,11 @@ When task recovery is enabled:
 - Completed steps are skipped on retry, resuming from the last incomplete step
 - Step outputs are restored so subsequent steps can access previous results
 
-Actions used in recoverable templates should be idempotent. You can use [checkpoints](./writing-custom-actions.md#using-checkpoints-in-custom-actions) in custom actions to achieve this.
+:::warning[Use idempotent actions]
+
+An action can run more than once if a task is recovered or retried. This can happen when an action succeeds but workspace serialization fails, because the step is not recorded as completed until its workspace has been stored. Actions used in recoverable templates should therefore be idempotent. You can use [checkpoints](./writing-custom-actions.md#using-checkpoints-in-custom-actions) in custom actions to achieve this.
+
+:::
 
 ### Workspace Serialization
 

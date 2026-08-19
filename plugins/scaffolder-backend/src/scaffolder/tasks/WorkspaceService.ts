@@ -57,10 +57,14 @@ export function resolveWorkspaceProvider(
       : undefined;
 
   if (!workspaceProvider) {
+    const databaseProviderGuidance =
+      providerName === 'database'
+        ? ` For database storage, add '@backstage/plugin-scaffolder-backend-module-workspace-database'. ` +
+          `When running in production, also set ` +
+          `'scaffolder.taskRecovery.database.dangerouslyEnableInProduction' to true.`
+        : '';
     throw new Error(
-      `Workspace provider '${providerName}' is configured but not available. ` +
-        `Make sure to install and register the corresponding module. ` +
-        `For database storage, add '@backstage/plugin-scaffolder-backend-module-workspace-database'.`,
+      `Workspace provider '${providerName}' is configured but not available. Make sure to install and register the corresponding module.${databaseProviderGuidance}`,
     );
   }
 

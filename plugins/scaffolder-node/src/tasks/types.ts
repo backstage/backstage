@@ -189,7 +189,7 @@ export interface TaskContext {
 
   updateStepState?(options: {
     stepId: string;
-    status: 'completed' | 'failed';
+    status: 'completed';
     output: { [name: string]: JsonValue };
   }): Promise<void>;
 

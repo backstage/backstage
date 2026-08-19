@@ -597,7 +597,7 @@ export interface TaskContext {
   // (undocumented)
   updateStepState?(options: {
     stepId: string;
-    status: 'completed' | 'failed';
+    status: 'completed';
     output: {
       [name: string]: JsonValue;
     };

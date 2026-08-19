@@ -40,7 +40,7 @@ export type TaskStoreEmitOptions<TBody = JsonObject> = {
  * Represents the completion state of a single step
  */
 export type StepState = {
-  status: 'completed' | 'failed';
+  status: 'completed';
   output: { [name: string]: JsonValue };
 };
 
@@ -57,7 +57,7 @@ export type TaskState = {
  */
 export type UpdateStepStateOptions = {
   stepId: string;
-  status: 'completed' | 'failed';
+  status: 'completed';
   output: { [name: string]: JsonValue };
 };
 
