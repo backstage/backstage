@@ -294,6 +294,84 @@ spec:
     });
   });
 
+  it('should resolve a selected group display title back to its entity ref when submitting', async () => {
+    catalogApi.getEntities.mockReturnValue(
+      Promise.resolve({
+        items: [
+          {
+            apiVersion: '1',
+            kind: 'Group',
+            metadata: {
+              name: 'my-team',
+              namespace: 'default',
+              title: 'My Team',
+            },
+          },
+        ],
+      }),
+    );
+    catalogImportApi.submitPullRequest.mockReturnValue(
+      Promise.resolve({
+        location: 'https://my/location.yaml',
+        link: 'https://my/pull',
+      }),
+    );
+
+    await renderInTestApp(
+      <Wrapper>
+        <StepPrepareCreatePullRequest
+          analyzeResult={analyzeResult}
+          onPrepare={onPrepareFn}
+          renderFormFields={({ register, groups, groupsLoading }) => {
+            return (
+              <>
+                <TextField {...asInputRef(register('title'))} />
+                <TextField {...asInputRef(register('body'))} />
+                <TextField
+                  {...asInputRef(register('componentName'))}
+                  id="name"
+                  label="name"
+                />
+                <TextField
+                  {...asInputRef(register('owner'))}
+                  id="owner"
+                  label="owner"
+                  data-testid="owner-loading"
+                  data-loading={groupsLoading}
+                  data-groups={JSON.stringify(groups)}
+                />
+              </>
+            );
+          }}
+        />
+      </Wrapper>,
+    );
+
+    // Wait for the group presentation title to be resolved.
+    await waitFor(() => {
+      expect(
+        screen.getByTestId('owner-loading').getAttribute('data-groups'),
+      ).toBe(JSON.stringify(['My Team']));
+    });
+
+    // Simulate the user selecting the group by its displayed title, exactly
+    // as the AutocompleteTextField would populate the owner field.
+    const ownerField = await screen.findByLabelText('owner');
+    await userEvent.clear(ownerField);
+    await userEvent.type(ownerField, 'My Team');
+    await userEvent.click(screen.getByRole('button', { name: /Create PR/i }));
+
+    expect(catalogImportApi.submitPullRequest).toHaveBeenCalledTimes(1);
+    expect(catalogImportApi.submitPullRequest.mock.calls[0]).toMatchObject([
+      {
+        fileContent: expect.stringContaining('owner: group:default/my-team'),
+      },
+    ]);
+    expect(
+      catalogImportApi.submitPullRequest.mock.calls[0][0].fileContent,
+    ).not.toContain('owner: My Team');
+  });
+
   describe('generateEntities', () => {
     it.each([[undefined], [null]])(
       'should not include blank namespace for %s',
