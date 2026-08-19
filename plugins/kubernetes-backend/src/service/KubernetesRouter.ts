@@ -51,7 +51,7 @@ import { ObjectsByEntityRequest } from '../types/types';
 import { KubernetesProxy } from './KubernetesProxy';
 import { requirePermission } from '../auth/requirePermission';
 import { CatalogService } from '@backstage/plugin-catalog-node';
-import { stringifyEntityRef } from '@backstage/catalog-model';
+import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { resolveProxyMiddlewareCacheOptions } from './ProxyMiddlewareCache';
 
 export interface KubernetesEnvironment {
@@ -221,12 +221,30 @@ export class KubernetesRouter {
           httpAuth,
           req,
         );
+
+        const credentials = await httpAuth.credentials(req);
+
+        let resolvedEntity = requestBody?.entity;
+        if (requestBody?.entity) {
+          if (!entityRef) {
+            throw new NotAllowedError('Invalid entity reference');
+          }
+          const parsedRef = parseEntityRef(entityRef);
+          const catalogEntity = await catalog.getEntityByRef(parsedRef, {
+            credentials,
+          });
+          if (!catalogEntity) {
+            throw new NotAllowedError(`Entity not found, ${entityRef}`);
+          }
+          resolvedEntity = catalogEntity;
+        }
+
         const response = await objectsProvider.getKubernetesObjectsByEntity(
           {
-            entity: requestBody?.entity,
+            entity: resolvedEntity,
             auth: requestBody?.auth || {},
           },
-          { credentials: await httpAuth.credentials(req) },
+          { credentials },
         );
         res.json(response);
         auditorEvent
