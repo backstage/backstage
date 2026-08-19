@@ -1033,20 +1033,27 @@ describe('scaffolder router', () => {
   });
 
   describe('GET /v2/tasks', () => {
-    it('return all tasks', async () => {
+    it('returns public task details without internal data', async () => {
       const { router, taskBroker } = await createTestRouter();
+      const task = {
+        id: 'a-random-id',
+        spec: {} as TaskSpec,
+        status: 'completed' as const,
+        createdAt: '2026-08-19T12:00:00.000Z',
+        lastHeartbeatAt: '2026-08-19T12:01:00.000Z',
+        createdBy: 'user:default/mock',
+        secrets: {
+          __initiatorCredentials: JSON.stringify(credentials),
+        },
+        state: {
+          checkpoints: {},
+        },
+        internalMetadata: 'not-public',
+      };
       (
         taskBroker.list as jest.Mocked<Required<TaskBroker>>['list']
       ).mockResolvedValue({
-        tasks: [
-          {
-            id: 'a-random-id',
-            spec: {} as TaskSpec,
-            status: 'completed',
-            createdAt: '',
-            createdBy: '',
-          },
-        ],
+        tasks: [task],
         totalTasks: 1,
       });
 
@@ -1062,8 +1069,9 @@ describe('scaffolder router', () => {
             id: 'a-random-id',
             spec: {} as TaskSpec,
             status: 'completed',
-            createdAt: '',
-            createdBy: '',
+            createdAt: '2026-08-19T12:00:00.000Z',
+            lastHeartbeatAt: '2026-08-19T12:01:00.000Z',
+            createdBy: 'user:default/mock',
           },
         ],
         totalTasks: 1,
@@ -1167,6 +1175,65 @@ describe('scaffolder router', () => {
       expect(response.body.status).toBe('completed');
       expect(response.body.secrets).toBeUndefined();
     });
+
+    it('does not divulge internal task state', async () => {
+      const { router, taskBroker } = await createTestRouter();
+      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+        id: 'a-random-id',
+        spec: {} as TaskSpec,
+        status: 'completed',
+        createdAt: '',
+        createdBy: '',
+        state: {
+          checkpoints: {
+            'checkpoint-secret-key': {
+              value: 'checkpoint-secret-value',
+            },
+          },
+        },
+      });
+
+      const response = await request(router).get(`/v2/tasks/a-random-id`);
+      const responseBody = JSON.stringify(response.body);
+
+      expect(response.status).toEqual(200);
+      expect(response.body.state).toBeUndefined();
+      expect(responseBody).not.toContain('checkpoint-secret-key');
+      expect(responseBody).not.toContain('checkpoint-secret-value');
+    });
+
+    it('returns public task details without internal data', async () => {
+      const { router, taskBroker } = await createTestRouter();
+      const task = {
+        id: 'a-random-id',
+        spec: {} as TaskSpec,
+        status: 'completed' as const,
+        createdAt: '2026-08-19T12:00:00.000Z',
+        createdBy: 'user:default/mock',
+        secrets: {
+          __initiatorCredentials: JSON.stringify(credentials),
+        },
+        state: {
+          checkpoints: {},
+        },
+        internalMetadata: 'not-public',
+      };
+      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue(
+        task,
+      );
+
+      const response = await request(router).get(`/v2/tasks/a-random-id`);
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toStrictEqual({
+        id: 'a-random-id',
+        spec: {},
+        status: 'completed',
+        createdAt: '2026-08-19T12:00:00.000Z',
+        createdBy: 'user:default/mock',
+      });
+    });
+
     it('disallows users from seeing tasks they do not own', async () => {
       const { router, permissions, taskBroker } = await createTestRouter();
       jest
