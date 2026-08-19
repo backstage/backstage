@@ -517,12 +517,6 @@ export const spec = {
           createdBy: {
             type: 'string',
           },
-          secrets: {
-            $ref: '#/components/schemas/TaskSecrets',
-          },
-          state: {
-            $ref: '#/components/schemas/JsonObject',
-          },
         },
         required: ['id', 'spec', 'status', 'createdAt'],
         description: 'SerializedTask',
