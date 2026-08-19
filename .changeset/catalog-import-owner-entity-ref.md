@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-import': patch
 ---
 
-Fixed the owner suggestions in the import stepper listing group display names instead of entity references. The selected owner is written verbatim into the generated `catalog-info.yaml`, so a group with a title or profile display name such as `My Team` produced an invalid `spec.owner` value; the suggestions are now entity references again, for example `my-team`.
+Fixed the owner selected in the import stepper being written to the generated `catalog-info.yaml` as a display name instead of an entity reference. Groups are still suggested by their display name, but selecting one now sets a valid `spec.owner`, for example picking `My Team` results in `my-team`.

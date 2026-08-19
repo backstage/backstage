@@ -18,7 +18,10 @@ import { DEFAULT_NAMESPACE, Entity } from '@backstage/catalog-model';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { toError } from '@backstage/errors';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  entityPresentationApiRef,
+} from '@backstage/plugin-catalog-react';
 import Box from '@material-ui/core/Box';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Grid from '@material-ui/core/Grid';
@@ -38,6 +41,7 @@ import { PrepareResult } from '../useImportState';
 import { PreparePullRequestForm } from './PreparePullRequestForm';
 import { PreviewCatalogInfoComponent } from './PreviewCatalogInfoComponent';
 import { PreviewPullRequestComponent } from './PreviewPullRequestComponent';
+import { AutocompleteTextFieldOption } from './AutocompleteTextField';
 
 const useStyles = makeStyles(theme => ({
   previewCard: {
@@ -91,7 +95,7 @@ export interface StepPrepareCreatePullRequestProps {
       'register' | 'setValue' | 'formState'
     > & {
       values: UnpackNestedValue<FormData>;
-      groups: string[];
+      groups: AutocompleteTextFieldOption[];
       groupsLoading: boolean;
     },
   ) => ReactNode;
@@ -118,9 +122,10 @@ export function generateEntities(
 }
 
 /**
- * Builds the owner option for a group entity.
+ * Builds the entity reference that is written to `spec.owner` when a group is
+ * selected as owner.
  *
- * The selected option is written verbatim to `spec.owner` of the generated
+ * The selected value is written verbatim to `spec.owner` of the generated
  * entity, so it has to be an entity reference rather than a display name.
  */
 function groupOwnerRef(entity: Entity): string {
@@ -143,6 +148,7 @@ export const StepPrepareCreatePullRequest = (
   const { t } = useTranslationRef(catalogImportTranslationRef);
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
+  const entityPresentationApi = useApi(entityPresentationApiRef);
   const catalogImportApi = useApi(catalogImportApiRef);
   const errorApi = useApi(errorApiRef);
 
@@ -171,7 +177,18 @@ export const StepPrepareCreatePullRequest = (
       filter: { kind: 'group' },
     });
 
-    return groupEntities.items.map(groupOwnerRef).sort();
+    const options = await Promise.all(
+      groupEntities.items.map(async entity => ({
+        label: (
+          await entityPresentationApi.forEntity(entity, {
+            defaultKind: 'group',
+          }).promise
+        ).primaryTitle,
+        id: groupOwnerRef(entity),
+      })),
+    );
+
+    return options.sort((a, b) => a.label.localeCompare(b.label));
   });
 
   const handleResult = useCallback(
