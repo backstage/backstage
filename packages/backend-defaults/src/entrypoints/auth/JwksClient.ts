@@ -29,29 +29,17 @@ type RemoteJWKSet = ReturnType<typeof createRemoteJWKSet>;
 
 class JwksKeyStore {
   readonly #resolver: RemoteJWKSet;
-  readonly #getLatestKeyStore: () => Promise<JwksKeyStore>;
   readonly #tryUseForcedReload: () => boolean;
 
-  constructor(
-    endpoint: URL,
-    getLatestKeyStore: () => Promise<JwksKeyStore>,
-    tryUseForcedReload: () => boolean,
-  ) {
+  constructor(endpoint: URL, tryUseForcedReload: () => boolean) {
     this.#resolver = createRemoteJWKSet(endpoint);
-    this.#getLatestKeyStore = getLatestKeyStore;
     this.#tryUseForcedReload = tryUseForcedReload;
   }
 
-  getKey: GetKeyFunction<JWSHeaderParameters, FlattenedJWSInput> = (
+  getKey: GetKeyFunction<JWSHeaderParameters, FlattenedJWSInput> = async (
     protectedHeader,
     token,
-  ) => this.#getKey(protectedHeader, token, true);
-
-  async #getKey(
-    protectedHeader: JWSHeaderParameters,
-    token: FlattenedJWSInput,
-    resolveLatestEndpoint: boolean,
-  ): ReturnType<RemoteJWKSet> {
+  ) => {
     const coolingDown = this.#resolver.coolingDown;
 
     try {
@@ -61,19 +49,12 @@ class JwksKeyStore {
         throw error;
       }
 
-      if (resolveLatestEndpoint) {
-        const latestKeyStore = await this.#getLatestKeyStore();
-        if (latestKeyStore !== this) {
-          return latestKeyStore.#getKey(protectedHeader, token, false);
-        }
-      }
-
       if (!coolingDown || !(await this.#reload())) {
         throw error;
       }
       return this.#resolver(protectedHeader, token);
     }
-  }
+  };
 
   async #reload(): Promise<boolean> {
     if (!this.#resolver.reloading && !this.#tryUseForcedReload()) {
@@ -86,7 +67,6 @@ class JwksKeyStore {
 
 export class JwksClient {
   #keyStores = new Map<string, JwksKeyStore>();
-  #currentKeyStore?: JwksKeyStore;
   #forcedReloads: number[] = [];
 
   private readonly getEndpoint: () => Promise<URL>;
@@ -103,22 +83,17 @@ export class JwksClient {
     protectedHeader,
     token,
   ) => {
-    const keyStore = this.#currentKeyStore ?? (await this.#getLatestKeyStore());
+    const keyStore = await this.#getKeyStore();
     return keyStore.getKey(protectedHeader, token);
   };
 
-  async #getLatestKeyStore(): Promise<JwksKeyStore> {
+  async #getKeyStore(): Promise<JwksKeyStore> {
     const endpoint = await this.getEndpoint();
     let keyStore = this.#keyStores.get(endpoint.href);
     if (!keyStore) {
-      keyStore = new JwksKeyStore(
-        endpoint,
-        () => this.#getLatestKeyStore(),
-        () => this.#tryUseForcedReload(),
-      );
+      keyStore = new JwksKeyStore(endpoint, () => this.#tryUseForcedReload());
       this.#keyStores.set(endpoint.href, keyStore);
     }
-    this.#currentKeyStore = keyStore;
     return keyStore;
   }
 

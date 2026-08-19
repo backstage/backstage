@@ -107,9 +107,12 @@ describe('JwksClient', () => {
     await expect(
       jwtVerify(await createToken(secondKey), client.getKey),
     ).resolves.toBeDefined();
+    await expect(
+      jwtVerify(await createToken(firstKey), client.getKey),
+    ).resolves.toBeDefined();
     expect(firstEndpointRequests).toBe(2);
     expect(secondEndpointRequests).toBe(1);
-    expect(getEndpoint).toHaveBeenCalledTimes(4);
+    expect(getEndpoint).toHaveBeenCalledTimes(5);
   });
 
   it('coalesces concurrent forced reloads', async () => {
