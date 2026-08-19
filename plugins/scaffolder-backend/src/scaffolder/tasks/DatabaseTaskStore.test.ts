@@ -82,6 +82,59 @@ describe('DatabaseTaskStore', () => {
     expect(tasks[0].id).toBeDefined();
   });
 
+  it('does not select stored workspaces during ordinary task operations', async () => {
+    const { store, manager } = await createStore();
+    const client = await manager.getClient();
+    const { taskId } = await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'me',
+    });
+    await client('tasks')
+      .where({ id: taskId })
+      .update({ workspace: Buffer.from('legacy workspace') });
+
+    const selectedTaskRows: Record<string, unknown>[] = [];
+    const onQueryResponse = (response: unknown, query: { sql?: string }) => {
+      if (
+        Array.isArray(response) &&
+        query.sql &&
+        /\bfrom\s+[`"]?tasks[`"]?/i.test(query.sql)
+      ) {
+        selectedTaskRows.push(
+          ...response.filter(
+            (row): row is Record<string, unknown> =>
+              typeof row === 'object' && row !== null && 'id' in row,
+          ),
+        );
+      }
+    };
+    client.on('query-response', onQueryResponse);
+
+    try {
+      await store.list({});
+      await store.getTask(taskId);
+      await store.claimTask();
+      await client('tasks')
+        .where({ id: taskId })
+        .update({ last_heartbeat_at: new Date(0) });
+      await store.listStaleTasks({ timeoutS: 1 });
+      await store.completeTask({
+        taskId,
+        status: 'completed',
+        eventBody: {},
+      });
+    } finally {
+      client.removeListener('query-response', onQueryResponse);
+    }
+
+    expect(selectedTaskRows).toHaveLength(5);
+    expect(
+      selectedTaskRows.every(
+        row => !Object.prototype.hasOwnProperty.call(row, 'workspace'),
+      ),
+    ).toBe(true);
+  });
+
   it('should allow paginating tasks', async () => {
     const { store } = await createStore();
     await store.createTask({

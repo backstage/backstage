@@ -203,7 +203,7 @@ export class DatabaseTaskStore implements TaskStore {
     this.recoverTasksEnabled = recoverTasksEnabled;
   }
 
-  private getState(task: RawDbTaskRow) {
+  private getState(task: Pick<RawDbTaskRow, 'id' | 'state'>) {
     try {
       return task.state ? JSON.parse(task.state).state : undefined;
     } catch (error) {
@@ -322,7 +322,14 @@ export class DatabaseTaskStore implements TaskStore {
     }
 
     const [results, [{ count }]] = await Promise.all([
-      queryBuilder.select(),
+      queryBuilder.select([
+        'id',
+        'spec',
+        'status',
+        'created_by',
+        'last_heartbeat_at',
+        'created_at',
+      ]),
       countQuery,
     ]);
 
@@ -356,7 +363,16 @@ export class DatabaseTaskStore implements TaskStore {
   async getTask(taskId: string): Promise<SerializedTask> {
     const [result] = await this.db<RawDbTaskRow>('tasks')
       .where({ id: taskId })
-      .select();
+      .select([
+        'id',
+        'spec',
+        'status',
+        'state',
+        'last_heartbeat_at',
+        'created_at',
+        'created_by',
+        'secrets',
+      ]);
     if (!result) {
       throw new NotFoundError(`No task with id '${taskId}' found`);
     }
@@ -416,7 +432,16 @@ export class DatabaseTaskStore implements TaskStore {
           status: 'open',
         })
         .limit(1)
-        .select();
+        .select([
+          'id',
+          'spec',
+          'status',
+          'state',
+          'last_heartbeat_at',
+          'created_at',
+          'created_by',
+          'secrets',
+        ]);
 
       if (!task) {
         return undefined;
@@ -481,7 +506,8 @@ export class DatabaseTaskStore implements TaskStore {
     const heartbeatInterval = intervalFromNowTill(timeoutS, this.db);
     const rawRows = await this.db<RawDbTaskRow>('tasks')
       .where('status', 'processing')
-      .andWhere('last_heartbeat_at', '<=', heartbeatInterval);
+      .andWhere('last_heartbeat_at', '<=', heartbeatInterval)
+      .select(['id', 'spec']);
     const tasks = rawRows.map(row => ({
       recovery: (JSON.parse(row.spec) as TaskSpec).EXPERIMENTAL_recovery,
       taskId: row.id,
@@ -511,7 +537,14 @@ export class DatabaseTaskStore implements TaskStore {
           id: taskId,
         })
         .limit(1)
-        .select();
+        .select([
+          'id',
+          'status',
+          'state',
+          'last_heartbeat_at',
+          'created_at',
+          'created_by',
+        ]);
 
       const updateTask = async (criteria: {
         id: string;
