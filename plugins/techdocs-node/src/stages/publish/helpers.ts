@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import fs from 'fs-extra';
+import JSON5 from 'json5';
 import mime from 'mime-types';
 import path from 'node:path';
 import createLimiter from 'p-limit';
 import recursiveReadDir from 'recursive-readdir';
+
+export const TECHDOCS_METADATA_FILE = 'techdocs_metadata.json';
+export const TECHDOCS_METADATA_PUBLISH_MARKER = 'publish_timestamp';
 
 /**
  * Helper to get the expected content-type for a given file extension. Also
@@ -111,6 +116,32 @@ export const getFileTreeRecursively = async (
     throw new Error(`Failed to read template directory: ${error.message}`);
   });
   return fileList;
+};
+
+export const isTechDocsMetadataFile = (
+  rootDirPath: string,
+  filePath: string,
+): boolean => {
+  const relativeFilePath = path.relative(rootDirPath, filePath);
+  return (
+    relativeFilePath.split(path.sep).join(path.posix.sep) ===
+    TECHDOCS_METADATA_FILE
+  );
+};
+
+export const readTechDocsMetadataFile = async (
+  metadataPath: string,
+  options: { markPublished: boolean },
+): Promise<Buffer> => {
+  const metadata = JSON5.parse(await fs.readFile(metadataPath, 'utf8'));
+
+  if (options.markPublished) {
+    metadata[TECHDOCS_METADATA_PUBLISH_MARKER] = Date.now();
+  } else {
+    delete metadata[TECHDOCS_METADATA_PUBLISH_MARKER];
+  }
+
+  return Buffer.from(JSON.stringify(metadata));
 };
 
 /**

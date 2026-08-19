@@ -54,10 +54,13 @@ import {
   getFileTreeRecursively,
   getHeadersForFileExtension,
   getStaleFiles,
+  isTechDocsMetadataFile,
   isValidContentPath,
   lowerCaseEntityTriplet,
   lowerCaseEntityTripletInStoragePath,
   normalizeExternalStorageRootPath,
+  readTechDocsMetadataFile,
+  TECHDOCS_METADATA_FILE,
 } from './helpers';
 import {
   PublisherBase,
@@ -499,12 +502,47 @@ export class AwsS3Publish implements PublisherBase {
     }
 
     // Then, merge new files into the same folder
-    let absoluteFilesToUpload;
+    const absoluteFilesToUpload = await getFileTreeRecursively(directory);
+    const metadataFile = absoluteFilesToUpload.find(file =>
+      isTechDocsMetadataFile(directory, file),
+    );
+    const filesToUpload = metadataFile
+      ? absoluteFilesToUpload.filter(file => file !== metadataFile)
+      : absoluteFilesToUpload;
+    const metadataKey = metadataFile
+      ? getCloudPathForLocalPath(
+          entity,
+          TECHDOCS_METADATA_FILE,
+          useLegacyPathCasing,
+          bucketRootPath,
+        )
+      : undefined;
+    const uploadMetadata = async (markPublished: boolean) => {
+      if (!metadataFile || !metadataKey) {
+        return;
+      }
+
+      const putParams: PutObjectCommandInput = {
+        Bucket: this.bucketName,
+        Key: metadataKey,
+        Body: await readTechDocsMetadataFile(metadataFile, {
+          markPublished,
+        }),
+        ...(sse && { ServerSideEncryption: sse }),
+      };
+
+      await this.retryOperation(
+        () => this.storageClient.send(new PutObjectCommand(putParams)),
+        `Upload-${metadataKey}`,
+        this.maxAttempts,
+      );
+    };
+
     try {
-      // Remove the absolute path prefix of the source directory
-      // Path of all files to upload, relative to the root of the source directory
-      // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
-      absoluteFilesToUpload = await getFileTreeRecursively(directory);
+      if (metadataFile && metadataKey) {
+        objects.push(metadataKey);
+        await uploadMetadata(false);
+      }
 
       await bulkStorageOperation(
         async absoluteFilePath => {
@@ -603,7 +641,7 @@ export class AwsS3Publish implements PublisherBase {
             throw error;
           }
         },
-        absoluteFilesToUpload,
+        filesToUpload,
         { concurrencyLimit: 10 },
       );
 
@@ -653,6 +691,7 @@ export class AwsS3Publish implements PublisherBase {
       const errorMessage = `Unable to delete file(s) from AWS S3. ${error}`;
       this.logger.error(errorMessage);
     }
+    await uploadMetadata(true);
     const publishEndTime = Date.now();
     const publishDurationMs = publishEndTime - publishStartTime;
     this.logger.info(

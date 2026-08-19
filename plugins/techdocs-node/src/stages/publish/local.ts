@@ -42,6 +42,8 @@ import {
   getFileTreeRecursively,
   getHeadersForFileExtension,
   lowerCaseEntityTripletInStoragePath,
+  readTechDocsMetadataFile,
+  TECHDOCS_METADATA_FILE,
 } from './helpers';
 import { ForwardedError } from '@backstage/errors';
 
@@ -138,6 +140,15 @@ export class LocalPublish implements PublisherBase {
 
     try {
       await fs.copy(directory, publishDir);
+      const sourceMetadataPath = path.join(directory, TECHDOCS_METADATA_FILE);
+      if (await fs.pathExists(sourceMetadataPath)) {
+        await fs.writeFile(
+          path.join(publishDir, TECHDOCS_METADATA_FILE),
+          await readTechDocsMetadataFile(sourceMetadataPath, {
+            markPublished: true,
+          }),
+        );
+      }
       this.logger.info(`Published site stored at ${publishDir}`);
     } catch (error) {
       this.logger.debug(

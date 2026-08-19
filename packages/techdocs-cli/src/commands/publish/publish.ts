@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { resolve } from 'node:path';
+import { resolve, join } from 'node:path';
+import fs from 'fs-extra';
+import JSON5 from 'json5';
 import { OptionValues } from 'commander';
 import { createLogger } from '../../lib/utility';
 import { HostDiscovery } from '@backstage/backend-defaults/discovery';
@@ -46,6 +48,61 @@ export default async function publish(opts: OptionValues): Promise<any> {
   } as Entity;
 
   const directory = resolve(opts.directory);
+
+  if (opts.skipIfUnchanged) {
+    const metadataPath = join(directory, 'techdocs_metadata.json');
+
+    if (!(await fs.pathExists(metadataPath))) {
+      logger.info(
+        '--skip-if-unchanged: techdocs_metadata.json not found locally, proceeding with publish',
+      );
+    } else {
+      const localMetadata = JSON5.parse(
+        await fs.readFile(metadataPath, 'utf8'),
+      );
+      const localEtag = localMetadata?.etag;
+
+      if (!localEtag) {
+        logger.info(
+          '--skip-if-unchanged: no etag in local techdocs_metadata.json (was --etag passed to generate?), proceeding with publish',
+        );
+      } else {
+        try {
+          const remoteMetadata = await publisher.fetchTechDocsMetadata({
+            namespace,
+            kind,
+            name,
+          });
+          const remoteEtag = remoteMetadata?.etag;
+          const remotePublishTimestamp = remoteMetadata?.publish_timestamp;
+
+          if (localEtag === remoteEtag && remotePublishTimestamp) {
+            logger.info(
+              `--skip-if-unchanged: local etag "${localEtag}" matches remote, skipping publish`,
+            );
+            return true;
+          }
+
+          if (localEtag === remoteEtag) {
+            logger.info(
+              '--skip-if-unchanged: remote metadata was not written by a completed publish, proceeding with publish',
+            );
+          } else {
+            logger.info(
+              `--skip-if-unchanged: etag changed from "${remoteEtag}" to "${localEtag}", proceeding with publish`,
+            );
+          }
+        } catch (error) {
+          // fetchTechDocsMetadata rejects when metadata is not found (first publish),
+          // but may also fail for other reasons (network, auth), so log the cause.
+          logger.info(
+            `--skip-if-unchanged: could not fetch remote metadata (first publish?), proceeding with publish: ${error}`,
+          );
+        }
+      }
+    }
+  }
+
   await publisher.publish({ entity, directory });
 
   return true;
