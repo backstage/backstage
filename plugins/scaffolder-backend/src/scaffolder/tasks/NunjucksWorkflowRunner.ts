@@ -830,7 +830,6 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       }
 
       await taskTrack.markSuccessful();
-      await task.cleanWorkspace?.();
 
       return { output };
     } finally {

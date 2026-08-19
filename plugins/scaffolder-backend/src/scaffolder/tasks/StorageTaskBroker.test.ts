@@ -553,6 +553,33 @@ describe('StorageTaskBroker', () => {
       const task = await broker.claim();
       await task.complete('completed');
     });
+
+    it('should not read the legacy timeout when staleTimeout is set', async () => {
+      const config = new ConfigReader({
+        scaffolder: {
+          taskRecovery: {
+            enabled: true,
+            staleTimeout: { seconds: 0 },
+          },
+          EXPERIMENTAL_recoverTasksTimeout: 'invalid',
+        },
+      });
+      const broker = new StorageTaskBroker(storage, logger, config);
+
+      const { taskId } = await broker.dispatch({
+        spec: { steps: [] } as unknown as TaskSpec,
+      });
+      await broker.claim();
+
+      await broker.recoverTasks();
+
+      await expect(storage.getTask(taskId)).resolves.toMatchObject({
+        status: 'open',
+      });
+
+      const task = await broker.claim();
+      await task.complete('completed');
+    });
   });
 
   describe('workspace cleanup on completion', () => {

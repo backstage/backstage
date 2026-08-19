@@ -382,15 +382,17 @@ export class StorageTaskBroker implements TaskBroker {
     }
 
     const defaultTimeout: HumanDuration = { seconds: 30 };
-    const timeout = readDuration(
-      this.config,
-      'scaffolder.taskRecovery.staleTimeout',
-      readDuration(
-        this.config,
-        'scaffolder.EXPERIMENTAL_recoverTasksTimeout',
-        defaultTimeout,
-      ),
-    );
+    const timeout = this.config?.has('scaffolder.taskRecovery.staleTimeout')
+      ? readDuration(
+          this.config,
+          'scaffolder.taskRecovery.staleTimeout',
+          defaultTimeout,
+        )
+      : readDuration(
+          this.config,
+          'scaffolder.EXPERIMENTAL_recoverTasksTimeout',
+          defaultTimeout,
+        );
 
     const { ids: recoveredTaskIds } = (await this.storage.recoverTasks?.({
       timeout,
