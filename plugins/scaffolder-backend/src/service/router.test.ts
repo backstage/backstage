@@ -1648,6 +1648,34 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
   });
 
   describe('POST /v2/dry-run', () => {
+    it('rejects dry runs without dry-run permission', async () => {
+      const { unwrappedRouter, permissions } = await createTestRouter();
+      const mockToken = mockCredentials.user.token();
+
+      jest.spyOn(permissions, 'authorize').mockImplementation(async requests =>
+        requests.map(permissionRequest => ({
+          result:
+            permissionRequest.permission.name === 'scaffolder.template.dry-run'
+              ? AuthorizeResult.DENY
+              : AuthorizeResult.ALLOW,
+        })),
+      );
+
+      const response = await request(unwrappedRouter)
+        .post('/v2/dry-run')
+        .set('Authorization', `Bearer ${mockToken}`)
+        .send({
+          template: generateMockTemplate(),
+          values: {
+            requiredParameter1: 'required-value-1',
+            requiredParameter2: 'required-value-2',
+          },
+          directoryContents: [],
+        });
+
+      expect(response.status).toEqual(403);
+    });
+
     it('should get user entity', async () => {
       const { router, catalog } = await createTestRouter();
       const mockToken = mockCredentials.user.token();
