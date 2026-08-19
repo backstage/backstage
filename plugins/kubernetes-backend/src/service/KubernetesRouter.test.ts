@@ -523,6 +523,7 @@ describe('API integration tests', () => {
             { type: 'pods', resources: [{ metadata: { name: 'pod1' } }] },
           ],
         }),
+        watchResource: jest.fn(),
       };
 
       const { server } = await startTestBackend({

@@ -5431,6 +5431,7 @@ __metadata:
     "@smithy/signature-v4": "npm:^4.1.0"
     "@types/express": "npm:^4.17.6"
     "@types/http-proxy-middleware": "npm:^1.0.0"
+    "@types/split2": "npm:^4.2.0"
     express: "npm:^4.22.0"
     express-promise-router: "npm:^4.1.0"
     fs-extra: "npm:^11.2.0"
@@ -5439,6 +5440,7 @@ __metadata:
     luxon: "npm:^3.0.0"
     msw: "npm:^1.0.0"
     node-fetch: "npm:^2.7.0"
+    split2: "npm:^4.2.0"
     supertest: "npm:^7.0.0"
     ws: "npm:^8.20.1"
   languageName: unknown
@@ -20017,6 +20019,15 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: 10/b4b5381122465d80ea8b158537c00bc82317222d3fb31fd7229ff25b31fa89134abfbab969118da55622236bf3d8fee75759f3959908b5688991f492008f29bc
+  languageName: node
+  linkType: hard
+
+"@types/split2@npm:^4.2.0":
+  version: 4.2.3
+  resolution: "@types/split2@npm:4.2.3"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10/972f7d463d6e08bcb64ae1e33c6f0e03a5343a60671e736db55e238282afcfb2e3e5877a6e233f8b2b2e2a6e0f99d9af1f87b373de8e3f7405cacfaa58b99e85
   languageName: node
   linkType: hard
 
@@ -42955,7 +42966,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"split2@npm:^4.1.0":
+"split2@npm:^4.1.0, split2@npm:^4.2.0":
   version: 4.2.0
   resolution: "split2@npm:4.2.0"
   checksum: 10/09bbefc11bcf03f044584c9764cd31a252d8e52cea29130950b26161287c11f519807c5e54bd9e5804c713b79c02cefe6a98f4688630993386be353e03f534ab
