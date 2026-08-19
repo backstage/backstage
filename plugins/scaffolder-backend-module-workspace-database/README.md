@@ -39,6 +39,6 @@ scaffolder:
 
 ## Limitations
 
-- 5 MB maximum workspace size.
+- 50 MB maximum workspace size.
 - Disabled in production unless you set `dangerouslyEnableInProduction` to `true`.
 - Not recommended for high-volume or large workspace scenarios.

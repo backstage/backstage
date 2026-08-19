@@ -142,7 +142,7 @@ scaffolder:
 
 Available workspace providers:
 
-- **`database`** — Stores workspaces in the database via `@backstage/plugin-scaffolder-backend-module-workspace-database`. Has a 5MB limit and is not recommended for production use.
+- **`database`** — Stores workspaces in the database via `@backstage/plugin-scaffolder-backend-module-workspace-database`. Has a 50MB limit and is not recommended for production use.
 - **`gcpBucket`** — Stores workspaces in a GCS bucket via `@backstage/plugin-scaffolder-backend-module-gcp`. Requires [workload identity](https://cloud.google.com/iam/docs/workload-identity-federation) to be configured. Bucket name is configured via `scaffolder.taskRecovery.gcsBucket.name`.
 
 To use a provider, install the corresponding module in your backend:

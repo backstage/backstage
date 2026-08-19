@@ -142,15 +142,13 @@ app:
       ).toBe(true);
     });
 
-    it('should throw if workspace exceeds 5MB', async () => {
-      const taskId = 'test-task-large';
+    it('should serialize a workspace below 50MB', async () => {
+      const taskId = 'test-task-below-limit';
       const largeDir = createMockDirectory();
 
-      // Create a file larger than 5MB
-      const largeContent = Buffer.alloc(6 * 1024 * 1024, 'x').toString();
       fs.writeFileSync(
         path.join(largeDir.path, 'large-file.txt'),
-        largeContent,
+        Buffer.alloc(6 * 1024 * 1024, 'x'),
       );
 
       await expect(
@@ -158,7 +156,24 @@ app:
           path: largeDir.path,
           taskId,
         }),
-      ).rejects.toThrow(/exceeds maximum allowed size of 5MB/);
+      ).resolves.toBeUndefined();
+    });
+
+    it('should throw if workspace exceeds 50MB', async () => {
+      const taskId = 'test-task-large';
+      const largeDir = createMockDirectory();
+
+      fs.writeFileSync(
+        path.join(largeDir.path, 'large-file.txt'),
+        Buffer.alloc(51 * 1024 * 1024, 'x'),
+      );
+
+      await expect(
+        provider.serializeWorkspace({
+          path: largeDir.path,
+          taskId,
+        }),
+      ).rejects.toThrow(/exceeds maximum allowed size of 50MB/);
     });
   });
 

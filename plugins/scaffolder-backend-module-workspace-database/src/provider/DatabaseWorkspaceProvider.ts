@@ -21,7 +21,7 @@ import {
   restoreWorkspace,
 } from '@backstage/plugin-scaffolder-node/alpha';
 
-const MAX_WORKSPACE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
+const MAX_WORKSPACE_SIZE_BYTES = 50 * 1024 * 1024; // 50MB
 
 type RawDbTaskWorkspaceRow = {
   task_id: string;
@@ -33,7 +33,7 @@ type RawDbTaskWorkspaceRow = {
  * A workspace provider that stores serialized workspaces in the database.
  *
  * @remarks
- * This provider is intended for development use only. It has a 5MB size limit
+ * This provider is intended for development use only. It has a 50MB size limit
  * and is disabled in production unless explicitly enabled via config.
  *
  * For production use, consider using an external storage provider like GCS.
@@ -71,7 +71,7 @@ export class DatabaseWorkspaceProvider implements WorkspaceProvider {
         `Workspace size (${Math.round(
           workspace.length / 1024 / 1024,
         )}MB) exceeds ` +
-          `maximum allowed size of 5MB for database storage. ` +
+          `maximum allowed size of 50MB for database storage. ` +
           `Consider using an external storage provider like GCS.`,
       );
     }
