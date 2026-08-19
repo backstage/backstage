@@ -360,10 +360,6 @@ components:
           type: string
         createdBy:
           type: string
-        secrets:
-          $ref: '#/components/schemas/TaskSecrets'
-        state:
-          $ref: '#/components/schemas/JsonObject'
       required:
         - id
         - spec
