@@ -25,7 +25,7 @@ import { toError, ForwardedError, NotModifiedError } from '@backstage/errors';
 import { Readable } from 'node:stream';
 import { relative } from 'node:path/posix';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
-import { hasDotPathSegments } from './util';
+import { hasDotPathSegments, isUrlPathWithoutDotSegments } from './util';
 import {
   AzureBlobStorageIntegration,
   AzureCredentialsManager,
@@ -43,8 +43,15 @@ import {
 } from '@backstage/backend-plugin-api';
 
 export function parseUrl(url: string): { path: string; container: string } {
+  if (!isUrlPathWithoutDotSegments(url)) {
+    throw new Error(`Invalid Azure Blob Storage URL format: ${url}`);
+  }
+
   const parsedUrl = new URL(url);
-  const pathSegments = parsedUrl.pathname.split('/').filter(Boolean);
+  const pathSegments = parsedUrl.pathname
+    .split('/')
+    .filter(Boolean)
+    .map(decodeURIComponent);
 
   if (pathSegments.length < 1) {
     throw new Error(`Invalid Azure Blob Storage URL format: ${url}`);
