@@ -66,7 +66,7 @@ const parsePortPredicate = (port: string | undefined) => {
   return (url: URL) => !url.port;
 };
 
-function predicateFromConfig(config: Config): (url: URL) => boolean {
+export function predicateFromConfig(config: Config): (url: URL) => boolean {
   const allow = config
     .getOptionalConfigArray('backend.reading.allow')
     ?.map(allowConfig => {
