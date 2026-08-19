@@ -76,6 +76,42 @@ describe('parseUrl', () => {
     });
   });
 
+  it('decodes blob path segments exactly once', () => {
+    expect(
+      parseUrl(
+        'https://test-account.blob.core.windows.net/mycontainer/%252e%252e/protected/catalog-info.yaml',
+      ),
+    ).toEqual({
+      path: '%2e%2e/protected/catalog-info.yaml',
+      container: 'mycontainer',
+    });
+  });
+
+  it.each([
+    '..',
+    '.',
+    '%2e%2e',
+    '%2E%2E',
+    '.%2e',
+    '%2e.',
+    '%2e%2e%2fprotected',
+    '%2e%2e%5cprotected',
+  ])('rejects encoded dot path segment %s', encodedDotSegment => {
+    expect(() =>
+      parseUrl(
+        `https://test-account.blob.core.windows.net/mycontainer/${encodedDotSegment}/protected/catalog-info.yaml`,
+      ),
+    ).toThrow('Invalid Azure Blob Storage URL format');
+  });
+
+  it('rejects encoded dot segments with backslash URL delimiters', () => {
+    expect(() =>
+      parseUrl(
+        String.raw`https://test-account.blob.core.windows.net\mycontainer\%2e%2e\protected\catalog-info.yaml`,
+      ),
+    ).toThrow('Invalid Azure Blob Storage URL format');
+  });
+
   it('throws error for invalid URLs', () => {
     expect(() =>
       parseUrl('https://test-account.blob.core.windows.net/'),

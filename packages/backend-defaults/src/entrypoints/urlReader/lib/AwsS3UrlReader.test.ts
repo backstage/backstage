@@ -237,6 +237,30 @@ describe('parseUrl', () => {
     ).toThrow('Invalid AWS S3 URL');
   });
 
+  it('decodes object path segments exactly once', () => {
+    expect(
+      parseUrl(
+        'https://bucket-1.s3.eu-west-1.amazonaws.com/sub/dir/%252e%252e/catalog-info.yaml',
+        { host: 'amazonaws.com' },
+      ),
+    ).toEqual({
+      path: 'sub/dir/%2e%2e/catalog-info.yaml',
+      bucket: 'bucket-1',
+      region: 'eu-west-1',
+    });
+  });
+
+  it.each([
+    'https://bucket-1.s3.eu-west-1.amazonaws.com/sub/dir/../catalog-info.yaml',
+    'https://bucket-1.s3.eu-west-1.amazonaws.com/sub/dir/%2e%2e/catalog-info.yaml',
+    'https://s3.eu-west-1.amazonaws.com/bucket-1/sub/dir/%2E%2E/%2e%2e/bucket-2/catalog-info.yaml',
+    String.raw`https://s3.eu-west-1.amazonaws.com\bucket-1\sub\dir\%2e%2e\catalog-info.yaml`,
+  ])('rejects dot path segments in %s', url => {
+    expect(() => parseUrl(url, { host: 'amazonaws.com' })).toThrow(
+      'Invalid AWS S3 URL',
+    );
+  });
+
   it('supports all non-aws formats', () => {
     expect(
       parseUrl('https://my-host.com/my.bucket-3/a/puppy.jpg', {

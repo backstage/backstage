@@ -28,6 +28,29 @@ export function hasDotPathSegments(name: string): boolean {
   });
 }
 
+export function isUrlPathWithoutDotSegments(url: string): boolean {
+  const authoritySeparator = url.indexOf('://');
+  if (authoritySeparator === -1) {
+    return false;
+  }
+
+  const urlRemainder = url.slice(authoritySeparator + 3);
+  const pathStart = urlRemainder.search(/[\\/]/);
+  const suffixStart = urlRemainder.search(/[?#]/);
+  let rawPathname = '';
+  if (pathStart !== -1 && (suffixStart === -1 || pathStart < suffixStart)) {
+    rawPathname = urlRemainder.slice(pathStart).split(/[?#]/, 1)[0];
+  }
+
+  try {
+    return !decodeURIComponent(rawPathname)
+      .split(/[\\/]/)
+      .some(segment => segment === '.' || segment === '..');
+  } catch {
+    return false;
+  }
+}
+
 export function parseLastModified(
   value: string | null | undefined,
 ): Date | undefined {
