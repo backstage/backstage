@@ -1,0 +1,11 @@
+---
+title: Argo Workflows
+author: Alithya
+authorUrl: https://alithya.com
+category: Orchestration
+description: Visualize Argo Workflow executions directly in the Backstage catalog, providing workflow run history, task status bars, and interactive DAG visualizations.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/argo-workflows/plugins/argo-workflows/README.md
+npmPackageName: '@backstage-community/plugin-argo-workflows'
+addedDate: '2026-08-13'
+status: active
+iconUrl: https://raw.githubusercontent.com/cncf/artwork/refs/heads/main/projects/argo/icon/color/argo-icon-color.svg
