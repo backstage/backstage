@@ -65,7 +65,7 @@ describe('JwksClient', () => {
     jest.restoreAllMocks();
   });
 
-  it('reloads newly published keys during cooldown and follows endpoint changes', async () => {
+  it('reloads newly published keys and reuses resolvers across endpoint changes', async () => {
     let endpoint = firstEndpoint;
     let keys = [firstKey.publicKey];
     let firstEndpointRequests = 0;
@@ -84,7 +84,6 @@ describe('JwksClient', () => {
       }),
     );
 
-    await client.refreshKeyStore();
     await expect(
       jwtVerify(await createToken(firstKey), client.getKey),
     ).resolves.toBeDefined();
@@ -103,7 +102,14 @@ describe('JwksClient', () => {
     ).resolves.toBeDefined();
     expect(firstEndpointRequests).toBe(2);
     expect(secondEndpointRequests).toBe(1);
-    expect(getEndpoint).toHaveBeenCalledTimes(3);
+
+    endpoint = firstEndpoint;
+    await expect(
+      jwtVerify(await createToken(secondKey), client.getKey),
+    ).resolves.toBeDefined();
+    expect(firstEndpointRequests).toBe(2);
+    expect(secondEndpointRequests).toBe(1);
+    expect(getEndpoint).toHaveBeenCalledTimes(4);
   });
 
   it('coalesces concurrent forced reloads', async () => {
@@ -130,7 +136,6 @@ describe('JwksClient', () => {
       }),
     );
 
-    await client.refreshKeyStore();
     await jwtVerify(await createToken(firstKey), client.getKey);
 
     keys = [firstKey.publicKey, secondKey.publicKey];
@@ -164,7 +169,6 @@ describe('JwksClient', () => {
       }),
     );
 
-    await client.refreshKeyStore();
     await jwtVerify(await createToken(firstKey), client.getKey);
     failRequests = true;
 
@@ -199,7 +203,7 @@ describe('JwksClient', () => {
     expect(requestCount).toBe(13);
   });
 
-  it('preserves normal resolver and initialization errors', async () => {
+  it('preserves normal resolver errors', async () => {
     let requestCount = 0;
     const client = new JwksClient(async () => firstEndpoint);
     server.use(
@@ -209,11 +213,6 @@ describe('JwksClient', () => {
       }),
     );
 
-    expect(() => client.getKey).toThrow(
-      'refreshKeyStore must be called before jwksClient.getKey',
-    );
-
-    await client.refreshKeyStore();
     await expect(
       jwtVerify(await createToken(firstKey, 'unknown'), client.getKey),
     ).rejects.toBeInstanceOf(errors.JWKSNoMatchingKey);

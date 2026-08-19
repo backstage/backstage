@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { AuthenticationError } from '@backstage/errors';
 import {
   createRemoteJWKSet,
   errors,
@@ -28,11 +27,67 @@ const FORCED_RELOAD_WINDOW_MS = 60_000;
 
 type RemoteJWKSet = ReturnType<typeof createRemoteJWKSet>;
 
+class JwksKeyStore {
+  readonly #resolver: RemoteJWKSet;
+  readonly #getLatestKeyStore: () => Promise<JwksKeyStore>;
+  readonly #tryUseForcedReload: () => boolean;
+
+  constructor(
+    endpoint: URL,
+    getLatestKeyStore: () => Promise<JwksKeyStore>,
+    tryUseForcedReload: () => boolean,
+  ) {
+    this.#resolver = createRemoteJWKSet(endpoint);
+    this.#getLatestKeyStore = getLatestKeyStore;
+    this.#tryUseForcedReload = tryUseForcedReload;
+  }
+
+  getKey: GetKeyFunction<JWSHeaderParameters, FlattenedJWSInput> = (
+    protectedHeader,
+    token,
+  ) => this.#getKey(protectedHeader, token, true);
+
+  async #getKey(
+    protectedHeader: JWSHeaderParameters,
+    token: FlattenedJWSInput,
+    resolveLatestEndpoint: boolean,
+  ): ReturnType<RemoteJWKSet> {
+    const coolingDown = this.#resolver.coolingDown;
+
+    try {
+      return await this.#resolver(protectedHeader, token);
+    } catch (error) {
+      if (!(error instanceof errors.JWKSNoMatchingKey)) {
+        throw error;
+      }
+
+      if (resolveLatestEndpoint) {
+        const latestKeyStore = await this.#getLatestKeyStore();
+        if (latestKeyStore !== this) {
+          return latestKeyStore.#getKey(protectedHeader, token, false);
+        }
+      }
+
+      if (!coolingDown || !(await this.#reload())) {
+        throw error;
+      }
+      return this.#resolver(protectedHeader, token);
+    }
+  }
+
+  async #reload(): Promise<boolean> {
+    if (!this.#resolver.reloading && !this.#tryUseForcedReload()) {
+      return false;
+    }
+    await this.#resolver.reload();
+    return true;
+  }
+}
+
 export class JwksClient {
-  #keyStore?: RemoteJWKSet;
-  #keyStoreUrl?: string;
+  #keyStores = new Map<string, JwksKeyStore>();
+  #currentKeyStore?: JwksKeyStore;
   #forcedReloads: number[] = [];
-  #forcedReload?: Promise<void>;
 
   private readonly getEndpoint: () => Promise<URL>;
 
@@ -41,68 +96,33 @@ export class JwksClient {
   }
 
   get getKey() {
-    if (!this.#keyStore) {
-      throw new AuthenticationError(
-        'refreshKeyStore must be called before jwksClient.getKey',
-      );
-    }
     return this.#getKey;
-  }
-
-  /**
-   * Initializes the remote key store using the latest endpoint.
-   */
-  async refreshKeyStore(): Promise<void> {
-    if (!this.#keyStore) {
-      const endpoint = await this.getEndpoint();
-      if (!this.#keyStore) {
-        this.#keyStore = createRemoteJWKSet(endpoint);
-        this.#keyStoreUrl = endpoint.href;
-      }
-    }
   }
 
   #getKey: GetKeyFunction<JWSHeaderParameters, FlattenedJWSInput> = async (
     protectedHeader,
     token,
   ) => {
-    const keyStore = this.#keyStore!;
-    const coolingDown = keyStore.coolingDown;
-
-    try {
-      return await keyStore(protectedHeader, token);
-    } catch (error) {
-      if (!(error instanceof errors.JWKSNoMatchingKey)) {
-        throw error;
-      }
-      if (this.#keyStore !== keyStore) {
-        return this.#keyStore!(protectedHeader, token);
-      }
-
-      let endpoint: URL | undefined;
-      if (!coolingDown) {
-        endpoint = await this.getEndpoint();
-        if (this.#keyStore !== keyStore) {
-          return this.#keyStore!(protectedHeader, token);
-        }
-        if (endpoint.href === this.#keyStoreUrl) {
-          throw error;
-        }
-      }
-      if (!(await this.#forceReload(endpoint))) {
-        throw error;
-      }
-
-      return this.#keyStore!(protectedHeader, token);
-    }
+    const keyStore = this.#currentKeyStore ?? (await this.#getLatestKeyStore());
+    return keyStore.getKey(protectedHeader, token);
   };
 
-  async #forceReload(endpoint?: URL): Promise<boolean> {
-    if (this.#forcedReload) {
-      await this.#forcedReload;
-      return true;
+  async #getLatestKeyStore(): Promise<JwksKeyStore> {
+    const endpoint = await this.getEndpoint();
+    let keyStore = this.#keyStores.get(endpoint.href);
+    if (!keyStore) {
+      keyStore = new JwksKeyStore(
+        endpoint,
+        () => this.#getLatestKeyStore(),
+        () => this.#tryUseForcedReload(),
+      );
+      this.#keyStores.set(endpoint.href, keyStore);
     }
+    this.#currentKeyStore = keyStore;
+    return keyStore;
+  }
 
+  #tryUseForcedReload(): boolean {
     const windowStart = Date.now() - FORCED_RELOAD_WINDOW_MS;
     this.#forcedReloads = this.#forcedReloads.filter(
       timestamp => timestamp > windowStart,
@@ -110,27 +130,7 @@ export class JwksClient {
     if (this.#forcedReloads.length >= FORCED_RELOAD_LIMIT) {
       return false;
     }
-
-    const forcedReload = (async () => {
-      const latestEndpoint = endpoint ?? (await this.getEndpoint());
-      if (latestEndpoint.href !== this.#keyStoreUrl) {
-        this.#keyStore = createRemoteJWKSet(latestEndpoint);
-        this.#keyStoreUrl = latestEndpoint.href;
-      }
-
-      const keyStore = this.#keyStore!;
-      if (!keyStore.reloading) {
-        this.#forcedReloads.push(Date.now());
-      }
-      await keyStore.reload();
-    })();
-    this.#forcedReload = forcedReload;
-
-    try {
-      await forcedReload;
-      return true;
-    } finally {
-      this.#forcedReload = undefined;
-    }
+    this.#forcedReloads.push(Date.now());
+    return true;
   }
 }
