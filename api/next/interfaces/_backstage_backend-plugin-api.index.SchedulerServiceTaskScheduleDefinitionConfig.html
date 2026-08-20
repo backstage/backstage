@@ -18,7 +18,7 @@ that control the scheduling of a task.</p>
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">SchedulerServiceTaskScheduleDefinitionConfig</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#frequency">frequency</a><span class="tsd-signature-symbol">:</span><br/>        <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">string</span><br/>        <span class="tsd-signature-symbol">|</span> <a href="../types/_backstage_types.HumanDuration.html" class="tsd-signature-type tsd-kind-type-alias">HumanDuration</a><br/>        <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">cron</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">}</span><br/>        <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">trigger</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;manual&quot;</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#initialdelay">initialDelay</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <a href="../types/_backstage_types.HumanDuration.html" class="tsd-signature-type tsd-kind-type-alias">HumanDuration</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#scope">scope</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">&quot;global&quot;</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;local&quot;</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#timeout">timeout</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <a href="../types/_backstage_types.HumanDuration.html" class="tsd-signature-type tsd-kind-type-alias">HumanDuration</a><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/e45bc5a9d574000cbbfe57e73a4e9b2c0154b280/packages/backend-plugin-api/src/services/definitions/SchedulerService.ts#L157">packages/backend-plugin-api/src/services/definitions/SchedulerService.ts:157</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/f91434377dc43cd64bef82344e3f2b539bfdaf11/packages/backend-plugin-api/src/services/definitions/SchedulerService.ts#L157">packages/backend-plugin-api/src/services/definitions/SchedulerService.ts:157</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -69,7 +69,7 @@ finishes.</p>
 <p>This is a required field.</p>
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/e45bc5a9d574000cbbfe57e73a4e9b2c0154b280/packages/backend-plugin-api/src/services/definitions/SchedulerService.ts#L172">packages/backend-plugin-api/src/services/definitions/SchedulerService.ts:172</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/f91434377dc43cd64bef82344e3f2b539bfdaf11/packages/backend-plugin-api/src/services/definitions/SchedulerService.ts#L172">packages/backend-plugin-api/src/services/definitions/SchedulerService.ts:172</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="initialdelay"><code class="tsd-tag">Optional</code><span>initial<wbr/>Delay</span><a href="#initialdelay" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">initialDelay</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <a href="../types/_backstage_types.HumanDuration.html" class="tsd-signature-type tsd-kind-type-alias">HumanDuration</a></div>
@@ -89,7 +89,7 @@ work; its main intended use is for individual machines to get a chance to
 reach some equilibrium at startup before triggering heavy batch workloads.</p>
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/e45bc5a9d574000cbbfe57e73a4e9b2c0154b280/packages/backend-plugin-api/src/services/definitions/SchedulerService.ts#L226">packages/backend-plugin-api/src/services/definitions/SchedulerService.ts:226</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/f91434377dc43cd64bef82344e3f2b539bfdaf11/packages/backend-plugin-api/src/services/definitions/SchedulerService.ts#L226">packages/backend-plugin-api/src/services/definitions/SchedulerService.ts:226</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="scope"><code class="tsd-tag">Optional</code><span>scope</span><a href="#scope" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">scope</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">&quot;global&quot;</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;local&quot;</span></div>
@@ -116,7 +116,7 @@ hosts. Each host runs the task according to the given cadence similarly to
 
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/e45bc5a9d574000cbbfe57e73a4e9b2c0154b280/packages/backend-plugin-api/src/services/definitions/SchedulerService.ts#L249">packages/backend-plugin-api/src/services/definitions/SchedulerService.ts:249</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/f91434377dc43cd64bef82344e3f2b539bfdaf11/packages/backend-plugin-api/src/services/definitions/SchedulerService.ts#L249">packages/backend-plugin-api/src/services/definitions/SchedulerService.ts:249</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="timeout"><span>timeout</span><a href="#timeout" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">timeout</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <a href="../types/_backstage_types.HumanDuration.html" class="tsd-signature-type tsd-kind-type-alias">HumanDuration</a></div>
@@ -125,7 +125,7 @@ it's considered timed out and gets &quot;released&quot; such that a new invocati
 is permitted to take place (possibly, then, on a different worker).</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/e45bc5a9d574000cbbfe57e73a4e9b2c0154b280/packages/backend-plugin-api/src/services/definitions/SchedulerService.ts#L207">packages/backend-plugin-api/src/services/definitions/SchedulerService.ts:207</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/f91434377dc43cd64bef82344e3f2b539bfdaf11/packages/backend-plugin-api/src/services/definitions/SchedulerService.ts#L207">packages/backend-plugin-api/src/services/definitions/SchedulerService.ts:207</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
