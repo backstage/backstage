@@ -128,6 +128,16 @@ export interface ClusterDetails {
    * Kubernetes resources.
    */
   customResources?: CustomResourceMatcher[];
+  /**
+   * Entity ref of the `kubernetes-cluster` resource this cluster was
+   * discovered from, when the cluster is sourced from the catalog.
+   *
+   * @remarks
+   * Used by the `catalogRelation` service locator to match a consumer entity's
+   * `dependsOn` relations to the correct cluster regardless of the namespace
+   * the cluster resource lives in.
+   */
+  entityRef?: string;
 }
 
 /**

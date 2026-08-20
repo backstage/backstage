@@ -23,6 +23,7 @@ import {
   KubernetesClustersSupplier,
 } from '@backstage/plugin-kubernetes-node';
 import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import {
   ANNOTATION_KUBERNETES_API_SERVER,
   ANNOTATION_KUBERNETES_API_SERVER_CA,
@@ -85,6 +86,7 @@ export class CatalogClusterLocator implements KubernetesClustersSupplier {
       const clusterDetails: ClusterDetails = {
         name: entity.metadata.name,
         title: entity.metadata.title,
+        entityRef: stringifyEntityRef(entity),
         url: annotations[ANNOTATION_KUBERNETES_API_SERVER],
         authMetadata: annotations,
         caData: annotations[ANNOTATION_KUBERNETES_API_SERVER_CA],
