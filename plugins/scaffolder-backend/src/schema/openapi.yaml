@@ -695,6 +695,8 @@ paths:
                       $ref: '#/components/schemas/ValidationError'
                 required:
                   - errors
+        '409':
+          $ref: '#/components/responses/ErrorResponse'
       security:
         - {}
         - JWT: []

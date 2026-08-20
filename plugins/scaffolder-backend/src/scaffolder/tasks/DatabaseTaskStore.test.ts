@@ -392,6 +392,59 @@ describe('DatabaseTaskStore', () => {
     ).toEqual([]);
   });
 
+  it.each(['open', 'processing'] as const)(
+    'should reject retrying %s task',
+    async status => {
+      const { store } = await createStore();
+      const { taskId } = await store.createTask({
+        spec: {} as TaskSpec,
+        createdBy: 'me',
+      });
+
+      if (status === 'processing') {
+        await store.claimTask();
+      }
+
+      await expect(store.retryTask?.({ taskId })).rejects.toThrow(
+        ConflictError,
+      );
+      await expect(store.getTask(taskId)).resolves.toMatchObject({ status });
+    },
+  );
+
+  it('should allow only one of two concurrent retries', async () => {
+    const { store, manager } = await createStore();
+    const client = await manager.getClient();
+    const { taskId } = await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'me',
+    });
+    await store.completeTask({ taskId, status: 'cancelled', eventBody: {} });
+
+    const results = await Promise.allSettled([
+      store.retryTask({ taskId }),
+      store.retryTask({ taskId }),
+    ]);
+
+    expect(
+      results.filter(result => result.status === 'fulfilled'),
+    ).toHaveLength(1);
+    expect(results.filter(result => result.status === 'rejected')).toEqual([
+      {
+        status: 'rejected',
+        reason: expect.any(ConflictError),
+      },
+    ]);
+    await expect(store.getTask(taskId)).resolves.toMatchObject({
+      status: 'open',
+    });
+    await expect(
+      client<RawDbTaskEventRow>('task_events')
+        .where({ task_id: taskId, event_type: 'recovered' })
+        .select('id'),
+    ).resolves.toHaveLength(1);
+  });
+
   it('should complete the task', async () => {
     const { store } = await createStore(eventsService);
     const { taskId } = await store.createTask({
@@ -616,6 +669,27 @@ describe.each(databases.eachSupportedId())(
 
       expect(typeof totalTasks).toBe('number');
       expect(totalTasks).toBe(2);
+    }, 60_000);
+  },
+);
+
+describe.each(databases.eachSupportedId())(
+  'DatabaseTaskStore retryTask, %p',
+  databaseId => {
+    it('retries a terminal task', async () => {
+      const knex = await databases.init(databaseId);
+      const store = await DatabaseTaskStore.create({ database: knex });
+      const { taskId } = await store.createTask({
+        spec: {} as TaskSpec,
+        createdBy: 'me',
+      });
+      await store.completeTask({ taskId, status: 'cancelled', eventBody: {} });
+
+      await store.retryTask({ taskId });
+
+      await expect(store.getTask(taskId)).resolves.toMatchObject({
+        status: 'open',
+      });
     }, 60_000);
   },
 );
