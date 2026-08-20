@@ -89,7 +89,6 @@ export type ReadinessResponse = {
 /**
  * Type to hold metadata found in techdocs_metadata.json and associated with each site
  * @param etag - ETag of the resource used to generate the site. Usually the latest commit sha of the source repository.
- * @param publish_timestamp - Timestamp of the most recent successful publish.
  * @public
  */
 export type TechDocsMetadata = {
@@ -97,7 +96,6 @@ export type TechDocsMetadata = {
   site_description: string;
   etag: string;
   build_timestamp: number;
-  publish_timestamp?: number;
   files?: string[];
 };
 

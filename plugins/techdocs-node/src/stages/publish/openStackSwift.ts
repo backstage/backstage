@@ -27,10 +27,7 @@ import { Stream, Readable } from 'node:stream';
 import {
   getFileTreeRecursively,
   getHeadersForFileExtension,
-  isTechDocsMetadataFile,
   lowerCaseEntityTripletInStoragePath,
-  readTechDocsMetadataFile,
-  TECHDOCS_METADATA_FILE,
 } from './helpers';
 import {
   PublisherBase,
@@ -155,43 +152,9 @@ export class OpenStackSwiftPublish implements PublisherBase {
       // Note: OpenStack Swift manages creation of parent directories if they do not exist.
       // So collecting path of only the files is good enough.
       const allFilesToUpload = await getFileTreeRecursively(directory);
-      const metadataFile = allFilesToUpload.find(file =>
-        isTechDocsMetadataFile(directory, file),
-      );
-      const filesToUpload = metadataFile
-        ? allFilesToUpload.filter(file => file !== metadataFile)
-        : allFilesToUpload;
       const limiter = createLimiter(10);
       const uploadPromises: Array<Promise<unknown>> = [];
-
-      // The / delimiter is intentional since it represents the cloud storage and not the local file system.
-      const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-      const metadataDestination = metadataFile
-        ? `${entityRootDir}/${TECHDOCS_METADATA_FILE}`
-        : undefined;
-      const uploadMetadata = async (markPublished: boolean) => {
-        if (!metadataFile || !metadataDestination) {
-          return undefined;
-        }
-
-        const stream = bufferToStream(
-          await readTechDocsMetadataFile(metadataFile, {
-            markPublished,
-          }),
-        );
-        return this.storageClient.upload(
-          this.containerName,
-          metadataDestination,
-          stream,
-        );
-      };
-
-      if (metadataFile && metadataDestination) {
-        objects.push(metadataDestination);
-        await uploadMetadata(false);
-      }
-
-      for (const filePath of filesToUpload) {
+      for (const filePath of allFilesToUpload) {
         // Remove the absolute path prefix of the source directory
         // Path of all files to upload, relative to the root of the source directory
         // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
@@ -203,6 +166,8 @@ export class OpenStackSwiftPublish implements PublisherBase {
           .split(path.sep)
           .join(path.posix.sep);
 
+        // The / delimiter is intentional since it represents the cloud storage and not the local file system.
+        const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
         const destination = `${entityRootDir}/${relativeFilePathPosix}`; // Swift container file relative path
         objects.push(destination);
 
@@ -219,7 +184,6 @@ export class OpenStackSwiftPublish implements PublisherBase {
         uploadPromises.push(uploadFile);
       }
       await Promise.all(uploadPromises);
-      await uploadMetadata(true);
       this.logger.info(
         `Successfully uploaded all the generated files for Entity ${entity.metadata.name}. Total number of files: ${allFilesToUpload.length}`,
       );

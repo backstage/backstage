@@ -16,6 +16,7 @@
 import { DefaultAzureCredential } from '@azure/identity';
 import {
   BlobServiceClient,
+  ContainerClient,
   StorageSharedKeyCredential,
 } from '@azure/storage-blob';
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
@@ -32,10 +33,7 @@ import {
   getHeadersForFileExtension,
   lowerCaseEntityTriplet,
   getStaleFiles,
-  isTechDocsMetadataFile,
   lowerCaseEntityTripletInStoragePath,
-  readTechDocsMetadataFile,
-  TECHDOCS_METADATA_FILE,
 } from './helpers';
 import {
   PublisherBase,
@@ -201,50 +199,16 @@ export class AzureBlobStoragePublish implements PublisherBase {
     }
 
     // Then, merge new files into the same folder
-    const absoluteFilesToUpload = await getFileTreeRecursively(directory);
-    const metadataFile = absoluteFilesToUpload.find(file =>
-      isTechDocsMetadataFile(directory, file),
-    );
-    const filesToUpload = metadataFile
-      ? absoluteFilesToUpload.filter(file => file !== metadataFile)
-      : absoluteFilesToUpload;
-    const metadataRemotePath = metadataFile
-      ? getCloudPathForLocalPath(
-          entity,
-          TECHDOCS_METADATA_FILE,
-          useLegacyPathCasing,
-        )
-      : undefined;
-
-    const container = this.storageClient.getContainerClient(this.containerName);
-    const uploadMetadata = async (markPublished: boolean) => {
-      if (!metadataFile || !metadataRemotePath) {
-        return;
-      }
-
-      const response = await container
-        .getBlockBlobClient(metadataRemotePath)
-        .uploadData(
-          await readTechDocsMetadataFile(metadataFile, {
-            markPublished,
-          }),
-        );
-
-      if (response._response.status >= 400) {
-        throw new Error(
-          `Upload failed for ${metadataFile} with status code ${response._response.status}`,
-        );
-      }
-    };
-
+    let absoluteFilesToUpload;
+    let container: ContainerClient;
     try {
+      // Remove the absolute path prefix of the source directory
+      // Path of all files to upload, relative to the root of the source directory
+      // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
+      absoluteFilesToUpload = await getFileTreeRecursively(directory);
+
+      container = this.storageClient.getContainerClient(this.containerName);
       const failedOperations: Error[] = [];
-
-      if (metadataFile && metadataRemotePath) {
-        objects.push(metadataRemotePath);
-        await uploadMetadata(false);
-      }
-
       await bulkStorageOperation(
         async absoluteFilePath => {
           const relativeFilePath = path.normalize(
@@ -270,7 +234,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
 
           return response;
         },
-        filesToUpload,
+        absoluteFilesToUpload,
         { concurrencyLimit: BATCH_CONCURRENCY },
       );
 
@@ -320,8 +284,6 @@ export class AzureBlobStoragePublish implements PublisherBase {
       const errorMessage = `Unable to delete file(s) from Azure. ${error}`;
       this.logger.error(errorMessage);
     }
-
-    await uploadMetadata(true);
 
     return { objects };
   }

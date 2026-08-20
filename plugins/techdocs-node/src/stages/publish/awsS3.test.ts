@@ -796,7 +796,7 @@ describe('AwsS3Publish', () => {
       });
 
       await expect(fails).rejects.toThrow(
-        `Failed to read template directory: ENOENT: no such file or directory, scandir '${wrongPathToGeneratedDirectory}'`,
+        `Unable to upload file(s) to AWS S3. Error: Failed to read template directory: ENOENT: no such file or directory, scandir '${wrongPathToGeneratedDirectory}'`,
       );
 
       await expect(fails).rejects.toMatchObject({
@@ -877,11 +877,8 @@ describe('AwsS3Publish', () => {
     it('should return tech docs metadata', async () => {
       const publisher = await createPublisherFromConfig();
       await publisher.publish({ entity, directory });
-      expect(await publisher.fetchTechDocsMetadata(entityName)).toEqual(
-        expect.objectContaining({
-          ...techdocsMetadata,
-          publish_timestamp: expect.any(Number),
-        }),
+      expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
+        techdocsMetadata,
       );
     });
 
@@ -890,11 +887,8 @@ describe('AwsS3Publish', () => {
         legacyUseCaseSensitiveTripletPaths: true,
       });
       await publisher.publish({ entity, directory });
-      expect(await publisher.fetchTechDocsMetadata(entityName)).toEqual(
-        expect.objectContaining({
-          ...techdocsMetadata,
-          publish_timestamp: expect.any(Number),
-        }),
+      expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
+        techdocsMetadata,
       );
     });
 
@@ -903,11 +897,8 @@ describe('AwsS3Publish', () => {
         bucketRootPath: 'backstage-data/techdocs',
       });
       await publisher.publish({ entity, directory });
-      expect(await publisher.fetchTechDocsMetadata(entityName)).toEqual(
-        expect.objectContaining({
-          ...techdocsMetadata,
-          publish_timestamp: expect.any(Number),
-        }),
+      expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
+        techdocsMetadata,
       );
     });
 
@@ -917,11 +908,8 @@ describe('AwsS3Publish', () => {
         legacyUseCaseSensitiveTripletPaths: true,
       });
       await publisher.publish({ entity, directory });
-      expect(await publisher.fetchTechDocsMetadata(entityName)).toEqual(
-        expect.objectContaining({
-          ...techdocsMetadata,
-          publish_timestamp: expect.any(Number),
-        }),
+      expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
+        techdocsMetadata,
       );
     });
 
@@ -940,11 +928,8 @@ describe('AwsS3Publish', () => {
       const publisher = await createPublisherFromConfig();
       await publisher.publish({ entity, directory });
 
-      expect(await publisher.fetchTechDocsMetadata(entityName)).toEqual(
-        expect.objectContaining({
-          ...techdocsMetadata,
-          publish_timestamp: expect.any(Number),
-        }),
+      expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
+        techdocsMetadata,
       );
 
       fs.writeFileSync(techdocsMetadataPath, techdocsMetadataContent);

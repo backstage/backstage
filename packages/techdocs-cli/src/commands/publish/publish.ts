@@ -74,24 +74,17 @@ export default async function publish(opts: OptionValues): Promise<any> {
             name,
           });
           const remoteEtag = remoteMetadata?.etag;
-          const remotePublishTimestamp = remoteMetadata?.publish_timestamp;
 
-          if (localEtag === remoteEtag && remotePublishTimestamp) {
+          if (localEtag === remoteEtag) {
             logger.info(
               `--skip-if-unchanged: local etag "${localEtag}" matches remote, skipping publish`,
             );
             return true;
           }
 
-          if (localEtag === remoteEtag) {
-            logger.info(
-              '--skip-if-unchanged: remote metadata was not written by a completed publish, proceeding with publish',
-            );
-          } else {
-            logger.info(
-              `--skip-if-unchanged: etag changed from "${remoteEtag}" to "${localEtag}", proceeding with publish`,
-            );
-          }
+          logger.info(
+            `--skip-if-unchanged: etag changed from "${remoteEtag}" to "${localEtag}", proceeding with publish`,
+          );
         } catch (error) {
           // fetchTechDocsMetadata rejects when metadata is not found (first publish),
           // but may also fail for other reasons (network, auth), so log the cause.

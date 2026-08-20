@@ -35,11 +35,9 @@ let createdStorageOptions: Array<StorageOptions | undefined> = [];
 jest.mock('@google-cloud/storage', () => {
   class GCSFile {
     private readonly filePath: string;
-    private readonly bucketName: string;
 
-    constructor(filePath: string, bucketName: string) {
+    constructor(filePath: string) {
       this.filePath = filePath;
-      this.bucketName = bucketName;
     }
 
     exists() {
@@ -78,16 +76,6 @@ jest.mock('@google-cloud/storage', () => {
     }
 
     delete() {
-      if (this.bucketName === 'delete_stale_files_error') {
-        throw Error('Message');
-      }
-      return Promise.resolve();
-    }
-
-    save(contents: Buffer) {
-      mockDir.addContent({
-        [this.filePath]: contents.toString('utf8'),
-      });
       return Promise.resolve();
     }
   }
@@ -116,7 +104,10 @@ jest.mock('@google-cloud/storage', () => {
     }
 
     file(destinationFilePath: string) {
-      return new GCSFile(destinationFilePath, this.bucketName);
+      if (this.bucketName === 'delete_stale_files_error') {
+        throw Error('Message');
+      }
+      return new GCSFile(destinationFilePath);
     }
 
     getFilesStream() {
@@ -344,7 +335,7 @@ describe('GoogleGCSPublish', () => {
       });
 
       await expect(fails).rejects.toThrow(
-        `Failed to read template directory: ENOENT: no such file or directory, scandir '${wrongPathToGeneratedDirectory}'`,
+        `Unable to upload file(s) to Google Cloud Storage. Error: Failed to read template directory: ENOENT: no such file or directory, scandir '${wrongPathToGeneratedDirectory}'`,
       );
 
       await expect(fails).rejects.toMatchObject({
@@ -421,11 +412,8 @@ describe('GoogleGCSPublish', () => {
     it('should return tech docs metadata', async () => {
       const publisher = createPublisherFromConfig();
       await publisher.publish({ entity, directory });
-      expect(await publisher.fetchTechDocsMetadata(entityName)).toEqual(
-        expect.objectContaining({
-          ...techdocsMetadata,
-          publish_timestamp: expect.any(Number),
-        }),
+      expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
+        techdocsMetadata,
       );
     });
 
@@ -434,11 +422,8 @@ describe('GoogleGCSPublish', () => {
         legacyUseCaseSensitiveTripletPaths: true,
       });
       await publisher.publish({ entity, directory });
-      expect(await publisher.fetchTechDocsMetadata(entityName)).toEqual(
-        expect.objectContaining({
-          ...techdocsMetadata,
-          publish_timestamp: expect.any(Number),
-        }),
+      expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
+        techdocsMetadata,
       );
     });
 
@@ -447,11 +432,8 @@ describe('GoogleGCSPublish', () => {
         bucketRootPath: 'backstage-data/techdocs',
       });
       await publisher.publish({ entity, directory });
-      expect(await publisher.fetchTechDocsMetadata(entityName)).toEqual(
-        expect.objectContaining({
-          ...techdocsMetadata,
-          publish_timestamp: expect.any(Number),
-        }),
+      expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
+        techdocsMetadata,
       );
     });
 
@@ -461,11 +443,8 @@ describe('GoogleGCSPublish', () => {
         legacyUseCaseSensitiveTripletPaths: true,
       });
       await publisher.publish({ entity, directory });
-      expect(await publisher.fetchTechDocsMetadata(entityName)).toEqual(
-        expect.objectContaining({
-          ...techdocsMetadata,
-          publish_timestamp: expect.any(Number),
-        }),
+      expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
+        techdocsMetadata,
       );
     });
 
@@ -484,11 +463,8 @@ describe('GoogleGCSPublish', () => {
       const publisher = createPublisherFromConfig();
       await publisher.publish({ entity, directory });
 
-      expect(await publisher.fetchTechDocsMetadata(entityName)).toEqual(
-        expect.objectContaining({
-          ...techdocsMetadata,
-          publish_timestamp: expect.any(Number),
-        }),
+      expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
+        techdocsMetadata,
       );
 
       fs.writeFileSync(techdocsMetadataPath, techdocsMetadataContent);

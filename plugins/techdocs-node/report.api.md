@@ -332,7 +332,6 @@ export type TechDocsMetadata = {
   site_description: string;
   etag: string;
   build_timestamp: number;
-  publish_timestamp?: number;
   files?: string[];
 };
 

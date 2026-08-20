@@ -127,9 +127,10 @@ export default async function generate(opts: OptionValues) {
     });
     const metadataPath = join(outputDir, TECHDOCS_METADATA_FILE);
     const metadata = JSON5.parse(await fs.readFile(metadataPath, 'utf8'));
-    await fs.writeFile(
+    await fs.writeJson(
       metadataPath,
-      JSON.stringify({ ...metadata, etag: generatedSiteEtag }, null, 2),
+      { ...metadata, etag: generatedSiteEtag },
+      { spaces: 2 },
     );
     logger.info(`Computed generated site content hash: ${generatedSiteEtag}`);
   }

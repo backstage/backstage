@@ -35,10 +35,7 @@ import {
   bulkStorageOperation,
   getCloudPathForLocalPath,
   getStaleFiles,
-  isTechDocsMetadataFile,
   normalizeExternalStorageRootPath,
-  readTechDocsMetadataFile,
-  TECHDOCS_METADATA_FILE,
 } from './helpers';
 import { MigrateWriteStream } from './migrations';
 import {
@@ -196,39 +193,12 @@ export class GoogleGCSPublish implements PublisherBase {
     }
 
     // Then, merge new files into the same folder
-    const absoluteFilesToUpload = await getFileTreeRecursively(directory);
-    const metadataFile = absoluteFilesToUpload.find(file =>
-      isTechDocsMetadataFile(directory, file),
-    );
-    const filesToUpload = metadataFile
-      ? absoluteFilesToUpload.filter(file => file !== metadataFile)
-      : absoluteFilesToUpload;
-    const metadataDestination = metadataFile
-      ? getCloudPathForLocalPath(
-          entity,
-          TECHDOCS_METADATA_FILE,
-          useLegacyPathCasing,
-          bucketRootPath,
-        )
-      : undefined;
-
-    const uploadMetadata = async (markPublished: boolean) => {
-      if (!metadataFile || !metadataDestination) {
-        return;
-      }
-
-      await bucket.file(metadataDestination).save(
-        await readTechDocsMetadataFile(metadataFile, {
-          markPublished,
-        }),
-      );
-    };
-
+    let absoluteFilesToUpload;
     try {
-      if (metadataFile && metadataDestination) {
-        objects.push(metadataDestination);
-        await uploadMetadata(false);
-      }
+      // Remove the absolute path prefix of the source directory
+      // Path of all files to upload, relative to the root of the source directory
+      // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
+      absoluteFilesToUpload = await getFileTreeRecursively(directory);
 
       await bulkStorageOperation(
         async absoluteFilePath => {
@@ -242,7 +212,7 @@ export class GoogleGCSPublish implements PublisherBase {
           objects.push(destination);
           return await bucket.upload(absoluteFilePath, { destination });
         },
-        filesToUpload,
+        absoluteFilesToUpload,
         { concurrencyLimit: 10 },
       );
 
@@ -283,8 +253,6 @@ export class GoogleGCSPublish implements PublisherBase {
       const errorMessage = `Unable to delete file(s) from Google Cloud Storage. ${error}`;
       this.logger.error(errorMessage);
     }
-
-    await uploadMetadata(true);
 
     return { objects };
   }

@@ -60,21 +60,6 @@ jest.mock('@azure/storage-blob', () => {
       });
     }
 
-    uploadData(source: Buffer): Promise<BlobUploadCommonResponse> {
-      mockDir.addContent({
-        [this.blobName]: source.toString('utf8'),
-      });
-      return Promise.resolve({
-        _response: {
-          request: {
-            url: `https://example.blob.core.windows.net`,
-          } as any,
-          status: 200,
-          headers: {} as any,
-        },
-      });
-    }
-
     exists() {
       return fs.pathExistsSync(mockDir.resolve(this.blobName));
     }
@@ -93,18 +78,6 @@ jest.mock('@azure/storage-blob', () => {
 
   class BlockBlobClientFailUpload extends BlockBlobClient {
     uploadFile(): Promise<BlobUploadCommonResponse> {
-      return Promise.resolve({
-        _response: {
-          request: {
-            url: `https://example.blob.core.windows.net`,
-          } as any,
-          status: 500,
-          headers: {} as any,
-        },
-      });
-    }
-
-    uploadData(): Promise<BlobUploadCommonResponse> {
       return Promise.resolve({
         _response: {
           request: {
@@ -406,7 +379,7 @@ describe('AzureBlobStoragePublish', () => {
       });
 
       await expect(fails).rejects.toThrow(
-        `Failed to read template directory: ENOENT: no such file or directory, scandir '${wrongPathToGeneratedDirectory}'`,
+        `Unable to upload file(s) to Azure. Error: Failed to read template directory: ENOENT: no such file or directory, scandir '${wrongPathToGeneratedDirectory}'`,
       );
 
       await expect(fails).rejects.toMatchObject({
@@ -432,7 +405,7 @@ describe('AzureBlobStoragePublish', () => {
         expect.stringContaining(
           `Upload failed for ${path.join(
             directory,
-            'techdocs_metadata.json',
+            '404.html',
           )} with status code 500`,
         ),
       );
@@ -472,11 +445,8 @@ describe('AzureBlobStoragePublish', () => {
     it('should return tech docs metadata', async () => {
       const publisher = createPublisherFromConfig();
       await publisher.publish({ entity, directory });
-      expect(await publisher.fetchTechDocsMetadata(entityName)).toEqual(
-        expect.objectContaining({
-          ...techdocsMetadata,
-          publish_timestamp: expect.any(Number),
-        }),
+      expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
+        techdocsMetadata,
       );
     });
 
@@ -485,11 +455,8 @@ describe('AzureBlobStoragePublish', () => {
         legacyUseCaseSensitiveTripletPaths: true,
       });
       await publisher.publish({ entity, directory });
-      expect(await publisher.fetchTechDocsMetadata(entityName)).toEqual(
-        expect.objectContaining({
-          ...techdocsMetadata,
-          publish_timestamp: expect.any(Number),
-        }),
+      expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
+        techdocsMetadata,
       );
     });
 
@@ -508,11 +475,8 @@ describe('AzureBlobStoragePublish', () => {
       const publisher = createPublisherFromConfig();
       await publisher.publish({ entity, directory });
 
-      expect(await publisher.fetchTechDocsMetadata(entityName)).toEqual(
-        expect.objectContaining({
-          ...techdocsMetadata,
-          publish_timestamp: expect.any(Number),
-        }),
+      expect(await publisher.fetchTechDocsMetadata(entityName)).toStrictEqual(
+        techdocsMetadata,
       );
 
       fs.writeFileSync(techdocsMetadataPath, techdocsMetadataContent);
@@ -617,7 +581,7 @@ describe('AzureBlobStoragePublish', () => {
       // Get BlockBlobClient from the mock module and replace the download method with a failing one
       const { BlockBlobClient } = jest.requireMock('@azure/storage-blob');
       const originalDownload = BlockBlobClient.prototype.download;
-      BlockBlobClient.prototype.download = function download() {
+      BlockBlobClient.prototype.download = function () {
         return Promise.resolve({
           readableStreamBody: {
             pipe: () => {

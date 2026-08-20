@@ -94,19 +94,18 @@ describe('publish', () => {
     it('should skip publish when local and remote etags match', async () => {
       jest.spyOn(fs, 'pathExists').mockResolvedValue(true as never);
       jest.spyOn(fs, 'readFile').mockResolvedValue(
-        JSON.stringify({
+        `{
           site_name: 'Test',
           site_description: 'Test site',
           etag: 'abc123',
           build_timestamp: 1234567890,
-        }) as never,
+        }` as never,
       );
       mockFetchTechDocsMetadata.mockResolvedValue({
         site_name: 'Test',
         site_description: 'Test site',
         etag: 'abc123',
         build_timestamp: 1234567890,
-        publish_timestamp: 1234567891,
       });
 
       const result = await publish(skipOpts);
@@ -118,28 +117,6 @@ describe('publish', () => {
         name: 'my-entity',
       });
       expect(mockPublish).not.toHaveBeenCalled();
-    });
-
-    it('should proceed when etags match but remote metadata has no publish marker', async () => {
-      jest.spyOn(fs, 'pathExists').mockResolvedValue(true as never);
-      jest.spyOn(fs, 'readFile').mockResolvedValue(
-        JSON.stringify({
-          site_name: 'Test',
-          site_description: 'Test site',
-          etag: 'abc123',
-          build_timestamp: 1234567890,
-        }) as never,
-      );
-      mockFetchTechDocsMetadata.mockResolvedValue({
-        site_name: 'Test',
-        site_description: 'Test site',
-        etag: 'abc123',
-        build_timestamp: 1234567890,
-      });
-
-      await publish(skipOpts);
-
-      expect(mockPublish).toHaveBeenCalledTimes(1);
     });
 
     it('should proceed with publish when etags differ', async () => {
