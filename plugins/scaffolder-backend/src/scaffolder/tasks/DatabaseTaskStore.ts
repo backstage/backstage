@@ -726,40 +726,43 @@ export class DatabaseTaskStore implements TaskStore {
     const { secrets, taskId } = options;
 
     await this.db.transaction(async tx => {
-      const result = await tx<RawDbTaskRow>('tasks')
+      const updateCount = await tx<RawDbTaskRow>('tasks')
         .where('id', taskId)
-        .update(
-          {
-            ...(secrets && { secrets: JSON.stringify(secrets) }),
-            status: 'open',
-            last_heartbeat_at: this.db.fn.now(),
-          },
-          ['id', 'spec'],
-        );
-
-      for (const { id, spec } of result) {
-        const taskSpec = JSON.parse(spec as string) as TaskSpec;
-
-        /**
-         * Once task is picked up, all event types are replayed.
-         * We have to remove cancelled or completion event_type as these are as actions for frontend to perform.
-         * In contrary, we send 'recovered' event_type to reset the state on the frontend side.
-         *
-         */
-        await tx<RawDbTaskEventRow>('task_events')
-          .where('task_id', id)
-          .andWhere(q => q.whereIn('event_type', ['cancelled', 'completion']))
-          .del();
-
-        await tx<RawDbTaskEventRow>('task_events').insert({
-          task_id: id,
-          event_type: 'recovered',
-          body: JSON.stringify({
-            recoverStrategy:
-              taskSpec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ?? 'none',
-          }),
+        .whereIn('status', ['cancelled', 'completed', 'failed', 'skipped'])
+        .update({
+          ...(secrets && { secrets: JSON.stringify(secrets) }),
+          status: 'open',
+          last_heartbeat_at: this.db.fn.now(),
         });
+
+      if (Number(updateCount) !== 1) {
+        throw new ConflictError(`Task with taskId ${taskId} cannot be retried`);
       }
+
+      const [task] = await tx<RawDbTaskRow>('tasks')
+        .where('id', taskId)
+        .select('id', 'spec');
+      const taskSpec = JSON.parse(task.spec) as TaskSpec;
+
+      /**
+       * Once task is picked up, all event types are replayed.
+       * We have to remove cancelled or completion event_type as these are as actions for frontend to perform.
+       * In contrary, we send 'recovered' event_type to reset the state on the frontend side.
+       *
+       */
+      await tx<RawDbTaskEventRow>('task_events')
+        .where('task_id', task.id)
+        .andWhere(q => q.whereIn('event_type', ['cancelled', 'completion']))
+        .del();
+
+      await tx<RawDbTaskEventRow>('task_events').insert({
+        task_id: task.id,
+        event_type: 'recovered',
+        body: JSON.stringify({
+          recoverStrategy:
+            taskSpec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ?? 'none',
+        }),
+      });
     });
   }
 

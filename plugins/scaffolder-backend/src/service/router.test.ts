@@ -16,6 +16,7 @@
 
 import { DatabaseManager } from '@backstage/backend-defaults/database';
 import { ConfigReader } from '@backstage/config';
+import { ConflictError } from '@backstage/errors';
 import express from 'express';
 import request from 'supertest';
 import ObservableImpl from 'zen-observable';
@@ -1347,6 +1348,9 @@ describe('scaffolder router', () => {
         createdAt: '',
         createdBy: 'user:default/mock',
       });
+      (
+        taskBroker.retry as jest.Mocked<TaskBroker>['retry']
+      ).mockResolvedValue();
 
       const response = await request(router)
         .post('/v2/tasks/a-random-id/retry')
@@ -1358,6 +1362,35 @@ describe('scaffolder router', () => {
 
       expect(response.status).toEqual(201);
       expect(taskBroker.retry).toHaveBeenCalled();
+    });
+
+    it('returns a conflict when the task cannot be retried', async () => {
+      const { router, taskBroker } = await createTestRouter();
+
+      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+        id: 'a-random-id',
+        spec: {} as TaskSpec,
+        status: 'processing',
+        createdAt: '',
+        createdBy: 'user:default/mock',
+      });
+      (taskBroker.retry as jest.Mocked<TaskBroker>['retry']).mockRejectedValue(
+        new ConflictError('Task with taskId a-random-id cannot be retried'),
+      );
+
+      const response = await request(router)
+        .post('/v2/tasks/a-random-id/retry')
+        .send({});
+
+      expect(response).toMatchObject({
+        status: 409,
+        body: {
+          error: {
+            name: 'ConflictError',
+            message: 'Task with taskId a-random-id cannot be retried',
+          },
+        },
+      });
     });
   });
 
