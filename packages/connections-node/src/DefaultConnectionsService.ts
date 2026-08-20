@@ -65,8 +65,10 @@ class PluginConnectionsService implements ConnectionsService {
   >(options: {
     type: TType;
     query: LookupConnectionType<TType>['query'];
-    authMethods: readonly [TAuthMethod, ...TAuthMethod[]];
-  }): Promise<Connection<TType, TAuthMethod>> {
+    authMethods?: readonly [TAuthMethod, ...TAuthMethod[]];
+  }): Promise<
+    Connection<TType, TAuthMethod> | Omit<Connection<TType>, 'auth'>
+  > {
     const result = await this.findOptional(options);
     if (!result) {
       throw new NotFoundError(
@@ -76,7 +78,7 @@ class PluginConnectionsService implements ConnectionsService {
     return result;
   }
 
-  async findOptional<
+  private async findOptional<
     TType extends ConnectionTypeKey,
     TAuthMethod extends ConnectionAuthMethodKey<TType>,
   >({
@@ -86,8 +88,10 @@ class PluginConnectionsService implements ConnectionsService {
   }: {
     type: TType;
     query: LookupConnectionType<TType>['query'];
-    authMethods: readonly [TAuthMethod, ...TAuthMethod[]];
-  }): Promise<Connection<TType, TAuthMethod> | undefined> {
+    authMethods?: readonly [TAuthMethod, ...TAuthMethod[]];
+  }): Promise<
+    Connection<TType, TAuthMethod> | Omit<Connection<TType>, 'auth'> | undefined
+  > {
     const connectionType = getConnectionType(type);
     const strategy = getLookupStrategy(connectionType.lookupStrategy);
     const identity = strategy.identityFromQuery(query);
@@ -111,6 +115,11 @@ class PluginConnectionsService implements ConnectionsService {
 
     if (!connection) {
       return undefined;
+    }
+
+    if (!authMethods) {
+      const { auth: _, ...info } = connection;
+      return info as Omit<Connection<TType>, 'auth'>;
     }
 
     if (connection.auth.length === 0) {
