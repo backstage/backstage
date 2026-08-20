@@ -1,5 +1,11 @@
 # @backstage/plugin-search-backend
 
+## 2.1.6
+
+### Patch Changes
+
+- 4f98d09: Fixed a bug where the search engine could receive an unfiltered query when no document types were permitted.
+
 ## 2.1.5
 
 ### Patch Changes

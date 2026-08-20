@@ -1,5 +1,11 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.21.8
+
+### Patch Changes
+
+- 9d950fa: Improved entity resolution on the deprecated services endpoint.
+
 ## 0.21.7
 
 ### Patch Changes
