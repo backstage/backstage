@@ -43,6 +43,7 @@ import {
   actionsRegistryServiceMock,
   metricsServiceMock,
 } from '@backstage/backend-test-utils/alpha';
+import { collectTemplateCapabilities } from '../../util/templating';
 
 describe('NunjucksWorkflowRunner', () => {
   let actionRegistry: TemplateActionRegistry;
@@ -253,6 +254,13 @@ describe('NunjucksWorkflowRunner', () => {
       permissions: mockedPermissionApi,
       config,
       metrics: metricsServiceMock.mock(),
+      templateCapabilities: collectTemplateCapabilities({
+        filters: {
+          toSecretKeyedObject: input => ({
+            [String(input).toUpperCase()]: 'public',
+          }),
+        },
+      }),
     });
   });
 
@@ -1745,6 +1753,101 @@ describe('NunjucksWorkflowRunner', () => {
           expect.objectContaining({ input: { secret } }),
         );
       });
+    });
+
+    it('should redact transformed secrets used in each values', async () => {
+      actionRegistry.register({
+        id: 'log-secret',
+        description: 'Mock action for testing',
+        supportsDryRun: true,
+        handler: async ctx => {
+          ctx.logger.info(ctx.input.secret);
+        },
+        schema: {
+          input: {
+            type: 'object',
+            required: ['secret'],
+            properties: {
+              secret: { type: 'string' },
+            },
+          },
+        },
+      });
+
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            each: ['${{ environment.secrets.AWS_ACCESS_KEY | upper }}'],
+            action: 'log-secret',
+            input: { secret: '${{ each.value }}' },
+          },
+          {
+            id: 'skipped',
+            name: 'skipped',
+            each: ['${{ environment.secrets.AWS_ACCESS_KEY | upper }}'],
+            if: '${{ false }}',
+            action: 'log-secret',
+            input: { secret: '${{ each.value }}' },
+          },
+          {
+            id: 'transformed-again',
+            name: 'transformed again',
+            each: ['${{ environment.secrets.AWS_ACCESS_KEY | upper }}'],
+            action: 'log-secret',
+            input: {
+              secret: '${{ each.value | replace("SECRET", "CREDENTIAL") }}',
+            },
+          },
+          {
+            id: 'mixed-values',
+            name: 'mixed values',
+            each: [
+              '${{ environment.secrets.AWS_ACCESS_KEY | replace("-", "_") }}',
+              'public-iteration',
+            ],
+            action: 'log-secret',
+            input: { secret: '${{ each.value }}' },
+          },
+          {
+            id: 'secret-key',
+            name: 'secret key',
+            each: '${{ environment.secrets.AWS_ACCESS_KEY | toSecretKeyedObject }}',
+            action: 'log-secret',
+            input: { secret: '${{ each.key }}' },
+          },
+          {
+            id: 'skipped-secret-key',
+            name: 'skipped secret key',
+            each: '${{ environment.secrets.AWS_ACCESS_KEY | toSecretKeyedObject }}',
+            if: '${{ false }}',
+            action: 'log-secret',
+            input: { secret: '${{ each.key }}' },
+          },
+        ],
+      });
+
+      await runner.execute(task);
+
+      expectTaskLog('info: Running step each: {"key":"0","value":"***"}');
+      expectTaskLog('info: Skipping step each: {"key":"0","value":"***"}');
+      expectTaskLog(
+        'info: Running step each: {"key":"1","value":"public-iteration"}',
+      );
+      expectTaskLog('info: public-iteration');
+      expectTaskLog('info: Running step each: {"key":"***","value":"public"}');
+      expectTaskLog('info: Skipping step each: {"key":"***","value":"public"}');
+      expectTaskLog('info: ***');
+      expect(
+        fakeTaskLog.mock.calls.map(args => stripAnsi(args[0])).join('\n'),
+      ).not.toContain('TEST-SECRET-VALUE');
+      expect(
+        fakeTaskLog.mock.calls.map(args => stripAnsi(args[0])).join('\n'),
+      ).not.toContain('TEST-CREDENTIAL-VALUE');
+      expect(
+        fakeTaskLog.mock.calls.map(args => stripAnsi(args[0])).join('\n'),
+      ).not.toContain('test_secret_value');
     });
 
     it('should run a step repeatedly - object list', async () => {

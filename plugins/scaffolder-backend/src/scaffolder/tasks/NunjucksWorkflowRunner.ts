@@ -367,6 +367,12 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           ['secrets'],
           preIterationContext.secrets as NunjitsuTemplateValue,
         );
+      const hasSecrets =
+        Object.keys(task.secrets ?? {}).length > 0 ||
+        Object.keys(this.environment?.secrets ?? {}).length > 0;
+      const preparedPreIterationContextNoSecrets = preparedPreIterationContext
+        .withValue(['secrets'], {})
+        .withValue(['environment', 'secrets'], {});
 
       const resolvedEach =
         step.each &&
@@ -378,11 +384,50 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         );
       }
 
+      // Discover secret-derived iteration values before logging or executing
+      // any iteration. The iteration value is already resolved by the time it
+      // is added to each iteration's context, so input-only comparison cannot
+      // identify it as secret-derived.
+      let eachWithoutSecretsEntries: [string, unknown][] | undefined;
+      if (step.each && resolvedEach && hasSecrets) {
+        try {
+          const eachWithoutSecrets = this.render(
+            step.each,
+            preparedPreIterationContextNoSecrets,
+            templateRenderer,
+          );
+          eachWithoutSecretsEntries =
+            Array.isArray(resolvedEach) && Array.isArray(eachWithoutSecrets)
+              ? Object.keys(resolvedEach).map(
+                  key =>
+                    [key, eachWithoutSecrets[Number(key)]] as [string, unknown],
+                )
+              : Object.entries(eachWithoutSecrets);
+          taskLogger.addRedactions(
+            collectSecretRedactions(
+              Object.entries(resolvedEach),
+              eachWithoutSecretsEntries,
+            ),
+          );
+        } catch {
+          taskLogger.addRedactions(extractStringValues(resolvedEach));
+        }
+      }
+
       const iterations = (
         resolvedEach
-          ? Object.entries(resolvedEach).map(([key, value]) => ({
-              each: { key, value },
-            }))
+          ? Object.entries(resolvedEach).map(([key, value], index) => {
+              const eachWithoutSecrets = eachWithoutSecretsEntries?.[index];
+              return {
+                each: { key, value },
+                eachWithoutSecrets: eachWithoutSecrets
+                  ? {
+                      key: eachWithoutSecrets[0],
+                      value: eachWithoutSecrets[1],
+                    }
+                  : {},
+              };
+            })
           : [{}]
       ).map(i => {
         const preparedFullContext =
@@ -392,6 +437,13 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
                 i.each as NunjitsuTemplateValue,
               )
             : preparedPreIterationContext;
+        const preparedContextNoSecrets =
+          'each' in i
+            ? preparedPreIterationContextNoSecrets.withValue(
+                ['each'],
+                i.eachWithoutSecrets as NunjitsuTemplateValue,
+              )
+            : preparedPreIterationContextNoSecrets;
         // Evaluate if condition once per iteration, only when using 'each'
         const shouldRun =
           !('each' in i) ||
@@ -401,6 +453,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         return {
           ...i,
           preparedContext: preparedFullContext,
+          preparedContextNoSecrets,
           shouldRun,
           // Secrets are only passed when templating the input to actions for security reasons
           input: step.input
@@ -474,18 +527,11 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         // Re-render the input without secrets and diff against the real render
         // to find values that changed due to secret interpolation.
         if (step.input) {
-          const hasSecrets =
-            Object.keys(task.secrets ?? {}).length > 0 ||
-            Object.keys(this.environment?.secrets ?? {}).length > 0;
-
           if (hasSecrets) {
             try {
-              const preparedContextNoSecrets = iteration.preparedContext
-                .withValue(['secrets'], {})
-                .withValue(['environment', 'secrets'], {});
               const inputWithoutSecrets = this.render(
                 step.input,
-                preparedContextNoSecrets,
+                iteration.preparedContextNoSecrets,
                 templateRenderer,
               );
               taskLogger.addRedactions(
