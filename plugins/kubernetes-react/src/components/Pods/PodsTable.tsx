@@ -55,7 +55,9 @@ export const RESOURCE_COLUMNS: PodColumns = 'RESOURCE';
 export type PodColumns = 'READY' | 'RESOURCE';
 
 /**
+ * Props for the PodsTable component.
  *
+ * Clicking any non-button cell in a row opens the pod drawer for that pod.
  *
  * @public
  */

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { screen, fireEvent, act } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import * as pod from './__fixtures__/pod.json';
 import * as crashingPod from './__fixtures__/crashing-pod.json';
 import { renderInTestApp } from '@backstage/test-utils';
@@ -185,18 +185,13 @@ describe('PodsTable', () => {
     expect(row).toHaveStyle({ cursor: 'pointer' });
   });
 
-  it('should trigger the row button when clicking a non-button cell', async () => {
+  it('should open the pod drawer when clicking a non-button cell', async () => {
     await renderInTestApp(<PodsTable pods={[pod as any]} />);
 
-    const row = screen.getByText('dice-roller-6c8646bfd-2m5hv').closest('tr')!;
-    const button = row.querySelector('button');
-    const clickSpy = jest.spyOn(button!, 'click');
+    expect(screen.queryByText('Pod (172.17.0.11)')).not.toBeInTheDocument();
 
-    jest.useFakeTimers();
     fireEvent.click(screen.getByText('Running'));
-    act(() => jest.runAllTimers());
-    jest.useRealTimers();
 
-    expect(clickSpy).toHaveBeenCalledTimes(1);
+    expect(await screen.findByText('Pod (172.17.0.11)')).toBeInTheDocument();
   });
 });
