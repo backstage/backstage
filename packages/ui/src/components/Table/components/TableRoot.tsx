@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import { useRef } from 'react';
 import { useDefinition } from '../../../hooks/useDefinition';
+import { useIsomorphicLayoutEffect } from '../../../hooks/useIsomorphicLayoutEffect';
 import { TableDefinition } from '../definition';
 import { Table as ReactAriaTable } from 'react-aria-components';
 import { TableRootProps } from '../types';
@@ -39,11 +41,29 @@ export const TableRoot = (props: TableRootProps) => {
     },
   );
 
+  const isBusy = Boolean(ownProps.stale || ownProps.isPending);
+  const ref = useRef<HTMLTableElement | HTMLDivElement>(null);
+
+  // React Aria only forwards a fixed set of ARIA attributes to the underlying
+  // grid element, and `aria-busy` is not one of them, so apply it directly to
+  // the DOM node to expose the loading state to assistive technology.
+  useIsomorphicLayoutEffect(() => {
+    const element = ref.current;
+    if (!element) {
+      return;
+    }
+    if (isBusy) {
+      element.setAttribute('aria-busy', 'true');
+    } else {
+      element.removeAttribute('aria-busy');
+    }
+  }, [isBusy]);
+
   return (
     <ReactAriaTable
+      ref={ref}
       className={ownProps.classes.root}
       aria-label="Data table"
-      aria-busy={ownProps.stale || ownProps.isPending}
       {...dataAttributes}
       {...restProps}
     />

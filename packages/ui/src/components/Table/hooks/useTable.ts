@@ -54,6 +54,23 @@ function useTableProps<T extends TableItem>(
   const displayData = paginationResult.data ?? previousDataRef.current;
   const isStale = paginationResult.isPending && displayData !== undefined;
 
+  // While a new page is loading, keep showing the navigation state of the
+  // page that is still visible. Otherwise the buttons flicker to disabled
+  // during the fetch, which drops keyboard focus in the browser.
+  const previousNavRef = useRef({
+    hasNextPage: paginationResult.hasNextPage,
+    hasPreviousPage: paginationResult.hasPreviousPage,
+  });
+  if (!isStale) {
+    previousNavRef.current = {
+      hasNextPage: paginationResult.hasNextPage,
+      hasPreviousPage: paginationResult.hasPreviousPage,
+    };
+  }
+  const { hasNextPage, hasPreviousPage } = isStale
+    ? previousNavRef.current
+    : paginationResult;
+
   const pagination = useMemo(() => {
     if (paginationOptions.type === 'none') {
       return { type: 'none' as const };
@@ -64,8 +81,8 @@ function useTableProps<T extends TableItem>(
       pageSizeOptions,
       offset: paginationResult.offset,
       totalCount: paginationResult.totalCount,
-      hasNextPage: paginationResult.hasNextPage,
-      hasPreviousPage: paginationResult.hasPreviousPage,
+      hasNextPage,
+      hasPreviousPage,
       onNextPage: () => {
         paginationResult.onNextPage();
         onNextPageCallback?.();
@@ -88,8 +105,8 @@ function useTableProps<T extends TableItem>(
     pageSizeOptions,
     paginationResult.offset,
     paginationResult.totalCount,
-    paginationResult.hasNextPage,
-    paginationResult.hasPreviousPage,
+    hasNextPage,
+    hasPreviousPage,
     paginationResult.onNextPage,
     paginationResult.onPreviousPage,
     paginationResult.onPageSizeChange,

@@ -22,6 +22,11 @@
     align-items: center;
     justify-content: space-between;
     padding-top: var(--bui-space-5);
+
+    /* Programmatic focus sink only (see focus handling in TablePagination). */
+    &:focus {
+      outline: none;
+    }
   }
 
   .bui-TablePaginationLeft {

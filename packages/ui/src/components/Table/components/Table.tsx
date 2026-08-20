@@ -17,6 +17,7 @@
 import { useId } from 'react-aria';
 import {
   type Key,
+  type Selection,
   ResizableTableContainer,
   Virtualizer,
 } from 'react-aria-components';
@@ -35,8 +36,9 @@ import type {
   RowConfig,
   RowRenderFn,
   TablePaginationType,
+  TableSelection,
 } from '../types';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { VisuallyHidden } from '../../VisuallyHidden';
 import { Flex } from '../../Flex';
 import { TableBodySkeleton } from './TableBodySkeleton';
@@ -66,7 +68,71 @@ function useDisabledRows<T extends TableItem>({
   }, [data, rowConfig]);
 }
 
-function useLiveRegionLabel(
+/**
+ * Rows rendered from `columnConfig` are keyed by `String(item.id)`. Adopters
+ * with numeric ids naturally pass numeric keys in `selection.selected`, so
+ * incoming keys are normalized to strings. When the adopter's selection uses
+ * numeric keys, reported keys are mapped back to the matching item's `id` so
+ * the round trip stays consistent; otherwise keys are reported unchanged.
+ */
+function useNormalizedSelection<T extends TableItem>({
+  data,
+  selectedKeys,
+  onSelectionChange,
+  enabled,
+}: {
+  data: T[] | undefined;
+  selectedKeys: TableSelection['selected'];
+  onSelectionChange: TableSelection['onSelectionChange'];
+  enabled: boolean;
+}) {
+  const normalizedSelectedKeys = useMemo(() => {
+    if (!enabled || !selectedKeys || selectedKeys === 'all') {
+      return selectedKeys;
+    }
+    return new Set<Key>(Array.from(selectedKeys, key => String(key)));
+  }, [enabled, selectedKeys]);
+
+  const handleSelectionChange = useCallback(
+    (keys: Selection) => {
+      if (!onSelectionChange) {
+        return;
+      }
+      if (!enabled || keys === 'all') {
+        onSelectionChange(keys);
+        return;
+      }
+      const originalKeys = new Map<string, Key>();
+      let usesNumericKeys = false;
+      if (selectedKeys && selectedKeys !== 'all') {
+        for (const key of selectedKeys) {
+          originalKeys.set(String(key), key);
+          usesNumericKeys ||= typeof key === 'number';
+        }
+      }
+      if (usesNumericKeys) {
+        for (const item of data ?? []) {
+          if (!originalKeys.has(String(item.id))) {
+            originalKeys.set(String(item.id), item.id);
+          }
+        }
+      }
+      onSelectionChange(
+        new Set<Key>(
+          Array.from(keys, key => originalKeys.get(String(key)) ?? key),
+        ),
+      );
+    },
+    [enabled, onSelectionChange, selectedKeys, data],
+  );
+
+  return {
+    selectedKeys: normalizedSelectedKeys,
+    onSelectionChange: onSelectionChange ? handleSelectionChange : undefined,
+  };
+}
+
+function getLiveRegionLabel(
   pagination: TablePaginationType,
   isStale: boolean,
   isLoading: boolean,
@@ -86,16 +152,21 @@ function useLiveRegionLabel(
     return 'Loading table data.';
   }
 
-  let liveRegionLabel = 'Table page loaded. ';
-
   if (getLabel) {
-    liveRegionLabel += getLabel({ pageSize, offset, totalCount });
-  } else if (offset !== undefined) {
+    return `Table page loaded. ${getLabel({ pageSize, offset, totalCount })}`;
+  }
+  if (totalCount === 0) {
+    return 'Table page loaded. No items to show.';
+  }
+  if (offset !== undefined) {
     const fromCount = offset + 1;
     const toCount = Math.min(offset + pageSize, totalCount ?? 0);
-    liveRegionLabel += `Showing ${fromCount} to ${toCount} of ${totalCount}`;
+    return `Table page loaded. Showing ${fromCount} to ${toCount} of ${totalCount}`;
   }
-  return liveRegionLabel;
+  if (totalCount !== undefined) {
+    return `Table page loaded. ${totalCount} items`;
+  }
+  return 'Table page loaded.';
 }
 
 /**
@@ -141,15 +212,22 @@ export function Table<T extends TableItem>({
 
   const isInitialLoading = pending && !data;
 
+  const normalizedSelection = useNormalizedSelection({
+    data,
+    selectedKeys,
+    onSelectionChange,
+    enabled: !isRowRenderFn(rowConfig),
+  });
+
   if (error) {
     return (
-      <div className={classes.root} style={style}>
+      <div className={classes.root} style={style} role="alert">
         Error: {error.message}
       </div>
     );
   }
 
-  const liveRegionLabel = useLiveRegionLabel(
+  const liveRegionLabel = getLiveRegionLabel(
     pagination,
     isStale,
     isInitialLoading,
@@ -202,8 +280,8 @@ export function Table<T extends TableItem>({
                 : {
                     selectionMode,
                     selectionBehavior,
-                    selectedKeys,
-                    onSelectionChange,
+                    selectedKeys: normalizedSelection.selectedKeys,
+                    onSelectionChange: normalizedSelection.onSelectionChange,
                   })}
               sortDescriptor={sort?.descriptor ?? undefined}
               onSortChange={sort?.onSortChange}

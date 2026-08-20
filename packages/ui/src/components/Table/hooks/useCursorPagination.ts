@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import type { TableItem } from '../types';
 import type {
   UseTableCursorOptions,
@@ -37,6 +37,16 @@ export function useCursorPagination<T extends TableItem, TFilter>(
   const { sort, filter, search } = query;
 
   const [pageSize, setPageSize] = useState(defaultPageSize);
+
+  // Follow the caller's `paginationOptions.pageSize` when it changes after
+  // mount, matching the behavior of complete mode.
+  const prevDefaultPageSizeRef = useRef(defaultPageSize);
+  useEffect(() => {
+    if (prevDefaultPageSizeRef.current !== defaultPageSize) {
+      prevDefaultPageSizeRef.current = defaultPageSize;
+      setPageSize(defaultPageSize);
+    }
+  }, [defaultPageSize]);
 
   const wrappedGetData = useCallback(
     async ({
@@ -69,7 +79,25 @@ export function useCursorPagination<T extends TableItem, TFilter>(
 
   const cache = usePageCache<T, string>({ getData: wrappedGetData });
 
-  useDebouncedReload(query, pageSize, cache.reload);
+  const debouncedReload = useDebouncedReload(query, pageSize, cache.reload);
+
+  // When the query or page size changed but the debounced reload has not run
+  // yet, navigating would fetch a page for the new query at the old position.
+  // Flush the pending reload instead so the table lands on the first page of
+  // the new result set.
+  const { flush } = debouncedReload;
+  const { onNextPage: cacheNextPage, onPreviousPage: cachePreviousPage } =
+    cache;
+  const onNextPage = useCallback(() => {
+    if (!flush()) {
+      cacheNextPage();
+    }
+  }, [flush, cacheNextPage]);
+  const onPreviousPage = useCallback(() => {
+    if (!flush()) {
+      cachePreviousPage();
+    }
+  }, [flush, cachePreviousPage]);
 
   const onPageSizeChange = useCallback(
     (newSize: number) => setPageSize(newSize),
@@ -85,8 +113,8 @@ export function useCursorPagination<T extends TableItem, TFilter>(
     pageSize,
     hasNextPage: cache.hasNextPage,
     hasPreviousPage: cache.hasPreviousPage,
-    onNextPage: cache.onNextPage,
-    onPreviousPage: cache.onPreviousPage,
+    onNextPage,
+    onPreviousPage,
     onPageSizeChange,
     reload: cache.reload,
   };
