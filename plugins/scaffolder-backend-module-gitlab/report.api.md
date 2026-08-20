@@ -160,7 +160,7 @@ export const createGitlabRepoPushAction: (options: {
   {
     projectid: string;
     projectPath: string;
-    commitHash: string;
+    commitHash?: string | undefined;
   },
   'v2'
 >;

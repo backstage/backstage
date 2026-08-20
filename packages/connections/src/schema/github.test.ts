@@ -13,165 +13,86 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { mockServices } from '@backstage/backend-test-utils';
-import { DefaultConnectionsService } from '../api';
+import { GithubConnectionType } from './github';
 
-describe('matchAuth', () => {
-  it('picks the app whose orgs contains the URL org', async () => {
-    const service = DefaultConnectionsService.create({
-      logger: mockServices.logger.mock(),
-      config: mockServices.rootConfig({
-        data: {
-          connections: [
-            {
-              type: 'github',
-              host: 'matchauth.example.com',
-              auth: [
-                {
-                  method: 'app',
-                  appId: 1,
-                  privateKey: 'pk-acme',
-                  clientId: 'client-acme',
-                  clientSecret: 'secret-acme',
-                  orgs: ['acme'],
-                },
-                {
-                  method: 'app',
-                  appId: 2,
-                  privateKey: 'pk-widgets',
-                  clientId: 'client-widgets',
-                  clientSecret: 'secret-widgets',
-                  orgs: ['widgets'],
-                },
-              ],
-            },
-          ],
-        },
-      }),
-    });
-    const catalog = service.forPlugin('catalog');
+const app = (appId: number, orgs?: string[]) => ({
+  method: 'app' as const,
+  title: 'GitHub App',
+  appId,
+  privateKey: 'private-key',
+  clientId: 'client-id',
+  clientSecret: 'client-secret',
+  orgs,
+});
 
-    const acme = await catalog.find({
-      type: 'github',
-      url: 'https://matchauth.example.com/acme/repo',
-      authMethods: ['app'],
-    });
-    const widgets = await catalog.find({
-      type: 'github',
-      url: 'https://matchauth.example.com/widgets/other-repo',
-      authMethods: ['app'],
+describe('GithubConnectionType', () => {
+  describe('matchAuth', () => {
+    it('selects an app matching the organization', () => {
+      const unrestricted = app(3);
+      const first = app(1, ['first']);
+      const second = app(2, ['second']);
+
+      expect(
+        GithubConnectionType.matchAuth?.([unrestricted, first, second], {
+          url: 'https://github.com/second/repository',
+        }),
+      ).toBe(second);
     });
 
-    expect((acme?.auth as { appId: number }).appId).toBe(1);
-    expect((widgets?.auth as { appId: number }).appId).toBe(2);
-  });
+    it('falls back to an unrestricted app when the organization does not match', () => {
+      const unrestricted = app(3);
+      const token = {
+        method: 'token' as const,
+        title: 'Token',
+        token: 'token',
+      };
 
-  it('falls back to the unrestricted app when no orgs matches', async () => {
-    const service = DefaultConnectionsService.create({
-      logger: mockServices.logger.mock(),
-      config: mockServices.rootConfig({
-        data: {
-          connections: [
-            {
-              type: 'github',
-              host: 'matchauth.example.com',
-              auth: [
-                {
-                  method: 'app',
-                  appId: 2,
-                  privateKey: 'pk-widgets',
-                  clientId: 'client-widgets',
-                  clientSecret: 'secret-widgets',
-                  orgs: ['widgets'],
-                },
-                {
-                  method: 'app',
-                  appId: 3,
-                  privateKey: 'pk-fallback',
-                  clientId: 'client-fallback',
-                  clientSecret: 'secret-fallback',
-                },
-              ],
-            },
-          ],
-        },
-      }),
+      expect(
+        GithubConnectionType.matchAuth?.(
+          [app(1, ['first']), token, unrestricted, app(2, ['second'])],
+          { url: 'https://github.com/example/repository' },
+        ),
+      ).toBe(unrestricted);
     });
 
-    const connection = await service.forPlugin('catalog').find({
-      type: 'github',
-      url: 'https://matchauth.example.com/unknown-org/repo',
-      authMethods: ['app'],
+    it('treats an app with no organizations as unrestricted', () => {
+      const unrestricted = app(3, []);
+
+      expect(
+        GithubConnectionType.matchAuth?.([app(1, ['first']), unrestricted], {
+          url: 'https://github.com/example/repository',
+        }),
+      ).toBe(unrestricted);
     });
 
-    expect((connection?.auth as { appId: number }).appId).toBe(3);
-  });
+    it('falls back to the only app when the organization does not match', () => {
+      const onlyApp = app(1, ['another-org']);
+      const token = {
+        method: 'token' as const,
+        title: 'Token',
+        token: 'token',
+      };
 
-  it('does not return an app scoped to a different org when the requested org has no app', async () => {
-    const service = DefaultConnectionsService.create({
-      logger: mockServices.logger.mock(),
-      config: mockServices.rootConfig({
-        data: {
-          connections: [
-            {
-              type: 'github',
-              host: 'matchauth.example.com',
-              auth: [
-                {
-                  method: 'app',
-                  appId: 2,
-                  privateKey: 'pk-widgets',
-                  clientId: 'client-widgets',
-                  clientSecret: 'secret-widgets',
-                  orgs: ['widgets'],
-                },
-              ],
-            },
-          ],
-        },
-      }),
+      expect(
+        GithubConnectionType.matchAuth?.([onlyApp, token], {
+          url: 'https://github.com/example/repository',
+        }),
+      ).toBe(onlyApp);
     });
 
-    await expect(
-      service.forPlugin('catalog').find({
-        type: 'github',
-        url: 'https://matchauth.example.com/acme/repo',
-        authMethods: ['app'],
-      }),
-    ).rejects.toThrow(/Connection not found for type "github"/);
-  });
+    it('falls back to a token when multiple apps do not match', () => {
+      const token = {
+        method: 'token' as const,
+        title: 'Token',
+        token: 'token',
+      };
 
-  it('matchAuth returns undefined when trying to fetch a token that doesnt exist', async () => {
-    const service = DefaultConnectionsService.create({
-      logger: mockServices.logger.mock(),
-      config: mockServices.rootConfig({
-        data: {
-          connections: [
-            {
-              type: 'github',
-              host: 'matchauth.example.com',
-              auth: [
-                {
-                  method: 'app',
-                  appId: 2,
-                  privateKey: 'pk-widgets',
-                  clientId: 'client-widgets',
-                  clientSecret: 'secret-widgets',
-                  orgs: ['widgets'],
-                },
-              ],
-            },
-          ],
-        },
-      }),
+      expect(
+        GithubConnectionType.matchAuth?.(
+          [app(1, ['first']), app(2, ['second']), token],
+          { url: 'https://github.com/example/repository' },
+        ),
+      ).toBe(token);
     });
-
-    await expect(
-      service.forPlugin('catalog').find({
-        type: 'github',
-        url: 'https://matchauth.example.com/acme/repo',
-        authMethods: ['token'],
-      }),
-    ).rejects.toThrow(/Connection not found for type "github"/);
   });
 });

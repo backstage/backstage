@@ -1,5 +1,82 @@
 # @backstage/repo-tools
 
+## 0.19.0
+
+### Minor Changes
+
+- 0804116: **BREAKING**: Renamed the `repo schema openapi verify` command to `repo schema openapi validate`. Added a new `package schema openapi validate` command to validate that an OpenAPI spec is a valid OpenAPI 3.x document.
+
+### Patch Changes
+
+- 226817d: chore(deps): bump `js-yaml` from 4.2.0 to 4.3.0
+- 78bf918: chore(deps): bump `tar` from 7.5.15 to 7.5.21
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/config-loader@1.11.2
+  - @backstage/backend-plugin-api@1.10.0
+
+## 0.18.1-next.1
+
+### Patch Changes
+
+- 78bf918: chore(deps): bump `tar` from 7.5.15 to 7.5.21
+- Updated dependencies
+  - @backstage/config-loader@1.11.2-next.0
+  - @backstage/backend-plugin-api@1.10.0-next.1
+
+## 0.18.1-next.0
+
+### Patch Changes
+
+- 226817d: chore(deps): bump `js-yaml` from 4.2.0 to 4.3.0
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+
+## 0.18.0
+
+### Minor Changes
+
+- 84171b3: **BREAKING**: Replaced `@useoptic/optic` and `@useoptic/openapi-utilities` with `oasdiff` for OpenAPI breaking change detection.
+
+  To migrate, remove `@useoptic/optic` from your root `package.json` and install the `oasdiff` CLI on your system — see https://github.com/oasdiff/oasdiff#installation for instructions.
+
+  The `package schema openapi diff` command now uses `oasdiff` under the hood. The `--since`, `--json`, and `--ignore` flags continue to work, but the JSON and text output formats have changed to match `oasdiff`'s native output.
+
+  The `repo schema openapi diff` command now automatically detects all packages with a changed `src/schema/openapi.yaml` and runs `oasdiff` against them directly. Packages no longer need a `"diff"` script in their `package.json` to be included in the check.
+
+  Removed the `package schema openapi init` and `repo schema openapi test` commands, which depended on the Optic `capture` workflow and have no equivalent with `oasdiff`. Runtime validation of your API against its OpenAPI spec is still available via `wrapServer` from `@backstage/backend-openapi-utils/testUtils`.
+
+### Patch Changes
+
+- 120e7c3: chore(deps): bump `js-yaml` from 4.1.1 to 4.2.0
+- Updated dependencies
+  - @backstage/config-loader@1.11.0
+  - @backstage/cli-common@0.3.0
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/cli-node@0.3.4
+
+## 0.18.0-next.1
+
+### Minor Changes
+
+- 84171b3: **BREAKING**: Replaced `@useoptic/optic` and `@useoptic/openapi-utilities` with `oasdiff` for OpenAPI breaking change detection.
+
+  To migrate, remove `@useoptic/optic` from your root `package.json` and install the `oasdiff` CLI on your system — see https://github.com/oasdiff/oasdiff#installation for instructions.
+
+  The `package schema openapi diff` command now uses `oasdiff` under the hood. The `--since`, `--json`, and `--ignore` flags continue to work, but the JSON and text output formats have changed to match `oasdiff`'s native output.
+
+  The `repo schema openapi diff` command now automatically detects all packages with a changed `src/schema/openapi.yaml` and runs `oasdiff` against them directly. Packages no longer need a `"diff"` script in their `package.json` to be included in the check.
+
+  Removed the `package schema openapi init` and `repo schema openapi test` commands, which depended on the Optic `capture` workflow and have no equivalent with `oasdiff`. Runtime validation of your API against its OpenAPI spec is still available via `wrapServer` from `@backstage/backend-openapi-utils/testUtils`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.3.0-next.0
+  - @backstage/backend-plugin-api@1.9.3-next.1
+  - @backstage/cli-node@0.3.4-next.0
+  - @backstage/config-loader@1.11.0-next.2
+
 ## 0.17.4-next.0
 
 ### Patch Changes

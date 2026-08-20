@@ -1,5 +1,56 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.21.7
+
+### Patch Changes
+
+- 684c9b9: Fixed `AwsIamStrategy` to resolve account-specific AWS credentials when an assume role ARN is configured, enabling support for `webIdentityTokenFile` and `accountDefaults` in environments without default AWS credentials.
+- c6af8ac: Added audit logging for kubernetes-backend routes. The plugin now emits auditor events for cluster list, cluster proxy, entity workload queries, custom resource queries, and the deprecated services endpoint. Administrators can filter audit logs by `eventId` values `cluster-fetch` and `resource-fetch`, and by `queryType` in event metadata.
+
+  `KubernetesProxyOptions` accepts an optional `auditor` for adopters that construct the proxy directly. When omitted, proxy requests are handled as before without audit events.
+
+- bac00a5: The Kubernetes API proxy now refreshes cached middleware when cluster details change, after a configurable TTL, or when the cache reaches its size limit. At startup, the backend logs a warning for each cluster configured with `skipTLSVerify: true`. Invalid cache configuration values fall back to defaults. Optional configuration is available under `kubernetes.proxy.middlewareCache`.
+- f0834bd: Added a `kubernetes.clusterLocatorContinueOnError` configuration option. When set to `true`, a failing cluster locator no longer causes the entire cluster list request to fail — errors are logged and clusters from the remaining successful locators are still returned. The default is `false`, preserving the existing behavior.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/integration-aws-node@0.2.1
+  - @backstage/plugin-permission-common@0.9.10
+  - @backstage/plugin-permission-node@0.11.3
+  - @backstage/plugin-catalog-node@2.2.4
+  - @backstage/plugin-kubernetes-node@0.4.7
+
+## 0.22.0-next.1
+
+### Minor Changes
+
+- c6af8ac: Added audit logging for kubernetes-backend routes. The plugin now emits auditor events for cluster list, cluster proxy, entity workload queries, custom resource queries, and the deprecated services endpoint. Administrators can filter audit logs by `eventId` values `cluster-fetch` and `resource-fetch`, and by `queryType` in event metadata.
+
+  **BREAKING**: `KubernetesProxyOptions` now requires `AuditorService`.
+
+## 0.21.7-next.0
+
+### Patch Changes
+
+- 684c9b9: Fixed `AwsIamStrategy` to resolve account-specific AWS credentials when an assume role ARN is configured, enabling support for `webIdentityTokenFile` and `accountDefaults` in environments without default AWS credentials.
+- f0834bd: Added a `kubernetes.clusterLocatorContinueOnError` configuration option. When set to `true`, a failing cluster locator no longer causes the entire cluster list request to fail — errors are logged and clusters from the remaining successful locators are still returned. The default is `false`, preserving the existing behavior.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-kubernetes-node@0.4.7-next.0
+  - @backstage/plugin-permission-node@0.11.3-next.0
+  - @backstage/plugin-catalog-node@2.2.4-next.0
+
+## 0.21.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/catalog-client@1.16.1
+  - @backstage/plugin-catalog-node@2.2.3
+  - @backstage/plugin-kubernetes-node@0.4.6
+  - @backstage/plugin-permission-node@0.11.2
+
 ## 0.21.6-next.0
 
 ### Patch Changes

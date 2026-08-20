@@ -26,10 +26,12 @@ export const GoogleGcsConnectionType = createConnectionType({
   authMethods: [
     {
       method: 'none',
+      title: 'None',
       configSchema: z.object({}),
     },
     {
       method: 'serviceAccount',
+      title: 'Service Account',
       configSchema: z.object({
         clientEmail: z.string(),
         privateKey: z.string(),

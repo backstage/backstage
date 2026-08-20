@@ -78,7 +78,7 @@ By default all internal users are allowed to create and delete entities. If this
 
 ## Scaffolder
 
-By default, Scaffolding jobs execute directly on the host machine, including any actions defined in the template. Because the Scaffolder templates are considered a more sensitive area it is recommended to control access to create and update templates to trusted parties. Template execution is intended to be secure regardless of input, but we still recommend this additional layer of protection. The string templating is executed in a [node VM sandbox](https://github.com/laverdet/isolated-vm) to mitigate the possibility of remote code execution attacks.
+By default, Scaffolding jobs execute directly on the host machine, including any actions defined in the template. Because the Scaffolder templates are considered a more sensitive area it is recommended to control access to create and update templates to trusted parties. Template execution is intended to be secure regardless of input, but we still recommend this additional layer of protection. String templates are evaluated by the [closed interpreter in Nunjitsu](https://github.com/Rugvip/nunjitsu/blob/main/docs/security.md), which prevents templates from accessing the surrounding Node.js process.
 
 The Scaffolder often has elevated permissions to for example create repositories in a GitHub organization. The operator should therefore be cautious of Scaffolder Templates that for example delete or update existing resources as the user input is typically user defined and can therefore delete or modify resources maliciously or by mistake.
 

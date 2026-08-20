@@ -13,7 +13,7 @@ jobs:
           egress-policy: audit
 
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           # 'v' prefix is added here for the tag, we keep it out of the manifest logic
           ref: v${{ github.event.client_payload.version }}
@@ -23,7 +23,6 @@ jobs:
         with:
           node-version: 22.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
-          corepack: true
 
       - name: yarn install
         uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
@@ -36,7 +35,7 @@ jobs:
 
       # Checkout backstage/versions into /backstage/versions, which is where store the output
       - name: Checkout versions
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           repository: backstage/versions
           path: versions

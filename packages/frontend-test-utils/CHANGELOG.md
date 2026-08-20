@@ -1,5 +1,60 @@
 # @backstage/frontend-test-utils
 
+## 0.6.3
+
+### Patch Changes
+
+- bd435c3: Identity mocks passed to `renderInTestApp` (for example via `mockApis.identity(...)`) are now applied before the app's built-in guest fallback, so the configured `userEntityRef` reliably takes effect in tests instead of being silently overwritten by the default guest user.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/core-app-api@1.20.4
+  - @backstage/test-utils@1.7.21
+  - @backstage/plugin-permission-common@0.9.10
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/plugin-app@0.5.2
+  - @backstage/frontend-app-api@0.16.7
+  - @backstage/plugin-app-react@0.2.6
+  - @backstage/plugin-permission-react@0.5.4
+
+## 0.6.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.5.2-next.2
+  - @backstage/frontend-plugin-api@0.18.0-next.0
+  - @backstage/frontend-app-api@0.16.7-next.1
+  - @backstage/plugin-app-react@0.2.6-next.0
+  - @backstage/core-plugin-api@1.12.9-next.0
+  - @backstage/core-app-api@1.20.4-next.1
+  - @backstage/test-utils@1.7.21-next.1
+  - @backstage/plugin-permission-react@0.5.4-next.0
+
+## 0.6.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.5.2-next.0
+  - @backstage/core-app-api@1.20.4-next.0
+  - @backstage/frontend-app-api@0.16.7-next.0
+  - @backstage/test-utils@1.7.21-next.0
+
+## 0.6.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.3
+  - @backstage/plugin-app@0.5.1
+  - @backstage/core-app-api@1.20.3
+  - @backstage/frontend-app-api@0.16.6
+  - @backstage/filter-predicates@0.1.4
+  - @backstage/core-plugin-api@1.12.8
+  - @backstage/test-utils@1.7.20
+  - @backstage/plugin-app-react@0.2.5
+  - @backstage/plugin-permission-react@0.5.3
+
 ## 0.6.2-next.0
 
 ### Patch Changes

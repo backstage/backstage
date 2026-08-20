@@ -30,6 +30,7 @@
     user-select: none;
     font-family: var(--bui-font-regular);
     font-weight: var(--bui-font-weight-bold);
+    line-height: 1.15;
     padding: 0;
     cursor: pointer;
     border-radius: var(--bui-radius-2);

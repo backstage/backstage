@@ -40,10 +40,14 @@ export class FrontendHostDiscovery implements DiscoveryApi {
    *        internal: https://internal.example.com/search
    *        external: https://example.com/search
    *      plugins: [search]
+   *    - target: https://example.com/api/{{pluginId}}
+   *      plugins: ['*']
    * ```
    *
-   * If a plugin is not declared in the config, the discovery will fall back to using the baseUrl with
-   * the provided `pathPattern` appended. The default path pattern is `"/api/{{ pluginId }}"`.
+   * If a plugin is not declared in the config, discovery will first use the
+   * wildcard target, if one is configured, and otherwise fall back to using
+   * the baseUrl with the provided `pathPattern` appended. The default path
+   * pattern is `"/api/{{ pluginId }}"`.
    */
   static fromConfig(config: Config, options?: { pathPattern?: string }) {
     const path = options?.pathPattern ?? '/api/{{ pluginId }}';
@@ -83,7 +87,7 @@ export class FrontendHostDiscovery implements DiscoveryApi {
   }
 
   async getBaseUrl(pluginId: string): Promise<string> {
-    const endpoint = this.endpoints.get(pluginId);
+    const endpoint = this.endpoints.get(pluginId) ?? this.endpoints.get('*');
     if (endpoint) {
       return endpoint.getBaseUrl(pluginId);
     }

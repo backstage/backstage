@@ -111,7 +111,8 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
           attributes: {
             // Inspired by the @modelcontextprotocol/sdk defaults for the hints.
             // https://github.com/modelcontextprotocol/typescript-sdk/blob/dd69efa1de8646bb6b195ff8d5f52e13739f4550/src/types.ts#L777-L812
-            destructive: action.attributes?.destructive ?? true,
+            destructive:
+              action.attributes?.destructive ?? !action.attributes?.readOnly,
             idempotent: action.attributes?.idempotent ?? false,
             readOnly: action.attributes?.readOnly ?? false,
           },

@@ -2,7 +2,7 @@
 id: configuration
 title: Configuring Kubernetes integration
 sidebar_label: Configuration
-description: Configuring the Kubernetes integration for Backstage expose your entity's objects
+description: Configuring the Kubernetes integration for Backstage to expose your entity's objects
 ---
 
 Configuring the Backstage Kubernetes integration involves two steps:
@@ -124,9 +124,28 @@ Valid values are:
 - `multiTenant` - This configuration assumes that all components run on all the
   provided clusters.
 
-- `singleTenant` - This configuration assumes that current component run on one cluster in provided clusters.
+- `singleTenant` - This configuration assumes that the current component runs on one cluster in the provided clusters.
 
-- `catalogRelation` - This configuration assumes that the current component runs only on all clusters it is dependant on.
+- `catalogRelation` - This configuration assumes that the current component runs only on all clusters it is dependent on.
+
+### `clusterLocatorContinueOnError` (optional)
+
+Controls whether the Kubernetes backend continues returning clusters when one
+or more cluster locators fail. When set to `true`, errors from individual
+locators are logged and clusters from the remaining successful locators are
+still returned. When set to `false` (the default), a single locator failure
+causes the entire cluster list request to fail.
+
+This is useful when you have multiple cluster locators configured and want to
+avoid a problem with one source (for example, a permission error in a single GKE
+project) from blocking all other clusters.
+
+```yaml
+kubernetes:
+  clusterLocatorContinueOnError: true
+```
+
+The default value is `false`.
 
 ### `clusterLocatorMethods`
 
@@ -354,7 +373,7 @@ application whose `clientId` is used by the auth provider should be granted the
 `openid` scope), `google`, `microsoft`, `okta`, `onelogin`.
 
 Take note that `oidcTokenProvider` is just the issuer for the token, you can use any
-of these with an OIDC enabled cluster, like using `microsoft` as the issuer for a EKS
+of these with an OIDC enabled cluster, like using `microsoft` as the issuer for an EKS
 cluster.
 
 ##### `clusters.\*.dashboardUrl` (optional)
@@ -395,7 +414,7 @@ clusterLinksFormatters.myDashboard = (options) => ...;
 ```
 
 See also
-https://github.com/backstage/backstage/tree/master/plugins/kubernetes/src/utils/clusterLinks/formatters
+<https://github.com/backstage/backstage/tree/master/plugins/kubernetes-react/src/api/formatters>
 for real examples.
 
 ##### `clusters.\*.dashboardParameters` (optional)
@@ -445,14 +464,14 @@ This value could be obtained via inspecting the `kubeconfig` file (usually
 at `~/.kube/config`) under `clusters[*].cluster.certificate-authority-data`. For
 GKE, execute the following command to obtain the value
 
-```
+```shell
 gcloud container clusters describe <YOUR_CLUSTER_NAME> \
     --zone=<YOUR_COMPUTE_ZONE> \
     --format="value(masterAuth.clusterCaCertificate)"
 ```
 
 See also
-https://cloud.google.com/kubernetes-engine/docs/how-to/api-server-authentication#environments-without-gcloud
+<https://cloud.google.com/kubernetes-engine/docs/how-to/api-server-authentication#environments-without-gcloud>
 for complete docs about GKE without `gcloud`.
 
 ##### `clusters.\*.caFile` (optional)
@@ -554,7 +573,7 @@ about resources.
 Defaults to `google` which leverages the logged in user's Google OAuth credentials.
 
 Set to `googleServiceAccount` to leverage
-Application Default Credentials (https://cloud.google.com/docs/authentication/application-default-credentials).
+Application Default Credentials (<https://cloud.google.com/docs/authentication/application-default-credentials>).
 To use a service account JSON key (not recommended), set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable
 on the Backstage backend to the path of the service account key file.
 
@@ -593,6 +612,28 @@ If the configuration-based cluster locators do not work for your use-case,
 it is also possible to implement a
 [custom `KubernetesClustersSupplier`](installation.md#custom-cluster-discovery).
 
+### `proxy` (optional)
+
+Options for the Kubernetes API proxy (`/api/kubernetes/proxy`).
+
+#### `proxy.middlewareCache` (optional)
+
+The proxy caches one `http-proxy-middleware` instance per cluster. Entries are refreshed when cluster details change, after a configurable TTL, or when the cache reaches its size limit.
+
+Clusters from **config** are loaded when the backend starts; changing `app-config` still requires a restart for those values to refresh. Catalog and other dynamic cluster sources can pick up cluster detail changes without a restart once the cluster supplier returns new details.
+
+```yaml
+kubernetes:
+  proxy:
+    middlewareCache:
+      maxSize: 100
+      ttl:
+        milliseconds: 60000
+```
+
+- `maxSize` — maximum cached middleware instances (default `100`).
+- `ttl.milliseconds` — cache entry lifetime in milliseconds (default `60000`).
+
 ### `customResources` (optional)
 
 Configures which [custom resources][3] to look for by default when returning an entity's
@@ -600,7 +641,7 @@ Kubernetes resources.
 
 **Notes:**
 
-- The optional `kubernetes.customResources` property is overrode by `customResources` at the [clusters level](#clusterscustomresources-optional).
+- The optional `kubernetes.customResources` property is overridden by `customResources` at the [clusters level](#clusterscustomresources-optional).
 
 Defaults to empty array. Example:
 

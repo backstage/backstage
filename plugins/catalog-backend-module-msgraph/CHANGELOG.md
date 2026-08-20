@@ -1,5 +1,31 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.10.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-catalog-node@2.2.4
+
+## 0.10.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-catalog-node@2.2.4-next.0
+
+## 0.10.4
+
+### Patch Changes
+
+- 06bf22e: Configuring `userGroupMember.path` together with `user.filter` is now rejected with a configuration error, as the two options are mutually exclusive. This matches the existing validation for `userGroupMember.filter` and `userGroupMember.search`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/plugin-catalog-node@2.2.3
+
 ## 0.10.4-next.0
 
 ### Patch Changes

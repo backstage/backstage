@@ -23,7 +23,6 @@ import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { createBackendPlugin } from '@backstage/backend-plugin-api';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
-import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
 import { ListToolsResultSchema } from '@modelcontextprotocol/sdk/types.js';
 import request from 'supertest';
 
@@ -51,7 +50,7 @@ describe('Mcp Backend', () => {
     },
   });
 
-  const getContext = async () => {
+  const getContext = async (instructions?: string) => {
     const { server } = await startTestBackend({
       features: [
         mcpPlugin,
@@ -65,6 +64,7 @@ describe('Mcp Backend', () => {
                 pluginSources: ['local'],
               },
             },
+            ...(instructions && { mcpActions: { instructions } }),
           },
         }),
       ],
@@ -86,7 +86,7 @@ describe('Mcp Backend', () => {
     };
   };
 
-  it('should support streamable spec', async () => {
+  it('should only support the streamable HTTP transport', async () => {
     const { client, serverAddress } = await getContext();
     const transport = new StreamableHTTPClientTransport(
       new URL(`${serverAddress}/api/mcp-actions/v1`),
@@ -125,49 +125,23 @@ describe('Mcp Backend', () => {
         name: 'local.make-greeting',
       },
     ]);
+
+    const legacyResponse = await request(serverAddress).get(
+      '/api/mcp-actions/v1/sse',
+    );
+    expect(legacyResponse.status).toBe(404);
   });
 
-  it('should support sse spec', async () => {
-    const { client, serverAddress } = await getContext();
-    const transport = new SSEClientTransport(
-      new URL(`${serverAddress}/api/mcp-actions/v1/sse`),
+  it('should return configured instructions for the default server', async () => {
+    const instructions = 'Use catalog tools before scaffolder tools.';
+    const { client, serverAddress } = await getContext(instructions);
+    const transport = new StreamableHTTPClientTransport(
+      new URL(`${serverAddress}/api/mcp-actions/v1`),
     );
 
     await client.connect(transport);
 
-    const result = await client.request(
-      {
-        method: 'tools/list',
-      },
-      ListToolsResultSchema,
-    );
-
-    await client.close();
-
-    expect(result.tools).toEqual([
-      {
-        annotations: {
-          destructiveHint: true,
-          idempotentHint: false,
-          openWorldHint: false,
-          readOnlyHint: false,
-          title: 'Make Greeting',
-        },
-        description: 'Make a greeting',
-        inputSchema: {
-          $schema: 'http://json-schema.org/draft-07/schema#',
-          additionalProperties: false,
-          properties: {
-            name: {
-              type: 'string',
-            },
-          },
-          required: ['name'],
-          type: 'object',
-        },
-        name: 'local.make-greeting',
-      },
-    ]);
+    expect(client.getInstructions()).toBe(instructions);
   });
 
   describe('multi-server routing', () => {
@@ -236,12 +210,14 @@ describe('Mcp Backend', () => {
                 servers: {
                   catalog: {
                     name: 'Catalog Server',
+                    instructions: 'Use this server to inspect the catalog.',
                     filter: {
                       include: [{ id: 'catalog-actions:*' }],
                     },
                   },
                   scaffolder: {
                     name: 'Scaffolder Server',
+                    instructions: 'Use this server to create components.',
                     filter: {
                       include: [{ id: 'scaffolder-actions:*' }],
                     },
@@ -264,6 +240,9 @@ describe('Mcp Backend', () => {
         new URL(`${serverAddress}/api/mcp-actions/v1/catalog`),
       );
       await catalogClient.connect(catalogTransport);
+      expect(catalogClient.getInstructions()).toBe(
+        'Use this server to inspect the catalog.',
+      );
       const catalogResult = await catalogClient.request(
         { method: 'tools/list' },
         ListToolsResultSchema,
@@ -276,6 +255,9 @@ describe('Mcp Backend', () => {
         new URL(`${serverAddress}/api/mcp-actions/v1/scaffolder`),
       );
       await scaffolderClient.connect(scaffolderTransport);
+      expect(scaffolderClient.getInstructions()).toBe(
+        'Use this server to create components.',
+      );
       const scaffolderResult = await scaffolderClient.request(
         { method: 'tools/list' },
         ListToolsResultSchema,
@@ -351,6 +333,49 @@ describe('Mcp Backend', () => {
       expect(response.body.authorization_servers[0]).toContain(
         `${mockExternalBaseUrl}/`,
       );
+      expect(response.body.scopes_supported).toEqual(['openid']);
+    });
+
+    it('should include offline_access in scopes_supported when refresh tokens are enabled', async () => {
+      const mockExternalBaseUrl = 'http://external.local:0/api';
+      const mockDiscovery = mockServices.discovery.mock({
+        getExternalBaseUrl: async pluginId =>
+          `${mockExternalBaseUrl}/${pluginId}`,
+      });
+
+      const { server } = await startTestBackend({
+        features: [
+          mcpPlugin,
+          mockPluginWithActions,
+          mockDiscovery.factory,
+          mockServices.rootConfig.factory({
+            data: {
+              backend: {
+                actions: {
+                  pluginSources: ['local'],
+                },
+              },
+              auth: {
+                experimentalDynamicClientRegistration: {
+                  enabled: true,
+                },
+                experimentalRefreshToken: {
+                  enabled: true,
+                },
+              },
+            },
+          }),
+        ],
+      });
+
+      const response = await request(server).get(
+        '/.well-known/oauth-protected-resource/api/mcp-actions/v1',
+      );
+      expect(response.status).toBe(200);
+      expect(response.body.scopes_supported).toEqual([
+        'openid',
+        'offline_access',
+      ]);
     });
 
     const pathTestCases = [
@@ -409,6 +434,7 @@ describe('Mcp Backend', () => {
         expect(response.body.authorization_servers[0]).toContain(
           `${mockExternalBaseUrl}/`,
         );
+        expect(response.body.scopes_supported).toEqual(['openid']);
       },
     );
 
@@ -425,7 +451,7 @@ describe('Mcp Backend', () => {
                 },
               },
               auth: {
-                experimentalClientIdMetadataDocuments: {
+                clientIdMetadataDocuments: {
                   enabled: true,
                 },
               },
@@ -441,6 +467,28 @@ describe('Mcp Backend', () => {
       expect(response.body.resource).toMatch(/\/api\/mcp-actions\/v1$/);
       expect(response.body.authorization_servers).toHaveLength(1);
       expect(response.body.authorization_servers[0]).toMatch(/\/api\/auth$/);
+      expect(response.body.scopes_supported).toEqual(['openid']);
+    });
+
+    it('should support the deprecated experimental CIMD configuration', async () => {
+      const { server } = await startTestBackend({
+        features: [
+          mcpPlugin,
+          mockPluginWithActions,
+          mockServices.rootConfig.factory({
+            data: {
+              backend: { actions: { pluginSources: ['local'] } },
+              auth: {
+                experimentalClientIdMetadataDocuments: { enabled: true },
+              },
+            },
+          }),
+        ],
+      });
+
+      await request(server)
+        .get('/.well-known/oauth-protected-resource/api/mcp-actions/v1')
+        .expect(200);
     });
   });
 });

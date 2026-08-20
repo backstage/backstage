@@ -1,5 +1,30 @@
 # @backstage/plugin-search-backend-module-stack-overflow-collator
 
+## 0.3.23
+
+### Patch Changes
+
+- 0dee0e6: Migrated tests from MSW v1 to MSW v2.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-search-backend-node@1.4.7
+
+## 0.3.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-search-backend-node@1.4.7-next.0
+
+## 0.3.22
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/plugin-search-backend-node@1.4.6
+
 ## 0.3.22-next.0
 
 ### Patch Changes

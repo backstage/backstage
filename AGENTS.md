@@ -29,6 +29,8 @@ The following files contain guidelines for the project:
 - `/SECURITY.md`: guidelines for security.
 - `/docs/architecture-decisions/`: contains the architecture decisions for the project.
 
+All new source files (`.ts`, `.tsx`, `.js`, `.jsx`) must include an Apache 2.0 copyright header with the current year. This does not apply to generated files, configuration files (JSON, YAML), or documentation files. Do NOT update the copyright year on existing files — leave the original year as-is.
+
 When writing or generating code, always match the existing coding style of each individual package and file. Different packages in the monorepo may have different conventions — consistency within a package is more important than consistency across the repo.
 
 When writing or generating tests, prefer fewer thorough tests with multiple assertions over many small tests. When using React Testing Library, prefer using `screen` and `.findBy*` queries over `waitFor`, and avoid adding test IDs to the implementation.
@@ -50,7 +52,11 @@ You MUST NOT run builds or create a release by running `yarn build`, `yarn chang
 
 All changes that affect the published version of packages in the `/packages` and `/plugins` directories must be accompanied by a changeset. Changes outside of these directories (e.g. `.patches/`, `.github/`, `docs/`, root config files) do not need changesets. Only non-private packages require changesets. See the guidelines in `/CONTRIBUTING.md#creating-changesets` for information on how to write good changesets. Changesets are stored in the `/.changeset` directory and should be created by writing changeset files directly — never use the changeset CLI. Breaking changes must be accompanied by a `minor` version bump for packages below version `1.0.0`, or a `major` version bump for packages at version `1.0.0` or higher. For non-breaking changes that introduce new APIs or features, use `minor` for packages at version `1.0.0` or higher, and `patch` for packages below `1.0.0`. Each changeset message should be relevant to the specific package it targets and written for Backstage adopters as the audience — describe user-facing behavior changes in plain language. Never reference internal implementation details such as function names, class names, variable names, or other code symbols that are not part of the public API. If a change spans multiple packages you often need to create separate changesets to make sure they are tailored to each package.
 
-When creating pull requests, use the template at `/.github/PULL_REQUEST_TEMPLATE.md`.
+Changes that introduce new features or modify existing behavior must include documentation updates. Documentation should be placed in [TSDoc](https://tsdoc.org) comments, the package README, or within the `/docs` folder, whichever is most appropriate. Documentation should follow the style guide at `/docs/contribute/doc-style-guide.md`.
+
+Before creating a pull request, check whether there is already an open PR for the same change to avoid duplicating effort.
+
+When creating pull requests, use the template at `/.github/PULL_REQUEST_TEMPLATE.md`. Do NOT erase or replace the template — fill it in and only check items on the checklist that have actually been completed. PR descriptions should be short and concise. If there are extensive details to share (design rationale, migration context, investigation notes), suggest opening a GitHub issue and linking to it from the PR instead. If the PR is related to an existing issue, link to it in the PR description.
 
 Never update ESLint, Prettier, or TypeScript configuration files unless specifically requested.
 

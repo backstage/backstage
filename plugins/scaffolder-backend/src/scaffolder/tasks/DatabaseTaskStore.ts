@@ -322,7 +322,22 @@ export class DatabaseTaskStore implements TaskStore {
       createdAt: parseSqlDateToIsoString(result.created_at),
     }));
 
-    return { tasks, totalTasks: count };
+    // `count` is coerced to a number because knex returns the result of a
+    // `COUNT(*)` aggregate as a string on PostgreSQL (the underlying column is
+    // a bigint), whereas it is a number on better-sqlite3. Without this the
+    // `totalTasks` value would be a string in production, which breaks
+    // consumers that expect a number (e.g. the `list-scaffolder-tasks` action
+    // whose output schema declares `totalTasks: z.number()`).
+    const totalTasks = Number(count);
+    if (!Number.isSafeInteger(totalTasks)) {
+      // A bigint count above Number.MAX_SAFE_INTEGER would silently lose
+      // precision when coerced, so fail loudly rather than report a wrong total.
+      throw new Error(
+        `Task count '${count}' exceeds the safe integer range and cannot be represented accurately as 'totalTasks'`,
+      );
+    }
+
+    return { tasks, totalTasks };
   }
 
   async getTask(taskId: string): Promise<SerializedTask> {

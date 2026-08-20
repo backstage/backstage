@@ -295,27 +295,6 @@ export interface MetricsServiceUpDownCounter<
   add(value: number, attributes?: TAttributes): void;
 }
 
-// @public (undocumented)
-export interface RootSystemMetadataService {
-  // (undocumented)
-  getInstalledPlugins: () => Promise<
-    ReadonlyArray<RootSystemMetadataServicePluginInfo>
-  >;
-}
-
-// @public (undocumented)
-export interface RootSystemMetadataServicePluginInfo {
-  // (undocumented)
-  readonly pluginId: string;
-}
-
-// @alpha
-export const rootSystemMetadataServiceRef: ServiceRef<
-  RootSystemMetadataService,
-  'root',
-  'singleton'
->;
-
 // @alpha
 export interface TracingService {
   readonly context: TracingServiceContextAPI;

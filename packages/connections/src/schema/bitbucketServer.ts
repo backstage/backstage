@@ -27,16 +27,19 @@ export const BitbucketServerConnectionType = createConnectionType({
   authMethods: [
     {
       method: 'none',
+      title: 'None',
       configSchema: z.object({}),
     },
     {
       method: 'token',
+      title: 'Token',
       configSchema: z.object({
         token: z.string(),
       }),
     },
     {
       method: 'basic',
+      title: 'Basic',
       configSchema: z.object({
         username: z.string(),
         password: z.string(),

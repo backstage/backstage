@@ -1,5 +1,57 @@
 # @backstage/cli-module-build
 
+## 0.1.7
+
+### Patch Changes
+
+- 943687f: Stopped disabling the Node.js snapshot by default when starting backends or running tests.
+- 4d7b153: chore(deps): bump `shell-quote` from 1.8.4 to 1.9.0
+- 78bf918: chore(deps): bump `tar` from 7.5.15 to 7.5.21
+- bb98419: Package preparation for publishing validates TypeScript configuration schemas strictly, preventing invalid schemas from being published. Other build and bundle paths report schema errors as warnings.
+- Updated dependencies
+  - @backstage/config-loader@1.11.2
+
+## 0.1.7-next.0
+
+### Patch Changes
+
+- 943687f: Stopped disabling the Node.js snapshot by default when starting backends or running tests.
+- 4d7b153: chore(deps): bump `shell-quote` from 1.8.4 to 1.9.0
+- 78bf918: chore(deps): bump `tar` from 7.5.15 to 7.5.21
+- bb98419: Package preparation for publishing validates TypeScript configuration schemas strictly, preventing invalid schemas from being published. Other build and bundle paths report schema errors as warnings.
+- Updated dependencies
+  - @backstage/config-loader@1.11.2-next.0
+
+## 0.1.5
+
+### Patch Changes
+
+- 87af6ce: Package preparation now converts TypeScript configuration schemas to separate JSON files. Backend builds compile schemas together before assembling the distribution workspace, while package publishing compiles each schema independently.
+- 853bcba: Improved caching for Module Federation remote builds by extracting dependencies into separate content-hashed chunks.
+- 3cce70f: Increase generated frontend static asset filename hashes to 12 characters to reduce the chance of collisions across long-lived cached builds.
+- da820d1: Added support for passing custom flags to the embedded postgres processes via `backend.database.connection.flags.postgres` and `backend.database.connection.flags.initdb` configuration properties.
+- Updated dependencies
+  - @backstage/config-loader@1.11.0
+  - @backstage/cli-common@0.3.0
+  - @backstage/cli-node@0.3.4
+
+## 0.1.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.3.0-next.0
+  - @backstage/cli-node@0.3.4-next.0
+  - @backstage/config-loader@1.11.0-next.2
+
+## 0.1.5-next.1
+
+### Patch Changes
+
+- 3cce70f: Increase generated frontend static asset filename hashes to 12 characters to reduce the chance of collisions across long-lived cached builds.
+- Updated dependencies
+  - @backstage/config-loader@1.11.0-next.1
+
 ## 0.1.5-next.0
 
 ### Patch Changes

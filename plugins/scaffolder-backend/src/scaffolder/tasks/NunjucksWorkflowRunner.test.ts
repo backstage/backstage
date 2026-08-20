@@ -650,6 +650,42 @@ describe('NunjucksWorkflowRunner', () => {
   });
 
   describe('templating', () => {
+    const createDeferred = () => {
+      let resolve!: () => void;
+      const promise = new Promise<void>(promiseResolve => {
+        resolve = promiseResolve;
+      });
+      return { promise, resolve };
+    };
+
+    const registerCheckpointAction = (
+      id: string,
+      fn: () => Promise<string>,
+      afterCheckpoint?: () => void,
+    ) => {
+      actionRegistry.register(
+        createTemplateAction({
+          id,
+          handler: async ctx => {
+            await ctx.checkpoint({ key: 'key', fn });
+            afterCheckpoint?.();
+          },
+        }),
+      );
+    };
+
+    const createCheckpointTask = (
+      action: string,
+      updateCheckpoint: jest.Mock,
+      serializeWorkspace?: jest.Mock,
+    ) => ({
+      ...createMockTaskWithSpec({
+        steps: [{ id: 'test', name: 'name', action }],
+      }),
+      updateCheckpoint,
+      ...(serializeWorkspace && { serializeWorkspace }),
+    });
+
     it('should template the input to an action', async () => {
       const task = createMockTaskWithSpec({
         steps: [
@@ -660,11 +696,14 @@ describe('NunjucksWorkflowRunner', () => {
             input: {
               foo: '${{parameters.input | lower }}',
               region: '${{environment.parameters.region}}',
+              identifier:
+                '${{ parameters.identifier | replace(r/^([a-z]+)([0-9]+)$/, "$2-$1") }}',
             },
           },
         ],
         parameters: {
           input: 'BACKSTAGE',
+          identifier: 'backstage123',
         },
       });
 
@@ -672,7 +711,11 @@ describe('NunjucksWorkflowRunner', () => {
 
       expect(fakeActionHandler).toHaveBeenCalledWith(
         expect.objectContaining({
-          input: { foo: 'backstage', region: 'us-east-1' },
+          input: {
+            foo: 'backstage',
+            region: 'us-east-1',
+            identifier: '123-backstage',
+          },
         }),
       );
     });
@@ -700,7 +743,7 @@ describe('NunjucksWorkflowRunner', () => {
       expect(logger.error).not.toHaveBeenCalled();
     });
 
-    it('should keep the original types for the input and not parse things that are not meant to be parsed', async () => {
+    it('should preserve native input value types', async () => {
       const task = createMockTaskWithSpec({
         steps: [
           {
@@ -710,19 +753,33 @@ describe('NunjucksWorkflowRunner', () => {
             input: {
               number: '${{parameters.number}}',
               string: '${{parameters.string}}',
+              boolean: '${{parameters.boolean}}',
+              nullValue: '${{parameters.nullValue}}',
+              array: '${{parameters.array}}',
             },
           },
         ],
         parameters: {
           number: 0,
           string: '1',
+          boolean: true,
+          nullValue: null,
+          array: ['one', 'two'],
         },
       });
 
       await runner.execute(task);
 
       expect(fakeActionHandler).toHaveBeenCalledWith(
-        expect.objectContaining({ input: { number: 0, string: '1' } }),
+        expect.objectContaining({
+          input: {
+            number: 0,
+            string: '1',
+            boolean: true,
+            nullValue: null,
+            array: ['one', 'two'],
+          },
+        }),
       );
     });
 
@@ -748,6 +805,40 @@ describe('NunjucksWorkflowRunner', () => {
       expect(fakeActionHandler).toHaveBeenCalledWith(
         expect.objectContaining({ input: { foo: { bar: 'BACKSTAGE' } } }),
       );
+    });
+
+    it('should preserve immutable structured values from Nunjitsu', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'jest-mock-action',
+            input: {
+              object: '${{ parameters.object }}',
+              array: '${{ parameters.array }}',
+            },
+          },
+        ],
+        parameters: {
+          object: { items: [{ name: 'one' }] },
+          array: [{ name: 'two' }],
+        },
+      });
+
+      await runner.execute(task);
+
+      const { input } = fakeActionHandler.mock.calls[0][0];
+      expect(input).toEqual({
+        object: { items: [{ name: 'one' }] },
+        array: [{ name: 'two' }],
+      });
+      expect(Object.getPrototypeOf(input.object)).toBeNull();
+      expect(Object.isFrozen(input.object)).toBe(true);
+      expect(Object.isFrozen(input.object.items)).toBe(true);
+      expect(Object.getPrototypeOf(input.object.items[0])).toBeNull();
+      expect(Object.isFrozen(input.array)).toBe(true);
+      expect(Object.getPrototypeOf(input.array[0])).toBeNull();
     });
 
     it('supports really complex structures', async () => {
@@ -853,6 +944,166 @@ describe('NunjucksWorkflowRunner', () => {
       expect(result.output.key3).toEqual('updated');
       expect(result.output.key4).toEqual(undefined);
       expect(result.output.key5).toEqual(undefined);
+    });
+
+    it('waits for successful checkpoint state to be persisted', async () => {
+      let actionContinued = false;
+      registerCheckpointAction(
+        'checkpoint-persistence-action',
+        async () => 'value',
+        () => {
+          actionContinued = true;
+        },
+      );
+
+      const updateStarted = createDeferred();
+      const pendingUpdate = createDeferred();
+      const task = createCheckpointTask(
+        'checkpoint-persistence-action',
+        jest.fn(() => {
+          updateStarted.resolve();
+          return pendingUpdate.promise;
+        }),
+      );
+
+      const execution = runner.execute(task);
+      await updateStarted.promise;
+      await new Promise(resolve => setImmediate(resolve));
+
+      expect(actionContinued).toBe(false);
+
+      pendingUpdate.resolve();
+      await execution;
+      expect(actionContinued).toBe(true);
+    });
+
+    it('does not record callback failure when successful persistence fails', async () => {
+      registerCheckpointAction(
+        'checkpoint-persistence-rejection-action',
+        async () => 'value',
+      );
+
+      const persistenceError = new Error('checkpoint persistence failed');
+      const updateCheckpoint = jest.fn().mockRejectedValue(persistenceError);
+      const task = createCheckpointTask(
+        'checkpoint-persistence-rejection-action',
+        updateCheckpoint,
+      );
+
+      await expect(runner.execute(task)).rejects.toBe(persistenceError);
+      expect(updateCheckpoint).toHaveBeenCalledTimes(1);
+      expect(updateCheckpoint).toHaveBeenCalledWith({
+        key: 'v1.task.checkpoint.test.key',
+        status: 'success',
+        value: 'value',
+      });
+    });
+
+    it('restores successful checkpoints with falsy values', async () => {
+      const checkpointCallback = jest.fn(async () => 'rerun');
+      const restoredValues: unknown[] = [];
+      actionRegistry.register(
+        createTemplateAction({
+          id: 'falsy-checkpoint-action',
+          handler: async ctx => {
+            for (const key of ['false', 'zero', 'empty']) {
+              restoredValues.push(
+                await ctx.checkpoint({ key, fn: checkpointCallback }),
+              );
+            }
+          },
+        }),
+      );
+
+      const updateCheckpoint = jest.fn();
+      const task = {
+        ...createMockTaskWithSpec({
+          steps: [
+            { id: 'test', name: 'name', action: 'falsy-checkpoint-action' },
+          ],
+        }),
+        getTaskState: async () => ({
+          state: {
+            checkpoints: {
+              'v1.task.checkpoint.test.false': {
+                status: 'success',
+                value: false,
+              },
+              'v1.task.checkpoint.test.zero': {
+                status: 'success',
+                value: 0,
+              },
+              'v1.task.checkpoint.test.empty': {
+                status: 'success',
+                value: '',
+              },
+            },
+          },
+        }),
+        updateCheckpoint,
+      };
+
+      await runner.execute(task);
+
+      expect(restoredValues).toEqual([false, 0, '']);
+      expect(checkpointCallback).not.toHaveBeenCalled();
+      expect(updateCheckpoint).not.toHaveBeenCalled();
+    });
+
+    it('waits for failed checkpoint state to be persisted', async () => {
+      const checkpointError = new Error('checkpoint failed');
+      registerCheckpointAction(
+        'failed-checkpoint-persistence-action',
+        async () => {
+          throw checkpointError;
+        },
+      );
+
+      const updateStarted = createDeferred();
+      const pendingUpdate = createDeferred();
+      const serializeWorkspace = jest.fn();
+      const task = createCheckpointTask(
+        'failed-checkpoint-persistence-action',
+        jest.fn(() => {
+          updateStarted.resolve();
+          return pendingUpdate.promise;
+        }),
+        serializeWorkspace,
+      );
+
+      const execution = runner.execute(task).then(
+        () => ({ error: undefined }),
+        error => ({ error }),
+      );
+
+      await updateStarted.promise;
+      expect(serializeWorkspace).not.toHaveBeenCalled();
+
+      pendingUpdate.resolve();
+      await expect(execution).resolves.toEqual({ error: checkpointError });
+      expect(serializeWorkspace).toHaveBeenCalled();
+    });
+
+    it('preserves callback and persistence errors for failed checkpoints', async () => {
+      const checkpointError = new Error('checkpoint failed');
+      registerCheckpointAction(
+        'failed-checkpoint-persistence-rejection-action',
+        async () => {
+          throw checkpointError;
+        },
+      );
+
+      const persistenceError = new Error('checkpoint persistence failed');
+      const task = createCheckpointTask(
+        'failed-checkpoint-persistence-rejection-action',
+        jest.fn().mockRejectedValue(persistenceError),
+      );
+
+      const execution = runner.execute(task);
+      await expect(execution).rejects.toBeInstanceOf(AggregateError);
+      await expect(execution).rejects.toMatchObject({
+        errors: [checkpointError, persistenceError],
+      });
     });
 
     it('should template the output from simple actions', async () => {

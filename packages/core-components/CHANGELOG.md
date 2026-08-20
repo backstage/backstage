@@ -1,5 +1,59 @@
 # @backstage/core-components
 
+## 0.18.13
+
+### Patch Changes
+
+- 226817d: chore(deps): bump `js-yaml` from 4.2.0 to 4.3.0
+- a4759e6: Migrated tests from MSW v1 to MSW v2.
+- 96cd953: Fixed the `DependencyGraph` component to avoid a jarring initial render where nodes briefly pile up at overlapping positions before animating into place. The graph content is now hidden until node measurements are complete and the layout has fully settled, then revealed at the correct positions with transitions suppressed for the first frame.
+
+  Also fixed a `containerRef` recreation chain where every graph dimension change caused the container measurement callback to be recreated and re-triggered, producing unnecessary re-renders during initial layout.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/ui@0.17.1
+
+## 0.18.13-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9-next.0
+
+## 0.18.13-next.1
+
+### Patch Changes
+
+- 96cd953: Fixed the `DependencyGraph` component to avoid a jarring initial render where nodes briefly pile up at overlapping positions before animating into place. The graph content is now hidden until node measurements are complete and the layout has fully settled, then revealed at the correct positions with transitions suppressed for the first frame.
+
+  Also fixed a `containerRef` recreation chain where every graph dimension change caused the container measurement callback to be recreated and re-triggered, producing unnecessary re-renders during initial layout.
+
+## 0.18.13-next.0
+
+### Patch Changes
+
+- 226817d: chore(deps): bump `js-yaml` from 4.2.0 to 4.3.0
+- Updated dependencies
+  - @backstage/ui@0.17.1-next.0
+
+## 0.18.12
+
+### Patch Changes
+
+- 120e7c3: chore(deps): bump `js-yaml` from 4.1.1 to 4.2.0
+- 9efce7d: Fixed the table filters sidebar rendering a stray `0` when no filters are configured.
+- 7ceeaad: Migrated CopyTextButton component from Material-UI to Backstage UI (BUI). Replaced MUI IconButton and Tooltip with BUI ButtonIcon and TooltipTrigger/Tooltip components. This is an internal refactoring that maintains backward compatibility - the component API remains unchanged.
+- Updated dependencies
+  - @backstage/ui@0.17.0
+  - @backstage/core-plugin-api@1.12.8
+
+## 0.18.12-next.1
+
+### Patch Changes
+
+- 7ceeaad: Migrated CopyTextButton component from Material-UI to Backstage UI (BUI). Replaced MUI IconButton and Tooltip with BUI ButtonIcon and TooltipTrigger/Tooltip components. This is an internal refactoring that maintains backward compatibility - the component API remains unchanged.
+
 ## 0.18.12-next.0
 
 ### Patch Changes

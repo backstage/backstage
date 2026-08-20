@@ -25,7 +25,7 @@ jobs:
           egress-policy: audit
 
       - name: checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           path: backstage
           ref: ${{ github.event.client_payload.version && env.RELEASE_VERSION || github.ref }}
@@ -35,7 +35,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
-          corepack: true
 
       - name: yarn install
         uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8

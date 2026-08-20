@@ -46,14 +46,13 @@ jobs:
           name: pr-context
           path: context/
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
 
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
-          corepack: true
 
       - name: yarn install
         uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
@@ -83,14 +82,13 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
 
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
-          corepack: true
 
       - name: yarn install
         uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
@@ -131,8 +129,8 @@ jobs:
       - name: lint openapi yaml files
         run: yarn backstage-repo-tools repo schema openapi lint
 
-      - name: verify openapi yaml file matches generated ts file
-        run: yarn backstage-repo-tools repo schema openapi verify
+      - name: validate openapi yaml file matches generated ts file
+        run: yarn backstage-repo-tools repo schema openapi validate
 
       - name: verify doc links
         run: node scripts/verify-links.js
@@ -177,10 +175,10 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
 
       - name: check for typos
-        uses: crate-ci/typos@631208b7aac2daa8b707f55e7331f9112b0e062d # v1.44.0
+        uses: crate-ci/typos@bee27e3a4fd1ea2111cf90ab89cd076c870fce14 # v1.48.0
         with:
           config: typos.toml
 
@@ -250,21 +248,24 @@ jobs:
       INTEGRATION_TEST_AZURE_TOKEN: ${{ secrets.INTEGRATION_TEST_AZURE_TOKEN }}
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+
+        # Only trees and paths are needed here, to check the release and to scope
+        # linting and testing to changed packages, so skip historical blob
+        # content rather than transferring the whole branch.
       - name: fetch master branch
-        run: git fetch origin master
+        run: git fetch --filter=blob:none origin master
 
         # Need to fetch the base branch to be able to verify the release
       - name: fetch base branch
         if: github.event.pull_request.base.ref != 'master'
-        run: git fetch origin ${{ github.event.pull_request.base.ref }}
+        run: git fetch --filter=blob:none origin ${{ github.event.pull_request.base.ref }}
 
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
-          corepack: true
 
       - name: yarn install
         uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
@@ -277,7 +278,7 @@ jobs:
 
       # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
       - name: restore backstage-cli cache
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
         with:
           path: .cache/backstage-cli
           key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-${{ github.run_id }}
@@ -291,6 +292,7 @@ jobs:
         run: yarn backstage-cli repo lint --since origin/master --success-cache --success-cache-dir .cache/backstage-cli
 
       - name: test changed packages
+        id: test
         run: yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --since origin/master --success-cache --success-cache-dir .cache/backstage-cli
         env:
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
@@ -299,17 +301,13 @@ jobs:
           BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
           BACKSTAGE_TEST_CACHE_REDIS7_CONNECTION_STRING: redis://localhost:${{ job.services.redis.ports[6379] }}
 
-      # Always save success cache even if there were failures, that way it can be used in re-triggered builds
+      # Save successful test results even if other tests failed
       - name: save backstage-cli cache
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
-        if: always()
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5
+        if: ${{ !cancelled() && steps.test.outcome != 'skipped' }}
         with:
           path: .cache/backstage-cli
           key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-${{ github.run_id }}
-
-      # We run the test cases before verifying the specs to prevent any failing tests from causing errors.
-      - name: verify openapi specs against test cases
-        run: yarn backstage-repo-tools repo schema openapi test
 
       - name: ensure clean working directory
         run: |

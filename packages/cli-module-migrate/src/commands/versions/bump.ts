@@ -13,13 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  BACKSTAGE_JSON,
-  bootstrapEnvProxyAgents,
-  targetPaths,
-} from '@backstage/cli-common';
-
-bootstrapEnvProxyAgents();
+import { BACKSTAGE_JSON, run, targetPaths } from '@backstage/cli-common';
 
 import { env } from 'node:process';
 import fs from 'fs-extra';
@@ -47,7 +41,6 @@ import {
 } from '@backstage/release-manifests';
 import { migrateMovedPackages } from './migrate';
 import { runYarnInstall } from '../../lib/utils';
-import { run } from '@backstage/cli-common';
 import type { CliCommandContext } from '@backstage/cli-node';
 
 const DEP_TYPES = [

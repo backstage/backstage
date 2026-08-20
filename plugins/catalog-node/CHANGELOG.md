@@ -1,5 +1,33 @@
 # @backstage/plugin-catalog-node
 
+## 2.2.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-permission-common@0.9.10
+  - @backstage/plugin-permission-node@0.11.3
+
+## 2.2.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/backend-test-utils@1.11.6-next.0
+  - @backstage/plugin-permission-node@0.11.3-next.0
+
+## 2.2.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/catalog-client@1.16.1
+  - @backstage/plugin-permission-node@0.11.2
+
 ## 2.2.3-next.0
 
 ### Patch Changes

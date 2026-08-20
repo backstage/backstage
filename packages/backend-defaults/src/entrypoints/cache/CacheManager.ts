@@ -26,6 +26,11 @@ import {
   CacheManagerOptions,
   ttlToMilliseconds,
   CacheStoreOptions,
+  CacheStoreConnection,
+  CacheStoreConnectionObject,
+  CacheStoreConfiguration,
+  CacheStoreDeps,
+  RedisCacheStoreConfiguration,
   RedisCacheStoreOptions,
   InfinispanClientBehaviorOptions,
   InfinispanServerConfig,
@@ -38,6 +43,7 @@ import {
   InfinispanClientCacheInterface,
   InfinispanKeyvStore,
 } from './providers/infinispan/InfinispanKeyvStore';
+import type { KeyvRedisOptions, RedisClusterOptions } from '@keyv/redis';
 
 type StoreFactory = (pluginId: string, defaultTtl: number | undefined) => Keyv;
 
@@ -63,7 +69,7 @@ export class CacheManager {
 
   private readonly logger?: LoggerService;
   private readonly store: keyof CacheManager['storeFactories'];
-  private readonly connection: string;
+  private readonly connection: CacheStoreConnection;
   private readonly errorHandler: CacheManagerOptions['onError'];
   private readonly defaultTtl?: number;
   private readonly storeOptions?: CacheStoreOptions;
@@ -84,8 +90,7 @@ export class CacheManager {
     // with an in-memory cache client.
     const store = config.getOptionalString('backend.cache.store') || 'memory';
     const defaultTtlConfig = config.getOptional('backend.cache.defaultTtl');
-    const connectionString =
-      config.getOptionalString('backend.cache.connection') || '';
+    const connection = CacheManager.parseConnection(config);
     const logger = options.logger?.child({
       type: 'cacheManager',
     });
@@ -108,16 +113,59 @@ export class CacheManager {
     }
 
     // Read store-specific options from config
-    const storeOptions = CacheManager.parseStoreOptions(store, config, logger);
+    const storeOptions = CacheManager.parseStoreOptions(
+      { store, connection },
+      { config, logger },
+    );
 
     return new CacheManager(
       store,
-      connectionString,
+      connection,
       options.onError,
       logger,
       defaultTtl,
       storeOptions,
     );
+  }
+
+  /**
+   * Parse the connection config, which can be either a plain URL string
+   * or an object with connection options (e.g. `{ url, pingInterval }`)
+   * passed through to the underlying store client.
+   *
+   * @param config - The configuration service
+   * @returns The parsed connection config, either a string or an object depending on how it was configured
+   */
+  private static parseConnection(
+    config: RootConfigService,
+  ): CacheStoreConnection {
+    const raw = config.getOptional('backend.cache.connection');
+    const store = config.getOptionalString('backend.cache.store') || 'memory';
+
+    if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+      if (store !== 'redis') {
+        throw new Error(
+          "backend.cache.connection object form is only supported when backend.cache.store is 'redis'",
+        );
+      }
+
+      const url = (raw as { url?: unknown }).url;
+      if (typeof url !== 'string' || url.length === 0) {
+        throw new Error(
+          "backend.cache.connection object must include a non-empty 'url' string",
+        );
+      }
+
+      return raw as CacheStoreConnectionObject;
+    }
+
+    if (raw !== undefined && typeof raw !== 'string') {
+      throw new Error(
+        `backend.cache.connection must be a string or object, got ${typeof raw}`,
+      );
+    }
+
+    return config.getOptionalString('backend.cache.connection') ?? '';
   }
 
   /**
@@ -129,28 +177,30 @@ export class CacheManager {
    * @returns The parsed store options
    */
   private static parseStoreOptions(
-    store: string,
-    config: RootConfigService,
-    logger?: LoggerService,
+    config: { store: string; connection: CacheStoreConnection },
+    deps: CacheStoreDeps,
   ): CacheStoreOptions | undefined {
+    const { store, connection } = config;
     const storeConfigPath = `backend.cache.${store}`;
 
-    if (store !== 'memory' && !config.has(storeConfigPath)) {
-      logger?.warn(
+    if (store !== 'memory' && !deps.config.has(storeConfigPath)) {
+      deps.logger?.warn(
         `No configuration found for cache store '${store}' at '${storeConfigPath}'.`,
       );
     }
 
     switch (store) {
       case 'redis':
-        return CacheManager.parseRedisOptions(storeConfigPath, config, logger);
+        return CacheManager.parseRedisOptions(
+          { storeConfigPath, connection },
+          deps,
+        );
       case 'valkey':
-        return CacheManager.parseValkeyOptions(storeConfigPath, config, logger);
+        return CacheManager.parseValkeyOptions({ storeConfigPath }, deps);
       case 'infinispan':
         return InfinispanOptionsMapper.parseInfinispanOptions(
-          storeConfigPath,
-          config,
-          logger,
+          { storeConfigPath },
+          deps,
         );
       default:
         return undefined;
@@ -161,16 +211,16 @@ export class CacheManager {
    * Parse Redis-specific options from configuration.
    */
   private static parseRedisOptions(
-    storeConfigPath: string,
-    config: RootConfigService,
-    logger?: LoggerService,
+    config: RedisCacheStoreConfiguration,
+    deps: CacheStoreDeps,
   ): RedisCacheStoreOptions {
     const redisOptions: RedisCacheStoreOptions = {
       type: 'redis',
     };
 
     const redisConfig =
-      config.getOptionalConfig(storeConfigPath) ?? new ConfigReader({});
+      deps.config.getOptionalConfig(config.storeConfigPath) ??
+      new ConfigReader({});
 
     redisOptions.client = {
       namespace: redisConfig.getOptionalString('client.namespace'),
@@ -187,15 +237,25 @@ export class CacheManager {
       const clusterConfig = redisConfig.getConfig('cluster');
 
       if (!clusterConfig.has('rootNodes')) {
-        logger?.warn(
+        deps.logger?.warn(
           `Redis cluster config has no 'rootNodes' key, defaulting to non-clustered mode`,
         );
         return redisOptions;
       }
 
+      // When connection is an object, merge its properties into cluster
+      // defaults so every node inherits those options (e.g. pingInterval).
+      let defaults: RedisClusterOptions['defaults'] =
+        clusterConfig.getOptional('defaults');
+
+      if (typeof config.connection === 'object') {
+        const { url: _url, ...connectionDefaults } = config.connection;
+        defaults = { ...defaults, ...connectionDefaults };
+      }
+
       redisOptions.cluster = {
         rootNodes: clusterConfig.get('rootNodes'),
-        defaults: clusterConfig.getOptional('defaults'),
+        defaults,
         minimizeConnections: clusterConfig.getOptionalBoolean(
           'minimizeConnections',
         ),
@@ -213,16 +273,16 @@ export class CacheManager {
    * Parse Valkey-specific options from configuration.
    */
   private static parseValkeyOptions(
-    storeConfigPath: string,
-    config: RootConfigService,
-    logger?: LoggerService,
+    config: CacheStoreConfiguration,
+    deps: CacheStoreDeps,
   ): ValkeyCacheStoreOptions {
     const valkeyOptions: ValkeyCacheStoreOptions = {
       type: 'valkey',
     };
 
     const valkeyConfig =
-      config.getOptionalConfig(storeConfigPath) ?? new ConfigReader({});
+      deps.config.getOptionalConfig(config.storeConfigPath) ??
+      new ConfigReader({});
 
     valkeyOptions.client = {
       keyPrefix: valkeyConfig.getOptionalString('client.keyPrefix'),
@@ -232,7 +292,7 @@ export class CacheManager {
       const clusterConfig = valkeyConfig.getConfig('cluster');
 
       if (!clusterConfig.has('rootNodes')) {
-        logger?.warn(
+        deps.logger?.warn(
           `Valkey cluster config has no 'rootNodes' key, defaulting to non-clustered mode`,
         );
         return valkeyOptions;
@@ -289,7 +349,7 @@ export class CacheManager {
   /** @internal */
   constructor(
     store: string,
-    connectionString: string,
+    connection: CacheStoreConnection,
     errorHandler: CacheManagerOptions['onError'],
     logger?: LoggerService,
     defaultTtl?: number,
@@ -300,7 +360,7 @@ export class CacheManager {
     }
     this.logger = logger;
     this.store = store as keyof CacheManager['storeFactories'];
-    this.connection = connectionString;
+    this.connection = connection;
     this.errorHandler = errorHandler;
     this.defaultTtl = defaultTtl;
     this.storeOptions = storeOptions;
@@ -329,9 +389,10 @@ export class CacheManager {
   }
 
   private createRedisStoreFactory(): StoreFactory {
-    const KeyvRedis = require('@keyv/redis').default;
-    const { createCluster } = require('@keyv/redis');
-    const stores: Record<string, typeof KeyvRedis> = {};
+    const keyvRedis = require('@keyv/redis') as typeof import('@keyv/redis');
+    const KeyvRedis = keyvRedis.default;
+    const { createCluster } = keyvRedis;
+    const stores: Record<string, InstanceType<typeof KeyvRedis>> = {};
 
     return (pluginId, defaultTtl) => {
       if (this.storeOptions?.type !== 'redis') {
@@ -340,12 +401,12 @@ export class CacheManager {
         );
       }
       if (!stores[pluginId]) {
-        const redisOptions = this.storeOptions?.client || {
+        const redisOptions: KeyvRedisOptions = this.storeOptions?.client || {
           keyPrefixSeparator: ':',
         };
         if (this.storeOptions?.cluster) {
           // Create a Redis cluster
-          const cluster = createCluster(this.storeOptions?.cluster);
+          const cluster = createCluster(this.storeOptions.cluster);
           stores[pluginId] = new KeyvRedis(cluster, redisOptions);
         } else {
           // Create a regular Redis connection

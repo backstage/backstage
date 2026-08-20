@@ -38,6 +38,13 @@ backend:
 
 For details on filtering actions, see the [filtering actions documentation](../backend-system/core-services/actions.md#filtering-actions).
 
+## Action Attributes
+
+When registering an action, set the `attributes` field to describe the action's behavior. This allows clients to make informed decisions, for example: warning users before invoking a destructive action, or allowing a read-only action to run without confirmation.
+
+The defaults are conservative. When unset, an action is assumed to be non-idempotent and not read-only. `destructive` defaults to `true` unless `readOnly` is `true`, in which case it defaults to `false`. **Set these explicitly when the defaults do not represent the action's capabilities.**
+See the [Action Attributes Reference](../backend-system/core-services/actions-registry.md#action-attributes-reference) for the full attribute definitions and defaults.
+
 ## Single MCP Server Name & Description
 
 You can configure the name and description of your Backstage MCP server with the following config:
@@ -51,6 +58,17 @@ mcpActions:
 :::tip
 Keep the following in mind when picking the name and description. The description should answer "what can I do with these tools?" from the perspective of an AI agent deciding whether to use this server — not "what is this server?". That means describing Backstage capabilities (catalog, scaffolder, etc.), not the MCP protocol or server identity.
 :::
+
+## Server Instructions
+
+You can provide instructions that describe how MCP clients should use the server and its tools. The server returns these instructions to clients during initialization.
+
+```yaml title="app-config.yaml"
+mcpActions:
+  instructions: 'Inspect existing catalog entities before creating new components.'
+```
+
+For named servers, configure instructions separately for each server.
 
 ## Namespaced Tool Names
 
@@ -73,12 +91,14 @@ mcpActions:
     catalog:
       name: 'Backstage Catalog'
       description: 'Tools for interacting with the software catalog'
+      instructions: 'Inspect catalog entities before making changes.'
       filter:
         include:
           - id: 'catalog:*'
     scaffolder:
       name: 'Backstage Scaffolder'
       description: 'Tools for creating new software from templates'
+      instructions: 'Use this server after checking the catalog.'
       filter:
         include:
           - id: 'scaffolder:*'
@@ -150,14 +170,11 @@ Authorization: Bearer <token>
 For more details about external access tokens and service-to-service authentication, see the
 [Service-to-Service Auth documentation](../auth/service-to-service-auth.md).
 
-### Experimental Authentication methods
+### OAuth authentication
 
-The MCP Actions Backend supports two experimental authentication methods based on the MCP specification:
+The MCP Actions Backend supports [Client ID Metadata Documents (CIMD)](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization#client-id-metadata-documents) based on the MCP specification.
 
-- [Client ID Metadata Documents (CIMD)](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization#client-id-metadata-documents)
-- [Dynamic Client Registration (DCR)](https://modelcontextprotocol.io/specification/2025-06-18/basic/authorization#dynamic-client-registration)
-
-They have the following requirements:
+CIMD has the following requirements:
 
 - You must be using the [New Frontend System](../frontend-system/architecture/00-index.md).
 - The `@backstage/plugin-auth-backend` plugin must be configured.
@@ -186,46 +203,41 @@ Follow these steps to install and configure the new `@backstage/plugin-auth` fro
 
 #### Client ID Metadata Documents
 
-:::warning
-This feature is highly experimental; proceed with caution. Client support is also currently limited but quickly being implemented.
-:::
+[Client ID Metadata Documents (CIMD)](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization#client-id-metadata-documents) is the recommended OAuth authentication method for MCP servers. The [MCP specification](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization) designates CIMD as the primary client registration approach, using SHOULD-level normative language.
 
-The [November 2025 MCP specification](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization) outlined a new authorization method to replace Dynamic Client Registration called [Client ID Metadata Documents (CIMD)](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization#client-id-metadata-documents).
+Using CIMD means you do not need to manually configure a token in your MCP client settings. Instead, a client can request a token on your behalf. When adding the MCP server to an MCP client like Cursor or Claude, a popup requiring your approval will open in your Backstage instance (powered by the `auth` plugin).
 
-Using Client ID Metadata Documents means you do not need to manually configure a token in your MCP client settings. Instead, a client can request a token on your behalf. When adding the MCP server to an MCP client like Cursor or Claude, a popup requiring your approval will open in your Backstage instance (powered by the `auth` plugin).
-
-This can be enabled in the `auth-backend` plugin by using the `auth.experimentalClientIdMetadataDocuments.enabled` flag in config:
+Enable CIMD in the `auth-backend` plugin using the `auth.clientIdMetadataDocuments.enabled` flag in config:
 
 ```yaml title="app-config.yaml"
 auth:
-  experimentalClientIdMetadataDocuments:
+  clientIdMetadataDocuments:
     enabled: true
     # Optional: override which client_id URLs are allowed.
-    # Defaults to Claude, VS Code, and the built-in Backstage CLI.
-    # Note: setting this replaces the defaults entirely. The built-in
-    # CLI pattern is derived from your auth backend's base URL and
-    # must be re-added manually if you override this list.
+    # Defaults to Claude, VS Code, ChatGPT Codex, and the built-in Backstage CLI.
+    # Note: setting this replaces the Claude, VS Code, and ChatGPT Codex
+    # defaults entirely. The built-in CLI client is always allowed, since
+    # this backend serves its metadata document itself.
     # allowedClientIdPatterns:
     #   - 'https://claude.ai/*'
     #   - 'https://vscode.dev/*'
+    #   - 'https://chatgpt.com/oauth/codex/*/client.json'
     #   - 'https://my-custom-client.example.com/*'
     # Optional: override which redirect URIs are allowed.
     # Defaults to loopback addresses (localhost, 127.0.0.1, [::1]).
     # allowedRedirectUriPatterns:
-    #   - 'http://localhost:*'
-    #   - 'http://127.0.0.1:*'
-    #   - 'http://[::1]:*'
+    #   - 'http://localhost:*/*'
+    #   - 'http://127.0.0.1:*/*'
+    #   - 'http://[::1]:*/*'
 ```
 
-#### Dynamic Client Registration
+#### Dynamic Client Registration (deprecated)
 
-:::warning
-This feature is highly experimental; proceed with caution. This method will likely be deprecated and replaced by [Client ID Metadata Documents](#client-id-metadata-documents) in the future. Only use in cases where clients do not yet support Client ID Metadata Documents.
+:::caution
+Dynamic Client Registration (DCR) is deprecated in Backstage and should not be used for new deployments. The MCP specification demoted DCR from a SHOULD to a MAY requirement in the [November 2025 revision](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization), characterizing it as a backwards-compatibility option. DCR will eventually be removed from both the MCP specification and Backstage. Migrate to [Client ID Metadata Documents](#client-id-metadata-documents).
 :::
 
-Using Dynamic Client Registration means you do not need to manually configure a token in your MCP client settings. Instead, a client can request a token on your behalf. When adding the MCP server to an MCP client like Cursor or Claude, a popup requiring your approval will open in your Backstage instance (powered by the `auth` plugin).
-
-This can be enabled in the `auth-backend` plugin by using the `auth.experimentalDynamicClientRegistration.enabled` flag in config:
+Existing DCR configurations continue to work but log a deprecation warning at startup. If you are using DCR, plan to migrate to CIMD.
 
 ```yaml title="app-config.yaml"
 auth:
@@ -235,23 +247,18 @@ auth:
     # Defaults to Cursor and loopback addresses (localhost, 127.0.0.1, [::1]).
     # allowedRedirectUriPatterns:
     #   - 'cursor://*'
-    #   - 'http://localhost:*'
-    #   - 'http://127.0.0.1:*'
-    #   - 'http://[::1]:*'
+    #   - 'http://localhost:*/*'
+    #   - 'http://127.0.0.1:*/*'
+    #   - 'http://[::1]:*/*'
 ```
 
 ## Configuring MCP Clients
 
-The MCP server supports both **Server-Sent Events (SSE)** and **Streamable HTTP** protocols.
-
-:::warning
-The SSE protocol is deprecated and will be removed in a future release.
-:::
+The MCP server uses the **Streamable HTTP** protocol.
 
 ### Endpoints
 
-- **Streamable HTTP:** `http://localhost:7007/api/mcp-actions/v1`
-- **SSE (deprecated):** `http://localhost:7007/api/mcp-actions/v1/sse`
+The default endpoint is `http://localhost:7007/api/mcp-actions/v1`.
 
 ```json
 {
@@ -350,3 +357,42 @@ These attributes are marked Opt-In by the OpenTelemetry GenAI semantic conventio
 :::
 
 See the [OpenTelemetry tutorial](../tutorials/setup-opentelemetry.md) to learn how to make these spans available.
+
+## Troubleshooting
+
+### `invalid_client` error during OAuth authentication
+
+If your MCP client shows an `invalid_client` error when authenticating, check the following:
+
+1. **Configuration placement**: The `auth.clientIdMetadataDocuments` (or `auth.experimentalDynamicClientRegistration`) configuration must be under the top-level `auth:` key, not under `backend.auth:`.
+
+   ```yaml title="app-config.yaml"
+   # Correct
+   auth:
+     clientIdMetadataDocuments:
+       enabled: true
+
+   # Incorrect — this will not work
+   backend:
+     auth:
+       clientIdMetadataDocuments:
+         enabled: true
+   ```
+
+2. **Cached credentials in VS Code**: VS Code can cache stale OAuth client IDs from previous attempts. Open the VS Code command palette and run `Authentication: Remove Dynamic Authentication Providers`, then select the Backstage entry (for example, `localhost:7007`) to clear it. Restart the MCP server and try again.
+
+3. **Redirect URI patterns**: If you are on a recent Backstage version, you may need to configure `allowedRedirectUriPatterns` explicitly. For VS Code, include patterns for `vscode.dev` and loopback addresses:
+
+   ```yaml title="app-config.yaml"
+   auth:
+     clientIdMetadataDocuments:
+       enabled: true
+       allowedRedirectUriPatterns:
+         - 'https://vscode.dev/*'
+         - 'https://insiders.vscode.dev/*'
+         - 'http://localhost:*/*'
+         - 'http://127.0.0.1:*/*'
+         - 'http://[::1]:*/*'
+   ```
+
+4. **New Frontend System requirement**: OAuth authentication (both CIMD and DCR) requires the [new frontend system](../frontend-system/architecture/00-index.md). If you are using the old frontend system, [migrate to the new frontend system](../frontend-system/architecture/00-index.md) to use OAuth authentication. If migration is not possible, use [static tokens](#external-access-with-static-tokens) as a fallback.

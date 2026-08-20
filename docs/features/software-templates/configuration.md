@@ -12,7 +12,7 @@ This is done in your `app-config.yaml` by adding
 [Backstage integrations](https://backstage.io/docs/integrations/) for the
 appropriate source code repository for your organization.
 
-:::note Note
+:::note
 
 Integrations may already be set up as part of your `app-config.yaml`.
 

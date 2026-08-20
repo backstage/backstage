@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { mockClient } from 'aws-sdk-client-mock';
-import 'aws-sdk-client-mock-jest';
 import { AwsOrganizationCloudAccountProcessor } from './AwsOrganizationCloudAccountProcessor';
 import {
   ListAccountsCommand,
   OrganizationsClient,
 } from '@aws-sdk/client-organizations';
+
+const organizationsSendMock = jest.fn();
 
 describe('AwsOrganizationCloudAccountProcessor', () => {
   describe('readLocation', () => {
@@ -29,25 +29,37 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
     });
     const location = { type: 'aws-cloud-accounts', target: '' };
     const emit = jest.fn();
-    const mock = mockClient(OrganizationsClient);
-
     afterEach(() => {
-      jest.resetAllMocks();
+      jest.restoreAllMocks();
+      organizationsSendMock.mockReset();
+      emit.mockReset();
     });
 
     it('generates component entities for accounts', async () => {
-      mock.on(ListAccountsCommand).resolves({
-        Accounts: [
-          {
-            Arn: 'arn:aws:organizations::192594491037:account/o-1vl18kc5a3/957140518395',
-            Name: 'Test Account',
-            Email: 'aws-test-account@backstage.io',
-            Status: 'ACTIVE',
-          },
-        ],
-        NextToken: undefined,
+      jest
+        .spyOn(OrganizationsClient.prototype, 'send')
+        .mockImplementation(organizationsSendMock);
+      organizationsSendMock.mockImplementation(async command => {
+        if (command instanceof ListAccountsCommand) {
+          return {
+            Accounts: [
+              {
+                Arn: 'arn:aws:organizations::192594491037:account/o-1vl18kc5a3/957140518395',
+                Name: 'Test Account',
+                Email: 'aws-test-account@backstage.io',
+                Status: 'ACTIVE',
+              },
+            ],
+            NextToken: undefined,
+          };
+        }
+        throw new Error(`Unexpected command: ${command.constructor.name}`);
       });
       await processor.readLocation(location, false, emit);
+      expect(organizationsSendMock).toHaveBeenCalledTimes(1);
+      expect(organizationsSendMock.mock.calls[0][0]).toBeInstanceOf(
+        ListAccountsCommand,
+      );
       expect(emit).toHaveBeenCalledWith({
         type: 'entity',
         location,
@@ -78,24 +90,36 @@ describe('AwsOrganizationCloudAccountProcessor', () => {
     });
 
     it('filters out accounts not in specified location target', async () => {
+      jest
+        .spyOn(OrganizationsClient.prototype, 'send')
+        .mockImplementation(organizationsSendMock);
       const locationTest = {
         type: 'aws-cloud-accounts',
         target: 'o-1vl18kc5a3',
       };
-      mock.on(ListAccountsCommand).resolves({
-        Accounts: [
-          {
-            Arn: 'arn:aws:organizations::192594491037:account/o-1vl18kc5a3/957140518395',
-            Name: 'Test Account',
-          },
-          {
-            Arn: 'arn:aws:organizations::192594491037:account/o-zzzzzzzzz/957140518395',
-            Name: 'Test Account 2',
-          },
-        ],
-        NextToken: undefined,
+      organizationsSendMock.mockImplementation(async command => {
+        if (command instanceof ListAccountsCommand) {
+          return {
+            Accounts: [
+              {
+                Arn: 'arn:aws:organizations::192594491037:account/o-1vl18kc5a3/957140518395',
+                Name: 'Test Account',
+              },
+              {
+                Arn: 'arn:aws:organizations::192594491037:account/o-zzzzzzzzz/957140518395',
+                Name: 'Test Account 2',
+              },
+            ],
+            NextToken: undefined,
+          };
+        }
+        throw new Error(`Unexpected command: ${command.constructor.name}`);
       });
       await processor.readLocation(locationTest, false, emit);
+      expect(organizationsSendMock).toHaveBeenCalledTimes(1);
+      expect(organizationsSendMock.mock.calls[0][0]).toBeInstanceOf(
+        ListAccountsCommand,
+      );
       expect(emit).toHaveBeenCalledTimes(1);
       expect(emit).toHaveBeenCalledWith({
         type: 'entity',

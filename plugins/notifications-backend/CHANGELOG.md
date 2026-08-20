@@ -1,5 +1,56 @@
 # @backstage/plugin-notifications-backend
 
+## 0.6.8
+
+### Patch Changes
+
+- 3222945: Fixed notification recipient resolution to safely handle cyclic group relationships during group traversal, preventing endless recursion.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/backend-openapi-utils@0.7.1
+  - @backstage/plugin-catalog-node@2.2.4
+  - @backstage/plugin-notifications-node@0.2.29
+  - @backstage/plugin-signals-node@0.2.4
+
+## 0.6.8-next.1
+
+### Patch Changes
+
+- 3222945: Fixed notification recipient resolution to safely handle cyclic group relationships during group traversal, preventing endless recursion.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.1
+
+## 0.6.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/backend-openapi-utils@0.7.1-next.0
+  - @backstage/plugin-catalog-node@2.2.4-next.0
+  - @backstage/plugin-notifications-node@0.2.29-next.0
+  - @backstage/plugin-signals-node@0.2.4-next.0
+
+## 0.6.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.7.0
+  - @backstage/plugin-notifications-node@0.2.28
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/plugin-catalog-node@2.2.3
+  - @backstage/plugin-signals-node@0.2.3
+
+## 0.6.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.7.0-next.1
+  - @backstage/backend-plugin-api@1.9.3-next.1
+
 ## 0.6.7-next.0
 
 ### Patch Changes

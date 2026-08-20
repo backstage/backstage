@@ -18,7 +18,7 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           # Fetch the commit that's merged into the base rather than the target ref
           # This will let us diff only the contents of the PR, without fetching more history
@@ -31,12 +31,16 @@ jobs:
         with:
           node-version: 22.x
           registry-url: https://registry.npmjs.org/
-          corepack: true
 
       - name: yarn install
         uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
         with:
           cache-prefix: linux-v22
+
+      - name: install oasdiff
+        env:
+          OASDIFF_VERSION: '1.18.1'
+        run: curl -fsSL https://raw.githubusercontent.com/oasdiff/oasdiff/v${OASDIFF_VERSION}/install.sh | version=${OASDIFF_VERSION} sh
 
       - name: breaking changes check
         run: |
