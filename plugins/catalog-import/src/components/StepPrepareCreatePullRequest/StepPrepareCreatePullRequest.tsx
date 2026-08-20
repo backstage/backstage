@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { DEFAULT_NAMESPACE, Entity } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { toError } from '@backstage/errors';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import {
   catalogApiRef,
   entityPresentationApiRef,
+  humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
 import Box from '@material-ui/core/Box';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -122,20 +123,6 @@ export function generateEntities(
 }
 
 /**
- * Builds the entity reference that is written to `spec.owner` when a group is
- * selected as owner.
- *
- * The selected value is written verbatim to `spec.owner` of the generated
- * entity, so it has to be an entity reference rather than a display name.
- */
-function groupOwnerRef(entity: Entity): string {
-  const namespace = entity.metadata.namespace || DEFAULT_NAMESPACE;
-  return namespace === DEFAULT_NAMESPACE
-    ? entity.metadata.name
-    : `${namespace}/${entity.metadata.name}`;
-}
-
-/**
  * Prepares a pull request.
  *
  * @public
@@ -184,7 +171,10 @@ export const StepPrepareCreatePullRequest = (
             defaultKind: 'group',
           }).promise
         ).primaryTitle,
-        id: groupOwnerRef(entity),
+        // The selected value is written verbatim to `spec.owner` of the
+        // generated entity, so it has to be an entity reference rather than a
+        // display name.
+        id: humanizeEntityRef(entity, { defaultKind: 'group' }),
       })),
     );
 
