@@ -166,4 +166,99 @@ describe('CatalogRelationServiceLocator', () => {
       clusters: [],
     });
   });
+
+  it('matches clusters by entityRef regardless of the namespace they live in', async () => {
+    const crsl = new CatalogRelationServiceLocator({
+      getClusters: jest.fn().mockResolvedValue([
+        {
+          name: 'cluster1',
+          url: 'http://localhost:8080',
+          authMetadata: {},
+          entityRef: 'resource:namespace1/cluster1',
+        },
+        {
+          name: 'cluster2',
+          url: 'http://localhost:8081',
+          authMetadata: {},
+          entityRef: 'resource:namespace2/cluster2',
+        },
+      ]),
+    });
+
+    const testEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      relations: [
+        { type: 'dependsOn', targetRef: 'resource:namespace1/cluster1' },
+        { type: 'ownedBy', targetRef: 'group:default/group1' },
+      ],
+      metadata: {
+        namespace: 'default',
+        name: 'testEntity',
+      },
+    };
+
+    const result = await crsl.getClustersByEntity(
+      testEntity,
+      {} as ServiceLocatorRequestContext,
+    );
+
+    expect(result).toEqual({
+      clusters: [
+        {
+          name: 'cluster1',
+          url: 'http://localhost:8080',
+          authMetadata: {},
+          entityRef: 'resource:namespace1/cluster1',
+        },
+      ],
+    });
+  });
+
+  it('disambiguates same-named clusters by entityRef', async () => {
+    const crsl = new CatalogRelationServiceLocator({
+      getClusters: jest.fn().mockResolvedValue([
+        {
+          name: 'cluster1',
+          url: 'http://localhost:8080',
+          authMetadata: {},
+          entityRef: 'resource:namespace1/cluster1',
+        },
+        {
+          name: 'cluster1',
+          url: 'http://localhost:8081',
+          authMetadata: {},
+          entityRef: 'resource:namespace2/cluster1',
+        },
+      ]),
+    });
+
+    const testEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      relations: [
+        { type: 'dependsOn', targetRef: 'resource:namespace2/cluster1' },
+      ],
+      metadata: {
+        namespace: 'default',
+        name: 'testEntity',
+      },
+    };
+
+    const result = await crsl.getClustersByEntity(
+      testEntity,
+      {} as ServiceLocatorRequestContext,
+    );
+
+    expect(result).toEqual({
+      clusters: [
+        {
+          name: 'cluster1',
+          url: 'http://localhost:8081',
+          authMetadata: {},
+          entityRef: 'resource:namespace2/cluster1',
+        },
+      ],
+    });
+  });
 });
