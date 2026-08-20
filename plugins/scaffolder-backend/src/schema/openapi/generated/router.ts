@@ -1036,6 +1036,9 @@ export const spec = {
               },
             },
           },
+          '409': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
         },
         security: [
           {},
