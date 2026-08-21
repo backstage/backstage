@@ -92,7 +92,9 @@ describe('verifyYarnPatches command', () => {
 
       expect(mockVerifyYarnPatches).not.toHaveBeenCalled();
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('USAGE:'),
+        expect.stringContaining(
+          'backstage-cli repo verify-yarn-patches [flags...]',
+        ),
       );
     } finally {
       exitSpy.mockRestore();
