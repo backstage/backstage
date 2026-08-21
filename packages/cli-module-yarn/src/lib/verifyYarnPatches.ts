@@ -15,6 +15,10 @@
  */
 
 import { getPackages } from '@manypkg/get-packages';
+import {
+  getManifestByVersion,
+  type ReleaseManifest,
+} from '@backstage/release-manifests';
 import { Configuration, structUtils } from '@yarnpkg/core';
 import type { PluginConfiguration } from '@yarnpkg/core';
 import { npath } from '@yarnpkg/fslib';
@@ -24,6 +28,9 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 export type PatchVerificationErrorKind =
+  | 'backstage-manifest-load-failure'
+  | 'backstage-package-missing'
+  | 'backstage-patch-holdback'
   | 'incompatible-patch-declarations'
   | 'lockfile-mismatch'
   | 'malformed-lockfile'
@@ -59,6 +66,12 @@ type PatchDeclaration = {
 type LocalPatchPath = {
   absolute: string;
   relative: string;
+};
+
+type PatchedBackstagePackage = {
+  name: string;
+  version: string;
+  location: string;
 };
 
 const MANIFEST_FIELDS = [
@@ -558,6 +571,163 @@ function uniqueDeclarations(
   return unique;
 }
 
+function getPatchedBackstagePackages(
+  declarations: Iterable<PatchDeclaration>,
+): PatchedBackstagePackage[] {
+  const packages: PatchedBackstagePackage[] = [];
+  for (const declaration of declarations) {
+    const descriptor = structUtils.parseDescriptor(declaration.source, true);
+    const range = structUtils.parseRange(descriptor.range);
+    if (descriptor.scope !== 'backstage' || range.protocol !== 'npm:') {
+      continue;
+    }
+    packages.push({
+      name: structUtils.stringifyIdent(descriptor),
+      version: range.selector,
+      location: declaration.location,
+    });
+  }
+  return packages;
+}
+
+function isReleaseManifest(value: unknown): value is ReleaseManifest {
+  return (
+    isRecord(value) &&
+    typeof value.releaseVersion === 'string' &&
+    Array.isArray(value.packages) &&
+    value.packages.every(
+      packageEntry =>
+        isRecord(packageEntry) &&
+        typeof packageEntry.name === 'string' &&
+        typeof packageEntry.version === 'string',
+    )
+  );
+}
+
+async function readBackstageVersion(
+  rootDir: string,
+): Promise<string | undefined> {
+  try {
+    const backstageJson: unknown = JSON.parse(
+      await fs.readFile(path.join(rootDir, 'backstage.json'), 'utf8'),
+    );
+    if (!isRecord(backstageJson) || typeof backstageJson.version !== 'string') {
+      throw new Error(
+        "backstage.json must contain a string 'version' property",
+      );
+    }
+    return backstageJson.version;
+  } catch (error) {
+    if (isErrorWithCode(error, 'ENOENT')) {
+      return undefined;
+    }
+    throw error;
+  }
+}
+
+async function loadReleaseManifest(options: {
+  backstageVersion: string;
+  env: NodeJS.ProcessEnv | undefined;
+  fetch: typeof globalThis.fetch | undefined;
+}): Promise<ReleaseManifest> {
+  const manifestFile = options.env?.BACKSTAGE_MANIFEST_FILE;
+  if (!manifestFile) {
+    return getManifestByVersion({
+      version: options.backstageVersion,
+      versionsBaseUrl: options.env?.BACKSTAGE_VERSIONS_BASE_URL,
+      fetch: options.fetch,
+    });
+  }
+
+  const manifest: unknown = JSON.parse(await fs.readFile(manifestFile, 'utf8'));
+  if (!isReleaseManifest(manifest)) {
+    throw new Error('Local Backstage release manifest has an invalid format');
+  }
+  return manifest;
+}
+
+async function validateBackstagePatches(options: {
+  rootDir: string;
+  declarations: Iterable<PatchDeclaration>;
+  env: NodeJS.ProcessEnv | undefined;
+  fetch: typeof globalThis.fetch | undefined;
+}): Promise<{
+  backstageCheck: VerifyYarnPatchesResult['backstageCheck'];
+  errors: PatchVerificationError[];
+}> {
+  const patchedPackages = getPatchedBackstagePackages(options.declarations);
+  if (patchedPackages.length === 0) {
+    return { backstageCheck: 'skipped', errors: [] };
+  }
+
+  let backstageVersion: string | undefined;
+  try {
+    backstageVersion = await readBackstageVersion(options.rootDir);
+  } catch (error) {
+    return {
+      backstageCheck: 'verified',
+      errors: [
+        {
+          kind: 'backstage-manifest-load-failure',
+          message: `Failed to read Backstage release version: ${String(error)}`,
+          location: 'backstage.json',
+        },
+      ],
+    };
+  }
+  if (backstageVersion === undefined) {
+    return { backstageCheck: 'skipped', errors: [] };
+  }
+
+  let releaseManifest: ReleaseManifest;
+  try {
+    releaseManifest = await loadReleaseManifest({
+      backstageVersion,
+      env: options.env,
+      fetch: options.fetch,
+    });
+  } catch (error) {
+    return {
+      backstageCheck: 'verified',
+      errors: [
+        {
+          kind: 'backstage-manifest-load-failure',
+          message: `Failed to load Backstage release manifest for '${backstageVersion}': ${String(
+            error,
+          )}`,
+          location: 'backstage.json',
+        },
+      ],
+    };
+  }
+
+  const packageVersions = new Map(
+    releaseManifest.packages.map(packageEntry => [
+      packageEntry.name,
+      packageEntry.version,
+    ]),
+  );
+  const errors: PatchVerificationError[] = [];
+  for (const patchedPackage of patchedPackages) {
+    const releaseVersion = packageVersions.get(patchedPackage.name);
+    if (releaseVersion === undefined) {
+      errors.push({
+        kind: 'backstage-package-missing',
+        message: `Patched package '${patchedPackage.name}' is absent from Backstage release '${backstageVersion}'`,
+        location: patchedPackage.location,
+      });
+    } else if (releaseVersion !== patchedPackage.version) {
+      errors.push({
+        kind: 'backstage-patch-holdback',
+        message: `Patched package '${patchedPackage.name}' is at version '${patchedPackage.version}', but Backstage release '${backstageVersion}' requires version '${releaseVersion}'`,
+        location: patchedPackage.location,
+      });
+    }
+  }
+
+  return { backstageCheck: 'verified', errors };
+}
+
 export async function verifyYarnPatches(
   options: VerifyYarnPatchesOptions,
 ): Promise<VerifyYarnPatchesResult> {
@@ -682,9 +852,17 @@ export async function verifyYarnPatches(
     }
   }
 
+  const backstageValidation = await validateBackstagePatches({
+    rootDir,
+    declarations: uniqueManifestDeclarations.values(),
+    env: options.env,
+    fetch: options.fetch,
+  });
+  errors.push(...backstageValidation.errors);
+
   return {
     patchCount: referencedPatchFiles.size,
-    backstageCheck: 'skipped',
+    backstageCheck: backstageValidation.backstageCheck,
     errors: sortErrors(errors),
   };
 }

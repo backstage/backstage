@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { createMockDirectory } from '@backstage/backend-test-utils';
+import {
+  createMockDirectory,
+  type MockDirectoryContent,
+} from '@backstage/backend-test-utils';
 import { Configuration } from '@yarnpkg/core';
 import { verifyYarnPatches } from './verifyYarnPatches';
 
@@ -32,6 +35,45 @@ const concurrentMockDirB = createMockDirectory();
 
 function packageJson(content: Record<string, unknown>): string {
   return JSON.stringify(content);
+}
+
+function createBackstagePatchRepository(
+  options: {
+    backstageVersion?: string;
+    sourceVersion?: string;
+  } = {},
+): MockDirectoryContent {
+  const sourceVersion = options.sourceVersion ?? '1.0.0';
+  const patchReference = `patch:@backstage/example@npm%3A${sourceVersion}#~/.yarn/patches/example.patch`;
+
+  return {
+    'package.json': packageJson({
+      name: 'root',
+      resolutions: {
+        '@backstage/example': patchReference,
+      },
+    }),
+    ...(options.backstageVersion
+      ? {
+          'backstage.json': packageJson({ version: options.backstageVersion }),
+        }
+      : {}),
+    '.yarn': { patches: { 'example.patch': 'patch' } },
+    'yarn.lock': `${LOCKFILE_HEADER}
+"@backstage/example@patch:@backstage/example@npm%3A${sourceVersion}#~/.yarn/patches/example.patch":
+  version: ${sourceVersion}
+  resolution: "@backstage/example@patch:@backstage/example@npm%3A${sourceVersion}#~/.yarn/patches/example.patch::version=${sourceVersion}&hash=aaaaaa"
+  languageName: node
+  linkType: hard
+`,
+  };
+}
+
+function releaseManifest(version: string, packageVersion = '1.0.0') {
+  return {
+    releaseVersion: version,
+    packages: [{ name: '@backstage/example', version: packageVersion }],
+  };
 }
 
 describe('verifyYarnPatches', () => {
@@ -768,5 +810,185 @@ plugins:
       ['.yarn/patches/orphaned.patch', 'orphaned-patch-file'],
       ['package.json#dependencies.zed', 'malformed-patch-reference'],
     ]);
+  });
+
+  it('skips Backstage manifest validation when backstage.json is absent', async () => {
+    mockDir.setContent(createBackstagePatchRepository());
+    const requestedUrls: string[] = [];
+    const fetch: NonNullable<
+      Parameters<typeof verifyYarnPatches>[0]['fetch']
+    > = async url => {
+      requestedUrls.push(url.toString());
+      return new Response(JSON.stringify(releaseManifest('1.0.0')), {
+        status: 200,
+      });
+    };
+
+    await expect(
+      verifyYarnPatches({ rootDir: mockDir.path, fetch }),
+    ).resolves.toEqual({
+      patchCount: 1,
+      backstageCheck: 'skipped',
+      errors: [],
+    });
+    expect(requestedUrls).toEqual([]);
+  });
+
+  it('verifies patched Backstage packages that match the selected release manifest', async () => {
+    mockDir.setContent(
+      createBackstagePatchRepository({ backstageVersion: '1.0.0' }),
+    );
+    const fetch: NonNullable<
+      Parameters<typeof verifyYarnPatches>[0]['fetch']
+    > = async () =>
+      new Response(JSON.stringify(releaseManifest('1.0.0')), { status: 200 });
+
+    await expect(
+      verifyYarnPatches({ rootDir: mockDir.path, fetch }),
+    ).resolves.toEqual({
+      patchCount: 1,
+      backstageCheck: 'verified',
+      errors: [],
+    });
+  });
+
+  it('reports patched Backstage packages held back from the selected release', async () => {
+    mockDir.setContent(
+      createBackstagePatchRepository({ backstageVersion: '1.0.1' }),
+    );
+    const fetch: NonNullable<
+      Parameters<typeof verifyYarnPatches>[0]['fetch']
+    > = async () =>
+      new Response(JSON.stringify(releaseManifest('1.0.1', '1.0.1')), {
+        status: 200,
+      });
+
+    await expect(
+      verifyYarnPatches({ rootDir: mockDir.path, fetch }),
+    ).resolves.toEqual({
+      patchCount: 1,
+      backstageCheck: 'verified',
+      errors: [
+        {
+          kind: 'backstage-patch-holdback',
+          message:
+            "Patched package '@backstage/example' is at version '1.0.0', but Backstage release '1.0.1' requires version '1.0.1'",
+          location: 'package.json#resolutions.@backstage/example',
+        },
+      ],
+    });
+  });
+
+  it('reports patched Backstage packages that are absent from the selected release manifest', async () => {
+    mockDir.setContent(
+      createBackstagePatchRepository({ backstageVersion: '1.0.0' }),
+    );
+    const fetch: NonNullable<
+      Parameters<typeof verifyYarnPatches>[0]['fetch']
+    > = async () =>
+      new Response(JSON.stringify({ releaseVersion: '1.0.0', packages: [] }), {
+        status: 200,
+      });
+
+    await expect(
+      verifyYarnPatches({ rootDir: mockDir.path, fetch }),
+    ).resolves.toEqual({
+      patchCount: 1,
+      backstageCheck: 'verified',
+      errors: [
+        {
+          kind: 'backstage-package-missing',
+          message:
+            "Patched package '@backstage/example' is absent from Backstage release '1.0.0'",
+          location: 'package.json#resolutions.@backstage/example',
+        },
+      ],
+    });
+  });
+
+  it('loads the selected release manifest from BACKSTAGE_MANIFEST_FILE', async () => {
+    mockDir.setContent({
+      ...createBackstagePatchRepository({ backstageVersion: '1.0.0' }),
+      'manifest.json': JSON.stringify(releaseManifest('1.0.0')),
+    });
+    const fetch: NonNullable<
+      Parameters<typeof verifyYarnPatches>[0]['fetch']
+    > = async () => {
+      throw new Error('fetch should not be called for a local manifest');
+    };
+
+    await expect(
+      verifyYarnPatches({
+        rootDir: mockDir.path,
+        env: {
+          ...process.env,
+          BACKSTAGE_MANIFEST_FILE: mockDir.resolve('manifest.json'),
+        },
+        fetch,
+      }),
+    ).resolves.toEqual({
+      patchCount: 1,
+      backstageCheck: 'verified',
+      errors: [],
+    });
+  });
+
+  it('uses BACKSTAGE_VERSIONS_BASE_URL when loading the selected release manifest', async () => {
+    mockDir.setContent(
+      createBackstagePatchRepository({ backstageVersion: '1.0.0' }),
+    );
+    const requestedUrls: string[] = [];
+    const fetch: NonNullable<
+      Parameters<typeof verifyYarnPatches>[0]['fetch']
+    > = async url => {
+      requestedUrls.push(url.toString());
+      return new Response(JSON.stringify(releaseManifest('1.0.0')), {
+        status: 200,
+      });
+    };
+
+    await expect(
+      verifyYarnPatches({
+        rootDir: mockDir.path,
+        env: {
+          ...process.env,
+          BACKSTAGE_VERSIONS_BASE_URL: 'https://versions.example.test',
+        },
+        fetch,
+      }),
+    ).resolves.toEqual({
+      patchCount: 1,
+      backstageCheck: 'verified',
+      errors: [],
+    });
+    expect(requestedUrls).toEqual([
+      'https://versions.example.test/v1/releases/1.0.0/manifest.json',
+    ]);
+  });
+
+  it('reports rejected manifest fetches as Backstage validation errors', async () => {
+    mockDir.setContent(
+      createBackstagePatchRepository({ backstageVersion: '1.0.0' }),
+    );
+    const fetch: NonNullable<
+      Parameters<typeof verifyYarnPatches>[0]['fetch']
+    > = async () => {
+      throw new Error('offline');
+    };
+
+    await expect(
+      verifyYarnPatches({ rootDir: mockDir.path, fetch }),
+    ).resolves.toEqual({
+      patchCount: 1,
+      backstageCheck: 'verified',
+      errors: [
+        {
+          kind: 'backstage-manifest-load-failure',
+          message:
+            "Failed to load Backstage release manifest for '1.0.0': Error: offline",
+          location: 'backstage.json',
+        },
+      ],
+    });
   });
 });
