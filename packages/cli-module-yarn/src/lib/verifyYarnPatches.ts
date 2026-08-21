@@ -74,6 +74,10 @@ const PATCH_PLUGIN_CONFIGURATION: PluginConfiguration = {
   plugins: new Set(['@yarnpkg/plugin-patch']),
 };
 
+// Yarn Configuration.find has no environment parameter and reads process.env.
+// Serialize the narrow overlay so concurrent verifications cannot interleave.
+let configurationEnvironmentQueue = Promise.resolve();
+
 function relativePath(rootDir: string, targetPath: string): string {
   return path.relative(rootDir, targetPath).split(path.sep).join('/');
 }
@@ -202,6 +206,71 @@ function declarationDescription(declaration: PatchDeclaration): string {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
+}
+
+function isYarnPluginsKey(key: string): boolean {
+  return key.toLowerCase() === 'yarn_plugins';
+}
+
+function setEnvironmentValue(key: string, value: string | undefined): void {
+  if (value === undefined) {
+    delete process.env[key];
+  } else {
+    process.env[key] = value;
+  }
+}
+
+async function withConfigurationEnvironment<T>(
+  env: NodeJS.ProcessEnv | undefined,
+  action: () => Promise<T>,
+): Promise<T> {
+  const waitForTurn = configurationEnvironmentQueue;
+  let releaseTurn = () => {};
+  const turnComplete = new Promise<void>(resolve => {
+    releaseTurn = resolve;
+  });
+  configurationEnvironmentQueue = waitForTurn.then(() => turnComplete);
+  await waitForTurn;
+
+  const environmentState = new Map<
+    string,
+    { previous: string | undefined; applied: string | undefined }
+  >();
+
+  try {
+    const targetEnvironment = env ? { ...env } : undefined;
+    if (targetEnvironment) {
+      for (const key of Object.keys(targetEnvironment)) {
+        if (isYarnPluginsKey(key)) {
+          delete targetEnvironment[key];
+        }
+      }
+    }
+
+    const keysToScope = new Set(
+      targetEnvironment
+        ? [...Object.keys(process.env), ...Object.keys(env ?? {})]
+        : Object.keys(process.env).filter(isYarnPluginsKey),
+    );
+    for (const key of keysToScope) {
+      const previous = process.env[key];
+      const applied = isYarnPluginsKey(key)
+        ? undefined
+        : targetEnvironment?.[key];
+      environmentState.set(key, { previous, applied });
+      setEnvironmentValue(key, applied);
+    }
+
+    return await action();
+  } finally {
+    for (const [key, { previous, applied }] of environmentState) {
+      // Keep values changed by unrelated async work while Yarn was loading.
+      if (process.env[key] === applied) {
+        setEnvironmentValue(key, previous);
+      }
+    }
+    releaseTurn();
+  }
 }
 
 function arraysEqual(left: string[], right: string[]): boolean {
@@ -438,7 +507,7 @@ async function readPatchFolder(
   rootDir: string,
   env: NodeJS.ProcessEnv | undefined,
 ): Promise<string> {
-  const loadConfiguration = async () => {
+  return withConfigurationEnvironment(env, async () => {
     // Yarn still applies inherited rc files when useRc is false; this only
     // prevents project rc files from loading arbitrary third-party plugins.
     const configuration = await Configuration.find(
@@ -450,28 +519,7 @@ async function readPatchFolder(
       },
     );
     return npath.fromPortablePath(configuration.get('patchFolder'));
-  };
-
-  if (!env) {
-    return loadConfiguration();
-  }
-
-  const previousEnv = process.env;
-  const configurationEnv = { ...env };
-  // Configuration.find reads process.env directly and has no environment
-  // parameter. Avoid loading plugins supplied through the temporary env too.
-  for (const key of Object.keys(configurationEnv)) {
-    if (key.toLowerCase() === 'yarn_plugins') {
-      delete configurationEnv[key];
-    }
-  }
-
-  process.env = configurationEnv;
-  try {
-    return await loadConfiguration();
-  } finally {
-    process.env = previousEnv;
-  }
+  });
 }
 
 async function findPatchFiles(directory: string): Promise<string[]> {
