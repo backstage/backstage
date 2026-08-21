@@ -1001,7 +1001,10 @@ describe('NunjucksWorkflowRunner', () => {
         updateCheckpoint,
       );
 
-      await expect(runner.execute(task)).rejects.toBe(persistenceError);
+      await expect(runner.execute(task)).rejects.toMatchObject({
+        name: 'Error',
+        message: 'checkpoint persistence failed',
+      });
       expect(updateCheckpoint).toHaveBeenCalledTimes(1);
       expect(updateCheckpoint).toHaveBeenCalledWith({
         key: 'v1.task.checkpoint.test.key',
@@ -1095,7 +1098,60 @@ describe('NunjucksWorkflowRunner', () => {
       expect(serializeWorkspace).toHaveBeenCalled();
     });
 
-    it('preserves callback and persistence errors for failed checkpoints', async () => {
+    it('redacts secrets from persisted checkpoint failures', async () => {
+      actionRegistry.register(
+        createTemplateAction({
+          id: 'failed-secret-checkpoint-action',
+          handler: async ctx => {
+            await ctx.checkpoint({
+              key: 'key',
+              fn: async () => {
+                throw new Error(
+                  `checkpoint failed ${ctx.input.raw} ${ctx.input.transformed}`,
+                );
+              },
+            });
+          },
+        }),
+      );
+
+      const secret = 'checkpoint-secret';
+      const transformedSecret = secret.toUpperCase();
+      const updateCheckpoint = jest.fn();
+      const task = {
+        ...createMockTaskWithSpec(
+          {
+            steps: [
+              {
+                id: 'test',
+                name: 'name',
+                action: 'failed-secret-checkpoint-action',
+                input: {
+                  raw: '${{ secrets.secret }}',
+                  transformed: '${{ secrets.secret | upper }}',
+                },
+              },
+            ],
+          },
+          { secret },
+        ),
+        updateCheckpoint,
+      };
+
+      await expect(runner.execute(task)).rejects.toThrow('checkpoint failed');
+      expect(updateCheckpoint).toHaveBeenCalledTimes(1);
+      const checkpoint = updateCheckpoint.mock.calls[0][0];
+      expect(checkpoint).toMatchObject({
+        key: 'v1.task.checkpoint.test.key',
+        status: 'failed',
+      });
+      expect(checkpoint.reason).toContain('checkpoint failed');
+      expect(checkpoint.reason).toContain('***');
+      expect(checkpoint.reason).not.toContain(secret);
+      expect(checkpoint.reason).not.toContain(transformedSecret);
+    });
+
+    it('reports checkpoint and persistence failure without attaching nested errors', async () => {
       const checkpointError = new Error('checkpoint failed');
       registerCheckpointAction(
         'failed-checkpoint-persistence-rejection-action',
@@ -1110,11 +1166,14 @@ describe('NunjucksWorkflowRunner', () => {
         jest.fn().mockRejectedValue(persistenceError),
       );
 
-      const execution = runner.execute(task);
-      await expect(execution).rejects.toBeInstanceOf(AggregateError);
-      await expect(execution).rejects.toMatchObject({
-        errors: [checkpointError, persistenceError],
+      const error = await runner.execute(task).catch(cause => cause);
+      expect(error).toMatchObject({
+        name: 'AggregateError',
+        message:
+          "Checkpoint 'key' failed and its failure state could not be persisted",
       });
+      expect(error).not.toBeInstanceOf(AggregateError);
+      expect(error).not.toHaveProperty('errors');
     });
 
     it('should template the output from simple actions', async () => {
@@ -1164,6 +1223,140 @@ describe('NunjucksWorkflowRunner', () => {
   });
 
   describe('redactions', () => {
+    it('should redact secrets from action errors', async () => {
+      actionRegistry.register({
+        id: 'fail-with-secret',
+        description: 'Mock action for testing',
+        handler: async ctx => {
+          const error = new Error(`Failed to read ${ctx.input.url}`);
+          error.name = `ReadError:${ctx.input.url}`;
+          throw Object.freeze(error);
+        },
+      });
+
+      const secret = 'my-secret-value';
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'fail-with-secret',
+              input: {
+                url: 'https://${{ secrets.secret }}@example.com',
+              },
+            },
+          ],
+        },
+        { secret },
+      );
+
+      let thrownError: Error | undefined;
+      try {
+        await runner.execute(task);
+      } catch (error) {
+        thrownError = error as Error;
+      }
+
+      expect(thrownError?.name).toBe('ReadError:***');
+      expect(thrownError?.message).toBe('Failed to read ***');
+      const failedLog = fakeTaskLog.mock.calls.find(
+        ([, metadata]) => metadata?.status === 'failed',
+      );
+      expect(stripAnsi(failedLog?.[0])).toContain(
+        'ReadError:***: Failed to read ***',
+      );
+      expect(stripAnsi(failedLog?.[0])).not.toContain(secret);
+    });
+
+    it('should safely handle action errors with throwing getters', async () => {
+      actionRegistry.register({
+        id: 'fail-with-throwing-getter',
+        description: 'Mock action for testing',
+        handler: async ctx => {
+          const error = new Error('Action failed');
+          Object.defineProperty(error, 'name', {
+            get(): string {
+              throw new Error(`Failed to read ${ctx.input.url}`);
+            },
+          });
+          throw error;
+        },
+      });
+
+      const secret = 'my-secret-value';
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'fail-with-throwing-getter',
+              input: {
+                url: 'https://${{ secrets.secret }}@example.com',
+              },
+            },
+          ],
+        },
+        { secret },
+      );
+
+      let thrownError: Error | undefined;
+      try {
+        await runner.execute(task);
+      } catch (error) {
+        thrownError = error as Error;
+      }
+
+      expect(thrownError).toMatchObject({
+        name: 'Error',
+        message: 'Task failed',
+      });
+      const failedLog = fakeTaskLog.mock.calls.find(
+        ([, metadata]) => metadata?.status === 'failed',
+      );
+      expect(stripAnsi(failedLog?.[0])).toContain('Error: Task failed');
+      expect(JSON.stringify(fakeTaskLog.mock.calls)).not.toContain(secret);
+    });
+
+    it('should preserve non-secret action error details', async () => {
+      actionRegistry.register({
+        id: 'fail-without-secret',
+        description: 'Mock action for testing',
+        handler: async ctx => {
+          throw new Error(`Failed to read ${ctx.input.url}`);
+        },
+      });
+
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'fail-without-secret',
+            input: {
+              url: 'https://example.com',
+            },
+          },
+        ],
+      });
+
+      let thrownError: Error | undefined;
+      try {
+        await runner.execute(task);
+      } catch (error) {
+        thrownError = error as Error;
+      }
+
+      expect(thrownError?.message).toBe('Failed to read https://example.com');
+      const failedLog = fakeTaskLog.mock.calls.find(
+        ([, metadata]) => metadata?.status === 'failed',
+      );
+      expect(stripAnsi(failedLog?.[0])).toContain(
+        'Error: Failed to read https://example.com',
+      );
+    });
+
     // eslint-disable-next-line jest/expect-expect
     it('should redact secrets that are passed with the task', async () => {
       actionRegistry.register({
@@ -1205,6 +1398,133 @@ describe('NunjucksWorkflowRunner', () => {
       await runner.execute(task);
 
       expectTaskLog('info: ***');
+    });
+
+    // eslint-disable-next-line jest/expect-expect
+    it('should redact task and environment secrets that share a key', async () => {
+      actionRegistry.register({
+        id: 'log-task-secret',
+        description: 'Mock action for testing',
+        handler: async ctx => {
+          ctx.logger.info(ctx.secrets?.AWS_ACCESS_KEY ?? 'missing');
+        },
+      });
+
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'log-task-secret',
+            },
+          ],
+        },
+        { AWS_ACCESS_KEY: 'task-secret-value' },
+      );
+
+      await runner.execute(task);
+
+      expectTaskLog('info: ***');
+    });
+
+    it('should redact secrets transformed through each', async () => {
+      actionRegistry.register({
+        id: 'log-each-secret',
+        description: 'Mock action for testing',
+        handler: async ctx => {
+          ctx.logger.info(ctx.input.secret);
+        },
+      });
+
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              each: ['${{ secrets.token | upper }}'],
+              action: 'log-each-secret',
+              input: {
+                secret: '${{ each.value | replace("A", "Z") }}',
+              },
+            },
+          ],
+        },
+        { token: 'task-a-secret' },
+      );
+
+      await runner.execute(task);
+
+      expectTaskLog('info: ***');
+      expect(JSON.stringify(fakeTaskLog.mock.calls)).not.toContain(
+        'TASK-A-SECRET',
+      );
+      expect(JSON.stringify(fakeTaskLog.mock.calls)).not.toContain(
+        'TZSK-Z-SECRET',
+      );
+    });
+
+    it('should redact transformed secrets in skipped each iterations', async () => {
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              each: ['${{ secrets.token | upper }}'],
+              if: '${{ false }}',
+              action: 'jest-mock-action',
+            },
+          ],
+        },
+        { token: 'skip-secret' },
+      );
+
+      await runner.execute(task);
+
+      expectTaskLog('info: Skipping step each: {"key":"0","value":"***"}');
+      expect(JSON.stringify(fakeTaskLog.mock.calls)).not.toContain(
+        'SKIP-SECRET',
+      );
+    });
+
+    it('should redact secret-derived each keys', async () => {
+      runner = new NunjucksWorkflowRunner({
+        actionRegistry,
+        integrations,
+        workingDirectory: mockDir.path,
+        logger,
+        permissions: mockedPermissionApi,
+        config: new ConfigReader({}),
+        metrics: metricsServiceMock.mock(),
+        templateCapabilities: {
+          filters: {
+            keyedBy: value => ({ [String(value).toUpperCase()]: 'value' }),
+          },
+        },
+      });
+
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              each: '${{ secrets.token | keyedBy }}',
+              action: 'jest-mock-action',
+            },
+          ],
+        },
+        { token: 'key-secret' },
+      );
+
+      await runner.execute(task);
+
+      expectTaskLog('info: Running step each: {"key":"***","value":"value"}');
+      expect(JSON.stringify(fakeTaskLog.mock.calls)).not.toContain(
+        'KEY-SECRET',
+      );
     });
 
     // eslint-disable-next-line jest/expect-expect

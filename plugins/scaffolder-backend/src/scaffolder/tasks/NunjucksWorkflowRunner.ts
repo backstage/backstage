@@ -144,7 +144,7 @@ const createStepLogger = ({
   task: TaskContext;
   step: TaskStep;
   rootLogger: LoggerService;
-  redactions?: Record<string, string>;
+  redactions?: Iterable<string>;
 }) => {
   const taskLogger = WinstonLogger.create({
     level: process.env.LOG_LEVEL || 'info',
@@ -155,16 +155,16 @@ const createStepLogger = ({
     transports: [new BackstageLoggerTransport(rootLogger, task, step.id)],
   });
 
-  taskLogger.addRedactions(Object.values(redactions ?? {}));
+  taskLogger.addRedactions(redactions ?? []);
 
   return { taskLogger };
 };
 
 /**
- * Recursively compares two rendered objects and returns string values from
- * `withSecrets` that differ from their counterpart in `withoutSecrets`.
- * These are values that were influenced by secret interpolation and should
- * be added as log redactions.
+ * Recursively compares two rendered objects and returns string keys and values
+ * from `withSecrets` that differ from their counterpart in `withoutSecrets`.
+ * These were influenced by secret interpolation and should be added as log
+ * redactions.
  */
 function collectSecretRedactions(
   withSecrets: unknown,
@@ -180,12 +180,22 @@ function collectSecretRedactions(
     );
   }
   if (withSecrets && typeof withSecrets === 'object') {
-    const other =
+    const otherEntries =
       withoutSecrets && typeof withoutSecrets === 'object'
-        ? (withoutSecrets as Record<string, unknown>)
-        : {};
+        ? Object.entries(withoutSecrets as Record<string, unknown>)
+        : [];
     return Object.entries(withSecrets as Record<string, unknown>).flatMap(
-      ([key, val]) => collectSecretRedactions(val, other[key]),
+      ([key, value], index) => {
+        const otherEntry = otherEntries[index];
+        if (!otherEntry) {
+          return [key, ...extractStringValues(value)];
+        }
+        const [otherKey, otherValue] = otherEntry;
+        return [
+          ...(key !== otherKey ? [key] : []),
+          ...collectSecretRedactions(value, otherValue),
+        ];
+      },
     );
   }
   return [];
@@ -331,6 +341,15 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     decision: PolicyDecision,
   ) {
     const stepTrack = await this.tracker.stepStart(task, step);
+    const { taskLogger } = createStepLogger({
+      task,
+      step,
+      rootLogger: this.options.logger,
+      redactions: [
+        ...Object.values(task.secrets ?? {}),
+        ...Object.values(this.environment?.secrets ?? {}),
+      ],
+    });
 
     if (task.cancelSignal.aborted) {
       throw new Error(
@@ -352,15 +371,6 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         await this.options.actionRegistry.get(step.action, {
           credentials: await task.getInitiatorCredentials(),
         });
-      const { taskLogger } = createStepLogger({
-        task,
-        step,
-        rootLogger: this.options.logger,
-        redactions: {
-          ...task.secrets,
-          ...this.environment?.secrets,
-        },
-      });
 
       if (task.isDryRun) {
         const redactedSecrets = Object.fromEntries(
@@ -523,9 +533,37 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         };
       });
       for (const iteration of iterations) {
+        if (hasSecrets && iteration.each) {
+          taskLogger.addRedactions(
+            collectSecretRedactions(
+              iteration.each,
+              iteration.eachWithoutSecrets,
+            ),
+          );
+        }
         if (!iteration.shouldRun) {
           // No need to check schema or authorization for iterations that will not run
           continue;
+        }
+
+        // Redact any rendered values that were influenced by secrets.
+        // Re-render the input without secrets and diff against the real render
+        // to find values that changed due to secret interpolation.
+        if (step.input) {
+          if (hasSecrets) {
+            try {
+              const inputWithoutSecrets = this.render(
+                step.input,
+                iteration.preparedContextNoSecrets,
+                templateRenderer,
+              );
+              taskLogger.addRedactions(
+                collectSecretRedactions(iteration.input, inputWithoutSecrets),
+              );
+            } catch {
+              taskLogger.addRedactions(extractStringValues(iteration.input));
+            }
+          }
         }
 
         const actionId = `${action.id}${
@@ -579,26 +617,6 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           );
         }
 
-        // Redact any rendered values that were influenced by secrets.
-        // Re-render the input without secrets and diff against the real render
-        // to find values that changed due to secret interpolation.
-        if (step.input) {
-          if (hasSecrets) {
-            try {
-              const inputWithoutSecrets = this.render(
-                step.input,
-                iteration.preparedContextNoSecrets,
-                templateRenderer,
-              );
-              taskLogger.addRedactions(
-                collectSecretRedactions(iteration.input, inputWithoutSecrets),
-              );
-            } catch {
-              taskLogger.addRedactions(extractStringValues(iteration.input));
-            }
-          }
-        }
-
         await action.handler({
           input: iteration.input,
           task: {
@@ -634,7 +652,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
                   await task.updateCheckpoint?.({
                     key,
                     status: 'failed',
-                    reason: stringifyError(err),
+                    reason: stringifyError(taskLogger.redactError(err)),
                   });
                 } catch (persistenceError) {
                   throw new AggregateError(
@@ -703,7 +721,8 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       await stepTrack.markSuccessful();
       return updatedPreparedContext;
-    } catch (err) {
+    } catch (cause) {
+      const err = taskLogger.redactError(cause);
       await taskTrack.markFailed(step, err);
       await stepTrack.markFailed();
       throw err;
