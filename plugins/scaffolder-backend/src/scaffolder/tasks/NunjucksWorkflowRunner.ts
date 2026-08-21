@@ -604,11 +604,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         }
         if (!isActionInputAuthorized(decision, action.id, iteration.input)) {
           throw new NotAllowedError(
-            `Unauthorized action: ${actionId}. The action is not allowed. Input: ${JSON.stringify(
-              iteration.input,
-              null,
-              2,
-            )}`,
+            `Unauthorized action: ${action.id}. The action is not allowed.`,
           );
         }
       }
