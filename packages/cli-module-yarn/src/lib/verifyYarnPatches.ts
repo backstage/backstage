@@ -201,6 +201,7 @@ function resolvePatchPath(
 function parsePatchDeclaration(options: {
   rootDir: string;
   parentDir: string;
+  parentLocator?: string;
   range: string;
   location: string;
   origin: 'manifest' | 'lockfile';
@@ -221,6 +222,7 @@ function parsePatchDeclaration(options: {
   );
   const paths: LocalPatchPath[] = [];
   let hasDependencyOwnedPath = false;
+  let hasProjectRelativePath = false;
   const patchPaths =
     parsedRange.selector === '' ? [] : parsedRange.selector.split('&');
   const components = patchPaths.map(patchPath => {
@@ -238,6 +240,12 @@ function parsePatchDeclaration(options: {
     );
     if (localPath) {
       paths.push(localPath);
+      if (
+        !pathWithoutFlags.startsWith('~/') &&
+        !ppath.isAbsolute(npath.toPortablePath(pathWithoutFlags))
+      ) {
+        hasProjectRelativePath = true;
+      }
       return `${flags}local<${localPath.absolute}>`;
     }
     hasDependencyOwnedPath = true;
@@ -251,7 +259,9 @@ function parsePatchDeclaration(options: {
   return {
     source,
     components,
-    parentLocator: parent.locator,
+    parentLocator:
+      parent.locator ??
+      (hasProjectRelativePath ? options.parentLocator : undefined),
     canMatchManifest: !hasDependencyOwnedPath,
     projectOwned:
       paths.length > 0 ||
@@ -262,7 +272,9 @@ function parsePatchDeclaration(options: {
 }
 
 function declarationKey(declaration: PatchDeclaration): string {
-  return `${declaration.source}\0${declaration.components.join('\0')}`;
+  return `${declaration.parentLocator ?? ''}\0${
+    declaration.source
+  }\0${declaration.components.join('\0')}`;
 }
 
 function declarationDescription(declaration: PatchDeclaration): string {
@@ -484,6 +496,17 @@ async function discoverManifestDeclarations(
       path.join(manifest.dir, 'package.json'),
     );
     const manifestJson: Record<string, unknown> = manifest.packageJson;
+    const manifestName = manifestJson.name;
+    const workspacePath = relativePath(rootDir, manifest.dir) || '.';
+    const parentLocator =
+      typeof manifestName === 'string'
+        ? structUtils.stringifyLocator(
+            structUtils.parseLocator(
+              `${manifestName}@workspace:${workspacePath}`,
+              true,
+            ),
+          )
+        : undefined;
 
     for (const field of MANIFEST_FIELDS) {
       const entries = manifestJson[field];
@@ -501,6 +524,7 @@ async function discoverManifestDeclarations(
           const declaration = parsePatchDeclaration({
             rootDir,
             parentDir: manifest.dir,
+            parentLocator,
             range,
             location,
             origin: 'manifest',

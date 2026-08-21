@@ -774,6 +774,58 @@ plugins:
     );
   });
 
+  it('requires matching lockfile declarations for each owning workspace', async () => {
+    mockDir.setContent({
+      'package.json': packageJson({
+        name: 'root',
+        workspaces: ['packages/*'],
+      }),
+      packages: {
+        a: {
+          'package.json': packageJson({
+            name: 'a',
+            dependencies: {
+              package:
+                'patch:package@npm%3A1.2.3#../../.yarn/patches/package.patch',
+            },
+          }),
+        },
+        b: {
+          'package.json': packageJson({
+            name: 'b',
+            dependencies: {
+              package:
+                'patch:package@npm%3A1.2.3#../../.yarn/patches/package.patch',
+            },
+          }),
+        },
+      },
+      '.yarn': { patches: { 'package.patch': 'patch' } },
+      'yarn.lock': `${LOCKFILE_HEADER}
+"package@patch:package@npm%3A1.2.3#../../.yarn/patches/package.patch::locator=a%40workspace%3Apackages%2Fa":
+  version: 1.2.3
+  resolution: "package@patch:package@npm%3A1.2.3#../../.yarn/patches/package.patch::version=1.2.3&hash=aaaaaa&locator=a%40workspace%3Apackages%2Fa"
+  languageName: node
+  linkType: hard
+`,
+    });
+
+    await expect(verifyYarnPatches({ rootDir: mockDir.path })).resolves.toEqual(
+      {
+        patchCount: 1,
+        backstageCheck: 'skipped',
+        errors: [
+          {
+            kind: 'lockfile-mismatch',
+            message:
+              "Patch declaration for 'package@npm:1.2.3' using '.yarn/patches/package.patch' is missing from yarn.lock",
+            location: 'packages/b/package.json#dependencies.package',
+          },
+        ],
+      },
+    );
+  });
+
   it('uses the exact resolved source for ranged Backstage and shared patch checks', async () => {
     mockDir.setContent({
       'package.json': packageJson({
