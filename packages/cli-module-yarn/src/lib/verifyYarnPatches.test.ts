@@ -194,6 +194,91 @@ describe('verifyYarnPatches', () => {
     );
   });
 
+  it('uses YARN_PATCH_FOLDER in preference to project configuration', async () => {
+    mockDir.setContent({
+      'package.json': packageJson({
+        name: 'root',
+        resolutions: {
+          package: 'patch:package@npm%3A1.0.0#~/env-patches/package.patch',
+        },
+      }),
+      '.yarnrc.yml': `patchFolder: project-patches
+plugins:
+  - path: ./missing-project-plugin.cjs
+`,
+      'project-patches': {
+        'orphaned.patch': 'patch',
+      },
+      'env-patches': {
+        'package.patch': 'patch',
+      },
+      'yarn.lock': `${LOCKFILE_HEADER}
+"package@patch:package@npm%3A1.0.0#~/env-patches/package.patch":
+  version: 1.0.0
+  resolution: "package@patch:package@npm%3A1.0.0#~/env-patches/package.patch::version=1.0.0&hash=aaaaaa"
+  languageName: node
+  linkType: hard
+`,
+    });
+
+    await expect(
+      verifyYarnPatches({
+        rootDir: mockDir.path,
+        env: { ...process.env, YARN_PATCH_FOLDER: 'env-patches' },
+      }),
+    ).resolves.toEqual({
+      patchCount: 1,
+      backstageCheck: 'skipped',
+      errors: [],
+    });
+  });
+
+  it('interpolates environment variables in the configured patch folder', async () => {
+    mockDir.setContent({
+      'package.json': packageJson({
+        name: 'root',
+        resolutions: {
+          package:
+            'patch:package@npm%3A1.0.0#~/interpolated/patches/package.patch',
+        },
+      }),
+      '.yarnrc.yml': 'patchFolder: ${PATCH_ROOT}/patches\n',
+      interpolated: {
+        patches: {
+          'package.patch': 'patch',
+          'orphaned.patch': 'patch',
+        },
+      },
+      'yarn.lock': `${LOCKFILE_HEADER}
+"package@patch:package@npm%3A1.0.0#~/interpolated/patches/package.patch":
+  version: 1.0.0
+  resolution: "package@patch:package@npm%3A1.0.0#~/interpolated/patches/package.patch::version=1.0.0&hash=aaaaaa"
+  languageName: node
+  linkType: hard
+`,
+    });
+    const env: NodeJS.ProcessEnv = {
+      ...process.env,
+      PATCH_ROOT: 'interpolated',
+    };
+    delete env.YARN_PATCH_FOLDER;
+
+    await expect(
+      verifyYarnPatches({ rootDir: mockDir.path, env }),
+    ).resolves.toEqual({
+      patchCount: 1,
+      backstageCheck: 'skipped',
+      errors: [
+        {
+          kind: 'orphaned-patch-file',
+          message:
+            "Patch file 'interpolated/patches/orphaned.patch' is not referenced by any manifest",
+          location: 'interpolated/patches/orphaned.patch',
+        },
+      ],
+    });
+  });
+
   it('counts multiple files in one patch declaration', async () => {
     mockDir.setContent({
       'package.json': packageJson({
@@ -407,6 +492,94 @@ describe('verifyYarnPatches', () => {
         ],
       },
     );
+  });
+
+  it('reports patch lockfile entries without resolution locators', async () => {
+    mockDir.setContent({
+      'package.json': packageJson({
+        name: 'root',
+        resolutions: {
+          package: 'patch:package@npm%3A1.0.0#~/.yarn/patches/package.patch',
+        },
+      }),
+      '.yarn': { patches: { 'package.patch': 'patch' } },
+      'yarn.lock': `${LOCKFILE_HEADER}
+"package@patch:package@npm%3A1.0.0#~/.yarn/patches/package.patch":
+  version: 1.0.0
+  languageName: node
+  linkType: hard
+`,
+    });
+
+    const result = await verifyYarnPatches({ rootDir: mockDir.path });
+
+    expect(result.errors).toEqual([
+      {
+        kind: 'malformed-lockfile',
+        message: expect.stringContaining('is missing its resolution locator'),
+        location: 'yarn.lock',
+      },
+    ]);
+  });
+
+  it('reports malformed patch resolution locators', async () => {
+    mockDir.setContent({
+      'package.json': packageJson({
+        name: 'root',
+        resolutions: {
+          package: 'patch:package@npm%3A1.0.0#~/.yarn/patches/package.patch',
+        },
+      }),
+      '.yarn': { patches: { 'package.patch': 'patch' } },
+      'yarn.lock': `${LOCKFILE_HEADER}
+"package@patch:package@npm%3A1.0.0#~/.yarn/patches/package.patch":
+  version: 1.0.0
+  resolution: "not a locator"
+  languageName: node
+  linkType: hard
+`,
+    });
+
+    const result = await verifyYarnPatches({ rootDir: mockDir.path });
+
+    expect(result.errors).toEqual([
+      {
+        kind: 'malformed-lockfile',
+        message: expect.stringContaining('has an invalid resolution locator'),
+        location: 'yarn.lock',
+      },
+    ]);
+  });
+
+  it('reports patch keys that disagree with their resolution locators', async () => {
+    mockDir.setContent({
+      'package.json': packageJson({
+        name: 'root',
+        resolutions: {
+          package: 'patch:package@npm%3A1.0.0#~/.yarn/patches/package.patch',
+        },
+      }),
+      '.yarn': { patches: { 'package.patch': 'patch' } },
+      'yarn.lock': `${LOCKFILE_HEADER}
+"package@patch:package@npm%3A1.0.0#~/.yarn/patches/package.patch":
+  version: 1.0.0
+  resolution: "package@patch:package@npm%3A1.0.0#~/.yarn/patches/different.patch::version=1.0.0&hash=aaaaaa"
+  languageName: node
+  linkType: hard
+`,
+    });
+
+    const result = await verifyYarnPatches({ rootDir: mockDir.path });
+
+    expect(result.errors).toEqual([
+      {
+        kind: 'lockfile-mismatch',
+        message: expect.stringContaining(
+          'disagrees with its resolution locator',
+        ),
+        location: 'yarn.lock',
+      },
+    ]);
   });
 
   it('reports local yarn.lock patches that have no manifest declaration', async () => {

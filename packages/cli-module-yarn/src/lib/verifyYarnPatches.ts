@@ -15,8 +15,11 @@
  */
 
 import { getPackages } from '@manypkg/get-packages';
-import { structUtils } from '@yarnpkg/core';
+import { Configuration, structUtils } from '@yarnpkg/core';
+import type { PluginConfiguration } from '@yarnpkg/core';
+import { npath } from '@yarnpkg/fslib';
 import { parseSyml } from '@yarnpkg/parsers';
+import patchPlugin from '@yarnpkg/plugin-patch';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
@@ -65,6 +68,11 @@ const MANIFEST_FIELDS = [
   'peerDependencies',
   'optionalDependencies',
 ] as const;
+
+const PATCH_PLUGIN_CONFIGURATION: PluginConfiguration = {
+  modules: new Map([['@yarnpkg/plugin-patch', patchPlugin]]),
+  plugins: new Set(['@yarnpkg/plugin-patch']),
+};
 
 function relativePath(rootDir: string, targetPath: string): string {
   return path.relative(rootDir, targetPath).split(path.sep).join('/');
@@ -192,6 +200,67 @@ function declarationDescription(declaration: PatchDeclaration): string {
   return declaration.paths.map(patchPath => patchPath.relative).join(', ');
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function arraysEqual(left: string[], right: string[]): boolean {
+  return (
+    left.length === right.length &&
+    left.every((value, index) => value === right[index])
+  );
+}
+
+function getBuiltinPatchPaths(range: string): string[] {
+  const parsedRange = structUtils.parseRange(range, {
+    requireProtocol: 'patch:',
+    requireSource: true,
+  });
+  return parsedRange.selector.split('&').filter(isBuiltinPatchPath);
+}
+
+function patchDescriptorAgreesWithLocator(options: {
+  descriptor: ReturnType<typeof structUtils.parseDescriptor>;
+  descriptorDeclaration: PatchDeclaration | undefined;
+  locator: ReturnType<typeof structUtils.parseLocator>;
+  locatorDeclaration: PatchDeclaration | undefined;
+}): boolean {
+  if (!structUtils.areIdentsEqual(options.descriptor, options.locator)) {
+    return false;
+  }
+
+  const descriptorRange = structUtils.parseRange(options.descriptor.range, {
+    requireProtocol: 'patch:',
+    requireSource: true,
+  });
+  const locatorRange = structUtils.parseRange(options.locator.reference, {
+    requireProtocol: 'patch:',
+    requireSource: true,
+  });
+  const sourceDescriptor = structUtils.parseDescriptor(
+    descriptorRange.source,
+    true,
+  );
+  const sourceLocator = structUtils.parseLocator(locatorRange.source, true);
+  if (!structUtils.areIdentsEqual(sourceDescriptor, sourceLocator)) {
+    return false;
+  }
+
+  const descriptorPaths =
+    options.descriptorDeclaration?.paths.map(patchPath => patchPath.absolute) ??
+    [];
+  const locatorPaths =
+    options.locatorDeclaration?.paths.map(patchPath => patchPath.absolute) ??
+    [];
+  return (
+    arraysEqual(descriptorPaths, locatorPaths) &&
+    arraysEqual(
+      getBuiltinPatchPaths(options.descriptor.range),
+      getBuiltinPatchPaths(options.locator.reference),
+    )
+  );
+}
+
 async function discoverManifestDeclarations(
   rootDir: string,
   errors: PatchVerificationError[],
@@ -266,11 +335,15 @@ function discoverLockfileDeclarations(
   }
 
   const declarations: PatchDeclaration[] = [];
-  for (const key of Object.keys(lockfileData)) {
+  for (const [key, lockfileEntry] of Object.entries(lockfileData)) {
     if (key === '__metadata') {
       continue;
     }
 
+    const patchDescriptors: Array<{
+      descriptor: ReturnType<typeof structUtils.parseDescriptor>;
+      declaration: PatchDeclaration | undefined;
+    }> = [];
     for (const entry of key.split(', ')) {
       try {
         const descriptor = structUtils.parseDescriptor(entry, true);
@@ -286,6 +359,7 @@ function discoverLockfileDeclarations(
         if (declaration) {
           declarations.push(declaration);
         }
+        patchDescriptors.push({ descriptor, declaration });
       } catch (error) {
         errors.push({
           kind: 'malformed-lockfile',
@@ -296,28 +370,108 @@ function discoverLockfileDeclarations(
         });
       }
     }
+
+    if (patchDescriptors.length === 0) {
+      continue;
+    }
+
+    const resolution = isRecord(lockfileEntry)
+      ? lockfileEntry.resolution
+      : undefined;
+    if (typeof resolution !== 'string') {
+      errors.push({
+        kind: 'malformed-lockfile',
+        message: `Patch entry '${key}' is missing its resolution locator`,
+        location: 'yarn.lock',
+      });
+      continue;
+    }
+
+    try {
+      const locator = structUtils.parseLocator(resolution, true);
+      if (!locator.reference.startsWith('patch:')) {
+        errors.push({
+          kind: 'lockfile-mismatch',
+          message: `Patch entry '${key}' disagrees with its resolution locator '${resolution}'`,
+          location: 'yarn.lock',
+        });
+        continue;
+      }
+      const locatorDeclaration = parsePatchDeclaration({
+        rootDir,
+        parentDir: rootDir,
+        range: locator.reference,
+        location: 'yarn.lock',
+      });
+      if (
+        patchDescriptors.some(
+          ({ descriptor, declaration }) =>
+            !patchDescriptorAgreesWithLocator({
+              descriptor,
+              descriptorDeclaration: declaration,
+              locator,
+              locatorDeclaration,
+            }),
+        )
+      ) {
+        errors.push({
+          kind: 'lockfile-mismatch',
+          message: `Patch entry '${key}' disagrees with its resolution locator '${resolution}'`,
+          location: 'yarn.lock',
+        });
+      }
+    } catch (error) {
+      errors.push({
+        kind: 'malformed-lockfile',
+        message: `Patch entry '${key}' has an invalid resolution locator '${resolution}': ${String(
+          error,
+        )}`,
+        location: 'yarn.lock',
+      });
+    }
   }
 
   return declarations;
 }
 
-async function readPatchFolder(rootDir: string): Promise<string> {
-  try {
-    const yarnrcContent = await fs.readFile(
-      path.join(rootDir, '.yarnrc.yml'),
-      'utf8',
+async function readPatchFolder(
+  rootDir: string,
+  env: NodeJS.ProcessEnv | undefined,
+): Promise<string> {
+  const loadConfiguration = async () => {
+    // Yarn still applies inherited rc files when useRc is false; this only
+    // prevents project rc files from loading arbitrary third-party plugins.
+    const configuration = await Configuration.find(
+      npath.toPortablePath(rootDir),
+      PATCH_PLUGIN_CONFIGURATION,
+      {
+        strict: false,
+        useRc: false,
+      },
     );
-    const yarnrc = parseSyml(yarnrcContent);
-    if (typeof yarnrc.patchFolder === 'string') {
-      return path.resolve(rootDir, yarnrc.patchFolder);
-    }
-  } catch (error) {
-    if (!isErrorWithCode(error, 'ENOENT')) {
-      throw error;
+    return npath.fromPortablePath(configuration.get('patchFolder'));
+  };
+
+  if (!env) {
+    return loadConfiguration();
+  }
+
+  const previousEnv = process.env;
+  const configurationEnv = { ...env };
+  // Configuration.find reads process.env directly and has no environment
+  // parameter. Avoid loading plugins supplied through the temporary env too.
+  for (const key of Object.keys(configurationEnv)) {
+    if (key.toLowerCase() === 'yarn_plugins') {
+      delete configurationEnv[key];
     }
   }
 
-  return path.join(rootDir, '.yarn', 'patches');
+  process.env = configurationEnv;
+  try {
+    return await loadConfiguration();
+  } finally {
+    process.env = previousEnv;
+  }
 }
 
 async function findPatchFiles(directory: string): Promise<string[]> {
@@ -416,7 +570,7 @@ export async function verifyYarnPatches(
     });
   }
 
-  const patchFolder = await readPatchFolder(rootDir);
+  const patchFolder = await readPatchFolder(rootDir, options.env);
   const patchFiles = await findPatchFiles(patchFolder);
   for (const patchFile of patchFiles) {
     if (!referencedPatchFiles.has(patchFile)) {
