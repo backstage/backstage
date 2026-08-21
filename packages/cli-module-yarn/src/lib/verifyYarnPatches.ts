@@ -631,17 +631,20 @@ async function loadReleaseManifest(options: {
   fetch: typeof globalThis.fetch | undefined;
 }): Promise<ReleaseManifest> {
   const manifestFile = options.env?.BACKSTAGE_MANIFEST_FILE;
-  if (!manifestFile) {
-    return getManifestByVersion({
-      version: options.backstageVersion,
-      versionsBaseUrl: options.env?.BACKSTAGE_VERSIONS_BASE_URL,
-      fetch: options.fetch,
-    });
-  }
-
-  const manifest: unknown = JSON.parse(await fs.readFile(manifestFile, 'utf8'));
+  const manifest: unknown = manifestFile
+    ? JSON.parse(await fs.readFile(manifestFile, 'utf8'))
+    : await getManifestByVersion({
+        version: options.backstageVersion,
+        versionsBaseUrl: options.env?.BACKSTAGE_VERSIONS_BASE_URL,
+        fetch: options.fetch,
+      });
   if (!isReleaseManifest(manifest)) {
-    throw new Error('Local Backstage release manifest has an invalid format');
+    throw new Error('Backstage release manifest has an invalid format');
+  }
+  if (manifest.releaseVersion !== options.backstageVersion) {
+    throw new Error(
+      `Backstage release manifest version '${manifest.releaseVersion}' does not match selected version '${options.backstageVersion}'`,
+    );
   }
   return manifest;
 }

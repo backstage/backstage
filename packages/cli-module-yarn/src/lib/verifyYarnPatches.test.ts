@@ -906,6 +906,67 @@ plugins:
     });
   });
 
+  it.each([
+    ['a null package list', { releaseVersion: '1.0.0', packages: null }],
+    [
+      'a package without a version',
+      {
+        releaseVersion: '1.0.0',
+        packages: [{ name: '@backstage/example' }],
+      },
+    ],
+  ])(
+    'reports malformed remote release manifests with %s as validation errors',
+    async (_description, manifest) => {
+      mockDir.setContent(
+        createBackstagePatchRepository({ backstageVersion: '1.0.0' }),
+      );
+      const fetch: NonNullable<
+        Parameters<typeof verifyYarnPatches>[0]['fetch']
+      > = async () => new Response(JSON.stringify(manifest), { status: 200 });
+
+      await expect(
+        verifyYarnPatches({ rootDir: mockDir.path, fetch }),
+      ).resolves.toEqual({
+        patchCount: 1,
+        backstageCheck: 'verified',
+        errors: [
+          {
+            kind: 'backstage-manifest-load-failure',
+            message:
+              "Failed to load Backstage release manifest for '1.0.0': Error: Backstage release manifest has an invalid format",
+            location: 'backstage.json',
+          },
+        ],
+      });
+    },
+  );
+
+  it('reports remote manifests for a different release as validation errors', async () => {
+    mockDir.setContent(
+      createBackstagePatchRepository({ backstageVersion: '1.0.0' }),
+    );
+    const fetch: NonNullable<
+      Parameters<typeof verifyYarnPatches>[0]['fetch']
+    > = async () =>
+      new Response(JSON.stringify(releaseManifest('1.0.1')), { status: 200 });
+
+    await expect(
+      verifyYarnPatches({ rootDir: mockDir.path, fetch }),
+    ).resolves.toEqual({
+      patchCount: 1,
+      backstageCheck: 'verified',
+      errors: [
+        {
+          kind: 'backstage-manifest-load-failure',
+          message:
+            "Failed to load Backstage release manifest for '1.0.0': Error: Backstage release manifest version '1.0.1' does not match selected version '1.0.0'",
+          location: 'backstage.json',
+        },
+      ],
+    });
+  });
+
   it('loads the selected release manifest from BACKSTAGE_MANIFEST_FILE', async () => {
     mockDir.setContent({
       ...createBackstagePatchRepository({ backstageVersion: '1.0.0' }),
@@ -930,6 +991,34 @@ plugins:
       patchCount: 1,
       backstageCheck: 'verified',
       errors: [],
+    });
+  });
+
+  it('reports local manifests for a different release as validation errors', async () => {
+    mockDir.setContent({
+      ...createBackstagePatchRepository({ backstageVersion: '1.0.0' }),
+      'manifest.json': JSON.stringify(releaseManifest('1.0.1')),
+    });
+
+    await expect(
+      verifyYarnPatches({
+        rootDir: mockDir.path,
+        env: {
+          ...process.env,
+          BACKSTAGE_MANIFEST_FILE: mockDir.resolve('manifest.json'),
+        },
+      }),
+    ).resolves.toEqual({
+      patchCount: 1,
+      backstageCheck: 'verified',
+      errors: [
+        {
+          kind: 'backstage-manifest-load-failure',
+          message:
+            "Failed to load Backstage release manifest for '1.0.0': Error: Backstage release manifest version '1.0.1' does not match selected version '1.0.0'",
+          location: 'backstage.json',
+        },
+      ],
     });
   });
 
