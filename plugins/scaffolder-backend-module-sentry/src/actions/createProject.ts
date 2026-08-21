@@ -17,6 +17,7 @@
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
+import { requestSentryApi, resolveSentryApiBaseUrl } from './sentryApi';
 
 /**
  * Creates the `sentry:project:create` Scaffolder action.
@@ -71,7 +72,7 @@ export function createSentryCreateProjectAction(options: { config: Config }) {
           z
             .string({
               description:
-                'Optional base URL for the Sentry API. e.g. https://sentry.io/api/0',
+                'Optional compatibility value that must match the configured Sentry API base URL, or the default Sentry API URL if none is configured',
             })
             .optional(),
       },
@@ -107,17 +108,17 @@ export function createSentryCreateProjectAction(options: { config: Config }) {
         throw new InputError(`No valid sentry token given`);
       }
 
-      const baseUrl =
-        apiBaseUrl ||
-        config.getOptionalString('scaffolder.sentry.apiBaseUrl') ||
-        'https://sentry.io/api/0';
+      const baseUrl = resolveSentryApiBaseUrl({
+        config,
+        inputApiBaseUrl: apiBaseUrl,
+      });
 
       const { result } = await ctx.checkpoint({
         key: `create.project.${organizationSlug}.${teamSlug}`,
         fn: async () => {
-          const response = await fetch(
-            `${baseUrl}/teams/${organizationSlug}/${teamSlug}/projects/`,
-            {
+          const { body: res, status } = await requestSentryApi<{ id: string }>({
+            url: `${baseUrl}/teams/${organizationSlug}/${teamSlug}/projects/`,
+            init: {
               method: 'POST',
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -125,25 +126,12 @@ export function createSentryCreateProjectAction(options: { config: Config }) {
               },
               body: JSON.stringify(body),
             },
-          );
-
-          const contentType = response.headers.get('content-type');
-
-          if (contentType !== 'application/json') {
-            throw new InputError(
-              `Unexpected Sentry Response Type: ${await response.text()}`,
-            );
-          }
-
-          const res = await response.json();
-
-          if (response.status !== 201) {
-            throw new InputError(`Sentry Response was: ${await res.detail}`);
-          }
+            expectedStatus: 201,
+          });
 
           return {
-            code: response.status,
-            result: res as { id: string },
+            code: status,
+            result: res,
           };
         },
       });
