@@ -1036,6 +1036,37 @@ describe('scaffolder router', () => {
   });
 
   describe('GET /v2/tasks', () => {
+    it('rejects task listing when task read permission is denied', async () => {
+      const { unwrappedRouter: router, permissions } = await createTestRouter();
+      jest
+        .spyOn(permissions, 'authorizeConditional')
+        .mockImplementationOnce(async () => [
+          {
+            result: AuthorizeResult.DENY,
+          },
+        ]);
+
+      const response = await request(router).get(`/v2/tasks`);
+
+      expect(response.status).toBe(403);
+    });
+
+    it('lists tasks when task read permission is allowed', async () => {
+      const { router, permissions } = await createTestRouter();
+      jest
+        .spyOn(permissions, 'authorizeConditional')
+        .mockImplementationOnce(async () => [
+          {
+            result: AuthorizeResult.ALLOW,
+          },
+        ]);
+
+      const response = await request(router).get(`/v2/tasks`);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toStrictEqual({ tasks: [], totalTasks: 0 });
+    });
+
     it('returns public task details without internal data', async () => {
       const { router, taskBroker } = await createTestRouter();
       const task = {
