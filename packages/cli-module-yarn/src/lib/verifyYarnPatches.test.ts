@@ -509,6 +509,32 @@ plugins:
     );
   });
 
+  it('matches built-in-only declarations between manifests and yarn.lock', async () => {
+    mockDir.setContent({
+      'package.json': packageJson({
+        name: 'root',
+        resolutions: {
+          package: 'patch:package@npm%3A1.0.0#optional!builtin<compat/package>',
+        },
+      }),
+      'yarn.lock': `${LOCKFILE_HEADER}
+"package@patch:package@npm%3A1.0.0#optional!builtin<compat/package>":
+  version: 1.0.0
+  resolution: "package@patch:package@npm%3A1.0.0#optional!builtin<compat/package>::version=1.0.0&hash=aaaaaa"
+  languageName: node
+  linkType: hard
+`,
+    });
+
+    await expect(verifyYarnPatches({ rootDir: mockDir.path })).resolves.toEqual(
+      {
+        patchCount: 0,
+        backstageCheck: 'skipped',
+        errors: [],
+      },
+    );
+  });
+
   it('keeps relative patches owned by npm dependencies internal to yarn.lock', async () => {
     mockDir.setContent({
       'package.json': packageJson({ name: 'root' }),
@@ -738,6 +764,66 @@ plugins:
 "package@patch:package@npm%3A^1.0.0#~/.yarn/patches/package.patch":
   version: 2.0.0
   resolution: "package@patch:package@npm%3A2.0.0#~/.yarn/patches/package.patch::version=2.0.0&hash=aaaaaa"
+  languageName: node
+  linkType: hard
+`,
+    });
+
+    const result = await verifyYarnPatches({ rootDir: mockDir.path });
+
+    expect(result.errors).toEqual([
+      {
+        kind: 'lockfile-mismatch',
+        message: expect.stringContaining(
+          'disagrees with its resolution locator',
+        ),
+        location: 'yarn.lock',
+      },
+    ]);
+  });
+
+  it('accepts Backstage patch sources resolved to compatible npm locators', async () => {
+    mockDir.setContent({
+      'package.json': packageJson({
+        name: 'root',
+        resolutions: {
+          '@backstage/example':
+            'patch:@backstage/example@backstage%3A^%3A%3Abackstage=1.2.3&npm=1.0.0#~/.yarn/patches/example.patch',
+        },
+      }),
+      '.yarn': { patches: { 'example.patch': 'patch' } },
+      'yarn.lock': `${LOCKFILE_HEADER}
+"@backstage/example@patch:@backstage/example@backstage%3A^%3A%3Abackstage=1.2.3&npm=1.0.0#~/.yarn/patches/example.patch":
+  version: 1.0.1
+  resolution: "@backstage/example@patch:@backstage/example@npm%3A1.0.1#~/.yarn/patches/example.patch::version=1.0.1&hash=aaaaaa"
+  languageName: node
+  linkType: hard
+`,
+    });
+
+    await expect(verifyYarnPatches({ rootDir: mockDir.path })).resolves.toEqual(
+      {
+        patchCount: 1,
+        backstageCheck: 'skipped',
+        errors: [],
+      },
+    );
+  });
+
+  it('rejects Backstage patch sources resolved outside their npm range', async () => {
+    mockDir.setContent({
+      'package.json': packageJson({
+        name: 'root',
+        resolutions: {
+          '@backstage/example':
+            'patch:@backstage/example@backstage%3A^%3A%3Abackstage=1.2.3&npm=1.0.0#~/.yarn/patches/example.patch',
+        },
+      }),
+      '.yarn': { patches: { 'example.patch': 'patch' } },
+      'yarn.lock': `${LOCKFILE_HEADER}
+"@backstage/example@patch:@backstage/example@backstage%3A^%3A%3Abackstage=1.2.3&npm=1.0.0#~/.yarn/patches/example.patch":
+  version: 2.0.0
+  resolution: "@backstage/example@patch:@backstage/example@npm%3A2.0.0#~/.yarn/patches/example.patch::version=2.0.0&hash=aaaaaa"
   languageName: node
   linkType: hard
 `,

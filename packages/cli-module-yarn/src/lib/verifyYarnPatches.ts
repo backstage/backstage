@@ -62,6 +62,7 @@ type PatchDeclaration = {
   resolvedSource?: string;
   components: string[];
   parentLocator?: string;
+  canMatchManifest: boolean;
   projectOwned: boolean;
   paths: LocalPatchPath[];
   location: string;
@@ -219,6 +220,7 @@ function parsePatchDeclaration(options: {
     parsedRange.params?.locator,
   );
   const paths: LocalPatchPath[] = [];
+  let hasDependencyOwnedPath = false;
   const components = parsedRange.selector.split('&').map(patchPath => {
     const flagIndex = patchPath.lastIndexOf('!');
     const flags = flagIndex === -1 ? '' : patchPath.slice(0, flagIndex + 1);
@@ -236,6 +238,7 @@ function parsePatchDeclaration(options: {
       paths.push(localPath);
       return `${flags}local<${localPath.absolute}>`;
     }
+    hasDependencyOwnedPath = true;
     return `${flags}relative<${pathWithoutFlags}>`;
   });
 
@@ -247,7 +250,10 @@ function parsePatchDeclaration(options: {
     source,
     components,
     parentLocator: parent.locator,
-    projectOwned: options.origin === 'manifest' || paths.length > 0,
+    canMatchManifest: !hasDependencyOwnedPath,
+    projectOwned:
+      paths.length > 0 ||
+      (options.origin === 'manifest' && !hasDependencyOwnedPath),
     paths,
     location: options.location,
   };
@@ -337,6 +343,29 @@ function arraysEqual(left: string[], right: string[]): boolean {
   );
 }
 
+function getNpmResolutionRange(
+  range: ReturnType<typeof structUtils.parseRange>,
+): string | undefined {
+  if (
+    range.protocol === 'npm:' &&
+    semverUtils.validRange(range.selector) !== null
+  ) {
+    return range.selector;
+  }
+
+  const npmVersion = range.params?.npm;
+  if (
+    range.protocol === 'backstage:' &&
+    range.selector === '^' &&
+    typeof npmVersion === 'string' &&
+    semverUtils.clean(npmVersion) !== null
+  ) {
+    return `^${npmVersion}`;
+  }
+
+  return undefined;
+}
+
 function patchDescriptorAgreesWithLocator(options: {
   descriptor: ReturnType<typeof structUtils.parseDescriptor>;
   descriptorDeclaration: PatchDeclaration | undefined;
@@ -366,18 +395,19 @@ function patchDescriptorAgreesWithLocator(options: {
 
   const descriptorSourceRange = structUtils.parseRange(sourceDescriptor.range);
   const locatorSourceRange = structUtils.parseRange(sourceLocator.reference);
-  if (descriptorSourceRange.protocol !== locatorSourceRange.protocol) {
-    return false;
-  }
+  const npmResolutionRange = getNpmResolutionRange(descriptorSourceRange);
   if (
-    descriptorSourceRange.protocol === 'npm:' &&
-    semverUtils.validRange(descriptorSourceRange.selector) !== null &&
-    semverUtils.clean(locatorSourceRange.selector) !== null &&
-    !semverUtils.satisfiesWithPrereleases(
-      locatorSourceRange.selector,
-      descriptorSourceRange.selector,
-    )
+    locatorSourceRange.protocol === 'npm:' &&
+    npmResolutionRange !== undefined
   ) {
+    const resolvedVersion = semverUtils.clean(locatorSourceRange.selector);
+    if (
+      resolvedVersion === null ||
+      !semverUtils.satisfiesWithPrereleases(resolvedVersion, npmResolutionRange)
+    ) {
+      return false;
+    }
+  } else if (descriptorSourceRange.protocol !== locatorSourceRange.protocol) {
     return false;
   }
 
@@ -488,7 +518,7 @@ function discoverLockfileDeclarations(
           location: 'yarn.lock',
           origin: 'lockfile',
         });
-        if (declaration?.projectOwned) {
+        if (declaration?.canMatchManifest) {
           declarations.push(declaration);
         }
         patchDescriptors.push({ descriptor, declaration });
@@ -892,7 +922,7 @@ export async function verifyYarnPatches(
     }
 
     for (const [key, declaration] of lockfileDeclarations) {
-      if (!uniqueManifestDeclarations.has(key)) {
+      if (declaration.projectOwned && !uniqueManifestDeclarations.has(key)) {
         errors.push({
           kind: 'lockfile-mismatch',
           message: `yarn.lock contains patch declaration for '${
