@@ -16,6 +16,7 @@
 
 import { targetPaths } from '@backstage/cli-common';
 import type { CliCommandContext } from '@backstage/cli-node';
+import { cli } from 'cleye';
 import {
   verifyYarnPatches,
   type PatchVerificationError,
@@ -30,7 +31,9 @@ function formatError(error: PatchVerificationError): string {
   return `  ${location}[${error.kind}]: ${error.message}\n`;
 }
 
-export default async (_context: CliCommandContext) => {
+export default async ({ args, info }: CliCommandContext) => {
+  cli({ name: info.usage }, undefined, args);
+
   const result = await verifyYarnPatches({
     rootDir: targetPaths.dir,
     env: process.env,

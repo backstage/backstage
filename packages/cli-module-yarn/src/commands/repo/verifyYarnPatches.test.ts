@@ -77,6 +77,29 @@ describe('verifyYarnPatches command', () => {
     expect(stderrSpy).not.toHaveBeenCalled();
   });
 
+  it('renders help without verifying the repository', async () => {
+    const exitError = new Error('process exited');
+    const exitSpy = jest.spyOn(process, 'exit').mockImplementation(code => {
+      expect(code).toBe(0);
+      throw exitError;
+    });
+    const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+
+    try {
+      await expect(
+        verifyYarnPatchesCommand({ ...context, args: ['--help'] }),
+      ).rejects.toBe(exitError);
+
+      expect(mockVerifyYarnPatches).not.toHaveBeenCalled();
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('USAGE:'),
+      );
+    } finally {
+      exitSpy.mockRestore();
+      consoleSpy.mockRestore();
+    }
+  });
+
   it('reports successful generic patch validation', async () => {
     mockVerifyYarnPatches.mockResolvedValue(healthyResult(2, 'skipped'));
 
