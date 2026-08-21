@@ -28,6 +28,7 @@ which bundles the following modules:
 | [New](./module-new.md)                   | `@backstage/cli-module-new`          | `new`                                                                                                                                                                           |
 | [Test](./module-test.md)                 | `@backstage/cli-module-test-jest`    | `repo test`, `package test`                                                                                                                                                     |
 | [Translations](./module-translations.md) | `@backstage/cli-module-translations` | `translations export`, `translations import`                                                                                                                                    |
+| [Yarn](./module-yarn.md)                 | `@backstage/cli-module-yarn`         | `repo verify-yarn-patches`                                                                                                                                                      |
 
 Each module name links to its dedicated page with full command documentation
 including options and examples. See the [commands](./03-commands.md) page for a
@@ -36,14 +37,14 @@ quick reference index of all commands.
 ## How module discovery works
 
 When the CLI starts it scans the project root's `package.json` for all
-dependencies and devDependencies. For each dependency it checks whether the
+dependencies and development dependencies. For each dependency it checks whether the
 package's own `package.json` contains `backstage.role` set to `"cli-module"`. If
 it does, the module is loaded and its commands become available.
 
 If no CLI modules are found among the project's dependencies, the CLI falls back
 to importing `@backstage/cli-defaults` and prints a deprecation warning. This
 fallback will be removed in a future release. To avoid the warning, add
-`@backstage/cli-defaults` as a `devDependency` in your root `package.json`, or
+`@backstage/cli-defaults` as a development dependency in your root `package.json`, or
 install individual `@backstage/cli-module-*` packages.
 
 ## Customizing the default modules
@@ -108,5 +109,5 @@ The CLI module system is implemented across several packages:
   `CliCommandContext` types.
 - **`@backstage/cli-common`** — Minimal shared utilities for path resolution and
   child process management, used by the CLI, backend, and `create-app`.
-- **`@backstage/cli-defaults`** — Aggregator package that re-exports all 12
+- **`@backstage/cli-defaults`** — Aggregator package that re-exports all 13
   default modules as an array.
