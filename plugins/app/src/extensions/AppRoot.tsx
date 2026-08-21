@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ComponentType,
-  PropsWithChildren,
-  ReactNode,
-  useState,
-  JSX,
-} from 'react';
+import { ComponentType, ReactNode, useMemo, useState, JSX } from 'react';
 import {
   ExtensionBoundary,
   coreExtensionData,
@@ -31,15 +25,17 @@ import {
   createExtensionInput,
   routeResolutionApiRef,
   pluginWrapperApiRef,
+  appHistoryApiRef,
   useAnalytics,
+  useHref,
 } from '@backstage/frontend-plugin-api';
 import { BreadcrumbsRegistryProvider } from './BreadcrumbsRegistryProvider';
 import {
   AppRootWrapperBlueprint,
-  RouterBlueprint,
   SignInPageBlueprint,
 } from '@backstage/plugin-app-react';
-import { BUIProvider } from '@backstage/ui';
+import { BUIProvider, type BUIRouter } from '@backstage/ui';
+import { useAppHistoryLocation } from '@internal/frontend';
 import {
   DiscoveryApi,
   ErrorApi,
@@ -53,21 +49,16 @@ import {
 } from '@backstage/core-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { isProtectedApp } from '../../../../packages/core-app-api/src/app/isProtectedApp';
-import { BrowserRouter } from 'react-router-dom';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { RouteTracker } from '../../../../packages/frontend-app-api/src/routing/RouteTracker';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { getBasePath } from '../../../../packages/frontend-app-api/src/routing/getBasePath';
+import { RootReactRouterV6 } from '../components/RootReactRouterV6';
 
 export const AppRoot = createExtension({
   name: 'root',
   attachTo: { id: 'app', input: 'root' },
   inputs: {
-    router: createExtensionInput([RouterBlueprint.dataRefs.component], {
-      singleton: true,
-      optional: true,
-      internal: true,
-    }),
     signInPage: createExtensionInput([SignInPageBlueprint.dataRefs.component], {
       singleton: true,
       optional: true,
@@ -129,9 +120,6 @@ export const AppRoot = createExtension({
           <AppRouter
             SignInPageComponent={inputs.signInPage?.get(
               SignInPageBlueprint.dataRefs.component,
-            )}
-            RouterComponent={inputs.router?.get(
-              RouterBlueprint.dataRefs.component,
             )}
             extraElements={inputs.elements?.map(el =>
               el.get(coreExtensionData.reactElement),
@@ -203,24 +191,7 @@ type RouteResolverProxy = {
 export interface AppRouterProps {
   children?: ReactNode;
   SignInPageComponent?: ComponentType<SignInPageProps>;
-  RouterComponent?: (props: { children: ReactNode }) => JSX.Element | null;
   extraElements?: Array<JSX.Element>;
-}
-
-function DefaultRouter(props: PropsWithChildren<{}>) {
-  const configApi = useApi(configApiRef);
-  const basePath = getBasePath(configApi);
-  return (
-    <BrowserRouter
-      basename={basePath}
-      future={{
-        v7_relativeSplatPath: false,
-        v7_startTransition: false,
-      }}
-    >
-      {props.children}
-    </BrowserRouter>
-  );
 }
 
 /**
@@ -232,19 +203,44 @@ function DefaultRouter(props: PropsWithChildren<{}>) {
  * Until the user has successfully signed in, this component will render
  * the sign-in page. Once the user has signed-in, it will instead render
  * the app, while providing routing and route tracking for the app.
+ *
+ * History authority is the AppHistory. `BUIProvider` receives navigation,
+ * href resolution, and reactive location as one capability backed by that
+ * history, so first-party chrome does not depend on an ambient router.
+ * react-aria calls `useHref` at each anchor's own position, which lets a target
+ * resolve against the page the anchor is written in and produces a
+ * browser-ready href with the deployment basename.
+ *
+ * `RootReactRouterV6` is a residual projection for third-party new frontend
+ * system chrome that still reads React Router v6 context. It owns no browser
+ * history. Its behavioral exit criteria are documented on that component;
+ * per-page React Router v6 support is independent and remains available through
+ * the default page adapter. Per-page adapters own in-plugin routing through
+ * PageBlueprint's `router` input / {@link pageRouterApiRef}.
  */
 export function AppRouter(props: AppRouterProps) {
-  const {
-    children,
-    SignInPageComponent,
-    RouterComponent = DefaultRouter,
-    extraElements = [],
-  } = props;
+  const { children, SignInPageComponent, extraElements = [] } = props;
 
   const configApi = useApi(configApiRef);
   const appIdentityProxy = toAppIdentityProxy(useApi(identityApiRef));
   const routeResolutionsApi = useApi(routeResolutionApiRef);
   const basePath = getBasePath(configApi);
+  // BUI navigation, href resolution, and active location all observe the same
+  // app history authority. Keeping these operations atomic prevents chrome
+  // from rendering links with one router and navigating through another.
+  const appHistory = useApi(appHistoryApiRef);
+  const buiRouter = useMemo<BUIRouter>(
+    () => ({
+      navigate(href, options) {
+        appHistory.navigate(href, options);
+      },
+      useHref,
+      useLocation() {
+        return useAppHistoryLocation(appHistory) ?? appHistory.location;
+      },
+    }),
+    [appHistory],
+  );
 
   // TODO: Private access for now, probably replace with path -> node lookup method on the API
   if (!('getRouteObjects' in routeResolutionsApi)) {
@@ -282,21 +278,21 @@ export function AppRouter(props: AppRouterProps) {
     }
 
     return (
-      <RouterComponent>
-        <BUIProvider useAnalytics={useAnalytics}>
+      <RootReactRouterV6>
+        <BUIProvider useAnalytics={useAnalytics} router={buiRouter}>
           <BreadcrumbsRegistryProvider>
             {...extraElements}
             <RouteTracker routeObjects={routeObjects} />
             {children}
           </BreadcrumbsRegistryProvider>
         </BUIProvider>
-      </RouterComponent>
+      </RootReactRouterV6>
     );
   }
 
   return (
-    <RouterComponent>
-      <BUIProvider useAnalytics={useAnalytics}>
+    <RootReactRouterV6>
+      <BUIProvider useAnalytics={useAnalytics} router={buiRouter}>
         <BreadcrumbsRegistryProvider>
           {...extraElements}
           <RouteTracker routeObjects={routeObjects} />
@@ -308,6 +304,6 @@ export function AppRouter(props: AppRouterProps) {
           </SignInPageWrapper>
         </BreadcrumbsRegistryProvider>
       </BUIProvider>
-    </RouterComponent>
+    </RootReactRouterV6>
   );
 }

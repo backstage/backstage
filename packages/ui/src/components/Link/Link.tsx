@@ -18,7 +18,7 @@ import { forwardRef, useRef } from 'react';
 import { mergeProps, useFocusRing, useLink } from 'react-aria';
 import type { LinkProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
-import { useResolvedHref } from '../../hooks/useResolvedHref';
+import { useHasBUIRouter, useResolvedHref } from '../../hooks/useResolvedHref';
 import { LinkDefinition } from './definition';
 import { getNodeText } from '../../analytics/getNodeText';
 
@@ -34,7 +34,20 @@ const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
 
   const { linkProps } = useLink(restProps, linkRef);
   const { isFocusVisible, focusProps } = useFocusRing();
-  const resolvedHref = useResolvedHref(restProps.href);
+  // Link renders its own anchor rather than letting react-aria render one, so
+  // it has to pick the href itself — and there are two answers to pick from.
+  // react-aria has already resolved the target through whichever resolver
+  // `BUIProvider` gave its router context, which is where an injected resolver
+  // runs; `useResolvedHref` resolves it through react-router. Only one of them
+  // is the authority, and taking the other would render an href here that
+  // disagrees with the one the same target gets on every other BUI surface.
+  // `useLink` types its result as plain DOM attributes, but the resolved href
+  // is in there all the same.
+  const ariaHref = (linkProps as React.AnchorHTMLAttributes<HTMLAnchorElement>)
+    .href;
+  const hasBUIRouter = useHasBUIRouter();
+  const routerHref = useResolvedHref(restProps.href);
+  const resolvedHref = hasBUIRouter ? ariaHref : routerHref;
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     linkProps.onClick?.(e);

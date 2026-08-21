@@ -16,16 +16,12 @@
 
 import { screen, waitFor, within } from '@testing-library/react';
 import { Route, Routes, useParams } from 'react-router-dom';
-import {
-  renderTestApp,
-  createExtensionTester,
-  renderInTestApp,
-} from '@backstage/frontend-test-utils';
+import { renderInTestApp, renderTestApp } from '@backstage/frontend-test-utils';
 import {
   BreadcrumbEntry,
   PageBlueprint,
-  coreExtensionData,
-  createExtension,
+  PageLayout,
+  SubPageBlueprint,
   createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
 
@@ -89,6 +85,102 @@ describe('PageLayout', () => {
         screen.getByRole('heading', { name: 'My Plugin' }),
       ).toBeInTheDocument();
     });
+  });
+
+  it('resolves relative tabs and the breadcrumb against the page mount', async () => {
+    const myPlugin = createFrontendPlugin({
+      pluginId: 'my-plugin',
+      extensions: [
+        PageBlueprint.make({
+          name: 'index-page',
+          params: {
+            title: 'Outer',
+            path: '/my-plugin',
+            noHeader: true,
+            loader: async () => (
+              <PageLayout
+                title="My Plugin"
+                tabs={[
+                  { id: 'overview', label: 'Overview', href: 'overview' },
+                  { id: 'settings', label: 'Settings', href: '/settings' },
+                ]}
+              >
+                <div>Plugin content</div>
+              </PageLayout>
+            ),
+          },
+        }),
+      ],
+    });
+
+    renderTestApp({
+      features: [myPlugin],
+      initialRouteEntries: ['/my-plugin'],
+    });
+
+    expect(
+      await screen.findByRole('tab', { name: 'Overview' }),
+    ).toHaveAttribute('href', '/my-plugin/overview');
+    expect(screen.getByRole('tab', { name: 'Settings' })).toHaveAttribute(
+      'href',
+      '/settings',
+    );
+    const breadcrumbList = screen.getByRole('navigation', {
+      name: 'Breadcrumbs',
+    });
+    expect(
+      within(breadcrumbList).getByRole('link', { name: 'My Plugin' }),
+    ).toHaveAttribute('href', '/my-plugin');
+  });
+
+  it('falls back to the ambient route match when there is no page mount', async () => {
+    // No AppRouteSwitch above the layout, so there is no PageMount to read and
+    // the surrounding React Router match is the only base available.
+    renderInTestApp(
+      <PageLayout
+        title="My Plugin"
+        tabs={[{ id: 'overview', label: 'Overview', href: 'overview' }]}
+      >
+        <div>Plugin content</div>
+      </PageLayout>,
+      {
+        mountPath: '/my-plugin',
+        initialRouteEntries: ['/my-plugin'],
+      },
+    );
+
+    expect(
+      await screen.findByRole('tab', { name: 'Overview' }),
+    ).toHaveAttribute('href', '/my-plugin/overview');
+    const breadcrumbList = screen.getByRole('navigation', {
+      name: 'Breadcrumbs',
+    });
+    expect(
+      within(breadcrumbList).getByRole('link', { name: 'My Plugin' }),
+    ).toHaveAttribute('href', '/my-plugin');
+  });
+
+  it('falls back to the app root when nothing above the layout has a path', async () => {
+    // Neither a PageMount nor a route match, which is also what a layout sees
+    // when the app has no root router at all.
+    renderInTestApp(
+      <PageLayout
+        title="My Plugin"
+        tabs={[{ id: 'overview', label: 'Overview', href: 'overview' }]}
+      >
+        <div>Plugin content</div>
+      </PageLayout>,
+    );
+
+    expect(
+      await screen.findByRole('tab', { name: 'Overview' }),
+    ).toHaveAttribute('href', '/overview');
+    const breadcrumbList = screen.getByRole('navigation', {
+      name: 'Breadcrumbs',
+    });
+    expect(
+      within(breadcrumbList).getByRole('link', { name: 'My Plugin' }),
+    ).toHaveAttribute('href', '/');
   });
 
   describe('Breadcrumbs', () => {
@@ -188,37 +280,66 @@ describe('PageLayout', () => {
       });
     });
 
+    it('should treat an empty titleLink as unset and use the mount path', async () => {
+      // PageBlueprint resolves titleLink from the route ref; force an empty
+      // string through the swappable PageLayout to cover the empty-href case.
+      const myPlugin = createFrontendPlugin({
+        pluginId: 'my-plugin',
+        extensions: [
+          PageBlueprint.make({
+            name: 'index-page',
+            params: {
+              title: 'Outer',
+              path: '/my-plugin',
+              noHeader: true,
+              loader: async () => (
+                <PageLayout title="My Plugin" titleLink="">
+                  <div data-testid="test-content">Plugin content</div>
+                </PageLayout>
+              ),
+            },
+          }),
+        ],
+      });
+
+      renderTestApp({
+        features: [myPlugin],
+        initialRouteEntries: ['/my-plugin'],
+      });
+
+      await waitFor(() => {
+        const breadcrumbList = screen.getByRole('navigation', {
+          name: 'Breadcrumbs',
+        });
+        const breadcrumbLink = within(breadcrumbList).getByRole('link', {
+          name: 'My Plugin',
+        });
+        expect(breadcrumbLink).toHaveAttribute('href', '/my-plugin');
+      });
+    });
+
     it('should register breadcrumbs for sub-pages', async () => {
+      // Unnamed parent → page:test; the sub-page attaches relatively (same
+      // pattern as PageBlueprint.test.tsx / SubPageBlueprint.test.tsx).
       const myPage = PageBlueprint.make({
-        name: 'my-plugin',
         params: {
           title: 'My Plugin',
           path: '/my-plugin',
         },
       });
 
-      const overviewSubPage = createExtension({
-        kind: 'sub-page',
+      const overviewSubPage = SubPageBlueprint.make({
         name: 'overview',
-        attachTo: { id: 'page:my-plugin', input: 'pages' },
-        output: [
-          coreExtensionData.routePath,
-          coreExtensionData.reactElement,
-          coreExtensionData.title,
-        ],
-        factory() {
-          return [
-            coreExtensionData.routePath('overview'),
-            coreExtensionData.reactElement(<div>Overview content</div>),
-            coreExtensionData.title('Overview'),
-          ];
+        params: {
+          path: 'overview',
+          title: 'Overview',
+          loader: async () => <div>Overview content</div>,
         },
       });
 
-      const tester = createExtensionTester(myPage).add(overviewSubPage);
-
-      renderInTestApp(tester.reactElement(), {
-        initialRouteEntries: ['/overview'],
+      renderTestApp({
+        extensions: [myPage, overviewSubPage],
+        initialRouteEntries: ['/my-plugin/overview'],
       });
 
       await waitFor(() => {
@@ -252,36 +373,27 @@ describe('PageLayout', () => {
         );
       }
 
+      // Unnamed parent → page:test; the sub-page attaches relatively (same
+      // pattern as PageBlueprint.test.tsx / SubPageBlueprint.test.tsx).
       const myPage = PageBlueprint.make({
-        name: 'scaffolder',
         params: {
           title: 'Create',
           path: '/create',
         },
       });
 
-      const tasksSubPage = createExtension({
-        kind: 'sub-page',
+      const tasksSubPage = SubPageBlueprint.make({
         name: 'tasks',
-        attachTo: { id: 'page:scaffolder', input: 'pages' },
-        output: [
-          coreExtensionData.routePath,
-          coreExtensionData.reactElement,
-          coreExtensionData.title,
-        ],
-        factory() {
-          return [
-            coreExtensionData.routePath('tasks'),
-            coreExtensionData.reactElement(<TasksSubPage />),
-            coreExtensionData.title('Tasks'),
-          ];
+        params: {
+          path: 'tasks',
+          title: 'Tasks',
+          loader: async () => <TasksSubPage />,
         },
       });
 
-      const tester = createExtensionTester(myPage).add(tasksSubPage);
-
-      renderInTestApp(tester.reactElement(), {
-        initialRouteEntries: ['/tasks/abc-123'],
+      renderTestApp({
+        extensions: [myPage, tasksSubPage],
+        initialRouteEntries: ['/create/tasks/abc-123'],
       });
 
       await waitFor(() => {

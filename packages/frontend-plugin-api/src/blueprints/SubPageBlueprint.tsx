@@ -16,13 +16,32 @@
 
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
-import { coreExtensionData, createExtensionBlueprint } from '../wiring';
+import {
+  coreExtensionData,
+  createExtensionBlueprint,
+  createExtensionInput,
+} from '../wiring';
 import { ExtensionBoundary } from '../components';
 import { optionalStringSchema } from '../schema/optionalStringSchema';
+import { PageRouterBlueprint } from './PageRouterBlueprint';
 
 /**
  * Creates extensions that are sub-page React components attached to a parent page.
  * Sub-pages are rendered as tabs within the parent page's header.
+ *
+ * A subpage is an ordinary route one level below its parent page: the page
+ * publishes the subpath, top-level route matching registers it, and the match
+ * names the subpage to show. The optional `router` input is passed to the
+ * parent page as internal metadata rather than rendered here. The page then
+ * selects exactly one adapter: the selected subpage override, the page
+ * override, or the app-wide default, in that order. Without its own override,
+ * a subpage inherits the page adapter at the page mount while its content
+ * still receives the selected subpage's `PageMount`.
+ *
+ * An inherited adapter's native routing APIs remain scoped to the page. Use
+ * the framework's `useHref` or `RouteLink` for targets that should resolve
+ * from the selected subpage, or attach an explicit router when the native APIs
+ * need the subpage itself as their root.
  *
  * @public
  * @example
@@ -44,12 +63,19 @@ import { optionalStringSchema } from '../schema/optionalStringSchema';
 export const SubPageBlueprint = createExtensionBlueprint({
   kind: 'sub-page',
   attachTo: { relative: { kind: 'page' }, input: 'pages' },
+  inputs: {
+    router: createExtensionInput([PageRouterBlueprint.dataRefs.component], {
+      singleton: true,
+      optional: true,
+    }),
+  },
   output: [
     coreExtensionData.routePath,
     coreExtensionData.reactElement,
     coreExtensionData.title,
     coreExtensionData.routeRef.optional(),
     coreExtensionData.icon.optional(),
+    PageRouterBlueprint.dataRefs.component.optional(),
   ],
   configSchema: {
     path: optionalStringSchema,
@@ -81,13 +107,21 @@ export const SubPageBlueprint = createExtensionBlueprint({
        */
       routeRef?: RouteRef;
     },
-    { config, node },
+    { config, node, inputs },
   ) {
-    yield coreExtensionData.routePath(config.path ?? params.path);
+    const routePath = config.path ?? params.path;
+    const RouterOverride = inputs.router?.get(
+      PageRouterBlueprint.dataRefs.component,
+    );
+
+    yield coreExtensionData.routePath(routePath);
     yield coreExtensionData.title(config.title ?? params.title);
     yield coreExtensionData.reactElement(
       ExtensionBoundary.lazy(node, params.loader),
     );
+    if (RouterOverride) {
+      yield PageRouterBlueprint.dataRefs.component(RouterOverride);
+    }
     if (params.routeRef) {
       yield coreExtensionData.routeRef(params.routeRef);
     }

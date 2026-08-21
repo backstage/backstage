@@ -476,3 +476,116 @@ function MyInvalidComponent() {
   // ...
 }
 ```
+
+## Scoped plugin routing
+
+The app owns browser history and exposes it as a single `AppHistoryApi`. No
+router component sits at the app root. The framework mounts one page router
+around the active page content, scoped to that page's own path. The default is
+React Router v6, so relative navigation inside a page behaves the way it always
+has unless the page selects another adapter.
+
+For the design background, see [RFC #33603](https://github.com/backstage/backstage/issues/33603).
+
+### What stays the same
+
+A plugin that only navigates inside its own page can keep using React Router. `Link`, `useNavigate`, `useParams`, and `<Routes>` from `react-router-dom` all work, as do relative paths and in-plugin sub-routes, because the page router is what provides that context. Moving to a different router library is optional.
+
+### Absolute and cross-plugin navigation
+
+A page router owns navigation within its own page and nothing beyond it. Resolving a route ref to a concrete path and handing it to React Router's `navigate`, or pointing a React Router `Link` at an absolute `to` string, reaches past that boundary and can break.
+
+For navigation that does cross the boundary, `@backstage/frontend-plugin-api` exports `useAppNavigate` and `useHref`. The pair mirrors the `navigate` and `useHref` props of [React Aria's `RouterProvider`](https://react-spectrum.adobe.com/react-aria/routing.html). `useAppNavigate` reads the app's `AppHistoryApi` when one is registered and falls back to React Router when it is not, so the same plugin code runs under both the new and the old frontend system. That fallback is also why the example below imports `useRouteRef` from `@backstage/core-plugin-api`, which resolves route refs in either system.
+
+```tsx
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
+import { rootRouteRef } from '../routes';
+
+export function useNavigateToSearchQuery() {
+  const searchRoute = useRouteRef(rootRouteRef);
+  const navigate = useAppNavigate();
+
+  return (query: string) => {
+    navigate(`${searchRoute()}?query=${encodeURIComponent(query)}`);
+  };
+}
+```
+
+`useHref` is the counterpart that resolves a path to a browser-ready href, for a plain `<a>` for example, with the same React Router fallback.
+
+For declarative cross-plugin links, `RouteLink` takes the route ref directly so that no absolute `to` string has to be built:
+
+```tsx
+import { RouteLink } from '@backstage/frontend-plugin-api';
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
+
+export function EntityNameLink(props: {
+  kind: string;
+  namespace: string;
+  name: string;
+}) {
+  return (
+    <RouteLink
+      routeRef={entityRouteRef}
+      params={{
+        kind: props.kind,
+        namespace: props.namespace,
+        name: props.name,
+      }}
+    >
+      {props.name}
+    </RouteLink>
+  );
+}
+```
+
+`useNavigateRouteRef` is the programmatic equivalent. If your plugin already depends on `EntityRefLink` from `@backstage/plugin-catalog-react`, upgrading that package picks up a `RouteLink`-based implementation.
+
+### Page routers
+
+A page's `router` input decides which library renders that page's content. Leave it empty and the page uses the app default, React Router v6.
+
+Sub-pages are ordinary routes one level below their page. The app's own route
+matching registers them and picks which one to show, so a page router never has
+to know that sub-pages exist. A sub-page with no router override inherits the
+page router at page scope. The adapter stays mounted across those sibling
+sub-pages, so it keeps its state.
+
+Native APIs from an inherited router also remain page-scoped. In React Router,
+relative `Link` targets and nested `<Routes>` inside a sub-page resolve against
+the page route. Framework links created with `useHref` or `RouteLink` resolve
+against the selected sub-page instead. Attach an explicit adapter to the
+sub-page when its content needs native router APIs scoped to that sub-page.
+
+A sub-page can select a different adapter through its own `router` input. The
+framework mounts exactly one adapter around the active content, using the
+explicit sub-page override first, then the page override, then the app default.
+A sub-page override therefore replaces the page adapter for that content
+instead of nesting another router inside it.
+
+The framework selects the adapter before it renders the content.
+`PageRouterBlueprint` and the page and sub-page `router` inputs tell the
+framework which adapter to select. A wrapper inside the content cannot remove a
+default router that is already mounted.
+
+Whatever the active page or sub-page produces is handed to the selected router
+unchanged, and the router component receives only `children`. First-party
+adapters read the page mount from a framework-private context, which keeps
+concrete mount paths and route patterns out of the public adapter contract.
+
+For the steps to attach one, see [Choose a router for a page](../building-plugins/10-page-routers.md).
+
+### Testing
+
+`renderInTestApp` and `renderTestApp` from `@backstage/frontend-test-utils` drive an in-memory `AppHistoryApi` and hand it back as `appHistory`, which is what you navigate and assert against. See [Testing](../building-plugins/02-testing.md#navigation-and-app-history) for the details.
+
+### Limits of the model
+
+The app root still projects React Router v6 context, because third-party chrome written for the new frontend system may read it. First-party chrome does not.
+
+Backstage UI receives navigation, href resolution, and location as one capability. A custom host that passes its own `router` to `BUIProvider` has to back `navigate`, `useHref`, and `useLocation` with the same routing authority, which the app plugin supplies from `AppHistoryApi`.
+
+An app releases its browser history listener when its React root is torn down. Re-running `createApp` during a hot reload builds a new app without tearing down the old one, so the previous listener stays attached until the page reloads.
+
+A router library can block navigation that starts inside its own page, but not navigation that starts anywhere else, because `AppHistoryApi` has no shared blocker contract.

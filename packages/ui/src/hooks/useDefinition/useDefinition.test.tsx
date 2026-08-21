@@ -693,6 +693,46 @@ describe('useDefinition', () => {
         expect(result.current.ownProps.href).toBe('/foo');
       });
     });
+
+    // Every BUI component that takes an href reaches its element through this
+    // hook, so making the href safe here is what covers all of them at once —
+    // Link takes its href from restProps, MenuItem, Row, Tab, Card, HeaderNav
+    // and TagGroup declare it in propDefs and read it from ownProps. Both
+    // routes out of the hook have to be checked, and both with and without a
+    // router, since the resolution branch only runs inside one.
+    describe('executable schemes', () => {
+      it.each`
+        description                  | href
+        ${'javascript:'}             | ${'javascript:alert(1)'}
+        ${'a disguised leading tab'} | ${'\tjavascript:alert(1)'}
+        ${'mixed case'}              | ${'JavaScript:alert(1)'}
+        ${'data:'}                   | ${'data:text/html,<script>alert(1)</script>'}
+        ${'vbscript:'}               | ${'vbscript:msgbox(1)'}
+      `('makes $description inert on both prop routes', ({ href }) => {
+        const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+        // Declared in propDefs, so it lands in ownProps — MenuItem, Row, Tab.
+        const asOwnProp = renderHook(() => useDefinition(hrefDef, { href }), {
+          wrapper: createRouterWrapper({ currentRoute: '/catalog' }),
+        });
+        // Not declared, so it falls through to restProps — Link.
+        const asRestProp = renderHook(() => useDefinition(basicDef, { href }), {
+          wrapper: createRouterWrapper({ currentRoute: '/catalog' }),
+        });
+        // No router at all: the resolution branch is skipped entirely, and the
+        // guard still has to hold.
+        const withoutRouter = renderHook(
+          () => useDefinition(hrefDef, { href }),
+          { wrapper: Wrapper },
+        );
+
+        expect(asOwnProp.result.current.ownProps.href).toBe('about:blank');
+        expect(asRestProp.result.current.restProps.href).toBe('about:blank');
+        expect(withoutRouter.result.current.ownProps.href).toBe('about:blank');
+        expect(warn).toHaveBeenCalled();
+        warn.mockRestore();
+      });
+    });
   });
 
   describe('options', () => {

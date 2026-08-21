@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { Fragment } from 'react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { type ReactNode } from 'react';
+import { Route, Routes, useMatch } from 'react-router-dom';
+import { PageMountProvider } from '@internal/frontend';
 import { prepareSpecializedApp } from '@backstage/frontend-app-api';
-import { RenderResult, render } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import {
@@ -25,29 +26,68 @@ import {
   ExtensionDefinition,
   coreExtensionData,
   RouteRef,
-  createFrontendPlugin,
   FrontendFeature,
-  createFrontendModule,
-  createApiFactory,
-  createRouteRef,
   ExternalRouteRef,
   identityApiRef,
-  type ApiRef,
 } from '@backstage/frontend-plugin-api';
-import { RouterBlueprint } from '@backstage/plugin-app-react';
 import appPlugin from '@backstage/plugin-app';
-import { getMockApiFactory } from '../apis/MockWithApiFactory';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { CreateSpecializedAppInternalOptions } from '../../../frontend-app-api/src/wiring/createSpecializedApp';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { getBasePath } from '../../../frontend-app-api/src/routing/getBasePath';
 import { TestApiPairs } from '../apis/TestApiProvider';
-import { OpaqueExternalRouteRef } from '@internal/frontend';
+import {
+  createTestNavigation,
+  type TestAppRenderResult,
+} from './createTestNavigation';
+import { prepareTestAppFeatures } from './prepareTestAppFeatures';
+
+export type { TestAppRenderResult };
 
 const DEFAULT_MOCK_CONFIG = {
   app: { baseUrl: 'http://localhost:3000' },
   backend: { baseUrl: 'http://localhost:7007' },
 };
+
+/**
+ * Publishes the page mount for an element rendered at `mountPath`.
+ *
+ * The test app owns navigation through an app history, the same seam as
+ * production, so page-relative targets are resolved against the page they are
+ * written in rather than against React Router. The page mount is what carries
+ * that page. In a real app it is published while the location is matched to a
+ * page; here the element is rendered directly, with no `AppRouteSwitch` above
+ * it to do so, and `mountPath` is the caller saying where the element sits.
+ *
+ * Without this, everything page-relative inside the element under test — a tab
+ * href, a `..` climb, a fragment-only target — would resolve against the app
+ * root, which is a place the element is not mounted.
+ *
+ * The pattern is published alongside the concrete base because a leading `..`
+ * climbs one route match rather than one path segment, and only the pattern
+ * says where the match ends: an element at `/catalog/:namespace/:kind/:name`
+ * is one route however many segments its address has.
+ */
+function TestPageMount(props: {
+  routePath: string;
+  routePattern: string;
+  children: ReactNode;
+}) {
+  const { routePath, routePattern, children } = props;
+  // Rendered as the route's own element, so this matches by construction. The
+  // guard is for the caller whose `initialRouteEntries` do not reach
+  // `mountPath`: publishing a mount the location is not actually at would be
+  // worse than publishing none.
+  const match = useMatch(routePath);
+  if (!match) {
+    return <>{children}</>;
+  }
+  return (
+    <PageMountProvider mount={{ basePath: match.pathnameBase, routePattern }}>
+      {children}
+    </PageMountProvider>
+  );
+}
 
 /**
  * Options to customize the behavior of the test app.
@@ -87,6 +127,10 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
    * the element is wrapped in a `<Route>` with this path, enabling
    * `useParams()` to extract parameters from the URL.
    *
+   * The element is also treated as a page mounted at this pattern, so targets
+   * written relative to the page — a tab href, a `..` climb — resolve against
+   * it rather than against the app root, as they would in a real app.
+   *
    * Should be used together with `initialRouteEntries` to set a concrete
    * URL that matches the pattern.
    *
@@ -101,7 +145,8 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
   mountPath?: string;
 
   /**
-   * Initial route entries to use for the router.
+   * Initial route entries for the in-memory app history.
+   * The last entry is the starting location.
    */
   initialRouteEntries?: string[];
 
@@ -141,12 +186,21 @@ const appPluginOverride = appPlugin.withOverrides({
 /**
  * @public
  * Renders the given element in a test app, for use in unit tests.
+ *
+ * Navigation is owned by a {@link @backstage/frontend-plugin-api#AppHistoryApi}
+ * with in-memory history, the same seam as production, and is returned as
+ * `appHistory`.
  */
 export function renderInTestApp<const TApiPairs extends any[] = any[]>(
   element: JSX.Element,
   options?: TestAppOptions<TApiPairs>,
-): RenderResult {
+): TestAppRenderResult {
   const mountPath = options?.mountPath;
+  const configData = options?.config ?? DEFAULT_MOCK_CONFIG;
+  const { appHistory, basename } = createTestNavigation({
+    initialEntries: options?.initialRouteEntries,
+    config: configData,
+  });
 
   const extensions: Array<ExtensionDefinition> = [
     createExtension({
@@ -160,9 +214,23 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
             mountPath === '/' || mountPath.endsWith('/*')
               ? mountPath
               : `${mountPath.replace(/\/$/, '')}/*`;
+          // The pattern the caller mounted at, which is `routePath` without
+          // the splat the wrapping route needs in order to host nested routes.
+          const routePattern =
+            routePath === '/' ? '/' : routePath.replace(/\/\*$/, '') || '/';
           content = (
             <Routes>
-              <Route path={routePath} element={content} />
+              <Route
+                path={routePath}
+                element={
+                  <TestPageMount
+                    routePath={routePath}
+                    routePattern={routePattern}
+                  >
+                    {content}
+                  </TestPageMount>
+                }
+              />
             </Routes>
           );
         }
@@ -172,92 +240,32 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
     }),
   ];
 
-  const externalBindings = new Map<ExternalRouteRef, RouteRef>();
+  const { features, apiFactoryOverrides, externalBindings } =
+    prepareTestAppFeatures({
+      extensions,
+      navigation: { appHistory, basename },
+      appPluginOverride,
+      mountedRoutes: options?.mountedRoutes,
+      features: options?.features,
+      apis: options?.apis,
+      mountedRouteAttachTo: { id: 'app/root', input: 'elements' },
+    });
 
-  if (options?.mountedRoutes) {
-    for (const [path, optionRef] of Object.entries(options.mountedRoutes)) {
-      let routeRef: RouteRef;
-
-      if (OpaqueExternalRouteRef.isType(optionRef)) {
-        // Create an actual route ref for the external route, then bind the external ref to it
-        routeRef = createRouteRef();
-        externalBindings.set(optionRef, routeRef);
-      } else {
-        routeRef = optionRef;
-      }
-
-      extensions.push(
-        createExtension({
-          kind: 'test-route',
-          name: path,
-          attachTo: { id: 'app/root', input: 'elements' },
-          output: [
-            coreExtensionData.reactElement,
-            coreExtensionData.routePath,
-            coreExtensionData.routeRef,
-          ],
-          factory: () => [
-            coreExtensionData.reactElement(<Fragment />),
-            coreExtensionData.routePath(path),
-            coreExtensionData.routeRef(routeRef),
-          ],
-        }),
-      );
-    }
-  }
-
-  const apiFactoryOverrides = (options?.apis ?? []).map(
-    entry =>
-      getMockApiFactory(entry) ??
-      createApiFactory(...(entry as readonly [ApiRef<any>, any])),
-  );
   const identityOverrideFactory = apiFactoryOverrides.find(
     factory => factory.api.id === identityApiRef.id,
   );
 
-  const features: FrontendFeature[] = [
-    createFrontendModule({
-      pluginId: 'app',
-      extensions: [
-        RouterBlueprint.make({
-          params: {
-            component: ({ children }) => (
-              <MemoryRouter
-                initialEntries={options?.initialRouteEntries}
-                future={{
-                  v7_relativeSplatPath: false,
-                  v7_startTransition: false,
-                }}
-              >
-                {children}
-              </MemoryRouter>
-            ),
-          },
-        }),
-      ],
-    }),
-    createFrontendPlugin({
-      pluginId: 'test',
-      extensions,
-    }),
-    appPluginOverride,
-  ];
-
-  if (options?.features) {
-    features.push(...options.features);
-  }
-
   const config = ConfigReader.fromConfigs([
     {
       context: 'render-config',
-      data: options?.config ?? DEFAULT_MOCK_CONFIG,
+      data: configData,
     },
   ]);
 
   const app = prepareSpecializedApp({
     features,
     config,
-    __internal: options?.apis && {
+    __internal: {
       apiFactoryOverrides: apiFactoryOverrides.filter(
         factory => factory.api.id !== identityApiRef.id,
       ),
@@ -284,7 +292,9 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
     });
   }
 
-  return render(
+  const result = render(
     app.tree.root.instance!.getData(coreExtensionData.reactElement),
   );
+
+  return Object.assign(result, { appHistory });
 }

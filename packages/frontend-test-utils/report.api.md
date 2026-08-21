@@ -7,8 +7,11 @@ import { AlertApi } from '@backstage/frontend-plugin-api';
 import { AlertMessage } from '@backstage/frontend-plugin-api';
 import { AnalyticsApi } from '@backstage/frontend-plugin-api';
 import { AnalyticsEvent } from '@backstage/frontend-plugin-api';
+import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ApiRef } from '@backstage/frontend-plugin-api';
+import { AppHistoryApi } from '@backstage/frontend-plugin-api';
+import { AppNavigateOptions } from '@backstage/frontend-plugin-api';
 import { AppNode } from '@backstage/frontend-plugin-api';
 import { AppNodeInstance } from '@backstage/frontend-plugin-api';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
@@ -42,11 +45,13 @@ import { Observable } from '@backstage/types';
 import { PermissionApi } from '@backstage/plugin-permission-react';
 import { ReactNode } from 'react';
 import { registerMswTestHooks } from '@backstage/test-utils';
-import { RenderResult } from '@testing-library/react';
+import type { RenderResult } from '@testing-library/react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { RouteResolutionApi } from '@backstage/frontend-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageApi as StorageApi_2 } from '@backstage/frontend-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
+import { SubRouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationApi } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { TranslationSnapshot } from '@backstage/frontend-plugin-api';
@@ -86,6 +91,16 @@ export function createExtensionTester<
     apis?: readonly [...TestApiPairs<TApiPairs>];
   },
 ): ExtensionTester<NonNullable<T['output']>>;
+
+// @public
+export function createMockAppHistory(
+  options?: MockAppHistoryOptions,
+): MockAppHistory;
+
+// @public
+export function createMockRouteResolutionApi(
+  options?: MockRouteResolutionApiOptions,
+): MockRouteResolutionApi;
 
 // @public @deprecated
 export type ErrorWithContext = {
@@ -185,6 +200,15 @@ export namespace mockApis {
         partialImpl?: Partial<AnalyticsApi> | undefined,
       ) => ApiMock<AnalyticsApi>;
   }
+  export function appHistory(
+    options?: MockAppHistoryOptions,
+  ): MockAppHistory & MockWithApiFactory<AppHistoryApi>;
+  export namespace appHistory {
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<AppHistoryApi> | undefined,
+      ) => ApiMock<AppHistoryApi>;
+  }
   export function config(options?: {
     data?: JsonObject;
   }): MockConfigApi & MockWithApiFactory<ConfigApi_2>;
@@ -255,6 +279,15 @@ export namespace mockApis {
         partialImpl?: Partial<PermissionApi> | undefined,
       ) => ApiMock<PermissionApi>;
   }
+  export function routeResolution(
+    options?: MockRouteResolutionApiOptions,
+  ): MockRouteResolutionApi & MockWithApiFactory<RouteResolutionApi>;
+  export namespace routeResolution {
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<RouteResolutionApi> | undefined,
+      ) => ApiMock<RouteResolutionApi>;
+  }
   export function storage(options?: {
     data?: JsonObject;
   }): MockStorageApi & MockWithApiFactory<StorageApi_2>;
@@ -271,6 +304,21 @@ export namespace mockApis {
       partialImpl?: Partial<TranslationApi> | undefined,
     ) => ApiMock<TranslationApi>;
   }
+}
+
+// @public
+export interface MockAppHistory extends AppHistoryApi {
+  navigateCalls: Array<{
+    to: string | number;
+    options?: AppNavigateOptions;
+  }>;
+}
+
+// @public
+export interface MockAppHistoryOptions {
+  basename?: string;
+  initialLocation?: string;
+  navigate?: jest.Mock | AppHistoryApi['navigate'];
 }
 
 // @public @deprecated
@@ -382,6 +430,25 @@ export class MockPermissionApi implements PermissionApi {
   ): Promise<EvaluatePermissionResponse>;
 }
 
+// @public
+export interface MockRouteResolutionApi extends RouteResolutionApi {
+  resolve: jest.MockedFunction<RouteResolutionApi['resolve']>;
+}
+
+// @public
+export interface MockRouteResolutionApiOptions {
+  resolve?: RouteResolutionApi['resolve'];
+  routes?:
+    | ReadonlyMap<MockRouteResolutionRouteRef, string>
+    | ReadonlyArray<[MockRouteResolutionRouteRef, string]>;
+}
+
+// @public
+export type MockRouteResolutionRouteRef =
+  | RouteRef<AnyRouteRefParams>
+  | SubRouteRef<AnyRouteRefParams>
+  | ExternalRouteRef<AnyRouteRefParams>;
+
 // @public @deprecated
 export class MockStorageApi implements StorageApi {
   // (undocumented)
@@ -431,12 +498,12 @@ export { registerMswTestHooks };
 export function renderInTestApp<const TApiPairs extends any[] = any[]>(
   element: JSX.Element,
   options?: TestAppOptions<TApiPairs>,
-): RenderResult;
+): TestAppRenderResult;
 
 // @public
 export function renderTestApp<const TApiPairs extends any[] = any[]>(
   options?: RenderTestAppOptions<TApiPairs>,
-): RenderResult;
+): TestAppRenderResult;
 
 // @public
 export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
@@ -481,6 +548,11 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
   mountPath?: string;
   initialRouteEntries?: string[];
   apis?: readonly [...TestApiPairs<TApiPairs>];
+};
+
+// @public
+export type TestAppRenderResult = RenderResult & {
+  appHistory: AppHistoryApi;
 };
 
 export { withLogCollector };

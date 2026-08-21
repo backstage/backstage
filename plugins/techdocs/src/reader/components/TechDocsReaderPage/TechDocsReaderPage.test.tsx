@@ -35,7 +35,7 @@ import { rootRouteRef, rootDocsRouteRef } from '../../../routes';
 import { TECHDOCS_EXTERNAL_ANNOTATION } from '@backstage/plugin-techdocs-common';
 
 import { TechDocsReaderPage } from './TechDocsReaderPage';
-import { Route, useNavigate, useParams } from 'react-router-dom';
+import { Route, useParams } from 'react-router-dom';
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { FlatRoutes } from '@backstage/core-app-api';
@@ -46,6 +46,7 @@ import {
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
 
 const mockEntityMetadata = {
   locationMetadata: {
@@ -119,9 +120,9 @@ jest.mock('@backstage/core-components', () => ({
   Page: jest.fn(),
 }));
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: jest.fn(),
+jest.mock('@backstage/frontend-plugin-api', () => ({
+  ...jest.requireActual('@backstage/frontend-plugin-api'),
+  useAppNavigate: jest.fn(),
 }));
 
 const configApi = mockApis.config({
@@ -164,7 +165,7 @@ describe('<TechDocsReaderPage />', () => {
       expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
     });
 
-    (useNavigate as jest.Mock).mockReturnValue(mockNavigate);
+    (useAppNavigate as jest.Mock).mockReturnValue(mockNavigate);
   });
 
   afterEach(() => {

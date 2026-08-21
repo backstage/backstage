@@ -1,0 +1,397 @@
+/*
+ * Copyright 2026 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useContext, useState } from 'react';
+import { act, render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import {
+  createMockAppHistory,
+  renderTestApp,
+} from '@backstage/frontend-test-utils';
+import {
+  PageBlueprint,
+  PageRouterBlueprint,
+  SubPageBlueprint,
+} from '@backstage/frontend-plugin-api';
+import {
+  Link,
+  MemoryRouter,
+  Route,
+  Routes,
+  UNSAFE_RouteContext,
+  useHref,
+  useParams,
+  useResolvedPath,
+  useSearchParams,
+} from 'react-router';
+import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';
+import { createScopedRouter } from './createScopedRouter';
+
+/**
+ * Page router adapter conformance.
+ *
+ * The behaviour a page adapter owes the framework is the same whichever
+ * routing library it wraps, so the scenarios below are written once against
+ * the framework — sub-page routing, the index redirect, staying mounted while
+ * the concrete mount prefix changes, query and hash surviving, an off-page
+ * location, and a round trip that must not accumulate the page prefix. The
+ * adapter and its in-page probe are the only things that vary; every
+ * assertion is shared, so an adapter that drifts fails here rather than
+ * quietly behaving differently from its siblings.
+ *
+ * What a library does *inside* a page is the library's own business, so that
+ * half is not hand-asserted: the second block below renders the same probe
+ * under this adapter and under a real `react-router` tree of the same shape,
+ * and requires them to agree. That is what pins `pathname` / `pathnameBase` /
+ * `route.path` in the injected route context to what React Router itself
+ * would have produced, rather than to whatever an adapter happened to pass.
+ */
+
+/**
+ * The page content, written with this adapter's routing library. Carries a
+ * piece of in-page state that a remount would reset, what the library makes
+ * of the current search params, a relative link, and a nested route one level
+ * deeper than the sub-page itself.
+ */
+function SubPageProbe(props: { name: string }) {
+  const [bumped, setBumped] = useState(0);
+  const [searchParams] = useSearchParams();
+  return (
+    <div>
+      <span data-testid="sub-page">{props.name}</span>
+      <span data-testid="bumped">{bumped}</span>
+      <span data-testid="lib-query">{searchParams.get('q') ?? ''}</span>
+      <button type="button" onClick={() => setBumped(n => n + 1)}>
+        Bump
+      </button>
+      <Link to="./deep">Deep</Link>
+      <Routes>
+        <Route path="deep" element={<span data-testid="deep">deep</span>} />
+      </Routes>
+    </div>
+  );
+}
+
+const adapter = {
+  name: 'React Router v7',
+  PageRouter: ReactRouterV7PageRouter,
+  SubPageProbe,
+};
+
+const PAGE_PATTERN = '/things/:id';
+
+function renderPage(initialPath: string) {
+  const thingsPage = PageBlueprint.make({
+    name: 'things',
+    params: { path: PAGE_PATTERN, title: 'Things' },
+  });
+  const elsewherePage = PageBlueprint.make({
+    name: 'elsewhere',
+    params: {
+      path: '/elsewhere',
+      loader: async () => <div data-testid="elsewhere-page">Elsewhere</div>,
+    },
+  });
+  const overviewSubPage = SubPageBlueprint.make({
+    name: 'overview',
+    attachTo: { id: 'page:test/things', input: 'pages' },
+    params: {
+      path: 'overview',
+      title: 'Overview',
+      loader: async () => <adapter.SubPageProbe name="overview" />,
+    },
+  });
+  const settingsSubPage = SubPageBlueprint.make({
+    name: 'settings',
+    attachTo: { id: 'page:test/things', input: 'pages' },
+    params: {
+      path: 'settings',
+      title: 'Settings',
+      loader: async () => <adapter.SubPageProbe name="settings" />,
+    },
+  });
+  const pageRouter = PageRouterBlueprint.make({
+    name: 'under-test',
+    attachTo: { id: 'page:test/things', input: 'router' },
+    params: { component: adapter.PageRouter },
+  });
+  // A sub-page is an ordinary route with a routing context of its own, so the
+  // content written with this library declares this adapter for itself rather
+  // than inheriting whatever the page above it happens to use.
+  const subPageRouters = ['overview', 'settings'].map(name =>
+    PageRouterBlueprint.make({
+      name: `${name}-under-test`,
+      attachTo: { id: `sub-page:test/${name}`, input: 'router' },
+      params: { component: adapter.PageRouter },
+    }),
+  );
+
+  return renderTestApp({
+    extensions: [
+      thingsPage,
+      elsewherePage,
+      overviewSubPage,
+      settingsSubPage,
+      pageRouter,
+      ...subPageRouters,
+    ],
+    initialRouteEntries: [initialPath],
+  });
+}
+
+describe(`${adapter.name} page adapter conformance`, () => {
+  it('should route sub-pages, redirect the page root to the first tab, and keep deeper paths inside the sub-page', async () => {
+    const { appHistory } = renderPage('/things/alpha/overview');
+
+    expect(await screen.findByTestId('sub-page')).toHaveTextContent('overview');
+    expect(screen.getByRole('tab', { name: 'Overview' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Settings' })).toBeInTheDocument();
+
+    await act(async () => {
+      appHistory.navigate('/things/alpha/settings');
+    });
+    expect(await screen.findByTestId('sub-page')).toHaveTextContent('settings');
+    expect(screen.queryByTestId('deep')).not.toBeInTheDocument();
+
+    // The page root lands on the first sub-page, and says so in the URL.
+    await act(async () => {
+      appHistory.navigate('/things/alpha?q=1');
+    });
+    expect(await screen.findByTestId('sub-page')).toHaveTextContent('overview');
+    expect(appHistory.location.pathname).toBe('/things/alpha/overview');
+
+    // A path deeper than the sub-page path still belongs to that sub-page.
+    await act(async () => {
+      appHistory.navigate('/things/alpha/overview/deep');
+    });
+    expect(await screen.findByTestId('deep')).toBeInTheDocument();
+  });
+
+  it('should not accumulate the mount prefix across a change of concrete prefix', async () => {
+    const { appHistory } = renderPage('/things/alpha/overview');
+
+    expect(await screen.findByTestId('sub-page')).toHaveTextContent('overview');
+
+    // Entity A → entity B: the same page pattern at a different concrete
+    // prefix.
+    await act(async () => {
+      appHistory.navigate('/things/beta/overview');
+    });
+
+    expect(await screen.findByTestId('sub-page')).toHaveTextContent('overview');
+    expect(appHistory.location.pathname).toBe('/things/beta/overview');
+
+    // Strip → navigate → emit → strip: an in-page link after the prefix
+    // changed must target the new prefix exactly once.
+    await act(async () => {
+      screen.getByRole('link', { name: 'Deep' }).click();
+    });
+
+    expect(await screen.findByTestId('deep')).toBeInTheDocument();
+    expect(appHistory.location.pathname).toBe('/things/beta/overview/deep');
+  });
+
+  it('should keep in-page state while the concrete mount prefix changes', async () => {
+    // Deliberately driven through the whole app rather than by re-rendering
+    // the adapter with a new `basePath`: everything between the page match and
+    // the adapter — the page mount context, the page chrome, the extension
+    // boundaries — re-renders on this navigation too, and a remount anywhere
+    // along that path costs the page its state just as surely as the adapter
+    // rebuilding its own router does. A harness that renders the adapter alone
+    // is stable by construction and so cannot see any of that.
+    const { appHistory } = renderPage('/things/alpha/overview');
+
+    expect(await screen.findByTestId('sub-page')).toHaveTextContent('overview');
+    await act(async () => {
+      screen.getByRole('button', { name: 'Bump' }).click();
+    });
+    await act(async () => {
+      screen.getByRole('button', { name: 'Bump' }).click();
+    });
+    expect(screen.getByTestId('bumped')).toHaveTextContent('2');
+
+    // Entity A → entity B. The app history emits synchronously from
+    // navigate(), before the re-render that hands the adapter its new concrete
+    // prefix — the ordering that used to make the adapter rebuild its router
+    // and throw away page state, scroll position and in-flight requests.
+    await act(async () => {
+      appHistory.navigate('/things/beta/overview');
+    });
+
+    expect(await screen.findByTestId('sub-page')).toHaveTextContent('overview');
+    expect(appHistory.location.pathname).toBe('/things/beta/overview');
+    expect(screen.getByTestId('bumped')).toHaveTextContent('2');
+  });
+
+  it('should carry query and hash into the page and out through in-page hrefs', async () => {
+    const { appHistory } = renderPage('/things/alpha/overview?q=1#frag');
+
+    expect(await screen.findByTestId('sub-page')).toHaveTextContent('overview');
+    expect(screen.getByTestId('lib-query')).toHaveTextContent('1');
+    expect(appHistory.location.search).toBe('?q=1');
+    expect(appHistory.location.hash).toBe('#frag');
+    expect(screen.getByRole('link', { name: 'Deep' })).toHaveAttribute(
+      'href',
+      '/things/alpha/overview/deep',
+    );
+  });
+
+  it('should hand the page over cleanly when the app navigates off it and back', async () => {
+    const { appHistory } = renderPage('/things/alpha/overview');
+
+    expect(await screen.findByTestId('sub-page')).toHaveTextContent('overview');
+
+    await act(async () => {
+      appHistory.navigate('/elsewhere');
+    });
+    expect(await screen.findByTestId('elsewhere-page')).toBeInTheDocument();
+    expect(screen.queryByTestId('sub-page')).not.toBeInTheDocument();
+
+    await act(async () => {
+      appHistory.navigate('/things/gamma/settings');
+    });
+    expect(await screen.findByTestId('sub-page')).toHaveTextContent('settings');
+    expect(appHistory.location.pathname).toBe('/things/gamma/settings');
+  });
+});
+
+/**
+ * The injected route context, compared against the real thing.
+ *
+ * Both sides render the same probe: once under this adapter, once under a
+ * `<Route path={`${pattern}/*`}>` in a real router at the same URL. Anything
+ * the adapter gets wrong about the match — the splat tail, which prefix
+ * relative targets resolve against, whether descendant `<Routes>` see a
+ * splat parent — shows up as a difference rather than as a plausible-looking
+ * expectation nobody rechecks.
+ */
+const ROUTE_PATTERN = '/catalog/:namespace/:kind/:name';
+const BASE_PATH = '/catalog/default/component/foo';
+
+function ContextProbe() {
+  const params = useParams();
+  // The match stack itself, not just what the hooks make of it. `route.path`
+  // in particular is only observable indirectly — a pattern that lost its
+  // trailing splat still resolves relative targets and still matches
+  // descendant `<Routes>`, and only tells React Router apart from the adapter
+  // by way of a console warning nobody reads. Comparing the stack against the
+  // real tree pins it.
+  const { matches } = useContext(UNSAFE_RouteContext);
+  return (
+    <div>
+      <span data-testid="dot">{useResolvedPath('./create').pathname}</span>
+      <span data-testid="up">{useResolvedPath('../sibling').pathname}</span>
+      <span data-testid="bare">{useResolvedPath('create').pathname}</span>
+      <span data-testid="href">{useHref('./create')}</span>
+      <span data-testid="params">{JSON.stringify(params)}</span>
+      <span data-testid="matches">
+        {JSON.stringify(
+          matches.map(match => [
+            match.pathname,
+            match.pathnameBase,
+            match.route.path,
+          ]),
+        )}
+      </span>
+      <Routes>
+        <Route
+          path="overview/*"
+          element={<span data-testid="nested">nested</span>}
+        />
+      </Routes>
+    </div>
+  );
+}
+
+function readContextProbe() {
+  return {
+    dot: screen.getByTestId('dot').textContent,
+    up: screen.getByTestId('up').textContent,
+    bare: screen.getByTestId('bare').textContent,
+    href: screen.getByTestId('href').textContent,
+    params: screen.getByTestId('params').textContent,
+    matches: screen.getByTestId('matches').textContent,
+    nested: screen.queryByTestId('nested')?.textContent ?? 'no-match',
+  };
+}
+
+describe(`${adapter.name} route context matches a real router tree`, () => {
+  it.each([
+    ['at the page root', BASE_PATH],
+    ['at a sub-page', `${BASE_PATH}/overview`],
+    ['below a sub-page', `${BASE_PATH}/overview/deep`],
+  ])('%s', (_name, url) => {
+    const real = render(
+      <MemoryRouter initialEntries={[url]}>
+        <Routes>
+          <Route path={`${ROUTE_PATTERN}/*`} element={<ContextProbe />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+    const expected = readContextProbe();
+    real.unmount();
+
+    const appHistory = createMockAppHistory({ initialLocation: url });
+    const { Router } = createScopedRouter(appHistory, {
+      routePattern: ROUTE_PATTERN,
+    });
+    render(
+      <Router>
+        <ContextProbe />
+      </Router>,
+    );
+
+    expect(readContextProbe()).toEqual(expected);
+  });
+
+  it('should follow app history and fall back to a neutral context off the page', () => {
+    const appHistory = createMockAppHistory({
+      initialLocation: `${BASE_PATH}/overview`,
+    });
+    const { Router } = createScopedRouter(appHistory, {
+      routePattern: ROUTE_PATTERN,
+    });
+
+    render(
+      <Router>
+        <ContextProbe />
+      </Router>,
+    );
+
+    expect(screen.getByTestId('params')).toHaveTextContent('"name":"foo"');
+    expect(screen.getByTestId('nested')).toBeInTheDocument();
+
+    act(() => {
+      appHistory.navigate(`${BASE_PATH}/settings`);
+    });
+
+    expect(screen.queryByTestId('nested')).not.toBeInTheDocument();
+    expect(screen.getByTestId('params')).toHaveTextContent('"*":"settings"');
+
+    // Off the page entirely — a real router would not have rendered the page
+    // at this location, so the honest answer is the neutral no-route context
+    // rather than an invented match that leaks a stale prefix. Anchored,
+    // because the failure this guards against is a *longer* pathname with the
+    // stale prefix still on the front, which a substring match would accept.
+    act(() => {
+      appHistory.navigate('/elsewhere');
+    });
+
+    expect(screen.getByTestId('params')).toHaveTextContent('{}');
+    expect(screen.getByTestId('matches')).toHaveTextContent(/^\[\]$/);
+    expect(screen.getByTestId('dot')).toHaveTextContent(/^\/create$/);
+  });
+});

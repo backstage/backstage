@@ -367,7 +367,25 @@ export async function createConfig(
       }),
     },
     module: {
-      rules: loaders,
+      rules: [
+        // TanStack Router reads React 19's `use` through a namespace member
+        // lookup rather than importing it, so that on React 18 the reference
+        // is simply absent at runtime and the library takes its React 18 path.
+        // The bundler resolves that lookup statically anyway and fails the
+        // build with "'use' is not exported from 'react'", which turns an app
+        // that merely depends on the library into one that cannot be built on
+        // React 18. Turn the export presence check off for this package alone,
+        // leaving it in force everywhere else.
+        // Rule parser options are flat, unlike the module-type keyed ones on
+        // `module.parser`, so this is `exportsPresence` and not
+        // `javascript.exportsPresence`. The nested spelling is accepted here
+        // and silently does nothing.
+        {
+          test: /[\\/]node_modules[\\/]@tanstack[\\/]react-router[\\/]/,
+          parser: { exportsPresence: false },
+        },
+        ...loaders,
+      ],
     },
     output: {
       uniqueName: options.moduleFederationRemote?.name,

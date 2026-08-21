@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import { PageBlueprint } from '@backstage/frontend-plugin-api';
+import { usePageMount } from '@internal/frontend';
 import { Link, useLocation, useParams } from 'react-router-dom';
 
 const DEFAULT_CONFIG = {
@@ -221,7 +222,7 @@ describe('AppRoutes', () => {
     });
   });
 
-  it('should show 404 for unknown paths when root route exists', async () => {
+  it('should render the not-found fallback for unknown paths when root is registered', async () => {
     const homePage = PageBlueprint.make({
       name: 'home',
       params: {
@@ -243,10 +244,157 @@ describe('AppRoutes', () => {
       initialRouteEntries: ['/unknown'],
     });
 
-    await waitFor(() => {
-      expect(screen.queryByTestId('home-page')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('catalog-page')).not.toBeInTheDocument();
+    expect(await screen.findByText(/PAGE NOT FOUND/i)).toBeInTheDocument();
+    expect(screen.queryByTestId('home-page')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('catalog-page')).not.toBeInTheDocument();
+  });
+
+  it('should render the not-found fallback when no route matches', async () => {
+    const catalogPage = PageBlueprint.make({
+      name: 'catalog',
+      params: {
+        path: '/catalog',
+        loader: async () => <div data-testid="catalog-page">Catalog Page</div>,
+      },
     });
+
+    renderTestApp({
+      extensions: [catalogPage],
+      initialRouteEntries: ['/unknown'],
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('catalog-page')).not.toBeInTheDocument();
+      expect(screen.getByText(/PAGE NOT FOUND/i)).toBeInTheDocument();
+    });
+  });
+
+  it('should prefer a more specific entity route over the catalog index route', async () => {
+    const catalogPage = PageBlueprint.make({
+      name: 'catalog',
+      params: {
+        path: '/catalog',
+        loader: async () => (
+          <div data-testid="catalog-page">Catalog Index Page</div>
+        ),
+      },
+    });
+
+    const catalogEntityPage = PageBlueprint.make({
+      name: 'catalog-entity',
+      params: {
+        path: '/catalog/:namespace/:kind/:name',
+        loader: async () => {
+          const MountProbe = () => {
+            const mount = usePageMount();
+            return (
+              <div data-testid="catalog-entity-page">
+                Catalog Entity Page
+                <div data-testid="contract-base">{mount?.basePath}</div>
+              </div>
+            );
+          };
+          return <MountProbe />;
+        },
+      },
+    });
+
+    renderTestApp({
+      extensions: [catalogPage, catalogEntityPage],
+      initialRouteEntries: ['/catalog/default/component/my-entity'],
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('catalog-entity-page')).toBeInTheDocument();
+      expect(screen.queryByTestId('catalog-page')).not.toBeInTheDocument();
+      expect(screen.getByTestId('contract-base')).toHaveTextContent(
+        '/catalog/default/component/my-entity',
+      );
+    });
+  });
+
+  it('should provide a PageMount with the matched basePath to the matched page', async () => {
+    const catalogPage = PageBlueprint.make({
+      name: 'catalog',
+      params: {
+        path: '/catalog',
+        loader: async () => {
+          const MountProbe = () => {
+            const mount = usePageMount();
+            return (
+              <div data-testid="catalog-page">
+                Catalog Page
+                <div data-testid="contract-base">{mount?.basePath}</div>
+              </div>
+            );
+          };
+          return <MountProbe />;
+        },
+      },
+    });
+
+    renderTestApp({
+      extensions: [catalogPage],
+      initialRouteEntries: ['/catalog/entities'],
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('catalog-page')).toBeInTheDocument();
+      expect(screen.getByTestId('contract-base')).toHaveTextContent('/catalog');
+    });
+  });
+
+  it('should resolve pages correctly when the app is served under a basename', async () => {
+    const CatalogWithLinks = () => {
+      const mount = usePageMount();
+      return (
+        <div data-testid="catalog-page">
+          Catalog Page
+          <div data-testid="contract-base">{mount?.basePath}</div>
+          <Link to="./create" data-testid="create-link">
+            Create Entity
+          </Link>
+        </div>
+      );
+    };
+
+    const catalogPage = PageBlueprint.make({
+      name: 'catalog',
+      params: {
+        path: '/catalog',
+        loader: async () => <CatalogWithLinks />,
+      },
+    });
+
+    const { appHistory } = renderTestApp({
+      extensions: [catalogPage],
+      // App-relative path; harness stores it under /backstage on the memory backend.
+      initialRouteEntries: ['/catalog/entities'],
+      config: {
+        app: { baseUrl: 'http://localhost:3000/backstage' },
+        backend: { baseUrl: 'http://localhost:7007' },
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('catalog-page')).toBeInTheDocument();
+      expect(screen.getByTestId('contract-base')).toHaveTextContent('/catalog');
+      expect(screen.getByTestId('create-link')).toHaveAttribute(
+        'href',
+        '/backstage/catalog/create',
+      );
+    });
+
+    // Prove the app history was constructed with basename: navigate writes
+    // under /backstage and location$ still emits the stripped app path.
+    const locations: string[] = [];
+    appHistory.location$.subscribe(loc => locations.push(loc.pathname));
+    expect(locations[locations.length - 1]).toBe('/catalog/entities');
+
+    await act(async () => {
+      appHistory.navigate('/catalog/other');
+    });
+    expect(locations).toContain('/catalog/other');
   });
 
   it('should redirect from one path to another using configured redirects', async () => {
@@ -899,6 +1047,94 @@ describe('AppRoutes', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Catalog Page')).toBeInTheDocument();
+    });
+  });
+
+  it('should support in-plugin relative navigation via the memory harness', async () => {
+    const CatalogWithNav = () => {
+      const location = useLocation();
+      return (
+        <div data-testid="catalog-page">
+          <div data-testid="pathname">{location.pathname}</div>
+          <Link to="./entities" data-testid="entities-link">
+            Entities
+          </Link>
+          <Link to="./create" data-testid="create-link">
+            Create
+          </Link>
+        </div>
+      );
+    };
+
+    const catalogPage = PageBlueprint.make({
+      name: 'catalog',
+      params: {
+        path: '/catalog',
+        loader: async () => <CatalogWithNav />,
+      },
+    });
+
+    renderTestApp({
+      extensions: [catalogPage],
+      initialRouteEntries: ['/catalog'],
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('pathname')).toHaveTextContent('/catalog');
+    });
+
+    await act(async () => {
+      screen.getByTestId('entities-link').click();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('pathname')).toHaveTextContent(
+        '/catalog/entities',
+      );
+    });
+
+    await act(async () => {
+      screen.getByTestId('create-link').click();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('pathname')).toHaveTextContent(
+        '/catalog/create',
+      );
+    });
+  });
+
+  it('should expose entity route params via the default page adapter', async () => {
+    const EntityParams = () => {
+      const params = useParams();
+      return (
+        <div data-testid="entity-page">
+          <span data-testid="namespace">{params.namespace}</span>
+          <span data-testid="kind">{params.kind}</span>
+          <span data-testid="name">{params.name}</span>
+          <span data-testid="splat">{params['*'] ?? ''}</span>
+        </div>
+      );
+    };
+
+    const catalogEntityPage = PageBlueprint.make({
+      name: 'catalog-entity',
+      params: {
+        path: '/catalog/:namespace/:kind/:name',
+        loader: async () => <EntityParams />,
+      },
+    });
+
+    renderTestApp({
+      extensions: [catalogEntityPage],
+      initialRouteEntries: ['/catalog/default/component/my-entity/overview'],
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('namespace')).toHaveTextContent('default');
+      expect(screen.getByTestId('kind')).toHaveTextContent('component');
+      expect(screen.getByTestId('name')).toHaveTextContent('my-entity');
+      expect(screen.getByTestId('splat')).toHaveTextContent('overview');
     });
   });
 });

@@ -17,21 +17,27 @@
 import {
   alertApiRef,
   analyticsApiRef,
+  appHistoryApiRef,
   configApiRef,
   discoveryApiRef,
   errorApiRef,
   fetchApiRef,
   featureFlagsApiRef,
   identityApiRef,
+  routeResolutionApiRef,
   storageApiRef,
   translationApiRef,
   type AnalyticsApi,
+  type AppHistoryApi,
+  type AppNavigateOptions,
   type ConfigApi,
   type DiscoveryApi,
   type ErrorApi,
   type FetchApi,
   type FeatureFlagState,
+  type AppLocation,
   type IdentityApi,
+  type RouteResolutionApi,
   type StorageApi,
   type TranslationApi,
 } from '@backstage/frontend-plugin-api';
@@ -57,7 +63,17 @@ import {
   attachMockApiFactory,
   type MockWithApiFactory,
 } from './MockWithApiFactory';
-import { createApiMock } from './createApiMock';
+import { createApiMock, type ApiMock } from './createApiMock';
+import {
+  createMockAppHistory,
+  type MockAppHistory,
+  type MockAppHistoryOptions,
+} from './createMockAppHistory';
+import {
+  createMockRouteResolutionApi,
+  type MockRouteResolutionApi,
+  type MockRouteResolutionApiOptions,
+} from './createMockRouteResolutionApi';
 
 /**
  * Mock implementations of the core utility APIs, to be used in tests.
@@ -457,6 +473,135 @@ export namespace mockApis {
   export namespace fetch {
     export const mock = createApiMock(fetchApiRef, () => ({
       fetch: jest.fn(),
+    }));
+  }
+
+  /**
+   * Fake implementation of
+   * {@link @backstage/frontend-plugin-api#AppHistoryApi}.
+   *
+   * @public
+   * @example
+   *
+   * ```tsx
+   * const navigate = jest.fn();
+   * const appHistory = mockApis.appHistory({ navigate });
+   * // Pair with mockApis.routeResolution() for RouteLink / useNavigateRouteRef
+   * ```
+   */
+  export function appHistory(
+    options?: MockAppHistoryOptions,
+  ): MockAppHistory & MockWithApiFactory<AppHistoryApi> {
+    const instance = createMockAppHistory(options);
+    return attachMockApiFactory(appHistoryApiRef, instance) as MockAppHistory &
+      MockWithApiFactory<AppHistoryApi>;
+  }
+
+  /**
+   * Mock helpers for
+   * {@link @backstage/frontend-plugin-api#AppHistoryApi}.
+   *
+   * The whole mock is backed by {@link createMockAppHistory}, so `location`,
+   * `location$`, `navigate` and `createHref` behave like the real app history
+   * while `navigate` and `createHref` stay assertable jest mocks. Components
+   * that subscribe to the location can therefore be rendered against this mock
+   * without any additional setup.
+   *
+   * A `navigate` passed in observes the call instead of replacing the
+   * implementation around it, so the real behavior — rejecting targets that
+   * are not app-relative, committing the new location, emitting on `location$`
+   * — is still there. A mock that is more permissive than the API it stands in
+   * for is a mock that hides bugs, so relaxing any of that is deliberate:
+   * assigning `location` pins it, and passing `createHref` replaces it
+   * outright.
+   *
+   * Use {@link mockApis.(appHistory:function)} instead when a test needs to
+   * configure the fake — an app deployed under a basename, or a starting
+   * location other than the app root.
+   *
+   * @public
+   */
+  export namespace appHistory {
+    export const mock: (
+      partialImpl?: Partial<AppHistoryApi> | undefined,
+    ) => ApiMock<AppHistoryApi> = partialImpl => {
+      // `navigate` goes to the fake rather than to `createApiMock`, which
+      // installs a partial implementation by replacing the jest mock's body
+      // wholesale. That would take the external-target guard, the location
+      // commit and the `location$` emission with it, leaving a mock that
+      // accepts `https://example.com` and reports the app root forever.
+      const { navigate, ...rest } = partialImpl ?? {};
+      const instance = createMockAppHistory({ navigate });
+      const navigateMock = jest.fn(
+        (
+          ...args:
+            | [path: string, options?: AppNavigateOptions]
+            | [delta: number]
+        ) => {
+          if (typeof args[0] === 'number') {
+            instance.navigate(args[0]);
+          } else if (args.length === 1) {
+            instance.navigate(args[0]);
+          } else {
+            instance.navigate(args[0], args[1]);
+          }
+        },
+      ) as unknown as jest.MockedFunction<AppHistoryApi['navigate']>;
+      // Set by `createApiMock` when a test passes an explicit `location`; the
+      // one documented way to stop the location tracking navigation.
+      let pinnedLocation: AppLocation | undefined;
+
+      return createApiMock(appHistoryApiRef, () => ({
+        // A getter, like the real app history's: reading it after a navigation
+        // has to see that navigation, and repeated reads have to be
+        // reference-equal or `useSyncExternalStore` re-renders forever.
+        get location() {
+          return pinnedLocation ?? instance.location;
+        },
+        set location(value: AppLocation) {
+          pinnedLocation = value;
+        },
+        location$: instance.location$,
+        // Rest args rather than named ones, so a single-argument call stays a
+        // single-argument call all the way through to a supplied `navigate`.
+        navigate: navigateMock,
+        createHref: jest.fn((to: string) => instance.createHref(to)),
+      }))(rest);
+    };
+  }
+
+  /**
+   * Fake implementation of
+   * {@link @backstage/frontend-plugin-api#RouteResolutionApi}.
+   *
+   * @public
+   * @example
+   *
+   * ```tsx
+   * const routeResolution = mockApis.routeResolution({
+   *   routes: [[catalogRouteRef, '/catalog/:namespace/:kind/:name']],
+   * });
+   * ```
+   */
+  export function routeResolution(
+    options?: MockRouteResolutionApiOptions,
+  ): MockRouteResolutionApi & MockWithApiFactory<RouteResolutionApi> {
+    const instance = createMockRouteResolutionApi(options);
+    return attachMockApiFactory(
+      routeResolutionApiRef,
+      instance,
+    ) as MockRouteResolutionApi & MockWithApiFactory<RouteResolutionApi>;
+  }
+
+  /**
+   * Mock helpers for
+   * {@link @backstage/frontend-plugin-api#RouteResolutionApi}.
+   *
+   * @public
+   */
+  export namespace routeResolution {
+    export const mock = createApiMock(routeResolutionApiRef, () => ({
+      resolve: jest.fn(),
     }));
   }
 }

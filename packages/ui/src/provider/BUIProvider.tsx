@@ -16,15 +16,31 @@
 
 import { useMemo, type ReactNode } from 'react';
 import { RouterProvider } from 'react-aria-components';
-import { useInRouterContext, useNavigate } from 'react-router-dom';
+import {
+  useHref,
+  useInRouterContext,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
 import { createVersionedValueMap } from '@backstage/version-bridge';
 import { BUIContext } from '../analytics/useAnalytics';
-import { useResolvedHref } from '../hooks/useResolvedHref';
+import { isExternalLink, sanitizeHref } from '../utils/linkUtils';
 import type { UseAnalyticsFn } from '../analytics/types';
+import {
+  BUIRouterContext,
+  BUIRouterHandlesRawHrefContext,
+  type BUIRouter,
+} from './BUIRouter';
 
 /** @public */
 export type BUIProviderProps = {
   useAnalytics?: UseAnalyticsFn;
+  /**
+   * Routing capability backed by the host application's router or history.
+   * When omitted, BUI adapts an ambient React Router v6 context when present,
+   * and otherwise leaves links to native browser navigation.
+   */
+  router?: BUIRouter;
   children: ReactNode;
 };
 
@@ -48,7 +64,7 @@ export type BUIProviderProps = {
  * @public
  */
 export function BUIProvider(props: BUIProviderProps) {
-  const { useAnalytics, children } = props;
+  const { useAnalytics, router, children } = props;
   const value = useMemo(
     () =>
       createVersionedValueMap({
@@ -61,18 +77,50 @@ export function BUIProvider(props: BUIProviderProps) {
     <BUIContext.Provider value={value}>{children}</BUIContext.Provider>
   );
 
-  if (useInRouterContext()) {
-    return <RoutedContent>{content}</RoutedContent>;
+  if (router) {
+    return (
+      <BUIRouterHandlesRawHrefContext.Provider value>
+        <BUIRouterContext.Provider value={router}>
+          <RouterProvider navigate={router.navigate} useHref={router.useHref}>
+            {content}
+          </RouterProvider>
+        </BUIRouterContext.Provider>
+      </BUIRouterHandlesRawHrefContext.Provider>
+    );
   }
 
-  return content;
+  return <MaybeReactRouterContent>{content}</MaybeReactRouterContent>;
 }
 
-function RoutedContent({ children }: { children: ReactNode }) {
+function MaybeReactRouterContent({ children }: { children: ReactNode }) {
+  if (!useInRouterContext()) {
+    return <>{children}</>;
+  }
+  return <ReactRouterContent>{children}</ReactRouterContent>;
+}
+
+function ReactRouterContent({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
-  return (
-    <RouterProvider navigate={navigate} useHref={useResolvedHref}>
-      {children}
-    </RouterProvider>
+  const router = useMemo<BUIRouter>(
+    () => ({
+      navigate,
+      useHref: useReactRouterHref,
+      useLocation,
+    }),
+    [navigate],
   );
+
+  return (
+    <BUIRouterContext.Provider value={router}>
+      <RouterProvider navigate={navigate} useHref={useReactRouterHref}>
+        {children}
+      </RouterProvider>
+    </BUIRouterContext.Provider>
+  );
+}
+
+function useReactRouterHref(href: string): string {
+  const safeHref = sanitizeHref(href) ?? '';
+  const resolved = useHref(safeHref);
+  return isExternalLink(safeHref) ? safeHref : resolved;
 }

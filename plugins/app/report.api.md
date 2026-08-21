@@ -119,18 +119,6 @@ const appPlugin: OverridableFrontendPlugin<
       configInput: {};
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {
-        router: ExtensionInput<
-          ConfigurableExtensionDataRef<
-            (props: { children: ReactNode }) => JSX.Element | null,
-            'app.router.wrapper',
-            {}
-          >,
-          {
-            singleton: true;
-            optional: true;
-            internal: true;
-          }
-        >;
         signInPage: ExtensionInput<
           ConfigurableExtensionDataRef<
             ComponentType<SignInPageProps>,
@@ -201,6 +189,13 @@ const appPlugin: OverridableFrontendPlugin<
           | ConfigurableExtensionDataRef<
               RouteRef<AnyRouteRefParams>,
               'core.routing.ref',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              string[],
+              'core.page.subPagePaths',
               {
                 optional: true;
               }
@@ -577,6 +572,21 @@ const appPlugin: OverridableFrontendPlugin<
     'api:app/openshift-auth': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'openshift-auth';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/page-router': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'page-router';
       config: {};
       configInput: {};
       output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;

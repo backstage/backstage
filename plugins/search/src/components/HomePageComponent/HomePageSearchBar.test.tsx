@@ -26,9 +26,9 @@ import { HomePageSearchBar } from './HomePageSearchBar';
 
 const navigate = jest.fn();
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => navigate,
+jest.mock('@backstage/frontend-plugin-api', () => ({
+  ...jest.requireActual('@backstage/frontend-plugin-api'),
+  useAppNavigate: () => navigate,
 }));
 
 describe('<HomePageSearchBar/>', () => {

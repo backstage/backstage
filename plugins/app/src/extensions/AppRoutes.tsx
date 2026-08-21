@@ -14,47 +14,36 @@
  * limitations under the License.
  */
 
+import { Suspense, type ComponentType, type ReactNode } from 'react';
 import { z } from 'zod/v4';
 import {
   createExtension,
+  createExtensionDataRef,
   coreExtensionData,
   createExtensionInput,
   NotFoundErrorPage,
+  appHistoryApiRef,
+  useApi,
 } from '@backstage/frontend-plugin-api';
-import { Navigate, useLocation, useParams, useRoutes } from 'react-router-dom';
+import { AppRouteSwitch, RouteTable } from '@internal/frontend';
 
-function RedirectWithParams({ to }: { to: string }) {
-  const params = useParams() as Record<string, string>;
-  const { search, hash } = useLocation();
+// Extension data is keyed by ID, so the app can consume this private page
+// blueprint output without exporting its ref through the public plugin API.
+const internalPageSubPagePathsDataRef = createExtensionDataRef<string[]>().with(
+  {
+    id: 'core.page.subPagePaths',
+  },
+);
 
-  let target = to;
-  for (const [name, value] of Object.entries(params)) {
-    // Use \b (word boundary) for named params so that `:a` doesn't
-    // accidentally match inside `:ab` when both are present.
-    target = target.replace(
-      name === '*' ? /\*/g : new RegExp(`:${name}\\b`, 'g'),
-      value ?? '',
-    );
+function normalizeRoutePath(path: string): string {
+  if (path === '/') {
+    return '/';
   }
+  return path.replace(/\/$/, '') || '/';
+}
 
-  const hashIndex = target.indexOf('#');
-  const beforeHash = hashIndex === -1 ? target : target.slice(0, hashIndex);
-  const targetHash = hashIndex === -1 ? '' : target.slice(hashIndex);
-
-  const queryIndex = beforeHash.indexOf('?');
-  const path = queryIndex === -1 ? beforeHash : beforeHash.slice(0, queryIndex);
-  const targetSearch = queryIndex === -1 ? '' : beforeHash.slice(queryIndex);
-
-  return (
-    <Navigate
-      to={{
-        pathname: path,
-        search: targetSearch || search,
-        hash: targetHash || hash,
-      }}
-      replace
-    />
-  );
+function PageSuspense(props: { children: ReactNode }) {
+  return <Suspense fallback={null}>{props.children}</Suspense>;
 }
 
 export const AppRoutes = createExtension({
@@ -65,6 +54,7 @@ export const AppRoutes = createExtension({
       coreExtensionData.routePath,
       coreExtensionData.routeRef.optional(),
       coreExtensionData.reactElement,
+      internalPageSubPagePathsDataRef.optional(),
     ]),
   },
   configSchema: {
@@ -81,36 +71,40 @@ export const AppRoutes = createExtension({
   factory({ inputs, config }) {
     const redirects = config.redirects ?? [];
 
-    const Routes = () => {
-      const element = useRoutes([
-        ...redirects.map(redirect => ({
-          path:
-            redirect.from === '/'
-              ? redirect.from
-              : `${redirect.from.replace(/\/$/, '')}/*`,
-          element: <RedirectWithParams to={redirect.to} />,
-        })),
-        ...inputs.routes.map(route => {
-          const routePath = route.get(coreExtensionData.routePath);
+    // A page's sub-pages are registered as routes one level below it, so a
+    // sub-page is matched by the same table as everything else and nothing
+    // above it has to know that sub-pages exist.
+    const routeTable = new RouteTable(
+      inputs.routes.map(route => ({
+        path: normalizeRoutePath(route.get(coreExtensionData.routePath)),
+        subPaths: route.get(internalPageSubPagePathsDataRef),
+      })),
+    );
 
-          return {
-            path:
-              routePath === '/'
-                ? routePath
-                : `${routePath.replace(/\/$/, '')}/*`,
+    const pages = new Map<string, ComponentType>();
+    for (const route of inputs.routes) {
+      const path = normalizeRoutePath(route.get(coreExtensionData.routePath));
+      if (pages.has(path)) {
+        continue;
+      }
+      const element = route.get(coreExtensionData.reactElement);
+      pages.set(path, () => <PageSuspense>{element}</PageSuspense>);
+    }
 
-            element: route.get(coreExtensionData.reactElement),
-          };
-        }),
-        {
-          path: '*',
-          element: <NotFoundErrorPage />,
-        },
-      ]);
+    const RoutesElement = () => {
+      const history = useApi(appHistoryApiRef);
 
-      return element;
+      return (
+        <AppRouteSwitch
+          history={history}
+          routeTable={routeTable}
+          pages={pages}
+          redirects={redirects}
+          fallback={<NotFoundErrorPage />}
+        />
+      );
     };
 
-    return [coreExtensionData.reactElement(<Routes />)];
+    return [coreExtensionData.reactElement(<RoutesElement />)];
   },
 });

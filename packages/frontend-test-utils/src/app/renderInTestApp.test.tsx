@@ -15,7 +15,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { screen, fireEvent } from '@testing-library/react';
+import { act, screen, fireEvent } from '@testing-library/react';
 import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 import {
   useAnalytics,
@@ -24,9 +24,16 @@ import {
   useRouteRef,
   identityApiRef,
   useApi,
+  useHref,
+  appHistoryApiRef,
 } from '@backstage/frontend-plugin-api';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation, Link } from 'react-router-dom';
 import { renderInTestApp } from './renderInTestApp';
+
+function PathProbe() {
+  const { pathname } = useLocation();
+  return <span>Path: {pathname}</span>;
+}
 
 describe('renderInTestApp', () => {
   it('should render the given component in a page', async () => {
@@ -200,5 +207,132 @@ describe('renderInTestApp', () => {
       await screen.findByText('user:default/i-just-made-this-up');
       expect(screen.queryByText('user:default/guest')).not.toBeInTheDocument();
     });
+  });
+
+  it('should drive navigation through the in-memory app history', async () => {
+    const LocationProbe = () => {
+      const { pathname } = useLocation();
+      const navigation = useApi(appHistoryApiRef);
+      return (
+        <div>
+          <span>Path: {pathname}</span>
+          <button type="button" onClick={() => navigation.navigate('/next')}>
+            Go next
+          </button>
+        </div>
+      );
+    };
+
+    const { appHistory } = renderInTestApp(<LocationProbe />, {
+      initialRouteEntries: ['/start'],
+    });
+
+    expect(screen.getByText('Path: /start')).toBeInTheDocument();
+
+    const locations: string[] = [];
+    appHistory.location$.subscribe(loc => locations.push(loc.pathname));
+
+    fireEvent.click(screen.getByRole('button', { name: 'Go next' }));
+
+    expect(await screen.findByText('Path: /next')).toBeInTheDocument();
+    expect(locations).toContain('/next');
+  });
+
+  it('should resolve locations under an app basename', async () => {
+    const LocationProbe = () => {
+      const { pathname } = useLocation();
+      return (
+        <div>
+          <span>Path: {pathname}</span>
+          <Link to="/catalog" data-testid="catalog-link">
+            Catalog
+          </Link>
+        </div>
+      );
+    };
+
+    const { appHistory } = renderInTestApp(<LocationProbe />, {
+      initialRouteEntries: ['/start'],
+      config: {
+        app: { baseUrl: 'http://localhost:3000/backstage' },
+        backend: { baseUrl: 'http://localhost:7007' },
+      },
+    });
+
+    expect(screen.getByText('Path: /start')).toBeInTheDocument();
+    expect(screen.getByTestId('catalog-link')).toHaveAttribute(
+      'href',
+      '/backstage/catalog',
+    );
+
+    // Driving the store from outside React, so the resulting re-render has to
+    // be wrapped or React warns that state was updated outside act().
+    act(() => {
+      appHistory.navigate('/catalog');
+    });
+    expect(await screen.findByText('Path: /catalog')).toBeInTheDocument();
+  });
+
+  describe('mountPath', () => {
+    // The element renders as a page mounted at `mountPath`, so page-relative
+    // targets have to resolve against that mount. Nothing here publishes one
+    // the way a real app's route switch does, and without it every target
+    // below resolves against the app root instead.
+    function HrefProbe(props: { to: string }) {
+      return (
+        <a data-testid="probe" href={useHref(props.to)}>
+          probe
+        </a>
+      );
+    }
+
+    it.each([
+      [
+        'a relative target',
+        'techdocs',
+        '/catalog/default/component/foo/techdocs',
+      ],
+      // The whole pattern is one match, so `..` climbs off the page rather
+      // than into `/catalog/default/component`, where no page is mounted.
+      ['a climbing target', '../bar', '/bar'],
+      [
+        'a query-only target',
+        '?tab=readme',
+        '/catalog/default/component/foo?tab=readme',
+      ],
+      ['an absolute target', '/settings', '/settings'],
+    ])('resolves %s against the mount', async (_name, to, expected) => {
+      renderInTestApp(<HrefProbe to={to} />, {
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: ['/catalog/default/component/foo'],
+      });
+
+      expect(screen.getByTestId('probe')).toHaveAttribute('href', expected);
+    });
+
+    it('leaves the mount unpublished when the location does not reach it', async () => {
+      renderInTestApp(<HrefProbe to="techdocs" />, {
+        mountPath: '/catalog/:namespace/:kind/:name',
+        initialRouteEntries: ['/somewhere-else'],
+      });
+
+      expect(screen.queryByTestId('probe')).not.toBeInTheDocument();
+    });
+  });
+
+  it('should expose an appHistory on the render result that drives the app', async () => {
+    const { appHistory } = renderInTestApp(<PathProbe />, {
+      initialRouteEntries: ['/start'],
+    });
+
+    expect(appHistory.location.pathname).toBe('/start');
+    expect(appHistory.createHref('/catalog?q=1')).toBe('/catalog?q=1');
+
+    act(() => {
+      appHistory.navigate('/elsewhere');
+    });
+
+    expect(await screen.findByText('Path: /elsewhere')).toBeInTheDocument();
+    expect(appHistory.location.pathname).toBe('/elsewhere');
   });
 });

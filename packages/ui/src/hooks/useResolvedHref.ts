@@ -15,28 +15,51 @@
  */
 
 import { useHref, useInRouterContext } from 'react-router-dom';
-import { isExternalLink } from '../utils/linkUtils';
+import { isExternalLink, sanitizeHref } from '../utils/linkUtils';
+import { useOptionalBUIRouter } from '../provider/BUIRouter';
+
+/**
+ * Whether `BUIProvider` has selected a routing authority for its descendants.
+ *
+ * A target is resolved once, and this is what says by whom. react-aria calls
+ * the injected resolver at each anchor's own position, where it can still tell
+ * which page the target was written in and can apply the app's deploy
+ * basename. react-router resolves against the context it is asked from, which
+ * for page chrome is the app root rather than the page. Only one of them may
+ * run: a fragment-only or relative target react-router has already resolved
+ * against the root has lost the page, and nothing downstream can put it back.
+ *
+ * @internal
+ */
+export function useHasBUIRouter(): boolean {
+  return Boolean(useOptionalBUIRouter());
+}
 
 /**
  * Resolves an href for rendering. External URLs are returned unchanged;
  * internal paths are resolved through react-router's useHref so they
  * respect the current basename and route context.
  *
+ * Hrefs a browser would execute rather than navigate to are made inert first.
+ * `useDefinition` already does this for every BUI component, so in practice
+ * this only bites for hrefs that arrive some other way.
+ *
  * @internal
  */
 export function useResolvedHref(href: string): string;
 export function useResolvedHref(href: string | undefined): string | undefined;
 export function useResolvedHref(href: string | undefined): string | undefined {
+  const safeHref = sanitizeHref(href);
   const hasRouter = useInRouterContext();
   // useHref throws outside a Router, so we guard with useInRouterContext.
   // The guard is safe because a component's router context does not
   // change during its lifetime, keeping the hook call count stable.
   if (!hasRouter) {
-    return href;
+    return safeHref;
   }
-  const resolved = useHref(href ?? '');
-  if (!href || isExternalLink(href)) {
-    return href;
+  const resolved = useHref(safeHref ?? '');
+  if (!safeHref || isExternalLink(safeHref)) {
+    return safeHref;
   }
   return resolved;
 }

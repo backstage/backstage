@@ -20,6 +20,7 @@ import {
   AppTree,
   AppTreeApi,
   appTreeApiRef,
+  appHistoryApiRef,
   ConfigApi,
   configApiRef,
   createApiFactory,
@@ -39,6 +40,7 @@ import { matchRoutes } from 'react-router-dom';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { createRouteAliasResolver } from '../routing/RouteAliasResolver';
+import { createAppHistory } from '../routing/AppHistory';
 import { RouteResolver } from '../routing/RouteResolver';
 import { collectRouteIds } from '../routing/collectRouteIds';
 import {
@@ -214,6 +216,21 @@ export function createPhaseApis(options: {
   );
   const identityProxy = new PreparedAppIdentityProxy();
   const phaseApiRegistry = new FrontendApiRegistry();
+
+  // Avoid constructing a window-history AppHistory (and attaching popstate)
+  // when a static factory already overrides the API — e.g. tests.
+  const hasNavigationOverride = options.staticFactories.some(
+    factory => factory.api.id === appHistoryApiRef.id,
+  );
+  // Creating an AppHistory attaches a popstate listener that lives until it is
+  // disposed, so the instance is kept here and released through the returned
+  // dispose(). An overridden API is owned by whoever supplied the factory.
+  const appHistory = hasNavigationOverride
+    ? undefined
+    : createAppHistory({
+        basename: options.appBasePath || undefined,
+      });
+
   phaseApiRegistry.registerAll([
     createApiFactory(appTreeApiRef, appTreeApi),
     ...(options.includeConfigApi
@@ -222,6 +239,7 @@ export function createPhaseApis(options: {
     createApiFactory(routeResolutionApiRef, routeResolutionApi),
     createApiFactory(identityApiRef, identityProxy),
     ...options.staticFactories,
+    ...(appHistory ? [createApiFactory(appHistoryApiRef, appHistory)] : []),
   ]);
 
   const apis = new FrontendApiResolver({
@@ -235,6 +253,13 @@ export function createPhaseApis(options: {
     routeResolutionApi,
     appTreeApi,
     identityApiProxy: identityProxy,
+    /**
+     * Releases the resources owned by these phase APIs. Safe to call more than
+     * once, and a no-op when the app history API was overridden.
+     */
+    dispose() {
+      appHistory?.dispose();
+    },
   };
 }
 

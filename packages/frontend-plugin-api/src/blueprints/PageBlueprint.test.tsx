@@ -18,13 +18,19 @@ import { PageBlueprint } from './PageBlueprint';
 import {
   createExtensionTester,
   renderInTestApp,
+  renderTestApp,
 } from '@backstage/frontend-test-utils';
 import {
   coreExtensionData,
   createExtensionBlueprint,
   createExtensionInput,
 } from '../wiring';
-import { waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
+import { useState } from 'react';
+import { SubPageBlueprint } from './SubPageBlueprint';
+import { PageRouterBlueprint } from './PageRouterBlueprint';
+import type { PageRouterComponent } from '../apis/definitions/PageRouterApi';
+import { usePageMount } from '@internal/frontend';
 
 describe('PageBlueprint', () => {
   const mockRouteRef = createRouteRef();
@@ -97,6 +103,33 @@ describe('PageBlueprint', () => {
                 "optional": [Function],
                 "toString": [Function],
               },
+              {
+                "$$type": "@backstage/ExtensionDataRef",
+                "config": {
+                  "optional": true,
+                },
+                "id": "core.page.router",
+                "optional": [Function],
+                "toString": [Function],
+              },
+            ],
+            "replaces": undefined,
+            "withContext": [Function],
+          },
+          "router": {
+            "$$type": "@backstage/ExtensionInput",
+            "config": {
+              "internal": false,
+              "optional": true,
+              "singleton": true,
+            },
+            "context": {
+              "input": "router",
+              "kind": "page",
+              "name": "test-page",
+            },
+            "extensionData": [
+              [Function],
             ],
             "replaces": undefined,
             "withContext": [Function],
@@ -131,6 +164,15 @@ describe('PageBlueprint', () => {
               "optional": true,
             },
             "id": "core.icon",
+            "optional": [Function],
+            "toString": [Function],
+          },
+          {
+            "$$type": "@backstage/ExtensionDataRef",
+            "config": {
+              "optional": true,
+            },
+            "id": "core.page.subPagePaths",
             "optional": [Function],
             "toString": [Function],
           },
@@ -266,5 +308,310 @@ describe('PageBlueprint', () => {
         ],
       }
     `);
+  });
+
+  it('should compose SubPageBlueprint pages into tabs', async () => {
+    const parentPage = PageBlueprint.make({
+      params: {
+        path: '/tools',
+        title: 'Tools',
+      },
+    });
+
+    const overviewSubPage = SubPageBlueprint.make({
+      name: 'overview',
+      params: {
+        path: 'overview',
+        title: 'Overview',
+        loader: async () => <div data-testid="overview">Overview</div>,
+      },
+    });
+
+    const settingsSubPage = SubPageBlueprint.make({
+      name: 'settings',
+      params: {
+        path: 'settings',
+        title: 'Settings',
+        loader: async () => <div data-testid="settings">Settings</div>,
+      },
+    });
+
+    renderTestApp({
+      extensions: [parentPage, overviewSubPage, settingsSubPage],
+      initialRouteEntries: ['/tools/overview'],
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('overview')).toBeInTheDocument(),
+    );
+    expect(screen.getByRole('tab', { name: 'Overview' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Settings' })).toBeInTheDocument();
+  });
+
+  it('should support SubPageBlueprint pages input', async () => {
+    const parentPage = PageBlueprint.make({
+      params: {
+        path: '/devtools',
+        title: 'DevTools',
+      },
+    });
+
+    const infoSubPage = SubPageBlueprint.make({
+      name: 'info',
+      params: {
+        path: 'info',
+        title: 'Info',
+        loader: async () => <div data-testid="info-page">Info</div>,
+      },
+    });
+
+    renderTestApp({
+      extensions: [parentPage, infoSubPage],
+      initialRouteEntries: ['/devtools/info'],
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('info-page')).toBeInTheDocument(),
+    );
+  });
+
+  it('should preserve a first sub-page router override in an isolated render', async () => {
+    const PageRouter: PageRouterComponent = ({ children }) => (
+      <div data-testid="page-router">{children}</div>
+    );
+    const SubPageRouter: PageRouterComponent = ({ children }) => (
+      <div data-testid="sub-page-router" data-mount={usePageMount()?.basePath}>
+        {children}
+      </div>
+    );
+    const FirstSubPage = () => (
+      <div data-testid="first-page" data-mount={usePageMount()?.basePath} />
+    );
+    const parentPage = PageBlueprint.make({
+      name: 'isolated',
+      params: { path: '/isolated', title: 'Isolated' },
+    });
+    const pageRouter = PageRouterBlueprint.make({
+      name: 'page-router',
+      attachTo: { id: 'page:isolated', input: 'router' },
+      params: { component: PageRouter },
+    });
+    const firstSubPage = SubPageBlueprint.make({
+      name: 'first',
+      attachTo: { id: 'page:isolated', input: 'pages' },
+      params: {
+        path: 'first',
+        title: 'First',
+        loader: async () => <FirstSubPage />,
+      },
+    });
+    const subPageRouter = PageRouterBlueprint.make({
+      name: 'sub-page-router',
+      attachTo: { id: 'sub-page:first', input: 'router' },
+      params: { component: SubPageRouter },
+    });
+    const tester = createExtensionTester(parentPage)
+      .add(pageRouter)
+      .add(firstSubPage)
+      .add(subPageRouter);
+
+    renderInTestApp(tester.reactElement(), {
+      mountPath: '/isolated',
+      initialRouteEntries: ['/isolated'],
+    });
+
+    expect(await screen.findByTestId('first-page')).toHaveAttribute(
+      'data-mount',
+      '/isolated/first',
+    );
+    expect(screen.getByTestId('sub-page-router')).toHaveAttribute(
+      'data-mount',
+      '/isolated/first',
+    );
+    expect(screen.queryByTestId('page-router')).not.toBeInTheDocument();
+  });
+
+  it('should hand the selected sub-page to the router adapter as opaque content', async () => {
+    const received: string[][] = [];
+
+    // A deliberately non-routing adapter. It has no way to choose between
+    // sub-pages, and does not need one: the selection has already been made by
+    // the time the content reaches it.
+    const RecordingRouter: PageRouterComponent = props => {
+      received.push(Object.keys(props).sort());
+      return <div data-testid="recording-router">{props.children}</div>;
+    };
+
+    const parentPage = PageBlueprint.make({
+      params: { path: '/recorded', title: 'Recorded' },
+    });
+    const adapter = PageRouterBlueprint.make({
+      name: 'recording',
+      attachTo: { id: 'page:test', input: 'router' },
+      params: { component: RecordingRouter },
+    });
+    const overviewSubPage = SubPageBlueprint.make({
+      name: 'overview',
+      params: {
+        path: 'overview',
+        title: 'Overview',
+        loader: async () => <div data-testid="overview">Overview</div>,
+      },
+    });
+    const settingsSubPage = SubPageBlueprint.make({
+      name: 'settings',
+      params: {
+        path: 'settings',
+        title: 'Settings',
+        loader: async () => <div data-testid="settings">Settings</div>,
+      },
+    });
+
+    renderTestApp({
+      extensions: [parentPage, adapter, overviewSubPage, settingsSubPage],
+      initialRouteEntries: ['/recorded/settings'],
+    });
+
+    expect(await screen.findByTestId('settings')).toBeInTheDocument();
+    expect(screen.getByTestId('recording-router')).toContainElement(
+      screen.getByTestId('settings'),
+    );
+    expect(screen.queryByTestId('overview')).not.toBeInTheDocument();
+
+    // The whole public contract is the opaque content. Mount details stay in
+    // the framework context for first-party adapters to consume privately.
+    expect(received[0]).toEqual(['children']);
+
+    // Breadcrumb wrapping stays framework-side: the adapter rendered nothing
+    // but the element it was given, and the sub-page breadcrumb is present.
+    // Awaited rather than read synchronously: breadcrumb entries register from
+    // an effect, and the header renders no nav at all until the first one
+    // arrives, so the content being on screen does not mean the nav is yet.
+    const breadcrumbs = await screen.findByRole('navigation', {
+      name: 'Breadcrumbs',
+    });
+    expect(breadcrumbs).toHaveTextContent('Recorded');
+    expect(breadcrumbs).toHaveTextContent('Settings');
+  });
+
+  it('should keep the page shell mounted while the sub-page changes', async () => {
+    // State held between the page chrome and the sub-page content: it survives
+    // a tab change only if nothing from the page shell down to the adapter is
+    // remounted. Asserted as a value rather than as a mount count, because the
+    // `<Suspense>` above the page makes the initial mount count 2 and so turns
+    // any counter into a measure of suspension as well.
+    const StatefulRouter: PageRouterComponent = ({ children }) => {
+      const [kept, setKept] = useState(0);
+      return (
+        <div>
+          <span data-testid="shell-state">{kept}</span>
+          <button type="button" onClick={() => setKept(n => n + 1)}>
+            Keep
+          </button>
+          {children}
+        </div>
+      );
+    };
+
+    const parentPage = PageBlueprint.make({
+      params: { path: '/kept', title: 'Kept' },
+    });
+    const adapter = PageRouterBlueprint.make({
+      name: 'stateful',
+      attachTo: { id: 'page:test', input: 'router' },
+      params: { component: StatefulRouter },
+    });
+    const overviewSubPage = SubPageBlueprint.make({
+      name: 'overview',
+      params: {
+        path: 'overview',
+        title: 'Overview',
+        loader: async () => <div data-testid="overview">Overview</div>,
+      },
+    });
+    const settingsSubPage = SubPageBlueprint.make({
+      name: 'settings',
+      params: {
+        path: 'settings',
+        title: 'Settings',
+        loader: async () => <div data-testid="settings">Settings</div>,
+      },
+    });
+
+    const { appHistory } = renderTestApp({
+      extensions: [parentPage, adapter, overviewSubPage, settingsSubPage],
+      initialRouteEntries: ['/kept/overview'],
+    });
+
+    expect(await screen.findByTestId('overview')).toBeInTheDocument();
+    await act(async () => {
+      screen.getByRole('button', { name: 'Keep' }).click();
+    });
+    await act(async () => {
+      screen.getByRole('button', { name: 'Keep' }).click();
+    });
+    expect(screen.getByTestId('shell-state')).toHaveTextContent('2');
+
+    await act(async () => {
+      appHistory.navigate('/kept/settings');
+    });
+
+    expect(await screen.findByTestId('settings')).toBeInTheDocument();
+    expect(screen.queryByTestId('overview')).not.toBeInTheDocument();
+    expect(screen.getByTestId('shell-state')).toHaveTextContent('2');
+    expect(screen.getByRole('tab', { name: 'Overview' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Settings' })).toBeInTheDocument();
+  });
+
+  it('should redirect to the first subpage on the parent index route, and leave a page without sub-pages alone', async () => {
+    const parentPage = PageBlueprint.make({
+      params: {
+        path: '/mixed',
+        title: 'Mixed',
+      },
+    });
+
+    const inputSubPage = SubPageBlueprint.make({
+      name: 'input',
+      params: {
+        path: 'input',
+        title: 'Input',
+        loader: async () => <div data-testid="input-page">Input</div>,
+      },
+    });
+
+    // A page with no sub-pages at all: its own root must stay put, and so must
+    // any deeper path it owns.
+    const plainPage = PageBlueprint.make({
+      name: 'plain',
+      params: {
+        path: '/plain',
+        title: 'Plain',
+        loader: async () => <div data-testid="plain-page">Plain</div>,
+      },
+    });
+
+    const { appHistory } = renderTestApp({
+      extensions: [parentPage, inputSubPage, plainPage],
+      initialRouteEntries: ['/mixed?tab=1#here'],
+    });
+
+    expect(await screen.findByTestId('input-page')).toBeInTheDocument();
+    // The URL says which tab is showing, and the query and fragment survive.
+    expect(appHistory.location.pathname).toBe('/mixed/input');
+    expect(appHistory.location.search).toBe('?tab=1');
+    expect(appHistory.location.hash).toBe('#here');
+
+    await act(async () => {
+      appHistory.navigate('/plain');
+    });
+    expect(await screen.findByTestId('plain-page')).toBeInTheDocument();
+    expect(appHistory.location.pathname).toBe('/plain');
+
+    await act(async () => {
+      appHistory.navigate('/plain/deeper');
+    });
+    expect(await screen.findByTestId('plain-page')).toBeInTheDocument();
+    expect(appHistory.location.pathname).toBe('/plain/deeper');
   });
 });

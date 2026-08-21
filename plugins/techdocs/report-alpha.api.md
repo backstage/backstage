@@ -19,6 +19,7 @@ import { JSX as JSX_2 } from 'react';
 import { JSXElementConstructor } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
+import { PageRouterComponent } from '@backstage/frontend-plugin-api';
 import { ReactElement } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
@@ -294,6 +295,13 @@ const _default: OverridableFrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ExtensionDataRef<
+            string[],
+            'core.page.subPagePaths',
+            {
+              optional: true;
+            }
           >;
       inputs: {
         pages: ExtensionInput<
@@ -319,10 +327,29 @@ const _default: OverridableFrontendPlugin<
               {
                 optional: true;
               }
+            >
+          | ConfigurableExtensionDataRef<
+              PageRouterComponent,
+              'core.page.router',
+              {
+                optional: true;
+              }
             >,
           {
             singleton: false;
             optional: false;
+            internal: false;
+          }
+        >;
+        router: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            PageRouterComponent,
+            'core.page.router',
+            {}
+          >,
+          {
+            singleton: true;
+            optional: true;
             internal: false;
           }
         >;
@@ -374,6 +401,13 @@ const _default: OverridableFrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ExtensionDataRef<
+            string[],
+            'core.page.subPagePaths',
+            {
+              optional: true;
+            }
           >;
       inputs: {
         pages: ExtensionInput<
@@ -399,10 +433,29 @@ const _default: OverridableFrontendPlugin<
               {
                 optional: true;
               }
+            >
+          | ConfigurableExtensionDataRef<
+              PageRouterComponent,
+              'core.page.router',
+              {
+                optional: true;
+              }
             >,
           {
             singleton: false;
             optional: false;
+            internal: false;
+          }
+        >;
+        router: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            PageRouterComponent,
+            'core.page.router',
+            {}
+          >,
+          {
+            singleton: true;
+            optional: true;
             internal: false;
           }
         >;
@@ -546,9 +599,9 @@ export const techdocsTranslationRef: TranslationRef<
     readonly 'table.emptyState.description': 'Create your own document. Check out our Getting Started Information';
     readonly 'table.emptyState.docsButton': 'DOCS';
     readonly 'home.supportButton': 'Discover documentation in your ecosystem.';
-    readonly 'aboutCard.viewTechdocs': 'View TechDocs';
     readonly 'notFound.title': 'Documentation not found';
     readonly 'notFound.builderNote': "Note that techdocs.builder is not set to 'local' in your config, which means this Backstage app will not generate docs if they are not found. Make sure the project's docs are generated and published by some external process (e.g. CI/CD pipeline). Or change techdocs.builder to 'local' to generate docs from this Backstage instance.";
+    readonly 'aboutCard.viewTechdocs': 'View TechDocs';
     readonly 'buildLogs.title': 'Build Details';
     readonly 'buildLogs.closeDrawer': 'Close the drawer';
     readonly 'buildLogs.showBuildLogs': 'Show Build Logs';

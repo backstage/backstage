@@ -34,7 +34,6 @@ import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import SearchIcon from '@material-ui/icons/Search';
 import classnames from 'classnames';
-import type { Location } from 'history';
 
 import {
   ComponentProps,
@@ -53,13 +52,14 @@ import {
   createElement,
 } from 'react';
 
-import {
-  Link,
-  NavLinkProps,
-  resolvePath,
-  useLocation,
-  useResolvedPath,
-} from 'react-router-dom';
+// Keep this as a value-style import so the long-standing public declaration
+// remains byte-for-byte stable after Link stops using React Router at runtime.
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import { NavLinkProps } from 'react-router-dom';
+import { resolvePath, useAppBasePath, type AppPath } from '@internal/frontend';
+import { useAppLocation, useAppResolvedPath } from '../appRouting';
+import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
+import { Link, type LinkProps } from '../../components/Link';
 
 import {
   SidebarConfig,
@@ -239,17 +239,24 @@ function useMemoStyles(sidebarConfig: SidebarConfig) {
  * Evaluates the routes of the SubmenuItems & nested DropdownItems.
  * The reevaluation is only triggered, if the `locationPathname` changes, as `useElementFilter` uses memorization.
  *
+ * Targets are resolved per element inside a memoized callback, so they cannot
+ * each call `useAppResolvedPath`; `basePath` carries the same resolution base
+ * that hook would use.
+ *
  * @param submenu SidebarSubmenu component
  * @param location Location
+ * @param basePath Base path relative targets resolve against
  * @returns boolean
  */
 const useLocationMatch = (
   submenu: ReactElement<SidebarSubmenuProps>,
-  location: Location,
+  location: AppPath,
+  basePath: string,
 ): boolean =>
   useElementFilter(
     submenu.props.children,
     elements => {
+      const base = basePath || '/';
       let active = false;
       elements
         .getElements()
@@ -264,19 +271,20 @@ const useLocationMatch = (
                 dropdownItems.forEach(
                   ({ to: _to }) =>
                     (active =
-                      active || isLocationMatch(location, resolvePath(_to))),
+                      active ||
+                      isLocationMatch(location, resolvePath(_to, base))),
                 );
                 return;
               }
               if (to) {
-                active = isLocationMatch(location, resolvePath(to));
+                active = isLocationMatch(location, resolvePath(to, base));
               }
             }
           },
         );
       return active;
     },
-    [location.pathname],
+    [location.pathname, basePath],
   );
 
 type SidebarItemBaseProps = {
@@ -298,7 +306,8 @@ type SidebarItemButtonProps = SidebarItemBaseProps & {
 type SidebarItemLinkProps = SidebarItemBaseProps & {
   to: string;
   onClick?: (ev: MouseEvent) => void;
-} & NavLinkProps;
+} & Omit<NavLinkProps, 'to' | 'color'> &
+  Pick<LinkProps, 'color'>;
 
 type SidebarItemWithSubmenuProps = SidebarItemBaseProps & {
   to?: string;
@@ -329,11 +338,13 @@ const sidebarSubmenuType = createElement(SidebarSubmenu).type;
 //               properly yet, matching for example /foobar with /foo.
 export const WorkaroundNavLink = forwardRef<
   HTMLAnchorElement,
-  NavLinkProps & {
-    children?: ReactNode;
-    activeStyle?: CSSProperties;
-    activeClassName?: string;
-  }
+  Omit<NavLinkProps, 'to' | 'color'> &
+    Pick<LinkProps, 'color'> & {
+      to: string;
+      children?: ReactNode;
+      activeStyle?: CSSProperties;
+      activeClassName?: string;
+    }
 >(function WorkaroundNavLinkWithRef(
   {
     to,
@@ -348,8 +359,9 @@ export const WorkaroundNavLink = forwardRef<
   },
   ref,
 ) {
-  let { pathname: locationPathname } = useLocation();
-  let { pathname: toPathname } = useResolvedPath(to);
+  const appHistory = useOptionalAppHistory();
+  let { pathname: locationPathname } = useAppLocation(appHistory);
+  let { pathname: toPathname } = useAppResolvedPath(appHistory, to);
 
   if (!caseSensitive) {
     locationPathname = locationPathname.toLocaleLowerCase('en-US');
@@ -363,12 +375,16 @@ export const WorkaroundNavLink = forwardRef<
   }
 
   const ariaCurrent = isActive ? ariaCurrentProp : undefined;
+  // NavLink and Material UI both extend anchor props, but disagree on the
+  // type of a handful of legacy attributes such as `color`.
+  const linkProps = rest as Omit<LinkProps, 'to'>;
 
   return (
     <Link
-      {...rest}
+      {...linkProps}
       to={to}
       ref={ref}
+      noTrack
       aria-current={ariaCurrent}
       style={{ ...style, ...(isActive ? activeStyle : undefined) }}
       className={classnames([
@@ -463,7 +479,8 @@ const SidebarItemBase = forwardRef<
   };
 
   const analyticsApi = useAnalytics();
-  const { pathname: to } = useResolvedPath(
+  const { pathname: to } = useAppResolvedPath(
+    useOptionalAppHistory(),
     !isButtonItem(props) && props.to ? props.to : '',
   );
 
@@ -518,8 +535,8 @@ const SidebarItemWithSubmenu = ({
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const classes = useMemoStyles(sidebarConfig);
   const [isHoveredOn, setIsHoveredOn] = useState(false);
-  const location = useLocation();
-  const isActive = useLocationMatch(children, location);
+  const location = useAppLocation(useOptionalAppHistory());
+  const isActive = useLocationMatch(children, location, useAppBasePath());
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
   );

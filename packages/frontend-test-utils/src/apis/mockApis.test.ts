@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { FeatureFlagState } from '@backstage/frontend-plugin-api';
+import {
+  FeatureFlagState,
+  AppLocation,
+  createRouteRef,
+} from '@backstage/frontend-plugin-api';
 import { mockApis } from './mockApis';
 
 describe('mockApis', () => {
@@ -114,6 +118,145 @@ describe('mockApis', () => {
 
     it('should have translation', () => {
       expect(mockApis.translation).toBeDefined();
+    });
+  });
+
+  describe('appHistory', () => {
+    it('can create an instance', () => {
+      const navigate = jest.fn();
+      const history = mockApis.appHistory({ navigate });
+      history.navigate('/catalog');
+      expect(navigate).toHaveBeenCalledWith('/catalog');
+      expect(history.navigateCalls).toEqual([
+        { to: '/catalog', options: undefined },
+      ]);
+    });
+
+    it('can create a mock and make assertions on it', () => {
+      const history = mockApis.appHistory.mock({
+        navigate: jest.fn(),
+      });
+      history.navigate('/tools');
+      expect(history.navigate).toHaveBeenCalledWith('/tools');
+    });
+
+    it('keeps the real behavior around a supplied navigate implementation', () => {
+      const navigate = jest.fn();
+      const history = mockApis.appHistory.mock({ navigate });
+
+      history.navigate('/tools', { replace: true, state: { step: 1 } });
+
+      // The supplied implementation observes the call rather than replacing
+      // everything around it, so the location still tracks the navigation.
+      expect(navigate).toHaveBeenCalledWith('/tools', {
+        replace: true,
+        state: { step: 1 },
+      });
+      expect(history.navigate).toHaveBeenCalledWith('/tools', {
+        replace: true,
+        state: { step: 1 },
+      });
+      expect(history.location).toEqual({
+        pathname: '/tools',
+        search: '',
+        hash: '',
+        state: { step: 1 },
+      });
+
+      // Arity survives the hand-off, so single-argument assertions hold.
+      history.navigate('/only-path');
+      expect(navigate.mock.calls[1]).toEqual(['/only-path']);
+
+      // And the guard on targets that are not app-relative is the real one,
+      // not something a supplied implementation can drop.
+      expect(() => history.navigate('https://example.com/x')).toThrow(
+        /does not support absolute or protocol-relative URLs/,
+      );
+      expect(() => history.navigate('mailto:support@example.com')).toThrow();
+      expect(navigate).toHaveBeenCalledTimes(2);
+      expect(history.location.pathname).toBe('/only-path');
+    });
+
+    it('gives every location$ subscription its own handler', () => {
+      const history = mockApis.appHistory.mock();
+      const seen: string[] = [];
+      // The same function subscribing twice is two subscriptions, exactly as
+      // it is on the real app history.
+      const onNext = (l: AppLocation) => seen.push(l.pathname);
+
+      const first = history.location$.subscribe(onNext);
+      const second = history.location$.subscribe(onNext);
+      expect(seen).toEqual(['/', '/']);
+
+      history.navigate('/catalog');
+      expect(seen).toEqual(['/', '/', '/catalog', '/catalog']);
+
+      first.unsubscribe();
+      expect(first.closed).toBe(true);
+      expect(second.closed).toBe(false);
+
+      history.navigate('/tools');
+      expect(seen).toEqual(['/', '/', '/catalog', '/catalog', '/tools']);
+
+      second.unsubscribe();
+    });
+
+    it('only stops tracking the location when a test asks it to', () => {
+      const pinned: AppLocation = {
+        pathname: '/pinned',
+        search: '',
+        hash: '',
+        state: undefined,
+      };
+      const history = mockApis.appHistory.mock({ location: pinned });
+
+      history.navigate('/tools');
+
+      expect(history.navigate).toHaveBeenCalledWith('/tools');
+      expect(history.location).toBe(pinned);
+    });
+
+    it('has working defaults for everything a subscriber needs', () => {
+      const history = mockApis.appHistory.mock();
+
+      expect(history.createHref('/catalog')).toBe('/catalog');
+      expect(history.location).toEqual({
+        pathname: '/',
+        search: '',
+        hash: '',
+        state: undefined,
+      });
+
+      const seen: AppLocation[] = [];
+      const subscription = history.location$.subscribe(l => seen.push(l));
+      expect(seen).toEqual([history.location]);
+
+      history.navigate('/tools');
+
+      expect(history.navigate).toHaveBeenCalledWith('/tools');
+      expect(history.location.pathname).toBe('/tools');
+      expect(seen[1]).toBe(history.location);
+
+      subscription.unsubscribe();
+    });
+  });
+
+  describe('routeResolution', () => {
+    it('can create an instance', () => {
+      const home = createRouteRef();
+      const routeResolution = mockApis.routeResolution({
+        routes: [[home, '/home']],
+      });
+      expect(routeResolution.resolve(home)?.()).toBe('/home');
+    });
+
+    it('can create a mock and make assertions on it', () => {
+      const home = createRouteRef();
+      const routeResolution = mockApis.routeResolution.mock({
+        resolve: jest.fn(() => () => '/mocked'),
+      });
+      expect(routeResolution.resolve(home)?.()).toBe('/mocked');
+      expect(routeResolution.resolve).toHaveBeenCalledWith(home);
     });
   });
 });

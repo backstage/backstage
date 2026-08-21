@@ -64,7 +64,9 @@ import {
   ApiBlueprint,
   dialogApiRef,
   toastApiRef,
+  pageRouterApiRef,
 } from '@backstage/frontend-plugin-api';
+import { ReactRouterV6PageRouter } from './routing/reactRouterV6';
 import {
   ScmAuth,
   ScmIntegrationsApi,
@@ -78,6 +80,15 @@ import { DefaultDialogApi } from './apis/DefaultDialogApi';
 import { analyticsApi } from './extensions/AnalyticsApi';
 
 export const apis = [
+  ApiBlueprint.make({
+    name: 'page-router',
+    params: defineParams =>
+      defineParams({
+        api: pageRouterApiRef,
+        deps: {},
+        factory: () => ReactRouterV6PageRouter,
+      }),
+  }),
   ApiBlueprint.make({
     name: 'dialog',
     params: defineParams =>

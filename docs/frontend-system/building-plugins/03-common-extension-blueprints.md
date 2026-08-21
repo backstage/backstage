@@ -25,6 +25,16 @@ To enable sub-pages on a page, you can either omit the `loader` param to use the
 
 Sub-page extensions create tabbed content within a parent page. They are attached to a page extension's `pages` input and rendered as tabs in the page header. Each sub-page has a `path` (relative to the parent page), a `title` for the tab, and an optional `icon`. Content is lazy-loaded via a `loader` function.
 
+### PageRouter - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.PageRouterBlueprint.html)
+
+Page router extensions choose the router library that renders active page
+content. They attach to the `router` input of a page or sub-page extension, and
+take a single `component` param. The framework mounts one adapter: an explicit
+sub-page override takes priority over the page override, followed by the app
+default, React Router v6. Sub-pages without an override inherit the page router
+at page scope. For the available adapters and how to attach one, see
+[Choose a router for a page](./10-page-routers.md).
+
 ### PluginHeaderAction - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.PluginHeaderActionBlueprint.html)
 
 Plugin header action extensions provide plugin-scoped actions that appear in the page header. They are automatically scoped to the plugin that provides them and will appear in the header of all pages belonging to that plugin. Actions are lazy-loaded via a `loader` function that returns a React element.
@@ -63,9 +73,9 @@ Nav content extensions allow you to replace the entire navbar with your own comp
 
 Your custom component receives a `navItems` prop—a collection with `take(id)` and `rest()` methods for placing specific items in custom positions. Nav items are auto-discovered from page extensions, and metadata (title, icon) comes from page config, nav item extensions, or plugin defaults. Use `navItems.take('page:home')` to take a specific item by extension ID, and `navItems.rest()` to get all remaining items. The deprecated `items` prop (a flat list) remains supported for backward compatibility.
 
-### Router - [Reference](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.RouterBlueprint.html)
+### AppRootWrapper - [Reference](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.AppRootWrapperBlueprint.html)
 
-Router extensions allow you to replace the router component used by the app. They are always attached to the app root extension.
+App root wrapper extensions install React components that wrap the entire app root. Use them for global providers, such as a query client, that every plugin in the app needs. They are the replacement for providers that used to be bundled into a custom root router component.
 
 ## Extension blueprints in `@backstage/plugin-catalog-react/alpha`
 

@@ -14,6 +14,7 @@ import { IconElement } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
+import { PageRouterComponent } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
@@ -74,6 +75,13 @@ const _default: OverridableFrontendPlugin<
             {
               optional: true;
             }
+          >
+        | ExtensionDataRef<
+            string[],
+            'core.page.subPagePaths',
+            {
+              optional: true;
+            }
           >;
       inputs: {
         pages: ExtensionInput<
@@ -99,10 +107,29 @@ const _default: OverridableFrontendPlugin<
               {
                 optional: true;
               }
+            >
+          | ConfigurableExtensionDataRef<
+              PageRouterComponent,
+              'core.page.router',
+              {
+                optional: true;
+              }
             >,
           {
             singleton: false;
             optional: false;
+            internal: false;
+          }
+        >;
+        router: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            PageRouterComponent,
+            'core.page.router',
+            {}
+          >,
+          {
+            singleton: true;
+            optional: true;
             internal: false;
           }
         >;

@@ -21,6 +21,7 @@ export {
 export { ApiBlueprint } from './ApiBlueprint';
 export { AppRootElementBlueprint } from './AppRootElementBlueprint';
 export { PageBlueprint } from './PageBlueprint';
+export { PageRouterBlueprint } from './PageRouterBlueprint';
 export { SubPageBlueprint } from './SubPageBlueprint';
 export { PluginHeaderActionBlueprint } from './PluginHeaderActionBlueprint';
 export {

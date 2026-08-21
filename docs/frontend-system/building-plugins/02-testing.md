@@ -273,6 +273,48 @@ describe('MyComponent', () => {
 });
 ```
 
+## Navigation and app history
+
+`renderInTestApp` and `renderTestApp` set up an in-memory app history and return
+it as `appHistory` on the render result. Use it to move the test app between
+locations and to assert on where it ended up:
+
+```tsx
+import { act, screen } from '@testing-library/react';
+import { renderTestApp } from '@backstage/frontend-test-utils';
+import { toolsPage } from './alpha';
+
+describe('Tools page', () => {
+  it('should show the details view when navigating to it', async () => {
+    const { appHistory } = renderTestApp({
+      extensions: [toolsPage],
+      initialRouteEntries: ['/tools'],
+    });
+
+    expect(await screen.findByText('All tools')).toBeInTheDocument();
+
+    await act(async () => {
+      appHistory.navigate('/tools/details');
+    });
+
+    expect(await screen.findByText('Tool details')).toBeInTheDocument();
+  });
+});
+```
+
+`appHistory.navigate` also takes a number, so `appHistory.navigate(-1)` walks
+back through history the way a browser back button does. The current location is
+readable as `appHistory.location`, observable through `appHistory.location$`, and
+`appHistory.createHref` resolves a path the way a rendered link would.
+
+Reach for this harness whenever the behavior under test depends on routing. A
+test that only needs React Router context inside a single component can keep
+using the patterns it already has. If you mock `AppHistoryApi` yourself, keep to
+its four members: `navigate`, `location`, `location$`, and `createHref`.
+
+For guidance on navigation that crosses page or plugin boundaries, see
+[Scoped plugin routing](../architecture/36-routes.md#scoped-plugin-routing).
+
 ## Extension tree snapshots
 
 The `snapshot()` method on `ExtensionTester` returns a tree-shaped representation of the resolved extension hierarchy, which is convenient to use with Jest's `toMatchInlineSnapshot()` for verifying extension structure in tests.

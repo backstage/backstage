@@ -15,12 +15,15 @@
  */
 
 import { useEffect } from 'react';
-import { matchRoutes, useLocation } from 'react-router-dom';
+import { matchRoutes } from 'react-router-dom';
 import {
   useAnalytics,
   AnalyticsContext,
   AnalyticsEventAttributes,
+  appHistoryApiRef,
+  useApi,
 } from '@backstage/frontend-plugin-api';
+import { useAppHistoryLocation } from '@internal/frontend';
 import { BackstageRouteObject } from './types';
 
 /**
@@ -109,7 +112,11 @@ export const RouteTracker = ({
 }: {
   routeObjects: BackstageRouteObject[];
 }) => {
-  const { pathname, search, hash } = useLocation();
+  // The app history is always registered where the tracker renders, so the
+  // subscription always has a location to report.
+  const { pathname, search, hash } = useAppHistoryLocation(
+    useApi(appHistoryApiRef),
+  )!;
 
   const { params, ...attributes } = getExtensionContext(
     pathname,

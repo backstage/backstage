@@ -19,12 +19,22 @@ import {
   TestApiProvider,
   renderInTestApp,
 } from '@backstage/test-utils';
-import { createEvent, fireEvent, screen } from '@testing-library/react';
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
+import {
+  createMockAppHistory,
+  renderInTestApp as renderInFrontendTestApp,
+} from '@backstage/frontend-test-utils';
+import { createEvent, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import HomeIcon from '@material-ui/icons/Home';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import { Sidebar } from './Bar';
-import { SidebarItem, SidebarSearchField, SidebarExpandButton } from './Items';
+import {
+  SidebarItem,
+  SidebarSearchField,
+  SidebarExpandButton,
+  WorkaroundNavLink,
+} from './Items';
 import { renderHook } from '@testing-library/react';
 import { makeStyles } from '@material-ui/core/styles';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
@@ -73,6 +83,157 @@ async function renderSidebar() {
   );
   await userEvent.hover(screen.getByTestId('sidebar-root'));
 }
+
+// A bare relative target is by far the most common way sidebar items are
+// written in the wild: an ecosystem scan of `backstage/community-plugins` found
+// around 130 of them, four of which are shipped sidebar components that
+// adopters mount straight into their own sidebar. The empty and `./` forms are
+// in here too, because they mean "the app root" rather than "wherever the user
+// happens to be right now".
+const relativeTargets = [
+  { text: 'Copilot', to: 'copilot', href: '/copilot' },
+  { text: 'RBAC', to: 'rbac', href: '/rbac' },
+  { text: 'Apiiro', to: 'apiiro', href: '/apiiro' },
+  { text: 'Mend', to: 'mend', href: '/mend' },
+  { text: 'Catalog', to: 'catalog', href: '/catalog' },
+  { text: 'Empty', to: '', href: '/' },
+  { text: 'Dot slash', to: './', href: '/' },
+];
+
+const relativeTargetsAnalyticsApi = mockApis.analytics();
+
+it('renders and navigates a sidebar link without an ambient React Router', () => {
+  const navigate = jest.fn();
+  const appHistory = createMockAppHistory({ navigate });
+
+  render(
+    <TestApiProvider
+      apis={[
+        [analyticsApiRef, relativeTargetsAnalyticsApi],
+        [appHistoryApiRef, appHistory],
+      ]}
+    >
+      <WorkaroundNavLink to="/catalog">Catalog</WorkaroundNavLink>
+    </TestApiProvider>,
+  );
+
+  const link = screen.getByRole('link', { name: 'Catalog' });
+  expect(link).toHaveAttribute('href', '/catalog');
+  fireEvent.click(link);
+  expect(navigate).toHaveBeenCalledWith('/catalog');
+});
+
+function RelativeTargetSidebar() {
+  return (
+    <TestApiProvider apis={[[analyticsApiRef, relativeTargetsAnalyticsApi]]}>
+      <Sidebar>
+        {relativeTargets.map(({ text, to }) => (
+          <SidebarItem key={text} text={text} icon={HomeIcon} to={to} />
+        ))}
+      </Sidebar>
+    </TestApiProvider>
+  );
+}
+
+// The sidebar renders as app-root chrome in both frontend systems, so both
+// resolve these targets against the app root rather than the route the browser
+// happens to be sitting on.
+const relativeTargetRenderers: Array<
+  [string, (path: string) => Promise<void>]
+> = [
+  [
+    'old frontend system',
+    async path => {
+      await renderInTestApp(<RelativeTargetSidebar />, {
+        routeEntries: [path],
+      });
+    },
+  ],
+  [
+    'new frontend system',
+    async path => {
+      renderInFrontendTestApp(<RelativeTargetSidebar />, {
+        initialRouteEntries: [path],
+      });
+    },
+  ],
+];
+
+describe.each(relativeTargetRenderers)(
+  'SidebarItem relative targets (%s)',
+  (_system, renderSidebarAt) => {
+    // The location the original bug surfaced at: deep inside a different plugin
+    // than the one the sidebar item points to.
+    const deepLocation = '/catalog/default/component/foo';
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('points at the app root while the browser is deep inside another plugin', async () => {
+      await renderSidebarAt(deepLocation);
+
+      await screen.findByRole('link', { name: 'RBAC' });
+      for (const { text, href } of relativeTargets) {
+        expect(screen.getByRole('link', { name: text })).toHaveAttribute(
+          'href',
+          href,
+        );
+      }
+
+      // `catalog` is the one item that owns the current location, so it is the
+      // only one highlighted. An empty target that resolved against the current
+      // location instead would light up on every page in the app.
+      expect(screen.getByRole('link', { name: 'Catalog' })).toHaveAttribute(
+        'aria-current',
+        'page',
+      );
+      for (const { text } of relativeTargets.filter(
+        each => each.text !== 'Catalog',
+      )) {
+        expect(screen.getByRole('link', { name: text })).not.toHaveAttribute(
+          'aria-current',
+        );
+      }
+    });
+
+    it('highlights the plugin whose relative target is the current page', async () => {
+      await renderSidebarAt('/rbac');
+
+      // `to="rbac"` means `/rbac`. Resolved against the current location it
+      // would mean `/rbac/rbac`, and the item would never highlight at all.
+      expect(await screen.findByRole('link', { name: 'RBAC' })).toHaveAttribute(
+        'aria-current',
+        'page',
+      );
+      for (const { text } of relativeTargets.filter(
+        each => each.text !== 'RBAC',
+      )) {
+        expect(screen.getByRole('link', { name: text })).not.toHaveAttribute(
+          'aria-current',
+        );
+      }
+    });
+
+    it('reports the app-root resolved target to analytics', async () => {
+      await renderSidebarAt(deepLocation);
+
+      await userEvent.click(
+        await screen.findByRole('link', { name: 'Dot slash' }),
+      );
+
+      // Resolved against the current location this would have been
+      // `/catalog/default/component/foo/`.
+      expect(relativeTargetsAnalyticsApi.captureEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'click',
+          subject: 'Dot slash',
+          attributes: { to: '/' },
+        }),
+      );
+    });
+  },
+);
 
 describe('Items', () => {
   beforeEach(async () => {

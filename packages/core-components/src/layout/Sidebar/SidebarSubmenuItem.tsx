@@ -15,7 +15,6 @@
  */
 
 import { useContext, useState } from 'react';
-import { resolvePath, useLocation, useResolvedPath } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
@@ -28,6 +27,9 @@ import { SidebarItemWithSubmenuContext } from './config';
 import { isLocationMatch } from './utils';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import { resolvePath, useAppBasePath } from '@internal/frontend';
+import { useAppLocation, useAppResolvedPath } from '../appRouting';
+import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
 
 /** @public */
 export type SidebarSubmenuItemClassKey =
@@ -162,8 +164,10 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   const closeSubmenu = () => {
     setIsHoveredOn(false);
   };
-  const toLocation = useResolvedPath(to ?? '');
-  const currentLocation = useLocation();
+  const appHistory = useOptionalAppHistory();
+  const basePath = useAppBasePath();
+  const toLocation = useAppResolvedPath(appHistory, to ?? '');
+  const currentLocation = useAppLocation(appHistory);
   let isActive = isLocationMatch(currentLocation, toLocation, exact);
 
   const [showDropDown, setShowDropDown] = useState(
@@ -174,7 +178,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   };
   if (dropdownItems !== undefined) {
     dropdownItems.some(item => {
-      const resolvedPath = resolvePath(item.to);
+      const resolvedPath = resolvePath(item.to, basePath || '/');
       isActive = isLocationMatch(currentLocation, resolvedPath, exact);
       return isActive;
     });
