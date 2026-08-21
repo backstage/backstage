@@ -62,6 +62,42 @@ describe('<AutocompleteTextField />', () => {
     expect(onSubmitFn.mock.calls[0][0]).toMatchObject({ owner: 'my-team' });
   });
 
+  it('submits the id when a label is typed and the field is blurred', async () => {
+    const onSubmitFn = jest.fn();
+
+    render(
+      <PreparePullRequestForm<{ owner: string }>
+        defaultValues={{ owner: '' }}
+        render={() => (
+          <>
+            <AutocompleteTextField
+              name="owner"
+              options={[{ label: 'My Displayed Team', id: 'my-team' }]}
+              textFieldProps={{ label: 'Entity Owner' }}
+            />
+            <Button type="submit">Submit</Button>
+          </>
+        )}
+        onSubmit={onSubmitFn}
+      />,
+    );
+
+    await act(async () => {
+      await userEvent.type(
+        screen.getByLabelText('Entity Owner'),
+        'My Displayed Team',
+      );
+      await userEvent.tab();
+    });
+
+    await act(async () => {
+      await userEvent.click(screen.getByRole('button', { name: /submit/i }));
+    });
+
+    expect(onSubmitFn).toHaveBeenCalledTimes(1);
+    expect(onSubmitFn.mock.calls[0][0]).toMatchObject({ owner: 'my-team' });
+  });
+
   it('submits plain string options and free text as they are', async () => {
     const onSubmitFn = jest.fn();
 

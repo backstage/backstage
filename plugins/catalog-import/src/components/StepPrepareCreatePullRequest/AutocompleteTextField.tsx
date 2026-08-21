@@ -42,8 +42,9 @@ function optionLabel(option: AutocompleteTextFieldOption): string {
  * Resolves the value that is stored in the form for a selection.
  *
  * `autoSelect` combined with `freeSolo` makes the autocompletion emit the raw
- * input string when the field is blurred, so labelled options are matched back
- * to their id instead of being stored by their display label.
+ * input string rather than the option object, both when an option is picked
+ * from the list and when the field is blurred. Labelled options are therefore
+ * matched back to their id, so that the form never stores a display label.
  */
 function optionValue(
   value: AutocompleteTextFieldOption | null,
