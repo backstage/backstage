@@ -35,7 +35,7 @@ const context: CliCommandContext = {
     name: 'verify-yarn-patches',
     usage: 'backstage-cli repo verify-yarn-patches',
   },
-} as CliCommandContext;
+};
 
 function healthyResult(
   patchCount: number,
