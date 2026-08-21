@@ -2568,9 +2568,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/cli-module-yarn@workspace:packages/cli-module-yarn"
   dependencies:
+    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/cli-common": "workspace:^"
     "@backstage/cli-node": "workspace:^"
+    "@manypkg/get-packages": "npm:^1.1.3"
+    "@yarnpkg/core": "npm:^4.4.1"
+    "@yarnpkg/parsers": "npm:^3.0.0"
     cleye: "npm:^2.6.0"
   bin:
     cli-module-yarn: bin/backstage-cli-module-yarn
