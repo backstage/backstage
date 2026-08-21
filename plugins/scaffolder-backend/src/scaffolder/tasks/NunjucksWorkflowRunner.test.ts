@@ -2895,4 +2895,272 @@ describe('NunjucksWorkflowRunner', () => {
       );
     });
   });
+
+  describe('task recovery - step resumption', () => {
+    // Recovery behavior (persistence + resumption) is gated behind
+    // `scaffolder.taskRecovery.enabled`, so these tests use a runner with
+    // recovery turned on.
+    let recoveryRunner: NunjucksWorkflowRunner;
+
+    beforeEach(() => {
+      recoveryRunner = new NunjucksWorkflowRunner({
+        actionRegistry,
+        integrations,
+        workingDirectory: mockDir.path,
+        logger,
+        permissions: mockedPermissionApi,
+        config: new ConfigReader({
+          scaffolder: { taskRecovery: { enabled: true } },
+        }),
+        metrics: metricsServiceMock.mock(),
+      });
+    });
+
+    it('skips completed steps and restores their outputs', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'step1',
+            name: 'completed step',
+            action: 'jest-mock-action',
+            input: {},
+          },
+          {
+            id: 'step2',
+            name: 'pending step',
+            action: 'jest-mock-action',
+            input: {},
+          },
+        ],
+        output: { fromStep1: '${{ steps.step1.output.mock }}' },
+      });
+      task.getTaskState = jest.fn().mockResolvedValue({
+        state: {
+          steps: {
+            step1: { status: 'completed', output: { mock: 'recovered-value' } },
+          },
+        },
+      });
+      task.updateStepState = jest.fn();
+
+      const result = await recoveryRunner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledTimes(1);
+      expect(result.output.fromStep1).toBe('recovered-value');
+      expect(task.updateStepState).toHaveBeenCalledTimes(1);
+      expect(task.updateStepState).toHaveBeenCalledWith({
+        stepId: 'step2',
+        status: 'completed',
+        output: expect.any(Object),
+      });
+    });
+
+    it('runs all steps when no prior state exists', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          { id: 'step1', name: 'first', action: 'jest-mock-action', input: {} },
+          {
+            id: 'step2',
+            name: 'second',
+            action: 'jest-mock-action',
+            input: {},
+          },
+        ],
+      });
+      task.getTaskState = jest.fn().mockResolvedValue(undefined);
+      task.updateStepState = jest.fn();
+
+      await recoveryRunner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledTimes(2);
+      expect(task.updateStepState).toHaveBeenCalledTimes(2);
+    });
+
+    it('saves each completed step state', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          { id: 'step1', name: 'first', action: 'output-action', input: {} },
+        ],
+      });
+      task.updateStepState = jest.fn();
+
+      await recoveryRunner.execute(task);
+
+      expect(task.updateStepState).toHaveBeenCalledWith({
+        stepId: 'step1',
+        status: 'completed',
+        output: expect.objectContaining({ mock: 'backstage' }),
+      });
+    });
+
+    it('serializes the workspace before marking a step completed', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          { id: 'step1', name: 'first', action: 'output-action', input: {} },
+        ],
+      });
+      const callOrder: string[] = [];
+      task.serializeWorkspace = jest.fn(async () => {
+        callOrder.push('serializeWorkspace');
+      });
+      task.updateStepState = jest.fn(async () => {
+        callOrder.push('updateStepState');
+      });
+
+      await recoveryRunner.execute(task);
+
+      expect(callOrder).toEqual(['serializeWorkspace', 'updateStepState']);
+    });
+
+    it('does not mark a step completed when workspace serialization fails', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          { id: 'step1', name: 'first', action: 'output-action', input: {} },
+        ],
+      });
+      task.serializeWorkspace = jest
+        .fn()
+        .mockRejectedValue(new Error('workspace persistence failed'));
+      task.updateStepState = jest.fn();
+
+      await expect(recoveryRunner.execute(task)).rejects.toThrow(
+        'workspace persistence failed',
+      );
+      expect(task.serializeWorkspace).toHaveBeenCalledTimes(1);
+      expect(task.updateStepState).not.toHaveBeenCalled();
+    });
+
+    it('retries the step that was in progress when execution stopped', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'step1',
+            name: 'completed',
+            action: 'jest-mock-action',
+            input: {},
+          },
+          {
+            id: 'step2',
+            name: 'was in progress',
+            action: 'jest-mock-action',
+            input: {},
+          },
+        ],
+      });
+      task.getTaskState = jest.fn().mockResolvedValue({
+        state: {
+          steps: {
+            step1: { status: 'completed', output: { done: true } },
+          },
+        },
+      });
+
+      await recoveryRunner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledTimes(1);
+    });
+
+    it('logs the number of restored steps', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'step1',
+            name: 'completed step',
+            action: 'jest-mock-action',
+            input: {},
+          },
+        ],
+      });
+      task.getTaskState = jest.fn().mockResolvedValue({
+        state: {
+          steps: {
+            step1: { status: 'completed', output: { mock: 'value' } },
+          },
+        },
+      });
+      task.emitLog = jest.fn();
+
+      await recoveryRunner.execute(task);
+
+      expect(task.emitLog).toHaveBeenCalledWith(
+        expect.stringContaining('1 step(s) already completed'),
+      );
+    });
+
+    it('emits a completed status event for skipped steps so the UI stays consistent', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'step1',
+            name: 'completed step',
+            action: 'jest-mock-action',
+            input: {},
+          },
+          {
+            id: 'step2',
+            name: 'pending step',
+            action: 'jest-mock-action',
+            input: {},
+          },
+        ],
+      });
+      task.getTaskState = jest.fn().mockResolvedValue({
+        state: {
+          steps: {
+            step1: { status: 'completed', output: { mock: 'value' } },
+          },
+        },
+      });
+      task.emitLog = jest.fn();
+
+      await recoveryRunner.execute(task);
+
+      expect(task.emitLog).toHaveBeenCalledWith(expect.any(String), {
+        stepId: 'step1',
+        status: 'completed',
+      });
+    });
+
+    it('does not persist step state when recovery is disabled', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          { id: 'step1', name: 'first', action: 'jest-mock-action', input: {} },
+        ],
+      });
+      task.updateStepState = jest.fn();
+
+      // The default `runner` is configured without task recovery enabled.
+      await runner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledTimes(1);
+      expect(task.updateStepState).not.toHaveBeenCalled();
+    });
+
+    it('ignores saved step state and re-runs all steps when recovery is disabled', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          { id: 'step1', name: 'first', action: 'jest-mock-action', input: {} },
+          {
+            id: 'step2',
+            name: 'second',
+            action: 'jest-mock-action',
+            input: {},
+          },
+        ],
+      });
+      task.getTaskState = jest.fn().mockResolvedValue({
+        state: {
+          steps: {
+            step1: { status: 'completed', output: { mock: 'value' } },
+          },
+        },
+      });
+
+      await runner.execute(task);
+
+      // Both steps run again; the persisted completed state is ignored so no
+      // step is skipped.
+      expect(fakeActionHandler).toHaveBeenCalledTimes(2);
+    });
+  });
 });

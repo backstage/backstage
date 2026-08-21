@@ -93,6 +93,7 @@ import {
 } from '../scaffolder';
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
+import { isTaskRecoveryEnabled } from '../scaffolder/tasks/taskRecoveryHelper';
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
 import { createOpenApiRouter } from '../schema/openapi';
 import {
@@ -279,6 +280,7 @@ export async function createRouter(
     const databaseTaskStore = await DatabaseTaskStore.create({
       database,
       events: eventsService,
+      recoverTasksEnabled: isTaskRecoveryEnabled(config),
     });
     taskBroker = new StorageTaskBroker(
       databaseTaskStore,

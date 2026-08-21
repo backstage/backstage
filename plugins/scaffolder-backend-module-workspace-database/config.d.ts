@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,22 +22,15 @@ export interface Config {
      */
     taskRecovery?: {
       /**
-       * GCS bucket configuration for workspace serialization.
-       * Only used when workspaceProvider is set to 'gcpBucket'.
+       * Database workspace provider configuration.
        */
-      gcsBucket?: {
+      database?: {
         /**
-         * The GCS bucket name to store serialized workspaces.
+         * Dangerously enable the database workspace provider in production.
          * @visibility backend
          */
-        name: string;
+        dangerouslyEnableInProduction: boolean;
       };
     };
-
-    /**
-     * Sets GCP bucket name to store serialized workspace for scaffolder tasks.
-     * @deprecated Use scaffolder.taskRecovery.gcsBucket.name instead.
-     */
-    EXPERIMENTAL_workspaceSerializationGcpBucketName?: string;
   };
 }

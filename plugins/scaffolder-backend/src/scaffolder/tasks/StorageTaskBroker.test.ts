@@ -25,8 +25,11 @@ import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker, TaskManager } from './StorageTaskBroker';
 import { mockServices } from '@backstage/backend-test-utils';
 import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
+import { TaskState } from './types';
 
-async function createStore(): Promise<DatabaseTaskStore> {
+async function createStore(
+  recoverTasksEnabled?: boolean,
+): Promise<DatabaseTaskStore> {
   const manager = DatabaseManager.fromConfig(
     new ConfigReader({
       backend: {
@@ -43,6 +46,7 @@ async function createStore(): Promise<DatabaseTaskStore> {
 
   return await DatabaseTaskStore.create({
     database: manager,
+    recoverTasksEnabled,
   });
 }
 
@@ -67,6 +71,28 @@ describe('StorageTaskBroker', () => {
     await expect(broker.claim()).resolves.toEqual(
       expect.any(TaskManager as any),
     );
+  });
+
+  it('rejects an unavailable workspace provider before claiming tasks', async () => {
+    const isolatedStorage = await createStore();
+    const { taskId } = await isolatedStorage.createTask(emptyTaskSpec);
+    const config = new ConfigReader({
+      scaffolder: {
+        taskRecovery: {
+          workspaceProvider: 'constructor',
+        },
+      },
+    });
+
+    expect(
+      () =>
+        new StorageTaskBroker(isolatedStorage, logger, config, undefined, {}),
+    ).toThrow(
+      "Workspace provider 'constructor' is configured but not available",
+    );
+    await expect(isolatedStorage.getTask(taskId)).resolves.toMatchObject({
+      status: 'open',
+    });
   });
 
   it('should wait for a dispatched work item', async () => {
@@ -128,13 +154,26 @@ describe('StorageTaskBroker', () => {
     expect(taskRow.status).toBe('completed');
   }, 10000);
 
-  it('should remove secrets after picking up a task', async () => {
-    const broker = new StorageTaskBroker(storage, logger);
+  it('should preserve secrets until terminal state for recovery', async () => {
+    const recoveryStorage = await createStore(true);
+    const broker = new StorageTaskBroker(recoveryStorage, logger);
     const dispatchResult = await broker.dispatch(emptyTaskWithFakeSecretsSpec);
-    await broker.claim();
+    const task = await broker.claim();
 
-    const taskRow = await storage.getTask(dispatchResult.taskId);
-    expect(taskRow.secrets).toBeUndefined();
+    // Secrets should be preserved after claiming (for potential recovery)
+    const taskRowAfterClaim = await recoveryStorage.getTask(
+      dispatchResult.taskId,
+    );
+    expect(taskRowAfterClaim.secrets).toEqual(fakeSecrets);
+
+    // Complete the task
+    await task.complete('completed');
+
+    // Secrets should be removed after reaching terminal state
+    const taskRowAfterComplete = await recoveryStorage.getTask(
+      dispatchResult.taskId,
+    );
+    expect(taskRowAfterComplete.secrets).toBeUndefined();
   }, 10000);
 
   it('should fail a task', async () => {
@@ -193,6 +232,32 @@ describe('StorageTaskBroker', () => {
     ]);
   });
 
+  it('does not keep normal task event streams recoverable when global recovery is enabled', async () => {
+    const isolatedStorage = await createStore();
+    const config = new ConfigReader({
+      scaffolder: { taskRecovery: { enabled: true } },
+    });
+    const broker = new StorageTaskBroker(isolatedStorage, logger, config);
+    const { taskId } = await broker.dispatch(emptyTaskSpec);
+    const completionPromise = new Promise<SerializedTaskEvent>(resolve => {
+      const subscription = broker.event$({ taskId }).subscribe(({ events }) => {
+        const completion = events.find(event => event.type === 'completion');
+        if (completion) {
+          subscription.unsubscribe();
+          resolve(completion);
+        }
+      });
+    });
+
+    const task = await broker.claim();
+    await task.complete('completed');
+
+    await expect(completionPromise).resolves.toMatchObject({
+      type: 'completion',
+      isTaskRecoverable: false,
+    });
+  });
+
   it('should heartbeat', async () => {
     const broker = new StorageTaskBroker(storage, logger);
     const { taskId } = await broker.dispatch(emptyTaskSpec);
@@ -248,7 +313,7 @@ describe('StorageTaskBroker', () => {
           id: taskId,
         }),
       ]),
-      totalTasks: 15,
+      totalTasks: 14,
     });
   });
 
@@ -310,7 +375,323 @@ describe('StorageTaskBroker', () => {
             value: 'https://github.com/backstage/backstage.git',
           },
         },
+        steps: {},
       },
+    });
+  });
+
+  describe('step state persistence', () => {
+    it('should persist step state via updateStepState', async () => {
+      const broker = new StorageTaskBroker(storage, logger);
+      await broker.dispatch({ spec: { steps: [] } as unknown as TaskSpec });
+      const task = await broker.claim();
+
+      await task.updateStepState?.({
+        stepId: 'step1',
+        status: 'completed',
+        output: { result: 'success' },
+      });
+
+      const taskState = await task.getTaskState?.();
+      const state = taskState?.state as TaskState | undefined;
+      expect(state?.steps?.step1).toEqual({
+        status: 'completed',
+        output: { result: 'success' },
+      });
+    });
+
+    it('should accumulate step states for multiple steps', async () => {
+      const broker = new StorageTaskBroker(storage, logger);
+      await broker.dispatch({ spec: { steps: [] } as unknown as TaskSpec });
+      const task = await broker.claim();
+
+      await task.updateStepState?.({
+        stepId: 'step1',
+        status: 'completed',
+        output: { result: 'first' },
+      });
+      await task.updateStepState?.({
+        stepId: 'step2',
+        status: 'completed',
+        output: { result: 'second' },
+      });
+
+      const taskState = await task.getTaskState?.();
+      const state = taskState?.state as TaskState | undefined;
+      expect(state?.steps).toEqual({
+        step1: { status: 'completed', output: { result: 'first' } },
+        step2: { status: 'completed', output: { result: 'second' } },
+      });
+    });
+
+    it('should preserve checkpoints when updating step state', async () => {
+      const broker = new StorageTaskBroker(storage, logger);
+      await broker.dispatch({ spec: { steps: [] } as unknown as TaskSpec });
+      const task = await broker.claim();
+
+      // First save a checkpoint
+      await task.updateCheckpoint?.({
+        key: 'checkpoint1',
+        status: 'success',
+        value: { done: true },
+      });
+
+      // Then save step state
+      await task.updateStepState?.({
+        stepId: 'step1',
+        status: 'completed',
+        output: { result: 'done' },
+      });
+
+      const taskState = await task.getTaskState?.();
+      const state = taskState?.state as TaskState | undefined;
+      // Both should be present
+      expect(state?.checkpoints?.checkpoint1).toBeDefined();
+      expect(state?.steps?.step1).toBeDefined();
+    });
+  });
+
+  describe('task recovery config', () => {
+    // Drain any open tasks from previous tests to avoid interference
+    beforeEach(async () => {
+      const tempBroker = new StorageTaskBroker(storage, logger);
+      // Claim and complete all open tasks
+      let openTasks = await storage.list({ filters: { status: 'open' } });
+      while (openTasks.tasks.length > 0) {
+        const task = await tempBroker.claim();
+        if (!task) break;
+        await task.complete('completed');
+        openTasks = await storage.list({ filters: { status: 'open' } });
+      }
+    });
+
+    it('should recover tasks when taskRecovery.enabled is true', async () => {
+      const config = new ConfigReader({
+        scaffolder: {
+          taskRecovery: {
+            enabled: true,
+            staleTimeout: { seconds: 0 },
+          },
+        },
+      });
+      const broker = new StorageTaskBroker(storage, logger, config);
+
+      const { taskId } = await broker.dispatch({
+        spec: { steps: [] } as unknown as TaskSpec,
+      });
+      await broker.claim();
+
+      // Trigger recovery (timeout 0 for immediate - recovers ALL processing tasks)
+      await broker.recoverTasks();
+
+      // Our task should be recovered to open status
+      const recoveredTask = await storage.getTask(taskId);
+      expect(recoveredTask.status).toBe('open');
+
+      // Cleanup: drain all recovered tasks (our test + any others that got recovered)
+      let openTasks = await storage.list({ filters: { status: 'open' } });
+      while (openTasks.tasks.length > 0) {
+        const task = await broker.claim();
+        if (!task) break;
+        await task.complete('completed');
+        openTasks = await storage.list({ filters: { status: 'open' } });
+      }
+    });
+
+    it('should not recover tasks when taskRecovery.enabled is false', async () => {
+      const config = new ConfigReader({
+        scaffolder: {
+          taskRecovery: {
+            enabled: false,
+          },
+        },
+      });
+      const broker = new StorageTaskBroker(storage, logger, config);
+
+      const { taskId } = await broker.dispatch({
+        spec: { steps: [] } as unknown as TaskSpec,
+      });
+      const task = await broker.claim();
+
+      // Verify we claimed the right task and it's in processing state
+      expect(task.taskId).toBe(taskId);
+      const beforeRecovery = await storage.getTask(taskId);
+      expect(beforeRecovery.status).toBe('processing');
+
+      // Try to recover (should not actually recover because enabled is false)
+      await broker.recoverTasks();
+
+      // Task should still be processing (not recovered)
+      const afterRecovery = await storage.getTask(taskId);
+      expect(afterRecovery.status).toBe('processing');
+
+      // Cleanup
+      await task.complete('completed');
+    });
+
+    it('should fallback to EXPERIMENTAL_recoverTasks if taskRecovery.enabled not set', async () => {
+      const config = new ConfigReader({
+        scaffolder: {
+          EXPERIMENTAL_recoverTasks: true,
+          EXPERIMENTAL_recoverTasksTimeout: { seconds: 0 },
+        },
+      });
+      const broker = new StorageTaskBroker(storage, logger, config);
+
+      const { taskId } = await broker.dispatch({
+        spec: { steps: [] } as unknown as TaskSpec,
+      });
+      await broker.claim();
+
+      await broker.recoverTasks();
+
+      // Task should be recovered using fallback config
+      const recoveredTask = await storage.getTask(taskId);
+      expect(recoveredTask.status).toBe('open');
+
+      // Cleanup: claim and complete the recovered task
+      const task = await broker.claim();
+      await task.complete('completed');
+    });
+
+    it('should not read the legacy timeout when staleTimeout is set', async () => {
+      const config = new ConfigReader({
+        scaffolder: {
+          taskRecovery: {
+            enabled: true,
+            staleTimeout: { seconds: 0 },
+          },
+          EXPERIMENTAL_recoverTasksTimeout: 'invalid',
+        },
+      });
+      const broker = new StorageTaskBroker(storage, logger, config);
+
+      const { taskId } = await broker.dispatch({
+        spec: { steps: [] } as unknown as TaskSpec,
+      });
+      await broker.claim();
+
+      await broker.recoverTasks();
+
+      await expect(storage.getTask(taskId)).resolves.toMatchObject({
+        status: 'open',
+      });
+
+      const task = await broker.claim();
+      await task.complete('completed');
+    });
+  });
+
+  describe('workspace cleanup on completion', () => {
+    it('should clean workspace on successful completion', async () => {
+      const cleanWorkspaceMock = jest.fn();
+      const mockWorkspaceProvider = {
+        serializeWorkspace: jest.fn(),
+        rehydrateWorkspace: jest.fn(),
+        cleanWorkspace: cleanWorkspaceMock,
+      };
+
+      const config = new ConfigReader({
+        scaffolder: {
+          taskRecovery: {
+            workspaceProvider: 'mock',
+          },
+        },
+      });
+
+      const broker = new StorageTaskBroker(storage, logger, config, undefined, {
+        mock: mockWorkspaceProvider,
+      });
+
+      await broker.dispatch(emptyTaskSpec);
+      const task = await broker.claim();
+      await task.complete('completed');
+
+      expect(cleanWorkspaceMock).toHaveBeenCalledWith({
+        taskId: task.taskId,
+      });
+    });
+
+    it('should not clean workspace on failed completion', async () => {
+      const cleanWorkspaceMock = jest.fn();
+      const mockWorkspaceProvider = {
+        serializeWorkspace: jest.fn(),
+        rehydrateWorkspace: jest.fn(),
+        cleanWorkspace: cleanWorkspaceMock,
+      };
+
+      const config = new ConfigReader({
+        scaffolder: {
+          taskRecovery: {
+            workspaceProvider: 'mock',
+          },
+        },
+      });
+
+      const broker = new StorageTaskBroker(storage, logger, config, undefined, {
+        mock: mockWorkspaceProvider,
+      });
+
+      await broker.dispatch(emptyTaskSpec);
+      const task = await broker.claim();
+      await task.complete('failed');
+
+      expect(cleanWorkspaceMock).not.toHaveBeenCalled();
+    });
+
+    it('should not fail task completion if workspace cleanup fails', async () => {
+      const cleanWorkspaceMock = jest
+        .fn()
+        .mockRejectedValue(new Error('Cleanup failed'));
+      const mockWorkspaceProvider = {
+        serializeWorkspace: jest.fn(),
+        rehydrateWorkspace: jest.fn(),
+        cleanWorkspace: cleanWorkspaceMock,
+      };
+
+      const config = new ConfigReader({
+        scaffolder: {
+          taskRecovery: {
+            workspaceProvider: 'mock',
+          },
+        },
+      });
+
+      const broker = new StorageTaskBroker(storage, logger, config, undefined, {
+        mock: mockWorkspaceProvider,
+      });
+
+      const { taskId } = await broker.dispatch(emptyTaskSpec);
+      const task = await broker.claim();
+
+      // Should not throw even though cleanup fails
+      await expect(task.complete('completed')).resolves.toBeUndefined();
+
+      // Task should still be marked as completed
+      const taskRow = await storage.getTask(taskId);
+      expect(taskRow.status).toBe('completed');
+    });
+
+    it('should not attempt cleanup when workspace serialization is disabled', async () => {
+      const cleanWorkspaceMock = jest.fn();
+      const mockWorkspaceProvider = {
+        serializeWorkspace: jest.fn(),
+        rehydrateWorkspace: jest.fn(),
+        cleanWorkspace: cleanWorkspaceMock,
+      };
+
+      // No workspaceProvider config = disabled
+      const config = new ConfigReader({});
+
+      const broker = new StorageTaskBroker(storage, logger, config, undefined, {
+        mock: mockWorkspaceProvider,
+      });
+
+      await broker.dispatch(emptyTaskSpec);
+      const task = await broker.claim();
+      await task.complete('completed');
+
+      expect(cleanWorkspaceMock).not.toHaveBeenCalled();
     });
   });
 });
