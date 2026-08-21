@@ -189,6 +189,17 @@ describe('expandShorthandExtensionParameters', () => {
     });
   });
 
+  it('supports boolean-ish string value from env var substitution', () => {
+    expect(run({ 'app/root': 'true' })).toEqual({
+      id: 'app/root',
+      disabled: false,
+    });
+    expect(run({ 'app/root': 'false' })).toEqual({
+      id: 'app/root',
+      disabled: true,
+    });
+  });
+
   it('should not support string values', () => {
     expect(() =>
       run({ 'app/root': 'example-package#MyRouter' }),
@@ -236,6 +247,22 @@ describe('expandShorthandExtensionParameters', () => {
     });
     expect(() =>
       run({ 'app/root': { disabled: 0 } }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid extension configuration at app.extensions[1][app/root].disabled, must be a boolean"`,
+    );
+  });
+
+  it('supports boolean-ish string for object disabled from env var substitution', () => {
+    expect(run({ 'app/root': { disabled: 'true' } })).toEqual({
+      id: 'app/root',
+      disabled: true,
+    });
+    expect(run({ 'app/root': { disabled: 'false' } })).toEqual({
+      id: 'app/root',
+      disabled: false,
+    });
+    expect(() =>
+      run({ 'app/root': { disabled: 'yes' } }),
     ).toThrowErrorMatchingInlineSnapshot(
       `"Invalid extension configuration at app.extensions[1][app/root].disabled, must be a boolean"`,
     );

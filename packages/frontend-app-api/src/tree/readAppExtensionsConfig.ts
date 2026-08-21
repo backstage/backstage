@@ -119,6 +119,16 @@ export function expandShorthandExtensionParameters(
     };
   }
 
+  // Environment variable substitution always produces a string, so boolean-ish
+  // strings need to be coerced too. Example YAML:
+  // - catalog.page.cicd: ${CATALOG_PAGE_CICD_ENABLED}
+  if (value === 'true' || value === 'false') {
+    return {
+      id,
+      disabled: value === 'false',
+    };
+  }
+
   // The remaining case is the generic object. Example YAML:
   //  - tech-radar.page:
   //      at: core.router/routes
@@ -134,7 +144,7 @@ export function expandShorthandExtensionParameters(
   }
 
   const attachTo = value.attachTo as { id: string; input: string } | undefined;
-  const disabled = value.disabled;
+  let disabled = value.disabled;
   const config = value.config;
 
   if (attachTo !== undefined) {
@@ -157,7 +167,13 @@ export function expandShorthandExtensionParameters(
     }
   }
   if (disabled !== undefined && typeof disabled !== 'boolean') {
-    throw new Error(errorMsg('must be a boolean', id, 'disabled'));
+    // Environment variable substitution always produces a string, e.g.
+    // disabled: ${CATALOG_OVERVIEW_DISABLED}
+    if (disabled === 'true' || disabled === 'false') {
+      disabled = disabled === 'true';
+    } else {
+      throw new Error(errorMsg('must be a boolean', id, 'disabled'));
+    }
   }
   if (
     config !== undefined &&
