@@ -254,6 +254,38 @@ export const marketplaceAiResourceEntityV1alpha1Validator: KindValidator = {
   },
 };
 
+/**
+ * A relation from an AI plugin to one of the skills that it contains.
+ * Reversed direction of {@link RELATION_SKILL_OF}.
+ *
+ * @alpha
+ */
+export const RELATION_HAS_SKILL = 'hasSkill';
+
+/**
+ * A relation from an AI skill to a plugin that contains it. Reversed
+ * direction of {@link RELATION_HAS_SKILL}.
+ *
+ * @alpha
+ */
+export const RELATION_SKILL_OF = 'skillOf';
+
+/**
+ * A relation from an AI marketplace to one of the plugins that it contains.
+ * Reversed direction of {@link RELATION_PLUGIN_OF}.
+ *
+ * @alpha
+ */
+export const RELATION_HAS_PLUGIN = 'hasPlugin';
+
+/**
+ * A relation from an AI plugin to a marketplace that contains it. Reversed
+ * direction of {@link RELATION_HAS_PLUGIN}.
+ *
+ * @alpha
+ */
+export const RELATION_PLUGIN_OF = 'pluginOf';
+
 const baseRelationFields = [
   {
     selector: { path: 'spec.owner' },
@@ -328,7 +360,7 @@ export const aiResourceEntityModel = createCatalogModelLayer({
             ...baseRelationFields,
             {
               selector: { path: 'spec.skills' },
-              relation: 'hasPart',
+              relation: RELATION_HAS_SKILL,
               defaultKind: 'AiResource',
               defaultNamespace: 'inherit' as const,
               allowedKinds: ['AiResource'],
@@ -345,7 +377,7 @@ export const aiResourceEntityModel = createCatalogModelLayer({
             ...baseRelationFields,
             {
               selector: { path: 'spec.plugins' },
-              relation: 'hasPart',
+              relation: RELATION_HAS_PLUGIN,
               defaultKind: 'AiResource',
               defaultNamespace: 'inherit' as const,
               allowedKinds: ['AiResource'],
@@ -375,11 +407,19 @@ export const aiResourceEntityModel = createCatalogModelLayer({
       forward: { type: 'dependsOn' },
       reverse: { type: 'dependencyOf' },
     });
-    model.updateRelationPair({
+    model.addRelationPair({
       fromKind: 'AiResource',
       toKind: 'AiResource',
-      forward: { type: 'hasPart' },
-      reverse: { type: 'partOf' },
+      description: 'An AI plugin contains an AI skill.',
+      forward: { type: RELATION_HAS_SKILL, title: 'has skill' },
+      reverse: { type: RELATION_SKILL_OF, title: 'skill of' },
+    });
+    model.addRelationPair({
+      fromKind: 'AiResource',
+      toKind: 'AiResource',
+      description: 'An AI marketplace contains an AI plugin.',
+      forward: { type: RELATION_HAS_PLUGIN, title: 'has plugin' },
+      reverse: { type: RELATION_PLUGIN_OF, title: 'plugin of' },
     });
   },
 });

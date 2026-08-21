@@ -86,14 +86,62 @@ Rule-specific fields:
 - `rationale` (required): An explanation of why the rule exists.
 - `disciplines` (optional): A list of disciplines the rule applies to.
 
+### Plugin
+
+Plugins package skills for distribution as a unit.
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: AiResource
+metadata:
+  name: code-review-plugin
+spec:
+  type: plugin
+  lifecycle: production
+  owner: ai-platform-team
+  skills:
+    - airesource:default/code-review
+  version: 1.0.0
+```
+
+Plugin-specific fields:
+
+- `skills` (required): References to the skills contained in the plugin. Each entry generates a `hasSkill` relation from the plugin and a `skillOf` relation from the skill.
+- `version` (optional): The plugin version.
+
+### Marketplace
+
+Marketplaces are registries of plugins for discovery and distribution.
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: AiResource
+metadata:
+  name: company-ai-tools
+spec:
+  type: marketplace
+  lifecycle: production
+  owner: ai-platform-team
+  plugins:
+    - airesource:default/code-review-plugin
+  version: 1.0.0
+```
+
+Marketplace-specific fields:
+
+- `plugins` (required): References to the plugins contained in the marketplace. Each entry generates a `hasPlugin` relation from the marketplace and a `pluginOf` relation from the plugin.
+- `version` (optional): The marketplace version.
+
 ### Base Fields
 
 All `AiResource` entities share these spec fields regardless of type:
 
-- `type` (required): The type of AI resource. Supported values are `skill` and `rule`, but any string is accepted.
+- `type` (required): The type of AI resource. Structured schemas are available for `skill`, `rule`, `plugin`, and `marketplace`, but any string is accepted.
 - `lifecycle` (required): The lifecycle stage of the resource, such as `experimental` or `production`.
 - `owner` (required): A reference to the owning entity, typically a group or user.
 - `system` (optional): A reference to the system this resource belongs to.
+
+The `system` field generates the standard `partOf` and `hasPart` relations. Plugin-to-skill and marketplace-to-plugin relationships use the more specific relations described above, allowing consumers to identify their meaning without fetching the related entity bodies.
 
 ### Accessing Skill and Rule Content
 
