@@ -26,6 +26,7 @@ import { ConfigReader } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import {
   createTemplateAction,
+  TaskBroker,
   TaskContext,
   TaskSecrets,
 } from '@backstage/plugin-scaffolder-node';
@@ -47,6 +48,7 @@ import {
   metricsServiceMock,
 } from '@backstage/backend-test-utils/alpha';
 import { collectTemplateCapabilities } from '../../util/templating';
+import { TaskWorker } from './TaskWorker';
 
 describe('NunjucksWorkflowRunner', () => {
   let actionRegistry: TemplateActionRegistry;
@@ -2925,6 +2927,166 @@ describe('NunjucksWorkflowRunner', () => {
       expect(fakeActionHandler).not.toHaveBeenCalled();
     });
 
+    it('does not expose rendered secrets when action authorization is denied', async () => {
+      mockedPermissionApi.authorizeConditional.mockResolvedValueOnce([
+        { result: AuthorizeResult.DENY },
+      ]);
+
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'jest-mock-action',
+              input: {
+                token: '${{ secrets.token }}',
+              },
+            },
+          ],
+        },
+        { token: 'sensitive-token-value' },
+      );
+
+      let thrownError: Error | undefined;
+      try {
+        await runner.execute(task);
+      } catch (error) {
+        thrownError = error as Error;
+      }
+
+      expect(thrownError).toBeInstanceOf(Error);
+      expect(thrownError?.message).toContain(
+        'Unauthorized action: jest-mock-action',
+      );
+      expect(thrownError?.message).not.toContain('sensitive-token-value');
+      expect(
+        fakeTaskLog.mock.calls.map(([message]) => message).join('\n'),
+      ).not.toContain('sensitive-token-value');
+      expect(fakeActionHandler).not.toHaveBeenCalled();
+    });
+
+    it('does not expose environment secrets when action authorization is denied', async () => {
+      mockedPermissionApi.authorizeConditional.mockResolvedValueOnce([
+        { result: AuthorizeResult.DENY },
+      ]);
+
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'jest-mock-action',
+            input: {
+              token: '${{ environment.secrets.AWS_ACCESS_KEY }}',
+            },
+          },
+        ],
+      });
+
+      let thrownError: Error | undefined;
+      try {
+        await runner.execute(task);
+      } catch (error) {
+        thrownError = error as Error;
+      }
+
+      expect(thrownError).toBeInstanceOf(Error);
+      expect(thrownError?.message).toContain(
+        'Unauthorized action: jest-mock-action',
+      );
+      expect(thrownError?.message).not.toContain('test-secret-value');
+      expect(JSON.stringify(fakeTaskLog.mock.calls)).not.toContain(
+        'test-secret-value',
+      );
+      expect(fakeActionHandler).not.toHaveBeenCalled();
+    });
+
+    it('does not expose secret-derived each keys when action authorization is denied', async () => {
+      mockedPermissionApi.authorizeConditional.mockResolvedValueOnce([
+        { result: AuthorizeResult.DENY },
+      ]);
+
+      const worker = await TaskWorker.create({
+        taskBroker: {} as TaskBroker,
+        actionRegistry,
+        integrations,
+        workingDirectory: mockDir.path,
+        logger,
+        permissions: mockedPermissionApi,
+        metrics: metricsServiceMock.mock(),
+        additionalTemplateFilters: {
+          keyedObject(input) {
+            return typeof input === 'string' ? { [input]: 'value' } : {};
+          },
+        },
+      });
+      const complete = jest.fn().mockResolvedValue(undefined);
+      const task = {
+        ...createMockTaskWithSpec(
+          {
+            steps: [
+              {
+                id: 'test',
+                name: 'name',
+                action: 'jest-mock-action',
+                each: '${{ secrets.iterationKey | keyedObject }}',
+              },
+            ],
+          },
+          { iterationKey: 'sensitive-iteration-key' },
+        ),
+        complete,
+      };
+
+      await worker.runOneTask(task);
+
+      expect(JSON.stringify(fakeTaskLog.mock.calls)).not.toContain(
+        'sensitive-iteration-key',
+      );
+      expect(JSON.stringify(complete.mock.calls)).not.toContain(
+        'sensitive-iteration-key',
+      );
+      expect(fakeTaskLog).toHaveBeenCalledWith(
+        expect.stringContaining('Unauthorized action: jest-mock-action'),
+        { stepId: 'test', status: 'failed' },
+      );
+      expect(complete).toHaveBeenCalledWith('failed', {
+        error: {
+          name: 'NotAllowedError',
+          message:
+            'Unauthorized action: jest-mock-action. The action is not allowed.',
+        },
+      });
+      expect(fakeActionHandler).not.toHaveBeenCalled();
+    });
+
+    it('passes rendered secrets to authorized action inputs', async () => {
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'jest-mock-action',
+              input: {
+                token: '${{ secrets.token }}',
+              },
+            },
+          ],
+        },
+        { token: 'sensitive-token-value' },
+      );
+
+      await runner.execute(task);
+
+      expect(fakeActionHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          input: { token: 'sensitive-token-value' },
+        }),
+      );
+    });
+
     it(`shouldn't execute actions who aren't authorized`, async () => {
       mockedPermissionApi.authorizeConditional.mockResolvedValueOnce([
         {
@@ -2964,11 +3126,7 @@ describe('NunjucksWorkflowRunner', () => {
       });
 
       await expect(runner.execute(task)).rejects.toThrow(
-        `Unauthorized action: jest-validated-action. The action is not allowed. Input: ${JSON.stringify(
-          { foo: 2 },
-          null,
-          2,
-        )}`,
+        'Unauthorized action: jest-validated-action. The action is not allowed.',
       );
       expect(fakeActionHandler).toHaveBeenCalled();
       expect(mockedPermissionApi.authorizeConditional).toHaveBeenCalledTimes(1);
