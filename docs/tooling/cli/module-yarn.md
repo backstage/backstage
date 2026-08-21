@@ -13,7 +13,7 @@ the Backstage release selected in `backstage.json`.
 
 Run this command from the root of a Yarn repository:
 
-```sh
+```shell
 yarn backstage-cli repo verify-yarn-patches
 ```
 

@@ -1,5 +1,5 @@
 ---
-'@backstage/cli-module-yarn': minor
+'@backstage/cli-module-yarn': patch
 '@backstage/cli-defaults': patch
 ---
 

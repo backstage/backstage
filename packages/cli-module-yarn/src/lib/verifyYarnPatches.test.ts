@@ -488,6 +488,32 @@ plugins:
     );
   });
 
+  it('ignores patch declarations with an empty selector', async () => {
+    mockDir.setContent({
+      'package.json': packageJson({
+        name: 'root',
+        resolutions: {
+          package: 'patch:package@npm%3A1.0.0#',
+        },
+      }),
+      'yarn.lock': `${LOCKFILE_HEADER}
+"package@patch:package@npm%3A1.0.0#":
+  version: 1.0.0
+  resolution: "package@patch:package@npm%3A1.0.0#::version=1.0.0&hash=aaaaaa"
+  languageName: node
+  linkType: hard
+`,
+    });
+
+    await expect(verifyYarnPatches({ rootDir: mockDir.path })).resolves.toEqual(
+      {
+        patchCount: 0,
+        backstageCheck: 'skipped',
+        errors: [],
+      },
+    );
+  });
+
   it('ignores Yarn built-in patches', async () => {
     mockDir.setContent({
       'package.json': packageJson({ name: 'root' }),
@@ -611,6 +637,40 @@ plugins:
         ],
       },
     );
+  });
+
+  it('reports referenced patch paths that are directories', async () => {
+    mockDir.setContent({
+      'package.json': packageJson({
+        name: 'root',
+        resolutions: {
+          package: 'patch:package@npm%3A1.0.0#~/.yarn/patches/directory.patch',
+        },
+      }),
+      '.yarn': {
+        patches: {
+          'directory.patch': { 'placeholder.txt': 'not a patch file' },
+        },
+      },
+      'yarn.lock': `${LOCKFILE_HEADER}
+"package@patch:package@npm%3A1.0.0#~/.yarn/patches/directory.patch":
+  version: 1.0.0
+  resolution: "package@patch:package@npm%3A1.0.0#~/.yarn/patches/directory.patch::version=1.0.0&hash=aaaaaa"
+  languageName: node
+  linkType: hard
+`,
+    });
+
+    const result = await verifyYarnPatches({ rootDir: mockDir.path });
+
+    expect(result.errors).toEqual([
+      {
+        kind: 'missing-patch-file',
+        message:
+          "Patch path '.yarn/patches/directory.patch' is not a regular file",
+        location: '.yarn/patches/directory.patch',
+      },
+    ]);
   });
 
   it('converts portable absolute patch paths before filesystem access', async () => {
@@ -764,6 +824,37 @@ plugins:
 "package@patch:package@npm%3A^1.0.0#~/.yarn/patches/package.patch":
   version: 2.0.0
   resolution: "package@patch:package@npm%3A2.0.0#~/.yarn/patches/package.patch::version=2.0.0&hash=aaaaaa"
+  languageName: node
+  linkType: hard
+`,
+    });
+
+    const result = await verifyYarnPatches({ rootDir: mockDir.path });
+
+    expect(result.errors).toEqual([
+      {
+        kind: 'lockfile-mismatch',
+        message: expect.stringContaining(
+          'disagrees with its resolution locator',
+        ),
+        location: 'yarn.lock',
+      },
+    ]);
+  });
+
+  it('reports non-semver patch sources that resolve to a different source', async () => {
+    mockDir.setContent({
+      'package.json': packageJson({
+        name: 'root',
+        resolutions: {
+          package: 'patch:package@file%3A.%2Fa#~/.yarn/patches/package.patch',
+        },
+      }),
+      '.yarn': { patches: { 'package.patch': 'patch' } },
+      'yarn.lock': `${LOCKFILE_HEADER}
+"package@patch:package@file%3A.%2Fa#~/.yarn/patches/package.patch":
+  version: 0.0.0
+  resolution: "package@patch:package@file%3A.%2Fb#~/.yarn/patches/package.patch::version=0.0.0&hash=aaaaaa"
   languageName: node
   linkType: hard
 `,

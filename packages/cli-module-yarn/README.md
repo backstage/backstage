@@ -7,7 +7,7 @@ references and patched Backstage package versions.
 
 Run the command from a Yarn repository root:
 
-```sh
+```shell
 yarn backstage-cli repo verify-yarn-patches
 ```
 

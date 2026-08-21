@@ -221,7 +221,9 @@ function parsePatchDeclaration(options: {
   );
   const paths: LocalPatchPath[] = [];
   let hasDependencyOwnedPath = false;
-  const components = parsedRange.selector.split('&').map(patchPath => {
+  const patchPaths =
+    parsedRange.selector === '' ? [] : parsedRange.selector.split('&');
+  const components = patchPaths.map(patchPath => {
     const flagIndex = patchPath.lastIndexOf('!');
     const flags = flagIndex === -1 ? '' : patchPath.slice(0, flagIndex + 1);
     const pathWithoutFlags = getPatchPathWithoutFlags(patchPath);
@@ -366,6 +368,50 @@ function getNpmResolutionRange(
   return undefined;
 }
 
+function nonNpmSourceAgrees(
+  descriptorRange: ReturnType<typeof structUtils.parseRange>,
+  locatorRange: ReturnType<typeof structUtils.parseRange>,
+): boolean {
+  if (descriptorRange.protocol !== locatorRange.protocol) {
+    return false;
+  }
+
+  if (descriptorRange.protocol === 'workspace:') {
+    const selector = descriptorRange.selector;
+    if (
+      selector === '*' ||
+      selector === '^' ||
+      selector === '~' ||
+      semverUtils.validRange(selector) !== null
+    ) {
+      return true;
+    }
+  }
+
+  const descriptorIdentity = descriptorRange.source ?? descriptorRange.selector;
+  const locatorIdentity = locatorRange.source ?? locatorRange.selector;
+  if (descriptorIdentity !== locatorIdentity) {
+    return false;
+  }
+
+  const descriptorParent = descriptorRange.params?.locator;
+  if (
+    typeof descriptorParent === 'string' &&
+    descriptorParent !== locatorRange.params?.locator
+  ) {
+    return false;
+  }
+
+  if (
+    descriptorRange.source !== null &&
+    descriptorRange.selector.startsWith('commit=')
+  ) {
+    return descriptorRange.selector === locatorRange.selector;
+  }
+
+  return true;
+}
+
 function patchDescriptorAgreesWithLocator(options: {
   descriptor: ReturnType<typeof structUtils.parseDescriptor>;
   descriptorDeclaration: PatchDeclaration | undefined;
@@ -407,7 +453,7 @@ function patchDescriptorAgreesWithLocator(options: {
     ) {
       return false;
     }
-  } else if (descriptorSourceRange.protocol !== locatorSourceRange.protocol) {
+  } else if (!nonNpmSourceAgrees(descriptorSourceRange, locatorSourceRange)) {
     return false;
   }
 
@@ -856,7 +902,14 @@ export async function verifyYarnPatches(
 
   for (const [absolute, patchPath] of referencedPatchFiles) {
     try {
-      await fs.access(absolute);
+      const stats = await fs.stat(absolute);
+      if (!stats.isFile()) {
+        errors.push({
+          kind: 'missing-patch-file',
+          message: `Patch path '${patchPath.relative}' is not a regular file`,
+          location: patchPath.relative,
+        });
+      }
     } catch (error) {
       if (!isErrorWithCode(error, 'ENOENT')) {
         throw error;
