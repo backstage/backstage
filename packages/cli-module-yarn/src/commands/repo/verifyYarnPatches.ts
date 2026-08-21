@@ -37,7 +37,6 @@ export default async ({ args, info }: CliCommandContext) => {
   const result = await verifyYarnPatches({
     rootDir: targetPaths.dir,
     env: process.env,
-    fetch: globalThis.fetch,
   });
 
   if (result.errors.length > 0) {

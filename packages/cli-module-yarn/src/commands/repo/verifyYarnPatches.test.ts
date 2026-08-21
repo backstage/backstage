@@ -113,7 +113,6 @@ describe('verifyYarnPatches command', () => {
     expect(mockVerifyYarnPatches).toHaveBeenCalledWith({
       rootDir: '/test-repository',
       env: process.env,
-      fetch: globalThis.fetch,
     });
   });
 

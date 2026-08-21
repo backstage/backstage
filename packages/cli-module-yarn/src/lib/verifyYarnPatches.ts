@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-import { getPackages } from '@manypkg/get-packages';
 import {
   getManifestByVersion,
   type ReleaseManifest,
 } from '@backstage/release-manifests';
-import { Configuration, semverUtils, structUtils } from '@yarnpkg/core';
-import type { PluginConfiguration } from '@yarnpkg/core';
+import {
+  Configuration,
+  httpUtils,
+  semverUtils,
+  structUtils,
+} from '@yarnpkg/core';
+import { Project, TAG_REGEXP, Workspace } from '@yarnpkg/core';
+import type { Descriptor, PluginConfiguration } from '@yarnpkg/core';
 import { npath, ppath } from '@yarnpkg/fslib';
 import { parseSyml } from '@yarnpkg/parsers';
 import patchPlugin from '@yarnpkg/plugin-patch';
@@ -380,6 +385,49 @@ function getNpmResolutionRange(
   return undefined;
 }
 
+function normalizeNpmAliasSource(descriptor: Descriptor): Descriptor {
+  const range = structUtils.parseRange(descriptor.range);
+  if (range.protocol !== 'npm:') {
+    return descriptor;
+  }
+
+  const aliasTarget = structUtils.tryParseDescriptor(range.selector, true);
+  if (!aliasTarget) {
+    return descriptor;
+  }
+
+  const aliasTargetRange = structUtils.parseRange(aliasTarget.range);
+  return aliasTargetRange.protocol === null
+    ? structUtils.makeDescriptor(aliasTarget, `npm:${aliasTarget.range}`)
+    : aliasTarget;
+}
+
+function npmSourceAgrees(
+  descriptorRange: ReturnType<typeof structUtils.parseRange>,
+  locatorRange: ReturnType<typeof structUtils.parseRange>,
+): boolean | undefined {
+  if (locatorRange.protocol !== 'npm:') {
+    return undefined;
+  }
+
+  const resolvedVersion = semverUtils.clean(locatorRange.selector);
+  if (resolvedVersion === null) {
+    return false;
+  }
+
+  const resolutionRange = getNpmResolutionRange(descriptorRange);
+  if (resolutionRange !== undefined) {
+    return semverUtils.satisfiesWithPrereleases(
+      resolvedVersion,
+      resolutionRange,
+    );
+  }
+
+  return descriptorRange.protocol === 'npm:'
+    ? TAG_REGEXP.test(descriptorRange.selector)
+    : undefined;
+}
+
 function nonNpmSourceAgrees(
   descriptorRange: ReturnType<typeof structUtils.parseRange>,
   locatorRange: ReturnType<typeof structUtils.parseRange>,
@@ -442,9 +490,8 @@ function patchDescriptorAgreesWithLocator(options: {
     requireProtocol: 'patch:',
     requireSource: true,
   });
-  const sourceDescriptor = structUtils.parseDescriptor(
-    descriptorRange.source,
-    true,
+  const sourceDescriptor = normalizeNpmAliasSource(
+    structUtils.parseDescriptor(descriptorRange.source, true),
   );
   const sourceLocator = structUtils.parseLocator(locatorRange.source, true);
   if (!structUtils.areIdentsEqual(sourceDescriptor, sourceLocator)) {
@@ -453,19 +500,15 @@ function patchDescriptorAgreesWithLocator(options: {
 
   const descriptorSourceRange = structUtils.parseRange(sourceDescriptor.range);
   const locatorSourceRange = structUtils.parseRange(sourceLocator.reference);
-  const npmResolutionRange = getNpmResolutionRange(descriptorSourceRange);
+  const npmAgreement = npmSourceAgrees(
+    descriptorSourceRange,
+    locatorSourceRange,
+  );
   if (
-    locatorSourceRange.protocol === 'npm:' &&
-    npmResolutionRange !== undefined
+    npmAgreement === false ||
+    (npmAgreement === undefined &&
+      !nonNpmSourceAgrees(descriptorSourceRange, locatorSourceRange))
   ) {
-    const resolvedVersion = semverUtils.clean(locatorSourceRange.selector);
-    if (
-      resolvedVersion === null ||
-      !semverUtils.satisfiesWithPrereleases(resolvedVersion, npmResolutionRange)
-    ) {
-      return false;
-    }
-  } else if (!nonNpmSourceAgrees(descriptorSourceRange, locatorSourceRange)) {
     return false;
   }
 
@@ -481,32 +524,34 @@ function patchDescriptorAgreesWithLocator(options: {
 
 async function discoverManifestDeclarations(
   rootDir: string,
+  configuration: Configuration,
   errors: PatchVerificationError[],
 ): Promise<PatchDeclaration[]> {
-  const { root, packages } = await getPackages(rootDir);
-  const manifests = [
-    root,
-    ...packages.filter(packageEntry => packageEntry.dir !== root.dir),
-  ];
+  const project = new Project(npath.toPortablePath(rootDir), { configuration });
+  const pendingWorkspaces = [npath.toPortablePath(rootDir)];
+  const visitedWorkspaces = new Set<string>();
   const declarations: PatchDeclaration[] = [];
 
-  for (const manifest of manifests) {
+  while (pendingWorkspaces.length > 0) {
+    const workspaceCwd = pendingWorkspaces.shift();
+    if (workspaceCwd === undefined || visitedWorkspaces.has(workspaceCwd)) {
+      continue;
+    }
+    visitedWorkspaces.add(workspaceCwd);
+
+    const workspace = new Workspace(workspaceCwd, { project });
+    await workspace.setup();
+    pendingWorkspaces.push(...workspace.workspacesCwds);
+
+    const manifestDir = npath.fromPortablePath(workspace.cwd);
     const manifestPath = relativePath(
       rootDir,
-      path.join(manifest.dir, 'package.json'),
+      path.join(manifestDir, 'package.json'),
     );
-    const manifestJson: Record<string, unknown> = manifest.packageJson;
-    const manifestName = manifestJson.name;
-    const workspacePath = relativePath(rootDir, manifest.dir) || '.';
-    const parentLocator =
-      typeof manifestName === 'string'
-        ? structUtils.stringifyLocator(
-            structUtils.parseLocator(
-              `${manifestName}@workspace:${workspacePath}`,
-              true,
-            ),
-          )
-        : undefined;
+    const manifestJson: Record<string, unknown> = workspace.manifest.raw;
+    const parentLocator = structUtils.stringifyLocator(
+      workspace.anchoredLocator,
+    );
 
     for (const field of MANIFEST_FIELDS) {
       const entries = manifestJson[field];
@@ -523,7 +568,7 @@ async function discoverManifestDeclarations(
         try {
           const declaration = parsePatchDeclaration({
             rootDir,
-            parentDir: manifest.dir,
+            parentDir: manifestDir,
             parentLocator,
             range,
             location,
@@ -679,14 +724,14 @@ function discoverLockfileDeclarations(
   return declarations;
 }
 
-async function readPatchFolder(
+async function readYarnConfiguration(
   rootDir: string,
   env: NodeJS.ProcessEnv | undefined,
-): Promise<string> {
+): Promise<Configuration> {
   return withConfigurationEnvironment(env, async () => {
     // Yarn still applies inherited rc files when useRc is false; this only
     // prevents project rc files from loading arbitrary third-party plugins.
-    const configuration = await Configuration.find(
+    return Configuration.find(
       npath.toPortablePath(rootDir),
       PATCH_PLUGIN_CONFIGURATION,
       {
@@ -694,7 +739,6 @@ async function readPatchFolder(
         useRc: false,
       },
     );
-    return npath.fromPortablePath(configuration.get('patchFolder'));
   });
 }
 
@@ -715,7 +759,10 @@ async function findPatchFiles(directory: string): Promise<string[]> {
       if (entry.isDirectory()) {
         return findPatchFiles(entryPath);
       }
-      return entry.isFile() && entry.name.endsWith('.patch') ? [entryPath] : [];
+      return (entry.isFile() || entry.isSymbolicLink()) &&
+        entry.name.endsWith('.patch')
+        ? [entryPath]
+        : [];
     }),
   );
   return files.flat().sort();
@@ -802,16 +849,30 @@ async function readBackstageVersion(
 
 async function loadReleaseManifest(options: {
   backstageVersion: string;
+  configuration: Configuration;
   env: NodeJS.ProcessEnv | undefined;
   fetch: typeof globalThis.fetch | undefined;
 }): Promise<ReleaseManifest> {
   const manifestFile = options.env?.BACKSTAGE_MANIFEST_FILE;
+  const fetch =
+    options.fetch ??
+    (async (url: string) => {
+      const manifest = await httpUtils.get(url, {
+        configuration: options.configuration,
+        jsonResponse: true,
+      });
+      return {
+        status: 200,
+        url,
+        json: async () => manifest,
+      };
+    });
   const manifest: unknown = manifestFile
     ? JSON.parse(await fs.readFile(manifestFile, 'utf8'))
     : await getManifestByVersion({
         version: options.backstageVersion,
         versionsBaseUrl: options.env?.BACKSTAGE_VERSIONS_BASE_URL,
-        fetch: options.fetch,
+        fetch,
       });
   if (!isReleaseManifest(manifest)) {
     throw new Error('Backstage release manifest has an invalid format');
@@ -827,6 +888,7 @@ async function loadReleaseManifest(options: {
 async function validateBackstagePatches(options: {
   rootDir: string;
   declarations: Iterable<PatchDeclaration>;
+  configuration: Configuration;
   env: NodeJS.ProcessEnv | undefined;
   fetch: typeof globalThis.fetch | undefined;
 }): Promise<{
@@ -861,6 +923,7 @@ async function validateBackstagePatches(options: {
   try {
     releaseManifest = await loadReleaseManifest({
       backstageVersion,
+      configuration: options.configuration,
       env: options.env,
       fetch: options.fetch,
     });
@@ -911,8 +974,10 @@ export async function verifyYarnPatches(
 ): Promise<VerifyYarnPatchesResult> {
   const rootDir = path.resolve(options.rootDir);
   const errors: PatchVerificationError[] = [];
+  const configuration = await readYarnConfiguration(rootDir, options.env);
   const manifestDeclarations = await discoverManifestDeclarations(
     rootDir,
+    configuration,
     errors,
   );
   const uniqueManifestDeclarations = uniqueDeclarations(manifestDeclarations);
@@ -946,7 +1011,7 @@ export async function verifyYarnPatches(
     }
   }
 
-  const patchFolder = await readPatchFolder(rootDir, options.env);
+  const patchFolder = npath.fromPortablePath(configuration.get('patchFolder'));
   const patchFiles = await findPatchFiles(patchFolder);
   for (const patchFile of patchFiles) {
     if (!referencedPatchFiles.has(patchFile)) {
@@ -1048,6 +1113,7 @@ export async function verifyYarnPatches(
   const backstageValidation = await validateBackstagePatches({
     rootDir,
     declarations: uniqueManifestDeclarations.values(),
+    configuration,
     env: options.env,
     fetch: options.fetch,
   });
