@@ -2228,6 +2228,7 @@ __metadata:
     "@backstage/cli-module-new": "workspace:^"
     "@backstage/cli-module-test-jest": "workspace:^"
     "@backstage/cli-module-translations": "workspace:^"
+    "@backstage/cli-module-yarn": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -2560,6 +2561,19 @@ __metadata:
     ts-morph: "npm:^24.0.0"
   bin:
     cli-module-translations: bin/backstage-cli-module-translations
+  languageName: unknown
+  linkType: soft
+
+"@backstage/cli-module-yarn@workspace:^, @backstage/cli-module-yarn@workspace:packages/cli-module-yarn":
+  version: 0.0.0-use.local
+  resolution: "@backstage/cli-module-yarn@workspace:packages/cli-module-yarn"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/cli-common": "workspace:^"
+    "@backstage/cli-node": "workspace:^"
+    cleye: "npm:^2.6.0"
+  bin:
+    cli-module-yarn: bin/backstage-cli-module-yarn
   languageName: unknown
   linkType: soft
 

@@ -41,7 +41,8 @@
     "@backstage/cli-module-migrate": "workspace:^",
     "@backstage/cli-module-new": "workspace:^",
     "@backstage/cli-module-test-jest": "workspace:^",
-    "@backstage/cli-module-translations": "workspace:^"
+    "@backstage/cli-module-translations": "workspace:^",
+    "@backstage/cli-module-yarn": "workspace:^"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
