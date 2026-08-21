@@ -44,13 +44,6 @@ import { CatalogService } from '@backstage/plugin-catalog-node';
 import { durationToMilliseconds } from '@backstage/types';
 import path from 'node:path';
 
-const isPathWithinEntity = (requestPath: string): boolean => {
-  const relativePath = path.posix.normalize(
-    decodeURI(requestPath).replace(/^\/+/, ''),
-  );
-  return relativePath !== '..' && !relativePath.startsWith('../');
-};
-
 /**
  * Required dependencies for running TechDocs in the "out-of-the-box"
  * deployment configuration (prepare/generate/publish all in the Backend).
@@ -299,12 +292,22 @@ export async function createRouter(
     router.use(
       '/static/docs/:namespace/:kind/:name',
       async (req, _res, next) => {
-        if (!isPathWithinEntity(req.path)) {
-          throw new NotFoundError('Invalid TechDocs content path');
-        }
-
         const { kind, namespace, name } = req.params;
         const entityName = { kind, namespace, name };
+
+        const entityRoot = '/entity';
+        const decodedPath = decodeURI(req.path);
+        const contentPath = path.posix.resolve(entityRoot, `.${decodedPath}`);
+        const relativePath = path.posix.relative(entityRoot, contentPath);
+        if (
+          decodedPath.includes('\\') ||
+          relativePath === '..' ||
+          relativePath.startsWith('../')
+        ) {
+          throw new NotFoundError(
+            `Content not found for ${stringifyEntityRef(entityName)}`,
+          );
+        }
 
         const credentials = await httpAuth.credentials(req, {
           allowLimitedAccess: true,
