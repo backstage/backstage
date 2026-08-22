@@ -378,13 +378,23 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           preIterationContext.secrets as NunjitsuTemplateValue,
         );
 
-      const resolvedEach =
-        step.each &&
-        this.render(step.each, preparedPreIterationContext, templateRenderer);
+      const hasEach = step.each !== undefined;
+      const resolvedEach = hasEach
+        ? this.render(step.each, preparedPreIterationContext, templateRenderer)
+        : undefined;
 
-      if (step.each && !resolvedEach) {
+      if (hasEach && resolvedEach === undefined) {
         throw new InputError(
           `Invalid value on action ${action.id}.each parameter, "${step.each}" cannot be resolved to a value`,
+        );
+      }
+
+      if (
+        hasEach &&
+        (resolvedEach === null || typeof resolvedEach !== 'object')
+      ) {
+        throw new InputError(
+          `Invalid value on action ${action.id}.each parameter, must resolve to an array or object`,
         );
       }
 
