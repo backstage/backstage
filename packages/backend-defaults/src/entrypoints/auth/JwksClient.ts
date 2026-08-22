@@ -24,6 +24,7 @@ import {
 
 const FORCED_RELOAD_LIMIT = 10;
 const FORCED_RELOAD_WINDOW_MS = 60_000;
+const KEY_STORE_CACHE_LIMIT = 100;
 
 type RemoteJWKSet = ReturnType<typeof createRemoteJWKSet>;
 
@@ -90,9 +91,15 @@ export class JwksClient {
   async #getKeyStore(): Promise<JwksKeyStore> {
     const endpoint = await this.getEndpoint();
     let keyStore = this.#keyStores.get(endpoint.href);
-    if (!keyStore) {
+    if (keyStore) {
+      // Reinsert entries to keep the least recently used endpoint first.
+      this.#keyStores.delete(endpoint.href);
+    } else {
       keyStore = new JwksKeyStore(endpoint, () => this.#tryUseForcedReload());
-      this.#keyStores.set(endpoint.href, keyStore);
+    }
+    this.#keyStores.set(endpoint.href, keyStore);
+    if (this.#keyStores.size > KEY_STORE_CACHE_LIMIT) {
+      this.#keyStores.delete(this.#keyStores.keys().next().value!);
     }
     return keyStore;
   }

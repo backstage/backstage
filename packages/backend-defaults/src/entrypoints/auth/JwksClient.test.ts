@@ -155,6 +155,45 @@ describe('JwksClient', () => {
     expect(requestCount).toBe(2);
   });
 
+  it('evicts the least recently used resolver after 100 endpoints', async () => {
+    let endpoint = 0;
+    const requestCounts = new Map<string, number>();
+    const client = new JwksClient(
+      async () => new URL(`http://localhost:7007/${endpoint}/jwks.json`),
+    );
+    server.use(
+      http.get('http://localhost:7007/:endpoint/jwks.json', ({ params }) => {
+        const endpointName = String(params.endpoint);
+        requestCounts.set(
+          endpointName,
+          (requestCounts.get(endpointName) ?? 0) + 1,
+        );
+        return HttpResponse.json({ keys: [firstKey.publicKey] });
+      }),
+    );
+    const token = await createToken(firstKey);
+
+    for (endpoint = 0; endpoint < 100; endpoint += 1) {
+      await jwtVerify(token, client.getKey);
+    }
+
+    endpoint = 0;
+    await jwtVerify(token, client.getKey);
+    expect(requestCounts.get('0')).toBe(1);
+
+    endpoint = 100;
+    await jwtVerify(token, client.getKey);
+    expect(requestCounts.get('100')).toBe(1);
+
+    endpoint = 1;
+    await jwtVerify(token, client.getKey);
+    expect(requestCounts.get('1')).toBe(2);
+
+    endpoint = 0;
+    await jwtVerify(token, client.getKey);
+    expect(requestCounts.get('0')).toBe(1);
+  });
+
   it('bounds failed forced reloads in a sliding window', async () => {
     let now = Date.now();
     jest.spyOn(Date, 'now').mockImplementation(() => now);
