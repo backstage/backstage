@@ -34,6 +34,23 @@ describe('Nunjitsu', () => {
     );
   });
 
+  it('supports intrinsic methods', () => {
+    const { render } = createTemplateRenderer();
+    const context = {
+      text: 'backstage',
+      number: 12.345,
+      array: ['catalog', 'scaffolder'],
+      map: new Map([['plugin', 'scaffolder']]),
+      set: new Set(['catalog', 'scaffolder']),
+    };
+
+    expect(render('${{ text.toUpperCase() }}', context)).toBe('BACKSTAGE');
+    expect(render('${{ number.toFixed(2) }}', context)).toBe('12.35');
+    expect(render('${{ array.includes("scaffolder") }}', context)).toBe('true');
+    expect(render('${{ map.get("plugin") }}', context)).toBe('scaffolder');
+    expect(render('${{ set.has("catalog") }}', context)).toBe('true');
+  });
+
   it('preserves native values for sole interpolations', () => {
     const renderer = createTemplateRenderer();
     const context = renderer.prepareContext({
