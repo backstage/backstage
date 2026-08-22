@@ -1,1 +1,0 @@
-Fixed the unintended removal of support for intrinsic string, number, array, `Map`, and `Set` methods in software templates.
