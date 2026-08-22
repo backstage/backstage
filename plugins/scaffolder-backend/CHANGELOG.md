@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend
 
+## 4.0.4
+
+### Patch Changes
+
+- 913634d: Restored support for intrinsic string, number, array, `Map`, and `Set` methods in software templates.
+
 ## 4.0.3
 
 ### Patch Changes
