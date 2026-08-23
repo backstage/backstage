@@ -121,4 +121,22 @@ describe('BUI FieldTemplate', () => {
     );
     expect(errorMessages.length).toBeGreaterThanOrEqual(1);
   });
+
+  it('should render a description defined on the root schema', () => {
+    const { getByText } = render(
+      <Form
+        EXPERIMENTAL_theme="bui"
+        validator={validator}
+        schema={{
+          type: 'object',
+          description: 'Step level description',
+          properties: {
+            name: { type: 'string', title: 'Full Name' },
+          },
+        }}
+      />,
+    );
+
+    expect(getByText('Step level description')).toBeInTheDocument();
+  });
 });
