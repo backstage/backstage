@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useEffect, useRef } from 'react';
 import { useDefinition } from '../../../hooks/useDefinition';
 import { TableDefinition } from '../definition';
 import { Table as ReactAriaTable } from 'react-aria-components';
@@ -39,11 +40,19 @@ export const TableRoot = (props: TableRootProps) => {
     },
   );
 
+  // react-aria-components filters unknown ARIA props off the table element,
+  // so `aria-busy` has to be applied to the rendered element directly.
+  const tableRef = useRef<HTMLTableElement>(null);
+  const isBusy = Boolean(ownProps.stale || ownProps.isPending);
+  useEffect(() => {
+    tableRef.current?.setAttribute('aria-busy', String(isBusy));
+  }, [isBusy]);
+
   return (
     <ReactAriaTable
+      ref={tableRef}
       className={ownProps.classes.root}
       aria-label="Data table"
-      aria-busy={ownProps.stale || ownProps.isPending}
       {...dataAttributes}
       {...restProps}
     />

@@ -28,15 +28,24 @@ export function useDebouncedReload<TFilter>(
   reload: () => void,
   delay: number = 200,
 ): void {
-  const prevDepsRef = useRef({ query, pageSize });
+  // Compare the query values rather than object identities, so that inline
+  // callback props with fresh identities on every render don't trigger
+  // spurious reloads.
+  const { sort, filter, search } = query;
+  const prevDepsRef = useRef({ sort, filter, search, pageSize });
 
   useEffect(() => {
     const prev = prevDepsRef.current;
-    if (prev.query !== query || prev.pageSize !== pageSize) {
-      prevDepsRef.current = { query, pageSize };
+    if (
+      prev.sort !== sort ||
+      prev.filter !== filter ||
+      prev.search !== search ||
+      prev.pageSize !== pageSize
+    ) {
+      prevDepsRef.current = { sort, filter, search, pageSize };
       const timer = setTimeout(reload, delay);
       return () => clearTimeout(timer);
     }
     return undefined;
-  }, [query, pageSize, reload, delay]);
+  }, [sort, filter, search, pageSize, reload, delay]);
 }
