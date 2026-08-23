@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { toError } from '@backstage/errors';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
@@ -100,6 +100,22 @@ export interface StepPrepareCreatePullRequestProps {
   ) => ReactNode;
 }
 
+/**
+ * Resolves the owner value entered/selected in the form back to an entity
+ * ref, when it matches one of the known groups. Falls back to the raw
+ * value for free-form entries that don't match a known group (the
+ * autocomplete field allows arbitrary text).
+ */
+function resolveOwnerEntityRef(
+  owner: string | undefined,
+  groupRefsByTitle: Map<string, string>,
+): string | undefined {
+  if (!owner) {
+    return owner;
+  }
+  return groupRefsByTitle.get(owner) ?? owner;
+}
+
 export function generateEntities(
   entities: PartialEntity[],
   componentName: string,
@@ -157,23 +173,43 @@ export const StepPrepareCreatePullRequest = (
     }
   }, [prDefaultsError, errorApi]);
 
+  // Maps the human-readable group title shown in the owner autocomplete
+  // back to the entity ref that must actually be written to the
+  // catalog-info.yaml `spec.owner` field. Titles (e.g. "My Team") are not
+  // valid entity refs (e.g. "group:default/my-team"), so this mapping is
+  // required whenever the presentation title differs from the ref.
+  const [groupRefsByTitle, setGroupRefsByTitle] = useState<Map<string, string>>(
+    new Map(),
+  );
+
   const { loading: groupsLoading, value: groups } = useAsync(async () => {
     const groupEntities = await catalogApi.getEntities({
       filter: { kind: 'group' },
     });
 
     const presentations = await Promise.all(
-      groupEntities.items.map(
-        e =>
-          entityPresentationApi.forEntity(e, { defaultKind: 'group' }).promise,
+      groupEntities.items.map(async e => ({
+        entityRef: stringifyEntityRef(e),
+        presentation: await entityPresentationApi.forEntity(e, {
+          defaultKind: 'group',
+        }).promise,
+      })),
+    );
+
+    setGroupRefsByTitle(
+      new Map(
+        presentations.map(p => [p.presentation.primaryTitle, p.entityRef]),
       ),
     );
-    return presentations.map(p => p.primaryTitle).sort();
+
+    return presentations.map(p => p.presentation.primaryTitle).sort();
   });
 
   const handleResult = useCallback(
     async (data: FormData) => {
       setSubmitted(true);
+
+      const owner = resolveOwnerEntityRef(data.owner, groupRefsByTitle);
 
       try {
         const pr = await catalogImportApi.submitPullRequest({
@@ -183,7 +219,7 @@ export const StepPrepareCreatePullRequest = (
           fileContent: generateEntities(
             analyzeResult.generatedEntities,
             data.componentName,
-            data.owner,
+            owner,
           )
             .map(e => YAML.stringify(e))
             .join('---\n'),
@@ -203,7 +239,7 @@ export const StepPrepareCreatePullRequest = (
                 entities: generateEntities(
                   analyzeResult.generatedEntities,
                   data.componentName,
-                  data.owner,
+                  owner,
                 ).map(e => ({
                   kind: e.kind,
                   namespace: e.metadata.namespace!,
@@ -225,6 +261,7 @@ export const StepPrepareCreatePullRequest = (
       analyzeResult.url,
       catalogImportApi,
       onPrepare,
+      groupRefsByTitle,
     ],
   );
 
@@ -285,7 +322,7 @@ export const StepPrepareCreatePullRequest = (
                 entities={generateEntities(
                   analyzeResult.generatedEntities,
                   values.componentName,
-                  values.owner,
+                  resolveOwnerEntityRef(values.owner, groupRefsByTitle),
                 )}
                 repositoryUrl={analyzeResult.url}
                 classes={{
