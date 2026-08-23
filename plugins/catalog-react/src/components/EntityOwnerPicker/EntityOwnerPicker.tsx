@@ -154,9 +154,15 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
     [ownersParameter],
   );
 
-  const [selectedOwners, setSelectedOwners] = useState<string[]>(
-    queryParamOwners.length ? queryParamOwners : filters.owners?.values ?? [],
-  );
+  const [selectedOwners, setSelectedOwners] = useState<string[]>(() => {
+    // Normalize raw query-parameter values (which may lack a kind, e.g.
+    // ?filters[owners]=team-a) through the filter so they become full
+    // entity refs before anything renders or parses them.
+    if (queryParamOwners.length) {
+      return new EntityOwnerFilter(queryParamOwners).values;
+    }
+    return filters.owners?.values ?? [];
+  });
 
   const [{ value, loading }, handleFetch, cache] = useFetchEntities({
     mode,

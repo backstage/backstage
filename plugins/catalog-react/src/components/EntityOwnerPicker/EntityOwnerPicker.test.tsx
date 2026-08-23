@@ -207,7 +207,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
     );
 
     expect(mockCatalogApi.getEntitiesByRefs).toHaveBeenCalledWith({
-      entityRefs: ['another-owner'],
+      entityRefs: ['group:default/another-owner'],
     });
     expect(updateFilters).toHaveBeenLastCalledWith({
       owners: new EntityOwnerFilter(['group:default/another-owner']),
@@ -253,7 +253,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
     );
 
     expect(mockCatalogApi.getEntitiesByRefs).toHaveBeenCalledWith({
-      entityRefs: ['another-owner'],
+      entityRefs: ['group:default/another-owner'],
     });
 
     fireEvent.click(screen.getByTestId('owner-picker-expand'));
@@ -345,7 +345,7 @@ describe('<EntityOwnerPicker mode="all" />', () => {
       </ApiProvider>,
     );
     expect(mockCatalogApi.getEntitiesByRefs).toHaveBeenCalledWith({
-      entityRefs: ['team-a'],
+      entityRefs: ['group:default/team-a'],
     });
     expect(updateFilters).toHaveBeenLastCalledWith({
       owners: new EntityOwnerFilter(['group:default/team-a']),
@@ -521,6 +521,33 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
 
     expect(updateFilters).toHaveBeenLastCalledWith({
       owners: new EntityOwnerFilter(['group:default/another-owner']),
+    });
+  });
+
+  it('normalizes a kindless query parameter value before initial render', async () => {
+    // Regression test for https://github.com/backstage/backstage/issues/35272
+    // A URL like ?filters[owners]=team-a must be normalized to a full entity
+    // ref during state initialization, so neither the catalog request nor the
+    // presentation API ever sees a ref without a kind.
+    const updateFilters = jest.fn();
+    const queryParameters = { owners: ['team-a'] };
+    await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters,
+          }}
+        >
+          <EntityOwnerPicker mode="owners-only" />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    // In owners-only mode the initial fetch is disabled, so we assert on the
+    // normalized filter value rather than the (skipped) catalog request.
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      owners: new EntityOwnerFilter(['group:default/team-a']),
     });
   });
 
