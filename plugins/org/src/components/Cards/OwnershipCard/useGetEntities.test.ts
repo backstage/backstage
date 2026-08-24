@@ -359,13 +359,18 @@ describe('useGetEntities', () => {
         filters: {
           kind: 'api',
           type: 'openapi',
-          owners: [
-            `group:default/${givenLeafGroup}`,
-            `group:default/${givenParentGroup}`,
-          ],
+          owners: expect.any(Array),
           user: 'all',
         },
       });
+      const owners = (params.filters as { owners: string[] }).owners;
+      expect(owners).toEqual(
+        expect.arrayContaining([
+          `group:default/${givenLeafGroup}`,
+          `group:default/${givenParentGroup}`,
+        ]),
+      );
+      expect(owners).toHaveLength(2);
     });
 
     it('should group entities by kind and type in query params', async () => {
