@@ -293,7 +293,7 @@ describe('useGetEntities', () => {
       catalogApi.getEntitiesByRefs.mockRestore();
     });
 
-    it('should produce query params with humanized entity refs as owners', async () => {
+    it('should produce query params with canonical entity refs as owners', async () => {
       getEntityRelationsMock.mockReturnValue([]);
       catalogApi.getEntities.mockResolvedValueOnce({
         items: [
@@ -320,7 +320,7 @@ describe('useGetEntities', () => {
         filters: {
           kind: 'component',
           type: 'service',
-          owners: givenLeafGroup,
+          owners: `group:default/${givenLeafGroup}`,
           user: 'all',
         },
       });
@@ -359,7 +359,10 @@ describe('useGetEntities', () => {
         filters: {
           kind: 'api',
           type: 'openapi',
-          owners: expect.arrayContaining([givenLeafGroup, givenParentGroup]),
+          owners: [
+            `group:default/${givenLeafGroup}`,
+            `group:default/${givenParentGroup}`,
+          ],
           user: 'all',
         },
       });
