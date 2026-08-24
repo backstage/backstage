@@ -33,6 +33,7 @@ describe('getRootLoggerConfig', () => {
               level: 'warn',
             },
           ],
+          redactAllowlist: ['backstage'],
         },
       },
     };
