@@ -42,6 +42,14 @@ import {
 } from '@backstage/backend-plugin-api';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 import { durationToMilliseconds } from '@backstage/types';
+import path from 'node:path';
+
+const isPathWithinEntity = (requestPath: string): boolean => {
+  const relativePath = path.posix.normalize(
+    decodeURI(requestPath).replace(/^\/+/, ''),
+  );
+  return relativePath !== '..' && !relativePath.startsWith('../');
+};
 
 /**
  * Required dependencies for running TechDocs in the "out-of-the-box"
@@ -291,6 +299,10 @@ export async function createRouter(
     router.use(
       '/static/docs/:namespace/:kind/:name',
       async (req, _res, next) => {
+        if (!isPathWithinEntity(req.path)) {
+          throw new NotFoundError('Invalid TechDocs content path');
+        }
+
         const { kind, namespace, name } = req.params;
         const entityName = { kind, namespace, name };
 
