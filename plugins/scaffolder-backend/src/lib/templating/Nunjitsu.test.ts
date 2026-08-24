@@ -29,6 +29,8 @@ describe('Nunjitsu', () => {
       renderer.render('${{ test | replace("my-", "our-") }}', context),
     ).toBe('our-value');
 
+    expect(renderer.render('${{ "value" if false }}', context)).toBe('');
+
     expect(() => renderer.render('${{ invalid...syntax }}', context)).toThrow(
       /Expected name/,
     );
