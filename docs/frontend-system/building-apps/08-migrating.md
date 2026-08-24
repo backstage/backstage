@@ -908,9 +908,12 @@ To add new content to an entity page, use `EntityCardBlueprint` for overview
 cards and `EntityContentBlueprint` for tab content. These extensions are
 discovered by the catalog plugin and avoid adding new components to the legacy
 `EntityPage` tree. `EntityContentBlueprint` also supports grouping tab content
-through its `group` configuration. See [Plugin specific extensions](../building-plugins/01-index.md#plugin-specific-extensions)
+through its `group` configuration; see
+[Configure groups, titles, and icons](../../features/software-catalog/catalog-customization.md#configure-groups-titles-and-icons)
+for how the groups themselves are defined. See
+[Plugin specific extensions](../building-plugins/01-index.md#plugin-specific-extensions)
 for an entity content example and
-[the Catalog extension blueprints](../building-plugins/03-common-extension-blueprints.md)
+[Common Extension Blueprints](../building-plugins/03-common-extension-blueprints.md)
 for card, content, and tab configuration details.
 
 ## Enable the new templates for `yarn new`
