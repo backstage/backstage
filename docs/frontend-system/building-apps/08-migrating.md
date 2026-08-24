@@ -610,15 +610,6 @@ Once that step is complete the work that remains is to migrate all of the [route
 
 Once these migrations are complete you should be left with an empty `convertLegacyAppRoot(...)` call that you can now remove, and your app should be fully migrated to the new system! 🎉
 
-### Retire `convertLegacyAppRoot`
-
-Treat the removal of `convertLegacyAppRoot` as a Phase 2 milestone. You can
-remove it when the call no longer receives legacy root elements, routes, or the
-`entityPage` option. Remove the call, its import, and the
-`convertedRootFeatures` entry from the `features` array. Then start your app to
-verify that the new frontend system provides the expected routes, navigation,
-and page content without the compatibility helper.
-
 #### App Root Elements
 
 App root elements are React elements that are rendered adjacent to your current `Root` component. For example, in this snippet `AlertDisplay`, `OAuthRequestDialog` and `VisitListener` are all app root elements:
@@ -910,6 +901,15 @@ At this point you should be able to run the app and see that you're not using th
 Once the cleanup is complete you should be left with clean entity pages that are built using a mix of the old and new frontend system. From this point you can continue to gradually migrate plugins that provide content for the entity pages, until all plugins have been fully moved to the new system and the `entityPage` option can be removed.
 
 Migrating across the tabs for the Entity Pages should be as simple as removing the `EntityLayout.Route` for each of the plugins that provide tab content, and then this tab should be sourced from the `EntityContent` extensions created by the plugins themselves which will be automatically detected and added to the App.
+
+### Retire `convertLegacyAppRoot`
+
+Treat the removal of `convertLegacyAppRoot` as a Phase 2 milestone. You can
+remove it when the call no longer receives legacy root elements, routes, or the
+`entityPage` option. Remove the call, its import, and the
+`convertedRootFeatures` entry from the `features` array. Then start your app to
+verify that the new frontend system provides the expected routes, navigation,
+and page content without the compatibility helper.
 
 ## Enable the new templates for `yarn new`
 
