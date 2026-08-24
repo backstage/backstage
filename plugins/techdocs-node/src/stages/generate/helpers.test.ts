@@ -30,7 +30,7 @@ import {
   getRepoUrlFromLocationAnnotation,
   patchIndexPreBuild,
   storeEtagMetadata,
-  validateDocsDirectory,
+  validateInputDirectory,
   validateMkdocsYaml,
 } from './helpers';
 import {
@@ -1242,8 +1242,8 @@ some_unknown_key: value
     });
   });
 
-  describe('validateDocsDirectory', () => {
-    it('should pass for a valid docs directory with no symlinks', async () => {
+  describe('validateInputDirectory', () => {
+    it('should pass for a valid input directory with no symlinks', async () => {
       mockDir.setContent({
         docs: {
           'index.md': 'Hello',
@@ -1252,7 +1252,7 @@ some_unknown_key: value
       });
 
       await expect(
-        validateDocsDirectory(mockDir.resolve('docs'), mockDir.path),
+        validateInputDirectory(mockDir.path),
       ).resolves.toBeUndefined();
     });
 
@@ -1271,7 +1271,7 @@ some_unknown_key: value
       );
 
       await expect(
-        validateDocsDirectory(mockDir.resolve('docs'), mockDir.path),
+        validateInputDirectory(mockDir.path),
       ).resolves.toBeUndefined();
     });
 
@@ -1296,9 +1296,9 @@ some_unknown_key: value
         mockDir.resolve('docs/escape.md'),
       );
 
-      await expect(
-        validateDocsDirectory(mockDir.resolve('docs'), mockDir.path),
-      ).rejects.toThrow(/not allowed to refer to a location outside/i);
+      await expect(validateInputDirectory(mockDir.path)).rejects.toThrow(
+        /not allowed to refer to a location outside/i,
+      );
     });
 
     it('should reject symlinks to sensitive files like /etc/passwd', async () => {
@@ -1311,9 +1311,25 @@ some_unknown_key: value
       // Create a symlink to /etc/passwd
       await fs.symlink('/etc/passwd', mockDir.resolve('docs/passwd.md'));
 
-      await expect(
-        validateDocsDirectory(mockDir.resolve('docs'), mockDir.path),
-      ).rejects.toThrow(/not allowed to refer to a location outside/i);
+      await expect(validateInputDirectory(mockDir.path)).rejects.toThrow(
+        /not allowed to refer to a location outside/i,
+      );
+    });
+
+    it('should reject symlinks outside the docs directory', async () => {
+      mockDir.setContent({
+        docs: {
+          'index.md': '# Test\n\n--8<-- "leak_link"\n',
+        },
+      });
+
+      // Create a symlink to /etc/passwd at the input directory root, which
+      // MkDocs snippets can include even though it is outside the docs directory
+      await fs.symlink('/etc/passwd', mockDir.resolve('leak_link'));
+
+      await expect(validateInputDirectory(mockDir.path)).rejects.toThrow(
+        /not allowed to refer to a location outside/i,
+      );
     });
 
     it('should reject symlinks in nested directories', async () => {
@@ -1329,9 +1345,9 @@ some_unknown_key: value
       // Create a symlink in a nested directory pointing outside
       await fs.symlink('/etc/passwd', mockDir.resolve('docs/nested/escape.md'));
 
-      await expect(
-        validateDocsDirectory(mockDir.resolve('docs'), mockDir.path),
-      ).rejects.toThrow(/not allowed to refer to a location outside/i);
+      await expect(validateInputDirectory(mockDir.path)).rejects.toThrow(
+        /not allowed to refer to a location outside/i,
+      );
     });
 
     it('should reject directory symlinks pointing outside', async () => {
@@ -1355,9 +1371,9 @@ some_unknown_key: value
         mockDir.resolve('docs/external-dir'),
       );
 
-      await expect(
-        validateDocsDirectory(mockDir.resolve('docs'), mockDir.path),
-      ).rejects.toThrow(/not allowed to refer to a location outside/i);
+      await expect(validateInputDirectory(mockDir.path)).rejects.toThrow(
+        /not allowed to refer to a location outside/i,
+      );
     });
 
     it('should pass for directory symlinks within input directory', async () => {
@@ -1377,7 +1393,22 @@ some_unknown_key: value
       );
 
       await expect(
-        validateDocsDirectory(mockDir.resolve('docs'), mockDir.path),
+        validateInputDirectory(mockDir.path),
+      ).resolves.toBeUndefined();
+    });
+
+    it('should pass for symlink cycles within input directory', async () => {
+      mockDir.setContent({
+        docs: {
+          'index.md': 'Hello',
+        },
+      });
+
+      // Create a symlink pointing at the input directory itself
+      await fs.symlink(mockDir.path, mockDir.resolve('self'));
+
+      await expect(
+        validateInputDirectory(mockDir.path),
       ).resolves.toBeUndefined();
     });
   });
