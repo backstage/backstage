@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  Entity,
+  parseEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import {
   MockEntityListContextProvider,
@@ -675,5 +679,53 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
 
     expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledTimes(1);
     expect(mockCatalogApi.getEntitiesByRefs).not.toHaveBeenCalled();
+  });
+
+  it('does not crash when the owners query parameter is a bare, non-namespaced ref', async () => {
+    // Regression test for a crash reported against a real Backstage instance:
+    // callers are explicitly allowed to put humanized/partial refs (e.g. "my-team"
+    // instead of "group:default/my-team") into the `owners` query parameter --
+    // EntityOwnerFilter itself defaults their kind to "Group" for exactly this
+    // reason. On the very first render, before the effect that normalizes
+    // `queryParamOwners` through `EntityOwnerFilter` has run, `getOptionLabel`
+    // (used to render the selected-owner chip) receives this raw, still
+    // un-namespaced string. It must resolve a title for it via the presentation
+    // API rather than throwing "Entity reference ... had missing or empty kind".
+    const forEntity = jest.fn((entityOrRef: Entity | string, context?: any) => {
+      const ref =
+        typeof entityOrRef === 'string'
+          ? entityOrRef
+          : stringifyEntityRef(entityOrRef);
+      // Mirrors the real DefaultEntityPresentationApi, which parses the ref
+      // using whatever default kind/namespace it is given.
+      const parsed = parseEntityRef(ref, context);
+      const snapshot = {
+        entityRef: stringifyEntityRef(parsed),
+        primaryTitle: parsed.name,
+      };
+      return { snapshot, promise: Promise.resolve(snapshot) };
+    });
+
+    const testApis = TestApiRegistry.from(
+      [catalogApiRef, mockCatalogApi],
+      [errorApiRef, mockErrorApi],
+      [entityPresentationApiRef, { forEntity }],
+    );
+
+    await renderInTestApp(
+      <ApiProvider apis={testApis}>
+        <MockEntityListContextProvider
+          value={{ queryParameters: { owners: ['another-owner'] } }}
+        >
+          <EntityOwnerPicker mode="owners-only" />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: 'another-owner' }),
+      ).toBeInTheDocument(),
+    );
   });
 });

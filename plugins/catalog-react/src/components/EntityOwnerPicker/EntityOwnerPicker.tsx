@@ -213,10 +213,15 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
         getOptionLabel={o => {
           if (mode === 'owners-only') {
             // Stubs have no title; use string ref so entityPresentationSnapshot hits the API cache.
+            // `o` may still be the raw, un-normalized value from the `owners` query parameter (e.g.
+            // on the very first render, before the effect above resolves it through
+            // `EntityOwnerFilter`), which is allowed to be a humanized/partial ref such as
+            // `my-team` rather than `group:default/my-team`. A default kind/namespace must be
+            // supplied so that presentation lookup does not throw on such refs.
             const ref = typeof o === 'string' ? o : stringifyEntityRef(o);
             return entityPresentationSnapshot(
               ref,
-              undefined,
+              { defaultKind: 'group', defaultNamespace: 'default' },
               entityPresentationApi,
             ).primaryTitle;
           }
