@@ -147,6 +147,11 @@ Options:
   --defaultPlugin <PLUGIN_NAME>   Plugins which should be added automatically to the mkdocs.yaml file. (default: [])
   --omitTechdocsCoreMkdocsPlugin  An option to disable automatic addition of techdocs-core plugin to the mkdocs.yaml files.
                                   Defaults to false, which means that the techdocs-core plugin is always added to the mkdocs file.
+  --dangerouslyAllowAdditionalKeys [additionalKeys...]
+                                  Top-level mkdocs.yml keys to allow beyond the built-in supported set, without failing
+                                  or stripping them. Same as the techdocs.generator.mkdocs.dangerouslyAllowAdditionalKeys
+                                  backend config option, which techdocs-cli generate does not currently read from a
+                                  config file. (default: [])
   --legacyCopyReadmeMdToIndexMd   Attempt to ensure an index.md exists falling back to using <docs-dir>/README.md or README.md
                                   in case a default <docs-dir>/index.md is not provided. (default: false)
   --disableExternalFonts          Disable external font downloads for all TechDocs sites. Useful for air-gapped environments

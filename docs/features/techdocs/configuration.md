@@ -141,6 +141,23 @@ techdocs:
       defaultPlugins: ['techdocs-core']
 ```
 
+#### Dangerously Allow Additional Keys
+
+`techdocs.generator.mkdocs.dangerouslyAllowAdditionalKeys`
+
+(Optional) By default, TechDocs validates `mkdocs.yml` against a built-in allow list of supported top-level keys. This option explicitly allows the listed additional keys, such as the `hooks` key which some MkDocs plugins require, without failing or stripping them. Use with caution: allowed keys are passed through without validation.
+
+**Example:**
+
+```yaml
+techdocs:
+  generator:
+    mkdocs:
+      dangerouslyAllowAdditionalKeys: ['hooks']
+```
+
+When running `techdocs-cli generate` directly, the same behavior is available via the `--dangerouslyAllowAdditionalKeys` CLI flag, since the CLI does not currently read this option from a config file.
+
 ## Builder Configuration
 
 `techdocs.builder`
