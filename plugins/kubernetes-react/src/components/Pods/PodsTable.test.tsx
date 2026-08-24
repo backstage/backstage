@@ -39,6 +39,20 @@ describe('PodsTable', () => {
     expect(screen.getByText('1.14.2')).toBeInTheDocument();
   });
 
+  it('should show unknown when pod image has no version', async () => {
+    const podWithoutVersion = {
+      ...pod,
+      spec: {
+        ...pod.spec,
+        containers: [{ ...pod.spec.containers[0], image: 'busybox' }],
+      },
+    };
+
+    await renderInTestApp(<PodsTable pods={[podWithoutVersion as any]} />);
+
+    expect(screen.getByText('unknown')).toBeInTheDocument();
+  });
+
   it('should render pod with extra columns', async () => {
     await renderInTestApp(
       <PodsTable pods={[pod as any]} extraColumns={[READY_COLUMNS]} />,
