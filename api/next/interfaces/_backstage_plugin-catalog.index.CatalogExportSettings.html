@@ -17,7 +17,7 @@
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">CatalogExportSettings</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#columns">columns</a><span class="tsd-signature-symbol">?:</span> <a href="_backstage_plugin-catalog.index.CatalogExportSettingsColumn.html" class="tsd-signature-type tsd-kind-interface">CatalogExportSettingsColumn</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#disablebuiltinexporters">disableBuiltinExporters</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#enabled">enabled</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#exporters">exporters</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <a href="_backstage_plugin-catalog.index.CatalogExporterConfig.html" class="tsd-signature-type tsd-kind-interface">CatalogExporterConfig</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#onerror">onError</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">error</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Error</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#onsuccess">onSuccess</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/de92faeb4a375af5bd4f7a84311e702736e98964/plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx#L54">plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx:54</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/806cef0c871d7a0e5e35e9431e23f42a3eed5366/plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx#L54">plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx:54</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -43,7 +43,7 @@ Each column specifies an entity field path and a display title.
 If not specified, uses default columns: Name, Type, Owner, Description.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/de92faeb4a375af5bd4f7a84311e702736e98964/plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx#L66">plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx:66</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/806cef0c871d7a0e5e35e9431e23f42a3eed5366/plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx#L66">plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx:66</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="disablebuiltinexporters"><code class="tsd-tag">Optional</code><span>disable<wbr/>Builtin<wbr/>Exporters</span><a href="#disablebuiltinexporters" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">disableBuiltinExporters</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
@@ -51,7 +51,7 @@ If not specified, uses default columns: Name, Type, Owner, Description.</p>
 Useful when only custom exporters should be available.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/de92faeb4a375af5bd4f7a84311e702736e98964/plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx#L79">plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx:79</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/806cef0c871d7a0e5e35e9431e23f42a3eed5366/plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx#L79">plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx:79</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="enabled"><code class="tsd-tag">Optional</code><span>enabled</span><a href="#enabled" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">enabled</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
@@ -59,7 +59,7 @@ Useful when only custom exporters should be available.</p>
 Defaults to false if not specified.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/de92faeb4a375af5bd4f7a84311e702736e98964/plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx#L59">plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx:59</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/806cef0c871d7a0e5e35e9431e23f42a3eed5366/plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx#L59">plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx:59</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="exporters"><code class="tsd-tag">Optional</code><span>exporters</span><a href="#exporters" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">exporters</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <a href="_backstage_plugin-catalog.index.CatalogExporterConfig.html" class="tsd-signature-type tsd-kind-interface">CatalogExporterConfig</a><span class="tsd-signature-symbol">&gt;</span></div>
@@ -68,7 +68,7 @@ Key is the format name (e.g., 'xml', 'yaml'), value is the exporter configuratio
 Custom formats will appear as options in the export dialog.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/de92faeb4a375af5bd4f7a84311e702736e98964/plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx#L73">plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx:73</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/806cef0c871d7a0e5e35e9431e23f42a3eed5366/plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx#L73">plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx:73</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="onerror"><code class="tsd-tag">Optional</code><span>on<wbr/>Error</span><a href="#onerror" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">onError</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">error</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Error</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span></div>
@@ -76,7 +76,7 @@ Custom formats will appear as options in the export dialog.</p>
 Receives an object containing the error for custom error handling.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/de92faeb4a375af5bd4f7a84311e702736e98964/plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx#L91">plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx:91</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/806cef0c871d7a0e5e35e9431e23f42a3eed5366/plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx#L91">plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx:91</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="onsuccess"><code class="tsd-tag">Optional</code><span>on<wbr/>Success</span><a href="#onsuccess" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">onSuccess</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span></div>
@@ -84,7 +84,7 @@ Receives an object containing the error for custom error handling.</p>
 Useful for showing notifications or performing post-export actions.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/de92faeb4a375af5bd4f7a84311e702736e98964/plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx#L85">plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx:85</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/806cef0c871d7a0e5e35e9431e23f42a3eed5366/plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx#L85">plugins/catalog/src/components/CatalogExportButton/CatalogExportButton.tsx:85</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
