@@ -311,6 +311,29 @@ export const ALLOWED_MKDOCS_KEYS = new Set([
 ]);
 
 /**
+ * Denylist of configuration keys that must be stripped from extension
+ * configurations nested within `markdown_extensions`.
+ */
+export const DANGEROUS_EXTENSION_CONFIG_KEYS = new Set(['plantuml_cmd']);
+
+/**
+ * Allowlist of theme configuration keys supported by TechDocs.
+ *
+ * @see https://squidfunk.github.io/mkdocs-material/setup/
+ */
+export const ALLOWED_THEME_KEYS = new Set([
+  'name',
+  'font',
+  'icon',
+  'logo',
+  'favicon',
+  'language',
+  'direction',
+  'palette',
+  'features',
+]);
+
+/**
  * Validating mkdocs config file for incorrect/insecure values
  * Throws on invalid configs
  *
