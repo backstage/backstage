@@ -59,6 +59,7 @@ import {
   taskCancelPermission,
   taskCreatePermission,
   taskReadPermission,
+  templateDryRunPermission,
   templateManagementPermission,
   templateParameterReadPermission,
   templateStepReadPermission,
@@ -441,6 +442,7 @@ export async function createRouter(
 
   permissionsRegistry.addPermissions([
     taskCreatePermission,
+    templateDryRunPermission,
     templateManagementPermission,
   ]);
 
@@ -1011,7 +1013,7 @@ export async function createRouter(
         const credentials = await httpAuth.credentials(req);
         await checkPermission({
           credentials,
-          permissions: [taskCreatePermission],
+          permissions: [taskCreatePermission, templateDryRunPermission],
           permissionService: permissions,
         });
 
