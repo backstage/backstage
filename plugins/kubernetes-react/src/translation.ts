@@ -36,6 +36,7 @@ export const kubernetesReactTranslationRef = createTranslationRef({
         name: 'name',
         phase: 'phase',
         status: 'status',
+        version: 'version',
         containersReady: 'containers ready',
         totalRestarts: 'total restarts',
         cpuUsage: 'CPU usage %',

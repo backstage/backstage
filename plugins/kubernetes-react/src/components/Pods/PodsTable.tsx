@@ -151,6 +151,19 @@ export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
       title: t('podsTable.columns.status'),
       render: containerStatuses,
     },
+    {
+      title: t('podsTable.columns.version'),
+      render: (pod: Pod) => {
+        const image = pod.spec?.containers?.[0]?.image;
+        const ref = image?.split('@')[0] ?? '';
+        const lastSlash = ref.lastIndexOf('/');
+        const lastColon = ref.lastIndexOf(':');
+        const tag =
+          lastColon > lastSlash ? ref.slice(lastColon + 1) : undefined;
+        return tag ?? t('podsTable.unknown');
+      },
+      width: 'auto',
+    },
   ];
   const columns: TableColumn<Pod>[] = [...defaultColumns];
 

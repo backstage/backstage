@@ -30,11 +30,13 @@ describe('PodsTable', () => {
     expect(screen.getByText('name')).toBeInTheDocument();
     expect(screen.getByText('phase')).toBeInTheDocument();
     expect(screen.getByText('status')).toBeInTheDocument();
+    expect(screen.getByText('version')).toBeInTheDocument();
 
     // values
     expect(screen.getByText('dice-roller-6c8646bfd-2m5hv')).toBeInTheDocument();
     expect(screen.getByText('Running')).toBeInTheDocument();
     expect(screen.getByText('OK')).toBeInTheDocument();
+    expect(screen.getByText('1.14.2')).toBeInTheDocument();
   });
 
   it('should render pod with extra columns', async () => {
