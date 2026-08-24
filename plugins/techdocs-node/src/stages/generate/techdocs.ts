@@ -26,7 +26,7 @@ import {
   patchIndexPreBuild,
   runCommand,
   storeEtagMetadata,
-  validateDocsDirectory,
+  validateInputDirectory,
   validateMkdocsYaml,
 } from './helpers';
 
@@ -135,11 +135,9 @@ export class TechdocsGenerator implements GeneratorBase {
       await patchIndexPreBuild({ inputDir, logger: childLogger, docsDir });
     }
 
-    // Validate that no symlinks in the docs directory point outside the input directory
-    // This prevents path traversal attacks where malicious symlinks could leak host files
-    const resolvedDocsDir = path.join(inputDir, docsDir ?? 'docs');
-
-    await validateDocsDirectory(resolvedDocsDir, inputDir);
+    // Validate that no symlinks in the input directory point outside it. MkDocs
+    // extensions can access files throughout the input directory, not just docs_dir.
+    await validateInputDirectory(inputDir);
 
     // patch the list of mkdocs plugins
     const defaultPlugins = this.options.defaultPlugins ?? [];
