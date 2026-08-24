@@ -676,4 +676,46 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
     expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledTimes(1);
     expect(mockCatalogApi.getEntitiesByRefs).not.toHaveBeenCalled();
   });
+
+  it('handles bare/kind-less query parameter in owners-only mode without error', async () => {
+    const updateFilters = jest.fn();
+    const queryParameters = { owners: ['team-a'] };
+
+    const mockPresentationApi: jest.Mocked<EntityPresentationApi> = {
+      forEntity: jest.fn().mockImplementation((entityOrRef: Entity | string) => {
+        const ref = typeof entityOrRef === 'string' ? entityOrRef : stringifyEntityRef(entityOrRef);
+        const snapshot = { entityRef: ref, primaryTitle: ref };
+        return { snapshot, promise: Promise.resolve(snapshot) };
+      }),
+    };
+
+    mockCatalogApi.getEntityFacets.mockResolvedValue({
+      facets: {
+        'relations.ownedBy': [{ count: 1, value: 'group:default/team-a' }],
+      },
+    });
+
+    const testApis = TestApiRegistry.from(
+      [catalogApiRef, mockCatalogApi],
+      [errorApiRef, mockErrorApi],
+      [entityPresentationApiRef, mockPresentationApi],
+    );
+
+    await renderInTestApp(
+      <ApiProvider apis={testApis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters,
+          }}
+        >
+          <EntityOwnerPicker mode="owners-only" />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    expect(updateFilters).toHaveBeenCalledWith({
+      owners: new EntityOwnerFilter(['group:default/team-a']),
+    });
+  });
 });

@@ -213,7 +213,15 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
         getOptionLabel={o => {
           if (mode === 'owners-only') {
             // Stubs have no title; use string ref so entityPresentationSnapshot hits the API cache.
-            const ref = typeof o === 'string' ? o : stringifyEntityRef(o);
+            const ref =
+              typeof o === 'string'
+                ? stringifyEntityRef(
+                    parseEntityRef(o, {
+                      defaultKind: 'group',
+                      defaultNamespace: 'default',
+                    }),
+                  )
+                : stringifyEntityRef(o);
             return entityPresentationSnapshot(
               ref,
               undefined,
