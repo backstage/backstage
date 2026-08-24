@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend
 
+## 4.0.5
+
+### Patch Changes
+
+- 640372d: Software template inline conditionals without an `else` branch now render an empty string when their condition is false, matching Nunjucks behavior.
+
 ## 4.0.4
 
 ### Patch Changes
