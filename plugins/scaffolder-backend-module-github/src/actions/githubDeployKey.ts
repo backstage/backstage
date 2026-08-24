@@ -91,7 +91,7 @@ export function createGithubDeployKeyAction(options: {
         privateKeySecretName = `${deployKeyName
           .split(' ')
           .join('_')
-          .toLocaleUpperCase('en-US')}_PRIVATE_KEY`,
+          .toUpperCase()}_PRIVATE_KEY`,
         token: providedToken,
       } = ctx.input;
 

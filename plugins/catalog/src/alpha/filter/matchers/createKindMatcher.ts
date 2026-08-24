@@ -23,6 +23,6 @@ export function createKindMatcher(
   parameters: string[],
   _onParseError: (error: Error) => void,
 ): EntityMatcherFn {
-  const items = parameters.map(p => p.toLocaleLowerCase('en-US'));
-  return entity => items.includes(entity.kind.toLocaleLowerCase('en-US'));
+  const items = parameters.map(p => p.toLowerCase());
+  return entity => items.includes(entity.kind.toLowerCase());
 }

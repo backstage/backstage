@@ -65,10 +65,10 @@ export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
     location: LocationSpec,
   ): Promise<Entity> {
     const applicableKinds = (this.opts.kinds ?? ['Component']).map(k =>
-      k.toLocaleLowerCase('en-US'),
+      k.toLowerCase(),
     );
     if (
-      !applicableKinds.includes(entity.kind.toLocaleLowerCase('en-US')) ||
+      !applicableKinds.includes(entity.kind.toLowerCase()) ||
       location.type !== 'url'
     ) {
       return entity;

@@ -18,8 +18,7 @@ import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 
-const capitalize = (str: string) =>
-  str.charAt(0).toLocaleUpperCase('en-US') + str.slice(1);
+const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
 export const DefaultCustomResourceDrawer = ({
   customResource,

@@ -391,7 +391,7 @@ function getValueFromMapWithInsensitiveKey(
   searchValue: string,
 ) {
   const result = map.get(searchValue);
-  return result ? result : map.get(searchValue.toLocaleLowerCase('en-US'));
+  return result ? result : map.get(searchValue.toLowerCase());
 }
 
 /**
@@ -425,9 +425,7 @@ export function resolveRelations(
     userMap.set(stringifyEntityRef(user), user);
     userMap.set(user.metadata.annotations![LDAP_DN_ANNOTATION], user);
     userMap.set(
-      user.metadata.annotations![LDAP_DN_ANNOTATION]?.toLocaleLowerCase(
-        'en-US',
-      ),
+      user.metadata.annotations![LDAP_DN_ANNOTATION]?.toLowerCase(),
       user,
     );
     userMap.set(user.metadata.annotations![LDAP_RDN_ANNOTATION], user);
@@ -437,9 +435,7 @@ export function resolveRelations(
     groupMap.set(stringifyEntityRef(group), group);
     groupMap.set(group.metadata.annotations![LDAP_DN_ANNOTATION], group);
     groupMap.set(
-      group.metadata.annotations![LDAP_DN_ANNOTATION]?.toLocaleLowerCase(
-        'en-US',
-      ),
+      group.metadata.annotations![LDAP_DN_ANNOTATION]?.toLowerCase(),
       group,
     );
     groupMap.set(group.metadata.annotations![LDAP_RDN_ANNOTATION], group);

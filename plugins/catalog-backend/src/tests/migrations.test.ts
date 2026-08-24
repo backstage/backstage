@@ -1225,7 +1225,7 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
     function expectedRef(type: string, target: string): string {
       return `location:default/generated-${createHash('sha1')
         .update(`${type}:${target}`)
-        .digest('hex')}`.toLocaleLowerCase('en-US');
+        .digest('hex')}`.toLowerCase();
     }
 
     // Non-bootstrap rows get their entity ref backfilled

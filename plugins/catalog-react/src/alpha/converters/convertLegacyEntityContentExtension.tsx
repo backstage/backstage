@@ -71,12 +71,7 @@ export function convertLegacyEntityContentExtension(
   const infix = match?.[1] ?? extName;
 
   let name: string | undefined = infix;
-  if (
-    pluginId &&
-    name
-      .toLocaleLowerCase('en-US')
-      .startsWith(pluginId.toLocaleLowerCase('en-US'))
-  ) {
+  if (pluginId && name.toLowerCase().startsWith(pluginId.toLowerCase())) {
     name = name.slice(pluginId.length);
     if (!name) {
       name = undefined;

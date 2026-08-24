@@ -253,8 +253,7 @@ export class KubernetesProxy {
       ca: bufferFromFileOrString(cluster.caFile, cluster.caData)?.toString(),
     };
 
-    const authHeader =
-      req.headers[HEADER_KUBERNETES_AUTH.toLocaleLowerCase('en-US')];
+    const authHeader = req.headers[HEADER_KUBERNETES_AUTH.toLowerCase()];
     if (typeof authHeader === 'string') {
       req.headers.authorization = authHeader;
     } else {

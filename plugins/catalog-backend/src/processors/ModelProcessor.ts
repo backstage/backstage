@@ -121,13 +121,11 @@ export class ModelProcessor implements CatalogProcessor {
               : DEFAULT_NAMESPACE,
         });
 
-        const targetKind = targetRef.kind.toLocaleLowerCase('en-US');
+        const targetKind = targetRef.kind.toLowerCase();
 
         if (
           fieldModel.allowedKinds &&
-          !fieldModel.allowedKinds.some(
-            k => k.toLocaleLowerCase('en-US') === targetKind,
-          )
+          !fieldModel.allowedKinds.some(k => k.toLowerCase() === targetKind)
         ) {
           // TODO: Make this more visible. We should probably not use logging,
           // but if we added admonition support on entities, this would be a
@@ -145,12 +143,12 @@ export class ModelProcessor implements CatalogProcessor {
         );
 
         // Emit the reverse relation if the model knows about it
-        const selfKind = entity.kind.toLocaleLowerCase('en-US');
+        const selfKind = entity.kind.toLowerCase();
         const relation = modelRelations.find(
           r =>
             r.forward.type === fieldModel.relation &&
-            r.fromKind.some(k => k.toLocaleLowerCase('en-US') === selfKind) &&
-            r.toKind.some(k => k.toLocaleLowerCase('en-US') === targetKind),
+            r.fromKind.some(k => k.toLowerCase() === selfKind) &&
+            r.toKind.some(k => k.toLowerCase() === targetKind),
         );
         if (relation) {
           emit(

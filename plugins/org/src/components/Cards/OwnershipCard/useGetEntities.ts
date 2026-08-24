@@ -51,7 +51,7 @@ const getQueryParams = (
       entityPresentationSnapshot(ref, { defaultKind: 'group' }).primaryTitle,
   );
   const filters = {
-    kind: kind.toLocaleLowerCase('en-US'),
+    kind: kind.toLowerCase(),
     type,
     owners,
     user: 'all',

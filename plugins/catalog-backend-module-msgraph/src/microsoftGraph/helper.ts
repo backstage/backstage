@@ -22,7 +22,7 @@
 export function normalizeEntityName(name: string): string {
   let cleaned = name
     .trim()
-    .toLocaleLowerCase()
+    .toLowerCase()
     .replace(/[^a-zA-Z0-9_\-\.]/g, '_');
 
   // invalid to end with _
