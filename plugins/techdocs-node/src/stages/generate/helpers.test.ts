@@ -1086,6 +1086,124 @@ some_unknown_key: value
       expect(warn).toHaveBeenCalledWith(expect.stringContaining('os:system'));
     });
 
+    it('should remove configuration from snippets extensions', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+markdown_extensions:
+  - pymdownx.snippets:
+      base_path: /
+  - pymdownx.snippets:SnippetExtension:
+      base_path: /
+  - pymdownx.tabbed:
+      alternate_style: true
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        markdown_extensions: Array<unknown>;
+      };
+
+      expect(parsedYml.markdown_extensions).toEqual([
+        { 'pymdownx.snippets': {} },
+        { 'pymdownx.snippets:SnippetExtension': {} },
+        { 'pymdownx.tabbed': { alternate_style: true } },
+      ]);
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('pymdownx.snippets configuration'),
+      );
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'pymdownx.snippets:SnippetExtension configuration',
+        ),
+      );
+    });
+
+    it('should remove configuration from every snippets extension in a mapping', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+markdown_extensions:
+  - pymdownx.snippets: {}
+    pymdownx.snippets:SnippetExtension:
+      base_path: /
+      restrict_base_path: false
+      url_download: true
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        markdown_extensions: Array<unknown>;
+      };
+
+      expect(parsedYml.markdown_extensions).toEqual([
+        {
+          'pymdownx.snippets': {},
+          'pymdownx.snippets:SnippetExtension': {},
+        },
+      ]);
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'pymdownx.snippets:SnippetExtension configuration',
+        ),
+      );
+    });
+
+    it('should preserve unconfigured snippets extensions', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+markdown_extensions:
+  - pymdownx.snippets
+  - pymdownx.snippets:SnippetExtension
+  - pymdownx.snippets: {}
+  - pymdownx.snippets:SnippetExtension: {}
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        markdown_extensions: Array<unknown>;
+      };
+
+      expect(parsedYml.markdown_extensions).toEqual([
+        'pymdownx.snippets',
+        'pymdownx.snippets:SnippetExtension',
+        { 'pymdownx.snippets': {} },
+        { 'pymdownx.snippets:SnippetExtension': {} },
+      ]);
+      expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('should remove unsupported snippets extension classes', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+markdown_extensions:
+  - pymdownx.snippets:SnippetMissingError
+  - pymdownx.snippets:SnippetMissingError: {}
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        markdown_extensions: Array<unknown>;
+      };
+
+      expect(parsedYml.markdown_extensions).toEqual([]);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('pymdownx.snippets:SnippetMissingError'),
+      );
+    });
+
     it('should handle markdown_extensions with only dangerous entries', async () => {
       mockDir.setContent({
         'mkdocs.yml': mkdocsYmlWithOnlyDangerousExtensions,
