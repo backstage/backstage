@@ -368,6 +368,79 @@ data: {"updated":true}
 
       expect(response.status).toBe(404);
     });
+
+    it('should only serve paths contained within the permission-checked entity', async () => {
+      const http = require('node:http');
+
+      const requestRawPath = async (
+        testApp: express.Express,
+        requestPath: string,
+      ) => {
+        const server = await new Promise<InstanceType<typeof http.Server>>(
+          resolve => {
+            const listeningServer = testApp.listen(0, '127.0.0.1', () =>
+              resolve(listeningServer),
+            );
+          },
+        );
+
+        try {
+          const port = (server.address() as { port: number }).port;
+          return await new Promise<number>((resolve, reject) => {
+            const req = http.get(
+              { host: '127.0.0.1', port, path: requestPath },
+              (res: {
+                resume: () => void;
+                on: Function;
+                statusCode?: number;
+              }) => {
+                res.resume();
+                res.on('end', () => resolve(res.statusCode ?? 0));
+              },
+            );
+            req.on('error', reject);
+          });
+        } finally {
+          await new Promise<void>((resolve, reject) => {
+            server.close((error: Error | undefined) =>
+              error ? reject(error) : resolve(),
+            );
+          });
+        }
+      };
+
+      const docsRouter = jest.fn((_req, res) => res.sendStatus(200));
+      publisher.docsRouter.mockReturnValue(docsRouter);
+
+      const app = await createApp({
+        ...outOfTheBoxOptions,
+        config: new ConfigReader({
+          permission: {
+            enabled: true,
+          },
+        }),
+      });
+
+      MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
+
+      const containedStatus = await requestRawPath(
+        app,
+        '/static/docs/default/component/entity-a/dir/%2e%2e/index.html',
+      );
+
+      expect(containedStatus).toBe(200);
+      expect(docsRouter).toHaveBeenCalledTimes(1);
+
+      docsRouter.mockClear();
+
+      const traversingStatus = await requestRawPath(
+        app,
+        '/static/docs/default/component/entity-a/%2e%2e/entity-b/index.html',
+      );
+
+      expect(traversingStatus).toBe(404);
+      expect(docsRouter).not.toHaveBeenCalled();
+    });
   });
 });
 
