@@ -18,6 +18,8 @@ import yaml from 'js-yaml';
 import { ParsedLocationAnnotation } from '../../helpers';
 import {
   ALLOWED_MKDOCS_KEYS,
+  ALLOWED_THEME_KEYS,
+  DANGEROUS_EXTENSION_CONFIG_KEYS,
   getRepoUrlFromLocationAnnotation,
   MKDOCS_SCHEMA,
 } from './helpers';
@@ -291,11 +293,85 @@ export const sanitizeMkdocsYml = async (
       }
     }
 
+    // Sanitize markdown_extensions
+    const extensions = sanitized.markdown_extensions;
+    if (Array.isArray(extensions)) {
+      const removedEntries: string[] = [];
+
+      sanitized.markdown_extensions = extensions.filter(ext => {
+        if (typeof ext === 'string') {
+          if (ext.includes(':')) {
+            removedEntries.push(ext);
+            return false;
+          }
+          return true;
+        }
+
+        if (!ext || typeof ext !== 'object' || Array.isArray(ext)) {
+          return true;
+        }
+
+        // Check every key, not just the first, so that a multi-key mapping
+        // cannot smuggle a dangerous name past the filter.
+        const dangerousNames = Object.keys(
+          ext as Record<string, unknown>,
+        ).filter(key => key.includes(':'));
+        if (dangerousNames.length > 0) {
+          removedEntries.push(...dangerousNames);
+          return false;
+        }
+
+        // Strip dangerous keys from the extension's own configuration.
+        for (const extConfig of Object.values(ext as Record<string, unknown>)) {
+          if (
+            extConfig &&
+            typeof extConfig === 'object' &&
+            !Array.isArray(extConfig)
+          ) {
+            for (const dangerousKey of DANGEROUS_EXTENSION_CONFIG_KEYS) {
+              if (dangerousKey in extConfig) {
+                delete (extConfig as Record<string, unknown>)[dangerousKey];
+                removedEntries.push(dangerousKey);
+              }
+            }
+          }
+        }
+
+        return true;
+      });
+
+      if (removedEntries.length > 0) {
+        logger.warn(
+          `Removed the following dangerous entries from markdown_extensions in mkdocs.yml: ${removedEntries.join(
+            ', ',
+          )}.`,
+        );
+      }
+    }
+
     // Clear the original object and copy sanitized values back
     for (const key of Object.keys(mkdocsYml)) {
       delete (mkdocsYml as Record<string, unknown>)[key];
     }
     Object.assign(mkdocsYml, sanitized);
+
+    // Sanitize theme sub-keys
+    const theme = (mkdocsYml as Record<string, unknown>).theme;
+    if (isThemeObject(theme)) {
+      const removedThemeKeys = Object.keys(theme).filter(
+        key => !ALLOWED_THEME_KEYS.has(key),
+      );
+      if (removedThemeKeys.length > 0) {
+        for (const key of removedThemeKeys) {
+          delete (theme as Record<string, unknown>)[key];
+        }
+        logger.warn(
+          `Removed the following unsupported keys from theme configuration in mkdocs.yml: ${removedThemeKeys.join(
+            ', ',
+          )}.`,
+        );
+      }
+    }
 
     // Always rewrite to ensure clean YAML output (resolves merge keys, anchors, etc.)
     return true;
