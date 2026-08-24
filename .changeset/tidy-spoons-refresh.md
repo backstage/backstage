@@ -2,4 +2,4 @@
 '@backstage/backend-defaults': patch
 ---
 
-Improve authentication reliability during signing key rotation by refreshing JWKS endpoints for newly published keys even while remote key set refreshes are normally paused.
+Improve authentication reliability during signing key rotation by performing budgeted JWKS reloads when a newly published key is requested during the remote key set cooldown.
