@@ -7019,7 +7019,6 @@ __metadata:
     fs-extra: "npm:^11.2.0"
     knex: "npm:^3.0.0"
     msw: "npm:^2.0.0"
-    node-html-markdown: "npm:^1.3.0"
     p-limit: "npm:^3.1.0"
     supertest: "npm:^7.0.0"
     winston: "npm:^3.2.1"

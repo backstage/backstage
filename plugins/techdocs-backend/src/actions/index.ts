@@ -16,7 +16,6 @@
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
 import { createGetTechdocsMetadataAction } from './createGetTechdocsMetadataAction';
-import { createGetTechdocsContentAction } from './createGetTechdocsContentAction';
 
 export const createTechdocsActions = (options: {
   actionsRegistry: ActionsRegistryService;
@@ -24,8 +23,6 @@ export const createTechdocsActions = (options: {
   discovery: DiscoveryService;
 }) => {
   createGetTechdocsMetadataAction(options);
-  createGetTechdocsContentAction(options);
 };
 
 export { createGetTechdocsMetadataAction } from './createGetTechdocsMetadataAction';
-export { createGetTechdocsContentAction } from './createGetTechdocsContentAction';

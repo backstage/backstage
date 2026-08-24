@@ -26,7 +26,7 @@ The Publishers are also used to fetch the static documentation files and render 
 
 ## Actions
 
-The TechDocs backend plugin registers the following actions with the Actions Registry Service (alpha):
+The TechDocs backend plugin registers the following action with the Actions Registry Service (alpha):
 
 ### `get-techdocs-metadata`
 
@@ -49,27 +49,6 @@ Retrieves metadata for a TechDocs site including site name, description, and nav
 | `nav`              | array  | Navigation structure of the documentation |
 | `pages`            | object | Pages in the documentation                |
 | `metadata`         | object | Additional metadata                       |
-
-### `get-techdocs-content`
-
-Retrieves the content of a specific file from a TechDocs site.
-
-**Input:**
-
-| Parameter   | Type   | Default      | Description                                 |
-| ----------- | ------ | ------------ | ------------------------------------------- |
-| `kind`      | string | "Component"  | The kind of the entity to query             |
-| `namespace` | string | "default"    | The namespace of the entity                 |
-| `name`      | string | (required)   | The name of the entity to query             |
-| `path`      | string | "index.html" | The file path within the documentation site |
-
-**Output:**
-
-| Field         | Type   | Description                       |
-| ------------- | ------ | --------------------------------- |
-| `content`     | string | The content of the requested file |
-| `contentType` | string | The content type of the file      |
-| `path`        | string | The path of the requested file    |
 
 ## Links
 
