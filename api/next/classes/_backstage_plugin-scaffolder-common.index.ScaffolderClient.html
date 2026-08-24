@@ -15,7 +15,7 @@
 <section class="tsd-panel tsd-comment">
 <div class="tsd-comment tsd-typography"><p>An API to interact with the scaffolder backend.</p>
 </div></section>
-<section class="tsd-panel tsd-hierarchy" data-refl="49244">
+<section class="tsd-panel tsd-hierarchy" data-refl="49248">
 <h4>Hierarchy (<a href="../hierarchy.html#@backstage/plugin-scaffolder-common.index.ScaffolderClient">View Summary</a>)</h4>
 <ul class="tsd-hierarchy">
 <li class="tsd-hierarchy-item"><span class="tsd-hierarchy-target">ScaffolderClient</span>
@@ -26,7 +26,7 @@
 <ul class="tsd-hierarchy">
 <li><a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html" class="tsd-signature-type tsd-kind-interface">ScaffolderApi</a></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/1eedc0d406294fa865e084d29231a4320ddfa258/plugins/scaffolder-common/src/ScaffolderClient.ts#L50">plugins/scaffolder-common/src/ScaffolderClient.ts:50</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/1a705cad96f0fbd48d4f7fe7e92e8a45d6afbab7/plugins/scaffolder-common/src/ScaffolderClient.ts#L50">plugins/scaffolder-common/src/ScaffolderClient.ts:50</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -66,7 +66,7 @@
 <li><span><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-symbol">{</span><br/>    <span class="tsd-kind-property">discoveryApi</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-call-signature">getBaseUrl</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">pluginId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">fetchApi</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{</span><br/>        <span class="tsd-kind-property">fetch</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{</span><br/>            <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RequestInfo</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">URL</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">init</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">RequestInit</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Response</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">;</span><br/>            <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">Request</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">URL</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">init</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">RequestInit</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Response</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">;</span><br/>        <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">identityApi</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">{</span><br/>        <span class="tsd-kind-call-signature">getBackstageIdentity</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><br/>            <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">ownershipEntityRefs</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">type</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;user&quot;</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">userEntityRef</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">,</span><br/>        <span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">scmIntegrationsApi</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/_backstage_integration.index.ScmIntegrationRegistry.html" class="tsd-signature-type tsd-kind-interface">ScmIntegrationRegistry</a><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">useLongPollingLogs</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-class">ScaffolderClient</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/1eedc0d406294fa865e084d29231a4320ddfa258/plugins/scaffolder-common/src/ScaffolderClient.ts#L66">plugins/scaffolder-common/src/ScaffolderClient.ts:66</a></li></ul></aside></div></li></ul></section></section></details>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/1a705cad96f0fbd48d4f7fe7e92e8a45d6afbab7/plugins/scaffolder-common/src/ScaffolderClient.ts#L66">plugins/scaffolder-common/src/ScaffolderClient.ts:66</a></li></ul></aside></div></li></ul></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -85,7 +85,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">results</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">id</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">title</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html">ScaffolderApi</a>.<a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html#autocomplete">autocomplete</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/1eedc0d406294fa865e084d29231a4320ddfa258/plugins/scaffolder-common/src/ScaffolderClient.ts#L389">plugins/scaffolder-common/src/ScaffolderClient.ts:389</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/1a705cad96f0fbd48d4f7fe7e92e8a45d6afbab7/plugins/scaffolder-common/src/ScaffolderClient.ts#L389">plugins/scaffolder-common/src/ScaffolderClient.ts:389</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="canceltask"><span>cancel<wbr/>Task</span><a href="#canceltask" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -101,7 +101,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">status</span><span class="tsd-signature-symbol">?:</span> <a href="../types/_backstage_plugin-scaffolder-common.index.ScaffolderTaskStatus.html" class="tsd-signature-type tsd-kind-type-alias">ScaffolderTaskStatus</a> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html">ScaffolderApi</a>.<a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html#canceltask">cancelTask</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/1eedc0d406294fa865e084d29231a4320ddfa258/plugins/scaffolder-common/src/ScaffolderClient.ts#L365">plugins/scaffolder-common/src/ScaffolderClient.ts:365</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/1a705cad96f0fbd48d4f7fe7e92e8a45d6afbab7/plugins/scaffolder-common/src/ScaffolderClient.ts#L365">plugins/scaffolder-common/src/ScaffolderClient.ts:365</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="dryrun"><span>dry<wbr/>Run</span><a href="#dryrun" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -117,7 +117,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderDryRunResponse.html" class="tsd-signature-type tsd-kind-interface">ScaffolderDryRunResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html">ScaffolderApi</a>.<a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html#dryrun">dryRun</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/1eedc0d406294fa865e084d29231a4320ddfa258/plugins/scaffolder-common/src/ScaffolderClient.ts#L220">plugins/scaffolder-common/src/ScaffolderClient.ts:220</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/1a705cad96f0fbd48d4f7fe7e92e8a45d6afbab7/plugins/scaffolder-common/src/ScaffolderClient.ts#L220">plugins/scaffolder-common/src/ScaffolderClient.ts:220</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getintegrationslist"><span>get<wbr/>Integrations<wbr/>List</span><a href="#getintegrationslist" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -131,7 +131,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderGetIntegrationsListResponse.html" class="tsd-signature-type tsd-kind-interface">ScaffolderGetIntegrationsListResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html">ScaffolderApi</a>.<a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html#getintegrationslist">getIntegrationsList</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/1eedc0d406294fa865e084d29231a4320ddfa258/plugins/scaffolder-common/src/ScaffolderClient.ts#L123">plugins/scaffolder-common/src/ScaffolderClient.ts:123</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/1a705cad96f0fbd48d4f7fe7e92e8a45d6afbab7/plugins/scaffolder-common/src/ScaffolderClient.ts#L123">plugins/scaffolder-common/src/ScaffolderClient.ts:123</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="gettask"><span>get<wbr/>Task</span><a href="#gettask" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -147,7 +147,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/_backstage_plugin-scaffolder-common.index.ScaffolderTask.html" class="tsd-signature-type tsd-kind-type-alias">ScaffolderTask</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html">ScaffolderApi</a>.<a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html#gettask">getTask</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/1eedc0d406294fa865e084d29231a4320ddfa258/plugins/scaffolder-common/src/ScaffolderClient.ts#L189">plugins/scaffolder-common/src/ScaffolderClient.ts:189</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/1a705cad96f0fbd48d4f7fe7e92e8a45d6afbab7/plugins/scaffolder-common/src/ScaffolderClient.ts#L189">plugins/scaffolder-common/src/ScaffolderClient.ts:189</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="gettemplateparameterschema"><span>get<wbr/>Template<wbr/>Parameter<wbr/>Schema</span><a href="#gettemplateparameterschema" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -163,7 +163,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/_backstage_plugin-scaffolder-common.index.TemplateParameterSchema.html" class="tsd-signature-type tsd-kind-type-alias">TemplateParameterSchema</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html">ScaffolderApi</a>.<a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html#gettemplateparameterschema">getTemplateParameterSchema</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/1eedc0d406294fa865e084d29231a4320ddfa258/plugins/scaffolder-common/src/ScaffolderClient.ts#L146">plugins/scaffolder-common/src/ScaffolderClient.ts:146</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/1a705cad96f0fbd48d4f7fe7e92e8a45d6afbab7/plugins/scaffolder-common/src/ScaffolderClient.ts#L146">plugins/scaffolder-common/src/ScaffolderClient.ts:146</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="listactions"><span>list<wbr/>Actions</span><a href="#listactions" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -178,7 +178,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/_backstage_plugin-scaffolder-common.index.ListActionsResponse.html" class="tsd-signature-type tsd-kind-type-alias">ListActionsResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html">ScaffolderApi</a>.<a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html#listactions">listActions</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/1eedc0d406294fa865e084d29231a4320ddfa258/plugins/scaffolder-common/src/ScaffolderClient.ts#L343">plugins/scaffolder-common/src/ScaffolderClient.ts:343</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/1a705cad96f0fbd48d4f7fe7e92e8a45d6afbab7/plugins/scaffolder-common/src/ScaffolderClient.ts#L343">plugins/scaffolder-common/src/ScaffolderClient.ts:343</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="listtasks"><span>list<wbr/>Tasks</span><a href="#listtasks" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -194,7 +194,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">tasks</span><span class="tsd-signature-symbol">:</span> <a href="../types/_backstage_plugin-scaffolder-common.index.ScaffolderTask.html" class="tsd-signature-type tsd-kind-type-alias">ScaffolderTask</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">totalTasks</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html">ScaffolderApi</a>.<a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html#listtasks">listTasks</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/1eedc0d406294fa865e084d29231a4320ddfa258/plugins/scaffolder-common/src/ScaffolderClient.ts#L90">plugins/scaffolder-common/src/ScaffolderClient.ts:90</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/1a705cad96f0fbd48d4f7fe7e92e8a45d6afbab7/plugins/scaffolder-common/src/ScaffolderClient.ts#L90">plugins/scaffolder-common/src/ScaffolderClient.ts:90</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="listtemplatingextensions"><span>list<wbr/>Templating<wbr/>Extensions</span><a href="#listtemplatingextensions" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -209,7 +209,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/_backstage_plugin-scaffolder-common.index.ListTemplatingExtensionsResponse.html" class="tsd-signature-type tsd-kind-type-alias">ListTemplatingExtensionsResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html">ScaffolderApi</a>.<a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html#listtemplatingextensions">listTemplatingExtensions</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/1eedc0d406294fa865e084d29231a4320ddfa258/plugins/scaffolder-common/src/ScaffolderClient.ts#L354">plugins/scaffolder-common/src/ScaffolderClient.ts:354</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/1a705cad96f0fbd48d4f7fe7e92e8a45d6afbab7/plugins/scaffolder-common/src/ScaffolderClient.ts#L354">plugins/scaffolder-common/src/ScaffolderClient.ts:354</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="retry"><span>retry</span><a href="#retry" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -225,7 +225,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">id</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html">ScaffolderApi</a>.<a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html#retry">retry</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/1eedc0d406294fa865e084d29231a4320ddfa258/plugins/scaffolder-common/src/ScaffolderClient.ts#L377">plugins/scaffolder-common/src/ScaffolderClient.ts:377</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/1a705cad96f0fbd48d4f7fe7e92e8a45d6afbab7/plugins/scaffolder-common/src/ScaffolderClient.ts#L377">plugins/scaffolder-common/src/ScaffolderClient.ts:377</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="scaffold"><span>scaffold</span><a href="#scaffold" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -241,7 +241,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderScaffoldResponse.html" class="tsd-signature-type tsd-kind-interface">ScaffolderScaffoldResponse</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html">ScaffolderApi</a>.<a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html#scaffold">scaffold</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/1eedc0d406294fa865e084d29231a4320ddfa258/plugins/scaffolder-common/src/ScaffolderClient.ts#L165">plugins/scaffolder-common/src/ScaffolderClient.ts:165</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/1a705cad96f0fbd48d4f7fe7e92e8a45d6afbab7/plugins/scaffolder-common/src/ScaffolderClient.ts#L165">plugins/scaffolder-common/src/ScaffolderClient.ts:165</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="streamlogs"><span>stream<wbr/>Logs</span><a href="#streamlogs" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -257,7 +257,7 @@
 <h4 class="tsd-returns-title">Returns <a href="../types/_backstage_types.Observable.html" class="tsd-signature-type tsd-kind-type-alias">Observable</a><span class="tsd-signature-symbol">&lt;</span><a href="../types/_backstage_plugin-scaffolder-common.index.LogEvent.html" class="tsd-signature-type tsd-kind-type-alias">LogEvent</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Implementation of <a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html">ScaffolderApi</a>.<a href="../interfaces/_backstage_plugin-scaffolder-common.index.ScaffolderApi.html#streamlogs">streamLogs</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/1eedc0d406294fa865e084d29231a4320ddfa258/plugins/scaffolder-common/src/ScaffolderClient.ts#L206">plugins/scaffolder-common/src/ScaffolderClient.ts:206</a></li></ul></aside></div></li></ul></section></section></details></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/1a705cad96f0fbd48d4f7fe7e92e8a45d6afbab7/plugins/scaffolder-common/src/ScaffolderClient.ts#L206">plugins/scaffolder-common/src/ScaffolderClient.ts:206</a></li></ul></aside></div></li></ul></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
