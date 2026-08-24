@@ -1147,7 +1147,7 @@ function isAppInstallationMissingError(error: unknown): boolean {
   }
   const err = error as { name?: string; message?: string };
   return (
-    err.name === 'NotFoundError' ||
+    err.name === 'NotFoundError' &&
     /no app installation found/i.test(err.message ?? '')
   );
 }
