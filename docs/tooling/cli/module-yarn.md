@@ -9,6 +9,9 @@ references, local patch files, and `yarn.lock` remain aligned. When a project
 patches a Backstage package, it also checks that the package version matches
 the Backstage release selected in `backstage.json`.
 
+See [Generating temporary patches](../local-dev/linking-local-packages.md#generating-temporary-patches)
+for guidance on creating Yarn patches for locally modified Backstage packages.
+
 The command verifies Yarn's native `patch:` protocol, available in Yarn 2 and
 later. It does not inspect patches managed by tools such as `patch-package` in
 Yarn Classic repositories.
