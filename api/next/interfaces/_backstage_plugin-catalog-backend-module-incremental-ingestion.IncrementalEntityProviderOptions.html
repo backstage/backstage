@@ -13,7 +13,7 @@
 <h1>Interface IncrementalEntityProviderOptions</h1></div>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">IncrementalEntityProviderOptions</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#backoff">backoff</a><span class="tsd-signature-symbol">?:</span> <a href="../types/_backstage_types.HumanDuration.html" class="tsd-signature-type tsd-kind-type-alias">HumanDuration</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#burstinterval">burstInterval</a><span class="tsd-signature-symbol">:</span> <a href="../types/_backstage_types.HumanDuration.html" class="tsd-signature-type tsd-kind-type-alias">HumanDuration</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#burstlength">burstLength</a><span class="tsd-signature-symbol">:</span> <a href="../types/_backstage_types.HumanDuration.html" class="tsd-signature-type tsd-kind-type-alias">HumanDuration</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#rejectemptysourcecollections">rejectEmptySourceCollections</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#rejectremovalsabovepercentage">rejectRemovalsAbovePercentage</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#restlength">restLength</a><span class="tsd-signature-symbol">:</span> <a href="../types/_backstage_types.HumanDuration.html" class="tsd-signature-type tsd-kind-type-alias">HumanDuration</a><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/806cef0c871d7a0e5e35e9431e23f42a3eed5366/plugins/catalog-backend-module-incremental-ingestion/src/types.ts#L138">plugins/catalog-backend-module-incremental-ingestion/src/types.ts:138</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/1eedc0d406294fa865e084d29231a4320ddfa258/plugins/catalog-backend-module-incremental-ingestion/src/types.ts#L138">plugins/catalog-backend-module-incremental-ingestion/src/types.ts:138</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -39,7 +39,7 @@ determines how soon it will be retried. E.g.
 <code>[{ minutes: 1}, { minutes: 5}, {minutes: 30 }, { hours: 3 }]</code></p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/806cef0c871d7a0e5e35e9431e23f42a3eed5366/plugins/catalog-backend-module-incremental-ingestion/src/types.ts#L163">plugins/catalog-backend-module-incremental-ingestion/src/types.ts:163</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/1eedc0d406294fa865e084d29231a4320ddfa258/plugins/catalog-backend-module-incremental-ingestion/src/types.ts#L163">plugins/catalog-backend-module-incremental-ingestion/src/types.ts:163</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="burstinterval"><span>burst<wbr/>Interval</span><a href="#burstinterval" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">burstInterval</span><span class="tsd-signature-symbol">:</span> <a href="../types/_backstage_types.HumanDuration.html" class="tsd-signature-type tsd-kind-type-alias">HumanDuration</a></div>
@@ -47,7 +47,7 @@ determines how soon it will be retried. E.g.
 much time to wait in between each burst.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/806cef0c871d7a0e5e35e9431e23f42a3eed5366/plugins/catalog-backend-module-incremental-ingestion/src/types.ts#L143">plugins/catalog-backend-module-incremental-ingestion/src/types.ts:143</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/1eedc0d406294fa865e084d29231a4320ddfa258/plugins/catalog-backend-module-incremental-ingestion/src/types.ts#L143">plugins/catalog-backend-module-incremental-ingestion/src/types.ts:143</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="burstlength"><span>burst<wbr/>Length</span><a href="#burstlength" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">burstLength</span><span class="tsd-signature-symbol">:</span> <a href="../types/_backstage_types.HumanDuration.html" class="tsd-signature-type tsd-kind-type-alias">HumanDuration</a></div>
@@ -55,7 +55,7 @@ much time to wait in between each burst.</p>
 to keep ingesting within each burst.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/806cef0c871d7a0e5e35e9431e23f42a3eed5366/plugins/catalog-backend-module-incremental-ingestion/src/types.ts#L149">plugins/catalog-backend-module-incremental-ingestion/src/types.ts:149</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/1eedc0d406294fa865e084d29231a4320ddfa258/plugins/catalog-backend-module-incremental-ingestion/src/types.ts#L149">plugins/catalog-backend-module-incremental-ingestion/src/types.ts:149</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="rejectemptysourcecollections"><code class="tsd-tag">Optional</code><span>reject<wbr/>Empty<wbr/>Source<wbr/>Collections</span><a href="#rejectemptysourcecollections" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">rejectEmptySourceCollections</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
@@ -65,7 +65,7 @@ improperly returned 0 assets. If set to <code>true</code>, Backstage will
 reject removals when that happens.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/806cef0c871d7a0e5e35e9431e23f42a3eed5366/plugins/catalog-backend-module-incremental-ingestion/src/types.ts#L179">plugins/catalog-backend-module-incremental-ingestion/src/types.ts:179</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/1eedc0d406294fa865e084d29231a4320ddfa258/plugins/catalog-backend-module-incremental-ingestion/src/types.ts#L179">plugins/catalog-backend-module-incremental-ingestion/src/types.ts:179</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="rejectremovalsabovepercentage"><code class="tsd-tag">Optional</code><span>reject<wbr/>Removals<wbr/>Above<wbr/>Percentage</span><a href="#rejectremovalsabovepercentage" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">rejectRemovalsAbovePercentage</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
@@ -75,7 +75,7 @@ Backstage removing all associated entities. To avoid that, set
 a percentage of entities past which removal will be disallowed.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/806cef0c871d7a0e5e35e9431e23f42a3eed5366/plugins/catalog-backend-module-incremental-ingestion/src/types.ts#L171">plugins/catalog-backend-module-incremental-ingestion/src/types.ts:171</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/1eedc0d406294fa865e084d29231a4320ddfa258/plugins/catalog-backend-module-incremental-ingestion/src/types.ts#L171">plugins/catalog-backend-module-incremental-ingestion/src/types.ts:171</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="restlength"><span>rest<wbr/>Length</span><a href="#restlength" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">restLength</span><span class="tsd-signature-symbol">:</span> <a href="../types/_backstage_types.HumanDuration.html" class="tsd-signature-type tsd-kind-type-alias">HumanDuration</a></div>
@@ -84,7 +84,7 @@ will rest for this period of time before starting to ingest
 again.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/806cef0c871d7a0e5e35e9431e23f42a3eed5366/plugins/catalog-backend-module-incremental-ingestion/src/types.ts#L156">plugins/catalog-backend-module-incremental-ingestion/src/types.ts:156</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/1eedc0d406294fa865e084d29231a4320ddfa258/plugins/catalog-backend-module-incremental-ingestion/src/types.ts#L156">plugins/catalog-backend-module-incremental-ingestion/src/types.ts:156</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
