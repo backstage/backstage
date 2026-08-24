@@ -28,6 +28,14 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 const MATERIAL_THEME = 'material';
+const PYMDOWNX_SNIPPETS_EXTENSION = 'pymdownx.snippets';
+
+function isPymdownxSnippetsExtension(extensionName: string): boolean {
+  return (
+    extensionName === PYMDOWNX_SNIPPETS_EXTENSION ||
+    extensionName === `${PYMDOWNX_SNIPPETS_EXTENSION}:SnippetExtension`
+  );
+}
 
 type MkDocsThemeObject = {
   name?: string;
@@ -300,6 +308,10 @@ export const sanitizeMkdocsYml = async (
 
       sanitized.markdown_extensions = extensions.filter(ext => {
         if (typeof ext === 'string') {
+          if (isPymdownxSnippetsExtension(ext)) {
+            return true;
+          }
+
           if (ext.includes(':')) {
             removedEntries.push(ext);
             return false;
@@ -313,12 +325,32 @@ export const sanitizeMkdocsYml = async (
 
         // Check every key, not just the first, so that a multi-key mapping
         // cannot smuggle a dangerous name past the filter.
-        const dangerousNames = Object.keys(
-          ext as Record<string, unknown>,
-        ).filter(key => key.includes(':'));
+        const extensionEntries = Object.entries(ext as Record<string, unknown>);
+        const dangerousNames = extensionEntries
+          .map(([extensionName]) => extensionName)
+          .filter(
+            extensionName =>
+              extensionName.includes(':') &&
+              !isPymdownxSnippetsExtension(extensionName),
+          );
         if (dangerousNames.length > 0) {
           removedEntries.push(...dangerousNames);
           return false;
+        }
+
+        for (const [extensionName, extensionConfig] of extensionEntries) {
+          if (!isPymdownxSnippetsExtension(extensionName)) {
+            continue;
+          }
+
+          if (
+            extensionConfig !== null &&
+            (typeof extensionConfig !== 'object' ||
+              Object.keys(extensionConfig).length > 0)
+          ) {
+            removedEntries.push(`${extensionName} configuration`);
+          }
+          Object.assign(ext, { [extensionName]: {} });
         }
 
         // Strip dangerous keys from the extension's own configuration.
