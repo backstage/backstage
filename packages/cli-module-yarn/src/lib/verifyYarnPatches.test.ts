@@ -298,6 +298,29 @@ describe('verifyYarnPatches', () => {
     );
   });
 
+  it('reports orphaned patch files without a .patch suffix', async () => {
+    mockDir.setContent({
+      'package.json': packageJson({ name: 'root' }),
+      '.yarn': { patches: { 'orphaned.diff': 'patch' } },
+      'yarn.lock': LOCKFILE_HEADER,
+    });
+
+    await expect(verifyYarnPatches({ rootDir: mockDir.path })).resolves.toEqual(
+      {
+        patchCount: 0,
+        backstageCheck: 'skipped',
+        errors: [
+          {
+            kind: 'orphaned-patch-file',
+            message:
+              "Patch file '.yarn/patches/orphaned.diff' is not referenced by any manifest",
+            location: '.yarn/patches/orphaned.diff',
+          },
+        ],
+      },
+    );
+  });
+
   it('uses YARN_PATCH_FOLDER in preference to project configuration', async () => {
     mockDir.setContent({
       'package.json': packageJson({
@@ -564,6 +587,27 @@ plugins:
     );
   });
 
+  it('ignores legacy Yarn built-in patches', async () => {
+    mockDir.setContent({
+      'package.json': packageJson({ name: 'root' }),
+      'yarn.lock': `${LOCKFILE_HEADER}
+"fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>":
+  version: 2.3.2
+  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"
+  languageName: node
+  linkType: hard
+`,
+    });
+
+    await expect(verifyYarnPatches({ rootDir: mockDir.path })).resolves.toEqual(
+      {
+        patchCount: 0,
+        backstageCheck: 'skipped',
+        errors: [],
+      },
+    );
+  });
+
   it('matches built-in-only declarations between manifests and yarn.lock', async () => {
     mockDir.setContent({
       'package.json': packageJson({
@@ -698,6 +742,12 @@ plugins:
         message:
           "Patch path '.yarn/patches/directory.patch' is not a regular file",
         location: '.yarn/patches/directory.patch',
+      },
+      {
+        kind: 'orphaned-patch-file',
+        message:
+          "Patch file '.yarn/patches/directory.patch/placeholder.txt' is not referenced by any manifest",
+        location: '.yarn/patches/directory.patch/placeholder.txt',
       },
     ]);
   });
@@ -1397,6 +1447,46 @@ plugins:
     );
   });
 
+  it('does not match patch declarations with different outer identities', async () => {
+    mockDir.setContent({
+      'package.json': packageJson({
+        name: 'root',
+        resolutions: {
+          'alias-a': 'patch:source@npm%3A1.0.0#~/.yarn/patches/shared.patch',
+        },
+      }),
+      '.yarn': { patches: { 'shared.patch': 'patch' } },
+      'yarn.lock': `${LOCKFILE_HEADER}
+"alias-b@patch:source@npm%3A1.0.0#~/.yarn/patches/shared.patch":
+  version: 1.0.0
+  resolution: "alias-b@patch:source@npm%3A1.0.0#~/.yarn/patches/shared.patch::version=1.0.0&hash=aaaaaa"
+  languageName: node
+  linkType: hard
+`,
+    });
+
+    await expect(verifyYarnPatches({ rootDir: mockDir.path })).resolves.toEqual(
+      {
+        patchCount: 1,
+        backstageCheck: 'skipped',
+        errors: [
+          {
+            kind: 'lockfile-mismatch',
+            message:
+              "Patch declaration for 'source@npm:1.0.0' using '.yarn/patches/shared.patch' is missing from yarn.lock",
+            location: 'package.json#resolutions.alias-a',
+          },
+          {
+            kind: 'lockfile-mismatch',
+            message:
+              "yarn.lock contains patch declaration for 'source@npm:1.0.0' using '.yarn/patches/shared.patch' that is absent from manifests",
+            location: 'yarn.lock',
+          },
+        ],
+      },
+    );
+  });
+
   it('sorts aggregated errors by location and kind', async () => {
     mockDir.setContent({
       'package.json': packageJson({
@@ -1453,6 +1543,82 @@ plugins:
     ).resolves.toEqual({
       patchCount: 1,
       backstageCheck: 'verified',
+      errors: [],
+    });
+  });
+
+  it('validates npm aliases that target Backstage packages', async () => {
+    mockDir.setContent({
+      'package.json': packageJson({
+        name: 'root',
+        resolutions: {
+          alias:
+            'patch:alias@npm%3A@backstage/example@1.0.0#~/.yarn/patches/example.patch',
+        },
+      }),
+      'backstage.json': packageJson({ version: '1.0.1' }),
+      '.yarn': { patches: { 'example.patch': 'patch' } },
+      'yarn.lock': `${LOCKFILE_HEADER}
+"alias@patch:alias@npm%3A@backstage/example@1.0.0#~/.yarn/patches/example.patch":
+  version: 1.0.0
+  resolution: "alias@patch:@backstage/example@npm%3A1.0.0#~/.yarn/patches/example.patch::version=1.0.0&hash=aaaaaa"
+  languageName: node
+  linkType: hard
+`,
+    });
+    const fetch: NonNullable<
+      Parameters<typeof verifyYarnPatches>[0]['fetch']
+    > = async () =>
+      new Response(JSON.stringify(releaseManifest('1.0.1', '1.0.1')), {
+        status: 200,
+      });
+
+    await expect(
+      verifyYarnPatches({ rootDir: mockDir.path, fetch }),
+    ).resolves.toEqual({
+      patchCount: 1,
+      backstageCheck: 'verified',
+      errors: [
+        {
+          kind: 'backstage-patch-holdback',
+          message:
+            "Patched package '@backstage/example' is at version '1.0.0', but Backstage release '1.0.1' requires version '1.0.1'",
+          location: 'package.json#resolutions.alias',
+        },
+      ],
+    });
+  });
+
+  it('skips npm aliases from Backstage names to non-Backstage packages', async () => {
+    mockDir.setContent({
+      'package.json': packageJson({
+        name: 'root',
+        resolutions: {
+          '@backstage/alias':
+            'patch:@backstage/alias@npm%3Aexample@1.0.0#~/.yarn/patches/example.patch',
+        },
+      }),
+      'backstage.json': packageJson({ version: '1.0.0' }),
+      '.yarn': { patches: { 'example.patch': 'patch' } },
+      'yarn.lock': `${LOCKFILE_HEADER}
+"@backstage/alias@patch:@backstage/alias@npm%3Aexample@1.0.0#~/.yarn/patches/example.patch":
+  version: 1.0.0
+  resolution: "@backstage/alias@patch:example@npm%3A1.0.0#~/.yarn/patches/example.patch::version=1.0.0&hash=aaaaaa"
+  languageName: node
+  linkType: hard
+`,
+    });
+    const fetch: NonNullable<
+      Parameters<typeof verifyYarnPatches>[0]['fetch']
+    > = async () => {
+      throw new Error('fetch should not be called');
+    };
+
+    await expect(
+      verifyYarnPatches({ rootDir: mockDir.path, fetch }),
+    ).resolves.toEqual({
+      patchCount: 1,
+      backstageCheck: 'skipped',
       errors: [],
     });
   });

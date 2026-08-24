@@ -27,7 +27,7 @@ import {
 import { Project, TAG_REGEXP, Workspace } from '@yarnpkg/core';
 import type { Descriptor, PluginConfiguration } from '@yarnpkg/core';
 import { npath, ppath } from '@yarnpkg/fslib';
-import { parseSyml } from '@yarnpkg/parsers';
+import { parseResolution, parseSyml } from '@yarnpkg/parsers';
 import patchPlugin from '@yarnpkg/plugin-patch';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -63,6 +63,7 @@ export type VerifyYarnPatchesResult = {
 };
 
 type PatchDeclaration = {
+  patchedIdent: string;
   source: string;
   resolvedSource?: string;
   components: string[];
@@ -137,6 +138,9 @@ function isErrorWithCode(error: unknown, code: string): boolean {
 }
 
 function getPatchPathWithoutFlags(patchPath: string): string {
+  if (patchPath.startsWith('~builtin<')) {
+    return patchPath.slice(1);
+  }
   const flagIndex = patchPath.lastIndexOf('!');
   return flagIndex === -1 ? patchPath : patchPath.slice(flagIndex + 1);
 }
@@ -207,6 +211,7 @@ function parsePatchDeclaration(options: {
   rootDir: string;
   parentDir: string;
   parentLocator?: string;
+  patchedIdent: string;
   range: string;
   location: string;
   origin: 'manifest' | 'lockfile';
@@ -262,6 +267,7 @@ function parsePatchDeclaration(options: {
   }
 
   return {
+    patchedIdent: options.patchedIdent,
     source,
     components,
     parentLocator:
@@ -277,7 +283,7 @@ function parsePatchDeclaration(options: {
 }
 
 function declarationKey(declaration: PatchDeclaration): string {
-  return `${declaration.parentLocator ?? ''}\0${
+  return `${declaration.parentLocator ?? ''}\0${declaration.patchedIdent}\0${
     declaration.source
   }\0${declaration.components.join('\0')}`;
 }
@@ -570,6 +576,10 @@ async function discoverManifestDeclarations(
             rootDir,
             parentDir: manifestDir,
             parentLocator,
+            patchedIdent:
+              field === 'resolutions'
+                ? parseResolution(name).descriptor.fullName
+                : structUtils.stringifyIdent(structUtils.parseIdent(name)),
             range,
             location,
             origin: 'manifest',
@@ -629,6 +639,7 @@ function discoverLockfileDeclarations(
         const declaration = parsePatchDeclaration({
           rootDir,
           parentDir: rootDir,
+          patchedIdent: structUtils.stringifyIdent(descriptor),
           range: descriptor.range,
           location: 'yarn.lock',
           origin: 'lockfile',
@@ -677,6 +688,7 @@ function discoverLockfileDeclarations(
       const locatorDeclaration = parsePatchDeclaration({
         rootDir,
         parentDir: rootDir,
+        patchedIdent: structUtils.stringifyIdent(locator),
         range: locator.reference,
         location: 'yarn.lock',
         origin: 'lockfile',
@@ -759,10 +771,7 @@ async function findPatchFiles(directory: string): Promise<string[]> {
       if (entry.isDirectory()) {
         return findPatchFiles(entryPath);
       }
-      return (entry.isFile() || entry.isSymbolicLink()) &&
-        entry.name.endsWith('.patch')
-        ? [entryPath]
-        : [];
+      return entry.isFile() || entry.isSymbolicLink() ? [entryPath] : [];
     }),
   );
   return files.flat().sort();
@@ -786,14 +795,16 @@ function getPatchedBackstagePackages(
 ): PatchedBackstagePackage[] {
   const packages: PatchedBackstagePackage[] = [];
   for (const declaration of declarations) {
-    const descriptor = structUtils.parseDescriptor(declaration.source, true);
-    if (descriptor.scope !== 'backstage') {
-      continue;
-    }
+    const declaredSource = normalizeNpmAliasSource(
+      structUtils.parseDescriptor(declaration.source, true),
+    );
     const resolvedSource = declaration.resolvedSource;
     const source = resolvedSource
       ? structUtils.parseLocator(resolvedSource, true)
-      : descriptor;
+      : declaredSource;
+    if (source.scope !== 'backstage') {
+      continue;
+    }
     const range = structUtils.parseRange(
       'reference' in source ? source.reference : source.range,
     );
@@ -804,7 +815,7 @@ function getPatchedBackstagePackages(
       continue;
     }
     packages.push({
-      name: structUtils.stringifyIdent(descriptor),
+      name: structUtils.stringifyIdent(source),
       version: range.selector,
       location: declaration.location,
     });
