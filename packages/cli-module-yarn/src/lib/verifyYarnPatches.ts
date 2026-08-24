@@ -754,7 +754,24 @@ async function readYarnConfiguration(
   });
 }
 
-async function findPatchFiles(directory: string): Promise<string[]> {
+async function findPatchFiles(
+  directory: string,
+  realpathAncestry: ReadonlySet<string> = new Set(),
+): Promise<string[]> {
+  let realDirectory;
+  try {
+    realDirectory = await fs.realpath(directory);
+  } catch (error) {
+    if (isErrorWithCode(error, 'ENOENT')) {
+      return [];
+    }
+    throw error;
+  }
+  if (realpathAncestry.has(realDirectory)) {
+    return [];
+  }
+  const nextAncestry = new Set(realpathAncestry).add(realDirectory);
+
   let entries;
   try {
     entries = await fs.readdir(directory, { withFileTypes: true });
@@ -769,9 +786,22 @@ async function findPatchFiles(directory: string): Promise<string[]> {
     entries.map(async entry => {
       const entryPath = path.join(directory, entry.name);
       if (entry.isDirectory()) {
-        return findPatchFiles(entryPath);
+        return findPatchFiles(entryPath, nextAncestry);
       }
-      return entry.isFile() || entry.isSymbolicLink() ? [entryPath] : [];
+      if (entry.isSymbolicLink()) {
+        try {
+          const targetStats = await fs.stat(entryPath);
+          if (targetStats.isDirectory()) {
+            return findPatchFiles(entryPath, nextAncestry);
+          }
+        } catch (error) {
+          if (!isErrorWithCode(error, 'ENOENT')) {
+            throw error;
+          }
+        }
+        return [entryPath];
+      }
+      return entry.isFile() ? [entryPath] : [];
     }),
   );
   return files.flat().sort();

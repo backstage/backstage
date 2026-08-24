@@ -298,6 +298,68 @@ describe('verifyYarnPatches', () => {
     );
   });
 
+  it('follows symbolic links to patch directories', async () => {
+    mockDir.setContent({
+      'package.json': packageJson({
+        name: 'root',
+        resolutions: {
+          package:
+            'patch:package@npm%3A1.0.0#~/.yarn/patches/shared/example.patch',
+        },
+      }),
+      '.yarn': { patches: {} },
+      'shared-patches': { 'example.patch': 'patch' },
+      'yarn.lock': `${LOCKFILE_HEADER}
+"package@patch:package@npm%3A1.0.0#~/.yarn/patches/shared/example.patch":
+  version: 1.0.0
+  resolution: "package@patch:package@npm%3A1.0.0#~/.yarn/patches/shared/example.patch::version=1.0.0&hash=aaaaaa"
+  languageName: node
+  linkType: hard
+`,
+    });
+    await fs.symlink(
+      mockDir.resolve('shared-patches'),
+      mockDir.resolve('.yarn/patches/shared'),
+      'dir',
+    );
+
+    await expect(verifyYarnPatches({ rootDir: mockDir.path })).resolves.toEqual(
+      {
+        patchCount: 1,
+        backstageCheck: 'skipped',
+        errors: [],
+      },
+    );
+  });
+
+  it('stops traversing symbolic link directory cycles', async () => {
+    mockDir.setContent({
+      'package.json': packageJson({ name: 'root' }),
+      '.yarn': { patches: { 'orphaned.patch': 'patch' } },
+      'yarn.lock': LOCKFILE_HEADER,
+    });
+    await fs.symlink(
+      mockDir.resolve('.yarn/patches'),
+      mockDir.resolve('.yarn/patches/cycle'),
+      'dir',
+    );
+
+    await expect(verifyYarnPatches({ rootDir: mockDir.path })).resolves.toEqual(
+      {
+        patchCount: 0,
+        backstageCheck: 'skipped',
+        errors: [
+          {
+            kind: 'orphaned-patch-file',
+            message:
+              "Patch file '.yarn/patches/orphaned.patch' is not referenced by any manifest",
+            location: '.yarn/patches/orphaned.patch',
+          },
+        ],
+      },
+    );
+  });
+
   it('reports orphaned patch files without a .patch suffix', async () => {
     mockDir.setContent({
       'package.json': packageJson({ name: 'root' }),
