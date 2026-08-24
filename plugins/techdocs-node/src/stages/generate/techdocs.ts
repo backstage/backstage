@@ -37,6 +37,7 @@ import {
   sanitizeMkdocsYml,
 } from './mkdocsPatchers';
 import {
+  ContainerRunnerPullOptions,
   GeneratorBase,
   GeneratorConfig,
   GeneratorOptions,
@@ -191,6 +192,7 @@ export class TechdocsGenerator implements GeneratorBase {
             // write to, otherwise they will just fail trying to write to /
             envVars: { HOME: '/tmp' },
             pullImage: this.options.pullImage,
+            pullOptions: this.options.pullOptions,
             defaultUser: runAsDefaultUser,
           });
           childLogger.info(
@@ -257,6 +259,9 @@ export function readGeneratorConfig(
       'docker',
     dockerImage: config.getOptionalString('techdocs.generator.dockerImage'),
     pullImage: config.getOptionalBoolean('techdocs.generator.pullImage'),
+    pullOptions: config.getOptional<ContainerRunnerPullOptions>(
+      'techdocs.generator.pullOptions',
+    ),
     omitTechdocsCoreMkdocsPlugin: config.getOptionalBoolean(
       'techdocs.generator.mkdocs.omitTechdocsCorePlugin',
     ),

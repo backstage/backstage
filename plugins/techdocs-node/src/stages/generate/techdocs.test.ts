@@ -104,6 +104,29 @@ describe('readGeneratorConfig', () => {
     });
   });
 
+  it('should read pull options config', () => {
+    const pullOptions = {
+      authconfig: {
+        username: 'user',
+        password: 'pass',
+      },
+    };
+
+    const config = new ConfigReader({
+      techdocs: {
+        generator: {
+          runIn: 'docker',
+          pullOptions,
+        },
+      },
+    });
+
+    expect(readGeneratorConfig(config, logger)).toEqual({
+      runIn: 'docker',
+      pullOptions,
+    });
+  });
+
   describe('with legacy techdocs.generators.techdocs config', () => {
     it('should read legacy docker option', () => {
       const config = new ConfigReader({

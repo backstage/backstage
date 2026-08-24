@@ -98,6 +98,51 @@ describe('DockerContainerRunner', () => {
     expect(mockRun).toHaveBeenCalled();
   });
 
+  it('should pass pull options to the docker client when pullImage is not set', async () => {
+    const pullOptions = {
+      authconfig: {
+        username: 'user',
+        password: 'pass',
+      },
+    };
+
+    await containerTaskApi.runContainer({
+      imageName,
+      args,
+      pullOptions,
+    });
+
+    expect(mockPull).toHaveBeenCalledWith(
+      imageName,
+      pullOptions,
+      expect.any(Function),
+    );
+    expect(mockRun).toHaveBeenCalled();
+  });
+
+  it('should pass pull options to the docker client when pullImage is true', async () => {
+    const pullOptions = {
+      authconfig: {
+        username: 'user',
+        password: 'pass',
+      },
+    };
+
+    await containerTaskApi.runContainer({
+      imageName,
+      args,
+      pullImage: true,
+      pullOptions,
+    });
+
+    expect(mockPull).toHaveBeenCalledWith(
+      imageName,
+      pullOptions,
+      expect.any(Function),
+    );
+    expect(mockRun).toHaveBeenCalled();
+  });
+
   it('should call the dockerClient run command with the correct arguments passed through', async () => {
     await containerTaskApi.runContainer({
       imageName,
