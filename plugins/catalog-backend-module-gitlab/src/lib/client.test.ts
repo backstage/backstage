@@ -23,6 +23,7 @@ import {
   GitLabIntegration,
   readGitLabIntegrationConfig,
 } from '@backstage/integration';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { handlers } from '../__testUtils__/handlers';
 import * as mock from '../__testUtils__/mocks';
@@ -674,6 +675,67 @@ describe('GitLabClient', () => {
       await expect(() => client.getUserById(42)).rejects.toThrow(
         'Internal Server Error',
       );
+    });
+  });
+
+  describe('getGroupMemberById', () => {
+    it('should return the member or undefined if the user is not a member', async () => {
+      server.use(
+        http.get(
+          `${mock.apiBaseUrl}/groups/group1/members/all/:userId`,
+          ({ params }) => {
+            const user = mock.all_self_hosted_group1_members.find(
+              member => member.id === Number(params.userId),
+            );
+            return user
+              ? HttpResponse.json(user)
+              : HttpResponse.json(
+                  { message: '404 Not found' },
+                  { status: 404 },
+                );
+          },
+        ),
+      );
+
+      const client = new GitLabClient({
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      await expect(
+        client.getGroupMemberById('group1', 1),
+      ).resolves.toMatchObject(mock.all_self_hosted_group1_members[0]);
+      await expect(
+        client.getGroupMemberById('group1', 2),
+      ).resolves.toBeUndefined();
+    });
+
+    it('should handle errors when fetching a group member by ID', async () => {
+      server.use(
+        http.get(`${mock.apiBaseUrl}/groups/group1/members/all/42`, () =>
+          HttpResponse.json(
+            { error: 'Internal Server Error' },
+            { status: 500 },
+          ),
+        ),
+      );
+
+      const client = new GitLabClient({
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
+        ),
+        logger: mockServices.logger.mock(),
+      });
+
+      await expect(() =>
+        client.getGroupMemberById('group1', 42),
+      ).rejects.toThrow('Internal Server Error');
     });
   });
 });
