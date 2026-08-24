@@ -450,8 +450,7 @@ export function createPublishBitbucketServerPullRequestAction(options: {
         });
 
         // copy files
-        fs.cpSync(sourceDir, tempDir, {
-          recursive: true,
+        fs.copySync(sourceDir, tempDir, {
           filter: isNotGitDirectoryOrContents,
         });
 
