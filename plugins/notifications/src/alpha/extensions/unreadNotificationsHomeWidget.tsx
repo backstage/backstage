@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { compatWrapper } from '@backstage/core-compat-api';
 import { type RendererProps } from '@backstage/plugin-home-react';
 import { HomePageWidgetBlueprint } from '@backstage/plugin-home-react/alpha';
 
@@ -32,7 +31,7 @@ const defaultCardLayout = {
 } as const;
 
 function BorderlessHomeWidgetRenderer({ Content }: RendererProps) {
-  return compatWrapper(<Content />);
+  return <Content />;
 }
 
 /**

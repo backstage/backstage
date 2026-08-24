@@ -87,7 +87,7 @@ function NotificationsPageContent(
   // polling refresh logic here.
   const { lastSignal } = useSignal('notifications');
   const [searchParams] = useSearchParams();
-  const highlightedNotificationId = searchParams.get('id') ?? undefined;
+  const highlightedNotificationId = searchParams.get('id') || undefined;
   const [highlightedNotification, setHighlightedNotification] = useState<
     Notification | undefined
   >();
@@ -219,6 +219,15 @@ function NotificationsPageContent(
     return [highlightedNotification, ...(notifications ?? [])];
   }, [notifications, highlightedNotification]);
 
+  const injectedHighlightedNotification =
+    highlightedNotification &&
+    !notifications?.some(
+      notification => notification.id === highlightedNotification.id,
+    );
+  const displayedPageSize = injectedHighlightedNotification
+    ? pageSize + 1
+    : pageSize;
+
   if (error) {
     return <ResponseErrorPanel error={error} />;
   }
@@ -277,7 +286,7 @@ function NotificationsPageContent(
             onPageChange={setPageNumber}
             onRowsPerPageChange={setPageSize}
             page={pageNumber}
-            pageSize={pageSize}
+            pageSize={displayedPageSize}
             totalCount={totalCount}
           />
         </Grid.Item>

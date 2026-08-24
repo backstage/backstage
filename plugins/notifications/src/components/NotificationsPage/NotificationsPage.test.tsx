@@ -84,4 +84,25 @@ describe('NotificationsPage deep linking', () => {
     expect(highlightedNotification).toBeInTheDocument();
     expect(highlightedNotification).toHaveAttribute('tabindex', '-1');
   });
+
+  it('ignores an empty id query param', async () => {
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [notificationsApiRef, notificationsApi],
+          [toastApiRef, { post: jest.fn() }],
+        ]}
+      >
+        <NotificationsPage />
+      </TestApiProvider>,
+      {
+        routeEntries: ['/notifications?id='],
+      },
+    );
+
+    expect(
+      await screen.findByText('Important notification'),
+    ).toBeInTheDocument();
+    expect(notificationsApi.getNotification).not.toHaveBeenCalled();
+  });
 });
