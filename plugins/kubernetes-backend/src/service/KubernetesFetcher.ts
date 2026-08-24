@@ -107,7 +107,11 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
               ? r.json().then(
                   ({ kind, items }): FetchResponse => ({
                     type: objectType,
-                    resources: this.transformResources(objectType, kind, items),
+                    resources: this.transformResources(
+                      { objectType, group, apiVersion, plural },
+                      kind,
+                      items,
+                    ),
                   }),
                 )
               : this.handleUnsuccessfulResponse(params.clusterDetails.name, r),
@@ -296,7 +300,6 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     const requestInit: RequestInit = {
       method: 'GET',
       headers: this.buildRequestHeaders(credential),
-      redirect: 'manual',
     };
 
     const url: URL = new URL(clusterDetails.url);
@@ -332,7 +335,6 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     const requestInit: RequestInit = {
       method: 'GET',
       headers: this.buildRequestHeaders(credential),
-      redirect: 'manual',
       ...(agent && { agent }),
     };
     return [new URL(url.toString()), requestInit];
@@ -374,41 +376,57 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     return agent;
   }
 
+  private redactSecretData(items: JsonObject[]): JsonObject[] {
+    return items.map((item: JsonObject) => {
+      const redacted: JsonObject = { ...item };
+      if (item.data && typeof item.data === 'object') {
+        redacted.data = Object.fromEntries(
+          Object.keys(item.data).map(key => [key, '***']),
+        );
+      }
+      if (item.stringData && typeof item.stringData === 'object') {
+        redacted.stringData = Object.fromEntries(
+          Object.keys(item.stringData).map(key => [key, '***']),
+        );
+      }
+      return redacted;
+    });
+  }
+
   private transformResources(
-    objectType: string,
-    kind: string,
+    resource: ObjectToFetch,
+    kind: string | undefined,
     items: JsonObject[],
   ): JsonObject[] {
-    let result = items;
+    const itemKind = kind?.replace(/(List)$/, '');
 
-    if (objectType === 'customresources') {
-      const singularKind = kind.replace(/(List)$/, '');
-      result = result.map((item: JsonObject) => ({
+    // Whether a response holds Secrets is decided from the resource that was
+    // requested and from the kind reported by the API server, rather than from
+    // the object type, which callers can influence. The request is checked on
+    // its own so that masking does not depend on the response at all, and the
+    // kind is checked as well to cover requests that reach Secrets by some
+    // other shape.
+    const containsSecrets =
+      resource.objectType === 'secrets' ||
+      itemKind === 'Secret' ||
+      (resource.group === '' &&
+        resource.apiVersion === 'v1' &&
+        resource.plural === 'secrets');
+
+    const resources = containsSecrets ? this.redactSecretData(items) : items;
+
+    if (resource.objectType === 'customresources') {
+      if (itemKind === undefined) {
+        throw new Error(
+          `Missing kind in response when fetching '${resource.plural}'`,
+        );
+      }
+      return resources.map((item: JsonObject) => ({
         ...item,
-        kind: singularKind,
+        kind: itemKind,
       }));
     }
 
-    if (
-      objectType === 'secrets' ||
-      (kind && kind.replace(/List$/, '') === 'Secret')
-    ) {
-      result = result.map((item: JsonObject) => {
-        const redacted: JsonObject = { ...item };
-        if (item.data && typeof item.data === 'object') {
-          redacted.data = Object.fromEntries(
-            Object.keys(item.data).map(key => [key, '***']),
-          );
-        }
-        if (item.stringData && typeof item.stringData === 'object') {
-          redacted.stringData = Object.fromEntries(
-            Object.keys(item.stringData).map(key => [key, '***']),
-          );
-        }
-        return redacted;
-      });
-    }
-
-    return result;
+    return resources;
   }
 }

@@ -1492,6 +1492,105 @@ describe('KubernetesFetcher', () => {
         ],
       });
     });
+
+    it('should mask secret data requested as a custom resource, leaving other custom resources intact', async () => {
+      worker.use(
+        rest.get('http://localhost:9999/api/v1/secrets', (req, res, ctx) =>
+          res(
+            checkToken(req, ctx, 'token'),
+            withLabels(req, ctx, {
+              kind: 'SecretList',
+              items: [
+                {
+                  metadata: { name: 'db-credentials' },
+                  data: {
+                    username: 'YWRtaW4=',
+                    password: 'czNjcjN0UEBzc3cwcmQ=',
+                  },
+                },
+              ],
+            }),
+          ),
+        ),
+        rest.get(
+          'http://localhost:9999/apis/some-group/v2/things',
+          (req, res, ctx) =>
+            res(
+              checkToken(req, ctx, 'token'),
+              withLabels(req, ctx, {
+                kind: 'ThingList',
+                items: [
+                  {
+                    metadata: { name: 'something-else' },
+                    data: { someKey: 'someValue' },
+                  },
+                ],
+              }),
+            ),
+        ),
+      );
+
+      const result = await sut.fetchObjectsForService({
+        serviceId: 'some-service',
+        clusterDetails: {
+          name: 'cluster1',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        credential: { type: 'bearer token', token: 'token' },
+        objectTypesToFetch: new Set<ObjectToFetch>(),
+        labelSelector: '',
+        customResources: [
+          {
+            objectType: 'customresources',
+            group: '',
+            apiVersion: 'v1',
+            plural: 'secrets',
+          },
+          {
+            objectType: 'customresources',
+            group: 'some-group',
+            apiVersion: 'v2',
+            plural: 'things',
+          },
+        ],
+      });
+
+      expect(result).toStrictEqual({
+        errors: [],
+        responses: [
+          {
+            type: 'customresources',
+            resources: [
+              {
+                kind: 'Secret',
+                metadata: {
+                  name: 'db-credentials',
+                  labels: {},
+                },
+                data: {
+                  username: '***',
+                  password: '***',
+                },
+              },
+            ],
+          },
+          {
+            type: 'customresources',
+            resources: [
+              {
+                kind: 'Thing',
+                metadata: {
+                  name: 'something-else',
+                  labels: {},
+                },
+                data: { someKey: 'someValue' },
+              },
+            ],
+          },
+        ],
+      });
+    });
   });
 
   describe('transformResources', () => {
@@ -1505,7 +1604,12 @@ describe('KubernetesFetcher', () => {
 
     it('removes List suffix from custom resource kinds', () => {
       const result = (fetcher as any).transformResources(
-        'customresources',
+        {
+          objectType: 'customresources',
+          group: 'some-group',
+          apiVersion: 'v2',
+          plural: 'helloworlds',
+        },
         'HelloWorldList',
         [{ name: 'foo' }],
       );
@@ -1514,7 +1618,12 @@ describe('KubernetesFetcher', () => {
 
     it('masks secret data and stringData values', () => {
       const result = (fetcher as any).transformResources(
-        'secrets',
+        {
+          objectType: 'secrets',
+          group: '',
+          apiVersion: 'v1',
+          plural: 'secrets',
+        },
         'SecretList',
         [
           {
@@ -1528,19 +1637,33 @@ describe('KubernetesFetcher', () => {
     });
 
     it('masks secrets by objectType when list kind is missing', () => {
-      const result = (fetcher as any).transformResources('secrets', undefined, [
+      const result = (fetcher as any).transformResources(
         {
-          data: { password: 'secret123' },
-          stringData: { token: 'plaintext-token' },
+          objectType: 'secrets',
+          group: '',
+          apiVersion: 'v1',
+          plural: 'secrets',
         },
-      ]);
+        undefined,
+        [
+          {
+            data: { password: 'secret123' },
+            stringData: { token: 'plaintext-token' },
+          },
+        ],
+      );
       expect(result[0].data.password).toBe('***');
       expect(result[0].stringData.token).toBe('***');
     });
 
     it('masks secrets fetched as custom resources', () => {
       const result = (fetcher as any).transformResources(
-        'customresources',
+        {
+          objectType: 'customresources',
+          group: '',
+          apiVersion: 'v1',
+          plural: 'secrets',
+        },
         'SecretList',
         [
           {
@@ -1556,7 +1679,12 @@ describe('KubernetesFetcher', () => {
 
     it('does not redact non-secret custom resources', () => {
       const result = (fetcher as any).transformResources(
-        'customresources',
+        {
+          objectType: 'customresources',
+          group: 'some-group',
+          apiVersion: 'v2',
+          plural: 'helloworlds',
+        },
         'HelloWorldList',
         [{ data: { config: 'visible' } }],
       );
@@ -1564,10 +1692,59 @@ describe('KubernetesFetcher', () => {
       expect(result[0].data.config).toBe('visible');
     });
 
+    it('masks secret data values based on the reported kind', () => {
+      const result = (fetcher as any).transformResources(
+        {
+          objectType: 'customresources',
+          group: 'some-group',
+          apiVersion: 'v2',
+          plural: 'things',
+        },
+        'SecretList',
+        [{ data: { password: 'secret123' } }],
+      );
+      expect(result[0]).toEqual({
+        kind: 'Secret',
+        data: { password: '***' },
+      });
+    });
+
+    it('masks secret data values based on the requested resource, whatever kind is reported', () => {
+      const result = (fetcher as any).transformResources(
+        {
+          objectType: 'customresources',
+          group: '',
+          apiVersion: 'v1',
+          plural: 'secrets',
+        },
+        'ThingList',
+        [{ data: { password: 'secret123' } }],
+      );
+      expect(result[0]).toEqual({
+        kind: 'Thing',
+        data: { password: '***' },
+      });
+    });
+
+    it('throws rather than reporting an unknown kind for custom resources', () => {
+      expect(() =>
+        (fetcher as any).transformResources(
+          {
+            objectType: 'customresources',
+            group: 'some-group',
+            apiVersion: 'v2',
+            plural: 'things',
+          },
+          undefined,
+          [{ name: 'foo' }],
+        ),
+      ).toThrow("Missing kind in response when fetching 'things'");
+    });
+
     it('returns other types unchanged', () => {
       const items = [{ name: 'pod' }];
       const result = (fetcher as any).transformResources(
-        'pods',
+        { objectType: 'pods', group: '', apiVersion: 'v1', plural: 'pods' },
         'PodList',
         items,
       );
