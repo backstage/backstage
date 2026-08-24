@@ -112,6 +112,39 @@ const mkdocsYmlWithDuplicateMergeHooks = fs.readFileSync(
     '../__fixtures__/mkdocs_with_duplicate_merge_hooks.yml',
   ),
 );
+const mkdocsYmlWithPlantumlCmd = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_with_plantuml_cmd.yml'),
+);
+const mkdocsYmlWithPlantumlCmdHyphenated = fs.readFileSync(
+  resolvePath(
+    __filename,
+    '../__fixtures__/mkdocs_with_plantuml_cmd_hyphenated.yml',
+  ),
+);
+const mkdocsYmlWithDangerousExtensions = fs.readFileSync(
+  resolvePath(
+    __filename,
+    '../__fixtures__/mkdocs_with_dangerous_extensions.yml',
+  ),
+);
+const mkdocsYmlWithOnlyDangerousExtensions = fs.readFileSync(
+  resolvePath(
+    __filename,
+    '../__fixtures__/mkdocs_with_only_dangerous_extensions.yml',
+  ),
+);
+const mkdocsYmlWithSafeExtensions = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_with_safe_extensions.yml'),
+);
+const mkdocsYmlWithMultiKeyDangerousExtension = fs.readFileSync(
+  resolvePath(
+    __filename,
+    '../__fixtures__/mkdocs_with_multi_key_dangerous_extension.yml',
+  ),
+);
+const mkdocsYmlWithThemeCustomDir = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_with_theme_custom_dir.yml'),
+);
 const mockLogger = mockServices.logger.mock();
 const warn = jest.spyOn(mockLogger, 'warn');
 
@@ -1027,6 +1060,212 @@ some_unknown_key: value
         expect.stringContaining(
           'DANGEROUS: Allowing additional MkDocs configuration keys beyond the default safe allowlist: hooks',
         ),
+      );
+    });
+
+    it('should remove dangerous markdown_extensions', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': mkdocsYmlWithDangerousExtensions,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      expect(parsedYml.markdown_extensions).toEqual([
+        { toc: { permalink: true } },
+        'admonition',
+      ]);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('subprocess:Popen'),
+      );
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('os:system'));
+    });
+
+    it('should handle markdown_extensions with only dangerous entries', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': mkdocsYmlWithOnlyDangerousExtensions,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      expect(parsedYml.markdown_extensions).toEqual([]);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('subprocess:Popen'),
+      );
+    });
+
+    it('should remove a mapping that mixes a dangerous name with a safe one', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': mkdocsYmlWithMultiKeyDangerousExtension,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      expect(parsedYml.markdown_extensions).toEqual(['admonition']);
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('os:system'));
+    });
+
+    it('should strip plantuml_cmd from markdown extension config', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': mkdocsYmlWithPlantumlCmd,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      const extensions = parsedYml.markdown_extensions as Array<
+        Record<string, Record<string, unknown>>
+      >;
+      const plantumlConfig = extensions.find(
+        e => typeof e === 'object' && 'plantuml_markdown' in e,
+      );
+      expect(plantumlConfig).toBeDefined();
+      expect(plantumlConfig!.plantuml_markdown.plantuml_cmd).toBeUndefined();
+      expect(plantumlConfig!.plantuml_markdown.output_format).toBe('svg');
+
+      const tocConfig = extensions.find(
+        e => typeof e === 'object' && 'toc' in e,
+      );
+      expect(tocConfig).toBeDefined();
+      expect((tocConfig as any).toc.permalink).toBe(true);
+
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Removed the following dangerous entries from markdown_extensions in mkdocs.yml: plantuml_cmd',
+        ),
+      );
+    });
+
+    it('should strip plantuml_cmd regardless of extension name variant', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': mkdocsYmlWithPlantumlCmdHyphenated,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      const extensions = parsedYml.markdown_extensions as Array<
+        Record<string, Record<string, unknown>>
+      >;
+      const plantumlConfig = extensions.find(
+        e => typeof e === 'object' && 'plantuml-markdown' in e,
+      );
+      expect(plantumlConfig).toBeDefined();
+      expect(plantumlConfig!['plantuml-markdown'].plantuml_cmd).toBeUndefined();
+
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('plantuml_cmd'),
+      );
+    });
+
+    it('should preserve safe markdown_extensions unchanged', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': mkdocsYmlWithSafeExtensions,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      expect(parsedYml.markdown_extensions).toEqual([
+        { toc: { permalink: true } },
+        'admonition',
+        'pymdownx.superfences',
+        { 'pymdownx.tabbed': { alternate_style: true } },
+      ]);
+      expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('should strip custom_dir from theme while preserving safe keys', async () => {
+      mockDir.setContent({
+        'mkdocs_theme_custom_dir.yml': mkdocsYmlWithThemeCustomDir,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_theme_custom_dir.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_theme_custom_dir.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        theme?: Record<string, unknown>;
+      };
+
+      expect(parsedYml.theme?.custom_dir).toBeUndefined();
+      expect(parsedYml.theme?.name).toBe('material');
+      expect(parsedYml.theme?.palette).toEqual({ primary: 'indigo' });
+      expect(parsedYml.theme?.font).toBe(false);
+      expect(parsedYml.theme?.features).toEqual(['navigation.instant']);
+      expect(parsedYml.theme?.language).toBe('en');
+      expect(parsedYml.theme?.direction).toBe('ltr');
+      expect(parsedYml.theme?.icon).toEqual({
+        repo: 'fontawesome/brands/github',
+      });
+      expect(parsedYml.theme?.logo).toBe('assets/logo.png');
+      expect(parsedYml.theme?.favicon).toBe('assets/favicon.png');
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Removed the following unsupported keys from theme configuration in mkdocs.yml: custom_dir',
+        ),
+      );
+    });
+
+    it('should not modify theme when it is a string', async () => {
+      const mkdocsWithStringTheme = `site_name: Test
+theme: material
+`;
+      mockDir.setContent({
+        'mkdocs_string_theme.yml': mkdocsWithStringTheme,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_string_theme.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_string_theme.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        theme?: unknown;
+      };
+
+      expect(parsedYml.theme).toBe('material');
+      expect(warn).not.toHaveBeenCalledWith(
+        expect.stringContaining('theme configuration'),
       );
     });
   });
