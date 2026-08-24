@@ -90,7 +90,7 @@ const apiDocsHasApisEntityCard = EntityCardBlueprint.make({
         entity.kind === 'Component' &&
         entity.relations?.some(
           ({ type, targetRef }) =>
-            type.toLocaleLowerCase('en-US') === RELATION_HAS_PART &&
+            type.toLowerCase() === RELATION_HAS_PART &&
             parseEntityRef(targetRef).kind === 'API',
         )!!
       );

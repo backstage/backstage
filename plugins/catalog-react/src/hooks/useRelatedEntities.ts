@@ -33,8 +33,8 @@ export function useRelatedEntities(
   loading: boolean;
   error: Error | undefined;
 } {
-  const filterByTypeLower = relationFilter?.type?.toLocaleLowerCase('en-US');
-  const filterByKindLower = relationFilter?.kind?.toLocaleLowerCase('en-US');
+  const filterByTypeLower = relationFilter?.type?.toLowerCase();
+  const filterByKindLower = relationFilter?.kind?.toLowerCase();
   const catalogApi = useApi(catalogApiRef);
 
   const {
@@ -44,8 +44,7 @@ export function useRelatedEntities(
   } = useAsync(async () => {
     const relations = entity.relations?.filter(
       r =>
-        (!filterByTypeLower ||
-          r.type.toLocaleLowerCase('en-US') === filterByTypeLower) &&
+        (!filterByTypeLower || r.type.toLowerCase() === filterByTypeLower) &&
         (!filterByKindLower ||
           parseEntityRef(r.targetRef).kind === filterByKindLower),
     );

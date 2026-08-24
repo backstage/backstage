@@ -80,7 +80,7 @@ exports.up = async function up(knex) {
       id: row.id,
       location_entity_ref: `location:default/generated-${createHash('sha1')
         .update(`${row.type}:${row.target}`)
-        .digest('hex')}`.toLocaleLowerCase('en-US'),
+        .digest('hex')}`.toLowerCase(),
     }));
 
     if (client === 'pg') {

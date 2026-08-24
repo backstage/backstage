@@ -133,7 +133,7 @@ class GithubAppManager {
 
   constructor(config: GithubAppConfig, baseUrl?: string) {
     this.allowedInstallationOwners = config.allowedInstallationOwners?.map(
-      owner => owner.toLocaleLowerCase('en-US'),
+      owner => owner.toLowerCase(),
     );
     this.baseUrl = baseUrl;
     this.baseAuthConfig = {
@@ -165,11 +165,7 @@ class GithubAppManager {
     }
 
     if (this.allowedInstallationOwners) {
-      if (
-        !this.allowedInstallationOwners?.includes(
-          owner.toLocaleLowerCase('en-US'),
-        )
-      ) {
+      if (!this.allowedInstallationOwners?.includes(owner.toLowerCase())) {
         return { accessToken: undefined }; // An empty token allows anonymous access to public repos
       }
     }
@@ -286,13 +282,13 @@ class GithubAppManager {
   }
 
   private async getInstallationData(owner: string): Promise<InstallationData> {
-    const ownerLower = owner.toLocaleLowerCase('en-US');
+    const ownerLower = owner.toLowerCase();
     const find = (list: Installations) =>
       list.find(
         inst =>
           inst.account &&
           'login' in inst.account &&
-          inst.account.login?.toLocaleLowerCase('en-US') === ownerLower,
+          inst.account.login?.toLowerCase() === ownerLower,
       );
 
     let installations = await this.getCachedInstallations();

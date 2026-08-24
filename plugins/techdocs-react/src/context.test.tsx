@@ -164,9 +164,9 @@ describe('useTechDocsReaderPage', () => {
 
   it('should set entityRef as lowercase when legacyUseCaseSensitiveTripletPaths is false', async () => {
     const lowercaseEntityRef = {
-      kind: mockEntityMetadata.kind.toLocaleLowerCase(),
-      name: mockEntityMetadata.metadata.name.toLocaleLowerCase(),
-      namespace: mockEntityMetadata.metadata.namespace?.toLocaleLowerCase(),
+      kind: mockEntityMetadata.kind.toLowerCase(),
+      name: mockEntityMetadata.metadata.name.toLowerCase(),
+      namespace: mockEntityMetadata.metadata.namespace?.toLowerCase(),
     };
     const { result } = renderHook(() => useTechDocsReaderPage(), { wrapper });
     await waitFor(() => {
