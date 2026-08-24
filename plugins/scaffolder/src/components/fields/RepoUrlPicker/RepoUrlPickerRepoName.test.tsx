@@ -17,9 +17,24 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
+import { useScaffolderTheme } from '@backstage/plugin-scaffolder-react/alpha';
 import { RepoUrlPickerRepoName } from './RepoUrlPickerRepoName';
 
+jest.mock('@backstage/plugin-scaffolder-react/alpha', () => ({
+  ...jest.requireActual('@backstage/plugin-scaffolder-react/alpha'),
+  useScaffolderTheme: jest.fn(),
+}));
+
+const mockUseScaffolderTheme = useScaffolderTheme as jest.Mock;
+
 describe('RepoUrlPickerRepoName', () => {
+  beforeEach(() => {
+    mockUseScaffolderTheme.mockReturnValue('mui');
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   it('should call onChange with the first allowed repo if there is none set already', async () => {
     const onChange = jest.fn();
 
@@ -189,5 +204,87 @@ describe('RepoUrlPickerRepoName', () => {
 
     // Ensure it's disabled
     expect(textInput).toBeDisabled();
+  });
+
+  describe('bui theme', () => {
+    beforeEach(() => {
+      mockUseScaffolderTheme.mockReturnValue('bui');
+    });
+
+    it('should render a select of all the allowed repos', async () => {
+      const allowedRepos = ['foo', 'bar'];
+      const onChange = jest.fn();
+
+      const { getByRole } = await renderInTestApp(
+        <RepoUrlPickerRepoName
+          onChange={onChange}
+          allowedRepos={allowedRepos}
+          rawErrors={[]}
+        />,
+      );
+
+      // BuiSelect renders a combobox trigger listing the allowed repos
+      expect(getByRole('button')).toBeVisible();
+    });
+
+    it('should render a plain text input when disableRepoAutocomplete is true', async () => {
+      const onChange = jest.fn();
+
+      const { getByRole, queryByRole } = await renderInTestApp(
+        <RepoUrlPickerRepoName
+          onChange={onChange}
+          rawErrors={[]}
+          disableRepoAutocomplete
+        />,
+      );
+
+      const textInput = getByRole('textbox');
+      expect(textInput).toBeVisible();
+
+      // Should be a plain text input, not an autocomplete/combobox
+      expect(queryByRole('combobox')).not.toBeInTheDocument();
+      expect(textInput).not.toHaveAttribute('aria-autocomplete');
+
+      act(() => {
+        textInput.focus();
+        fireEvent.change(textInput, { target: { value: 'new-repo' } });
+      });
+
+      expect(onChange).toHaveBeenCalledWith({ name: 'new-repo' });
+    });
+
+    it('should render custom labels when repoLabel and repoDescription are provided', async () => {
+      const onChange = jest.fn();
+
+      const { getByText, getByRole } = await renderInTestApp(
+        <RepoUrlPickerRepoName
+          onChange={onChange}
+          rawErrors={[]}
+          repoLabel="New Repository Name"
+          repoDescription="Type a new repo name"
+          disableRepoAutocomplete
+        />,
+      );
+
+      expect(getByRole('textbox')).toBeVisible();
+      expect(getByText('New Repository Name')).toBeVisible();
+      expect(getByText('Type a new repo name')).toBeVisible();
+    });
+
+    it('should render an autocomplete of availableRepos when repo autocomplete is enabled', async () => {
+      const availableRepos = [{ name: 'foo' }, { name: 'bar' }];
+      const onChange = jest.fn();
+
+      const { getByRole } = await renderInTestApp(
+        <RepoUrlPickerRepoName
+          onChange={onChange}
+          availableRepos={availableRepos}
+          rawErrors={[]}
+        />,
+      );
+
+      // BuiAutocomplete (Combobox) exposes the combobox role
+      expect(getByRole('combobox')).toBeVisible();
+    });
   });
 });

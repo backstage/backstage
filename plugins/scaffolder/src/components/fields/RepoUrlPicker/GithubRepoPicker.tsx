@@ -64,12 +64,7 @@ export const GithubRepoPicker = (
     useState<{ owner: string; name: string }[]>([]);
 
   const updateAvailableRepositoriesWithOwner = useCallback(() => {
-    if (
-      disableRepoAutocomplete ||
-      !scaffolderApi.autocomplete ||
-      !accessToken ||
-      !host
-    ) {
+    if (!scaffolderApi.autocomplete || !accessToken || !host) {
       setAvailableRepositoriesWithOwner([]);
       return;
     }
@@ -92,7 +87,7 @@ export const GithubRepoPicker = (
       .catch(() => {
         setAvailableRepositoriesWithOwner([]);
       });
-  }, [disableRepoAutocomplete, scaffolderApi, accessToken, host]);
+  }, [scaffolderApi, accessToken, host]);
 
   useDebounce(updateAvailableRepositoriesWithOwner, 500, [
     updateAvailableRepositoriesWithOwner,
@@ -106,12 +101,24 @@ export const GithubRepoPicker = (
 
   // Update available repositories when available repositories with owner change or when owner changes
   const updateAvailableRepositories = useCallback(() => {
+    // Only surface repository suggestions when repo autocomplete is enabled.
+    // Owner suggestions are still derived from the fetch above.
+    if (disableRepoAutocomplete) {
+      onChange({ availableRepos: [] });
+      return;
+    }
+
     const availableRepos = availableRepositoriesWithOwner.flatMap(r =>
       r.owner === owner ? [{ name: r.name }] : [],
     );
 
     onChange({ availableRepos });
-  }, [availableRepositoriesWithOwner, owner, onChange]);
+  }, [
+    disableRepoAutocomplete,
+    availableRepositoriesWithOwner,
+    owner,
+    onChange,
+  ]);
 
   useDebounce(updateAvailableRepositories, 500, [updateAvailableRepositories]);
 

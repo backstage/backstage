@@ -134,12 +134,13 @@ export const RepoUrlPickerRepoName = (props: {
     );
   }
 
-  const repoItems: SelectItem[] = allowedRepos
-    ? allowedRepos.map(i => ({ label: i, value: i }))
-    : [{ label: 'Loading...', value: 'loading' }];
-
   const renderMuiInput = () => {
     if (allowedRepos?.length) {
+      const repoItems: SelectItem[] = allowedRepos.map(i => ({
+        label: i,
+        value: i,
+      }));
+
       return (
         <MuiSelect
           native
