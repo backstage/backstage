@@ -18,7 +18,12 @@ import { screen } from '@testing-library/react';
 import * as pod from './__fixtures__/pod.json';
 import * as crashingPod from './__fixtures__/crashing-pod.json';
 import { renderInTestApp } from '@backstage/test-utils';
-import { PodsTable, READY_COLUMNS, RESOURCE_COLUMNS } from './PodsTable';
+import {
+  PodsTable,
+  PodsTablesProps,
+  READY_COLUMNS,
+  RESOURCE_COLUMNS,
+} from './PodsTable';
 import { kubernetesProviders } from '../../hooks/test-utils';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
 import { TableColumn } from '@backstage/core-components';
@@ -150,6 +155,22 @@ describe('PodsTable', () => {
 
     expect(screen.getByText('v1pod-namespace')).toBeInTheDocument();
     expect(screen.getByText('default')).toBeInTheDocument();
+  });
+
+  it('should reject V1Pod extra columns for a directly passed Pod', () => {
+    const v1PodColumn: TableColumn<V1Pod> = {
+      title: 'v1pod-namespace',
+      render: (podData: V1Pod) => podData.metadata?.namespace ?? 'unknown',
+      width: 'auto',
+    };
+
+    // @ts-expect-error singleton Pod inputs only accept Pod-compatible columns.
+    const props: PodsTablesProps<V1Pod> = {
+      pods: pod as any as Pod,
+      extraColumns: [v1PodColumn],
+    };
+
+    expect(props).toBeDefined();
   });
 
   it('should render pod, with metrics context', async () => {

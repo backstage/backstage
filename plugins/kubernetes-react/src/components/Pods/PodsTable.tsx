@@ -68,18 +68,26 @@ export type PodExtraColumn<T extends Pod | V1Pod = Pod> =
   | PodColumns
   | TableColumn<T>;
 
+type PodsTableArrayProps<T extends Pod | V1Pod = Pod> = {
+  pods: T[];
+  extraColumns?: PodExtraColumn<T>[];
+  children?: ReactNode;
+};
+
+type PodsTableLegacySingletonProps = {
+  pods: Pod;
+  extraColumns?: PodExtraColumn<Pod>[];
+  children?: ReactNode;
+};
+
 /**
  *
  *
  * @public
  */
-export type PodsTablesProps<T extends Pod | V1Pod = Pod> = {
-  // `Pod` is accepted on its own, in addition to `T[]`, for backwards
-  // compatibility with the previously published prop type.
-  pods: T[] | Pod;
-  extraColumns?: PodExtraColumn<T>[];
-  children?: ReactNode;
-};
+export type PodsTablesProps<T extends Pod | V1Pod = Pod> =
+  | PodsTableArrayProps<T>
+  | PodsTableLegacySingletonProps;
 
 const PodDrawerTrigger = ({ pod }: { pod: Pod }) => {
   const errors = useMatchingErrors({
@@ -222,7 +230,7 @@ export const PodsTable = <T extends Pod | V1Pod = Pod>({
   const columns: TableColumn<T>[] = [
     ...(defaultColumns as unknown as TableColumn<T>[]),
   ];
-  for (const extraColumn of extraColumns) {
+  for (const extraColumn of extraColumns as PodExtraColumn<T>[]) {
     if (typeof extraColumn === 'string') {
       columns.push(
         ...(columnsByPreset[extraColumn] as unknown as TableColumn<T>[]),
