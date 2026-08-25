@@ -1159,6 +1159,20 @@ describe('scaffolder router', () => {
       });
     });
 
+    it('rejects ordering by unsupported task fields', async () => {
+      const { router, taskBroker } = await createTestRouter();
+
+      const response = await request(router).get(`/v2/tasks?order=asc:secrets`);
+
+      expect(response.status).toEqual(400);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          error: expect.objectContaining({ name: 'InputError' }),
+        }),
+      );
+      expect(taskBroker.list).not.toHaveBeenCalled();
+    });
+
     it('disallows users from seeing tasks they do not own', async () => {
       const { router, taskBroker, permissions } = await createTestRouter();
       jest

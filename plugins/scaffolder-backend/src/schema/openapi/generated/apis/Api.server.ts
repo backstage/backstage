@@ -100,7 +100,7 @@ export type ListTasks = {
     order?: Array<string>;
     status?: Array<string>;
   };
-  response: ListTasksResponse;
+  response: ListTasksResponse | Error;
 };
 /**
  * @public
