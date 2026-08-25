@@ -74,7 +74,9 @@ export type PodExtraColumn<T extends Pod | V1Pod = Pod> =
  * @public
  */
 export type PodsTablesProps<T extends Pod | V1Pod = Pod> = {
-  pods: T[];
+  // `Pod` is accepted on its own, in addition to `T[]`, for backwards
+  // compatibility with the previously published prop type.
+  pods: T[] | Pod;
   extraColumns?: PodExtraColumn<T>[];
   children?: ReactNode;
 };
@@ -242,10 +244,12 @@ export const PodsTable = <T extends Pod | V1Pod = Pod>({
         // It was observed that in some instances the pod drawer closes when new data (like CPU usage) is available and the table reloads.
         // Mapping the metadata UID to the tables ID fixes this problem.
         data={
-          (pods as Pod[]).map((pod: Pod) => ({
-            ...pod,
-            id: pod?.metadata?.uid,
-          })) as any as T[]
+          (Array.isArray(pods) ? (pods as Pod[]) : [pods as Pod]).map(
+            (pod: Pod) => ({
+              ...pod,
+              id: pod?.metadata?.uid,
+            }),
+          ) as any as T[]
         }
         columns={columns}
       />

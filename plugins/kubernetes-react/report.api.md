@@ -829,7 +829,7 @@ export const PodsTable: <T extends Pod_2 | V1Pod = Pod_2>(
 
 // @public (undocumented)
 export type PodsTablesProps<T extends Pod_2 | V1Pod = Pod_2> = {
-  pods: T[];
+  pods: T[] | Pod_2;
   extraColumns?: PodExtraColumn<T>[];
   children?: ReactNode;
 };

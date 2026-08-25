@@ -42,6 +42,14 @@ describe('PodsTable', () => {
     expect(screen.getByText('1.14.2')).toBeInTheDocument();
   });
 
+  it('should render a single pod passed directly (not wrapped in an array)', async () => {
+    await renderInTestApp(<PodsTable pods={pod as any} />);
+
+    expect(screen.getByText('dice-roller-6c8646bfd-2m5hv')).toBeInTheDocument();
+    expect(screen.getByText('Running')).toBeInTheDocument();
+    expect(screen.getByText('1.14.2')).toBeInTheDocument();
+  });
+
   it('should show unknown when pod image has no version', async () => {
     const podWithoutVersion = {
       ...pod,
