@@ -1,5 +1,11 @@
 # @backstage/cli-module-build
 
+## 0.1.8-next.0
+
+### Patch Changes
+
+- b2b7568: Significantly improve the performance of `build-workspace` when packaging many Backstage packages.
+
 ## 0.1.7
 
 ### Patch Changes

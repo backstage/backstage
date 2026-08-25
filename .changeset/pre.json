@@ -232,5 +232,31 @@
     "@backstage/plugin-user-settings-backend": "0.4.6",
     "@backstage/plugin-user-settings-common": "0.1.0"
   },
-  "changesets": []
+  "changesets": [
+    "calm-inline-templates",
+    "calm-otters-listen",
+    "calm-taxis-listen",
+    "catalog-import-owner-entity-ref",
+    "create-app-1787665840",
+    "elasticsearch-empty-type-guard",
+    "fast-build-workspaces",
+    "fix-entity-owner-picker-humanized-refs",
+    "fix-gitlab-push-branch-filter",
+    "fix-gitlab-repo-push-empty-actions",
+    "fuzzy-lions-repeat",
+    "gcp-bucket-config",
+    "kubernetes-services-entity-resolution",
+    "owner-links-use-entity-refs",
+    "quick-collators-page",
+    "quiet-dry-runs",
+    "scaffolder-template-output-redirect",
+    "search-backend-empty-type-filter",
+    "shaggy-hornets-ask",
+    "silver-pandas-battle",
+    "task-recovery-feature",
+    "tidy-pandas-juggle",
+    "tidy-toasts-smile",
+    "v-mp-s-c",
+    "watch-functionality"
+  ]
 }

@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-common
 
+## 2.3.0-next.0
+
+### Minor Changes
+
+- 1a705ca: Added `templateDryRunPermission`, which allows permission policies to control who can submit inline Software Template dry runs.
+
 ## 2.2.2
 
 ### Patch Changes

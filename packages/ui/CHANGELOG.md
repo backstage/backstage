@@ -1,5 +1,11 @@
 # @backstage/ui
 
+## 0.17.2-next.0
+
+### Patch Changes
+
+- f914343: Prevent BUI styles from overriding document and native control line heights while preserving BUI component typography.
+
 ## 0.17.1
 
 ### Patch Changes

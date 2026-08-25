@@ -1,5 +1,12 @@
 # @backstage/plugin-catalog-backend-module-gitlab-org
 
+## 0.2.25-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-gitlab@0.8.7-next.0
+
 ## 0.2.24
 
 ### Patch Changes

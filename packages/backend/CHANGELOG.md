@@ -1,5 +1,21 @@
 # example-backend
 
+## 0.0.54-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@4.1.0-next.0
+  - @backstage/plugin-search-backend-module-elasticsearch@1.8.8-next.0
+  - @backstage/plugin-kubernetes-backend@0.21.10-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.3.19-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.4.18-next.0
+  - @backstage/plugin-search-backend@2.1.7-next.0
+  - @backstage/plugin-auth-backend@0.30.1-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.24-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.13-next.0
+  - @backstage/plugin-scaffolder-backend-module-notifications@0.1.26-next.0
+
 ## 0.0.53
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @backstage/plugin-kubernetes-node
 
+## 0.4.8-next.0
+
+### Patch Changes
+
+- d9a57de: Add `KubernetesWatcher` interface for streaming Kubernetes resource changes via an async iterator. The watcher is separated from `KubernetesFetcher` because watching is a long-lived streaming connection that only works with server-side auth providers. Watch supports all event types (ADDED, MODIFIED, DELETED, BOOKMARK, ERROR) with errors yielded as data rather than thrown.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.9.13-next.0
+
 ## 0.4.7
 
 ### Patch Changes

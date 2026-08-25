@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog
 
+## 2.0.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@2.3.0-next.0
+  - @backstage/ui@0.17.2-next.0
+  - @backstage/plugin-catalog-react@3.2.2-next.0
+  - @backstage/core-components@0.18.14-next.0
+  - @backstage/core-compat-api@0.5.15-next.0
+  - @backstage/plugin-search-react@1.11.8-next.0
+  - @backstage/plugin-techdocs-react@1.3.15-next.0
+
 ## 2.0.8
 
 ### Patch Changes

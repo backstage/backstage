@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder-backend-module-gcp
 
+## 0.2.25-next.0
+
+### Patch Changes
+
+- e95b649: Added new config path `scaffolder.taskRecovery.gcsBucket.name` for GCS workspace provider. The previous `EXPERIMENTAL_workspaceSerializationGcpBucketName` config is still supported as a fallback. Workspace upload failures are now propagated so that a task does not record a completed step without its corresponding workspace.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.7-next.0
+
 ## 0.2.24
 
 ### Patch Changes
