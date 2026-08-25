@@ -9,7 +9,9 @@ import type { JsonObject } from '@backstage/types';
 
 // @public (undocumented)
 export type AuthValue<T extends ConnectionType | ConnectionTypeKey> =
-  ConnectionAuthValue<LookupConnectionType<T>['auth'][number]>;
+  LookupConnectionType<T> extends ConnectionType<infer TDefinition>
+    ? ConnectionAuthValue<TDefinition['auth'][number]>
+    : never;
 
 // @public
 export function buildConnectionsFromConfig(options: {
@@ -98,7 +100,9 @@ export interface ConnectionsService {
     TAuthMethod extends ConnectionAuthMethodKey<TType>,
   >(options: {
     type: TType;
-    query: LookupConnectionType<TType>['query'];
+    query: LookupConnectionType<TType> extends ConnectionType<infer TDefinition>
+      ? TDefinition['query']
+      : never;
     authMethods: readonly [TAuthMethod, ...TAuthMethod[]];
   }): Promise<Connection<TType, TAuthMethod>>;
 }
@@ -141,8 +145,6 @@ export type ConnectionType<
         }
       : never
     : never)[];
-  readonly query: T['query'];
-  readonly auth: T['auth'];
   matchAuth?(
     authMethods: ConnectionAuthValue<T['auth'][number]>[],
     query: T['query'],

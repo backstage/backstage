@@ -18,7 +18,9 @@ import type { ConnectionTypeKey, LookupConnectionType } from '../definitions';
 
 /** @public */
 export type AuthValue<T extends ConnectionType | ConnectionTypeKey> =
-  ConnectionAuthValue<LookupConnectionType<T>['auth'][number]>;
+  LookupConnectionType<T> extends ConnectionType<infer TDefinition>
+    ? ConnectionAuthValue<TDefinition['auth'][number]>
+    : never;
 
 // A connection of a specific type.
 //
