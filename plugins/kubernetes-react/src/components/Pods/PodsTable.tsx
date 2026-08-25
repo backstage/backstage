@@ -19,6 +19,7 @@ import { PodDrawer } from './PodDrawer';
 import {
   containersReady,
   containerStatuses,
+  parseImageTag,
   podStatusToCpuUtil,
   podStatusToMemoryUtil,
   totalRestarts,
@@ -58,21 +59,23 @@ export type PodColumns = 'READY' | 'RESOURCE';
  * A column to render in the pods table.
  *
  * Can either be one of the `PodColumns` presets, or a custom
- * `TableColumn<Pod>` or `TableColumn<V1Pod>`, matching whichever row
- * type was passed to the `pods` prop of `PodsTable`.
+ * `TableColumn<T>`, matching the row type `T` passed to the `pods`
+ * prop of `PodsTable`.
  *
  * @public
  */
-export type PodExtraColumn = PodColumns | TableColumn<Pod> | TableColumn<V1Pod>;
+export type PodExtraColumn<T extends Pod | V1Pod = Pod> =
+  | PodColumns
+  | TableColumn<T>;
 
 /**
  *
  *
  * @public
  */
-export type PodsTablesProps = {
-  pods: Pod[] | V1Pod[];
-  extraColumns?: PodExtraColumn[];
+export type PodsTablesProps<T extends Pod | V1Pod = Pod> = {
+  pods: T[];
+  extraColumns?: PodExtraColumn<T>[];
   children?: ReactNode;
 };
 
@@ -120,7 +123,10 @@ const Memory = ({ clusterName, pod }: { clusterName: string; pod: Pod }) => {
  *
  * @public
  */
-export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
+export const PodsTable = <T extends Pod | V1Pod = Pod>({
+  pods,
+  extraColumns = [],
+}: PodsTablesProps<T>) => {
   const cluster = useContext(ClusterContext);
   const { t } = useTranslationRef(kubernetesReactTranslationRef);
 
@@ -165,13 +171,21 @@ export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
     {
       title: t('podsTable.columns.version'),
       render: (pod: Pod) => {
-        const image = pod.spec?.containers?.[0]?.image;
-        const ref = image?.split('@')[0] ?? '';
-        const lastSlash = ref.lastIndexOf('/');
-        const lastColon = ref.lastIndexOf(':');
-        const tag =
-          lastColon > lastSlash ? ref.slice(lastColon + 1) : undefined;
-        return tag ?? t('podsTable.unknown');
+        const containers = pod.spec?.containers ?? [];
+        const tags = containers.map(container => ({
+          name: container.name,
+          tag: parseImageTag(container.image) ?? t('podsTable.unknown'),
+        }));
+        if (tags.length === 0) {
+          return t('podsTable.unknown');
+        }
+        // Only qualify the tag with the container name when there's more
+        // than one container, so a single-container pod (the common case)
+        // keeps showing a plain version string.
+        if (tags.length === 1) {
+          return tags[0].tag;
+        }
+        return tags.map(({ name, tag }) => `${name}: ${tag}`).join(', ');
       },
       width: 'auto',
     },
@@ -198,15 +212,21 @@ export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
     [RESOURCE_COLUMNS]: resourceColumns,
   };
 
-  const columns: TableColumn<Pod>[] = [...defaultColumns];
+  // The built-in columns above always operate on rows normalized to `Pod`
+  // (see the `data` mapping below), regardless of the row type `T` selected
+  // by the caller, so a single cast at this boundary is safe. Custom columns
+  // supplied via `extraColumns`, on the other hand, are already declared as
+  // `TableColumn<T>` and require no cast.
+  const columns: TableColumn<T>[] = [
+    ...(defaultColumns as unknown as TableColumn<T>[]),
+  ];
   for (const extraColumn of extraColumns) {
     if (typeof extraColumn === 'string') {
-      columns.push(...columnsByPreset[extraColumn]);
+      columns.push(
+        ...(columnsByPreset[extraColumn] as unknown as TableColumn<T>[]),
+      );
     } else {
-      // Rows are always normalized to `Pod` before being handed to the
-      // table, regardless of whether `pods` was passed as `Pod[]` or
-      // `V1Pod[]`, so it is safe to treat the column as `TableColumn<Pod>`.
-      columns.push(extraColumn as TableColumn<Pod>);
+      columns.push(extraColumn);
     }
   }
 
@@ -225,7 +245,7 @@ export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
           (pods as Pod[]).map((pod: Pod) => ({
             ...pod,
             id: pod?.metadata?.uid,
-          })) as any as Pod[]
+          })) as any as T[]
         }
         columns={columns}
       />

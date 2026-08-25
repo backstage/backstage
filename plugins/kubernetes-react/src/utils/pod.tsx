@@ -47,6 +47,23 @@ export const containersReady = (pod: Pod): string => {
   return `${containersReadyItem}/${containerStatuses.length}`;
 };
 
+/**
+ * Extracts the tag from a container image reference, e.g. `1.14.2` from
+ * `nginx:1.14.2` or `localhost:5000/nginx:1.14.2`. Returns `undefined` if
+ * the image has no tag (e.g. it is referenced only by digest).
+ *
+ * @public
+ */
+export const parseImageTag = (image?: string): string | undefined => {
+  if (!image) {
+    return undefined;
+  }
+  const ref = image.split('@')[0];
+  const lastSlash = ref.lastIndexOf('/');
+  const lastColon = ref.lastIndexOf(':');
+  return lastColon > lastSlash ? ref.slice(lastColon + 1) : undefined;
+};
+
 export const totalRestarts = (pod: Pod): number => {
   const containerStatuses = pod.status?.containerStatuses ?? [];
   return containerStatuses?.reduce((a, b) => a + b.restartCount, 0);

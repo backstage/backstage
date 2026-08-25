@@ -16,12 +16,33 @@
 
 import {
   currentToDeclaredResourceToPerc,
+  parseImageTag,
   podStatusToCpuUtil,
   podStatusToMemoryUtil,
 } from './pod';
 import { SubvalueCell } from '@backstage/core-components';
 
 describe('pod', () => {
+  describe('parseImageTag', () => {
+    it.each([
+      ['nginx:1.14.2', '1.14.2'],
+      ['nginx', undefined],
+      ['localhost:5000/nginx:1.0.0', '1.0.0'],
+      ['localhost:5000/nginx', undefined],
+      [
+        'nginx:1.14.2@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        '1.14.2',
+      ],
+      [
+        'nginx@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        undefined,
+      ],
+      [undefined, undefined],
+    ])('parses %p as %p', (image, expected) => {
+      expect(parseImageTag(image)).toBe(expected);
+    });
+  });
+
   describe('currentToDeclaredResourceToPerc', () => {
     it.each([
       [10, 100],

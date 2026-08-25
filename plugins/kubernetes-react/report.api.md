@@ -766,10 +766,9 @@ export interface PodExecTerminalProps {
 }
 
 // @public
-export type PodExtraColumn =
+export type PodExtraColumn<T extends Pod_2 | V1Pod = Pod_2> =
   | PodColumns
-  | TableColumn<Pod_2>
-  | TableColumn<V1Pod>;
+  | TableColumn<T>;
 
 // @public
 export const PodLogs: FC<PodLogsProps>;
@@ -824,12 +823,14 @@ export interface PodScope {
 }
 
 // @public (undocumented)
-export const PodsTable: (input: PodsTablesProps) => JSX_2.Element;
+export const PodsTable: <T extends Pod_2 | V1Pod = Pod_2>(
+  input: PodsTablesProps<T>,
+) => JSX_2.Element;
 
 // @public (undocumented)
-export type PodsTablesProps = {
-  pods: Pod_2[] | V1Pod[];
-  extraColumns?: PodExtraColumn[];
+export type PodsTablesProps<T extends Pod_2 | V1Pod = Pod_2> = {
+  pods: T[];
+  extraColumns?: PodExtraColumn<T>[];
   children?: ReactNode;
 };
 

@@ -56,6 +56,25 @@ describe('PodsTable', () => {
     expect(screen.getByText('unknown')).toBeInTheDocument();
   });
 
+  it('should render a version per container for multi-container pods', async () => {
+    const multiContainerPod = {
+      ...pod,
+      spec: {
+        ...pod.spec,
+        containers: [
+          { ...pod.spec.containers[0], name: 'app', image: 'nginx:1.14.2' },
+          { ...pod.spec.containers[0], name: 'side-car', image: 'busybox' },
+        ],
+      },
+    };
+
+    await renderInTestApp(<PodsTable pods={[multiContainerPod as any]} />);
+
+    expect(
+      screen.getByText('app: 1.14.2, side-car: unknown'),
+    ).toBeInTheDocument();
+  });
+
   it('should render pod with extra columns', async () => {
     await renderInTestApp(
       <PodsTable pods={[pod as any]} extraColumns={[READY_COLUMNS]} />,
