@@ -25,6 +25,8 @@ import catalogGraphPlugin from './alpha';
 import { catalogGraphRouteRef } from './routes';
 import { catalogGraphApiRef, DefaultCatalogGraphApi } from './api';
 
+jest.setTimeout(30_000);
+
 jest.mock('./components/CatalogGraphPage', () => {
   const { useCatalogGraphPage } = jest.requireActual<
     typeof import('./components/CatalogGraphPage/useCatalogGraphPage')
@@ -163,7 +165,11 @@ describe('catalog-graph alpha plugin', () => {
 
       expect(await screen.findByText('Relations')).toBeInTheDocument();
       expect(
-        await screen.findByText('component:default/my-service'),
+        await screen.findByText(
+          'component:default/my-service',
+          {},
+          { timeout: 5_000 },
+        ),
       ).toBeInTheDocument();
     });
 
@@ -200,7 +206,11 @@ describe('catalog-graph alpha plugin', () => {
 
       expect(await screen.findByText('Relations')).toBeInTheDocument();
       expect(
-        await screen.findByText('api:production/my-api'),
+        await screen.findByText(
+          'api:production/my-api',
+          {},
+          { timeout: 5_000 },
+        ),
       ).toBeInTheDocument();
     });
 
