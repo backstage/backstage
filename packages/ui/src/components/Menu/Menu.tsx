@@ -33,7 +33,10 @@ import {
   Virtualizer,
   ListLayout,
 } from 'react-aria-components';
-import { useDefinition } from '../../hooks/useDefinition';
+import {
+  useDefinition,
+  type UseDefinitionResult,
+} from '../../hooks/useDefinition';
 import {
   MenuDefinition,
   MenuListBoxDefinition,
@@ -66,6 +69,10 @@ import { isInternalLink } from '../../utils/linkUtils';
 import { getNodeText } from '../../analytics/getNodeText';
 import { Box } from '../Box';
 import { BgReset } from '../../hooks/useBg';
+import {
+  getReactAriaAnchorProps,
+  type AnchorNavigation,
+} from '../../navigation/useNavigation';
 
 // The height will be used for virtualized menus. It should match the size set in CSS for each menu item.
 const rowHeight = 32;
@@ -304,25 +311,36 @@ export const MenuAutocompleteListbox = (
   );
 };
 
-/** @public */
-export const MenuItem = (props: MenuItemProps) => {
-  const { ownProps, restProps, dataAttributes, analytics } = useDefinition(
-    MenuItemDefinition,
-    props,
-  );
-  const { classes, iconStart, children, href } = ownProps;
+type MenuItemViewProps = {
+  definitionResult: UseDefinitionResult<
+    typeof MenuItemDefinition,
+    MenuItemProps
+  >;
+  navigation: AnchorNavigation;
+};
+
+const MenuItemView = ({ definitionResult, navigation }: MenuItemViewProps) => {
+  const { ownProps, restProps, dataAttributes, analytics } = definitionResult;
+  const { classes, iconStart, children } = ownProps;
+  const { href } = ownProps;
 
   const isExternal = href && !isInternalLink(href);
+  const target = restProps.target ?? (isExternal ? '_blank' : undefined);
+  const rel = restProps.rel ?? (isExternal ? 'noopener noreferrer' : undefined);
+  const navigationProps = getReactAriaAnchorProps(navigation, {
+    href,
+    routerOptions: restProps.routerOptions,
+  });
 
   return (
     <RAMenuItem
       className={classes.root}
       {...dataAttributes}
-      href={href}
-      target={isExternal ? '_blank' : undefined}
-      rel={isExternal ? 'noopener noreferrer' : undefined}
       textValue={typeof children === 'string' ? children : undefined}
       {...restProps}
+      {...navigationProps}
+      target={target}
+      rel={rel}
       onAction={() => {
         restProps.onAction?.();
         if (href) {
@@ -346,18 +364,44 @@ export const MenuItem = (props: MenuItemProps) => {
 };
 
 /** @public */
-export const MenuListBoxItem = (props: MenuListBoxItemProps) => {
-  const { ownProps, restProps } = useDefinition(
-    MenuListBoxItemDefinition,
-    props,
+export const MenuItem = (props: MenuItemProps) => {
+  const definitionResult = useDefinition(MenuItemDefinition, props);
+  const Navigation = definitionResult.navigation;
+
+  return (
+    <Navigation
+      props={{
+        ...definitionResult.restProps,
+        href: definitionResult.ownProps.href,
+      }}
+      view={MenuItemView}
+      viewProps={{ definitionResult }}
+    />
   );
+};
+
+type MenuListBoxItemViewProps = {
+  definitionResult: UseDefinitionResult<
+    typeof MenuListBoxItemDefinition,
+    MenuListBoxItemProps
+  >;
+  navigation: AnchorNavigation;
+};
+
+const MenuListBoxItemView = ({
+  definitionResult,
+  navigation,
+}: MenuListBoxItemViewProps) => {
+  const { ownProps, restProps } = definitionResult;
   const { classes, children } = ownProps;
+  const navigationProps = getReactAriaAnchorProps(navigation, restProps);
 
   return (
     <RAListBoxItem
       textValue={typeof children === 'string' ? children : undefined}
       className={classes.root}
       {...restProps}
+      {...navigationProps}
     >
       <div className={classes.itemContent}>
         <div className={classes.check}>
@@ -366,6 +410,20 @@ export const MenuListBoxItem = (props: MenuListBoxItemProps) => {
         {children}
       </div>
     </RAListBoxItem>
+  );
+};
+
+/** @public */
+export const MenuListBoxItem = (props: MenuListBoxItemProps) => {
+  const definitionResult = useDefinition(MenuListBoxItemDefinition, props);
+  const Navigation = definitionResult.navigation;
+
+  return (
+    <Navigation
+      props={definitionResult.restProps}
+      view={MenuListBoxItemView}
+      viewProps={{ definitionResult }}
+    />
   );
 };
 
