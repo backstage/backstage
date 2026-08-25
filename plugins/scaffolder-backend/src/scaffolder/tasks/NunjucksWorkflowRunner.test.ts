@@ -1972,6 +1972,27 @@ describe('NunjucksWorkflowRunner', () => {
       expect(fakeActionHandler).not.toHaveBeenCalled();
     });
 
+    it('should reject literal falsy each values', async () => {
+      for (const each of [0, false]) {
+        const task = createMockTaskWithSpec({
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              each,
+              action: 'jest-mock-action',
+            },
+          ],
+        });
+
+        await expect(runner.execute(task)).rejects.toThrow(
+          'must resolve to an array or object',
+        );
+      }
+
+      expect(fakeActionHandler).not.toHaveBeenCalled();
+    });
+
     it('should validate each parameter renders to a valid value', async () => {
       const task = createMockTaskWithSpec({
         steps: [
