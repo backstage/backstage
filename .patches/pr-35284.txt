@@ -1,1 +1,1 @@
-Fix catalog detail ownership links.
+Fixed ownership card links to filter the catalog by canonical owner entity references instead of mutable presentation titles.
