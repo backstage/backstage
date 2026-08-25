@@ -114,12 +114,12 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     this.allowedEmailDomains = emailProcessorConfig
       .getOptionalStringArray('allowedEmailDomains')
       ?.map(domain => domain.toLowerCase());
-    this.allowlistEmailAddresses = emailProcessorConfig.getOptionalStringArray(
-      'allowlistEmailAddresses',
-    );
-    this.denylistEmailAddresses = emailProcessorConfig.getOptionalStringArray(
-      'denylistEmailAddresses',
-    );
+    this.allowlistEmailAddresses = emailProcessorConfig
+      .getOptionalStringArray('allowlistEmailAddresses')
+      ?.map(address => address.trim().toLowerCase());
+    this.denylistEmailAddresses = emailProcessorConfig
+      .getOptionalStringArray('denylistEmailAddresses')
+      ?.map(address => address.trim().toLowerCase());
     this.filter = getProcessorFiltersFromConfig(emailProcessorConfig);
   }
 
@@ -252,10 +252,13 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       return false;
     });
 
+    let skippedOutsideDomains = 0;
     emails = emails.filter(email => {
-      const onAllowlist = this.allowlistEmailAddresses?.includes(email);
+      const normalizedEmail = email.trim().toLowerCase();
+      const onAllowlist =
+        this.allowlistEmailAddresses?.includes(normalizedEmail);
 
-      // Exact allowlist addresses are accepted even outside allowedEmailDomains.
+      // Allowlisted addresses are accepted even outside allowedEmailDomains.
       if (onAllowlist) {
         return true;
       }
@@ -265,9 +268,10 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
         if (this.allowedEmailDomains.includes(domain)) {
           return true;
         }
-        this.logger.warn(
+        this.logger.debug(
           `Skipping notification email address outside allowedEmailDomains: ${email}`,
         );
+        skippedOutsideDomains += 1;
         return false;
       }
 
@@ -279,9 +283,15 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       return true;
     });
 
+    if (skippedOutsideDomains > 0) {
+      this.logger.info(
+        `Skipped ${skippedOutsideDomains} notification email address(es) outside allowedEmailDomains`,
+      );
+    }
+
     if (this.denylistEmailAddresses) {
       emails = emails.filter(email => {
-        if (this.denylistEmailAddresses?.includes(email)) {
+        if (this.denylistEmailAddresses?.includes(email.trim().toLowerCase())) {
           this.logger.warn(
             `Skipping denylisted notification email address: ${email}`,
           );

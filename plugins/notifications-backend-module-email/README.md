@@ -106,11 +106,11 @@ notifications:
       allowedEmailDomains:
         - mycompany.com
         - subsidiary.com
-      # Exact addresses always allowed (even outside allowedEmailDomains)
+      # Addresses always allowed (case-insensitive; even outside allowedEmailDomains)
       allowlistEmailAddresses:
         - contractor@gmail.com
         - john.doe@backstage.io
-      # List of denied email addresses to get notifications via email
+      # List of denied email addresses (case-insensitive)
       denylistEmailAddresses:
         - jane.doe@backstage.io
 ```
@@ -121,6 +121,7 @@ warning in the logs); delivery continues for remaining valid recipients.
 
 When `allowedEmailDomains` is set, addresses whose domain is not listed are
 skipped unless the full address is present in `allowlistEmailAddresses`.
+Matching for allowlist and denylist addresses is case-insensitive.
 `denylistEmailAddresses` is applied last and can block an allowlisted address.
 
 ## Securing recipient addresses

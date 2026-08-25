@@ -48,8 +48,7 @@
     "@backstage/types": "workspace:^",
     "lodash": "^4.17.21",
     "nodemailer": "^9.0.1",
-    "p-throttle": "^4.1.1",
-    "zod": "^3.25.76 || ^4.0.0"
+    "p-throttle": "^4.1.1"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

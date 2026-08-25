@@ -5903,7 +5903,6 @@ __metadata:
     lodash: "npm:^4.17.21"
     nodemailer: "npm:^9.0.1"
     p-throttle: "npm:^4.1.1"
-    zod: "npm:^3.25.76 || ^4.0.0"
   languageName: unknown
   linkType: soft
 

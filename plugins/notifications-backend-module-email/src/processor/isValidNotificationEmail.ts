@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-import { z } from 'zod';
-
 /**
- * Returns true if the address is a single well-formed email suitable for
- * notification delivery. Uses Zod's default email check (not RFC 5322),
- * which rejects quoted local-parts and multi-address strings.
+ * Returns true if the address is a single unquoted local@domain suitable for
+ * notification delivery. Rejects whitespace, quotes, commas, semicolons,
+ * angle brackets, and multiple @ characters so address-list / display-name
+ * forms cannot be treated as one recipient by nodemailer.
  */
 export function isValidNotificationEmail(email: string): boolean {
-  return z.string().email().safeParse(email).success;
+  if (email.length === 0 || email !== email.trim()) {
+    return false;
+  }
+  if (/[\s"',;<>]/.test(email)) {
+    return false;
+  }
+  const at = email.indexOf('@');
+  return at > 0 && at === email.lastIndexOf('@') && at < email.length - 1;
 }
