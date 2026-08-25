@@ -15,6 +15,7 @@
  */
 
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
+import { NotAllowedError } from '@backstage/errors';
 import {
   DefaultTemplateActionRegistry,
   TemplateActionRegistry,
@@ -31,6 +32,8 @@ import {
 import { UserEntity } from '@backstage/catalog-model';
 import {
   AuthorizeResult,
+  type PermissionCondition,
+  type PermissionCriteria,
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
@@ -2649,6 +2652,181 @@ describe('NunjucksWorkflowRunner', () => {
       );
       expect(fakeActionHandler).toHaveBeenCalled();
       expect(mockedPermissionApi.authorizeConditional).toHaveBeenCalledTimes(1);
+    });
+
+    it.each([
+      ['path', 'example/team', false],
+      ['path', 'ExAmPlE/TeAm', false],
+      ['path', 42, false],
+      ['path', '42', false],
+      ['path', 'example/other', true],
+      ['[path]', 'ExAmPlE/TeAm', false],
+      ['[path]', 42, false],
+      ['["path"]', 'ExAmPlE/TeAm', false],
+      ['["path"]', '42', false],
+      ["['path']", 'ExAmPlE/TeAm', false],
+      ["['path']", 42, false],
+      ['path', 'ExAmPlE/TeAm', false, 'custom:gitlab:group:access'],
+      ['path', 42, false, 'custom:gitlab:group:access'],
+      ['path', 'ExAmPlE/TeAm', false, 'github:group:access'],
+      ['path', 42, false, 'github:group:access'],
+      ['path', 'ExAmPlE/TeAm', false, 'bitbucketCloud:group:access'],
+      ['path', '42', false, 'bitbucketCloud:group:access'],
+      ['path', 'ExAmPlE/TeAm', true, 'publish:github:pull-request'],
+      ['path', 42, true, 'publish:github:pull-request'],
+    ])(
+      'matches %s input values for %s',
+      async (key, path, allowed, actionId = 'gitlab:group:access') => {
+        actionRegistry.register(
+          createTemplateAction({
+            id: actionId,
+            schema: {
+              input: {
+                path: z => z.union([z.string(), z.number()]),
+              },
+            },
+            handler: fakeActionHandler,
+          }),
+        );
+
+        mockedPermissionApi.authorizeConditional.mockResolvedValueOnce([
+          {
+            result: AuthorizeResult.CONDITIONAL,
+            pluginId: 'scaffolder',
+            resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+            conditions: {
+              not: {
+                allOf: [
+                  {
+                    resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+                    rule: 'HAS_ACTION_ID',
+                    params: { actionId },
+                  },
+                  {
+                    resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+                    rule: 'HAS_STRING_PROPERTY',
+                    params: {
+                      key,
+                      value: 'example/team',
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        ]);
+
+        const task = createMockTaskWithSpec({
+          steps: [
+            {
+              id: 'test',
+              name: 'Grant GitLab group access',
+              action: actionId,
+              input: { path },
+            },
+          ],
+        });
+
+        const result = runner.execute(task).then(
+          () => true,
+          error => {
+            if (!(error instanceof NotAllowedError)) {
+              throw error;
+            }
+
+            return false;
+          },
+        );
+
+        await expect(result).resolves.toBe(allowed);
+        expect(fakeActionHandler).toHaveBeenCalledTimes(Number(allowed));
+      },
+    );
+
+    it('accepts numeric group identifiers under compatible policies', async () => {
+      actionRegistry.register(
+        createTemplateAction({
+          id: 'gitlab:group:access',
+          schema: {
+            input: {
+              path: z => z.number(),
+            },
+          },
+          handler: fakeActionHandler,
+        }),
+      );
+
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'Grant GitLab group access',
+            action: 'gitlab:group:access',
+            input: { path: 42 },
+          },
+        ],
+      });
+
+      await runner.execute(task);
+
+      for (const conditions of [
+        {
+          anyOf: [
+            {
+              resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+              rule: 'HAS_NUMBER_PROPERTY',
+              params: { key: 'path', value: 42 },
+            },
+            {
+              resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+              rule: 'HAS_STRING_PROPERTY',
+              params: { key: 'path', value: 'example/other' },
+            },
+          ],
+        },
+        {
+          anyOf: [
+            {
+              allOf: [
+                {
+                  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+                  rule: 'HAS_ACTION_ID',
+                  params: { actionId: 'other-action' },
+                },
+                {
+                  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+                  rule: 'HAS_STRING_PROPERTY',
+                  params: {
+                    key: 'path',
+                    value: 'example/team',
+                  },
+                },
+              ],
+            },
+            {
+              resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+              rule: 'HAS_ACTION_ID',
+              params: { actionId: 'gitlab:group:access' },
+            },
+          ],
+        },
+      ] satisfies Array<PermissionCriteria<PermissionCondition>>) {
+        mockedPermissionApi.authorizeConditional.mockResolvedValueOnce([
+          {
+            result: AuthorizeResult.CONDITIONAL,
+            pluginId: 'scaffolder',
+            resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+            conditions,
+          },
+        ]);
+
+        await runner.execute(task);
+      }
+
+      expect(fakeActionHandler).toHaveBeenCalledTimes(3);
+      expect(fakeActionHandler).toHaveBeenCalledWith(
+        expect.objectContaining({ input: { path: 42 } }),
+      );
     });
   });
 

@@ -25,6 +25,7 @@ import {
 import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
 import fs from 'fs-extra';
 import { validate as validateJsonSchema } from 'jsonschema';
+import { toPath } from 'lodash';
 import path from 'node:path';
 import {
   createTemplateRenderer,
@@ -35,6 +36,7 @@ import {
   TemplateValue as NunjitsuTemplateValue,
 } from 'nunjitsu';
 import * as winston from 'winston';
+import { z } from 'zod/v3';
 import { TemplateActionRegistry } from '../actions/TemplateActionRegistry';
 import {
   filterConditionalItems,
@@ -53,9 +55,16 @@ import { UserEntity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   AuthorizeResult,
+  type PermissionCondition,
+  type PermissionCriteria,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
-import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
+import {
+  createConditionAuthorizer,
+  isAndCriteria,
+  isNotCriteria,
+  isOrCriteria,
+} from '@backstage/plugin-permission-node';
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import {
   TaskContext,
@@ -201,6 +210,58 @@ function extractStringValues(obj: unknown): string[] {
 const isActionAuthorized = createConditionAuthorizer(
   Object.values(scaffolderActionRules),
 );
+
+const stringPathConditionSchema = z.object({
+  rule: z.literal('HAS_STRING_PROPERTY'),
+  params: z.object({
+    key: z.string().refine(key => toPath(key).join('.') === 'path'),
+    value: z.string(),
+  }),
+});
+
+const numericGroupPathSchema = z.number().or(z.string().regex(/^\d+$/u));
+
+function getStringPathConditions(
+  criteria: PermissionCriteria<PermissionCondition>,
+): Array<string> {
+  switch (true) {
+    case isAndCriteria(criteria):
+      return criteria.allOf.flatMap(getStringPathConditions);
+    case isOrCriteria(criteria):
+      return criteria.anyOf.flatMap(getStringPathConditions);
+    case isNotCriteria(criteria):
+      return getStringPathConditions(criteria.not);
+    default: {
+      const condition = stringPathConditionSchema.safeParse(criteria);
+      return condition.success ? [condition.data.params.value] : [];
+    }
+  }
+}
+
+function isActionInputAuthorized(
+  decision: PolicyDecision,
+  action: string,
+  input: JsonObject,
+): boolean {
+  if (!isActionAuthorized(decision, { action, input })) {
+    return false;
+  }
+
+  if (
+    decision.result !== AuthorizeResult.CONDITIONAL ||
+    !action.split(':').includes('group') ||
+    !numericGroupPathSchema.safeParse(input.path).success
+  ) {
+    return true;
+  }
+
+  return getStringPathConditions(decision.conditions).every(candidatePath =>
+    isActionAuthorized(decision, {
+      action,
+      input: { ...input, path: candidatePath },
+    }),
+  );
+}
 
 export class NunjucksWorkflowRunner implements WorkflowRunner {
   private readonly defaultTemplateCapabilities: TemplateCapabilities;
@@ -483,12 +544,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             );
           }
         }
-        if (
-          !isActionAuthorized(decision, {
-            action: action.id,
-            input: iteration.input,
-          })
-        ) {
+        if (!isActionInputAuthorized(decision, action.id, iteration.input)) {
           throw new NotAllowedError(
             `Unauthorized action: ${actionId}. The action is not allowed. Input: ${JSON.stringify(
               iteration.input,
