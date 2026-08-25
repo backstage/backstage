@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-import
 
+## 0.13.17
+
+### Patch Changes
+
+- f400f2b: Fixed the owner selected in the import stepper being written to the generated `catalog-info.yaml` as a display name instead of an entity reference. Groups are still suggested by their display name, but selecting one now sets a valid `spec.owner`, for example picking `My Team` results in `my-team`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.2
+
 ## 0.13.16
 
 ### Patch Changes
