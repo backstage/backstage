@@ -765,8 +765,8 @@ export interface PodExecTerminalProps {
   podNamespace: string;
 }
 
-// @public (undocumented)
-export type PodExtraColumn = PodColumns | TableColumn<Pod_2>;
+// @public
+export type PodExtraColumn = PodColumns | TableColumn<Pod_2 | V1Pod>;
 
 // @public
 export const PodLogs: FC<PodLogsProps>;
@@ -825,7 +825,7 @@ export const PodsTable: (input: PodsTablesProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type PodsTablesProps = {
-  pods: Pod_2 | V1Pod[];
+  pods: Pod_2[] | V1Pod[];
   extraColumns?: PodExtraColumn[];
   children?: ReactNode;
 };

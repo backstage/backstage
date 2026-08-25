@@ -55,11 +55,16 @@ export const RESOURCE_COLUMNS: PodColumns = 'RESOURCE';
 export type PodColumns = 'READY' | 'RESOURCE';
 
 /**
+ * A column to render in the pods table.
  *
+ * Can either be one of the `PodColumns` presets, or a custom
+ * `TableColumn` whose render/field callbacks receive the row as
+ * either a `Pod` or a `V1Pod`, depending on what was passed to the
+ * `pods` prop of `PodsTable`.
  *
  * @public
  */
-export type PodExtraColumn = PodColumns | TableColumn<Pod>;
+export type PodExtraColumn = PodColumns | TableColumn<Pod | V1Pod>;
 
 /**
  *
@@ -67,7 +72,7 @@ export type PodExtraColumn = PodColumns | TableColumn<Pod>;
  * @public
  */
 export type PodsTablesProps = {
-  pods: Pod | V1Pod[];
+  pods: Pod[] | V1Pod[];
   extraColumns?: PodExtraColumn[];
   children?: ReactNode;
 };
@@ -199,7 +204,10 @@ export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
     if (typeof extraColumn === 'string') {
       columns.push(...columnsByPreset[extraColumn]);
     } else {
-      columns.push(extraColumn);
+      // Rows are always normalized to `Pod` before being handed to the
+      // table, regardless of whether `pods` was passed as `Pod[]` or
+      // `V1Pod[]`, so it is safe to treat the column as `TableColumn<Pod>`.
+      columns.push(extraColumn as TableColumn<Pod>);
     }
   }
 
