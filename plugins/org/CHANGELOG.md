@@ -1,5 +1,13 @@
 # @backstage/plugin-org
 
+## 0.7.8
+
+### Patch Changes
+
+- 2a0e31c: Fixed ownership card catalog links to filter by stable entity references instead of display titles.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.2
+
 ## 0.7.7
 
 ### Patch Changes
