@@ -565,6 +565,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListTasksResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
       security:
         - {}
         - JWT: []

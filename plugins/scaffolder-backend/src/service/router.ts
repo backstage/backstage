@@ -189,6 +189,8 @@ const readDuration = (
   return defaultValue;
 };
 
+const taskOrderFields = new Set(['created_at', 'status', 'created_by']);
+
 function formatSecretsValidationErrors(result: ValidatorResult) {
   return result.errors.map(err => {
     const property = err.property.replace(/^instance/, 'secrets');
@@ -680,6 +682,10 @@ export async function createRouter(
             throw new InputError(
               `Invalid order parameter "${item}", expected "<asc or desc>:<field name>"`,
             );
+          }
+
+          if (!taskOrderFields.has(match[2])) {
+            throw new InputError(`Invalid order field "${match[2]}"`);
           }
 
           return {
