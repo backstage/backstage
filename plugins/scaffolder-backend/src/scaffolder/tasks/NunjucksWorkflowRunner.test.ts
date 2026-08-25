@@ -1979,7 +1979,8 @@ describe('NunjucksWorkflowRunner', () => {
             {
               id: 'test',
               name: 'name',
-              each,
+              // Deliberately bypass the static constraint to test malformed input at runtime
+              each: each as unknown as string,
               action: 'jest-mock-action',
             },
           ],
