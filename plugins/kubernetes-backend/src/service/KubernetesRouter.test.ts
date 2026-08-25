@@ -55,6 +55,12 @@ import {
 } from '@backstage/plugin-kubernetes-node';
 import { ExtendedHttpServer } from '@backstage/backend-defaults/rootHttpRouter';
 
+jest.mock('@backstage/catalog-client', () => ({
+  CatalogClient: jest.fn().mockReturnValue({
+    getEntityByRef: jest.fn(),
+  }),
+}));
+
 describe('API integration tests', () => {
   let app: ExtendedHttpServer;
   let objectsProviderMock: jest.Mocked<KubernetesObjectsProvider>;
@@ -118,22 +124,21 @@ describe('API integration tests', () => {
       getCustomResourcesByEntity: jest.fn().mockResolvedValue(happyK8SResult),
     };
 
-    jest.mock('@backstage/catalog-client', () => ({
-      CatalogClient: jest.fn().mockReturnValue({
-        getEntityByRef: jest.fn().mockImplementation(async entityRef => {
-          if (entityRef.name === 'noentity') {
-            return undefined;
-          }
-          return {
-            kind: entityRef.kind,
-            metadata: {
-              name: entityRef.name,
-              namespace: entityRef.namespace,
-            },
-          };
-        }),
+    const { CatalogClient } = jest.requireMock('@backstage/catalog-client');
+    (CatalogClient as jest.Mock).mockReturnValue({
+      getEntityByRef: jest.fn().mockImplementation(async (entityRef: any) => {
+        if (entityRef.name === 'noentity') {
+          return undefined;
+        }
+        return {
+          kind: entityRef.kind,
+          metadata: {
+            name: entityRef.name,
+            namespace: entityRef.namespace,
+          },
+        };
       }),
-    }));
+    });
 
     const { server } = await startTestBackend({
       features: [
@@ -497,7 +502,12 @@ describe('API integration tests', () => {
 
       const response = await request(app)
         .post('/api/kubernetes/services/test-service')
-        .send({ entity: { metadata: { name: 'thing' } } });
+        .send({
+          entity: {
+            kind: 'Component',
+            metadata: { name: 'thing', namespace: 'default' },
+          },
+        });
 
       expect(response.body).toEqual({
         items: [
@@ -523,6 +533,7 @@ describe('API integration tests', () => {
             { type: 'pods', resources: [{ metadata: { name: 'pod1' } }] },
           ],
         }),
+        watchResource: jest.fn(),
       };
 
       const { server } = await startTestBackend({
@@ -582,7 +593,10 @@ describe('API integration tests', () => {
       await request(app)
         .post('/api/kubernetes/services/test-service')
         .send({
-          entity: { metadata: { name: 'thing' } },
+          entity: {
+            kind: 'Component',
+            metadata: { name: 'thing', namespace: 'default' },
+          },
           auth: { custom: 'custom-token' },
         });
 
@@ -625,6 +639,22 @@ describe('API integration tests', () => {
       expect(response.body).toEqual(happyK8SResult);
       expect(auditEvent.success).toHaveBeenCalled();
       expect(auditEvent.fail).not.toHaveBeenCalled();
+    });
+
+    it('rejects entities not found in catalog', async () => {
+      const response = await request(app)
+        .post('/api/kubernetes/services/test-service')
+        .send({
+          entity: {
+            kind: 'Component',
+            metadata: { name: 'noentity', namespace: 'default' },
+          },
+        })
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toEqual(403);
+      expect(auditEvent.fail).toHaveBeenCalled();
+      expect(auditEvent.success).not.toHaveBeenCalled();
     });
   });
 

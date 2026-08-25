@@ -1,5 +1,18 @@
 # @backstage/plugin-search-backend-module-techdocs
 
+## 0.4.17
+
+### Patch Changes
+
+- 0dee0e6: Migrated tests from MSW v1 to MSW v2.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/plugin-techdocs-node@1.15.3
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-permission-common@0.9.10
+  - @backstage/plugin-catalog-node@2.2.4
+  - @backstage/plugin-search-backend-node@1.4.7
+
 ## 0.4.17-next.0
 
 ### Patch Changes

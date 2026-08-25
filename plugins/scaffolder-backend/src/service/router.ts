@@ -59,6 +59,7 @@ import {
   taskCancelPermission,
   taskCreatePermission,
   taskReadPermission,
+  templateDryRunPermission,
   templateManagementPermission,
   templateParameterReadPermission,
   templateStepReadPermission,
@@ -93,6 +94,7 @@ import {
 } from '../scaffolder';
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
+import { isTaskRecoveryEnabled } from '../scaffolder/tasks/taskRecoveryHelper';
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
 import { createOpenApiRouter } from '../schema/openapi';
 import {
@@ -279,6 +281,7 @@ export async function createRouter(
     const databaseTaskStore = await DatabaseTaskStore.create({
       database,
       events: eventsService,
+      recoverTasksEnabled: isTaskRecoveryEnabled(config),
     });
     taskBroker = new StorageTaskBroker(
       databaseTaskStore,
@@ -439,6 +442,7 @@ export async function createRouter(
 
   permissionsRegistry.addPermissions([
     taskCreatePermission,
+    templateDryRunPermission,
     templateManagementPermission,
   ]);
 
@@ -1009,7 +1013,7 @@ export async function createRouter(
         const credentials = await httpAuth.credentials(req);
         await checkPermission({
           credentials,
-          permissions: [taskCreatePermission],
+          permissions: [taskCreatePermission, templateDryRunPermission],
           permissionService: permissions,
         });
 

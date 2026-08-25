@@ -37,7 +37,7 @@ You can use the `backstage-cli` to create a GitHub App using a manifest file
 that we provide. This gives us a way to automate some of the work required to
 create a GitHub app.
 
-```console
+```shell
 yarn backstage-cli create-github-app <github org>
 ```
 

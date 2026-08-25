@@ -15,7 +15,7 @@
  */
 
 import { Knex } from 'knex';
-import { retryOnDeadlock } from './util';
+import { isDeadlockError, retryOnDeadlock } from './util';
 
 jest.mock('node:timers/promises', () => ({
   setTimeout: jest.fn(),
@@ -121,5 +121,27 @@ describe('retryOnDeadlock', () => {
       'deadlock detected',
     );
     expect(fn).toHaveBeenCalledTimes(4);
+  });
+});
+
+describe('isDeadlockError', () => {
+  it('returns true for PostgreSQL deadlock error code 40P01', () => {
+    expect(isDeadlockError(mockKnex('pg'), pgDeadlockError())).toBe(true);
+  });
+
+  it('returns false for non-deadlock PostgreSQL errors', () => {
+    const err = Object.assign(new Error('unique violation'), { code: '23505' });
+    expect(isDeadlockError(mockKnex('pg'), err)).toBe(false);
+  });
+
+  it('returns false for PostgreSQL deadlock code on non-PostgreSQL engines', () => {
+    expect(isDeadlockError(mockKnex('better-sqlite3'), pgDeadlockError())).toBe(
+      false,
+    );
+  });
+
+  it('returns false for non-Error values', () => {
+    expect(isDeadlockError(mockKnex('pg'), 'not an error')).toBe(false);
+    expect(isDeadlockError(mockKnex('pg'), null)).toBe(false);
   });
 });

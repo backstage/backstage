@@ -43,6 +43,7 @@ const tryInitGitRepositoryMock = jest.spyOn(tasks, 'tryInitGitRepository');
 const readGitConfig = jest.spyOn(tasks, 'readGitConfig');
 const moveAppMock = jest.spyOn(tasks, 'moveAppTask');
 const buildAppMock = jest.spyOn(tasks, 'buildAppTask');
+const tryCommandForVersionMock = jest.spyOn(tasks, 'tryCommandForVersion');
 
 describe('command entrypoint', () => {
   const mockDir = createMockDirectory({ mockOsTmpDir: true });
@@ -54,6 +55,10 @@ describe('command entrypoint', () => {
     });
     readGitConfig.mockResolvedValue({
       defaultBranch: 'git-default-branch',
+    });
+    tryCommandForVersionMock.mockResolvedValue({
+      version: '1.2.3',
+      error: undefined,
     });
   });
 
@@ -150,5 +155,111 @@ describe('command entrypoint', () => {
     readGitConfig.mockResolvedValue(undefined);
     await createApp(cmd);
     expect(tryInitGitRepositoryMock).not.toHaveBeenCalled();
+  });
+
+  it('should exit when yarn is not available', async () => {
+    tryCommandForVersionMock.mockImplementation(async (command: string) => {
+      if (command === 'yarn -v') {
+        return { version: 'N/A', error: 'Command not found: yarn' };
+      }
+      return { version: '3.12.4', error: undefined };
+    });
+    jest.spyOn(tasks.Task, 'exit').mockImplementation(() => {
+      throw new Error('exit');
+    });
+    const cmd = {} as unknown as Command;
+    await expect(createApp(cmd)).rejects.toThrow('exit');
+    expect(templatingMock).not.toHaveBeenCalled();
+  });
+
+  it('should continue when python is not available', async () => {
+    tryCommandForVersionMock.mockImplementation(async (command: string) => {
+      if (command.startsWith('python')) {
+        return { version: 'N/A', error: 'Command not found: python' };
+      }
+      return { version: '4.6.0', error: undefined };
+    });
+    const cmd = {} as unknown as Command;
+    await createApp(cmd);
+    expect(templatingMock).toHaveBeenCalled();
+  });
+
+  it('should fall back to python when python3 is not available', async () => {
+    tryCommandForVersionMock.mockImplementation(async (command: string) => {
+      if (command === 'python3 --version') {
+        return { version: 'N/A', error: 'Command not found: python3' };
+      }
+      if (command === 'python --version') {
+        return { version: 'Python 3.12.4', error: undefined };
+      }
+      return { version: '4.6.0', error: undefined };
+    });
+    const cmd = {} as unknown as Command;
+    await createApp(cmd);
+    expect(tryCommandForVersionMock).toHaveBeenCalledWith('python --version');
+    expect(templatingMock).toHaveBeenCalled();
+  });
+
+  it('should exit when Node version is an odd number', async () => {
+    const originalVersion = process.versions.node;
+    Object.defineProperty(process.versions, 'node', {
+      value: '23.1.0',
+      configurable: true,
+    });
+    try {
+      jest.spyOn(tasks.Task, 'exit').mockImplementation(() => {
+        throw new Error('exit');
+      });
+      const cmd = {} as unknown as Command;
+      await expect(createApp(cmd)).rejects.toThrow('exit');
+      expect(templatingMock).not.toHaveBeenCalled();
+    } finally {
+      Object.defineProperty(process.versions, 'node', {
+        value: originalVersion,
+        configurable: true,
+      });
+    }
+  });
+
+  it('should exit when Node version is too old', async () => {
+    const originalVersion = process.versions.node;
+    Object.defineProperty(process.versions, 'node', {
+      value: '18.0.0',
+      configurable: true,
+    });
+    try {
+      jest.spyOn(tasks.Task, 'exit').mockImplementation(() => {
+        throw new Error('exit');
+      });
+      const cmd = {} as unknown as Command;
+      await expect(createApp(cmd)).rejects.toThrow('exit');
+      expect(templatingMock).not.toHaveBeenCalled();
+    } finally {
+      Object.defineProperty(process.versions, 'node', {
+        value: originalVersion,
+        configurable: true,
+      });
+    }
+  });
+
+  it('should exit when Node version is too new', async () => {
+    const originalVersion = process.versions.node;
+    Object.defineProperty(process.versions, 'node', {
+      value: '26.0.0',
+      configurable: true,
+    });
+    try {
+      jest.spyOn(tasks.Task, 'exit').mockImplementation(() => {
+        throw new Error('exit');
+      });
+      const cmd = {} as unknown as Command;
+      await expect(createApp(cmd)).rejects.toThrow('exit');
+      expect(templatingMock).not.toHaveBeenCalled();
+    } finally {
+      Object.defineProperty(process.versions, 'node', {
+        value: originalVersion,
+        configurable: true,
+      });
+    }
   });
 });

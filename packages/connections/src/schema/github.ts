@@ -53,7 +53,7 @@ export const GithubConnectionType = createConnectionType({
     },
   ],
   matchAuth: (authMethods, query) => {
-    const org = new URL(query).pathname
+    const org = new URL(query.url).pathname
       .split('/')
       .filter(Boolean)[0]
       .toLocaleLowerCase();

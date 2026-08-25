@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-permission-common",
-  "version": "0.9.9",
+  "version": "0.9.10",
   "description": "Isomorphic types and client for Backstage permissions and authorization",
   "backstage": {
     "role": "common-library",
@@ -57,7 +57,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "msw": "^1.0.0"
+    "msw": "^2.0.0"
   },
   "configSchema": "config.d.ts"
 }

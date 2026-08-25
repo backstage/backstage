@@ -90,82 +90,6 @@ describe('runBackend', () => {
     jest.useRealTimers();
   });
 
-  describe('--no-node-snapshot argument handling', () => {
-    it('should pass --no-node-snapshot when NODE_OPTIONS is not set', async () => {
-      delete process.env.NODE_OPTIONS;
-
-      runBackend({ entry: 'src/index' });
-
-      await jest.advanceTimersByTimeAsync(100);
-
-      expect(mockSpawn).toHaveBeenCalled();
-      const spawnArgs = mockSpawn.mock.calls[0][1] as string[];
-      expect(spawnArgs).toContain('--no-node-snapshot');
-    });
-
-    it('should pass --no-node-snapshot when NODE_OPTIONS exists without --node-snapshot', async () => {
-      process.env.NODE_OPTIONS = '--max-old-space-size=4096';
-
-      runBackend({ entry: 'src/index' });
-
-      await jest.advanceTimersByTimeAsync(100);
-
-      expect(mockSpawn).toHaveBeenCalled();
-      const spawnArgs = mockSpawn.mock.calls[0][1] as string[];
-      expect(spawnArgs).toContain('--no-node-snapshot');
-    });
-
-    it('should not pass --no-node-snapshot when --node-snapshot already exists in NODE_OPTIONS', async () => {
-      process.env.NODE_OPTIONS = '--node-snapshot --max-old-space-size=4096';
-
-      runBackend({ entry: 'src/index' });
-
-      await jest.advanceTimersByTimeAsync(100);
-
-      expect(mockSpawn).toHaveBeenCalled();
-      const spawnArgs = mockSpawn.mock.calls[0][1] as string[];
-      expect(spawnArgs).not.toContain('--no-node-snapshot');
-    });
-
-    it('should not pass --no-node-snapshot when --node-snapshot exists in the middle of NODE_OPTIONS', async () => {
-      process.env.NODE_OPTIONS =
-        '--max-old-space-size=4096 --node-snapshot --inspect';
-
-      runBackend({ entry: 'src/index' });
-
-      await jest.advanceTimersByTimeAsync(100);
-
-      expect(mockSpawn).toHaveBeenCalled();
-      const spawnArgs = mockSpawn.mock.calls[0][1] as string[];
-      expect(spawnArgs).not.toContain('--no-node-snapshot');
-    });
-
-    it('should pass --no-node-snapshot even with trailing spaces in NODE_OPTIONS', async () => {
-      process.env.NODE_OPTIONS = '--max-old-space-size=4096 ';
-
-      runBackend({ entry: 'src/index' });
-
-      await jest.advanceTimersByTimeAsync(100);
-
-      expect(mockSpawn).toHaveBeenCalled();
-      const spawnArgs = mockSpawn.mock.calls[0][1] as string[];
-      expect(spawnArgs).toContain('--no-node-snapshot');
-    });
-
-    it('should pass --no-node-snapshot alongside other option args like --inspect', async () => {
-      delete process.env.NODE_OPTIONS;
-
-      runBackend({ entry: 'src/index', inspectEnabled: true });
-
-      await jest.advanceTimersByTimeAsync(100);
-
-      expect(mockSpawn).toHaveBeenCalled();
-      const spawnArgs = mockSpawn.mock.calls[0][1] as string[];
-      expect(spawnArgs).toContain('--no-node-snapshot');
-      expect(spawnArgs).toContain('--inspect');
-    });
-  });
-
   describe('embedded-postgres support', () => {
     it('should inject config override from startEmbeddedDb when it returns a result', async () => {
       mockStartEmbeddedDb.mockResolvedValue({
@@ -188,6 +112,7 @@ describe('runBackend', () => {
         configPaths: undefined,
         targetDir: undefined,
       });
+      expect(mockSpawn.mock.calls[0][1]).not.toContain('--no-node-snapshot');
       const spawnEnv = mockSpawn.mock.calls[0][2]?.env as Record<
         string,
         string

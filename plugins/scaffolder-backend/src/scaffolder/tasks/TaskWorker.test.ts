@@ -148,6 +148,64 @@ describe('TaskWorker', () => {
     expect(event?.body.output).toEqual({ testOutput: 'testmockoutput' });
   });
 
+  it('should complete successfully when workspace cleanup fails', async () => {
+    const cleanWorkspace = jest
+      .fn()
+      .mockRejectedValue(new Error('Cleanup failed'));
+    const config = new ConfigReader({
+      scaffolder: {
+        taskRecovery: {
+          workspaceProvider: 'mock',
+        },
+      },
+    });
+    const broker = new StorageTaskBroker(storage, logger, config, undefined, {
+      mock: {
+        serializeWorkspace: jest.fn(),
+        rehydrateWorkspace: jest.fn(),
+        cleanWorkspace,
+      },
+    });
+    const { NunjucksWorkflowRunner: ActualNunjucksWorkflowRunner } =
+      jest.requireActual<typeof import('./NunjucksWorkflowRunner')>(
+        './NunjucksWorkflowRunner',
+      );
+    const actualWorkflowRunner = new ActualNunjucksWorkflowRunner({
+      actionRegistry,
+      integrations,
+      logger,
+      workingDirectory,
+      metrics: metricsServiceMock.mock(),
+    });
+    MockedNunjucksWorkflowRunner.mockImplementation(() => actualWorkflowRunner);
+    const taskWorker = await TaskWorker.create({
+      logger,
+      workingDirectory,
+      integrations,
+      taskBroker: broker,
+      actionRegistry,
+      config,
+      metrics: metricsServiceMock.mock(),
+    });
+
+    const { taskId } = await broker.dispatch({
+      spec: {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [],
+        output: {},
+        parameters: {},
+      },
+    });
+    const task = await broker.claim();
+
+    await taskWorker.runOneTask(task);
+
+    await expect(storage.getTask(taskId)).resolves.toMatchObject({
+      status: 'completed',
+    });
+    expect(cleanWorkspace).toHaveBeenCalledTimes(1);
+  });
+
   it('should log an audit event with task parameters when running a task', async () => {
     (workflowRunner.execute as jest.Mock).mockResolvedValue({
       output: {},

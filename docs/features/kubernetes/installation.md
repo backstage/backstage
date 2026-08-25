@@ -140,7 +140,7 @@ backend.add(kubernetesModuleCustomClusterDiscovery);
 backend.start();
 ```
 
-:::note Note
+:::note
 
 This example uses items from the `@backstage/plugin-kubernetes-node` and `luxon` packages, you'll need to add those for this example to work as is.
 

@@ -119,7 +119,7 @@ The [ConfigApi](https://backstage.io/api/stable/types/_backstage_frontend-plugin
 [UtilityApi](../api/utility-apis.md). It's accessible as usual via the
 `configApiRef` exported from `@backstage/core-plugin-api`:
 
-```
+```ts
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
 ...
 const MyReactComponent = (...) => {

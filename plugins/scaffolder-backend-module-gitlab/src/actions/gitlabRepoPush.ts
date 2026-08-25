@@ -100,9 +100,12 @@ export const createGitlabRepoPushAction = (options: {
             description: 'Gitlab Project path',
           }),
         commitHash: z =>
-          z.string({
-            description: 'The git commit hash of the commit',
-          }),
+          z
+            .string({
+              description:
+                'The git commit hash of the commit, or omitted when there were no file changes to commit and `allowEmpty` is not true (covers both the default of unset and an explicit `false`).',
+            })
+            .optional(),
       },
     },
     async handler(ctx) {
@@ -213,6 +216,15 @@ export const createGitlabRepoPushAction = (options: {
             )}`,
           );
         }
+      }
+
+      if (actions.length === 0 && !allowEmpty) {
+        ctx.logger.warn(
+          `No file changes to commit to ${repoID} on branch '${branchName}'; skipping commit. Set 'allowEmpty: true' to create an empty commit.`,
+        );
+        ctx.output('projectid', repoID);
+        ctx.output('projectPath', repoID);
+        return;
       }
 
       try {

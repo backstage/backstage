@@ -31,6 +31,7 @@ import {
 } from '@backstage/plugin-kubernetes-common';
 import { getMockReq, getMockRes } from '@jest-mock/express';
 import express from 'express';
+import * as httpProxyMiddleware from 'http-proxy-middleware';
 import Router from 'express-promise-router';
 import { Server } from 'node:http';
 import { rest } from 'msw';
@@ -126,14 +127,17 @@ describe('KubernetesProxy', () => {
     proxyPath,
     requestPath,
     headers,
+    proxyOverride,
   }: {
     proxyPath: string;
     requestPath: string;
     headers?: Record<string, string>;
+    proxyOverride?: KubernetesProxy;
   }) => {
+    const activeProxy = proxyOverride ?? proxy;
     const app = express().use(
       Router()
-        .use(proxyPath, proxy.createRequestHandler({ permissionApi }))
+        .use(proxyPath, activeProxy.createRequestHandler({ permissionApi }))
         .use(middleware.error()),
     );
 
@@ -687,6 +691,43 @@ describe('KubernetesProxy', () => {
         server.close();
       }
     });
+
+    it('works without an auditor configured', async () => {
+      const proxyWithoutAuditor = new KubernetesProxy({
+        logger,
+        clusterSupplier,
+        authStrategy,
+        discovery: mockDiscoveryApi,
+        httpAuth: mockServices.httpAuth.mock(),
+      });
+
+      clusterSupplier.getClusters.mockResolvedValue([
+        {
+          name: 'cluster1',
+          url: 'https://localhost:9999',
+          authMetadata: {},
+        },
+      ]);
+
+      worker.use(
+        rest.get('https://localhost:9999/api', (_: any, res: any, ctx: any) =>
+          res(ctx.status(200), ctx.json({ ok: true })),
+        ),
+      );
+
+      auditor.createEvent.mockClear();
+
+      const requestPromise = setupProxyPromise({
+        proxyPath: '/mountpath',
+        requestPath: '/api',
+        headers: { [HEADER_KUBERNETES_CLUSTER]: 'cluster1' },
+        proxyOverride: proxyWithoutAuditor,
+      });
+
+      await requestPromise.expect(200);
+
+      expect(auditor.createEvent).not.toHaveBeenCalled();
+    });
   });
 
   it('should return a ERROR_NOT_FOUND if no clusters are found', async () => {
@@ -775,6 +816,37 @@ describe('KubernetesProxy', () => {
     const response = await requestPromise;
 
     expect(response.status).toEqual(299);
+    expect(response.body).toStrictEqual(apiResponse);
+  });
+
+  it('rewrites paths when the proxy mount contains regex metacharacters', async () => {
+    const apiResponse = { kind: 'PodList', items: [] };
+
+    clusterSupplier.getClusters.mockResolvedValue([
+      {
+        name: 'cluster1',
+        url: 'https://localhost:9999/api',
+        authMetadata: {},
+      },
+    ]);
+
+    worker.use(
+      rest.get(
+        'https://localhost:9999/api/v1/pods',
+        (_: any, res: any, ctx: any) =>
+          res(ctx.status(200), ctx.json(apiResponse)),
+      ),
+    );
+
+    const requestPromise = setupProxyPromise({
+      proxyPath: '/mount.path',
+      requestPath: '/v1/pods',
+      headers: { [HEADER_KUBERNETES_CLUSTER]: 'cluster1' },
+    });
+
+    const response = await requestPromise;
+
+    expect(response.status).toEqual(200);
     expect(response.body).toStrictEqual(apiResponse);
   });
 
@@ -1689,6 +1761,62 @@ describe('KubernetesProxy', () => {
         kind: 'NamespaceList',
         apiVersion: 'v1',
         items: [],
+      });
+    });
+  });
+
+  describe('middleware cache', () => {
+    let createProxyMiddlewareSpy: jest.SpiedFunction<
+      typeof httpProxyMiddleware.createProxyMiddleware
+    >;
+
+    beforeEach(() => {
+      createProxyMiddlewareSpy = jest
+        .spyOn(httpProxyMiddleware, 'createProxyMiddleware')
+        .mockImplementation((() => jest.fn()) as any);
+      proxy = new KubernetesProxy({
+        logger,
+        clusterSupplier,
+        authStrategy,
+        discovery: mockDiscoveryApi,
+        httpAuth: mockServices.httpAuth.mock(),
+        auditor,
+        middlewareCache: { ttlMs: 60_000, maxSize: 10 },
+      });
+    });
+
+    afterEach(() => {
+      createProxyMiddlewareSpy.mockRestore();
+    });
+
+    it('recreates middleware when skipTLSVerify changes', async () => {
+      const baseCluster: ClusterDetails = {
+        name: 'cluster1',
+        url: 'https://localhost:9999',
+        authMetadata: {},
+        skipTLSVerify: true,
+      };
+
+      clusterSupplier.getClusters
+        .mockResolvedValueOnce([baseCluster])
+        .mockResolvedValueOnce([{ ...baseCluster, skipTLSVerify: false }]);
+
+      const handler = proxy.createRequestHandler({ permissionApi });
+
+      const req1 = buildMockRequest('cluster1', 'api');
+      const { res: res1, next: next1 } = getMockRes();
+      await handler(req1, res1, next1);
+
+      const req2 = buildMockRequest('cluster1', 'api');
+      const { res: res2, next: next2 } = getMockRes();
+      await handler(req2, res2, next2);
+
+      expect(createProxyMiddlewareSpy).toHaveBeenCalledTimes(2);
+      expect(createProxyMiddlewareSpy.mock.calls[0][0]).toMatchObject({
+        secure: false,
+      });
+      expect(createProxyMiddlewareSpy.mock.calls[1][0]).toMatchObject({
+        secure: true,
       });
     });
   });
