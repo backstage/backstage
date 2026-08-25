@@ -27,6 +27,7 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'podsTable.columns.name': 'name';
     readonly 'podsTable.columns.id': 'ID';
     readonly 'podsTable.columns.status': 'status';
+    readonly 'podsTable.columns.version': 'version';
     readonly 'podsTable.columns.phase': 'phase';
     readonly 'podsTable.columns.containersReady': 'containers ready';
     readonly 'podsTable.columns.totalRestarts': 'total restarts';
