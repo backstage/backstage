@@ -183,6 +183,27 @@ The per-template `spec.EXPERIMENTAL_recovery` field is no longer required. When 
 
 The old experimental flags are still supported as fallbacks but are deprecated and will be removed in a future release. If you use `EXPERIMENTAL_workspaceSerialization`, install and register the corresponding workspace provider module. The database provider module migrates existing database workspace snapshots from the legacy task storage when it starts for the first time. The `EXPERIMENTAL_workspaceSerializationProvider` setting continues to select a provider only when `EXPERIMENTAL_workspaceSerialization` is set to `true`.
 
+## Requiring SCM user credentials
+
+You can require that supported SCM actions only operate with credentials
+explicitly provided by the signed-in user:
+
+```yaml
+scaffolder:
+  requireScmUserCredentials: true
+```
+
+When enabled, supported built-in GitHub, GitLab, Bitbucket Cloud, Bitbucket
+Server, and Azure DevOps mutation actions reject requests that do not include a
+user-provided token. The `fetch:plain`, `fetch:plain:file`, `fetch:template`,
+and `fetch:template:file` actions enforce the same requirement for GitHub and
+GitLab reads. Custom actions and SCM readers that do not accept a user token
+input are not affected.
+
+The GitLab `publish:gitlab` action's `setUserAsOwner` and `ownerUsername`
+inputs cannot be used with this setting because they require privileged
+credentials from the GitLab integration.
+
 ## Customizing the ScaffolderPage with Grouping and Filtering
 
 The sections below cover the legacy (JSX) frontend system. For the new
