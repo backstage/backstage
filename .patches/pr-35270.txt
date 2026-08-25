@@ -1,0 +1,1 @@
+Fix catalog detail page ownership.
