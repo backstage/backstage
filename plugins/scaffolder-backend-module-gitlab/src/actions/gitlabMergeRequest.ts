@@ -332,50 +332,64 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
               execute_filemode: file.executable,
             }));
 
-      let createBranch = actions.length > 0;
+      // Checkpointed like the commit and the merge request below: on a task that is
+      // started over, the branch created by the previous attempt would make the checks
+      // throw. The callback has to return a truthy value, only those are replayed.
+      await ctx.checkpoint({
+        key: `ensure.branch.${repoID}.${branchName}`,
+        fn: async () => {
+          let createBranch = actions.length > 0;
 
-      try {
-        const branch = await api.Branches.show(repoID, branchName);
-        if (createBranch) {
-          const mergeRequests = await api.MergeRequests.all({
-            projectId: repoID,
-            source_branch: branchName,
-          });
+          try {
+            const branch = await api.Branches.show(repoID, branchName);
+            if (createBranch) {
+              const mergeRequests = await api.MergeRequests.all({
+                projectId: repoID,
+                source_branch: branchName,
+              });
 
-          if (mergeRequests.length > 0) {
-            // If an open MR exists, include the MR link in the error message
-            throw new InputError(
-              `The branch creation failed because the branch already exists at: ${branch.web_url}. Additionally, there is a Merge Request for this branch: ${mergeRequests[0].web_url}`,
+              if (mergeRequests.length > 0) {
+                // If an open MR exists, include the MR link in the error message
+                throw new InputError(
+                  `The branch creation failed because the branch already exists at: ${branch.web_url}. Additionally, there is a Merge Request for this branch: ${mergeRequests[0].web_url}`,
+                );
+              } else {
+                // If no open MR, just notify about the existing branch
+                throw new InputError(
+                  `The branch creation failed because the branch already exists at: ${branch.web_url}.`,
+                );
+              }
+            }
+
+            ctx.logger.info(
+              `Using existing branch ${branchName} without modification.`,
             );
-          } else {
-            // If no open MR, just notify about the existing branch
-            throw new InputError(
-              `The branch creation failed because the branch already exists at: ${branch.web_url}.`,
-            );
+          } catch (e) {
+            if (e instanceof InputError) {
+              throw e;
+            }
+            createBranch = true;
           }
-        }
 
-        ctx.logger.info(
-          `Using existing branch ${branchName} without modification.`,
-        );
-      } catch (e) {
-        if (e instanceof InputError) {
-          throw e;
-        }
-        createBranch = true;
-      }
+          if (createBranch) {
+            try {
+              await api.Branches.create(
+                repoID,
+                branchName,
+                String(targetBranch),
+              );
+            } catch (e) {
+              throw new InputError(
+                `The branch creation failed. Please check that your repo does not already contain a branch named '${branchName}'. ${getErrorMessage(
+                  e,
+                )}`,
+              );
+            }
+          }
 
-      if (createBranch) {
-        try {
-          await api.Branches.create(repoID, branchName, String(targetBranch));
-        } catch (e) {
-          throw new InputError(
-            `The branch creation failed. Please check that your repo does not already contain a branch named '${branchName}'. ${getErrorMessage(
-              e,
-            )}`,
-          );
-        }
-      }
+          return branchName;
+        },
+      });
 
       await ctx.checkpoint({
         key: `commit.to.${repoID}.${branchName}`,

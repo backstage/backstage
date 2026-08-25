@@ -88,6 +88,17 @@ const mockGitlabClient = {
         default_branch: 'main',
       };
     }),
+    all: jest.fn(async (options: { source_branch?: string }) => {
+      if (options.source_branch !== 'existing-branch') {
+        return [];
+      }
+      return [
+        {
+          iid: 4,
+          web_url: 'https://foo.bar.baz/owner/repo/-/merge_requests/4',
+        },
+      ];
+    }),
   },
   MergeRequestApprovals: {
     allApprovalRules: jest.fn(
@@ -1506,6 +1517,53 @@ describe('createGitLabMergeRequest', () => {
           labels: ['foo', 'bar', 'baz'],
         },
       );
+    });
+  });
+
+  describe('when the branch already exists', () => {
+    const input = {
+      repoUrl: 'gitlab.com?repo=repo&owner=owner',
+      title: 'Create my new MR',
+      branchName: 'existing-branch',
+      description: 'This MR is really good',
+    };
+
+    beforeEach(() => {
+      mockDir.setContent({
+        [workspacePath]: { 'foo.txt': 'Hello there!' },
+      });
+    });
+
+    it('fails when the branch and a merge request for it already exist', async () => {
+      const ctx = createMockActionContext({ input, workspacePath });
+
+      await expect(instance.handler(ctx)).rejects.toThrow(
+        'The branch creation failed because the branch already exists at: https://foo.bar.baz/owner/repo/-/tree/existing-branch. Additionally, there is a Merge Request for this branch: https://foo.bar.baz/owner/repo/-/merge_requests/4',
+      );
+    });
+
+    it('skips the branch handling that a previous attempt already checkpointed', async () => {
+      const ctx = createMockActionContext({ input, workspacePath });
+      // A task that already created the branch on its first attempt: the checkpoint
+      // returns the stored value instead of running the callback again.
+      ctx.checkpoint = (async (opts: { key: string; fn: () => unknown }) =>
+        opts.key === 'ensure.branch.owner/repo.existing-branch'
+          ? opts.key
+          : opts.fn()) as typeof ctx.checkpoint;
+
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Branches.show).not.toHaveBeenCalled();
+      expect(mockGitlabClient.Branches.create).not.toHaveBeenCalled();
+      expect(mockGitlabClient.MergeRequests.all).not.toHaveBeenCalled();
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'existing-branch',
+        'main',
+        'Create my new MR',
+        { description: 'This MR is really good', removeSourceBranch: false },
+      );
+      expect(ctx.output).toHaveBeenCalledWith('projectid', 'owner/repo');
     });
   });
 });
