@@ -128,11 +128,24 @@ export const getRepoUrlFromLocationAnnotation = (
   return {};
 };
 
+const ALLOWED_PYTHON_YAML_TAGS = new Set([
+  'tag:yaml.org,2002:python/name:materialx.emoji.twemoji',
+  'tag:yaml.org,2002:python/object.apply:materialx.emoji.to_svg',
+  'tag:yaml.org,2002:python/object/apply:pymdownx.slugs.slugify',
+]);
+
 class UnknownTag {
   public readonly data: any;
   public readonly type?: string;
 
   constructor(data: any, type?: string) {
+    if (
+      type?.startsWith('tag:yaml.org,2002:python/') &&
+      !ALLOWED_PYTHON_YAML_TAGS.has(type)
+    ) {
+      throw new Error(`Unsupported Python YAML tag '${type}'`);
+    }
+
     this.data = data;
     this.type = type;
   }
