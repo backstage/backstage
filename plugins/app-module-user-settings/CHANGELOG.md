@@ -1,5 +1,13 @@
 # @backstage/plugin-app-module-user-settings
 
+## 0.1.2-next.0
+
+### Patch Changes
+
+- 4cba335: Fixes published entry point configurations so it can be imported reliably in Jest/Node resolution.
+- Updated dependencies
+  - @backstage/plugin-user-settings@0.9.7-next.0
+
 ## 0.1.1
 
 ### Patch Changes

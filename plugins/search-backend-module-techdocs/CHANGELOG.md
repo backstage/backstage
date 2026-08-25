@@ -1,5 +1,11 @@
 # @backstage/plugin-search-backend-module-techdocs
 
+## 0.4.18-next.0
+
+### Patch Changes
+
+- 979c255: Improved catalog indexing performance by using cursor pagination for TechDocs and avoiding unused total item counts in search collators.
+
 ## 0.4.17
 
 ### Patch Changes

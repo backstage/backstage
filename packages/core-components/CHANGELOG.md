@@ -1,5 +1,12 @@
 # @backstage/core-components
 
+## 0.18.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.17.2-next.0
+
 ## 0.18.13
 
 ### Patch Changes

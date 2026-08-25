@@ -1,5 +1,25 @@
 # @backstage/plugin-scaffolder-backend
 
+## 4.1.0-next.0
+
+### Minor Changes
+
+- 1a705ca: Applied `templateDryRunPermission` to inline Software Template dry runs and the corresponding backend action. Permission policies that deny unknown permissions must explicitly allow `scaffolder.template.dry-run` to retain existing dry-run access.
+- e95b649: Added task recovery feature with new `scaffolder.taskRecovery` config section. When enabled, tasks that crash or timeout are automatically recovered and resume from the last completed step, task secrets are retained until the task reaches a terminal state so recovery can continue, and completed step outputs are persisted. Enabling recovery applies to all scaffolder tasks, so actions used by those tasks should be idempotent or use checkpoints. When recovery is disabled (the default), the previous behavior is unchanged: secrets are cleared as soon as a task is claimed and retries re-run every step. The new config consolidates previous experimental flags (`EXPERIMENTAL_recoverTasks`, `EXPERIMENTAL_workspaceSerialization`, `EXPERIMENTAL_recoverTasksTimeout`) which remain supported as fallbacks. The legacy workspace provider setting continues to select a provider only when `EXPERIMENTAL_workspaceSerialization` is `true`.
+
+  Workspace serialization for task recovery now requires installing a separate workspace provider module, including when you use the legacy configuration. For development, use `@backstage/plugin-scaffolder-backend-module-workspace-database` (50 MB limit, not recommended for production). On first startup, that module migrates existing database workspace snapshots from the legacy task storage. For production, use `@backstage/plugin-scaffolder-backend-module-gcp` or a similar external storage provider. The scaffolder rejects a configured provider that has not been installed and registered.
+
+  Enabling crash recovery does not keep completed task event streams open; normal task completion remains terminal for event-stream clients.
+
+### Patch Changes
+
+- 2bf1392: Software template inline conditionals without an `else` branch now render an empty string when their condition is false, matching Nunjucks behavior.
+- beaa3db: Reject Scaffolder steps where `each` resolves to a primitive value instead of an array or object.
+- c1a30ef: Restored support for intrinsic string, number, array, `Map`, and `Set` methods in software templates.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@2.3.0-next.0
+  - @backstage/plugin-scaffolder-node@0.13.7-next.0
+
 ## 4.0.3
 
 ### Patch Changes

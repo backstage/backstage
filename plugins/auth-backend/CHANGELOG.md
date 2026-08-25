@@ -1,5 +1,11 @@
 # @backstage/plugin-auth-backend
 
+## 0.30.1-next.0
+
+### Patch Changes
+
+- 08c5d9b: Fixed inconsistent URL pattern matching in token revocation.
+
 ## 0.30.0
 
 ### Minor Changes
