@@ -1950,6 +1950,50 @@ describe('NunjucksWorkflowRunner', () => {
       expect(fakeActionHandler).not.toHaveBeenCalled();
     });
 
+    it('should reject non-collection each values', async () => {
+      for (const value of ['single', '', 1, 0, true, false, null]) {
+        const task = createMockTaskWithSpec({
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              each: '${{ parameters.data }}',
+              action: 'jest-mock-action',
+            },
+          ],
+          parameters: { data: value },
+        });
+
+        await expect(runner.execute(task)).rejects.toThrow(
+          'must resolve to an array or object',
+        );
+      }
+
+      expect(fakeActionHandler).not.toHaveBeenCalled();
+    });
+
+    it('should reject literal falsy each values', async () => {
+      for (const each of [0, false]) {
+        const task = createMockTaskWithSpec({
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              // Deliberately bypass the static constraint to test malformed input at runtime
+              each: each as unknown as string,
+              action: 'jest-mock-action',
+            },
+          ],
+        });
+
+        await expect(runner.execute(task)).rejects.toThrow(
+          'must resolve to an array or object',
+        );
+      }
+
+      expect(fakeActionHandler).not.toHaveBeenCalled();
+    });
+
     it('should validate each parameter renders to a valid value', async () => {
       const task = createMockTaskWithSpec({
         steps: [
