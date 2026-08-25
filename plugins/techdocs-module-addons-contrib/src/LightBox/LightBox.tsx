@@ -16,8 +16,7 @@
 
 import { useEffect } from 'react';
 import { useShadowRootElements } from '@backstage/plugin-techdocs-react';
-// @ts-ignore
-import PhotoSwipeLightbox, { DataSource, ZoomLevel } from 'photoswipe/lightbox';
+import PhotoSwipeLightbox, { DataSource } from 'photoswipe/lightbox';
 import PhotoSwipe from 'photoswipe';
 import 'photoswipe/style.css';
 import './lightbox.css';
@@ -32,9 +31,13 @@ export const LightBoxAddon = () => {
     let lightbox: PhotoSwipeLightbox | null = new PhotoSwipeLightbox({
       pswpModule: PhotoSwipe,
       initialZoomLevel: 1,
-      secondaryZoomLevel: (zoomLevelObject: ZoomLevel) => {
+      secondaryZoomLevel: zoomLevelObject => {
         // photoswipe/lightbox won't zoom the image further then the given width and height.
         // therefore we need to calculate the zoom factor needed to fit the complete image in the viewport manually.
+        // photoswipe sets both sizes before calling this, the guard is only for the types.
+        if (!zoomLevelObject.elementSize || !zoomLevelObject.panAreaSize) {
+          return 1;
+        }
         const imageWidth = zoomLevelObject.elementSize.x;
         const imageHeight = zoomLevelObject.elementSize.y;
         const viewportWidth = zoomLevelObject.panAreaSize.x;
