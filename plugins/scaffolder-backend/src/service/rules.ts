@@ -31,7 +31,7 @@ import { SerializedTask, TaskFilter } from '@backstage/plugin-scaffolder-node';
 
 import { z } from 'zod/v3';
 import { JsonObject, JsonPrimitive } from '@backstage/types';
-import { get } from 'lodash';
+import { get, toPath } from 'lodash';
 
 export const createTemplatePermissionRule = makeCreatePermissionRule<
   TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
@@ -122,6 +122,26 @@ function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
       }
       if (value !== undefined) {
         if (valueSchema.safeParse(value).success) {
+          if (typeof value === 'string' && typeof foundValue === 'string') {
+            const property = toPath(key).join('.');
+            const actionSegments = resource.action.split(':');
+            const integration = actionSegments.find(segment =>
+              /^(?:gitlab|github|bitbucket(?:Cloud|Server)?)$/u.test(segment),
+            );
+
+            if (
+              integration &&
+              (['owner', 'repoName', 'projectId', 'repoUrl'].includes(
+                property,
+              ) ||
+                (actionSegments.includes('group') && property === 'path'))
+            ) {
+              return (
+                value.toLocaleLowerCase('en-US') ===
+                foundValue.toLocaleLowerCase('en-US')
+              );
+            }
+          }
           return value === foundValue;
         }
         return false;
