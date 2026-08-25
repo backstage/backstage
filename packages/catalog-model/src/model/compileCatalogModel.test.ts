@@ -144,6 +144,7 @@ describe('compileCatalogModel jsonSchema $id', () => {
   // a model source might if it hasn't changed the spec shape between
   // apiVersions.
   const sharedKindSchema = {
+    $id: 'SharedGadgetSchema',
     type: 'object',
     required: ['spec'],
     properties: {
@@ -195,6 +196,22 @@ describe('compileCatalogModel jsonSchema $id', () => {
     const v1beta1 = model.getKind({
       kind: 'Gadget',
       apiVersion: 'example.com/v1beta1',
+    });
+
+    const ajv = new Ajv({ allowUnionTypes: true, allErrors: true });
+    expect(() => ajv.compile(v1alpha1!.jsonSchema)).not.toThrow();
+    expect(() => ajv.compile(v1beta1!.jsonSchema)).not.toThrow();
+  });
+
+  it('lets a single shared Ajv instance compile multiple versions of a built-in kind', () => {
+    const model = compileCatalogModel([defaultCatalogEntityModel]);
+    const v1alpha1 = model.getKind({
+      kind: 'Component',
+      apiVersion: 'backstage.io/v1alpha1',
+    });
+    const v1beta1 = model.getKind({
+      kind: 'Component',
+      apiVersion: 'backstage.io/v1beta1',
     });
 
     const ajv = new Ajv({ allowUnionTypes: true, allErrors: true });

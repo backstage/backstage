@@ -195,6 +195,32 @@ describe('ModelProcessor', () => {
         /Validation of Component entity failed/,
       );
     });
+
+    it('validates API entities with different apiVersions', async () => {
+      const model = compileCatalogModel([defaultCatalogEntityModel]);
+      const processor = new ModelProcessor(
+        ModelHolder.modelPassthroughForTest(model),
+      );
+      const entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'API',
+        metadata: { name: 'my-api' },
+        spec: {
+          type: 'openapi',
+          lifecycle: 'production',
+          owner: 'group:default/my-team',
+          definition: 'openapi: 3.0.0',
+        },
+      };
+
+      await expect(processor.validateEntityKind(entity)).resolves.toBe(true);
+      await expect(
+        processor.validateEntityKind({
+          ...entity,
+          apiVersion: 'backstage.io/v1beta1',
+        }),
+      ).resolves.toBe(true);
+    });
   });
 
   describe('postProcessEntity', () => {
