@@ -45,6 +45,7 @@ import {
   ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -526,6 +527,14 @@ const SidebarItemWithSubmenu = ({
     theme.breakpoints.down('sm'),
   );
   const closeTimerRef = useRef<number>();
+
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) {
+        clearTimeout(closeTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleMouseEnter = () => {
     if (closeTimerRef.current) {
