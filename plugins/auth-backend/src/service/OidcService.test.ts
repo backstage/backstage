@@ -1184,6 +1184,14 @@ describe('OidcService', () => {
             }),
           ).resolves.toBe(false);
 
+          // Client IDs that match the full URL string but not the hostname
+          // component are rejected
+          await expect(
+            service.verifyRevocationClient({
+              clientId: 'https://other.com/.example.com/client.json',
+            }),
+          ).resolves.toBe(false);
+
           // DCR clients must present a valid client secret
           const client = await service.registerClient({
             clientName: 'Test Client',
