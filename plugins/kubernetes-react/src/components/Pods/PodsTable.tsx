@@ -68,26 +68,22 @@ export type PodExtraColumn<T extends Pod | V1Pod = Pod> =
   | PodColumns
   | TableColumn<T>;
 
-type PodsTableArrayProps<T extends Pod | V1Pod = Pod> = {
-  pods: T[];
-  extraColumns?: PodExtraColumn<T>[];
-  children?: ReactNode;
-};
-
-type PodsTableLegacySingletonProps = {
-  pods: Pod;
-  extraColumns?: PodExtraColumn<Pod>[];
-  children?: ReactNode;
-};
-
 /**
  *
  *
  * @public
  */
-export type PodsTablesProps<T extends Pod | V1Pod = Pod> =
-  | PodsTableArrayProps<T>
-  | PodsTableLegacySingletonProps;
+export type PodsTablesProps<T extends Pod | V1Pod = V1Pod> =
+  | {
+      pods: T[];
+      extraColumns?: PodExtraColumn<T>[];
+      children?: ReactNode;
+    }
+  | {
+      pods: Pod;
+      extraColumns?: PodExtraColumn<Pod>[];
+      children?: ReactNode;
+    };
 
 const PodDrawerTrigger = ({ pod }: { pod: Pod }) => {
   const errors = useMatchingErrors({

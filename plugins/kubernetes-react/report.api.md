@@ -828,11 +828,17 @@ export const PodsTable: <T extends Pod_2 | V1Pod = Pod_2>(
 ) => JSX_2.Element;
 
 // @public (undocumented)
-export type PodsTablesProps<T extends Pod_2 | V1Pod = Pod_2> = {
-  pods: T[] | Pod_2;
-  extraColumns?: PodExtraColumn<T>[];
-  children?: ReactNode;
-};
+export type PodsTablesProps<T extends Pod_2 | V1Pod = V1Pod> =
+  | {
+      pods: T[];
+      extraColumns?: PodExtraColumn<T>[];
+      children?: ReactNode;
+    }
+  | {
+      pods: Pod_2;
+      extraColumns?: PodExtraColumn<Pod_2>[];
+      children?: ReactNode;
+    };
 
 // @public (undocumented)
 export class RancherClusterLinksFormatter implements ClusterLinksFormatter {
