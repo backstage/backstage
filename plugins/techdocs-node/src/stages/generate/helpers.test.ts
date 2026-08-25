@@ -840,6 +840,65 @@ describe('helpers', () => {
       );
     });
 
+    it('should remove extra templates by default', async () => {
+      mockDir.setContent({
+        'mkdocs_with_extra_templates.yml': `site_name: Test
+extra_templates:
+  - status.html
+`,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_with_extra_templates.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_extra_templates.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      expect(parsedYml.extra_templates).toBeUndefined();
+      expect(parsedYml.site_name).toBe('Test');
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('extra_templates'),
+      );
+    });
+
+    it('should allow extra templates when explicitly configured', async () => {
+      mockDir.setContent({
+        'mkdocs_with_extra_templates.yml': `site_name: Test
+extra_templates:
+  - status.html
+`,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_with_extra_templates.yml'),
+        mockLogger,
+        ['extra_templates'],
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_extra_templates.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      expect(parsedYml.extra_templates).toEqual(['status.html']);
+      expect(parsedYml.site_name).toBe('Test');
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'DANGEROUS: Allowing additional MkDocs configuration keys beyond the default safe allowlist: extra_templates',
+        ),
+      );
+    });
+
     it('should not modify mkdocs.yml when no disallowed keys are present', async () => {
       await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
 
