@@ -140,7 +140,9 @@ export function expandShorthandExtensionParameters(
   if (typeof value !== 'object' || Array.isArray(value)) {
     // We don't mention null here - we don't want people to explicitly enter
     // - entity.card.about: null
-    throw new Error(errorMsg('value must be a boolean or object', id));
+    throw new Error(
+      errorMsg("value must be a boolean, 'true', 'false', or object", id),
+    );
   }
 
   const attachTo = value.attachTo as { id: string; input: string } | undefined;
@@ -172,7 +174,9 @@ export function expandShorthandExtensionParameters(
     if (disabled === 'true' || disabled === 'false') {
       disabled = disabled === 'true';
     } else {
-      throw new Error(errorMsg('must be a boolean', id, 'disabled'));
+      throw new Error(
+        errorMsg("must be a boolean, 'true', or 'false'", id, 'disabled'),
+      );
     }
   }
   if (

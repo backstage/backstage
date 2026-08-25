@@ -94,7 +94,7 @@ describe('readAppExtensionsConfig', () => {
         }),
       ),
     ).toThrow(
-      'Invalid extension configuration at app.extensions[0][app/root], value must be a boolean or object',
+      "Invalid extension configuration at app.extensions[0][app/root], value must be a boolean, 'true', 'false', or object",
     );
   });
 
@@ -148,10 +148,10 @@ describe('expandShorthandExtensionParameters', () => {
 
   it('rejects unknown values', () => {
     expect(() => run({ a: 1 })).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][a], value must be a boolean or object"`,
+      `"Invalid extension configuration at app.extensions[1][a], value must be a boolean, 'true', 'false', or object"`,
     );
     expect(() => run({ a: [] })).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][a], value must be a boolean or object"`,
+      `"Invalid extension configuration at app.extensions[1][a], value must be a boolean, 'true', 'false', or object"`,
     );
   });
 
@@ -204,7 +204,7 @@ describe('expandShorthandExtensionParameters', () => {
     expect(() =>
       run({ 'app/root': 'example-package#MyRouter' }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][app/root], value must be a boolean or object"`,
+      `"Invalid extension configuration at app.extensions[1][app/root], value must be a boolean, 'true', 'false', or object"`,
     );
   });
 
@@ -248,7 +248,7 @@ describe('expandShorthandExtensionParameters', () => {
     expect(() =>
       run({ 'app/root': { disabled: 0 } }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][app/root].disabled, must be a boolean"`,
+      `"Invalid extension configuration at app.extensions[1][app/root].disabled, must be a boolean, 'true', or 'false'"`,
     );
   });
 
@@ -264,7 +264,7 @@ describe('expandShorthandExtensionParameters', () => {
     expect(() =>
       run({ 'app/root': { disabled: 'yes' } }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid extension configuration at app.extensions[1][app/root].disabled, must be a boolean"`,
+      `"Invalid extension configuration at app.extensions[1][app/root].disabled, must be a boolean, 'true', or 'false'"`,
     );
   });
 
