@@ -59,9 +59,16 @@ export type PodColumns = 'READY' | 'RESOURCE';
  *
  * @public
  */
+export type PodExtraColumn = PodColumns | TableColumn<Pod>;
+
+/**
+ *
+ *
+ * @public
+ */
 export type PodsTablesProps = {
   pods: Pod | V1Pod[];
-  extraColumns?: PodColumns[];
+  extraColumns?: PodExtraColumn[];
   children?: ReactNode;
 };
 
@@ -165,29 +172,35 @@ export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
       width: 'auto',
     },
   ];
-  const columns: TableColumn<Pod>[] = [...defaultColumns];
+  const resourceColumns: TableColumn<Pod>[] = [
+    {
+      title: t('podsTable.columns.cpuUsage'),
+      render: (pod: Pod) => {
+        return <Cpu clusterName={cluster.name} pod={pod} />;
+      },
+      width: 'auto',
+    },
+    {
+      title: t('podsTable.columns.memoryUsage'),
+      render: (pod: Pod) => {
+        return <Memory clusterName={cluster.name} pod={pod} />;
+      },
+      width: 'auto',
+    },
+  ];
 
-  if (extraColumns.includes(READY_COLUMNS)) {
-    columns.push(...READY);
-  }
-  if (extraColumns.includes(RESOURCE_COLUMNS)) {
-    const resourceColumns: TableColumn<Pod>[] = [
-      {
-        title: t('podsTable.columns.cpuUsage'),
-        render: (pod: Pod) => {
-          return <Cpu clusterName={cluster.name} pod={pod} />;
-        },
-        width: 'auto',
-      },
-      {
-        title: t('podsTable.columns.memoryUsage'),
-        render: (pod: Pod) => {
-          return <Memory clusterName={cluster.name} pod={pod} />;
-        },
-        width: 'auto',
-      },
-    ];
-    columns.push(...resourceColumns);
+  const columnsByPreset: Record<PodColumns, TableColumn<Pod>[]> = {
+    [READY_COLUMNS]: READY,
+    [RESOURCE_COLUMNS]: resourceColumns,
+  };
+
+  const columns: TableColumn<Pod>[] = [...defaultColumns];
+  for (const extraColumn of extraColumns) {
+    if (typeof extraColumn === 'string') {
+      columns.push(...columnsByPreset[extraColumn]);
+    } else {
+      columns.push(extraColumn);
+    }
   }
 
   const tableStyle = {

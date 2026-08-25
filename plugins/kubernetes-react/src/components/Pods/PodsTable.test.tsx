@@ -73,6 +73,24 @@ describe('PodsTable', () => {
     expect(screen.getByText('OK')).toBeInTheDocument();
   });
 
+  it('should render pod with custom extra column', async () => {
+    await renderInTestApp(
+      <PodsTable
+        pods={[pod as any]}
+        extraColumns={[
+          {
+            title: 'namespace',
+            render: podData => podData.metadata?.namespace ?? 'unknown',
+            width: 'auto',
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.getByText('namespace')).toBeInTheDocument();
+    expect(screen.getByText('default')).toBeInTheDocument();
+  });
+
   it('should render pod, with metrics context', async () => {
     const clusterToClientPodStatus = new Map<string, ClientPodStatus[]>();
 
