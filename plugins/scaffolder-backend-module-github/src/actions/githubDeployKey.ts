@@ -32,8 +32,9 @@ import { examples } from './githubDeployKey.examples';
  */
 export function createGithubDeployKeyAction(options: {
   integrations: ScmIntegrationRegistry;
+  requireScmUserCredentials?: boolean;
 }) {
-  const { integrations } = options;
+  const { integrations, requireScmUserCredentials } = options;
   // For more information on how to define custom actions, see
   //   https://backstage.io/docs/features/software-templates/writing-custom-actions
   return createTemplateAction({
@@ -103,6 +104,7 @@ export function createGithubDeployKeyAction(options: {
 
       const octokitOptions = await getOctokitOptions({
         integrations,
+        requireScmUserCredentials,
         token: providedToken,
         host,
         owner,

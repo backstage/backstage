@@ -97,8 +97,9 @@ const commitActions = ['create', 'delete', 'update', 'skip', 'auto'] as const;
  */
 export const createPublishGitlabMergeRequestAction = (options: {
   integrations: ScmIntegrationRegistry;
+  requireScmUserCredentials?: boolean;
 }) => {
-  const { integrations } = options;
+  const { integrations, requireScmUserCredentials } = options;
 
   return createTemplateAction({
     id: 'publish:gitlab:merge-request',
@@ -218,6 +219,7 @@ _deprecated_: \`projectid\` passed as query parameters in the \`repoUrl\``,
         integrations,
         token,
         repoUrl,
+        requireScmUserCredentials,
       });
 
       let assigneeId: number | undefined = undefined;

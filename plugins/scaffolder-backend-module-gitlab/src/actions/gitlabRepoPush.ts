@@ -37,8 +37,9 @@ import { RepositoryTreeSchema } from '@gitbeaker/rest';
  */
 export const createGitlabRepoPushAction = (options: {
   integrations: ScmIntegrationRegistry;
+  requireScmUserCredentials?: boolean;
 }) => {
-  const { integrations } = options;
+  const { integrations, requireScmUserCredentials } = options;
 
   return createTemplateAction({
     id: 'gitlab:repo:push',
@@ -123,6 +124,7 @@ export const createGitlabRepoPushAction = (options: {
         integrations,
         token,
         repoUrl,
+        requireScmUserCredentials,
       });
 
       let fileRoot: string;

@@ -47,6 +47,14 @@ export interface Config {
     concurrentTasksLimit?: number;
 
     /**
+     * Requires supported SCM actions to only operate with credentials
+     * explicitly provided by the signed-in user.
+     *
+     * Defaults to false.
+     */
+    requireScmUserCredentials?: boolean;
+
+    /**
      * Tries to wait for tasks to finish during SIGTERM before shutting down the TaskWorker.
      */
     EXPERIMENTAL_gracefulShutdown?: boolean;
