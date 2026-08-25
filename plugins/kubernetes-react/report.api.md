@@ -823,7 +823,7 @@ export interface PodScope {
 }
 
 // @public (undocumented)
-export const PodsTable: <T extends Pod_2 | V1Pod = Pod_2>(
+export const PodsTable: <T extends Pod_2 | V1Pod = V1Pod>(
   input: PodsTablesProps<T>,
 ) => JSX_2.Element;
 

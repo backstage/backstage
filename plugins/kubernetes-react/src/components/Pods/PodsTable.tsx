@@ -129,7 +129,7 @@ const Memory = ({ clusterName, pod }: { clusterName: string; pod: Pod }) => {
  *
  * @public
  */
-export const PodsTable = <T extends Pod | V1Pod = Pod>({
+export const PodsTable = <T extends Pod | V1Pod = V1Pod>({
   pods,
   extraColumns = [],
 }: PodsTablesProps<T>) => {
