@@ -139,6 +139,115 @@ describe('compileCatalogModel', () => {
   });
 });
 
+describe('compileCatalogModel jsonSchema $id', () => {
+  // Both versions intentionally reuse the exact same schema object, the way
+  // a model source might if it hasn't changed the spec shape between
+  // apiVersions.
+  const sharedKindSchema = {
+    type: 'object',
+    required: ['spec'],
+    properties: {
+      spec: {
+        type: 'object',
+        required: ['owner'],
+        properties: { owner: { type: 'string' } },
+      },
+    },
+  };
+
+  const multiVersionLayer = createCatalogModelLayer({
+    layerId: 'MultiVersion',
+    builder: model => {
+      model.addKind({
+        group: 'example.com',
+        names: { kind: 'Gadget', singular: 'gadget', plural: 'gadgets' },
+        description: 'A test gadget kind with multiple apiVersions',
+        versions: [
+          { name: 'v1alpha1', schema: { jsonSchema: sharedKindSchema } },
+          { name: 'v1beta1', schema: { jsonSchema: sharedKindSchema } },
+        ],
+      });
+    },
+  });
+
+  it('gives distinct $ids to different apiVersions of the same kind, even when they share a schema object', () => {
+    const model = compileCatalogModel([multiVersionLayer]);
+    const v1alpha1 = model.getKind({
+      kind: 'Gadget',
+      apiVersion: 'example.com/v1alpha1',
+    });
+    const v1beta1 = model.getKind({
+      kind: 'Gadget',
+      apiVersion: 'example.com/v1beta1',
+    });
+
+    expect(v1alpha1?.jsonSchema.$id).toBeDefined();
+    expect(v1beta1?.jsonSchema.$id).toBeDefined();
+    expect(v1alpha1?.jsonSchema.$id).not.toEqual(v1beta1?.jsonSchema.$id);
+  });
+
+  it('lets a single shared Ajv instance compile both apiVersion schemas without an $id collision', () => {
+    const model = compileCatalogModel([multiVersionLayer]);
+    const v1alpha1 = model.getKind({
+      kind: 'Gadget',
+      apiVersion: 'example.com/v1alpha1',
+    });
+    const v1beta1 = model.getKind({
+      kind: 'Gadget',
+      apiVersion: 'example.com/v1beta1',
+    });
+
+    const ajv = new Ajv({ allowUnionTypes: true, allErrors: true });
+    expect(() => ajv.compile(v1alpha1!.jsonSchema)).not.toThrow();
+    expect(() => ajv.compile(v1beta1!.jsonSchema)).not.toThrow();
+  });
+
+  it('gives distinct $ids to different specTypes of the same kind/apiVersion', () => {
+    const specTypeLayer = createCatalogModelLayer({
+      layerId: 'SpecTypes',
+      builder: model => {
+        model.addKind({
+          group: 'example.com',
+          names: {
+            kind: 'Sprocket',
+            singular: 'sprocket',
+            plural: 'sprockets',
+          },
+          description: 'A test sprocket kind with discriminated spec types',
+          versions: [
+            {
+              name: 'v1alpha1',
+              specType: 'database',
+              schema: { jsonSchema: { type: 'object', properties: {} } },
+            },
+            {
+              name: 'v1alpha1',
+              specType: 'bucket',
+              schema: { jsonSchema: { type: 'object', properties: {} } },
+            },
+          ],
+        });
+      },
+    });
+
+    const model = compileCatalogModel([specTypeLayer]);
+    const database = model.getKind({
+      kind: 'Sprocket',
+      apiVersion: 'example.com/v1alpha1',
+      spec: { type: 'database' },
+    });
+    const bucket = model.getKind({
+      kind: 'Sprocket',
+      apiVersion: 'example.com/v1alpha1',
+      spec: { type: 'bucket' },
+    });
+
+    expect(database?.jsonSchema.$id).toBeDefined();
+    expect(bucket?.jsonSchema.$id).toBeDefined();
+    expect(database?.jsonSchema.$id).not.toEqual(bucket?.jsonSchema.$id);
+  });
+});
+
 describe('compileCatalogModel specType', () => {
   const specTypeLayer = createCatalogModelLayer({
     layerId: 'SpecType',
@@ -330,6 +439,7 @@ describe('compileCatalogModel integration', () => {
         },
       ],
       jsonSchema: {
+        $id: 'Widget/example.com%2Fv1alpha1',
         type: 'object',
         required: ['spec', 'apiVersion', 'kind', 'metadata'],
         additionalProperties: false,
@@ -505,6 +615,7 @@ describe('compileCatalogModel integration', () => {
         },
       ],
       jsonSchema: {
+        $id: 'Widget/example.com%2Fv1alpha1',
         type: 'object',
         required: ['spec', 'apiVersion', 'kind', 'metadata'],
         additionalProperties: false,
@@ -646,6 +757,7 @@ describe('compileCatalogModel integration', () => {
         },
       ],
       jsonSchema: {
+        $id: 'Widget/example.com%2Fv1alpha1',
         type: 'object',
         required: ['spec', 'apiVersion', 'kind', 'metadata'],
         additionalProperties: false,
