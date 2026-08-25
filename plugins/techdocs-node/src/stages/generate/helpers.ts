@@ -308,7 +308,6 @@ export const ALLOWED_MKDOCS_KEYS = new Set([
   'markdown_extensions',
   'extra',
   'extra_css',
-  'extra_templates',
   // Preview controls
   'use_directory_urls',
   'strict',
