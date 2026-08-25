@@ -766,7 +766,10 @@ export interface PodExecTerminalProps {
 }
 
 // @public
-export type PodExtraColumn = PodColumns | TableColumn<Pod_2 | V1Pod>;
+export type PodExtraColumn =
+  | PodColumns
+  | TableColumn<Pod_2>
+  | TableColumn<V1Pod>;
 
 // @public
 export const PodLogs: FC<PodLogsProps>;

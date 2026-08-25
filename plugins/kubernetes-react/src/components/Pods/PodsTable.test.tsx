@@ -18,14 +18,10 @@ import { screen } from '@testing-library/react';
 import * as pod from './__fixtures__/pod.json';
 import * as crashingPod from './__fixtures__/crashing-pod.json';
 import { renderInTestApp } from '@backstage/test-utils';
-import {
-  PodsTable,
-  READY_COLUMNS,
-  RESOURCE_COLUMNS,
-  PodExtraColumn,
-} from './PodsTable';
+import { PodsTable, READY_COLUMNS, RESOURCE_COLUMNS } from './PodsTable';
 import { kubernetesProviders } from '../../hooks/test-utils';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
+import { TableColumn } from '@backstage/core-components';
 import { Pod } from 'kubernetes-models/v1/Pod';
 import type { V1Pod } from '@kubernetes/client-node';
 
@@ -87,7 +83,7 @@ describe('PodsTable', () => {
         extraColumns={[
           {
             title: 'namespace',
-            render: podData => podData.metadata?.namespace ?? 'unknown',
+            render: (podData: Pod) => podData.metadata?.namespace ?? 'unknown',
             width: 'auto',
           },
         ]}
@@ -99,9 +95,9 @@ describe('PodsTable', () => {
   });
 
   it('should render a Pod with a custom extra column typed for Pod', async () => {
-    const podColumn: PodExtraColumn = {
+    const podColumn: TableColumn<Pod> = {
       title: 'pod-namespace',
-      render: podData => podData.metadata?.namespace ?? 'unknown',
+      render: (podData: Pod) => podData.metadata?.namespace ?? 'unknown',
       width: 'auto',
     };
 
@@ -115,9 +111,9 @@ describe('PodsTable', () => {
 
   it('should render V1Pod data with a custom extra column typed for V1Pod', async () => {
     const v1Pod: V1Pod = pod as any as V1Pod;
-    const v1PodColumn: PodExtraColumn = {
+    const v1PodColumn: TableColumn<V1Pod> = {
       title: 'v1pod-namespace',
-      render: podData => podData.metadata?.namespace ?? 'unknown',
+      render: (podData: V1Pod) => podData.metadata?.namespace ?? 'unknown',
       width: 'auto',
     };
 

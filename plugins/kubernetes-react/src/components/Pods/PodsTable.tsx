@@ -58,13 +58,12 @@ export type PodColumns = 'READY' | 'RESOURCE';
  * A column to render in the pods table.
  *
  * Can either be one of the `PodColumns` presets, or a custom
- * `TableColumn` whose render/field callbacks receive the row as
- * either a `Pod` or a `V1Pod`, depending on what was passed to the
- * `pods` prop of `PodsTable`.
+ * `TableColumn<Pod>` or `TableColumn<V1Pod>`, matching whichever row
+ * type was passed to the `pods` prop of `PodsTable`.
  *
  * @public
  */
-export type PodExtraColumn = PodColumns | TableColumn<Pod | V1Pod>;
+export type PodExtraColumn = PodColumns | TableColumn<Pod> | TableColumn<V1Pod>;
 
 /**
  *
