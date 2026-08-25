@@ -5,7 +5,7 @@ description: Choosing and configuring your search engine for Backstage
 ---
 
 Backstage supports 3 search engines by default, an in-memory engine called [Lunr](#lunr), [Postgres](#postgres)
-and [Elasticsearch](#elasticsearch).
+and [Elasticsearch/OpenSearch](#elasticsearch).
 
 ## Lunr
 
@@ -102,9 +102,9 @@ search:
 
 The Postgres documentation on [Highlighting Results](https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-HEADLINE) has more details.
 
-## Elasticsearch
+## Elasticsearch (7.x) and OpenSearch
 
-Backstage supports Elasticsearch (and OpenSearch) search engine connections,
+Backstage supports Elasticsearch and OpenSearch search engine connections,
 indexing and querying out of the box. Available configuration options enable
 usage of either AWS or Elastic.co hosted solutions, or a custom self-hosted solution.
 
