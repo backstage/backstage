@@ -239,6 +239,62 @@ describe('confluence:transform:markdown', () => {
     );
   });
 
+  it('should reject attachment titles that resolve outside the image directory', async () => {
+    const options = {
+      reader,
+      integrations,
+      config,
+    };
+    const responseBody = {
+      results: [
+        {
+          id: '4444444',
+          type: 'page',
+          title: 'Testing',
+          body: {
+            export_view: {
+              value: '<p>hello world</p>',
+            },
+          },
+        },
+      ],
+    };
+    const responseBodyTwo = {
+      results: [
+        {
+          id: '4444444',
+          type: 'attachment',
+          title: '../../screenshot.png',
+          metadata: {
+            mediaType: 'image/png',
+          },
+          _links: {
+            download: '/download/attachments/4444444/screenshot.png',
+          },
+        },
+      ],
+    };
+
+    worker.use(
+      http.get(`${baseUrl}/rest/api/content`, () =>
+        HttpResponse.json(responseBody, { status: 200, statusText: 'OK' }),
+      ),
+      http.get(`${baseUrl}/rest/api/content/4444444/child/attachment`, () =>
+        HttpResponse.json(responseBodyTwo, { status: 200, statusText: 'OK' }),
+      ),
+      http.get(`${baseUrl}/download/attachments/4444444/screenshot.png`, () =>
+        HttpResponse.text('content', { status: 200, statusText: 'OK' }),
+      ),
+    );
+
+    const action = createConfluenceToMarkdownAction(options);
+    await expect(async () => {
+      await action.handler(mockContext);
+    }).rejects.toThrow(
+      'Relative path is not allowed to refer to a directory outside its parent',
+    );
+  });
+
   it('should fail on the second fetch call to confluence', async () => {
     const options = {
       reader,

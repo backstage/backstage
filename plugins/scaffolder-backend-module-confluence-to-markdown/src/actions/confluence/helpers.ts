@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ResponseError, ConflictError } from '@backstage/errors';
 import fs from 'fs-extra';
@@ -160,16 +161,16 @@ export const getAndWriteAttachments = async (
       if (!res.ok) {
         throw await ResponseError.fromResponse(res);
       } else if (res.body !== null) {
-        fs.openSync(`${workspace}/${mkdocsDir}docs/img/${downloadTitle}`, 'w');
-        const writeStream = fs.createWriteStream(
-          `${workspace}/${mkdocsDir}docs/img/${downloadTitle}`,
-        );
+        const imgDir = resolveSafeChildPath(workspace, `${mkdocsDir}docs/img`);
+        const filePath = resolveSafeChildPath(imgDir, downloadTitle);
+        fs.openSync(filePath, 'w');
+        const writeStream = fs.createWriteStream(filePath);
         // TODO(freben): This cast is sketchy, but for some reason the node types don't quite line up here
         // https://stackoverflow.com/questions/44672942/stream-response-to-file-using-fetch-api-and-fs-createwritestream/73879265#73879265
         Readable.fromWeb(res.body as any).pipe(writeStream);
         await new Promise((resolve, reject) => {
           writeStream.on('finish', () => {
-            resolve(`${workspace}/${mkdocsDir}docs/img/${downloadTitle}`);
+            resolve(filePath);
           });
           writeStream.on('error', reject);
         });
