@@ -125,7 +125,7 @@ all of the processors' contributions to one step are run in the order that the
 processors were registered, then all of their contributions to the next step in
 the same order, and so on.
 
-:::note Technical note
+:::note[Technical note]
 
 Processors registered from the same catalog module always run
 in the registration order, but this does not apply over multiple catalog modules as
@@ -174,7 +174,7 @@ steps and merging them into the final object which is what is visible from the
 catalog API. As the final entity itself gets updated, the stitcher makes sure
 that the search table gets refreshed accordingly as well.
 
-:::note Note
+:::note
 
 The search table mentioned here is not related to the core Search
 feature of Backstage. It's rather the table that backs the ability to filter
@@ -195,7 +195,7 @@ The diagram shows how the stitcher reads from several sources:
 The last part is noteworthy: This is how the stitcher is able to collect all of
 the relation edges, both incoming and outgoing, no matter who produced them.
 
-:::note Technical note
+:::note[Technical note]
 
 Whether the entity will be stitched depends on the entity hash value,
 which is calculated based on the entity body, relations, errors, referred entities,
@@ -286,7 +286,7 @@ The default behavior of the catalog is to automatically remove orphaned
 entities. However, if you want to keep them instead, you can disable the
 automated cleanup with the following app-config option.
 
-```
+```yaml
 catalog:
   orphanStrategy: keep
 ```
@@ -298,7 +298,7 @@ which may trigger the implicit deletion of more than just the entity you thought
 you were deleting. This concept is explained here.
 
 Recall that all entity providers manage a private "bucket" of entities, as
-described in the [External integrations](external-integrations.md) article. They
+described in the [External integrations](external-integrations/index.md) article. They
 can perform some operations on those entities, including additions, updates, and
 deletions. Entity additions/updates are subject to the regular processing loops,
 which means that bucket entities may end up forming roots of an entire graph of

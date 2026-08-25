@@ -31,7 +31,7 @@ backend.add(import('@backstage/plugin-search-backend'));
 backend.start();
 ```
 
-:::note Note
+:::note
 
 Lunr is appropriate as a zero-config search engine when developing
 other parts of Backstage locally, however its use is highly discouraged when
@@ -348,7 +348,7 @@ backend.start();
 
 The `getAuthHeaders` method is called before each request, allowing for just-in-time token retrieval and automatic rotation. When an auth provider is configured, it takes precedence over any static authentication in `app-config.yaml`.
 
-:::note Note
+:::note
 
 Custom authentication is supported for the `elastic`, `opensearch`, and default providers. The `aws` provider uses AWS SigV4 request signing and does not support custom auth providers.
 

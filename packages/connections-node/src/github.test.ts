@@ -53,12 +53,12 @@ describe('matchAuth', () => {
 
     const acme = await catalog.find({
       type: 'github',
-      url: 'https://matchauth.example.com/acme/repo',
+      query: { url: 'https://matchauth.example.com/acme/repo' },
       authMethods: ['app'],
     });
     const widgets = await catalog.find({
       type: 'github',
-      url: 'https://matchauth.example.com/widgets/other-repo',
+      query: { url: 'https://matchauth.example.com/widgets/other-repo' },
       authMethods: ['app'],
     });
 
@@ -100,7 +100,7 @@ describe('matchAuth', () => {
 
     const connection = await service.forPlugin('catalog').find({
       type: 'github',
-      url: 'https://matchauth.example.com/unknown-org/repo',
+      query: { url: 'https://matchauth.example.com/unknown-org/repo' },
       authMethods: ['app'],
     });
 
@@ -134,7 +134,7 @@ describe('matchAuth', () => {
 
     const connection = await service.forPlugin('catalog').find({
       type: 'github',
-      url: 'https://matchauth.example.com/acme/repo',
+      query: { url: 'https://matchauth.example.com/acme/repo' },
       authMethods: ['app'],
     });
 
@@ -169,7 +169,7 @@ describe('matchAuth', () => {
     await expect(
       service.forPlugin('catalog').find({
         type: 'github',
-        url: 'https://matchauth.example.com/acme/repo',
+        query: { url: 'https://matchauth.example.com/acme/repo' },
         authMethods: ['token'],
       }),
     ).rejects.toThrow(/Connection not found for type "github"/);

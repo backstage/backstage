@@ -94,6 +94,7 @@ describe('fetch:template:file', () => {
             name: 'test-project',
             count: 1234,
             itemList: ['first', 'second', 'third'],
+            identifier: 'backstage123',
           },
           token: 'mockToken',
         });
@@ -101,7 +102,7 @@ describe('fetch:template:file', () => {
         mockFetchFile.mockImplementation(({ outputPath }) => {
           mockDir.setContent({
             [outputPath]:
-              '${{ values.name }}: ${{ values.count }} ${{ values.itemList | dump }}',
+              '${{ values.name }}: ${{ values.count }} ${{ values.itemList | dump }} ${{ values.identifier | replace(r/^([a-z]+)([0-9]+)$/, "$2-$1") }}',
           });
 
           return Promise.resolve();
@@ -133,7 +134,9 @@ describe('fetch:template:file', () => {
             joinPath(workspacePath, context.input.targetPath),
             'utf-8',
           ),
-        ).resolves.toEqual('test-project: 1234 ["first","second","third"]');
+        ).resolves.toEqual(
+          'test-project: 1234 ["first","second","third"] 123-backstage',
+        );
       });
     });
 

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-common",
-  "version": "2.2.2-next.0",
+  "version": "2.2.2",
   "description": "Common functionalities for the scaffolder, to be shared between scaffolder and scaffolder-backend plugin",
   "backstage": {
     "role": "common-library",
@@ -74,6 +74,6 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "msw": "^1.0.0"
+    "msw": "^2.0.0"
   }
 }

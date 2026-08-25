@@ -149,6 +149,10 @@ export const mcpPlugin = createBackendPlugin({
           // Protected Resource Metadata (RFC 9728)
           // https://datatracker.ietf.org/doc/html/rfc9728
           // This allows MCP clients to discover the authorization server for this resource
+          const refreshTokenEnabled = config.getOptionalBoolean(
+            'auth.experimentalRefreshToken.enabled',
+          );
+
           const serverSuffixes = serverConfigs?.size
             ? [...serverConfigs.keys()].map(key => `/v1/${key}`)
             : ['/v1'];
@@ -167,6 +171,14 @@ export const mcpPlugin = createBackendPlugin({
                 res.json({
                   resource: `${mcpBaseUrl}${suffix}`,
                   authorization_servers: [authBaseUrl],
+                  // RFC 9728 §2: clients discover which scope to request from
+                  // this field. Without it, RFC-compliant MCP clients request
+                  // no scope and never receive a refresh token (OIDC Core §11
+                  // requires offline_access to signal refresh token issuance).
+                  scopes_supported: [
+                    'openid',
+                    ...(refreshTokenEnabled ? ['offline_access'] : []),
+                  ],
                 });
               },
             );

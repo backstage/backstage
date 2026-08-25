@@ -20,6 +20,7 @@ import { randomUUID as uuid } from 'node:crypto';
 import { applyDatabaseMigrations } from './migrations';
 import { DbFinalEntitiesRow, DbRefreshStateRow } from './tables';
 import { createEntitiesCountByKind, queryEntitiesCountByKind } from './metrics';
+import waitForExpect from 'wait-for-expect';
 
 jest.setTimeout(60_000);
 
@@ -93,7 +94,7 @@ describe.each(databases.eachSupportedId())('metrics, %p', databaseId => {
   describe('createEntitiesCountByKind', () => {
     it('serves cached results within the TTL and refreshes after', async () => {
       const knex = await createDatabase();
-      const getCount = createEntitiesCountByKind(knex, { ttlMs: 50 });
+      const getCount = createEntitiesCountByKind(knex, { ttlMs: 500 });
 
       await insertEntity(knex, {
         entityRef: 'component:default/one',
@@ -112,14 +113,15 @@ describe.each(databases.eachSupportedId())('metrics, %p', databaseId => {
       expect(Object.fromEntries(cached)).toEqual({ component: 1 });
 
       // After the TTL elapses the next call hits the database again.
-      await new Promise(resolve => setTimeout(resolve, 80));
-      const refreshed = await getCount();
-      expect(Object.fromEntries(refreshed)).toEqual({ component: 2 });
+      await waitForExpect(async () => {
+        const refreshed = await getCount();
+        expect(Object.fromEntries(refreshed)).toEqual({ component: 2 });
+      });
     });
 
     it('coalesces overlapping callers into a single underlying query', async () => {
       const knex = await createDatabase();
-      const getCount = createEntitiesCountByKind(knex, { ttlMs: 50 });
+      const getCount = createEntitiesCountByKind(knex, { ttlMs: 500 });
 
       await insertEntity(knex, {
         entityRef: 'component:default/one',

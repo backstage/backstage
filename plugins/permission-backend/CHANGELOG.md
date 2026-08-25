@@ -1,5 +1,16 @@
 # @backstage/plugin-permission-backend
 
+## 0.7.15
+
+### Patch Changes
+
+- b754e32: Migrated tests from MSW v1 to MSW v2.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-auth-node@0.7.4
+  - @backstage/plugin-permission-common@0.9.10
+  - @backstage/plugin-permission-node@0.11.3
+
 ## 0.7.15-next.0
 
 ### Patch Changes

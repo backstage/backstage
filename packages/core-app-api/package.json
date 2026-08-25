@@ -1,6 +1,6 @@
 {
   "name": "@backstage/core-app-api",
-  "version": "1.20.4-next.0",
+  "version": "1.20.4",
   "description": "Core app API used by Backstage apps",
   "backstage": {
     "role": "web-library"
@@ -70,7 +70,7 @@
     "@testing-library/user-event": "^14.0.0",
     "@types/react": "^18.0.0",
     "@types/zen-observable": "^0.8.0",
-    "msw": "^1.0.0",
+    "msw": "^2.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
     "react-router-beta": "npm:react-router@6.0.0-beta.0",

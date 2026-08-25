@@ -33,6 +33,8 @@ import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import {
   FormFieldBlueprint,
   formFieldsApiRef,
+  scaffolderTemplateOutputsComponentRef,
+  scaffolderTemplateOutputTemplateRefsRef,
 } from '@backstage/plugin-scaffolder-react/alpha';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import {
@@ -100,13 +102,35 @@ export const scaffolderTemplatesSubPage = SubPageBlueprint.makeWithOverrides({
   },
 });
 
-export const scaffolderTasksSubPage = SubPageBlueprint.make({
+export const scaffolderTasksSubPage = SubPageBlueprint.makeWithOverrides({
   name: 'tasks',
-  params: {
-    path: 'tasks',
-    title: 'Tasks',
-    loader: () =>
-      import('./components/TasksSubPage').then(m => <m.TasksSubPage />),
+  inputs: {
+    templateOutputsComponents: createExtensionInput(
+      [
+        scaffolderTemplateOutputsComponentRef,
+        scaffolderTemplateOutputTemplateRefsRef,
+      ],
+      { optional: true },
+    ),
+  },
+  factory(originalFactory, { inputs }) {
+    return originalFactory({
+      path: 'tasks',
+      title: 'Tasks',
+      loader: async () => {
+        const templateOutputsComponents = inputs.templateOutputsComponents?.map(
+          input => ({
+            component: input.get(scaffolderTemplateOutputsComponentRef),
+            templateRefs: input.get(scaffolderTemplateOutputTemplateRefsRef),
+          }),
+        );
+        return import('./components/TasksSubPage').then(m => (
+          <m.TasksSubPage
+            templateOutputsComponents={templateOutputsComponents}
+          />
+        ));
+      },
+    });
   },
 });
 

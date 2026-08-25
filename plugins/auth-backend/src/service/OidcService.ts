@@ -378,11 +378,25 @@ export class OidcService {
 
     const cliClientId = `${this.baseUrl}/.well-known/oauth-client/cli.json`;
 
+    // This backend serves the CLI client metadata document itself at
+    // /.well-known/oauth-client/cli.json whenever CIMD is enabled, so its
+    // client_id is always accepted. Configuring allowedClientIdPatterns
+    // narrows which third-party clients are allowed, it does not turn off the
+    // built-in CLI.
+    const configuredClientIdPatterns = this.config.getOptionalStringArray(
+      `${configPath}.allowedClientIdPatterns`,
+    );
+
     return {
       enabled,
-      allowedClientIdPatterns: this.config.getOptionalStringArray(
-        `${configPath}.allowedClientIdPatterns`,
-      ) ?? ['https://claude.ai/*', 'https://vscode.dev/*', cliClientId],
+      allowedClientIdPatterns: configuredClientIdPatterns
+        ? [...new Set([...configuredClientIdPatterns, cliClientId])]
+        : [
+            'https://claude.ai/*',
+            'https://vscode.dev/*',
+            'https://chatgpt.com/oauth/codex/*/client.json',
+            cliClientId,
+          ],
       allowedRedirectUriPatterns:
         this.config.getOptionalStringArray(
           `${configPath}.allowedRedirectUriPatterns`,
@@ -418,16 +432,24 @@ export class OidcService {
       throw new InputError('Client ID metadata documents not enabled');
     }
 
-    const clientIdMatchers = cimd.allowedClientIdPatterns.map(
-      createUrlPatternMatcher,
-    );
-    if (!clientIdMatchers.some(matches => matches(opts.cimdUrl))) {
+    const matchingPattern = cimd.allowedClientIdPatterns.find(pattern => {
+      const matches = createUrlPatternMatcher(pattern);
+      return matches(opts.cimdUrl);
+    });
+    if (!matchingPattern) {
       throw new InputError(`Invalid client_id '${opts.clientId}'`);
     }
+
+    // Exact patterns (no wildcards) mean the admin explicitly listed this
+    // URL, so we can skip the SSRF check. Wildcard patterns could match
+    // attacker-controlled subdomains that resolve to internal IPs.
+    const isExactPattern =
+      !matchingPattern.includes('*') && !matchingPattern.includes('?');
 
     const cimdClient = await fetchCimdMetadata({
       clientId: opts.clientId,
       validatedUrl: opts.cimdUrl,
+      skipSsrfCheck: isExactPattern,
     });
 
     if (opts.redirectUri) {

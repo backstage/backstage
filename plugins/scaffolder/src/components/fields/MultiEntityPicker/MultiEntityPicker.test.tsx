@@ -54,7 +54,9 @@ describe('<MultiEntityPicker />', () => {
   let props: FieldProps<string[]>;
 
   const catalogApi = catalogApiMock.mock({
-    getEntities: jest.fn(async () => ({ items: entities })),
+    streamEntities: jest.fn(async function* () {
+      yield entities;
+    }),
   });
   let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
@@ -96,7 +98,7 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith(undefined);
+      expect(catalogApi.streamEntities).toHaveBeenCalledWith({});
     });
 
     it('updates even if there is not an exact match', async () => {
@@ -140,7 +142,9 @@ describe('<MultiEntityPicker />', () => {
         formData,
       } as unknown as FieldProps<any>;
 
-      catalogApi.getEntities.mockResolvedValue({ items: entities });
+      catalogApi.streamEntities.mockImplementation(async function* () {
+        yield entities;
+      });
     });
 
     it('searches for a specific group entity', async () => {
@@ -150,7 +154,8 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith({
+      expect(catalogApi.streamEntities).toHaveBeenCalledWith({
+        query: {},
         filter: [
           {
             kind: ['Group'],
@@ -174,7 +179,9 @@ describe('<MultiEntityPicker />', () => {
         },
       };
 
-      catalogApi.getEntities.mockResolvedValue({ items: entities });
+      catalogApi.streamEntities.mockImplementation(async function* () {
+        yield entities;
+      });
 
       await renderInTestApp(
         <Wrapper>
@@ -182,7 +189,8 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith({
+      expect(catalogApi.streamEntities).toHaveBeenCalledWith({
+        query: {},
         filter: {
           kind: ['Group'],
           'metadata.name': 'test-entity',
@@ -208,7 +216,8 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith({
+      expect(catalogApi.streamEntities).toHaveBeenCalledWith({
+        query: {},
         filter: [
           {
             kind: ['User'],
@@ -241,7 +250,9 @@ describe('<MultiEntityPicker />', () => {
         formData,
       } as unknown as FieldProps<any>;
 
-      catalogApi.getEntities.mockResolvedValue({ items: entities });
+      catalogApi.streamEntities.mockImplementation(async function* () {
+        yield entities;
+      });
     });
 
     it('searches for a Group entity', async () => {
@@ -251,7 +262,8 @@ describe('<MultiEntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith({
+      expect(catalogApi.streamEntities).toHaveBeenCalledWith({
+        query: {},
         filter: [
           {
             kind: ['Group'],
@@ -306,7 +318,9 @@ describe('<MultiEntityPicker />', () => {
     });
 
     it('preserves existing data on selecting an existing option', async () => {
-      catalogApi.getEntities.mockResolvedValue({ items: entities });
+      catalogApi.streamEntities.mockImplementation(async function* () {
+        yield entities;
+      });
 
       const { getByRole } = await renderInTestApp(
         <Wrapper>
@@ -343,7 +357,9 @@ describe('<MultiEntityPicker />', () => {
         formData,
       } as unknown as FieldProps<any>;
 
-      catalogApi.getEntities.mockResolvedValue({ items: entities });
+      catalogApi.streamEntities.mockImplementation(async function* () {
+        yield entities;
+      });
     });
 
     it('returns the full entityRef when entity exists in the list', async () => {
@@ -402,7 +418,9 @@ describe('<MultiEntityPicker />', () => {
         formData,
       } as unknown as FieldProps<any>;
 
-      catalogApi.getEntities.mockResolvedValue({ items: entities });
+      catalogApi.streamEntities.mockImplementation(async function* () {
+        yield entities;
+      });
     });
 
     it('User enters clear input', async () => {
@@ -491,7 +509,9 @@ describe('<MultiEntityPicker />', () => {
         formData,
       } as unknown as FieldProps<any>;
 
-      catalogApi.getEntities.mockResolvedValue({ items: entities });
+      catalogApi.streamEntities.mockImplementation(async function* () {
+        yield entities;
+      });
     });
     it('Prevents user from modifying input when ui:disabled is true', async () => {
       props.formData = ['component/default:myentity'];
@@ -531,7 +551,9 @@ describe('<MultiEntityPicker />', () => {
         formData,
       } as unknown as FieldProps<any>;
 
-      catalogApi.getEntities.mockResolvedValue({ items: entities });
+      catalogApi.streamEntities.mockImplementation(async function* () {
+        yield entities;
+      });
     });
 
     it('User enters clear input', async () => {
@@ -628,7 +650,9 @@ describe('<MultiEntityPicker />', () => {
         formData,
       } as unknown as FieldProps<any>;
 
-      catalogApi.getEntities.mockResolvedValue({ items: entities });
+      catalogApi.streamEntities.mockImplementation(async function* () {
+        yield entities;
+      });
     });
 
     it('User enters clear input', async () => {
@@ -725,7 +749,9 @@ describe('<MultiEntityPicker />', () => {
         formData,
       } as unknown as FieldProps<any>;
 
-      catalogApi.getEntities.mockResolvedValue({ items: entities });
+      catalogApi.streamEntities.mockImplementation(async function* () {
+        yield entities;
+      });
     });
 
     it('User enters clear input', async () => {
@@ -829,7 +855,9 @@ describe('<MultiEntityPicker />', () => {
         formData,
       } as unknown as FieldProps<any>;
 
-      catalogApi.getEntities.mockResolvedValue({ items: testEntities });
+      catalogApi.streamEntities.mockImplementation(async function* () {
+        yield testEntities;
+      });
     });
 
     it('limit the number of selected entities when maxNoOfEntities is specified', async () => {
@@ -1031,13 +1059,14 @@ describe('<MultiEntityPicker />', () => {
     });
 
     it('renders and filters selection displayName', async () => {
-      catalogApi.getEntities.mockResolvedValue({
-        items: entities.map(item => ({
-          ...item,
-          spec: {
-            profile: { displayName: item.metadata.name.replace('-', ' ') },
-          },
-        })),
+      const items = entities.map(item => ({
+        ...item,
+        spec: {
+          profile: { displayName: item.metadata.name.replace('-', ' ') },
+        },
+      }));
+      catalogApi.streamEntities.mockImplementation(async function* () {
+        yield items;
       });
 
       const { getByRole, getByText } = await renderInTestApp(
@@ -1060,14 +1089,15 @@ describe('<MultiEntityPicker />', () => {
     });
 
     it('renders and filters selection title', async () => {
-      catalogApi.getEntities.mockResolvedValue({
-        items: entities.map(item => ({
-          ...item,
-          metadata: {
-            ...item.metadata,
-            title: item.metadata.name.replace('-', ' ').toUpperCase(),
-          },
-        })),
+      const items = entities.map(item => ({
+        ...item,
+        metadata: {
+          ...item.metadata,
+          title: item.metadata.name.replace('-', ' ').toUpperCase(),
+        },
+      }));
+      catalogApi.streamEntities.mockImplementation(async function* () {
+        yield items;
       });
 
       const { getByRole, getByText } = await renderInTestApp(

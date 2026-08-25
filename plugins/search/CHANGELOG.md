@@ -1,5 +1,40 @@
 # @backstage/plugin-search
 
+## 1.7.7
+
+### Patch Changes
+
+- a178067: Added a Home page search bar widget blueprint for the new frontend system.
+- Updated dependencies
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/plugin-catalog-react@3.2.1
+  - @backstage/ui@0.17.1
+  - @backstage/plugin-home-react@0.1.41
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/plugin-search-react@1.11.7
+
+## 1.7.7-next.2
+
+### Patch Changes
+
+- a178067: Added a Home page search bar widget blueprint for the new frontend system.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9-next.1
+  - @backstage/plugin-catalog-react@3.2.1-next.3
+  - @backstage/plugin-home-react@0.1.41-next.2
+
+## 1.7.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.1-next.2
+  - @backstage/frontend-plugin-api@0.18.0-next.0
+  - @backstage/core-plugin-api@1.12.9-next.0
+  - @backstage/plugin-search-react@1.11.7-next.1
+  - @backstage/core-components@0.18.13-next.2
+
 ## 1.7.7-next.0
 
 ### Patch Changes

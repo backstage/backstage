@@ -7,7 +7,7 @@ description: How to keep your Backstage instance up to date with the latest rele
 
 Audience: Developers and Admins
 
-:::note Note
+:::note
 To better understand the concepts in this section, it's recommended to have an understanding of [Monorepos](https://semaphoreci.com/blog/what-is-monorepo), [Semantic Versioning](https://semver.org) and [CHANGELOGs](https://keepachangelog.com).
 :::
 

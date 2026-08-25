@@ -101,7 +101,7 @@ export class DefaultGithubCredentialsProvider
       const connection = await this.#connections
         .find({
           type: 'github',
-          url: opts.url,
+          query: { url: opts.url },
           authMethods: ['app', 'token', 'none'],
         })
         .catch(error => {

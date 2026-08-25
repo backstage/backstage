@@ -70,7 +70,7 @@ export function AboutField(props: AboutFieldProps) {
     );
   return (
     <div className={className}>
-      <Typography variant="h2" className={classes.label}>
+      <Typography variant="inherit" component="h2" className={classes.label}>
         {label}
       </Typography>
       {content}
