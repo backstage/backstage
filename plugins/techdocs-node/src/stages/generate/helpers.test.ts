@@ -1020,6 +1020,20 @@ theme:
         validateMkdocsYaml(inputDir, mkdocsYmlWithEnvTag.toString()),
       ).resolves.toBeUndefined();
     });
+
+    it.each([
+      ['scalar', 'site_name: !!python/name:builtins.str'],
+      [
+        'mapping',
+        `site_name: !!python/object/apply:builtins.str
+  args: [test]`,
+      ],
+      ['sequence', 'site_name: !!python/object/apply:builtins.str [test]'],
+    ])('should reject Python YAML tags with %s values', async (_, content) => {
+      await expect(validateMkdocsYaml(inputDir, content)).rejects.toThrow(
+        'Unsupported Python YAML tag',
+      );
+    });
   });
 
   describe('sanitizeMkdocsYml', () => {
