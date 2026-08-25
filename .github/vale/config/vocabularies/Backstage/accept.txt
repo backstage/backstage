@@ -114,6 +114,9 @@ deduplicated
 deduplication
 deliverables
 denormalized
+denylist
+denylisted
+denylists
 dependabot
 deps
 dequeue
