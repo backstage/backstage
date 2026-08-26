@@ -25,11 +25,11 @@ export const LightBoxAddon = () => {
   useEffect(() => {
     let cancelled = false;
     let lightbox: PhotoSwipeLightbox | null = null;
-    // Filtered before loading photoswipe, so that linked images are recognised
-    // against the same DOM the click handlers are bound to.
+    // Resolved up front so pages with no zoomable image never load photoswipe.
     const lightboxImages = images.filter(image => !image.closest('a'));
 
-    // photoswipe and its CSS are only needed once a lightbox is on screen.
+    // Imported here rather than statically, so photoswipe and its stylesheets
+    // stay out of the app's initial bundle and load with the first docs page.
     const setup = async () => {
       const [{ default: Lightbox }, { default: PhotoSwipe }] =
         await Promise.all([
@@ -100,10 +100,16 @@ export const LightBoxAddon = () => {
       lightbox.init();
     };
 
-    setup();
+    if (lightboxImages.length > 0) {
+      // Unhandled on purpose: the app's ErrorApi reports rejections.
+      setup();
+    }
 
     return () => {
       cancelled = true;
+      lightboxImages.forEach(image => {
+        image.onclick = null;
+      });
       lightbox?.destroy();
       lightbox = null;
     };
