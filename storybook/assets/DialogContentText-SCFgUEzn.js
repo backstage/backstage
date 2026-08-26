@@ -1,0 +1,1 @@
+import{cY as a,c8 as t,a9 as n,aj as r}from"./iframe-Zd-YI-2K.js";var s={root:{marginBottom:12}},i=t.forwardRef(function(o,e){return t.createElement(n,r({component:"p",variant:"body1",color:"textSecondary",ref:e},o))});const x=a(s,{name:"MuiDialogContentText"})(i);export{x as D};

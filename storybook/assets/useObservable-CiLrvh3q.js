@@ -1,0 +1,1 @@
+import{c8 as o}from"./iframe-Zd-YI-2K.js";import{u as n}from"./useIsomorphicLayoutEffect-CJ3v6f3B.js";function f(r,t){var u=o.useState(t),e=u[0],s=u[1];return n(function(){var a=r.subscribe(s);return function(){return a.unsubscribe()}},[r]),e}export{f as u};
