@@ -32,7 +32,7 @@ export default ({ theme }: RuleOptions) => `
   --md-default-fg-color--lightest: ${alpha(theme.palette.text.secondary, 0.15)};
 
   /* BACKGROUND */
-  --md-default-bg-color:${theme.palette.background.default};
+  --md-default-bg-color: var(--bui-bg-app, ${theme.palette.background.default});
   --md-default-bg-color--light: ${theme.palette.background.paper};
   --md-default-bg-color--lighter: ${lighten(
     theme.palette.background.paper,
