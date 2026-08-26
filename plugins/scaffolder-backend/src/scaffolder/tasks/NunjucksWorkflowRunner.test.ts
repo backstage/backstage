@@ -3239,7 +3239,7 @@ describe('NunjucksWorkflowRunner', () => {
       expect(metrics.createCounter).toHaveBeenCalledWith(
         'scaffolder.task.time_saved',
         expect.objectContaining({
-          description: expect.stringContaining('Time saved'),
+          description: expect.stringContaining('time saved'),
           unit: 's',
         }),
       );
@@ -3315,7 +3315,7 @@ describe('NunjucksWorkflowRunner', () => {
         expect(metrics.createCounter).toHaveBeenCalledWith(
           'scaffolder.task.time_saved',
           expect.objectContaining({
-            description: expect.stringContaining('Time saved'),
+            description: expect.stringContaining('time saved'),
             unit: 's',
           }),
         );
