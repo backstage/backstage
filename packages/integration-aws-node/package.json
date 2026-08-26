@@ -1,27 +1,12 @@
 {
   "name": "@backstage/integration-aws-node",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Helpers for fetching AWS account credentials",
   "backstage": {
     "role": "node-library"
   },
   "publishConfig": {
     "access": "public"
-  },
-  "exports": {
-    ".": "./src/index.ts",
-    "./alpha": "./src/alpha/index.ts",
-    "./package.json": "./package.json"
-  },
-  "typesVersions": {
-    "*": {
-      "alpha": [
-        "src/alpha/index.ts"
-      ],
-      "package.json": [
-        "package.json"
-      ]
-    }
   },
   "keywords": [
     "backstage"
@@ -33,8 +18,23 @@
     "directory": "packages/integration-aws-node"
   },
   "license": "Apache-2.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha/index.ts",
+    "./package.json": "./package.json"
+  },
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha/index.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
   "files": [
     "dist",
     "config.d.ts"

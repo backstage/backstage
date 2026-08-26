@@ -52,6 +52,9 @@ export const taskCreatePermission: BasicPermission;
 export const taskReadPermission: ResourcePermission<'scaffolder-task'>;
 
 // @alpha
+export const templateDryRunPermission: BasicPermission;
+
+// @alpha
 export const templateManagementPermission: BasicPermission;
 
 // @alpha

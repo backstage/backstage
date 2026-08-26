@@ -1,5 +1,28 @@
 # @backstage/plugin-kubernetes
 
+## 0.12.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.2-next.0
+  - @backstage/plugin-kubernetes-common@0.9.13-next.0
+  - @backstage/core-components@0.18.14-next.0
+  - @backstage/plugin-kubernetes-react@0.5.24-next.0
+
+## 0.12.22
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/core-components@0.18.13
+  - @backstage/plugin-kubernetes-react@0.5.23
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/plugin-catalog-react@3.2.1
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/plugin-permission-react@0.5.4
+
 ## 0.12.22-next.1
 
 ### Patch Changes

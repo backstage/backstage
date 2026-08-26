@@ -30,6 +30,7 @@ import {
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
+import { KubernetesConnection } from './KubernetesConnection';
 
 const mockCertDir = createMockDirectory({
   content: {
@@ -176,6 +177,7 @@ describe('KubernetesFetcher', () => {
     beforeEach(() => {
       sut = new KubernetesClientBasedFetcher({
         logger,
+        connection: new KubernetesConnection({ logger }),
       });
     });
 
@@ -1103,8 +1105,10 @@ describe('KubernetesFetcher', () => {
     let sut: KubernetesClientBasedFetcher;
 
     beforeEach(() => {
+      const logger = mockServices.logger.mock();
       sut = new KubernetesClientBasedFetcher({
-        logger: mockServices.logger.mock(),
+        logger,
+        connection: new KubernetesConnection({ logger }),
       });
     });
 
@@ -1386,8 +1390,10 @@ describe('KubernetesFetcher', () => {
     let fetcher: KubernetesClientBasedFetcher;
 
     beforeEach(() => {
+      const logger = mockServices.logger.mock();
       fetcher = new KubernetesClientBasedFetcher({
-        logger: mockServices.logger.mock(),
+        logger,
+        connection: new KubernetesConnection({ logger }),
       });
     });
 
@@ -1419,4 +1425,6 @@ describe('KubernetesFetcher', () => {
       expect(result).toBe(items);
     });
   });
+
+  // watchResource tests are in KubernetesWatcher.test.ts
 });

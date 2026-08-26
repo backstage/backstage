@@ -1,5 +1,15 @@
 # @backstage/backend-app-api
 
+## 1.7.3
+
+### Patch Changes
+
+- 64cea29: Updated the backend runtime to use the internal connection service implementation after the shared connection contract moved into `@backstage/connections`.
+- 03133fc: Hardened backend startup against malformed installed backend features, with contextual input errors and configured boot-failure handling when invalid registrations can be attributed to a plugin or module.
+- Updated dependencies
+  - @backstage/connections@0.3.0
+  - @backstage/backend-plugin-api@1.10.0
+
 ## 1.7.3-next.1
 
 ### Patch Changes

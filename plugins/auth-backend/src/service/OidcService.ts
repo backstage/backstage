@@ -748,7 +748,7 @@ export class OidcService {
       return (
         cimd.enabled &&
         cimd.allowedClientIdPatterns.some(pattern =>
-          matcher.isMatch(clientId, pattern),
+          createUrlPatternMatcher(pattern)(cimdUrl),
         )
       );
     }

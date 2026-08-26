@@ -5431,6 +5431,7 @@ __metadata:
     "@smithy/signature-v4": "npm:^4.1.0"
     "@types/express": "npm:^4.17.6"
     "@types/http-proxy-middleware": "npm:^1.0.0"
+    "@types/split2": "npm:^4.2.0"
     express: "npm:^4.22.0"
     express-promise-router: "npm:^4.1.0"
     fs-extra: "npm:^11.2.0"
@@ -5439,6 +5440,7 @@ __metadata:
     luxon: "npm:^3.0.0"
     msw: "npm:^1.0.0"
     node-fetch: "npm:^2.7.0"
+    split2: "npm:^4.2.0"
     supertest: "npm:^7.0.0"
     ws: "npm:^8.20.1"
   languageName: unknown
@@ -6120,6 +6122,7 @@ __metadata:
   resolution: "@backstage/plugin-scaffolder-backend-module-gcp@workspace:plugins/scaffolder-backend-module-gcp"
   dependencies:
     "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
@@ -6268,6 +6271,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-scaffolder-backend-module-workspace-database@workspace:plugins/scaffolder-backend-module-workspace-database":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-scaffolder-backend-module-workspace-database@workspace:plugins/scaffolder-backend-module-workspace-database"
+  dependencies:
+    "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    fs-extra: "npm:^11.0.0"
+    knex: "npm:^3.0.0"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-scaffolder-backend-module-yeoman@workspace:plugins/scaffolder-backend-module-yeoman":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-yeoman@workspace:plugins/scaffolder-backend-module-yeoman"
@@ -6318,7 +6336,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     logform: "npm:^2.3.2"
     luxon: "npm:^3.0.0"
-    nunjitsu: "npm:^0.5.0"
+    nunjitsu: "npm:^0.6.1"
     p-queue: "npm:^6.6.2"
     prom-client: "npm:^15.0.0"
     strip-ansi: "npm:^7.1.0"
@@ -20017,6 +20035,15 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: 10/b4b5381122465d80ea8b158537c00bc82317222d3fb31fd7229ff25b31fa89134abfbab969118da55622236bf3d8fee75759f3959908b5688991f492008f29bc
+  languageName: node
+  linkType: hard
+
+"@types/split2@npm:^4.2.0":
+  version: 4.2.3
+  resolution: "@types/split2@npm:4.2.3"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10/972f7d463d6e08bcb64ae1e33c6f0e03a5343a60671e736db55e238282afcfb2e3e5877a6e233f8b2b2e2a6e0f99d9af1f87b373de8e3f7405cacfaa58b99e85
   languageName: node
   linkType: hard
 
@@ -36791,10 +36818,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nunjitsu@npm:^0.5.0":
-  version: 0.5.0
-  resolution: "nunjitsu@npm:0.5.0"
-  checksum: 10/7482355dbb7c8921ce84e1d634bf627dd4704b9f69315660dd98ff0328f91f3e9d295adad04e629c2254de00348720059d7ec306d0edea2af71614473041f9b6
+"nunjitsu@npm:^0.6.1":
+  version: 0.6.1
+  resolution: "nunjitsu@npm:0.6.1"
+  checksum: 10/29b1ed8b93c5f099493d3b7e9a706bcece6dc8c5d58cafe2642abd4fd1e93911e2a1f800f0490641f3057e885478db87405d42f7f3525abb5f577db62112fdeb
   languageName: node
   linkType: hard
 
@@ -42955,7 +42982,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"split2@npm:^4.1.0":
+"split2@npm:^4.1.0, split2@npm:^4.2.0":
   version: 4.2.0
   resolution: "split2@npm:4.2.0"
   checksum: 10/09bbefc11bcf03f044584c9764cd31a252d8e52cea29130950b26161287c11f519807c5e54bd9e5804c713b79c02cefe6a98f4688630993386be353e03f534ab

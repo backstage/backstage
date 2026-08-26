@@ -47,6 +47,35 @@ export interface Config {
     concurrentTasksLimit?: number;
 
     /**
+     * Task recovery configuration
+     * @visibility backend
+     */
+    taskRecovery?: {
+      /**
+       * Enable automatic task recovery. When enabled:
+       * - Secrets are preserved until task completion
+       * - Step state is saved after each step
+       * - Crashed tasks resume from last completed step
+       * @visibility backend
+       */
+      enabled?: boolean;
+      /**
+       * How long before a task is considered stale and eligible for recovery.
+       * Default: 30 seconds
+       * @visibility backend
+       */
+      staleTimeout?: HumanDuration | string;
+      /**
+       * The workspace provider to use for serializing and restoring workspaces.
+       * Setting this value enables workspace serialization.
+       * If not set, workspace serialization is disabled.
+       * Common values: 'database'
+       * @visibility backend
+       */
+      workspaceProvider?: string;
+    };
+
+    /**
      * Tries to wait for tasks to finish during SIGTERM before shutting down the TaskWorker.
      */
     EXPERIMENTAL_gracefulShutdown?: boolean;
@@ -55,18 +84,21 @@ export interface Config {
      * Sets the tasks recoverability on system start up.
      *
      * If not specified, the default value is false.
+     * @deprecated Use scaffolder.taskRecovery.enabled instead.
      */
     EXPERIMENTAL_recoverTasks?: boolean;
 
     /**
      * Sets the serialization of the workspace to have an ability to rerun the failed task.
+     * @deprecated Use scaffolder.taskRecovery.workspaceProvider instead.
      */
     EXPERIMENTAL_workspaceSerialization?: boolean;
 
     /**
      * Sets the provider for workspace serialization.
      *
-     * By default, it is your database.
+     * Defaults to the database provider when workspace serialization is enabled.
+     * @deprecated Use scaffolder.taskRecovery.workspaceProvider instead.
      */
     EXPERIMENTAL_workspaceSerializationProvider?: string;
 
@@ -74,7 +106,8 @@ export interface Config {
      * Every task which is in progress state and having a last heartbeat longer than a specified timeout is going to
      * be attempted to recover.
      *
-     * If not specified, the default value is 5 seconds.
+     * If not specified, the default value is 30 seconds.
+     * @deprecated Use scaffolder.taskRecovery.staleTimeout instead.
      */
     EXPERIMENTAL_recoverTasksTimeout?: HumanDuration | string;
 

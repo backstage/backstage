@@ -15,6 +15,7 @@
  */
 
 import { InputError, NotAllowedError, stringifyError } from '@backstage/errors';
+
 import { ScmIntegrations } from '@backstage/integration';
 import {
   TaskRecovery,
@@ -41,7 +42,13 @@ import {
   generateExampleOutput,
   isTruthy,
 } from './helper';
-import { TaskTrackType, WorkflowResponse, WorkflowRunner } from './types';
+import { isTaskRecoveryEnabled } from './taskRecoveryHelper';
+import {
+  TaskTrackType,
+  TaskState,
+  WorkflowResponse,
+  WorkflowRunner,
+} from './types';
 
 import type {
   AuditorService,
@@ -212,6 +219,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
   } = { parameters: {}, secrets: {} };
 
   private readonly tracker: ReturnType<typeof scaffoldingTracker>;
+  private readonly recoveryEnabled: boolean;
 
   constructor(options: NunjucksWorkflowRunnerOptions) {
     this.options = options;
@@ -223,6 +231,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       ),
     });
     this.tracker = scaffoldingTracker(options.metrics);
+    this.recoveryEnabled = isTaskRecoveryEnabled(options.config);
   }
 
   async getEnvironmentConfig(): Promise<{
@@ -271,6 +280,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     decision: PolicyDecision,
   ) {
     const stepTrack = await this.tracker.stepStart(task, step);
+    let workspaceSerializationAttempted = false;
 
     if (task.cancelSignal.aborted) {
       throw new Error(
@@ -369,13 +379,23 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           preIterationContext.secrets as NunjitsuTemplateValue,
         );
 
-      const resolvedEach =
-        step.each &&
-        this.render(step.each, preparedPreIterationContext, templateRenderer);
+      const hasEach = step.each !== undefined;
+      const resolvedEach = hasEach
+        ? this.render(step.each, preparedPreIterationContext, templateRenderer)
+        : undefined;
 
-      if (step.each && !resolvedEach) {
+      if (hasEach && resolvedEach === undefined) {
         throw new InputError(
           `Invalid value on action ${action.id}.each parameter, "${step.each}" cannot be resolved to a value`,
+        );
+      }
+
+      if (
+        hasEach &&
+        (resolvedEach === null || typeof resolvedEach !== 'object')
+      ) {
+        throw new InputError(
+          `Invalid value on action ${action.id}.each parameter, must resolve to an array or object`,
         );
       }
 
@@ -600,6 +620,19 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         );
       }
 
+      workspaceSerializationAttempted = true;
+      await task.serializeWorkspace?.({ path: workspacePath });
+
+      // Persist step state so a recovered task can resume from here. Only done
+      // when recovery is enabled to keep the default retry lifecycle unchanged.
+      if (this.recoveryEnabled) {
+        await task.updateStepState?.({
+          stepId: step.id,
+          status: 'completed',
+          output: stepOutput,
+        });
+      }
+
       await stepTrack.markSuccessful();
       return updatedPreparedContext;
     } catch (err) {
@@ -607,7 +640,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       await stepTrack.markFailed();
       throw err;
     } finally {
-      await task.serializeWorkspace?.({ path: workspacePath });
+      if (!workspaceSerializationAttempted) {
+        await task.serializeWorkspace?.({ path: workspacePath });
+      }
     }
   }
 
@@ -681,10 +716,46 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             )
           : [{ result: AuthorizeResult.ALLOW }];
 
+      // Only resume from persisted step state when recovery is enabled.
+      // Otherwise ignore any saved state so retries always re-run every step,
+      // matching the behavior when recovery is disabled.
+      const prevTaskState = this.recoveryEnabled
+        ? await task.getTaskState?.()
+        : undefined;
+      const recoveredTaskState = prevTaskState?.state as TaskState | undefined;
+      const savedSteps = recoveredTaskState?.steps ?? {};
+      const completedStepIds = Object.keys(savedSteps).filter(
+        id => savedSteps[id]?.status === 'completed',
+      );
+      if (completedStepIds.length > 0) {
+        await task.emitLog(
+          `Task recovered - resuming from last known good state. ${completedStepIds.length} step(s) already completed.`,
+        );
+      }
+
       let firstError: Error | undefined;
       const allErrors: Array<{ step: TaskStep; error: Error }> = [];
 
       for (const step of task.spec.steps) {
+        const savedStepState = savedSteps[step.id];
+        if (savedStepState?.status === 'completed') {
+          context.steps[step.id] = { output: savedStepState.output };
+          preparedContext = preparedContext.withValue(
+            ['steps', step.id],
+            context.steps[step.id] as unknown as NunjitsuTemplateValue,
+          );
+          // Re-emit the completion status event for the skipped step so the
+          // frontend, which reconstructs step status from log events, does not
+          // show a recovered step as stuck in `processing`. This also covers
+          // the crash window between persisting the step state and emitting the
+          // original completion event.
+          await task.emitLog(
+            `Skipping step ${step.id} because it was already completed in a previous run`,
+            { stepId: step.id, status: 'completed' },
+          );
+          continue;
+        }
+
         // If a previous step failed, only run steps whose `if` condition
         // invokes a status check global (${{ always() }} or ${{ failure() }})
         if (taskState.failed) {
@@ -770,7 +841,6 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       }
 
       await taskTrack.markSuccessful();
-      await task.cleanWorkspace?.();
 
       return { output };
     } finally {

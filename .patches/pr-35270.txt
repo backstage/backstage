@@ -1,0 +1,1 @@
+Fixed catalog pages opened from ownership cards to normalize legacy bare owner filters before rendering, preventing entity reference errors.

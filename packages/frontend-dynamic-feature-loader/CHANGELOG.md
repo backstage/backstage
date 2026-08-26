@@ -1,5 +1,14 @@
 # @backstage/frontend-dynamic-feature-loader
 
+## 0.1.15
+
+### Patch Changes
+
+- 6ea4a2d: Updated documentation link to point to the new per-module CLI command pages.
+- a4759e6: Migrated tests from MSW v1 to MSW v2.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.0
+
 ## 0.1.15-next.1
 
 ### Patch Changes

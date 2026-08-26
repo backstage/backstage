@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-backend-module-backstage-openapi
 
+## 0.5.17
+
+### Patch Changes
+
+- 74d8cbf: The internal OpenAPI documentation provider now automatically discovers installed plugins via the system metadata service. The `catalog.providers.backstageOpenapi.plugins` configuration option is now optional and deprecated; when omitted, all installed plugins are discovered dynamically.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/backend-openapi-utils@0.7.1
+  - @backstage/plugin-catalog-node@2.2.4
+
 ## 0.5.17-next.0
 
 ### Patch Changes

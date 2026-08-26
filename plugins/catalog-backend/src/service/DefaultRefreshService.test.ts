@@ -34,6 +34,7 @@ import { ProcessingDatabase } from '../database/types';
 import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProcessingEngine';
 import { EntityProcessingRequest } from '../processing/types';
 import { DefaultRefreshService } from './DefaultRefreshService';
+import { retryOnDeadlock } from '../database/util';
 import { ConfigReader } from '@backstage/config';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
@@ -175,13 +176,19 @@ describe.each(databases.eachSupportedId())(
           ? (JSON.parse(result.processed_entity) as Entity)
           : undefined;
         if (entity?.metadata?.annotations?.['refresh-completed']) {
-          // Reset the annotation so that we can run another verification
+          // Reset the annotation so that we can run another verification.
+          // This update can race with the processing engine writing to the
+          // same row, causing a deadlock on MySQL.
           delete entity.metadata.annotations['refresh-completed'];
-          await knex<DbRefreshStateRow>('refresh_state')
-            .update({
-              processed_entity: JSON.stringify(entity),
-            })
-            .where('entity_ref', entityRef);
+          await retryOnDeadlock(
+            () =>
+              knex<DbRefreshStateRow>('refresh_state')
+                .update({
+                  processed_entity: JSON.stringify(entity),
+                })
+                .where('entity_ref', entityRef),
+            knex,
+          );
           return true;
         }
         await new Promise(resolve => setTimeout(resolve, 500));
