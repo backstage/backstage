@@ -16,33 +16,25 @@
 import type { ConnectionAuthValue, ConnectionType } from './ConnectionType';
 import type { ConnectionTypeKey, LookupConnectionType } from '../definitions';
 
-/** @public */
-export type AuthValue<T extends ConnectionType | ConnectionTypeKey> =
-  LookupConnectionType<T> extends ConnectionType<infer TDefinition>
-    ? ConnectionAuthValue<TDefinition['auth'][number]>
-    : never;
-
 // A connection of a specific type.
 //
 // - With `T`: a single type, e.g. `Connection<'github'>`.
 // - With `TAuthMethod`: narrows `auth` to a single method variant — the
 //   shape returned by `ConnectionsService.find`.
 // - With no parameters: an open shape suitable for internal storage.
-//   Use `AnyConnection` when you want a discriminated union for narrowing.
 /** @public */
 export type Connection<
   T extends ConnectionType | ConnectionTypeKey = ConnectionType,
   TAuthMethod extends string = string,
-> = {
-  type: LookupConnectionType<T>['type'];
-  title: string;
-  auth: string extends TAuthMethod
-    ? AuthValue<T>[]
-    : Extract<AuthValue<T>, { method: TAuthMethod }>;
-} & ReturnType<LookupConnectionType<T>['configSchema']['parse']>;
-
-// Discriminated union of every known connection type, suitable for
-// `switch (c.type)` narrowing.
-export type AnyConnection = {
-  [K in ConnectionTypeKey]: Connection<K>;
-}[ConnectionTypeKey];
+> = LookupConnectionType<T> extends ConnectionType<infer TDefinition>
+  ? {
+      type: LookupConnectionType<T>['type'];
+      title: string;
+      auth: string extends TAuthMethod
+        ? ConnectionAuthValue<TDefinition['auth'][number]>[]
+        : Extract<
+            ConnectionAuthValue<TDefinition['auth'][number]>,
+            { method: TAuthMethod }
+          >;
+    } & ReturnType<LookupConnectionType<T>['configSchema']['parse']>
+  : never;

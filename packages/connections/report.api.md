@@ -7,12 +7,6 @@ import { Config } from '@backstage/config';
 import type { Expand } from '@backstage/types';
 import type { JsonObject } from '@backstage/types';
 
-// @public (undocumented)
-export type AuthValue<T extends ConnectionType | ConnectionTypeKey> =
-  LookupConnectionType<T> extends ConnectionType<infer TDefinition>
-    ? ConnectionAuthValue<TDefinition['auth'][number]>
-    : never;
-
 // @public
 export function buildConnectionsFromConfig(options: {
   config: Config;
@@ -56,18 +50,20 @@ export type ConfiguredConnectionAuth<M> = M extends {
 export type Connection<
   T extends ConnectionType | ConnectionTypeKey = ConnectionType,
   TAuthMethod extends string = string,
-> = {
-  type: LookupConnectionType<T>['type'];
-  title: string;
-  auth: string extends TAuthMethod
-    ? AuthValue<T>[]
-    : Extract<
-        AuthValue<T>,
-        {
-          method: TAuthMethod;
-        }
-      >;
-} & ReturnType<LookupConnectionType<T>['configSchema']['parse']>;
+> = LookupConnectionType<T> extends ConnectionType<infer TDefinition>
+  ? {
+      type: LookupConnectionType<T>['type'];
+      title: string;
+      auth: string extends TAuthMethod
+        ? ConnectionAuthValue<TDefinition['auth'][number]>[]
+        : Extract<
+            ConnectionAuthValue<TDefinition['auth'][number]>,
+            {
+              method: TAuthMethod;
+            }
+          >;
+    } & ReturnType<LookupConnectionType<T>['configSchema']['parse']>
+  : never;
 
 // @public
 export type ConnectionAuthMatch = {
