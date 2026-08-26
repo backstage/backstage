@@ -75,6 +75,7 @@ import {
   convertFiltersToRecord,
 } from '../../util/templating';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';
+import { Duration } from 'luxon';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -780,6 +781,22 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
   }
 }
 
+function getTimeSavedSeconds(spec: TaskSpec): number | undefined {
+  const timeSavedAnnotation =
+    spec.templateInfo?.entity?.metadata.annotations?.[
+      'backstage.io/time-saved'
+    ];
+  if (!timeSavedAnnotation) {
+    return undefined;
+  }
+  const duration = Duration.fromISO(timeSavedAnnotation);
+  if (!duration.isValid) {
+    return undefined;
+  }
+  const seconds = duration.as('seconds');
+  return seconds > 0 ? seconds : undefined;
+}
+
 function scaffoldingTracker(metrics: MetricsService) {
   // prom-client metrics are deprecated in favour of OpenTelemetry metrics.
   const promTaskCount = createCounterMetric({
@@ -812,6 +829,12 @@ function scaffoldingTracker(metrics: MetricsService) {
     unit: 's',
   });
 
+  const taskTimeSaved = metrics.createCounter('scaffolder.task.time_saved', {
+    description:
+      'Estimated time saved by successfully completing a scaffolder task, based on backstage.io/time-saved annotation',
+    unit: 's',
+  });
+
   const stepCount = metrics.createCounter('scaffolder.step.count', {
     description: 'Total number of individual scaffolder action steps executed',
   });
@@ -825,6 +848,10 @@ function scaffoldingTracker(metrics: MetricsService) {
     await task.emitLog(`Starting up task with ${task.spec.steps.length} steps`);
     const template = task.spec.templateInfo?.entityRef || '';
     const user = task.spec.user?.ref || '';
+
+    const timeSavedSeconds = task.isDryRun
+      ? undefined
+      : getTimeSavedSeconds(task.spec);
 
     const startTime = process.hrtime();
     const taskTimer = promTaskDuration.startTimer({
@@ -859,6 +886,10 @@ function scaffoldingTracker(metrics: MetricsService) {
         template,
         result: 'ok',
       });
+
+      if (timeSavedSeconds) {
+        taskTimeSaved.add(timeSavedSeconds, { template });
+      }
     }
 
     async function markFailed(step: TaskStep, err: Error) {
