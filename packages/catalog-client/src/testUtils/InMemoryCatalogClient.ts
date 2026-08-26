@@ -126,19 +126,19 @@ function buildEntitySearch(entity: Entity) {
   if (entity.metadata?.name) {
     rows.push({
       key: 'metadata.name',
-      value: entity.metadata.name.toLocaleLowerCase('en-US'),
+      value: entity.metadata.name.toLowerCase(),
     });
   }
   if (entity.metadata?.namespace) {
     rows.push({
       key: 'metadata.namespace',
-      value: entity.metadata.namespace.toLocaleLowerCase('en-US'),
+      value: entity.metadata.namespace.toLowerCase(),
     });
   }
   if (entity.metadata?.uid) {
     rows.push({
       key: 'metadata.uid',
-      value: entity.metadata.uid.toLocaleLowerCase('en-US'),
+      value: entity.metadata.uid.toLowerCase(),
     });
   }
 
@@ -149,8 +149,8 @@ function buildEntitySearch(entity: Entity) {
   // Visit relations
   for (const relation of entity.relations ?? []) {
     rows.push({
-      key: `relations.${relation.type.toLocaleLowerCase('en-US')}`,
-      value: relation.targetRef.toLocaleLowerCase('en-US'),
+      key: `relations.${relation.type.toLowerCase()}`,
+      value: relation.targetRef.toLowerCase(),
     });
   }
 
@@ -172,8 +172,8 @@ function createFilter(
     return filters.some(filter => {
       for (const [key, expectedValue] of Object.entries(filter)) {
         const searchValues = rows
-          .filter(row => row.key === key.toLocaleLowerCase('en-US'))
-          .map(row => row.value?.toString().toLocaleLowerCase('en-US'));
+          .filter(row => row.key === key.toLowerCase())
+          .map(row => row.value?.toString().toLowerCase());
 
         if (searchValues.length === 0) {
           return false;
@@ -183,14 +183,10 @@ function createFilter(
         }
         if (Array.isArray(expectedValue)) {
           return expectedValue.some(value =>
-            searchValues?.includes(String(value).toLocaleLowerCase('en-US')),
+            searchValues?.includes(String(value).toLowerCase()),
           );
         }
-        if (
-          !searchValues?.includes(
-            String(expectedValue).toLocaleLowerCase('en-US'),
-          )
-        ) {
+        if (!searchValues?.includes(String(expectedValue).toLowerCase())) {
           return false;
         }
       }
@@ -253,16 +249,16 @@ function applyOrdering(entities: Entity[], order?: EntityOrderQuery): Entity[] {
     const bRows = searchMap.get(b)!;
 
     for (const { field, order: dir } of orders) {
-      const key = field.toLocaleLowerCase('en-US');
-      const aRow = aRows.find(r => r.key.toLocaleLowerCase('en-US') === key);
-      const bRow = bRows.find(r => r.key.toLocaleLowerCase('en-US') === key);
+      const key = field.toLowerCase();
+      const aRow = aRows.find(r => r.key.toLowerCase() === key);
+      const bRow = bRows.find(r => r.key.toLowerCase() === key);
       const aValue =
         aRow?.value !== null && aRow?.value !== undefined
-          ? String(aRow.value).toLocaleLowerCase('en-US')
+          ? String(aRow.value).toLowerCase()
           : null;
       const bValue =
         bRow?.value !== null && bRow?.value !== undefined
-          ? String(bRow.value).toLocaleLowerCase('en-US')
+          ? String(bRow.value).toLowerCase()
           : null;
 
       if (aValue === null && bValue === null) continue;
@@ -289,20 +285,17 @@ function applyFullTextFilter(
   if (!fullTextFilter?.term?.trim()) {
     return entities;
   }
-  const term = fullTextFilter.term.trim().toLocaleLowerCase('en-US');
-  const fields = fullTextFilter.fields?.map(f => f.toLocaleLowerCase('en-US'));
+  const term = fullTextFilter.term.trim().toLowerCase();
+  const fields = fullTextFilter.fields?.map(f => f.toLowerCase());
 
   return entities.filter(entity => {
     const rows = buildEntitySearch(entity);
     return rows.some(row => {
-      if (
-        fields?.length &&
-        !fields.includes(row.key.toLocaleLowerCase('en-US'))
-      ) {
+      if (fields?.length && !fields.includes(row.key.toLowerCase())) {
         return false;
       }
       if (row.value === null || row.value === undefined) return false;
-      const value = String(row.value).toLocaleLowerCase('en-US');
+      const value = String(row.value).toLowerCase();
       return value.includes(term);
     });
   });
@@ -526,11 +519,7 @@ export class InMemoryCatalogClient implements CatalogApi {
           // matching the backend's count(DISTINCT entity_id) behavior
           const uniqueValues = new Set(
             rows
-              .filter(
-                row =>
-                  row.key.toLocaleLowerCase('en-US') ===
-                  facet.toLocaleLowerCase('en-US'),
-              )
+              .filter(row => row.key.toLowerCase() === facet.toLowerCase())
               .map(row => row.value)
               .filter(v => v !== null && v !== undefined)
               .map(v => String(v)),

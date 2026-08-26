@@ -66,10 +66,8 @@ const MINIMUM_USER_SELECT = ['id', 'accountEnabled'];
 
 function ensureMinimumSelect(select: string[] | undefined): string[] {
   const base = select?.length ? select : DEFAULT_USER_SELECT;
-  const lower = new Set(base.map(s => s.toLocaleLowerCase('en-US')));
-  const missing = MINIMUM_USER_SELECT.filter(
-    f => !lower.has(f.toLocaleLowerCase('en-US')),
-  );
+  const lower = new Set(base.map(s => s.toLowerCase()));
+  const missing = MINIMUM_USER_SELECT.filter(f => !lower.has(f.toLowerCase()));
   return missing.length > 0 ? [...base, ...missing] : base;
 }
 

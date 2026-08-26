@@ -203,8 +203,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
   // otherwise fall back to the entity's kind field directly.
   const displayedKind = entities[0]?.kind ?? filters.kind?.value;
   const displayedKindLabel =
-    displayedKind?.toLocaleLowerCase('en-US') ===
-    filters.kind?.value?.toLocaleLowerCase('en-US')
+    displayedKind?.toLowerCase() === filters.kind?.value?.toLowerCase()
       ? filters.kind?.label || ''
       : displayedKind || '';
   const currentType = filters.type?.value || '';

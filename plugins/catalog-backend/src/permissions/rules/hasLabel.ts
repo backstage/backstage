@@ -44,14 +44,14 @@ export const hasLabel = createPermissionRule({
     if (isExactKeyMatch) return true;
 
     // case-insensitive matching if exact match is not found
-    const normalizedLabel = label.toLocaleLowerCase('en-US');
-    const normalizedValue = value?.toLocaleLowerCase('en-US');
+    const normalizedLabel = label.toLowerCase();
+    const normalizedValue = value?.toLowerCase();
 
     for (const [key, val] of Object.entries(resource.metadata.labels)) {
-      if (key.toLocaleLowerCase('en-US') === normalizedLabel) {
+      if (key.toLowerCase() === normalizedLabel) {
         if (
           normalizedValue === undefined ||
-          val.toLocaleLowerCase('en-US') === normalizedValue
+          val.toLowerCase() === normalizedValue
         ) {
           return true;
         }

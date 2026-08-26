@@ -94,8 +94,8 @@ export const CatalogGraphCard = (
     (node: EntityNode, _: MouseEvent<unknown>) => {
       const nodeEntityName = parseEntityRef(node.id);
       const path = catalogEntityRoute({
-        kind: nodeEntityName.kind.toLocaleLowerCase('en-US'),
-        namespace: nodeEntityName.namespace.toLocaleLowerCase('en-US'),
+        kind: nodeEntityName.kind.toLowerCase(),
+        namespace: nodeEntityName.namespace.toLowerCase(),
         name: nodeEntityName.name,
       });
       analytics.captureEvent(

@@ -105,7 +105,7 @@ export function applyPredicateEntityFilterToQuery(options: {
   return targetQuery.andWhere(inner => {
     for (const [keyAnyCase, value] of Object.entries(filter)) {
       applyFieldCondition({
-        key: keyAnyCase.toLocaleLowerCase('en-US'),
+        key: keyAnyCase.toLowerCase(),
         value,
         targetQuery: inner,
         onEntityIdField,
@@ -131,7 +131,7 @@ function applyFieldCondition(options: {
     return targetQuery.whereExists(
       searchExists(knex, onEntityIdField)
         .where(`${S}.key`, key)
-        .where(`${S}.value`, String(value).toLocaleLowerCase('en-US')),
+        .where(`${S}.value`, String(value).toLowerCase()),
     );
   }
 
@@ -147,7 +147,7 @@ function applyFieldCondition(options: {
     }
 
     if ('$in' in value) {
-      const values = value.$in.map(v => String(v).toLocaleLowerCase('en-US'));
+      const values = value.$in.map(v => String(v).toLowerCase());
       return targetQuery.whereExists(
         searchExists(knex, onEntityIdField)
           .where(`${S}.key`, key)
@@ -156,7 +156,7 @@ function applyFieldCondition(options: {
     }
 
     if ('$hasPrefix' in value) {
-      const prefix = value.$hasPrefix.toLocaleLowerCase('en-US');
+      const prefix = value.$hasPrefix.toLowerCase();
       const escaped = prefix.replace(/[%_\\]/g, c => `\\${c}`);
       return targetQuery.whereExists(
         searchExists(knex, onEntityIdField)
@@ -186,7 +186,7 @@ function applyFieldCondition(options: {
         return targetQuery.whereExists(
           searchExists(knex, onEntityIdField)
             .where(`${S}.key`, key)
-            .where(`${S}.value`, String(target).toLocaleLowerCase('en-US')),
+            .where(`${S}.value`, String(target).toLowerCase()),
         );
       }
 
@@ -256,7 +256,7 @@ function applyContainsRelation(options: {
 
   function parseStringOrIn(value: unknown): string[] {
     if (typeof value === 'string') {
-      return [value.toLocaleLowerCase('en-US')];
+      return [value.toLowerCase()];
     }
     if (
       isObject(value) &&
@@ -270,7 +270,7 @@ function applyContainsRelation(options: {
           `Empty "$in" array for $contains on "relations" is not allowed`,
         );
       }
-      return value.$in.map(v => v.toLocaleLowerCase('en-US'));
+      return value.$in.map(v => v.toLowerCase());
     }
     const actual = JSON.stringify(value);
     throw new InputError(
@@ -282,7 +282,7 @@ function applyContainsRelation(options: {
   let targetRef: string[] | undefined;
 
   for (const [rawKey, value] of Object.entries(rawTarget)) {
-    const key = rawKey.toLocaleLowerCase('en-US');
+    const key = rawKey.toLowerCase();
 
     if (key === 'type') {
       if (type !== undefined) {
@@ -318,7 +318,7 @@ function applyContainsRelation(options: {
 
   const subquery = searchExists(knex, onEntityIdField).where(
     `${S}.key`,
-    `relations.${type.toLocaleLowerCase('en-US')}`,
+    `relations.${type.toLowerCase()}`,
   );
 
   if (targetRef) {

@@ -352,8 +352,8 @@ export const WorkaroundNavLink = forwardRef<
   let { pathname: toPathname } = useResolvedPath(to);
 
   if (!caseSensitive) {
-    locationPathname = locationPathname.toLocaleLowerCase('en-US');
-    toPathname = toPathname.toLocaleLowerCase('en-US');
+    locationPathname = locationPathname.toLowerCase();
+    toPathname = toPathname.toLowerCase();
   }
 
   let isActive = locationPathname === toPathname;

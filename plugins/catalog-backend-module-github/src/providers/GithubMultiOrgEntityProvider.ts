@@ -1020,7 +1020,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 
     if (result && result.spec) {
       if (!this.options.alwaysUseDefaultNamespace) {
-        result.metadata.namespace = ctx.org.toLocaleLowerCase('en-US');
+        result.metadata.namespace = ctx.org.toLowerCase();
       }
 
       // Group `spec.members` inherits the namespace of it's group so need to explicitly specify refs here

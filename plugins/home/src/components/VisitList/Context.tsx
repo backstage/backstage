@@ -85,15 +85,13 @@ const defaultGetChipColor: GetChipColorFunction = (visit: Visit): string => {
     'domain',
     'location',
   ];
-  const foundIndex = entityKinds.indexOf(
-    entity.kind.toLocaleLowerCase('en-US'),
-  );
+  const foundIndex = entityKinds.indexOf(entity.kind.toLowerCase());
   return foundIndex === -1 ? defaultColor : getColorByIndex(foundIndex + 1);
 };
 
 const defaultGetLabel: GetLabelFunction = (visit: Visit): string => {
   const entity = maybeEntity(visit);
-  return (entity?.kind ?? 'Other').toLocaleLowerCase('en-US');
+  return (entity?.kind ?? 'Other').toLowerCase();
 };
 
 // Create the context

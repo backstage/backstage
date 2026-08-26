@@ -68,7 +68,7 @@ export class DefaultCatalogDatabase implements CatalogDatabase {
     const { entityRef } = options;
     const entityRefs = new Array<string>();
 
-    let currentRef = entityRef.toLocaleLowerCase('en-US');
+    let currentRef = entityRef.toLowerCase();
     for (let depth = 1; depth <= MAX_ANCESTOR_DEPTH; depth += 1) {
       const rows = await tx<DbRefreshStateReferencesRow>(
         'refresh_state_references',
@@ -104,7 +104,7 @@ export class DefaultCatalogDatabase implements CatalogDatabase {
     const { entityRef } = options;
 
     const updateResult = await tx<DbRefreshStateRow>('refresh_state')
-      .where({ entity_ref: entityRef.toLocaleLowerCase('en-US') })
+      .where({ entity_ref: entityRef.toLowerCase() })
       .update({ next_update_at: tx.fn.now() });
     if (updateResult === 0) {
       throw new NotFoundError(`Failed to schedule ${entityRef} for refresh`);

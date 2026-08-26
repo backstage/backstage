@@ -60,8 +60,8 @@ export const columnFactories = {
       searchable: true,
       defaultSort: 'asc',
       customSort: (row1, row2) => {
-        const title1 = customTitle(row1.entity).toLocaleLowerCase();
-        const title2 = customTitle(row2.entity).toLocaleLowerCase();
+        const title1 = customTitle(row1.entity).toLowerCase();
+        const title2 = customTitle(row2.entity).toLowerCase();
         return title1.localeCompare(title2);
       },
       render: (row: DocsTableRow) => (

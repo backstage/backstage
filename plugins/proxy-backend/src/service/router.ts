@@ -175,7 +175,7 @@ export function buildMiddleware(
 
       // allow all configured headers
       ...(fullConfig.allowedHeaders || []),
-    ].map(h => h.toLocaleLowerCase()),
+    ].map(h => h.toLowerCase()),
   );
 
   if (credentialsPolicy === 'forward') {
@@ -193,7 +193,7 @@ export function buildMiddleware(
   const filter = (_pathname: string, req: http.IncomingMessage): boolean => {
     const headerNames = Object.keys(req.headers);
     headerNames.forEach(h => {
-      if (!requestHeaderAllowList.has(h.toLocaleLowerCase())) {
+      if (!requestHeaderAllowList.has(h.toLowerCase())) {
         delete req.headers[h];
       }
     });
@@ -211,7 +211,7 @@ export function buildMiddleware(
 
       // allow all configured headers
       ...(fullConfig.allowedHeaders || []),
-    ].map(h => h.toLocaleLowerCase()),
+    ].map(h => h.toLowerCase()),
   );
 
   fullConfig.onProxyRes = (
@@ -223,7 +223,7 @@ export function buildMiddleware(
     const headerNames = Object.keys(proxyRes.headers);
 
     headerNames.forEach(h => {
-      if (!responseHeaderAllowList.has(h.toLocaleLowerCase())) {
+      if (!responseHeaderAllowList.has(h.toLowerCase())) {
         delete proxyRes.headers[h];
       }
     });

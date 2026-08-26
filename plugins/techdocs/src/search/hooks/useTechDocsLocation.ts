@@ -44,11 +44,7 @@ export function useEntityPageTechDocsRedirect(entityRef: CompoundEntityRef) {
     const catalogDocsPath = trimEndSlash(routeDocsCatalog());
 
     return (url: string): string => {
-      if (
-        url
-          .toLocaleLowerCase('en-US')
-          .startsWith(rootDocsPath.toLocaleLowerCase('en-US'))
-      ) {
+      if (url.toLowerCase().startsWith(rootDocsPath.toLowerCase())) {
         const suffix = trimStartSlash(url.slice(rootDocsPath.length));
         return suffix.length === 0 || suffix.startsWith('#')
           ? `${catalogDocsPath}${suffix}`

@@ -29,7 +29,7 @@ import { CatalogService } from '@backstage/plugin-catalog-node';
 import { NotificationRecipientResolver } from '@backstage/plugin-notifications-node';
 
 const isUserEntityRef = (ref: string) =>
-  parseEntityRef(ref).kind.toLocaleLowerCase() === 'user';
+  parseEntityRef(ref).kind.toLowerCase() === 'user';
 
 // Partitions array of entity references to two arrays; user entity refs and other entity refs
 const partitionEntityRefs = (refs: string[]): string[][] => {
