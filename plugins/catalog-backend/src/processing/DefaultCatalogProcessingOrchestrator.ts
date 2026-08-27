@@ -158,6 +158,7 @@ export class DefaultCatalogProcessingOrchestrator
       entity = await this.runPreProcessStep(entity, context);
       entity = await this.runPolicyStep(entity);
       await this.runValidateStep(entity, context);
+
       if (isLocationEntity(entity)) {
         await this.runSpecialLocationStep(entity, context);
       }
@@ -185,11 +186,19 @@ export class DefaultCatalogProcessingOrchestrator
         }
       }
 
+      // Location entities treat partial target success as ok; this covers
+      // all collector errors because results() marks the collector as done,
+      // preventing a before/after snapshot of just target-reading errors.
+      const ok =
+        isLocationEntity(entity) && collectorResults.deferredEntities.length > 0
+          ? true
+          : collectorResults.errors.length === 0;
+
       return {
         ...collectorResults,
         completedEntity: entity,
         state: { cache: cache.collect() },
-        ok: collectorResults.errors.length === 0,
+        ok,
       };
     } catch (error) {
       const err = toError(error);
@@ -375,45 +384,58 @@ export class DefaultCatalogProcessingOrchestrator
           maybeRelativeTarget,
         );
 
-        let didRead = false;
-        for (const processor of this.options.processors) {
-          if (processor.readLocation) {
-            try {
-              const read = await withActiveSpan(
-                tracer,
-                'ProcessingStep',
-                async span => {
-                  addEntityAttributes(span, entity);
-                  addProcessorAttributes(span, 'readLocation', processor);
-                  return await processor.readLocation!(
-                    {
-                      type,
-                      target,
-                      presence,
-                    },
-                    presence === 'optional',
-                    context.collector.forProcessor(processor),
-                    this.options.parser,
-                    context.cache.forProcessor(processor, target),
-                  );
-                },
-              );
-              if (read) {
-                didRead = true;
-                break;
+        try {
+          let didRead = false;
+          for (const processor of this.options.processors) {
+            if (processor.readLocation) {
+              try {
+                const read = await withActiveSpan(
+                  tracer,
+                  'ProcessingStep',
+                  async span => {
+                    addEntityAttributes(span, entity);
+                    addProcessorAttributes(span, 'readLocation', processor);
+                    return await processor.readLocation!(
+                      {
+                        type,
+                        target,
+                        presence,
+                      },
+                      presence === 'optional',
+                      context.collector.forProcessor(processor),
+                      this.options.parser,
+                      context.cache.forProcessor(processor, target),
+                    );
+                  },
+                );
+                if (read) {
+                  didRead = true;
+                  break;
+                }
+              } catch (e) {
+                throw new InputError(
+                  `Processor ${processor.constructor.name} threw an error while reading ${type}:${target}`,
+                  e,
+                );
               }
-            } catch (e) {
-              throw new InputError(
-                `Processor ${processor.constructor.name} threw an error while reading ${type}:${target}`,
-                e,
-              );
             }
           }
-        }
-        if (!didRead) {
-          throw new InputError(
-            `No processor was able to handle reading of ${type}:${target}`,
+          if (!didRead) {
+            throw new InputError(
+              `No processor was able to handle reading of ${type}:${target}`,
+            );
+          }
+        } catch (e) {
+          const originalError = toError(e);
+          const error = new Error(
+            `Failed to read location target ${type}:${target}, ${originalError.message}`,
+            { cause: originalError },
           );
+          context.collector.generic()({
+            type: 'error',
+            location: context.location,
+            error,
+          });
         }
       }
     });

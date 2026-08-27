@@ -345,4 +345,408 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
       );
     });
   });
+
+  describe('location target partial failure', () => {
+    const child1: Entity = {
+      apiVersion: '1',
+      kind: 'Component',
+      metadata: { name: 'child1', namespace: 'default' },
+    };
+
+    const child2: Entity = {
+      apiVersion: '1',
+      kind: 'Component',
+      metadata: { name: 'child2', namespace: 'default' },
+    };
+
+    function makeLocationEntity(targets: string[]): LocationEntity {
+      return {
+        apiVersion: 'backstage.io/v1beta1',
+        kind: 'Location',
+        metadata: {
+          name: 'test-location',
+          annotations: {
+            [ANNOTATION_ORIGIN_LOCATION]: 'url:https://example.com/origin.yaml',
+            [ANNOTATION_LOCATION]: 'url:https://example.com/origin.yaml',
+          },
+        },
+        spec: {
+          type: 'url',
+          targets,
+        },
+      };
+    }
+
+    function createOrchestrator(processor: CatalogProcessor) {
+      return new DefaultCatalogProcessingOrchestrator({
+        processors: [processor],
+        integrations: ScmIntegrations.fromConfig(new ConfigReader({})),
+        logger: mockServices.logger.mock(),
+        parser: defaultEntityDataParser,
+        policy: EntityPolicies.allOf([]),
+        rulesEnforcer: { isAllowed: () => true },
+      });
+    }
+
+    it('returns ok with all deferred entities when all targets succeed', async () => {
+      const processor: CatalogProcessor = {
+        getProcessorName: () => 'test',
+        validateEntityKind: async () => true,
+        readLocation: async (location, _optional, emit) => {
+          if (location.target === 'https://example.com/a.yaml') {
+            emit(
+              processingResult.entity(
+                { type: 'url', target: location.target },
+                child1,
+              ),
+            );
+          } else if (location.target === 'https://example.com/b.yaml') {
+            emit(
+              processingResult.entity(
+                { type: 'url', target: location.target },
+                child2,
+              ),
+            );
+          }
+          return true;
+        },
+      };
+
+      const entity = makeLocationEntity([
+        'https://example.com/a.yaml',
+        'https://example.com/b.yaml',
+      ]);
+      const result = await createOrchestrator(processor).process({
+        entity,
+        state: {},
+      });
+
+      expect(result.ok).toBe(true);
+      expect(result).toMatchObject({
+        errors: [],
+        deferredEntities: expect.arrayContaining([
+          expect.objectContaining({
+            entity: expect.objectContaining({
+              metadata: expect.objectContaining({ name: 'child1' }),
+            }),
+          }),
+          expect.objectContaining({
+            entity: expect.objectContaining({
+              metadata: expect.objectContaining({ name: 'child2' }),
+            }),
+          }),
+        ]),
+      });
+    });
+
+    it('returns ok with successful deferred entities when one target emits an error', async () => {
+      const processor: CatalogProcessor = {
+        getProcessorName: () => 'test',
+        validateEntityKind: async () => true,
+        readLocation: async (location, _optional, emit) => {
+          if (location.target === 'https://example.com/good.yaml') {
+            emit(
+              processingResult.entity(
+                { type: 'url', target: location.target },
+                child1,
+              ),
+            );
+          } else if (location.target === 'https://example.com/bad.yaml') {
+            emit(processingResult.notFoundError(location, 'not found'));
+          }
+          return true;
+        },
+      };
+
+      const entity = makeLocationEntity([
+        'https://example.com/good.yaml',
+        'https://example.com/bad.yaml',
+      ]);
+      const result = await createOrchestrator(processor).process({
+        entity,
+        state: {},
+      });
+
+      expect(result.ok).toBe(true);
+      expect(result).toMatchObject({
+        errors: [expect.objectContaining({ message: 'not found' })],
+        deferredEntities: [
+          expect.objectContaining({
+            entity: expect.objectContaining({
+              metadata: expect.objectContaining({ name: 'child1' }),
+            }),
+          }),
+        ],
+      });
+    });
+
+    it('returns ok with successful deferred entities when one target processor throws', async () => {
+      const processor: CatalogProcessor = {
+        getProcessorName: () => 'test',
+        validateEntityKind: async () => true,
+        readLocation: async (location, _optional, emit) => {
+          if (location.target === 'https://example.com/good.yaml') {
+            emit(
+              processingResult.entity(
+                { type: 'url', target: location.target },
+                child1,
+              ),
+            );
+            return true;
+          }
+          throw new Error('connection refused');
+        },
+      };
+
+      const entity = makeLocationEntity([
+        'https://example.com/good.yaml',
+        'https://example.com/throwing.yaml',
+      ]);
+      const result = await createOrchestrator(processor).process({
+        entity,
+        state: {},
+      });
+
+      expect(result.ok).toBe(true);
+      expect(result).toMatchObject({
+        errors: [
+          expect.objectContaining({
+            message: expect.stringContaining('connection refused'),
+          }),
+        ],
+        deferredEntities: [
+          expect.objectContaining({
+            entity: expect.objectContaining({
+              metadata: expect.objectContaining({ name: 'child1' }),
+            }),
+          }),
+        ],
+      });
+    });
+
+    it('returns ok with successful deferred entities when no processor handles one target', async () => {
+      const processor: CatalogProcessor = {
+        getProcessorName: () => 'test',
+        validateEntityKind: async () => true,
+        readLocation: async (location, _optional, emit) => {
+          if (location.target === 'https://example.com/good.yaml') {
+            emit(
+              processingResult.entity(
+                { type: 'url', target: location.target },
+                child1,
+              ),
+            );
+            return true;
+          }
+          return false;
+        },
+      };
+
+      const entity = makeLocationEntity([
+        'https://example.com/good.yaml',
+        'https://example.com/unhandled.yaml',
+      ]);
+      const result = await createOrchestrator(processor).process({
+        entity,
+        state: {},
+      });
+
+      expect(result.ok).toBe(true);
+      expect(result).toMatchObject({
+        errors: [
+          expect.objectContaining({
+            message: expect.stringContaining('No processor was able to handle'),
+          }),
+        ],
+        deferredEntities: [
+          expect.objectContaining({
+            entity: expect.objectContaining({
+              metadata: expect.objectContaining({ name: 'child1' }),
+            }),
+          }),
+        ],
+      });
+    });
+
+    it('returns not ok when all targets fail', async () => {
+      const processor: CatalogProcessor = {
+        getProcessorName: () => 'test',
+        validateEntityKind: async () => true,
+        readLocation: async (location, _optional, emit) => {
+          emit(
+            processingResult.notFoundError(
+              location,
+              `not found: ${location.target}`,
+            ),
+          );
+          return true;
+        },
+      };
+
+      const entity = makeLocationEntity([
+        'https://example.com/bad1.yaml',
+        'https://example.com/bad2.yaml',
+      ]);
+      const result = await createOrchestrator(processor).process({
+        entity,
+        state: {},
+      });
+
+      expect(result.ok).toBe(false);
+      expect(result.errors).toHaveLength(2);
+    });
+
+    it('returns not ok when a single target fails', async () => {
+      const processor: CatalogProcessor = {
+        getProcessorName: () => 'test',
+        validateEntityKind: async () => true,
+        readLocation: async () => {
+          throw new Error('boom');
+        },
+      };
+
+      const entity = makeLocationEntity(['https://example.com/only.yaml']);
+      const result = await createOrchestrator(processor).process({
+        entity,
+        state: {},
+      });
+
+      expect(result.ok).toBe(false);
+      expect(result.errors).toHaveLength(1);
+      expect(result.errors[0].message).toContain('boom');
+    });
+
+    it('returns ok with no deferred entities when targets list is empty', async () => {
+      const processor: CatalogProcessor = {
+        getProcessorName: () => 'test',
+        validateEntityKind: async () => true,
+      };
+
+      const entity = makeLocationEntity([]);
+      const result = await createOrchestrator(processor).process({
+        entity,
+        state: {},
+      });
+
+      expect(result.ok).toBe(true);
+      expect(result).toMatchObject({
+        errors: [],
+        deferredEntities: [],
+      });
+    });
+
+    it('preserves deferred entities from all successful targets when one in the middle fails', async () => {
+      const child3: Entity = {
+        apiVersion: '1',
+        kind: 'Component',
+        metadata: { name: 'child3', namespace: 'default' },
+      };
+
+      const processor: CatalogProcessor = {
+        getProcessorName: () => 'test',
+        validateEntityKind: async () => true,
+        readLocation: async (location, _optional, emit) => {
+          if (location.target === 'https://example.com/a.yaml') {
+            emit(
+              processingResult.entity(
+                { type: 'url', target: location.target },
+                child1,
+              ),
+            );
+            return true;
+          } else if (location.target === 'https://example.com/b.yaml') {
+            throw new Error('404 not found');
+          } else if (location.target === 'https://example.com/c.yaml') {
+            emit(
+              processingResult.entity(
+                { type: 'url', target: location.target },
+                child3,
+              ),
+            );
+            return true;
+          }
+          return false;
+        },
+      };
+
+      const entity = makeLocationEntity([
+        'https://example.com/a.yaml',
+        'https://example.com/b.yaml',
+        'https://example.com/c.yaml',
+      ]);
+      const result = await createOrchestrator(processor).process({
+        entity,
+        state: {},
+      });
+
+      expect(result.ok).toBe(true);
+      expect(result.errors).toHaveLength(1);
+      expect(result.errors[0].message).toContain('404 not found');
+      expect(result).toMatchObject({
+        deferredEntities: expect.arrayContaining([
+          expect.objectContaining({
+            entity: expect.objectContaining({
+              metadata: expect.objectContaining({ name: 'child1' }),
+            }),
+          }),
+          expect.objectContaining({
+            entity: expect.objectContaining({
+              metadata: expect.objectContaining({ name: 'child3' }),
+            }),
+          }),
+        ]),
+      });
+      // Verify the failed target's entity is not present
+      if (!result.ok) {
+        throw new Error('Expected result.ok to be true');
+      }
+      const names = result.deferredEntities.map(d => d.entity.metadata.name);
+      expect(names).not.toContain('child2');
+    });
+
+    it('does not affect ok flag for non-Location entities with errors', async () => {
+      const nonLocationEntity = {
+        apiVersion: 'my-api/v1',
+        kind: 'FooBar',
+        metadata: {
+          name: 'my-foo-bar',
+          annotations: {
+            [ANNOTATION_LOCATION]: 'url:./here',
+            [ANNOTATION_ORIGIN_LOCATION]: 'url:./there',
+          },
+        },
+      };
+
+      const processor: CatalogProcessor = {
+        getProcessorName: () => 'test',
+        validateEntityKind: async () => true,
+        postProcessEntity: async (e, _location, emit) => {
+          emit(
+            processingResult.generalError(
+              { type: 'url', target: 'foo' },
+              'some error',
+            ),
+          );
+          return e;
+        },
+      };
+
+      const orchestrator = new DefaultCatalogProcessingOrchestrator({
+        processors: [processor],
+        integrations: ScmIntegrations.fromConfig(new ConfigReader({})),
+        logger: mockServices.logger.mock(),
+        parser: defaultEntityDataParser,
+        policy: EntityPolicies.allOf([]),
+        rulesEnforcer: { isAllowed: () => true },
+      });
+
+      const result = await orchestrator.process({
+        entity: nonLocationEntity,
+        state: {},
+      });
+
+      expect(result.ok).toBe(false);
+      expect(result.errors).toHaveLength(1);
+    });
+  });
 });
