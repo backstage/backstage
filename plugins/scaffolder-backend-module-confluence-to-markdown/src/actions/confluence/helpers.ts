@@ -137,13 +137,13 @@ export const fetchConfluence = async (
 
 export const getAndWriteAttachments = async (
   arr: Results,
-  workspace: string,
+  docsDir: string,
   config: LocalConfluenceConfig,
-  mkdocsDir: string,
 ) => {
   const productArr: string[][] = [];
   const baseUrl = config.baseUrl;
   const authHeaderValue = getAuthorizationHeaderValue(config);
+  const attachmentDir = resolveSafeChildPath(docsDir, 'img');
   await Promise.all(
     await arr.results.map(async (result: Result) => {
       const downloadLink = result._links.download;
@@ -161,16 +161,18 @@ export const getAndWriteAttachments = async (
       if (!res.ok) {
         throw await ResponseError.fromResponse(res);
       } else if (res.body !== null) {
-        const imgDir = resolveSafeChildPath(workspace, `${mkdocsDir}docs/img`);
-        const filePath = resolveSafeChildPath(imgDir, downloadTitle);
-        fs.openSync(filePath, 'w');
-        const writeStream = fs.createWriteStream(filePath);
+        const attachmentPath = resolveSafeChildPath(
+          attachmentDir,
+          downloadTitle,
+        );
+        fs.openSync(attachmentPath, 'w');
+        const writeStream = fs.createWriteStream(attachmentPath);
         // TODO(freben): This cast is sketchy, but for some reason the node types don't quite line up here
         // https://stackoverflow.com/questions/44672942/stream-response-to-file-using-fetch-api-and-fs-createwritestream/73879265#73879265
         Readable.fromWeb(res.body as any).pipe(writeStream);
         await new Promise((resolve, reject) => {
           writeStream.on('finish', () => {
-            resolve(filePath);
+            resolve(attachmentPath);
           });
           writeStream.on('error', reject);
         });
