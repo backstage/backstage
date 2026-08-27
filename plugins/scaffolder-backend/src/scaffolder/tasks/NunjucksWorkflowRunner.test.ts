@@ -15,7 +15,6 @@
  */
 
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
-import { NotAllowedError } from '@backstage/errors';
 import {
   DefaultTemplateActionRegistry,
   TemplateActionRegistry,
@@ -3208,7 +3207,7 @@ describe('NunjucksWorkflowRunner', () => {
         const result = runner.execute(task).then(
           () => true,
           error => {
-            if (!(error instanceof NotAllowedError)) {
+            if (error?.name !== 'NotAllowedError') {
               throw error;
             }
 

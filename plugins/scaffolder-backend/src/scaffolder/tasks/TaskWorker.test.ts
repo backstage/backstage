@@ -309,10 +309,13 @@ describe('TaskWorker', () => {
     );
     const completionEvent = events.find(event => event.type === 'completion');
 
-    expect(failedStepEvent?.body.message).toContain('"url": "***"');
-    expect(completionEvent?.body.error).toMatchObject({
+    expect(failedStepEvent?.body.message).toContain(
+      'Unauthorized action: rejected-action. The action is not allowed.',
+    );
+    expect(completionEvent?.body.error).toEqual({
       name: 'NotAllowedError',
-      message: expect.stringContaining('"url": "***"'),
+      message:
+        'Unauthorized action: rejected-action. The action is not allowed.',
     });
     expect(JSON.stringify(events)).not.toContain(transformedSecret);
   });
