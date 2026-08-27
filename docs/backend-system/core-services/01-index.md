@@ -17,6 +17,7 @@ import { coreServices } from '@backstage/backend-plugin-api';
 
 - [Auth Service](./auth.md) - Token authentication and credentials management.
 - [Cache Service](./cache.md) - Key-value store for caching data.
+- [Connections Service](./connections.md) - Shared, typed configuration and authentication for external services (experimental).
 - [Database Service](./database.md) - Database access and management via [knex](https://knexjs.org/).
 - [Discovery Service](./discovery.md) - Service discovery for inter-plugin communication.
 - [Http Auth Service](./http-auth.md) - Authentication of HTTP requests.
