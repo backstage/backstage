@@ -46,6 +46,8 @@ import {
 
 describe('NunjucksWorkflowRunner', () => {
   let actionRegistry: TemplateActionRegistry;
+  let metrics: ReturnType<typeof metricsServiceMock.mock>;
+
   let runner: NunjucksWorkflowRunner;
   let fakeActionHandler: jest.Mock;
   let fakeTaskLog: jest.Mock;
@@ -245,6 +247,8 @@ describe('NunjucksWorkflowRunner', () => {
       },
     });
 
+    metrics = metricsServiceMock.mock();
+
     runner = new NunjucksWorkflowRunner({
       actionRegistry,
       integrations,
@@ -252,7 +256,7 @@ describe('NunjucksWorkflowRunner', () => {
       logger,
       permissions: mockedPermissionApi,
       config,
-      metrics: metricsServiceMock.mock(),
+      metrics,
     });
   });
 
@@ -3206,5 +3210,164 @@ describe('NunjucksWorkflowRunner', () => {
       // step is skipped.
       expect(fakeActionHandler).toHaveBeenCalledTimes(2);
     });
+  });
+  describe('time-saved metrics', () => {
+    it('records time-saved metric when a task succeeds', async () => {
+      const task = createMockTaskWithSpec({
+        templateInfo: {
+          entityRef: 'template:default/example',
+          entity: {
+            metadata: {
+              name: 'example',
+              annotations: {
+                'backstage.io/time-saved': 'PT30M',
+              },
+            },
+          },
+        },
+        steps: [
+          {
+            id: 'step1',
+            name: 'Test step',
+            action: 'jest-mock-action',
+          },
+        ],
+      });
+
+      await runner.execute(task);
+
+      expect(metrics.createCounter).toHaveBeenCalledWith(
+        'scaffolder.task.time_saved',
+        expect.objectContaining({
+          description: expect.stringContaining('time saved'),
+          unit: 's',
+        }),
+      );
+
+      const timeSavedCounterIndex = metrics.createCounter.mock.calls.findIndex(
+        ([name]) => name === 'scaffolder.task.time_saved',
+      );
+
+      const timeSavedCounter =
+        metrics.createCounter.mock.results[timeSavedCounterIndex].value;
+
+      expect(timeSavedCounter.add).toHaveBeenCalledWith(
+        1800,
+        expect.objectContaining({
+          template: 'template:default/example',
+        }),
+      );
+    });
+
+    it.each([
+      {
+        name: 'dry runs',
+        annotation: 'PT30M',
+        isDryRun: true,
+      },
+      {
+        name: 'negative time-saved duration',
+        annotation: '-PT30M',
+        isDryRun: false,
+      },
+      {
+        name: 'missing time-saved annotation',
+        annotation: undefined,
+        isDryRun: false,
+      },
+      {
+        name: 'invalid time-saved annotation',
+        annotation: 'invalid-duration',
+        isDryRun: false,
+      },
+      {
+        name: 'zero time-saved duration',
+        annotation: 'PT0S',
+        isDryRun: false,
+      },
+    ])(
+      'should not record time-saved metric when task $name',
+      async ({ annotation, isDryRun }) => {
+        const task = createMockTaskWithSpec(
+          {
+            templateInfo: {
+              entityRef: 'template:default/example',
+              entity: {
+                metadata: {
+                  name: 'example',
+                  annotations: annotation
+                    ? {
+                        'backstage.io/time-saved': annotation,
+                      }
+                    : undefined,
+                },
+              },
+            },
+            steps: [
+              {
+                id: 'step1',
+                name: 'Test step',
+                action: 'jest-mock-action',
+              },
+            ],
+          },
+          undefined,
+          isDryRun,
+        );
+
+        await runner.execute(task);
+
+        expect(metrics.createCounter).toHaveBeenCalledWith(
+          'scaffolder.task.time_saved',
+          expect.objectContaining({
+            description: expect.stringContaining('time saved'),
+            unit: 's',
+          }),
+        );
+
+        const timeSavedCounterIndex =
+          metrics.createCounter.mock.calls.findIndex(
+            ([name]) => name === 'scaffolder.task.time_saved',
+          );
+
+        const timeSavedCounter =
+          metrics.createCounter.mock.results[timeSavedCounterIndex].value;
+
+        expect(timeSavedCounter.add).not.toHaveBeenCalled();
+      },
+    );
+  });
+  it('should not record time-saved metric when task fails', async () => {
+    const task = createMockTaskWithSpec({
+      templateInfo: {
+        entityRef: 'template:default/example',
+        entity: {
+          metadata: {
+            name: 'example',
+            annotations: {
+              'backstage.io/time-saved': 'PT30M',
+            },
+          },
+        },
+      },
+      steps: [
+        {
+          id: 'step1',
+          name: 'Test step',
+          action: 'jest-mock-action',
+        },
+      ],
+    });
+
+    await expect(runner.execute(task)).rejects.toThrow('Action failed');
+
+    const timeSavedCounterIndex = metrics.createCounter.mock.calls.findIndex(
+      ([name]) => name === 'scaffolder.task.time_saved',
+    );
+
+    const timeSavedCounter =
+      metrics.createCounter.mock.results[timeSavedCounterIndex].value;
+
+    expect(timeSavedCounter.add).not.toHaveBeenCalled();
   });
 });

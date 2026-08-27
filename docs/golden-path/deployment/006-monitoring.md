@@ -36,6 +36,7 @@ Common examples include:
 - `catalog.processing.duration` - Time spent processing entities.
 - `scaffolder.task.count` - Number of scaffolder tasks run.
 - `scaffolder.task.duration` - Time taken by scaffolder tasks.
+- `scaffolder.task.time_saved` - Estimated time saved by successfully completed scaffolder tasks, based on the `backstage.io/time-saved` template annotation.
 
 The specific metric names may vary depending on which plugins you have
 installed and their versions. These examples help you set up alerts for
