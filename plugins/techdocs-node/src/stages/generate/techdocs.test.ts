@@ -15,7 +15,10 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { readGeneratorConfig } from './techdocs';
+import fs from 'fs-extra';
+import path from 'node:path';
+import os from 'node:os';
+import { readGeneratorConfig, createSourceExcludeFilter } from './techdocs';
 
 const mockLogger = {
   warn: jest.fn(),
@@ -176,5 +179,90 @@ describe('readGeneratorConfig', () => {
       pullImage: false,
       defaultPlugins: ['mkdocs-custom-plugin'],
     });
+  });
+});
+
+describe('createSourceExcludeFilter', () => {
+  let tmpDir: string;
+
+  beforeEach(async () => {
+    tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'techdocs-filter-'));
+    await fs.ensureDir(path.join(tmpDir, '.git'));
+    await fs.ensureDir(path.join(tmpDir, 'node_modules'));
+    await fs.ensureDir(path.join(tmpDir, '__pycache__'));
+    await fs.ensureDir(path.join(tmpDir, '.venv'));
+    await fs.writeFile(path.join(tmpDir, 'module.pyc'), '');
+    await fs.writeFile(path.join(tmpDir, 'index.md'), '');
+    await fs.writeFile(path.join(tmpDir, 'guide.md'), '');
+    await fs.writeFile(path.join(tmpDir, 'mkdocs.yml'), '');
+    await fs.writeFile(path.join(tmpDir, 'diagram.png'), '');
+    await fs.writeFile(path.join(tmpDir, 'photo.jpg'), '');
+    await fs.writeFile(path.join(tmpDir, 'icon.svg'), '');
+    await fs.ensureDir(path.join(tmpDir, 'build'));
+    await fs.ensureDir(path.join(tmpDir, 'docs'));
+    await fs.writeFile(path.join(tmpDir, 'real-target.md'), '');
+    await fs.symlink(
+      path.join(tmpDir, 'real-target.md'),
+      path.join(tmpDir, 'symlinked.md'),
+    );
+  });
+
+  afterEach(async () => {
+    await fs.remove(tmpDir);
+  });
+
+  it('should exclude built-in patterns by default', () => {
+    const filter = createSourceExcludeFilter();
+
+    expect(filter(path.join(tmpDir, '.git'))).toBe(false);
+    expect(filter(path.join(tmpDir, 'node_modules'))).toBe(false);
+    expect(filter(path.join(tmpDir, '__pycache__'))).toBe(false);
+    expect(filter(path.join(tmpDir, '.venv'))).toBe(false);
+    expect(filter(path.join(tmpDir, 'module.pyc'))).toBe(false);
+  });
+
+  it('should allow non-excluded files', () => {
+    const filter = createSourceExcludeFilter();
+
+    expect(filter(path.join(tmpDir, 'index.md'))).toBe(true);
+    expect(filter(path.join(tmpDir, 'guide.md'))).toBe(true);
+    expect(filter(path.join(tmpDir, 'mkdocs.yml'))).toBe(true);
+    expect(filter(path.join(tmpDir, 'diagram.png'))).toBe(true);
+  });
+
+  it('should apply custom extension excludes', () => {
+    const filter = createSourceExcludeFilter(['*.png', '*.jpg']);
+
+    expect(filter(path.join(tmpDir, 'diagram.png'))).toBe(false);
+    expect(filter(path.join(tmpDir, 'photo.jpg'))).toBe(false);
+    expect(filter(path.join(tmpDir, 'index.md'))).toBe(true);
+  });
+
+  it('should apply custom directory excludes', () => {
+    const filter = createSourceExcludeFilter(['build']);
+
+    expect(filter(path.join(tmpDir, 'build'))).toBe(false);
+    expect(filter(path.join(tmpDir, 'docs'))).toBe(true);
+  });
+
+  it('should combine built-in and custom excludes', () => {
+    const filter = createSourceExcludeFilter(['*.svg']);
+
+    expect(filter(path.join(tmpDir, '.git'))).toBe(false);
+    expect(filter(path.join(tmpDir, 'icon.svg'))).toBe(false);
+    expect(filter(path.join(tmpDir, 'index.md'))).toBe(true);
+  });
+
+  it('should exclude symbolic links', () => {
+    const filter = createSourceExcludeFilter();
+
+    expect(filter(path.join(tmpDir, 'symlinked.md'))).toBe(false);
+    expect(filter(path.join(tmpDir, 'real-target.md'))).toBe(true);
+  });
+
+  it('should return false for paths that do not exist', () => {
+    const filter = createSourceExcludeFilter();
+
+    expect(filter('/nonexistent/path/file.md')).toBe(false);
   });
 });

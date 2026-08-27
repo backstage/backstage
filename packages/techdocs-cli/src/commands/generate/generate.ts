@@ -103,6 +103,13 @@ export default async function generate(opts: OptionValues) {
     logStream: getLogStream(logger),
     siteOptions: { name: opts.siteName },
     runAsDefaultUser: opts.runAsDefaultUser,
+    preserveSources: opts.includeSources,
+    sourceExcludes: opts.sourceExcludes?.length
+      ? opts.sourceExcludes
+      : undefined,
+    sourceAdditionalFiles: opts.sourceAdditionalFiles?.length
+      ? opts.sourceAdditionalFiles
+      : undefined,
   });
 
   if (configIsTemporary) {

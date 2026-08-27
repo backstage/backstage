@@ -70,6 +70,9 @@ export type GeneratorRunOptions = {
   logStream?: Writable;
   siteOptions?: { name?: string };
   runAsDefaultUser?: boolean;
+  preserveSources?: boolean;
+  sourceExcludes?: string[];
+  sourceAdditionalFiles?: string[];
 };
 
 /**

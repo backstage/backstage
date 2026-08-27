@@ -30,6 +30,7 @@ Options:
   --disableExternalFonts
   --docker-image <DOCKER_IMAGE>
   --etag <ETAG>
+  --include-sources
   --legacyCopyReadmeMdToIndexMd
   --no-docker
   --no-pull
@@ -37,7 +38,9 @@ Options:
   --output-dir <PATH>
   --runAsDefaultUser
   --site-name
+  --source-additional-files <FILES...>
   --source-dir <PATH>
+  --source-excludes <PATTERNS...>
   --techdocs-ref <HOST_TYPE:URL>
   -h, --help
   -v, --verbose

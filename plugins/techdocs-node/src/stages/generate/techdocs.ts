@@ -16,6 +16,7 @@
 
 import { Config } from '@backstage/config';
 import path from 'node:path';
+import fs from 'fs-extra';
 import {
   ScmIntegrationRegistry,
   ScmIntegrations,
@@ -29,6 +30,7 @@ import {
   validateDocsDirectory,
   validateMkdocsYaml,
 } from './helpers';
+import { getFileTreeRecursively } from '../publish/helpers';
 
 import {
   patchMkdocsYmlPreBuild,
@@ -45,7 +47,7 @@ import {
 } from './types';
 import { ForwardedError } from '@backstage/errors';
 import { DockerContainerRunner } from './DockerContainerRunner';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { isChildPath, LoggerService } from '@backstage/backend-plugin-api';
 import { TechDocsContainerRunner } from './types';
 
 /**
@@ -91,6 +93,80 @@ export class TechdocsGenerator implements GeneratorBase {
     this.options = readGeneratorConfig(options.config, options.logger);
     this.containerRunner = options.containerRunner;
     this.scmIntegrations = options.scmIntegrations;
+  }
+
+  private async copySources(options: {
+    inputDir: string;
+    outputDir: string;
+    docsDir: string | undefined;
+    sourceExcludes?: string[];
+    sourceAdditionalFiles?: string[];
+    logger: LoggerService;
+  }): Promise<void> {
+    const {
+      inputDir,
+      outputDir,
+      docsDir,
+      sourceExcludes,
+      sourceAdditionalFiles,
+      logger,
+    } = options;
+    const resolvedDocsDir = docsDir ?? 'docs';
+    const docsSource = path.resolve(inputDir, resolvedDocsDir);
+    if (docsSource === path.resolve(inputDir)) {
+      logger.warn(
+        'Skipping source storage: docs_dir resolves to the input directory, which may contain non-documentation files',
+      );
+      return;
+    }
+
+    const sourcesDir = path.join(outputDir, '_sources');
+    await fs.ensureDir(sourcesDir);
+
+    const filter = createSourceExcludeFilter(sourceExcludes);
+
+    if (await fs.pathExists(docsSource)) {
+      await fs.copy(docsSource, path.join(sourcesDir, resolvedDocsDir), {
+        filter,
+      });
+    }
+
+    const additionalFiles = sourceAdditionalFiles ?? ['README.md'];
+    for (const fileName of additionalFiles) {
+      const basename = path.basename(fileName);
+      const source = path.resolve(inputDir, fileName);
+      if (!filter(source)) {
+        continue;
+      }
+      if (!isChildPath(path.resolve(inputDir), source)) {
+        logger.warn(
+          `Skipping additional source file '${fileName}': path resolves outside the input directory`,
+        );
+        continue;
+      }
+      if (await fs.pathExists(source)) {
+        const fileStat = await fs.lstat(source);
+        if (fileStat.isSymbolicLink()) {
+          logger.warn(
+            `Skipping additional source file '${fileName}': file is a symbolic link`,
+          );
+          continue;
+        }
+        await fs.copy(source, path.join(sourcesDir, basename));
+      }
+    }
+
+    const fileTree = await getFileTreeRecursively(sourcesDir);
+    const files = fileTree
+      .map(f => path.relative(sourcesDir, f).split(path.sep).join('/'))
+      .sort();
+
+    await fs.writeJson(path.join(sourcesDir, 'manifest.json'), {
+      generatedAt: Date.now(),
+      files,
+    });
+
+    logger.info(`Preserved source files in ${sourcesDir}`);
   }
 
   /** {@inheritDoc GeneratorBase.run} */
@@ -217,6 +293,18 @@ export class TechdocsGenerator implements GeneratorBase {
      * Post Generate steps
      */
 
+    // Optionally preserve source files alongside the generated output
+    if (options.preserveSources) {
+      await this.copySources({
+        inputDir,
+        outputDir,
+        docsDir,
+        sourceExcludes: options.sourceExcludes,
+        sourceAdditionalFiles: options.sourceAdditionalFiles,
+        logger: childLogger,
+      });
+    }
+
     // Add build timestamp and files to techdocs_metadata.json
     // Creates techdocs_metadata.json if file does not exist.
     await createOrUpdateMetadata(
@@ -233,6 +321,38 @@ export class TechdocsGenerator implements GeneratorBase {
       );
     }
   }
+}
+
+const BUILT_IN_EXCLUDES = [
+  '.git',
+  'node_modules',
+  '__pycache__',
+  '.venv',
+  '*.pyc',
+];
+
+/** @internal */
+export function createSourceExcludeFilter(
+  sourceExcludes?: string[],
+): (filePath: string) => boolean {
+  const allExcludes = [...BUILT_IN_EXCLUDES, ...(sourceExcludes ?? [])];
+  return (filePath: string): boolean => {
+    try {
+      const stat = fs.lstatSync(filePath);
+      if (stat.isSymbolicLink()) {
+        return false;
+      }
+    } catch {
+      return false;
+    }
+    const basename = path.basename(filePath);
+    return !allExcludes.some(pattern => {
+      if (pattern.startsWith('*.')) {
+        return basename.endsWith(pattern.slice(1));
+      }
+      return basename === pattern;
+    });
+  };
 }
 
 export function readGeneratorConfig(
