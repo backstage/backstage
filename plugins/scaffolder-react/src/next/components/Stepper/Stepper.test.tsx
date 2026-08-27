@@ -707,6 +707,38 @@ describe('Stepper', () => {
     unmount();
   });
 
+  it('should scroll the window to top on step change when there is no <main> element', async () => {
+    const manifest: TemplateParameterSchema = {
+      steps: [
+        { title: 'Step 1', schema: { properties: {} } },
+        { title: 'Step 2', schema: { properties: {} } },
+      ],
+      title: 'Scroll Test (no main)',
+    };
+
+    // Apps on the new frontend system render no <main> element. With none
+    // present, the Stepper should fall back to scrolling the window.
+    // (jsdom does not implement window.scrollTo, so we stub it.)
+    const scrollToSpy = jest
+      .spyOn(window, 'scrollTo')
+      .mockImplementation(() => {});
+
+    const { getByRole, unmount } = await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+      </SecretsContextProvider>,
+    );
+
+    await act(async () => {
+      fireEvent.click(getByRole('button', { name: 'Next' }));
+    });
+
+    expect(scrollToSpy).toHaveBeenCalledWith({ top: 0, behavior: 'auto' });
+
+    scrollToSpy.mockRestore();
+    unmount();
+  });
+
   describe('Scaffolder Layouts', () => {
     it('should render the step in the scaffolder layout', async () => {
       const ScaffolderLayout: LayoutTemplate = ({ properties }) => (
