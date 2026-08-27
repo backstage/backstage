@@ -234,9 +234,7 @@ export const Stepper = (stepperProps: StepperProps) => {
       return getScrollableParent(element.parentElement);
     };
 
-    const scrollTarget =
-      getScrollableParent(formWrapperRef.current) ??
-      document.querySelector('main');
+    const scrollTarget = getScrollableParent(formWrapperRef.current);
 
     if (scrollTarget && typeof scrollTarget.scrollTo === 'function') {
       scrollTarget.scrollTo({ top: 0, behavior: 'auto' });
