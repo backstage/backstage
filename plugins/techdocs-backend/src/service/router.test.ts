@@ -29,6 +29,7 @@ import { createEventStream, createRouter, RouterOptions } from './router';
 import { TechDocsCache } from '../cache';
 import { mockErrorHandler, mockServices } from '@backstage/backend-test-utils';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 jest.mock('./CachedEntityLoader');
 jest.mock('./DocsSynchronizer');
@@ -108,6 +109,13 @@ describe('createRouter', () => {
     shouldBuild: jest.fn(),
   };
   const mockCatalogService = catalogServiceMock();
+  // Default permissions mock that allows all requests
+  const defaultPermissionsMock = mockServices.permissions.mock({
+    authorize: jest.fn().mockResolvedValue([{ result: AuthorizeResult.ALLOW }]),
+    authorizeConditional: jest
+      .fn()
+      .mockResolvedValue([{ result: AuthorizeResult.ALLOW }]),
+  });
   const outOfTheBoxOptions = {
     preparers,
     generators,
@@ -125,6 +133,7 @@ describe('createRouter', () => {
     docsBuildStrategy,
     auth: mockServices.auth(),
     httpAuth: mockServices.httpAuth(),
+    permissions: defaultPermissionsMock,
     catalog: mockCatalogService,
   };
   const recommendedOptions = {
@@ -136,11 +145,12 @@ describe('createRouter', () => {
     docsBuildStrategy,
     auth: mockServices.auth(),
     httpAuth: mockServices.httpAuth(),
+    permissions: defaultPermissionsMock,
     catalog: mockCatalogService,
   };
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   beforeEach(async () => {
@@ -294,6 +304,63 @@ data: {"updated":true}
 `,
         );
       });
+
+      it('should deny access when TechDocs permission is denied', async () => {
+        const permissions = mockServices.permissions.mock({
+          authorize: jest
+            .fn()
+            .mockResolvedValue([{ result: AuthorizeResult.DENY }]),
+        });
+
+        const app = await createApp({
+          ...outOfTheBoxOptions,
+          permissions,
+          config: new ConfigReader({
+            permission: { enabled: true },
+          }),
+        });
+
+        MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
+
+        const response = await request(app)
+          .get('/sync/default/Component/test')
+          .set('accept', 'text/event-stream')
+          .send();
+
+        expect(response.status).toBe(403);
+      });
+
+      it('should authorize and sync when TechDocs permission is allowed', async () => {
+        const permissions = mockServices.permissions.mock({
+          authorize: jest
+            .fn()
+            .mockResolvedValue([{ result: AuthorizeResult.ALLOW }]),
+        });
+
+        const app = await createApp({
+          ...outOfTheBoxOptions,
+          permissions,
+          config: new ConfigReader({
+            permission: { enabled: true },
+          }),
+        });
+
+        docsBuildStrategy.shouldBuild.mockResolvedValue(true);
+        MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
+        MockDocsSynchronizer.prototype.doSync.mockImplementation(
+          async ({ responseHandler }) =>
+            responseHandler.finish({ updated: true }),
+        );
+
+        const response = await request(app)
+          .get('/sync/default/Component/test')
+          .set('accept', 'text/event-stream')
+          .send();
+
+        expect(response.status).toBe(200);
+        expect(permissions.authorize).toHaveBeenCalled();
+        expect(MockDocsSynchronizer.prototype.doSync).toHaveBeenCalledTimes(1);
+      });
     });
   });
 
@@ -301,6 +368,8 @@ data: {"updated":true}
     it('should delegate to the publisher handler', async () => {
       const docsRouter = jest.fn((_req, res) => res.sendStatus(200));
       publisher.docsRouter.mockReturnValue(docsRouter);
+
+      MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
 
       const app = await createApp(outOfTheBoxOptions);
 
@@ -313,6 +382,8 @@ data: {"updated":true}
     });
 
     it('should return assets from cache', async () => {
+      MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
+
       const app = await createApp(outOfTheBoxOptions);
 
       MockTechDocsCache.get.mockResolvedValue(
@@ -327,16 +398,21 @@ data: {"updated":true}
       expect(MockTechDocsCache.get).toHaveBeenCalled();
     });
 
-    it('should check entity access when permissions are enabled', async () => {
+    it('should check entity access and TechDocs permission', async () => {
       const docsRouter = jest.fn((_req, res) => res.sendStatus(200));
       publisher.docsRouter.mockReturnValue(docsRouter);
 
+      const permissions = mockServices.permissions.mock({
+        authorize: jest
+          .fn()
+          .mockResolvedValue([{ result: AuthorizeResult.ALLOW }]),
+      });
+
       const app = await createApp({
         ...outOfTheBoxOptions,
+        permissions,
         config: new ConfigReader({
-          permission: {
-            enabled: true,
-          },
+          permission: { enabled: true },
         }),
       });
 
@@ -348,15 +424,41 @@ data: {"updated":true}
 
       expect(response.status).toBe(200);
       expect(MockCachedEntityLoader.prototype.load).toHaveBeenCalled();
+      expect(permissions.authorize).toHaveBeenCalled();
     });
 
-    it('should not return assets without corresponding entity access', async () => {
+    it('should deny access when TechDocs permission is denied', async () => {
+      const docsRouter = jest.fn((_req, res) => res.sendStatus(200));
+      publisher.docsRouter.mockReturnValue(docsRouter);
+
+      const permissions = mockServices.permissions.mock({
+        authorize: jest
+          .fn()
+          .mockResolvedValue([{ result: AuthorizeResult.DENY }]),
+      });
+
+      const app = await createApp({
+        ...outOfTheBoxOptions,
+        permissions,
+        config: new ConfigReader({
+          permission: { enabled: true },
+        }),
+      });
+
+      MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
+
+      const response = await request(app)
+        .get('/static/docs/default/component/test')
+        .send();
+
+      expect(response.status).toBe(403);
+    });
+
+    it('should return 404 when entity is not found', async () => {
       const app = await createApp({
         ...outOfTheBoxOptions,
         config: new ConfigReader({
-          permission: {
-            enabled: true,
-          },
+          permission: { enabled: true },
         }),
       });
 
@@ -367,6 +469,123 @@ data: {"updated":true}
         .send();
 
       expect(response.status).toBe(404);
+    });
+  });
+
+  describe('GET /metadata/techdocs', () => {
+    it('should return techdocs metadata when permission is allowed', async () => {
+      const permissions = mockServices.permissions.mock({
+        authorize: jest
+          .fn()
+          .mockResolvedValue([{ result: AuthorizeResult.ALLOW }]),
+      });
+
+      const app = await createApp({
+        ...outOfTheBoxOptions,
+        permissions,
+        config: new ConfigReader({
+          permission: { enabled: true },
+        }),
+      });
+
+      MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
+      publisher.fetchTechDocsMetadata.mockResolvedValue({
+        site_name: 'Test',
+        site_description: 'Test description',
+        etag: 'abc123',
+        build_timestamp: 1704067200,
+      });
+
+      const response = await request(app)
+        .get('/metadata/techdocs/default/Component/test')
+        .send();
+
+      expect(response.status).toBe(200);
+      expect(permissions.authorize).toHaveBeenCalled();
+    });
+
+    it('should deny access when TechDocs permission is denied', async () => {
+      const permissions = mockServices.permissions.mock({
+        authorize: jest
+          .fn()
+          .mockResolvedValue([{ result: AuthorizeResult.DENY }]),
+      });
+
+      const app = await createApp({
+        ...outOfTheBoxOptions,
+        permissions,
+        config: new ConfigReader({
+          permission: { enabled: true },
+        }),
+      });
+
+      MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
+
+      const response = await request(app)
+        .get('/metadata/techdocs/default/Component/test')
+        .send();
+
+      expect(response.status).toBe(403);
+    });
+  });
+
+  describe('GET /metadata/entity', () => {
+    it('should check TechDocs permission before returning entity metadata', async () => {
+      const permissions = mockServices.permissions.mock({
+        authorize: jest
+          .fn()
+          .mockResolvedValue([{ result: AuthorizeResult.ALLOW }]),
+      });
+
+      const app = await createApp({
+        ...outOfTheBoxOptions,
+        permissions,
+        config: new ConfigReader({
+          permission: { enabled: true },
+        }),
+      });
+
+      MockCachedEntityLoader.prototype.load.mockResolvedValue({
+        ...entity,
+        metadata: {
+          ...entity.metadata,
+          annotations: {
+            'backstage.io/techdocs-ref':
+              'url:https://github.com/backstage/backstage',
+          },
+        },
+      });
+
+      const response = await request(app)
+        .get('/metadata/entity/default/Component/test')
+        .send();
+
+      expect(response.status).toBe(200);
+      expect(permissions.authorize).toHaveBeenCalled();
+    });
+
+    it('should deny access when TechDocs permission is denied', async () => {
+      const permissions = mockServices.permissions.mock({
+        authorize: jest
+          .fn()
+          .mockResolvedValue([{ result: AuthorizeResult.DENY }]),
+      });
+
+      const app = await createApp({
+        ...outOfTheBoxOptions,
+        permissions,
+        config: new ConfigReader({
+          permission: { enabled: true },
+        }),
+      });
+
+      MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
+
+      const response = await request(app)
+        .get('/metadata/entity/default/Component/test')
+        .send();
+
+      expect(response.status).toBe(403);
     });
   });
 });

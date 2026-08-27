@@ -35,6 +35,7 @@ import {
   techdocsPublisherExtensionPoint,
 } from '@backstage/plugin-techdocs-node';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+import { techDocsPermissions } from '@backstage/plugin-techdocs-common';
 import * as winston from 'winston';
 import { createRouter } from './service/router';
 
@@ -112,6 +113,8 @@ export const techdocsPlugin = createBackendPlugin({
         cache: coreServices.cache,
         httpAuth: coreServices.httpAuth,
         auth: coreServices.auth,
+        permissions: coreServices.permissions,
+        permissionsRegistry: coreServices.permissionsRegistry,
         catalog: catalogServiceRef,
       },
       async init({
@@ -123,6 +126,8 @@ export const techdocsPlugin = createBackendPlugin({
         cache,
         httpAuth,
         auth,
+        permissions,
+        permissionsRegistry,
         catalog,
       }) {
         // Preparers are responsible for fetching source files for documentation.
@@ -153,6 +158,12 @@ export const techdocsPlugin = createBackendPlugin({
         // checks if the publisher is working and logs the result
         await publisher.getReadiness();
 
+        // Register the TechDocs read permission so that it can be discovered
+        // and evaluated by permission policies, including the RBAC plugin. The
+        // `catalog-entity` resource type it targets is owned and registered by
+        // the catalog, so only the permission itself is added here.
+        permissionsRegistry.addPermissions(techDocsPermissions);
+
         http.use(
           await createRouter({
             logger: logger,
@@ -166,6 +177,7 @@ export const techdocsPlugin = createBackendPlugin({
             discovery,
             httpAuth,
             auth,
+            permissions,
             catalog,
           }),
         );

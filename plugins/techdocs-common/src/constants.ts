@@ -21,3 +21,17 @@ export const TECHDOCS_EXTERNAL_ANNOTATION = 'backstage.io/techdocs-entity';
 /** @public */
 export const TECHDOCS_EXTERNAL_PATH_ANNOTATION =
   'backstage.io/techdocs-entity-path';
+
+/**
+ * A well-known annotation used to signal that access to an entity's TechDocs
+ * should be restricted. A permission policy can read this annotation to decide
+ * whether to apply additional access control (for example, limiting access to
+ * entity owners) via the `techdocs.entity.read` permission.
+ *
+ * The annotation is only a signal; the actual authorization decision is made by
+ * the permission policy. Entities without this annotation are unaffected.
+ *
+ * @public
+ */
+export const TECHDOCS_VISIBILITY_ANNOTATION =
+  'backstage.io/techdocs-visibility';

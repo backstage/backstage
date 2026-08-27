@@ -6991,6 +6991,8 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/plugin-techdocs-common": "workspace:^"
     "@backstage/plugin-techdocs-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/express": "npm:^4.17.6"
@@ -7010,6 +7012,8 @@ __metadata:
   resolution: "@backstage/plugin-techdocs-common@workspace:plugins/techdocs-common"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/plugin-catalog-common": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
   languageName: unknown
   linkType: soft
 

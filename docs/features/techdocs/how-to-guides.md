@@ -861,3 +861,157 @@ downloaded:
 ```markdown
 [Link text](https://example.com/foo.jpg){: download="foo.jpg" }
 ```
+
+## How to restrict access to TechDocs using permissions
+
+By default, TechDocs serves documentation to anyone who can view the entity in the catalog. However, you may want to restrict access to documentation independently from catalog visibility — for example, to protect sensitive security runbooks or internal architecture documents.
+
+TechDocs supports the Backstage permission framework through the `techdocs.entity.read` permission. When permissions are enabled, all TechDocs endpoints check this permission before serving content.
+
+TechDocs does not enforce any access rules of its own beyond this check — **you decide in your own permission policy what stays open to everyone and what gets locked down**. The sections below show a suggested convention, using a well-known annotation to activate restriction for specific entities, but you are free to base your policy on any entity property (owner, tags, labels, kind, and so on).
+
+### Understanding how TechDocs permissions work
+
+TechDocs uses **two layers of permission checks**:
+
+1. **Catalog entity permission** (`catalog.entity.read`): Before accessing TechDocs, the system first checks if the user can view the entity in the catalog. This happens automatically when loading entity metadata.
+
+2. **TechDocs permission** (`techdocs.entity.read`): After the catalog permission check passes, TechDocs checks this permission to determine if the user can access the documentation specifically.
+
+This means a user must have **both** permissions to access documentation. You can use this to create scenarios where users can see an entity in the catalog (its name, description, owner) but cannot access its documentation.
+
+### Enable permissions
+
+First, ensure the permission framework is enabled in your `app-config.yaml`:
+
+```yaml
+permission:
+  enabled: true
+```
+
+### Write a permission policy
+
+Create or update your permission policy to handle the `techdocs.entity.read` permission. Here's an example that restricts TechDocs access:
+
+```typescript
+import { techDocsEntityReadPermission } from '@backstage/plugin-techdocs-common';
+import {
+  PolicyDecision,
+  AuthorizeResult,
+} from '@backstage/plugin-permission-common';
+import {
+  PermissionPolicy,
+  PolicyQuery,
+} from '@backstage/plugin-permission-node';
+
+class MyPermissionPolicy implements PermissionPolicy {
+  async handle(request: PolicyQuery): Promise<PolicyDecision> {
+    if (request.permission.name === techDocsEntityReadPermission.name) {
+      // Your authorization logic here. Return a plain ALLOW or DENY, or a
+      // CONDITIONAL decision to restrict access based on entity properties
+      // (see the owner-based example below).
+      return { result: AuthorizeResult.DENY };
+    }
+
+    return { result: AuthorizeResult.ALLOW };
+  }
+}
+```
+
+Since `techdocs.entity.read` uses the `catalog-entity` resource type, you can reuse existing catalog permission rules and conditions in your policy.
+
+### Restrict only specific documentation
+
+You usually don't want to lock down _all_ documentation — only a subset, such as
+security runbooks or sensitive architecture documents. TechDocs exports a
+well-known annotation, `backstage.io/techdocs-visibility`, that entity owners can
+add to mark their documentation as restricted:
+
+```yaml title="catalog-info.yaml"
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: incident-response-runbook
+  annotations:
+    backstage.io/techdocs-visibility: restricted
+spec:
+  type: documentation
+  owner: security-team
+```
+
+Your permission policy can then read this annotation and restrict access to
+entity owners only, while leaving all other documentation open by default:
+
+```typescript
+import {
+  techDocsEntityReadPermission,
+  TECHDOCS_VISIBILITY_ANNOTATION,
+} from '@backstage/plugin-techdocs-common';
+import {
+  AuthorizeResult,
+  PolicyDecision,
+  isPermission,
+} from '@backstage/plugin-permission-common';
+import {
+  catalogConditions,
+  createCatalogConditionalDecision,
+} from '@backstage/plugin-catalog-backend/alpha';
+import {
+  PermissionPolicy,
+  PolicyQuery,
+  PolicyQueryUser,
+} from '@backstage/plugin-permission-node';
+
+class MyPermissionPolicy implements PermissionPolicy {
+  async handle(
+    request: PolicyQuery,
+    user?: PolicyQueryUser,
+  ): Promise<PolicyDecision> {
+    if (isPermission(request.permission, techDocsEntityReadPermission)) {
+      return createCatalogConditionalDecision(request.permission, {
+        anyOf: [
+          // Documentation without the annotation stays open to everyone.
+          {
+            not: catalogConditions.hasAnnotation({
+              annotation: TECHDOCS_VISIBILITY_ANNOTATION,
+              value: 'restricted',
+            }),
+          },
+          // Restricted documentation is only readable by entity owners.
+          catalogConditions.isEntityOwner({
+            claims: user?.info.ownershipEntityRefs ?? [],
+          }),
+        ],
+      });
+    }
+
+    return { result: AuthorizeResult.ALLOW };
+  }
+}
+```
+
+With this policy, documentation stays open by default, and only entities marked
+with `backstage.io/techdocs-visibility: restricted` are limited to their owners.
+The annotation is only a signal — the permission policy is what enforces access,
+so you remain free to define what "restricted" means for your organization.
+
+### Using the RBAC plugin
+
+If you manage permissions with the community RBAC plugin instead of a custom
+policy, add `techdocs` to the list of plugins it evaluates so that the
+`techdocs.entity.read` permission is discovered:
+
+```yaml title="app-config.yaml"
+permission:
+  enabled: true
+  rbac:
+    pluginsWithPermission:
+      - catalog
+      - techdocs
+```
+
+Because `techdocs.entity.read` uses the `catalog-entity` resource type, the same
+catalog conditions (such as owner or annotation rules) are available when
+building RBAC conditional policies for TechDocs.
+
+For more details on writing permission policies, see the [permission documentation](../../permissions/writing-a-policy.md).
