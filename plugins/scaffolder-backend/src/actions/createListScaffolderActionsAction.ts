@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { z } from 'zod';
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { ScaffolderService } from '@backstage/plugin-scaffolder-node';
 
@@ -38,27 +39,26 @@ Each action includes:
 - schema: Input and output JSON schemas
 - examples: Usage examples when available`,
     schema: {
-      input: z => z.object({}).describe('No input is required'),
-      output: z =>
-        z.object({
-          actions: z.array(
-            z.object({
-              id: z.string(),
-              description: z.string(),
-              schema: z.object({
-                input: z
-                  .object({})
-                  .passthrough()
-                  .describe('JSON Schema for input of Action'),
-                output: z
-                  .object({})
-                  .passthrough()
-                  .describe('JSON Schema for output of Action'),
-              }),
-              examples: z.array(z.any()).optional(),
+      input: z.object({}).describe('No input is required'),
+      output: z.object({
+        actions: z.array(
+          z.object({
+            id: z.string(),
+            description: z.string(),
+            schema: z.object({
+              input: z
+                .object({})
+                .passthrough()
+                .describe('JSON Schema for input of Action'),
+              output: z
+                .object({})
+                .passthrough()
+                .describe('JSON Schema for output of Action'),
             }),
-          ),
-        }),
+            examples: z.array(z.any()).optional(),
+          }),
+        ),
+      }),
     },
     action: async ({ credentials }) => {
       const actions = await scaffolderService.listActions(undefined, {

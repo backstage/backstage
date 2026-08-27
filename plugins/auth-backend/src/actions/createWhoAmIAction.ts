@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { z } from 'zod';
 import { AuthService, UserInfoService } from '@backstage/backend-plugin-api';
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { NotAllowedError, NotFoundError } from '@backstage/errors';
@@ -40,28 +41,27 @@ export const createWhoAmIAction = ({
     description:
       'Returns the catalog entity and user info for the currently authenticated user. This action requires user credentials and cannot be used with service or unauthenticated credentials.',
     schema: {
-      input: z => z.object({}),
-      output: z =>
-        z.object({
-          entity: z
-            .object({})
-            .passthrough()
-            .describe('The full catalog entity for the authenticated user'),
-          userInfo: z
-            .object({
-              userEntityRef: z
-                .string()
-                .describe(
-                  'The entity ref of the user, e.g. user:default/jane.doe',
-                ),
-              ownershipEntityRefs: z
-                .array(z.string())
-                .describe('Entity refs that the user claims ownership through'),
-            })
-            .describe(
-              'User identity information extracted from the authentication token',
-            ),
-        }),
+      input: z.object({}),
+      output: z.object({
+        entity: z
+          .object({})
+          .passthrough()
+          .describe('The full catalog entity for the authenticated user'),
+        userInfo: z
+          .object({
+            userEntityRef: z
+              .string()
+              .describe(
+                'The entity ref of the user, e.g. user:default/jane.doe',
+              ),
+            ownershipEntityRefs: z
+              .array(z.string())
+              .describe('Entity refs that the user claims ownership through'),
+          })
+          .describe(
+            'User identity information extracted from the authentication token',
+          ),
+      }),
     },
     action: async ({ credentials }) => {
       if (!auth.isPrincipal(credentials, 'user')) {

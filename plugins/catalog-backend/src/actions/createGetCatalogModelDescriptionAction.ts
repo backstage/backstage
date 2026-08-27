@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { z } from 'zod';
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import {
   CatalogModel,
@@ -49,15 +50,14 @@ export const createGetCatalogModelDescriptionAction = ({
       idempotent: true,
     },
     schema: {
-      input: z => z.object({}),
-      output: z =>
-        z.object({
-          description: z
-            .string()
-            .describe(
-              'Markdown description of the catalog model including entity kinds, spec fields, and relations.',
-            ),
-        }),
+      input: z.object({}),
+      output: z.object({
+        description: z
+          .string()
+          .describe(
+            'Markdown description of the catalog model including entity kinds, spec fields, and relations.',
+          ),
+      }),
     },
     action: async () => {
       return {

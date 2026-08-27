@@ -19,15 +19,34 @@ import {
 } from '@backstage/backend-plugin-api';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { JsonObject, JsonValue } from '@backstage/types';
-import { z, AnyZodObject } from 'zod/v3';
-import zodToJsonSchema from 'zod-to-json-schema';
 import { mockCredentials } from '../../services';
 import {
   ActionsRegistryActionOptions,
+  ActionsRegistryActionSchema,
   ActionsRegistryService,
   ActionsService,
   ActionsServiceAction,
 } from '@backstage/backend-plugin-api/alpha';
+
+type ValidationResult = Awaited<
+  ReturnType<ActionsRegistryActionSchema['~standard']['validate']>
+>;
+
+type ResolvedActionSchema = {
+  validate(value: unknown): Promise<ValidationResult>;
+  jsonSchema: ActionsServiceAction['schema']['input'];
+};
+
+type RegisteredAction = Omit<
+  ActionsRegistryActionOptions<any, any, any>,
+  'schema'
+> & {
+  schema: {
+    input: ResolvedActionSchema;
+    output: ResolvedActionSchema;
+    secrets?: ResolvedActionSchema;
+  };
+};
 
 /**
  * A mock implementation of the ActionsRegistryService and ActionsService that can be used in tests.
@@ -78,33 +97,33 @@ export class MockActionsRegistry
   readonly actions: Map<string, ActionsRegistryActionOptions<any, any, any>> =
     new Map();
 
+  private readonly resolvedActions = new Map<string, RegisteredAction>();
+
   async list(): Promise<{ actions: ActionsServiceAction[] }> {
     return {
-      actions: Array.from(this.actions.entries()).map(([id, action]) => ({
-        id,
-        pluginId: 'test',
-        name: action.name,
-        title: action.title,
-        description: action.description,
-        attributes: {
-          destructive:
-            action.attributes?.destructive ?? !action.attributes?.readOnly,
-          idempotent: action.attributes?.idempotent ?? false,
-          readOnly: action.attributes?.readOnly ?? false,
-        },
-        examples: action.examples,
-        schema: {
-          input: action.schema?.input
-            ? zodToJsonSchema(action.schema.input(z))
-            : zodToJsonSchema(z.object({})),
-          output: action.schema?.output
-            ? zodToJsonSchema(action.schema.output(z))
-            : zodToJsonSchema(z.object({})),
-          ...(action.schema?.secrets && {
-            secrets: zodToJsonSchema(action.schema.secrets(z)),
-          }),
-        } as ActionsServiceAction['schema'],
-      })),
+      actions: Array.from(this.resolvedActions.entries()).map(
+        ([id, action]) => ({
+          id,
+          pluginId: 'test',
+          name: action.name,
+          title: action.title,
+          description: action.description,
+          attributes: {
+            destructive:
+              action.attributes?.destructive ?? !action.attributes?.readOnly,
+            idempotent: action.attributes?.idempotent ?? false,
+            readOnly: action.attributes?.readOnly ?? false,
+          },
+          examples: action.examples,
+          schema: {
+            input: action.schema.input.jsonSchema,
+            output: action.schema.output.jsonSchema,
+            ...(action.schema.secrets && {
+              secrets: action.schema.secrets.jsonSchema,
+            }),
+          } as ActionsServiceAction['schema'],
+        }),
+      ),
     };
   }
 
@@ -114,7 +133,7 @@ export class MockActionsRegistry
     secrets?: JsonObject;
     credentials?: BackstageCredentials;
   }): Promise<{ output: JsonValue }> {
-    const action = this.actions.get(opts.id);
+    const action = this.resolvedActions.get(opts.id);
 
     if (!action) {
       const availableActionIds = Array.from(this.actions.keys()).join(', ');
@@ -125,60 +144,59 @@ export class MockActionsRegistry
       );
     }
 
-    const input = action.schema?.input
-      ? action.schema.input(z).safeParse(opts.input)
-      : ({ success: true, data: undefined } as const);
+    const input = await action.schema.input.validate(opts.input);
 
-    if (!input.success) {
-      throw new InputError(`Invalid input to action "${opts.id}"`, input.error);
+    if (input.issues) {
+      throw new InputError(
+        `Invalid input to action "${opts.id}"`,
+        formatValidationIssues(input.issues),
+      );
     }
 
-    if (action.schema?.secrets && !opts.secrets) {
+    if (action.schema.secrets && !opts.secrets) {
       throw new InputError(
         `Action "${opts.id}" requires secrets but none were provided`,
       );
     }
 
-    if (!action.schema?.secrets && opts.secrets) {
+    if (!action.schema.secrets && opts.secrets) {
       throw new InputError(`Action "${opts.id}" does not accept secrets`);
     }
 
-    const secrets = action.schema?.secrets
-      ? action.schema.secrets(z).safeParse(opts.secrets)
-      : ({ success: true, data: undefined } as const);
+    const secrets = action.schema.secrets
+      ? await action.schema.secrets.validate(opts.secrets)
+      : ({ value: undefined } as const);
 
-    if (!secrets.success) {
+    if (secrets.issues) {
       throw new InputError(
         `Invalid secrets for action "${opts.id}"`,
-        secrets.error,
+        formatValidationIssues(secrets.issues),
       );
     }
 
     const result = await action.action({
-      input: input.data,
-      secrets: secrets.data,
+      input: input.value,
+      secrets: secrets.value,
       credentials: opts.credentials ?? mockCredentials.none(),
       logger: this.logger,
     });
 
-    const output = action.schema?.output
-      ? action.schema.output(z).safeParse(result?.output)
-      : ({ success: true, data: result?.output } as const);
+    const output = await action.schema.output.validate(result?.output);
 
-    if (!output.success) {
+    if (output.issues) {
       throw new InputError(
         `Invalid output from action "${opts.id}"`,
-        output.error,
+        formatValidationIssues(output.issues),
       );
     }
 
-    return { output: output.data };
+    return { output: output.value as JsonValue };
   }
 
   register<
-    TInputSchema extends AnyZodObject,
-    TOutputSchema extends AnyZodObject,
-    TSecretsSchema extends AnyZodObject | undefined = undefined,
+    TInputSchema extends ActionsRegistryActionSchema,
+    TOutputSchema extends ActionsRegistryActionSchema,
+    TSecretsSchema extends ActionsRegistryActionSchema | undefined = undefined,
   >(
     options: ActionsRegistryActionOptions<
       TInputSchema,
@@ -196,6 +214,84 @@ export class MockActionsRegistry
       throw new Error(`Action with id "${id}" is already registered`);
     }
 
+    const schema = {
+      input: resolveActionSchema(id, 'input', options.schema.input, 'input'),
+      output: resolveActionSchema(
+        id,
+        'output',
+        options.schema.output,
+        'output',
+      ),
+      ...(options.schema.secrets && {
+        secrets: resolveActionSchema(
+          id,
+          'secrets',
+          options.schema.secrets,
+          'input',
+        ),
+      }),
+    };
+
     this.actions.set(id, options);
+    this.resolvedActions.set(id, { ...options, schema });
   }
+}
+
+function resolveActionSchema(
+  actionId: string,
+  schemaKind: 'input' | 'output' | 'secrets',
+  schema: ActionsRegistryActionSchema,
+  conversion: 'input' | 'output',
+): ResolvedActionSchema {
+  const standard = schema?.['~standard'];
+  if (!standard || typeof standard.validate !== 'function') {
+    throw new Error(
+      `The ${schemaKind} schema for action "${actionId}" is not a valid Standard Schema`,
+    );
+  }
+  if (
+    typeof standard.jsonSchema?.input !== 'function' ||
+    typeof standard.jsonSchema?.output !== 'function'
+  ) {
+    throw new Error(
+      `The ${schemaKind} schema for action "${actionId}" does not support Standard JSON Schema conversion`,
+    );
+  }
+
+  let jsonSchema: Record<string, unknown>;
+  try {
+    jsonSchema = standard.jsonSchema[conversion]({ target: 'draft-07' });
+  } catch (error) {
+    throw new Error(
+      `The ${schemaKind} schema for action "${actionId}" could not be converted to draft-07 JSON Schema`,
+      { cause: error },
+    );
+  }
+
+  return {
+    async validate(value) {
+      return await standard.validate(value);
+    },
+    jsonSchema,
+  };
+}
+
+function formatValidationIssues(
+  issues: ReadonlyArray<{
+    message: string;
+    path?: ReadonlyArray<PropertyKey | { key: PropertyKey }>;
+  }>,
+): Error {
+  return new Error(
+    issues
+      .map(issue => {
+        const path = issue.path
+          ?.map(segment =>
+            String(typeof segment === 'object' ? segment.key : segment),
+          )
+          .join('.');
+        return path ? `${issue.message} at '${path}'` : issue.message;
+      })
+      .join('; '),
+  );
 }

@@ -25,20 +25,39 @@ import {
 } from '@backstage/backend-plugin-api';
 import PromiseRouter from 'express-promise-router';
 import { Router, json } from 'express';
-import { z, AnyZodObject } from 'zod/v3';
-import zodToJsonSchema from 'zod-to-json-schema';
 import {
   ActionsRegistryActionOptions,
+  ActionsRegistryActionSchema,
   ActionsRegistryService,
+  ActionsServiceAction,
 } from '@backstage/backend-plugin-api/alpha';
 import { InputError, NotAllowedError, NotFoundError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
-type ActionEntry = [string, ActionsRegistryActionOptions<any, any, any>];
+type ValidationResult = Awaited<
+  ReturnType<ActionsRegistryActionSchema['~standard']['validate']>
+>;
+
+type ResolvedActionSchema = {
+  validate(value: unknown): Promise<ValidationResult>;
+  jsonSchema: ActionsServiceAction['schema']['input'];
+};
+
+type RegisteredAction = Omit<
+  ActionsRegistryActionOptions<any, any, any>,
+  'schema'
+> & {
+  schema: {
+    input: ResolvedActionSchema;
+    output: ResolvedActionSchema;
+    secrets?: ResolvedActionSchema;
+  };
+};
+
+type ActionEntry = [string, RegisteredAction];
 
 export class DefaultActionsRegistryService implements ActionsRegistryService {
-  private actions: Map<string, ActionsRegistryActionOptions<any, any, any>> =
-    new Map();
+  private actions = new Map<string, RegisteredAction>();
 
   private readonly logger: LoggerService;
   private readonly httpAuth: HttpAuthService;
@@ -118,14 +137,10 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
           },
           examples: action.examples,
           schema: {
-            input: action.schema?.input
-              ? zodToJsonSchema(action.schema.input(z))
-              : zodToJsonSchema(z.object({})),
-            output: action.schema?.output
-              ? zodToJsonSchema(action.schema.output(z))
-              : zodToJsonSchema(z.object({})),
-            ...(action.schema?.secrets && {
-              secrets: zodToJsonSchema(action.schema.secrets(z)),
+            input: action.schema.input.jsonSchema,
+            output: action.schema.output.jsonSchema,
+            ...(action.schema.secrets && {
+              secrets: action.schema.secrets.jsonSchema,
             }),
           },
         })),
@@ -166,59 +181,55 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
         const rawInput = opts.wrapped ? req.body.input : req.body;
         const rawSecrets = opts.wrapped ? req.body.secrets : undefined;
 
-        const input = action.schema?.input
-          ? action.schema.input(z).safeParse(rawInput)
-          : ({ success: true, data: undefined } as const);
+        const input = await action.schema.input.validate(rawInput);
 
-        if (!input.success) {
+        if (input.issues) {
           throw new InputError(
             `Invalid input to action "${req.params.actionId}"`,
-            input.error,
+            formatValidationIssues(input.issues),
           );
         }
 
-        if (action.schema?.secrets && !rawSecrets) {
+        if (action.schema.secrets && !rawSecrets) {
           throw new InputError(
             `Action "${req.params.actionId}" requires secrets but none were provided`,
           );
         }
 
-        if (!action.schema?.secrets && rawSecrets) {
+        if (!action.schema.secrets && rawSecrets) {
           throw new InputError(
             `Action "${req.params.actionId}" does not accept secrets`,
           );
         }
 
-        const secrets = action.schema?.secrets
-          ? action.schema.secrets(z).safeParse(rawSecrets)
-          : ({ success: true, data: undefined } as const);
+        const secrets = action.schema.secrets
+          ? await action.schema.secrets.validate(rawSecrets)
+          : ({ value: undefined } as const);
 
-        if (!secrets.success) {
+        if (secrets.issues) {
           throw new InputError(
             `Invalid secrets for action "${req.params.actionId}"`,
-            secrets.error,
+            formatValidationIssues(secrets.issues),
           );
         }
 
         const result = await action.action({
-          input: input.data,
-          secrets: secrets.data,
+          input: input.value,
+          secrets: secrets.value,
           credentials,
           logger: this.logger,
         });
 
-        const output = action.schema?.output
-          ? action.schema.output(z).safeParse(result?.output)
-          : ({ success: true, data: result?.output } as const);
+        const output = await action.schema.output.validate(result?.output);
 
-        if (!output.success) {
+        if (output.issues) {
           throw new InputError(
             `Invalid output from action "${req.params.actionId}"`,
-            output.error,
+            formatValidationIssues(output.issues),
           );
         }
 
-        res.json({ output: output.data });
+        res.json({ output: output.value });
       };
 
     // Deprecated: remove v1 invoke route once all callers have migrated to v2
@@ -236,9 +247,9 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
   }
 
   register<
-    TInputSchema extends AnyZodObject,
-    TOutputSchema extends AnyZodObject,
-    TSecretsSchema extends AnyZodObject | undefined = undefined,
+    TInputSchema extends ActionsRegistryActionSchema,
+    TOutputSchema extends ActionsRegistryActionSchema,
+    TSecretsSchema extends ActionsRegistryActionSchema | undefined = undefined,
   >(
     options: ActionsRegistryActionOptions<
       TInputSchema,
@@ -252,11 +263,29 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
       throw new Error(`Action with id "${id}" is already registered`);
     }
 
+    const schema = {
+      input: resolveActionSchema(id, 'input', options.schema.input, 'input'),
+      output: resolveActionSchema(
+        id,
+        'output',
+        options.schema.output,
+        'output',
+      ),
+      ...(options.schema.secrets && {
+        secrets: resolveActionSchema(
+          id,
+          'secrets',
+          options.schema.secrets,
+          'input',
+        ),
+      }),
+    };
+
     if (options.visibilityPermission) {
       this.permissionsRegistry.addPermissions([options.visibilityPermission]);
     }
 
-    this.actions.set(id, options);
+    this.actions.set(id, { ...options, schema });
   }
 
   private async filterByPermissions(
@@ -286,4 +315,63 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
 
     return entries.filter(([id]) => !deniedIds.has(id));
   }
+}
+
+function resolveActionSchema(
+  actionId: string,
+  schemaKind: 'input' | 'output' | 'secrets',
+  schema: ActionsRegistryActionSchema,
+  conversion: 'input' | 'output',
+): ResolvedActionSchema {
+  const standard = schema?.['~standard'];
+  if (!standard || typeof standard.validate !== 'function') {
+    throw new Error(
+      `The ${schemaKind} schema for action "${actionId}" is not a valid Standard Schema`,
+    );
+  }
+  if (
+    typeof standard.jsonSchema?.input !== 'function' ||
+    typeof standard.jsonSchema?.output !== 'function'
+  ) {
+    throw new Error(
+      `The ${schemaKind} schema for action "${actionId}" does not support Standard JSON Schema conversion`,
+    );
+  }
+
+  let jsonSchema: Record<string, unknown>;
+  try {
+    jsonSchema = standard.jsonSchema[conversion]({ target: 'draft-07' });
+  } catch (error) {
+    throw new Error(
+      `The ${schemaKind} schema for action "${actionId}" could not be converted to draft-07 JSON Schema`,
+      { cause: error },
+    );
+  }
+
+  return {
+    async validate(value) {
+      return await standard.validate(value);
+    },
+    jsonSchema,
+  };
+}
+
+function formatValidationIssues(
+  issues: ReadonlyArray<{
+    message: string;
+    path?: ReadonlyArray<PropertyKey | { key: PropertyKey }>;
+  }>,
+): Error {
+  return new Error(
+    issues
+      .map(issue => {
+        const path = issue.path
+          ?.map(segment =>
+            String(typeof segment === 'object' ? segment.key : segment),
+          )
+          .join('.');
+        return path ? `${issue.message} at '${path}'` : issue.message;
+      })
+      .join('; '),
+  );
 }

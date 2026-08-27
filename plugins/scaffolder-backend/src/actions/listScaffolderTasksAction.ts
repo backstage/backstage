@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { z } from 'zod';
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { NotAllowedError } from '@backstage/errors';
@@ -43,71 +44,69 @@ Set owned to true to return only tasks created by the current user; omit or set 
 Filtering by one or multiple statuses is supported. Pagination is supported via limit and offset.
     `,
     schema: {
-      input: z =>
-        z.object({
-          owned: z
-            .boolean()
+      input: z.object({
+        owned: z
+          .boolean()
+          .optional()
+          .default(false)
+          .describe(
+            'If true, return only tasks created by the current user. Requires a user identity.',
+          ),
+        limit: z
+          .number()
+          .int()
+          .min(1)
+          .max(1000)
+          .describe('The maximum number of tasks to return for pagination')
+          .optional(),
+        offset: z
+          .number()
+          .int()
+          .min(0)
+          .describe('The offset to start from for pagination')
+          .optional(),
+        status: (() => {
+          const statusEnum = z.enum([
+            'open',
+            'processing',
+            'completed',
+            'failed',
+            'cancelled',
+            'skipped',
+          ]);
+          return z
+            .union([statusEnum, z.array(statusEnum).nonempty()])
             .optional()
-            .default(false)
-            .describe(
-              'If true, return only tasks created by the current user. Requires a user identity.',
-            ),
-          limit: z
+            .describe('Filter tasks by status, or an array of statuses');
+        })(),
+      }),
+      output: z
+        .object({
+          tasks: z
+            .array(
+              z.object({
+                id: z.string().describe('The task identifier'),
+                spec: z.unknown().describe('The task specification'),
+                status: z
+                  .string()
+                  .describe(
+                    'Task status: open, processing, completed, failed, cancelled, or skipped',
+                  ),
+                createdAt: z
+                  .string()
+                  .describe('Timestamp when the task was created'),
+                lastHeartbeatAt: z
+                  .string()
+                  .optional()
+                  .describe('Timestamp of the last heartbeat'),
+              }),
+            )
+            .describe('The list of scaffolder tasks'),
+          totalTasks: z
             .number()
-            .int()
-            .min(1)
-            .max(1000)
-            .describe('The maximum number of tasks to return for pagination')
-            .optional(),
-          offset: z
-            .number()
-            .int()
-            .min(0)
-            .describe('The offset to start from for pagination')
-            .optional(),
-          status: (() => {
-            const statusEnum = z.enum([
-              'open',
-              'processing',
-              'completed',
-              'failed',
-              'cancelled',
-              'skipped',
-            ]);
-            return z
-              .union([statusEnum, z.array(statusEnum).nonempty()])
-              .optional()
-              .describe('Filter tasks by status, or an array of statuses');
-          })(),
-        }),
-      output: z =>
-        z
-          .object({
-            tasks: z
-              .array(
-                z.object({
-                  id: z.string().describe('The task identifier'),
-                  spec: z.unknown().describe('The task specification'),
-                  status: z
-                    .string()
-                    .describe(
-                      'Task status: open, processing, completed, failed, cancelled, or skipped',
-                    ),
-                  createdAt: z
-                    .string()
-                    .describe('Timestamp when the task was created'),
-                  lastHeartbeatAt: z
-                    .string()
-                    .optional()
-                    .describe('Timestamp of the last heartbeat'),
-                }),
-              )
-              .describe('The list of scaffolder tasks'),
-            totalTasks: z
-              .number()
-              .describe('Total number of tasks matching the filter'),
-          })
-          .describe('Object containing a tasks array and totalTasks count'),
+            .describe('Total number of tasks matching the filter'),
+        })
+        .describe('Object containing a tasks array and totalTasks count'),
     },
     action: async ({ input, credentials }) => {
       if (input.owned && !auth.isPrincipal(credentials, 'user')) {

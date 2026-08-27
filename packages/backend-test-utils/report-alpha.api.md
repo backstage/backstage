@@ -4,10 +4,10 @@
 
 ```ts
 import { ActionsRegistryActionOptions } from '@backstage/backend-plugin-api/alpha';
+import { ActionsRegistryActionSchema } from '@backstage/backend-plugin-api/alpha';
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
 import { ActionsServiceAction } from '@backstage/backend-plugin-api/alpha';
-import { AnyZodObject } from 'zod/v3';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
@@ -83,9 +83,9 @@ export class MockActionsRegistry
   }>;
   // (undocumented)
   register<
-    TInputSchema extends AnyZodObject,
-    TOutputSchema extends AnyZodObject,
-    TSecretsSchema extends AnyZodObject | undefined = undefined,
+    TInputSchema extends ActionsRegistryActionSchema,
+    TOutputSchema extends ActionsRegistryActionSchema,
+    TSecretsSchema extends ActionsRegistryActionSchema | undefined = undefined,
   >(
     options: ActionsRegistryActionOptions<
       TInputSchema,

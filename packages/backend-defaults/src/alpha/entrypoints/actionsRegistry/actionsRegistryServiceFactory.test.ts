@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { z } from 'zod';
 import { createBackendPlugin } from '@backstage/backend-plugin-api';
 import {
   mockCredentials,
@@ -22,6 +23,7 @@ import {
 import { httpRouterServiceFactory } from '../../../entrypoints/httpRouter';
 import request from 'supertest';
 import { actionsRegistryServiceFactory } from './actionsRegistryServiceFactory';
+import { DefaultActionsRegistryService } from './DefaultActionsRegistryService';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import {
@@ -53,14 +55,12 @@ describe('actionsRegistryServiceFactory', () => {
                 title: 'Test',
                 description: 'Test',
                 schema: {
-                  input: z =>
-                    z.object({
-                      test: z.string(),
-                    }),
-                  output: z =>
-                    z.object({
-                      ok: z.boolean(),
-                    }),
+                  input: z.object({
+                    test: z.string(),
+                  }),
+                  output: z.object({
+                    ok: z.boolean(),
+                  }),
                 },
                 action: async ({ input: { test } }) => {
                   // @ts-expect-error - test is not a boolean
@@ -90,14 +90,12 @@ describe('actionsRegistryServiceFactory', () => {
                 title: 'Test',
                 description: 'Test',
                 schema: {
-                  input: z =>
-                    z.object({
-                      test: z.string(),
-                    }),
-                  output: z =>
-                    z.object({
-                      ok: z.boolean(),
-                    }),
+                  input: z.object({
+                    test: z.string(),
+                  }),
+                  output: z.object({
+                    ok: z.boolean(),
+                  }),
                 },
                 // @ts-expect-error - ok is not a boolean
                 action: async () => {
@@ -126,14 +124,12 @@ describe('actionsRegistryServiceFactory', () => {
                 title: 'Test',
                 description: 'Test',
                 schema: {
-                  input: z =>
-                    z.object({
-                      name: z.string(),
-                    }),
-                  output: z =>
-                    z.object({
-                      ok: z.boolean(),
-                    }),
+                  input: z.object({
+                    name: z.string(),
+                  }),
+                  output: z.object({
+                    ok: z.boolean(),
+                  }),
                 },
                 examples: [
                   {
@@ -163,6 +159,62 @@ describe('actionsRegistryServiceFactory', () => {
       expect(true).toBe(true);
     });
 
+    it('should distinguish schema input and output types', () => {
+      createBackendPlugin({
+        pluginId: 'my-plugin',
+        register(reg) {
+          reg.registerInit({
+            deps: {
+              actionsRegistry: actionsRegistryServiceRef,
+            },
+            async init({ actionsRegistry }) {
+              actionsRegistry.register({
+                name: 'test',
+                title: 'Test',
+                description: 'Test',
+                schema: {
+                  input: z.object({
+                    value: z.string().pipe(z.coerce.number()),
+                  }),
+                  output: z.object({
+                    value: z.number().pipe(z.coerce.string()),
+                  }),
+                  secrets: z.object({
+                    value: z.string().pipe(z.coerce.number()),
+                  }),
+                },
+                examples: [
+                  {
+                    title: 'Valid example',
+                    input: { value: '1' },
+                    output: { value: '2' },
+                  },
+                  {
+                    title: 'Bad input',
+                    // @ts-expect-error - example input is the wire type
+                    input: { value: 1 },
+                  },
+                  {
+                    title: 'Bad output',
+                    input: { value: '1' },
+                    // @ts-expect-error - example output is the validated type
+                    output: { value: 2 },
+                  },
+                ],
+                action: async ({ input, secrets }) => {
+                  const inputValue: number = input.value;
+                  const secretValue: number = secrets.value;
+                  return { output: { value: inputValue + secretValue } };
+                },
+              });
+            },
+          });
+        },
+      });
+
+      expect(true).toBe(true);
+    });
+
     it('should properly infer the secrets types', () => {
       createBackendPlugin({
         pluginId: 'my-plugin',
@@ -177,9 +229,9 @@ describe('actionsRegistryServiceFactory', () => {
                 title: 'Test',
                 description: 'Test',
                 schema: {
-                  input: z => z.object({ test: z.string() }),
-                  output: z => z.object({ ok: z.boolean() }),
-                  secrets: z => z.object({ token: z.string() }),
+                  input: z.object({ test: z.string() }),
+                  output: z.object({ ok: z.boolean() }),
+                  secrets: z.object({ token: z.string() }),
                 },
                 action: async ({ secrets: { token } }) => {
                   // @ts-expect-error - token is not a boolean
@@ -209,8 +261,8 @@ describe('actionsRegistryServiceFactory', () => {
                 title: 'Test',
                 description: 'Test',
                 schema: {
-                  input: z => z.object({ test: z.string() }),
-                  output: z => z.object({ ok: z.boolean() }),
+                  input: z.object({ test: z.string() }),
+                  output: z.object({ ok: z.boolean() }),
                 },
                 action: async () => {
                   return { output: { ok: true } };
@@ -240,14 +292,12 @@ describe('actionsRegistryServiceFactory', () => {
                 title: 'Test',
                 description: 'Test',
                 schema: {
-                  input: z =>
-                    z.object({
-                      name: z.string(),
-                    }),
-                  output: z =>
-                    z.object({
-                      ok: z.boolean(),
-                    }),
+                  input: z.object({
+                    name: z.string(),
+                  }),
+                  output: z.object({
+                    ok: z.boolean(),
+                  }),
                 },
                 action: async () => ({ output: { ok: true } }),
               });
@@ -309,10 +359,10 @@ describe('actionsRegistryServiceFactory', () => {
                 title: 'Test',
                 description: 'Test',
                 schema: {
-                  input: z => z.object({}),
-                  output: z => z.object({}),
+                  input: z.object({}),
+                  output: z.object({}),
                 },
-                action: async () => ({ output: { ok: true } }),
+                action: async () => ({ output: {} }),
               });
               actionsRegistry.register({
                 name: 'read-only',
@@ -322,10 +372,10 @@ describe('actionsRegistryServiceFactory', () => {
                   readOnly: true,
                 },
                 schema: {
-                  input: z => z.object({}),
-                  output: z => z.object({}),
+                  input: z.object({}),
+                  output: z.object({}),
                 },
-                action: async () => ({ output: { ok: true } }),
+                action: async () => ({ output: {} }),
               });
             },
           });
@@ -383,10 +433,10 @@ describe('actionsRegistryServiceFactory', () => {
                   readOnly: false,
                 },
                 schema: {
-                  input: z => z.object({}),
-                  output: z => z.object({}),
+                  input: z.object({}),
+                  output: z.object({}),
                 },
-                action: async () => ({ output: { ok: true } }),
+                action: async () => ({ output: {} }),
               });
               actionsRegistry.register({
                 name: 'read-only',
@@ -397,10 +447,10 @@ describe('actionsRegistryServiceFactory', () => {
                   readOnly: true,
                 },
                 schema: {
-                  input: z => z.object({}),
-                  output: z => z.object({}),
+                  input: z.object({}),
+                  output: z.object({}),
                 },
-                action: async () => ({ output: { ok: true } }),
+                action: async () => ({ output: {} }),
               });
             },
           });
@@ -455,14 +505,12 @@ describe('actionsRegistryServiceFactory', () => {
                 title: 'Test',
                 description: 'Test',
                 schema: {
-                  input: z =>
-                    z.object({
-                      name: z.string(),
-                    }),
-                  output: z =>
-                    z.object({
-                      ok: z.boolean(),
-                    }),
+                  input: z.object({
+                    name: z.string(),
+                  }),
+                  output: z.object({
+                    ok: z.boolean(),
+                  }),
                 },
                 examples: [
                   {
@@ -514,7 +562,7 @@ describe('actionsRegistryServiceFactory', () => {
       });
     });
 
-    it('should forces registration of input and output schema as objects', async () => {
+    it('should allow non-object input and output schemas', async () => {
       const pluginSubject = createBackendPlugin({
         pluginId: 'my-plugin',
         register(reg) {
@@ -528,12 +576,9 @@ describe('actionsRegistryServiceFactory', () => {
                 title: 'Test',
                 description: 'Test',
                 schema: {
-                  // @ts-expect-error - z.undefined is not a valid schema
-                  input: z => z.undefined(),
-                  // @ts-expect-error - z.string is not a valid schema
-                  output: z => z.string(),
+                  input: z.string(),
+                  output: z.string(),
                 },
-                // @ts-expect-error - output is not a valid, needs to be an object
                 action: async () => ({ output: 'ok' }),
               });
             },
@@ -558,12 +603,46 @@ describe('actionsRegistryServiceFactory', () => {
             title: 'Test',
             description: 'Test',
             schema: {
-              input: {},
-              output: {},
+              input: { type: 'string' },
+              output: { type: 'string' },
             },
           },
         ],
       });
+    });
+
+    it('should reject schemas without Standard JSON Schema support during registration', () => {
+      const validationOnlySchema = {
+        '~standard': {
+          version: 1 as const,
+          vendor: 'test',
+          validate: () => ({ value: {} }),
+        },
+      };
+      const registry = DefaultActionsRegistryService.create({
+        logger: mockServices.logger.mock(),
+        httpAuth: mockServices.httpAuth.mock(),
+        auth: mockServices.auth.mock(),
+        metadata: { getId: () => 'my-plugin' },
+        permissions: mockServices.permissions.mock(),
+        permissionsRegistry: mockServices.permissionsRegistry.mock(),
+      });
+
+      expect(() =>
+        registry.register({
+          name: 'invalid-action',
+          title: 'Invalid Action',
+          description: 'Missing JSON Schema support',
+          schema: {
+            // @ts-expect-error - deliberately missing Standard JSON Schema support
+            input: validationOnlySchema,
+            output: z.object({}),
+          },
+          action: async () => ({ output: {} }),
+        }),
+      ).toThrow(
+        'The input schema for action "my-plugin:invalid-action" does not support Standard JSON Schema conversion',
+      );
     });
 
     it('should return secrets schema in action list when declared', async () => {
@@ -580,12 +659,11 @@ describe('actionsRegistryServiceFactory', () => {
                 title: 'Test',
                 description: 'Test',
                 schema: {
-                  input: z => z.object({}),
-                  output: z => z.object({}),
-                  secrets: z =>
-                    z.object({
-                      token: z.string(),
-                    }),
+                  input: z.object({}),
+                  output: z.object({}),
+                  secrets: z.object({
+                    token: z.string(),
+                  }),
                 },
                 action: async () => ({ output: {} }),
               });
@@ -625,8 +703,8 @@ describe('actionsRegistryServiceFactory', () => {
                 title: 'Test',
                 description: 'Test',
                 schema: {
-                  input: z => z.object({}),
-                  output: z => z.object({}),
+                  input: z.object({}),
+                  output: z.object({}),
                 },
                 action: async () => ({ output: {} }),
               });
@@ -651,10 +729,12 @@ describe('actionsRegistryServiceFactory', () => {
   describe('/.backstage/actions/v1/actions/:actionId/invoke', () => {
     const mockAction = jest.fn();
     const mockSecretAction = jest.fn();
+    const mockTransformedAction = jest.fn();
 
     beforeEach(() => {
       mockAction.mockReset();
       mockSecretAction.mockReset();
+      mockTransformedAction.mockReset();
       mockAction.mockResolvedValue({ output: { ok: true } });
     });
 
@@ -671,16 +751,48 @@ describe('actionsRegistryServiceFactory', () => {
               title: 'Test',
               description: 'Test',
               schema: {
-                input: z =>
-                  z.object({
-                    name: z.string(),
-                  }),
-                output: z =>
-                  z.object({
-                    ok: z.boolean(),
-                  }),
+                input: z.object({
+                  name: z.string(),
+                }),
+                output: z.object({
+                  ok: z.boolean(),
+                }),
               },
               action: mockAction,
+            });
+          },
+        });
+      },
+    });
+
+    const pluginWithTransforms = createBackendPlugin({
+      pluginId: 'my-plugin',
+      register(reg) {
+        reg.registerInit({
+          deps: { actionsRegistry: actionsRegistryServiceRef },
+          async init({ actionsRegistry }) {
+            actionsRegistry.register({
+              name: 'transformed-action',
+              title: 'Transformed Action',
+              description: 'Uses transformed and asynchronous schemas',
+              schema: {
+                input: z.object({
+                  value: z.string().pipe(z.coerce.number()),
+                  check: z.string().refine(async value => value === 'valid', {
+                    message: 'Check must be valid',
+                  }),
+                }),
+                output: z.object({
+                  value: z.number().pipe(z.coerce.string()),
+                }),
+                secrets: z.object({
+                  token: z.string().pipe(z.coerce.number()),
+                }),
+              },
+              action: async ({ input, secrets }) => {
+                mockTransformedAction({ input, secrets });
+                return { output: { value: input.value + secrets.token } };
+              },
             });
           },
         });
@@ -823,6 +935,55 @@ describe('actionsRegistryServiceFactory', () => {
       expect(body).toMatchObject({ output: { ok: true } });
     });
 
+    it('should transform values, await validation, and publish the corresponding schemas', async () => {
+      const { server } = await startTestBackend({
+        features: [pluginWithTransforms, ...defaultServices],
+      });
+
+      const listResponse = await request(server).get(
+        '/api/my-plugin/.backstage/actions/v1/actions',
+      );
+      const invokeResponse = await request(server)
+        .post(
+          '/api/my-plugin/.backstage/actions/v2/actions/my-plugin:transformed-action/invoke',
+        )
+        .send({
+          input: { value: '2', check: 'valid' },
+          secrets: { token: '3' },
+        });
+      const invalidResponse = await request(server)
+        .post(
+          '/api/my-plugin/.backstage/actions/v2/actions/my-plugin:transformed-action/invoke',
+        )
+        .send({
+          input: { value: '2', check: 'invalid' },
+          secrets: { token: '3' },
+        });
+
+      expect(listResponse.status).toBe(200);
+      expect(listResponse.body.actions[0].schema).toMatchObject({
+        input: {
+          properties: { value: { type: 'string' } },
+        },
+        output: {
+          properties: { value: { type: 'string' } },
+        },
+        secrets: {
+          properties: { token: { type: 'string' } },
+        },
+      });
+      expect(invokeResponse.status).toBe(200);
+      expect(invokeResponse.body).toEqual({ output: { value: '5' } });
+      expect(mockTransformedAction).toHaveBeenCalledWith({
+        input: { value: 2, check: 'valid' },
+        secrets: { token: 3 },
+      });
+      expect(invalidResponse.status).toBe(400);
+      expect(invalidResponse.body.error.message).toContain(
+        "Check must be valid at 'check'",
+      );
+    });
+
     it('should forward the original error when the action throws a known error', async () => {
       const { server } = await startTestBackend({
         features: [pluginSubject, ...defaultServices],
@@ -882,9 +1043,9 @@ describe('actionsRegistryServiceFactory', () => {
               title: 'Secret Action',
               description: 'Needs secrets',
               schema: {
-                input: z => z.object({ repo: z.string() }),
-                output: z => z.object({ ok: z.boolean() }),
-                secrets: z => z.object({ token: z.string() }),
+                input: z.object({ repo: z.string() }),
+                output: z.object({ ok: z.boolean() }),
+                secrets: z.object({ token: z.string() }),
               },
               action: mockSecretAction,
             });
@@ -1005,8 +1166,8 @@ describe('actionsRegistryServiceFactory', () => {
                 title: 'Public Action',
                 description: 'No permission required',
                 schema: {
-                  input: z => z.object({}),
-                  output: z => z.object({}),
+                  input: z.object({}),
+                  output: z.object({}),
                 },
                 action: async () => ({ output: {} }),
               });
@@ -1016,8 +1177,8 @@ describe('actionsRegistryServiceFactory', () => {
                 description: 'Permission required',
                 visibilityPermission: testPermission,
                 schema: {
-                  input: z => z.object({}),
-                  output: z => z.object({}),
+                  input: z.object({}),
+                  output: z.object({}),
                 },
                 action: async () => ({ output: {} }),
               });
@@ -1064,8 +1225,8 @@ describe('actionsRegistryServiceFactory', () => {
                 description: 'Permission required',
                 visibilityPermission: testPermission,
                 schema: {
-                  input: z => z.object({}),
-                  output: z => z.object({}),
+                  input: z.object({}),
+                  output: z.object({}),
                 },
                 action: async () => ({ output: {} }),
               });
@@ -1112,8 +1273,8 @@ describe('actionsRegistryServiceFactory', () => {
                 description: 'Permission required',
                 visibilityPermission: testPermission,
                 schema: {
-                  input: z => z.object({}),
-                  output: z => z.object({}),
+                  input: z.object({}),
+                  output: z.object({}),
                 },
                 action: async () => ({ output: {} }),
               });
@@ -1165,8 +1326,8 @@ describe('actionsRegistryServiceFactory', () => {
                 description: 'Permission required',
                 visibilityPermission: testPermission,
                 schema: {
-                  input: z => z.object({}),
-                  output: z => z.object({ ok: z.boolean() }),
+                  input: z.object({}),
+                  output: z.object({ ok: z.boolean() }),
                 },
                 action: mockAction,
               });
@@ -1217,8 +1378,8 @@ describe('actionsRegistryServiceFactory', () => {
                 description: 'Permission required',
                 visibilityPermission: testPermission,
                 schema: {
-                  input: z => z.object({}),
-                  output: z => z.object({}),
+                  input: z.object({}),
+                  output: z.object({}),
                 },
                 action: async () => ({ output: {} }),
               });
@@ -1264,8 +1425,8 @@ describe('actionsRegistryServiceFactory', () => {
                 description: 'Permission required',
                 visibilityPermission: testPermission,
                 schema: {
-                  input: z => z.object({}),
-                  output: z => z.object({}),
+                  input: z.object({}),
+                  output: z.object({}),
                 },
                 action: async () => ({ output: {} }),
               });

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { z as zv4 } from 'zod';
 import { DatabaseManager } from '@backstage/backend-defaults/database';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
@@ -272,8 +273,8 @@ describe('scaffolder router', () => {
         title: 'Test',
         description: 'Test',
         schema: {
-          input: z => z.object({ name: z.string() }),
-          output: z => z.object({ name: z.string() }),
+          input: zv4.object({ name: zv4.string() }),
+          output: zv4.object({ name: zv4.string() }),
         },
         action: async () => ({ output: { name: 'test' } }),
       });
@@ -291,7 +292,6 @@ describe('scaffolder router', () => {
         schema: {
           input: {
             $schema: 'http://json-schema.org/draft-07/schema#',
-            additionalProperties: false,
             properties: { name: { type: 'string' } },
             required: ['name'],
             type: 'object',

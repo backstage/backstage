@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { z } from 'zod';
 import {
   coreServices,
   createBackendPlugin,
@@ -36,14 +37,12 @@ describe('MockActionsRegistry', () => {
       title: 'Test',
       description: 'Test',
       schema: {
-        input: z =>
-          z.object({
-            name: z.string(),
-          }),
-        output: z =>
-          z.object({
-            name: z.string(),
-          }),
+        input: z.object({
+          name: z.string(),
+        }),
+        output: z.object({
+          name: z.string(),
+        }),
       },
       action: async ({ input }) => ({ output: { name: input.name } }),
     });
@@ -64,15 +63,15 @@ describe('MockActionsRegistry', () => {
       title: 'Test',
       description: 'Test',
       schema: {
-        input: z => z.object({ name: z.string() }),
-        output: z => z.object({ name: z.string() }),
+        input: z.object({ name: z.string() }),
+        output: z.object({ name: z.string() }),
       },
       action: async ({ input }) => ({ output: { name: input.name } }),
     });
 
     await expect(
       registry.invoke({ id: 'test:my-demo-action', input: { name: 1 } }),
-    ).rejects.toThrow('Invalid input to action "test:my-demo-action"');
+    ).rejects.toThrow(/Invalid input to action "test:my-demo-action".*name/);
   });
 
   it('should throw an error when the action is not found', async () => {
@@ -91,8 +90,8 @@ describe('MockActionsRegistry', () => {
       title: 'Test',
       description: 'Test',
       schema: {
-        input: z => z.object({ name: z.string() }),
-        output: z => z.object({ name: z.string() }),
+        input: z.object({ name: z.string() }),
+        output: z.object({ name: z.string() }),
       },
       action: async ({ input }) => ({ output: { name: input.name } }),
     });
@@ -110,8 +109,8 @@ describe('MockActionsRegistry', () => {
       title: 'Test',
       description: 'Test',
       schema: {
-        input: z => z.object({ name: z.number() }),
-        output: z => z.object({ name: z.string() }),
+        input: z.object({ name: z.number() }),
+        output: z.object({ name: z.string() }),
       },
       // @ts-expect-error - we want to test the error case
       action: async ({ input }) => ({ output: { name: input.name } }),
@@ -130,8 +129,8 @@ describe('MockActionsRegistry', () => {
       title: 'Test',
       description: 'Test',
       schema: {
-        input: z => z.object({ name: z.string() }),
-        output: z => z.object({ name: z.string() }),
+        input: z.object({ name: z.string() }),
+        output: z.object({ name: z.string() }),
       },
       action: async ({ input }) => ({ output: { name: input.name } }),
     });
@@ -143,8 +142,8 @@ describe('MockActionsRegistry', () => {
         destructive: false,
       },
       schema: {
-        input: z => z.object({}),
-        output: z => z.object({}),
+        input: z.object({}),
+        output: z.object({}),
       },
       action: async () => ({ output: {} }),
     });
@@ -156,8 +155,8 @@ describe('MockActionsRegistry', () => {
         readOnly: true,
       },
       schema: {
-        input: z => z.object({}),
-        output: z => z.object({}),
+        input: z.object({}),
+        output: z.object({}),
       },
       action: async () => ({ output: {} }),
     });
@@ -170,8 +169,8 @@ describe('MockActionsRegistry', () => {
         readOnly: true,
       },
       schema: {
-        input: z => z.object({}),
-        output: z => z.object({}),
+        input: z.object({}),
+        output: z.object({}),
       },
       action: async () => ({ output: {} }),
     });
@@ -236,6 +235,94 @@ describe('MockActionsRegistry', () => {
     });
   });
 
+  it('should transform values, await validation, and list the corresponding schemas', async () => {
+    const registry = actionsRegistryServiceMock();
+    const action = jest.fn(
+      async ({
+        input,
+        secrets,
+      }: {
+        input: { value: number; check: string };
+        secrets: { token: number };
+      }) => ({ output: { value: input.value + secrets.token } }),
+    );
+
+    registry.register({
+      name: 'transformed-action',
+      title: 'Transformed Action',
+      description: 'Uses transformed and asynchronous schemas',
+      schema: {
+        input: z.object({
+          value: z.string().pipe(z.coerce.number()),
+          check: z.string().refine(async value => value === 'valid', {
+            message: 'Check must be valid',
+          }),
+        }),
+        output: z.object({
+          value: z.number().pipe(z.coerce.string()),
+        }),
+        secrets: z.object({
+          token: z.string().pipe(z.coerce.number()),
+        }),
+      },
+      action,
+    });
+
+    const result = await registry.invoke({
+      id: 'test:transformed-action',
+      input: { value: '2', check: 'valid' },
+      secrets: { token: '3' },
+    });
+    const listed = await registry.list();
+
+    expect(result).toEqual({ output: { value: '5' } });
+    expect(action).toHaveBeenCalledWith(
+      expect.objectContaining({
+        input: { value: 2, check: 'valid' },
+        secrets: { token: 3 },
+      }),
+    );
+    expect(listed.actions[0].schema).toMatchObject({
+      input: { properties: { value: { type: 'string' } } },
+      output: { properties: { value: { type: 'string' } } },
+      secrets: { properties: { token: { type: 'string' } } },
+    });
+    await expect(
+      registry.invoke({
+        id: 'test:transformed-action',
+        input: { value: '2', check: 'invalid' },
+        secrets: { token: '3' },
+      }),
+    ).rejects.toThrow("Check must be valid at 'check'");
+  });
+
+  it('should reject schemas without Standard JSON Schema support during registration', () => {
+    const registry = actionsRegistryServiceMock();
+    const validationOnlySchema = {
+      '~standard': {
+        version: 1 as const,
+        vendor: 'test',
+        validate: () => ({ value: {} }),
+      },
+    };
+
+    expect(() =>
+      registry.register({
+        name: 'invalid-action',
+        title: 'Invalid Action',
+        description: 'Missing JSON Schema support',
+        schema: {
+          // @ts-expect-error - deliberately missing Standard JSON Schema support
+          input: validationOnlySchema,
+          output: z.object({}),
+        },
+        action: async () => ({ output: {} }),
+      }),
+    ).toThrow(
+      'The input schema for action "test:invalid-action" does not support Standard JSON Schema conversion',
+    );
+  });
+
   describe('actionsRegistryServiceMock + mockService.actionsRegistry', () => {
     it('should be able to register and invoke actions', async () => {
       const pluginWithAction = createBackendPlugin({
@@ -249,8 +336,8 @@ describe('MockActionsRegistry', () => {
                 title: 'Test',
                 description: 'Test',
                 schema: {
-                  input: z => z.object({ name: z.string() }),
-                  output: z => z.object({ name: z.string() }),
+                  input: z.object({ name: z.string() }),
+                  output: z.object({ name: z.string() }),
                 },
                 action: async ({ input }) => {
                   expect(input).toEqual({ name: 'test' });

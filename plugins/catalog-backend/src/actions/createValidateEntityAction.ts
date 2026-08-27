@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { z } from 'zod';
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import yaml from 'yaml';
 import { CatalogService } from '@backstage/plugin-catalog-node';
@@ -35,25 +36,19 @@ export const createValidateEntityAction = (options: {
       destructive: false,
     },
     schema: {
-      input: z =>
-        z.object({
-          entity: z.string().describe('Entity YAML content to validate'),
-          location: z
-            .string()
-            .url()
-            .optional()
-            .describe('Location to validate'),
-        }),
-      output: z =>
-        z.object({
-          isValid: z.boolean().describe('Whether the entity is valid'),
-          isValidYaml: z.boolean().describe('Whether the YAML syntax is valid'),
-          errors: z.array(z.string()).describe('Array of validation errors'),
-          entity: z
-            .record(z.any())
-            .optional()
-            .describe('Parsed entity object if valid'),
-        }),
+      input: z.object({
+        entity: z.string().describe('Entity YAML content to validate'),
+        location: z.string().url().optional().describe('Location to validate'),
+      }),
+      output: z.object({
+        isValid: z.boolean().describe('Whether the entity is valid'),
+        isValidYaml: z.boolean().describe('Whether the YAML syntax is valid'),
+        errors: z.array(z.string()).describe('Array of validation errors'),
+        entity: z
+          .record(z.string(), z.any())
+          .optional()
+          .describe('Parsed entity object if valid'),
+      }),
     },
     action: async ({ input, credentials }) => {
       const { entity: content, location } = input;

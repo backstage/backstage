@@ -19,6 +19,7 @@ export type {
   ActionsRegistryActionOptions,
   ActionsRegistryActionContext,
   ActionsRegistryActionExample,
+  ActionsRegistryActionSchema,
 } from './ActionsRegistryService';
 
 export type { ActionsService, ActionsServiceAction } from './ActionsService';

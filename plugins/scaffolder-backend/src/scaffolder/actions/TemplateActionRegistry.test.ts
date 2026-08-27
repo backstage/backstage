@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { z } from 'zod';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { DefaultTemplateActionRegistry } from './TemplateActionRegistry';
@@ -90,8 +91,8 @@ describe('DefaultTemplateActionRegistry', () => {
         title: 'Service Action',
         description: 'Service action',
         schema: {
-          input: z => z.object({}),
-          output: z => z.object({}),
+          input: z.object({}),
+          output: z.object({}),
         },
         attributes: {
           readOnly: true,
@@ -166,8 +167,8 @@ describe('DefaultTemplateActionRegistry', () => {
         title: 'Service Action',
         description: 'Service action',
         schema: {
-          input: z => z.object({}),
-          output: z => z.object({}),
+          input: z.object({}),
+          output: z.object({}),
         },
         attributes: {
           readOnly: true,
@@ -200,8 +201,8 @@ describe('DefaultTemplateActionRegistry', () => {
         title: 'Same ID',
         description: 'Service action',
         schema: {
-          input: z => z.object({}),
-          output: z => z.object({}),
+          input: z.object({}),
+          output: z.object({}),
         },
         action: async () => ({ output: {} }),
       });
@@ -223,8 +224,8 @@ describe('DefaultTemplateActionRegistry', () => {
         title: 'Destructive Action',
         description: 'Destructive action',
         schema: {
-          input: z => z.object({}),
-          output: z => z.object({}),
+          input: z.object({}),
+          output: z.object({}),
         },
         attributes: {
           readOnly: false,
@@ -247,8 +248,8 @@ describe('DefaultTemplateActionRegistry', () => {
         title: 'Non-readonly Action',
         description: 'Non-readonly action',
         schema: {
-          input: z => z.object({}),
-          output: z => z.object({}),
+          input: z.object({}),
+          output: z.object({}),
         },
         attributes: {
           readOnly: false,

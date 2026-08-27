@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { z } from 'zod';
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { ConflictError, InputError } from '@backstage/errors';
@@ -39,24 +40,23 @@ Each entity in the software catalog has a unique name, kind, and namespace. The 
 Each entity is identified by a unique entity reference, which is a string of the form "kind:namespace/name".
     `,
     schema: {
-      input: z =>
-        z.object({
-          kind: z
-            .string()
-            .describe(
-              'The kind of the entity to query. If the kind is unknown it can be omitted.',
-            )
-            .optional(),
-          namespace: z
-            .string()
-            .describe(
-              'The namespace of the entity to query. If the namespace is unknown it can be omitted.',
-            )
-            .optional(),
-          name: z.string().describe('The name of the entity to query'),
-        }),
+      input: z.object({
+        kind: z
+          .string()
+          .describe(
+            'The kind of the entity to query. If the kind is unknown it can be omitted.',
+          )
+          .optional(),
+        namespace: z
+          .string()
+          .describe(
+            'The namespace of the entity to query. If the namespace is unknown it can be omitted.',
+          )
+          .optional(),
+        name: z.string().describe('The name of the entity to query'),
+      }),
       // TODO: is there a better way to do this?
-      output: z => z.object({}).passthrough(),
+      output: z.object({}).passthrough(),
     },
     action: async ({ input, credentials }) => {
       const filter: Record<string, string> = { 'metadata.name': input.name };

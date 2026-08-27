@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { z } from 'zod';
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { templateDryRunPermission } from '@backstage/plugin-scaffolder-common/alpha';
 import { ScaffolderService } from '@backstage/plugin-scaffolder-node';
@@ -47,64 +48,58 @@ export const createDryRunTemplateAction = ({
       'Dry-runs a scaffolder template to validate it without making changes. Returns success with execution logs, or errors for validation failures.',
     visibilityPermission: templateDryRunPermission,
     schema: {
-      input: z =>
-        z.object({
-          templateYaml: z
-            .string()
-            .describe(
-              'The YAML content of the scaffolder template to validate',
-            ),
-          values: z
-            .record(z.unknown())
-            .optional()
-            .describe('Input values for template parameters'),
-          files: z
-            .array(
-              z.object({
-                path: z
-                  .string()
-                  .describe('File path relative to template root'),
-                content: z.string().describe('File content'),
-              }),
-            )
-            .optional()
-            .describe('Files required for running the template'),
-        }),
-      output: z =>
-        z.object({
-          valid: z.boolean().describe('Whether the template is valid'),
-          message: z
-            .string()
-            .describe('Success message or validation error details'),
-          errors: z
-            .array(z.string())
-            .optional()
-            .describe('List of validation errors'),
-          log: z
-            .array(
-              z.object({
-                message: z.string(),
-                stepId: z.string().optional(),
-                status: z.string().optional(),
-              }),
-            )
-            .optional()
-            .describe('Execution log from dry-run'),
-          output: z
-            .record(z.unknown())
-            .optional()
-            .describe('Template output values'),
-          steps: z
-            .array(
-              z.object({
-                id: z.string(),
-                name: z.string(),
-                action: z.string(),
-              }),
-            )
-            .optional()
-            .describe('Parsed template steps'),
-        }),
+      input: z.object({
+        templateYaml: z
+          .string()
+          .describe('The YAML content of the scaffolder template to validate'),
+        values: z
+          .record(z.string(), z.unknown())
+          .optional()
+          .describe('Input values for template parameters'),
+        files: z
+          .array(
+            z.object({
+              path: z.string().describe('File path relative to template root'),
+              content: z.string().describe('File content'),
+            }),
+          )
+          .optional()
+          .describe('Files required for running the template'),
+      }),
+      output: z.object({
+        valid: z.boolean().describe('Whether the template is valid'),
+        message: z
+          .string()
+          .describe('Success message or validation error details'),
+        errors: z
+          .array(z.string())
+          .optional()
+          .describe('List of validation errors'),
+        log: z
+          .array(
+            z.object({
+              message: z.string(),
+              stepId: z.string().optional(),
+              status: z.string().optional(),
+            }),
+          )
+          .optional()
+          .describe('Execution log from dry-run'),
+        output: z
+          .record(z.string(), z.unknown())
+          .optional()
+          .describe('Template output values'),
+        steps: z
+          .array(
+            z.object({
+              id: z.string(),
+              name: z.string(),
+              action: z.string(),
+            }),
+          )
+          .optional()
+          .describe('Parsed template steps'),
+      }),
     },
     action: async ({ input, credentials }) => {
       const { templateYaml, values = {}, files = [] } = input;

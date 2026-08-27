@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { z } from 'zod';
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { NotAllowedError } from '@backstage/errors';
@@ -67,67 +68,65 @@ Use \`offset\` and \`limit\` to paginate. The response includes \`totalCount\` s
       idempotent: true,
     },
     schema: {
-      input: z =>
-        z.object({
-          view: z
-            .enum(['unread', 'read', 'saved', 'all'])
-            .optional()
-            .describe(
-              'Which notifications to return. Defaults to "unread". "unread" returns only unread notifications, "read" returns only read notifications, "saved" returns bookmarked notifications, "all" returns everything.',
-            ),
-          search: z
-            .string()
-            .optional()
-            .describe(
-              'Free-text search string to filter notifications by title or description.',
-            ),
-          topic: z
-            .string()
-            .optional()
-            .describe(
-              'Filter to notifications with this specific topic, e.g. "ci/cd".',
-            ),
-          minimumSeverity: z
-            .enum(['critical', 'high', 'normal', 'low'])
-            .optional()
-            .describe(
-              'Minimum severity to include. "critical" is most severe, "low" is least. For example, "high" returns "critical" and "high" notifications only.',
-            ),
-          createdAfter: z
-            .string()
-            .optional()
-            .describe(
-              'ISO 8601 datetime string. Only return notifications created after this time, e.g. "2025-01-01T00:00:00Z".',
-            ),
-          offset: z
-            .number()
-            .int()
-            .min(0)
-            .optional()
-            .describe(
-              'Number of notifications to skip for pagination. Defaults to 0.',
-            ),
-          limit: z
-            .number()
-            .int()
-            .min(1)
-            .max(100)
-            .optional()
-            .describe(
-              'Maximum number of notifications to return (1–100). Defaults to 10.',
-            ),
-        }),
-      output: z =>
-        z.object({
-          notifications: z
-            .array(z.object({}).passthrough())
-            .describe('List of notifications matching the filters.'),
-          totalCount: z
-            .number()
-            .describe(
-              'Total number of notifications matching the filters, useful for pagination.',
-            ),
-        }),
+      input: z.object({
+        view: z
+          .enum(['unread', 'read', 'saved', 'all'])
+          .optional()
+          .describe(
+            'Which notifications to return. Defaults to "unread". "unread" returns only unread notifications, "read" returns only read notifications, "saved" returns bookmarked notifications, "all" returns everything.',
+          ),
+        search: z
+          .string()
+          .optional()
+          .describe(
+            'Free-text search string to filter notifications by title or description.',
+          ),
+        topic: z
+          .string()
+          .optional()
+          .describe(
+            'Filter to notifications with this specific topic, e.g. "ci/cd".',
+          ),
+        minimumSeverity: z
+          .enum(['critical', 'high', 'normal', 'low'])
+          .optional()
+          .describe(
+            'Minimum severity to include. "critical" is most severe, "low" is least. For example, "high" returns "critical" and "high" notifications only.',
+          ),
+        createdAfter: z
+          .string()
+          .optional()
+          .describe(
+            'ISO 8601 datetime string. Only return notifications created after this time, e.g. "2025-01-01T00:00:00Z".',
+          ),
+        offset: z
+          .number()
+          .int()
+          .min(0)
+          .optional()
+          .describe(
+            'Number of notifications to skip for pagination. Defaults to 0.',
+          ),
+        limit: z
+          .number()
+          .int()
+          .min(1)
+          .max(100)
+          .optional()
+          .describe(
+            'Maximum number of notifications to return (1–100). Defaults to 10.',
+          ),
+      }),
+      output: z.object({
+        notifications: z
+          .array(z.object({}).passthrough())
+          .describe('List of notifications matching the filters.'),
+        totalCount: z
+          .number()
+          .describe(
+            'Total number of notifications matching the filters, useful for pagination.',
+          ),
+      }),
     },
     examples: [
       {

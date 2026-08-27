@@ -28,13 +28,10 @@ const allowedLocationProtocols = ['http:', 'https:'];
  */
 export const toSearchResults = (resultSet: IndexableResultSet) => ({
   ...resultSet,
-  results: resultSet.results.map(result => ({
-    ...result,
-    document: {
-      ...result.document,
-      authorization: undefined,
-    },
-  })),
+  results: resultSet.results.map(result => {
+    const { authorization: _, ...document } = result.document;
+    return { ...result, document };
+  }),
 });
 
 /**
