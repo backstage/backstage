@@ -130,8 +130,8 @@ describe('CatalogClusterLocator', () => {
       mockServices.auth(),
     );
 
-    await expect(
-      clusterSupplier.getClusters({ credentials }),
-    ).rejects.toThrow(/serviceAccount/);
+    await expect(clusterSupplier.getClusters({ credentials })).rejects.toThrow(
+      /serviceAccount/,
+    );
   });
 });
