@@ -16,6 +16,7 @@
 import actions from '@backstage/cli-module-actions';
 import auth from '@backstage/cli-module-auth';
 import build from '@backstage/cli-module-build';
+import catalog from '@backstage/cli-module-catalog';
 import config from '@backstage/cli-module-config';
 import github from '@backstage/cli-module-github';
 import info from '@backstage/cli-module-info';
@@ -23,6 +24,8 @@ import lint from '@backstage/cli-module-lint';
 import maintenance from '@backstage/cli-module-maintenance';
 import migrate from '@backstage/cli-module-migrate';
 import newModule from '@backstage/cli-module-new';
+import scaffolder from '@backstage/cli-module-scaffolder';
+import search from '@backstage/cli-module-search';
 import testJest from '@backstage/cli-module-test-jest';
 import translations from '@backstage/cli-module-translations';
 
@@ -35,6 +38,7 @@ export default [
   actions,
   auth,
   build,
+  catalog,
   config,
   github,
   info,
@@ -42,6 +46,8 @@ export default [
   maintenance,
   migrate,
   newModule,
+  scaffolder,
+  search,
   testJest,
   translations,
 ];
