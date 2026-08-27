@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.9.13
+
+### Patch Changes
+
+- 6fb2a41: Added support for requiring user-provided credentials for GitHub mutation actions when `scaffolder.requireScmUserCredentials` is enabled.
+- Updated dependencies
+  - @backstage/integration@2.1.1
+
 ## 0.9.12
 
 ### Patch Changes

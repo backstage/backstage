@@ -1,5 +1,11 @@
 # @backstage/plugin-auth-backend-module-oidc-provider
 
+## 0.4.20
+
+### Patch Changes
+
+- 1b1f05e: Omit email addresses from the default OIDC profile unless the identity provider marks them as verified.
+
 ## 0.4.19
 
 ### Patch Changes

@@ -1,5 +1,25 @@
 # @backstage/plugin-scaffolder-backend
 
+## 4.1.0
+
+### Minor Changes
+
+- 6fb2a41: Added the `scaffolder.requireScmUserCredentials` configuration option to require user-provided credentials for supported SCM mutation and fetch actions.
+
+### Patch Changes
+
+- 0253c50: Respect task read permission decisions when listing scaffolder tasks.
+- e673a86: Restrict task list ordering to supported fields.
+- 66d2219: Exclude internal task data from task responses.
+- 3eb3dc5: Improve denied scaffolder action error handling.
+- 3f1e869: Ensure task failure details use the configured log redactions.
+- dc30fae: Fixed log redaction for transformed secret values used to iterate Scaffolder steps.
+- 9e86c95: Restrict task retries to terminal states.
+- a91ed72: Fixed matching of action input values in scaffolder permission policies.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@2.2.3
+  - @backstage/integration@2.1.1
+
 ## 4.0.5
 
 ### Patch Changes

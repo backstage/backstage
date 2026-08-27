@@ -1,5 +1,18 @@
 # @backstage/backend-defaults
 
+## 0.17.8
+
+### Patch Changes
+
+- a8fb34a: Improve action handling consistency.
+- bc80ffd: Improved service credential handling during plugin-to-plugin delegation.
+- 47ddbd8: Improved input validation and path handling for cloud storage URL readers.
+- 14e925c: Improved input validation for cloud storage URL readers.
+- a49804f: Fixed handling of GitLab URLs for instances configured with a relative base path.
+- c83c305: Updated URL reader allow list matching so configured paths match either the exact path or paths below it at a segment boundary.
+- Updated dependencies
+  - @backstage/integration@2.1.1
+
 ## 0.17.7
 
 ### Patch Changes

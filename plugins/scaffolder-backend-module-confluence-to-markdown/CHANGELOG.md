@@ -1,5 +1,14 @@
 # @backstage/plugin-scaffolder-backend-module-confluence-to-markdown
 
+## 0.3.25
+
+### Patch Changes
+
+- 506c2c1: Improve handling of imported Confluence attachments
+- 5f0000c: Validate repository file paths before transforming Confluence content.
+- Updated dependencies
+  - @backstage/integration@2.1.1
+
 ## 0.3.24
 
 ### Patch Changes

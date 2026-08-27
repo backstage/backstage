@@ -1,5 +1,18 @@
 # @backstage/plugin-techdocs-node
 
+## 1.15.4
+
+### Patch Changes
+
+- 911ca36: Updated TechDocs generation to reject source trees containing symlinks that resolve outside the source directory.
+- a7d995f: Improved MkDocs configuration handling for additional templates.
+- 02cd7cd: Improved MkDocs configuration sanitization to cover additional nested configuration keys and theme options.
+- a270912: Improved MkDocs configuration file handling.
+- 25125ee: Improved validation of MkDocs configuration values during TechDocs generation.
+- 6aecb26: Improved file validation in the local TechDocs publisher during the publish step.
+- Updated dependencies
+  - @backstage/integration@2.1.1
+
 ## 1.15.3
 
 ### Patch Changes

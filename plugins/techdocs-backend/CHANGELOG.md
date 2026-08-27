@@ -1,5 +1,15 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.2.4
+
+### Patch Changes
+
+- 40ecc4c: Improve validation of TechDocs static content paths.
+- bf6bbf7: Improved path validation for TechDocs content serving.
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.15.4
+  - @backstage/integration@2.1.1
+
 ## 2.2.3
 
 ### Patch Changes

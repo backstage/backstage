@@ -1,5 +1,11 @@
 # @backstage/plugin-proxy-backend
 
+## 0.6.17
+
+### Patch Changes
+
+- 233287d: Improved request path handling in the proxy-backend.
+
 ## 0.6.16
 
 ### Patch Changes

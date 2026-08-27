@@ -1,5 +1,14 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket-server
 
+## 0.2.25
+
+### Patch Changes
+
+- 818528e: Fixed a security issue in pull request workspace handling.
+- 6fb2a41: Added support for requiring user-provided credentials for Bitbucket Server mutation actions when `scaffolder.requireScmUserCredentials` is enabled.
+- Updated dependencies
+  - @backstage/integration@2.1.1
+
 ## 0.2.24
 
 ### Patch Changes

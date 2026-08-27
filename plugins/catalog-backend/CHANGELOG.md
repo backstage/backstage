@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-backend
 
+## 3.9.1
+
+### Patch Changes
+
+- 61a10f1: Improved path validation for catalog entity placeholders.
+- 21424fa: Correct catalog property permission matching.
+- 23774b6: Allowed location type restrictions are now applied consistently during catalog processing.
+- Updated dependencies
+  - @backstage/integration@2.1.1
+
 ## 3.9.0
 
 ### Minor Changes

@@ -1,5 +1,12 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.21.10
+
+### Patch Changes
+
+- c14f8be: Reject unsupported service account authentication in catalog-provided cluster definitions.
+- 050a4e1: Improved handling of Kubernetes resource response data.
+
 ## 0.21.9
 
 ### Patch Changes

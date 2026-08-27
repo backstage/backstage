@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend-module-azure
 
+## 0.3.21
+
+### Patch Changes
+
+- 47ddbd8: Improved handling of Azure Blob Storage blob names when creating catalog locations.
+- Updated dependencies
+  - @backstage/integration@2.1.1
+
 ## 0.3.20
 
 ### Patch Changes

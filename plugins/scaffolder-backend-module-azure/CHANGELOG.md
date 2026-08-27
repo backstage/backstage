@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder-backend-module-azure
 
+## 0.2.25
+
+### Patch Changes
+
+- 6fb2a41: Added support for requiring user-provided credentials for Azure DevOps mutation actions when `scaffolder.requireScmUserCredentials` is enabled.
+- Updated dependencies
+  - @backstage/integration@2.1.1
+
 ## 0.2.24
 
 ### Patch Changes

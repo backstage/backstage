@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.8.7
+
+### Patch Changes
+
+- c211b4b: Fixed a scope validation issue in GitLab organization discovery.
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.8
+  - @backstage/integration@2.1.1
+
 ## 0.8.6
 
 ### Patch Changes

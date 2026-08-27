@@ -1,5 +1,11 @@
 # @backstage/integration
 
+## 2.1.1
+
+### Patch Changes
+
+- a49804f: Fixed handling of GitLab URLs for instances configured with a relative base path.
+
 ## 2.1.0
 
 ### Minor Changes
