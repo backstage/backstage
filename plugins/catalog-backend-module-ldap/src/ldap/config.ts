@@ -22,6 +22,7 @@ import { Config } from '@backstage/config';
 import { JsonValue } from '@backstage/types';
 import { SearchOptions } from 'ldapts';
 import mergeWith from 'lodash/mergeWith';
+import cloneDeep from 'lodash/cloneDeep';
 import { trimEnd } from 'lodash';
 import { RecursivePartial } from './util';
 
@@ -88,7 +89,7 @@ export type UserConfig = {
   dn: string;
   // The search options to use.
   // Only the scope, filter, attributes, and paged fields are supported. The
-  // default is scope "one" and attributes "*" and "+".
+  // default is scope "one" and a minimal attribute set for mapped fields.
   options: SearchOptions;
 
   // JSON paths (on a.b.c form) and hard coded values to set on those paths
@@ -185,10 +186,37 @@ export type VendorConfig = {
   uuidAttributeName?: string;
 };
 
-const defaultUserConfig = {
+const DEFAULT_USER_SEARCH_ATTRIBUTES = [
+  'dn',
+  'entryDN',
+  'distinguishedName',
+  'entryUUID',
+  'objectGUID',
+  'ipaUniqueID',
+  'uid',
+  'cn',
+  'mail',
+  'memberOf',
+];
+
+const DEFAULT_GROUP_SEARCH_ATTRIBUTES = [
+  'dn',
+  'entryDN',
+  'distinguishedName',
+  'entryUUID',
+  'objectGUID',
+  'ipaUniqueID',
+  'cn',
+  'description',
+  'groupType',
+  'memberOf',
+];
+// `member` is added via map.members when that mapping is enabled (default).
+
+const defaultUserConfig: RecursivePartial<UserConfig> = {
   options: {
     scope: 'one',
-    attributes: ['*', '+'],
+    attributes: DEFAULT_USER_SEARCH_ATTRIBUTES,
   },
   map: {
     rdn: 'uid',
@@ -199,10 +227,10 @@ const defaultUserConfig = {
   },
 };
 
-const defaultGroupConfig = {
+const defaultGroupConfig: RecursivePartial<GroupConfig> = {
   options: {
     scope: 'one',
-    attributes: ['*', '+'],
+    attributes: DEFAULT_GROUP_SEARCH_ATTRIBUTES,
   },
   map: {
     rdn: 'cn',
@@ -214,6 +242,129 @@ const defaultGroupConfig = {
     members: 'member',
   },
 };
+
+function replaceArraysIfPresent(_into: any, from: any) {
+  // Replace arrays instead of merging, otherwise default behavior
+  return Array.isArray(from) ? from : undefined;
+}
+
+function membershipAttributeNames(
+  map: UserConfig['map'] | GroupConfig['map'],
+): Set<string> {
+  const names = new Set<string>();
+  if (typeof map.memberOf === 'string' && map.memberOf.length > 0) {
+    names.add(map.memberOf);
+  }
+  if (
+    'members' in map &&
+    typeof map.members === 'string' &&
+    map.members.length > 0
+  ) {
+    names.add(map.members);
+  }
+  return names;
+}
+
+/**
+ * Builds the LDAP attribute list for a search.
+ *
+ * Mapped fields and vendor DN/UUID names are merged in automatically so custom
+ * `map.*` overrides keep working. When the caller supplies an explicit
+ * attributes list (without `*`/`+`), membership attributes that were left out
+ * of that list are not re-added.
+ */
+function withEffectiveSearchAttributes<T extends UserConfig | GroupConfig>(
+  config: T,
+  vendor: VendorConfig | undefined,
+  baseAttributes: string[],
+  explicitAttributes?: string[],
+): T {
+  const startingAttributes = explicitAttributes ?? baseAttributes;
+  const hasWildcard =
+    startingAttributes.includes('*') || startingAttributes.includes('+');
+  const membershipAttrs = membershipAttributeNames(config.map);
+
+  const mappedAttributes = Object.values(config.map).filter(
+    (value): value is string => {
+      if (typeof value !== 'string' || value.length === 0) {
+        return false;
+      }
+      // Do not re-add membership attrs the caller left out of an explicit list.
+      if (
+        explicitAttributes &&
+        !hasWildcard &&
+        membershipAttrs.has(value) &&
+        !explicitAttributes.includes(value)
+      ) {
+        return false;
+      }
+      return true;
+    },
+  );
+
+  const attributes = [
+    ...new Set(
+      [
+        ...(config.options.attributes ?? baseAttributes),
+        ...mappedAttributes,
+        vendor?.dnAttributeName,
+        vendor?.uuidAttributeName,
+      ].filter((value): value is string => Boolean(value)),
+    ),
+  ];
+
+  return {
+    ...config,
+    options: {
+      ...config.options,
+      attributes,
+    },
+  };
+}
+
+function mergeWithEffectiveUserSearchAttributes(
+  defaults: RecursivePartial<UserConfig>,
+  config: RecursivePartial<UserConfig> | undefined,
+  vendor: VendorConfig | undefined,
+): UserConfig {
+  const explicitAttributes = Array.isArray(config?.options?.attributes)
+    ? config.options.attributes
+    : undefined;
+  const merged = mergeWith(
+    {},
+    defaults,
+    config,
+    replaceArraysIfPresent,
+  ) as UserConfig;
+  return withEffectiveSearchAttributes(
+    merged,
+    vendor,
+    DEFAULT_USER_SEARCH_ATTRIBUTES,
+    explicitAttributes,
+  );
+}
+
+function mergeWithEffectiveGroupSearchAttributes(
+  defaults: RecursivePartial<GroupConfig>,
+  config: RecursivePartial<GroupConfig> | undefined,
+  vendor: VendorConfig | undefined,
+): GroupConfig {
+  const explicitAttributes = Array.isArray(config?.options?.attributes)
+    ? config.options.attributes
+    : undefined;
+  const merged = mergeWith(
+    {},
+    defaults,
+    config,
+    replaceArraysIfPresent,
+  ) as GroupConfig;
+  return withEffectiveSearchAttributes(
+    merged,
+    vendor,
+    DEFAULT_GROUP_SEARCH_ATTRIBUTES,
+    explicitAttributes,
+  );
+}
 
 function freeze<T>(data: T): T {
   return JSON.parse(JSON.stringify(data), (_key, value) => {
@@ -306,7 +457,7 @@ function readSetConfig(
   if (!c) {
     return undefined;
   }
-  return c.get();
+  return cloneDeep(c.get());
 }
 
 function readUserMapConfig(c: Config | undefined): Partial<UserConfig['map']> {
@@ -403,17 +554,18 @@ function formatFilter(filter?: string): string | undefined {
 export function readLdapLegacyConfig(config: Config): LdapProviderConfig[] {
   const providerConfigs = config.getOptionalConfigArray('providers') ?? [];
   return providerConfigs.map(c => {
+    const vendor = readVendorConfig(c.getOptionalConfig('vendor'));
     const newConfig = {
       target: trimEnd(c.getString('target'), '/'),
       tls: readTlsConfig(c.getOptionalConfig('tls')),
       bind: readBindConfig(c.getOptionalConfig('bind')),
-      users: readUserConfig(c.getConfig('users')).map(it => {
-        return mergeWith({}, defaultUserConfig, it, replaceArraysIfPresent);
-      }),
-      groups: readGroupConfig(c.getConfig('groups')).map(it => {
-        return mergeWith({}, defaultGroupConfig, it, replaceArraysIfPresent);
-      }),
-      vendor: readVendorConfig(c.getOptionalConfig('vendor')),
+      users: readUserConfig(c.getConfig('users')).map(it =>
+        mergeWithEffectiveUserSearchAttributes(defaultUserConfig, it, vendor),
+      ),
+      groups: readGroupConfig(c.getConfig('groups')).map(it =>
+        mergeWithEffectiveGroupSearchAttributes(defaultGroupConfig, it, vendor),
+      ),
+      vendor,
     };
 
     return freeze(newConfig) as LdapProviderConfig;
@@ -444,6 +596,7 @@ export function readProviderConfigs(config: Config): LdapProviderConfig[] {
     const isUserList = Array.isArray(c.getOptional('users'));
     const isGroupList = Array.isArray(c.getOptional('groups'));
 
+    const vendor = readVendorConfig(c.getOptionalConfig('vendor'));
     const newConfig = {
       id,
       target: trimEnd(c.getString('target'), '/'),
@@ -453,25 +606,20 @@ export function readProviderConfigs(config: Config): LdapProviderConfig[] {
         isUserList
           ? c.getOptionalConfigArray('users')
           : c.getOptionalConfig('users'),
-      ).map(it => {
-        return mergeWith({}, defaultUserConfig, it, replaceArraysIfPresent);
-      }),
+      ).map(it =>
+        mergeWithEffectiveUserSearchAttributes(defaultUserConfig, it, vendor),
+      ),
       groups: readGroupConfig(
         isGroupList
           ? c.getOptionalConfigArray('groups')
           : c.getOptionalConfig('groups'),
-      ).map(it => {
-        return mergeWith({}, defaultGroupConfig, it, replaceArraysIfPresent);
-      }),
+      ).map(it =>
+        mergeWithEffectiveGroupSearchAttributes(defaultGroupConfig, it, vendor),
+      ),
       schedule,
-      vendor: readVendorConfig(c.getOptionalConfig('vendor')),
+      vendor,
     };
 
     return freeze(newConfig) as LdapProviderConfig;
   });
-}
-
-function replaceArraysIfPresent(_into: any, from: any) {
-  // Replace arrays instead of merging, otherwise default behavior
-  return Array.isArray(from) ? from : undefined;
 }

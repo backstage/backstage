@@ -25,6 +25,7 @@ import {
 
 export function buildOrgHierarchy(groups: GroupEntity[]) {
   const groupsByRef = new Map(groups.map(g => [stringifyEntityRef(g), g]));
+  const childrenByParentRef = new Map<string, Set<string>>();
 
   //
   // Make sure that g.parent.children contain g
@@ -35,8 +36,16 @@ export function buildOrgHierarchy(groups: GroupEntity[]) {
     const parentRef = group.spec.parent;
     if (parentRef) {
       const parent = groupsByRef.get(parentRef);
-      if (parent && !parent.spec.children.includes(selfRef)) {
-        parent.spec.children.push(selfRef);
+      if (parent) {
+        let childrenSet = childrenByParentRef.get(parentRef);
+        if (!childrenSet) {
+          childrenSet = new Set(parent.spec.children);
+          childrenByParentRef.set(parentRef, childrenSet);
+        }
+        if (!childrenSet.has(selfRef)) {
+          childrenSet.add(selfRef);
+          parent.spec.children.push(selfRef);
+        }
       }
     }
   }
