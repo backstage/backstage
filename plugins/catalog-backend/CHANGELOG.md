@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-backend
 
+## 3.7.2
+
+### Patch Changes
+
+- 0b0f6fc: Improved path validation for catalog entity placeholders.
+
 ## 3.7.1
 
 ### Patch Changes
