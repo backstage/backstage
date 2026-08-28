@@ -466,6 +466,32 @@ describe.each(databases.eachSupportedId())(
       });
     });
 
+    it('creates task duration histogram with explicit second-scale bucket boundaries', () => {
+      const metrics = metricsServiceMock.mock();
+      void new PluginTaskSchedulerImpl(
+        'test',
+        async () => ({} as any),
+        mockServices.logger.mock(),
+        metrics,
+        {
+          addShutdownHook: jest.fn(),
+          addBeforeShutdownHook: jest.fn(),
+          addStartupHook: jest.fn(),
+        },
+      );
+
+      expect(metrics.createHistogram).toHaveBeenCalledWith(
+        'backend_tasks.task.runs.duration',
+        expect.objectContaining({
+          advice: expect.objectContaining({
+            explicitBucketBoundaries: [
+              0.1, 0.5, 1, 5, 10, 30, 60, 120, 300, 600, 1800, 3600,
+            ],
+          }),
+        }),
+      );
+    });
+
     describe('parseDuration', () => {
       it('should parse durations', () => {
         expect(parseDuration({ milliseconds: 5000 })).toEqual('PT5S');

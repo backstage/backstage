@@ -78,6 +78,11 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
       {
         description: 'Histogram of task run durations',
         unit: 'seconds',
+        advice: {
+          explicitBucketBoundaries: [
+            0.1, 0.5, 1, 5, 10, 30, 60, 120, 300, 600, 1800, 3600,
+          ],
+        },
       },
     );
     this.lastStarted = metrics.createGauge('backend_tasks.task.runs.started', {
