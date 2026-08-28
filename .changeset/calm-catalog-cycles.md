@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog': patch
 ---
 
-Updated internal imports to avoid circular module dependencies in catalog pages and exports.
+Fixed circular dependency warnings when building the catalog plugin.
