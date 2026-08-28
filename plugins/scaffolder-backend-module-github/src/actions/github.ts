@@ -29,7 +29,7 @@ import {
   createGithubRepoWithCollaboratorsAndTopics,
   initRepoPushAndProtect,
 } from './helpers';
-import { getOctokitOptions } from '../util';
+import { getOctokitOptions, withoutProperties } from '../util';
 import * as inputProps from './inputProperties';
 import * as outputProps from './outputProperties';
 import { examples } from './github.examples';
@@ -53,51 +53,11 @@ export function createPublishGithubAction(options: {
       'Initializes a git repository of contents in workspace and publishes it to GitHub.',
     examples,
     schema: {
-      input: {
-        repoUrl: inputProps.repoUrl,
-        description: inputProps.description,
-        homepage: inputProps.homepage,
-        access: inputProps.access,
-        bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
-        requiredApprovingReviewCount: inputProps.requiredApprovingReviewCount,
-        restrictions: inputProps.restrictions,
-        requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
-        dismissStaleReviews: inputProps.dismissStaleReviews,
-        requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
-        requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
-        requiredConversationResolution:
-          inputProps.requiredConversationResolution,
-        requireLastPushApproval: inputProps.requireLastPushApproval,
-        repoVisibility: inputProps.repoVisibility,
-        defaultBranch: inputProps.defaultBranch,
-        protectDefaultBranch: inputProps.protectDefaultBranch,
-        protectEnforceAdmins: inputProps.protectEnforceAdmins,
-        deleteBranchOnMerge: inputProps.deleteBranchOnMerge,
-        gitCommitMessage: inputProps.gitCommitMessage,
-        gitAuthorName: inputProps.gitAuthorName,
-        gitAuthorEmail: inputProps.gitAuthorEmail,
-        allowMergeCommit: inputProps.allowMergeCommit,
-        allowSquashMerge: inputProps.allowSquashMerge,
-        squashMergeCommitTitle: inputProps.squashMergeCommitTitle,
-        squashMergeCommitMessage: inputProps.squashMergeCommitMessage,
-        allowRebaseMerge: inputProps.allowRebaseMerge,
-        allowAutoMerge: inputProps.allowAutoMerge,
-        allowUpdateBranch: inputProps.allowUpdateBranch,
-        sourcePath: inputProps.sourcePath,
-        collaborators: inputProps.collaborators,
-        hasProjects: inputProps.hasProjects,
-        hasWiki: inputProps.hasWiki,
-        hasIssues: inputProps.hasIssues,
-        token: inputProps.token,
-        topics: inputProps.topics,
-        repoVariables: inputProps.repoVariables,
-        secrets: inputProps.secrets,
-        oidcCustomization: inputProps.oidcCustomization,
-        requiredCommitSigning: inputProps.requiredCommitSigning,
-        requiredLinearHistory: inputProps.requiredLinearHistory,
-        customProperties: inputProps.customProperties,
-        subscribe: inputProps.subscribe,
-      },
+      input: withoutProperties(inputProps, [
+        'autoInit',
+        'blockCreations',
+        'branch',
+      ]),
       output: {
         remoteUrl: outputProps.remoteUrl,
         repoContentsUrl: outputProps.repoContentsUrl,
@@ -147,6 +107,7 @@ export function createPublishGithubAction(options: {
         subscribe = false,
         requiredCommitSigning = false,
         requiredLinearHistory = false,
+        workflowAccess,
       } = ctx.input;
 
       const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
@@ -198,6 +159,7 @@ export function createPublishGithubAction(options: {
             customProperties,
             subscribe,
             ctx.logger,
+            workflowAccess,
           );
 
           return {

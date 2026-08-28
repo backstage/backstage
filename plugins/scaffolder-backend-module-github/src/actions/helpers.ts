@@ -80,8 +80,8 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
   customProperties: { [key: string]: string | string[] } | undefined,
   subscribe: boolean | undefined,
   logger: LoggerService,
-  autoInit?: boolean | undefined,
   workflowAccess?: 'none' | 'organization' | 'user',
+  autoInit?: boolean | undefined,
 ) {
   const user = await client.rest.users.getByUsername({
     username: owner,

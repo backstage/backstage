@@ -67,4 +67,21 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description:
+      'Initializes a GitHub repository with workflow access set to organization',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'publish',
+          action: 'publish:github',
+          name: 'Publish to GitHub',
+          input: {
+            repoUrl: 'github.com?repo=repo&owner=owner',
+            workflowAccess: 'organization',
+          },
+        },
+      ],
+    }),
+  },
 ];

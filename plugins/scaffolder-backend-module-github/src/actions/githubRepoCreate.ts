@@ -133,8 +133,8 @@ export function createGithubRepoCreateAction(options: {
             customProperties,
             subscribe,
             ctx.logger,
-            autoInit,
             workflowAccess,
+            autoInit,
           );
           return newRepo.clone_url;
         },

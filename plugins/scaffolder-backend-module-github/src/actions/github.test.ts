@@ -80,6 +80,7 @@ const mockOctokit = {
       createRepoVariable: jest.fn(),
       createOrUpdateRepoSecret: jest.fn(),
       getRepoPublicKey: jest.fn(),
+      setWorkflowAccessToRepository: jest.fn(),
     },
     activity: {
       setRepoSubscription: jest.fn(),
@@ -119,6 +120,27 @@ describe('publish:github', () => {
       access: 'owner/blam',
     },
   });
+
+  const runHandlerForType = async (
+    type: 'organization' | 'user',
+    input: any = {},
+  ) => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: `${type.at(0)?.toUpperCase()}${type.slice(1)}` },
+    });
+
+    const methodName =
+      type === 'organization' ? 'createInOrg' : 'createForAuthenticatedUser';
+    mockOctokit.rest.repos[methodName].mockResolvedValue({ data: {} });
+
+    return action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        ...input,
+      },
+    });
+  };
 
   beforeEach(() => {
     octokitMock.mockImplementation(() => mockOctokit);
@@ -1887,6 +1909,27 @@ describe('publish:github', () => {
       ignored: false,
     });
   });
+
+  it.each(['organization', 'user'] as const)(
+    'should configure workflowAccess for %ss',
+    async type => {
+      mockOctokit.rest.actions.setWorkflowAccessToRepository.mockResolvedValueOnce(
+        {
+          data: {},
+        },
+      );
+
+      await runHandlerForType(type, { workflowAccess: type });
+
+      expect(
+        mockOctokit.rest.actions.setWorkflowAccessToRepository,
+      ).toHaveBeenCalledWith({
+        access_level: type,
+        owner: 'owner',
+        repo: 'repo',
+      });
+    },
+  );
 
   describe('GraphQL API fallback', () => {
     let readdirSpy: jest.SpyInstance;

@@ -217,3 +217,16 @@ export async function getOctokitOptions(options: {
     previews: ['nebula-preview'],
   };
 }
+
+export function withoutProperties<T extends object, K extends keyof T>(
+  object: T,
+  keys: K[],
+): Omit<T, K> {
+  const result: Partial<T> = { ...object };
+
+  keys.forEach(key => {
+    delete result[key];
+  });
+
+  return result as Omit<T, K>;
+}
