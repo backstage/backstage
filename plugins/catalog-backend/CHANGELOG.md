@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-backend
 
+## 3.5.1
+
+### Patch Changes
+
+- 99729e9: Improved path validation for catalog entity placeholders.
+
 ## 3.5.0
 
 ### Minor Changes

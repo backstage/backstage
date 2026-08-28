@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-backend
 
+## 3.3.1
+
+### Patch Changes
+
+- c198388: Exclude internal task data from task responses.
+- 56be299: Restrict task retries to terminal states.
+- 11c1384: Fixed matching of action input values in scaffolder permission policies.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@2.0.1
+
 ## 3.3.0
 
 ### Minor Changes

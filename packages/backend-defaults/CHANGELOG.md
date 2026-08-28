@@ -1,5 +1,11 @@
 # @backstage/backend-defaults
 
+## 0.16.1
+
+### Patch Changes
+
+- 4034624: Improved service credential handling during plugin-to-plugin delegation.
+
 ## 0.16.0
 
 ### Minor Changes
