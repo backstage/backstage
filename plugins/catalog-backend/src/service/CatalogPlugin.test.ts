@@ -23,7 +23,7 @@ import {
 import { createCatalogPermissionRule } from '../permissions';
 
 describe('catalogPlugin', () => {
-  it('should support custom permission rules', async () => {
+  it('should register permissions and support custom permission rules', async () => {
     const { server } = await startTestBackend({
       features: [
         catalogPlugin,
@@ -61,6 +61,12 @@ describe('catalogPlugin', () => {
     );
 
     expect(res.status).toBe(200);
+    expect(res.body.permissions).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: 'catalog.ingestion.read' }),
+        expect.objectContaining({ name: 'catalog.ingestion.manage' }),
+      ]),
+    );
     expect(res.body.rules).toContainEqual({
       name: 'test',
       resourceType: 'catalog-entity',

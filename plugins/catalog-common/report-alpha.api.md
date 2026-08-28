@@ -27,6 +27,15 @@ export const catalogEntityRefreshPermission: ResourcePermission<'catalog-entity'
 export const catalogEntityValidatePermission: BasicPermission;
 
 // @alpha
+export const catalogIngestionManagePermission: BasicPermission;
+
+// @alpha
+export const catalogIngestionPermissions: BasicPermission[];
+
+// @alpha
+export const catalogIngestionReadPermission: BasicPermission;
+
+// @alpha
 export const catalogLocationAnalyzePermission: BasicPermission;
 
 // @alpha

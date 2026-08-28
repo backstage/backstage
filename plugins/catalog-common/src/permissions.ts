@@ -149,6 +149,36 @@ export const catalogLocationDeletePermission = createPermission({
 });
 
 /**
+ * Permission for reading catalog ingestion status and marks.
+ *
+ * @alpha
+ */
+export const catalogIngestionReadPermission = createPermission({
+  name: 'catalog.ingestion.read',
+  attributes: { action: 'read' },
+});
+
+/**
+ * Permission for managing catalog ingestion providers and marks.
+ *
+ * @alpha
+ */
+export const catalogIngestionManagePermission = createPermission({
+  name: 'catalog.ingestion.manage',
+  attributes: { action: 'update' },
+});
+
+/**
+ * List of all catalog ingestion permissions.
+ *
+ * @alpha
+ */
+export const catalogIngestionPermissions = [
+  catalogIngestionReadPermission,
+  catalogIngestionManagePermission,
+];
+
+/**
  * List of all catalog permissions.
  * @alpha
  */
@@ -162,4 +192,5 @@ export const catalogPermissions = [
   catalogLocationCreatePermission,
   catalogLocationDeletePermission,
   catalogLocationAnalyzePermission,
+  ...catalogIngestionPermissions,
 ];
