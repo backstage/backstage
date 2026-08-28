@@ -361,55 +361,72 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       : await this.getAllOrgs(this.options.gitHubConfig);
 
     for (const org of orgsToProcess) {
-      const { headers, type: tokenType } =
-        await this.options.githubCredentialsProvider.getCredentials({
-          url: `${this.options.githubUrl}/${org}`,
+      try {
+        const { headers, type: tokenType } =
+          await this.options.githubCredentialsProvider.getCredentials({
+            url: `${this.options.githubUrl}/${org}`,
+          });
+        const client = graphql.defaults({
+          baseUrl: this.options.gitHubConfig.apiBaseUrl,
+          headers,
         });
-      const client = graphql.defaults({
-        baseUrl: this.options.gitHubConfig.apiBaseUrl,
-        headers,
-      });
 
-      logger.info(`Reading GitHub users and teams for org: ${org}`);
+        logger.info(`Reading GitHub users and teams for org: ${org}`);
 
-      const pageSizes = this.getPageSizes();
+        const pageSizes = this.getPageSizes();
 
-      const { users } = await getOrganizationUsers(
-        client,
-        org,
-        tokenType,
-        this.options.userTransformer,
-        pageSizes,
-        this.options.excludeSuspendedUsers,
-        this.useRestSuspendedCheck ? this.getRestClient(org) : undefined,
-      );
+        const { users } = await getOrganizationUsers(
+          client,
+          org,
+          tokenType,
+          this.options.userTransformer,
+          pageSizes,
+          this.options.excludeSuspendedUsers,
+          this.useRestSuspendedCheck ? this.getRestClient(org) : undefined,
+        );
 
-      const { teams } = await getOrganizationTeams(
-        client,
-        org,
-        this.defaultMultiOrgTeamTransformer.bind(this),
-        pageSizes,
-      );
+        const { teams } = await getOrganizationTeams(
+          client,
+          org,
+          this.defaultMultiOrgTeamTransformer.bind(this),
+          pageSizes,
+        );
 
-      // Grab current users from `allUsersMap` if they already exist in our
-      // pending users so we can append to their group membership relations
-      const pendingUsers = users.map(u => {
-        const userRef = stringifyEntityRef(u);
-        if (!allUsersMap.has(userRef)) {
-          allUsersMap.set(userRef, u);
+        // Grab current users from `allUsersMap` if they already exist in our
+        // pending users so we can append to their group membership relations
+        const pendingUsers = users.map(u => {
+          const userRef = stringifyEntityRef(u);
+          if (!allUsersMap.has(userRef)) {
+            allUsersMap.set(userRef, u);
+          }
+
+          return allUsersMap.get(userRef);
+        });
+
+        if (areGroupEntities(teams)) {
+          buildOrgHierarchy(teams);
+          if (areUserEntities(pendingUsers)) {
+            assignGroupsToUsers(pendingUsers, teams);
+          }
         }
 
-        return allUsersMap.get(userRef);
-      });
-
-      if (areGroupEntities(teams)) {
-        buildOrgHierarchy(teams);
-        if (areUserEntities(pendingUsers)) {
-          assignGroupsToUsers(pendingUsers, teams);
+        allTeams.push(...teams);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        if (
+          message.includes('No app installation found') ||
+          message.includes('NotFoundError')
+        ) {
+          logger.debug(
+            `GitHub app is not installed for organization '${org}'. ` +
+              `Ensure the GitHub App is installed for this organization ` +
+              `and that the GitHub credentials provider has appropriate permissions. ` +
+              `Error: ${message}`,
+          );
+        } else {
+          throw error;
         }
       }
-
-      allTeams.push(...teams);
     }
 
     const allUsers = Array.from(allUsersMap.values());
