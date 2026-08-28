@@ -479,6 +479,7 @@ function nonNpmSourceAgrees(
 }
 
 function patchDescriptorAgreesWithLocator(options: {
+  configuration: Configuration;
   descriptor: ReturnType<typeof structUtils.parseDescriptor>;
   descriptorDeclaration: PatchDeclaration | undefined;
   locator: ReturnType<typeof structUtils.parseLocator>;
@@ -497,7 +498,9 @@ function patchDescriptorAgreesWithLocator(options: {
     requireSource: true,
   });
   const sourceDescriptor = normalizeNpmAliasSource(
-    structUtils.parseDescriptor(descriptorRange.source, true),
+    options.configuration.normalizeDependency(
+      structUtils.parseDescriptor(descriptorRange.source, true),
+    ),
   );
   const sourceLocator = structUtils.parseLocator(locatorRange.source, true);
   if (!structUtils.areIdentsEqual(sourceDescriptor, sourceLocator)) {
@@ -605,6 +608,7 @@ async function discoverManifestDeclarations(
 
 function discoverLockfileDeclarations(
   rootDir: string,
+  configuration: Configuration,
   lockfileContent: string,
   errors: PatchVerificationError[],
 ): PatchDeclaration[] {
@@ -709,6 +713,7 @@ function discoverLockfileDeclarations(
         patchDescriptors.some(
           ({ descriptor, declaration }) =>
             !patchDescriptorAgreesWithLocator({
+              configuration,
               descriptor,
               descriptorDeclaration: declaration,
               locator,
@@ -1084,7 +1089,12 @@ export async function verifyYarnPatches(
 
   if (lockfileContent !== undefined) {
     const lockfileDeclarations = uniqueDeclarations(
-      discoverLockfileDeclarations(rootDir, lockfileContent, errors),
+      discoverLockfileDeclarations(
+        rootDir,
+        configuration,
+        lockfileContent,
+        errors,
+      ),
     );
 
     for (const [key, declaration] of uniqueManifestDeclarations) {

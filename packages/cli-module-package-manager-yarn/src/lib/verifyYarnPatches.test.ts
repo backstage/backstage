@@ -1031,6 +1031,61 @@ plugins:
     );
   });
 
+  it('accepts protocol-less npm patch sources resolved to npm locators', async () => {
+    mockDir.setContent({
+      'package.json': packageJson({
+        name: 'root',
+        resolutions: {
+          package: 'patch:package@1.0.0#~/.yarn/patches/package.patch',
+        },
+      }),
+      '.yarn': { patches: { 'package.patch': 'patch' } },
+      'yarn.lock': `${LOCKFILE_HEADER}
+"package@patch:package@1.0.0#~/.yarn/patches/package.patch":
+  version: 1.0.0
+  resolution: "package@patch:package@npm%3A1.0.0#~/.yarn/patches/package.patch::version=1.0.0&hash=aaaaaa"
+  languageName: node
+  linkType: hard
+`,
+    });
+
+    await expect(verifyYarnPatches({ rootDir: mockDir.path })).resolves.toEqual(
+      {
+        patchCount: 1,
+        backstageCheck: 'skipped',
+        errors: [],
+      },
+    );
+  });
+
+  it('honors the configured default protocol for protocol-less patch sources', async () => {
+    mockDir.setContent({
+      'package.json': packageJson({
+        name: 'root',
+        resolutions: {
+          package: 'patch:package@1.0.0#~/.yarn/patches/package.patch',
+        },
+      }),
+      '.yarnrc.yml': 'defaultProtocol: "custom:"\n',
+      '.yarn': { patches: { 'package.patch': 'patch' } },
+      'yarn.lock': `${LOCKFILE_HEADER}
+"package@patch:package@1.0.0#~/.yarn/patches/package.patch":
+  version: 1.0.0
+  resolution: "package@patch:package@custom%3A1.0.0#~/.yarn/patches/package.patch::version=1.0.0&hash=aaaaaa"
+  languageName: node
+  linkType: hard
+`,
+    });
+
+    await expect(verifyYarnPatches({ rootDir: mockDir.path })).resolves.toEqual(
+      {
+        patchCount: 1,
+        backstageCheck: 'skipped',
+        errors: [],
+      },
+    );
+  });
+
   it('accepts npm alias patch sources resolved to their target package', async () => {
     mockDir.setContent({
       'package.json': packageJson({
