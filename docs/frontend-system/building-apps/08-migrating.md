@@ -269,7 +269,7 @@ describe('App', () => {
 
 ### 6) Avoid double headers
 
-When running in hybrid mode, a duplicate header appears if the legacy header is still active alongside the new one. To avoid this, include the following code in packages/app/src/styles.css.
+When running in hybrid mode, a duplicate header appears if the legacy header is still active alongside the new one. To avoid this, include the following code in `packages/app/src/styles.css`.
 
 ```
 /* Hide the BUI header when the legacy backstage header is present in <main> */
