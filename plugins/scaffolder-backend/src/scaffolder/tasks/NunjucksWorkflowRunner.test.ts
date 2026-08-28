@@ -3725,6 +3725,41 @@ describe('NunjucksWorkflowRunner', () => {
     });
   });
 
+  it('creates scaffolding histograms with explicit second-scale bucket boundaries', () => {
+    const metrics = metricsServiceMock.mock();
+    void new NunjucksWorkflowRunner({
+      actionRegistry: new DefaultTemplateActionRegistry(
+        actionsRegistryServiceMock(),
+        mockServices.logger.mock(),
+      ),
+      integrations,
+      workingDirectory: mockDir.path,
+      logger,
+      permissions: mockedPermissionApi,
+      config: new ConfigReader({}),
+      metrics,
+    });
+
+    expect(metrics.createHistogram).toHaveBeenCalledWith(
+      'scaffolder.task.duration',
+      expect.objectContaining({
+        advice: expect.objectContaining({
+          explicitBucketBoundaries: [
+            1, 5, 10, 30, 60, 120, 300, 600, 1800, 3600,
+          ],
+        }),
+      }),
+    );
+    expect(metrics.createHistogram).toHaveBeenCalledWith(
+      'scaffolder.step.duration',
+      expect.objectContaining({
+        advice: expect.objectContaining({
+          explicitBucketBoundaries: [0.1, 0.5, 1, 5, 10, 30, 60, 120, 300],
+        }),
+      }),
+    );
+  });
+
   describe('task recovery - step resumption', () => {
     // Recovery behavior (persistence + resumption) is gated behind
     // `scaffolder.taskRecovery.enabled`, so these tests use a runner with

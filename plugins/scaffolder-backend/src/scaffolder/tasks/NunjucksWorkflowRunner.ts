@@ -997,6 +997,9 @@ function scaffoldingTracker(metrics: MetricsService) {
   const taskDuration = metrics.createHistogram('scaffolder.task.duration', {
     description: 'Time taken to complete a scaffolder task end-to-end',
     unit: 's',
+    advice: {
+      explicitBucketBoundaries: [1, 5, 10, 30, 60, 120, 300, 600, 1800, 3600],
+    },
   });
 
   const stepCount = metrics.createCounter('scaffolder.step.count', {
@@ -1006,6 +1009,9 @@ function scaffoldingTracker(metrics: MetricsService) {
   const stepDuration = metrics.createHistogram('scaffolder.step.duration', {
     description: 'Time taken to complete a single scaffolder action step',
     unit: 's',
+    advice: {
+      explicitBucketBoundaries: [0.1, 0.5, 1, 5, 10, 30, 60, 120, 300],
+    },
   });
 
   async function taskStart(task: TaskContext) {
