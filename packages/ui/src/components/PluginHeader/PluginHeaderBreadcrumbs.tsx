@@ -44,7 +44,7 @@ function BreadcrumbSeparator() {
 /** Wraps children in a tooltip that shows on hover when the label is truncated. */
 function BreadcrumbTooltipWrapper(props: {
   showTooltip: boolean;
-  label: string;
+  label: React.ReactNode;
   children: React.ReactNode;
 }) {
   const { showTooltip, label, children } = props;

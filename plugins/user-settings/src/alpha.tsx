@@ -19,6 +19,7 @@ import {
   createFrontendPlugin,
   PageBlueprint,
   SubPageBlueprint,
+  useTranslationRef,
 } from '@backstage/frontend-plugin-api';
 import { Content } from '@backstage/core-components';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -32,11 +33,36 @@ import { userSettingsTranslationRef as _userSettingsTranslationRef } from './tra
  */
 export const userSettingsTranslationRef = _userSettingsTranslationRef;
 
+// These render the translated title reactively (re-rendering when the
+// language changes), unlike the plain `title` strings below which are
+// resolved once when the extension is constructed and used only as a
+// static fallback (e.g. for consumers that need a plain string).
+function SettingsPageTitle() {
+  const { t } = useTranslationRef(userSettingsTranslationRef);
+  return <>{t('settingsLayout.title')}</>;
+}
+
+function GeneralSettingsTitle() {
+  const { t } = useTranslationRef(userSettingsTranslationRef);
+  return <>{t('defaultSettingsPage.tabsTitle.general')}</>;
+}
+
+function AuthProvidersSettingsTitle() {
+  const { t } = useTranslationRef(userSettingsTranslationRef);
+  return <>{t('defaultSettingsPage.tabsTitle.authProviders')}</>;
+}
+
+function FeatureFlagsSettingsTitle() {
+  const { t } = useTranslationRef(userSettingsTranslationRef);
+  return <>{t('defaultSettingsPage.tabsTitle.featureFlags')}</>;
+}
+
 const userSettingsPage = PageBlueprint.make({
   params: {
     path: '/settings',
     routeRef: settingsRouteRef,
     title: 'Settings',
+    titleElement: <SettingsPageTitle />,
     icon: <SettingsIcon fontSize="inherit" />,
   },
 });
@@ -46,6 +72,7 @@ const generalSettingsPage = SubPageBlueprint.make({
   params: {
     path: 'general',
     title: 'General',
+    titleElement: <GeneralSettingsTitle />,
     loader: () =>
       import('./components/General').then(m => (
         <Content>
@@ -67,6 +94,7 @@ const authProvidersSettingsPage = SubPageBlueprint.makeWithOverrides({
     return originalFactory({
       path: 'auth-providers',
       title: 'Authentication Providers',
+      titleElement: <AuthProvidersSettingsTitle />,
       loader: () =>
         import('./components/AuthProviders').then(m => (
           <Content>
@@ -86,6 +114,7 @@ const featureFlagsSettingsPage = SubPageBlueprint.make({
   params: {
     path: 'feature-flags',
     title: 'Feature Flags',
+    titleElement: <FeatureFlagsSettingsTitle />,
     loader: () =>
       import('./components/FeatureFlags').then(m => (
         <Content>

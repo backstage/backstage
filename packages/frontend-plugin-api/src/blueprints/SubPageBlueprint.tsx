@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ReactNode } from 'react';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
 import { coreExtensionData, createExtensionBlueprint } from '../wiring';
@@ -48,6 +49,7 @@ export const SubPageBlueprint = createExtensionBlueprint({
     coreExtensionData.routePath,
     coreExtensionData.reactElement,
     coreExtensionData.title,
+    coreExtensionData.titleElement.optional(),
     coreExtensionData.routeRef.optional(),
     coreExtensionData.icon.optional(),
   ],
@@ -68,6 +70,16 @@ export const SubPageBlueprint = createExtensionBlueprint({
        */
       title: string;
       /**
+       * An optional, reactively rendered alternative to `title`. Use this to
+       * make the tab label translatable, e.g. by rendering a small component
+       * that calls `useTranslationRef` internally:
+       *
+       * ```tsx
+       * titleElement: <SubPageTitle />
+       * ```
+       */
+      titleElement?: ReactNode;
+      /**
        * Optional icon for this sub-page, displayed in the tab.
        */
       icon?: IconElement;
@@ -85,6 +97,9 @@ export const SubPageBlueprint = createExtensionBlueprint({
   ) {
     yield coreExtensionData.routePath(config.path ?? params.path);
     yield coreExtensionData.title(config.title ?? params.title);
+    if (!config.title && params.titleElement) {
+      yield coreExtensionData.titleElement(params.titleElement);
+    }
     yield coreExtensionData.reactElement(
       ExtensionBoundary.lazy(node, params.loader),
     );

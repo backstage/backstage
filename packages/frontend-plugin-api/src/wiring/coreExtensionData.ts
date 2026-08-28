@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JSX } from 'react';
+import { JSX, ReactNode } from 'react';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing/RouteRef';
 import { createExtensionDataRef } from './createExtensionDataRef';
@@ -22,6 +22,17 @@ import { createExtensionDataRef } from './createExtensionDataRef';
 /** @public */
 export const coreExtensionData = {
   title: createExtensionDataRef<string>().with({ id: 'core.title' }),
+  /**
+   * An optional, reactively rendered alternative to `title`. When present,
+   * consumers that render a Page/SubPage's title (tabs, page header,
+   * breadcrumbs) should prefer this over `title`, since it can be a React
+   * element that resolves its text at render time (e.g. via
+   * `useTranslationRef`), unlike `title` which is a plain string fixed at
+   * extension construction time.
+   */
+  titleElement: createExtensionDataRef<ReactNode>().with({
+    id: 'core.titleElement',
+  }),
   /** An icon element for the extension. Should be exactly 24x24 pixels. */
   icon: createExtensionDataRef<IconElement>().with({ id: 'core.icon' }),
   reactElement: createExtensionDataRef<JSX.Element>().with({

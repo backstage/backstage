@@ -3,7 +3,7 @@ import addonDocs from '@storybook/addon-docs';
 import addonThemes from '@storybook/addon-themes';
 import addonLinks from '@storybook/addon-links';
 import { definePreview } from '@storybook/react-vite';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { TestApiProvider } from '@backstage/test-utils';
 import { AlertDisplay } from '@backstage/core-components';
 import { apis, appThemeApi } from './support/apis';

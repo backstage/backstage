@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useState } from 'react';
 import { createRouteRef } from '../routing';
 import { PageBlueprint } from './PageBlueprint';
+import { SubPageBlueprint } from './SubPageBlueprint';
 import {
   createExtensionTester,
   renderInTestApp,
@@ -24,7 +26,7 @@ import {
   createExtensionBlueprint,
   createExtensionInput,
 } from '../wiring';
-import { waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 
 describe('PageBlueprint', () => {
   const mockRouteRef = createRouteRef();
@@ -93,6 +95,15 @@ describe('PageBlueprint', () => {
                 "config": {
                   "optional": true,
                 },
+                "id": "core.titleElement",
+                "optional": [Function],
+                "toString": [Function],
+              },
+              {
+                "$$type": "@backstage/ExtensionDataRef",
+                "config": {
+                  "optional": true,
+                },
                 "id": "core.icon",
                 "optional": [Function],
                 "toString": [Function],
@@ -122,6 +133,15 @@ describe('PageBlueprint', () => {
               "optional": true,
             },
             "id": "core.title",
+            "optional": [Function],
+            "toString": [Function],
+          },
+          {
+            "$$type": "@backstage/ExtensionDataRef",
+            "config": {
+              "optional": true,
+            },
+            "id": "core.titleElement",
             "optional": [Function],
             "toString": [Function],
           },
@@ -266,5 +286,66 @@ describe('PageBlueprint', () => {
         ],
       }
     `);
+  });
+
+  it('should reactively re-render a sub-page tab/breadcrumb label provided via titleElement', async () => {
+    // Simulates a translated title: the *value* changes at render time
+    // (e.g. in response to a language switch), unlike a plain `title`
+    // string which is fixed once when the extension factory runs.
+    function DynamicTitle() {
+      const [label, setLabel] = useState('General');
+      return (
+        <button
+          data-testid="toggle-title"
+          onClick={() => setLabel('Allgemein')}
+        >
+          {label}
+        </button>
+      );
+    }
+
+    const rootPage = PageBlueprint.make({
+      name: 'title-test-page',
+      params: {
+        path: '/test',
+        routeRef: mockRouteRef,
+      },
+    });
+
+    const subPage = SubPageBlueprint.make({
+      name: 'general',
+      attachTo: { id: 'page:title-test-page', input: 'pages' },
+      params: {
+        path: 'general',
+        title: 'General',
+        titleElement: <DynamicTitle />,
+        loader: () => Promise.resolve(<div data-testid="content" />),
+      },
+    });
+
+    const tester = createExtensionTester(rootPage).add(subPage);
+
+    renderInTestApp(tester.reactElement());
+
+    // Initially renders the titleElement's current value, in both the tab
+    // and the breadcrumb it registers - not the plain fallback `title`.
+    await waitFor(() =>
+      expect(screen.getAllByText('General').length).toBeGreaterThan(0),
+    );
+
+    // Simulate a language switch: the titleElement is mounted independently
+    // wherever it's consumed (tab label, breadcrumb label, and any hidden
+    // measurement copies the real tab bar renders for overflow handling) -
+    // toggle every mounted instance to prove each one re-renders in place,
+    // rather than being frozen at extension-construction time like a plain
+    // `title` string would be. Some instances mount asynchronously, so this
+    // polls and clicks any newly-appeared ones until none show 'General'.
+    await waitFor(() => {
+      for (const toggle of screen.queryAllByText('General')) {
+        fireEvent.click(toggle);
+      }
+      expect(screen.queryAllByText('General').length).toBe(0);
+    });
+    expect(screen.getAllByText('Allgemein').length).toBeGreaterThan(0);
   });
 });

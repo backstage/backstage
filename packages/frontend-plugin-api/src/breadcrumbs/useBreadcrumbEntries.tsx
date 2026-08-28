@@ -23,7 +23,7 @@ import {
 import type { BreadcrumbEntryData } from './types';
 
 interface Registration {
-  update(label: string, href: string): void;
+  update(label: ReactNode, href: string): void;
   unregister(): void;
 }
 

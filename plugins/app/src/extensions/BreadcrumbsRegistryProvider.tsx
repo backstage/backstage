@@ -22,7 +22,7 @@ import {
 } from '@backstage/version-bridge';
 
 interface Registration {
-  update(label: string, href: string): void;
+  update(label: ReactNode, href: string): void;
   unregister(): void;
 }
 
@@ -54,7 +54,7 @@ export function BreadcrumbsRegistryProvider(props: { children: ReactNode }) {
     const record = { ...entry };
     setEntries(prev => [...prev, record].sort((a, b) => a.depth - b.depth));
     return {
-      update(label: string, href: string) {
+      update(label: ReactNode, href: string) {
         if (record.label === label && record.href === href) return;
         record.label = label;
         record.href = href;
