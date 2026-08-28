@@ -972,7 +972,7 @@ function scaffoldingTracker(metrics: MetricsService) {
   const promTaskCount = createCounterMetric({
     name: 'scaffolder_task_count',
     help: 'Count of task runs',
-    labelNames: ['template', 'user', 'result'],
+    labelNames: ['template', 'result'],
   });
   const promTaskDuration = createHistogramMetric({
     name: 'scaffolder_task_duration',
@@ -1011,7 +1011,6 @@ function scaffoldingTracker(metrics: MetricsService) {
   async function taskStart(task: TaskContext) {
     await task.emitLog(`Starting up task with ${task.spec.steps.length} steps`);
     const template = task.spec.templateInfo?.entityRef || '';
-    const user = task.spec.user?.ref || '';
 
     const startTime = process.hrtime();
     const taskTimer = promTaskDuration.startTimer({
@@ -1036,12 +1035,11 @@ function scaffoldingTracker(metrics: MetricsService) {
     async function markSuccessful() {
       promTaskCount.inc({
         template,
-        user,
         result: 'ok',
       });
       taskTimer({ result: 'ok' });
 
-      taskCount.add(1, { template, user, result: 'ok' });
+      taskCount.add(1, { template, result: 'ok' });
       taskDuration.record(endTime(), {
         template,
         result: 'ok',
@@ -1055,12 +1053,11 @@ function scaffoldingTracker(metrics: MetricsService) {
       });
       promTaskCount.inc({
         template,
-        user,
         result: 'failed',
       });
       taskTimer({ result: 'failed' });
 
-      taskCount.add(1, { template, user, result: 'failed' });
+      taskCount.add(1, { template, result: 'failed' });
       taskDuration.record(endTime(), {
         template,
         result: 'failed',
@@ -1074,12 +1071,11 @@ function scaffoldingTracker(metrics: MetricsService) {
       });
       promTaskCount.inc({
         template,
-        user,
         result: 'cancelled',
       });
       taskTimer({ result: 'cancelled' });
 
-      taskCount.add(1, { template, user, result: 'cancelled' });
+      taskCount.add(1, { template, result: 'cancelled' });
       taskDuration.record(endTime(), {
         template,
         result: 'cancelled',

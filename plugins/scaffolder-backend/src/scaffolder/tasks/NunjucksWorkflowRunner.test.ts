@@ -46,6 +46,7 @@ import {
   actionsRegistryServiceMock,
   metricsServiceMock,
 } from '@backstage/backend-test-utils/alpha';
+import { register } from 'prom-client';
 import { collectTemplateCapabilities } from '../../util/templating';
 import { TaskWorker } from './TaskWorker';
 
@@ -55,6 +56,7 @@ describe('NunjucksWorkflowRunner', () => {
   let fakeActionHandler: jest.Mock;
   let fakeTaskLog: jest.Mock;
   let stripAnsi: typeof import('strip-ansi').default;
+  let metrics: ReturnType<typeof metricsServiceMock.mock>;
 
   const logger = mockServices.logger.mock();
   const mockDir = createMockDirectory();
@@ -250,6 +252,7 @@ describe('NunjucksWorkflowRunner', () => {
       },
     });
 
+    metrics = metricsServiceMock.mock();
     runner = new NunjucksWorkflowRunner({
       actionRegistry,
       integrations,
@@ -257,7 +260,7 @@ describe('NunjucksWorkflowRunner', () => {
       logger,
       permissions: mockedPermissionApi,
       config,
-      metrics: metricsServiceMock.mock(),
+      metrics,
       templateCapabilities: collectTemplateCapabilities({
         filters: {
           toSecretKeyedObject: input => ({
@@ -272,6 +275,30 @@ describe('NunjucksWorkflowRunner', () => {
     mockDir.clear();
 
     jest.resetAllMocks();
+  });
+
+  it('does not include the user identity in task count metrics', async () => {
+    const template = 'template:default/example';
+    const task = createMockTaskWithSpec({
+      steps: [],
+      templateInfo: { entityRef: template },
+      user: { ref: 'user:default/example' },
+    });
+
+    await runner.execute(task);
+
+    expect(register.getSingleMetric('scaffolder_task_count')).toMatchObject({
+      labelNames: ['template', 'result'],
+    });
+
+    const taskCountIndex = metrics.createCounter.mock.calls.findIndex(
+      ([name]) => name === 'scaffolder.task.count',
+    );
+    const taskCount = metrics.createCounter.mock.results[taskCountIndex].value;
+    expect(taskCount.add).toHaveBeenCalledWith(1, {
+      template,
+      result: 'ok',
+    });
   });
 
   it('should throw an error if the action does not exist', async () => {
