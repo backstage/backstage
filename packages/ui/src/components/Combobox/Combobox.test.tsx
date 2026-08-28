@@ -113,6 +113,19 @@ afterEach(() => {
 });
 
 describe('Combobox', () => {
+  it('opens when the input receives focus', async () => {
+    renderCombobox(
+      <Combobox
+        aria-label="Status"
+        options={owners.map(owner => ({ id: owner.id, label: owner.name }))}
+      />,
+    );
+
+    act(() => screen.getByRole('combobox').focus());
+
+    expect(await screen.findByRole('listbox')).toBeInTheDocument();
+  });
+
   it('does not open when disabled', () => {
     renderCombobox(
       <Combobox
