@@ -19,7 +19,7 @@ import {
   OAuthAuthenticatorResult,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
-import { z } from 'zod/v3';
+import { z } from 'zod';
 
 import { GithubProfile } from './authenticator';
 
