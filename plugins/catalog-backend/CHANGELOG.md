@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-backend
 
+## 3.6.2
+
+### Patch Changes
+
+- e786ac3: Improved path validation for catalog entity placeholders.
+
 ## 3.6.1
 
 ### Patch Changes

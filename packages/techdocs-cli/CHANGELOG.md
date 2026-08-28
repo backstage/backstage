@@ -1,5 +1,13 @@
 # @techdocs/cli
 
+## 1.10.8
+
+### Patch Changes
+
+- 6bcaf9c: Improved MkDocs configuration file handling.
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.14.6
+
 ## 1.10.7
 
 ### Patch Changes

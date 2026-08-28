@@ -1,5 +1,14 @@
 # @backstage/plugin-techdocs-node
 
+## 1.14.6
+
+### Patch Changes
+
+- ef92d3d: Improved MkDocs configuration handling for additional templates.
+- a900a99: Improved MkDocs configuration sanitization to cover additional nested configuration keys and theme options.
+- 6bcaf9c: Improved MkDocs configuration file handling.
+- b6d1aea: Improved validation of MkDocs configuration values during TechDocs generation.
+
 ## 1.14.5
 
 ### Patch Changes
