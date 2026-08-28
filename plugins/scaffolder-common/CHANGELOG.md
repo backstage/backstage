@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-common
 
+## 2.2.2
+
+### Patch Changes
+
+- 36b693d: Exclude internal task data from task responses.
+
 ## 2.2.1
 
 ### Patch Changes
