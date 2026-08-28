@@ -324,6 +324,12 @@ export const columnConfigPropDefs: Record<string, PropDef> = {
     default: 'false',
     description: 'Whether the column is hidden.',
   },
+  isResizable: {
+    type: 'boolean',
+    default: 'false',
+    description:
+      'Whether users can resize the column with a pointer or keyboard.',
+  },
   isRowHeader: {
     type: 'boolean',
     default: 'false',
@@ -512,6 +518,12 @@ export const tableRootPropDefs: Record<string, PropDef> = {
 };
 
 export const columnPropDefs: Record<string, PropDef> = {
+  isResizable: {
+    type: 'boolean',
+    default: 'false',
+    description:
+      'Whether users can resize the column with a pointer or keyboard.',
+  },
   isRowHeader: {
     type: 'boolean',
     description: 'Whether this column is a row header for accessibility.',
