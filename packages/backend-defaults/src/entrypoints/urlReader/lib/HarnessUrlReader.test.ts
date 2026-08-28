@@ -287,6 +287,124 @@ describe('HarnessUrlReader', () => {
       },
     );
 
+    it('allows direct consumers to provide a cross-origin redirect predicate', async () => {
+      let receivedApiKey: string | null = null;
+      worker.use(
+        http.get(
+          'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/raw/direct-redirect.yaml',
+          () =>
+            new HttpResponse(null, {
+              status: 302,
+              headers: {
+                location: 'https://downloads.example.com/direct-target.yaml',
+              },
+            }),
+        ),
+        http.get(
+          'https://downloads.example.com/direct-target.yaml',
+          ({ request }) => {
+            receivedApiKey = request.headers.get('x-api-key');
+            return new HttpResponse('redirected content', { status: 200 });
+          },
+        ),
+      );
+
+      const reader = new HarnessUrlReader(
+        new HarnessIntegration(
+          readHarnessConfig(
+            new ConfigReader({
+              host: 'app.harness.io',
+              apiKey: 'harness-api-key',
+            }),
+          ),
+        ),
+        {
+          treeResponseFactory,
+          allowedRedirectPredicate: url =>
+            url.hostname === 'downloads.example.com',
+        },
+      );
+
+      const response = await reader.readUrl(
+        'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/direct-redirect.yaml',
+      );
+
+      expect((await response.buffer()).toString()).toBe('redirected content');
+      expect(receivedApiKey).toBeNull();
+    });
+
+    it.each([
+      {
+        authType: 'API key',
+        integrationAuth: { apiKey: 'harness-api-key' },
+        sourceHeader: 'x-api-key',
+        sourceValue: 'harness-api-key',
+      },
+      {
+        authType: 'token',
+        integrationAuth: { token: 'harness-token' },
+        sourceHeader: 'authorization',
+        sourceValue: 'Bearer harness-token',
+      },
+    ])(
+      'does not restore $authType after a redirect chain leaves the Harness origin',
+      async ({ integrationAuth, sourceHeader, sourceValue }) => {
+        let receivedSourceHeader: string | null = null;
+        let receivedExternalHeader: string | null = null;
+        let receivedReturnedHeader: string | null = null;
+        worker.use(
+          http.get(
+            'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/raw/out-and-back.yaml',
+            ({ request }) => {
+              receivedSourceHeader = request.headers.get(sourceHeader);
+              return new HttpResponse(null, {
+                status: 302,
+                headers: {
+                  location: 'https://downloads.example.com/redirect-hop',
+                },
+              });
+            },
+          ),
+          http.get(
+            'https://downloads.example.com/redirect-hop',
+            ({ request }) => {
+              receivedExternalHeader = request.headers.get(sourceHeader);
+              return new HttpResponse(null, {
+                status: 302,
+                headers: {
+                  location: 'https://app.harness.io/redirect-target',
+                },
+              });
+            },
+          ),
+          http.get('https://app.harness.io/redirect-target', ({ request }) => {
+            receivedReturnedHeader = request.headers.get(sourceHeader);
+            return new HttpResponse('redirected content', { status: 200 });
+          }),
+        );
+
+        const [{ reader }] = createReader({
+          integrations: {
+            harness: [{ host: 'app.harness.io', ...integrationAuth }],
+          },
+          backend: {
+            reading: {
+              allow: [{ host: 'downloads.example.com' }],
+            },
+          },
+        });
+
+        const response = await reader.readUrl(
+          'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/out-and-back.yaml',
+        );
+
+        expect((await response.buffer()).toString()).toBe('redirected content');
+        expect(receivedSourceHeader).toBe(sourceValue);
+        expect(receivedExternalHeader).toBeNull();
+        expect(receivedReturnedHeader).toBeNull();
+      },
+    );
+
     it('follows at most five same-origin redirects', async () => {
       worker.use(
         http.get(

@@ -61,8 +61,8 @@ export class HarnessUrlReader implements UrlReaderService {
       .map(integration => {
         const reader = new HarnessUrlReader(integration, {
           treeResponseFactory,
+          allowedRedirectPredicate,
         });
-        reader.allowedRedirectPredicate = allowedRedirectPredicate;
         const predicate = (url: URL) => {
           return url.host === integration.config.host;
         };
@@ -73,17 +73,21 @@ export class HarnessUrlReader implements UrlReaderService {
   private readonly integration: HarnessIntegration;
   private readonly deps: {
     treeResponseFactory: ReadTreeResponseFactory;
+    allowedRedirectPredicate?: (url: URL) => boolean;
   };
-  private allowedRedirectPredicate: (url: URL) => boolean = () => false;
+  private readonly allowedRedirectPredicate: (url: URL) => boolean;
 
   constructor(
     integration: HarnessIntegration,
     deps: {
       treeResponseFactory: ReadTreeResponseFactory;
+      allowedRedirectPredicate?: (url: URL) => boolean;
     },
   ) {
     this.integration = integration;
     this.deps = deps;
+    this.allowedRedirectPredicate =
+      deps.allowedRedirectPredicate ?? (() => false);
   }
   async read(url: string): Promise<Buffer> {
     const response = await this.readUrl(url);
@@ -198,11 +202,12 @@ export class HarnessUrlReader implements UrlReaderService {
     const configuredOrigin = new URL(`https://${this.integration.config.host}`)
       .origin;
     let currentUrl = url;
+    let includeCredentials = true;
 
     for (let redirectCount = 0; ; redirectCount += 1) {
       const currentUrlObject = new URL(currentUrl);
       const requestOptions =
-        currentUrlObject.origin === configuredOrigin
+        includeCredentials && currentUrlObject.origin === configuredOrigin
           ? getHarnessRequestOptions(this.integration.config)
           : {};
       let response: Response;
@@ -240,6 +245,10 @@ export class HarnessUrlReader implements UrlReaderService {
         throw new Error(
           `Refusing to follow cross-origin Harness redirect to ${redirectUrl.origin}`,
         );
+      }
+
+      if (redirectUrl.origin !== configuredOrigin) {
+        includeCredentials = false;
       }
 
       if (redirectCount === MAX_REDIRECTS) {
