@@ -426,6 +426,7 @@ export const ColumnWidthsWithFr: Story = {
         id: 'name',
         label: 'Name (3fr, min 200px)',
         isRowHeader: true,
+        isResizable: true,
         defaultWidth: '3fr',
         minWidth: 200,
         cell: item => (
@@ -435,6 +436,7 @@ export const ColumnWidthsWithFr: Story = {
       {
         id: 'owner',
         label: 'Owner (2fr, 120–300px)',
+        isResizable: true,
         defaultWidth: '2fr',
         minWidth: 120,
         maxWidth: 300,
@@ -443,6 +445,7 @@ export const ColumnWidthsWithFr: Story = {
       {
         id: 'type',
         label: 'Type (1fr, 80–150px)',
+        isResizable: true,
         defaultWidth: '1fr',
         minWidth: 80,
         maxWidth: 150,
@@ -451,6 +454,7 @@ export const ColumnWidthsWithFr: Story = {
       {
         id: 'lifecycle',
         label: 'Lifecycle (1fr, 80–150px)',
+        isResizable: true,
         defaultWidth: '1fr',
         minWidth: 80,
         maxWidth: 150,

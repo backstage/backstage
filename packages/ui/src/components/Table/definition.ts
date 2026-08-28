@@ -118,10 +118,12 @@ export const ColumnDefinition = defineComponent<ColumnOwnProps>()({
     headContent: 'bui-TableHeadContent',
     headLabel: 'bui-TableHeadLabel',
     headSortButton: 'bui-TableHeadSortButton',
+    resizer: 'bui-TableColumnResizer',
   },
   propDefs: {
     children: {},
     className: {},
+    isResizable: {},
   },
 });
 
