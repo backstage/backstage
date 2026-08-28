@@ -672,7 +672,7 @@ export default {
                 'tooling/cli/module-new',
                 'tooling/cli/module-test',
                 'tooling/cli/module-translations',
-                'tooling/cli/module-yarn',
+                'tooling/cli/module-package-manager-yarn',
               ],
             ),
             'tooling/cli/building-cli-modules',

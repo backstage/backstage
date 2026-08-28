@@ -1,10 +1,11 @@
 ---
-id: module-yarn
-title: Yarn Module
+id: module-package-manager-yarn
+title: Yarn Package Manager Module
 description: CLI command for verifying Yarn patch references.
 ---
 
-The Yarn module (`@backstage/cli-module-yarn`) verifies that Yarn patch
+The Yarn package manager module (`@backstage/cli-module-package-manager-yarn`)
+verifies that Yarn patch
 references, local patch files, and `yarn.lock` remain aligned. When a project
 patches a Backstage package, it also checks that the package version matches
 the Backstage release selected in `backstage.json`.
@@ -16,12 +17,12 @@ The command verifies Yarn's native `patch:` protocol, available in Yarn 2 and
 later. It does not inspect patches managed by tools such as `patch-package` in
 Yarn Classic repositories.
 
-## repo verify-yarn-patches
+## pm verify-patches
 
 Run this command from the root of a Yarn repository:
 
 ```shell
-yarn backstage-cli repo verify-yarn-patches
+yarn backstage-cli pm verify-patches
 ```
 
 The command scans the root and workspace `package.json` files for `patch:`

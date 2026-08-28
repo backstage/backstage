@@ -1,6 +1,6 @@
-# @backstage/cli-module-yarn
+# @backstage/cli-module-package-manager-yarn
 
-Adds `backstage-cli repo verify-yarn-patches`, a read-only check for Yarn patch
+Adds `backstage-cli pm verify-patches`, a read-only check for Yarn patch
 references and patched Backstage package versions.
 
 The command verifies Yarn's native `patch:` protocol, available in Yarn 2 and
@@ -12,7 +12,7 @@ Yarn Classic repositories.
 Run the command from a Yarn repository root:
 
 ```shell
-yarn backstage-cli repo verify-yarn-patches
+yarn backstage-cli pm verify-patches
 ```
 
 The command scans the root `package.json` and every workspace manifest for

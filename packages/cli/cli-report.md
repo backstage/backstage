@@ -26,6 +26,7 @@ Commands:
   migrate
   new
   package
+  pm
   repo
   translations
   versions:bump
@@ -597,6 +598,29 @@ Options:
   -w, --maxWorkers
 ```
 
+### `backstage-cli pm`
+
+```
+Usage: backstage-cli pm [flags...]
+
+Options:
+  -V, --version
+  -h, --help
+
+Commands:
+  help
+  verify-patches
+```
+
+### `backstage-cli pm verify-patches`
+
+```
+Usage: backstage-cli pm verify-patches [flags...]
+
+Options:
+  -h, --help
+```
+
 ### `backstage-cli repo`
 
 ```
@@ -615,7 +639,6 @@ Commands:
   list-deprecations
   start
   test
-  verify-yarn-patches
 ```
 
 ### `backstage-cli repo build`
@@ -701,15 +724,6 @@ Options:
   --since <string>
   --success-cache
   --success-cache-dir <string>
-  -h, --help
-```
-
-### `backstage-cli repo verify-yarn-patches`
-
-```
-Usage: backstage-cli repo verify-yarn-patches [flags...]
-
-Options:
   -h, --help
 ```
 

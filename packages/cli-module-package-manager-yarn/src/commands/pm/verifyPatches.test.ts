@@ -21,7 +21,7 @@ jest.mock('../../lib/verifyYarnPatches', () => ({
   verifyYarnPatches: jest.fn(),
 }));
 
-import verifyYarnPatchesCommand from './verifyYarnPatches';
+import verifyYarnPatchesCommand from './verifyPatches';
 import {
   verifyYarnPatches,
   type VerifyYarnPatchesResult,
@@ -32,8 +32,8 @@ const mockVerifyYarnPatches = jest.mocked(verifyYarnPatches);
 const context: CliCommandContext = {
   args: [],
   info: {
-    name: 'verify-yarn-patches',
-    usage: 'backstage-cli repo verify-yarn-patches',
+    name: 'verify-patches',
+    usage: 'backstage-cli pm verify-patches',
   },
 };
 
@@ -92,9 +92,7 @@ describe('verifyYarnPatches command', () => {
 
       expect(mockVerifyYarnPatches).not.toHaveBeenCalled();
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining(
-          'backstage-cli repo verify-yarn-patches [flags...]',
-        ),
+        expect.stringContaining('backstage-cli pm verify-patches [flags...]'),
       );
     } finally {
       exitSpy.mockRestore();

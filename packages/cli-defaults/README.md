@@ -4,21 +4,21 @@ The default set of CLI modules for the Backstage CLI. Installing this single pac
 
 ## Included Modules
 
-| Module                                                             | Description                              |
-| :----------------------------------------------------------------- | :--------------------------------------- |
-| [`@backstage/cli-module-actions`](../cli-module-actions)           | Action discovery and execution           |
-| [`@backstage/cli-module-auth`](../cli-module-auth)                 | Authentication commands                  |
-| [`@backstage/cli-module-build`](../cli-module-build)               | Build, start, and packaging commands     |
-| [`@backstage/cli-module-config`](../cli-module-config)             | Configuration inspection commands        |
-| [`@backstage/cli-module-github`](../cli-module-github)             | GitHub App creation                      |
-| [`@backstage/cli-module-info`](../cli-module-info)                 | Environment and dependency info          |
-| [`@backstage/cli-module-lint`](../cli-module-lint)                 | Linting commands                         |
-| [`@backstage/cli-module-maintenance`](../cli-module-maintenance)   | Repository maintenance commands          |
-| [`@backstage/cli-module-migrate`](../cli-module-migrate)           | Migration and version management         |
-| [`@backstage/cli-module-new`](../cli-module-new)                   | Scaffolding for new plugins and packages |
-| [`@backstage/cli-module-test-jest`](../cli-module-test-jest)       | Jest-based testing commands              |
-| [`@backstage/cli-module-translations`](../cli-module-translations) | Translation management commands          |
-| [`@backstage/cli-module-yarn`](../cli-module-yarn)                 | Yarn patch verification                  |
+| Module                                                                             | Description                              |
+| :--------------------------------------------------------------------------------- | :--------------------------------------- |
+| [`@backstage/cli-module-actions`](../cli-module-actions)                           | Action discovery and execution           |
+| [`@backstage/cli-module-auth`](../cli-module-auth)                                 | Authentication commands                  |
+| [`@backstage/cli-module-build`](../cli-module-build)                               | Build, start, and packaging commands     |
+| [`@backstage/cli-module-config`](../cli-module-config)                             | Configuration inspection commands        |
+| [`@backstage/cli-module-github`](../cli-module-github)                             | GitHub App creation                      |
+| [`@backstage/cli-module-info`](../cli-module-info)                                 | Environment and dependency info          |
+| [`@backstage/cli-module-lint`](../cli-module-lint)                                 | Linting commands                         |
+| [`@backstage/cli-module-maintenance`](../cli-module-maintenance)                   | Repository maintenance commands          |
+| [`@backstage/cli-module-migrate`](../cli-module-migrate)                           | Migration and version management         |
+| [`@backstage/cli-module-new`](../cli-module-new)                                   | Scaffolding for new plugins and packages |
+| [`@backstage/cli-module-package-manager-yarn`](../cli-module-package-manager-yarn) | Yarn package manager commands            |
+| [`@backstage/cli-module-test-jest`](../cli-module-test-jest)                       | Jest-based testing commands              |
+| [`@backstage/cli-module-translations`](../cli-module-translations)                 | Translation management commands          |
 
 For fine-grained control over which CLI commands are available, you can install individual modules instead.
 

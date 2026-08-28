@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /**
- * CLI module for the Backstage CLI.
+ * CLI module for Yarn package manager commands in the Backstage CLI.
  *
  * @packageDocumentation
  */
@@ -26,11 +26,11 @@ export default createCliModule({
   packageJson,
   init: async reg => {
     reg.addCommand({
-      path: ['repo', 'verify-yarn-patches'],
+      path: ['pm', 'verify-patches'],
       description:
         'Verify Yarn patch references and Backstage package versions',
       execute: {
-        loader: () => import('./commands/repo/verifyYarnPatches'),
+        loader: () => import('./commands/pm/verifyPatches'),
       },
     });
   },

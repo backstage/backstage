@@ -96,7 +96,7 @@ jobs:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - name: verify Yarn patches
-        run: yarn backstage-cli repo verify-yarn-patches
+        run: yarn backstage-cli pm verify-patches
 
       - name: verify yarn dependency duplicates
         run: node scripts/verify-lockfile-duplicates.js

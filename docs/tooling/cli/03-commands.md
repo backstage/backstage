@@ -141,8 +141,8 @@ help [command]                                 display help for command
 | `translations export` | Export translation messages to JSON files |
 | `translations import` | Generate translation resource wiring code |
 
-### [Yarn Module](./module-yarn.md)
+### [Yarn Package Manager Module](./module-package-manager-yarn.md)
 
-| Command                    | Description                             |
-| -------------------------- | --------------------------------------- |
-| `repo verify-yarn-patches` | Verify Yarn patch references and health |
+| Command             | Description                             |
+| ------------------- | --------------------------------------- |
+| `pm verify-patches` | Verify Yarn patch references and health |

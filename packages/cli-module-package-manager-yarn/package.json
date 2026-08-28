@@ -1,7 +1,7 @@
 {
-  "name": "@backstage/cli-module-yarn",
+  "name": "@backstage/cli-module-package-manager-yarn",
   "version": "0.1.0",
-  "description": "CLI module for Backstage CLI",
+  "description": "CLI module for Yarn package manager commands",
   "backstage": {
     "role": "cli-module"
   },
@@ -14,12 +14,12 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "packages/cli-module-yarn"
+    "directory": "packages/cli-module-package-manager-yarn"
   },
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "bin": "bin/backstage-cli-module-yarn",
+  "bin": "bin/backstage-cli-module-package-manager-yarn",
   "files": [
     "dist",
     "bin"
