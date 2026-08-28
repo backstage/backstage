@@ -88,8 +88,9 @@ the token authentication shape.
 :::caution[Authentication values can expire]
 `ConnectionsService.find` returns static configuration or bootstrap material.
 It does not check whether a returned token remains valid, track expiration, or
-refresh it. Use a [credential API](./concepts.md#credential-apis) when the
-authentication method has a dynamic lifecycle.
+refresh it. Use a separate credential provider when the authentication method
+has a dynamic lifecycle. See the connection service
+[limitations](./concepts.md#limitations).
 :::
 
 `authMethods` is a non-empty list of
@@ -129,9 +130,8 @@ switch (connection.auth.method) {
 ```
 
 The application fields are static credentials, not an installation token. The
-`createClientWithGitHubApp` layer acts as a
-[credential API](./concepts.md#credential-apis) and is responsible for token
-exchange and caching.
+`createClientWithGitHubApp` layer is separate from the connection service and
+is responsible for token exchange and caching.
 
 ## Look up an AWS account
 

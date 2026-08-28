@@ -24,19 +24,21 @@ connections:
 
 ## Connection fields
 
-| Field    | Required | Purpose                                                         |
-| -------- | -------- | --------------------------------------------------------------- |
-| `host`   | Yes      | Host matched against the resource URL supplied by the consumer. |
-| `region` | Yes      | AWS region containing the CodeCommit repositories.              |
+| Field    | Type     | Required | Description                                                     |
+| -------- | -------- | -------- | --------------------------------------------------------------- |
+| `host`   | `string` | Yes      | Host matched against the resource URL supplied by the consumer. |
+| `region` | `string` | Yes      | AWS region containing the CodeCommit repositories.              |
 
 ## Authentication methods
 
 AWS CodeCommit requires authentication and does not support the `none` method.
 
-| Method       | Required fields                  | Optional fields |
-| ------------ | -------------------------------- | --------------- |
-| `accessKey`  | `accessKeyId`, `secretAccessKey` | None            |
-| `assumeRole` | `roleArn`                        | `externalId`    |
+| Method       | Field             | Type     | Required | Description                                |
+| ------------ | ----------------- | -------- | -------- | ------------------------------------------ |
+| `accessKey`  | `accessKeyId`     | `string` | Yes      | Static AWS access key ID.                  |
+| `accessKey`  | `secretAccessKey` | `string` | Yes      | Static AWS secret access key.              |
+| `assumeRole` | `roleArn`         | `string` | Yes      | ARN of the role to assume.                 |
+| `assumeRole` | `externalId`      | `string` | No       | External ID passed when assuming the role. |
 
 The service returns the configured static access keys or role parameters. An
 AWS credential provider is responsible for assuming the role and refreshing
@@ -49,8 +51,10 @@ a URL. The service parses `query.url` and selects the connection whose `host`
 matches exactly.
 
 When more than one authentication entry is visible to the calling plugin, the
-first visible entry is selected. The selected method must appear in the
-consumer's `authMethods` list.
+first visible entry is selected. Use
+[plugin scoping](../concepts.md#plugin-scoping) to supply different credentials
+to a specific plugin; otherwise, configuration order determines which entry is
+selected. The selected method must appear in the consumer's `authMethods` list.
 
 ## Consume an AWS CodeCommit connection
 

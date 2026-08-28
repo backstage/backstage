@@ -22,22 +22,24 @@ connections:
 
 ## Connection fields
 
-| Field            | Required | Purpose                                                 |
-| ---------------- | -------- | ------------------------------------------------------- |
-| `host`           | Yes      | Storage host matched against the resource URL.          |
-| `accountName`    | No       | Azure Storage account name.                             |
-| `endpoint`       | No       | Custom Blob Storage endpoint.                           |
-| `endpointSuffix` | No       | Custom endpoint suffix used by the storage environment. |
+| Field            | Type     | Required | Description                                             |
+| ---------------- | -------- | -------- | ------------------------------------------------------- |
+| `host`           | `string` | Yes      | Storage host matched against the resource URL.          |
+| `accountName`    | `string` | No       | Azure Storage account name.                             |
+| `endpoint`       | `string` | No       | Custom Blob Storage endpoint.                           |
+| `endpointSuffix` | `string` | No       | Custom endpoint suffix used by the storage environment. |
 
 ## Authentication methods
 
-| Method             | Required fields                        | Optional fields |
-| ------------------ | -------------------------------------- | --------------- |
-| `none`             | None                                   | None            |
-| `accountKey`       | `accountKey`                           | None            |
-| `sasToken`         | `sasToken`                             | None            |
-| `connectionString` | `connectionString`                     | None            |
-| `aadCredential`    | `clientId`, `tenantId`, `clientSecret` | None            |
+| Method             | Field              | Type     | Required | Description                            |
+| ------------------ | ------------------ | -------- | -------- | -------------------------------------- |
+| `none`             | None               | —        | —        | Does not accept authentication fields. |
+| `accountKey`       | `accountKey`       | `string` | Yes      | Azure Storage account key.             |
+| `sasToken`         | `sasToken`         | `string` | Yes      | Shared access signature token.         |
+| `connectionString` | `connectionString` | `string` | Yes      | Azure Storage connection string.       |
+| `aadCredential`    | `clientId`         | `string` | Yes      | Microsoft Entra ID client ID.          |
+| `aadCredential`    | `tenantId`         | `string` | Yes      | Microsoft Entra ID tenant ID.          |
+| `aadCredential`    | `clientSecret`     | `string` | Yes      | Microsoft Entra ID client secret.      |
 
 The `aadCredential` method name is retained in configuration and represents
 Microsoft Entra ID client credentials. The connection service returns the
@@ -53,7 +55,10 @@ a blob URL. The service selects the connection whose `host` matches the parsed
 URL host exactly.
 
 When more than one authentication entry is visible to the calling plugin, the
-first visible entry is selected.
+first visible entry is selected. Use
+[plugin scoping](../concepts.md#plugin-scoping) to supply different credentials
+to a specific plugin; otherwise, configuration order determines which entry is
+selected.
 
 ## Consume an Azure Blob Storage connection
 

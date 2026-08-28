@@ -22,16 +22,17 @@ connections:
 
 ## Connection fields
 
-| Field  | Required | Purpose                                                   |
-| ------ | -------- | --------------------------------------------------------- |
-| `host` | Yes      | Storage host matched against the consumer's resource URL. |
+| Field  | Type     | Required | Description                                               |
+| ------ | -------- | -------- | --------------------------------------------------------- |
+| `host` | `string` | Yes      | Storage host matched against the consumer's resource URL. |
 
 ## Authentication methods
 
-| Method           | Required fields             | Optional fields |
-| ---------------- | --------------------------- | --------------- |
-| `none`           | None                        | None            |
-| `serviceAccount` | `clientEmail`, `privateKey` | None            |
+| Method           | Field         | Type     | Required | Description                            |
+| ---------------- | ------------- | -------- | -------- | -------------------------------------- |
+| `none`           | None          | —        | —        | Does not accept authentication fields. |
+| `serviceAccount` | `clientEmail` | `string` | Yes      | Google service-account client email.   |
+| `serviceAccount` | `privateKey`  | `string` | Yes      | Google service-account private key.    |
 
 The service returns static service-account configuration. A Google Cloud
 credential provider is responsible for constructing or refreshing usable
@@ -46,7 +47,10 @@ a Google Cloud Storage URL. The service selects the connection whose `host`
 matches the parsed URL host exactly.
 
 When more than one authentication entry is visible to the calling plugin, the
-first visible entry is selected.
+first visible entry is selected. Use
+[plugin scoping](../concepts.md#plugin-scoping) to supply different credentials
+to a specific plugin; otherwise, configuration order determines which entry is
+selected.
 
 ## Consume a Google Cloud Storage connection
 

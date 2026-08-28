@@ -22,18 +22,21 @@ connections:
 
 ## Connection fields
 
-| Field  | Required | Purpose                                                           |
-| ------ | -------- | ----------------------------------------------------------------- |
-| `host` | Yes      | Bitbucket Cloud host matched against the consumer's resource URL. |
+| Field  | Type     | Required | Description                                                       |
+| ------ | -------- | -------- | ----------------------------------------------------------------- |
+| `host` | `string` | Yes      | Bitbucket Cloud host matched against the consumer's resource URL. |
 
 ## Authentication methods
 
-| Method        | Required fields            | Optional fields |
-| ------------- | -------------------------- | --------------- |
-| `none`        | None                       | None            |
-| `token`       | `username`, `token`        | None            |
-| `appPassword` | `username`, `appPassword`  | None            |
-| `oauth`       | `clientId`, `clientSecret` | None            |
+| Method        | Field          | Type     | Required | Description                                          |
+| ------------- | -------------- | -------- | -------- | ---------------------------------------------------- |
+| `none`        | None           | —        | —        | Does not accept authentication fields.               |
+| `token`       | `username`     | `string` | Yes      | Bitbucket username associated with the token.        |
+| `token`       | `token`        | `string` | Yes      | Bitbucket access token.                              |
+| `appPassword` | `username`     | `string` | Yes      | Bitbucket username associated with the app password. |
+| `appPassword` | `appPassword`  | `string` | Yes      | Bitbucket app password.                              |
+| `oauth`       | `clientId`     | `string` | Yes      | OAuth client ID.                                     |
+| `oauth`       | `clientSecret` | `string` | Yes      | OAuth client secret.                                 |
 
 The `oauth` method returns static client credentials. A credential provider is
 responsible for exchanging them for a usable access token.
@@ -47,8 +50,10 @@ a Bitbucket URL. The service selects the connection whose `host` matches the
 parsed URL host exactly.
 
 When more than one authentication entry is visible to the calling plugin, the
-first visible entry is selected. The selected method must appear in the
-consumer's `authMethods` list.
+first visible entry is selected. Use
+[plugin scoping](../concepts.md#plugin-scoping) to supply different credentials
+to a specific plugin; otherwise, configuration order determines which entry is
+selected. The selected method must appear in the consumer's `authMethods` list.
 
 ## Consume a Bitbucket Cloud connection
 

@@ -237,12 +237,20 @@ includes and environment variable substitution to keep values organized.
 
 ## Migrate from legacy integrations
 
-The default service converts supported legacy `integrations` configuration and
-the legacy top-level `aws` configuration into connections. This lets existing
-configuration continue to supply connection data while plugins migrate to the
-connection service.
+At backend startup, the default connection service automatically reads both
+explicit `connections` configuration and supported legacy `integrations`
+configuration. It converts the legacy integrations, including the legacy
+top-level `aws` configuration, into in-memory connections before making them
+available to plugins. Adopters do not need to enable this conversion or change
+their existing integrations while plugins migrate to the connection service.
 
-You can migrate one connection type at a time. For example:
+The conversion does not rewrite `app-config.yaml`. It only determines which
+connections the running backend loads.
+
+### Migrate one type at a time
+
+Legacy and explicit entries can be used together when they have different
+connection types. Given this configuration:
 
 ```yaml title="app-config.yaml"
 # Legacy configuration
@@ -260,11 +268,48 @@ connections:
         token: ${GITLAB_TOKEN}
 ```
 
-Legacy GitHub and explicit GitLab entries are both loaded. When at least one
-explicit connection exists for a type, all legacy entries of that type are
-ignored and a warning is logged. An explicit GitHub entry therefore takes over
-the complete GitHub connection set; it does not merge with individual legacy
-GitHub hosts.
+The service automatically converts and loads the legacy GitHub integration
+alongside the explicit GitLab connection.
+
+### Explicit connections replace the legacy type
+
+The precedence rule applies to the complete connection type, not to individual
+hosts. If at least one explicit connection exists for a type, the service drops
+all converted legacy integration entries of that type from its runtime
+connection list.
+
+For example:
+
+```yaml title="app-config.yaml"
+integrations:
+  github:
+    - host: github.com
+      token: ${GITHUB_TOKEN}
+    - host: github.example.com
+      token: ${GITHUB_ENTERPRISE_TOKEN}
+
+connections:
+  - type: github
+    host: github.example.com
+    auth:
+      - method: token
+        token: ${GITHUB_ENTERPRISE_CONNECTION_TOKEN}
+```
+
+The running backend loads only the explicit `github` connection. Both converted
+legacy GitHub entries are dropped, including the `github.com` entry whose host
+does not overlap. The service logs one warning for the overlapping `github`
+type.
+
+In summary:
+
+- With no explicit connection for a type, all supported legacy entries of that
+  type are converted and loaded automatically.
+- With any explicit connection for a type, all converted legacy entries of that
+  type are dropped.
+- Legacy and explicit entries of different types are loaded together.
+
+The same rule applies to the converted legacy top-level `aws` configuration.
 
 ## Diagnose configuration and lookup failures
 

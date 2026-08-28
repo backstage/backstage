@@ -26,19 +26,21 @@ connections:
 
 ## Connection fields
 
-| Field              | Required | Purpose                                                         |
-| ------------------ | -------- | --------------------------------------------------------------- |
-| `host`             | Yes      | Host matched against the resource URL supplied by the consumer. |
-| `endpoint`         | No       | Custom S3 API endpoint.                                         |
-| `s3ForcePathStyle` | No       | Whether an S3 client should use path-style bucket URLs.         |
+| Field              | Type      | Required | Description                                                     |
+| ------------------ | --------- | -------- | --------------------------------------------------------------- |
+| `host`             | `string`  | Yes      | Host matched against the resource URL supplied by the consumer. |
+| `endpoint`         | `string`  | No       | Custom S3 API endpoint.                                         |
+| `s3ForcePathStyle` | `boolean` | No       | Whether an S3 client should use path-style bucket URLs.         |
 
 ## Authentication methods
 
-| Method       | Required fields                  | Optional fields |
-| ------------ | -------------------------------- | --------------- |
-| `none`       | None                             | None            |
-| `accessKey`  | `accessKeyId`, `secretAccessKey` | None            |
-| `assumeRole` | `roleArn`                        | `externalId`    |
+| Method       | Field             | Type     | Required | Description                                |
+| ------------ | ----------------- | -------- | -------- | ------------------------------------------ |
+| `none`       | None              | —        | —        | Does not accept authentication fields.     |
+| `accessKey`  | `accessKeyId`     | `string` | Yes      | Static AWS access key ID.                  |
+| `accessKey`  | `secretAccessKey` | `string` | Yes      | Static AWS secret access key.              |
+| `assumeRole` | `roleArn`         | `string` | Yes      | ARN of the role to assume.                 |
+| `assumeRole` | `externalId`      | `string` | No       | External ID passed when assuming the role. |
 
 Use `none` explicitly for an endpoint that permits unauthenticated access. The
 service does not infer unauthenticated access from a missing `auth` array.
@@ -53,7 +55,10 @@ a URL. The service selects the connection whose `host` matches the parsed URL
 host exactly, including a port when one is present.
 
 When more than one authentication entry is visible to the calling plugin, the
-first visible entry is selected.
+first visible entry is selected. Use
+[plugin scoping](../concepts.md#plugin-scoping) to supply different credentials
+to a specific plugin; otherwise, configuration order determines which entry is
+selected.
 
 ## Consume an AWS S3 connection
 

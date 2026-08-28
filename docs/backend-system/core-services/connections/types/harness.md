@@ -22,17 +22,18 @@ connections:
 
 ## Connection fields
 
-| Field  | Required | Purpose                                                   |
-| ------ | -------- | --------------------------------------------------------- |
-| `host` | Yes      | Harness host matched against the consumer's resource URL. |
+| Field  | Type     | Required | Description                                               |
+| ------ | -------- | -------- | --------------------------------------------------------- |
+| `host` | `string` | Yes      | Harness host matched against the consumer's resource URL. |
 
 ## Authentication methods
 
 Harness requires authentication and does not support the `none` method.
 
-| Method  | Required fields | Optional fields |
-| ------- | --------------- | --------------- |
-| `token` | `token`         | `apiKey`        |
+| Method  | Field    | Type     | Required | Description                   |
+| ------- | -------- | -------- | -------- | ----------------------------- |
+| `token` | `token`  | `string` | Yes      | Harness authentication token. |
+| `token` | `apiKey` | `string` | No       | Additional Harness API key.   |
 
 The optional `apiKey` is returned alongside the token for consumers that need
 both values.
@@ -45,8 +46,9 @@ parsed URL host exactly.
 
 When more than one token entry is visible to the calling plugin, the first
 visible entry is selected. Use
-[plugin scoping](../concepts.md#plugin-scoping) to provide plugin-specific
-credentials.
+[plugin scoping](../concepts.md#plugin-scoping) to supply different credentials
+to a specific plugin; otherwise, configuration order determines which entry is
+selected.
 
 ## Consume a Harness connection
 

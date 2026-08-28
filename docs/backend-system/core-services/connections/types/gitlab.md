@@ -23,18 +23,18 @@ connections:
 
 ## Connection fields
 
-| Field        | Required | Purpose                                                  |
-| ------------ | -------- | -------------------------------------------------------- |
-| `host`       | Yes      | GitLab host matched against the consumer's resource URL. |
-| `apiBaseUrl` | No       | Base URL for the GitLab API.                             |
-| `baseUrl`    | No       | Base URL of the GitLab instance.                         |
+| Field        | Type     | Required | Description                                              |
+| ------------ | -------- | -------- | -------------------------------------------------------- |
+| `host`       | `string` | Yes      | GitLab host matched against the consumer's resource URL. |
+| `apiBaseUrl` | `string` | No       | Base URL for the GitLab API.                             |
+| `baseUrl`    | `string` | No       | Base URL of the GitLab instance.                         |
 
 ## Authentication methods
 
-| Method  | Required fields | Optional fields |
-| ------- | --------------- | --------------- |
-| `none`  | None            | None            |
-| `token` | `token`         | None            |
+| Method  | Field   | Type     | Required | Description                            |
+| ------- | ------- | -------- | -------- | -------------------------------------- |
+| `none`  | None    | —        | —        | Does not accept authentication fields. |
+| `token` | `token` | `string` | Yes      | GitLab access token.                   |
 
 Use `none` explicitly when the consumer only needs public GitLab content.
 
@@ -47,7 +47,8 @@ parsed URL host exactly.
 When more than one authentication entry is visible to the calling plugin, the
 first visible entry is selected. Use
 [plugin scoping](../concepts.md#plugin-scoping) to supply a different token to a
-specific plugin.
+specific plugin; otherwise, configuration order determines which entry is
+selected.
 
 ## Consume a GitLab connection
 

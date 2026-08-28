@@ -39,9 +39,9 @@ Connections contain static configuration. They do not create API clients,
 exchange application credentials for short-lived tokens, refresh credentials,
 or test whether an external system is reachable. Returned authentication values
 are static configuration or bootstrap material, not a guarantee of a currently
-valid credential. A plugin or a dedicated
-[credential API](./connections/concepts.md#credential-apis) performs dynamic
-operations after resolving a connection.
+valid credential. A plugin or separate credential provider performs dynamic
+operations after resolving a connection. See the connection service
+[limitations](./connections/concepts.md#limitations).
 
 ## How the pieces fit together
 
@@ -54,7 +54,7 @@ and a plugin's use of that configuration:
 | [Configured connection](./connections/concepts.md#configured-connection)   | Supplies one external endpoint and its authentication entries in Backstage configuration.     | A GitHub Enterprise host with a token.                                                   |
 | [Connection declaration](./connections/concepts.md#connection-declaration) | Records that a plugin or module intends to use a connection type.                             | The catalog backend declares that it uses `github`.                                      |
 | [Connection service](./connections/concepts.md#connection-service)         | Selects a configured connection and one eligible authentication entry for the calling plugin. | A lookup for a repository URL returns the matching GitHub host and authentication value. |
-| Consumer                                                                   | Uses the returned static fields to construct a client or call a credential API.               | A GitHub client uses the returned base URL and token.                                    |
+| Consumer                                                                   | Uses the returned static fields to construct a client or pass them to a credential provider.  | A GitHub client uses the returned base URL and token.                                    |
 
 At startup, the default service loads and validates configuration. When a
 plugin calls `ConnectionsService.find`, the service applies the plugin's
@@ -66,8 +66,8 @@ query, selects one authentication entry, and returns the result.
 Start with the guide that matches your task:
 
 - [Connection concepts](./connections/concepts.md) defines the model and
-  explains lookup, authentication selection, plugin scoping, and the boundary
-  between connections and credential APIs.
+  explains lookup, authentication selection, plugin scoping, and the static
+  credential lifecycle limitation.
 - [Configure and manage connections](./connections/configuring-connections.md)
   shows how to create, change, scope, and migrate connection configuration.
 - [Consume connections](./connections/consuming-connections.md) shows how a

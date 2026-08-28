@@ -40,15 +40,13 @@ is used to assume a role in another account.
 
 ## Connection fields
 
-All AWS connection fields are optional:
-
-| Field                  | Purpose                                                                                         |
-| ---------------------- | ----------------------------------------------------------------------------------------------- |
-| `roleName`             | Role to assume in an account that does not have its own authentication entry.                   |
-| `partition`            | AWS partition for connection-level role assumption. Requires `roleName`.                        |
-| `region`               | AWS region associated with connection-level role assumption. Requires `roleName`.               |
-| `externalId`           | External ID passed during connection-level role assumption. Requires `roleName`.                |
-| `webIdentityTokenFile` | Path to a web identity token used during connection-level role assumption. Requires `roleName`. |
+| Field                  | Type     | Required | Description                                                                                     |
+| ---------------------- | -------- | -------- | ----------------------------------------------------------------------------------------------- |
+| `roleName`             | `string` | No       | Role to assume in an account that does not have its own authentication entry.                   |
+| `partition`            | `string` | No       | AWS partition for connection-level role assumption. Requires `roleName`.                        |
+| `region`               | `string` | No       | AWS region associated with connection-level role assumption. Requires `roleName`.               |
+| `externalId`           | `string` | No       | External ID passed during connection-level role assumption. Requires `roleName`.                |
+| `webIdentityTokenFile` | `string` | No       | Path to a web identity token used during connection-level role assumption. Requires `roleName`. |
 
 `externalId` and `webIdentityTokenFile` are mutually exclusive.
 
@@ -56,18 +54,18 @@ All AWS connection fields are optional:
 
 The `account` method supports these fields:
 
-| Field                  | Purpose                                                                                         |
-| ---------------------- | ----------------------------------------------------------------------------------------------- |
-| `accountId`            | AWS account number represented by the entry. Required unless `mainAccount` is `true`.           |
-| `mainAccount`          | Marks the entry as the fallback and source of credentials for connection-level role assumption. |
-| `accessKeyId`          | Static access key ID. Must be configured with `secretAccessKey`.                                |
-| `secretAccessKey`      | Static secret access key. Must be configured with `accessKeyId`.                                |
-| `profile`              | Local AWS profile used for the account.                                                         |
-| `roleName`             | Role to assume in this entry's account.                                                         |
-| `partition`            | AWS partition for the entry's role. Requires `roleName`.                                        |
-| `region`               | AWS region for the account or role.                                                             |
-| `externalId`           | External ID passed when assuming the entry's role. Requires `roleName`.                         |
-| `webIdentityTokenFile` | Path to a web identity token used when assuming the entry's role. Requires `roleName`.          |
+| Field                  | Type      | Required    | Description                                                                                                                                   |
+| ---------------------- | --------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `accountId`            | `string`  | Conditional | AWS account number represented by the entry. Required unless `mainAccount` is `true`.                                                         |
+| `mainAccount`          | `boolean` | Conditional | Marks the entry as the fallback and source of credentials for connection-level role assumption. Set it to `true` when `accountId` is omitted. |
+| `accessKeyId`          | `string`  | No          | Static access key ID. Must be configured with `secretAccessKey`.                                                                              |
+| `secretAccessKey`      | `string`  | No          | Static secret access key. Must be configured with `accessKeyId`.                                                                              |
+| `profile`              | `string`  | No          | Local AWS profile used for the account.                                                                                                       |
+| `roleName`             | `string`  | No          | Role to assume in this entry's account.                                                                                                       |
+| `partition`            | `string`  | No          | AWS partition for the entry's role. Requires `roleName`.                                                                                      |
+| `region`               | `string`  | No          | AWS region for the account or role.                                                                                                           |
+| `externalId`           | `string`  | No          | External ID passed when assuming the entry's role. Requires `roleName`.                                                                       |
+| `webIdentityTokenFile` | `string`  | No          | Path to a web identity token used when assuming the entry's role. Requires `roleName`.                                                        |
 
 The AWS type validates the complete connection:
 
@@ -94,6 +92,10 @@ Selection follows this order:
 
 A malformed ARN causes an `InputError` instead of falling back to the main
 account.
+
+[Plugin scoping](../concepts.md#plugin-scoping) can restrict which account
+entries a plugin can see. The selection order applies only to the entries that
+remain visible to that plugin.
 
 ## Consume an AWS connection
 

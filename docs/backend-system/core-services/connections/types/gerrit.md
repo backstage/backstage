@@ -24,19 +24,20 @@ connections:
 
 ## Connection fields
 
-| Field            | Required | Purpose                                                  |
-| ---------------- | -------- | -------------------------------------------------------- |
-| `host`           | Yes      | Gerrit host matched against the consumer's resource URL. |
-| `baseUrl`        | No       | Base URL of the Gerrit instance.                         |
-| `gitilesBaseUrl` | Yes      | Base URL used to access repositories through Gitiles.    |
-| `cloneUrl`       | No       | Alternative base URL used to clone repositories.         |
+| Field            | Type     | Required | Description                                              |
+| ---------------- | -------- | -------- | -------------------------------------------------------- |
+| `host`           | `string` | Yes      | Gerrit host matched against the consumer's resource URL. |
+| `baseUrl`        | `string` | No       | Base URL of the Gerrit instance.                         |
+| `gitilesBaseUrl` | `string` | Yes      | Base URL used to access repositories through Gitiles.    |
+| `cloneUrl`       | `string` | No       | Alternative base URL used to clone repositories.         |
 
 ## Authentication methods
 
-| Method  | Required fields        | Optional fields |
-| ------- | ---------------------- | --------------- |
-| `none`  | None                   | None            |
-| `basic` | `username`, `password` | None            |
+| Method  | Field      | Type     | Required | Description                            |
+| ------- | ---------- | -------- | -------- | -------------------------------------- |
+| `none`  | None       | —        | —        | Does not accept authentication fields. |
+| `basic` | `username` | `string` | Yes      | Gerrit username.                       |
+| `basic` | `password` | `string` | Yes      | Gerrit password.                       |
 
 Use `none` explicitly when Gerrit and Gitiles permit unauthenticated access.
 
@@ -47,7 +48,10 @@ a Gerrit URL. The service selects the connection whose `host` matches the
 parsed URL host exactly.
 
 When more than one authentication entry is visible to the calling plugin, the
-first visible entry is selected.
+first visible entry is selected. Use
+[plugin scoping](../concepts.md#plugin-scoping) to supply different credentials
+to a specific plugin; otherwise, configuration order determines which entry is
+selected.
 
 ## Consume a Gerrit connection
 

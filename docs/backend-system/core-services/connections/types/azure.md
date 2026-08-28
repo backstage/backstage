@@ -23,18 +23,25 @@ connections:
 
 ## Connection fields
 
-| Field  | Required | Purpose                                                        |
-| ------ | -------- | -------------------------------------------------------------- |
-| `host` | Yes      | Azure DevOps host matched against the consumer's resource URL. |
+| Field  | Type     | Required | Description                                                    |
+| ------ | -------- | -------- | -------------------------------------------------------------- |
+| `host` | `string` | Yes      | Azure DevOps host matched against the consumer's resource URL. |
 
 ## Authentication methods
 
-| Method              | Required fields                        | Optional fields                               |
-| ------------------- | -------------------------------------- | --------------------------------------------- |
-| `none`              | None                                   | None                                          |
-| `pat`               | `personalAccessToken`                  | `orgs`                                        |
-| `clientCredentials` | `clientId`, `clientSecret`, `tenantId` | `orgs`                                        |
-| `managedIdentity`   | `clientId`                             | `tenantId`, `managedIdentityClientId`, `orgs` |
+| Method              | Field                     | Type       | Required | Description                                                                 |
+| ------------------- | ------------------------- | ---------- | -------- | --------------------------------------------------------------------------- |
+| `none`              | None                      | —          | —        | Does not accept authentication fields.                                      |
+| `pat`               | `personalAccessToken`     | `string`   | Yes      | Azure DevOps personal access token.                                         |
+| `pat`               | `orgs`                    | `string[]` | No       | Azure DevOps organizations using the token.                                 |
+| `clientCredentials` | `clientId`                | `string`   | Yes      | Microsoft Entra ID client ID.                                               |
+| `clientCredentials` | `clientSecret`            | `string`   | Yes      | Microsoft Entra ID client secret.                                           |
+| `clientCredentials` | `tenantId`                | `string`   | Yes      | Microsoft Entra ID tenant ID.                                               |
+| `clientCredentials` | `orgs`                    | `string[]` | No       | Azure DevOps organizations using the credentials.                           |
+| `managedIdentity`   | `clientId`                | `string`   | Yes      | Client ID of the managed identity or app registration to authenticate as.   |
+| `managedIdentity`   | `tenantId`                | `string`   | No       | Microsoft Entra ID tenant ID used with a managed identity client assertion. |
+| `managedIdentity`   | `managedIdentityClientId` | `string`   | No       | Client ID of the identity generating the assertion, or `system-assigned`.   |
+| `managedIdentity`   | `orgs`                    | `string[]` | No       | Azure DevOps organizations using the identity.                              |
 
 `orgs` is returned to consumers as static configuration. The connection
 service does not use it when selecting an Azure authentication entry. A
@@ -52,8 +59,9 @@ the parsed URL host exactly.
 
 When more than one authentication entry is visible to the calling plugin, the
 first visible entry is selected. Use
-[plugin scoping](../concepts.md#plugin-scoping) or configuration order to make
-selection deterministic.
+[plugin scoping](../concepts.md#plugin-scoping) to supply different credentials
+to a specific plugin; otherwise, configuration order determines which entry is
+selected.
 
 ## Consume an Azure DevOps connection
 

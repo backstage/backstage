@@ -144,9 +144,9 @@ connection configuration.
 
 ## Plugin scoping
 
-_Plugin scoping_ applies connection-level and authentication-level
-`match.plugins` rules to the calling plugin's service instance. Credentials
-excluded by a rule never reach the plugin.
+_Plugin scoping_ uses `match.plugins` rules to control which connections and
+credentials each plugin can see. Credentials that do not match a plugin are
+not available to it.
 
 This scoping supports cases such as:
 
@@ -161,7 +161,66 @@ Backstage permission framework or the external system's own authorization.
 
 ## What happens during `find`
 
-A lookup follows this order:
+After a plugin declares a connection type and receives its plugin-scoped
+connection service, it calls `find` when it needs to access that external
+system. The plugin identifies the connection type, describes the resource with
+a [lookup query](#lookup-queries), and lists the
+[authentication methods](#authentication-method) it knows how to handle. The
+service uses those inputs to select one configured connection and one
+authentication entry.
+
+For example, a host lookup uses the URL in the query to find the connection
+with the same host.
+
+**Given this config**
+
+```yaml title="app-config.yaml"
+connections:
+  - type: github
+    title: GitHub.com
+    host: github.com
+    apiBaseUrl: https://api.github.com
+    rawBaseUrl: https://raw.githubusercontent.com
+    auth:
+      - method: token
+        title: Catalog token
+        token: ${GITHUB_TOKEN}
+```
+
+**And this `find` call**
+
+```ts
+const connection = await connections.find({
+  type: 'github',
+  query: {
+    url: 'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
+  },
+  authMethods: ['token'],
+});
+```
+
+**We get this**
+
+```ts
+{
+  type: 'github',
+  title: 'GitHub.com',
+  host: 'github.com',
+  apiBaseUrl: 'https://api.github.com',
+  rawBaseUrl: 'https://raw.githubusercontent.com',
+  auth: {
+    method: 'token',
+    title: 'Catalog token',
+    token: '<value of GITHUB_TOKEN>',
+  },
+}
+```
+
+The query is used for selection and is not included in the result. The
+configured `auth` array is replaced by the one authentication entry selected
+for this lookup.
+
+The service produces that result in this order:
 
 1. The runtime checks that the calling plugin or module declared the requested
    type.
@@ -184,35 +243,40 @@ filter candidates before type-specific authentication selection. If the type
 selects a method that the consumer did not list, the lookup fails instead of
 silently returning another credential.
 
-## Credential APIs
+## Limitations
 
-A _credential API_ turns static authentication configuration into a usable
-dynamic credential when a method requires exchange, refresh, or caching.
-Connections return configuration data as it appears after schema validation.
+Connections only manage static connection and authentication configuration.
+The connection service validates that configuration, selects the relevant
+entry, and returns its fields. It does not manage the lifecycle of the returned
+authentication values.
 
 Connection authentication values are static configuration or bootstrap
-material. They are not guaranteed to remain valid credentials. The connection
-service does not track expiration, refresh credentials, or reload a replacement
-value when it changes outside the running backend.
+material. They are not guaranteed to remain valid credentials. In particular,
+the connection service does not:
 
-For a token method, the returned value can be directly usable when the lookup
-completes, but the connection service does not guarantee that it remains valid.
-For an application, role, profile, or managed identity method, the returned
-fields are inputs to a credential API.
+- Check whether a configured token is valid or expired.
+- Exchange application, role, or identity configuration for a short-lived
+  credential.
+- Refresh or cache dynamic credentials.
+- Reload a token when its value changes outside the running backend.
 
-For example, a GitHub `app` entry contains the application ID and private key.
-It is not a GitHub installation token. A GitHub credential provider must use
-those fields to obtain and cache an installation token.
+A configured token may be directly usable, but the consumer is responsible for
+handling rejection or expiration. Other methods, such as an application, role,
+profile, or managed identity, return the fields needed by a separate credential
+provider.
 
-Keep this boundary in mind when designing consumers:
+For example, a GitHub `app` entry returns the application ID and private key. It
+does not return a GitHub installation token. A GitHub credential provider must
+use those fields to obtain, cache, and refresh an installation token.
+
+Keep this limitation in mind when designing consumers:
 
 - Use connections to locate an endpoint and select static authentication
   configuration.
-- Use a type-specific credential provider to exchange, refresh, or cache
-  dynamic credentials.
+- Pass bootstrap fields to a service-specific credential provider when token
+  exchange, refresh, or caching is required.
 - Treat a directly configured token as static. If it expires or is replaced,
-  update the configuration and restart the backend, unless a credential API or
-  custom connection service provides a dynamic lifecycle.
+  update the configuration and restart the backend.
 - Use a client factory to construct a service-specific API client.
 - Never send connection authentication values to the frontend or include them
   in logs.
