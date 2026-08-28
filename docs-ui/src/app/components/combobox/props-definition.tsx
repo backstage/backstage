@@ -142,6 +142,12 @@ export const comboboxPropDefs: Record<string, PropDef> = {
     description:
       'Allows unmatched text to remain in the input when committed. No option is selected for the custom text.',
   },
+  menuTrigger: {
+    type: 'enum',
+    values: ['focus', 'input', 'manual'],
+    default: 'focus',
+    description: 'Controls the interaction that opens the suggestions popover.',
+  },
   value: {
     type: 'enum',
     values: ['Key', 'T', 'null'],
