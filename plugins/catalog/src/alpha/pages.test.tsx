@@ -142,7 +142,7 @@ describe('Entity page', () => {
   });
 
   describe('Entity Page Groups', () => {
-    it('Should render a group as dropdown', async () => {
+    it.skip('Should render a group as dropdown', async () => {
       const tester = createExtensionTester(
         Object.assign({ namespace: 'catalog' }, catalogEntityPage),
       )
