@@ -878,10 +878,25 @@ export class PgConnector implements Connector {
   }
 
   async shutdown(): Promise<void> {
-    await Promise.all([
+    const results = await Promise.allSettled([
       this.databaseAdminPool.shutdown(),
       this.schemaAdminPool.shutdown(),
     ]);
+    const errors = results
+      .filter(
+        (result): result is PromiseRejectedResult =>
+          result.status === 'rejected',
+      )
+      .map(result => result.reason);
+    if (errors.length === 1) {
+      throw errors[0];
+    }
+    if (errors.length > 1) {
+      throw new AggregateError(
+        errors,
+        'Failed to shut down PostgreSQL admin pools',
+      );
+    }
   }
 
   async getClient(

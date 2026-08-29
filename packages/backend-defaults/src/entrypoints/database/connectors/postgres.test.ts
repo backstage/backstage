@@ -1247,6 +1247,59 @@ describe('postgres', () => {
         'Failed to destroy PostgreSQL admin pool clients',
       );
     });
+
+    it('waits for both admin pools to shut down before reporting failure', async () => {
+      let releaseSchemaDestroy!: () => void;
+      const schemaDestroyBlocker = new Promise<void>(resolve => {
+        releaseSchemaDestroy = resolve;
+      });
+      const databaseAdmin = {
+        from: jest.fn().mockReturnValue({
+          where: jest.fn().mockReturnValue({
+            count: jest.fn().mockResolvedValue([{ count: '1' }]),
+          }),
+        }),
+        destroy: jest.fn().mockRejectedValue(new Error('destroy failed')),
+      } as unknown as Knex;
+      const schemaAdmin = {
+        raw: jest.fn().mockResolvedValue(undefined),
+        destroy: jest.fn().mockReturnValue(schemaDestroyBlocker),
+      } as unknown as Knex;
+      const createAdminClient = jest
+        .fn()
+        .mockResolvedValueOnce(databaseAdmin)
+        .mockResolvedValueOnce(schemaAdmin);
+      const connector = new PgConnector(
+        new ConfigReader({
+          client: 'pg',
+          connection: { host: 'localhost', database: 'shared' },
+          pluginDivisionMode: 'schema',
+          ensureSchemaExists: true,
+        }),
+        'backstage_plugin_',
+        { createAdminClient },
+      );
+      const client = await connector.getClient('plugin1', deps);
+
+      const shutdownSettled = jest.fn();
+      const shutdown = connector.shutdown().then(
+        () => shutdownSettled(),
+        error => shutdownSettled(error),
+      );
+      for (let i = 0; i < 10; i++) {
+        await Promise.resolve();
+      }
+      expect(shutdownSettled).not.toHaveBeenCalled();
+
+      releaseSchemaDestroy();
+      await shutdown;
+      expect(shutdownSettled).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'Failed to destroy PostgreSQL admin pool clients',
+        }),
+      );
+      await client.destroy();
+    });
   });
 
   describe('getPgConnectionConfig', () => {
