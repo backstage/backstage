@@ -142,7 +142,7 @@ jobs:
         run: node scripts/verify-plugin-directory.js
 
       - name: test release scripts
-        run: yarn node --test scripts/create-github-release.test.js
+        run: yarn node --test scripts/create-github-release.test.js scripts/find-latest-stable-release.test.js
 
       - name: build all packages
         run: yarn backstage-cli repo build --all
