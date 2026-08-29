@@ -23,7 +23,8 @@ jobs:
         with:
           script: |
             const version = process.env.RELEASE_VERSION;
-            const validVersion = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/.test(version);
+            // Numeric prerelease identifiers must not contain leading zeroes.
+            const validVersion = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-(?:(?:0|[1-9]\d*)|(?:\d*[A-Za-z-][0-9A-Za-z-]*))(?:\.(?:(?:0|[1-9]\d*)|(?:\d*[A-Za-z-][0-9A-Za-z-]*)))*)?$/.test(version);
             if (!validVersion) {
               core.setFailed('Invalid release version');
               return;
