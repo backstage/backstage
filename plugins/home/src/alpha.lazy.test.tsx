@@ -20,8 +20,8 @@ describe('home alpha entry point', () => {
   });
 
   it('does not load visit tracking UI unless it is enabled', () => {
-    jest.doMock('./components/', () => {
-      throw new Error('home components were loaded eagerly');
+    jest.doMock('./components/VisitListener', () => {
+      throw new Error('visit listener was loaded eagerly');
     });
 
     jest.isolateModules(() => {
