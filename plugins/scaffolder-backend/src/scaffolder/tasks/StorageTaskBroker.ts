@@ -37,12 +37,7 @@ import {
   WorkspaceProvider,
   UpdateTaskCheckpointOptions,
 } from '@backstage/plugin-scaffolder-node/alpha';
-import {
-  HumanDuration,
-  JsonObject,
-  Observable,
-  createDeferred,
-} from '@backstage/types';
+import { HumanDuration, JsonObject, Observable } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 import {
   DefaultWorkspaceService,
@@ -345,7 +340,7 @@ export class StorageTaskBroker implements TaskBroker {
     return await this.storage.list(options ?? {});
   }
 
-  private deferredDispatch = createDeferred();
+  private readonly dispatchWaiters = new Set<() => void>();
 
   private async registerCancellable(
     taskId: string,
@@ -406,8 +401,9 @@ export class StorageTaskBroker implements TaskBroker {
   /**
    * {@inheritdoc TaskBroker.claim}
    */
-  async claim(): Promise<TaskContext> {
+  async claim(options?: { signal?: AbortSignal }): Promise<TaskContext> {
     for (;;) {
+      options?.signal?.throwIfAborted();
       const pendingTask = await this.storage.claimTask();
       if (pendingTask) {
         const abortController = new AbortController();
@@ -428,7 +424,7 @@ export class StorageTaskBroker implements TaskBroker {
         );
       }
 
-      await this.waitForDispatch();
+      await this.waitForDispatch(options?.signal);
     }
   }
 
@@ -526,13 +522,37 @@ export class StorageTaskBroker implements TaskBroker {
     );
   }
 
-  private waitForDispatch() {
-    return this.deferredDispatch;
+  private waitForDispatch(signal?: AbortSignal) {
+    return new Promise<void>((resolve, reject) => {
+      const onDispatch = () => {
+        cleanup();
+        resolve();
+      };
+      const onAbort = () => {
+        cleanup();
+        reject(signal?.reason);
+      };
+      const dispatchWaiters = this.dispatchWaiters;
+
+      function cleanup() {
+        dispatchWaiters.delete(onDispatch);
+        signal?.removeEventListener('abort', onAbort);
+      }
+
+      this.dispatchWaiters.add(onDispatch);
+      signal?.addEventListener('abort', onAbort, { once: true });
+      if (signal?.aborted) {
+        onAbort();
+      }
+    });
   }
 
   private signalDispatch() {
-    this.deferredDispatch.resolve();
-    this.deferredDispatch = createDeferred();
+    const waiters = [...this.dispatchWaiters];
+    this.dispatchWaiters.clear();
+    for (const waiter of waiters) {
+      waiter();
+    }
   }
 
   async cancel(taskId: string) {
