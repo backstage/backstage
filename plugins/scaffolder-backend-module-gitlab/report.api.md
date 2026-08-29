@@ -289,6 +289,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     reviewers?: string[] | undefined;
     assignReviewersFromApprovalRules?: boolean | undefined;
     labels?: string | string[] | undefined;
+    autoMerge?: boolean | undefined;
   },
   {
     targetBranchName: string;
