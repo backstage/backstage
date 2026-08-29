@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-import { EntityIconLinkBlueprint } from '@backstage/plugin-catalog-react/alpha';
-import { useCatalogSourceIconLinkProps } from '../components/AboutCard/useCatalogSourceIconLinkProps';
+describe('home alpha entry point', () => {
+  beforeEach(() => {
+    jest.resetModules();
+  });
 
-const catalogViewSourceEntityIconLink = EntityIconLinkBlueprint.make({
-  name: 'view-source',
-  params: {
-    useProps: useCatalogSourceIconLinkProps,
-  },
+  it('does not load visit tracking UI unless it is enabled', () => {
+    jest.doMock('./components/', () => {
+      throw new Error('home components were loaded eagerly');
+    });
+
+    jest.isolateModules(() => {
+      expect(() => require('./alpha')).not.toThrow();
+    });
+  });
 });
-
-export default [catalogViewSourceEntityIconLink];
