@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder-backend': major
+'@backstage/plugin-scaffolder-backend': minor
 ---
 
 **BREAKING** This change alters the bucket boundaries of the `scaffolder.task.duration` and `scaffolder.step.duration` OpenTelemetry histogram metrics. If you have dashboards or alerts that depend on a boundary that this change removes (e.g. `le="25"`) for these metrics, they will need to be updated.
