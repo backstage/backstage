@@ -642,6 +642,50 @@ describe('TaskWorker internals', () => {
     expect(claimedTaskCount).toBe(3);
     expect(inflightTasks.length).toBe(2);
   });
+
+  it('should keep claiming tasks after a claim fails', async () => {
+    const workflowRunner: WorkflowRunner = {
+      // Never resolves, so the worker parks at its concurrency limit once it
+      // has successfully claimed a task.
+      execute() {
+        return new Promise<never>(() => {});
+      },
+    };
+
+    let claimedTaskCount = 0;
+    const taskWorker = new TaskWorkerConstructor({
+      runners: { workflowRunner },
+      logger: mockServices.logger.mock(),
+      taskBroker: {
+        event$() {
+          return new ObservableImpl<{ events: SerializedTaskEvent[] }>(
+            () => {},
+          );
+        },
+        async claim() {
+          claimedTaskCount++;
+          if (claimedTaskCount === 1) {
+            throw new Error('Connection terminated unexpectedly');
+          }
+          return {
+            spec: {
+              apiVersion: 'scaffolder.backstage.io/v1beta3',
+            },
+            createdBy: 'test',
+            async complete(_result, _metadata) {},
+          } as TaskContext;
+        },
+      } as unknown as TaskBroker,
+      concurrentTasksLimit: 1,
+    });
+
+    taskWorker.start();
+
+    // The first claim rejects. The worker must retry rather than stop for good.
+    await waitForExpect(() => {
+      expect(claimedTaskCount).toBe(2);
+    });
+  });
 });
 
 describe('createParameterTruncator', () => {
