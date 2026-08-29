@@ -33,11 +33,16 @@ type EntityPageDocsProps = {
    * Show or hide the content search bar, defaults to true.
    */
   withSearch?: boolean;
+  /**
+   * Show or hide the feedback button, defaults to true.
+   */
+  withFeedbackLink?: boolean;
 };
 
 export const EntityPageDocs = ({
   entity,
   withSearch = true,
+  withFeedbackLink,
 }: EntityPageDocsProps) => {
   let entityRef = getCompoundEntityRef(entity);
 
@@ -60,6 +65,7 @@ export const EntityPageDocs = ({
       <TechDocsReaderPageSubheader />
       <TechDocsReaderPageContent
         withSearch={withSearch}
+        withFeedbackLink={withFeedbackLink}
         searchResultUrlMapper={searchResultUrlMapper}
         defaultPath={defaultPath}
       />

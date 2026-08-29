@@ -23,17 +23,18 @@ import { TechDocsReaderContent } from './TechDocsReaderContent';
 export type TechDocsReaderLayoutProps = {
   withHeader?: boolean;
   withSearch?: boolean;
+  withFeedbackLink?: boolean;
 };
 
 export const TechDocsReaderLayout = (props: TechDocsReaderLayoutProps) => {
-  const { withSearch, withHeader = true } = props;
+  const { withSearch, withHeader = true, withFeedbackLink } = props;
   return (
     <>
       {withHeader && <TechDocsReaderHeader withSearch={withSearch} />}
       <Container mt="6">
         <TechDocsReaderEntityCard withSearch={!withHeader && withSearch} />
         <TechDocsReaderPageSubheader />
-        <TechDocsReaderContent />
+        <TechDocsReaderContent withFeedbackLink={withFeedbackLink} />
       </Container>
     </>
   );

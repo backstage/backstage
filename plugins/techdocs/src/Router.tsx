@@ -80,16 +80,23 @@ export const EmbeddedDocsRouter = (
   props: PropsWithChildren<{
     emptyState?: ReactElement;
     withSearch?: boolean;
+    withFeedbackLink?: boolean;
   }>,
 ) => {
-  const { children, emptyState, withSearch = true } = props;
+  const { children, emptyState, withSearch = true, withFeedbackLink } = props;
   const { entity } = useEntity();
 
   // Using objects instead of <Route> elements, otherwise "outlet" will be null on sub-pages and add-ons won't render
   const element = useRoutes([
     {
       path: '/*',
-      element: <EntityPageDocs entity={entity} withSearch={withSearch} />,
+      element: (
+        <EntityPageDocs
+          entity={entity}
+          withSearch={withSearch}
+          withFeedbackLink={withFeedbackLink}
+        />
+      ),
       children: [
         {
           path: '*',
