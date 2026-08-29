@@ -503,6 +503,15 @@ function requirePgConnectionString() {
   }
 }
 
+const PG_DATABASE_ADMIN_OVERRIDES: Knex.Config = {
+  connection: { database: 'postgres' },
+  pool: { min: 0, max: 1, acquireTimeoutMillis: 10000 },
+};
+
+const PG_SCHEMA_ADMIN_OVERRIDES: Knex.Config = {
+  pool: { min: 0, max: 1, acquireTimeoutMillis: 10000 },
+};
+
 /**
  * Creates the missing Postgres database if it does not exist
  *
@@ -531,15 +540,6 @@ export async function ensurePgDatabaseExists(
     }),
   );
 }
-
-const PG_DATABASE_ADMIN_OVERRIDES: Knex.Config = {
-  connection: { database: 'postgres' },
-  pool: { min: 0, max: 1, acquireTimeoutMillis: 10000 },
-};
-
-const PG_SCHEMA_ADMIN_OVERRIDES: Knex.Config = {
-  pool: { min: 0, max: 1, acquireTimeoutMillis: 10000 },
-};
 
 async function ensurePgDatabase(admin: Knex, database: string): Promise<void> {
   const result = await admin
