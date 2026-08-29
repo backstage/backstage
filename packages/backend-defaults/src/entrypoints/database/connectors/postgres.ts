@@ -38,6 +38,131 @@ import { TokenCredential } from '@azure/identity';
 // Limits the number of concurrent DDL operations to 1
 const ddlLimiter = limiterFactory(1);
 
+export class PgAdminPool {
+  private client?: Promise<Knex>;
+  private destruction?: Promise<void>;
+  private readonly destructionErrors: unknown[] = [];
+  private idleTimer?: NodeJS.Timeout;
+  private readonly operations = new Set<Promise<unknown>>();
+  private isShutdown = false;
+
+  constructor(
+    private readonly createClient: () => Promise<Knex>,
+    private readonly idleTimeoutMillis: number,
+  ) {}
+
+  async run<T>(operation: (client: Knex) => Promise<T> | T): Promise<T> {
+    if (this.isShutdown) {
+      throw new Error('PostgreSQL admin pool is shut down');
+    }
+
+    clearTimeout(this.idleTimer);
+    this.idleTimer = undefined;
+
+    const operationPromise = this.runOperation(operation);
+    this.operations.add(operationPromise);
+    try {
+      return await operationPromise;
+    } finally {
+      this.operations.delete(operationPromise);
+      this.scheduleIdleDestroy();
+    }
+  }
+
+  async shutdown(): Promise<void> {
+    this.isShutdown = true;
+    clearTimeout(this.idleTimer);
+    this.idleTimer = undefined;
+
+    await Promise.allSettled(this.operations);
+    await this.destroyClient().catch(() => {});
+    if (this.destructionErrors.length > 0) {
+      throw new AggregateError(
+        this.destructionErrors,
+        'Failed to destroy PostgreSQL admin pool clients',
+      );
+    }
+  }
+
+  async invalidate(): Promise<void> {
+    clearTimeout(this.idleTimer);
+    this.idleTimer = undefined;
+
+    await Promise.allSettled(this.operations);
+    await this.destroyClient();
+  }
+
+  private async runOperation<T>(
+    operation: (client: Knex) => Promise<T> | T,
+  ): Promise<T> {
+    if (this.destruction) {
+      await this.destruction;
+    }
+    if (this.isShutdown) {
+      throw new Error('PostgreSQL admin pool is shut down');
+    }
+
+    let clientPromise = this.client;
+    if (!clientPromise) {
+      clientPromise = this.createClient();
+      this.client = clientPromise;
+      void clientPromise.catch(() => {
+        if (this.client === clientPromise) {
+          this.client = undefined;
+        }
+      });
+    }
+    return operation(await clientPromise);
+  }
+
+  private scheduleIdleDestroy(): void {
+    if (this.isShutdown || this.operations.size > 0) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      if (this.idleTimer === timer) {
+        this.idleTimer = undefined;
+        void this.destroyClient().catch(() => {});
+      }
+    }, this.idleTimeoutMillis);
+    timer.unref();
+    this.idleTimer = timer;
+  }
+
+  private destroyClient(): Promise<void> {
+    if (this.destruction) {
+      return this.destruction;
+    }
+
+    const clientPromise = this.client;
+    this.client = undefined;
+    if (!clientPromise) {
+      return Promise.resolve();
+    }
+
+    const destruction = clientPromise.then(
+      client => client.destroy(),
+      () => undefined,
+    );
+    this.destruction = destruction;
+    void destruction.then(
+      () => {
+        if (this.destruction === destruction) {
+          this.destruction = undefined;
+        }
+      },
+      error => {
+        if (this.destruction === destruction) {
+          this.destruction = undefined;
+          this.destructionErrors.push(error);
+        }
+      },
+    );
+    return destruction;
+  }
+}
+
 /**
  * Creates a knex postgres database connection
  *
@@ -388,54 +513,77 @@ export async function ensurePgDatabaseExists(
   dbConfig: Config,
   ...databases: Array<string>
 ) {
-  // Implements a single existence check attempt
-  const ensureDatabase = async (database: string) => {
-    const admin = await createPgDatabaseClient(dbConfig, {
-      connection: {
-        database: 'postgres',
-      },
-      pool: {
-        min: 0,
-        max: 1,
-        acquireTimeoutMillis: 10000,
-      },
-    });
-
-    try {
-      const result = await admin
-        .from('pg_database')
-        .where('datname', database)
-        .count<Record<string, { count: string }>>();
-
-      if (parseInt(result[0].count, 10) > 0) {
-        return;
-      }
-
-      await admin.raw(`CREATE DATABASE ??`, [database]);
-    } finally {
-      await admin.destroy();
-    }
-  };
-
   await Promise.all(
     databases.map(async database => {
-      // For initial setup we use a smaller timeout but several retries. Given that this
-      // is a separate connection pool we should never really run into issues with connection
-      // acquisition timeouts, but we do anyway. This might be a bug in knex or some other dependency.
-      const maxAttempts = 3;
-      for (let attempt = 1; ; attempt++) {
-        try {
-          return await ddlLimiter(() => ensureDatabase(database));
-        } catch (err) {
-          if (attempt >= maxAttempts) {
-            throw err;
-          } else {
-            await new Promise(resolve => setTimeout(resolve, 100));
+      return retryPgAdminOperation(() =>
+        ddlLimiter(async () => {
+          const admin = await createPgDatabaseClient(
+            dbConfig,
+            PG_DATABASE_ADMIN_OVERRIDES,
+          );
+          try {
+            await ensurePgDatabase(admin, database);
+          } finally {
+            await admin.destroy();
           }
-        }
-      }
+        }),
+      );
     }),
   );
+}
+
+const PG_DATABASE_ADMIN_OVERRIDES: Knex.Config = {
+  connection: { database: 'postgres' },
+  pool: { min: 0, max: 1, acquireTimeoutMillis: 10000 },
+};
+
+const PG_SCHEMA_ADMIN_OVERRIDES: Knex.Config = {
+  pool: { min: 0, max: 1, acquireTimeoutMillis: 10000 },
+};
+
+async function ensurePgDatabase(admin: Knex, database: string): Promise<void> {
+  const result = await admin
+    .from('pg_database')
+    .where('datname', database)
+    .count<Record<string, { count: string }>>();
+
+  if (parseInt(result[0].count, 10) === 0) {
+    await admin.raw(`CREATE DATABASE ??`, [database]);
+  }
+}
+
+async function retryPgAdminOperation(
+  operation: () => Promise<void>,
+): Promise<void> {
+  // For initial setup we use a smaller timeout but several retries. Given that this
+  // is a separate connection pool we should never really run into issues with connection
+  // acquisition timeouts, but we do anyway. This might be a bug in knex or some other dependency.
+  const maxAttempts = 3;
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      if (attempt >= maxAttempts) {
+        throw error;
+      }
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+  }
+}
+
+async function ensurePgSchema(
+  admin: Knex,
+  role: string | undefined,
+  schema: string,
+): Promise<void> {
+  if (role) {
+    await admin.raw(`CREATE SCHEMA IF NOT EXISTS ?? AUTHORIZATION ??`, [
+      schema,
+      role,
+    ]);
+  } else {
+    await admin.raw(`CREATE SCHEMA IF NOT EXISTS ??`, [schema]);
+  }
 }
 
 /**
@@ -452,19 +600,10 @@ export async function ensurePgSchemaExists(
   const role = dbConfig.getOptionalString('role');
 
   try {
-    const ensureSchema = async (database: string) => {
-      if (role) {
-        await admin.raw(`CREATE SCHEMA IF NOT EXISTS ?? AUTHORIZATION ??`, [
-          database,
-          role,
-        ]);
-      } else {
-        await admin.raw(`CREATE SCHEMA IF NOT EXISTS ??`, [database]);
-      }
-    };
-
     await Promise.all(
-      schemas.map(database => ddlLimiter(() => ensureSchema(database))),
+      schemas.map(schema =>
+        ddlLimiter(() => ensurePgSchema(admin, role, schema)),
+      ),
     );
   } finally {
     await admin.destroy();
@@ -669,22 +808,50 @@ export class PgConnector implements Connector {
   private readonly config: Config;
   private readonly prefix: string;
   private readonly databaseEnsureCache = new Map<string, Promise<void>>();
-  private readonly ensureDatabaseExists: typeof ensurePgDatabaseExists;
+  private readonly customEnsureDatabaseExists?: typeof ensurePgDatabaseExists;
+  private readonly databaseAdminPool: PgAdminPool;
+  private readonly schemaAdminPool: PgAdminPool;
 
   constructor(
     config: Config,
     prefix: string,
-    ensureDatabaseExists: typeof ensurePgDatabaseExists = ensurePgDatabaseExists,
+    options: {
+      ensureDatabaseExists?: typeof ensurePgDatabaseExists;
+      createAdminClient?: (overrides: Knex.Config) => Promise<Knex>;
+      adminPoolIdleTimeoutMillis?: number;
+    } = {},
   ) {
     this.config = config;
     this.prefix = prefix;
-    this.ensureDatabaseExists = ensureDatabaseExists;
+    this.customEnsureDatabaseExists = options.ensureDatabaseExists;
+
+    const createAdminClient =
+      options.createAdminClient ??
+      ((overrides: Knex.Config) =>
+        createPgDatabaseClient(this.config, overrides));
+    const idleTimeoutMillis = options.adminPoolIdleTimeoutMillis ?? 10_000;
+    this.databaseAdminPool = new PgAdminPool(
+      () => createAdminClient(PG_DATABASE_ADMIN_OVERRIDES),
+      idleTimeoutMillis,
+    );
+    this.schemaAdminPool = new PgAdminPool(
+      () => createAdminClient(PG_SCHEMA_ADMIN_OVERRIDES),
+      idleTimeoutMillis,
+    );
   }
 
   private async ensureDatabase(databaseName: string): Promise<void> {
     let promise = this.databaseEnsureCache.get(databaseName);
     if (!promise) {
-      promise = this.ensureDatabaseExists(this.config, databaseName);
+      promise = this.customEnsureDatabaseExists
+        ? this.customEnsureDatabaseExists(this.config, databaseName)
+        : retryPgAdminOperation(() =>
+            ddlLimiter(() =>
+              this.runAdminOperation(this.databaseAdminPool, admin =>
+                ensurePgDatabase(admin, databaseName),
+              ),
+            ),
+          );
       this.databaseEnsureCache.set(databaseName, promise);
     }
 
@@ -696,6 +863,25 @@ export class PgConnector implements Connector {
       }
       throw error;
     }
+  }
+
+  private async runAdminOperation<T>(
+    pool: PgAdminPool,
+    operation: (client: Knex) => Promise<T>,
+  ): Promise<T> {
+    try {
+      return await pool.run(operation);
+    } catch (error) {
+      await pool.invalidate();
+      throw error;
+    }
+  }
+
+  async shutdown(): Promise<void> {
+    await Promise.all([
+      this.databaseAdminPool.shutdown(),
+      this.schemaAdminPool.shutdown(),
+    ]);
   }
 
   async getClient(
@@ -724,7 +910,15 @@ export class PgConnector implements Connector {
     if (pluginDbConfig.pluginDivisionMode === 'schema') {
       if (pluginDbConfig.ensureSchemaExists || pluginDbConfig.ensureExists) {
         try {
-          await ensurePgSchemaExists(this.config, pluginId);
+          await ddlLimiter(() =>
+            this.runAdminOperation(this.schemaAdminPool, admin =>
+              ensurePgSchema(
+                admin,
+                this.config.getOptionalString('role'),
+                pluginId,
+              ),
+            ),
+          );
         } catch (error) {
           throw new Error(
             `Failed to connect to the database to make sure that schema for plugin '${pluginId}' exists, ${error}`,

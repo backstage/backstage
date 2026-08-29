@@ -21,6 +21,7 @@ import {
   createPgDatabaseClient,
   getPgConnectionConfig,
   parsePgConnectionString,
+  PgAdminPool,
   PgConnector,
 } from './postgres';
 import { type Knex } from 'knex';
@@ -43,6 +44,206 @@ describe('postgres', () => {
     database: 'foodb',
   });
 
+  describe('PgAdminPool', () => {
+    it('reuses the client between operations within the idle timeout', async () => {
+      const client = { destroy: jest.fn() } as unknown as Knex;
+      const createClient = jest.fn().mockResolvedValue(client);
+      const pool = new PgAdminPool(createClient, 10_000);
+
+      const first = await pool.run((admin: unknown) => admin);
+      const second = await pool.run((admin: unknown) => admin);
+
+      expect(first).toBe(client);
+      expect(second).toBe(client);
+      expect(createClient).toHaveBeenCalledTimes(1);
+      expect(client.destroy).not.toHaveBeenCalled();
+    });
+
+    it('destroys an idle client and recreates it for later work', async () => {
+      jest.useFakeTimers();
+      try {
+        const clients = [
+          { destroy: jest.fn().mockResolvedValue(undefined) },
+          { destroy: jest.fn().mockResolvedValue(undefined) },
+        ] as unknown as Knex[];
+        const createClient = jest
+          .fn()
+          .mockResolvedValueOnce(clients[0])
+          .mockResolvedValueOnce(clients[1]);
+        const pool = new PgAdminPool(createClient, 10_000);
+
+        await pool.run(() => undefined);
+        await jest.advanceTimersByTimeAsync(5_000);
+        await pool.run(() => undefined);
+        await jest.advanceTimersByTimeAsync(9_999);
+        expect(clients[0].destroy).not.toHaveBeenCalled();
+
+        await jest.advanceTimersByTimeAsync(1);
+        expect(clients[0].destroy).toHaveBeenCalledTimes(1);
+
+        const laterClient = await pool.run(admin => admin);
+        expect(laterClient).toBe(clients[1]);
+      } finally {
+        jest.useRealTimers();
+      }
+    });
+
+    it('waits for idle destruction before creating another client', async () => {
+      jest.useFakeTimers();
+      try {
+        let releaseDestroy!: () => void;
+        const destroyBlocker = new Promise<void>(resolve => {
+          releaseDestroy = resolve;
+        });
+        const clients = [
+          { destroy: jest.fn().mockReturnValue(destroyBlocker) },
+          { destroy: jest.fn().mockResolvedValue(undefined) },
+        ] as unknown as Knex[];
+        const createClient = jest
+          .fn()
+          .mockResolvedValueOnce(clients[0])
+          .mockResolvedValueOnce(clients[1]);
+        const pool = new PgAdminPool(createClient, 10_000);
+
+        await pool.run(() => undefined);
+        await jest.advanceTimersByTimeAsync(10_000);
+        expect(clients[0].destroy).toHaveBeenCalledTimes(1);
+
+        const laterOperation = pool.run(admin => admin);
+        await Promise.resolve();
+        expect(createClient).toHaveBeenCalledTimes(1);
+
+        releaseDestroy();
+        await expect(laterOperation).resolves.toBe(clients[1]);
+      } finally {
+        jest.useRealTimers();
+      }
+    });
+
+    it('waits for idle destruction during shutdown', async () => {
+      jest.useFakeTimers();
+      try {
+        let releaseDestroy!: () => void;
+        const destroyBlocker = new Promise<void>(resolve => {
+          releaseDestroy = resolve;
+        });
+        const client = {
+          destroy: jest.fn().mockReturnValue(destroyBlocker),
+        } as unknown as Knex;
+        const pool = new PgAdminPool(
+          jest.fn().mockResolvedValue(client),
+          10_000,
+        );
+
+        await pool.run(() => undefined);
+        await jest.advanceTimersByTimeAsync(10_000);
+
+        const shutdownComplete = jest.fn();
+        const shutdown = pool.shutdown().then(shutdownComplete);
+        for (let i = 0; i < 10; i++) {
+          await Promise.resolve();
+        }
+        expect(shutdownComplete).not.toHaveBeenCalled();
+
+        releaseDestroy();
+        await shutdown;
+        expect(shutdownComplete).toHaveBeenCalledTimes(1);
+      } finally {
+        jest.useRealTimers();
+      }
+    });
+
+    it('recovers after idle destruction fails and reports it on shutdown', async () => {
+      jest.useFakeTimers();
+      try {
+        const clients = [
+          {
+            destroy: jest.fn().mockRejectedValue(new Error('destroy failed')),
+          },
+          { destroy: jest.fn().mockResolvedValue(undefined) },
+        ] as unknown as Knex[];
+        const pool = new PgAdminPool(
+          jest
+            .fn()
+            .mockResolvedValueOnce(clients[0])
+            .mockResolvedValueOnce(clients[1]),
+          10_000,
+        );
+
+        await pool.run(() => undefined);
+        await jest.advanceTimersByTimeAsync(10_000);
+
+        await expect(pool.run(admin => admin)).resolves.toBe(clients[1]);
+        await expect(pool.shutdown()).rejects.toThrow(
+          'Failed to destroy PostgreSQL admin pool clients',
+        );
+      } finally {
+        jest.useRealTimers();
+      }
+    });
+
+    it('destroys the client on shutdown and rejects later work', async () => {
+      const client = {
+        destroy: jest.fn().mockResolvedValue(undefined),
+      } as unknown as Knex;
+      const pool = new PgAdminPool(jest.fn().mockResolvedValue(client), 10_000);
+
+      await pool.run(() => undefined);
+      await pool.shutdown();
+
+      expect(client.destroy).toHaveBeenCalledTimes(1);
+      await expect(pool.run(() => undefined)).rejects.toThrow(
+        'PostgreSQL admin pool is shut down',
+      );
+    });
+
+    it('retries client creation after a failure', async () => {
+      const client = {
+        destroy: jest.fn().mockResolvedValue(undefined),
+      } as unknown as Knex;
+      const createClient = jest
+        .fn()
+        .mockRejectedValueOnce(new Error('connection failed'))
+        .mockResolvedValueOnce(client);
+      const pool = new PgAdminPool(createClient, 10_000);
+
+      await expect(pool.run(() => undefined)).rejects.toThrow(
+        'connection failed',
+      );
+      await expect(pool.run(admin => admin)).resolves.toBe(client);
+      expect(createClient).toHaveBeenCalledTimes(2);
+      await pool.shutdown();
+    });
+
+    it('waits for active operations before shutting down', async () => {
+      const client = {
+        destroy: jest.fn().mockResolvedValue(undefined),
+      } as unknown as Knex;
+      const pool = new PgAdminPool(jest.fn().mockResolvedValue(client), 10_000);
+      let signalStarted!: () => void;
+      const started = new Promise<void>(resolve => {
+        signalStarted = resolve;
+      });
+      let releaseOperation!: () => void;
+      const operationBlocker = new Promise<void>(resolve => {
+        releaseOperation = resolve;
+      });
+      const operation = pool.run(async () => {
+        signalStarted();
+        await operationBlocker;
+      });
+      await started;
+
+      const shutdown = pool.shutdown();
+      await Promise.resolve();
+      expect(client.destroy).not.toHaveBeenCalled();
+
+      releaseOperation();
+      await Promise.all([operation, shutdown]);
+      expect(client.destroy).toHaveBeenCalledTimes(1);
+    });
+  });
+
   const createMockConnectionString = () =>
     'postgresql://foo:bar@acme:5432/foodb';
 
@@ -50,6 +251,10 @@ describe('postgres', () => {
     new ConfigReader({ client: 'pg', connection });
 
   describe('buildPgDatabaseConfig', () => {
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
     it('builds a postgres config', async () => {
       const mockConnection = createMockConnection();
 
@@ -862,7 +1067,7 @@ describe('postgres', () => {
       const connector = new PgConnector(
         createConnectorConfig(),
         'backstage_plugin_',
-        ensureDatabaseExists,
+        { ensureDatabaseExists },
       );
 
       const clients = await Promise.all([
@@ -887,7 +1092,7 @@ describe('postgres', () => {
       const connector = new PgConnector(
         createConnectorConfig(),
         'backstage_plugin_',
-        ensureDatabaseExists,
+        { ensureDatabaseExists },
       );
 
       await expect(connector.getClient('plugin1', deps)).rejects.toThrow(
@@ -896,6 +1101,119 @@ describe('postgres', () => {
 
       const client = await connector.getClient('plugin2', deps);
       expect(ensureDatabaseExists).toHaveBeenCalledTimes(2);
+      await client.destroy();
+    });
+
+    it('shares an admin client between checks for distinct databases', async () => {
+      const count = jest.fn().mockResolvedValue([{ count: '1' }]);
+      const where = jest.fn().mockReturnValue({ count });
+      const admin = {
+        from: jest.fn().mockReturnValue({ where }),
+        destroy: jest.fn().mockResolvedValue(undefined),
+      } as unknown as Knex;
+      const createAdminClient = jest.fn().mockResolvedValue(admin);
+      const connector = new PgConnector(
+        new ConfigReader({
+          client: 'pg',
+          connection: { host: 'localhost' },
+          plugin: {
+            plugin1: { connection: { database: 'database1' } },
+            plugin2: { connection: { database: 'database2' } },
+          },
+        }),
+        'backstage_plugin_',
+        { createAdminClient, adminPoolIdleTimeoutMillis: 10_000 },
+      );
+
+      const clients = await Promise.all([
+        connector.getClient('plugin1', deps),
+        connector.getClient('plugin2', deps),
+      ]);
+
+      expect(createAdminClient).toHaveBeenCalledTimes(1);
+      expect(admin.from).toHaveBeenCalledTimes(2);
+      await (connector as any).shutdown();
+      expect(admin.destroy).toHaveBeenCalledTimes(1);
+      await Promise.all(clients.map(client => client.destroy()));
+    });
+
+    it('shares an admin client between schema creation operations', async () => {
+      const admin = {
+        raw: jest.fn().mockResolvedValue(undefined),
+        destroy: jest.fn().mockResolvedValue(undefined),
+      } as unknown as Knex;
+      const createAdminClient = jest.fn().mockResolvedValue(admin);
+      const connector = new PgConnector(
+        new ConfigReader({
+          client: 'pg',
+          connection: { host: 'localhost', database: 'shared' },
+          pluginDivisionMode: 'schema',
+          ensureExists: false,
+          ensureSchemaExists: true,
+        }),
+        'backstage_plugin_',
+        { createAdminClient, adminPoolIdleTimeoutMillis: 10_000 },
+      );
+
+      const clients = await Promise.all([
+        connector.getClient('plugin1', deps),
+        connector.getClient('plugin2', deps),
+      ]);
+
+      expect(createAdminClient).toHaveBeenCalledTimes(1);
+      expect(admin.raw).toHaveBeenNthCalledWith(
+        1,
+        'CREATE SCHEMA IF NOT EXISTS ??',
+        ['plugin1'],
+      );
+      expect(admin.raw).toHaveBeenNthCalledWith(
+        2,
+        'CREATE SCHEMA IF NOT EXISTS ??',
+        ['plugin2'],
+      );
+      await connector.shutdown();
+      expect(admin.destroy).toHaveBeenCalledTimes(1);
+      await Promise.all(clients.map(client => client.destroy()));
+    });
+
+    it('recreates the admin client when a database operation and cleanup fail', async () => {
+      const firstAdmin = {
+        from: jest.fn().mockReturnValue({
+          where: jest.fn().mockReturnValue({
+            count: jest.fn().mockRejectedValue(new Error('connection failed')),
+          }),
+        }),
+        destroy: jest.fn().mockRejectedValue(new Error('destroy failed')),
+      } as unknown as Knex;
+      const secondAdmin = {
+        from: jest.fn().mockReturnValue({
+          where: jest.fn().mockReturnValue({
+            count: jest.fn().mockResolvedValue([{ count: '1' }]),
+          }),
+        }),
+        destroy: jest.fn().mockResolvedValue(undefined),
+      } as unknown as Knex;
+      const createAdminClient = jest
+        .fn()
+        .mockResolvedValueOnce(firstAdmin)
+        .mockResolvedValueOnce(secondAdmin);
+      const connector = new PgConnector(
+        new ConfigReader({
+          client: 'pg',
+          connection: { host: 'localhost' },
+          plugin: { plugin1: { connection: { database: 'database1' } } },
+        }),
+        'backstage_plugin_',
+        { createAdminClient },
+      );
+
+      const client = await connector.getClient('plugin1', deps);
+
+      expect(createAdminClient).toHaveBeenCalledTimes(2);
+      expect(firstAdmin.destroy).toHaveBeenCalledTimes(1);
+      await expect(connector.shutdown()).rejects.toThrow(
+        'Failed to destroy PostgreSQL admin pool clients',
+      );
       await client.destroy();
     });
   });
