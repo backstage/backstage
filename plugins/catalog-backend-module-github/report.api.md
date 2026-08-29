@@ -158,6 +158,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     teamTransformer?: TeamTransformer;
     alwaysUseDefaultNamespace?: boolean;
     pageSizes?: Partial<GithubPageSizes>;
+    queryLimits?: Partial<GithubQueryLimits>;
     excludeSuspendedUsers?: boolean;
     cache?: CacheService;
     experimental_checkForSuspendedUsersWithRest?: boolean;
@@ -185,6 +186,7 @@ export interface GithubMultiOrgEntityProviderOptions {
   logger: LoggerService;
   orgs?: string[];
   pageSizes?: Partial<GithubPageSizes>;
+  queryLimits?: Partial<GithubQueryLimits>;
   schedule?: 'manual' | SchedulerServiceTaskRunner;
   teamTransformer?: TeamTransformer;
   userTransformer?: UserTransformer;
@@ -241,6 +243,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
     userTransformer?: UserTransformer;
     teamTransformer?: TeamTransformer;
     pageSizes?: Partial<GithubPageSizes>;
+    queryLimits?: Partial<GithubQueryLimits>;
     excludeSuspendedUsers?: boolean;
     cache?: CacheService;
     experimental_checkForSuspendedUsersWithRest?: boolean;
@@ -269,6 +272,7 @@ export interface GithubOrgEntityProviderOptions {
   logger: LoggerService;
   orgUrl: string;
   pageSizes?: Partial<GithubPageSizes>;
+  queryLimits?: Partial<GithubQueryLimits>;
   schedule?: 'manual' | SchedulerServiceTaskRunner;
   teamTransformer?: TeamTransformer;
   userTransformer?: UserTransformer;
@@ -305,6 +309,11 @@ export type GithubPageSizes = {
   teamMembers: number;
   organizationMembers: number;
   repositories: number;
+};
+
+// @public
+export type GithubQueryLimits = {
+  teamMembers?: number;
 };
 
 // @public

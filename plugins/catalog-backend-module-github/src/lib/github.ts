@@ -67,6 +67,15 @@ export type GithubPageSizes = {
 };
 
 /**
+ * Configuration for GitHub GraphQL API paging options
+ *
+ * @public
+ */
+export type GithubQueryLimits = {
+  teamMembers?: number;
+};
+
+/**
  * Default page sizes for GitHub GraphQL API queries.
  * These values are reduced to prevent RESOURCE_LIMITS_EXCEEDED errors with large organizations.
  *
@@ -77,6 +86,10 @@ export const DEFAULT_PAGE_SIZES: GithubPageSizes = {
   teamMembers: 50,
   organizationMembers: 50,
   repositories: 25,
+};
+
+export const DEFAULT_QUERY_LIMITS: GithubQueryLimits = {
+  teamMembers: undefined,
 };
 
 // Graphql types
@@ -267,12 +280,14 @@ export async function getOrganizationUsers(
  * @param org - The slug of the org to read
  * @param teamTransformer - Optional transformer for team entities
  * @param pageSizes - Optional page sizes configuration
+ * @param queryLimits - Optional limit for number of items in GitHub graphql queries
  */
 export async function getOrganizationTeams(
   client: typeof graphql,
   org: string,
   teamTransformer: TeamTransformer = defaultOrganizationTeamTransformer,
   pageSizes: GithubPageSizes = DEFAULT_PAGE_SIZES,
+  queryLimits: GithubQueryLimits = DEFAULT_QUERY_LIMITS,
 ): Promise<{
   teams: Entity[];
 }> {
@@ -325,6 +340,7 @@ export async function getOrganizationTeams(
         ctx.org,
         item.slug,
         pageSizes,
+        queryLimits,
       );
       for (const userLogin of members) {
         memberNames.push(userLogin);
@@ -361,6 +377,7 @@ export async function getOrganizationTeamsFromUsers(
   userLogins: string[],
   teamTransformer: TeamTransformer = defaultOrganizationTeamTransformer,
   pageSizes: GithubPageSizes = DEFAULT_PAGE_SIZES,
+  queryLimits: GithubQueryLimits = DEFAULT_QUERY_LIMITS,
 ): Promise<{
   teams: Entity[];
 }> {
@@ -420,6 +437,7 @@ export async function getOrganizationTeamsFromUsers(
         ctx.org,
         item.slug,
         pageSizes,
+        queryLimits,
       );
       for (const userLogin of members) {
         memberNames.push(userLogin);
@@ -539,6 +557,7 @@ export async function getOrganizationTeam(
   teamSlug: string,
   teamTransformer: TeamTransformer = defaultOrganizationTeamTransformer,
   pageSizes: GithubPageSizes = DEFAULT_PAGE_SIZES,
+  queryLimits: GithubQueryLimits = DEFAULT_QUERY_LIMITS,
 ): Promise<{
   team: Entity;
 }> {
@@ -580,6 +599,7 @@ export async function getOrganizationTeam(
         ctx.org,
         item.slug,
         pageSizes,
+        queryLimits,
       );
       for (const userLogin of members) {
         memberNames.push(userLogin);
@@ -757,6 +777,7 @@ export async function getTeamMembers(
   org: string,
   teamSlug: string,
   pageSizes: GithubPageSizes = DEFAULT_PAGE_SIZES,
+  queryLimits: GithubQueryLimits = DEFAULT_QUERY_LIMITS,
 ): Promise<{ members: GithubUser[] }> {
   const query = `
     query members($org: String!, $teamSlug: String!, $cursor: String, $membersPageSize: Int!) {
@@ -777,6 +798,7 @@ export async function getTeamMembers(
     connection: r => r.organization?.team?.members,
     transformer: async user => user,
     variables: { org, teamSlug, membersPageSize: pageSizes.teamMembers },
+    maxItems: queryLimits.teamMembers,
   });
 
   return { members };
@@ -801,6 +823,7 @@ export async function getTeamMembers(
  *               returns the model mapped form of it
  * @param params.variables - The variable values that the query needs, minus the cursor
  * @param params.filter - An optional filter function to filter the nodes before transforming them
+ * @param params.maxItems - Optional cap on the number of transformed items returned
  */
 export async function queryWithPaging<
   GraphqlType,
@@ -818,13 +841,28 @@ export async function queryWithPaging<
   ) => Promise<OutputType | undefined>;
   variables: Variables;
   filter?: (item: GraphqlType) => Promise<boolean> | boolean;
+  maxItems?: number;
 }): Promise<OutputType[]> {
-  const { client, query, org, connection, transformer, variables, filter } =
-    params;
+  const {
+    client,
+    query,
+    org,
+    connection,
+    transformer,
+    variables,
+    filter,
+    maxItems,
+  } = params;
   const result: OutputType[] = [];
   const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+  const maxResultItems = maxItems ?? Infinity;
+
+  if (maxResultItems < 0) {
+    throw new Error(`Invalid maxItems (${maxResultItems}): must be >= 0`);
+  }
 
   let cursor: string | undefined = undefined;
+  let maxItemsReached = false;
   for (let j = 0; j < 1000 /* just for sanity */; ++j) {
     const response: Response = await client(query, {
       ...variables,
@@ -847,7 +885,17 @@ export async function queryWithPaging<
       });
       if (transformedNode) {
         result.push(transformedNode);
+        if (result.length > maxResultItems) {
+          maxItemsReached = true;
+          break;
+        }
       }
+    }
+
+    // when we reach max allowed items, we return empty array not to confuse users with incomplete data,
+    // when this happens during fetching members of big teams, the team then does not appear in the catalog at all
+    if (maxItemsReached) {
+      return [];
     }
 
     if (!conn.pageInfo.hasNextPage) {

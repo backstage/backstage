@@ -127,6 +127,57 @@ describe('catalogModuleGithubOrgEntityProvider', () => {
     );
   });
 
+  it('should register provider with custom query limits', async () => {
+    let addedProviders: Array<EntityProvider> | undefined;
+
+    const extensionPoint = {
+      addEntityProvider: (...providers: any) => {
+        addedProviders = providers;
+      },
+    };
+    const runner = jest.fn();
+    const scheduler = mockServices.scheduler.mock({
+      createScheduledTaskRunner() {
+        return { run: runner };
+      },
+    });
+
+    const config = {
+      catalog: {
+        providers: {
+          githubOrg: [
+            {
+              id: 'default',
+              githubUrl: 'https://github.com',
+              orgs: ['backstage'],
+              schedule: {
+                frequency: 'P1M',
+                timeout: 'PT3M',
+              },
+              queryLimits: {
+                teamMembers: 100,
+              },
+            },
+          ],
+        },
+      },
+    };
+
+    await startTestBackend({
+      extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
+      features: [
+        catalogModuleGithubOrgEntityProvider,
+        mockServices.rootConfig.factory({ data: config }),
+        scheduler.factory,
+      ],
+    });
+
+    expect(addedProviders?.length).toEqual(1);
+    expect(addedProviders![0].getProviderName()).toEqual(
+      'GithubMultiOrgEntityProvider:default',
+    );
+  });
+
   it('should register provider without page sizes configuration', async () => {
     let addedProviders: Array<EntityProvider> | undefined;
 

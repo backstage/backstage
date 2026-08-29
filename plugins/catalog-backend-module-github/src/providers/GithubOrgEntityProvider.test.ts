@@ -194,6 +194,115 @@ describe('GithubOrgEntityProvider', () => {
       });
     });
 
+    it('should apply queryLimits when reading org data', async () => {
+      const logger = mockServices.logger.mock();
+      const gitHubConfig = {
+        host: 'https://github.com',
+      };
+
+      const mockGetCredentials = jest.fn().mockReturnValue({
+        headers: { token: 'blah' },
+        type: 'app',
+      });
+
+      const githubCredentialsProvider = {
+        getCredentials: mockGetCredentials,
+      };
+
+      const provider = new GithubOrgEntityProvider({
+        id: 'my-id',
+        githubCredentialsProvider,
+        orgUrl: 'https://github.com/backstage',
+        gitHubConfig,
+        logger,
+        queryLimits: { teamMembers: 1 },
+      });
+
+      const connection: EntityProviderConnection = {
+        applyMutation: jest.fn(),
+        refresh: jest.fn(),
+      };
+
+      await provider.connect(connection);
+
+      mockClient = jest
+        .fn()
+        // getOrganizationUsers
+        .mockResolvedValueOnce({
+          organization: {
+            membersWithRole: {
+              pageInfo: { hasNextPage: false },
+              nodes: [
+                {
+                  login: 'a',
+                  id: 'f',
+                  name: 'b',
+                  bio: 'c',
+                  email: 'd',
+                  avatarUrl: 'e',
+                },
+              ],
+            },
+          },
+        })
+        // getOrganizationTeams (initial teams query, members paginate)
+        .mockResolvedValueOnce({
+          organization: {
+            teams: {
+              pageInfo: { hasNextPage: false },
+              nodes: [
+                {
+                  slug: 'team',
+                  combinedSlug: 'blah/team',
+                  name: 'Team',
+                  description: 'The one and only team',
+                  avatarUrl: 'http://example.com/team.jpeg',
+                  parentTeam: {
+                    slug: 'parent',
+                    combinedSlug: '',
+                    members: { pageInfo: { hasNextPage: false }, nodes: [] },
+                  },
+                  members: {
+                    pageInfo: { hasNextPage: true },
+                    nodes: [{ login: 'a' }],
+                  },
+                },
+              ],
+            },
+          },
+        })
+        // getTeamMembers (members query returns more than the limit)
+        .mockResolvedValueOnce({
+          organization: {
+            team: {
+              slug: 'team',
+              combinedSlug: 'blah/team',
+              members: {
+                pageInfo: { hasNextPage: false },
+                nodes: [{ login: 'a' }, { login: 'b' }],
+              },
+            },
+          },
+        });
+
+      (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
+
+      await provider.read();
+
+      expect(connection.applyMutation).toHaveBeenCalledWith(
+        expect.objectContaining({
+          entities: expect.arrayContaining([
+            expect.objectContaining({
+              entity: expect.objectContaining({
+                kind: 'Group',
+                spec: expect.objectContaining({ members: [] }),
+              }),
+            }),
+          ]),
+        }),
+      );
+    });
+
     it('should not apply mutation if a request fails', async () => {
       setupMocks(() => Promise.reject(new Error('Network error')));
 

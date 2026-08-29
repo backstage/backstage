@@ -127,6 +127,7 @@ export const catalogModuleGithubOrgEntityProvider = createBackendModule({
               alwaysUseDefaultNamespace:
                 definitions.length === 1 && definition.orgs?.length === 1,
               pageSizes: definition.pageSizes,
+              queryLimits: definition.queryLimits,
               excludeSuspendedUsers: definition.excludeSuspendedUsers,
               cache,
               experimental_checkForSuspendedUsersWithRest:
@@ -148,6 +149,9 @@ function readDefinitionsFromConfig(rootConfig: Config): Array<{
     teams?: number;
     teamMembers?: number;
     organizationMembers?: number;
+  };
+  queryLimits?: {
+    teamMembers?: number;
   };
   excludeSuspendedUsers?: boolean;
   experimental_checkForSuspendedUsersWithRest?: boolean;
@@ -177,6 +181,11 @@ function readDefinitionsFromConfig(rootConfig: Config): Array<{
           organizationMembers: c.getOptionalNumber(
             'pageSizes.organizationMembers',
           ),
+        }
+      : undefined,
+    queryLimits: c.has('queryLimits')
+      ? {
+          teamMembers: c.getOptionalNumber('queryLimits.teamMembers'),
         }
       : undefined,
     excludeSuspendedUsers:

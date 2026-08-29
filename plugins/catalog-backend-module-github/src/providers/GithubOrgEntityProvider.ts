@@ -56,6 +56,7 @@ import {
   createRemoveEntitiesOperation,
   createRestClient,
   DEFAULT_PAGE_SIZES,
+  DEFAULT_QUERY_LIMITS,
   DeferredEntitiesBuilder,
   getOrganizationTeam,
   getOrganizationTeams,
@@ -63,6 +64,7 @@ import {
   getOrganizationTeamsFromUsers,
   getOrganizationUsers,
   GithubPageSizes,
+  GithubQueryLimits,
   GithubTeam,
   isGitHubEnterprise,
   isSuspended,
@@ -150,6 +152,12 @@ export interface GithubOrgEntityProviderOptions {
   pageSizes?: Partial<GithubPageSizes>;
 
   /**
+   * Optionally configure query limits for GitHub GraphQL API queries.
+   * Add these max amounts if the job runs for so long that it times out (request headers timeout is 60 minutes)
+   */
+  queryLimits?: Partial<GithubQueryLimits>;
+
+  /**
    * Optionally exclude suspended users when querying organization users.
    * @defaultValue false
    * @remarks
@@ -210,6 +218,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       teamTransformer: options.teamTransformer,
       events: options.events,
       pageSizes: options.pageSizes,
+      queryLimits: options.queryLimits,
       excludeSuspendedUsers: options.excludeSuspendedUsers,
       cache: options.cache,
       experimental_checkForSuspendedUsersWithRest:
@@ -232,6 +241,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
       pageSizes?: Partial<GithubPageSizes>;
+      queryLimits?: Partial<GithubQueryLimits>;
       excludeSuspendedUsers?: boolean;
       cache?: CacheService;
       experimental_checkForSuspendedUsersWithRest?: boolean;
@@ -251,6 +261,13 @@ export class GithubOrgEntityProvider implements EntityProvider {
     return {
       ...DEFAULT_PAGE_SIZES,
       ...this.options.pageSizes,
+    };
+  }
+
+  private getQueryLimits(): GithubQueryLimits {
+    return {
+      ...DEFAULT_QUERY_LIMITS,
+      ...this.options.queryLimits,
     };
   }
 
@@ -325,7 +342,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
 
     const { org } = parseGithubOrgUrl(this.options.orgUrl);
     const pageSizes = this.getPageSizes();
-
+    const queryLimits = this.getQueryLimits();
     const { users } = await getOrganizationUsers(
       client,
       org,
@@ -340,6 +357,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       org,
       this.options.teamTransformer,
       pageSizes,
+      queryLimits,
     );
 
     if (areGroupEntities(teams)) {
@@ -450,6 +468,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
 
     const { org } = parseGithubOrgUrl(this.options.orgUrl);
     const pageSizes = this.getPageSizes();
+    const queryLimits = this.getQueryLimits();
     const { team } = await getOrganizationTeam(
       client,
       org,
@@ -482,6 +501,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       usersToRebuild.map(u => u.metadata.name),
       this.options.teamTransformer,
       pageSizes,
+      queryLimits,
     );
 
     if (areGroupEntities(teams)) {
