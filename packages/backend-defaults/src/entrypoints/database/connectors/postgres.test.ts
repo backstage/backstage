@@ -1216,6 +1216,37 @@ describe('postgres', () => {
       );
       await client.destroy();
     });
+
+    it('preserves the database operation error when cleanup also fails', async () => {
+      const operationError = new Error('connection failed');
+      const createAdminClient = jest.fn().mockImplementation(async () => {
+        return {
+          from: jest.fn().mockReturnValue({
+            where: jest.fn().mockReturnValue({
+              count: jest.fn().mockRejectedValue(operationError),
+            }),
+          }),
+          destroy: jest.fn().mockRejectedValue(new Error('destroy failed')),
+        } as unknown as Knex;
+      });
+      const connector = new PgConnector(
+        new ConfigReader({
+          client: 'pg',
+          connection: { host: 'localhost' },
+          plugin: { plugin1: { connection: { database: 'database1' } } },
+        }),
+        'backstage_plugin_',
+        { createAdminClient },
+      );
+
+      await expect(connector.getClient('plugin1', deps)).rejects.toThrow(
+        "Failed to connect to the database to make sure that 'database1' exists, Error: connection failed",
+      );
+      expect(createAdminClient).toHaveBeenCalledTimes(3);
+      await expect(connector.shutdown()).rejects.toThrow(
+        'Failed to destroy PostgreSQL admin pool clients',
+      );
+    });
   });
 
   describe('getPgConnectionConfig', () => {

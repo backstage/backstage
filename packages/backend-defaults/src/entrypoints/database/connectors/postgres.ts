@@ -872,7 +872,7 @@ export class PgConnector implements Connector {
     try {
       return await pool.run(operation);
     } catch (error) {
-      await pool.invalidate();
+      await pool.invalidate().catch(() => {});
       throw error;
     }
   }
