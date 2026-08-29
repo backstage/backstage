@@ -35,41 +35,45 @@ const databases = TestDatabases.create({
   ids: ['POSTGRES_18', 'POSTGRES_14', 'SQLITE_3'],
 });
 
+const addShutdownHook = jest.fn();
+
+async function init(id: TestDatabaseId) {
+  const knex = await databases.init(id);
+  await migrateBackendTasks(knex);
+  const manager = new PluginTaskSchedulerImpl(
+    'myplugin',
+    async () => knex,
+    mockServices.logger.mock(),
+    metricsServiceMock.mock(),
+    {
+      addShutdownHook,
+      addBeforeShutdownHook: jest.fn(),
+      addStartupHook: jest.fn(),
+    },
+  );
+  return { knex, manager };
+}
+
+function setup(databaseId: TestDatabaseId) {
+  beforeAll(async () => {
+    // Make sure the database is running before mocking timers, in case of testcontainers
+    await databases.init(databaseId);
+    jest.useFakeTimers();
+  }, 60_000);
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+}
+
 describe.each(databases.eachSupportedId())(
   'PluginTaskManagerImpl, %p',
   databaseId => {
-    const addShutdownHook = jest.fn();
-
-    beforeAll(async () => {
-      // Make sure the database is running before mocking timers, in case of testcontainers
-      await databases.init(databaseId);
-      jest.useFakeTimers();
-    }, 60_000);
-
-    afterAll(() => {
-      jest.useRealTimers();
-    });
-
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-
-    async function init(id: TestDatabaseId) {
-      const knex = await databases.init(id);
-      await migrateBackendTasks(knex);
-      const manager = new PluginTaskSchedulerImpl(
-        'myplugin',
-        async () => knex,
-        mockServices.logger.mock(),
-        metricsServiceMock.mock(),
-        {
-          addShutdownHook,
-          addBeforeShutdownHook: jest.fn(),
-          addStartupHook: jest.fn(),
-        },
-      );
-      return { knex, manager };
-    }
+    setup(databaseId);
 
     // This is just to test the wrapper code; most of the actual tests are in
     // TaskWorker.test.ts
@@ -197,130 +201,6 @@ describe.each(databases.eachSupportedId())(
 
     // This is just to test the wrapper code; most of the actual tests are in
     // TaskWorker.test.ts
-    describe('scheduleTask with local scope', () => {
-      it('can run the v1 happy path', async () => {
-        const { manager } = await init('SQLITE_3');
-
-        const fn = jest.fn();
-        const promise = new Promise(resolve => fn.mockImplementation(resolve));
-        await manager.scheduleTask({
-          id: 'task1',
-          timeout: { milliseconds: 5000 },
-          frequency: { milliseconds: 5000 },
-          fn,
-          scope: 'local',
-        });
-
-        await promise;
-        expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));
-      }, 60_000);
-
-      it('can run the v2 happy path', async () => {
-        const { manager } = await init('SQLITE_3');
-
-        const fn = jest.fn();
-        const promise = new Promise(resolve => fn.mockImplementation(resolve));
-        await manager.scheduleTask({
-          id: 'task2',
-          timeout: Duration.fromMillis(5000),
-          frequency: { cron: '* * * * * *' },
-          fn,
-          scope: 'local',
-        });
-
-        await promise;
-        expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));
-      }, 60_000);
-
-      it('aborts the task if shutdown hook is invoked', async () => {
-        const { manager } = await init('SQLITE_3');
-
-        const fn = jest.fn();
-        const promise = new Promise<AbortSignal>(resolve =>
-          fn.mockImplementation(resolve),
-        );
-        await manager.scheduleTask({
-          id: 'task3',
-          timeout: Duration.fromMillis(5000),
-          frequency: { cron: '* * * * * *' },
-          fn,
-          scope: 'local',
-        });
-
-        const shutdownHook = addShutdownHook.mock.calls[0][0];
-        const abortSignal = await promise;
-        expect(abortSignal.aborted).toBe(false);
-
-        // Should be aborted after the shutdown hook is invoked
-        await shutdownHook();
-        expect(abortSignal.aborted).toBe(true);
-      }, 60_000);
-    });
-
-    describe('triggerTask with local scope', () => {
-      it('can manually trigger a task', async () => {
-        const { manager } = await init('SQLITE_3');
-
-        const fn = jest.fn();
-        const promise = new Promise(resolve => fn.mockImplementation(resolve));
-        await manager.scheduleTask({
-          id: 'task1',
-          timeout: Duration.fromMillis(5000),
-          frequency: Duration.fromObject({ years: 1 }),
-          initialDelay: Duration.fromObject({ years: 1 }),
-          fn,
-          scope: 'local',
-        });
-
-        await manager.triggerTask('task1');
-        jest.advanceTimersByTime(5000);
-
-        await promise;
-        expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));
-      }, 60_000);
-
-      it('cant trigger a non-existent task', async () => {
-        const { manager } = await init('SQLITE_3');
-
-        const fn = jest.fn();
-        await manager.scheduleTask({
-          id: 'task1',
-          timeout: Duration.fromMillis(5000),
-          frequency: Duration.fromObject({ years: 1 }),
-          fn,
-          scope: 'local',
-        });
-
-        await expect(() => manager.triggerTask('task2')).rejects.toThrow(
-          NotFoundError,
-        );
-      }, 60_000);
-
-      it('cant trigger a running task', async () => {
-        const { manager } = await init('SQLITE_3');
-
-        const promise = createDeferred();
-
-        await manager.scheduleTask({
-          id: 'task1',
-          timeout: Duration.fromMillis(5000),
-          frequency: Duration.fromObject({ years: 1 }),
-          fn: async () => {
-            promise.resolve();
-            await new Promise(r => setTimeout(r, 20000));
-          },
-          scope: 'local',
-        });
-
-        await promise;
-        await expect(() => manager.triggerTask('task1')).rejects.toThrow(
-          ConflictError,
-        );
-      }, 60_000);
-    });
-
-    // This is just to test the wrapper code; most of the actual tests are in
-    // TaskWorker.test.ts
     describe('createScheduledTaskRunner', () => {
       it('can run the happy path', async () => {
         const { manager } = await init(databaseId);
@@ -379,46 +259,6 @@ describe.each(databases.eachSupportedId())(
       });
     });
 
-    describe('cancelTask with local scope', () => {
-      it('can cancel a running task', async () => {
-        const { manager } = await init('SQLITE_3');
-
-        const promise = createDeferred();
-
-        await manager.scheduleTask({
-          id: 'task1',
-          timeout: Duration.fromMillis(5000),
-          frequency: Duration.fromObject({ years: 1 }),
-          fn: async () => {
-            promise.resolve();
-            await new Promise(r => setTimeout(r, 20000));
-          },
-          scope: 'local',
-        });
-
-        await promise;
-        await expect(manager.cancelTask('task1')).resolves.toBeUndefined();
-      }, 60_000);
-
-      it('cannot cancel a task that is not running', async () => {
-        const { manager } = await init('SQLITE_3');
-
-        const fn = jest.fn();
-        await manager.scheduleTask({
-          id: 'task1',
-          timeout: Duration.fromMillis(5000),
-          frequency: Duration.fromObject({ years: 1 }),
-          initialDelay: Duration.fromObject({ years: 1 }),
-          fn,
-          scope: 'local',
-        });
-
-        await expect(manager.cancelTask('task1')).rejects.toThrow(
-          ConflictError,
-        );
-      }, 60_000);
-    });
-
     describe('cancelTask with global scope', () => {
       it('can cancel a running task', async () => {
         const { manager } = await init(databaseId);
@@ -465,14 +305,180 @@ describe.each(databases.eachSupportedId())(
         );
       });
     });
-
-    describe('parseDuration', () => {
-      it('should parse durations', () => {
-        expect(parseDuration({ milliseconds: 5000 })).toEqual('PT5S');
-        expect(parseDuration(Duration.fromMillis(5000))).toEqual('PT5S');
-        expect(parseDuration({ cron: '1 * * * *' })).toEqual('1 * * * *');
-        expect(parseDuration({ trigger: 'manual' })).toEqual('manual');
-      });
-    });
   },
 );
+
+describe('PluginTaskManagerImpl, local scope', () => {
+  setup('SQLITE_3');
+
+  // This is just to test the wrapper code; most of the actual tests are in
+  // TaskWorker.test.ts
+  describe('scheduleTask with local scope', () => {
+    it('can run the v1 happy path', async () => {
+      const { manager } = await init('SQLITE_3');
+
+      const fn = jest.fn();
+      const promise = new Promise(resolve => fn.mockImplementation(resolve));
+      await manager.scheduleTask({
+        id: 'task1',
+        timeout: { milliseconds: 5000 },
+        frequency: { milliseconds: 5000 },
+        fn,
+        scope: 'local',
+      });
+
+      await promise;
+      expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));
+    }, 60_000);
+
+    it('can run the v2 happy path', async () => {
+      const { manager } = await init('SQLITE_3');
+
+      const fn = jest.fn();
+      const promise = new Promise(resolve => fn.mockImplementation(resolve));
+      await manager.scheduleTask({
+        id: 'task2',
+        timeout: Duration.fromMillis(5000),
+        frequency: { cron: '* * * * * *' },
+        fn,
+        scope: 'local',
+      });
+
+      await promise;
+      expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));
+    }, 60_000);
+
+    it('aborts the task if shutdown hook is invoked', async () => {
+      const { manager } = await init('SQLITE_3');
+
+      const fn = jest.fn();
+      const promise = new Promise<AbortSignal>(resolve =>
+        fn.mockImplementation(resolve),
+      );
+      await manager.scheduleTask({
+        id: 'task3',
+        timeout: Duration.fromMillis(5000),
+        frequency: { cron: '* * * * * *' },
+        fn,
+        scope: 'local',
+      });
+
+      const shutdownHook = addShutdownHook.mock.calls[0][0];
+      const abortSignal = await promise;
+      expect(abortSignal.aborted).toBe(false);
+
+      // Should be aborted after the shutdown hook is invoked
+      await shutdownHook();
+      expect(abortSignal.aborted).toBe(true);
+    }, 60_000);
+  });
+
+  describe('triggerTask with local scope', () => {
+    it('can manually trigger a task', async () => {
+      const { manager } = await init('SQLITE_3');
+
+      const fn = jest.fn();
+      const promise = new Promise(resolve => fn.mockImplementation(resolve));
+      await manager.scheduleTask({
+        id: 'task1',
+        timeout: Duration.fromMillis(5000),
+        frequency: Duration.fromObject({ years: 1 }),
+        initialDelay: Duration.fromObject({ years: 1 }),
+        fn,
+        scope: 'local',
+      });
+
+      await manager.triggerTask('task1');
+      jest.advanceTimersByTime(5000);
+
+      await promise;
+      expect(fn).toHaveBeenCalledWith(expect.any(AbortSignal));
+    }, 60_000);
+
+    it('cant trigger a non-existent task', async () => {
+      const { manager } = await init('SQLITE_3');
+
+      const fn = jest.fn();
+      await manager.scheduleTask({
+        id: 'task1',
+        timeout: Duration.fromMillis(5000),
+        frequency: Duration.fromObject({ years: 1 }),
+        fn,
+        scope: 'local',
+      });
+
+      await expect(() => manager.triggerTask('task2')).rejects.toThrow(
+        NotFoundError,
+      );
+    }, 60_000);
+
+    it('cant trigger a running task', async () => {
+      const { manager } = await init('SQLITE_3');
+
+      const promise = createDeferred();
+
+      await manager.scheduleTask({
+        id: 'task1',
+        timeout: Duration.fromMillis(5000),
+        frequency: Duration.fromObject({ years: 1 }),
+        fn: async () => {
+          promise.resolve();
+          await new Promise(r => setTimeout(r, 20000));
+        },
+        scope: 'local',
+      });
+
+      await promise;
+      await expect(() => manager.triggerTask('task1')).rejects.toThrow(
+        ConflictError,
+      );
+    }, 60_000);
+  });
+
+  describe('cancelTask with local scope', () => {
+    it('can cancel a running task', async () => {
+      const { manager } = await init('SQLITE_3');
+
+      const promise = createDeferred();
+
+      await manager.scheduleTask({
+        id: 'task1',
+        timeout: Duration.fromMillis(5000),
+        frequency: Duration.fromObject({ years: 1 }),
+        fn: async () => {
+          promise.resolve();
+          await new Promise(r => setTimeout(r, 20000));
+        },
+        scope: 'local',
+      });
+
+      await promise;
+      await expect(manager.cancelTask('task1')).resolves.toBeUndefined();
+    }, 60_000);
+
+    it('cannot cancel a task that is not running', async () => {
+      const { manager } = await init('SQLITE_3');
+
+      const fn = jest.fn();
+      await manager.scheduleTask({
+        id: 'task1',
+        timeout: Duration.fromMillis(5000),
+        frequency: Duration.fromObject({ years: 1 }),
+        initialDelay: Duration.fromObject({ years: 1 }),
+        fn,
+        scope: 'local',
+      });
+
+      await expect(manager.cancelTask('task1')).rejects.toThrow(ConflictError);
+    }, 60_000);
+  });
+});
+
+describe('parseDuration', () => {
+  it('should parse durations', () => {
+    expect(parseDuration({ milliseconds: 5000 })).toEqual('PT5S');
+    expect(parseDuration(Duration.fromMillis(5000))).toEqual('PT5S');
+    expect(parseDuration({ cron: '1 * * * *' })).toEqual('1 * * * *');
+    expect(parseDuration({ trigger: 'manual' })).toEqual('manual');
+  });
+});
