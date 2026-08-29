@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog-backend': major
+'@backstage/plugin-catalog-backend': minor
 ---
 
 **BREAKING** This change alters the bucket boundaries of the `catalog.processing.duration`, `catalog.processors.duration`, `catalog.processing.queue.delay`, `catalog.stitching.duration`, and `catalog.stitching.queue.delay` OpenTelemetry histogram metrics. If you have dashboards or alerts that depend on a boundary that this change removes (e.g. `le="25"`) for these metrics, they will need to be updated.
