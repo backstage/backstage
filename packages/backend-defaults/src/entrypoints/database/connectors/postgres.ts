@@ -668,10 +668,34 @@ export function computePgPluginConfig(
 export class PgConnector implements Connector {
   private readonly config: Config;
   private readonly prefix: string;
+  private readonly databaseEnsureCache = new Map<string, Promise<void>>();
+  private readonly ensureDatabaseExists: typeof ensurePgDatabaseExists;
 
-  constructor(config: Config, prefix: string) {
+  constructor(
+    config: Config,
+    prefix: string,
+    ensureDatabaseExists: typeof ensurePgDatabaseExists = ensurePgDatabaseExists,
+  ) {
     this.config = config;
     this.prefix = prefix;
+    this.ensureDatabaseExists = ensureDatabaseExists;
+  }
+
+  private async ensureDatabase(databaseName: string): Promise<void> {
+    let promise = this.databaseEnsureCache.get(databaseName);
+    if (!promise) {
+      promise = this.ensureDatabaseExists(this.config, databaseName);
+      this.databaseEnsureCache.set(databaseName, promise);
+    }
+
+    try {
+      await promise;
+    } catch (error) {
+      if (this.databaseEnsureCache.get(databaseName) === promise) {
+        this.databaseEnsureCache.delete(databaseName);
+      }
+      throw error;
+    }
   }
 
   async getClient(
@@ -689,7 +713,7 @@ export class PgConnector implements Connector {
 
     if (pluginDbConfig.databaseName && pluginDbConfig.ensureExists) {
       try {
-        await ensurePgDatabaseExists(this.config, pluginDbConfig.databaseName);
+        await this.ensureDatabase(pluginDbConfig.databaseName);
       } catch (error) {
         throw new Error(
           `Failed to connect to the database to make sure that '${pluginDbConfig.databaseName}' exists, ${error}`,
