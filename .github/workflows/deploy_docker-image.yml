@@ -84,6 +84,7 @@ jobs:
     runs-on: ubuntu-latest
     concurrency:
       group: backstage-docker-latest-promotion
+      queue: max
       cancel-in-progress: false
 
     steps:
