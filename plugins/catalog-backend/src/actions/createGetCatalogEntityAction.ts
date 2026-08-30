@@ -13,17 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { PermissionsService } from '@backstage/backend-plugin-api';
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { ConflictError, InputError } from '@backstage/errors';
+import { ConflictError, NotFoundError } from '@backstage/errors';
 import { CatalogService } from '@backstage/plugin-catalog-node';
+import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 export const createGetCatalogEntityAction = ({
   catalog,
   actionsRegistry,
+  permissions,
 }: {
   catalog: CatalogService;
   actionsRegistry: ActionsRegistryService;
+  permissions: PermissionsService;
 }) => {
   actionsRegistry.register({
     name: 'get-catalog-entity',
@@ -59,6 +64,16 @@ Each entity is identified by a unique entity reference, which is a string of the
       output: z => z.object({}).passthrough(),
     },
     action: async ({ input, credentials }) => {
+      // Check before calling the catalog service so that external access
+      // restrictions are evaluated using the original caller credentials.
+      const [readDecision] = await permissions.authorizeConditional(
+        [{ permission: catalogEntityReadPermission }],
+        { credentials },
+      );
+      if (readDecision.result === AuthorizeResult.DENY) {
+        throw new NotFoundError(`No entity found with name "${input.name}"`);
+      }
+
       const filter: Record<string, string> = { 'metadata.name': input.name };
 
       if (input.kind) {
@@ -77,7 +92,7 @@ Each entity is identified by a unique entity reference, which is a string of the
       );
 
       if (items.length === 0) {
-        throw new InputError(`No entity found with name "${input.name}"`);
+        throw new NotFoundError(`No entity found with name "${input.name}"`);
       }
 
       if (items.length > 1) {

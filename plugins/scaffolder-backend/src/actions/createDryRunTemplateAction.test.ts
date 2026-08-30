@@ -16,6 +16,9 @@
 import { createDryRunTemplateAction } from './createDryRunTemplateAction';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
 import { scaffolderServiceMock } from '@backstage/plugin-scaffolder-node/testUtils';
+import { PermissionsService } from '@backstage/backend-plugin-api';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { NotAllowedError } from '@backstage/errors';
 
 type DryRunTemplateOutput = {
   valid: boolean;
@@ -56,9 +59,51 @@ spec:
 
 describe('createDryRunTemplateAction', () => {
   const mockScaffolderService = scaffolderServiceMock.mock();
+  const permissions = {
+    authorize: jest.fn().mockResolvedValue([{ result: AuthorizeResult.ALLOW }]),
+  } as unknown as jest.Mocked<PermissionsService>;
 
   beforeEach(() => {
     jest.resetAllMocks();
+    permissions.authorize.mockResolvedValue([
+      { result: AuthorizeResult.ALLOW },
+    ]);
+  });
+
+  it('rejects denied task creation permission before starting a dry run', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    mockScaffolderService.dryRun.mockResolvedValue({
+      log: [],
+      output: {},
+      steps: [],
+      directoryContents: [],
+    });
+    permissions.authorize.mockResolvedValue([{ result: AuthorizeResult.DENY }]);
+    const options = {
+      actionsRegistry: mockActionsRegistry,
+      scaffolderService: mockScaffolderService,
+      permissions,
+    };
+    createDryRunTemplateAction(options);
+
+    await expect(
+      mockActionsRegistry.invoke({
+        id: 'test:dry-run-template',
+        input: { templateYaml: validTemplateYaml },
+      }),
+    ).rejects.toThrow(NotAllowedError);
+
+    expect(permissions.authorize).toHaveBeenCalledWith(
+      [
+        {
+          permission: expect.objectContaining({
+            name: 'scaffolder.task.create',
+          }),
+        },
+      ],
+      { credentials: expect.any(Object) },
+    );
+    expect(mockScaffolderService.dryRun).not.toHaveBeenCalled();
   });
 
   it('requires dry-run permission for action visibility', () => {
@@ -67,6 +112,7 @@ describe('createDryRunTemplateAction', () => {
     createDryRunTemplateAction({
       actionsRegistry: mockActionsRegistry,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     expect(
@@ -97,6 +143,7 @@ describe('createDryRunTemplateAction', () => {
     createDryRunTemplateAction({
       actionsRegistry: mockActionsRegistry,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     const result = await mockActionsRegistry.invoke({
@@ -146,6 +193,7 @@ describe('createDryRunTemplateAction', () => {
     createDryRunTemplateAction({
       actionsRegistry: mockActionsRegistry,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     const values = { name: 'my-app' };
@@ -186,6 +234,7 @@ describe('createDryRunTemplateAction', () => {
     createDryRunTemplateAction({
       actionsRegistry: mockActionsRegistry,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     const result = await mockActionsRegistry.invoke({
@@ -214,6 +263,7 @@ describe('createDryRunTemplateAction', () => {
     createDryRunTemplateAction({
       actionsRegistry: mockActionsRegistry,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     await expect(
@@ -236,6 +286,7 @@ describe('createDryRunTemplateAction', () => {
     createDryRunTemplateAction({
       actionsRegistry: mockActionsRegistry,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     await mockActionsRegistry.invoke({
@@ -265,6 +316,7 @@ describe('createDryRunTemplateAction', () => {
     createDryRunTemplateAction({
       actionsRegistry: mockActionsRegistry,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     const result = await mockActionsRegistry.invoke({

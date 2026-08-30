@@ -16,6 +16,7 @@
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { InputError } from '@backstage/errors';
 import { CatalogService } from '@backstage/plugin-catalog-node';
+import { catalogLocationCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 
 const isValidUrl = (url: string) => {
   try {
@@ -42,6 +43,7 @@ export const createRegisterCatalogEntitiesAction = ({
       readOnly: false,
       idempotent: false,
     },
+    visibilityPermission: catalogLocationCreatePermission,
     description: `Registers one or more entities in the Backstage catalog by creating a Location entity that points to a remote catalog-info.yaml file.
 
 This action is similar to the "Register existing component" flow in the Backstage UI, where you provide a URL to a catalog-info.yaml file describing catalog entities such as Components, Systems, Resources, APIs, Users, and Groups. The action will create a new Location entity that references the provided file; all entities defined within that file will be imported into the catalog.

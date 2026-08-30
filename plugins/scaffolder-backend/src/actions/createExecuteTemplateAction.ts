@@ -13,16 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { PermissionsService } from '@backstage/backend-plugin-api';
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
+import { NotAllowedError } from '@backstage/errors';
+import {
+  actionExecutePermission,
+  taskCreatePermission,
+  templateParameterReadPermission,
+  templateStepReadPermission,
+} from '@backstage/plugin-scaffolder-common/alpha';
 import { ScaffolderService } from '@backstage/plugin-scaffolder-node';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { JsonValue } from '@backstage/types';
 
 export const createExecuteTemplateAction = ({
   actionsRegistry,
   scaffolderService,
+  permissions,
 }: {
   actionsRegistry: ActionsRegistryService;
   scaffolderService: ScaffolderService;
+  permissions: PermissionsService;
 }) => {
   actionsRegistry.register({
     name: 'execute-template',
@@ -32,6 +43,7 @@ export const createExecuteTemplateAction = ({
       readOnly: false,
       idempotent: false,
     },
+    visibilityPermission: taskCreatePermission,
     description: `Executes a Scaffolder template with its template ref and input parameter values.
 The template is run using the credentials provided to this action, and respects any RBAC permissions associated with those credentials.
 Returns a taskId that can be used to track execution progress.
@@ -66,6 +78,22 @@ Use the catalog.get-catalog-entity action to fetch the Template entity and disco
         }),
     },
     action: async ({ input, credentials }) => {
+      // Check before calling the scaffolder service so that external access
+      // restrictions are evaluated using the original caller credentials.
+      const decisions = await permissions.authorizeConditional(
+        [
+          { permission: actionExecutePermission },
+          { permission: templateParameterReadPermission },
+          { permission: templateStepReadPermission },
+        ],
+        { credentials },
+      );
+      if (
+        decisions.some(decision => decision.result === AuthorizeResult.DENY)
+      ) {
+        throw new NotAllowedError();
+      }
+
       const { taskId } = await scaffolderService.scaffold(
         {
           templateRef: input.templateRef,

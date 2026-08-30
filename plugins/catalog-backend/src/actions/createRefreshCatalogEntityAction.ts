@@ -13,17 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { PermissionsService } from '@backstage/backend-plugin-api';
 import type { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { ConflictError, InputError } from '@backstage/errors';
+import {
+  ConflictError,
+  NotAllowedError,
+  NotFoundError,
+} from '@backstage/errors';
+import {
+  catalogEntityReadPermission,
+  catalogEntityRefreshPermission,
+} from '@backstage/plugin-catalog-common/alpha';
 import type { CatalogService } from '@backstage/plugin-catalog-node';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 export const createRefreshCatalogEntityAction = ({
   catalog,
   actionsRegistry,
+  permissions,
 }: {
   catalog: CatalogService;
   actionsRegistry: ActionsRegistryService;
+  permissions: PermissionsService;
 }) => {
   actionsRegistry.register({
     name: 'refresh-catalog-entity',
@@ -69,6 +81,24 @@ Each entity in the software catalog has a unique name, kind, and namespace. If t
         }),
     },
     action: async ({ input, credentials }) => {
+      // Check before calling the catalog service so that external access
+      // restrictions are evaluated using the original caller credentials.
+      const [refreshDecision, readDecision] =
+        await permissions.authorizeConditional(
+          [
+            { permission: catalogEntityRefreshPermission },
+            { permission: catalogEntityReadPermission },
+          ],
+          { credentials },
+        );
+
+      if (refreshDecision.result === AuthorizeResult.DENY) {
+        throw new NotAllowedError();
+      }
+      if (readDecision.result === AuthorizeResult.DENY) {
+        throw new NotFoundError(`No entity found with name "${input.name}"`);
+      }
+
       const filter: Record<string, string> = { 'metadata.name': input.name };
 
       if (input.kind) {
@@ -85,7 +115,7 @@ Each entity in the software catalog has a unique name, kind, and namespace. If t
       );
 
       if (items.length === 0) {
-        throw new InputError(`No entity found with name "${input.name}"`);
+        throw new NotFoundError(`No entity found with name "${input.name}"`);
       }
 
       if (items.length > 1) {
@@ -99,6 +129,21 @@ Each entity in the software catalog has a unique name, kind, and namespace. If t
       }
 
       const entityRef = stringifyEntityRef(items[0]);
+
+      if (refreshDecision.result === AuthorizeResult.CONDITIONAL) {
+        const [entityDecision] = await permissions.authorize(
+          [
+            {
+              permission: catalogEntityRefreshPermission,
+              resourceRef: entityRef,
+            },
+          ],
+          { credentials },
+        );
+        if (entityDecision.result !== AuthorizeResult.ALLOW) {
+          throw new NotAllowedError();
+        }
+      }
 
       await catalog.refreshEntity(entityRef, { credentials });
 

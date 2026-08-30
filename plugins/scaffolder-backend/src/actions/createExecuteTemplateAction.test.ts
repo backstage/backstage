@@ -16,12 +16,92 @@
 import { createExecuteTemplateAction } from './createExecuteTemplateAction';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
 import { scaffolderServiceMock } from '@backstage/plugin-scaffolder-node/testUtils';
+import { PermissionsService } from '@backstage/backend-plugin-api';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { NotAllowedError } from '@backstage/errors';
 
 describe('createExecuteTemplateAction', () => {
   const mockScaffolderService = scaffolderServiceMock.mock();
+  const permissions = {
+    authorizeConditional: jest
+      .fn()
+      .mockResolvedValue([
+        { result: AuthorizeResult.ALLOW },
+        { result: AuthorizeResult.ALLOW },
+        { result: AuthorizeResult.ALLOW },
+      ]),
+  } as unknown as jest.Mocked<PermissionsService>;
 
   beforeEach(() => {
     jest.resetAllMocks();
+    permissions.authorizeConditional.mockResolvedValue([
+      { result: AuthorizeResult.ALLOW },
+      { result: AuthorizeResult.ALLOW },
+      { result: AuthorizeResult.ALLOW },
+    ]);
+  });
+
+  it('rejects a denied Scaffolder permission before creating a task', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    mockScaffolderService.scaffold.mockResolvedValue({ taskId: 'task-id' });
+    permissions.authorizeConditional.mockResolvedValue([
+      { result: AuthorizeResult.ALLOW },
+      { result: AuthorizeResult.DENY },
+      { result: AuthorizeResult.ALLOW },
+    ]);
+    const options = {
+      actionsRegistry: mockActionsRegistry,
+      scaffolderService: mockScaffolderService,
+      permissions,
+    };
+    createExecuteTemplateAction(options);
+
+    await expect(
+      mockActionsRegistry.invoke({
+        id: 'test:execute-template',
+        input: {
+          templateRef: 'template:default/my-template',
+          values: { name: 'my-app' },
+        },
+      }),
+    ).rejects.toThrow(NotAllowedError);
+
+    expect(permissions.authorizeConditional).toHaveBeenCalledWith(
+      [
+        {
+          permission: expect.objectContaining({
+            name: 'scaffolder.action.execute',
+          }),
+        },
+        {
+          permission: expect.objectContaining({
+            name: 'scaffolder.template.parameter.read',
+          }),
+        },
+        {
+          permission: expect.objectContaining({
+            name: 'scaffolder.template.step.read',
+          }),
+        },
+      ],
+      { credentials: expect.any(Object) },
+    );
+    expect(mockScaffolderService.scaffold).not.toHaveBeenCalled();
+  });
+
+  it('requires task creation permission for action visibility', () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+
+    createExecuteTemplateAction({
+      actionsRegistry: mockActionsRegistry,
+      scaffolderService: mockScaffolderService,
+      permissions,
+    });
+
+    expect(
+      mockActionsRegistry.actions.get('test:execute-template')
+        ?.visibilityPermission?.name,
+    ).toBe('scaffolder.task.create');
   });
 
   it('should scaffold a template and return the taskId', async () => {
@@ -33,6 +113,7 @@ describe('createExecuteTemplateAction', () => {
     createExecuteTemplateAction({
       actionsRegistry: mockActionsRegistry,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     const result = await mockActionsRegistry.invoke({
@@ -63,6 +144,7 @@ describe('createExecuteTemplateAction', () => {
     createExecuteTemplateAction({
       actionsRegistry: mockActionsRegistry,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     const result = await mockActionsRegistry.invoke({
@@ -94,6 +176,7 @@ describe('createExecuteTemplateAction', () => {
     createExecuteTemplateAction({
       actionsRegistry: mockActionsRegistry,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     await mockActionsRegistry.invoke({
@@ -117,6 +200,7 @@ describe('createExecuteTemplateAction', () => {
     createExecuteTemplateAction({
       actionsRegistry: mockActionsRegistry,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     await expect(

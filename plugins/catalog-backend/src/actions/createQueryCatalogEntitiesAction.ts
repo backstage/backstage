@@ -16,6 +16,9 @@
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 import { createZodV3FilterPredicateSchema } from '@backstage/filter-predicates';
+import { PermissionsService } from '@backstage/backend-plugin-api';
+import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 const QUERY_SYNTAX = `
 ## Query Syntax
@@ -111,10 +114,12 @@ export const createQueryCatalogEntitiesAction = ({
   catalog,
   actionsRegistry,
   useExperimentalCatalogLayersDescriptions,
+  permissions,
 }: {
   catalog: CatalogService;
   actionsRegistry: ActionsRegistryService;
   useExperimentalCatalogLayersDescriptions?: boolean;
+  permissions: PermissionsService;
 }) => {
   actionsRegistry.register({
     name: 'query-catalog-entities',
@@ -213,6 +218,23 @@ export const createQueryCatalogEntitiesAction = ({
         }),
     },
     action: async ({ input, credentials }) => {
+      // Check before calling the catalog service so that external access
+      // restrictions are evaluated using the original caller credentials.
+      const [readDecision] = await permissions.authorizeConditional(
+        [{ permission: catalogEntityReadPermission }],
+        { credentials },
+      );
+      if (readDecision.result === AuthorizeResult.DENY) {
+        return {
+          output: {
+            items: [],
+            totalItems: 0,
+            hasMoreEntities: false,
+            nextPageCursor: undefined,
+          },
+        };
+      }
+
       const response = await catalog.queryEntities(
         {
           ...input,
