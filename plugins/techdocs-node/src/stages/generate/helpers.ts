@@ -128,9 +128,29 @@ export const getRepoUrlFromLocationAnnotation = (
   return {};
 };
 
+// Listed exactly rather than by a `pymdownx.` prefix: resolving one of these
+// tags imports the module it names, and a prefix would accept any module-level
+// attribute of any importable submodule.
 const ALLOWED_PYTHON_YAML_TAGS = new Set([
+  // Emoji indexes; mkdocs-material moved its own from materialx to
+  // material.extensions in 9.4.
+  'tag:yaml.org,2002:python/name:pymdownx.emoji.emojione',
+  'tag:yaml.org,2002:python/name:pymdownx.emoji.gemoji',
+  'tag:yaml.org,2002:python/name:pymdownx.emoji.twemoji',
   'tag:yaml.org,2002:python/name:materialx.emoji.twemoji',
-  'tag:yaml.org,2002:python/object.apply:materialx.emoji.to_svg',
+  'tag:yaml.org,2002:python/name:material.extensions.emoji.twemoji',
+  // Emoji generators
+  'tag:yaml.org,2002:python/name:pymdownx.emoji.to_alt',
+  'tag:yaml.org,2002:python/name:pymdownx.emoji.to_png',
+  'tag:yaml.org,2002:python/name:pymdownx.emoji.to_png_sprite',
+  'tag:yaml.org,2002:python/name:pymdownx.emoji.to_svg',
+  'tag:yaml.org,2002:python/name:pymdownx.emoji.to_svg_sprite',
+  'tag:yaml.org,2002:python/name:materialx.emoji.to_svg',
+  'tag:yaml.org,2002:python/name:material.extensions.emoji.to_svg',
+  // Custom fence formats, used for Mermaid diagrams
+  'tag:yaml.org,2002:python/name:pymdownx.superfences.fence_code_format',
+  'tag:yaml.org,2002:python/name:pymdownx.superfences.fence_div_format',
+  // Slug factory for toc and pymdownx.tabbed
   'tag:yaml.org,2002:python/object/apply:pymdownx.slugs.slugify',
 ]);
 
