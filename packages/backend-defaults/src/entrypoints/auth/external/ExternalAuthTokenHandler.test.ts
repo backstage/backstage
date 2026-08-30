@@ -132,7 +132,7 @@ describe('ExternalTokenHandler', () => {
       },
     ]);
 
-    await expect(plugin1.verifyToken('token')).resolves.toMatchObject({
+    await expect(plugin1.verifyToken('token')).resolves.toEqual({
       subject: 'sub',
       accessRestrictions: { permissionNames: ['do.it'] },
     });
@@ -213,12 +213,12 @@ describe('ExternalTokenHandler', () => {
       .setProtectedHeader({ alg: 'HS256' })
       .sign(legacyKey);
 
-    await expect(handler.verifyToken(legacyToken)).resolves.toMatchObject({
+    await expect(handler.verifyToken(legacyToken)).resolves.toEqual({
       subject: 'legacy-subject',
       accessRestrictions: { permissionNames: ['catalog.entity.read'] },
     });
 
-    await expect(handler.verifyToken('defdefdef')).resolves.toMatchObject({
+    await expect(handler.verifyToken('defdefdef')).resolves.toEqual({
       subject: 'static-subject',
       accessRestrictions: { permissionNames: ['catalog.entity.read'] },
     });
@@ -226,7 +226,7 @@ describe('ExternalTokenHandler', () => {
     const jwksToken = await factory.issueToken({
       claims: { sub: 'jwks-subject' },
     });
-    await expect(handler.verifyToken(jwksToken)).resolves.toMatchObject({
+    await expect(handler.verifyToken(jwksToken)).resolves.toEqual({
       subject: 'external:custom-prefix:jwks-subject',
       accessRestrictions: { permissionNames: ['catalog.entity.read'] },
     });

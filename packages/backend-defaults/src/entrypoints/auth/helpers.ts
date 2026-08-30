@@ -22,14 +22,12 @@ import {
   BackstageUserPrincipal,
 } from '@backstage/backend-plugin-api';
 import { InternalBackstageCredentials } from './types';
-import { AccessRestrictionsMap } from './external/types';
 import { createHash } from 'node:crypto';
 
 export function createCredentialsWithServicePrincipal(
   sub: string,
   token?: string,
   accessRestrictions?: BackstagePrincipalAccessRestrictions,
-  allAccessRestrictions?: AccessRestrictionsMap,
 ): InternalBackstageCredentials<BackstageServicePrincipal> {
   const principal = createServicePrincipal(sub, accessRestrictions);
   const result = {
@@ -43,12 +41,6 @@ export function createCredentialsWithServicePrincipal(
       configurable: true,
       writable: true,
       value: token,
-    },
-    allAccessRestrictions: {
-      enumerable: false,
-      configurable: true,
-      writable: true,
-      value: allAccessRestrictions,
     },
     toString: {
       enumerable: false,

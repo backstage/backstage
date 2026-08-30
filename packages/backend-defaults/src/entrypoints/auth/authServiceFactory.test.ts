@@ -440,25 +440,26 @@ describe('authServiceFactory', () => {
     });
   });
 
-  it('should enforce access restrictions when issuing plugin tokens on behalf of service principals', async () => {
+  it('should allow trusted services to issue plugin tokens on behalf of service principals', async () => {
     const tester = ServiceFactoryTester.from(authServiceFactory, {
       dependencies: mockDeps,
     });
 
     const catalogAuth = await tester.getSubject('catalog');
 
-    // Permission-level restrictions (e.g. permission name) cannot be forwarded
+    // Permission-level ingress restrictions do not constrain trusted service
+    // handlers from making follow-up requests.
     const restrictedCredentials = await catalogAuth.authenticate(
       'limited-static-token',
     );
     await expect(
       catalogAuth.getPluginRequestToken({
         onBehalfOf: restrictedCredentials,
-        targetPluginId: 'catalog',
+        targetPluginId: 'scaffolder',
       }),
-    ).rejects.toThrow('is restricted and cannot be delegated');
+    ).resolves.toEqual(expect.objectContaining({ token: expect.any(String) }));
 
-    // Permission attribute restrictions (e.g. action: read) cannot be forwarded
+    // Permission attribute restrictions likewise apply at ingress only.
     const actionRestrictedCredentials = await catalogAuth.authenticate(
       'action-restricted-static-token',
     );
@@ -467,9 +468,9 @@ describe('authServiceFactory', () => {
         onBehalfOf: actionRestrictedCredentials,
         targetPluginId: 'catalog',
       }),
-    ).rejects.toThrow('is restricted and cannot be delegated');
+    ).resolves.toEqual(expect.objectContaining({ token: expect.any(String) }));
 
-    // Plugin-only restrictions allow delegation to listed plugins
+    // Plugin-only ingress restrictions do not constrain follow-up requests.
     const pluginOnlyCredentials = await catalogAuth.authenticate(
       'plugin-only-static-token',
     );
@@ -480,13 +481,12 @@ describe('authServiceFactory', () => {
       }),
     ).resolves.toEqual(expect.objectContaining({ token: expect.any(String) }));
 
-    // Plugin-only restrictions reject delegation to unlisted plugins
     await expect(
       catalogAuth.getPluginRequestToken({
         onBehalfOf: pluginOnlyCredentials,
         targetPluginId: 'permission',
       }),
-    ).rejects.toThrow("is not included in token's access restrictions");
+    ).resolves.toEqual(expect.objectContaining({ token: expect.any(String) }));
 
     // Unrestricted credentials always allow delegation
     const unrestrictedCredentials = await catalogAuth.authenticate(

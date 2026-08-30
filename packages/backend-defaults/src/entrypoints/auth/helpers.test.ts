@@ -129,27 +129,6 @@ describe('credentials', () => {
     });
   });
 
-  it('should retain allAccessRestrictions through internal conversion but omit from serialization', () => {
-    const restrictionsMap = new Map(
-      Object.entries({ catalog: { permissionNames: ['do.it'] } }),
-    );
-    const credentials = createCredentialsWithServicePrincipal(
-      'my-service',
-      undefined,
-      { permissionNames: ['do.it'] },
-      restrictionsMap,
-    );
-
-    const internal = toInternalBackstageCredentials(credentials);
-    expect(internal.allAccessRestrictions).toBe(restrictionsMap);
-    expect(internal.allAccessRestrictions?.get('catalog')).toEqual({
-      permissionNames: ['do.it'],
-    });
-
-    const serialized = JSON.stringify(credentials);
-    expect(serialized).not.toMatch(/allAccessRestrictions/);
-  });
-
   it('should have a serializable form both as strings and as JSON', () => {
     const simpleService = createCredentialsWithServicePrincipal('my-service');
     expect(String(simpleService)).toMatchInlineSnapshot(

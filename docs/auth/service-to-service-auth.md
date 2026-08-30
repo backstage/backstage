@@ -252,6 +252,11 @@ access restrictions whenever possible, to reduce risk.
 
 :::
 
+Access restrictions apply when the external token is used to enter a plugin.
+They do not constrain follow-up requests that the receiving plugin makes to
+other plugins. Plugin request handlers are trusted to authorize the incoming
+request before performing further work on behalf of the caller.
+
 Each entry has one or more of the following fields:
 
 - **`plugin`**: Required. A plugin ID as a string, for example `'catalog'`. Permits
