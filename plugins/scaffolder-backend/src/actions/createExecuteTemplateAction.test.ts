@@ -14,31 +14,25 @@
  * limitations under the License.
  */
 import { createExecuteTemplateAction } from './createExecuteTemplateAction';
+import { mockServices } from '@backstage/backend-test-utils';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
 import { scaffolderServiceMock } from '@backstage/plugin-scaffolder-node/testUtils';
-import { PermissionsService } from '@backstage/backend-plugin-api';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { NotAllowedError } from '@backstage/errors';
 
 describe('createExecuteTemplateAction', () => {
   const mockScaffolderService = scaffolderServiceMock.mock();
-  const permissions = {
-    authorizeConditional: jest
-      .fn()
-      .mockResolvedValue([
-        { result: AuthorizeResult.ALLOW },
-        { result: AuthorizeResult.ALLOW },
-        { result: AuthorizeResult.ALLOW },
-      ]),
-  } as unknown as jest.Mocked<PermissionsService>;
+  let permissions: ReturnType<typeof mockServices.permissions.mock>;
 
   beforeEach(() => {
     jest.resetAllMocks();
-    permissions.authorizeConditional.mockResolvedValue([
-      { result: AuthorizeResult.ALLOW },
-      { result: AuthorizeResult.ALLOW },
-      { result: AuthorizeResult.ALLOW },
-    ]);
+    permissions = mockServices.permissions.mock({
+      authorizeConditional: async () => [
+        { result: AuthorizeResult.ALLOW },
+        { result: AuthorizeResult.ALLOW },
+        { result: AuthorizeResult.ALLOW },
+      ],
+    });
   });
 
   it('rejects a denied Scaffolder permission before creating a task', async () => {

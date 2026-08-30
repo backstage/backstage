@@ -16,19 +16,17 @@
 import { createUnregisterCatalogEntitiesAction } from './createUnregisterCatalogEntitiesAction';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
-import { PermissionsService } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { NotFoundError } from '@backstage/errors';
 
 describe('createUnregisterCatalogEntitiesAction', () => {
-  const permissions = {
-    authorize: jest.fn().mockResolvedValue([{ result: AuthorizeResult.ALLOW }]),
-  } as unknown as jest.Mocked<PermissionsService>;
+  let permissions: ReturnType<typeof mockServices.permissions.mock>;
 
   beforeEach(() => {
-    permissions.authorize
-      .mockReset()
-      .mockResolvedValue([{ result: AuthorizeResult.ALLOW }]);
+    permissions = mockServices.permissions.mock({
+      authorize: async () => [{ result: AuthorizeResult.ALLOW }],
+    });
   });
 
   it('requires location deletion permission for action visibility', () => {

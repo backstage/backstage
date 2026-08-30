@@ -16,29 +16,20 @@
 import { createRefreshCatalogEntityAction } from './createRefreshCatalogEntityAction';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
-import { PermissionsService } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { NotAllowedError, NotFoundError } from '@backstage/errors';
 
 describe('createRefreshCatalogEntityAction', () => {
-  const permissions = {
-    authorize: jest.fn(),
-    authorizeConditional: jest
-      .fn()
-      .mockResolvedValue([
-        { result: AuthorizeResult.ALLOW },
-        { result: AuthorizeResult.ALLOW },
-      ]),
-  } as unknown as jest.Mocked<PermissionsService>;
+  let permissions: ReturnType<typeof mockServices.permissions.mock>;
 
   beforeEach(() => {
-    permissions.authorize.mockReset();
-    permissions.authorizeConditional
-      .mockReset()
-      .mockResolvedValue([
+    permissions = mockServices.permissions.mock({
+      authorizeConditional: async () => [
         { result: AuthorizeResult.ALLOW },
         { result: AuthorizeResult.ALLOW },
-      ]);
+      ],
+    });
   });
   const componentEntity = {
     apiVersion: 'backstage.io/v1alpha1',

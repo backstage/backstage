@@ -16,7 +16,7 @@
 import { createQueryCatalogEntitiesAction } from './createQueryCatalogEntitiesAction';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
-import { PermissionsService } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 const testEntities = [
@@ -54,19 +54,17 @@ const testEntities = [
 
 function createCatalogQueryAction(options?: {
   entities?: typeof testEntities;
-  authorizeResult?: AuthorizeResult;
+  authorizeResult?: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
 }) {
   const mockActionsRegistry = actionsRegistryServiceMock();
   const mockCatalog = catalogServiceMock({
     entities: options?.entities ?? testEntities,
   });
-  const permissions = {
-    authorizeConditional: jest
-      .fn()
-      .mockResolvedValue([
-        { result: options?.authorizeResult ?? AuthorizeResult.ALLOW },
-      ]),
-  } as unknown as jest.Mocked<PermissionsService>;
+  const permissions = mockServices.permissions.mock({
+    authorizeConditional: async () => [
+      { result: options?.authorizeResult ?? AuthorizeResult.ALLOW },
+    ],
+  });
   createQueryCatalogEntitiesAction({
     catalog: mockCatalog,
     actionsRegistry: mockActionsRegistry,

@@ -20,20 +20,15 @@ import { ScaffolderTask } from '@backstage/plugin-scaffolder-common';
 import { scaffolderServiceMock } from '@backstage/plugin-scaffolder-node/testUtils';
 import { createListScaffolderTasksAction } from './listScaffolderTasksAction';
 import { ListTasksResponse } from '../schema/openapi/generated/models/ListTasksResponse.model';
-import { PermissionsService } from '@backstage/backend-plugin-api';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
-const permissions = {
-  authorizeConditional: jest
-    .fn()
-    .mockResolvedValue([{ result: AuthorizeResult.ALLOW }]),
-} as unknown as jest.Mocked<PermissionsService>;
-
 describe('createListScaffolderTasksAction', () => {
+  let permissions: ReturnType<typeof mockServices.permissions.mock>;
+
   beforeEach(() => {
-    permissions.authorizeConditional
-      .mockReset()
-      .mockResolvedValue([{ result: AuthorizeResult.ALLOW }]);
+    permissions = mockServices.permissions.mock({
+      authorizeConditional: async () => [{ result: AuthorizeResult.ALLOW }],
+    });
   });
 
   it('should list tasks successfully', async () => {

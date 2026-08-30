@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
+import { mockServices } from '@backstage/backend-test-utils';
 import { scaffolderServiceMock } from '@backstage/plugin-scaffolder-node/testUtils';
 import { LogEvent } from '@backstage/plugin-scaffolder-common';
 import { createGetScaffolderTaskLogsAction } from './createGetScaffolderTaskLogsAction';
-import { PermissionsService } from '@backstage/backend-plugin-api';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { NotAllowedError } from '@backstage/errors';
 
-const permissions = {
-  authorizeConditional: jest
-    .fn()
-    .mockResolvedValue([{ result: AuthorizeResult.ALLOW }]),
-} as unknown as jest.Mocked<PermissionsService>;
-
 describe('createGetScaffolderTaskLogsAction', () => {
+  let permissions: ReturnType<typeof mockServices.permissions.mock>;
+
   beforeEach(() => {
-    permissions.authorizeConditional
-      .mockReset()
-      .mockResolvedValue([{ result: AuthorizeResult.ALLOW }]);
+    permissions = mockServices.permissions.mock({
+      authorizeConditional: async () => [{ result: AuthorizeResult.ALLOW }],
+    });
   });
 
   it('should return log events for a task', async () => {

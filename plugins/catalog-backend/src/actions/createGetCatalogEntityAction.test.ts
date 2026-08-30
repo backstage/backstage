@@ -16,21 +16,17 @@
 import { createGetCatalogEntityAction } from './createGetCatalogEntityAction';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
-import { PermissionsService } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { NotFoundError } from '@backstage/errors';
 
-const permissions = {
-  authorizeConditional: jest
-    .fn()
-    .mockResolvedValue([{ result: AuthorizeResult.ALLOW }]),
-} as unknown as jest.Mocked<PermissionsService>;
-
 describe('createGetCatalogEntityAction', () => {
+  let permissions: ReturnType<typeof mockServices.permissions.mock>;
+
   beforeEach(() => {
-    permissions.authorizeConditional
-      .mockReset()
-      .mockResolvedValue([{ result: AuthorizeResult.ALLOW }]);
+    permissions = mockServices.permissions.mock({
+      authorizeConditional: async () => [{ result: AuthorizeResult.ALLOW }],
+    });
   });
 
   it('throws NotFoundError if the entity is not found', async () => {
