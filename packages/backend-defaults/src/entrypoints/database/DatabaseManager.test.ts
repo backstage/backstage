@@ -63,6 +63,29 @@ describe('DatabaseManagerImpl', () => {
     expect(connector2.getClient).toHaveBeenCalledTimes(0);
   });
 
+  it('does not query idle database clients', async () => {
+    jest.useFakeTimers();
+    const nodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'production';
+    const raw = jest.fn();
+    const connector = {
+      getClient: jest.fn().mockResolvedValue({ raw }),
+    } satisfies Connector;
+    const impl = new DatabaseManagerImpl(new ConfigReader({ client: 'pg' }), {
+      pg: connector,
+    });
+
+    try {
+      await impl.forPlugin('plugin1', deps).getClient();
+      await jest.advanceTimersByTimeAsync(60_000);
+
+      expect(raw).not.toHaveBeenCalled();
+    } finally {
+      process.env.NODE_ENV = nodeEnv;
+      jest.useRealTimers();
+    }
+  });
+
   it('respects per-plugin overridden connectors', async () => {
     const connector1 = {
       getClient: jest.fn(),
