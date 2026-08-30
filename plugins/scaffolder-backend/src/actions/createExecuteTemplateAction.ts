@@ -19,8 +19,6 @@ import { NotAllowedError } from '@backstage/errors';
 import {
   actionExecutePermission,
   taskCreatePermission,
-  templateParameterReadPermission,
-  templateStepReadPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import { ScaffolderService } from '@backstage/plugin-scaffolder-node';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
@@ -80,17 +78,11 @@ Use the catalog.get-catalog-entity action to fetch the Template entity and disco
     action: async ({ input, credentials }) => {
       // Check before calling the scaffolder service so that external access
       // restrictions are evaluated using the original caller credentials.
-      const decisions = await permissions.authorizeConditional(
-        [
-          { permission: actionExecutePermission },
-          { permission: templateParameterReadPermission },
-          { permission: templateStepReadPermission },
-        ],
+      const [executeDecision] = await permissions.authorizeConditional(
+        [{ permission: actionExecutePermission }],
         { credentials },
       );
-      if (
-        decisions.some(decision => decision.result === AuthorizeResult.DENY)
-      ) {
+      if (executeDecision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError();
       }
 

@@ -27,21 +27,15 @@ describe('createExecuteTemplateAction', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     permissions = mockServices.permissions.mock({
-      authorizeConditional: async () => [
-        { result: AuthorizeResult.ALLOW },
-        { result: AuthorizeResult.ALLOW },
-        { result: AuthorizeResult.ALLOW },
-      ],
+      authorizeConditional: async () => [{ result: AuthorizeResult.ALLOW }],
     });
   });
 
-  it('rejects a denied Scaffolder permission before creating a task', async () => {
+  it('rejects denied action execution before creating a task', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     mockScaffolderService.scaffold.mockResolvedValue({ taskId: 'task-id' });
     permissions.authorizeConditional.mockResolvedValue([
-      { result: AuthorizeResult.ALLOW },
       { result: AuthorizeResult.DENY },
-      { result: AuthorizeResult.ALLOW },
     ]);
     const options = {
       actionsRegistry: mockActionsRegistry,
@@ -67,20 +61,39 @@ describe('createExecuteTemplateAction', () => {
             name: 'scaffolder.action.execute',
           }),
         },
-        {
-          permission: expect.objectContaining({
-            name: 'scaffolder.template.parameter.read',
-          }),
-        },
-        {
-          permission: expect.objectContaining({
-            name: 'scaffolder.template.step.read',
-          }),
-        },
       ],
       { credentials: expect.any(Object) },
     );
     expect(mockScaffolderService.scaffold).not.toHaveBeenCalled();
+  });
+
+  it('leaves template read permission filtering to the scaffolder service', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    mockScaffolderService.scaffold.mockResolvedValue({ taskId: 'task-id' });
+    permissions.authorizeConditional.mockImplementation(async requests =>
+      requests.map(request => ({
+        result:
+          request.permission.name === 'scaffolder.action.execute'
+            ? AuthorizeResult.ALLOW
+            : AuthorizeResult.DENY,
+      })),
+    );
+
+    createExecuteTemplateAction({
+      actionsRegistry: mockActionsRegistry,
+      scaffolderService: mockScaffolderService,
+      permissions,
+    });
+
+    await expect(
+      mockActionsRegistry.invoke({
+        id: 'test:execute-template',
+        input: {
+          templateRef: 'template:default/my-template',
+          values: { name: 'my-app' },
+        },
+      }),
+    ).resolves.toEqual({ output: { taskId: 'task-id' } });
   });
 
   it('requires task creation permission for action visibility', () => {
