@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { Meter, metrics } from '@opentelemetry/api';
+import { mockServices } from '@backstage/backend-test-utils';
 import { DefaultMetricsService } from './DefaultMetricsService';
 
 // The real (noop) OpenTelemetry API meter provider used in tests collapses
@@ -194,6 +195,51 @@ describe('DefaultMetricsService', () => {
       expect(meter.createCounter).toHaveBeenCalledTimes(1);
       expect(meter.createGauge).toHaveBeenCalledTimes(1);
       expect(counter).not.toBe(gauge);
+    });
+
+    it('should warn when a cached instrument is reused with different options', () => {
+      const logger = mockServices.logger.mock();
+
+      const serviceA = DefaultMetricsService.create({
+        name: 'plugin-e',
+        logger,
+      });
+      serviceA.createCounter('conflicting_metric', {
+        description: 'Counted by plugin e',
+      });
+
+      const serviceB = DefaultMetricsService.create({
+        name: 'plugin-f',
+        logger,
+      });
+      serviceB.createCounter('conflicting_metric', {
+        description: 'Counted by plugin f',
+      });
+
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining('conflicting_metric'),
+      );
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining('plugin-e'),
+      );
+    });
+
+    it('should not warn when a cached instrument is reused with matching options', () => {
+      const logger = mockServices.logger.mock();
+
+      const serviceA = DefaultMetricsService.create({
+        name: 'plugin-g',
+        logger,
+      });
+      serviceA.createCounter('matching_metric', { description: 'Same' });
+
+      const serviceB = DefaultMetricsService.create({
+        name: 'plugin-h',
+        logger,
+      });
+      serviceB.createCounter('matching_metric', { description: 'Same' });
+
+      expect(logger.warn).not.toHaveBeenCalled();
     });
   });
 });
