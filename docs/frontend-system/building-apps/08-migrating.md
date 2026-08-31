@@ -920,6 +920,15 @@ Once the cleanup is complete you should be left with clean entity pages that are
 
 Migrating across the tabs for the Entity Pages should be as simple as removing the `EntityLayout.Route` for each of the plugins that provide tab content, and then this tab should be sourced from the `EntityContent` extensions created by the plugins themselves which will be automatically detected and added to the App.
 
+### Retire `convertLegacyAppRoot`
+
+Treat the removal of `convertLegacyAppRoot` as a Phase 2 milestone. You can
+remove it when the call no longer receives legacy root elements, routes, or the
+`entityPage` option. Remove the call, its import, and the
+`convertedRootFeatures` entry from the `features` array. Then start your app to
+verify that the new frontend system provides the expected routes, navigation,
+and page content without the compatibility helper.
+
 ## Enable the new templates for `yarn new`
 
 It's encouraged that once you switch over to using the new frontend system, that new plugins that you create are using the new frontend system. This means that you're not instantly creating legacy plugins that will eventually need migration.
