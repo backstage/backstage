@@ -63,6 +63,29 @@ techdocs:
     pullImage: false
 ```
 
+### Pull Options
+
+`techdocs.generator.pullOptions`
+
+(Optional) This can be used to pass auth options when pulling the docker image. This is useful when `techdocs.generator.dockerImage` is set and `techdocs.generator.pullImage` is `true` (or unset, which uses the default pull behavior) and the image is hosted in a private registry.
+
+You can set `authconfig` to provide registry credentials. For supported fields and more examples, see the [Dockerode docs for pulling from private repos](https://github.com/apocas/dockerode?tab=readme-ov-file#pull-from-private-repos).
+
+**Example:**
+
+```yaml
+techdocs:
+  generator:
+    runIn: 'docker'
+    dockerImage: 'custom-registry/techdocs'
+    pullImage: true
+    pullOptions:
+      authconfig:
+        username: ${REGISTRY_USERNAME}
+        password: ${REGISTRY_PASSWORD}
+        serveraddress: 'https://index.docker.io/v1'
+```
+
 ### MkDocs Configuration
 
 #### Omit TechDocs Core Plugin
