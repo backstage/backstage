@@ -29,6 +29,16 @@ describe('catalog alpha entry point', () => {
     });
   });
 
+  it('does not load the catalog overview page until its loader runs', () => {
+    jest.doMock('./components/CatalogOverviewPage', () => {
+      throw new Error('catalog overview page was loaded eagerly');
+    });
+
+    jest.isolateModules(() => {
+      expect(() => require('./plugin')).not.toThrow();
+    });
+  });
+
   it('does not load the About card to provide the source icon link', () => {
     jest.doMock('../components/AboutCard/AboutCard', () => {
       throw new Error('AboutCard was loaded eagerly');
