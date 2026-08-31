@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -191,13 +191,8 @@ The metadata includes information about the site structure, navigation, and othe
 
           const filteredMetadata: Record<string, unknown> = {
             ...metadataWithExtras,
+            ...(filteredPages && { pages: filteredPages }),
           };
-
-          if (filteredPages !== undefined) {
-            filteredMetadata.pages = filteredPages;
-          } else {
-            delete filteredMetadata.pages;
-          }
 
           return {
             output: filteredMetadata,
@@ -216,9 +211,7 @@ The metadata includes information about the site structure, navigation, and othe
           throw error;
         }
 
-        throw new InputError(
-          `Failed to get TechDocs metadata: ${errorMessage}`,
-        );
+        throw new Error(`Failed to get TechDocs metadata: ${errorMessage}`);
       }
     },
   });
