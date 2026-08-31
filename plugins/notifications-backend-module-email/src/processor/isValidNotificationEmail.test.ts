@@ -35,6 +35,8 @@ describe('isValidNotificationEmail', () => {
     expect(isValidNotificationEmail('Name <user@example.com>')).toBe(false);
     expect(isValidNotificationEmail('<user@example.com>')).toBe(false);
     expect(isValidNotificationEmail('user@example.com;evil@x.com')).toBe(false);
+    expect(isValidNotificationEmail('group:user@example.com;')).toBe(false);
+    expect(isValidNotificationEmail('user@example.com:evil@x.com')).toBe(false);
     expect(isValidNotificationEmail('not-an-email')).toBe(false);
     expect(isValidNotificationEmail('user@@example.com')).toBe(false);
     expect(isValidNotificationEmail('@example.com')).toBe(false);

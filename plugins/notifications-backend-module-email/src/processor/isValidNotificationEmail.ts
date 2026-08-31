@@ -17,14 +17,15 @@
 /**
  * Returns true if the address is a single unquoted local@domain suitable for
  * notification delivery. Rejects whitespace, quotes, commas, semicolons,
- * angle brackets, and multiple @ characters so address-list / display-name
- * forms cannot be treated as one recipient by nodemailer.
+ * colons, angle brackets, and multiple @ characters so address-list,
+ * display-name, and RFC group forms cannot be treated as one recipient by
+ * nodemailer.
  */
 export function isValidNotificationEmail(email: string): boolean {
   if (email.length === 0 || email !== email.trim()) {
     return false;
   }
-  if (/[\s"',;<>]/.test(email)) {
+  if (/[\s"',;<>:]/.test(email)) {
     return false;
   }
   const at = email.indexOf('@');
