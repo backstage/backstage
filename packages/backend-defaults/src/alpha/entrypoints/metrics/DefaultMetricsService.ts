@@ -49,6 +49,16 @@ export interface DefaultMetricsServiceOptions {
 export class DefaultMetricsService implements MetricsService {
   private readonly meter: Meter;
 
+  // Instruments are cached process-wide, keyed by kind and metric name. When
+  // multiple plugins (each with their own Meter/Instrumentation Scope) create
+  // an instrument with the same name, the OpenTelemetry Prometheus exporter
+  // emits one `# HELP`/`# TYPE` block per scope, producing duplicate HELP
+  // lines for the same metric name. That violates the Prometheus text
+  // exposition format and causes scrapes to fail. Caching by name ensures a
+  // metric name maps to a single underlying instrument, regardless of which
+  // plugin creates it first.
+  private static readonly instrumentCache = new Map<string, unknown>();
+
   private constructor(opts: DefaultMetricsServiceOptions) {
     // The meter name sets the OpenTelemetry Instrumentation Scope which identifies the source of metrics in telemetry backends.
     this.meter = metrics.getMeter(opts.name, opts.version, {
@@ -66,32 +76,55 @@ export class DefaultMetricsService implements MetricsService {
     return new DefaultMetricsService(opts);
   }
 
+  private getOrCreateInstrument<T>(
+    kind: string,
+    name: string,
+    create: () => T,
+  ): T {
+    const key = `${kind}:${name}`;
+    const existing = DefaultMetricsService.instrumentCache.get(key);
+    if (existing) {
+      return existing as T;
+    }
+    const instrument = create();
+    DefaultMetricsService.instrumentCache.set(key, instrument);
+    return instrument;
+  }
+
   createCounter<TAttributes extends MetricAttributes = MetricAttributes>(
     name: string,
     opts?: MetricOptions,
   ): MetricsServiceCounter<TAttributes> {
-    return this.meter.createCounter(name, opts);
+    return this.getOrCreateInstrument('counter', name, () =>
+      this.meter.createCounter<TAttributes>(name, opts),
+    );
   }
 
   createUpDownCounter<TAttributes extends MetricAttributes = MetricAttributes>(
     name: string,
     opts?: MetricOptions,
   ): MetricsServiceUpDownCounter<TAttributes> {
-    return this.meter.createUpDownCounter(name, opts);
+    return this.getOrCreateInstrument('upDownCounter', name, () =>
+      this.meter.createUpDownCounter<TAttributes>(name, opts),
+    );
   }
 
   createHistogram<TAttributes extends MetricAttributes = MetricAttributes>(
     name: string,
     opts?: MetricOptions,
   ): MetricsServiceHistogram<TAttributes> {
-    return this.meter.createHistogram(name, opts);
+    return this.getOrCreateInstrument('histogram', name, () =>
+      this.meter.createHistogram<TAttributes>(name, opts),
+    );
   }
 
   createGauge<TAttributes extends MetricAttributes = MetricAttributes>(
     name: string,
     opts?: MetricOptions,
   ): MetricsServiceGauge<TAttributes> {
-    return this.meter.createGauge(name, opts);
+    return this.getOrCreateInstrument('gauge', name, () =>
+      this.meter.createGauge<TAttributes>(name, opts),
+    );
   }
 
   createObservableCounter<
@@ -100,7 +133,9 @@ export class DefaultMetricsService implements MetricsService {
     name: string,
     opts?: MetricOptions,
   ): MetricsServiceObservableCounter<TAttributes> {
-    return this.meter.createObservableCounter(name, opts);
+    return this.getOrCreateInstrument('observableCounter', name, () =>
+      this.meter.createObservableCounter<TAttributes>(name, opts),
+    );
   }
 
   createObservableUpDownCounter<
@@ -109,7 +144,9 @@ export class DefaultMetricsService implements MetricsService {
     name: string,
     opts?: MetricOptions,
   ): MetricsServiceObservableUpDownCounter<TAttributes> {
-    return this.meter.createObservableUpDownCounter(name, opts);
+    return this.getOrCreateInstrument('observableUpDownCounter', name, () =>
+      this.meter.createObservableUpDownCounter<TAttributes>(name, opts),
+    );
   }
 
   createObservableGauge<
@@ -118,6 +155,8 @@ export class DefaultMetricsService implements MetricsService {
     name: string,
     opts?: MetricOptions,
   ): MetricsServiceObservableGauge<TAttributes> {
-    return this.meter.createObservableGauge(name, opts);
+    return this.getOrCreateInstrument('observableGauge', name, () =>
+      this.meter.createObservableGauge<TAttributes>(name, opts),
+    );
   }
 }
