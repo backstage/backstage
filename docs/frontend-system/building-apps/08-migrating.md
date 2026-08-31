@@ -41,6 +41,7 @@ Before you begin, review this checklist to track your progress:
 - [ ] Complete minimal changes for hybrid configuration (Phase 1)
 - [ ] App starts and works in hybrid mode
 - [ ] Gradually migrate and remove legacy code and helpers (Phase 2)
+- [ ] Remove legacy plugin routes and imports after migrating their replacements
 - [ ] App runs fully on the new frontend system
 
 :::info
@@ -396,9 +397,18 @@ app:
   packages: all # ✨
 ```
 
+### Removing legacy routes
+
+After migrating a plugin page to the new frontend system, verify that the
+new extension is installed and working correctly. You can then remove the
+plugin's legacy route, page import, and related route wiring from the app.
+
+Before removing route references or external route bindings, make sure they
+are not still used by another plugin or app component.
+
 #### `featureFlags`
 
-Declaring features flags in the app is no longer supported, move these declarations to the appropriate plugins instead.
+Declaring features flags in the app is no longer supported; move these declarations to the appropriate plugins instead.
 
 For example, the following app feature flags configuration:
 
