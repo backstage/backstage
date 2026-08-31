@@ -182,7 +182,7 @@ describe('JWKSHandler', () => {
           tier: ['gold', 'silver'],
           // matched against one entry of a claim that is an array
           groups: 'admins',
-          // matched against one token of a space-delimited claim
+          // matched against one token of the space-delimited `scope` claim
           scope: 'catalog:read',
         },
       }),
@@ -249,6 +249,32 @@ describe('JWKSHandler', () => {
     await expect(
       jwksTokenHandler.verifyToken(partialMatch, context),
     ).resolves.toBeUndefined();
+  });
+
+  it('only splits the `scope` claim on spaces, not other claims', async () => {
+    const context = jwksTokenHandler.initialize({
+      options: new ConfigReader({
+        url: `${mockBaseUrl}/.well-known/jwks.json`,
+        algorithm: 'RS256',
+        issuer: mockBaseUrl,
+        audience: 'backstage',
+        claims: { name: 'jane', scope: 'catalog:read' },
+      }),
+    });
+
+    // A `name` of "jane doe" must not match an allowed value of "jane" just
+    // because "jane" is one of its space-separated words.
+    const token = await factory.issueToken({
+      claims: {
+        sub: mockSubject,
+        name: 'jane doe',
+        scope: 'catalog:read catalog:write',
+      },
+    });
+
+    const result = await jwksTokenHandler.verifyToken(token, context);
+
+    expect(result).toBeUndefined();
   });
 
   it('rejects a token when a required claim does not match', async () => {

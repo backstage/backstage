@@ -63,13 +63,15 @@ const readClaimAllowedValues = (value: unknown): string[] | undefined => {
 };
 
 // Normalizes a verified JWT claim value into the set of values it satisfies:
-// the value itself, plus - for a space-delimited string (e.g. OAuth `scope`)
-// or an array - each of its entries, all by their string form.
-const claimValues = (claimValue: unknown): Set<string> => {
+// the value itself, plus each entry of an array claim.
+//
+// Note: `scope` is the only claim the OAuth2/JWT RFCs (RFC 6749 §3.3,
+// RFC 8693 §4.2, RFC 9068 §2.2.3) define as space-delimited.
+const claimValues = (claim: string, claimValue: unknown): Set<string> => {
   let values: unknown[];
   if (Array.isArray(claimValue)) {
     values = claimValue;
-  } else if (typeof claimValue === 'string') {
+  } else if (claim === 'scope' && typeof claimValue === 'string') {
     values = [claimValue, ...claimValue.split(' ')];
   } else {
     values = [claimValue];
@@ -150,7 +152,7 @@ export const jwksTokenHandler = createExternalTokenHandler<JWKSTokenContext>({
       const { sub } = payload;
       if (sub) {
         const allClaimsMatch = context.claims.every(({ claim, anyOf }) => {
-          const actual = claimValues(payload[claim]);
+          const actual = claimValues(claim, payload[claim]);
           return anyOf.some(required => actual.has(required));
         });
         if (!allClaimsMatch) {
