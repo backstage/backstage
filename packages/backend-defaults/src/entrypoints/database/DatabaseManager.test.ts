@@ -65,8 +65,9 @@ describe('DatabaseManagerImpl', () => {
 
   it('does not query idle database clients', async () => {
     jest.useFakeTimers();
-    const nodeEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'production';
+    const env = process.env as Record<string, string | undefined>;
+    const nodeEnv = env.NODE_ENV;
+    env.NODE_ENV = 'production';
     const raw = jest.fn();
     const connector = {
       getClient: jest.fn().mockResolvedValue({ raw }),
@@ -81,7 +82,7 @@ describe('DatabaseManagerImpl', () => {
 
       expect(raw).not.toHaveBeenCalled();
     } finally {
-      process.env.NODE_ENV = nodeEnv;
+      env.NODE_ENV = nodeEnv;
       jest.useRealTimers();
     }
   });
