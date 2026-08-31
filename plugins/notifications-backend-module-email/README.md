@@ -121,6 +121,8 @@ warning in the logs); delivery continues for remaining valid recipients.
 
 When `allowedEmailDomains` is set, addresses whose domain is not listed are
 skipped unless the full address is present in `allowlistEmailAddresses`.
+Domain matching is exact (case-insensitive); subdomains are not implied — for
+example, `mail.mycompany.com` does not match `mycompany.com`.
 Matching for allowlist and denylist addresses is case-insensitive.
 `denylistEmailAddresses` is applied last and can block an allowlisted address.
 
