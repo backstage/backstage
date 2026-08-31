@@ -78,17 +78,6 @@ export function LogViewerControls(props: LogViewerControlsProps) {
           <FilterListIcon color="disabled" />
         )}
       </IconButton>
-      {Boolean(props?.onDownloadLog) ? (
-        <ToolTip title={t('logViewer.downloadBtn.tooltip')}>
-          <IconButton
-            aria-label={t('logViewer.downloadBtn.tooltip')}
-            size="small"
-            onClick={props.onDownloadLog}
-          >
-            <GetApp />
-          </IconButton>
-        </ToolTip>
-      ) : null}
       {Boolean(props?.onCopyLog) ? (
         <ToolTip title={t('logViewer.copyBtn.tooltip')}>
           <IconButton
@@ -97,6 +86,17 @@ export function LogViewerControls(props: LogViewerControlsProps) {
             onClick={props.onCopyLog}
           >
             <FileCopyIcon />
+          </IconButton>
+        </ToolTip>
+      ) : null}
+      {Boolean(props?.onDownloadLog) ? (
+        <ToolTip title={t('logViewer.downloadBtn.tooltip')}>
+          <IconButton
+            aria-label={t('logViewer.downloadBtn.tooltip')}
+            size="small"
+            onClick={props.onDownloadLog}
+          >
+            <GetApp />
           </IconButton>
         </ToolTip>
       ) : null}
