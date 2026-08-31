@@ -49,22 +49,26 @@ createBackendPlugin({
 ## Configuring connection pools
 
 Each plugin that calls `getClient()` receives a Knex connection pool. You can
-configure the pool through `backend.database.knexConfig`. The database service
-does not issue periodic queries to keep idle pools active, so Knex controls when
-idle connections are closed and reopened.
+configure the pool through `backend.database.knexConfig`. PostgreSQL and MySQL
+pools default the minimum pool size to zero, and the database service does not
+issue periodic queries to keep idle pools active. This allows Knex to close all
+idle connections after the configured idle timeout and reopen them on demand.
 
-For example, you can allow an inactive plugin pool to close all of its
-connections after the configured idle timeout:
+For example, you can limit each plugin pool to five connections and configure
+how long idle connections are retained:
 
 ```yaml
 backend:
   database:
     knexConfig:
       pool:
-        min: 0
         max: 5
         idleTimeoutMillis: 30000
 ```
+
+You can set `pool.min` explicitly if you need to retain a minimum number of
+connections. Connections retained by a nonzero minimum are not closed by the
+idle timeout.
 
 You can override these settings for individual plugins through
 `backend.database.plugin.<pluginId>.knexConfig`.

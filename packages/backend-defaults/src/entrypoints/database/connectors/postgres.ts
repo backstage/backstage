@@ -76,6 +76,7 @@ export async function buildPgDatabaseConfig(
   overrides?: Knex.Config,
 ) {
   const config = mergeDatabaseConfig(
+    { pool: { min: 0 } },
     dbConfig.get(),
     {
       connection: getPgConnectionConfig(dbConfig, !!overrides),
