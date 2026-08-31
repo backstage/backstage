@@ -445,10 +445,7 @@ const config: Config = {
       },
     ],
   ],
-  themes: [
-    'docusaurus-theme-openapi-docs',
-    '@docusaurus/theme-mermaid',
-  ],
+  themes: ['docusaurus-theme-openapi-docs', '@docusaurus/theme-mermaid'],
   themeConfig: {
     metadata: [
       {
