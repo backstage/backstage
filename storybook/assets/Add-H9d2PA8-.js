@@ -1,0 +1,1 @@
+import{cd as o,ce as c,ch as v,cc as n,bs as l}from"./iframe-D3gHomOk.js";var e={},r;function s(){if(r)return e;r=1;var a=o(),t=c();Object.defineProperty(e,"__esModule",{value:!0}),e.default=void 0;var d=t(v()),u=a(n()),i=(0,u.default)(d.createElement("path",{d:"M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"}),"Add");return e.default=i,e}var f=s();const q=l(f);export{q as A};

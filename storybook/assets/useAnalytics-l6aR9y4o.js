@@ -1,0 +1,28 @@
+import{c8 as c,b4 as p,bQ as h,b3 as m,bu as v,aR as R,cA as g}from"./iframe-D3gHomOk.js";const u=m("analytics-context"),x=Object.freeze({routeRef:"unknown",pluginId:"root",extension:"App"}),d=()=>{const n=c.useContext(u);if(n===void 0)return x;const e=n.atVersion(1);if(e===void 0)throw new Error("No context found for version 1.");return e},f=n=>{const{attributes:e,children:r}=n,a=d(),o=c.useMemo(()=>p({1:{...a,...e}}),[a,e]);return h.jsx(u.Provider,{value:o,children:r})};f.__docgenInfo={description:`Provides components in the child react tree an Analytics Context, ensuring
+all analytics events captured within the context have relevant attributes.
+
+@remarks
+
+Analytics contexts are additive, meaning the context ultimately emitted with
+an event is the combination of all contexts in the parent tree.
+
+@public`,methods:[],displayName:"AnalyticsContext",props:{attributes:{required:!0,tsType:{name:"Partial",elements:[{name:"intersection",raw:`CommonAnalyticsContext & {
+  [param in string]: string | boolean | number | undefined;
+}`,elements:[{name:"signature",type:"object",raw:`{
+  /**
+   * The nearest known parent plugin where the event was captured.
+   */
+  pluginId: string;
+
+  /**
+   * The ID of the routeRef that was active when the event was captured.
+   */
+  routeRef: string;
+
+  /**
+   * The nearest known parent extension where the event was captured.
+   */
+  extension: string;
+}`,signature:{properties:[{key:"pluginId",value:{name:"string",required:!0},description:"The nearest known parent plugin where the event was captured."},{key:"routeRef",value:{name:"string",required:!0},description:"The ID of the routeRef that was active when the event was captured."},{key:"extension",value:{name:"string",required:!0},description:"The nearest known parent extension where the event was captured."}]}},{name:"signature",type:"object",raw:`{
+  [param in string]: string | boolean | number | undefined;
+}`,signature:{properties:[{key:{name:"string",required:!0},value:{name:"union",raw:"string | boolean | number | undefined",elements:[{name:"string"},{name:"boolean"},{name:"number"},{name:"undefined"}]}}]}}]}],raw:"Partial<AnalyticsContextValue>"},description:""},children:{required:!0,tsType:{name:"ReactNode"},description:""}}};const t=v("core-plugin-api:analytics-tracker-events",()=>({mostRecentGatheredNavigation:void 0,mostRecentRoutableExtensionRender:void 0,beforeUnloadRegistered:!1})),y="_ROUTABLE-EXTENSION-RENDERED";class b{analyticsApi;context;constructor(e,r={routeRef:"unknown",pluginId:"root",extension:"App"}){this.analyticsApi=e,this.context=r,t.beforeUnloadRegistered||(addEventListener("beforeunload",()=>{t.mostRecentGatheredNavigation&&(this.analyticsApi.captureEvent({...t.mostRecentGatheredNavigation,...t.mostRecentRoutableExtensionRender}),t.mostRecentGatheredNavigation=void 0,t.mostRecentRoutableExtensionRender=void 0)},{once:!0,passive:!0}),t.beforeUnloadRegistered=!0)}setContext(e){this.context=e}captureEvent(e,r,{value:a,attributes:o}={}){const{_routeNodeType:l,...i}=this.context;if(e===y){t.mostRecentGatheredNavigation&&(t.mostRecentRoutableExtensionRender={context:{...i,extension:"App"}});return}if(t.mostRecentGatheredNavigation){try{this.analyticsApi.captureEvent({...t.mostRecentGatheredNavigation,...t.mostRecentRoutableExtensionRender})}catch(s){console.warn("Error during analytics event capture. %o",s)}t.mostRecentGatheredNavigation=void 0,t.mostRecentRoutableExtensionRender=void 0}if(e==="navigate"&&l==="gathered"&&i.pluginId==="root"){t.mostRecentGatheredNavigation={action:e,subject:r,value:a,attributes:o,context:i};return}try{this.analyticsApi.captureEvent({action:e,subject:r,value:a,attributes:o,context:i})}catch(s){console.warn("Error during analytics event capture. %o",s)}}}const w=R;function A(n){return w(n)}const E=A({id:"core.analytics"});function C(){try{return g(E)}catch{return{captureEvent:()=>{}}}}function N(){const n=c.useRef(null),e=d(),r=C();function a(){return n.current===null&&(n.current=new b(r)),n.current}const o=a();return o.setContext(e),o}export{f as A,E as a,A as c,y as r,N as u};
