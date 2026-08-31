@@ -15,6 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import path from 'node:path';
 import { readGeneratorConfig, TechdocsGenerator } from './techdocs';
 import { getMkdocsYml, runCommand } from './helpers';
 
@@ -219,7 +220,10 @@ describe('TechdocsGenerator.run', () => {
     expect(jest.mocked(runCommand)).toHaveBeenCalledWith(
       expect.objectContaining({
         command: 'mkdocs',
-        args: expect.arrayContaining(['-f', 'config/mkdocs.yaml']),
+        args: expect.arrayContaining([
+          '-f',
+          path.join('config', 'mkdocs.yaml'),
+        ]),
         options: { cwd: inputDir },
       }),
     );
