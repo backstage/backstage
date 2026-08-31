@@ -24,7 +24,7 @@ import { createSwappableComponent } from './createSwappableComponent';
  */
 export interface PageLayoutTab {
   id: string;
-  label: string;
+  label: ReactNode;
   icon?: IconElement;
   href: string;
 }
@@ -40,7 +40,7 @@ export type PageTab = PageLayoutTab;
  * @public
  */
 export interface PageLayoutProps {
-  title?: string;
+  title?: ReactNode;
   icon?: IconElement;
   noHeader?: boolean;
   titleLink?: string;

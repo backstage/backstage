@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { ReactNode } from 'react';
+
 /**
  * A single breadcrumb entry registered by a page component.
  *
@@ -21,6 +23,6 @@
  */
 export interface BreadcrumbEntryData {
   href: string;
-  label: string;
+  label: ReactNode;
   depth: number;
 }

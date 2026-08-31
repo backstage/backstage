@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JSX } from 'react';
+import { JSX, ReactNode } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
@@ -60,6 +60,7 @@ export const PageBlueprint = createExtensionBlueprint({
       coreExtensionData.routeRef.optional(),
       coreExtensionData.reactElement,
       coreExtensionData.title.optional(),
+      coreExtensionData.titleElement.optional(),
       coreExtensionData.icon.optional(),
     ]),
   },
@@ -68,6 +69,7 @@ export const PageBlueprint = createExtensionBlueprint({
     coreExtensionData.reactElement,
     coreExtensionData.routeRef.optional(),
     coreExtensionData.title.optional(),
+    coreExtensionData.titleElement.optional(),
     coreExtensionData.icon.optional(),
   ],
   configSchema: {
@@ -78,6 +80,16 @@ export const PageBlueprint = createExtensionBlueprint({
     params: {
       path: string;
       title?: string;
+      /**
+       * An optional, reactively rendered alternative to `title`. Use this to
+       * make the page title translatable, e.g. by rendering a small
+       * component that calls `useTranslationRef` internally:
+       *
+       * ```tsx
+       * titleElement: <PageTitle />
+       * ```
+       */
+      titleElement?: ReactNode;
       icon?: IconElement;
       loader?: () => Promise<JSX.Element>;
       routeRef?: RouteRef;
@@ -94,6 +106,8 @@ export const PageBlueprint = createExtensionBlueprint({
     const noHeader = params.noHeader ?? false;
     const resolvedTitle =
       title ?? node.spec.plugin.title ?? node.spec.plugin.pluginId;
+    const resolvedTitleElement =
+      (!config.title && params.titleElement) || resolvedTitle;
     const resolvedIcon = icon ?? node.spec.plugin.icon;
     const titleRouteRef =
       (node.spec.plugin.routes as { root?: RouteRef }).root ?? params.routeRef;
@@ -109,7 +123,7 @@ export const PageBlueprint = createExtensionBlueprint({
 
         return (
           <PageLayout
-            title={resolvedTitle}
+            title={resolvedTitleElement}
             icon={resolvedIcon}
             noHeader={noHeader}
             titleLink={titleLink}
@@ -125,10 +139,11 @@ export const PageBlueprint = createExtensionBlueprint({
       const tabs: PageLayoutTab[] = inputs.pages.map(page => {
         const path = page.get(coreExtensionData.routePath);
         const tabTitle = page.get(coreExtensionData.title);
+        const tabTitleElement = page.get(coreExtensionData.titleElement);
         const tabIcon = page.get(coreExtensionData.icon);
         return {
           id: path,
-          label: tabTitle || path,
+          label: tabTitleElement ?? tabTitle ?? path,
           icon: tabIcon,
           href: path,
         };
@@ -143,7 +158,7 @@ export const PageBlueprint = createExtensionBlueprint({
         const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
         return (
           <PageLayout
-            title={resolvedTitle}
+            title={resolvedTitleElement}
             icon={resolvedIcon}
             tabs={tabs}
             titleLink={titleLink}
@@ -159,6 +174,9 @@ export const PageBlueprint = createExtensionBlueprint({
               {inputs.pages.map((page, index) => {
                 const path = page.get(coreExtensionData.routePath);
                 const tabTitle = page.get(coreExtensionData.title);
+                const tabTitleElement = page.get(
+                  coreExtensionData.titleElement,
+                );
                 const element = page.get(coreExtensionData.reactElement);
                 return (
                   <Route
@@ -166,7 +184,10 @@ export const PageBlueprint = createExtensionBlueprint({
                     path={`${path}/*`}
                     element={
                       <BreadcrumbEntry
-                        entry={{ label: tabTitle || path, href: path }}
+                        entry={{
+                          label: tabTitleElement ?? tabTitle ?? path,
+                          href: path,
+                        }}
                       >
                         {element}
                       </BreadcrumbEntry>
@@ -188,7 +209,7 @@ export const PageBlueprint = createExtensionBlueprint({
         const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
         return (
           <PageLayout
-            title={resolvedTitle}
+            title={resolvedTitleElement}
             icon={resolvedIcon}
             titleLink={titleLink}
             headerActions={headerActions}
@@ -202,6 +223,9 @@ export const PageBlueprint = createExtensionBlueprint({
     }
     if (title) {
       yield coreExtensionData.title(title);
+    }
+    if (!config.title && params.titleElement) {
+      yield coreExtensionData.titleElement(params.titleElement);
     }
     if (icon) {
       yield coreExtensionData.icon(icon);

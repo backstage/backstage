@@ -2469,7 +2469,7 @@ export interface HeaderTab {
   // (undocumented)
   id: string;
   // (undocumented)
-  label: string;
+  label: React.ReactNode;
   matchStrategy?: TabMatchStrategy;
 }
 
@@ -3031,7 +3031,7 @@ export interface PluginHeaderBreadcrumbEntry {
   // (undocumented)
   href: string;
   // (undocumented)
-  label: string;
+  label: React.ReactNode;
 }
 
 // @public
@@ -3077,7 +3077,7 @@ export interface PluginHeaderOwnProps {
   // (undocumented)
   tabs?: HeaderTab[];
   // (undocumented)
-  title?: string;
+  title?: React.ReactNode;
   // (undocumented)
   titleLink?: string;
 }

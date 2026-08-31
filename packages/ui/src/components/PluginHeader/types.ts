@@ -24,7 +24,7 @@ import { TabMatchStrategy } from '../Tabs';
  */
 export interface PluginHeaderOwnProps {
   icon?: React.ReactNode;
-  title?: string;
+  title?: React.ReactNode;
   titleLink?: string;
   breadcrumbs?: PluginHeaderBreadcrumbEntry[];
   customActions?: React.ReactNode;
@@ -47,7 +47,7 @@ export interface PluginHeaderProps extends PluginHeaderOwnProps {}
  */
 export interface HeaderTab {
   id: string;
-  label: string;
+  label: React.ReactNode;
   href: string;
   /**
    * Strategy for matching the current route to determine if this tab should be active.
@@ -64,5 +64,5 @@ export interface HeaderTab {
  */
 export interface PluginHeaderBreadcrumbEntry {
   href: string;
-  label: string;
+  label: React.ReactNode;
 }
