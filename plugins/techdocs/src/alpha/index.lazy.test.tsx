@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import { EntityIconLinkBlueprint } from '@backstage/plugin-catalog-react/alpha';
-import { useCatalogSourceIconLinkProps } from '../components/AboutCard/useCatalogSourceIconLinkProps';
+describe('techdocs alpha entry point', () => {
+  it('does not load the reader layout until the reader page loader runs', () => {
+    jest.doMock('./components/TechDocsReaderLayout', () => {
+      throw new Error('TechDocsReaderLayout was loaded eagerly');
+    });
 
-const catalogViewSourceEntityIconLink = EntityIconLinkBlueprint.make({
-  name: 'view-source',
-  params: {
-    useProps: useCatalogSourceIconLinkProps,
-  },
+    expect(() => require('./index')).not.toThrow();
+  });
 });
-
-export default [catalogViewSourceEntityIconLink];
