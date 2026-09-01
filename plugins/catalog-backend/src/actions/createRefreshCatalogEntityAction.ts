@@ -81,8 +81,9 @@ Each entity in the software catalog has a unique name, kind, and namespace. If t
         }),
     },
     action: async ({ input, credentials }) => {
-      // Check before calling the catalog service so that external access
-      // restrictions are evaluated using the original caller credentials.
+      // TODO: Revisit this explicit check once service on-behalf-of
+      // authentication preserves caller identity and access restrictions
+      // across service boundaries. Until then, authorize before delegating.
       const [refreshDecision, readDecision] =
         await permissions.authorizeConditional(
           [

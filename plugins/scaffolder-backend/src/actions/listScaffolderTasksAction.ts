@@ -114,8 +114,9 @@ Filtering by one or multiple statuses is supported. Pagination is supported via 
           .describe('Object containing a tasks array and totalTasks count'),
     },
     action: async ({ input, credentials }) => {
-      // Check before calling the scaffolder service so that external access
-      // restrictions are evaluated using the original caller credentials.
+      // TODO: Revisit this explicit check once service on-behalf-of
+      // authentication preserves caller identity and access restrictions
+      // across service boundaries. Until then, authorize before delegating.
       const [readDecision] = await permissions.authorizeConditional(
         [{ permission: taskReadPermission }],
         { credentials },

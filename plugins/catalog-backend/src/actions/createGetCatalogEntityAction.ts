@@ -64,8 +64,9 @@ Each entity is identified by a unique entity reference, which is a string of the
       output: z => z.object({}).passthrough(),
     },
     action: async ({ input, credentials }) => {
-      // Check before calling the catalog service so that external access
-      // restrictions are evaluated using the original caller credentials.
+      // TODO: Revisit this explicit check once service on-behalf-of
+      // authentication preserves caller identity and access restrictions
+      // across service boundaries. Until then, authorize before delegating.
       const [readDecision] = await permissions.authorizeConditional(
         [{ permission: catalogEntityReadPermission }],
         { credentials },

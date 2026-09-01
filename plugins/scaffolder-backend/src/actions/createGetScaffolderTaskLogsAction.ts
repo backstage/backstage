@@ -93,8 +93,9 @@ Use the after parameter to fetch only events after a specific event ID for incre
           .describe('Object containing the events array'),
     },
     action: async ({ input, credentials }) => {
-      // Check before calling the scaffolder service so that external access
-      // restrictions are evaluated using the original caller credentials.
+      // TODO: Revisit this explicit check once service on-behalf-of
+      // authentication preserves caller identity and access restrictions
+      // across service boundaries. Until then, authorize before delegating.
       const [readDecision] = await permissions.authorizeConditional(
         [{ permission: taskReadPermission }],
         { credentials },

@@ -76,8 +76,9 @@ Use the catalog.get-catalog-entity action to fetch the Template entity and disco
         }),
     },
     action: async ({ input, credentials }) => {
-      // Check before calling the scaffolder service so that external access
-      // restrictions are evaluated using the original caller credentials.
+      // TODO: Revisit this explicit check once service on-behalf-of
+      // authentication preserves caller identity and access restrictions
+      // across service boundaries. Until then, authorize before delegating.
       const [executeDecision] = await permissions.authorizeConditional(
         [{ permission: actionExecutePermission }],
         { credentials },
