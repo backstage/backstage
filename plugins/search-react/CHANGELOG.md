@@ -1,5 +1,65 @@
 # @backstage/plugin-search-react
 
+## 1.11.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.0
+
+## 1.11.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/frontend-plugin-api@0.18.0
+
+## 1.11.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.0-next.0
+  - @backstage/core-plugin-api@1.12.9-next.0
+  - @backstage/core-components@0.18.13-next.2
+
+## 1.11.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.13-next.0
+
+## 1.11.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.3
+  - @backstage/core-components@0.18.12
+  - @backstage/core-plugin-api@1.12.8
+
+## 1.11.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.3-next.0
+  - @backstage/core-components@0.18.12-next.0
+  - @backstage/core-plugin-api@1.12.8-next.0
+
+## 1.11.5
+
+### Patch Changes
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- Updated dependencies
+  - @backstage/core-components@0.18.11
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/core-plugin-api@1.12.7
+
 ## 1.11.5-next.1
 
 ### Patch Changes

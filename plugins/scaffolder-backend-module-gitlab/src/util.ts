@@ -44,6 +44,7 @@ export const parseRepoHost = (repoUrl: string): string => {
 export const getToken = (
   config: z.infer<typeof commonGitlabConfig>,
   integrations: ScmIntegrationRegistry,
+  requireScmUserCredentials = false,
 ): { token: string; integrationConfig: GitLabIntegration } => {
   const host = parseRepoHost(config.repoUrl);
   const integrationConfig = integrations.gitlab.byHost(host);
@@ -51,6 +52,12 @@ export const getToken = (
   if (!integrationConfig) {
     throw new InputError(
       `No matching integration configuration for host ${host}, please check your integrations config`,
+    );
+  }
+
+  if (requireScmUserCredentials && !config.token) {
+    throw new InputError(
+      `No user credentials provided for host ${host}, but scaffolder.requireScmUserCredentials is enabled`,
     );
   }
 
@@ -96,13 +103,20 @@ export function getClient(props: {
   host: string;
   token?: string;
   integrations: ScmIntegrationRegistry;
+  requireScmUserCredentials?: boolean;
 }): InstanceType<typeof Gitlab> {
-  const { host, token, integrations } = props;
+  const { host, token, integrations, requireScmUserCredentials } = props;
   const integrationConfig = integrations.gitlab.byHost(host);
 
   if (!integrationConfig) {
     throw new InputError(
       `No matching integration configuration for host ${host}, please check your integrations config`,
+    );
+  }
+
+  if (requireScmUserCredentials && !token) {
+    throw new InputError(
+      `No user credentials provided for host ${host}, but scaffolder.requireScmUserCredentials is enabled`,
     );
   }
 

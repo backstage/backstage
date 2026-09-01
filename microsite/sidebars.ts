@@ -45,6 +45,7 @@ function sidebarElementWithIndex(
 
 export default {
   docs: [
+    'landing-page/doc-landing-page',
     sidebarElementWithIndex({ label: 'Overview' }, [
       'overview/what-is-backstage',
       'overview/technical-overview',
@@ -61,6 +62,7 @@ export default {
         'getting-started/configure-app-with-plugins',
         'getting-started/homepage',
       ]),
+      'getting-started/ci',
       sidebarElementWithIndex({ label: 'Deploying Backstage' }, [
         'deployment/index',
         'deployment/scaling',
@@ -79,6 +81,7 @@ export default {
           'getting-started/update-a-component',
           'getting-started/unregister-delete-component',
         ]),
+        'features/techdocs/creating-and-publishing',
       ]),
       'overview/support',
       'getting-started/keeping-backstage-updated',
@@ -150,7 +153,14 @@ export default {
             description:
               'Features in Backstage you can leverage with your AI tools.',
           },
-          ['ai/skills', 'ai/mcp-actions', 'ai/well-known-actions'],
+          [
+            'ai/overview',
+            'ai/ai-in-the-catalog',
+            'ai/mcp-actions',
+            'ai/well-known-actions',
+            'ai/skills',
+            'ai/well-known-skills',
+          ],
         ),
         sidebarElementWithIndex(
           {
@@ -179,6 +189,7 @@ export default {
                 'auth/google/provider',
                 'auth/google/gcp-iap-auth',
                 'auth/guest/provider',
+                'auth/keycloak/provider',
                 'auth/okta/provider',
                 'auth/oauth2-proxy/provider',
                 'auth/onelogin/provider',
@@ -207,6 +218,7 @@ export default {
             'features/kubernetes/authentication-strategies',
             'features/kubernetes/troubleshooting',
             'features/kubernetes/proxy',
+            'features/kubernetes/audit-events',
           ],
         ),
         sidebarElementWithIndex(
@@ -272,7 +284,12 @@ export default {
             },
             'features/search/architecture',
             'features/search/search-engines',
-            'features/search/collators',
+            {
+              type: 'category',
+              label: 'Collators',
+              link: { type: 'doc', id: 'features/search/collators' },
+              items: ['features/search/custom-collators'],
+            },
             'features/search/how-to-guides',
           ],
         ),
@@ -292,7 +309,19 @@ export default {
             'features/software-catalog/well-known-relations',
             'features/software-catalog/well-known-statuses',
             'features/software-catalog/extending-the-model',
-            'features/software-catalog/external-integrations',
+            {
+              type: 'category',
+              label: 'External integrations',
+              link: {
+                type: 'doc',
+                id: 'features/software-catalog/external-integrations/index',
+              },
+              items: [
+                'features/software-catalog/external-integrations/entity-providers',
+                'features/software-catalog/external-integrations/processors',
+                'features/software-catalog/external-integrations/incremental-entity-providers',
+              ],
+            },
             'features/software-catalog/catalog-customization',
             'features/software-catalog/entity-presentation',
             'features/software-catalog/audit-events',
@@ -395,9 +424,11 @@ export default {
           'integrations/azure-blobStorage/locations',
           'integrations/azure-blobStorage/discovery',
         ]),
-        sidebarElementWithIndex({ label: 'Azure' }, [
+        sidebarElementWithIndex({ label: 'Azure DevOps' }, [
           'integrations/azure/locations',
           'integrations/azure/discovery',
+        ]),
+        sidebarElementWithIndex({ label: 'Microsoft Entra ID' }, [
           'integrations/azure/org',
         ]),
         sidebarElementWithIndex({ label: 'Bitbucket Cloud' }, [
@@ -435,6 +466,9 @@ export default {
         ]),
         sidebarElementWithIndex({ label: 'Google GCS' }, [
           'integrations/google-cloud-storage/locations',
+        ]),
+        sidebarElementWithIndex({ label: 'Keycloak' }, [
+          'integrations/keycloak/org',
         ]),
         sidebarElementWithIndex({ label: 'LDAP' }, ['integrations/ldap/org']),
         sidebarElementWithIndex({ label: 'Okta' }, ['integrations/okta/org']),
@@ -591,6 +625,7 @@ export default {
                 'frontend-system/building-apps/plugin-conversion',
                 'frontend-system/building-apps/module-federation',
                 'frontend-system/building-apps/migrating',
+                'frontend-system/building-apps/app-visualizer',
               ],
             ),
             sidebarElementWithIndex(
@@ -618,6 +653,30 @@ export default {
             'tooling/cli/build-system',
             'tooling/cli/commands',
             'tooling/cli/templates',
+            sidebarElementWithIndex(
+              {
+                label: 'CLI Modules',
+                description:
+                  'Documentation for each CLI module and its commands.',
+              },
+              [
+                'tooling/cli/modules',
+                'tooling/cli/module-auth',
+                'tooling/cli/module-actions',
+                'tooling/cli/module-build',
+                'tooling/cli/module-config',
+                'tooling/cli/module-github',
+                'tooling/cli/module-info',
+                'tooling/cli/module-lint',
+                'tooling/cli/module-maintenance',
+                'tooling/cli/module-migrate',
+                'tooling/cli/module-new',
+                'tooling/cli/module-test',
+                'tooling/cli/module-translations',
+                'tooling/cli/module-package-manager-yarn',
+              ],
+            ),
+            'tooling/cli/building-cli-modules',
             sidebarElementWithIndex(
               {
                 label: 'Local Development',
@@ -701,7 +760,6 @@ export default {
             'tutorials/react-router-stable-migration',
             'tutorials/react18-migration',
             'tutorials/package-role-migration',
-            'tutorials/migrating-away-from-core',
             'tutorials/yarn-migration',
             'tutorials/migrate-to-mui5',
             'tutorials/auth-service-migration',

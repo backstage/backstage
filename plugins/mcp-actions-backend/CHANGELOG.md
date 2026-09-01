@@ -1,5 +1,80 @@
 # @backstage/plugin-mcp-actions-backend
 
+## 0.2.1
+
+### Patch Changes
+
+- ec2b90f: Added support for configuring MCP server instructions for both default and named servers.
+- d7d03d9: Replaced duplicated documentation in the README with a link to the full docs on `backstage.io`.
+- e4983fd: Added audit logging for MCP server operations using the Backstage Auditor Service. The plugin now emits `connection`, `tool-discovery`, and `tool-execution` audit events, allowing adopters to monitor and audit MCP server activity.
+- 9937a99: Added `scopes_supported` to the OAuth 2.0 Protected Resource Metadata (RFC 9728) response. Without this field, RFC-compliant MCP clients did not know which scope to request and never received a refresh token, causing sessions to expire with the short-lived access token. The field now includes `openid`, and also `offline_access` when `auth.experimentalRefreshToken` is enabled.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-catalog-node@2.2.4
+
+## 0.2.1-next.2
+
+### Patch Changes
+
+- 9937a99: Added `scopes_supported` to the OAuth 2.0 Protected Resource Metadata (RFC 9728) response. Without this field, RFC-compliant MCP clients did not know which scope to request and never received a refresh token, causing sessions to expire with the short-lived access token. The field now includes `openid`, and also `offline_access` when `auth.experimentalRefreshToken` is enabled.
+
+## 0.2.1-next.1
+
+### Patch Changes
+
+- d7d03d9: Replaced duplicated documentation in the README with a link to the full docs on `backstage.io`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.1
+
+## 0.2.1-next.0
+
+### Patch Changes
+
+- ec2b90f: Added support for configuring MCP server instructions for both default and named servers.
+- e4983fd: Added audit logging for MCP server operations using the Backstage Auditor Service. The plugin now emits `connection`, `tool-discovery`, and `tool-execution` audit events, allowing adopters to monitor and audit MCP server activity.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-catalog-node@2.2.4-next.0
+
+## 0.2.0
+
+### Minor Changes
+
+- 567bc4c: **BREAKING**: Removed the deprecated Server-Sent Events (SSE) MCP transport. MCP clients must use the Streamable HTTP endpoint at `/api/mcp-actions/v1` or a configured named-server endpoint.
+
+### Patch Changes
+
+- e2b3472: Updated OAuth discovery to use the stable `auth.clientIdMetadataDocuments` configuration while retaining compatibility with the deprecated experimental key.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/catalog-client@1.16.1
+  - @backstage/plugin-catalog-node@2.2.3
+
+## 0.2.0-next.1
+
+### Minor Changes
+
+- 567bc4c: **BREAKING**: Removed the deprecated Server-Sent Events (SSE) MCP transport. MCP clients must use the Streamable HTTP endpoint at `/api/mcp-actions/v1` or a configured named-server endpoint.
+
+## 0.1.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/plugin-catalog-node@2.2.3-next.0
+  - @backstage/catalog-client@1.16.1-next.0
+
+## 0.1.14
+
+### Patch Changes
+
+- ed1be73: Validate each action against the MCP tool schema when responding to `tools/list`, and skip any action that doesn't conform instead of failing the entire response. A single misbehaving action with a malformed input schema will now be logged as a warning and omitted from the tool list, letting the remaining actions continue to be served.
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-catalog-node@2.2.2
+
 ## 0.1.14-next.1
 
 ### Patch Changes

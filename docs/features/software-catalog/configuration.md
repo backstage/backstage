@@ -88,7 +88,7 @@ is offered by each integration.
 To ingest entities from an existing system already tracking software, you can
 also write a _custom processor_ to convert between the existing system and
 Backstage's descriptor format. This is documented in
-[External Integrations](external-integrations.md).
+[External Integrations](external-integrations/index.md).
 
 ### Processor configuration
 
@@ -234,24 +234,9 @@ Setting this value too low risks exhausting rate limits on external systems that
 are queried by processors, such as version control systems housing catalog-info
 files.
 
-## Stitching strategy
+## Stitching
 
-[Stitching](./life-of-an-entity.md#stitching) finalizes the entity. It can be run in
-two modes:
-
-- `immediate` - performs stitching in-band immediately when needed
-- `deferred` - performs the stitching asynchronously
-
-It can be configured with the `stitchingStrategy` app-config parameter.
-
-```yaml title="app-config.yaml"
-catalog:
-  stitchingStrategy:
-    mode: immediate
-```
-
-For the `deferred` mode you can set up additional parameters to further tune the process,
-by setting the following parameters:
+[Stitching](./life-of-an-entity.md#stitching) finalizes entities asynchronously via a worker queue. You can tune the following parameters under `catalog.stitchingStrategy`:
 
 - `pollingInterval` - the interval between polling for entities that need stitching
 - `stitchTimeout` - the maximum time to wait for an entity to be stitched
@@ -261,9 +246,8 @@ These parameters accept a duration object, similar to the `processingInterval` p
 ```yaml title="app-config.yaml"
 catalog:
   stitchingStrategy:
-    mode: deferred
     pollingInterval: { seconds: 1 }
-    stitchTimeout: { minutes: 1 };
+    stitchTimeout: { minutes: 1 }
 ```
 
 ## Subscribing to Catalog Errors
@@ -302,7 +286,7 @@ This will log errors with a level of `warn`.
 
 You should now see logs as the catalog emits events. Example:
 
-```
+```log
 [1] 2024-06-07T00:00:28.787Z events warn Policy check failed for user:default/guest; caused by Error: Malformed envelope, /metadata/tags must be array entity=user:default/guest location=file:/Users/foobar/code/backstage-demo-instance/examples/org.yaml
 ```
 

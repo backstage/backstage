@@ -1,5 +1,82 @@
 # @backstage/plugin-devtools
 
+## 0.1.43-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.17.2-next.0
+  - @backstage/core-components@0.18.14-next.0
+  - @backstage/core-compat-api@0.5.15-next.0
+
+## 0.1.42
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/ui@0.17.1
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/core-compat-api@0.5.14
+  - @backstage/plugin-permission-react@0.5.4
+
+## 0.1.42-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.0-next.0
+  - @backstage/core-compat-api@0.5.14-next.1
+  - @backstage/core-plugin-api@1.12.9-next.0
+  - @backstage/core-components@0.18.13-next.2
+  - @backstage/plugin-permission-react@0.5.4-next.0
+
+## 0.1.42-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.13-next.0
+  - @backstage/ui@0.17.1-next.0
+  - @backstage/core-compat-api@0.5.14-next.0
+
+## 0.1.41
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.3
+  - @backstage/ui@0.17.0
+  - @backstage/core-components@0.18.12
+  - @backstage/core-compat-api@0.5.13
+  - @backstage/core-plugin-api@1.12.8
+  - @backstage/plugin-permission-react@0.5.3
+
+## 0.1.41-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.17.0-next.0
+  - @backstage/core-compat-api@0.5.13-next.0
+  - @backstage/frontend-plugin-api@0.17.3-next.0
+  - @backstage/core-components@0.18.12-next.0
+  - @backstage/core-plugin-api@1.12.8-next.0
+  - @backstage/plugin-permission-react@0.5.3-next.0
+
+## 0.1.40
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/ui@0.16.0
+  - @backstage/core-compat-api@0.5.12
+  - @backstage/core-plugin-api@1.12.7
+  - @backstage/plugin-permission-react@0.5.2
+
 ## 0.1.40-next.1
 
 ### Patch Changes

@@ -1,5 +1,36 @@
 # @backstage/plugin-scaffolder-common
 
+## 2.3.0-next.0
+
+### Minor Changes
+
+- 1a705ca: Added `templateDryRunPermission`, which allows permission policies to control who can submit inline Software Template dry runs.
+
+## 2.2.2
+
+### Patch Changes
+
+- 4e8d763: Migrated tests from MSW v1 to MSW v2.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/integration@2.1.0
+  - @backstage/plugin-permission-common@0.9.10
+
+## 2.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.0-next.0
+
+## 2.2.1
+
+### Patch Changes
+
+- 02c4e8a: Removed unused `json-schema` runtime dependency. The package was only used for TypeScript types from `@types/json-schema`; affected imports have been converted to `import type` to allow safe removal.
+- Updated dependencies
+  - @backstage/integration@2.0.3
+
 ## 2.2.1-next.0
 
 ### Patch Changes

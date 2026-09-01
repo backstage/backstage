@@ -19,6 +19,7 @@ import { z } from 'zod/v4';
 /** @public */
 export const GithubConnectionType = createConnectionType({
   type: 'github',
+  title: 'GitHub',
   configSchema: z.object({
     host: z.string(),
     apiBaseUrl: z.string().optional(),
@@ -27,16 +28,19 @@ export const GithubConnectionType = createConnectionType({
   authMethods: [
     {
       method: 'none',
+      title: 'None',
       configSchema: z.object({}),
     },
     {
       method: 'token',
+      title: 'Token',
       configSchema: z.object({
         token: z.string(),
       }),
     },
     {
       method: 'app',
+      title: 'GitHub App',
       configSchema: z.object({
         appId: z.union([z.number(), z.string()]),
         privateKey: z.string(),
@@ -49,12 +53,18 @@ export const GithubConnectionType = createConnectionType({
     },
   ],
   matchAuth: (authMethods, query) => {
-    const org = new URL(query).pathname.split('/').filter(Boolean)[0];
+    const org = new URL(query.url).pathname
+      .split('/')
+      .filter(Boolean)[0]
+      .toLocaleLowerCase();
     const apps = authMethods.filter(a => a.method === 'app');
     const appWithOrg = org ? apps.find(a => a.orgs?.includes(org)) : undefined;
     if (appWithOrg) return appWithOrg;
+
     const unrestrictedApp = apps.find(a => !a.orgs?.length);
     if (unrestrictedApp) return unrestrictedApp;
+
+    if (apps.length === 1) return apps[0];
 
     return (
       authMethods.find(a => a.method === 'token') ??

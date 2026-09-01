@@ -18,13 +18,13 @@ description: Documentation landing page.
       <ul>
         <li><a href='https://backstage.io/docs/overview/what-is-backstage'>What is Backstage?</a></li>
         <li><a href='https://backstage.io/docs/overview/technical-overview'>Technical Overview</a></li>
-        <li><a href='https://backstage.io/docs/overview/architecture-overview'>Architecture overview</a></li> 
+        <li><a href='https://backstage.io/docs/overview/architecture-overview'>Architecture overview</a></li>
         <li><a href='https://backstage.io/docs/plugins/'>Introduction to Plugins</a></li>
         <li><a href='https://backstage.io/docs/features/software-catalog/'>Software Catalog Overview</a></li>
         <li><a href='https://backstage.io/docs/features/software-catalog/system-model'>System Model</a></li>
         <li><a href='https://backstage.io/docs/auth/'>Authentication in Backstage</a></li>
         <li><a href='https://backstage.io/docs/backend-system/'>Backend System Overview</a></li>
-        <li><a href='https://backstage.io/docs/frontend-system/architecture/index'>New Frontend System Overview</a></li> 
+        <li><a href='https://backstage.io/docs/frontend-system/architecture/index'>New Frontend System Overview</a></li>
         <li><a href='https://backstage.io/docs/overview/threat-model'>Security & Threat Model</a></li>
         <li><a href='https://backstage.io/docs/overview/versioning-policy'>Release & Versioning Policy</a></li>
       </ul>
@@ -53,8 +53,8 @@ description: Documentation landing page.
         <li><a href='https://backstage.io/docs/features/software-templates/adding-templates'>Creating a Software Template</a></li>
         <li><a href='https://backstage.io/docs/features/kubernetes/'>Check health of services with Kubernetes</a></li>
         <li><a href='https://backstage.io/docs/tooling/cli/overview/'>Backstage CLI</a></li>
-      </ul>           
-    </td> 
+      </ul>
+    </td>
     <td valign='top'><i>Configure, Deploy, & Upgrade.</i><br><br>
       <ul>
         <li><a href='https://backstage.io/docs/getting-started/config/authentication'>Setup Authentication</a></li>
@@ -70,6 +70,7 @@ description: Documentation landing page.
     </td>
     <td valign='top'><i>Additional Backstage Features</i><br><br>
       <ul>
+        <li><a href='https://backstage.io/docs/ai/generated-index/'>AI</a></li>
         <li><a href='https://backstage.io/docs/features/search/'>Search</a></li>
         <li><a href='https://backstage.io/docs/features/software-catalog/'>Software Catalog</a></li>
         <li><a href='https://backstage.io/docs/features/software-templates/'>Software Templates (aka Scaffolder)</a></li>

@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { toError } from '@backstage/errors';
 import { Duration } from 'luxon';
 import { ConfigClusterLocator } from './ConfigClusterLocator';
 import { GkeClusterLocator } from './GkeClusterLocator';
@@ -35,24 +36,48 @@ import { CatalogService } from '@backstage/plugin-catalog-node';
 class CombinedClustersSupplier implements KubernetesClustersSupplier {
   readonly clusterSuppliers: KubernetesClustersSupplier[];
   readonly logger: LoggerService;
+  readonly continueOnError: boolean;
 
   constructor(
     clusterSuppliers: KubernetesClustersSupplier[],
     logger: LoggerService,
+    continueOnError: boolean = false,
   ) {
     this.clusterSuppliers = clusterSuppliers;
     this.logger = logger;
+    this.continueOnError = continueOnError;
   }
 
   async getClusters(options: {
     credentials: BackstageCredentials;
   }): Promise<ClusterDetails[]> {
-    const clusters = await Promise.all(
-      this.clusterSuppliers.map(supplier => supplier.getClusters(options)),
-    ).then(res => {
-      return res.flat();
-    });
+    const clusters = this.continueOnError
+      ? await this.getClustersSettled(options)
+      : await Promise.all(
+          this.clusterSuppliers.map(supplier => supplier.getClusters(options)),
+        ).then(res => res.flat());
     return this.warnDuplicates(clusters);
+  }
+
+  private async getClustersSettled(options: {
+    credentials: BackstageCredentials;
+  }): Promise<ClusterDetails[]> {
+    const results = await Promise.allSettled(
+      this.clusterSuppliers.map(supplier => supplier.getClusters(options)),
+    );
+    const clusters: ClusterDetails[] = [];
+    for (let i = 0; i < results.length; i++) {
+      const result = results[i];
+      if (result.status === 'fulfilled') {
+        clusters.push(...result.value);
+      } else {
+        this.logger.error(
+          `Failed to retrieve clusters from cluster locator method #${i + 1}`,
+          toError(result.reason),
+        );
+      }
+    }
+    return clusters;
   }
 
   private warnDuplicates(clusters: ClusterDetails[]): ClusterDetails[] {
@@ -107,5 +132,13 @@ export const getCombinedClusterSupplier = (
       }
     });
 
-  return new CombinedClustersSupplier(clusterSuppliers, logger);
+  const continueOnError =
+    rootConfig.getOptionalBoolean('kubernetes.clusterLocatorContinueOnError') ??
+    false;
+
+  return new CombinedClustersSupplier(
+    clusterSuppliers,
+    logger,
+    continueOnError,
+  );
 };

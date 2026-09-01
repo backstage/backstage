@@ -51,7 +51,7 @@ export const keycloakAuthApiRef: ApiRef<
 
 The `id` of the API ref can be anything you want, as long as it doesn't conflict with other refs. Backstage recommends to use a custom name that references your custom provider.
 
-:::note TypeScript Note
+:::note[TypeScript Note]
 As we're exporting this API reference, as well as the TypeScript types, we need to
 be able to import this reference anywhere in the app. The types will tell TypeScript
 what instance we're getting from DI when injecting the API. In this case we are defining
@@ -62,7 +62,8 @@ interfaces:
 - Profile API for requesting user profile info from the auth provider in question.
 - Backstage identity API to handle and associate the user profile with backstage identity.
 - Session API, to handle the session the user will have while signed in.
-  :::
+
+:::
 
 ### The API Factory (and auth provider)
 
@@ -259,7 +260,7 @@ These parameters have implicit default values. Don't override them unless you kn
   start URL is controlled by the browser, so this feature is only for improving the
   Backstage user experience.
 
-:::note Config Reloading
+:::note[Config Reloading]
 Backstage does not yet support hot reloading of auth provider configuration. Any changes to this YAML file require a restart of Backstage.
 :::
 
@@ -281,13 +282,13 @@ export const providers = [
 ];
 ```
 
-:::note Note
+:::note
 These steps apply to most auth providers. The main
 difference between providers will be the contents of the API factory, the code
 in the Auth Provider Factory, the resolver, and the different variables each provider
 needs in the YAML config or env variables.
 :::
 
-[1]: https://backstage.io/docs/auth/identity-resolver
-[3]: https://backstage.io/docs/auth/#sign-in-configuration
-[4]: https://backstage.io/docs/api/utility-apis
+[1]: ./identity-resolver.md
+[3]: ./index.md#sign-in-configuration
+[4]: ../api/utility-apis.md

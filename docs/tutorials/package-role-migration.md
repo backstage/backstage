@@ -97,7 +97,7 @@ This will migrate all existing `.eslintrc.js` that extend the old configuration 
 
 ### Step 4 - Use `backstage-cli repo`
 
-The Backstage CLI recently introduced a new `repo` command category, which houses commands that operate on an entire monorepo at once. These commands work particularly well once packages have been migrated to use roles, as that allows for some very effective optimizations. It is typically much faster to use these commands compared to using tools like `lerna`, as they're able to avoid the overhead of calling package scripts through `yarn` and can operate on multiple packages at once. You can read more about the `repo` command in the [CLI command documentation](../tooling/cli/03-commands.md#repo-build).
+The Backstage CLI recently introduced a new `repo` command category, which houses commands that operate on an entire monorepo at once. These commands work particularly well once packages have been migrated to use roles, as that allows for some very effective optimizations. It is typically much faster to use these commands compared to using tools like `lerna`, as they're able to avoid the overhead of calling package scripts through `yarn` and can operate on multiple packages at once. You can read more about the `repo` command in the [CLI command documentation](../tooling/cli/module-build.md#repo-build).
 
 The way to execute this step of the migration is not as well defined as the previous steps, as it depends on what your development and CI/CD setup looks like. Look for the following patterns to replace in your root `package.json` as well as CI/CD setup:
 

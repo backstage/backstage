@@ -1,5 +1,124 @@
 # @backstage/plugin-scaffolder-backend
 
+## 4.1.0-next.0
+
+### Minor Changes
+
+- 1a705ca: Applied `templateDryRunPermission` to inline Software Template dry runs and the corresponding backend action. Permission policies that deny unknown permissions must explicitly allow `scaffolder.template.dry-run` to retain existing dry-run access.
+- e95b649: Added task recovery feature with new `scaffolder.taskRecovery` config section. When enabled, tasks that crash or timeout are automatically recovered and resume from the last completed step, task secrets are retained until the task reaches a terminal state so recovery can continue, and completed step outputs are persisted. Enabling recovery applies to all scaffolder tasks, so actions used by those tasks should be idempotent or use checkpoints. When recovery is disabled (the default), the previous behavior is unchanged: secrets are cleared as soon as a task is claimed and retries re-run every step. The new config consolidates previous experimental flags (`EXPERIMENTAL_recoverTasks`, `EXPERIMENTAL_workspaceSerialization`, `EXPERIMENTAL_recoverTasksTimeout`) which remain supported as fallbacks. The legacy workspace provider setting continues to select a provider only when `EXPERIMENTAL_workspaceSerialization` is `true`.
+
+  Workspace serialization for task recovery now requires installing a separate workspace provider module, including when you use the legacy configuration. For development, use `@backstage/plugin-scaffolder-backend-module-workspace-database` (50 MB limit, not recommended for production). On first startup, that module migrates existing database workspace snapshots from the legacy task storage. For production, use `@backstage/plugin-scaffolder-backend-module-gcp` or a similar external storage provider. The scaffolder rejects a configured provider that has not been installed and registered.
+
+  Enabling crash recovery does not keep completed task event streams open; normal task completion remains terminal for event-stream clients.
+
+### Patch Changes
+
+- 2bf1392: Software template inline conditionals without an `else` branch now render an empty string when their condition is false, matching Nunjucks behavior.
+- beaa3db: Reject Scaffolder steps where `each` resolves to a primitive value instead of an array or object.
+- c1a30ef: Restored support for intrinsic string, number, array, `Map`, and `Set` methods in software templates.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@2.3.0-next.0
+  - @backstage/plugin-scaffolder-node@0.13.7-next.0
+
+## 4.0.3
+
+### Patch Changes
+
+- 4bbc088: Fixed the stale task janitor not being set up by passing the scheduler service to the router.
+- 943687f: Removed the native addon requirement from scaffolder template rendering. Templates now run through a TypeScript interpreter, and the backend no longer needs the `--no-node-snapshot` Node.js option.
+- 7ca434e: Scaffolder tasks now wait for recovery checkpoint state to be persisted before continuing, preventing later execution from racing ahead of stored recovery state. Restored checkpoints also preserve falsy values without re-running their callbacks.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/plugin-scaffolder-node@0.13.6
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/integration@2.1.0
+  - @backstage/plugin-permission-common@0.9.10
+  - @backstage/plugin-permission-node@0.11.3
+  - @backstage/plugin-scaffolder-common@2.2.2
+  - @backstage/backend-openapi-utils@0.7.1
+  - @backstage/plugin-catalog-node@2.2.4
+  - @backstage/plugin-events-node@0.4.25
+
+## 4.0.3-next.2
+
+### Patch Changes
+
+- 943687f: Removed the native addon requirement from scaffolder template rendering. Templates now run through a TypeScript interpreter, and the backend no longer needs the `--no-node-snapshot` Node.js option.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.6-next.2
+  - @backstage/backend-plugin-api@1.10.0-next.1
+
+## 4.0.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.0-next.0
+  - @backstage/plugin-scaffolder-common@2.2.2-next.0
+  - @backstage/plugin-scaffolder-node@0.13.6-next.1
+
+## 4.0.3-next.0
+
+### Patch Changes
+
+- 4bbc088: Fixed the stale task janitor not being set up by passing the scheduler service to the router.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-permission-node@0.11.3-next.0
+  - @backstage/backend-openapi-utils@0.7.1-next.0
+  - @backstage/plugin-catalog-node@2.2.4-next.0
+  - @backstage/plugin-events-node@0.4.25-next.0
+  - @backstage/plugin-scaffolder-node@0.13.6-next.0
+
+## 4.0.2
+
+### Patch Changes
+
+- 55902bb: Fixed `DatabaseTaskStore.list` returning `totalTasks` as a string on PostgreSQL. knex returns a `COUNT(*)` aggregate as a string on PostgreSQL (the column is a bigint) while better-sqlite3 returns a number, so the count is now coerced with `Number(...)` and guarded with `Number.isSafeInteger(...)`. This in turn fixes the `list-scaffolder-tasks` action, whose output schema declares `totalTasks: z.number()` and previously failed validation in production with `Invalid output ... totalTasks: Expected number, received string`.
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.7.0
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/plugin-catalog-node@2.2.3
+  - @backstage/plugin-events-node@0.4.24
+  - @backstage/plugin-permission-node@0.11.2
+  - @backstage/plugin-scaffolder-node@0.13.5
+
+## 4.0.2-next.1
+
+### Patch Changes
+
+- 55902bb: Fixed `DatabaseTaskStore.list` returning `totalTasks` as a string on PostgreSQL. knex returns a `COUNT(*)` aggregate as a string on PostgreSQL (the column is a bigint) while better-sqlite3 returns a number, so the count is now coerced with `Number(...)` and guarded with `Number.isSafeInteger(...)`. This in turn fixes the `list-scaffolder-tasks` action, whose output schema declares `totalTasks: z.number()` and previously failed validation in production with `Invalid output ... totalTasks: Expected number, received string`.
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.7.0-next.1
+  - @backstage/backend-plugin-api@1.9.3-next.1
+
+## 4.0.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.11.2-next.0
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/plugin-catalog-node@2.2.3-next.0
+  - @backstage/plugin-events-node@0.4.24-next.0
+  - @backstage/plugin-scaffolder-node@0.13.5-next.0
+  - @backstage/backend-openapi-utils@0.6.11-next.0
+
+## 4.0.1
+
+### Patch Changes
+
+- 063fc34: Restored user-supplied task secrets in scaffolder dry-run executions. The previous security fix that stripped secrets from dry-run also removed task secrets passed in the dry-run request body, which broke integration test setups that rely on user-supplied secrets. Environment secrets (server-configured) remain stripped during dry-run; only task secrets supplied by the caller are now forwarded to actions.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.4
+  - @backstage/integration@2.0.3
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-scaffolder-common@2.2.1
+  - @backstage/backend-openapi-utils@0.6.10
+  - @backstage/plugin-catalog-node@2.2.2
+  - @backstage/plugin-events-node@0.4.23
+  - @backstage/plugin-permission-node@0.11.1
+
 ## 4.0.1-next.0
 
 ### Patch Changes

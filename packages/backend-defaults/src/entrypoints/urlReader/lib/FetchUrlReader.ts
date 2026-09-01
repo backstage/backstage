@@ -66,7 +66,7 @@ const parsePortPredicate = (port: string | undefined) => {
   return (url: URL) => !url.port;
 };
 
-function predicateFromConfig(config: Config): (url: URL) => boolean {
+export function predicateFromConfig(config: Config): (url: URL) => boolean {
   const allow = config
     .getOptionalConfigArray('backend.reading.allow')
     ?.map(allowConfig => {
@@ -74,9 +74,15 @@ function predicateFromConfig(config: Config): (url: URL) => boolean {
       const checkPath = paths
         ? (url: URL) => {
             const targetPath = path.posix.normalize(url.pathname);
-            return paths.some(allowedPath =>
-              targetPath.startsWith(allowedPath),
-            );
+            return paths.some(allowedPath => {
+              const allowedPathPrefix = allowedPath.endsWith('/')
+                ? allowedPath
+                : `${allowedPath}/`;
+              return (
+                targetPath === allowedPath ||
+                targetPath.startsWith(allowedPathPrefix)
+              );
+            });
           }
         : (_url: URL) => true;
       const host = allowConfig.getString('host');
@@ -113,7 +119,9 @@ export class FetchUrlReader implements UrlReaderService {
    *   For example 'example.com' and '*.example.com' are valid values, 'prod.*.example.com' is not.
    *
    * `paths`:
-   *   An optional list of paths which are allowed. If the list is omitted all paths are allowed.
+   *   An optional list of paths which are allowed. Each entry matches the exact path or paths
+   *   below it at a segment boundary. A trailing slash only matches that path with the slash and
+   *   paths below it. If the list is omitted all paths are allowed.
    */
   static factory: ReaderFactory = ({ config }) => {
     const predicate = predicateFromConfig(config);

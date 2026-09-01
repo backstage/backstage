@@ -152,8 +152,6 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
         { entity_id: 'i', key: 'k2', value: null },
       ]),
     );
-
-    await knex.destroy();
   });
 
   it('20221201085245_add_last_updated_at_in_final_entities.js', async () => {
@@ -226,8 +224,6 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
         },
       ]),
     );
-
-    await knex.destroy();
   });
 
   it('20230525141717_stitch_queue.js', async () => {
@@ -294,8 +290,6 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
         last_discovery_at: expect.anything(),
       },
     ]);
-
-    await knex.destroy();
   });
 
   it('20241003170511_alter_target_in_locations.js', async () => {
@@ -378,8 +372,6 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
         },
       ]),
     );
-
-    await knex.destroy();
   });
 
   it('20241024104700_add_entity_ref_to_final_entities.js', async () => {
@@ -481,8 +473,6 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
         },
       ]),
     );
-
-    await knex.destroy();
   });
 
   it('20241111000000_drop_redundant_indices.js', async () => {
@@ -495,7 +485,6 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
     await migrateDownOnce(knex);
 
     expect(true).toBe(true);
-    await knex.destroy();
   });
 
   it('20250401200503_update_refresh_state_columns.js', async () => {
@@ -575,8 +564,6 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
         cache: JSON.stringify({ cacheKey: 'cacheValue' }),
       }),
     );
-
-    await knex.destroy();
   });
 
   it('20250514000000_refresh_state_references_big_increments.js', async () => {
@@ -657,8 +644,6 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
         target_entity_ref: 'k:ns/a',
       },
     ]);
-
-    await knex.destroy();
   });
 
   it('20260214000000_search_fk_final_entities.js', async () => {
@@ -906,8 +891,6 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
         original_value: 'setting',
       },
     ]);
-
-    await knex.destroy();
   });
 
   it('20260215000000_move_stitch_queue.js', async () => {
@@ -1052,8 +1035,6 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
       r => r.entity_id === 'id2',
     );
     expect(id2RefreshRow?.next_stitch_at).toBeNull();
-
-    await knex.destroy();
   });
 
   it('20260510000000_search_indices_and_dedup.js', async () => {
@@ -1137,8 +1118,6 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
         original_value: 'extra',
       }),
     ).resolves.not.toThrow();
-
-    await knex.destroy();
   });
 
   it('20260510000000_search_indices_and_dedup.js preconditions met (PG fast path)', async () => {
@@ -1147,7 +1126,6 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
     // The fast path (skip dedup when unique index pre-exists) is a
     // PostgreSQL-only code path that checks pg_index.
     if (!knex.client.config.client.includes('pg')) {
-      await knex.destroy();
       return;
     }
 
@@ -1205,7 +1183,6 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
     );
 
     await migrateDownOnce(knex);
-    await knex.destroy();
   });
 
   it('20260403000000_add_location_entity_ref.js', async () => {
@@ -1279,8 +1256,6 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
 
     const columnsReverted = await knex('locations').columnInfo();
     expect(columnsReverted.location_entity_ref).toBeUndefined();
-
-    await knex.destroy();
   });
 
   it('20260516000000_relations_target_index.js', async () => {
@@ -1350,8 +1325,6 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
     // Verify rollback drops the index
     await migrateDownOnce(knex);
     expect(await indexExists('relations_target_entity_ref_idx')).toBe(false);
-
-    await knex.destroy();
   });
 
   it('20260519000000_search_extended_statistics.js', async () => {
@@ -1409,8 +1382,6 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
 
     await migrateDownOnce(knex);
     expect(await statsExist()).toBe(false);
-
-    await knex.destroy();
   });
 
   it('20260608000000_search_autovacuum_and_ndistinct.js', async () => {
@@ -1472,7 +1443,5 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
       expect(await hasAutovacuumOptions(table)).toBe(false);
     }
     expect(await hasNdistinctOverride()).toBe(false);
-
-    await knex.destroy();
   });
 });

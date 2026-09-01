@@ -32,8 +32,12 @@ import { WorkflowRunner } from './types';
 import { setTimeout } from 'node:timers/promises';
 import { JsonObject } from '@backstage/types';
 import { Config } from '@backstage/config';
+import { collectTemplateCapabilities } from '../../util/templating';
 
 const DEFAULT_TASK_PARAMETER_MAX_LENGTH = 256;
+
+/** How long to wait before trying to claim again after a failed claim. */
+const CLAIM_RETRY_DELAY_MS = 1000;
 
 /**
  * TaskWorkerOptions
@@ -134,8 +138,10 @@ export class TaskWorker {
       logger,
       auditor,
       workingDirectory,
-      additionalTemplateFilters,
-      additionalTemplateGlobals,
+      templateCapabilities: collectTemplateCapabilities({
+        filters: additionalTemplateFilters,
+        globals: additionalTemplateGlobals,
+      }),
       permissions,
       config,
       metrics,
@@ -170,10 +176,22 @@ export class TaskWorker {
     })();
     (async () => {
       while (!this.stopWorkers) {
-        await this.onReadyToClaimTask();
-        if (!this.stopWorkers) {
-          const task = await this.options.taskBroker.claim();
-          void this.taskQueue.add(() => this.runOneTask(task));
+        try {
+          await this.onReadyToClaimTask();
+          if (!this.stopWorkers) {
+            const task = await this.options.taskBroker.claim();
+            void this.taskQueue.add(() => this.runOneTask(task));
+          }
+        } catch (err) {
+          // Without this the loop exits on the first rejection and the worker
+          // stops claiming tasks for the rest of the process lifetime, leaving
+          // every new task queued with no indication that anything is wrong.
+          this.logger?.error(
+            `Failed to claim task, retrying in ${CLAIM_RETRY_DELAY_MS}ms; caused by ${stringifyError(
+              err,
+            )}`,
+          );
+          await setTimeout(CLAIM_RETRY_DELAY_MS);
         }
       }
     })();

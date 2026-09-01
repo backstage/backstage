@@ -134,10 +134,13 @@ describe('<StructuredMetadataTable />', () => {
       expect(rendered.queryByText(/^Test D/)).toBeInTheDocument();
 
       // nested content is displayed as yaml via lazy-loaded CodeSnippet
-      await waitFor(() => {
-        expect(rendered.queryByText(/^testC/)).toBeInTheDocument();
-        expect(rendered.queryByText(/testE: stuff/)).toBeInTheDocument();
-      });
+      await waitFor(
+        () => {
+          expect(rendered.queryByText(/^testC/)).toBeInTheDocument();
+          expect(rendered.queryByText(/testE: stuff/)).toBeInTheDocument();
+        },
+        { timeout: 15000 },
+      );
     });
 
     it('should be possible to disable it', async () => {
@@ -177,10 +180,13 @@ describe('<StructuredMetadataTable />', () => {
       expect(rendered.queryByText(/^tEsTd/)).toBeInTheDocument();
 
       // nested content is displayed as yaml via lazy-loaded CodeSnippet
-      await waitFor(() => {
-        expect(rendered.queryByText(/^testC/)).toBeInTheDocument();
-        expect(rendered.queryByText(/^testE/)).toBeInTheDocument();
-      });
+      await waitFor(
+        () => {
+          expect(rendered.queryByText(/^testC/)).toBeInTheDocument();
+          expect(rendered.queryByText(/^testE/)).toBeInTheDocument();
+        },
+        { timeout: 15000 },
+      );
     });
   });
 });

@@ -1,5 +1,52 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.8.8-next.0
+
+### Patch Changes
+
+- b11c9b4: Fixed a bug where an empty document type list could result in querying all indices instead of returning empty results.
+
+## 1.8.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/integration-aws-node@0.2.1
+  - @backstage/plugin-search-backend-node@1.4.7
+
+## 1.8.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-search-backend-node@1.4.7-next.0
+
+## 1.8.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/plugin-search-backend-node@1.4.6
+
+## 1.8.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.4.6-next.0
+  - @backstage/backend-plugin-api@1.9.3-next.0
+
+## 1.8.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-search-backend-node@1.4.5
+
 ## 1.8.4-next.0
 
 ### Patch Changes

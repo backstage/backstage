@@ -15,7 +15,7 @@
  */
 
 import { cli } from 'cleye';
-import { JSONSchema7 as JSONSchema } from 'json-schema';
+import type { JSONSchema7 as JSONSchema } from 'json-schema';
 import { stringify as stringifyYaml } from 'yaml';
 import { loadCliConfig } from '../lib/config';
 import { JsonObject } from '@backstage/types';
@@ -24,10 +24,10 @@ import type { CliCommandContext } from '@backstage/cli-node';
 
 export default async ({ args, info }: CliCommandContext) => {
   const {
-    flags: { merge, format, package: pkg },
+    flags: { merge, format, package: pkg, strict },
   } = cli(
     {
-      help: info,
+      name: info.usage,
       booleanFlagNegation: true,
       flags: {
         package: { type: String, description: 'Package to print schema for' },
@@ -35,6 +35,10 @@ export default async ({ args, info }: CliCommandContext) => {
         merge: {
           type: Boolean,
           description: 'Merge all schemas into a single schema',
+        },
+        strict: {
+          type: Boolean,
+          description: 'Treat TypeScript configuration schema errors as fatal',
         },
       },
     },
@@ -46,6 +50,7 @@ export default async ({ args, info }: CliCommandContext) => {
     args: [],
     fromPackage: pkg,
     mockEnv: true,
+    strict,
   });
 
   let configSchema: JsonObject | JSONSchema;

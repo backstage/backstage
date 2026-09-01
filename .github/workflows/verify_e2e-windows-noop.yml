@@ -11,8 +11,7 @@ on:
       - 'packages/e2e-test/**'
       - 'packages/create-app/**'
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   noop:

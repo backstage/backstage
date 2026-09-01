@@ -15,7 +15,7 @@
  */
 
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { codeSearch, CodeSearchResponse } from './azure';
 import {
@@ -57,11 +57,12 @@ describe('azure', () => {
       const response: CodeSearchResponse = { count: 0, results: [] };
 
       server.use(
-        rest.post(
+        http.post(
           `https://almsearch.dev.azure.com/shopify/_apis/search/codesearchresults`,
-          (req, res, ctx) => {
-            expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
-            expect(req.body).toEqual({
+          async ({ request }) => {
+            const body = await request.json();
+            expect(request.headers.get('Authorization')).toBe('Basic OkFCQw==');
+            expect(body).toEqual({
               searchText: 'path:/catalog-info.yaml repo:* proj:engineering',
               $orderBy: [
                 {
@@ -72,7 +73,7 @@ describe('azure', () => {
               $skip: 0,
               $top: 1000,
             });
-            return res(ctx.json(response));
+            return HttpResponse.json(response);
           },
         ),
       );
@@ -123,11 +124,12 @@ describe('azure', () => {
     };
 
     server.use(
-      rest.post(
+      http.post(
         `https://almsearch.dev.azure.com/shopify/_apis/search/codesearchresults`,
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
-          expect(req.body).toEqual({
+        async ({ request }) => {
+          const body = await request.json();
+          expect(request.headers.get('Authorization')).toBe('Basic OkFCQw==');
+          expect(body).toEqual({
             searchText: 'path:/catalog-info.yaml repo:* proj:engineering',
             $orderBy: [
               {
@@ -138,7 +140,7 @@ describe('azure', () => {
             $skip: 0,
             $top: 1000,
           });
-          return res(ctx.json(response));
+          return HttpResponse.json(response);
         },
       ),
     );
@@ -178,11 +180,12 @@ describe('azure', () => {
     };
 
     server.use(
-      rest.post(
+      http.post(
         `https://almsearch.dev.azure.com/shopify/_apis/search/codesearchresults`,
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
-          expect(req.body).toEqual({
+        async ({ request }) => {
+          const body = await request.json();
+          expect(request.headers.get('Authorization')).toBe('Basic OkFCQw==');
+          expect(body).toEqual({
             searchText:
               'path:/catalog-info.yaml repo:backstage proj:engineering',
             $orderBy: [
@@ -194,7 +197,7 @@ describe('azure', () => {
             $skip: 0,
             $top: 1000,
           });
-          return res(ctx.json(response));
+          return HttpResponse.json(response);
         },
       ),
     );
@@ -235,11 +238,12 @@ describe('azure', () => {
     };
 
     server.use(
-      rest.post(
+      http.post(
         `https://almsearch.dev.azure.com/shopify/_apis/search/codesearchresults`,
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
-          expect(req.body).toEqual({
+        async ({ request }) => {
+          const body = await request.json();
+          expect(request.headers.get('Authorization')).toBe('Basic OkFCQw==');
+          expect(body).toEqual({
             searchText:
               'path:/catalog-info.yaml repo:backstage proj:engineering',
             $orderBy: [
@@ -254,7 +258,7 @@ describe('azure', () => {
               Branch: ['topic/catalog-info'],
             },
           });
-          return res(ctx.json(response));
+          return HttpResponse.json(response);
         },
       ),
     );
@@ -295,11 +299,12 @@ describe('azure', () => {
     };
 
     server.use(
-      rest.post(
+      http.post(
         `https://azuredevops.mycompany.com/shopify/_apis/search/codesearchresults`,
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
-          expect(req.body).toEqual({
+        async ({ request }) => {
+          const body = await request.json();
+          expect(request.headers.get('Authorization')).toBe('Basic OkFCQw==');
+          expect(body).toEqual({
             searchText: 'path:/catalog-info.yaml repo:* proj:engineering',
             $orderBy: [
               {
@@ -310,7 +315,7 @@ describe('azure', () => {
             $skip: 0,
             $top: 1000,
           });
-          return res(ctx.json(response));
+          return HttpResponse.json(response);
         },
       ),
     );
@@ -349,28 +354,29 @@ describe('azure', () => {
     };
 
     server.use(
-      rest.post(
+      http.post(
         `https://almsearch.dev.azure.com/shopify/_apis/search/codesearchresults`,
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
-          expect(req.body).toMatchObject({
+        async ({ request }) => {
+          const body = (await request.json()) as {
+            $skip: number;
+            $top: number;
+          };
+          expect(request.headers.get('Authorization')).toBe('Basic OkFCQw==');
+          expect(body).toMatchObject({
             searchText:
               'path:/catalog-info.yaml repo:backstage proj:engineering',
             $top: 1000,
           });
 
-          const body = req.body as { $skip: number; $top: number };
           const countItemsToReturn =
             body.$top + body.$skip > totalCount
               ? totalCount - body.$skip
               : body.$top;
 
-          return res(
-            ctx.json({
-              count: totalCount,
-              results: generateItems(countItemsToReturn),
-            }),
-          );
+          return HttpResponse.json({
+            count: totalCount,
+            results: generateItems(countItemsToReturn),
+          });
         },
       ),
     );
@@ -411,11 +417,12 @@ describe('azure', () => {
     };
 
     server.use(
-      rest.post(
+      http.post(
         `https://almsearch.dev.azure.com/shopify/_apis/search/codesearchresults`,
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Basic OkFCQw==');
-          expect(req.body).toEqual({
+        async ({ request }) => {
+          const body = await request.json();
+          expect(request.headers.get('Authorization')).toBe('Basic OkFCQw==');
+          expect(body).toEqual({
             searchText: 'path:/catalog-info.yaml repo:* proj:engineering',
             $orderBy: [
               {
@@ -426,7 +433,7 @@ describe('azure', () => {
             $skip: 0,
             $top: 1000,
           });
-          return res(ctx.json(response));
+          return HttpResponse.json(response);
         },
       ),
     );
@@ -464,10 +471,10 @@ describe('azure', () => {
         : `https://${host}`;
 
       server.use(
-        rest.post(
+        http.post(
           `${expectedBaseUrl}/test-org/_apis/search/codesearchresults`,
-          (_req, res, ctx) => {
-            return res(ctx.json(mockResponse));
+          () => {
+            return HttpResponse.json(mockResponse);
           },
         ),
       );

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli-module-lint",
-  "version": "0.1.2",
+  "version": "0.1.5",
   "description": "CLI module for Backstage CLI",
   "backstage": {
     "role": "cli-module"
@@ -36,12 +36,12 @@
     "@backstage/cli-common": "workspace:^",
     "@backstage/cli-node": "workspace:^",
     "chalk": "^4.0.0",
-    "cleye": "^2.3.0",
+    "cleye": "^2.6.0",
     "eslint": "^8.6.0",
     "eslint-formatter-friendly": "^7.0.0",
     "fs-extra": "^11.2.0",
     "globby": "^11.1.0",
-    "shell-quote": "^1.8.1"
+    "shell-quote": "^1.9.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

@@ -7,7 +7,7 @@ import { AnyZodObject } from 'zod/v3';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { BasicPermission } from '@backstage/plugin-permission-common';
 import { JsonObject } from '@backstage/types';
-import { JSONSchema7 } from 'json-schema';
+import type { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import type { Request as Request_2 } from 'express';
@@ -294,27 +294,6 @@ export interface MetricsServiceUpDownCounter<
   // (undocumented)
   add(value: number, attributes?: TAttributes): void;
 }
-
-// @public (undocumented)
-export interface RootSystemMetadataService {
-  // (undocumented)
-  getInstalledPlugins: () => Promise<
-    ReadonlyArray<RootSystemMetadataServicePluginInfo>
-  >;
-}
-
-// @public (undocumented)
-export interface RootSystemMetadataServicePluginInfo {
-  // (undocumented)
-  readonly pluginId: string;
-}
-
-// @alpha
-export const rootSystemMetadataServiceRef: ServiceRef<
-  RootSystemMetadataService,
-  'root',
-  'singleton'
->;
 
 // @alpha
 export interface TracingService {

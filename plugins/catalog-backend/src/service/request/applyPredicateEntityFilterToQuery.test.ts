@@ -82,10 +82,6 @@ describe.each(databases.eachSupportedId())(
       });
     });
 
-    afterAll(async () => {
-      knex.destroy();
-    });
-
     async function addEntity(entity: Entity) {
       const id = uuid();
       const entityRef = stringifyEntityRef(entity);
@@ -115,7 +111,7 @@ describe.each(databases.eachSupportedId())(
       const q =
         knex<DbFinalEntitiesRow>('final_entities').whereNotNull('final_entity');
       applyEntityFilterToQuery({
-        query: predicate,
+        filter: predicate,
         targetQuery: q,
         onEntityIdField: 'final_entities.entity_id',
         knex,
@@ -411,8 +407,7 @@ describe.each(databases.eachSupportedId())(
             'final_entity',
           );
         applyEntityFilterToQuery({
-          filter: { key: 'kind', values: ['component'] },
-          query: { 'spec.type': 'service' },
+          filter: { $all: [{ kind: 'component' }, { 'spec.type': 'service' }] },
           targetQuery: q,
           onEntityIdField: 'final_entities.entity_id',
           knex,

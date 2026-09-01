@@ -189,7 +189,8 @@ export interface Config {
           attributes?: {
             /**
              * If specified, only match actions where destructive matches this value.
-             * Actions default to destructive: true if not explicitly set.
+             * Actions default to destructive: false when readOnly is true,
+             * and destructive: true otherwise.
              */
             destructive?: boolean;
 
@@ -234,7 +235,8 @@ export interface Config {
           attributes?: {
             /**
              * If specified, only match actions where destructive matches this value.
-             * Actions default to destructive: true if not explicitly set.
+             * Actions default to destructive: false when readOnly is true,
+             * and destructive: true otherwise.
              */
             destructive?: boolean;
 
@@ -784,10 +786,24 @@ export interface Config {
       | {
           store: 'redis';
           /**
-           * A redis connection string in the form `redis://user:pass@host:port`.
+           * A redis connection string in the form `redis://user:pass@host:port`,
+           * or an object with connection options passed directly to the underlying
+           * client (e.g. `{ url: 'redis://localhost:6379', pingInterval: 60000 }`).
+           * The object form is only supported for the Redis store.
            * @visibility secret
            */
-          connection: string;
+          connection:
+            | string
+            | {
+                /**
+                 * The Redis connection URL.
+                 */
+                url: string;
+                /**
+                 * Other connection settings
+                 */
+                [key: string]: unknown;
+              };
           /** An optional default TTL (in milliseconds, if given as a number). */
           defaultTtl?: number | HumanDuration | string;
           redis?: {
@@ -1254,7 +1270,7 @@ export interface Config {
       /**
        * List of logger overrides.
        *
-       * Can be used to configure a different level for logs matching certain criterias.
+       * Can be used to configure a different level for logs matching certain criteria.
        * For example, it can be used to ignore 'info' logs of given plugins.
        *
        * @example
@@ -1397,10 +1413,11 @@ export interface Config {
         host: string;
 
         /**
-         * An optional list of paths. In case they are present only targets matching
-         * any of them will are allowed. You can use trailing slashes to make sure only
-         * subdirectories are allowed, for example `/mydir/` will allow targets with
-         * paths like `/mydir/a` but will block paths like `/mydir2`.
+         * An optional list of paths. When present, only targets matching an exact path
+         * or a path below it at a segment boundary are allowed. For example, `/mydir`
+         * allows `/mydir` and `/mydir/a`, but blocks `/mydir2`. A trailing slash excludes
+         * the exact path without the slash, so `/mydir/` allows `/mydir/a` but not
+         * `/mydir`.
          */
         paths?: string[];
       }>;

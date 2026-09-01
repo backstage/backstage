@@ -1,5 +1,107 @@
 # @backstage/plugin-scaffolder-react
 
+## 2.1.0-next.0
+
+### Minor Changes
+
+- 5ff93bf: Added functionality to register a Template Outputs Component in the new frontend system.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@2.3.0-next.0
+  - @backstage/ui@0.17.2-next.0
+  - @backstage/plugin-catalog-react@3.2.2-next.0
+  - @backstage/core-components@0.18.14-next.0
+  - @backstage/frontend-test-utils@0.6.4-next.0
+
+## 2.0.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/plugin-catalog-react@3.2.1
+  - @backstage/ui@0.17.1
+  - @backstage/plugin-scaffolder-common@2.2.2
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/plugin-permission-react@0.5.4
+
+## 2.0.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.1-next.2
+  - @backstage/frontend-plugin-api@0.18.0-next.0
+  - @backstage/core-plugin-api@1.12.9-next.0
+  - @backstage/core-components@0.18.13-next.2
+  - @backstage/plugin-permission-react@0.5.4-next.0
+
+## 2.0.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.1-next.1
+  - @backstage/core-components@0.18.13-next.1
+  - @backstage/plugin-scaffolder-common@2.2.2-next.0
+
+## 2.0.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.13-next.0
+  - @backstage/ui@0.17.1-next.0
+  - @backstage/plugin-catalog-react@3.2.1-next.0
+  - @backstage/frontend-test-utils@0.6.3-next.0
+
+## 2.0.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.3
+  - @backstage/ui@0.17.0
+  - @backstage/plugin-catalog-react@3.2.0
+  - @backstage/core-components@0.18.12
+  - @backstage/catalog-client@1.16.1
+  - @backstage/core-plugin-api@1.12.8
+  - @backstage/plugin-permission-react@0.5.3
+
+## 2.0.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.0-next.0
+  - @backstage/ui@0.17.0-next.0
+  - @backstage/frontend-plugin-api@0.17.3-next.0
+  - @backstage/frontend-test-utils@0.6.2-next.0
+  - @backstage/catalog-client@1.16.1-next.0
+  - @backstage/core-components@0.18.12-next.0
+  - @backstage/core-plugin-api@1.12.8-next.0
+  - @backstage/plugin-permission-react@0.5.3-next.0
+
+## 2.0.1
+
+### Patch Changes
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- 02c4e8a: Removed unused `json-schema` runtime dependency. The package was only used for TypeScript types from `@types/json-schema`; affected imports have been converted to `import type` to allow safe removal.
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0
+  - @backstage/plugin-catalog-react@3.1.0
+  - @backstage/core-components@0.18.11
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/ui@0.16.0
+  - @backstage/plugin-scaffolder-common@2.2.1
+  - @backstage/core-plugin-api@1.12.7
+  - @backstage/plugin-permission-react@0.5.2
+
 ## 2.0.1-next.1
 
 ### Patch Changes

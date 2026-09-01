@@ -176,4 +176,113 @@ describe('getCombinedClusterSupplier', () => {
 
     expect(warn).toHaveBeenCalledWith(`Duplicate cluster name 'cluster'`);
   });
+
+  it('rejects when a supplier fails and continueOnError is not set', async () => {
+    const config = mockServices.rootConfig({
+      data: {
+        kubernetes: {
+          clusterLocatorMethods: [
+            {
+              type: 'config',
+              clusters: [
+                {
+                  name: 'cluster1',
+                  url: 'http://localhost:8080',
+                  authProvider: 'serviceAccount',
+                },
+              ],
+            },
+            { type: 'catalog' },
+          ],
+        },
+      },
+    });
+    const mockStrategy: jest.Mocked<AuthenticationStrategy> = {
+      getCredential: jest.fn(),
+      validateCluster: jest.fn().mockReturnValue([]),
+      presentAuthMetadata: jest.fn(),
+    };
+
+    const catalogMock = catalogServiceMock({
+      entities: [],
+    });
+    catalogMock.getEntities = jest
+      .fn()
+      .mockRejectedValue(new Error('catalog down'));
+
+    const auth = mockServices.auth();
+    const credentials = mockCredentials.user();
+
+    const clusterSupplier = getCombinedClusterSupplier(
+      config,
+      catalogMock,
+      mockStrategy,
+      mockServices.logger.mock(),
+      undefined,
+      auth,
+    );
+
+    await expect(clusterSupplier.getClusters({ credentials })).rejects.toThrow(
+      'catalog down',
+    );
+  });
+
+  it('returns clusters from successful suppliers when continueOnError is true', async () => {
+    const config = mockServices.rootConfig({
+      data: {
+        kubernetes: {
+          clusterLocatorContinueOnError: true,
+          clusterLocatorMethods: [
+            {
+              type: 'config',
+              clusters: [
+                {
+                  name: 'cluster1',
+                  url: 'http://localhost:8080',
+                  authProvider: 'serviceAccount',
+                },
+              ],
+            },
+            { type: 'catalog' },
+          ],
+        },
+      },
+    });
+    const mockStrategy: jest.Mocked<AuthenticationStrategy> = {
+      getCredential: jest.fn(),
+      validateCluster: jest.fn().mockReturnValue([]),
+      presentAuthMetadata: jest.fn(),
+    };
+
+    const catalogMock = catalogServiceMock({
+      entities: [],
+    });
+    catalogMock.getEntities = jest
+      .fn()
+      .mockRejectedValue(new Error('catalog down'));
+
+    const logger = mockServices.logger.mock();
+    const errorSpy = jest.spyOn(logger, 'error');
+    const auth = mockServices.auth();
+    const credentials = mockCredentials.user();
+
+    const clusterSupplier = getCombinedClusterSupplier(
+      config,
+      catalogMock,
+      mockStrategy,
+      logger,
+      undefined,
+      auth,
+    );
+    const result = await clusterSupplier.getClusters({ credentials });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe('cluster1');
+    expect(errorSpy).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'Failed to retrieve clusters from cluster locator method',
+      ),
+      expect.any(Error),
+    );
+  });
 });

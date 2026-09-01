@@ -107,6 +107,70 @@ describe('RouteResolver', () => {
     expect(r.resolve(externalRef2, src('/'))?.({ x: '5x' })).toBe(undefined);
   });
 
+  it('should resolve nested sub routes directly and as external targets', () => {
+    const packagesRouteRef = createRouteRef();
+    const revisionRouteRef = createSubRouteRef({
+      parent: packagesRouteRef,
+      path: '/:name/:revision',
+    });
+    const attachmentsRouteRef = createSubRouteRef({
+      parent: revisionRouteRef,
+      path: '/attachments',
+    });
+    const attachmentRouteRef = createSubRouteRef({
+      parent: attachmentsRouteRef,
+      path: '/:attachmentId',
+    });
+    const attachmentExternalRouteRef = createExternalRouteRef({
+      params: ['name', 'revision', 'attachmentId'],
+    });
+    const r = new RouteResolver(
+      new Map([[packagesRouteRef, 'packages']]),
+      new Map(),
+      [
+        {
+          routeRefs: new Set([packagesRouteRef]),
+          path: 'packages',
+          ...rest,
+        },
+      ],
+      new Map([[attachmentExternalRouteRef, attachmentRouteRef]]),
+      '/base',
+      emptyResolver,
+      new Map(),
+    );
+
+    expect(
+      r.resolve(
+        attachmentsRouteRef,
+        src('/'),
+      )?.({
+        name: 'example',
+        revision: '1.0.0',
+      }),
+    ).toBe('/packages/example/1.0.0/attachments');
+    expect(
+      r.resolve(
+        attachmentRouteRef,
+        src('/base/other'),
+      )?.({
+        name: 'example',
+        revision: '1.0.0',
+        attachmentId: 'readme',
+      }),
+    ).toBe('/packages/example/1.0.0/attachments/readme');
+    expect(
+      r.resolve(
+        attachmentExternalRouteRef,
+        src('/base'),
+      )?.({
+        name: 'example',
+        revision: '1.0.0',
+        attachmentId: 'license',
+      }),
+    ).toBe('/packages/example/1.0.0/attachments/license');
+  });
+
   it('should resolve an absolute route with a param and with a parent', () => {
     const r = new RouteResolver(
       new Map<RouteRef, string>([

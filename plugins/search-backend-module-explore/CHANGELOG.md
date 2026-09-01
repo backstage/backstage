@@ -1,5 +1,46 @@
 # @backstage/plugin-search-backend-module-explore
 
+## 0.3.17
+
+### Patch Changes
+
+- 0dee0e6: Migrated tests from MSW v1 to MSW v2.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-search-backend-node@1.4.7
+
+## 0.3.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-search-backend-node@1.4.7-next.0
+
+## 0.3.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/plugin-search-backend-node@1.4.6
+
+## 0.3.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.4.6-next.0
+  - @backstage/backend-plugin-api@1.9.3-next.0
+
+## 0.3.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-search-backend-node@1.4.5
+
 ## 0.3.15-next.0
 
 ### Patch Changes

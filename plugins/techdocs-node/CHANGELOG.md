@@ -1,5 +1,54 @@
 # @backstage/plugin-techdocs-node
 
+## 1.15.3
+
+### Patch Changes
+
+- 226817d: chore(deps): bump `js-yaml` from 4.2.0 to 4.3.0
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/integration@2.1.0
+  - @backstage/integration-aws-node@0.2.1
+
+## 1.15.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.0-next.0
+
+## 1.15.3-next.0
+
+### Patch Changes
+
+- 226817d: chore(deps): bump `js-yaml` from 4.2.0 to 4.3.0
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+
+## 1.15.2
+
+### Patch Changes
+
+- 120e7c3: chore(deps): bump `js-yaml` from 4.1.1 to 4.2.0
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+
+## 1.15.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.0
+
+## 1.15.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.3
+  - @backstage/backend-plugin-api@1.9.2
+
 ## 1.15.1-next.0
 
 ### Patch Changes

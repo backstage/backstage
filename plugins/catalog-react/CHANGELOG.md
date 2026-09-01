@@ -1,5 +1,175 @@
 # @backstage/plugin-catalog-react
 
+## 3.2.2-next.0
+
+### Patch Changes
+
+- a7b14b5: Fixed `EntityOwnerPicker` crashing with `Entity reference "<name>" had missing or empty kind` when the `owners` query parameter contains humanized entity refs, as produced by the `OwnershipCard` links in `@backstage/plugin-org`.
+
+  Query parameters were stored as-is in the initial state and only converted to full entity refs by an effect, which runs after the first render. That first render passed the raw value to the entity presentation API, whose `parseEntityRef` call rejects a ref without a kind. The same raw value was also sent to `catalogApi.getEntitiesByRefs` on mount, and made the option checkboxes render unselected until the effect ran.
+
+  The query parameters are now normalized through `EntityOwnerFilter` when the state is initialized, matching what the existing effect already did and what the `filters` code path already produced.
+
+- Updated dependencies
+  - @backstage/ui@0.17.2-next.0
+  - @backstage/core-components@0.18.14-next.0
+  - @backstage/core-compat-api@0.5.15-next.0
+  - @backstage/frontend-test-utils@0.6.4-next.0
+
+## 3.2.1
+
+### Patch Changes
+
+- 9fcfbc9: Fixed a performance issue where all components reading the entity context on an entity page would rerender unnecessarily whenever the page rendered again without the entity data having changed, for example when a URL query parameter changed. This was particularly noticeable when switching tabs in the entity inspector dialog, which caused the entire underlying page to rerender.
+- e766061: Fixed an issue where the "Owned" count in `UserListPicker` would display the total number of catalog entities instead of 0 when the logged-in user has no ownership entity refs. The empty `relations.ownedBy` filter was being silently dropped by the catalog client, causing the backend to return all entities with no ownership filter applied.
+
+  This was a regression introduced in #22131, which removed an explicit `ownershipEntityRefs?.length === 0` guard that had been present since #20339.
+
+- ed462ad: Fixed `EntityOwnerPicker` in `owners-only` mode to display human-readable entity titles (from `metadata.title` or `spec.profile.displayName`) instead of opaque internal names, both in the dropdown list and in the selected owner chips. The owner list is now virtualized, keeping the picker responsive for catalogs with large numbers of owner entities.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/ui@0.17.1
+  - @backstage/plugin-permission-common@0.9.10
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/core-compat-api@0.5.14
+  - @backstage/integration-react@1.2.21
+  - @backstage/plugin-permission-react@0.5.4
+
+## 3.2.1-next.3
+
+### Patch Changes
+
+- 9fcfbc9: Fixed a performance issue where all components reading the entity context on an entity page would rerender unnecessarily whenever the page rendered again without the entity data having changed, for example when a URL query parameter changed. This was particularly noticeable when switching tabs in the entity inspector dialog, which caused the entire underlying page to rerender.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9-next.1
+
+## 3.2.1-next.2
+
+### Patch Changes
+
+- e766061: Fixed an issue where the "Owned" count in `UserListPicker` would display the total number of catalog entities instead of 0 when the logged-in user has no ownership entity refs. The empty `relations.ownedBy` filter was being silently dropped by the catalog client, causing the backend to return all entities with no ownership filter applied.
+
+  This was a regression introduced in #22131, which removed an explicit `ownershipEntityRefs?.length === 0` guard that had been present since #20339.
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.0-next.0
+  - @backstage/core-compat-api@0.5.14-next.1
+  - @backstage/core-plugin-api@1.12.9-next.0
+  - @backstage/core-components@0.18.13-next.2
+  - @backstage/integration-react@1.2.21-next.1
+  - @backstage/plugin-permission-react@0.5.4-next.0
+
+## 3.2.1-next.1
+
+### Patch Changes
+
+- ed462ad: Fixed `EntityOwnerPicker` in `owners-only` mode to display human-readable entity titles (from `metadata.title` or `spec.profile.displayName`) instead of opaque internal names, both in the dropdown list and in the selected owner chips. The owner list is now virtualized, keeping the picker responsive for catalogs with large numbers of owner entities.
+- Updated dependencies
+  - @backstage/core-components@0.18.13-next.1
+  - @backstage/integration-react@1.2.21-next.0
+
+## 3.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.13-next.0
+  - @backstage/ui@0.17.1-next.0
+  - @backstage/frontend-test-utils@0.6.3-next.0
+  - @backstage/core-compat-api@0.5.14-next.0
+
+## 3.2.0
+
+### Minor Changes
+
+- ba49e37: **BREAKING ALPHA**: The `EntityContextMenuItemBlueprint` now outputs menu item data instead of a rendered MUI element. The Catalog entity page consumes this data and renders BUI menu items.
+
+  The source-level `icon`, `useProps`, and filter authoring model remains, with `icon` now typed as `IconElement`. We recommend using Remix icons and checking that custom icons follow the standard icon sizing requirements.
+
+  Menu items close immediately when selected, including while asynchronous actions are pending.
+
+- 15719cc: Added an alpha BUI-ready entity header layout extension point. Its loaded component receives Catalog-composed tabs and the active tab ID, allowing custom entity headers to preserve or customize entity-page navigation.
+
+  **DEPRECATED ALPHA**: The existing opaque entity header extension point is deprecated. It continues to work through a temporary Catalog legacy-layout fallback so adopters can migrate custom entity headers incrementally.
+
+### Patch Changes
+
+- 8a500d5: Fixed a regression where `EntityTypePicker`'s `initialFilter` prop was being cleared when used alongside `EntityKindPicker` inside `EntityListProvider`. The type filter is now correctly preserved after the available types load for the selected kind.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.3
+  - @backstage/ui@0.17.0
+  - @backstage/core-components@0.18.12
+  - @backstage/filter-predicates@0.1.4
+  - @backstage/catalog-client@1.16.1
+  - @backstage/core-compat-api@0.5.13
+  - @backstage/core-plugin-api@1.12.8
+  - @backstage/integration-react@1.2.20
+  - @backstage/plugin-permission-react@0.5.3
+
+## 3.2.0-next.1
+
+### Patch Changes
+
+- 8a500d5: Fixed a regression where `EntityTypePicker`'s `initialFilter` prop was being cleared when used alongside `EntityKindPicker` inside `EntityListProvider`. The type filter is now correctly preserved after the available types load for the selected kind.
+- Updated dependencies
+  - @backstage/core-components@0.18.12-next.1
+
+## 3.2.0-next.0
+
+### Minor Changes
+
+- ba49e37: **BREAKING ALPHA**: The `EntityContextMenuItemBlueprint` now outputs menu item data instead of a rendered MUI element. The Catalog entity page consumes this data and renders BUI menu items.
+
+  The source-level `icon`, `useProps`, and filter authoring model remains, with `icon` now typed as `IconElement`. We recommend using Remix icons and checking that custom icons follow the standard icon sizing requirements.
+
+  Menu items close immediately when selected, including while asynchronous actions are pending.
+
+- 15719cc: Added an alpha BUI-ready entity header layout extension point. Its loaded component receives Catalog-composed tabs and the active tab ID, allowing custom entity headers to preserve or customize entity-page navigation.
+
+  **DEPRECATED ALPHA**: The existing opaque entity header extension point is deprecated. It continues to work through a temporary Catalog legacy-layout fallback so adopters can migrate custom entity headers incrementally.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.17.0-next.0
+  - @backstage/filter-predicates@0.1.4-next.0
+  - @backstage/core-compat-api@0.5.13-next.0
+  - @backstage/frontend-plugin-api@0.17.3-next.0
+  - @backstage/frontend-test-utils@0.6.2-next.0
+  - @backstage/catalog-client@1.16.1-next.0
+  - @backstage/core-components@0.18.12-next.0
+  - @backstage/core-plugin-api@1.12.8-next.0
+  - @backstage/integration-react@1.2.20-next.0
+  - @backstage/plugin-permission-react@0.5.3-next.0
+
+## 3.1.0
+
+### Minor Changes
+
+- b6d6551: Added optional `getOptionLabel` and `renderOption` props to `EntityAutocompletePicker`, allowing consumers to customize how option labels and option rendering are displayed in the autocomplete dropdown.
+- 5dd532d: Added a `refresh` function to the `useEntityList` hook.
+- 4212b78: Allow full text searching of Location target URLs in catalog tables
+
+### Patch Changes
+
+- d8757b1: The entity list provider now fetches the entity list and the total count as two separate parallel requests when using cursor or offset pagination. The list query skips the expensive count computation (using `totalItems: 'exclude'`), so the table populates immediately. The count arrives asynchronously and updates the title. A new `totalItemsLoading` field is exposed on `EntityListContextProps` so consumers can distinguish a stale count from a fresh one.
+
+  The catalog table now keeps stale rows visible during filter changes and page navigation instead of replacing the entire table body with a spinner. The full-table spinner is only shown on the very first load when no data exists yet. The entity count in the title is dimmed while the count is refreshing, and a small spinner appears next to the title while rows are loading.
+
+- e0889a3: chore(deps): bump `qs` from 6.15.1 to 6.15.2
+- 7c20545: Fixed redundant API calls during entity list initialization. Filter components that register their initial state in quick succession (e.g. `EntityKindPicker`, `UserListPicker`, `EntityTagPicker`) no longer trigger multiple identical fetches. Frontend-only filter changes such as toggling the user list are now applied synchronously without a network round-trip.
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0
+  - @backstage/core-components@0.18.11
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/ui@0.16.0
+  - @backstage/core-compat-api@0.5.12
+  - @backstage/core-plugin-api@1.12.7
+  - @backstage/integration-react@1.2.19
+  - @backstage/plugin-permission-react@0.5.2
+
 ## 3.0.1-next.1
 
 ### Patch Changes

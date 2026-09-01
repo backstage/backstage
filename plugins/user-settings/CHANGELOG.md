@@ -1,5 +1,91 @@
 # @backstage/plugin-user-settings
 
+## 0.9.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.17.2-next.0
+  - @backstage/plugin-catalog-react@3.2.2-next.0
+  - @backstage/core-app-api@1.20.5-next.0
+  - @backstage/core-components@0.18.14-next.0
+
+## 0.9.6
+
+### Patch Changes
+
+- 4e8d763: Migrated tests from MSW v1 to MSW v2.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/plugin-catalog-react@3.2.1
+  - @backstage/core-app-api@1.20.4
+  - @backstage/ui@0.17.1
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/plugin-signals-react@0.0.25
+
+## 0.9.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.1-next.2
+  - @backstage/frontend-plugin-api@0.18.0-next.0
+  - @backstage/core-plugin-api@1.12.9-next.0
+  - @backstage/core-app-api@1.20.4-next.1
+  - @backstage/core-components@0.18.13-next.2
+  - @backstage/plugin-signals-react@0.0.25-next.0
+
+## 0.9.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.13-next.0
+  - @backstage/ui@0.17.1-next.0
+  - @backstage/plugin-catalog-react@3.2.1-next.0
+  - @backstage/core-app-api@1.20.4-next.0
+
+## 0.9.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.3
+  - @backstage/ui@0.17.0
+  - @backstage/plugin-catalog-react@3.2.0
+  - @backstage/core-components@0.18.12
+  - @backstage/core-app-api@1.20.3
+  - @backstage/core-plugin-api@1.12.8
+  - @backstage/plugin-signals-react@0.0.24
+
+## 0.9.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.0-next.0
+  - @backstage/ui@0.17.0-next.0
+  - @backstage/core-app-api@1.20.3-next.0
+  - @backstage/frontend-plugin-api@0.17.3-next.0
+  - @backstage/core-components@0.18.12-next.0
+  - @backstage/core-plugin-api@1.12.8-next.0
+  - @backstage/plugin-signals-react@0.0.24-next.0
+
+## 0.9.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.1.0
+  - @backstage/core-components@0.18.11
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/ui@0.16.0
+  - @backstage/core-app-api@1.20.2
+  - @backstage/core-plugin-api@1.12.7
+  - @backstage/plugin-signals-react@0.0.23
+
 ## 0.9.4-next.1
 
 ### Patch Changes

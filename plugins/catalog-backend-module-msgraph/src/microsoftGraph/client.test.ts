@@ -16,8 +16,9 @@
 
 import { TokenCredential } from '@azure/identity';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
+import { getEventListeners } from 'node:events';
 import { MicrosoftGraphClient } from './client';
 
 describe('MicrosoftGraphClient', () => {
@@ -42,8 +43,8 @@ describe('MicrosoftGraphClient', () => {
 
   it('should perform raw request', async () => {
     worker.use(
-      rest.get('https://other.example.com/', (_, res, ctx) =>
-        res(ctx.status(200), ctx.json({ value: 'example' })),
+      http.get('https://other.example.com/', () =>
+        HttpResponse.json({ value: 'example' }),
       ),
     );
 
@@ -59,8 +60,8 @@ describe('MicrosoftGraphClient', () => {
 
   it('should perform simple api request', async () => {
     worker.use(
-      rest.get('https://example.com/users', (_, res, ctx) =>
-        res(ctx.status(200), ctx.json({ value: 'example' })),
+      http.get('https://example.com/users', () =>
+        HttpResponse.json({ value: 'example' }),
       ),
     );
 
@@ -72,8 +73,8 @@ describe('MicrosoftGraphClient', () => {
 
   it('should perform api request with filter, select, expand and top', async () => {
     worker.use(
-      rest.get('https://example.com/users', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json({ queryString: req.url.search })),
+      http.get('https://example.com/users', ({ request }) =>
+        HttpResponse.json({ queryString: new URL(request.url).search }),
       ),
     );
 
@@ -93,8 +94,8 @@ describe('MicrosoftGraphClient', () => {
 
   it('should correctly encode filter with special characters like "&"', async () => {
     worker.use(
-      rest.get('https://example.com/users', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json({ queryString: req.url.search })),
+      http.get('https://example.com/users', ({ request }) =>
+        HttpResponse.json({ queryString: new URL(request.url).search }),
       ),
     );
 
@@ -111,13 +112,10 @@ describe('MicrosoftGraphClient', () => {
 
   it('should perform collection request for a single page', async () => {
     worker.use(
-      rest.get('https://example.com/users', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.json({
-            value: ['first'],
-          }),
-        ),
+      http.get('https://example.com/users', () =>
+        HttpResponse.json({
+          value: ['first'],
+        }),
       ),
     );
 
@@ -130,19 +128,16 @@ describe('MicrosoftGraphClient', () => {
 
   it('should perform collection request for multiple pages', async () => {
     worker.use(
-      rest.get('https://example.com/users', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.json({
-            value: ['first'],
-            '@odata.nextLink': 'https://example.com/users2',
-          }),
-        ),
+      http.get('https://example.com/users', () =>
+        HttpResponse.json({
+          value: ['first'],
+          '@odata.nextLink': 'https://example.com/users2',
+        }),
       ),
     );
     worker.use(
-      rest.get('https://example.com/users2', (_, res, ctx) =>
-        res(ctx.status(200), ctx.json({ value: ['second'] })),
+      http.get('https://example.com/users2', () =>
+        HttpResponse.json({ value: ['second'] }),
       ),
     );
 
@@ -153,30 +148,77 @@ describe('MicrosoftGraphClient', () => {
     expect(values).toEqual(['first', 'second']);
   });
 
+  it('should not retain abort listeners on a signal reused across a collection walk', async () => {
+    // One page per request, so the number of requests in the walk is known.
+    const pages = 20;
+    worker.use(
+      http.get('https://example.com/users', ({ request }) => {
+        const page = Number(new URL(request.url).searchParams.get('page') ?? 0);
+        return HttpResponse.json({
+          value: [`entry-${page}`],
+          ...(page + 1 < pages
+            ? {
+                '@odata.nextLink': `https://example.com/users?page=${page + 1}`,
+              }
+            : {}),
+        });
+      }),
+    );
+
+    const controller = new AbortController();
+
+    const values = await collectAsyncIterable(
+      client.requestCollection<string>(
+        'users',
+        undefined,
+        'basic',
+        controller.signal,
+      ),
+    );
+
+    expect(values).toHaveLength(pages);
+    // Without a per-request dependent signal this is one listener per request,
+    // held until the requests are garbage collected.
+    expect(getEventListeners(controller.signal, 'abort')).toHaveLength(0);
+  });
+
+  it('should still abort a request, forwarding the original reason', async () => {
+    worker.use(
+      http.get('https://example.com/users', () =>
+        HttpResponse.json({ value: [] }),
+      ),
+    );
+
+    const controller = new AbortController();
+    const reason = new Error('task cancelled');
+    controller.abort(reason);
+
+    await expect(
+      client.requestApi('users', undefined, undefined, controller.signal),
+    ).rejects.toBe(reason);
+  });
+
   it('should load user profile photo with max size of 120', async () => {
     worker.use(
-      rest.get('https://example.com/users/user-id/photos', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.json({
-            value: [
-              {
-                height: 120,
-                id: 120,
-              },
-              {
-                height: 500,
-                id: 500,
-              },
-            ],
-          }),
-        ),
+      http.get('https://example.com/users/user-id/photos', () =>
+        HttpResponse.json({
+          value: [
+            {
+              height: 120,
+              id: 120,
+            },
+            {
+              height: 500,
+              id: 500,
+            },
+          ],
+        }),
       ),
     );
     worker.use(
-      rest.get(
+      http.get(
         'https://example.com/users/user-id/photos/120/*',
-        (_, res, ctx) => res(ctx.status(200), ctx.text('911')),
+        () => new HttpResponse('911'),
       ),
     );
 
@@ -187,8 +229,9 @@ describe('MicrosoftGraphClient', () => {
 
   it('should not fail if user has no profile photo', async () => {
     worker.use(
-      rest.get('https://example.com/users/user-id/photos', (_, res, ctx) =>
-        res(ctx.status(404)),
+      http.get(
+        'https://example.com/users/user-id/photos',
+        () => new HttpResponse(null, { status: 404 }),
       ),
     );
 
@@ -199,8 +242,9 @@ describe('MicrosoftGraphClient', () => {
 
   it('should load user profile photo', async () => {
     worker.use(
-      rest.get('https://example.com/users/user-id/photo/*', (_, res, ctx) =>
-        res(ctx.status(200), ctx.text('911')),
+      http.get(
+        'https://example.com/users/user-id/photo/*',
+        () => new HttpResponse('911'),
       ),
     );
 
@@ -211,9 +255,9 @@ describe('MicrosoftGraphClient', () => {
 
   it('should load user profile photo for size 120', async () => {
     worker.use(
-      rest.get(
+      http.get(
         'https://example.com/users/user-id/photos/120/*',
-        (_, res, ctx) => res(ctx.status(200), ctx.text('911')),
+        () => new HttpResponse('911'),
       ),
     );
 
@@ -224,13 +268,10 @@ describe('MicrosoftGraphClient', () => {
 
   it('should load users', async () => {
     worker.use(
-      rest.get('https://example.com/users', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.json({
-            value: [{ surname: 'Example' }],
-          }),
-        ),
+      http.get('https://example.com/users', () =>
+        HttpResponse.json({
+          value: [{ surname: 'Example' }],
+        }),
       ),
     );
 
@@ -241,24 +282,21 @@ describe('MicrosoftGraphClient', () => {
 
   it('should load group profile photo with max size of 120', async () => {
     worker.use(
-      rest.get('https://example.com/groups/group-id/photos', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.json({
-            value: [
-              {
-                height: 120,
-                id: 120,
-              },
-            ],
-          }),
-        ),
+      http.get('https://example.com/groups/group-id/photos', () =>
+        HttpResponse.json({
+          value: [
+            {
+              height: 120,
+              id: 120,
+            },
+          ],
+        }),
       ),
     );
     worker.use(
-      rest.get(
+      http.get(
         'https://example.com/groups/group-id/photos/120/*',
-        (_, res, ctx) => res(ctx.status(200), ctx.text('911')),
+        () => new HttpResponse('911'),
       ),
     );
 
@@ -269,8 +307,9 @@ describe('MicrosoftGraphClient', () => {
 
   it('should load group profile photo', async () => {
     worker.use(
-      rest.get('https://example.com/groups/group-id/photo/*', (_, res, ctx) =>
-        res(ctx.status(200), ctx.text('911')),
+      http.get(
+        'https://example.com/groups/group-id/photo/*',
+        () => new HttpResponse('911'),
       ),
     );
 
@@ -281,13 +320,10 @@ describe('MicrosoftGraphClient', () => {
 
   it('should load groups', async () => {
     worker.use(
-      rest.get('https://example.com/groups', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.json({
-            value: [{ displayName: 'Example' }],
-          }),
-        ),
+      http.get('https://example.com/groups', () =>
+        HttpResponse.json({
+          value: [{ displayName: 'Example' }],
+        }),
       ),
     );
 
@@ -298,16 +334,13 @@ describe('MicrosoftGraphClient', () => {
 
   it('should load group members', async () => {
     worker.use(
-      rest.get('https://example.com/groups/group-id/members', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.json({
-            value: [
-              { '@odata.type': '#microsoft.graph.user' },
-              { '@odata.type': '#microsoft.graph.group' },
-            ],
-          }),
-        ),
+      http.get('https://example.com/groups/group-id/members', () =>
+        HttpResponse.json({
+          value: [
+            { '@odata.type': '#microsoft.graph.user' },
+            { '@odata.type': '#microsoft.graph.group' },
+          ],
+        }),
       ),
     );
 
@@ -323,15 +356,12 @@ describe('MicrosoftGraphClient', () => {
 
   it('should load user group members', async () => {
     worker.use(
-      rest.get(
+      http.get(
         'https://example.com/groups/group-id/members/microsoft.graph.user',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.json({
-              value: [{ id: '12345' }, { id: '67890' }],
-            }),
-          ),
+        () =>
+          HttpResponse.json({
+            value: [{ id: '12345' }, { id: '67890' }],
+          }),
       ),
     );
 
@@ -344,13 +374,10 @@ describe('MicrosoftGraphClient', () => {
 
   it('should load organization', async () => {
     worker.use(
-      rest.get('https://example.com/organization/tenant-id', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.json({
-            displayName: 'Example',
-          }),
-        ),
+      http.get('https://example.com/organization/tenant-id', () =>
+        HttpResponse.json({
+          displayName: 'Example',
+        }),
       ),
     );
 

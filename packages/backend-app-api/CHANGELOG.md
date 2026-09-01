@@ -1,5 +1,57 @@
 # @backstage/backend-app-api
 
+## 1.7.3
+
+### Patch Changes
+
+- 64cea29: Updated the backend runtime to use the internal connection service implementation after the shared connection contract moved into `@backstage/connections`.
+- 03133fc: Hardened backend startup against malformed installed backend features, with contextual input errors and configured boot-failure handling when invalid registrations can be attributed to a plugin or module.
+- Updated dependencies
+  - @backstage/connections@0.3.0
+  - @backstage/backend-plugin-api@1.10.0
+
+## 1.7.3-next.1
+
+### Patch Changes
+
+- 03133fc: Hardened backend startup against malformed installed backend features, with contextual input errors and configured boot-failure handling when invalid registrations can be attributed to a plugin or module.
+- Updated dependencies
+  - @backstage/connections@0.3.0-next.2
+
+## 1.7.3-next.0
+
+### Patch Changes
+
+- 64cea29: Updated the backend runtime to use the internal connection service implementation after the shared connection contract moved into `@backstage/connections`.
+- Updated dependencies
+  - @backstage/connections@0.3.0-next.0
+  - @backstage/backend-plugin-api@1.10.0-next.0
+
+## 1.7.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/connections@0.2.0
+  - @backstage/backend-plugin-api@1.9.3
+
+## 1.7.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/connections@0.1.1-next.0
+
+## 1.7.1
+
+### Patch Changes
+
+- 2e895ea: Internal refactor.
+- Updated dependencies
+  - @backstage/connections@0.1.0
+  - @backstage/backend-plugin-api@1.9.2
+
 ## 1.7.1-next.0
 
 ### Patch Changes

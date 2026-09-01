@@ -32,6 +32,7 @@ import { rootHealthServiceFactory } from '@backstage/backend-defaults/rootHealth
 import { rootHttpRouterServiceFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
 import { rootLoggerServiceFactory } from '@backstage/backend-defaults/rootLogger';
+import { rootSystemMetadataServiceFactory } from '@backstage/backend-defaults/rootSystemMetadata';
 import { schedulerServiceFactory } from '@backstage/backend-defaults/scheduler';
 import { urlReaderServiceFactory } from '@backstage/backend-defaults/urlReader';
 import { userInfoServiceFactory } from '@backstage/backend-defaults/userInfo';
@@ -62,6 +63,7 @@ export const defaultServiceFactories: ServiceFactory[] = [
   rootHttpRouterServiceFactory,
   rootLifecycleServiceFactory,
   rootLoggerServiceFactory,
+  rootSystemMetadataServiceFactory,
   schedulerServiceFactory,
   userInfoServiceFactory,
   urlReaderServiceFactory,

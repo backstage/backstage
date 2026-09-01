@@ -1,5 +1,50 @@
 # @backstage/integration
 
+## 2.1.0
+
+### Minor Changes
+
+- dc951d4: Added support for creating a GitHub credentials provider backed by the connections service.
+
+### Patch Changes
+
+- 87bfe22: GitHub integrations now cache the list of app installations for a short period, avoiding a full `GET /app/installations` pagination on every token fetch. This significantly reduces API usage against the 15k/hour GitHub App rate limit for organizations with many installations or frequent credential refreshes.
+
+  The cache is refreshed on a 10-minute TTL, and is additionally invalidated when a lookup for a previously-unseen owner occurs (throttled to once per minute) or when GitHub reports that a cached installation is no longer available, so newly added or removed installations are still picked up promptly.
+
+- Updated dependencies
+  - @backstage/connections@0.3.0
+
+## 2.1.0-next.1
+
+### Patch Changes
+
+- 87bfe22: GitHub integrations now cache the list of app installations for a short period, avoiding a full `GET /app/installations` pagination on every token fetch. This significantly reduces API usage against the 15k/hour GitHub App rate limit for organizations with many installations or frequent credential refreshes.
+
+  The cache is refreshed on a 10-minute TTL, and is additionally invalidated when a lookup for a previously-unseen owner occurs (throttled to once per minute) or when GitHub reports that a cached installation is no longer available, so newly added or removed installations are still picked up promptly.
+
+- Updated dependencies
+  - @backstage/connections@0.3.0-next.2
+
+## 2.1.0-next.0
+
+### Minor Changes
+
+- dc951d4: Added support for creating a GitHub credentials provider backed by the connections service.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/connections@0.3.0-next.1
+
+## 2.0.3
+
+### Patch Changes
+
+- a07e6a3: Added the correctly-spelled `AzureBlobStorageIntegration` class export and deprecated the previous typoed `AzureBlobStorageIntergation` export. Existing usage of `AzureBlobStorageIntergation` continues to work; switch to `AzureBlobStorageIntegration` to avoid future removal.
+- b75158b: Adapted Azure-related tests for the Azure SDK upgrade to ESM-style exports. The `AzureBlobStorageUrlReader` now accepts an optional `createContainerClient` dependency for testability without needing to mock the `@azure/storage-blob` module.
+- 241d359: Changed visibility of Bitbucket username as it is not a secret.
+
 ## 2.0.3-next.1
 
 ### Patch Changes

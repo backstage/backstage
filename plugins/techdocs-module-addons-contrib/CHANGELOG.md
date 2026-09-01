@@ -1,5 +1,88 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.40-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.0
+  - @backstage/plugin-techdocs-react@1.3.15-next.0
+
+## 1.1.39
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/integration@2.1.0
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/integration-react@1.2.21
+  - @backstage/plugin-techdocs-react@1.3.14
+
+## 1.1.39-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.0-next.0
+  - @backstage/core-plugin-api@1.12.9-next.0
+  - @backstage/plugin-techdocs-react@1.3.14-next.1
+  - @backstage/core-components@0.18.13-next.2
+  - @backstage/integration-react@1.2.21-next.1
+
+## 1.1.39-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.13-next.1
+  - @backstage/integration@2.1.0-next.0
+  - @backstage/integration-react@1.2.21-next.0
+
+## 1.1.39-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.13-next.0
+  - @backstage/plugin-techdocs-react@1.3.14-next.0
+
+## 1.1.38
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.3
+  - @backstage/core-components@0.18.12
+  - @backstage/plugin-techdocs-react@1.3.13
+  - @backstage/core-plugin-api@1.12.8
+  - @backstage/integration-react@1.2.20
+
+## 1.1.38-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.3-next.0
+  - @backstage/core-components@0.18.12-next.0
+  - @backstage/core-plugin-api@1.12.8-next.0
+  - @backstage/integration-react@1.2.20-next.0
+  - @backstage/plugin-techdocs-react@1.3.13-next.0
+
+## 1.1.37
+
+### Patch Changes
+
+- 9095f69: Added a default export to the `/alpha` entrypoint that bundles all contributed TechDocs addon modules using `createFrontendFeatureLoader`. This allows the package to be loaded as a single feature in setups that discover frontend modules through their default export, such as dynamic plugin loaders.
+- Updated dependencies
+  - @backstage/core-components@0.18.11
+  - @backstage/integration@2.0.3
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/core-plugin-api@1.12.7
+  - @backstage/integration-react@1.2.19
+  - @backstage/plugin-techdocs-react@1.3.12
+
 ## 1.1.37-next.1
 
 ### Patch Changes

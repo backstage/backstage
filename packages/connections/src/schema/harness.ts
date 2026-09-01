@@ -19,12 +19,14 @@ import { z } from 'zod/v4';
 /** @public */
 export const HarnessConnectionType = createConnectionType({
   type: 'harness',
+  title: 'Harness',
   configSchema: z.object({
     host: z.string(),
   }),
   authMethods: [
     {
       method: 'token',
+      title: 'Token',
       configSchema: z.object({
         token: z.string(),
         apiKey: z.string().optional(),

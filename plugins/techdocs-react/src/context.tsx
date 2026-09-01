@@ -135,16 +135,26 @@ export const TechDocsReaderPageProvider = memo(
       defaultTechDocsReaderPageValue.shadowRoot,
     );
 
+    const {
+      value: metadataValue,
+      loading: metadataLoading,
+      error: metadataError,
+      retry: retryMetadata,
+    } = metadata;
+
     useEffect(() => {
-      if (shadowRoot && !metadata.value && !metadata.loading) {
-        metadata.retry();
+      // Retry once the shadow root is attached, but only while the request has
+      // not yet produced a value or failed. Checking the error state is what
+      // stops a permanently failing request (e.g. a 404) from retrying forever.
+      if (shadowRoot && !metadataValue && !metadataLoading && !metadataError) {
+        retryMetadata();
       }
     }, [
-      metadata.value,
-      metadata.loading,
       shadowRoot,
-      metadata.retry,
-      metadata,
+      metadataValue,
+      metadataLoading,
+      metadataError,
+      retryMetadata,
     ]);
 
     const value: TechDocsReaderPageValue = {

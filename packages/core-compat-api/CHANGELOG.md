@@ -1,5 +1,71 @@
 # @backstage/core-compat-api
 
+## 0.5.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.2-next.0
+
+## 0.5.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/plugin-catalog-react@3.2.1
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/plugin-app-react@0.2.6
+
+## 0.5.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.1-next.2
+  - @backstage/frontend-plugin-api@0.18.0-next.0
+  - @backstage/plugin-app-react@0.2.6-next.0
+  - @backstage/core-plugin-api@1.12.9-next.0
+
+## 0.5.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.1-next.0
+
+## 0.5.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.3
+  - @backstage/plugin-catalog-react@3.2.0
+  - @backstage/filter-predicates@0.1.4
+  - @backstage/core-plugin-api@1.12.8
+  - @backstage/plugin-app-react@0.2.5
+
+## 0.5.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.0-next.0
+  - @backstage/filter-predicates@0.1.4-next.0
+  - @backstage/frontend-plugin-api@0.17.3-next.0
+  - @backstage/core-plugin-api@1.12.8-next.0
+  - @backstage/plugin-app-react@0.2.5-next.0
+
+## 0.5.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.1.0
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/core-plugin-api@1.12.7
+  - @backstage/plugin-app-react@0.2.4
+
 ## 0.5.12-next.1
 
 ### Patch Changes

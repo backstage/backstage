@@ -1,5 +1,145 @@
 # @backstage/plugin-techdocs
 
+## 1.18.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.17.2-next.0
+  - @backstage/plugin-catalog-react@3.2.2-next.0
+  - @backstage/core-components@0.18.14-next.0
+  - @backstage/plugin-search-react@1.11.8-next.0
+  - @backstage/plugin-auth-react@0.1.31-next.0
+  - @backstage/plugin-techdocs-react@1.3.15-next.0
+
+## 1.18.0
+
+### Minor Changes
+
+- 4f9ce5e: Add `initialFilter` config for `page:techdocs`. Valid options are `all`, `owned` and `starred`. Defaults to `owned`.
+
+### Patch Changes
+
+- e06a951: chore(deps): bump `dompurify` from 3.4.11 to 3.4.12
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/plugin-catalog-react@3.2.1
+  - @backstage/ui@0.17.1
+  - @backstage/integration@2.1.0
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/integration-react@1.2.21
+  - @backstage/plugin-auth-react@0.1.30
+  - @backstage/plugin-search-react@1.11.7
+  - @backstage/plugin-techdocs-react@1.3.14
+
+## 1.18.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.1-next.2
+  - @backstage/frontend-plugin-api@0.18.0-next.0
+  - @backstage/core-plugin-api@1.12.9-next.0
+  - @backstage/plugin-search-react@1.11.7-next.1
+  - @backstage/plugin-techdocs-react@1.3.14-next.1
+  - @backstage/core-components@0.18.13-next.2
+  - @backstage/integration-react@1.2.21-next.1
+  - @backstage/plugin-auth-react@0.1.30-next.1
+
+## 1.18.0-next.1
+
+### Patch Changes
+
+- e06a951: chore(deps): bump `dompurify` from 3.4.11 to 3.4.12
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.1-next.1
+  - @backstage/core-components@0.18.13-next.1
+  - @backstage/integration@2.1.0-next.0
+  - @backstage/integration-react@1.2.21-next.0
+
+## 1.18.0-next.0
+
+### Minor Changes
+
+- 4f9ce5e: Add `initialFilter` config for `page:techdocs`. Valid options are `all`, `owned` and `starred`. Defaults to `owned`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.13-next.0
+  - @backstage/ui@0.17.1-next.0
+  - @backstage/plugin-auth-react@0.1.30-next.0
+  - @backstage/plugin-catalog-react@3.2.1-next.0
+  - @backstage/plugin-search-react@1.11.7-next.0
+  - @backstage/plugin-techdocs-react@1.3.14-next.0
+
+## 1.17.8
+
+### Patch Changes
+
+- 34bda9e: chore(deps): bump `dompurify` from 3.4.5 to 3.4.9
+- f2aa036: chore(deps): bump `dompurify` from 3.4.9 to 3.4.11
+- b8db4fe: The TechDocs plugin now adds the Documentation result type to the Search page when it is installed.
+- 65c7f98: Fixed duplicate React key warnings when documentation entities share a name across different namespaces or kinds.
+- 9459c14: Fixed TechDocs pages sometimes rendering blank due to sanitizer hooks registered by other plugins.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.3
+  - @backstage/ui@0.17.0
+  - @backstage/plugin-catalog-react@3.2.0
+  - @backstage/core-components@0.18.12
+  - @backstage/plugin-techdocs-react@1.3.13
+  - @backstage/catalog-client@1.16.1
+  - @backstage/core-plugin-api@1.12.8
+  - @backstage/integration-react@1.2.20
+  - @backstage/plugin-auth-react@0.1.29
+  - @backstage/plugin-search-react@1.11.6
+
+## 1.17.8-next.0
+
+### Patch Changes
+
+- 65c7f98: Fixed duplicate React key warnings when documentation entities share a name across different namespaces or kinds.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.0-next.0
+  - @backstage/ui@0.17.0-next.0
+  - @backstage/frontend-plugin-api@0.17.3-next.0
+  - @backstage/plugin-search-react@1.11.6-next.0
+  - @backstage/catalog-client@1.16.1-next.0
+  - @backstage/core-components@0.18.12-next.0
+  - @backstage/core-plugin-api@1.12.8-next.0
+  - @backstage/integration-react@1.2.20-next.0
+  - @backstage/plugin-auth-react@0.1.29-next.0
+  - @backstage/plugin-techdocs-react@1.3.13-next.0
+
+## 1.17.7
+
+### Patch Changes
+
+- 460c597: Added missing i18n support for TechDocs plugin components including:
+
+  - Search components (placeholder text, no results message)
+  - Table components (column headers, pagination, toolbar, actions, empty states)
+  - Home page components (support button, page wrapper title/subtitle)
+  - Reader components (build logs, not found errors, state indicators, settings)
+  - Error messages and navigation labels
+
+  Also exported `techdocsTranslationRef` from the alpha entrypoint for external use.
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0
+  - @backstage/plugin-catalog-react@3.1.0
+  - @backstage/core-components@0.18.11
+  - @backstage/plugin-search-react@1.11.5
+  - @backstage/integration@2.0.3
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/ui@0.16.0
+  - @backstage/core-plugin-api@1.12.7
+  - @backstage/integration-react@1.2.19
+  - @backstage/plugin-auth-react@0.1.28
+  - @backstage/plugin-techdocs-react@1.3.12
+
 ## 1.17.7-next.1
 
 ### Patch Changes

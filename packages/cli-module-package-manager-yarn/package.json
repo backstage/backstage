@@ -1,0 +1,49 @@
+{
+  "name": "@backstage/cli-module-package-manager-yarn",
+  "version": "0.1.0",
+  "description": "CLI module for Yarn package manager commands",
+  "backstage": {
+    "role": "cli-module"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/cli-module-package-manager-yarn"
+  },
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "bin": "bin/backstage-cli-module-package-manager-yarn",
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/cli-common": "workspace:^",
+    "@backstage/cli-node": "workspace:^",
+    "@backstage/release-manifests": "workspace:^",
+    "@yarnpkg/core": "^4.4.1",
+    "@yarnpkg/fslib": "^3.1.2",
+    "@yarnpkg/parsers": "^3.0.0",
+    "@yarnpkg/plugin-patch": "^4.0.2",
+    "cleye": "^2.6.0"
+  },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^"
+  }
+}

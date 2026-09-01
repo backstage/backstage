@@ -49,6 +49,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 import { ComponentType, Fragment, useEffect, useState } from 'react';
 import appPluginOriginal from '@backstage/plugin-app';
+import { z } from 'zod/v4';
 
 const signInPageComponentDataRef = createExtensionDataRef<
   ComponentType<{ onSignInSuccess(identity: IdentityApi): void }>
@@ -294,8 +295,122 @@ describe('createSpecializedApp', () => {
     expect(mockAnalyticsApi).toHaveBeenCalled();
   });
 
-  it('should select the API factory from the owning plugin on conflict', () => {
-    const testApiRef = createApiRef<{ value: string }>({ id: 'test.api' });
+  it.each([
+    [
+      'first ID segment',
+      createApiRef<{ value: string }>({ id: 'test.api' }),
+      'test',
+    ],
+    [
+      'plugin-prefixed ID',
+      createApiRef<{ value: string }>({ id: 'plugin.test.api' }),
+      'test',
+    ],
+    [
+      'core-prefixed ID',
+      createApiRef<{ value: string }>({ id: 'core.test-api' }),
+      'app',
+    ],
+  ])(
+    'should select the API factory from the owning plugin on conflict using the %s',
+    (_ownershipType, testApiRef, ownerPluginId) => {
+      const appRootPlugin = createFrontendPlugin({
+        pluginId: 'app',
+        extensions: [
+          createExtension({
+            attachTo: { id: 'root', input: 'app' },
+            output: [coreExtensionData.reactElement],
+            factory: ({ apis }) => [
+              coreExtensionData.reactElement(
+                <div>Selected API: {apis.get(testApiRef)!.value}</div>,
+              ),
+            ],
+          }),
+        ],
+      });
+      const ownerFeature =
+        ownerPluginId === 'app'
+          ? createFrontendModule({
+              pluginId: ownerPluginId,
+              extensions: [
+                ApiBlueprint.make({
+                  params: defineParams =>
+                    defineParams({
+                      api: testApiRef,
+                      deps: {},
+                      factory: () => ({ value: 'owner' }),
+                    }),
+                }),
+              ],
+            })
+          : createFrontendPlugin({
+              pluginId: ownerPluginId,
+              extensions: [
+                ApiBlueprint.make({
+                  params: defineParams =>
+                    defineParams({
+                      api: testApiRef,
+                      deps: {},
+                      factory: () => ({ value: 'owner' }),
+                    }),
+                }),
+              ],
+            });
+
+      const app = createSpecializedApp({
+        features: [
+          appRootPlugin,
+          createFrontendPlugin({
+            pluginId: 'other-before',
+            extensions: [
+              ApiBlueprint.make({
+                params: defineParams =>
+                  defineParams({
+                    api: testApiRef,
+                    deps: {},
+                    factory: () => ({ value: 'other' }),
+                  }),
+              }),
+            ],
+          }),
+          ownerFeature,
+          createFrontendPlugin({
+            pluginId: 'other-after',
+            extensions: [
+              ApiBlueprint.make({
+                params: defineParams =>
+                  defineParams({
+                    api: testApiRef,
+                    deps: {},
+                    factory: () => ({ value: 'other' }),
+                  }),
+              }),
+            ],
+          }),
+        ],
+      });
+
+      expect(app.errors).toEqual([
+        expect.objectContaining({
+          code: 'API_FACTORY_CONFLICT',
+          message: expect.stringContaining(`API '${testApiRef.id}'`),
+        }),
+        expect.objectContaining({
+          code: 'API_FACTORY_CONFLICT',
+          message: expect.stringContaining(`API '${testApiRef.id}'`),
+        }),
+      ]);
+
+      render(app.element);
+      expect(screen.getByText('Selected API: owner')).toBeInTheDocument();
+    },
+  );
+
+  it('should prefer explicit API ownership regardless of registration order', () => {
+    const testApiRef = createApiRef<{ value: string }>().with({
+      id: 'shared.api',
+      pluginId: 'owner',
+    });
     const appRootPlugin = createFrontendPlugin({
       pluginId: 'app',
       extensions: [
@@ -322,13 +437,13 @@ describe('createSpecializedApp', () => {
                 defineParams({
                   api: testApiRef,
                   deps: {},
-                  factory: () => ({ value: 'other' }),
+                  factory: () => ({ value: 'other-before' }),
                 }),
             }),
           ],
         }),
         createFrontendPlugin({
-          pluginId: 'test',
+          pluginId: 'owner',
           extensions: [
             ApiBlueprint.make({
               params: defineParams =>
@@ -348,7 +463,7 @@ describe('createSpecializedApp', () => {
                 defineParams({
                   api: testApiRef,
                   deps: {},
-                  factory: () => ({ value: 'other' }),
+                  factory: () => ({ value: 'other-after' }),
                 }),
             }),
           ],
@@ -359,11 +474,23 @@ describe('createSpecializedApp', () => {
     expect(app.errors).toEqual([
       expect.objectContaining({
         code: 'API_FACTORY_CONFLICT',
-        message: expect.stringContaining("API 'test.api'"),
+        message:
+          "API 'shared.api' is already provided by plugin 'owner', cannot also be provided by 'other-before'.",
+        context: expect.objectContaining({
+          apiRefId: 'shared.api',
+          pluginId: 'other-before',
+          existingPluginId: 'owner',
+        }),
       }),
       expect.objectContaining({
         code: 'API_FACTORY_CONFLICT',
-        message: expect.stringContaining("API 'test.api'"),
+        message:
+          "API 'shared.api' is already provided by plugin 'owner', cannot also be provided by 'other-after'.",
+        context: expect.objectContaining({
+          apiRefId: 'shared.api',
+          pluginId: 'other-after',
+          existingPluginId: 'owner',
+        }),
       }),
     ]);
 
@@ -730,10 +857,8 @@ describe('createSpecializedApp', () => {
             createExtension({
               name: 'child',
               attachTo: { id: 'test', input: 'text' },
-              config: {
-                schema: {
-                  text: z => z.string().default('test'),
-                },
+              configSchema: {
+                text: z.string().default('test'),
               },
               output: [textDataRef],
               factory: ({ config }) => [textDataRef(config.text)],

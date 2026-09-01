@@ -19,26 +19,28 @@ import knexFactory, { Knex } from 'knex';
 import { parse as parsePgConnectionString } from 'pg-connection-string';
 import { randomUUID as uuid } from 'node:crypto';
 import { waitForReady } from '../util/waitForReady';
-import { Engine, LARGER_POOL_CONFIG, TestDatabaseProperties } from './types';
+import { Engine, TEST_POOL_CONFIG, TestDatabaseProperties } from './types';
 
 async function waitForPostgresReady(
   connection: Knex.PgConnectionConfig,
 ): Promise<void> {
-  await waitForReady(async () => {
-    const knex = knexFactory({
-      client: 'pg',
-      connection: {
-        // make a copy because the driver mutates this
-        ...connection,
+  const knex = knexFactory({
+    client: 'pg',
+    connection: { ...connection },
+    pool: { min: 0, max: 1 },
+  });
+  try {
+    await waitForReady(
+      async () => {
+        const result = await knex.select(knex.raw('version()'));
+        return Array.isArray(result) && Boolean(result[0]?.version);
       },
-    });
-    try {
-      const result = await knex.select(knex.raw('version()'));
-      return Array.isArray(result) && Boolean(result[0]?.version);
-    } finally {
-      await knex.destroy();
-    }
-  }, 'the database');
+      'the database',
+      60_000,
+    );
+  } finally {
+    await knex.destroy();
+  }
 }
 
 export async function startPostgresContainer(image: string): Promise<{
@@ -52,6 +54,7 @@ export async function startPostgresContainer(image: string): Promise<{
   const { GenericContainer } =
     require('testcontainers') as typeof import('testcontainers');
 
+  // See note in mysql.ts about why we don't enable .withReuse() here.
   const container = await new GenericContainer(image)
     .withExposedPorts(5432)
     .withEnvironment({
@@ -60,6 +63,7 @@ export async function startPostgresContainer(image: string): Promise<{
       POSTGRES_PASSWORD: password,
     })
     .withTmpFs({ '/var/lib/postgresql/data': 'rw' })
+    .withCommand(['-c', 'max_connections=1000'])
     .start();
 
   const host = container.getHost();
@@ -135,7 +139,7 @@ export class PostgresEngine implements Engine {
           ...this.#connection,
           database: databaseName,
         },
-        ...LARGER_POOL_CONFIG,
+        ...TEST_POOL_CONFIG,
       });
       this.#knexInstances.push(knexInstance);
 
@@ -147,19 +151,34 @@ export class PostgresEngine implements Engine {
 
   async shutdown(): Promise<void> {
     for (const instance of this.#knexInstances) {
-      await instance.destroy();
-    }
-
-    const adminConnection = this.#connectAdmin();
-    try {
-      for (const databaseName of this.#databaseNames) {
-        await adminConnection.raw('DROP DATABASE ??', [databaseName]);
+      try {
+        await instance.destroy();
+      } catch {
+        // Best-effort — the connection may already be dead
       }
-    } finally {
-      await adminConnection.destroy();
     }
 
-    await this.#stopContainer?.();
+    let adminConnection: Knex | undefined;
+    try {
+      adminConnection = this.#connectAdmin();
+      for (const databaseName of this.#databaseNames) {
+        try {
+          await adminConnection.raw('DROP DATABASE ??', [databaseName]);
+        } catch {
+          // Best-effort — the database may already be gone
+        }
+      }
+    } catch {
+      // Best-effort — the container may already be stopped
+    } finally {
+      await adminConnection?.destroy().catch(() => {});
+    }
+
+    try {
+      await this.#stopContainer?.();
+    } catch {
+      // Best-effort
+    }
   }
 
   #connectAdmin(): Knex {

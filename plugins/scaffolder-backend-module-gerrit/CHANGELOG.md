@@ -1,5 +1,65 @@
 # @backstage/plugin-scaffolder-backend-module-gerrit
 
+## 0.2.25-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.7-next.0
+
+## 0.2.24
+
+### Patch Changes
+
+- 4e8d763: Migrated tests from MSW v1 to MSW v2.
+- f83a652: Made `description` parameter optional in `publish:gerrit` action.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.6
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/integration@2.1.0
+
+## 0.2.24-next.1
+
+### Patch Changes
+
+- f83a652: Made `description` parameter optional in `publish:gerrit` action.
+- Updated dependencies
+  - @backstage/integration@2.1.0-next.0
+  - @backstage/plugin-scaffolder-node@0.13.6-next.1
+
+## 0.2.24-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-scaffolder-node@0.13.6-next.0
+
+## 0.2.23
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/plugin-scaffolder-node@0.13.5
+
+## 0.2.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/plugin-scaffolder-node@0.13.5-next.0
+
+## 0.2.22
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.4
+  - @backstage/integration@2.0.3
+  - @backstage/backend-plugin-api@1.9.2
+
 ## 0.2.22-next.0
 
 ### Patch Changes

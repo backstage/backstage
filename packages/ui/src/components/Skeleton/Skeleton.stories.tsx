@@ -15,7 +15,9 @@
  */
 import preview from '../../../../../.storybook/preview';
 import { Skeleton } from './Skeleton';
+import { Box } from '../Box';
 import { Flex } from '../Flex';
+import { Text } from '../Text';
 
 const meta = preview.meta({
   title: 'Backstage UI/Skeleton',
@@ -73,6 +75,37 @@ export const Demo2 = meta.story({
       <Skeleton width={400} height={160} />
       <Skeleton width={400} height={12} />
       <Skeleton width={240} height={12} />
+    </Flex>
+  ),
+});
+
+export const BackgroundAwareness = meta.story({
+  render: () => (
+    <Flex direction="column" gap="4">
+      <Box bg="neutral" p="4">
+        <Text>Neutral 1 container</Text>
+        <Flex gap="2" mt="2" direction="column" pb="4">
+          <Skeleton width={200} height={12} />
+          <Skeleton width={200} height={12} />
+          <Skeleton width={200} height={12} />
+        </Flex>
+        <Box bg="neutral" p="4">
+          <Text>Neutral 2 container</Text>
+          <Flex gap="2" mt="2" direction="column" pb="4">
+            <Skeleton width={200} height={12} />
+            <Skeleton width={200} height={12} />
+            <Skeleton width={200} height={12} />
+          </Flex>
+          <Box bg="neutral" p="4">
+            <Text>Neutral 3 container</Text>
+            <Flex gap="2" mt="2" direction="column">
+              <Skeleton width={200} height={12} />
+              <Skeleton width={200} height={12} />
+              <Skeleton width={200} height={12} />
+            </Flex>
+          </Box>
+        </Box>
+      </Box>
     </Flex>
   ),
 });

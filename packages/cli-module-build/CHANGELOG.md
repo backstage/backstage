@@ -1,5 +1,84 @@
 # @backstage/cli-module-build
 
+## 0.1.8-next.0
+
+### Patch Changes
+
+- b2b7568: Significantly improve the performance of `build-workspace` when packaging many Backstage packages.
+
+## 0.1.7
+
+### Patch Changes
+
+- 943687f: Stopped disabling the Node.js snapshot by default when starting backends or running tests.
+- 4d7b153: chore(deps): bump `shell-quote` from 1.8.4 to 1.9.0
+- 78bf918: chore(deps): bump `tar` from 7.5.15 to 7.5.21
+- bb98419: Package preparation for publishing validates TypeScript configuration schemas strictly, preventing invalid schemas from being published. Other build and bundle paths report schema errors as warnings.
+- Updated dependencies
+  - @backstage/config-loader@1.11.2
+
+## 0.1.7-next.0
+
+### Patch Changes
+
+- 943687f: Stopped disabling the Node.js snapshot by default when starting backends or running tests.
+- 4d7b153: chore(deps): bump `shell-quote` from 1.8.4 to 1.9.0
+- 78bf918: chore(deps): bump `tar` from 7.5.15 to 7.5.21
+- bb98419: Package preparation for publishing validates TypeScript configuration schemas strictly, preventing invalid schemas from being published. Other build and bundle paths report schema errors as warnings.
+- Updated dependencies
+  - @backstage/config-loader@1.11.2-next.0
+
+## 0.1.5
+
+### Patch Changes
+
+- 87af6ce: Package preparation now converts TypeScript configuration schemas to separate JSON files. Backend builds compile schemas together before assembling the distribution workspace, while package publishing compiles each schema independently.
+- 853bcba: Improved caching for Module Federation remote builds by extracting dependencies into separate content-hashed chunks.
+- 3cce70f: Increase generated frontend static asset filename hashes to 12 characters to reduce the chance of collisions across long-lived cached builds.
+- da820d1: Added support for passing custom flags to the embedded postgres processes via `backend.database.connection.flags.postgres` and `backend.database.connection.flags.initdb` configuration properties.
+- Updated dependencies
+  - @backstage/config-loader@1.11.0
+  - @backstage/cli-common@0.3.0
+  - @backstage/cli-node@0.3.4
+
+## 0.1.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.3.0-next.0
+  - @backstage/cli-node@0.3.4-next.0
+  - @backstage/config-loader@1.11.0-next.2
+
+## 0.1.5-next.1
+
+### Patch Changes
+
+- 3cce70f: Increase generated frontend static asset filename hashes to 12 characters to reduce the chance of collisions across long-lived cached builds.
+- Updated dependencies
+  - @backstage/config-loader@1.11.0-next.1
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- 87af6ce: Package preparation now converts TypeScript configuration schemas to separate JSON files. Backend builds compile schemas together before assembling the distribution workspace, while package publishing compiles each schema independently.
+- da820d1: Added support for passing custom flags to the embedded postgres processes via `backend.database.connection.flags.postgres` and `backend.database.connection.flags.initdb` configuration properties.
+- Updated dependencies
+  - @backstage/config-loader@1.11.0-next.0
+
+## 0.1.4
+
+### Patch Changes
+
+- 696c78c: The `--help` output for commands now shows a generated usage line that lists the available flags and any positional arguments the command accepts.
+- 2e6ffe6: Updated the standalone CLI executable to use the new CLI module runner.
+- a1971ea: Suppress false-positive `@protobufjs/inquire` "Critical dependency" warning in the bundler. Since `protobufjs` 7.5.9, the dynamic require path in inquire is no longer exercised, but webpack/rspack still flags it during static analysis.
+- 8007b58: Updated dependency `embedded-postgres` to `18.3.0-beta.17`.
+- Updated dependencies
+  - @backstage/cli-node@0.3.3
+  - @backstage/config-loader@1.10.12
+
 ## 0.1.4-next.0
 
 ### Patch Changes

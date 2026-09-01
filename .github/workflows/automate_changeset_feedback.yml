@@ -27,11 +27,14 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           # Fetch the commit that's merged into the base rather than the target ref
           # This will let us diff only the contents of the PR, without fetching more history
           ref: 'refs/pull/${{ github.event.pull_request.number }}/merge'
+          # Safe to allow: the checkout is only ever diffed, never built or
+          # executed, and the app credentials used below are scoped to posting comments.
+          allow-unsafe-pr-checkout: true
       - name: fetch base
         run: git fetch --depth 1 origin ${{ github.base_ref }}
       - uses: backstage/actions/changeset-feedback@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8

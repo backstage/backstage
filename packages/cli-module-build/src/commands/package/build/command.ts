@@ -43,7 +43,7 @@ export default async ({ args, info }: CliCommandContext) => {
     },
   } = cli(
     {
-      help: info,
+      name: info.usage,
       booleanFlagNegation: true,
       flags: {
         role: {

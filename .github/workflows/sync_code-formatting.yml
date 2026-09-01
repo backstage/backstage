@@ -14,17 +14,18 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           # Fetch changes to previous commit - required for 'only_changed' in Prettier action
           fetch-depth: 0
+          filter: blob:none
 
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
-          corepack: true
+
       - name: yarn install
         uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
         with:

@@ -15,10 +15,40 @@
  */
 
 export * from './Combobox';
-export * from './types';
+export * from './ComboboxItem';
+export type {
+  ComboboxAsyncSearch,
+  ComboboxAsyncItemsProps,
+  ComboboxAsyncOptionsProps,
+  ComboboxBaseOwnProps,
+  ComboboxCommonProps,
+  ComboboxItemsProps,
+  ComboboxItemOwnProps,
+  ComboboxItemProfileOwnProps,
+  ComboboxItemProfileProps,
+  ComboboxItemProps,
+  ComboboxItemSelectionProps,
+  ComboboxItemTextOwnProps,
+  ComboboxItemTextProps,
+  ComboboxKeySelectionProps,
+  ComboboxOwnProps,
+  ComboboxOptionsProps,
+  ComboboxProps,
+  ComboboxSearch,
+  ComboboxServerItem,
+  ComboboxServerItemsProps,
+  ComboboxServerOptionsProps,
+  ComboboxStaticProps,
+  ComboboxStaticSearch,
+  Option,
+  OptionSection,
+} from './types';
 export {
   ComboboxDefinition,
   ComboboxInputDefinition,
+  ComboboxItemDefinition,
+  ComboboxItemProfileDefinition,
+  ComboboxItemTextDefinition,
   ComboboxListBoxDefinition,
   ComboboxListBoxItemDefinition,
   ComboboxSectionDefinition,

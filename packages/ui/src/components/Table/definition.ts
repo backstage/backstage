@@ -35,6 +35,7 @@ export const TableWrapperDefinition = defineComponent<{
   classNames: {
     root: 'bui-TableWrapper',
     resizableContainer: 'bui-TableResizableContainer',
+    scrollContainer: 'bui-TableScrollContainer',
   },
   propDefs: {
     className: {},
@@ -101,7 +102,6 @@ export const RowDefinition = defineComponent<RowOwnProps>()({
   propDefs: {
     columns: {},
     children: {},
-    href: {},
     noTrack: {},
   },
 });

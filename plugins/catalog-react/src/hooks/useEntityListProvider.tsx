@@ -127,6 +127,11 @@ export type EntityListContextProps<
   setLimit: (limit: number) => void;
   setOffset?: (offset: number) => void;
   paginationMode: PaginationMode;
+
+  /**
+   * Trigger refresh of entities and entity totals.
+   */
+  refresh?: () => void;
 };
 
 // This context has support for multiple concurrent versions of this package.
@@ -234,6 +239,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | undefined>();
+  const [refreshToken, setRefreshToken] = useState(0);
 
   // Tracks the params of the last API call so identical requests are
   // skipped even when requestedFilters changes (e.g. a label change
@@ -345,7 +351,13 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
 
   // Slight debounce on the refresh, since (especially on page load)
   // several filters will be calling updateFilters in rapid succession.
-  useDebounce(refresh, 10, [adjustedFilters, cursor, limit, offset]);
+  useDebounce(refresh, 10, [
+    adjustedFilters,
+    cursor,
+    limit,
+    offset,
+    refreshToken,
+  ]);
 
   // Fetch the total count separately, only when filters change. This is
   // decoupled from the main list fetch so that page navigation doesn't
@@ -372,7 +384,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       }
     }, [catalogApi, paginationMode, adjustedFilters]);
 
-  useDebounce(refreshCount, 10, [adjustedFilters]);
+  useDebounce(refreshCount, 10, [adjustedFilters, refreshToken]);
 
   // Frontend filtering — synchronous, no debounce needed. Updates
   // instantly when requestedFilters or backendEntities change.
@@ -451,6 +463,12 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     [paginationMode],
   );
 
+  const triggerRefresh = useCallback(() => {
+    // Clear the ref to allow refetching with the same params.
+    lastFetchParamsRef.current = undefined;
+    setRefreshToken(t => t + 1);
+  }, []);
+
   const pageInfo = useMemo(() => {
     if (paginationMode !== 'cursor') {
       return undefined;
@@ -484,6 +502,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       setLimit,
       setOffset,
       paginationMode,
+      refresh: triggerRefresh,
     }),
     [
       requestedFilters,
@@ -501,6 +520,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       offset,
       setLimit,
       setOffset,
+      triggerRefresh,
     ],
   );
 

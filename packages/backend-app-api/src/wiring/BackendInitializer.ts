@@ -30,30 +30,38 @@ import {
   ExtensionPointFactoryMiddleware,
   ServiceOrExtensionPoint,
 } from './types';
-import { OpaqueExtensionPointFactoryMiddleware } from '@internal/backend';
+import {
+  OpaqueExtensionPointFactoryMiddleware,
+  unwrapFeature,
+} from '@internal/backend';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type {
-  InternalBackendFeature,
   InternalBackendFeatureLoader,
   InternalBackendRegistrations,
 } from '../../../backend-plugin-api/src/wiring/types';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import type { InternalServiceFactory } from '../../../backend-plugin-api/src/services/system/types';
 import { ConflictError, ForwardedError, toError } from '@backstage/errors';
 import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
 import { createInitializationResultCollector } from './createInitializationResultCollector';
-import { deepFreeze, unwrapFeature } from './helpers';
+import { deepFreeze } from './helpers';
 import type { RootInstanceMetadataServicePluginInfo } from '@backstage/backend-plugin-api';
 import { BackendStartupResult } from './types';
 import { BackendStartupError } from './BackendStartupError';
 import { createAllowBootFailurePredicate } from './createAllowBootFailurePredicate';
-import {
-  connectionsServiceRef,
-  type ConnectionsService,
-} from '@backstage/connections';
+import type { ConnectionsService } from '@backstage/connections';
+import { connectionsServiceRef } from '@backstage/connections-node';
 import { withDeclaredConnections } from './withDeclaredConnections';
+import {
+  assertObject,
+  describeBackendFeature,
+  throwInvalidBackendFeature,
+  validateBackendFeature,
+  validateBackendRegistration,
+  validateBackendRegistrations,
+  validateServiceRef,
+  type ValidatedBackendFeature,
+} from './validateBackendFeature';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -63,6 +71,11 @@ export interface BackendRegisterInit {
     func: (deps: { [name: string]: unknown }) => Promise<void>;
   };
 }
+
+type InstalledFeatureLoader = {
+  feature: InternalBackendFeatureLoader;
+  source: string;
+};
 
 /**
  * A registry of backend instances, used to manage process shutdown hooks across all instances.
@@ -151,13 +164,10 @@ function collectCallerConnectionRegistrations(
 }
 
 function createRootInstanceMetadataServiceFactory(
-  rawRegistrations: InternalBackendRegistrations[],
+  registrations: ReturnType<InternalBackendRegistrations['getRegistrations']>,
 ) {
   const installedPlugins: Map<string, RootInstanceMetadataServicePluginInfo> =
     new Map();
-  const registrations = rawRegistrations
-    .filter(registration => registration.featureType === 'registrations')
-    .flatMap(registration => registration.getRegistrations());
   const plugins = registrations.filter(
     registration =>
       registration.type === 'plugin' || registration.type === 'plugin-v1.1',
@@ -204,7 +214,13 @@ function createRootInstanceMetadataServiceFactory(
 export class BackendInitializer {
   #startPromise?: Promise<{ result: BackendStartupResult }>;
   #stopPromise?: Promise<void>;
-  #registrations = new Array<InternalBackendRegistrations>();
+  #registrations = new Array<{
+    feature: InternalBackendRegistrations;
+    source: string;
+  }>();
+  #allRegistrations = new Array<
+    ReturnType<InternalBackendRegistrations['getRegistrations']>[number]
+  >();
   #extensionPoints = new Map<
     string,
     {
@@ -213,8 +229,11 @@ export class BackendInitializer {
     }
   >();
   #serviceRegistry: ServiceRegistry;
-  #registeredFeatures = new Array<Promise<BackendFeature>>();
-  #registeredFeatureLoaders = new Array<InternalBackendFeatureLoader>();
+  #registeredFeatures = new Array<{
+    feature: Promise<BackendFeature>;
+    source: string;
+  }>();
+  #registeredFeatureLoaders = new Array<InstalledFeatureLoader>();
   #extensionPointFactoryMiddleware: ExtensionPointFactoryMiddleware[];
   #callerConnectionRegistrations = new Map<string, ConnectionRegistration[]>();
 
@@ -329,20 +348,25 @@ export class BackendInitializer {
     if (this.#startPromise) {
       throw new Error('feature can not be added after the backend has started');
     }
-    this.#registeredFeatures.push(Promise.resolve(feature));
+    this.#registeredFeatures.push({
+      feature: Promise.resolve(feature),
+      source: `features[${this.#registeredFeatures.length}]`,
+    });
   }
 
-  #addFeature(feature: BackendFeature) {
-    if (isServiceFactory(feature)) {
-      this.#serviceRegistry.add(feature);
-    } else if (isBackendFeatureLoader(feature)) {
-      this.#registeredFeatureLoaders.push(feature);
-    } else if (isBackendRegistrations(feature)) {
-      this.#registrations.push(feature);
+  #addFeature(feature: ValidatedBackendFeature, source: string) {
+    if (feature.type === 'service') {
+      this.#serviceRegistry.add(feature.feature, source);
+    } else if (feature.type === 'loader') {
+      this.#registeredFeatureLoaders.push({
+        feature: feature.feature,
+        source,
+      });
     } else {
-      throw new Error(
-        `Failed to add feature, invalid feature ${JSON.stringify(feature)}`,
-      );
+      this.#registrations.push({
+        feature: feature.feature,
+        source,
+      });
     }
   }
 
@@ -363,14 +387,21 @@ export class BackendInitializer {
   async #doStart(): Promise<{ result: BackendStartupResult }> {
     this.#serviceRegistry.checkForCircularDeps();
 
-    for (const feature of this.#registeredFeatures) {
-      this.#addFeature(await feature);
+    for (const { feature, source: fallbackSource } of this
+      .#registeredFeatures) {
+      const resolvedFeature = await feature;
+      const source = describeBackendFeature(resolvedFeature) ?? fallbackSource;
+      this.#addFeature(validateBackendFeature(resolvedFeature, source), source);
     }
 
     await this.#applyBackendFeatureLoaders(this.#registeredFeatureLoaders);
 
+    this.#allRegistrations = this.#registrations.flatMap(
+      ({ feature, source }) => validateBackendRegistrations(feature, source),
+    );
+
     this.#serviceRegistry.add(
-      createRootInstanceMetadataServiceFactory(this.#registrations),
+      createRootInstanceMetadataServiceFactory(this.#allRegistrations),
     );
 
     // This makes sure that any uncaught errors or unhandled rejections are
@@ -411,9 +442,7 @@ export class BackendInitializer {
       'root',
     );
 
-    const allRegistrations = this.#registrations.flatMap(f =>
-      f.getRegistrations(),
-    );
+    const allRegistrations = this.#allRegistrations;
 
     this.#callerConnectionRegistrations =
       collectCallerConnectionRegistrations(allRegistrations);
@@ -541,8 +570,18 @@ export class BackendInitializer {
     const moduleInits = new Map<string, Map<string, BackendRegisterInit>>();
 
     for (const r of allRegistrations) {
+      const pluginId =
+        'pluginId' in r && typeof r.pluginId === 'string'
+          ? r.pluginId
+          : undefined;
+      const moduleId =
+        'moduleId' in r && typeof r.moduleId === 'string'
+          ? r.moduleId
+          : undefined;
       const addedExtensionPointIds: string[] = [];
       try {
+        validateBackendRegistration(r);
+
         const provides = new Set<ExtensionPoint<unknown>>();
 
         if (r.type === 'plugin' || r.type === 'module') {
@@ -611,12 +650,12 @@ export class BackendInitializer {
         for (const id of addedExtensionPointIds) {
           this.#extensionPoints.delete(id);
         }
-        if ('pluginId' in r && 'moduleId' in r) {
-          resultCollector.onPluginModuleResult(r.pluginId, r.moduleId, err);
-        } else if ('pluginId' in r) {
-          pluginInits.delete(r.pluginId);
-          moduleInits.delete(r.pluginId);
-          resultCollector.onPluginResult(r.pluginId, err);
+        if (pluginId !== undefined && moduleId !== undefined) {
+          resultCollector.onPluginModuleResult(pluginId, moduleId, err);
+        } else if (pluginId !== undefined) {
+          pluginInits.delete(pluginId);
+          moduleInits.delete(pluginId);
+          resultCollector.onPluginResult(pluginId, err);
         } else {
           throw err;
         }
@@ -654,11 +693,12 @@ export class BackendInitializer {
 
     // Get all plugins.
     const allPlugins = new Set<string>();
-    for (const feature of this.#registrations) {
-      for (const r of feature.getRegistrations()) {
-        if (r.type === 'plugin' || r.type === 'plugin-v1.1') {
-          allPlugins.add(r.pluginId);
-        }
+    for (const registration of this.#allRegistrations) {
+      if (
+        registration.type === 'plugin' ||
+        registration.type === 'plugin-v1.1'
+      ) {
+        allPlugins.add(registration.pluginId);
       }
     }
 
@@ -731,17 +771,24 @@ export class BackendInitializer {
     throw new Error('Unexpected plugin lifecycle service implementation');
   }
 
-  async #applyBackendFeatureLoaders(loaders: InternalBackendFeatureLoader[]) {
-    const servicesAddedByLoaders = new Map<
-      string,
-      InternalBackendFeatureLoader
-    >();
+  async #applyBackendFeatureLoaders(loaders: InstalledFeatureLoader[]) {
+    const servicesAddedByLoaders = new Map<string, InstalledFeatureLoader>();
 
-    for (const loader of loaders) {
+    for (const installedLoader of loaders) {
+      const { feature: loader, source: loaderSource } = installedLoader;
+      if (loader.deps !== undefined) {
+        assertObject(
+          loader.deps,
+          `${loaderSource}.deps`,
+          'a dependency object',
+        );
+      }
+
       const deps = new Map<string, unknown>();
       const missingRefs = new Set<ServiceOrExtensionPoint>();
 
       for (const [name, ref] of Object.entries(loader.deps ?? {})) {
+        validateServiceRef(ref, `${loaderSource}.deps.${name}`);
         if (ref.scope !== 'root') {
           throw new Error(
             `Feature loaders can only depend on root scoped services, but '${name}' is scoped to '${ref.scope}'. Offending loader is ${loader.description}`,
@@ -765,23 +812,48 @@ export class BackendInitializer {
         );
       }
 
-      const result = await loader
-        .loader(Object.fromEntries(deps))
-        .then(features => features.map(unwrapFeature))
-        .catch(error => {
-          throw new ForwardedError(
-            `Feature loader ${loader.description} failed`,
-            error,
-          );
-        });
+      let result: unknown;
+      try {
+        result = await loader.loader(Object.fromEntries(deps));
+      } catch (error) {
+        throw new ForwardedError(
+          `Feature loader ${loader.description} failed`,
+          error,
+        );
+      }
+      if (!Array.isArray(result)) {
+        throwInvalidBackendFeature(
+          `${loaderSource} -> loader output`,
+          'an array of backend features',
+          result,
+        );
+      }
+
+      const loadedFeatures = result.map((feature, index) => {
+        const fallbackSource = `${loaderSource} -> loader output[${index}]`;
+        const unwrappedFeature = unwrapFeature(
+          feature as BackendFeature | { default: BackendFeature },
+        );
+        const description = describeBackendFeature(unwrappedFeature);
+        const source = description
+          ? `${description} (returned by ${loaderSource}, output[${index}])`
+          : fallbackSource;
+        return {
+          feature: validateBackendFeature(unwrappedFeature, source),
+          source,
+        };
+      });
 
       let didAddServiceFactory = false;
-      const newLoaders = new Array<InternalBackendFeatureLoader>();
+      const newLoaders = new Array<InstalledFeatureLoader>();
 
-      for await (const feature of result) {
-        if (isBackendFeatureLoader(feature)) {
-          newLoaders.push(feature);
-        } else {
+      for (const loadedFeature of loadedFeatures) {
+        const { feature, source } = loadedFeature;
+        if (feature.type === 'loader') {
+          newLoaders.push({ feature: feature.feature, source });
+        } else if (feature.type === 'service') {
+          validateServiceRef(feature.feature.service, `${source}.service`);
+
           // This block makes sure that feature loaders do not provide duplicate
           // implementations for the same service, but at the same time allows
           // service factories provided by feature loaders to be overridden by
@@ -789,25 +861,30 @@ export class BackendInitializer {
           //
           // If a factory has already been explicitly installed, the service
           // factory provided by the loader will simply be ignored.
-          if (isServiceFactory(feature) && !feature.service.multiton) {
+          if (!feature.feature.service.multiton) {
             const conflictingLoader = servicesAddedByLoaders.get(
-              feature.service.id,
+              feature.feature.service.id,
             );
             if (conflictingLoader) {
               throw new Error(
-                `Duplicate service implementations provided for ${feature.service.id} by both feature loader ${loader.description} and feature loader ${conflictingLoader.description}`,
+                `Duplicate service implementations provided for ${feature.feature.service.id} by both feature loader ${loader.description} and feature loader ${conflictingLoader.feature.description}`,
               );
             }
 
             // Check that this service wasn't already explicitly added by backend.add(serviceFactory)
-            if (!this.#serviceRegistry.hasBeenAdded(feature.service)) {
+            if (!this.#serviceRegistry.hasBeenAdded(feature.feature.service)) {
               didAddServiceFactory = true;
-              servicesAddedByLoaders.set(feature.service.id, loader);
-              this.#addFeature(feature);
+              servicesAddedByLoaders.set(
+                feature.feature.service.id,
+                installedLoader,
+              );
+              this.#addFeature(feature, source);
             }
           } else {
-            this.#addFeature(feature);
+            this.#addFeature(feature, source);
           }
+        } else {
+          this.#addFeature(feature, source);
         }
       }
 
@@ -822,47 +899,4 @@ export class BackendInitializer {
       }
     }
   }
-}
-
-function toInternalBackendFeature(
-  feature: BackendFeature,
-): InternalBackendFeature {
-  if (feature.$$type !== '@backstage/BackendFeature') {
-    throw new Error(`Invalid BackendFeature, bad type '${feature.$$type}'`);
-  }
-  const internal = feature as InternalBackendFeature;
-  if (internal.version !== 'v1') {
-    throw new Error(
-      `Invalid BackendFeature, bad version '${internal.version}'`,
-    );
-  }
-  return internal;
-}
-
-function isServiceFactory(
-  feature: BackendFeature,
-): feature is InternalServiceFactory {
-  const internal = toInternalBackendFeature(feature);
-  if (internal.featureType === 'service') {
-    return true;
-  }
-  // Backwards compatibility for v1 registrations that use duck typing
-  return 'service' in internal;
-}
-
-function isBackendRegistrations(
-  feature: BackendFeature,
-): feature is InternalBackendRegistrations {
-  const internal = toInternalBackendFeature(feature);
-  if (internal.featureType === 'registrations') {
-    return true;
-  }
-  // Backwards compatibility for v1 registrations that use duck typing
-  return 'getRegistrations' in internal;
-}
-
-function isBackendFeatureLoader(
-  feature: BackendFeature,
-): feature is InternalBackendFeatureLoader {
-  return toInternalBackendFeature(feature).featureType === 'loader';
 }

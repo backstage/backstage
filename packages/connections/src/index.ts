@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { connectionsServiceRef, connectionsServiceFactory } from './service';
 export type { ConnectionsService } from './api/ConnectionsService';
 export type { Connection, AuthValue } from './api/Connection';
 export type {
+  ConnectionAuthMatch,
   ConnectionType,
-  ConnectionAuthMethod,
   ConnectionAuthMethodKey,
   ConnectionAuthValue,
+  LookupStrategy,
+  ConfiguredConnectionAuth,
+  PortableSchema,
 } from './api/ConnectionType';
-export { DefaultConnectionsService } from './api/DefaultConnectionService';
-export { declareConnection } from './api/declareConnection';
 export { connectionTypes } from './definitions/types';
 export type {
   ConnectionTypeKey,
   LookupConnectionType,
 } from './definitions/types';
+export { buildConnectionsFromConfig } from './config/buildConnectionsFromConfig';
+export type { ConfiguredConnection } from './config/types';

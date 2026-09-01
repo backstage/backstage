@@ -46,7 +46,7 @@ export default async ({ args, info }: CliCommandContext) => {
     flags: { input, output },
   } = cli(
     {
-      help: info,
+      name: info.usage,
       booleanFlagNegation: true,
       flags: {
         input: {

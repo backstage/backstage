@@ -1,5 +1,67 @@
 # @backstage/cli-module-new
 
+## 0.1.7-next.0
+
+### Patch Changes
+
+- 4cba335: Fixes published entry point configurations so it can be imported reliably in Jest/Node resolution.
+
+## 0.1.6
+
+### Patch Changes
+
+- 90ef477: Added a new `permission-policy-module` template for scaffolding custom permission policies via `backstage-cli new`. The template generates a backend module that wires a `PermissionPolicy` implementation into the permission backend using the `policyExtensionPoint`, along with a test example.
+- 88b2bbf: Added a `search-collator-module` template for scaffolding new search collator modules via `backstage-cli new`.
+- 2c7cc55: Added a new `catalog-processor-module` template for scaffolding catalog processor modules via `backstage-cli new`.
+- 8ccc09b: Fixed `yarn new` failing with "No version available" for several templates by adding missing packages to the version map.
+- 0e6007f: Updated the `plugin-web-library` template to use `toastApiRef` from `@backstage/frontend-plugin-api` instead of the deprecated `alertApiRef` from `@backstage/core-plugin-api`.
+- 90bbc2e: Added `UserInfoService` to the `permission-policy-module` template so that scaffolded permission policies have the service already wired up for ownership lookups.
+- 10887f4: Fixed generated frontend plugin tables to identify their row header, and added the associated backend plugin package as a development dependency of generated backend plugin modules.
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- 90ef477: Added a new `permission-policy-module` template for scaffolding custom permission policies via `backstage-cli new`. The template generates a backend module that wires a `PermissionPolicy` implementation into the permission backend using the `policyExtensionPoint`, along with a test example.
+- 88b2bbf: Added a `search-collator-module` template for scaffolding new search collator modules via `backstage-cli new`.
+- 2c7cc55: Added a new `catalog-processor-module` template for scaffolding catalog processor modules via `backstage-cli new`.
+- 0e6007f: Updated the `plugin-web-library` template to use `toastApiRef` from `@backstage/frontend-plugin-api` instead of the deprecated `alertApiRef` from `@backstage/core-plugin-api`.
+- 90bbc2e: Added `UserInfoService` to the `permission-policy-module` template so that scaffolded permission policies have the service already wired up for ownership lookups.
+- 10887f4: Fixed generated frontend plugin tables to identify their row header, and added the associated backend plugin package as a development dependency of generated backend plugin modules.
+
+## 0.1.5
+
+### Patch Changes
+
+- 28c1c1c: Synced zod-validation-error versions between packages
+- Updated dependencies
+  - @backstage/cli-common@0.3.0
+  - @backstage/cli-node@0.3.4
+
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.3.0-next.0
+  - @backstage/cli-node@0.3.4-next.0
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- 28c1c1c: Synced zod-validation-error versions between packages
+
+## 0.1.4
+
+### Patch Changes
+
+- 4014819: Added a new `scaffolder-field-extension-module` template for scaffolding custom Scaffolder form field extensions via `backstage-cli new`.
+- 696c78c: The `--help` output for commands now shows a generated usage line that lists the available flags and any positional arguments the command accepts.
+- 2e6ffe6: Updated the standalone CLI executable to use the new CLI module runner.
+- Updated dependencies
+  - @backstage/cli-node@0.3.3
+
 ## 0.1.4-next.0
 
 ### Patch Changes

@@ -6,6 +6,7 @@
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogApi } from '@backstage/plugin-catalog-react';
+import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { DomainEntity } from '@backstage/catalog-model';
@@ -259,13 +260,9 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'deleteEntity.deleteButtonTitle': 'Delete';
     readonly 'deleteEntity.dialogTitle': 'Are you sure you want to delete this entity?';
     readonly 'deleteEntity.actionButtonTitle': 'Delete entity';
-    readonly 'indexPage.title': '{{orgName}} Catalog';
-    readonly 'indexPage.createButtonTitle': 'Create';
-    readonly 'indexPage.supportButtonContent': 'All your software catalog entities';
-    readonly 'entityPage.notFoundMessage': 'There is no {{kind}} with the requested {{link}}.';
-    readonly 'entityPage.notFoundLinkText': 'kind, namespace, and name';
     readonly 'aboutCard.title': 'About';
     readonly 'aboutCard.unknown': 'unknown';
+    readonly 'aboutCard.viewTechdocs': 'View TechDocs';
     readonly 'aboutCard.refreshButtonTitle': 'Schedule entity refresh';
     readonly 'aboutCard.editButtonTitle': 'Edit Metadata';
     readonly 'aboutCard.editButtonAriaLabel': 'Edit';
@@ -273,7 +270,6 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'aboutCard.refreshScheduledMessage': 'Refresh scheduled';
     readonly 'aboutCard.refreshButtonAriaLabel': 'Refresh';
     readonly 'aboutCard.launchTemplate': 'Launch Template';
-    readonly 'aboutCard.viewTechdocs': 'View TechDocs';
     readonly 'aboutCard.viewSource': 'View Source';
     readonly 'aboutCard.descriptionField.value': 'No description';
     readonly 'aboutCard.descriptionField.label': 'Description';
@@ -291,6 +287,11 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'aboutCard.tagsField.value': 'No Tags';
     readonly 'aboutCard.tagsField.label': 'Tags';
     readonly 'aboutCard.targetsField.label': 'Targets';
+    readonly 'indexPage.title': '{{orgName}} Catalog';
+    readonly 'indexPage.createButtonTitle': 'Create';
+    readonly 'indexPage.supportButtonContent': 'All your software catalog entities';
+    readonly 'entityPage.notFoundMessage': 'There is no {{kind}} with the requested {{link}}.';
+    readonly 'entityPage.notFoundLinkText': 'kind, namespace, and name';
     readonly 'searchResultItem.type': 'Type';
     readonly 'searchResultItem.kind': 'Kind';
     readonly 'searchResultItem.owner': 'Owner';
@@ -312,7 +313,7 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'entityContextMenu.inspectMenuTitle': 'Inspect entity';
     readonly 'entityContextMenu.copyURLMenuTitle': 'Copy entity URL';
     readonly 'entityContextMenu.unregisterMenuTitle': 'Unregister entity';
-    readonly 'entityContextMenu.moreButtonAriaLabel': 'more';
+    readonly 'entityContextMenu.moreButtonAriaLabel': 'More actions';
     readonly 'entityLabelsCard.title': 'Labels';
     readonly 'entityLabelsCard.readMoreButtonTitle': 'Read more';
     readonly 'entityLabelsCard.columnKeyLabel': 'Label';
@@ -321,6 +322,9 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'entityLabels.ownerLabel': 'Owner';
     readonly 'entityLabels.warningPanelTitle': 'Entity not found';
     readonly 'entityLabels.lifecycleLabel': 'Lifecycle';
+    readonly 'entityLabels.systemLabel': 'System';
+    readonly 'entityLabels.domainLabel': 'Domain';
+    readonly 'entityLabels.partOfLabel': 'Part of';
     readonly 'entityLinksCard.title': 'Links';
     readonly 'entityLinksCard.readMoreButtonTitle': 'Read more';
     readonly 'entityLinksCard.emptyDescription': 'No links defined for this entity. You can add links to your entity YAML as shown in the highlighted example below:';
@@ -602,9 +606,7 @@ export interface EntityLinksCardProps {
 export type EntityLinksEmptyStateClassKey = 'code';
 
 // @public @deprecated (undocumented)
-export const EntityListContainer: (props: {
-  children: ReactNode;
-}) => JSX_2.Element;
+export const EntityListContainer: typeof CatalogFilterLayout.Content;
 
 // @public
 export function EntityOrphanWarning(): JSX_2.Element;
@@ -651,13 +653,7 @@ export interface EntitySwitchProps {
 }
 
 // @public @deprecated (undocumented)
-export const FilterContainer: (props: {
-  children: ReactNode;
-  options?: {
-    drawerBreakpoint?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | number;
-    drawerAnchor?: 'left' | 'right' | 'top' | 'bottom';
-  };
-}) => JSX_2.Element;
+export const FilterContainer: typeof CatalogFilterLayout.Filters;
 
 // @public @deprecated (undocumented)
 export const FilteredEntityLayout: (props: {

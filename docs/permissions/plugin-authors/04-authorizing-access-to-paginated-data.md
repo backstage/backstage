@@ -37,7 +37,7 @@ This approach will work for simple cases, but it has a downside: it forces us to
 
 To avoid this situation, the permissions framework has support for filtering items in the data source itself. In this part of the tutorial, we'll describe the steps required to use that behavior.
 
-:::note Note
+:::note
 
 In order to perform authorization filtering in this way, the data source must allow filters to be logically combined with AND, OR, and NOT operators. The conditional decisions returned by the permissions framework use a [nested object](https://backstage.io/api/stable/types/_backstage_plugin-permission-common.PermissionCriteria.html) to combine conditions. If you're implementing a filter API from scratch, we recommend using the same shape for ease of interoperability. If not, you'll need to implement a function which transforms the nested object into your own format.
 
@@ -176,30 +176,67 @@ Since `TodoFilter` used in our plugin matches the structure of the conditions ob
 
 ## Test the authorized read endpoint
 
-Let's update our permission policy to return a conditional result whenever a `todoListReadPermission` permission is received. In this case, we can reuse the decision returned for the `todosListCreate` permission.
+Let's update our permission policy to return a conditional result whenever a `todoListReadPermission` permission is received. In this case, we can reuse the decision returned for the `todoListUpdatePermission`. Update the `CustomPolicy` class in the permission policy module created during the [Getting Started](../getting-started.md) steps:
 
-```ts title="packages/backend/src/plugins/permission.ts"
+```ts
+import {
+  AuthorizeResult,
+  PolicyDecision,
+  isPermission,
+} from '@backstage/plugin-permission-common';
+import {
+  PermissionPolicy,
+  PolicyQuery,
+  PolicyQueryUser,
+} from '@backstage/plugin-permission-node';
+import { UserInfoService } from '@backstage/backend-plugin-api';
 import {
   todoListCreatePermission,
   todoListUpdatePermission,
   /* highlight-add-next-line */
   todoListReadPermission,
 } from '@internal/plugin-todo-list-common';
+import {
+  todoListConditions,
+  createTodoListConditionalDecision,
+} from '@internal/plugin-todo-list-backend';
 
-/* highlight-remove-next-line */
-if (isPermission(request.permission, todoListUpdatePermission)) {
-/* highlight-add-start */
-if (
-  isPermission(request.permission, todoListUpdatePermission) ||
-  isPermission(request.permission, todoListReadPermission)
-) {
-/* highlight-add-end */
-  return createTodoListConditionalDecision(
-    request.permission,
-    todoListConditions.isOwner({
-      userId: user?.identity.userEntityRef
-    }),
-  );
+export class CustomPolicy implements PermissionPolicy {
+  constructor(private readonly userInfo: UserInfoService) {}
+
+  async handle(
+    request: PolicyQuery,
+    user?: PolicyQueryUser,
+  ): Promise<PolicyDecision> {
+    if (isPermission(request.permission, todoListCreatePermission)) {
+      return {
+        result: AuthorizeResult.ALLOW,
+      };
+    }
+
+    /* highlight-remove-next-line */
+    if (isPermission(request.permission, todoListUpdatePermission)) {
+    /* highlight-add-start */
+    if (
+      isPermission(request.permission, todoListUpdatePermission) ||
+      isPermission(request.permission, todoListReadPermission)
+    ) {
+    /* highlight-add-end */
+      const userEntityRef = user
+        ? (await this.userInfo.getUserInfo(user.credentials)).userEntityRef
+        : '';
+      return createTodoListConditionalDecision(
+        request.permission,
+        todoListConditions.isOwner({
+          userId: userEntityRef,
+        }),
+      );
+    }
+
+    return {
+      result: AuthorizeResult.ALLOW,
+    };
+  }
 }
 ```
 

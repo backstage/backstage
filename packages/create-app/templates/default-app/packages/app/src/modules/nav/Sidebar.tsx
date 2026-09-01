@@ -23,6 +23,7 @@ export const SidebarContent = NavContentBlueprint.make({
 
       // Skipped items
       nav.take('page:search'); // Using search modal instead
+      nav.take('page:notifications'); // Using NotificationsSidebarItem manually instead
 
       return (
         <Sidebar>
@@ -32,6 +33,7 @@ export const SidebarContent = NavContentBlueprint.make({
           </SidebarGroup>
           <SidebarDivider />
           <SidebarGroup label="Menu" icon={<MenuIcon />}>
+            {nav.take('page:home')}
             {nav.take('page:catalog')}
             {nav.take('page:scaffolder')}
             <SidebarDivider />

@@ -1,5 +1,80 @@
 # @backstage/plugin-home-react
 
+## 0.1.42-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.0
+  - @backstage/core-compat-api@0.5.15-next.0
+
+## 0.1.41
+
+### Patch Changes
+
+- a178067: Added `HomePageDefaultConfigItem` type and optional `defaultConfig` prop to `HomePageLayoutProps`.
+- Updated dependencies
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/core-compat-api@0.5.14
+
+## 0.1.41-next.2
+
+### Patch Changes
+
+- a178067: Added `HomePageDefaultConfigItem` type and optional `defaultConfig` prop to `HomePageLayoutProps`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9-next.1
+
+## 0.1.41-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.0-next.0
+  - @backstage/core-compat-api@0.5.14-next.1
+  - @backstage/core-plugin-api@1.12.9-next.0
+  - @backstage/core-components@0.18.13-next.2
+
+## 0.1.41-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.13-next.0
+  - @backstage/core-compat-api@0.5.14-next.0
+
+## 0.1.40
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.3
+  - @backstage/core-components@0.18.12
+  - @backstage/core-compat-api@0.5.13
+  - @backstage/core-plugin-api@1.12.8
+
+## 0.1.40-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-compat-api@0.5.13-next.0
+  - @backstage/frontend-plugin-api@0.17.3-next.0
+  - @backstage/core-components@0.18.12-next.0
+  - @backstage/core-plugin-api@1.12.8-next.0
+
+## 0.1.39
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/core-compat-api@0.5.12
+  - @backstage/core-plugin-api@1.12.7
+
 ## 0.1.39-next.1
 
 ### Patch Changes

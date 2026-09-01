@@ -1,5 +1,61 @@
 # @techdocs/cli
 
+## 1.11.4-next.0
+
+### Patch Changes
+
+- de92fae: Fixed an issue where `techdocs-cli serve` would silently stop detecting documentation changes and no longer refresh the browser when the Python environment (TechDocs container image or local) contains `click` 8.3.x. The CLI now explicitly enables MkDocs live reload when serving.
+
+## 1.11.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-defaults@0.17.7
+  - @backstage/plugin-techdocs-node@1.15.3
+
+## 1.11.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.6-next.0
+  - @backstage/plugin-techdocs-node@1.15.3-next.0
+
+## 1.11.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.5
+  - @backstage/plugin-techdocs-node@1.15.2
+  - @backstage/cli-common@0.3.0
+
+## 1.11.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.3.0-next.0
+  - @backstage/backend-defaults@0.17.5-next.2
+
+## 1.11.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.4-next.0
+  - @backstage/plugin-techdocs-node@1.15.2-next.0
+
+## 1.11.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.3
+  - @backstage/plugin-techdocs-node@1.15.1
+
 ## 1.11.1-next.0
 
 ### Patch Changes

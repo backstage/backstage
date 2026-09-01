@@ -19,6 +19,7 @@ import { z } from 'zod/v4';
 /** @public */
 export const GerritConnectionType = createConnectionType({
   type: 'gerrit',
+  title: 'Gerrit',
   configSchema: z.object({
     host: z.string(),
     baseUrl: z.string().optional(),
@@ -28,10 +29,12 @@ export const GerritConnectionType = createConnectionType({
   authMethods: [
     {
       method: 'none',
+      title: 'None',
       configSchema: z.object({}),
     },
     {
       method: 'basic',
+      title: 'Basic',
       configSchema: z.object({
         username: z.string(),
         password: z.string(),

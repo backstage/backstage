@@ -34,6 +34,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 export interface RealLogViewerProps {
   showDownloadButton?: boolean;
   onDownloadLog?: () => void;
+  onCopyLog?: () => void | Promise<void>;
   text: string;
   textWrap?: boolean;
   classes?: { root?: string };
@@ -106,6 +107,15 @@ export function RealLogViewer(props: RealLogViewerProps) {
   const handleCopySelection = (line: number) => {
     selection.copySelection(line);
     setShowCopyInfo(true);
+  };
+
+  const handleCopyLog = async () => {
+    try {
+      await props.onCopyLog?.();
+      setShowCopyInfo(true);
+    } catch {
+      // The callback owns error reporting; only show confirmation on success.
+    }
   };
 
   function setRowHeight(index: number, size: number) {
@@ -192,6 +202,7 @@ export function RealLogViewer(props: RealLogViewerProps) {
                 <LogViewerControls
                   {...search}
                   onDownloadLog={props.onDownloadLog}
+                  onCopyLog={props.onCopyLog ? handleCopyLog : undefined}
                 />
               </Box>
               {shouldTextWrap ? (

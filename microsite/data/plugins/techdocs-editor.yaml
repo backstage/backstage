@@ -1,0 +1,11 @@
+---
+title: TechDocs Editor
+author: Estehsan
+authorUrl: https://github.com/Estehsan
+category: Documentation
+description: Edit TechDocs directly in Backstage with WYSIWYG/Markdown modes and open GitHub or GitLab pull/merge requests from the portal.
+documentation: https://github.com/Estehsan/backstage-techdoc-editor/tree/main/workspaces/techdocs-editor/plugins/techdocs-editor#readme
+iconUrl: https://github.com/Estehsan/Portfolio/blob/main/public/tech-doc-editor.png?raw=true
+npmPackageName: '@estehsaan/backstage-plugin-techdocs-editor'
+addedDate: '2026-07-20'
+status: active

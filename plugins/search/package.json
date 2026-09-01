@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search",
-  "version": "1.7.5-next.1",
+  "version": "1.7.8-next.0",
   "description": "The Backstage plugin that provides your backstage app with search",
   "backstage": {
     "role": "frontend-plugin",
@@ -63,6 +63,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
+    "@backstage/plugin-home-react": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
     "@backstage/plugin-search-react": "workspace:^",
     "@backstage/types": "workspace:^",
@@ -78,6 +79,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
+    "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",

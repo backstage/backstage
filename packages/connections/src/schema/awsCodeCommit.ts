@@ -19,17 +19,15 @@ import { z } from 'zod/v4';
 /** @public */
 export const AwsCodeCommitConnectionType = createConnectionType({
   type: 'aws-codecommit',
+  title: 'AWS CodeCommit',
   configSchema: z.object({
     host: z.string(),
     region: z.string(),
   }),
   authMethods: [
     {
-      method: 'none',
-      configSchema: z.object({}),
-    },
-    {
       method: 'accessKey',
+      title: 'Access Key',
       configSchema: z.object({
         accessKeyId: z.string(),
         secretAccessKey: z.string(),
@@ -37,6 +35,7 @@ export const AwsCodeCommitConnectionType = createConnectionType({
     },
     {
       method: 'assumeRole',
+      title: 'Assume Role',
       configSchema: z.object({
         roleArn: z.string(),
         externalId: z.string().optional(),

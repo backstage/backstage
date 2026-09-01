@@ -19,6 +19,7 @@ import { z } from 'zod/v4';
 /** @public */
 export const AwsS3ConnectionType = createConnectionType({
   type: 'aws-s3',
+  title: 'AWS S3',
   configSchema: z.object({
     host: z.string(),
     endpoint: z.string().optional(),
@@ -27,10 +28,12 @@ export const AwsS3ConnectionType = createConnectionType({
   authMethods: [
     {
       method: 'none',
+      title: 'None',
       configSchema: z.object({}),
     },
     {
       method: 'accessKey',
+      title: 'Access Key',
       configSchema: z.object({
         accessKeyId: z.string(),
         secretAccessKey: z.string(),
@@ -38,6 +41,7 @@ export const AwsS3ConnectionType = createConnectionType({
     },
     {
       method: 'assumeRole',
+      title: 'Assume Role',
       configSchema: z.object({
         roleArn: z.string(),
         externalId: z.string().optional(),

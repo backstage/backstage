@@ -162,6 +162,40 @@ describe('useOwnedEntitiesCount', () => {
     });
   });
 
+  it(`should return count 0 without invoking queryEntities if ownershipEntityRefs is empty`, async () => {
+    jest.spyOn(mockIdentityApi, 'getBackstageIdentity').mockResolvedValueOnce({
+      type: 'user',
+      ownershipEntityRefs: [],
+      userEntityRef: 'user:default/spiderman',
+    });
+
+    mockCatalogApi.queryEntities.mockResolvedValue({
+      items: [],
+      totalItems: 10,
+      pageInfo: {},
+    });
+
+    const { result } = renderHook(() => useOwnedEntitiesCount(), {
+      wrapper: createWrapperWithInitialFilters({
+        namespace: new EntityNamespaceFilter(['a-namespace']),
+      }),
+    });
+
+    await waitFor(() =>
+      expect(mockIdentityApi.getBackstageIdentity).toHaveBeenCalled(),
+    );
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(mockCatalogApi.queryEntities).not.toHaveBeenCalled();
+    expect(result.current).toEqual({
+      count: 0,
+      loading: false,
+      filter: EntityUserFilter.owned([]),
+      ownershipEntityRefs: [],
+    });
+  });
+
   it(`should send claims in common between owners filter and logged in user`, async () => {
     mockCatalogApi.queryEntities.mockResolvedValue({
       items: [],

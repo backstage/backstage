@@ -27,7 +27,13 @@
     flex-direction: column;
     flex: 1;
     min-height: 0;
-    overflow: hidden;
+    overflow: auto;
+  }
+
+  .bui-TableScrollContainer {
+    overflow: auto;
+    flex: 1;
+    min-height: 0;
   }
 
   .bui-Table {
@@ -38,9 +44,6 @@
     border-collapse: collapse;
     table-layout: fixed;
     transition: opacity 0.2s ease-in-out;
-    overflow: auto;
-    flex: 1;
-    min-height: 0;
 
     &[data-stale='true'],
     &[data-ispending='true'] {
@@ -57,6 +60,7 @@
     text-align: left;
     padding: var(--bui-space-3);
     font-size: var(--bui-font-size-3);
+    line-height: 1.15;
     color: var(--bui-fg-primary);
   }
 
@@ -194,6 +198,7 @@
     font-size: var(--bui-font-size-3);
     font-family: var(--bui-font-regular);
     font-weight: var(--bui-font-weight-regular);
+    line-height: 1.15;
     min-width: 0;
     overflow: hidden;
   }

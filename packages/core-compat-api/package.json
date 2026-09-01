@@ -1,6 +1,6 @@
 {
   "name": "@backstage/core-compat-api",
-  "version": "0.5.12-next.1",
+  "version": "0.5.15-next.0",
   "backstage": {
     "role": "web-library"
   },
@@ -48,6 +48,7 @@
     "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/plugin-catalog": "workspace:^",
     "@backstage/test-utils": "workspace:^",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@types/react": "^18.0.0",

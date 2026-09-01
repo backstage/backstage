@@ -29,8 +29,9 @@ import { examples } from './gitlabProjectDeployTokenCreate.examples';
  */
 export const createGitlabProjectDeployTokenAction = (options: {
   integrations: ScmIntegrationRegistry;
+  requireScmUserCredentials?: boolean;
 }) => {
-  const { integrations } = options;
+  const { integrations, requireScmUserCredentials } = options;
   return createTemplateAction({
     id: 'gitlab:projectDeployToken:create',
     examples,
@@ -87,7 +88,12 @@ export const createGitlabProjectDeployTokenAction = (options: {
       }
 
       const { host } = parseRepoUrl(repoUrl, integrations);
-      const api = getClient({ host, integrations, token });
+      const api = getClient({
+        host,
+        integrations,
+        token,
+        requireScmUserCredentials,
+      });
 
       const { deployToken, deployUsername } = await ctx.checkpoint({
         key: `create.deploy.token.${projectId}.${name}`,

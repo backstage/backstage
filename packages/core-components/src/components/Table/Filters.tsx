@@ -120,7 +120,7 @@ export const Filters = (props: Props) => {
         </Button>
       </Box>
       <Box className={classes.filters}>
-        {props.filters?.length &&
+        {!!props.filters?.length &&
           props.filters.map(filter => (
             <Select
               triggerReset={reset}

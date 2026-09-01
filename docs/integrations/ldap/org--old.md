@@ -27,7 +27,7 @@ to `@backstage/plugin-catalog-backend-module-ldap` to your backend package.
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-ldap
 ```
 
-:::note Note
+:::note
 
 When configuring to use a Provider instead of a Processor you do not
 need to add a _location_ pointing to your LDAP server

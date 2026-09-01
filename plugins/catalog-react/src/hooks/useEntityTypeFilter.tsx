@@ -80,7 +80,7 @@ export function useEntityTypeFilter(): {
         .then(response => response.facets['spec.type'] || []);
       return items;
     }
-    return [];
+    return undefined;
   }, [kind, catalogApi]);
 
   const facetsRef = useRef(facets);

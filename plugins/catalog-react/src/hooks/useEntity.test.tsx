@@ -15,7 +15,7 @@
  */
 
 import { PropsWithChildren } from 'react';
-import { renderHook } from '@testing-library/react';
+import { render, renderHook } from '@testing-library/react';
 import {
   useEntity,
   useAsyncEntity,
@@ -54,6 +54,33 @@ describe('useEntity', () => {
     });
 
     expect(result.current.entity).toBe(entity);
+  });
+
+  it('should not rerender consumers when the provider rerenders with unchanged values', () => {
+    let consumerRenderCount = 0;
+    const Consumer = () => {
+      useEntity();
+      consumerRenderCount++;
+      return null;
+    };
+    // The consumer element must be identity-stable across rerenders, so that
+    // any rerenders of it are caused by the context value changing
+    const consumerElement = <Consumer />;
+    const refresh = () => {};
+
+    const { rerender } = render(
+      <AsyncEntityProvider entity={entity} loading={false} refresh={refresh}>
+        {consumerElement}
+      </AsyncEntityProvider>,
+    );
+    expect(consumerRenderCount).toBe(1);
+
+    rerender(
+      <AsyncEntityProvider entity={entity} loading={false} refresh={refresh}>
+        {consumerElement}
+      </AsyncEntityProvider>,
+    );
+    expect(consumerRenderCount).toBe(1);
   });
 
   it('should provide entityRef analytics context', () => {

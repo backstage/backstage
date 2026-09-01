@@ -243,5 +243,54 @@ describe('GcsUrlReader', () => {
         'GcsUrlReader readTree does not support glob patterns, use search instead',
       );
     });
+
+    it.each([
+      ['literal dot-dot', 'prefix/uploads/../file.yaml'],
+      ['deep traversal', 'prefix/uploads/../../etc/passwd'],
+      ['backslash', 'prefix/uploads\\../file.yaml'],
+      ['encoded dot-dot', 'prefix/uploads/%2e%2e/file.yaml'],
+      ['mixed encoded', 'prefix/uploads/.%2e/file.yaml'],
+      ['uppercase encoded', 'prefix/uploads/%2E%2E/file.yaml'],
+    ])(
+      'filters out files with %s path traversal segments',
+      async (_label, maliciousName) => {
+        const legitimateFile = {
+          name: 'prefix/file.yaml',
+          metadata: { updated: '2024-01-01T00:00:00Z' },
+          createReadStream: () => Readable.from(Buffer.from('legitimate')),
+        };
+        const maliciousFile = {
+          name: maliciousName,
+          metadata: { updated: '2024-01-02T00:00:00Z' },
+          createReadStream: () => Readable.from(Buffer.from('malicious')),
+        };
+        bucketGetFilesMock.mockResolvedValue([[legitimateFile, maliciousFile]]);
+
+        const result = await reader.readTree(
+          'https://storage.cloud.google.com/bucket/prefix/',
+        );
+        const files = await result.files();
+
+        expect(files).toHaveLength(1);
+        expect(files[0].path).toBe('file.yaml');
+      },
+    );
+
+    it('allows files with double dots in non-segment positions', async () => {
+      const fileWithDotsInName = {
+        name: 'prefix/file..config.yml',
+        metadata: { updated: '2024-01-01T00:00:00Z' },
+        createReadStream: () => Readable.from(Buffer.from('content')),
+      };
+      bucketGetFilesMock.mockResolvedValue([[fileWithDotsInName]]);
+
+      const result = await reader.readTree(
+        'https://storage.cloud.google.com/bucket/prefix/',
+      );
+      const files = await result.files();
+
+      expect(files).toHaveLength(1);
+      expect(files[0].path).toBe('file..config.yml');
+    });
   });
 });

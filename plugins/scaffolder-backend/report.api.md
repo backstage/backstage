@@ -104,6 +104,7 @@ export function createFetchCatalogEntityAction(options: {
 export function createFetchPlainAction(options: {
   reader: UrlReaderService;
   integrations: ScmIntegrations;
+  requireScmUserCredentials?: boolean;
 }): TemplateAction<
   {
     url: string;
@@ -120,6 +121,7 @@ export function createFetchPlainAction(options: {
 export function createFetchPlainFileAction(options: {
   reader: UrlReaderService;
   integrations: ScmIntegrations;
+  requireScmUserCredentials?: boolean;
 }): TemplateAction<
   {
     url: string;
@@ -136,6 +138,7 @@ export function createFetchPlainFileAction(options: {
 export function createFetchTemplateAction(options: {
   reader: UrlReaderService;
   integrations: ScmIntegrations;
+  requireScmUserCredentials?: boolean;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 }): TemplateAction<
@@ -162,6 +165,7 @@ export function createFetchTemplateAction(options: {
 export function createFetchTemplateFileAction(options: {
   reader: UrlReaderService;
   integrations: ScmIntegrations;
+  requireScmUserCredentials?: boolean;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 }): TemplateAction<

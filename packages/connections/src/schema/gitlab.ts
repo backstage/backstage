@@ -19,6 +19,7 @@ import { z } from 'zod/v4';
 /** @public */
 export const GitlabConnectionType = createConnectionType({
   type: 'gitlab',
+  title: 'GitLab',
   configSchema: z.object({
     host: z.string(),
     apiBaseUrl: z.string().optional(),
@@ -27,10 +28,12 @@ export const GitlabConnectionType = createConnectionType({
   authMethods: [
     {
       method: 'none',
+      title: 'None',
       configSchema: z.object({}),
     },
     {
       method: 'token',
+      title: 'Token',
       configSchema: z.object({
         token: z.string(),
       }),

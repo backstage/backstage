@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { JsonObject, JsonValue } from '@backstage/types';
-import { JSONSchema7 } from 'json-schema';
+import type { JSONSchema7 } from 'json-schema';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 /**

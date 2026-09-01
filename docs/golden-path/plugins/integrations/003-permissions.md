@@ -65,7 +65,7 @@ import {
   createPermissionRule,
 } from '@backstage/plugin-permission-node';
 import { TODO_RESOURCE_TYPE } from '@internal/plugin-todo-common';
-import { z } from 'zod/v3';
+import * as z from 'zod';
 import type { TodoItem } from './services/TodoListService';
 
 export const todoResourceRef = createPermissionResourceRef<

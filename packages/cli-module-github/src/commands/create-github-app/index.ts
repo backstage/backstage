@@ -31,7 +31,7 @@ import type { CliCommandContext } from '@backstage/cli-node';
 export default async ({ args, info }: CliCommandContext) => {
   const { _: positionals } = cli(
     {
-      help: { ...info, usage: `${info.usage} <github-org>` },
+      name: info.usage,
       booleanFlagNegation: true,
       parameters: ['<github-org>'],
     },

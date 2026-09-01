@@ -37,12 +37,12 @@ You can use the `backstage-cli` to create a GitHub App using a manifest file
 that we provide. This gives us a way to automate some of the work required to
 create a GitHub app.
 
-```console
+```shell
 yarn backstage-cli create-github-app <github org>
 ```
 
 You can read more about the
-[`backstage-cli create-github-app`](../../tooling/cli/03-commands.md#create-github-app) command.
+[`backstage-cli create-github-app`](../../tooling/cli/module-github.md#create-github-app) command.
 
 Once you've gone through the CLI command, it should produce a YAML file in the
 root of the project which you can then use as an `include` in your
