@@ -223,6 +223,8 @@ Below is a chart to help you decide where to place your code.
 
 ```mermaid
 flowchart TD
+  accTitle: Package placement decision
+  accDescr: Decision flow for choosing which plugin package should contain new code.
   start["In what plugin package should I put my code?"] --> public{"Is the new addition public API?<br/>i.e. exported from the package"}
   public -- No --> local["Put it in the package<br/>that uses it"]
   public -- Yes --> audience{"Is the export supposed<br/>to be used by other plugins or just app/backend packages?"}
