@@ -1,5 +1,14 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.5.24-next.1
+
+### Patch Changes
+
+- 83f34f2: The pod exec terminal now loads `@xterm/xterm` and its stylesheet when a terminal is opened, instead of including them in the initial bundle.
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.1
+  - @backstage/core-plugin-api@1.12.10-next.0
+
 ## 0.5.24-next.0
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/plugin-notifications
 
+## 0.5.21-next.1
+
+### Patch Changes
+
+- b31afcf: Fixed circular dependency warnings when building the notification settings UI.
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/ui@0.18.0-next.1
+  - @backstage/core-plugin-api@1.12.10-next.0
+  - @backstage/plugin-signals-react@0.0.26-next.0
+
 ## 0.5.21-next.0
 
 ### Patch Changes

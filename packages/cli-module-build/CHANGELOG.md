@@ -1,5 +1,11 @@
 # @backstage/cli-module-build
 
+## 0.1.8-next.1
+
+### Patch Changes
+
+- 277a125: Fixed declaration bundling of imports that use the `node:` built-in module prefix.
+
 ## 0.1.8-next.0
 
 ### Patch Changes

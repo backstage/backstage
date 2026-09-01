@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-react
 
+## 3.2.3-next.1
+
+### Patch Changes
+
+- bf7e890: Added the missing Material UI dependency used by catalog popovers.
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/filter-predicates@0.1.5-next.0
+  - @backstage/ui@0.18.0-next.1
+  - @backstage/integration-react@1.2.22-next.0
+  - @backstage/core-compat-api@0.5.15-next.1
+  - @backstage/core-plugin-api@1.12.10-next.0
+  - @backstage/catalog-client@1.16.2-next.0
+  - @backstage/plugin-permission-react@0.5.5-next.0
+
 ## 3.2.2-next.0
 
 ### Patch Changes

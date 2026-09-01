@@ -1,5 +1,13 @@
 # @backstage/plugin-auth-react
 
+## 0.1.31-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.1
+  - @backstage/core-plugin-api@1.12.10-next.0
+
 ## 0.1.31-next.0
 
 ### Patch Changes

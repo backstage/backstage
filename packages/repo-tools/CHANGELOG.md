@@ -1,5 +1,13 @@
 # @backstage/repo-tools
 
+## 0.19.1-next.0
+
+### Patch Changes
+
+- bf1f82d: Added the required OpenAPI types dependency for Swagger Parser.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
 ## 0.19.0
 
 ### Minor Changes

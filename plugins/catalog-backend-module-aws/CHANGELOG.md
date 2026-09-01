@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-backend-module-aws
 
+## 0.4.28-next.1
+
+### Patch Changes
+
+- 8b3c83e: Improved handling of AWS S3 object keys when creating catalog locations.
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.9-next.0
+  - @backstage/integration@2.1.2-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-catalog-node@2.2.5-next.0
+
 ## 0.4.27-next.0
 
 ### Patch Changes
