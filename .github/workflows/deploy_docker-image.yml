@@ -104,6 +104,7 @@ jobs:
         id: latest-release
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         with:
+          retries: 3
           script: |
             const { findLatestStableRelease } = require(`${process.env.GITHUB_WORKSPACE}/backstage/scripts/find-latest-stable-release`);
             const tags = await github.paginate(github.rest.repos.listTags, {
@@ -134,4 +135,15 @@ jobs:
         env:
           IMAGE: ghcr.io/${{ github.repository_owner }}/backstage
           VERSION: ${{ github.event.client_payload.version }}
-        run: docker buildx imagetools create --tag "${IMAGE}:latest" "${IMAGE}:${VERSION}"
+        run: |
+          for attempt in 1 2 3; do
+            if docker buildx imagetools create --tag "${IMAGE}:latest" "${IMAGE}:${VERSION}"; then
+              exit 0
+            fi
+
+            if [ "${attempt}" -lt 3 ]; then
+              sleep $((attempt * 5))
+            fi
+          done
+
+          exit 1
