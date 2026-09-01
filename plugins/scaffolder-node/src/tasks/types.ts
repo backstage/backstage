@@ -220,13 +220,19 @@ export interface TaskBroker {
 
   vacuumTasks(options: { timeoutS: number }): Promise<void>;
 
+  /**
+   * Returns task events that are safe for public projection. Implementations
+   * must redact all task-local sensitive values before emitting events.
+   */
   event$(options: {
     taskId: string;
     after: number | undefined;
   }): Observable<{ events: SerializedTaskEvent[] }>;
 
+  /** Returns a public task projection with secrets and recovery state omitted. */
   get(taskId: string): Promise<SerializedTask>;
 
+  /** Returns public task projections with secrets and recovery state omitted. */
   list(options?: {
     filters?: {
       createdBy?: string | string[];

@@ -22,6 +22,7 @@
 
 export {
   ConfigSchemaError,
+  enumerateConfigSecrets,
   loadConfigSchema,
   mergeConfigSchemas,
 } from './schema';

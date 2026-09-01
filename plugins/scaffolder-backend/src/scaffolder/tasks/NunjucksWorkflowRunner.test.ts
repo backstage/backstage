@@ -49,6 +49,8 @@ import {
 import { register } from 'prom-client';
 import { collectTemplateCapabilities } from '../../util/templating';
 import { TaskWorker } from './TaskWorker';
+import { TaskRunContext } from './TaskRunContext';
+import type { MetricsService } from '@backstage/backend-plugin-api/alpha';
 
 describe('NunjucksWorkflowRunner', () => {
   let actionRegistry: TemplateActionRegistry;
@@ -60,6 +62,32 @@ describe('NunjucksWorkflowRunner', () => {
 
   const logger = mockServices.logger.mock();
   const mockDir = createMockDirectory();
+
+  const withRedactionPersistence = (task: TaskContext) =>
+    Object.assign(task, {});
+
+  const executeTask = async (
+    workflowRunner: NunjucksWorkflowRunner,
+    task: TaskContext,
+  ) => {
+    const context = await TaskRunContext.create({
+      task: withRedactionPersistence(task),
+      logger,
+      systemSecrets: {
+        subscribe: () => ({
+          secrets: new Set(),
+          unsubscribe() {},
+        }),
+      },
+      environment: await workflowRunner.getEnvironmentConfig(),
+      loadEnvironment: () => workflowRunner.getEnvironmentConfig(),
+    });
+    try {
+      return await workflowRunner.execute(context);
+    } finally {
+      await context.dispose();
+    }
+  };
 
   const mockedPermissionApi: jest.Mocked<PermissionEvaluator> = {
     authorizeConditional: jest.fn(),
@@ -285,7 +313,7 @@ describe('NunjucksWorkflowRunner', () => {
       user: { ref: 'user:default/example' },
     });
 
-    await runner.execute(task);
+    await executeTask(runner, task);
 
     expect(register.getSingleMetric('scaffolder_task_count')).toMatchObject({
       labelNames: ['template', 'result'],
@@ -306,7 +334,7 @@ describe('NunjucksWorkflowRunner', () => {
       steps: [{ id: 'test', name: 'name', action: 'does-not-exist' }],
     });
 
-    await expect(runner.execute(task)).rejects.toThrow(
+    await expect(executeTask(runner, task)).rejects.toThrow(
       /Template action with ID 'does-not-exist' is not registered/,
     );
   });
@@ -317,7 +345,7 @@ describe('NunjucksWorkflowRunner', () => {
         steps: [{ id: 'test', name: 'name', action: 'jest-validated-action' }],
       });
 
-      await expect(runner.execute(task)).rejects.toThrow(
+      await expect(executeTask(runner, task)).rejects.toThrow(
         /Invalid input passed to action jest-validated-action, instance requires property "foo"/,
       );
     });
@@ -329,7 +357,7 @@ describe('NunjucksWorkflowRunner', () => {
         ],
       });
 
-      await expect(runner.execute(task)).rejects.toThrow(
+      await expect(executeTask(runner, task)).rejects.toThrow(
         /Invalid input passed to action jest-zod-validated-action, instance requires property \"foo\"/,
       );
     });
@@ -346,7 +374,7 @@ describe('NunjucksWorkflowRunner', () => {
         ],
       });
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expect(fakeActionHandler).toHaveBeenCalledTimes(1);
     });
@@ -363,7 +391,7 @@ describe('NunjucksWorkflowRunner', () => {
         ],
       });
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expect(fakeActionHandler).toHaveBeenCalledTimes(1);
     });
@@ -400,7 +428,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       });
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expect(fakeActionHandler.mock.calls[0][0].templateInfo).toEqual({
         entityRef,
@@ -429,7 +457,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       );
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expect(fakeActionHandler.mock.calls[0][0].secrets).toEqual(
         expect.objectContaining({ backstageToken: token }),
@@ -448,7 +476,7 @@ describe('NunjucksWorkflowRunner', () => {
         ],
       });
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expect(fakeActionHandler.mock.calls[0][0].step.id).toEqual('test');
       expect(fakeActionHandler.mock.calls[0][0].step.name).toEqual('name');
@@ -472,7 +500,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       });
 
-      const { output } = await runner.execute(task);
+      const { output } = await executeTask(runner, task);
 
       expect(output.result).toBe('backstage');
     });
@@ -493,7 +521,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       });
 
-      const { output } = await runner.execute(task);
+      const { output } = await executeTask(runner, task);
 
       expect(output.result).toBeUndefined();
     });
@@ -514,7 +542,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       });
 
-      const { output } = await runner.execute(task);
+      const { output } = await executeTask(runner, task);
 
       expect(output.result).toBeUndefined();
     });
@@ -534,7 +562,7 @@ describe('NunjucksWorkflowRunner', () => {
           },
         });
 
-        const { output } = await runner.execute(task);
+        const { output } = await executeTask(runner, task);
         expect(output.result).toBe('backstage');
       });
       it('skips when false', async () => {
@@ -552,7 +580,7 @@ describe('NunjucksWorkflowRunner', () => {
           },
         });
 
-        const { output } = await runner.execute(task);
+        const { output } = await executeTask(runner, task);
         expect(output.result).toBeUndefined();
       });
     });
@@ -567,7 +595,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       });
 
-      const { output } = await runner.execute(task);
+      const { output } = await executeTask(runner, task);
       expect(output.links).toEqual([
         { title: 'Always', url: 'https://example.com' },
       ]);
@@ -584,7 +612,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       });
 
-      const { output } = await runner.execute(task);
+      const { output } = await executeTask(runner, task);
       expect(output.links).toEqual([
         { title: 'Always', url: 'https://example.com' },
       ]);
@@ -598,7 +626,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       });
 
-      const { output } = await runner.execute(task);
+      const { output } = await executeTask(runner, task);
       expect(output.links).toEqual([
         { title: 'Visible', url: 'https://visible.com' },
       ]);
@@ -624,7 +652,7 @@ describe('NunjucksWorkflowRunner', () => {
         parameters: { enableCI: 'No' },
       });
 
-      const { output } = await runner.execute(task);
+      const { output } = await executeTask(runner, task);
       expect(output.links).toEqual([]);
     });
 
@@ -643,7 +671,7 @@ describe('NunjucksWorkflowRunner', () => {
         parameters: { enableCI: 'Yes' },
       });
 
-      const { output } = await runner.execute(task);
+      const { output } = await executeTask(runner, task);
       expect(output.links).toEqual([
         { title: 'CI', url: 'https://ci.example.com' },
       ]);
@@ -666,7 +694,7 @@ describe('NunjucksWorkflowRunner', () => {
         parameters: { show: true },
       });
 
-      const { output } = await runner.execute(task);
+      const { output } = await executeTask(runner, task);
       expect(output.text).toEqual([
         { title: 'Always', content: 'visible' },
         { title: 'Conditional', content: 'conditional' },
@@ -682,7 +710,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       });
 
-      const { output } = await runner.execute(task);
+      const { output } = await executeTask(runner, task);
       expect((output.links as JsonArray)[0]).not.toHaveProperty('if');
       expect((output.text as JsonArray)[0]).not.toHaveProperty('if');
     });
@@ -746,7 +774,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       });
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expect(fakeActionHandler).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -777,7 +805,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       });
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expect(logger.error).not.toHaveBeenCalled();
     });
@@ -807,7 +835,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       });
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expect(fakeActionHandler).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -839,7 +867,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       });
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expect(fakeActionHandler).toHaveBeenCalledWith(
         expect.objectContaining({ input: { foo: { bar: 'BACKSTAGE' } } }),
@@ -865,7 +893,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       });
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       const { input } = fakeActionHandler.mock.calls[0][0];
       expect(input).toEqual({
@@ -900,7 +928,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       });
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expect(fakeActionHandler).toHaveBeenCalledWith(
         expect.objectContaining({ input: { foo: 'nested' } }),
@@ -927,7 +955,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       });
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expect(fakeActionHandler).toHaveBeenCalledWith(
         expect.objectContaining({ input: { foo: 1 } }),
@@ -976,7 +1004,7 @@ describe('NunjucksWorkflowRunner', () => {
           });
         },
       };
-      const result = await runner.execute(task);
+      const result = await executeTask(runner, task);
 
       expect(result.output.key1).toEqual('initial');
       expect(result.output.key2).toEqual('updated');
@@ -1005,7 +1033,7 @@ describe('NunjucksWorkflowRunner', () => {
         }),
       );
 
-      const execution = runner.execute(task);
+      const execution = executeTask(runner, task);
       await updateStarted.promise;
       await new Promise(resolve => setImmediate(resolve));
 
@@ -1029,7 +1057,9 @@ describe('NunjucksWorkflowRunner', () => {
         updateCheckpoint,
       );
 
-      await expect(runner.execute(task)).rejects.toMatchObject({
+      const projectedError = await executeTask(runner, task).catch(e => e);
+      expect(projectedError).not.toBe(persistenceError);
+      expect(projectedError).toMatchObject({
         name: 'Error',
         message: 'checkpoint persistence failed',
       });
@@ -1085,7 +1115,7 @@ describe('NunjucksWorkflowRunner', () => {
         updateCheckpoint,
       };
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expect(restoredValues).toEqual([false, 0, '']);
       expect(checkpointCallback).not.toHaveBeenCalled();
@@ -1113,7 +1143,7 @@ describe('NunjucksWorkflowRunner', () => {
         serializeWorkspace,
       );
 
-      const execution = runner.execute(task).then(
+      const execution = executeTask(runner, task).then(
         () => ({ error: undefined }),
         error => ({ error }),
       );
@@ -1166,7 +1196,9 @@ describe('NunjucksWorkflowRunner', () => {
         updateCheckpoint,
       };
 
-      await expect(runner.execute(task)).rejects.toThrow('checkpoint failed');
+      await expect(executeTask(runner, task)).rejects.toThrow(
+        'checkpoint failed',
+      );
       expect(updateCheckpoint).toHaveBeenCalledTimes(1);
       const checkpoint = updateCheckpoint.mock.calls[0][0];
       expect(checkpoint).toMatchObject({
@@ -1194,7 +1226,7 @@ describe('NunjucksWorkflowRunner', () => {
         jest.fn().mockRejectedValue(persistenceError),
       );
 
-      const error = await runner.execute(task).catch(cause => cause);
+      const error = await executeTask(runner, task).catch(cause => cause);
       expect(error).toMatchObject({
         name: 'AggregateError',
         message:
@@ -1219,7 +1251,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       });
 
-      const { output } = await runner.execute(task);
+      const { output } = await executeTask(runner, task);
 
       expect(output.foo).toEqual('BACKSTAGE');
     });
@@ -1240,7 +1272,7 @@ describe('NunjucksWorkflowRunner', () => {
         ],
       });
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expect(fakeActionHandler).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -1281,7 +1313,7 @@ describe('NunjucksWorkflowRunner', () => {
 
       let thrownError: Error | undefined;
       try {
-        await runner.execute(task);
+        await executeTask(runner, task);
       } catch (error) {
         thrownError = error as Error;
       }
@@ -1331,7 +1363,7 @@ describe('NunjucksWorkflowRunner', () => {
 
       let thrownError: Error | undefined;
       try {
-        await runner.execute(task);
+        await executeTask(runner, task);
       } catch (error) {
         thrownError = error as Error;
       }
@@ -1371,7 +1403,7 @@ describe('NunjucksWorkflowRunner', () => {
 
       let thrownError: Error | undefined;
       try {
-        await runner.execute(task);
+        await executeTask(runner, task);
       } catch (error) {
         thrownError = error as Error;
       }
@@ -1383,6 +1415,184 @@ describe('NunjucksWorkflowRunner', () => {
       expect(stripAnsi(failedLog?.[0])).toContain(
         'Error: Failed to read https://example.com',
       );
+    });
+
+    it('redacts task and step metric attributes', async () => {
+      const secret = 'metrics-secret-value';
+      const metricAttributes: unknown[] = [];
+      const testMetrics = {
+        createCounter: () => ({
+          add: (_value: number, attributes: unknown) => {
+            metricAttributes.push(attributes);
+          },
+        }),
+        createHistogram: () => ({
+          record: (_value: number, attributes: unknown) => {
+            metricAttributes.push(attributes);
+          },
+        }),
+      } as unknown as MetricsService;
+      const metricsRunner = new NunjucksWorkflowRunner({
+        actionRegistry,
+        integrations,
+        workingDirectory: mockDir.path,
+        logger,
+        permissions: mockedPermissionApi,
+        metrics: testMetrics,
+      });
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: secret,
+              action: 'jest-mock-action',
+            },
+          ],
+          templateInfo: { entityRef: secret },
+          user: { ref: secret },
+        },
+        { secret },
+      );
+
+      await executeTask(metricsRunner, task);
+
+      expect(JSON.stringify(metricAttributes)).not.toContain(secret);
+      expect(JSON.stringify(metricAttributes)).toContain('***');
+    });
+
+    it('redacts metric attributes learned during action execution', async () => {
+      const secret = 'late-sensitive-value';
+      const metricAttributes: unknown[] = [];
+      const testMetrics = {
+        createCounter: () => ({
+          add: (_value: number, attributes: unknown) => {
+            metricAttributes.push(attributes);
+          },
+        }),
+        createHistogram: () => ({
+          record: (_value: number, attributes: unknown) => {
+            metricAttributes.push(attributes);
+          },
+        }),
+      } as unknown as MetricsService;
+      actionRegistry.register(
+        createTemplateAction({
+          id: 'register-metric-secret',
+          handler: async ctx => ctx.registerSensitiveValue(secret),
+        }),
+      );
+      const metricsRunner = new NunjucksWorkflowRunner({
+        actionRegistry,
+        integrations,
+        workingDirectory: mockDir.path,
+        logger,
+        permissions: mockedPermissionApi,
+        metrics: testMetrics,
+      });
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: secret,
+            action: 'register-metric-secret',
+          },
+        ],
+        templateInfo: { entityRef: secret },
+        user: { ref: secret },
+      });
+
+      await executeTask(metricsRunner, task);
+
+      expect(JSON.stringify(metricAttributes)).not.toContain(secret);
+      expect(JSON.stringify(metricAttributes)).toContain('***');
+    });
+
+    it('registers a native object key from each before validation can expose it', async () => {
+      const nativeObjectRunner = new NunjucksWorkflowRunner({
+        actionRegistry,
+        integrations,
+        workingDirectory: mockDir.path,
+        logger,
+        permissions: mockedPermissionApi,
+        templateCapabilities: {
+          filters: {
+            secretObject: value => ({
+              [`projected-${String(value).toUpperCase()}`]: 'value',
+            }),
+          },
+          globals: {},
+        },
+        metrics: metricsServiceMock.mock(),
+      });
+      const task = createMockTaskWithSpec(
+        {
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'jest-validated-action',
+              each: '${{ secrets.secret | secretObject }}',
+              input: { foo: 'not-a-number' },
+            },
+          ],
+        },
+        { secret: 'derived-secret-key' },
+      );
+      const context = await TaskRunContext.create({
+        task,
+        logger,
+        systemSecrets: {
+          subscribe: () => ({ secrets: new Set(), unsubscribe() {} }),
+        },
+        environment: await nativeObjectRunner.getEnvironmentConfig(),
+        loadEnvironment: () => nativeObjectRunner.getEnvironmentConfig(),
+      });
+
+      let error: unknown;
+      try {
+        await nativeObjectRunner.execute(context);
+      } catch (caught) {
+        error = caught;
+      } finally {
+        await context.dispose();
+      }
+
+      expect(error).toBeInstanceOf(Error);
+      expect(context.redacter.redactError(error).message).toContain(
+        'jest-validated-action[***]',
+      );
+      expect(context.redacter.redactError(error).message).not.toContain(
+        'projected-DERIVED-SECRET-KEY',
+      );
+    });
+
+    // eslint-disable-next-line jest/expect-expect
+    it('lets actions register newly generated sensitive keys and values', async () => {
+      actionRegistry.register(
+        createTemplateAction({
+          id: 'register-secret',
+          handler: async ctx => {
+            ctx.registerSensitiveValue({
+              'generated-secret-key': 'generated-secret-value',
+            });
+            ctx.logger.info('generated-secret-key=generated-secret-value');
+          },
+        }),
+      );
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'test',
+            name: 'name',
+            action: 'register-secret',
+          },
+        ],
+      });
+
+      await executeTask(runner, task);
+
+      expectTaskLog('info: ***=***');
     });
 
     // eslint-disable-next-line jest/expect-expect
@@ -1423,7 +1633,7 @@ describe('NunjucksWorkflowRunner', () => {
         { secret: 'my-secret-value' },
       );
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expectTaskLog('info: ***');
     });
@@ -1451,7 +1661,7 @@ describe('NunjucksWorkflowRunner', () => {
         { AWS_ACCESS_KEY: 'task-secret-value' },
       );
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expectTaskLog('info: ***');
     });
@@ -1482,7 +1692,7 @@ describe('NunjucksWorkflowRunner', () => {
         { token: 'task-a-secret' },
       );
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expectTaskLog('info: ***');
       expect(JSON.stringify(fakeTaskLog.mock.calls)).not.toContain(
@@ -1509,7 +1719,7 @@ describe('NunjucksWorkflowRunner', () => {
         { token: 'skip-secret' },
       );
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expectTaskLog('info: Skipping step each: {"key":"0","value":"***"}');
       expect(JSON.stringify(fakeTaskLog.mock.calls)).not.toContain(
@@ -1547,7 +1757,7 @@ describe('NunjucksWorkflowRunner', () => {
         { token: 'key-secret' },
       );
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expectTaskLog('info: Running step each: {"key":"***","value":"value"}');
       expect(JSON.stringify(fakeTaskLog.mock.calls)).not.toContain(
@@ -1593,7 +1803,7 @@ describe('NunjucksWorkflowRunner', () => {
         { secret: 'my-secret-value' },
       );
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expectTaskLog('info: ***');
     });
@@ -1636,7 +1846,7 @@ describe('NunjucksWorkflowRunner', () => {
         { secret: 'my-secret-value' },
       );
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expectTaskLog('info: *** {"thing":"***"}');
     });
@@ -1679,7 +1889,7 @@ describe('NunjucksWorkflowRunner', () => {
         { backstageToken: 'header.payload.signature' },
       );
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expectTaskLog('info: ***');
     });
@@ -1722,7 +1932,7 @@ describe('NunjucksWorkflowRunner', () => {
         { mySecret: 'super-secret-token' },
       );
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expectTaskLog('info: ***');
     });
@@ -1766,7 +1976,7 @@ describe('NunjucksWorkflowRunner', () => {
         { backstageToken: 'header.payload.signature' },
       );
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expectTaskLog('info: ***');
     });
@@ -1809,11 +2019,12 @@ describe('NunjucksWorkflowRunner', () => {
         {},
       );
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expectTaskLog('info: ***');
     });
 
+    // eslint-disable-next-line jest/expect-expect
     it('should not redact non-secret values in rendered input', async () => {
       actionRegistry.register({
         id: 'log-secret',
@@ -1849,7 +2060,7 @@ describe('NunjucksWorkflowRunner', () => {
         parameters: { serviceName: 'my-service' },
       });
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expectTaskLog('info: my-service');
     });
@@ -1904,7 +2115,7 @@ describe('NunjucksWorkflowRunner', () => {
         { token: 'aaa.bbb.ccc' },
       );
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expectTaskLog('info: ***');
     });
@@ -1948,7 +2159,7 @@ describe('NunjucksWorkflowRunner', () => {
         { token: 'my-secret' },
       );
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expectTaskLog('info: ***');
     });
@@ -1991,7 +2202,7 @@ describe('NunjucksWorkflowRunner', () => {
         { s1: 'first-secret', s2: 'second.secret' },
       );
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expectTaskLog('info: *** ***');
     });
@@ -2031,7 +2242,7 @@ describe('NunjucksWorkflowRunner', () => {
         { backstageToken: 'header.payload.signature' },
       );
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expect(fakeActionHandler).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -2058,7 +2269,7 @@ describe('NunjucksWorkflowRunner', () => {
           colors,
         },
       });
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       colors.forEach((color, idx) => {
         expectTaskLog(
@@ -2094,7 +2305,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
         secrets,
       );
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       Object.values(secrets).forEach((secret, idx) => {
         expectTaskLog(
@@ -2179,7 +2390,7 @@ describe('NunjucksWorkflowRunner', () => {
         ],
       });
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expectTaskLog('info: Running step each: {"key":"0","value":"***"}');
       expectTaskLog('info: Skipping step each: {"key":"0","value":"***"}');
@@ -2219,7 +2430,7 @@ describe('NunjucksWorkflowRunner', () => {
           settings: [{ color: 'blue' }],
         },
       });
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expectTaskLog(
         'info: Running step each: {"key":"0","value":"[object Object]"}',
@@ -2257,7 +2468,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
         secrets,
       );
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       Object.values(secrets).forEach((secret, idx) => {
         expectTaskLog(
@@ -2290,7 +2501,7 @@ describe('NunjucksWorkflowRunner', () => {
           settings,
         },
       });
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       for (const [key, value] of Object.entries(settings)) {
         expectTaskLog(
@@ -2323,7 +2534,7 @@ describe('NunjucksWorkflowRunner', () => {
           conditions,
         },
       });
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       truthyConditions.forEach((condition, idx) => {
         expectTaskLog(
@@ -2364,7 +2575,7 @@ describe('NunjucksWorkflowRunner', () => {
           numbers,
         },
       });
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       numbers.forEach((foo, idx) => {
         expectTaskLog(
@@ -2398,7 +2609,7 @@ describe('NunjucksWorkflowRunner', () => {
           ],
         },
       });
-      await expect(runner.execute(task)).rejects.toThrow(
+      await expect(executeTask(runner, task)).rejects.toThrow(
         'Invalid input passed to action jest-validated-action[1], instance requires property "foo"',
       );
       expect(fakeActionHandler).not.toHaveBeenCalled();
@@ -2418,7 +2629,7 @@ describe('NunjucksWorkflowRunner', () => {
           parameters: { data: value },
         });
 
-        await expect(runner.execute(task)).rejects.toThrow(
+        await expect(executeTask(runner, task)).rejects.toThrow(
           'must resolve to an array or object',
         );
       }
@@ -2440,7 +2651,7 @@ describe('NunjucksWorkflowRunner', () => {
           ],
         });
 
-        await expect(runner.execute(task)).rejects.toThrow(
+        await expect(executeTask(runner, task)).rejects.toThrow(
           'must resolve to an array or object',
         );
       }
@@ -2460,7 +2671,7 @@ describe('NunjucksWorkflowRunner', () => {
           },
         ],
       });
-      await expect(runner.execute(task)).rejects.toThrow(
+      await expect(executeTask(runner, task)).rejects.toThrow(
         'Invalid value on action jest-validated-action.each parameter, "${{parameters.data}}" cannot be resolved to a value',
       );
       expect(fakeActionHandler).not.toHaveBeenCalled();
@@ -2483,7 +2694,7 @@ describe('NunjucksWorkflowRunner', () => {
         { foo: 'bar' },
       );
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expect(fakeActionHandler).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -2510,7 +2721,7 @@ describe('NunjucksWorkflowRunner', () => {
         { foo: 'bar' },
       );
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expect(fakeActionHandler).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -2538,7 +2749,7 @@ describe('NunjucksWorkflowRunner', () => {
         { foo: 'bar', AWS_ACCESS_KEY: 'another-value-from-task' },
       );
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expect(fakeActionHandler).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -2572,7 +2783,7 @@ describe('NunjucksWorkflowRunner', () => {
         { foo: 'bar' },
       );
 
-      const executedTask = await runner.execute(task);
+      const executedTask = await executeTask(runner, task);
 
       expect(executedTask.output.b).toBeUndefined();
       expect(executedTask.output.c).toBeUndefined();
@@ -2602,7 +2813,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       });
 
-      const { output } = await runner.execute(task);
+      const { output } = await executeTask(runner, task);
 
       expect(output.foo).toEqual('bob user:default/guest');
     });
@@ -2627,7 +2838,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       });
 
-      const { output } = await runner.execute(task);
+      const { output } = await executeTask(runner, task);
 
       expect(output.foo).toEqual({
         host: 'github.com',
@@ -2655,7 +2866,7 @@ describe('NunjucksWorkflowRunner', () => {
           },
         });
 
-        const { output } = await runner.execute(task);
+        const { output } = await executeTask(runner, task);
 
         expect(output.foo).toEqual({
           kind: 'component',
@@ -2682,7 +2893,7 @@ describe('NunjucksWorkflowRunner', () => {
           },
         });
 
-        const { output } = await runner.execute(task);
+        const { output } = await executeTask(runner, task);
 
         expect(output.foo).toEqual({
           kind: 'user',
@@ -2709,7 +2920,7 @@ describe('NunjucksWorkflowRunner', () => {
           },
         });
 
-        const { output } = await runner.execute(task);
+        const { output } = await executeTask(runner, task);
 
         expect(output.foo).toEqual({
           kind: 'user',
@@ -2736,7 +2947,7 @@ describe('NunjucksWorkflowRunner', () => {
           },
         });
 
-        const { output } = await runner.execute(task);
+        const { output } = await executeTask(runner, task);
 
         expect(output.foo).toEqual({
           kind: 'user',
@@ -2765,7 +2976,7 @@ describe('NunjucksWorkflowRunner', () => {
             },
           });
 
-          const { output } = await runner.execute(task);
+          const { output } = await executeTask(runner, task);
 
           expect(output.foo).toEqual({
             kind: 'user',
@@ -2793,7 +3004,7 @@ describe('NunjucksWorkflowRunner', () => {
           },
         });
 
-        const { output } = await runner.execute(task);
+        const { output } = await executeTask(runner, task);
 
         expect(output.foo).toEqual(
           `\${{ parameters.entity | parseEntityRef({ defaultNamespace:"namespace-b" }) }}`,
@@ -2819,7 +3030,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       });
 
-      const { output } = await runner.execute(task);
+      const { output } = await executeTask(runner, task);
 
       expect(output.foo).toEqual('component');
     });
@@ -2848,7 +3059,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       });
 
-      const { output } = await runner.execute(task);
+      const { output } = await executeTask(runner, task);
 
       expect(output.foo).toEqual('component');
     });
@@ -2873,7 +3084,7 @@ describe('NunjucksWorkflowRunner', () => {
         true,
       );
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expect(fakeActionHandler.mock.calls[0][0].isDryRun).toEqual(true);
     });
@@ -2900,7 +3111,7 @@ describe('NunjucksWorkflowRunner', () => {
         true,
       );
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expect(fakeActionHandler.mock.calls[0][0].isDryRun).toEqual(true);
       expect(
@@ -2930,7 +3141,7 @@ describe('NunjucksWorkflowRunner', () => {
         true,
       );
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expect(fakeActionHandler.mock.calls[0][0].isDryRun).toEqual(true);
       expect(fakeActionHandler.mock.calls[0][0].step.id).toEqual('test');
@@ -2966,7 +3177,7 @@ describe('NunjucksWorkflowRunner', () => {
         true,
       );
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       const handlerCall = dryRunHandler.mock.calls[0][0];
       expect(handlerCall.input.envSecret).toBeUndefined();
@@ -2991,7 +3202,7 @@ describe('NunjucksWorkflowRunner', () => {
         ],
       });
 
-      await expect(runner.execute(task)).rejects.toThrow(
+      await expect(executeTask(runner, task)).rejects.toThrow(
         /Unauthorized action: jest-validated-action. The action is not allowed/,
       );
       expect(fakeActionHandler).not.toHaveBeenCalled();
@@ -3020,7 +3231,7 @@ describe('NunjucksWorkflowRunner', () => {
 
       let thrownError: Error | undefined;
       try {
-        await runner.execute(task);
+        await executeTask(runner, task);
       } catch (error) {
         thrownError = error as Error;
       }
@@ -3056,7 +3267,7 @@ describe('NunjucksWorkflowRunner', () => {
 
       let thrownError: Error | undefined;
       try {
-        await runner.execute(task);
+        await executeTask(runner, task);
       } catch (error) {
         thrownError = error as Error;
       }
@@ -3085,6 +3296,12 @@ describe('NunjucksWorkflowRunner', () => {
         logger,
         permissions: mockedPermissionApi,
         metrics: metricsServiceMock.mock(),
+        systemSecrets: {
+          subscribe: () => ({
+            secrets: new Set(),
+            unsubscribe() {},
+          }),
+        },
         additionalTemplateFilters: {
           keyedObject(input) {
             return typeof input === 'string' ? { [input]: 'value' } : {};
@@ -3148,7 +3365,7 @@ describe('NunjucksWorkflowRunner', () => {
         { token: 'sensitive-token-value' },
       );
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expect(fakeActionHandler).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -3195,7 +3412,7 @@ describe('NunjucksWorkflowRunner', () => {
         ],
       });
 
-      await expect(runner.execute(task)).rejects.toThrow(
+      await expect(executeTask(runner, task)).rejects.toThrow(
         'Unauthorized action: jest-validated-action. The action is not allowed.',
       );
       expect(fakeActionHandler).toHaveBeenCalled();
@@ -3275,7 +3492,7 @@ describe('NunjucksWorkflowRunner', () => {
           ],
         });
 
-        const result = runner.execute(task).then(
+        const result = executeTask(runner, task).then(
           () => true,
           error => {
             if (error?.name !== 'NotAllowedError') {
@@ -3315,7 +3532,7 @@ describe('NunjucksWorkflowRunner', () => {
         ],
       });
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       for (const conditions of [
         {
@@ -3368,7 +3585,7 @@ describe('NunjucksWorkflowRunner', () => {
           },
         ]);
 
-        await runner.execute(task);
+        await executeTask(runner, task);
       }
 
       expect(fakeActionHandler).toHaveBeenCalledTimes(3);
@@ -3420,7 +3637,7 @@ describe('NunjucksWorkflowRunner', () => {
         ],
       });
 
-      await expect(runner.execute(task)).rejects.toThrow('step failed');
+      await expect(executeTask(runner, task)).rejects.toThrow('step failed');
       expect(cleanupHandler).toHaveBeenCalledTimes(1);
     });
 
@@ -3441,7 +3658,7 @@ describe('NunjucksWorkflowRunner', () => {
         ],
       });
 
-      await expect(runner.execute(task)).rejects.toThrow('step failed');
+      await expect(executeTask(runner, task)).rejects.toThrow('step failed');
       expect(cleanupHandler).toHaveBeenCalledTimes(1);
     });
 
@@ -3462,7 +3679,7 @@ describe('NunjucksWorkflowRunner', () => {
         ],
       });
 
-      await runner.execute(task);
+      await executeTask(runner, task);
       expect(fakeActionHandler).toHaveBeenCalledTimes(1);
       expect(cleanupHandler).not.toHaveBeenCalled();
     });
@@ -3484,7 +3701,7 @@ describe('NunjucksWorkflowRunner', () => {
         ],
       });
 
-      await expect(runner.execute(task)).rejects.toThrow('step failed');
+      await expect(executeTask(runner, task)).rejects.toThrow('step failed');
       expect(cleanupHandler).not.toHaveBeenCalled();
     });
 
@@ -3510,7 +3727,7 @@ describe('NunjucksWorkflowRunner', () => {
         ],
       });
 
-      await expect(runner.execute(task)).rejects.toThrow('step failed');
+      await expect(executeTask(runner, task)).rejects.toThrow('step failed');
       expect(cleanupHandler).toHaveBeenCalledTimes(1);
       // step3 should not run because it has no status check function
       expect(fakeActionHandler).not.toHaveBeenCalled();
@@ -3551,7 +3768,7 @@ describe('NunjucksWorkflowRunner', () => {
       });
 
       // Should throw the first error (from step1)
-      await expect(runner.execute(task)).rejects.toThrow('step failed');
+      await expect(executeTask(runner, task)).rejects.toThrow('step failed');
       expect(failingCleanup).toHaveBeenCalledTimes(1);
       expect(cleanupHandler).toHaveBeenCalledTimes(1);
     });
@@ -3602,7 +3819,7 @@ describe('NunjucksWorkflowRunner', () => {
       });
 
       // Should throw the first error (from step1)
-      await expect(runner.execute(task)).rejects.toThrow('step failed');
+      await expect(executeTask(runner, task)).rejects.toThrow('step failed');
 
       // All cleanup handlers should have been called
       expect(failingCleanup2).toHaveBeenCalledTimes(1);
@@ -3611,12 +3828,20 @@ describe('NunjucksWorkflowRunner', () => {
       // Subsequent errors should be logged
       expect(logger.error).toHaveBeenCalledWith(
         'Additional error in step step2 (First cleanup): second cleanup failed',
-        secondCleanupError,
+        expect.objectContaining({
+          name: 'Error',
+          message: 'second cleanup failed',
+        }),
       );
+      expect(logger.error.mock.calls[0][1]).not.toBe(secondCleanupError);
       expect(logger.error).toHaveBeenCalledWith(
         'Additional error in step step3 (Second cleanup): third cleanup failed',
-        thirdCleanupError,
+        expect.objectContaining({
+          name: 'Error',
+          message: 'third cleanup failed',
+        }),
       );
+      expect(logger.error.mock.calls[1][1]).not.toBe(thirdCleanupError);
 
       // Summary warning should be logged
       expect(logger.warn).toHaveBeenCalledWith(
@@ -3676,7 +3901,7 @@ describe('NunjucksWorkflowRunner', () => {
         ],
       });
 
-      await expect(runner.execute(task)).rejects.toThrow('step failed');
+      await expect(executeTask(runner, task)).rejects.toThrow('step failed');
 
       // Verify execution order and counts
       expect(fakeActionHandler).toHaveBeenCalledTimes(1); // step1
@@ -3772,7 +3997,7 @@ describe('NunjucksWorkflowRunner', () => {
       });
       task.updateStepState = jest.fn();
 
-      const result = await recoveryRunner.execute(task);
+      const result = await executeTask(recoveryRunner, task);
 
       expect(fakeActionHandler).toHaveBeenCalledTimes(1);
       expect(result.output.fromStep1).toBe('recovered-value');
@@ -3799,7 +4024,7 @@ describe('NunjucksWorkflowRunner', () => {
       task.getTaskState = jest.fn().mockResolvedValue(undefined);
       task.updateStepState = jest.fn();
 
-      await recoveryRunner.execute(task);
+      await executeTask(recoveryRunner, task);
 
       expect(fakeActionHandler).toHaveBeenCalledTimes(2);
       expect(task.updateStepState).toHaveBeenCalledTimes(2);
@@ -3813,7 +4038,7 @@ describe('NunjucksWorkflowRunner', () => {
       });
       task.updateStepState = jest.fn();
 
-      await recoveryRunner.execute(task);
+      await executeTask(recoveryRunner, task);
 
       expect(task.updateStepState).toHaveBeenCalledWith({
         stepId: 'step1',
@@ -3836,7 +4061,7 @@ describe('NunjucksWorkflowRunner', () => {
         callOrder.push('updateStepState');
       });
 
-      await recoveryRunner.execute(task);
+      await executeTask(recoveryRunner, task);
 
       expect(callOrder).toEqual(['serializeWorkspace', 'updateStepState']);
     });
@@ -3852,7 +4077,7 @@ describe('NunjucksWorkflowRunner', () => {
         .mockRejectedValue(new Error('workspace persistence failed'));
       task.updateStepState = jest.fn();
 
-      await expect(recoveryRunner.execute(task)).rejects.toThrow(
+      await expect(executeTask(recoveryRunner, task)).rejects.toThrow(
         'workspace persistence failed',
       );
       expect(task.serializeWorkspace).toHaveBeenCalledTimes(1);
@@ -3884,7 +4109,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       });
 
-      await recoveryRunner.execute(task);
+      await executeTask(recoveryRunner, task);
 
       expect(fakeActionHandler).toHaveBeenCalledTimes(1);
     });
@@ -3909,7 +4134,7 @@ describe('NunjucksWorkflowRunner', () => {
       });
       task.emitLog = jest.fn();
 
-      await recoveryRunner.execute(task);
+      await executeTask(recoveryRunner, task);
 
       expect(task.emitLog).toHaveBeenCalledWith(
         expect.stringContaining('1 step(s) already completed'),
@@ -3942,7 +4167,7 @@ describe('NunjucksWorkflowRunner', () => {
       });
       task.emitLog = jest.fn();
 
-      await recoveryRunner.execute(task);
+      await executeTask(recoveryRunner, task);
 
       expect(task.emitLog).toHaveBeenCalledWith(expect.any(String), {
         stepId: 'step1',
@@ -3959,7 +4184,7 @@ describe('NunjucksWorkflowRunner', () => {
       task.updateStepState = jest.fn();
 
       // The default `runner` is configured without task recovery enabled.
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       expect(fakeActionHandler).toHaveBeenCalledTimes(1);
       expect(task.updateStepState).not.toHaveBeenCalled();
@@ -3985,7 +4210,7 @@ describe('NunjucksWorkflowRunner', () => {
         },
       });
 
-      await runner.execute(task);
+      await executeTask(runner, task);
 
       // Both steps run again; the persisted completed state is ignored so no
       // step is skipped.

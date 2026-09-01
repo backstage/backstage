@@ -19,13 +19,13 @@ import { TaskSpec, TaskStep } from '@backstage/plugin-scaffolder-common';
 import {
   TaskSecrets,
   TemplateAction,
-  TaskContext,
   SerializedTaskEvent,
   SerializedTask,
   TaskStatus,
   TaskFilters,
 } from '@backstage/plugin-scaffolder-node';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import type { TaskRunContext } from './TaskRunContext';
 
 /**
  * TaskStoreEmitOptions
@@ -169,7 +169,7 @@ export interface TaskStore {
 export type WorkflowResponse = { output: { [key: string]: JsonValue } };
 
 export interface WorkflowRunner {
-  execute(task: TaskContext): Promise<WorkflowResponse>;
+  execute(context: TaskRunContext): Promise<WorkflowResponse>;
   getEnvironmentConfig?(): Promise<{
     parameters: JsonObject;
     secrets?: TaskSecrets;

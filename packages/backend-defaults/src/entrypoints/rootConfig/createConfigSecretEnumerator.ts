@@ -16,7 +16,11 @@
 
 import { LoggerService } from '@backstage/backend-plugin-api';
 import type { Config } from '@backstage/config';
-import { ConfigSchema, loadConfigSchema } from '@backstage/config-loader';
+import {
+  ConfigSchema,
+  enumerateConfigSecrets,
+  loadConfigSchema,
+} from '@backstage/config-loader';
 import { getPackages } from '@manypkg/get-packages';
 
 /** @public */
@@ -35,18 +39,7 @@ export async function createConfigSecretEnumerator(options: {
     }));
 
   return (config: Config) => {
-    const [secretsData] = schema.process(
-      [{ data: config.getOptional() ?? {}, context: 'schema-enumerator' }],
-      {
-        visibility: ['secret'],
-        ignoreSchemaErrors: true,
-      },
-    );
-    const secrets = new Set<string>();
-    JSON.parse(
-      JSON.stringify(secretsData.data),
-      (_, v) => typeof v === 'string' && secrets.add(v),
-    );
+    const secrets = enumerateConfigSecrets({ config, schema });
     logger.info(
       `Found ${secrets.size} new secrets in config that will be redacted`,
     );

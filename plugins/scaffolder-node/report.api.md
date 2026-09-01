@@ -52,6 +52,7 @@ export type ActionContext<
     name: keyof TActionOutput,
     value: TActionOutput[keyof TActionOutput],
   ): void;
+  registerSensitiveValue(value: JsonValue): void;
   createTemporaryDirectory(): Promise<string>;
   getInitiatorCredentials(): Promise<BackstageCredentials>;
   task: {
@@ -504,13 +505,10 @@ export interface TaskBroker {
   dispatch(
     options: TaskBrokerDispatchOptions,
   ): Promise<TaskBrokerDispatchResult>;
-  // (undocumented)
   event$(options: { taskId: string; after: number | undefined }): Observable<{
     events: SerializedTaskEvent[];
   }>;
-  // (undocumented)
   get(taskId: string): Promise<SerializedTask>;
-  // (undocumented)
   list(options?: {
     filters?: {
       createdBy?: string | string[];

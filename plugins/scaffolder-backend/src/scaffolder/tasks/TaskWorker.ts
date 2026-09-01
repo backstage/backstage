@@ -16,7 +16,7 @@
 
 import { AuditorService, LoggerService } from '@backstage/backend-plugin-api';
 import type { MetricsService } from '@backstage/backend-plugin-api/alpha';
-import { InputError, stringifyError, toError } from '@backstage/errors';
+import { InputError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import {
@@ -31,13 +31,26 @@ import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { WorkflowRunner } from './types';
 import { setTimeout } from 'node:timers/promises';
 import { JsonObject } from '@backstage/types';
-import { Config } from '@backstage/config';
+import { Config, ConfigReader } from '@backstage/config';
 import { collectTemplateCapabilities } from '../../util/templating';
+import { TaskRunContext } from './TaskRunContext';
+import type { SystemSecretProvider } from './TaskRunContext';
+import { SystemSecretSource } from './SystemSecretSource';
 
 const DEFAULT_TASK_PARAMETER_MAX_LENGTH = 256;
 
 /** How long to wait before trying to claim again after a failed claim. */
 const CLAIM_RETRY_DELAY_MS = 1000;
+
+class NoopLogger implements LoggerService {
+  error(): void {}
+  warn(): void {}
+  info(): void {}
+  debug(): void {}
+  child(): LoggerService {
+    return this;
+  }
+}
 
 /**
  * TaskWorkerOptions
@@ -53,6 +66,8 @@ export type TaskWorkerOptions = {
   auditor?: AuditorService;
   config?: Config;
   gracefulShutdown?: boolean;
+  systemSecrets: SystemSecretProvider;
+  disposeSystemSecrets?: () => void;
 };
 
 /**
@@ -84,6 +99,7 @@ export type CreateWorkerOptions = {
   permissions?: PermissionEvaluator;
   gracefulShutdown?: boolean;
   metrics: MetricsService;
+  systemSecrets?: SystemSecretProvider;
 };
 
 /**
@@ -130,7 +146,18 @@ export class TaskWorker {
       permissions,
       gracefulShutdown,
       metrics,
+      systemSecrets,
     } = options;
+    let disposeSystemSecrets: (() => void) | undefined;
+    let resolvedSystemSecrets = systemSecrets;
+    if (!resolvedSystemSecrets) {
+      const source = await SystemSecretSource.create({
+        config: config ?? new ConfigReader({}),
+        logger,
+      });
+      resolvedSystemSecrets = source;
+      disposeSystemSecrets = () => source.close();
+    }
 
     const workflowRunner = new NunjucksWorkflowRunner({
       actionRegistry,
@@ -146,15 +173,17 @@ export class TaskWorker {
       config,
       metrics,
     });
-
     return new TaskWorker({
       taskBroker: taskBroker,
       runners: { workflowRunner },
       concurrentTasksLimit,
       permissions,
+      logger,
       auditor,
       config,
       gracefulShutdown,
+      systemSecrets: resolvedSystemSecrets,
+      disposeSystemSecrets,
       parameterAuditTransform: createParameterTruncator(config),
     });
   }
@@ -199,11 +228,16 @@ export class TaskWorker {
 
   async stop() {
     this.stopWorkers = true;
-    if (this.options?.gracefulShutdown) {
-      while (this.taskQueue.size > 0) {
-        await setTimeout(1000);
-      }
+    const dispose = this.taskQueue.onIdle().then(() => {
+      this.options.disposeSystemSecrets?.();
+    });
+    if (this.options.gracefulShutdown) {
+      await dispose;
     }
+  }
+
+  waitUntilIdle(): Promise<void> {
+    return this.taskQueue.onIdle();
   }
 
   protected onReadyToClaimTask(): Promise<void> {
@@ -220,39 +254,81 @@ export class TaskWorker {
   }
 
   async runOneTask(task: TaskContext) {
-    const auditorEvent = await this.auditor?.createEvent({
-      eventId: 'task',
-      severityLevel: 'medium',
-      meta: {
-        actionType: 'execution',
-        createdBy: task.createdBy,
-        taskId: task.taskId,
-        taskParameters: this.parameterAuditTransform(task.spec.parameters),
-        templateRef: task.spec.templateInfo?.entityRef,
-      },
+    const runner = this.options.runners.workflowRunner;
+    const runContext = await TaskRunContext.create({
+      task,
+      logger: this.logger ?? new NoopLogger(),
+      systemSecrets: this.options.systemSecrets,
+      loadEnvironment: async () =>
+        (await runner.getEnvironmentConfig?.()) ?? {
+          parameters: {},
+          secrets: {},
+        },
     });
+    let auditorEvent:
+      | Awaited<ReturnType<NonNullable<AuditorService>['createEvent']>>
+      | undefined;
 
     try {
-      if (task.spec.apiVersion !== 'scaffolder.backstage.io/v1beta3') {
+      await runContext.waitUntilReady();
+      const auditParameters = runContext.redacter.redactJson(
+        task.spec.parameters,
+      ) as JsonObject;
+      auditorEvent = await this.auditor?.createEvent({
+        eventId: 'task',
+        severityLevel: 'medium',
+        meta: runContext.redacter.redactJson({
+          actionType: 'execution',
+          createdBy: task.createdBy,
+          taskId: task.taskId,
+          taskParameters: this.parameterAuditTransform(auditParameters),
+          templateRef: task.spec.templateInfo?.entityRef,
+        }) as JsonObject,
+      });
+
+      if (
+        runContext.task.spec.apiVersion !== 'scaffolder.backstage.io/v1beta3'
+      ) {
         throw new Error(
-          `Unsupported Template apiVersion ${task.spec.apiVersion}`,
+          `Unsupported Template apiVersion ${runContext.task.spec.apiVersion}`,
         );
       }
 
-      const { output } = await this.options.runners.workflowRunner.execute(
-        task,
-      );
+      const { output } = await runner.execute(runContext);
 
-      await task.complete('completed', { output });
+      await runContext.task.complete('completed', { output });
       await auditorEvent?.success();
     } catch (error) {
-      const err = toError(error);
-      await auditorEvent?.fail({
-        error: err,
-      });
-      await task.complete('failed', {
-        error: { name: err.name, message: err.message },
-      });
+      const err = runContext.redacter.redactError(error);
+      let projectedAuditError: Error | undefined;
+      try {
+        await auditorEvent?.fail({
+          error: err,
+        });
+      } catch (auditError) {
+        projectedAuditError = runContext.redacter.redactError(auditError);
+      }
+      try {
+        if (runContext.initializationError) {
+          await task.complete('failed', {
+            error: {
+              name: 'Error',
+              message: 'Failed to initialize task secret redaction',
+            },
+          });
+        } else {
+          await runContext.task.complete('failed', {
+            error: { name: err.name, message: err.message },
+          });
+        }
+      } catch (completionError) {
+        throw runContext.redacter.redactError(completionError);
+      }
+      if (projectedAuditError) {
+        throw projectedAuditError;
+      }
+    } finally {
+      await runContext.dispose();
     }
   }
 }

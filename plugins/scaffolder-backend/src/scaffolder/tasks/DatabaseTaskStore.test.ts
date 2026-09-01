@@ -28,6 +28,7 @@ import { TaskState } from './types';
 const createStore = async (
   events?: EventsService,
   recoverTasksEnabled?: boolean,
+  systemSecrets?: Set<string> | false,
 ) => {
   const manager = DatabaseManager.fromConfig(
     new ConfigReader({
@@ -46,6 +47,15 @@ const createStore = async (
     database: manager,
     events,
     recoverTasksEnabled,
+    systemSecrets:
+      events && systemSecrets !== false
+        ? {
+            subscribe: () => ({
+              secrets: systemSecrets ?? new Set(),
+              unsubscribe() {},
+            }),
+          }
+        : undefined,
   });
   return { store, manager };
 };
@@ -59,13 +69,115 @@ describe('DatabaseTaskStore', () => {
     jest.resetAllMocks();
   });
 
-  it('should create the database store and run migration', async () => {
+  it('does not retain task secrets in a separate redaction table', async () => {
     const { store, manager } = await createStore();
-    expect(store).toBeDefined();
+    const { taskId } = await store.createTask({
+      spec: {} as TaskSpec,
+      secrets: { token: 'sensitive-value' },
+    });
+    await store.claimTask();
+    await store.completeTask({
+      taskId,
+      status: 'completed',
+      eventBody: { message: 'done' },
+    });
 
     const client = await manager.getClient();
-    expect(client.schema.hasTable('tasks')).toBeTruthy();
-    expect(client.schema.hasTable('task_events')).toBeTruthy();
+    await expect(client.schema.hasTable('tasks')).resolves.toBe(true);
+    await expect(client.schema.hasTable('task_events')).resolves.toBe(true);
+    await expect(client.schema.hasTable('task_redactions')).resolves.toBe(
+      false,
+    );
+    await expect(
+      client('tasks').where({ id: taskId }).first('secrets'),
+    ).resolves.toEqual({ secrets: null });
+  });
+
+  describe('learned redactions', () => {
+    it('redacts task and credential values when the task is created', async () => {
+      const { store } = await createStore(eventsService);
+      await store.createTask({
+        spec: {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          parameters: { duplicated: 'task-secret' },
+          user: { ref: 'user:default/mock' },
+        } as unknown as TaskSpec,
+        secrets: {
+          task: 'task-secret',
+          __initiatorCredentials: JSON.stringify({
+            version: 'v1',
+            principal: {
+              type: 'user',
+              userEntityRef: 'user:default/mock',
+            },
+            token: 'credential-token',
+          }),
+        },
+      });
+
+      const published = JSON.stringify(
+        (eventsService.publish as jest.Mock).mock.calls,
+      );
+      expect(published).not.toContain('task-secret');
+      expect(published).not.toContain('credential-token');
+      expect(published).toContain('user:default/mock');
+    });
+
+    it('redacts current system secrets from task event projections', async () => {
+      const { store } = await createStore(
+        eventsService,
+        undefined,
+        new Set(['current-system-secret']),
+      );
+
+      await store.createTask({
+        spec: {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          parameters: { value: 'current-system-secret' },
+        } as unknown as TaskSpec,
+      });
+
+      expect(
+        JSON.stringify((eventsService.publish as jest.Mock).mock.calls),
+      ).not.toContain('current-system-secret');
+    });
+
+    it('suppresses task events when the system secret source is unavailable', async () => {
+      const { store } = await createStore(eventsService, undefined, false);
+
+      await store.createTask({ spec: {} as TaskSpec });
+
+      expect(eventsService.publish).not.toHaveBeenCalled();
+    });
+
+    it('removes task-secret values from durable projections at completion', async () => {
+      const { store, manager } = await createStore(undefined, true);
+      const secret = 'terminal-task-secret';
+      const { taskId } = await store.createTask({
+        spec: {
+          steps: [],
+          parameters: { duplicatedSecret: secret },
+        } as unknown as TaskSpec,
+        secrets: { token: secret },
+      });
+      await store.claimTask();
+
+      await store.completeTask({
+        taskId,
+        status: 'completed',
+        eventBody: { message: `completed with ${secret}` },
+      });
+
+      const client = await manager.getClient();
+      const task = await client('tasks')
+        .where({ id: taskId })
+        .first('spec', 'secrets');
+      expect(task.secrets).toBeNull();
+      expect(task.spec).not.toContain(secret);
+      expect(JSON.stringify(await store.listEvents({ taskId }))).not.toContain(
+        secret,
+      );
+    });
   });
 
   it('should list all created tasks', async () => {
@@ -534,11 +646,11 @@ describe('DatabaseTaskStore', () => {
       topic: 'scaffolder.task',
       eventPayload: {
         id: taskId,
+        spec: {},
         status: 'processing',
         createdAt: expect.any(String),
         lastHeartbeatAt: null,
         createdBy: 'me',
-        spec: {},
       },
     });
   });

@@ -16,6 +16,7 @@
 
 import { WinstonLogger } from './logger';
 import { MESSAGE } from 'triple-beam';
+import { TaskRedacter } from './TaskRedacter';
 
 describe('WinstonLogger', () => {
   describe('redacter', () => {
@@ -105,12 +106,12 @@ describe('WinstonLogger', () => {
         });
       });
 
-      it('should preserve diagnostics for non-Error throws', () => {
+      it('should describe non-Error throws without stringifying values', () => {
         const { redactError } = WinstonLogger.redacter();
 
         expect(redactError(42)).toMatchObject({
           name: 'Error',
-          message: "unknown error '42'",
+          message: 'Task failed with thrown value of type number',
         });
       });
 
@@ -252,10 +253,11 @@ describe('WinstonLogger', () => {
       });
 
       it('should handle null and undefined values in newRedactions without crashing', () => {
-        const { add, format } = WinstonLogger.redacter();
+        const redacter = new TaskRedacter();
+        const redactionFormat = WinstonLogger.redacter(redacter);
 
         expect(() => {
-          add([null as any, undefined as any, 'valid-secret']);
+          redacter.add([null as any, undefined as any, 'valid-secret']);
         }).not.toThrow();
 
         const testObj = {
@@ -263,16 +265,17 @@ describe('WinstonLogger', () => {
           message: 'This contains valid-secret and should be redacted',
           [MESSAGE]: 'This contains valid-secret and should be redacted',
         };
-        const result = format.transform(testObj);
+        const result = redactionFormat.transform(testObj);
         expect((result as any)?.[MESSAGE]).toBe(
           'This contains *** and should be redacted',
         );
       });
 
       it('should skip empty and single character redactions', () => {
-        const { add, format } = WinstonLogger.redacter();
+        const redacter = new TaskRedacter();
+        const redactionFormat = WinstonLogger.redacter(redacter);
 
-        add(['', 'x', 'valid-secret-123']);
+        redacter.add(['', 'x', 'valid-secret-123']);
 
         // MESSAGE symbol is where Winston stores the formatted message for redaction
         const testObj = {
@@ -281,16 +284,17 @@ describe('WinstonLogger', () => {
           [MESSAGE]: 'This contains valid-secret-123 and should be redacted',
         };
 
-        const result = format.transform(testObj);
+        const result = redactionFormat.transform(testObj);
         expect((result as any)?.[MESSAGE]).toBe(
           'This contains *** and should be redacted',
         );
       });
 
       it('should trim whitespace from redactions', () => {
-        const { add, format } = WinstonLogger.redacter();
+        const redacter = new TaskRedacter();
+        const redactionFormat = WinstonLogger.redacter(redacter);
 
-        add(['  secret-with-spaces  \n', '  another-secret\t']);
+        redacter.add(['  secret-with-spaces  \n', '  another-secret\t']);
 
         const testObj = {
           level: 'info',
@@ -298,7 +302,7 @@ describe('WinstonLogger', () => {
           [MESSAGE]: 'This contains secret-with-spaces and another-secret',
         };
 
-        const result = format.transform(testObj);
+        const result = redactionFormat.transform(testObj);
         expect((result as any)?.[MESSAGE]).toBe('This contains *** and ***');
       });
     });

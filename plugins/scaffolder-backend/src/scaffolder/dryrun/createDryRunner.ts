@@ -47,6 +47,8 @@ import { NunjucksWorkflowRunner } from '../tasks/NunjucksWorkflowRunner';
 import { collectTemplateCapabilities } from '../../util/templating';
 import { DecoratedActionsRegistry } from './DecoratedActionsRegistry';
 import { TemplateActionRegistry } from '../actions';
+import { TaskRunContext } from '../tasks/TaskRunContext';
+import type { SystemSecretProvider } from '../tasks/TaskRunContext';
 
 interface DryRunInput {
   spec: TaskSpec;
@@ -84,6 +86,7 @@ export type TemplateTesterCreateOptions = {
   permissions?: PermissionEvaluator;
   config?: Config;
   metrics: MetricsService;
+  systemSecrets: SystemSecretProvider;
 };
 
 /**
@@ -101,7 +104,7 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
   });
 
   return async function dryRun(input: DryRunInput): Promise<DryRunResult> {
-    let contentPromise;
+    const extraction: { promise?: Promise<SerializedFile[]> } = {};
 
     const workflowRunner = new NunjucksWorkflowRunner({
       ...options,
@@ -111,8 +114,8 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
           id: 'dry-run:extract',
           supportsDryRun: true,
           async handler(ctx) {
-            contentPromise = serializeDirectoryContents(ctx.workspacePath);
-            await contentPromise.catch(() => {});
+            extraction.promise = serializeDirectoryContents(ctx.workspacePath);
+            await extraction.promise.catch(() => {});
           },
         }),
       ]),
@@ -136,11 +139,12 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
       };
     }>();
 
+    let runContext: TaskRunContext | undefined;
     try {
       await deserializeDirectoryContents(contentsPath, input.directoryContents);
 
       const abortSignal = new AbortController().signal;
-      const result = await workflowRunner.execute({
+      const task = {
         taskId: dryRunId,
         spec: {
           ...input.spec,
@@ -175,20 +179,38 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
         complete: async () => {
           throw new Error('Not implemented');
         },
+      };
+      runContext = await TaskRunContext.create({
+        task,
+        logger: options.logger,
+        systemSecrets: options.systemSecrets,
+        loadEnvironment: () => workflowRunner.getEnvironmentConfig(),
       });
+      const result = await workflowRunner.execute(runContext);
+      await runContext.waitUntilReady();
 
-      if (!contentPromise) {
+      if (!extraction.promise) {
         throw new Error('Content extraction step was skipped');
       }
-      const directoryContents = await contentPromise;
+      const directoryContents = (await extraction.promise).map(file => ({
+        ...file,
+        path: runContext!.redacter.redactString(file.path),
+        content: runContext!.redacter.redactBuffer(file.content),
+      }));
 
       return {
-        log,
+        log: runContext.redacter.redactJson(log) as DryRunResult['log'],
         directoryContents,
-        output: result.output,
+        output: runContext.redacter.redactJson(result.output) as JsonObject,
       };
+    } catch (error) {
+      throw runContext ? runContext.redacter.redactError(error) : error;
     } finally {
-      await fs.remove(contentsPath);
+      try {
+        await runContext?.dispose();
+      } finally {
+        await fs.remove(contentsPath);
+      }
     }
   };
 }

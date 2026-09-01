@@ -49,8 +49,16 @@ import {
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
+import { TaskRunContext } from './TaskRunContext';
 
 jest.mock('./NunjucksWorkflowRunner');
+jest.mock('./SystemSecretSource', () => ({
+  SystemSecretSource: {
+    create: jest.fn(async () => ({
+      subscribe: () => ({ secrets: new Set(), unsubscribe() {} }),
+    })),
+  },
+}));
 const MockedNunjucksWorkflowRunner =
   NunjucksWorkflowRunner as jest.Mock<NunjucksWorkflowRunner>;
 MockedNunjucksWorkflowRunner.mockImplementation();
@@ -91,7 +99,7 @@ describe('TaskWorker', () => {
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
     MockedNunjucksWorkflowRunner.mockImplementation(() => workflowRunner);
   });
 
@@ -438,6 +446,196 @@ describe('TaskWorker', () => {
     });
     expect(auditEvent.success).toHaveBeenCalled();
   });
+
+  it('redacts audit failures and completion errors without retaining the thrown error', async () => {
+    const original = Object.assign(
+      new Error('failed with task-secret', {
+        cause: new Error('cause task-secret'),
+      }),
+      { detail: 'detail task-secret' },
+    );
+    (workflowRunner.execute as jest.Mock).mockRejectedValue(original);
+    const auditor = mockServices.auditor.mock();
+    const auditEvent = { success: jest.fn(), fail: jest.fn() };
+    auditor.createEvent.mockResolvedValue(auditEvent);
+    const complete = jest.fn();
+    const taskWorker = await TaskWorker.create({
+      logger,
+      workingDirectory,
+      integrations,
+      taskBroker: {} as TaskBroker,
+      actionRegistry,
+      auditor,
+      metrics: metricsServiceMock.mock(),
+    });
+
+    await taskWorker.runOneTask({
+      taskId: 'test-id',
+      spec: {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        parameters: { value: 'task-secret' },
+        steps: [],
+        output: {},
+      },
+      secrets: { value: 'task-secret' },
+      complete,
+    } as unknown as TaskContext);
+
+    expect(auditor.createEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        meta: expect.objectContaining({
+          taskParameters: { value: '***' },
+        }),
+      }),
+    );
+    const projectedError = auditEvent.fail.mock.calls[0][0].error;
+    expect(projectedError).not.toBe(original);
+    expect(projectedError).toMatchObject({
+      name: 'Error',
+      message: 'failed with ***',
+    });
+    expect('cause' in projectedError).toBe(false);
+    expect('detail' in projectedError).toBe(false);
+    expect(complete).toHaveBeenCalledWith('failed', {
+      error: { name: 'Error', message: 'failed with ***' },
+    });
+  });
+
+  it('redacts task parameters before truncating them for audit', async () => {
+    const secret = 'a-very-long-task-secret';
+    (workflowRunner.execute as jest.Mock).mockResolvedValue({ output: {} });
+    const auditor = mockServices.auditor.mock();
+    auditor.createEvent.mockResolvedValue({
+      success: jest.fn(),
+      fail: jest.fn(),
+    });
+    const taskWorker = await TaskWorker.create({
+      logger,
+      workingDirectory,
+      integrations,
+      taskBroker: {} as TaskBroker,
+      actionRegistry,
+      auditor,
+      config: new ConfigReader({
+        scaffolder: { auditor: { taskParameterMaxLength: 5 } },
+      }),
+      metrics: metricsServiceMock.mock(),
+    });
+
+    await taskWorker.runOneTask({
+      taskId: 'test-id',
+      spec: {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        parameters: { value: secret },
+        steps: [],
+        output: {},
+      },
+      secrets: { value: secret },
+      complete: jest.fn(),
+    } as unknown as TaskContext);
+
+    expect(auditor.createEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        meta: expect.objectContaining({ taskParameters: { value: '***' } }),
+      }),
+    );
+  });
+
+  it('sanitizes errors thrown by the audit failure sink', async () => {
+    const secret = 'task-secret';
+    (workflowRunner.execute as jest.Mock).mockRejectedValue(
+      new Error(`task failed with ${secret}`),
+    );
+    const auditor = mockServices.auditor.mock();
+    const auditError = Object.assign(
+      new Error(`audit storage failed with ${secret}`),
+      { detail: secret },
+    );
+    const auditEvent = {
+      success: jest.fn(),
+      fail: jest.fn().mockRejectedValue(auditError),
+    };
+    auditor.createEvent.mockResolvedValue(auditEvent);
+    const complete = jest.fn();
+    const taskWorker = await TaskWorker.create({
+      logger,
+      workingDirectory,
+      integrations,
+      taskBroker: {} as TaskBroker,
+      actionRegistry,
+      auditor,
+      metrics: metricsServiceMock.mock(),
+    });
+
+    const result = taskWorker.runOneTask({
+      taskId: 'test-id',
+      spec: {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        parameters: {},
+        steps: [],
+        output: {},
+      },
+      secrets: { value: secret },
+      complete,
+    } as unknown as TaskContext);
+
+    const error = await result.catch(caught => caught);
+    expect(error).toMatchObject({
+      message: 'audit storage failed with ***',
+    });
+    expect(error).not.toBe(auditError);
+    expect(error).not.toHaveProperty('detail');
+    expect(complete).toHaveBeenCalledWith('failed', {
+      error: { name: 'Error', message: 'task failed with ***' },
+    });
+  });
+
+  it('fails safely when loading the execution environment fails', async () => {
+    const originalGetEnvironmentConfig = workflowRunner.getEnvironmentConfig;
+    const environmentError = Object.assign(
+      new Error('environment failed with task-secret'),
+      { detail: 'task-secret' },
+    );
+    workflowRunner.getEnvironmentConfig = jest
+      .fn()
+      .mockRejectedValue(environmentError);
+    const auditor = mockServices.auditor.mock();
+    const auditEvent = { success: jest.fn(), fail: jest.fn() };
+    auditor.createEvent.mockResolvedValue(auditEvent);
+    const complete = jest.fn();
+    const taskWorker = await TaskWorker.create({
+      logger,
+      workingDirectory,
+      integrations,
+      taskBroker: {} as TaskBroker,
+      actionRegistry,
+      auditor,
+      metrics: metricsServiceMock.mock(),
+    });
+
+    await taskWorker.runOneTask({
+      taskId: 'test-id',
+      spec: {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        parameters: {},
+        steps: [],
+        output: {},
+      },
+      secrets: { value: 'task-secret' },
+      complete,
+    } as unknown as TaskContext);
+
+    expect(auditor.createEvent).not.toHaveBeenCalled();
+    expect(auditEvent.fail).not.toHaveBeenCalled();
+    expect(complete).toHaveBeenCalledWith('failed', {
+      error: {
+        name: 'Error',
+        message: 'Failed to initialize task secret redaction',
+      },
+    });
+
+    workflowRunner.getEnvironmentConfig = originalGetEnvironmentConfig;
+  });
 });
 
 describe('Concurrent TaskWorker', () => {
@@ -466,7 +664,7 @@ describe('Concurrent TaskWorker', () => {
 
   beforeEach(() => {
     asyncTasksCount = 0;
-    jest.resetAllMocks();
+    jest.clearAllMocks();
     MockedNunjucksWorkflowRunner.mockImplementation(() => workflowRunner);
   });
 
@@ -505,7 +703,9 @@ describe('Concurrent TaskWorker', () => {
     await dispatchANewTask();
     await dispatchANewTask();
 
-    expect(asyncTasksCount).toEqual(expectedConcurrentTasks);
+    await waitForExpect(() => {
+      expect(asyncTasksCount).toEqual(expectedConcurrentTasks);
+    });
   });
 });
 
@@ -518,8 +718,8 @@ describe('Cancellable TaskWorker', () => {
   let myTask: TaskContext | undefined = undefined;
 
   const workflowRunner: NunjucksWorkflowRunner = {
-    execute: (task: TaskContext) => {
-      myTask = task;
+    execute: (context: TaskRunContext) => {
+      myTask = context.task;
     },
   } as unknown as NunjucksWorkflowRunner;
 
@@ -528,7 +728,7 @@ describe('Cancellable TaskWorker', () => {
   });
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
     MockedNunjucksWorkflowRunner.mockImplementation(() => workflowRunner);
   });
 
@@ -578,7 +778,7 @@ describe('TaskWorker internals', () => {
 
   it('should not pick up tasks before it is ready to execute more work', async () => {
     const inflightTasks = new Array<{
-      task: TaskContext;
+      task: TaskRunContext;
       resolve: () => void;
     }>();
     const workflowRunner: WorkflowRunner = {
@@ -595,6 +795,7 @@ describe('TaskWorker internals', () => {
     const subscribers = new Set<
       ZenObservable.SubscriptionObserver<{ events: SerializedTaskEvent[] }>
     >();
+    const secretListeners = new Set<(secrets: ReadonlySet<string>) => void>();
 
     let claimedTaskCount = 0;
     const taskWorker = new TaskWorkerConstructor({
@@ -622,6 +823,15 @@ describe('TaskWorker internals', () => {
         },
       } as unknown as TaskBroker,
       concurrentTasksLimit: 2,
+      systemSecrets: {
+        subscribe(listener) {
+          secretListeners.add(listener);
+          return {
+            secrets: new Set(),
+            unsubscribe: () => secretListeners.delete(listener),
+          };
+        },
+      },
     });
 
     expect(claimedTaskCount).toBe(0);
@@ -641,6 +851,26 @@ describe('TaskWorker internals', () => {
     // We now expect one more task to have been claimed, and two tasks in the queue again
     expect(claimedTaskCount).toBe(3);
     expect(inflightTasks.length).toBe(2);
+
+    let stopped = false;
+    const stop = taskWorker.stop().then(() => {
+      stopped = true;
+    });
+    for (const listener of secretListeners) {
+      listener(new Set(['rotated-during-shutdown']));
+    }
+    await new Promise(resolve => setTimeout(resolve));
+
+    expect(stopped).toBe(true);
+    for (const { task } of inflightTasks) {
+      await task.waitUntilReady();
+      expect(task.redacter.redactString('rotated-during-shutdown')).toBe('***');
+    }
+
+    for (const inflight of inflightTasks) {
+      inflight.resolve();
+    }
+    await stop;
   });
 
   it('should keep claiming tasks after a claim fails', async () => {
@@ -677,6 +907,9 @@ describe('TaskWorker internals', () => {
         },
       } as unknown as TaskBroker,
       concurrentTasksLimit: 1,
+      systemSecrets: {
+        subscribe: () => ({ secrets: new Set(), unsubscribe() {} }),
+      },
     });
 
     taskWorker.start();

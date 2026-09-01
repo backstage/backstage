@@ -43,6 +43,7 @@ export function createMockActionContext<
     logger: loggerToWinstonLogger(mockServices.logger.mock()),
     logStream: new PassThrough(),
     output: jest.fn(),
+    registerSensitiveValue: jest.fn(),
     createTemporaryDirectory: jest.fn(),
     input: {} as TActionInput,
     async checkpoint<T extends JsonValue | void>(

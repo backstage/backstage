@@ -91,6 +91,8 @@ import {
   convertFiltersToRecord,
 } from '../../util/templating';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';
+import { TaskRedacter } from './TaskRedacter';
+import { TaskRunContext } from './TaskRunContext';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -146,12 +148,12 @@ const createStepLogger = ({
   task,
   step,
   rootLogger,
-  redactions,
+  redacter,
 }: {
   task: TaskContext;
   step: TaskStep;
   rootLogger: LoggerService;
-  redactions?: Iterable<string>;
+  redacter: TaskRedacter;
 }) => {
   const taskLogger = WinstonLogger.create({
     level: process.env.LOG_LEVEL || 'info',
@@ -160,9 +162,8 @@ const createStepLogger = ({
       winston.format.simple(),
     ),
     transports: [new BackstageLoggerTransport(rootLogger, task, step.id)],
+    redacter,
   });
-
-  taskLogger.addRedactions(redactions ?? []);
 
   return { taskLogger };
 };
@@ -176,6 +177,7 @@ const createStepLogger = ({
 function collectSecretRedactions(
   withSecrets: unknown,
   withoutSecrets: unknown,
+  source: unknown,
 ): string[] {
   if (typeof withSecrets === 'string') {
     return withSecrets !== withoutSecrets ? [withSecrets] : [];
@@ -183,24 +185,33 @@ function collectSecretRedactions(
   if (Array.isArray(withSecrets)) {
     const other = Array.isArray(withoutSecrets) ? withoutSecrets : [];
     return withSecrets.flatMap((val, i) =>
-      collectSecretRedactions(val, other[i]),
+      collectSecretRedactions(
+        val,
+        other[i],
+        Array.isArray(source) ? source[i] : undefined,
+      ),
     );
   }
   if (withSecrets && typeof withSecrets === 'object') {
-    const otherEntries =
+    const other =
       withoutSecrets && typeof withoutSecrets === 'object'
-        ? Object.entries(withoutSecrets as Record<string, unknown>)
-        : [];
+        ? (withoutSecrets as Record<string, unknown>)
+        : {};
+    const otherEntries = Object.entries(other);
+    const sourceObject =
+      source && typeof source === 'object' && !Array.isArray(source)
+        ? (source as Record<string, unknown>)
+        : {};
     return Object.entries(withSecrets as Record<string, unknown>).flatMap(
-      ([key, value], index) => {
-        const otherEntry = otherEntries[index];
-        if (!otherEntry) {
-          return [key, ...extractStringValues(value)];
-        }
-        const [otherKey, otherValue] = otherEntry;
+      ([key, val], index) => {
+        const otherEntry = Object.hasOwn(other, key)
+          ? ([key, other[key]] as const)
+          : otherEntries[index];
         return [
-          ...(key !== otherKey ? [key] : []),
-          ...collectSecretRedactions(value, otherValue),
+          ...(Object.hasOwn(sourceObject, key) || otherEntry?.[0] === key
+            ? []
+            : [key]),
+          ...collectSecretRedactions(val, otherEntry?.[1], sourceObject[key]),
         ];
       },
     );
@@ -209,7 +220,7 @@ function collectSecretRedactions(
 }
 
 /**
- * Extracts all string values from a nested object structure.
+ * Extracts all string keys and values from a nested object structure.
  * Used as a fallback when the comparison render fails.
  */
 function extractStringValues(obj: unknown): string[] {
@@ -283,10 +294,6 @@ function isActionInputAuthorized(
 export class NunjucksWorkflowRunner implements WorkflowRunner {
   private readonly defaultTemplateCapabilities: TemplateCapabilities;
   private readonly options: NunjucksWorkflowRunnerOptions;
-  private environment: {
-    parameters: JsonObject;
-    secrets?: Record<string, string>;
-  } = { parameters: {}, secrets: {} };
 
   private readonly tracker: ReturnType<typeof scaffoldingTracker>;
   private readonly recoveryEnabled: boolean;
@@ -339,7 +346,36 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     });
   }
 
+  private renderAndRegister<T>(options: {
+    input: T;
+    context: PreparedTemplateContext;
+    contextWithoutSecrets: PreparedTemplateContext;
+    templateRenderer: TemplateRenderer;
+    runContext: TaskRunContext;
+  }): { value: T; valueWithoutSecrets: T | undefined } {
+    const value = this.render(
+      options.input,
+      options.context,
+      options.templateRenderer,
+    );
+    try {
+      const valueWithoutSecrets = this.render(
+        options.input,
+        options.contextWithoutSecrets,
+        options.templateRenderer,
+      );
+      options.runContext.addSensitiveValues(
+        collectSecretRedactions(value, valueWithoutSecrets, options.input),
+      );
+      return { value, valueWithoutSecrets };
+    } catch {
+      options.runContext.addSensitiveValues(extractStringValues(value));
+      return { value, valueWithoutSecrets: undefined };
+    }
+  }
+
   async executeStep(
+    runContext: TaskRunContext,
     task: TaskContext,
     step: TaskStep,
     context: TemplateContext,
@@ -349,16 +385,17 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     workspacePath: string,
     decision: PolicyDecision,
   ) {
-    const stepTrack = await this.tracker.stepStart(task, step);
+    const stepTrack = await this.tracker.stepStart(
+      task,
+      step,
+      runContext.redacter,
+    );
     let workspaceSerializationAttempted = false;
     const { taskLogger } = createStepLogger({
       task,
       step,
-      rootLogger: this.options.logger,
-      redactions: [
-        ...Object.values(task.secrets ?? {}),
-        ...Object.values(this.environment?.secrets ?? {}),
-      ],
+      rootLogger: runContext.logger,
+      redacter: runContext.redacter,
     });
 
     if (task.cancelSignal.aborted) {
@@ -372,7 +409,17 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         step.if === false ||
         (typeof step.if === 'string' &&
           step.each === undefined &&
-          !isTruthy(this.render(step.if, preparedContext, templateRenderer)))
+          !isTruthy(
+            this.renderAndRegister({
+              input: step.if,
+              context: preparedContext,
+              contextWithoutSecrets: preparedContext
+                .withValue(['secrets'], {})
+                .withValue(['environment', 'secrets'], {}),
+              templateRenderer,
+              runContext,
+            }).value,
+          ))
       ) {
         await stepTrack.skipFalsy();
         return preparedContext;
@@ -388,14 +435,14 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         );
 
         const redactedEnvironmentSecrets = Object.fromEntries(
-          Object.entries(this.environment?.secrets ?? {}).map(secret => [
+          Object.entries(runContext.environment.secrets ?? {}).map(secret => [
             secret[0],
             '***',
           ]),
         );
         const dryRunContext = preparedContext
           .withValue(['environment'], {
-            parameters: this.environment?.parameters || {},
+            parameters: runContext.environment.parameters || {},
             secrets: redactedEnvironmentSecrets,
           } as NunjitsuTemplateValue)
           .withValue(['secrets'], redactedSecrets);
@@ -434,8 +481,8 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       const preIterationContext = {
         ...context,
         environment: {
-          parameters: this.environment?.parameters ?? {},
-          secrets: task.isDryRun ? {} : this.environment?.secrets ?? {},
+          parameters: runContext.environment.parameters ?? {},
+          secrets: task.isDryRun ? {} : runContext.environment.secrets ?? {},
         },
         secrets: task.secrets ?? {},
       };
@@ -448,17 +495,26 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           ['secrets'],
           preIterationContext.secrets as NunjitsuTemplateValue,
         );
-      const hasSecrets =
-        Object.keys(task.secrets ?? {}).length > 0 ||
-        Object.keys(this.environment?.secrets ?? {}).length > 0;
-      const preparedPreIterationContextNoSecrets = preparedPreIterationContext
-        .withValue(['secrets'], {})
-        .withValue(['environment', 'secrets'], {});
+      const preparedPreIterationContextNoSecrets = preparedContext
+        .withValue(['environment'], {
+          parameters: runContext.environment.parameters ?? {},
+          secrets: {},
+        } as NunjitsuTemplateValue)
+        .withValue(['secrets'], {});
 
       const hasEach = step.each !== undefined;
-      const resolvedEach = hasEach
-        ? this.render(step.each, preparedPreIterationContext, templateRenderer)
+      const resolvedEachResult = hasEach
+        ? this.renderAndRegister({
+            input: step.each,
+            context: preparedPreIterationContext,
+            contextWithoutSecrets: preparedPreIterationContextNoSecrets,
+            templateRenderer,
+            runContext,
+          })
         : undefined;
+      const resolvedEach = resolvedEachResult?.value;
+      const resolvedEachWithoutSecrets =
+        resolvedEachResult?.valueWithoutSecrets;
 
       if (hasEach && resolvedEach === undefined) {
         throw new InputError(
@@ -475,40 +531,27 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         );
       }
 
-      // Discover secret-derived iteration values before logging or executing
-      // any iteration. The iteration value is already resolved by the time it
-      // is added to each iteration's context, so input-only comparison cannot
-      // identify it as secret-derived.
-      let eachWithoutSecretsEntries: [string, unknown][] | undefined;
-      if (step.each && resolvedEach && hasSecrets) {
-        try {
-          const eachWithoutSecrets = this.render(
-            step.each,
-            preparedPreIterationContextNoSecrets,
-            templateRenderer,
-          );
-          eachWithoutSecretsEntries =
-            Array.isArray(resolvedEach) && Array.isArray(eachWithoutSecrets)
-              ? Object.keys(resolvedEach).map(
-                  key =>
-                    [key, eachWithoutSecrets[Number(key)]] as [string, unknown],
-                )
-              : Object.entries(eachWithoutSecrets);
-          taskLogger.addRedactions(
-            collectSecretRedactions(
-              Object.entries(resolvedEach),
-              eachWithoutSecretsEntries,
-            ),
-          );
-        } catch {
-          taskLogger.addRedactions(extractStringValues(resolvedEach));
-        }
-      }
-
+      const eachWithoutSecretsEntries =
+        resolvedEachWithoutSecrets !== null &&
+        typeof resolvedEachWithoutSecrets === 'object'
+          ? Object.entries(resolvedEachWithoutSecrets)
+          : [];
       const iterations = (
         resolvedEach
           ? Object.entries(resolvedEach).map(([key, value], index) => {
-              const eachWithoutSecrets = eachWithoutSecretsEntries?.[index];
+              let eachWithoutSecrets: [string, JsonValue] | undefined =
+                eachWithoutSecretsEntries[index];
+              if (
+                Array.isArray(resolvedEach) &&
+                Array.isArray(resolvedEachWithoutSecrets)
+              ) {
+                eachWithoutSecrets = Object.hasOwn(
+                  resolvedEachWithoutSecrets,
+                  key,
+                )
+                  ? [key, resolvedEachWithoutSecrets[Number(key)]]
+                  : undefined;
+              }
               return {
                 each: { key, value },
                 eachWithoutSecrets: eachWithoutSecrets
@@ -516,7 +559,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
                       key: eachWithoutSecrets[0],
                       value: eachWithoutSecrets[1],
                     }
-                  : {},
+                  : undefined,
               };
             })
           : [{}]
@@ -528,8 +571,8 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
                 i.each as NunjitsuTemplateValue,
               )
             : preparedPreIterationContext;
-        const preparedContextNoSecrets =
-          'each' in i
+        const preparedFullContextNoSecrets =
+          'eachWithoutSecrets' in i && i.eachWithoutSecrets
             ? preparedPreIterationContextNoSecrets.withValue(
                 ['each'],
                 i.eachWithoutSecrets as NunjitsuTemplateValue,
@@ -539,51 +582,37 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         const shouldRun =
           !('each' in i) ||
           !step.if ||
-          isTruthy(this.render(step.if, preparedFullContext, templateRenderer));
+          isTruthy(
+            this.renderAndRegister({
+              input: step.if,
+              context: preparedFullContext,
+              contextWithoutSecrets: preparedFullContextNoSecrets,
+              templateRenderer,
+              runContext,
+            }).value,
+          );
 
         return {
           ...i,
           preparedContext: preparedFullContext,
-          preparedContextNoSecrets,
+          preparedContextNoSecrets: preparedFullContextNoSecrets,
           shouldRun,
           // Secrets are only passed when templating the input to actions for security reasons
           input: step.input
-            ? this.render(step.input, preparedFullContext, templateRenderer)
+            ? this.renderAndRegister({
+                input: step.input,
+                context: preparedFullContext,
+                contextWithoutSecrets: preparedFullContextNoSecrets,
+                templateRenderer,
+                runContext,
+              }).value
             : {},
         };
       });
       for (const iteration of iterations) {
-        if (hasSecrets && iteration.each) {
-          taskLogger.addRedactions(
-            collectSecretRedactions(
-              iteration.each,
-              iteration.eachWithoutSecrets,
-            ),
-          );
-        }
         if (!iteration.shouldRun) {
           // No need to check schema or authorization for iterations that will not run
           continue;
-        }
-
-        // Redact any rendered values that were influenced by secrets.
-        // Re-render the input without secrets and diff against the real render
-        // to find values that changed due to secret interpolation.
-        if (step.input) {
-          if (hasSecrets) {
-            try {
-              const inputWithoutSecrets = this.render(
-                step.input,
-                iteration.preparedContextNoSecrets,
-                templateRenderer,
-              );
-              taskLogger.addRedactions(
-                collectSecretRedactions(iteration.input, inputWithoutSecrets),
-              );
-            } catch {
-              taskLogger.addRedactions(extractStringValues(iteration.input));
-            }
-          }
         }
 
         const actionId = `${action.id}${
@@ -706,6 +735,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
               stepOutput[name] = value;
             }
           },
+          registerSensitiveValue(value: JsonValue) {
+            runContext.registerSensitiveValue(value);
+          },
           templateInfo: task.spec.templateInfo,
           user: task.spec.user,
           isDryRun: task.isDryRun,
@@ -762,7 +794,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     }
   }
 
-  async execute(task: TaskContext): Promise<WorkflowResponse> {
+  async execute(runContext: TaskRunContext): Promise<WorkflowResponse> {
+    runContext.assertInitialized();
+    const task = runContext.task;
     if (!isValidTaskSpec(task.spec)) {
       throw new InputError(
         'Wrong template version executed with the workflow engine',
@@ -773,8 +807,6 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     const workspacePath = path.join(this.options.workingDirectory, taskId);
 
     const { templateCapabilities } = this.options;
-
-    this.environment = await this.getEnvironmentConfig();
 
     // Track whether any step has failed, used by status check functions
     const taskState = { failed: false };
@@ -803,13 +835,13 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     try {
       await task.rehydrateWorkspace?.({ taskId, targetPath: workspacePath });
 
-      const taskTrack = await this.tracker.taskStart(task);
+      const taskTrack = await this.tracker.taskStart(task, runContext.redacter);
       await fs.ensureDir(workspacePath);
 
       const context: TemplateContext = {
         parameters: task.spec.parameters,
         environment: {
-          parameters: this.environment?.parameters || {},
+          parameters: runContext.environment.parameters || {},
           secrets: {},
         },
         steps: {},
@@ -898,6 +930,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
         try {
           preparedContext = await this.executeStep(
+            runContext,
             task,
             step,
             context,
@@ -915,7 +948,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             firstError = error;
           } else {
             // Log subsequent errors to preserve debugging information
-            this.options.logger.error(
+            runContext.logger.error(
               `Additional error in step ${step.id} (${step.name}): ${error.message}`,
               error,
             );
@@ -935,18 +968,22 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             .slice(1)
             .map(({ step }) => `${step.id} (${step.name})`)
             .join(', ');
-          this.options.logger.warn(
+          runContext.logger.warn(
             `Task failed with ${allErrors.length} errors. First error from step ${allErrors[0].step.id}. Additional failures in: ${additionalErrorSummary}`,
           );
         }
         throw firstError;
       }
 
-      const output = this.render(
-        task.spec.output,
-        preparedContext,
+      const output = this.renderAndRegister({
+        input: task.spec.output,
+        context: preparedContext,
+        contextWithoutSecrets: preparedContext
+          .withValue(['secrets'], {})
+          .withValue(['environment', 'secrets'], {}),
         templateRenderer,
-      );
+        runContext,
+      }).value;
 
       // Filter output links and text items based on their `if` condition
       if (Array.isArray(output?.links)) {
@@ -1008,14 +1045,19 @@ function scaffoldingTracker(metrics: MetricsService) {
     unit: 's',
   });
 
-  async function taskStart(task: TaskContext) {
+  async function taskStart(task: TaskContext, redacter: TaskRedacter) {
     await task.emitLog(`Starting up task with ${task.spec.steps.length} steps`);
     const template = task.spec.templateInfo?.entityRef || '';
 
     const startTime = process.hrtime();
-    const taskTimer = promTaskDuration.startTimer({
-      template,
-    });
+    const taskTimer = promTaskDuration.startTimer();
+
+    function labels(result: string) {
+      return {
+        template: redacter.redactString(template),
+        result,
+      };
+    }
 
     function endTime() {
       const delta = process.hrtime(startTime);
@@ -1033,16 +1075,14 @@ function scaffoldingTracker(metrics: MetricsService) {
     }
 
     async function markSuccessful() {
-      promTaskCount.inc({
-        template,
-        result: 'ok',
-      });
-      taskTimer({ result: 'ok' });
+      const attributes = labels('ok');
+      promTaskCount.inc(attributes);
+      taskTimer({ template: attributes.template, result: attributes.result });
 
-      taskCount.add(1, { template, result: 'ok' });
+      taskCount.add(1, attributes);
       taskDuration.record(endTime(), {
-        template,
-        result: 'ok',
+        template: attributes.template,
+        result: attributes.result,
       });
     }
 
@@ -1051,16 +1091,14 @@ function scaffoldingTracker(metrics: MetricsService) {
         stepId: step.id,
         status: 'failed',
       });
-      promTaskCount.inc({
-        template,
-        result: 'failed',
-      });
-      taskTimer({ result: 'failed' });
+      const attributes = labels('failed');
+      promTaskCount.inc(attributes);
+      taskTimer({ template: attributes.template, result: attributes.result });
 
-      taskCount.add(1, { template, result: 'failed' });
+      taskCount.add(1, attributes);
       taskDuration.record(endTime(), {
-        template,
-        result: 'failed',
+        template: attributes.template,
+        result: attributes.result,
       });
     }
 
@@ -1069,16 +1107,14 @@ function scaffoldingTracker(metrics: MetricsService) {
         stepId: step.id,
         status: 'cancelled',
       });
-      promTaskCount.inc({
-        template,
-        result: 'cancelled',
-      });
-      taskTimer({ result: 'cancelled' });
+      const attributes = labels('cancelled');
+      promTaskCount.inc(attributes);
+      taskTimer({ template: attributes.template, result: attributes.result });
 
-      taskCount.add(1, { template, result: 'cancelled' });
+      taskCount.add(1, attributes);
       taskDuration.record(endTime(), {
-        template,
-        result: 'cancelled',
+        template: attributes.template,
+        result: attributes.result,
       });
     }
 
@@ -1090,18 +1126,28 @@ function scaffoldingTracker(metrics: MetricsService) {
     };
   }
 
-  async function stepStart(task: TaskContext, step: TaskStep) {
+  async function stepStart(
+    task: TaskContext,
+    step: TaskStep,
+    redacter: TaskRedacter,
+  ) {
     await task.emitLog(`Beginning step ${step.name}`, {
       stepId: step.id,
       status: 'processing',
     });
     const template = task.spec.templateInfo?.entityRef || '';
+    const stepName = step.name;
 
     const startTime = process.hrtime();
-    const stepTimer = promStepDuration.startTimer({
-      template,
-      step: step.name,
-    });
+    const stepTimer = promStepDuration.startTimer();
+
+    function labels(result: string) {
+      return {
+        template: redacter.redactString(template),
+        step: redacter.redactString(stepName),
+        result,
+      };
+    }
 
     function endTime() {
       const delta = process.hrtime(startTime);
@@ -1113,51 +1159,30 @@ function scaffoldingTracker(metrics: MetricsService) {
         stepId: step.id,
         status: 'completed',
       });
-      promStepCount.inc({
-        template,
-        step: step.name,
-        result: 'ok',
-      });
-      stepTimer({ result: 'ok' });
+      const attributes = labels('ok');
+      promStepCount.inc(attributes);
+      stepTimer(attributes);
 
-      stepCount.add(1, { template, step: step.name, result: 'ok' });
-      stepDuration.record(endTime(), {
-        template,
-        step: step.name,
-        result: 'ok',
-      });
+      stepCount.add(1, attributes);
+      stepDuration.record(endTime(), attributes);
     }
 
     async function markCancelled() {
-      promStepCount.inc({
-        template,
-        step: step.name,
-        result: 'cancelled',
-      });
-      stepTimer({ result: 'cancelled' });
+      const attributes = labels('cancelled');
+      promStepCount.inc(attributes);
+      stepTimer(attributes);
 
-      stepCount.add(1, { template, step: step.name, result: 'cancelled' });
-      stepDuration.record(endTime(), {
-        template,
-        step: step.name,
-        result: 'cancelled',
-      });
+      stepCount.add(1, attributes);
+      stepDuration.record(endTime(), attributes);
     }
 
     async function markFailed() {
-      promStepCount.inc({
-        template,
-        step: step.name,
-        result: 'failed',
-      });
-      stepTimer({ result: 'failed' });
+      const attributes = labels('failed');
+      promStepCount.inc(attributes);
+      stepTimer(attributes);
 
-      stepCount.add(1, { template, step: step.name, result: 'failed' });
-      stepDuration.record(endTime(), {
-        template,
-        step: step.name,
-        result: 'failed',
-      });
+      stepCount.add(1, attributes);
+      stepDuration.record(endTime(), attributes);
     }
 
     async function skipFalsy() {
@@ -1165,14 +1190,11 @@ function scaffoldingTracker(metrics: MetricsService) {
         `Skipping step ${step.id} because its if condition was false`,
         { stepId: step.id, status: 'skipped' },
       );
-      stepTimer({ result: 'skipped' });
+      const attributes = labels('skipped');
+      stepTimer(attributes);
 
-      stepCount.add(1, { template, step: step.name, result: 'skipped' });
-      stepDuration.record(endTime(), {
-        template,
-        step: step.name,
-        result: 'skipped',
-      });
+      stepCount.add(1, attributes);
+      stepDuration.record(endTime(), attributes);
     }
 
     return {

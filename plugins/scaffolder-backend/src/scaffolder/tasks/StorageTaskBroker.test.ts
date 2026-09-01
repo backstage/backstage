@@ -73,6 +73,17 @@ describe('StorageTaskBroker', () => {
     );
   });
 
+  it('does not advertise workspace persistence when it is disabled', async () => {
+    const isolatedStorage = await createStore();
+    const broker = new StorageTaskBroker(isolatedStorage, logger);
+
+    await broker.dispatch(emptyTaskSpec);
+    const task = await broker.claim();
+
+    expect(task.serializeWorkspace).toBeUndefined();
+    await task.complete('completed');
+  });
+
   it('rejects an unavailable workspace provider before claiming tasks', async () => {
     const isolatedStorage = await createStore();
     const { taskId } = await isolatedStorage.createTask(emptyTaskSpec);
@@ -144,6 +155,74 @@ describe('StorageTaskBroker', () => {
 
     expect(task.secrets).toEqual({ ...fakeSecrets });
   }, 10000);
+
+  it('omits secrets and recovery state from public task projections', async () => {
+    const broker = new StorageTaskBroker(storage, logger);
+    const { taskId } = await broker.dispatch({
+      spec: {
+        steps: [],
+        parameters: { duplicatedSecret: fakeSecrets.backstageToken },
+      } as unknown as TaskSpec,
+      secrets: fakeSecrets,
+    });
+    await storage.saveTaskState({
+      taskId,
+      state: { checkpoints: { secret: { value: 'secret' } } },
+    });
+    const task = await broker.claim();
+
+    const publicTask = await broker.get(taskId);
+    expect(publicTask).not.toHaveProperty('secrets');
+    expect(publicTask).not.toHaveProperty('state');
+    expect(JSON.stringify(publicTask)).not.toContain(
+      fakeSecrets.backstageToken,
+    );
+    const list = jest.spyOn(storage, 'list').mockResolvedValueOnce({
+      tasks: [await storage.getTask(taskId)],
+      totalTasks: 1,
+    });
+    const listedTask = (await broker.list()).tasks[0];
+    expect(listedTask).not.toHaveProperty('secrets');
+    expect(listedTask).not.toHaveProperty('state');
+    expect(JSON.stringify(listedTask)).not.toContain(
+      fakeSecrets.backstageToken,
+    );
+    list.mockRestore();
+    await task.complete('completed');
+    expect(JSON.stringify(await broker.get(taskId))).not.toContain(
+      fakeSecrets.backstageToken,
+    );
+  });
+
+  it('includes current system secrets in public task projections', async () => {
+    const secret = 'current-system-secret';
+    const isolatedStorage = await createStore();
+    const broker = new StorageTaskBroker(
+      isolatedStorage,
+      logger,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      {
+        subscribe: () => ({
+          secrets: new Set([secret]),
+          unsubscribe() {},
+        }),
+      },
+    );
+    const { taskId } = await broker.dispatch({
+      spec: {
+        steps: [],
+        parameters: { duplicatedSecret: secret },
+      } as unknown as TaskSpec,
+    });
+
+    expect(JSON.stringify(await broker.get(taskId))).not.toContain(secret);
+
+    const task = await broker.claim();
+    await task.complete('completed');
+  });
 
   it('should complete a task', async () => {
     const broker = new StorageTaskBroker(storage, logger);
@@ -302,6 +381,81 @@ describe('StorageTaskBroker', () => {
     expect(task.done).toBe(true);
   });
 
+  it('redacts task and system secrets from stale-task failures', async () => {
+    const isolatedStorage = await createStore();
+    const taskSecret = 'stale-task-secret';
+    const systemSecret = 'stale-system-secret';
+    const { taskId } = await isolatedStorage.createTask({
+      spec: { steps: [] } as unknown as TaskSpec,
+      secrets: { token: taskSecret },
+    });
+    jest.spyOn(isolatedStorage, 'listStaleTasks').mockResolvedValueOnce({
+      tasks: [{ taskId }],
+    });
+    jest
+      .spyOn(isolatedStorage, 'completeTask')
+      .mockRejectedValueOnce(
+        new Error(`failed with ${taskSecret} and ${systemSecret}`),
+      );
+    const taskLogger = mockServices.logger.mock();
+    const auditEvent = { success: jest.fn(), fail: jest.fn() };
+    const auditor = mockServices.auditor.mock();
+    auditor.createEvent.mockResolvedValue(auditEvent);
+    const broker = new StorageTaskBroker(
+      isolatedStorage,
+      taskLogger,
+      undefined,
+      undefined,
+      undefined,
+      auditor,
+      {
+        subscribe: () => ({
+          secrets: new Set([systemSecret]),
+          unsubscribe() {},
+        }),
+      },
+    );
+
+    await broker.vacuumTasks({ timeoutS: 2 });
+
+    expect(JSON.stringify(taskLogger.warn.mock.calls)).not.toContain(
+      taskSecret,
+    );
+    expect(JSON.stringify(taskLogger.warn.mock.calls)).not.toContain(
+      systemSecret,
+    );
+    expect(auditEvent.fail).toHaveBeenCalledWith({
+      error: expect.objectContaining({
+        message: 'failed with *** and ***',
+      }),
+    });
+  });
+
+  it('redacts system secrets from stale-task discovery failures', async () => {
+    const systemSecret = 'stale-discovery-system-secret';
+    jest
+      .spyOn(storage, 'listStaleTasks')
+      .mockRejectedValueOnce(new Error(`failed with ${systemSecret}`));
+    const broker = new StorageTaskBroker(
+      storage,
+      mockServices.logger.mock(),
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      {
+        subscribe: () => ({
+          secrets: new Set([systemSecret]),
+          unsubscribe() {},
+        }),
+      },
+    );
+
+    await expect(broker.vacuumTasks({ timeoutS: 2 })).rejects.toMatchObject({
+      message: 'failed with ***',
+    });
+  });
+
   it('should list all tasks', async () => {
     const broker = new StorageTaskBroker(storage, logger);
     const { taskId } = await broker.dispatch(emptyTaskSpec);
@@ -313,7 +467,7 @@ describe('StorageTaskBroker', () => {
           id: taskId,
         }),
       ]),
-      totalTasks: 14,
+      totalTasks: 15,
     });
   });
 

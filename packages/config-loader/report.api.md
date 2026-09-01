@@ -124,6 +124,12 @@ export type ConfigTarget =
 export type ConfigVisibility = 'frontend' | 'backend' | 'secret';
 
 // @public
+export function enumerateConfigSecrets(options: {
+  config: Config;
+  schema: ConfigSchema;
+}): Set<string>;
+
+// @public
 export class EnvConfigSource implements ConfigSource {
   static create(options: EnvConfigSourceOptions): ConfigSource;
   // (undocumented)
