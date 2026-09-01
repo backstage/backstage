@@ -2,4 +2,4 @@
 '@backstage/cli-module-build': patch
 ---
 
-Switched to the `openBrowser` helper from `@backstage/cli-common`.
+Fixed the `start` command to honor the `BROWSER` and `BROWSER_ARGS` environment variables when opening the browser, and extended macOS tab reuse to Google Chrome Dev and Beta.

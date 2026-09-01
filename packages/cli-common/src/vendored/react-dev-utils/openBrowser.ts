@@ -42,11 +42,12 @@
  * - Replaced chalk with Node built-in styleText (node:util)
  * - Inlined AppleScript: openChrome.applescript is embedded as a string and piped to `osascript -` on stdin; no separate .applescript file. The package build only emits JavaScript into dist, so a sibling script file would be missing from the published package.
  * - osascript is invoked via execFileSync with an argument array rather than a shell string. The URL is therefore passed verbatim instead of through encodeURI, which upstream needed for shell quoting but which double-encodes already-escaped query parameters.
- * - Process check on macOS: original uses "ps cax | grep <browser>"; we use "pgrep -x <browser>", which matches the command name exactly rather than by substring, and without spawning a shell.
+ * - Process check on macOS: original uses "ps cax | grep <browser>"; we use "pgrep -x <browser>", which matches the command name exactly rather than by substring, and without spawning a shell. macOS pgrep matches the full executable name even beyond the kernel's 15-character comm limit.
  * - open() options: original used url: true; removed in open v8, deprecated in v7.2
  * - open() app option: original passed [browser, ...args], which open v8+ reads as a list of fallback apps rather than a browser and its arguments; we pass { name, arguments } so BROWSER_ARGS is honoured.
  * - Browser list follows current upstream main, which adds Google Chrome Dev and Google Chrome Beta over the released react-dev-utils 12.0.1.
- * - Make open an optional peer dependency
+ * - Make open an optional peer dependency; only the default-browser fallback path needs it, and openBrowser warns and returns false if that path is reached without it
+ * - The open fallback is loaded on demand, so its browser launch starts only after openBrowser has returned; upstream loaded open at require time and began the spawn before returning
  * - Ported to TypeScript with basic types; same API openBrowser(url: string): boolean.
  *
  * -----------------------------------------------------------------------
@@ -267,15 +268,17 @@ function startBrowserProcess(
   if (typeof resolvedBrowser === 'string' && resolvedBrowser) {
     appOption =
       args.length > 0
-        ? { name: resolvedBrowser, arguments: args as readonly string[] }
+        ? { name: resolvedBrowser, arguments: args }
         : { name: resolvedBrowser };
   }
 
   // Fallback to open (ESM-only; load via dynamic import from CJS build).
-  // It will always open a new tab. The result has to be reported synchronously,
-  // so check up front that the optional peer is installed and let any later
-  // failure go unreported.
+  // It will always open a new tab. The result has to be reported
+  // synchronously, so any later failure goes unreported.
   if (!isOpenInstalled()) {
+    console.warn(
+      "openBrowser requires the optional 'open' peer dependency of @backstage/cli-common to open the default browser",
+    );
     return false;
   }
   loadOpen()
@@ -290,8 +293,10 @@ function startBrowserProcess(
  *
  * Adapted from `react-dev-utils/openBrowser`.
  *
- * Opening a browser requires the optional `open` peer dependency; without it
- * this returns false. A browser is launched asynchronously, so a true result
+ * Only the default-browser fallback requires the optional `open` peer
+ * dependency; that path warns and returns false without it. The macOS
+ * Chromium tab-reuse path works without it. On the fallback path the launch
+ * starts asynchronously after this function has returned, so a true result
  * means it was started, not that it succeeded.
  *
  * @public

@@ -55,10 +55,10 @@
     "@backstage/cli": "workspace:^",
     "@types/cross-spawn": "^6.0.2",
     "@types/node": "^22.13.14",
-    "open": "^10"
+    "open": "^10.2.0"
   },
   "peerDependencies": {
-    "open": "^10"
+    "open": "^10.2.0"
   },
   "peerDependenciesMeta": {
     "open": {

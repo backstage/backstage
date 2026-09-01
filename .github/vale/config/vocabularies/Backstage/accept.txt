@@ -581,7 +581,6 @@ validator
 validators
 Valkey
 varchar
-vendored
 viewport
 virtualized
 vite
