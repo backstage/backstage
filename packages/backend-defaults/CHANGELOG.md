@@ -1,5 +1,28 @@
 # @backstage/backend-defaults
 
+## 0.17.9-next.0
+
+### Patch Changes
+
+- 45d760b: Improve action handling consistency.
+- 8d71644: Reduced PostgreSQL connection churn during backend startup when many plugins initialize databases or schemas.
+- 416be1b: Updated Harness URL reading to validate cross-origin redirect destinations
+  against `backend.reading.allow`.
+- 5aac521: Improved service credential handling during plugin-to-plugin delegation.
+- 61449ae: Reduced PostgreSQL startup connections when multiple plugins share a database by reusing the database existence check.
+- 8b3c83e: Improved input validation and path handling for cloud storage URL readers.
+- 61d97c0: Improved input validation for cloud storage URL readers.
+- e895def: Fixed handling of GitLab URLs for instances configured with a relative base path.
+- e13e278: Updated URL reader allow list matching so configured paths match either the exact path or paths below it at a segment boundary.
+- e3b587c: Improve authentication reliability during signing key rotation by performing budgeted JWKS reloads when a newly published key is requested during the remote key set cooldown.
+- Updated dependencies
+  - @backstage/integration@2.1.2-next.0
+  - @backstage/backend-app-api@1.7.4-next.0
+  - @backstage/plugin-auth-node@0.7.5-next.0
+  - @backstage/plugin-permission-node@0.11.4-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-events-node@0.4.26-next.0
+
 ## 0.17.7
 
 ### Patch Changes

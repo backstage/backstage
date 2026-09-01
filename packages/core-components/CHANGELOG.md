@@ -1,5 +1,15 @@
 # @backstage/core-components
 
+## 0.18.14-next.1
+
+### Patch Changes
+
+- b80a9f3: Added an `onCopyLog` prop to the `LogViewer` component that renders a copy button in the toolbar, allowing users to copy all log content to the clipboard.
+- 279fdf6: Declared the DOM Testing Library dependency required by React Testing Library.
+- Updated dependencies
+  - @backstage/ui@0.18.0-next.1
+  - @backstage/core-plugin-api@1.12.10-next.0
+
 ## 0.18.14-next.0
 
 ### Patch Changes

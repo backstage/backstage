@@ -1,5 +1,16 @@
 # @backstage/plugin-notifications-backend-module-email
 
+## 0.3.25-next.0
+
+### Patch Changes
+
+- 2a19159: Hardened notification email delivery with format validation and optional `allowedEmailDomains`. Invalid or disallowed addresses are skipped; `allowlistEmailAddresses` and `denylistEmailAddresses` match case-insensitively, allowlist still overrides the domain list, and denied addresses win last.
+- Updated dependencies
+  - @backstage/catalog-client@1.16.2-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-catalog-node@2.2.5-next.0
+  - @backstage/plugin-notifications-node@0.2.30-next.0
+
 ## 0.3.24
 
 ### Patch Changes

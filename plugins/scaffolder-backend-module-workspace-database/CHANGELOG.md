@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder-backend-module-workspace-database
 
+## 0.1.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.7-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
 ## 0.1.0-next.0
 
 ### Minor Changes

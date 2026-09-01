@@ -1,5 +1,16 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.11.11-next.1
+
+### Patch Changes
+
+- bbba6b5: Added support for requiring user-provided credentials for GitLab mutation actions when `scaffolder.requireScmUserCredentials` is enabled.
+- cd77db3: Added an `autoMerge` boolean input to the `publish:gitlab:merge-request` scaffolder action. When set to `true`, the merge request is automatically merged once all merge checks succeed, using GitLab's auto-merge feature.
+- Updated dependencies
+  - @backstage/integration@2.1.2-next.0
+  - @backstage/plugin-scaffolder-node@0.13.7-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
 ## 0.11.10-next.0
 
 ### Patch Changes
