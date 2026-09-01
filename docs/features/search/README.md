@@ -44,7 +44,7 @@ the search engines are used.
 
 | Search Engines                                                | Support Status |
 | ------------------------------------------------------------- | -------------- |
-| [Elasticsearch/OpenSearch](./search-engines.md#elasticsearch) | ✅             |
+| [Elasticsearch/OpenSearch](./search-engines.md#elasticsearch-7x-and-opensearch) | ✅             |
 | [Lunr](./search-engines.md#lunr)                              | ✅             |
 | [Postgres](./search-engines.md#postgres)                      | Community ✅   |
 
