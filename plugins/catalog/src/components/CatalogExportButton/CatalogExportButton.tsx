@@ -30,10 +30,13 @@ import {
   Select,
   Text,
 } from '@backstage/ui';
-import { useStreamingExport } from './file-download';
+import { useStreamingExport } from './file-download/useStreamingExport';
 import type { CatalogExportSettingsColumn } from './file-download/serializeEntities';
 import { getColumnTitle } from './file-download/serializeEntities';
 import type { CatalogExporter } from './file-download/useStreamingExport';
+import { CatalogExportType } from './CatalogExportType';
+
+export { CatalogExportType } from './CatalogExportType';
 
 /**
  * Custom exporter configuration for a catalog export format.
@@ -89,17 +92,6 @@ export interface CatalogExportSettings {
    * Receives an object containing the error for custom error handling.
    */
   onError?: (options: { error: Error }) => void;
-}
-
-/**
- * The available export formats for the catalog export.
- * Currently supports CSV and JSON.
- *
- * @public
- */
-export enum CatalogExportType {
-  CSV = 'csv',
-  JSON = 'json',
 }
 
 /**
