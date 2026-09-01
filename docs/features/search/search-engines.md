@@ -5,7 +5,7 @@ description: Choosing and configuring your search engine for Backstage
 ---
 
 Backstage supports 3 search engines by default, an in-memory engine called [Lunr](#lunr), [Postgres](#postgres)
-and [Elasticsearch/OpenSearch](#elasticsearch).
+and [Elasticsearch/OpenSearch](#elasticsearch-7x-and-opensearch).
 
 ## Lunr
 
