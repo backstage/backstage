@@ -142,7 +142,17 @@ export async function buildBundle(options: BuildOptions) {
     // No @types/bfj
     await require('bfj').write(
       resolvePath(paths.targetDist, 'bundle-stats.json'),
-      mainStats.toJson(),
+      // Requested explicitly, as the bundler defaults leave most of these out
+      // of the report, which bundle analysis tools need.
+      mainStats.toJson({
+        assets: true,
+        chunkGroups: true,
+        // Asking for `modules` turns this off by default, in both bundlers
+        chunkModules: true,
+        chunks: true,
+        entrypoints: true,
+        modules: true,
+      }),
     );
   }
 
