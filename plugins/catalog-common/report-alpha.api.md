@@ -30,9 +30,6 @@ export const catalogEntityValidatePermission: BasicPermission;
 export const catalogIngestionManagePermission: BasicPermission;
 
 // @alpha
-export const catalogIngestionPermissions: BasicPermission[];
-
-// @alpha
 export const catalogIngestionReadPermission: BasicPermission;
 
 // @alpha

@@ -169,16 +169,6 @@ export const catalogIngestionManagePermission = createPermission({
 });
 
 /**
- * List of all catalog ingestion permissions.
- *
- * @alpha
- */
-export const catalogIngestionPermissions = [
-  catalogIngestionReadPermission,
-  catalogIngestionManagePermission,
-];
-
-/**
  * List of all catalog permissions.
  * @alpha
  */
@@ -192,5 +182,6 @@ export const catalogPermissions = [
   catalogLocationCreatePermission,
   catalogLocationDeletePermission,
   catalogLocationAnalyzePermission,
-  ...catalogIngestionPermissions,
+  catalogIngestionReadPermission,
+  catalogIngestionManagePermission,
 ];
