@@ -315,7 +315,6 @@ export async function createConfig(
 
   return {
     mode,
-    profile: false,
     ...(isDev
       ? {
           watchOptions: {
@@ -339,6 +338,9 @@ export async function createConfig(
     resolve: {
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json', '.wasm'],
       mainFields: ['browser', 'module', 'main'],
+      // Rspack defaults this to an empty list, which stops root-absolute
+      // imports from resolving. The value matches WebPack's own default.
+      roots: [paths.targetPath],
       fallback: {
         ...pickBy(require('node-stdlib-browser')),
         module: false,
@@ -368,6 +370,17 @@ export async function createConfig(
     },
     module: {
       rules: loaders,
+      // Pinned, as the Rspack defaults fail the build on otherwise valid app
+      // code: `exportsPresence` errors on missing exports, and renamed
+      // `require` calls are left unbundled. WebPack has no `requireAlias`.
+      ...(!webpack && {
+        parser: {
+          javascript: {
+            exportsPresence: 'auto' as const,
+            requireAlias: true,
+          },
+        },
+      }),
     },
     output: {
       uniqueName: options.moduleFederationRemote?.name,
