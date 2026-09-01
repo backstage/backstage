@@ -46,6 +46,7 @@ import { Readable } from 'node:stream';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { relative } from 'node:path/posix';
 import { AbortController } from '@aws-sdk/abort-controller';
+import { hasDotPathSegments } from './util';
 
 export function parseUrl(
   url: string,
@@ -362,6 +363,9 @@ export class AwsCodeCommitUrlReader implements UrlReaderService {
       const responses = [];
 
       for (let i = 0; i < allFiles.length; i++) {
+        if (hasDotPathSegments(String(allFiles[i]))) {
+          continue;
+        }
         const getFileCommand = new GetFileCommand({
           repositoryName: repositoryName,
           filePath: String(allFiles[i]),

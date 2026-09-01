@@ -1,5 +1,26 @@
 # @backstage/backend-defaults
 
+## 0.17.7
+
+### Patch Changes
+
+- 79c1d58: Fixed a bug in the Azure DevOps URL reader where the abort signal was not forwarded to the commits API fetch, causing the fetch to hang indefinitely when a build timeout or cancellation was triggered.
+- b1b6c80: Read-only actions now default to non-destructive when the destructive attribute is omitted.
+- 78bf918: chore(deps): bump `tar` from 7.5.15 to 7.5.21
+- bb98419: TypeScript configuration schema warnings discovered while setting up secret redaction are now reported through the Backstage logger.
+- 74d8cbf: Added a new public `@backstage/backend-defaults/rootSystemMetadata` entrypoint, exporting `rootSystemMetadataServiceFactory` and `DefaultRootSystemMetadataService`. The system metadata service is now registered automatically as a default service, so backends no longer need to add it manually.
+- e56d23c: Throw an error when `payload.uip` is missing in `createLimitedUserToken` instead of constructing an invalid limited token with an undefined signature.
+- Updated dependencies
+  - @backstage/backend-app-api@1.7.3
+  - @backstage/config-loader@1.11.2
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-auth-node@0.7.4
+  - @backstage/integration@2.1.0
+  - @backstage/integration-aws-node@0.2.1
+  - @backstage/plugin-permission-common@0.9.10
+  - @backstage/plugin-permission-node@0.11.3
+  - @backstage/plugin-events-node@0.4.25
+
 ## 0.17.7-next.2
 
 ### Patch Changes

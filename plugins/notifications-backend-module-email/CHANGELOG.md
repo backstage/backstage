@@ -1,5 +1,17 @@
 # @backstage/plugin-notifications-backend-module-email
 
+## 0.3.24
+
+### Patch Changes
+
+- a4e7831: Updated `nodemailer` from v8 to v9. The new major version validates TLS certificates by default when fetching remote content such as attachments or OAuth2 tokens. If your SMTP relay or OAuth2 endpoint uses a self-signed or otherwise untrusted certificate, email delivery may start failing. You can opt out per transport by setting `tls: { rejectUnauthorized: false }` in your nodemailer transport options.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/integration-aws-node@0.2.1
+  - @backstage/plugin-catalog-node@2.2.4
+  - @backstage/plugin-notifications-node@0.2.29
+
 ## 0.3.24-next.1
 
 ### Patch Changes

@@ -21,14 +21,21 @@ import {
   createPgDatabaseClient,
   getPgConnectionConfig,
   parsePgConnectionString,
+  PgConnector,
 } from './postgres';
 import { type Knex } from 'knex';
+import { mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('@google-cloud/cloud-sql-connector');
 jest.mock('@azure/identity');
 jest.mock('@aws-sdk/rds-signer');
 
 describe('postgres', () => {
+  const deps = {
+    logger: mockServices.logger.mock(),
+    lifecycle: mockServices.lifecycle.mock(),
+  };
+
   const createMockConnection = () => ({
     host: 'acme',
     user: 'foo',
@@ -836,6 +843,60 @@ describe('postgres', () => {
         },
         useNullAsDefault: true,
       });
+    });
+  });
+
+  describe('PgConnector', () => {
+    const createConnectorConfig = () =>
+      new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+        plugin: {
+          plugin1: { connection: { database: 'shared' } },
+          plugin2: { connection: { database: 'shared' } },
+        },
+      });
+
+    it('shares database existence checks between plugins', async () => {
+      const ensureDatabaseExists = jest.fn().mockResolvedValue(undefined);
+      const connector = new PgConnector(
+        createConnectorConfig(),
+        'backstage_plugin_',
+        ensureDatabaseExists,
+      );
+
+      const clients = await Promise.all([
+        connector.getClient('plugin1', deps),
+        connector.getClient('plugin2', deps),
+      ]);
+
+      expect(ensureDatabaseExists).toHaveBeenCalledTimes(1);
+      expect(ensureDatabaseExists).toHaveBeenCalledWith(
+        expect.any(ConfigReader),
+        'shared',
+      );
+
+      await Promise.all(clients.map(client => client.destroy()));
+    });
+
+    it('retries a database existence check after failure', async () => {
+      const ensureDatabaseExists = jest
+        .fn()
+        .mockRejectedValueOnce(new Error('temporary failure'))
+        .mockResolvedValueOnce(undefined);
+      const connector = new PgConnector(
+        createConnectorConfig(),
+        'backstage_plugin_',
+        ensureDatabaseExists,
+      );
+
+      await expect(connector.getClient('plugin1', deps)).rejects.toThrow(
+        "Failed to connect to the database to make sure that 'shared' exists, Error: temporary failure",
+      );
+
+      const client = await connector.getClient('plugin2', deps);
+      expect(ensureDatabaseExists).toHaveBeenCalledTimes(2);
+      await client.destroy();
     });
   });
 

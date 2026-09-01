@@ -23,18 +23,24 @@ import {
   TableProps,
   WarningPanel,
 } from '@backstage/core-components';
-import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  configApiRef,
+  useApi,
+  useApiHolder,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import {
   useEntityList,
   useStarredEntities,
+  entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
 import { techdocsTranslationRef } from '../../../translation';
 import { DocsTable } from './DocsTable';
 import { OffsetPaginatedDocsTable } from './OffsetPaginatedDocsTable';
 import { CursorPaginatedDocsTable } from './CursorPaginatedDocsTable';
 import { actionFactories } from './actions';
-import { columnFactories, defaultColumns } from './columns';
+import { columnFactories } from './columns';
 import {
   DocsTableRow,
   DocsTableColumnFactories,
@@ -69,6 +75,7 @@ const EntityListDocsTableComponent = (
   const [, copyToClipboard] = useCopyToClipboard();
   const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
   const config = useApi(configApiRef);
+  const apiHolder = useApiHolder();
   const { t } = useTranslationRef(techdocsTranslationRef);
 
   const title = capitalize(filters.user?.value ?? 'all');
@@ -86,12 +93,26 @@ const EntityListDocsTableComponent = (
     entities,
     getRouteToReaderPageFor,
     config,
+    apiHolder.get(entityPresentationApiRef),
   );
+
+  const tableColumns = columns || [
+    columnFactories.createTitleColumn({
+      hidden: true,
+      entityPresentationApi: apiHolder.get(entityPresentationApiRef),
+    }),
+    columnFactories.createNameColumn({
+      entityPresentationApi: apiHolder.get(entityPresentationApiRef),
+    }),
+    columnFactories.createOwnerColumn(),
+    columnFactories.createKindColumn(),
+    columnFactories.createTypeColumn(),
+  ];
 
   if (paginationMode === 'cursor') {
     return (
       <CursorPaginatedDocsTable
-        columns={columns || defaultColumns}
+        columns={tableColumns}
         isLoading={loading}
         title={title}
         actions={actions || defaultActions}
@@ -104,7 +125,7 @@ const EntityListDocsTableComponent = (
   } else if (paginationMode === 'offset') {
     return (
       <OffsetPaginatedDocsTable
-        columns={columns || defaultColumns}
+        columns={tableColumns}
         isLoading={loading}
         title={title}
         actions={actions || defaultActions}
@@ -128,7 +149,7 @@ const EntityListDocsTableComponent = (
       entities={entities}
       loading={loading}
       actions={actions || defaultActions}
-      columns={columns}
+      columns={tableColumns}
       options={options}
     />
   );

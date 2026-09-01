@@ -1184,6 +1184,14 @@ describe('OidcService', () => {
             }),
           ).resolves.toBe(false);
 
+          // Client IDs that match the full URL string but not the hostname
+          // component are rejected
+          await expect(
+            service.verifyRevocationClient({
+              clientId: 'https://other.com/.example.com/client.json',
+            }),
+          ).resolves.toBe(false);
+
           // DCR clients must present a valid client secret
           const client = await service.registerClient({
             clientName: 'Test Client',
@@ -1223,6 +1231,35 @@ describe('OidcService', () => {
       });
 
       describe('createAuthorizationSession with CIMD', () => {
+        it('should accept ChatGPT Codex client IDs with default CIMD patterns', async () => {
+          const codexClientId =
+            'https://chatgpt.com/oauth/codex/backstage/client.json';
+          mockFetchCimdMetadata.mockResolvedValueOnce({
+            ...cimdMetadata,
+            clientId: codexClientId,
+          });
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                clientIdMetadataDocuments: { enabled: true },
+              },
+            },
+          });
+
+          await expect(
+            service.createAuthorizationSession({
+              clientId: codexClientId,
+              redirectUri: 'http://localhost:8080/callback',
+              responseType: 'code',
+              scope: 'openid',
+              ...pkceParams,
+            }),
+          ).resolves.toEqual(
+            expect.objectContaining({ clientName: 'CIMD Test Client' }),
+          );
+        });
+
         it('should accept loopback redirect URIs with default CIMD patterns', async () => {
           const { service } = await createOidcService({
             databaseId,

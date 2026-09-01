@@ -1,5 +1,15 @@
 # @backstage/frontend-plugin-api
 
+## 0.18.0
+
+### Minor Changes
+
+- 907793c: **BREAKING**: Removed the deprecated `config.schema` option for extensions and extension blueprints. Use the top-level `configSchema` option with Standard Schema-compatible schema values, such as Zod v4.
+
+### Patch Changes
+
+- e156f1e: Added support for using a `SubRouteRef` as the parent of another `SubRouteRef`. Child paths are combined with ancestor paths at creation, and nested sub-routes inherit parameters from their complete ancestor chain.
+
 ## 0.18.0-next.0
 
 ### Minor Changes

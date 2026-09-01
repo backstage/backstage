@@ -28,8 +28,9 @@ import { examples } from './gitlabProjectVariableCreate.examples';
  */
 export const createGitlabProjectVariableAction = (options: {
   integrations: ScmIntegrationRegistry;
+  requireScmUserCredentials?: boolean;
 }) => {
-  const { integrations } = options;
+  const { integrations, requireScmUserCredentials } = options;
   return createTemplateAction({
     id: 'gitlab:projectVariable:create',
     examples,
@@ -118,7 +119,12 @@ export const createGitlabProjectVariableAction = (options: {
 
       const { host } = parseRepoUrl(repoUrl, integrations);
 
-      const api = getClient({ host, integrations, token });
+      const api = getClient({
+        host,
+        integrations,
+        token,
+        requireScmUserCredentials,
+      });
 
       await ctx.checkpoint({
         key: `create.project.variables.${projectId}.${key}.${value}`,

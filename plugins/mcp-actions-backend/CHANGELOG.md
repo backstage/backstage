@@ -1,5 +1,17 @@
 # @backstage/plugin-mcp-actions-backend
 
+## 0.2.1
+
+### Patch Changes
+
+- ec2b90f: Added support for configuring MCP server instructions for both default and named servers.
+- d7d03d9: Replaced duplicated documentation in the README with a link to the full docs on `backstage.io`.
+- e4983fd: Added audit logging for MCP server operations using the Backstage Auditor Service. The plugin now emits `connection`, `tool-discovery`, and `tool-execution` audit events, allowing adopters to monitor and audit MCP server activity.
+- 9937a99: Added `scopes_supported` to the OAuth 2.0 Protected Resource Metadata (RFC 9728) response. Without this field, RFC-compliant MCP clients did not know which scope to request and never received a refresh token, causing sessions to expire with the short-lived access token. The field now includes `openid`, and also `offline_access` when `auth.experimentalRefreshToken` is enabled.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-catalog-node@2.2.4
+
 ## 0.2.1-next.2
 
 ### Patch Changes

@@ -154,8 +154,12 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
     [ownersParameter],
   );
 
+  // Query parameters may contain humanized refs (e.g. `guests` rather than
+  // `group:default/guests`), so they are normalized before being stored.
   const [selectedOwners, setSelectedOwners] = useState<string[]>(
-    queryParamOwners.length ? queryParamOwners : filters.owners?.values ?? [],
+    queryParamOwners.length
+      ? new EntityOwnerFilter(queryParamOwners).values
+      : filters.owners?.values ?? [],
   );
 
   const [{ value, loading }, handleFetch, cache] = useFetchEntities({

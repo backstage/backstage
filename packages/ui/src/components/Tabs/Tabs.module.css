@@ -50,6 +50,7 @@
   .bui-Tab {
     font-size: var(--bui-font-size-3);
     font-family: var(--bui-font-regular);
+    line-height: 1.15;
     font-weight: var(--bui-font-weight-regular);
     color: var(--bui-fg-secondary);
     height: 36px;

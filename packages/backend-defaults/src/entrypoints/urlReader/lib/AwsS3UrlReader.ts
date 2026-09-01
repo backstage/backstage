@@ -47,6 +47,7 @@ import { AbortController } from '@aws-sdk/abort-controller';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { Readable } from 'node:stream';
 import { relative } from 'node:path/posix';
+import { hasDotPathSegments, isUrlPathWithoutDotSegments } from './util';
 
 export const DEFAULT_REGION = 'us-east-1';
 
@@ -75,8 +76,16 @@ export function parseUrl(
   url: string,
   config: AwsS3IntegrationConfig,
 ): { path: string; bucket: string; region: string } {
+  if (!isUrlPathWithoutDotSegments(url)) {
+    throw new Error(`Invalid AWS S3 URL ${url}`);
+  }
+
   const parsedUrl = new URL(url);
-  const pathname = parsedUrl.pathname.substring(1);
+  const pathname = parsedUrl.pathname
+    .substring(1)
+    .split('/')
+    .map(decodeURIComponent)
+    .join('/');
   const host = parsedUrl.host;
 
   if (isAmazonHost(config.host)) {
@@ -386,6 +395,9 @@ export class AwsS3UrlReader implements UrlReaderService {
       } while (continuationToken);
 
       for (let i = 0; i < allObjects.length; i++) {
+        if (hasDotPathSegments(String(allObjects[i]))) {
+          continue;
+        }
         const getObjectCommand = new GetObjectCommand({
           Bucket: bucket,
           Key: String(allObjects[i]),
