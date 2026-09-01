@@ -187,6 +187,36 @@ The following metrics are available:
 - `backend_tasks.task.runs.started`: Gauge recording the Unix epoch time (seconds) when each task (`taskId` label) was last started
 - `backend_tasks.task.runs.completed`: Gauge recording the Unix epoch time (seconds) when each task (`taskId` label) was last completed
 
+### Histogram bucket boundaries
+
+The duration and delay metrics above are histograms that record values in
+seconds. OpenTelemetry's default bucket boundaries are calibrated for
+milliseconds, so every realistic value landed in the first few buckets and
+percentiles such as p95 and p99 were unusable. Each of these histograms
+therefore declares explicit second-scale boundaries:
+
+| Metric                             | Bucket boundaries (seconds)                           |
+| ---------------------------------- | ----------------------------------------------------- |
+| `catalog.processing.duration`      | 0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30, 60     |
+| `catalog.processors.duration`      | 0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30, 60     |
+| `catalog.processing.queue.delay`   | 0.1, 0.5, 1, 5, 10, 30, 60, 300, 600, 1800, 3600      |
+| `catalog.stitching.duration`       | 0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30, 60     |
+| `catalog.stitching.queue.delay`    | 0.1, 0.5, 1, 5, 10, 30, 60, 300, 600, 1800, 3600      |
+| `scaffolder.task.duration`         | 1, 5, 10, 30, 60, 120, 300, 600, 1800, 3600           |
+| `scaffolder.step.duration`         | 0.1, 0.5, 1, 5, 10, 30, 60, 120, 300                  |
+| `backend_tasks.task.runs.duration` | 0.1, 0.5, 1, 5, 10, 30, 60, 120, 300, 600, 1800, 3600 |
+
+The queue delay metrics use wider boundaries than the duration metrics because
+an entity can wait in the queue far longer than it takes to process it.
+
+If you export these metrics to Prometheus, the boundaries appear as `le` label
+values on the generated `_bucket` series. The previous defaults were `0`, `5`,
+`10`, `25`, `50`, `75`, `100`, `250`, `500`, `750`, `1000`, `2500`, `5000`,
+`7500` and `10000`, so a dashboard or alert pinned to a boundary that these
+lists no longer contain, such as `le="25"`, stops returning data and must be
+pointed at one of the values in the table above. Queries built on
+`histogram_quantile` keep working and become more accurate.
+
 ## References
 
 - [Getting started with OpenTelemetry Node.js](https://opentelemetry.io/docs/instrumentation/js/getting-started/nodejs/)
