@@ -69,7 +69,9 @@
     "@backstage/plugin-signals-backend": "workspace:^",
     "@backstage/plugin-techdocs-backend": "workspace:^",
     "@backstage/plugin-user-settings-backend": "workspace:^",
+    "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/auto-instrumentations-node": "^0.79.0",
+    "@opentelemetry/core": "^2.0.0",
     "@opentelemetry/exporter-prometheus": "^0.221.0",
     "@opentelemetry/sdk-node": "^0.221.0",
     "example-app": "link:../app"
