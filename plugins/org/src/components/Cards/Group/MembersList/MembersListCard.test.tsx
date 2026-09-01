@@ -28,16 +28,20 @@ import {
   TestApiProvider,
 } from '@backstage/test-utils';
 import { MembersListCard } from './MembersListCard';
-import {
-  groupA,
-  mockedCatalogApiSupportingGroups,
-} from '../../../../__testUtils__/catalogMocks';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import { EntityLayout, catalogPlugin } from '@backstage/plugin-catalog';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Observable } from '@backstage/types';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import {
+  groupA,
+  mockedCatalogApiSupportingGroups,
+} from '../../../../__testUtils__/catalogMocks';
+
+jest.mock('../../../UserAvatar', () => ({
+  UserAvatar: jest.fn(() => <div data-testid="user-avatar" />),
+}));
 
 const mockedStarredEntitiesApi: Partial<StarredEntitiesApi> = {
   starredEntitie$: () => {
@@ -131,13 +135,11 @@ describe('MemberTab Test', () => {
     expect(screen.getByText('team-d members (1 of 1)')).toBeInTheDocument();
   });
 
-  it('renderMemberAvatar overrides the default avatar', async () => {
+  it('renders UserAvatar for each member', async () => {
     await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <EntityProvider entity={groupEntity}>
-          <MembersListCard
-            renderMemberAvatar={() => <div data-testid="custom-avatar" />}
-          />
+          <MembersListCard />
         </EntityProvider>
       </TestApiProvider>,
       {
@@ -148,7 +150,7 @@ describe('MemberTab Test', () => {
       },
     );
 
-    expect(screen.getByTestId('custom-avatar')).toBeInTheDocument();
+    expect(screen.getByTestId('user-avatar')).toBeInTheDocument();
   });
 
   it('Can render different member display title', async () => {

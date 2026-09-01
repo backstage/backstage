@@ -84,38 +84,30 @@ Once added MyGroupsSidebarItem will work in three ways:
 
    ![MyGroupsSidebarItem multiple example](./docs/mygroupssidebaritem-multiple.png)
 
-### MembersListCard and custom member avatars
+### UserAvatar and custom member avatars
 
-On the group entity page, wire `EntityMembersListCard` or `MembersListCard` in your catalog `EntityPage.tsx`. By default, member avatars use `member.spec.profile.picture` from the catalog; when that field is empty, initials are shown.
+Org plugin surfaces such as `MembersListCard` and `UserProfileCard` render user avatars through the shared `UserAvatar` swappable component. By default, avatars use `entity.spec.profile.picture` from the catalog; when that field is empty, initials are shown.
 
-`renderMemberAvatar` is a prop on `MembersListCard`. In the old frontend system, `EntityMembersListCard` is not a separate implementation — it lazy-loads `MembersListCard` — so you can pass the prop to either export in `EntityPage.tsx`.
-
-To lazy-load avatars from an external source (for example an identity provider API):
+If your organization loads profile photos lazily from an external source instead of storing them in the catalog during ingestion, override `UserAvatar` once in your app module:
 
 ```tsx
-import {
-  EntityMembersListCard,
-  type MembersListCardRenderMemberAvatarProps,
-} from '@backstage/plugin-org';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
+import { UserAvatar } from '@backstage/plugin-org';
 
-const groupPage = (
-  <EntityLayout>
-    <EntityLayout.Route path="/" title="Overview">
-      <Grid container spacing={3}>
-        {/* ...other group cards... */}
-        <Grid item xs={12} md={6}>
-          <EntityMembersListCard
-            renderMemberAvatar={(
-              props: MembersListCardRenderMemberAvatarProps,
-            ) => <LazyMemberAvatar {...props} />}
-          />
-        </Grid>
-      </Grid>
-    </EntityLayout.Route>
-  </EntityLayout>
-);
+export const appModuleOrg = createFrontendModule({
+  pluginId: 'app',
+  extensions: [
+    SwappableComponentBlueprint.make({
+      name: 'org-user-avatar',
+      params: defineParams =>
+        defineParams({
+          component: UserAvatar,
+          loader: () => import('./LazyUserAvatar').then(m => m.LazyUserAvatar),
+        }),
+    }),
+  ],
+});
 ```
 
-You can use `MembersListCard` with the same prop if you import it directly.
-
-When the prop is omitted, behavior is unchanged. On the new frontend system, the default `entity-card:org/members-list` extension does not expose `renderMemberAvatar` through `app-config.yaml` — use an extension override instead. See [README-alpha.md](./README-alpha.md#custom-member-avatars).
+When no override is registered, behavior is unchanged. See [README-alpha.md](./README-alpha.md#custom-user-avatars) for more detail.

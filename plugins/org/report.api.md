@@ -7,9 +7,10 @@ import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
-import { ReactElement } from 'react';
+import { SwappableComponentRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { UserEntity } from '@backstage/catalog-model';
+import { AvatarOwnProps } from '@backstage/ui';
 
 // @public (undocumented)
 export type ComponentsGridClassKey =
@@ -24,6 +25,20 @@ export const EntityGroupProfileCard: (props: {
 }) => JSX_2.Element;
 
 // @public (undocumented)
+export interface DefaultUserAvatarProps {
+  entity: UserEntity;
+  displayName: string;
+  className?: string;
+  size?: AvatarOwnProps['size'];
+  purpose?: AvatarOwnProps['purpose'];
+}
+
+// @public (undocumented)
+export const DefaultUserAvatar: (
+  props: DefaultUserAvatarProps,
+) => JSX_2.Element;
+
+// @public (undocumented)
 export const EntityMembersListCard: (props: {
   memberDisplayTitle?: string;
   pageSize?: number;
@@ -31,9 +46,6 @@ export const EntityMembersListCard: (props: {
   relationType?: string;
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
-  renderMemberAvatar?: (
-    options: MembersListCardRenderMemberAvatarProps,
-  ) => ReactElement;
 }) => JSX_2.Element;
 
 // @public (undocumented)
@@ -68,20 +80,28 @@ export const MembersListCard: (props: {
   relationType?: string;
   relationsType?: EntityRelationAggregation;
   relationAggregation?: EntityRelationAggregation;
-  renderMemberAvatar?: (
-    options: MembersListCardRenderMemberAvatarProps,
-  ) => ReactElement;
 }) => JSX_2.Element;
 
 // @public (undocumented)
 export type MembersListCardClassKey = 'memberList';
 
 // @public (undocumented)
-export type MembersListCardRenderMemberAvatarProps = {
-  member: UserEntity;
-  displayName: string;
-  className?: string;
+export const UserAvatar: {
+  (props: UserAvatarProps): JSX_2.Element | null;
+  ref: SwappableComponentRef<
+    DefaultUserAvatarProps,
+    UserAvatarProps
+  >;
 };
+
+// @public (undocumented)
+export interface UserAvatarProps {
+  entity: UserEntity;
+  displayName?: string;
+  className?: string;
+  size?: AvatarOwnProps['size'];
+  purpose?: AvatarOwnProps['purpose'];
+}
 
 // @public
 export const MyGroupsSidebarItem: (props: {

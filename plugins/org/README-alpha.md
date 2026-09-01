@@ -145,7 +145,7 @@ For more information about where to place extension overrides, see the official 
 
 An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that displays group members with avatars, names, and emails. Clicking a member's name opens the user's catalog page; clicking an email opens your default mail client.
 
-By default, each member avatar uses `member.spec.profile.picture` from the catalog. When that field is empty, the card shows initials. If your organization loads profile photos lazily from an external source instead of storing them in the catalog during ingestion, use the [`renderMemberAvatar`](#custom-member-avatars) prop to supply photos on demand.
+By default, each member avatar uses `member.spec.profile.picture` from the catalog. When that field is empty, the card shows initials. If your organization loads profile photos lazily from an external source instead of storing them in the catalog during ingestion, override the shared [`UserAvatar`](#custom-user-avatars) swappable component.
 
 | Kind          | Namespace | Name           | Id                             |
 | ------------- | --------- | -------------- | ------------------------------ |
@@ -172,60 +172,71 @@ app:
 ```
 
 > [!NOTE]
-> Member avatar rendering is **not** configurable through `app-config.yaml`. See [Custom member avatars](#custom-member-avatars) below.
+> User avatar rendering is **not** configurable through `app-config.yaml`. See [Custom user avatars](#custom-user-avatars) below.
 
-#### Custom member avatars
+#### Custom user avatars
 
-`MembersListCard` accepts an optional `renderMemberAvatar` render prop. When provided, it replaces the built-in `@backstage/ui` `Avatar` for each member row. Search, pagination, and aggregate-member behavior are unchanged.
-
-| How you use the card                                                              | `renderMemberAvatar` available?                                                                                                              |
-| --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `<MembersListCard renderMemberAvatar={...} />` in app code                        | Yes                                                                                                                                          |
-| `<EntityMembersListCard renderMemberAvatar={...} />` in a legacy `EntityPage.tsx` | Yes — `EntityMembersListCard` lazy-loads the same `MembersListCard` component, so props pass through unchanged                               |
-| `entity-card:org/members-list` enabled via `app-config.yaml`                      | No — the default extension renders `MembersListCard` internally without forwarding this prop; use an [extension override](#override) instead |
+`MembersListCard` and `UserProfileCard` render user avatars through the shared `UserAvatar` swappable component. Apps can override it once via `SwappableComponentBlueprint` to customize avatar rendering consistently across org plugin surfaces.
 
 ```tsx
-import {
-  MembersListCard,
-  type MembersListCardRenderMemberAvatarProps,
-} from '@backstage/plugin-org';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
+import { UserAvatar, type DefaultUserAvatarProps } from '@backstage/plugin-org';
+import { Avatar } from '@backstage/ui';
+import { useLazyProfilePhoto } from './useLazyProfilePhoto';
 
-<MembersListCard
-  renderMemberAvatar={({ member, displayName, className }) => (
-    <LazyMemberAvatar
-      member={member}
-      displayName={displayName}
-      className={className}
+function LazyUserAvatar(props: DefaultUserAvatarProps) {
+  const picture = useLazyProfilePhoto(props.entity);
+  return (
+    <Avatar
+      className={props.className}
+      name={props.displayName}
+      src={picture ?? ''}
+      purpose={props.purpose ?? 'decoration'}
+      size={props.size ?? 'x-large'}
     />
-  )}
-/>;
+  );
+}
+
+export default createFrontendModule({
+  pluginId: 'app',
+  extensions: [
+    SwappableComponentBlueprint.make({
+      name: 'org-user-avatar',
+      params: defineParams =>
+        defineParams({
+          component: UserAvatar,
+          loader: () => Promise.resolve(LazyUserAvatar),
+        }),
+    }),
+  ],
+});
 ```
 
-The renderer receives:
+Components used as the swappable implementation receive `DefaultUserAvatarProps`:
 
-| Prop          | Type         | Description                                                                  |
-| ------------- | ------------ | ---------------------------------------------------------------------------- |
-| `member`      | `UserEntity` | Catalog user entity for the row.                                             |
-| `displayName` | `string`     | `member.spec.profile.displayName`, or `member.metadata.name` as fallback.    |
-| `className`   | `string`     | Layout class used by the default avatar; pass through for consistent sizing. |
+| Prop          | Type         | Description                                                               |
+| ------------- | ------------ | ------------------------------------------------------------------------- |
+| `entity`      | `UserEntity` | Catalog user entity.                                                      |
+| `displayName` | `string`     | `entity.spec.profile.displayName`, or `entity.metadata.name` as fallback. |
+| `className`   | `string`     | Optional layout class from the caller.                                    |
+| `size`        | `string`     | Avatar size passed by the caller (`small`, `x-large`, etc.).              |
+| `purpose`     | `string`     | Avatar purpose passed by the caller.                                      |
 
-When `renderMemberAvatar` is omitted, behavior is unchanged:
+When no override is registered, behavior is unchanged:
 
 ```tsx
 <Avatar src={profile?.picture ?? ''} />
 ```
 
-On the new frontend system, wire custom avatars with an [extension override](#override) that loads `MembersListCard` and passes `renderMemberAvatar` (see example below). You cannot set `renderMemberAvatar` from `app-config.yaml` alone.
-
 #### Override
 
-Use extension overrides to customize the members-list card — either pass `renderMemberAvatar` to the stock `MembersListCard`, or replace the card entirely:
+Use extension overrides to customize the members-list card — for example to change pagination defaults or replace the card entirely:
 
 ```tsx
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { MembersListCard } from '@backstage/plugin-org';
-import { LazyMemberAvatar } from './LazyMemberAvatar';
 
 export default createFrontendModule({
   pluginId: 'org',
@@ -234,12 +245,7 @@ export default createFrontendModule({
       name: 'members-list',
       params: {
         filter: { kind: 'group' },
-        loader: async () => (
-          <MembersListCard
-            showAggregateMembersToggle
-            renderMemberAvatar={props => <LazyMemberAvatar {...props} />}
-          />
-        ),
+        loader: async () => <MembersListCard showAggregateMembersToggle />,
       },
     }),
   ],
