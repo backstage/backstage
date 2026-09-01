@@ -1877,6 +1877,7 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -2822,6 +2823,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -3092,6 +3094,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -3128,6 +3131,7 @@ __metadata:
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@react-hookz/web": "npm:^24.0.0"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -3155,6 +3159,7 @@ __metadata:
     "@backstage/plugin-app": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/ui": "workspace:^"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -3184,6 +3189,7 @@ __metadata:
     "@module-federation/enhanced": "npm:^2.3.3"
     "@module-federation/runtime": "npm:^2.3.3"
     "@module-federation/sdk": "npm:^2.3.3"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -3218,6 +3224,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
     "@standard-schema/spec": "npm:^1.1.0"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -3267,6 +3274,7 @@ __metadata:
     zen-observable: "npm:^0.10.0"
     zod: "npm:^3.25.76 || ^4.0.0"
   peerDependencies:
+    "@testing-library/dom": ^10.0.0
     "@testing-library/react": ^16.0.0
     "@types/jest": "*"
     "@types/react": ^17.0.0 || ^18.0.0
@@ -3519,6 +3527,7 @@ __metadata:
     "@backstage/frontend-test-utils": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@material-ui/core": "npm:^4.9.13"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -3589,6 +3598,7 @@ __metadata:
     "@material-ui/lab": "npm:^4.0.0-alpha.61"
     "@react-hookz/web": "npm:^24.0.0"
     "@remixicon/react": "npm:>=4.6.0 <4.9.0"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@testing-library/user-event": "npm:^14.0.0"
@@ -4106,6 +4116,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@material-ui/core": "npm:^4.9.13"
     "@react-hookz/web": "npm:^24.0.0"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@testing-library/user-event": "npm:^14.0.0"
@@ -4137,6 +4148,7 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@backstage/ui": "workspace:^"
     "@remixicon/react": "npm:>=4.6.0 <4.9.0"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@testing-library/user-event": "npm:^14.0.0"
@@ -4872,6 +4884,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/ui": "workspace:^"
     "@remixicon/react": "npm:>=4.6.0 <4.9.0"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@testing-library/user-event": "npm:^14.0.0"
@@ -5079,6 +5092,7 @@ __metadata:
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@material-ui/core": "npm:^4.9.13"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -5482,6 +5496,7 @@ __metadata:
     "@kubernetes-models/apimachinery": "npm:^2.0.0"
     "@material-ui/core": "npm:^4.12.2"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/node": "npm:^22.13.14"
@@ -5557,6 +5572,7 @@ __metadata:
     "@material-ui/core": "npm:^4.9.13"
     "@material-ui/icons": "npm:^4.11.3"
     "@material-ui/lab": "npm:^4.0.0-alpha.61"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -5657,6 +5673,7 @@ __metadata:
     "@backstage/ui": "workspace:^"
     "@mui/material": "npm:^5.12.2"
     "@mui/system": "npm:^5.16.14"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -5796,6 +5813,7 @@ __metadata:
     "@backstage/theme": "workspace:^"
     "@backstage/ui": "workspace:^"
     "@remixicon/react": "npm:>=4.6.0 <4.9.0"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -5990,6 +6008,7 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/test-utils": "workspace:^"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -6913,6 +6932,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@material-ui/core": "npm:^4.12.4"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -6945,6 +6965,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@material-ui/core": "npm:^4.12.4"
     "@remixicon/react": "npm:>=4.6.0 <4.9.0"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -6986,6 +7007,7 @@ __metadata:
     react-router-dom: "npm:^6.30.2"
     shadow-dom-testing-library: "npm:^1.13.1"
   peerDependencies:
+    "@testing-library/dom": ^10.0.0
     "@testing-library/react": ^16.0.0
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
@@ -7131,6 +7153,7 @@ __metadata:
     "@backstage/version-bridge": "workspace:^"
     "@material-ui/core": "npm:^4.12.2"
     "@material-ui/styles": "npm:^4.11.0"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -7394,6 +7417,7 @@ __metadata:
     react-router-dom: "npm:^6.30.2"
     zen-observable: "npm:^0.10.0"
   peerDependencies:
+    "@testing-library/dom": ^10.0.0
     "@testing-library/react": ^16.0.0
     "@types/jest": "*"
     "@types/react": ^17.0.0 || ^18.0.0
@@ -7417,6 +7441,7 @@ __metadata:
     "@emotion/styled": "npm:^11.10.5"
     "@mui/material": "npm:^5.12.2"
     "@mui/styles": "npm:^5.14.18"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -7458,6 +7483,7 @@ __metadata:
     "@remixicon/react": "npm:>=4.6.0 <4.9.0"
     "@storybook/react-vite": "npm:^10.4.0"
     "@tanstack/react-table": "npm:^8.21.3"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -7492,6 +7518,7 @@ __metadata:
   resolution: "@backstage/version-bridge@workspace:packages/version-bridge"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
@@ -9930,6 +9957,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
   languageName: unknown
@@ -9940,6 +9968,7 @@ __metadata:
   resolution: "@internal/opaque@workspace:packages/opaque-internal"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
   languageName: unknown
