@@ -139,20 +139,24 @@ export async function createConfig(
       options.moduleFederationRemote,
     );
 
-    const refreshOptions = {
-      overlay: {
-        sockProtocol: 'ws',
-        sockHost: host,
-        sockPort: port,
-      },
-    } as const;
-
     if (webpack) {
       const ReactRefreshPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-      plugins.push(new ReactRefreshPlugin(refreshOptions));
+      plugins.push(
+        new ReactRefreshPlugin({
+          overlay: {
+            sockProtocol: 'ws',
+            sockHost: host,
+            sockPort: port,
+          },
+        }),
+      );
     } else {
-      const RspackReactRefreshPlugin = require('@rspack/plugin-react-refresh');
-      plugins.push(new RspackReactRefreshPlugin(refreshOptions));
+      // The plugin is a named export, and unlike the WebPack one above it
+      // takes no overlay options.
+      const {
+        ReactRefreshRspackPlugin,
+      } = require('@rspack/plugin-react-refresh');
+      plugins.push(new ReactRefreshRspackPlugin());
     }
   }
 
@@ -313,6 +317,14 @@ export async function createConfig(
   const mode = isDev ? 'development' : 'production';
   const optimization = optimizationConfig(options);
 
+  // WebPack takes this under `experiments`, Rspack at the top level, and each
+  // rejects the other's shape. The config is typed with Rspack's types, hence
+  // the cast for WebPack.
+  const lazyCompilation = yn(process.env.EXPERIMENTAL_LAZY_COMPILATION);
+  const lazyCompilationConfig = webpack
+    ? ({ experiments: { lazyCompilation } } as Configuration)
+    : { lazyCompilation };
+
   return {
     mode,
     ...(isDev
@@ -402,13 +414,7 @@ export async function createConfig(
           }
         : {}),
     },
-    experiments: {
-      lazyCompilation: yn(process.env.EXPERIMENTAL_LAZY_COMPILATION),
-      ...(!webpack && {
-        // We're still using `style-loader` for custom `insert` option
-        css: false,
-      }),
-    },
+    ...lazyCompilationConfig,
     plugins,
     ignoreWarnings: [
       // @protobufjs/inquire uses require(moduleName) with a dynamic argument.
