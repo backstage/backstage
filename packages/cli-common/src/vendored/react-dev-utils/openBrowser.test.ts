@@ -58,9 +58,22 @@ describe('openBrowser', () => {
     expect(openBrowser('http://example.com')).toBe(false);
   });
 
-  it('returns false when the open peer dependency is not installed', () => {
+  it('warns and returns false when the fallback needs the missing open peer dependency', () => {
     jest.mocked(isOpenInstalled).mockReturnValue(false);
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     expect(openBrowser('http://example.com')).toBe(false);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining("optional 'open' peer dependency"),
+    );
+    warn.mockRestore();
+  });
+
+  it('reuses a macOS Chromium tab without the open peer dependency', () => {
+    jest.mocked(isOpenInstalled).mockReturnValue(false);
+    setPlatform('darwin');
+    jest.mocked(execFileSync).mockReturnValue('');
+    expect(openBrowser('http://example.com')).toBe(true);
+    expect(openMock).not.toHaveBeenCalled();
   });
 
   it('opens the default browser when BROWSER is unset', async () => {
@@ -103,6 +116,37 @@ describe('openBrowser', () => {
         input: expect.stringContaining('on run argv'),
         stdio: ['pipe', 'ignore', 'ignore'],
       },
+    );
+    expect(openMock).not.toHaveBeenCalled();
+  });
+
+  it('tries Chromium browsers in priority order, including long app names', () => {
+    setPlatform('darwin');
+    // Only Google Chrome Beta is running.
+    jest.mocked(execFileSync).mockImplementation((file, args) => {
+      if (file === 'pgrep' && args?.[1] !== 'Google Chrome Beta') {
+        throw new Error('no such process');
+      }
+      return '';
+    });
+
+    expect(openBrowser('http://example.com')).toBe(true);
+    expect(execFileSync).toHaveBeenNthCalledWith(
+      1,
+      'pgrep',
+      ['-x', 'Google Chrome Canary'],
+      { stdio: 'ignore' },
+    );
+    expect(execFileSync).toHaveBeenNthCalledWith(
+      2,
+      'pgrep',
+      ['-x', 'Google Chrome Dev'],
+      { stdio: 'ignore' },
+    );
+    expect(execFileSync).toHaveBeenLastCalledWith(
+      'osascript',
+      ['-', 'http://example.com', 'Google Chrome Beta'],
+      expect.objectContaining({ stdio: ['pipe', 'ignore', 'ignore'] }),
     );
     expect(openMock).not.toHaveBeenCalled();
   });
