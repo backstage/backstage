@@ -1444,4 +1444,111 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
     }
     expect(await hasNdistinctOverride()).toBe(false);
   });
+
+  it('20260616000000_refresh_state_references_sync_indices.js', async () => {
+    const knex = await databases.init(databaseId);
+
+    await migrateUntilBefore(
+      knex,
+      '20260616000000_refresh_state_references_sync_indices.js',
+    );
+
+    // Insert two entities so we can create refs to them
+    for (const ref of ['k:ns/n1', 'k:ns/n2', 'k:ns/n3']) {
+      await knex
+        .insert({
+          entity_id: `id-${ref}`,
+          entity_ref: ref,
+          unprocessed_entity: '{}',
+          errors: '[]',
+          next_update_at: new Date(),
+          last_discovery_at: new Date(),
+        })
+        .into('refresh_state');
+    }
+
+    // Insert duplicate source_entity_ref refs (before the unique index)
+    await knex
+      .insert([
+        { source_entity_ref: 'k:ns/n1', target_entity_ref: 'k:ns/n2' },
+        { source_entity_ref: 'k:ns/n1', target_entity_ref: 'k:ns/n2' },
+        { source_entity_ref: 'k:ns/n1', target_entity_ref: 'k:ns/n3' },
+      ])
+      .into('refresh_state_references');
+
+    // Insert duplicate source_key refs
+    await knex
+      .insert([
+        { source_key: 'provider-a', target_entity_ref: 'k:ns/n1' },
+        { source_key: 'provider-a', target_entity_ref: 'k:ns/n1' },
+      ])
+      .into('refresh_state_references');
+
+    // Run the migration — it should dedup and add unique indices
+    await migrateUpOnce(knex);
+
+    // Duplicates should be gone
+    const entityRefs = await knex('refresh_state_references')
+      .whereNotNull('source_entity_ref')
+      .select('source_entity_ref', 'target_entity_ref');
+    expect(entityRefs).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          source_entity_ref: 'k:ns/n1',
+          target_entity_ref: 'k:ns/n2',
+        }),
+        expect.objectContaining({
+          source_entity_ref: 'k:ns/n1',
+          target_entity_ref: 'k:ns/n3',
+        }),
+      ]),
+    );
+    expect(entityRefs).toHaveLength(2);
+
+    const keyRefs = await knex('refresh_state_references')
+      .whereNotNull('source_key')
+      .select('source_key', 'target_entity_ref');
+    expect(keyRefs).toEqual([
+      expect.objectContaining({
+        source_key: 'provider-a',
+        target_entity_ref: 'k:ns/n1',
+      }),
+    ]);
+
+    // Unique constraint should prevent new duplicates
+    await expect(
+      knex
+        .insert({
+          source_entity_ref: 'k:ns/n1',
+          target_entity_ref: 'k:ns/n2',
+        })
+        .into('refresh_state_references'),
+    ).rejects.toThrow();
+    await expect(
+      knex
+        .insert({
+          source_key: 'provider-a',
+          target_entity_ref: 'k:ns/n1',
+        })
+        .into('refresh_state_references'),
+    ).rejects.toThrow();
+
+    // Down migration should restore the old indices
+    await migrateDownOnce(knex);
+
+    // Duplicates should now be possible again
+    await knex
+      .insert({
+        source_entity_ref: 'k:ns/n1',
+        target_entity_ref: 'k:ns/n2',
+      })
+      .into('refresh_state_references');
+
+    const afterDown = await knex('refresh_state_references')
+      .where({ source_entity_ref: 'k:ns/n1', target_entity_ref: 'k:ns/n2' })
+      .select();
+    expect(afterDown).toHaveLength(2);
+
+    await knex.destroy();
+  });
 });
