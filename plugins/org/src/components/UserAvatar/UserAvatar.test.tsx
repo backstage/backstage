@@ -19,6 +19,22 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import { UserAvatar } from './UserAvatar';
 
+jest.mock('@backstage/ui', () => {
+  const actual = jest.requireActual('@backstage/ui');
+  return {
+    ...actual,
+    Avatar: (props: { src?: string; name?: string }) => (
+      <div
+        data-testid="mock-avatar"
+        data-src={props.src ?? ''}
+        data-name={props.name ?? ''}
+        role="img"
+        aria-hidden
+      />
+    ),
+  };
+});
+
 describe('UserAvatar', () => {
   const user: UserEntity = {
     apiVersion: 'backstage.io/v1alpha1',
@@ -37,10 +53,11 @@ describe('UserAvatar', () => {
       <UserAvatar entity={user} displayName="Tara" size="x-large" />,
     );
 
-    const avatar = await screen.findByRole('img', { hidden: true });
+    const avatar = await screen.findByTestId('mock-avatar');
     expect(avatar).toHaveAttribute(
-      'src',
+      'data-src',
       'https://example.com/staff/tara.jpeg',
     );
+    expect(avatar).toHaveAttribute('data-name', 'Tara');
   });
 });
