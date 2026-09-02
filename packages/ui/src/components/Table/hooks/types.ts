@@ -59,6 +59,12 @@ export interface PaginationOptions
       | 'showPaginationLabel'
     >
   > {
+  /**
+   * The zero-based item offset to use for the initial page.
+   *
+   * In complete mode, the offset is adjusted to the last available page if
+   * the data later becomes too short for the current page.
+   */
   initialOffset?: number;
 }
 
@@ -125,6 +131,10 @@ export type UseTableCompleteOptions<
   filterDebounceMs?: number;
 } & (
     | {
+        /**
+         * Controlled table data. Set to `undefined` while loading new data;
+         * the previous data remains visible and is reported as stale.
+         */
         data: T[] | undefined;
         getData?: never;
       }
