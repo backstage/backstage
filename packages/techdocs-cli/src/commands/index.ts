@@ -52,7 +52,8 @@ export function registerCommands(program: Command) {
     )
     .option(
       '--etag <ETAG>',
-      'A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored in techdocs_metadata.json.',
+      'A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored in techdocs_metadata.json.' +
+        ' If omitted, a sha256 content hash of the generated site output is computed automatically.',
     )
     .option(
       '--site-name',
@@ -229,6 +230,12 @@ export function registerCommands(program: Command) {
       '--directory <PATH>',
       'Path of the directory containing generated files to publish',
       './site/',
+    )
+    .option(
+      '--skip-if-unchanged',
+      'Skip publishing if the local etag in techdocs_metadata.json matches the remote etag.' +
+        ' The generate step computes a generated site content hash automatically unless --etag is overridden.',
+      false,
     )
     .action(lazy(() => import('./publish/publish'), 'default'));
 

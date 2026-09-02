@@ -18252,6 +18252,7 @@ __metadata:
     find-process: "npm:^2.0.0"
     fs-extra: "npm:^11.0.0"
     http-proxy: "npm:^1.18.1"
+    json5: "npm:^2.1.3"
     nodemon: "npm:^3.0.1"
     react-dev-utils: "npm:^12.0.0-next.60"
     serve-handler: "npm:^6.1.3"

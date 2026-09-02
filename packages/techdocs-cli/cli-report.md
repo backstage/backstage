@@ -90,6 +90,7 @@ Options:
   --osSecret <OPENSTACK SWIFT APPLICATION CREDENTIAL SECRET>
   --osSwiftUrl <OPENSTACK SWIFT SWIFTURL>
   --publisher-type <TYPE>
+  --skip-if-unchanged
   --storage-name <BUCKET/CONTAINER NAME>
   -h, --help
 ```

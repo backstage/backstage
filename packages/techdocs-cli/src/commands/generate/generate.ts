@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { resolve } from 'node:path';
+import { join, resolve } from 'node:path';
 import { OptionValues } from 'commander';
 import fs from 'fs-extra';
+import JSON5 from 'json5';
 import {
   TechdocsGenerator,
   ParsedLocationAnnotation,
@@ -28,6 +29,18 @@ import {
   createLogger,
   getLogStream,
 } from '../../lib/utility';
+import { computeDirectoryEtag } from '../../lib/etag';
+
+const TECHDOCS_METADATA_FILE = 'techdocs_metadata.json';
+const GENERATED_SITE_ETAG_EXCLUDED_FILES = [
+  TECHDOCS_METADATA_FILE,
+  // The compressed sitemap can include gzip metadata that changes between
+  // otherwise identical generated sites; sitemap.xml still captures content.
+  'sitemap.xml.gz',
+  // mkdocs writes build-date lastmod entries into sitemap.xml, so the hash
+  // changes daily even when the documentation content is identical.
+  'sitemap.xml',
+];
 
 export default async function generate(opts: OptionValues) {
   // Use techdocs-node package to generate docs. Keep consistency between Backstage and CI generating docs.
@@ -83,6 +96,9 @@ export default async function generate(opts: OptionValues) {
     }
   }
 
+  const hasExplicitEtag = opts.etag !== undefined;
+  const etag = hasExplicitEtag ? opts.etag : undefined;
+
   // Generate docs using @backstage/plugin-techdocs-node
   const techdocsGenerator = await TechdocsGenerator.fromConfig(config, {
     logger,
@@ -99,11 +115,25 @@ export default async function generate(opts: OptionValues) {
         }
       : {}),
     logger,
-    etag: opts.etag,
+    etag,
     logStream: getLogStream(logger),
     siteOptions: { name: opts.siteName },
     runAsDefaultUser: opts.runAsDefaultUser,
   });
+
+  if (!hasExplicitEtag) {
+    const generatedSiteEtag = await computeDirectoryEtag(outputDir, {
+      exclude: GENERATED_SITE_ETAG_EXCLUDED_FILES,
+    });
+    const metadataPath = join(outputDir, TECHDOCS_METADATA_FILE);
+    const metadata = JSON5.parse(await fs.readFile(metadataPath, 'utf8'));
+    await fs.writeJson(
+      metadataPath,
+      { ...metadata, etag: generatedSiteEtag },
+      { spaces: 2 },
+    );
+    logger.info(`Computed generated site content hash: ${generatedSiteEtag}`);
+  }
 
   if (configIsTemporary) {
     process.on('exit', async () => {
