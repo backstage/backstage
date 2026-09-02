@@ -44,14 +44,38 @@ import {
 } from '@backstage/plugin-search-react';
 import { DefaultStarredEntitiesApi } from './apis';
 import { DefaultCatalogPageProps } from './components/CatalogPage';
-import { DependencyOfComponentsCardProps } from './components/DependencyOfComponentsCard';
-import { DependsOnComponentsCardProps } from './components/DependsOnComponentsCard';
-import { DependsOnResourcesCardProps } from './components/DependsOnResourcesCard';
-import { HasComponentsCardProps } from './components/HasComponentsCard';
-import { HasResourcesCardProps } from './components/HasResourcesCard';
-import { HasSubcomponentsCardProps } from './components/HasSubcomponentsCard';
-import { HasSubdomainsCardProps } from './components/HasSubdomainsCard';
-import { HasSystemsCardProps } from './components/HasSystemsCard';
+import {
+  DependencyOfComponentsCardLegacyProps,
+  DependencyOfComponentsCardProps,
+} from './components/DependencyOfComponentsCard';
+import {
+  DependsOnComponentsCardLegacyProps,
+  DependsOnComponentsCardProps,
+} from './components/DependsOnComponentsCard';
+import {
+  DependsOnResourcesCardLegacyProps,
+  DependsOnResourcesCardProps,
+} from './components/DependsOnResourcesCard';
+import {
+  HasComponentsCardLegacyProps,
+  HasComponentsCardProps,
+} from './components/HasComponentsCard';
+import {
+  HasResourcesCardLegacyProps,
+  HasResourcesCardProps,
+} from './components/HasResourcesCard';
+import {
+  HasSubcomponentsCardLegacyProps,
+  HasSubcomponentsCardProps,
+} from './components/HasSubcomponentsCard';
+import {
+  HasSubdomainsCardLegacyProps,
+  HasSubdomainsCardProps,
+} from './components/HasSubdomainsCard';
+import {
+  HasSystemsCardLegacyProps,
+  HasSystemsCardProps,
+} from './components/HasSystemsCard';
 import { RelatedEntitiesCardProps } from './components/RelatedEntitiesCard';
 import { CatalogSearchResultListItemProps } from './components/CatalogSearchResultListItem';
 import { DefaultEntityPresentationApi } from './apis/EntityPresentationApi';
@@ -159,20 +183,21 @@ export const EntityLabelsCard = catalogPlugin.provide(
 );
 
 /** @public */
-export const EntityHasSystemsCard: (props: HasSystemsCardProps) => JSX.Element =
-  catalogPlugin.provide(
-    createComponentExtension({
-      name: 'EntityHasSystemsCard',
-      component: {
-        lazy: () =>
-          import('./components/HasSystemsCard').then(m => m.HasSystemsCard),
-      },
-    }),
-  );
+export const EntityHasSystemsCard: (
+  props: HasSystemsCardProps | HasSystemsCardLegacyProps,
+) => JSX.Element = catalogPlugin.provide(
+  createComponentExtension({
+    name: 'EntityHasSystemsCard',
+    component: {
+      lazy: () =>
+        import('./components/HasSystemsCard').then(m => m.HasSystemsCard),
+    },
+  }),
+);
 
 /** @public */
 export const EntityHasComponentsCard: (
-  props: HasComponentsCardProps,
+  props: HasComponentsCardProps | HasComponentsCardLegacyProps,
 ) => JSX.Element = catalogPlugin.provide(
   createComponentExtension({
     name: 'EntityHasComponentsCard',
@@ -185,7 +210,7 @@ export const EntityHasComponentsCard: (
 
 /** @public */
 export const EntityHasSubcomponentsCard: (
-  props: HasSubcomponentsCardProps,
+  props: HasSubcomponentsCardProps | HasSubcomponentsCardLegacyProps,
 ) => JSX.Element = catalogPlugin.provide(
   createComponentExtension({
     name: 'EntityHasSubcomponentsCard',
@@ -200,7 +225,7 @@ export const EntityHasSubcomponentsCard: (
 
 /** @public */
 export const EntityHasSubdomainsCard: (
-  props: HasSubdomainsCardProps,
+  props: HasSubdomainsCardProps | HasSubdomainsCardLegacyProps,
 ) => JSX.Element = catalogPlugin.provide(
   createComponentExtension({
     name: 'EntityHasSubdomainsCard',
@@ -213,7 +238,7 @@ export const EntityHasSubdomainsCard: (
 
 /** @public */
 export const EntityHasResourcesCard: (
-  props: HasResourcesCardProps,
+  props: HasResourcesCardProps | HasResourcesCardLegacyProps,
 ) => JSX.Element = catalogPlugin.provide(
   createComponentExtension({
     name: 'EntityHasResourcesCard',
@@ -226,7 +251,7 @@ export const EntityHasResourcesCard: (
 
 /** @public */
 export const EntityDependsOnComponentsCard: (
-  props: DependsOnComponentsCardProps,
+  props: DependsOnComponentsCardProps | DependsOnComponentsCardLegacyProps,
 ) => JSX.Element = catalogPlugin.provide(
   createComponentExtension({
     name: 'EntityDependsOnComponentsCard',
@@ -241,7 +266,9 @@ export const EntityDependsOnComponentsCard: (
 
 /** @public */
 export const EntityDependencyOfComponentsCard: (
-  props: DependencyOfComponentsCardProps,
+  props:
+    | DependencyOfComponentsCardProps
+    | DependencyOfComponentsCardLegacyProps,
 ) => JSX.Element = catalogPlugin.provide(
   createComponentExtension({
     name: 'EntityDependencyOfComponentsCard',
@@ -256,7 +283,7 @@ export const EntityDependencyOfComponentsCard: (
 
 /** @public */
 export const EntityDependsOnResourcesCard: (
-  props: DependsOnResourcesCardProps,
+  props: DependsOnResourcesCardProps | DependsOnResourcesCardLegacyProps,
 ) => JSX.Element = catalogPlugin.provide(
   createComponentExtension({
     name: 'EntityDependsOnResourcesCard',
