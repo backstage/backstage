@@ -7218,6 +7218,7 @@ __metadata:
     dompurify: "npm:^3.4.12"
     git-url-parse: "npm:^15.0.0"
     lodash: "npm:^4.17.21"
+    postcss: "npm:^8.1.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-helmet: "npm:6.1.0"
