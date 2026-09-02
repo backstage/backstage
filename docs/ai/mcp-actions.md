@@ -134,6 +134,12 @@ mcpActions:
 
 By default, the Backstage backend requires authentication for all requests.
 
+When OAuth support is enabled through Dynamic Client Registration or Client ID
+Metadata Documents, unauthenticated MCP requests return an RFC 9728
+`WWW-Authenticate` challenge. The challenge points clients to the protected
+resource metadata for the requested MCP server. Rejected Bearer tokens include
+`error="invalid_token"` so clients can refresh or restart authorization.
+
 ### External Access with Static Tokens
 
 :::warning

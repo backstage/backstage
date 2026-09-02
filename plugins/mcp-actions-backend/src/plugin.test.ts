@@ -13,14 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
+import {
+  mockCredentials,
+  mockServices,
+  startTestBackend,
+} from '@backstage/backend-test-utils';
 import {
   metricsServiceMock,
   tracingServiceMock,
 } from '@backstage/backend-test-utils/alpha';
 import { mcpPlugin } from './plugin';
 import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
-import { createBackendPlugin } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createBackendPlugin,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { ListToolsResultSchema } from '@modelcontextprotocol/sdk/types.js';
@@ -489,6 +497,152 @@ describe('Mcp Backend', () => {
       await request(server)
         .get('/.well-known/oauth-protected-resource/api/mcp-actions/v1')
         .expect(200);
+    });
+
+    const challengeTestCases = [
+      {
+        name: 'default server',
+        suffix: '/v1',
+        mcpActions: undefined,
+      },
+      {
+        name: 'named server',
+        suffix: '/v1/catalog',
+        mcpActions: {
+          servers: {
+            catalog: {
+              name: 'Catalog',
+              filter: { include: [] },
+            },
+          },
+        },
+      },
+    ];
+
+    it.each(challengeTestCases)(
+      'should advertise OAuth metadata and still require credentials for the $name',
+      async ({ suffix, mcpActions }) => {
+        const externalBaseUrl = 'https://backstage.example.com/api';
+        const mockDiscovery = mockServices.discovery.mock({
+          getExternalBaseUrl: async pluginId =>
+            `${externalBaseUrl}/${pluginId}`,
+        });
+        const mockAuditor = mockServices.auditor.mock();
+        const mockAuditorFactory = createServiceFactory({
+          service: coreServices.auditor,
+          deps: {},
+          factory: async () => mockAuditor,
+        });
+
+        const { server } = await startTestBackend({
+          features: [
+            mcpPlugin,
+            mockPluginWithActions,
+            mockDiscovery.factory,
+            mockAuditorFactory,
+            mockServices.httpAuth.factory({
+              defaultCredentials: mockCredentials.none(),
+            }),
+            mockServices.rootConfig.factory({
+              data: {
+                backend: {
+                  actions: {
+                    pluginSources: ['local'],
+                  },
+                },
+                auth: {
+                  experimentalDynamicClientRegistration: {
+                    enabled: true,
+                  },
+                },
+                ...(mcpActions && { mcpActions }),
+              },
+            }),
+          ],
+        });
+
+        const path = `/api/mcp-actions${suffix}`;
+        const resourceMetadataUrl = `${externalBaseUrl.replace(
+          /\/api$/,
+          '',
+        )}/.well-known/oauth-protected-resource${path}`;
+        const initializeRequest = {
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'initialize',
+          params: {
+            protocolVersion: '2025-06-18',
+            capabilities: {},
+            clientInfo: { name: 'test client', version: '1.0' },
+          },
+        };
+
+        const missingCredentials = await request(server)
+          .post(path)
+          .set('Host', 'untrusted.example.com')
+          .set('Accept', 'application/json, text/event-stream')
+          .send(initializeRequest);
+        expect(missingCredentials.status).toBe(401);
+        expect(missingCredentials.header['www-authenticate']).toBe(
+          `Bearer resource_metadata="${resourceMetadataUrl}"`,
+        );
+
+        const invalidCredentials = await request(server)
+          .post(path)
+          .set('Authorization', 'Bearer invalid-token')
+          .set('Accept', 'application/json, text/event-stream')
+          .send(initializeRequest);
+        expect(invalidCredentials.status).toBe(401);
+        expect(invalidCredentials.header['www-authenticate']).toBe(
+          `Bearer resource_metadata="${resourceMetadataUrl}", error="invalid_token"`,
+        );
+        expect(mockAuditor.createEvent).not.toHaveBeenCalled();
+
+        const validCredentials = await request(server)
+          .post(path)
+          .set('Authorization', mockCredentials.user.header())
+          .set('Accept', 'application/json, text/event-stream')
+          .send(initializeRequest);
+        expect(validCredentials.status).toBe(200);
+      },
+    );
+
+    it('should keep the default authentication policy when OAuth is disabled', async () => {
+      const { server } = await startTestBackend({
+        features: [
+          mcpPlugin,
+          mockPluginWithActions,
+          mockServices.httpAuth.factory({
+            defaultCredentials: mockCredentials.none(),
+          }),
+          mockServices.rootConfig.factory({
+            data: {
+              backend: {
+                actions: {
+                  pluginSources: ['local'],
+                },
+              },
+            },
+          }),
+        ],
+      });
+
+      const response = await request(server)
+        .post('/api/mcp-actions/v1')
+        .set('Accept', 'application/json, text/event-stream')
+        .send({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'initialize',
+          params: {
+            protocolVersion: '2025-06-18',
+            capabilities: {},
+            clientInfo: { name: 'test client', version: '1.0' },
+          },
+        });
+
+      expect(response.status).toBe(401);
+      expect(response.header['www-authenticate']).toBeUndefined();
     });
   });
 });
