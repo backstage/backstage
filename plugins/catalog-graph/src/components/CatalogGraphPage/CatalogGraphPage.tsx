@@ -27,7 +27,7 @@ import {
   entityPresentationSnapshot,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import Grid from '@material-ui/core/Grid';
+
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -67,14 +67,23 @@ const useStyles = makeStyles(
       minHeight: 0,
     },
     container: {
-      height: '100%',
-      maxHeight: '100%',
+      display: 'flex',
+      flexDirection: 'column',
       minHeight: 0,
+      [theme.breakpoints.up('lg')]: {
+        flexDirection: 'row',
+        height: '100%',
+        maxHeight: '100%',
+      },
     },
     fullHeight: {
-      maxHeight: '100%',
       display: 'flex',
-      minHeight: 0,
+      flex: 1,
+      minHeight: '50vh',
+      [theme.breakpoints.up('lg')]: {
+        maxHeight: '100%',
+        minHeight: 0,
+      },
     },
     graphWrapper: {
       position: 'relative',
@@ -99,8 +108,13 @@ const useStyles = makeStyles(
       display: 'grid',
       gridGap: theme.spacing(1),
       gridAutoRows: 'auto',
+      flexShrink: 0,
+      marginBottom: theme.spacing(2),
       [theme.breakpoints.up('lg')]: {
         display: 'block',
+        width: '16.666667%',
+        marginBottom: 0,
+        paddingRight: theme.spacing(2),
       },
       [theme.breakpoints.only('md')]: {
         gridTemplateColumns: 'repeat(3, 1fr)',
@@ -205,9 +219,9 @@ export const CatalogGraphPage = (
             {t('catalogGraphPage.supportButtonDescription')}
           </SupportButton>
         </ContentHeader>
-        <Grid container alignItems="stretch" className={classes.container}>
+        <div className={classes.container}>
           {showFilters && (
-            <Grid item xs={12} lg={2} className={classes.filters}>
+            <div className={classes.filters}>
               <MaxDepthFilter value={maxDepth} onChange={setMaxDepth} />
               <SelectedKindsFilter
                 value={selectedKinds}
@@ -229,9 +243,9 @@ export const CatalogGraphPage = (
                 onChange={setMergeRelations}
                 label={t('catalogGraphPage.mergeRelationsSwitchLabel')}
               />
-            </Grid>
+            </div>
           )}
-          <Grid item xs className={classes.fullHeight}>
+          <div className={classes.fullHeight}>
             <Paper className={classes.graphWrapper}>
               <Typography
                 variant="caption"
@@ -268,8 +282,8 @@ export const CatalogGraphPage = (
                 curve={curve}
               />
             </Paper>
-          </Grid>
-        </Grid>
+          </div>
+        </div>
       </Content>
     </Page>
   );
