@@ -93,13 +93,7 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const router = await createOpenApiRouter({
-    validatorOptions: {
-      // We want the spec to be up to date with the expected value, but the return type needs
-      //  to be controlled by the router implementation not the request validator.
-      ignorePaths: /^\/validate-entity\/?$/,
-    },
-  });
+  const router = await createOpenApiRouter();
   const {
     entitiesCatalog,
     locationAnalyzer,

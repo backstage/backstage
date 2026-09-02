@@ -1919,15 +1919,9 @@ export const spec = {
               schema: {
                 type: 'object',
                 properties: {
-                  location: {
-                    type: 'string',
-                  },
-                  entity: {
-                    type: 'object',
-                    additionalProperties: {},
-                  },
+                  location: {},
+                  entity: {},
                 },
-                required: ['location', 'entity'],
               },
             },
           },

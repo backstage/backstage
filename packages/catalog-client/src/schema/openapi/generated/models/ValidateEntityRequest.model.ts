@@ -22,6 +22,6 @@
  * @public
  */
 export interface ValidateEntityRequest {
-  location: string;
-  entity: { [key: string]: any };
+  location?: any | null;
+  entity?: any | null;
 }
