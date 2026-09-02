@@ -64,27 +64,42 @@ export const Variants = meta.story({
       },
     },
   },
-  render: () => (
+  render: args => (
     <Flex direction="column" gap="4">
       <Flex align="center">
-        <Button iconStart={<RiCloudLine />} variant="primary">
+        <Button iconStart={<RiCloudLine />} variant="primary" {...args}>
           Button
         </Button>
-        <Button iconStart={<RiCloudLine />} variant="secondary">
+        <Button iconStart={<RiCloudLine />} variant="secondary" {...args}>
           Button
         </Button>
-        <Button iconStart={<RiCloudLine />} variant="tertiary">
+        <Button iconStart={<RiCloudLine />} variant="tertiary" {...args}>
           Button
         </Button>
       </Flex>
       <Flex align="center">
-        <Button iconStart={<RiCloudLine />} variant="primary" destructive>
+        <Button
+          iconStart={<RiCloudLine />}
+          variant="primary"
+          destructive
+          {...args}
+        >
           Button
         </Button>
-        <Button iconStart={<RiCloudLine />} variant="secondary" destructive>
+        <Button
+          iconStart={<RiCloudLine />}
+          variant="secondary"
+          destructive
+          {...args}
+        >
           Button
         </Button>
-        <Button iconStart={<RiCloudLine />} variant="tertiary" destructive>
+        <Button
+          iconStart={<RiCloudLine />}
+          variant="tertiary"
+          destructive
+          {...args}
+        >
           Button
         </Button>
       </Flex>

@@ -124,12 +124,18 @@
     CircularSp-Cyrl, CircularSp-Grek, CircularSp-Deva;
 
   .bui-Button {
-    border-radius: var(--bui-radius-3);
-    padding-inline: var(--bui-space-3);
+    border-radius: var(--bui-radius-full);
+    padding-inline: var(--bui-space-4);
   }
 
   .bui-ButtonIcon {
     padding: 0;
+    border-radius: var(--bui-radius-full);
+  }
+
+  .bui-ButtonLink {
+    border-radius: var(--bui-radius-full);
+    padding-inline: var(--bui-space-4);
   }
 
   .bui-MenuPopup {
