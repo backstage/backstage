@@ -735,6 +735,130 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
         .select();
       expect(notifications).toHaveLength(1); // Notification created for enabled topic
     });
+
+    it('should send notification when origin is enabled in config even if channel is disabled', async () => {
+      const configWithOriginOverride = mockServices.rootConfig({
+        data: {
+          app: { baseUrl: 'http://localhost' },
+          notifications: {
+            defaultSettings: {
+              channels: [
+                {
+                  id: 'Web',
+                  enabled: false,
+                  origins: [
+                    {
+                      id: 'external:test-service',
+                      enabled: true,
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      });
+
+      const routerWithOriginOverride = await createRouter({
+        logger: mockServices.logger.mock(),
+        store,
+        signals: signalService,
+        userInfo,
+        config: configWithOriginOverride,
+        httpAuth,
+        auth,
+        catalog,
+      });
+      const appWithOriginOverride = express()
+        .use(routerWithOriginOverride)
+        .use(mockErrorHandler());
+
+      const sendNotification = (opts: NotificationSendOptions) =>
+        request(appWithOriginOverride)
+          .post('/notifications')
+          .send(opts)
+          .set('Content-Type', 'application/json')
+          .set('Accept', 'application/json');
+
+      const response = await sendNotification({
+        recipients: {
+          type: 'entity',
+          entityRef: ['user:default/mock'],
+        },
+        payload: {
+          title: 'soundcheck notification',
+          topic: 'test-topic',
+        },
+      });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toHaveLength(1);
+      expect(response.body[0]).toMatchObject({
+        origin: 'external:test-service',
+        payload: {
+          title: 'soundcheck notification',
+        },
+      });
+    });
+
+    it('should not send notification for non-matching origin when channel is disabled with origin overrides', async () => {
+      const configWithOriginOverride = mockServices.rootConfig({
+        data: {
+          app: { baseUrl: 'http://localhost' },
+          notifications: {
+            defaultSettings: {
+              channels: [
+                {
+                  id: 'Web',
+                  enabled: false,
+                  origins: [
+                    {
+                      id: 'external:other-service',
+                      enabled: true,
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      });
+
+      const routerWithOriginOverride = await createRouter({
+        logger: mockServices.logger.mock(),
+        store,
+        signals: signalService,
+        userInfo,
+        config: configWithOriginOverride,
+        httpAuth,
+        auth,
+        catalog,
+      });
+      const appWithOriginOverride = express()
+        .use(routerWithOriginOverride)
+        .use(mockErrorHandler());
+
+      const sendNotification = (opts: NotificationSendOptions) =>
+        request(appWithOriginOverride)
+          .post('/notifications')
+          .send(opts)
+          .set('Content-Type', 'application/json')
+          .set('Accept', 'application/json');
+
+      const response = await sendNotification({
+        recipients: {
+          type: 'entity',
+          entityRef: ['user:default/mock'],
+        },
+        payload: {
+          title: 'test notification',
+          topic: 'test-topic',
+        },
+      });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([]);
+    });
   });
 
   describe('POST /notifications with custom receiver resolver', () => {
