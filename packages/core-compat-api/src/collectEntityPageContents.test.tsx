@@ -14,19 +14,28 @@
  * limitations under the License.
  */
 
-import { ExtensionAttachTo } from '@backstage/frontend-plugin-api';
+import {
+  coreExtensionData,
+  ExtensionAttachTo,
+  ExtensionDefinition,
+} from '@backstage/frontend-plugin-api';
 import { EntityLayout, EntitySwitch, isKind } from '@backstage/plugin-catalog';
 import { JSX } from 'react';
 import { collectEntityPageContents } from './collectEntityPageContents';
 import {
+  attachComponentData,
+  createRouteRef,
   createComponentExtension,
   createPlugin,
+  createRoutableExtension,
 } from '@backstage/core-plugin-api';
+import { ComponentProps } from 'react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   resolveExtensionDefinition,
   toInternalExtension,
 } from '../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
+import { createExtensionTester } from '@backstage/frontend-test-utils';
 
 const fooPlugin = createPlugin({
   id: 'foo',
@@ -44,6 +53,25 @@ const OtherFooContent = fooPlugin.provide(
     component: { sync: () => <div>other foo content</div> },
   }),
 );
+const fooRouteRef = createRouteRef({ id: 'foo' });
+const FooRoutableContent = fooPlugin.provide(
+  createRoutableExtension({
+    name: 'FooRoutableContent',
+    mountPoint: fooRouteRef,
+    component: async () => () => <div>foo routable content</div>,
+  }),
+);
+const routeMountPointRef = createRouteRef({ id: 'route-mounted' });
+
+function RouteWithMountPoint(props: ComponentProps<typeof EntityLayout.Route>) {
+  return <EntityLayout.Route {...props} />;
+}
+attachComponentData(
+  RouteWithMountPoint,
+  'plugin.catalog.entityLayoutRoute',
+  true,
+);
+attachComponentData(RouteWithMountPoint, 'core.mountPoint', routeMountPointRef);
 
 const simpleTestContent = (
   <EntityLayout>
@@ -167,5 +195,67 @@ describe('collectEntityPageContents', () => {
         },
       ]
     `);
+  });
+
+  it('preserves plugin-specific route context for analytics on discovered entity tabs', () => {
+    const discovered = new Array<{
+      extension: ExtensionDefinition;
+      pluginId: string | undefined;
+    }>();
+
+    collectEntityPageContents(
+      <EntityLayout>
+        <EntityLayout.Route path="/foo" title="Foo">
+          <FooRoutableContent />
+        </EntityLayout.Route>
+      </EntityLayout>,
+      {
+        discoverExtension(extension, plugin) {
+          discovered.push({ extension, pluginId: plugin?.getId() });
+        },
+      },
+    );
+
+    expect(discovered).toHaveLength(1);
+    expect(discovered[0].pluginId).toBe('foo');
+
+    const internal = toInternalExtension(
+      resolveExtensionDefinition(discovered[0].extension, {
+        namespace: discovered[0].pluginId ?? 'test',
+      }),
+    );
+    expect(internal.id).toBe('entity-content:foo/discovered-1');
+    expect(internal.attachTo).toEqual({
+      id: 'page:catalog/entity',
+      input: 'contents',
+    });
+
+    const tester = createExtensionTester(discovered[0].extension);
+
+    expect(tester.get(coreExtensionData.routePath)).toBe('/foo');
+    expect(tester.get(coreExtensionData.routeRef)).toBe(fooRouteRef);
+  });
+
+  it('preserves mount points from route elements as route refs on discovered entity content', () => {
+    const discovered = new Array<ExtensionDefinition>();
+
+    collectEntityPageContents(
+      <EntityLayout>
+        <RouteWithMountPoint path="/mounted" title="Mounted">
+          <div>mounted route</div>
+        </RouteWithMountPoint>
+      </EntityLayout>,
+      {
+        discoverExtension(extension) {
+          discovered.push(extension);
+        },
+      },
+    );
+
+    expect(discovered).toHaveLength(1);
+    const tester = createExtensionTester(discovered[0]);
+
+    expect(tester.get(coreExtensionData.routePath)).toBe('/mounted');
+    expect(tester.get(coreExtensionData.routeRef)).toBe(routeMountPointRef);
   });
 });

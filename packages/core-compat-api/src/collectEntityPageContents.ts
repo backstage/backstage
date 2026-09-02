@@ -16,8 +16,10 @@
 
 import {
   ApiHolder,
+  AnyRouteRefParams,
   getComponentData,
   BackstagePlugin as LegacyBackstagePlugin,
+  RouteRef,
 } from '@backstage/core-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { JSX, ReactNode, isValidElement, Children } from 'react';
@@ -25,6 +27,7 @@ import {
   EntityCardBlueprint,
   EntityContentBlueprint,
 } from '@backstage/plugin-catalog-react/alpha';
+import { convertLegacyRouteRef } from './convertLegacyRouteRef';
 import { normalizeRoutePath } from './normalizeRoutePath';
 
 const ENTITY_SWITCH_KEY = 'core.backstage.entitySwitch';
@@ -109,6 +112,16 @@ export function collectEntityPageContents(
           );
         } else {
           const name = `discovered-${routeCounter++}`;
+          let routeRef = getComponentData<RouteRef<AnyRouteRefParams>>(
+            element,
+            'core.mountPoint',
+          );
+          if (!routeRef) {
+            routeRef = getComponentData<RouteRef<AnyRouteRefParams>>(
+              pageNode.children,
+              'core.mountPoint',
+            );
+          }
 
           context.discoverExtension(
             EntityContentBlueprint.makeWithOverrides({
@@ -117,6 +130,9 @@ export function collectEntityPageContents(
                 return originalFactory({
                   path: normalizeRoutePath(pageNode.path),
                   title: pageNode.title,
+                  routeRef: routeRef
+                    ? convertLegacyRouteRef(routeRef)
+                    : undefined,
                   filter: mergedIf && (entity => mergedIf(entity, { apis })),
                   loader: () => Promise.resolve(pageNode.children),
                 });
