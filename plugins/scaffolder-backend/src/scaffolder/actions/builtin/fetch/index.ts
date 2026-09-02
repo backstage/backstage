@@ -18,3 +18,5 @@ export { createFetchPlainAction } from './plain';
 export { createFetchPlainFileAction } from './plainFile';
 export { createFetchTemplateAction } from './template';
 export { createFetchTemplateFileAction } from './templateFile';
+export { createWorkspaceTemplateAction } from './workspaceTemplate';
+export { createWorkspaceTemplateFileAction } from './workspaceTemplateFile';
