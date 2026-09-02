@@ -1,1 +1,0 @@
-import{G as o}from"./useFocusRing-DHt_dYoo.js";import{c8 as d}from"./iframe-D3gHomOk.js";function c(t,a,r){let f=o(e=>{r&&!e.defaultPrevented&&r(a)});d.useEffect(()=>{let e=t?.current?.form;return e?.addEventListener("reset",f),()=>{e?.removeEventListener("reset",f)}},[t])}export{c as $};

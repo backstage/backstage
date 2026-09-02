@@ -1,0 +1,1 @@
+import{c8 as t}from"./iframe-BiC6vzfc.js";function n(){var e=t.useRef(!1),r=t.useCallback(function(){return e.current},[]);return t.useEffect(function(){return e.current=!0,function(){e.current=!1}},[]),r}export{n as u};
