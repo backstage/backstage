@@ -136,50 +136,6 @@ describe('NavContentBlueprint', () => {
     `);
   });
 
-  it('should return a valid component with legacy items', () => {
-    const extension = NavContentBlueprint.make({
-      name: 'test',
-      params: {
-        component: ({ items }) => (
-          <div>
-            Items:
-            {items.map((item, index) => (
-              <a key={index} href={item.to}>
-                {item.title}
-              </a>
-            ))}
-          </div>
-        ),
-      },
-    });
-
-    const tester = createExtensionTester(extension);
-
-    expect(
-      tester.get(NavContentBlueprint.dataRefs.component)({
-        navItems: mockNavItems([]),
-        items: [
-          {
-            to: '/',
-            text: 'Home',
-            title: 'Home',
-            icon: () => null,
-            routeRef,
-          },
-        ],
-      }),
-    ).toEqual(
-      <div>
-        Items:
-        {[
-          <a key={0} href="/">
-            Home
-          </a>,
-        ]}
-      </div>,
-    );
-  });
-
   it('should return a valid component with navItems', () => {
     const items: NavContentNavItem[] = [
       {
@@ -225,7 +181,6 @@ describe('NavContentBlueprint', () => {
     expect(
       tester.get(NavContentBlueprint.dataRefs.component)({
         navItems: mockNavItems(items),
-        items: [],
       }),
     ).toEqual(
       <div>
@@ -289,7 +244,7 @@ describe('NavContentBlueprint', () => {
     const tester = createExtensionTester(extension);
     const Component = tester.get(NavContentBlueprint.dataRefs.component);
 
-    render(<Component navItems={mockNavItems(items)} items={[]} />);
+    render(<Component navItems={mockNavItems(items)} />);
 
     const homeLink = screen.getByText('Home');
     expect(homeLink).toBeInTheDocument();
@@ -352,7 +307,7 @@ describe('NavContentBlueprint', () => {
     const tester = createExtensionTester(extension);
     const Component = tester.get(NavContentBlueprint.dataRefs.component);
 
-    render(<Component navItems={mockNavItems(items)} items={[]} />);
+    render(<Component navItems={mockNavItems(items)} />);
 
     expect(screen.getByText('Catalog').closest('nav')).toBeTruthy();
     expect(screen.queryByText('DevTools')?.closest('nav')).toBeFalsy();

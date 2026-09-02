@@ -33,10 +33,6 @@ export function convertLegacyPageExtension(
   overrides?: {
     name?: string;
     path?: string;
-    /**
-     * @deprecated Use the `path` param instead.
-     */
-    defaultPath?: [Error: `Use the 'path' override instead`];
   },
 ): ExtensionDefinition {
   const element = <LegacyExtension />;
