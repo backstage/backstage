@@ -42,11 +42,11 @@ The following sections show the plugins and search engines currently supported b
 See [Backstage Search Architecture](architecture.md) to get an overview of how
 the search engines are used.
 
-| Search Engines                                                | Support Status |
-| ------------------------------------------------------------- | -------------- |
-| [Elasticsearch/OpenSearch](./search-engines.md#elasticsearch) | ✅             |
-| [Lunr](./search-engines.md#lunr)                              | ✅             |
-| [Postgres](./search-engines.md#postgres)                      | Community ✅   |
+| Search Engines                                                                  | Support Status |
+| ------------------------------------------------------------------------------- | -------------- |
+| [Elasticsearch/OpenSearch](./search-engines.md#elasticsearch-7x-and-opensearch) | ✅             |
+| [Lunr](./search-engines.md#lunr)                                                | ✅             |
+| [Postgres](./search-engines.md#postgres)                                        | Community ✅   |
 
 [Reach out to us](#get-involved) if you want to chat about support for more plugin integrations and
 search engines.
