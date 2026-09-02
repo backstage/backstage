@@ -2971,7 +2971,6 @@ export interface PaginationOptions
       | 'showPaginationLabel'
     >
   > {
-  // (undocumented)
   initialOffset?: number;
 }
 
