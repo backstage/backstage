@@ -20,7 +20,15 @@ Follow the
 [official Google Cloud documentation](https://googleapis.dev/nodejs/storage/latest/index.html#quickstart)
 for the latest instructions on the following steps involving GCP.
 
-**1. Set `techdocs.publisher.type` config in your `app-config.yaml`**
+**1. Install Google Cloud's related packages**
+
+Add `@google-cloud/storage` in your backend package
+
+```shell
+yarn --cwd packages/backend add @google-cloud/storage
+```
+
+**2. Set `techdocs.publisher.type` config in your `app-config.yaml`**
 
 Set `techdocs.publisher.type` to `'googleGcs'`.
 
@@ -30,7 +38,7 @@ techdocs:
     type: 'googleGcs'
 ```
 
-**2. Create a GCS Bucket**
+**3. Create a GCS Bucket**
 
 Create a dedicated Google Cloud Storage bucket for TechDocs sites.
 techdocs-backend will publish documentation to this bucket. TechDocs will fetch
@@ -51,16 +59,16 @@ techdocs:
       projectId: 'name-of-project'
 ```
 
-**3a. (Recommended) Authentication using environment variable**
+**4a. (Recommended) Authentication using environment variable**
 
 The GCS Node.js client will automatically use the environment variable
 `GOOGLE_APPLICATION_CREDENTIALS` to authenticate with Google Cloud. It might
 already be set in Compute Engine, Google Kubernetes Engine, etc. Read
 <https://cloud.google.com/docs/authentication/production> for more details.
 
-**3b. Authentication using app-config.yaml**
+**4b. Authentication using app-config.yaml**
 
-If you do not prefer (3a) and optionally like to use a service account, you can
+If you do not prefer (4a) and optionally like to use a service account, you can
 follow these steps.
 
 Create a new Service Account and a key associated with it. In roles of the
@@ -115,7 +123,7 @@ techdocs:
       projectId: 'name-of-project'
 ```
 
-**4. That's it!**
+**5. That's it!**
 
 Your Backstage app is now ready to use Google Cloud Storage for TechDocs, to
 store and read the static generated documentation files.
@@ -128,6 +136,8 @@ You can register custom `StorageOptions` that will be used to configure the clie
 need to register publisher settings inside your module init, like in the following example:
 
 ```typescript
+import type { StorageOptions } from '@google-cloud/storage';
+
 export const gcsPublisherCustomizer = createBackendModule({
   pluginId: 'techdocs',
   moduleId: 'gcs-publisher-customizer',
@@ -152,7 +162,22 @@ export const gcsPublisherCustomizer = createBackendModule({
 
 ## Configuring AWS S3 Bucket with TechDocs
 
-**1. Set `techdocs.publisher.type` config in your `app-config.yaml`**
+**1. Install AWS S3's related packages**
+
+Add the AWS S3 packages in your backend package
+
+```
+yarn --cwd packages/backend add \
+  @aws-sdk/client-s3 \
+  @aws-sdk/credential-providers \
+  @aws-sdk/lib-storage \
+  @aws-sdk/types \
+  @backstage/integration-aws-node \
+  @smithy/node-http-handler \
+  hpagent
+```
+
+**2. Set `techdocs.publisher.type` config in your `app-config.yaml`**
 
 Set `techdocs.publisher.type` to `'awsS3'`.
 
@@ -162,7 +187,7 @@ techdocs:
     type: 'awsS3'
 ```
 
-**2. Create an S3 Bucket**
+**3. Create an S3 Bucket**
 
 Create a dedicated AWS S3 bucket for the storage of TechDocs sites.
 [Refer to the official documentation](https://docs.aws.amazon.com/AmazonS3/latest/user-guide/create-bucket.html).
@@ -185,7 +210,7 @@ techdocs:
 /* highlight-add-end */
 ```
 
-**3. Create minimal AWS IAM policies to manage TechDocs**
+**4. Create minimal AWS IAM policies to manage TechDocs**
 
 To _write_ TechDocs into the S3 bucket the IAM policy needs to have at a minimum
 permissions to:
@@ -238,7 +263,7 @@ well as all resources under the bucket. See the example policy below.
 }
 ```
 
-**4a. (Recommended) Setup authentication the AWS way, using environment
+**5a. (Recommended) Setup authentication the AWS way, using environment
 variables**
 
 You should follow the
@@ -254,7 +279,7 @@ If the environment variables
 - `AWS_SECRET_ACCESS_KEY`
 - `AWS_REGION`
 
-are set and can be used to access the bucket you created in step 2, they will be
+are set and can be used to access the bucket you created in step 3, they will be
 used by the AWS SDK V3 Node.js client for authentication.
 [Refer to the official documentation for loading credentials in Node.js from environment variables](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html).
 
@@ -268,7 +293,7 @@ environment automatically by defining appropriate IAM role with access to the
 bucket. Read more in the
 [official AWS documentation for using IAM roles](https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html#use-roles).
 
-**4b. Authentication using app-config.yaml via aws.accounts**
+**5b. Authentication using app-config.yaml via aws.accounts**
 
 AWS credentials and region can be provided to the AWS SDK via `app-config.yaml`.
 If the configs below are present, they will be used over existing `AWS_*`
@@ -292,7 +317,7 @@ aws:
 Refer to the
 [official AWS documentation for obtaining the credentials](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-credentials-node.html).
 
-**4c. Authentication using app-config.yaml via integrations.awsS3**
+**5c. Authentication using app-config.yaml via integrations.awsS3**
 
 If you already have an [AWS S3 integration](../../integrations/aws-s3/locations.md), you can use it to authenticate with AWS S3:
 
@@ -330,7 +355,7 @@ integrations:
       secretAccessKey: ${AWS_SECRET_ACCESS_KEY_2}
 ```
 
-**4d. Authentication using an assumed role** Users with multiple AWS accounts
+**5d. Authentication using an assumed role** Users with multiple AWS accounts
 may want to use a role for S3 storage that is in a different AWS account. Using
 the `roleArn` parameter as seen below, you can instruct the TechDocs publisher
 to assume a role before accessing S3.
@@ -350,7 +375,7 @@ Note: Assuming a role requires that primary credentials are already configured
 at `AWS.config.credentials`. Read more about
 [assuming roles in AWS](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html).
 
-**5. That's it!**
+**6. That's it!**
 
 Your Backstage app is now ready to use AWS S3 for TechDocs, to store and read
 the static generated documentation files. When you start the backend of the app,
@@ -363,7 +388,15 @@ Follow the
 [official Azure Blob Storage documentation](https://docs.microsoft.com/en-us/azure/storage/common/storage-auth?toc=/azure/storage/blobs/toc.json)
 for the latest instructions on the following steps involving Azure Blob Storage.
 
-**1. Set `techdocs.publisher.type` config in your `app-config.yaml`**
+**1. Install Azure Blob Storage related packages**
+
+Add the Azure Blob Storage packages in your backend package
+
+```shell
+yarn --cwd packages/backend add @azure/identity @azure/storage-blob
+```
+
+**2. Set `techdocs.publisher.type` config in your `app-config.yaml`**
 
 Set `techdocs.publisher.type` to `'azureBlobStorage'`.
 
@@ -373,7 +406,7 @@ techdocs:
     type: 'azureBlobStorage'
 ```
 
-**2. Create an Azure Blob Storage Container**
+**3. Create an Azure Blob Storage Container**
 
 Create a dedicated container for TechDocs sites.
 [Refer to the official documentation](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-portal).
@@ -393,7 +426,7 @@ techdocs:
       containerName: 'name-of-techdocs-storage-container'
 ```
 
-**3a. (Recommended) Authentication using environment variable**
+**4a. (Recommended) Authentication using environment variable**
 
 The Azure Blob Storage client in Backstage supports all credential types
 provided by
@@ -439,9 +472,9 @@ For more details, see the
 and
 [Workload Identity Federation for Kubernetes](https://learn.microsoft.com/en-us/azure/active-directory/workload-identities/workload-identity-federation-overview).
 
-**3b. Authentication using app-config.yaml**
+**4b. Authentication using app-config.yaml**
 
-If you do not prefer (3a) and optionally like to use key-based access, you can
+If you do not prefer (4a) and optionally like to use key-based access, you can
 follow these steps.
 
 To get credentials, access the Azure Portal and go to "Settings > Access Keys",
@@ -466,7 +499,7 @@ applied, in order to read, write, and delete objects as needed, unless you use
 an external publisher, in this case the `Storage Blob Data Reader` role is
 sufficient.
 
-**4. That's it!**
+**5. That's it!**
 
 Your Backstage app is now ready to use Azure Blob Storage for TechDocs, to store
 and read the static generated documentation files. When you start the backend of
@@ -480,7 +513,15 @@ Follow the
 [official OpenStack Api documentation](https://docs.openstack.org/api-ref/identity/v3/)
 for the latest instructions on the following steps involving OpenStack Storage.
 
-**1. Set `techdocs.publisher.type` config in your `app-config.yaml`**
+**1. Install OpenStack Swift related packages**
+
+Add the OpenStack Swift packages in your backend package
+
+```shell
+yarn --cwd packages/backend add @trendyol-js/openstack-swift-sdk
+```
+
+**2. Set `techdocs.publisher.type` config in your `app-config.yaml`**
 
 Set `techdocs.publisher.type` to `'openStackSwift'`.
 
@@ -490,7 +531,7 @@ techdocs:
     type: 'openStackSwift'
 ```
 
-**2. Create an OpenStack Swift Storage Container**
+**3. Create an OpenStack Swift Storage Container**
 
 Create a dedicated container for TechDocs sites.
 [Refer to the official documentation](https://docs.openstack.org/mitaka/user-guide/dashboard_manage_containers.html).
@@ -510,7 +551,7 @@ techdocs:
       containerName: 'name-of-techdocs-storage-container'
 ```
 
-**3. Authentication using app-config.yaml**
+**4. Authentication using app-config.yaml**
 
 Set the configs in your `app-config.yaml` to point to your container name.
 
@@ -530,7 +571,7 @@ techdocs:
       swiftUrl: ${OPENSTACK_SWIFT_STORAGE_SWIFT_URL}
 ```
 
-**4. That's it!**
+**5. That's it!**
 
 Your Backstage app is now ready to use OpenStack Swift Storage for TechDocs, to
 store and read the static generated documentation files. When you start the

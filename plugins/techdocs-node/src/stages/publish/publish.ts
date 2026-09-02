@@ -15,11 +15,8 @@
  */
 
 import { Config } from '@backstage/config';
-import { AwsS3Publish } from './awsS3';
-import { AzureBlobStoragePublish } from './azureBlobStorage';
-import { GoogleGCSPublish } from './googleStorage';
+import { ForwardedError } from '@backstage/errors';
 import { LocalPublish } from './local';
-import { OpenStackSwiftPublish } from './openStackSwift';
 import {
   PublisherFactory,
   PublisherBase,
@@ -82,8 +79,18 @@ export class Publisher implements PublisherBuilder {
     ) ?? 'local') as PublisherType;
 
     switch (publisherType) {
-      case 'googleGcs':
+      case 'googleGcs': {
         logger.info('Creating Google Storage Bucket publisher for TechDocs');
+        const { GoogleGCSPublish } = await import('./googleStorage').catch(
+          error => {
+            throw new ForwardedError(
+              `Failed to load the Google Cloud Storage TechDocs publisher, which requires ` +
+                `'@google-cloud/storage'. It must be installed as an explicit dependency in ` +
+                `your project`,
+              error,
+            );
+          },
+        );
         publishers.register(
           publisherType,
           GoogleGCSPublish.fromConfig(
@@ -93,31 +100,64 @@ export class Publisher implements PublisherBuilder {
           ),
         );
         break;
-      case 'awsS3':
+      }
+      case 'awsS3': {
         logger.info('Creating AWS S3 Bucket publisher for TechDocs');
+        const { AwsS3Publish } = await import('./awsS3').catch(error => {
+          throw new ForwardedError(
+            `Failed to load the AWS S3 TechDocs publisher, which requires ` +
+              `'@aws-sdk/client-s3', '@aws-sdk/credential-providers', '@aws-sdk/lib-storage', ` +
+              `'@aws-sdk/types', '@backstage/integration-aws-node', '@smithy/node-http-handler' ` +
+              `and 'hpagent'. They must be installed as explicit dependencies in your project`,
+            error,
+          );
+        });
         publishers.register(
           publisherType,
           await AwsS3Publish.fromConfig(config, logger),
         );
         break;
-      case 'azureBlobStorage':
+      }
+      case 'azureBlobStorage': {
         logger.info(
           'Creating Azure Blob Storage Container publisher for TechDocs',
         );
+        const { AzureBlobStoragePublish } = await import(
+          './azureBlobStorage'
+        ).catch(error => {
+          throw new ForwardedError(
+            `Failed to load the Azure Blob Storage TechDocs publisher, which requires ` +
+              `'@azure/identity' and '@azure/storage-blob'. They must be installed as ` +
+              `explicit dependencies in your project`,
+            error,
+          );
+        });
         publishers.register(
           publisherType,
           AzureBlobStoragePublish.fromConfig(config, logger),
         );
         break;
-      case 'openStackSwift':
+      }
+      case 'openStackSwift': {
         logger.info(
           'Creating OpenStack Swift Container publisher for TechDocs',
         );
+        const { OpenStackSwiftPublish } = await import(
+          './openStackSwift'
+        ).catch(error => {
+          throw new ForwardedError(
+            `Failed to load the OpenStack Swift TechDocs publisher, which requires ` +
+              `'@trendyol-js/openstack-swift-sdk'. It must be installed as an explicit ` +
+              `dependency in your project`,
+            error,
+          );
+        });
         publishers.register(
           publisherType,
           OpenStackSwiftPublish.fromConfig(config, logger),
         );
         break;
+      }
       case 'local':
         logger.info('Creating Local publisher for TechDocs');
         publishers.register(

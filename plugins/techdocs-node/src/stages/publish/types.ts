@@ -17,7 +17,6 @@ import express from 'express';
 import { Config } from '@backstage/config';
 import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
-import { StorageOptions } from '@google-cloud/storage';
 
 /**
  * Options for building publishers
@@ -35,7 +34,12 @@ export type PublisherFactory = {
  * @public
  */
 export interface PublisherSettings {
-  googleGcs?: StorageOptions;
+  /**
+   * Intentionally typed as `unknown` rather than `StorageOptions`, to
+   * avoid exposing a type from `@google-cloud/storage` in this package's
+   * public API.
+   */
+  googleGcs?: unknown;
 }
 
 /**
