@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog-backend-module-incremental-ingestion': patch
+'@backstage/plugin-catalog-backend-module-incremental-ingestion': minor
 ---
 
-Added permission checks for reading and managing catalog ingestion providers through the administrative routes.
+**BREAKING**: The incremental ingestion administrative routes now enforce separate read and manage permissions. Installations with custom permission policies must add decisions for the new permissions.
