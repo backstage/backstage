@@ -153,20 +153,27 @@ export function useCompletePagination<T extends TableItem, TFilter>(
     sortFn,
   ]);
 
-  const totalCount = processedData?.length ?? 0;
+  const previousProcessedDataRef = useRef(processedData);
+  if (processedData !== undefined) {
+    previousProcessedDataRef.current = processedData;
+  }
+  const retainedProcessedData =
+    processedData ?? previousProcessedDataRef.current;
+
+  const totalCount = retainedProcessedData?.length ?? 0;
 
   const effectiveOffset = useMemo(() => {
     if (noPagination) {
       return 0;
     }
-    if (processedData === undefined) {
+    if (retainedProcessedData === undefined) {
       return offset;
     }
     if (totalCount === 0) {
       return 0;
     }
     return Math.min(offset, Math.floor((totalCount - 1) / pageSize) * pageSize);
-  }, [noPagination, offset, pageSize, processedData, totalCount]);
+  }, [noPagination, offset, pageSize, retainedProcessedData, totalCount]);
 
   // Persist the corrected offset so later data growth does not restore it.
   useEffect(() => {
@@ -179,9 +186,12 @@ export function useCompletePagination<T extends TableItem, TFilter>(
   const paginatedData = useMemo(
     () =>
       noPagination
-        ? processedData
-        : processedData?.slice(effectiveOffset, effectiveOffset + pageSize),
-    [processedData, effectiveOffset, pageSize, noPagination],
+        ? retainedProcessedData
+        : retainedProcessedData?.slice(
+            effectiveOffset,
+            effectiveOffset + pageSize,
+          ),
+    [retainedProcessedData, effectiveOffset, pageSize, noPagination],
   );
 
   const hasNextPage = !noPagination && effectiveOffset + pageSize < totalCount;

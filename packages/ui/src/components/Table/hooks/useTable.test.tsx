@@ -78,7 +78,12 @@ describe('useTable', () => {
     );
     expect(result.current.tableProps.isPending).toBe(true);
     expect(result.current.tableProps.isStale).toBe(true);
-    expect(getPagination(result.current).offset).toBe(10);
+    expect(getPagination(result.current)).toMatchObject({
+      offset: 10,
+      totalCount: 25,
+      hasNextPage: true,
+      hasPreviousPage: true,
+    });
   });
 
   it('persists a valid offset when complete data shrinks', () => {

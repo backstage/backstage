@@ -133,7 +133,8 @@ export type UseTableCompleteOptions<
     | {
         /**
          * Controlled table data. Set to `undefined` while loading new data;
-         * the previous data remains visible and is reported as stale.
+         * the previous data and pagination metadata remain visible and are
+         * reported as stale.
          */
         data: T[] | undefined;
         getData?: never;
