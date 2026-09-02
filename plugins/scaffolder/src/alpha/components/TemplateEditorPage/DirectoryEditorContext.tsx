@@ -15,8 +15,16 @@
  */
 
 import { ErrorPanel } from '@backstage/core-components';
-import { useAsync, useRerender } from '@react-hookz/web';
-import { createContext, ReactNode, useContext, useEffect } from 'react';
+import { useRerender } from '@react-hookz/web';
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   TemplateDirectoryAccess,
   TemplateFileAccess,
@@ -24,6 +32,7 @@ import {
 
 const MAX_SIZE = 1024 * 1024;
 const MAX_SIZE_MESSAGE = 'This file is too large to be displayed';
+const FILE_READ_CONCURRENCY = 6;
 
 interface DirectoryEditorFile {
   /** The path of the file relative to the root directory */
@@ -38,12 +47,19 @@ interface DirectoryEditorFile {
   /** Save the staged content of the file to disk */
   save(): Promise<void>;
   /** Reload the staged content of the file from disk */
-  reload(): Promise<void>;
+  reload(options?: { silent?: boolean }): Promise<void>;
 }
 
 interface DirectoryEditor {
   /** A list of all files in the edited directory */
   files: Array<DirectoryEditorFile>;
+
+  /** Whether the directory is being loaded from disk */
+  loading: boolean;
+  /** Number of files loaded so far during the current reload */
+  loadedFileCount: number;
+  /** Total number of files to load during the current reload */
+  totalFileCount: number;
 
   /** The currently selected file */
   selectedFile: DirectoryEditorFile | undefined;
@@ -98,13 +114,15 @@ class DirectoryEditorFileManager implements DirectoryEditorFile {
     }
   }
 
-  async reload(): Promise<void> {
+  async reload(options?: { silent?: boolean }): Promise<void> {
     const file = await this.#access.file();
     if (file.size > MAX_SIZE) {
       if (this.#content !== undefined) {
         this.#content = undefined;
         this.#savedContent = undefined;
-        this.#signalUpdate();
+        if (!options?.silent) {
+          this.#signalUpdate();
+        }
       }
       return;
     }
@@ -113,7 +131,9 @@ class DirectoryEditorFileManager implements DirectoryEditorFile {
     if (this.#content !== content) {
       this.#content = content;
       this.#savedContent = content;
-      this.#signalUpdate();
+      if (!options?.silent) {
+        this.#signalUpdate();
+      }
     }
   }
 }
@@ -124,6 +144,9 @@ class DirectoryEditorManager implements DirectoryEditor {
 
   #files: DirectoryEditorFile[] = [];
   #selectedFile: DirectoryEditorFile | undefined;
+  #loading = false;
+  #loadedFileCount = 0;
+  #totalFileCount = 0;
 
   constructor(access: TemplateDirectoryAccess) {
     this.#access = access;
@@ -131,6 +154,18 @@ class DirectoryEditorManager implements DirectoryEditor {
 
   get files() {
     return this.#files;
+  }
+
+  get loading() {
+    return this.#loading;
+  }
+
+  get loadedFileCount() {
+    return this.#loadedFileCount;
+  }
+
+  get totalFileCount() {
+    return this.#totalFileCount;
   }
 
   get selectedFile() {
@@ -155,24 +190,47 @@ class DirectoryEditorManager implements DirectoryEditor {
   }
 
   async reload(): Promise<void> {
+    if (this.#loading) {
+      return;
+    }
+
     const selectedPath = this.#selectedFile?.path;
 
-    const files = await this.#access.listFiles();
-    const fileManagers = await Promise.all(
-      files.map(async file => {
-        const manager = new DirectoryEditorFileManager(
-          file,
-          this.#signalUpdate,
-        );
-        await manager.reload();
-        return manager;
-      }),
-    );
-    this.#files.length = 0;
-    this.#files.push(...fileManagers);
-
-    this.setSelectedFile(selectedPath);
+    this.#loading = true;
+    this.#loadedFileCount = 0;
+    this.#totalFileCount = 0;
     this.#signalUpdate();
+
+    try {
+      const fileAccesses = await this.#access.listFiles();
+
+      this.#files.length = 0;
+      this.#totalFileCount = fileAccesses.length;
+      this.#signalUpdate();
+
+      for (let i = 0; i < fileAccesses.length; i += FILE_READ_CONCURRENCY) {
+        const chunk = fileAccesses.slice(i, i + FILE_READ_CONCURRENCY);
+        const managers = await Promise.all(
+          chunk.map(async fileAccess => {
+            const manager = new DirectoryEditorFileManager(
+              fileAccess,
+              this.#signalUpdate,
+            );
+            await manager.reload({ silent: true });
+            this.#loadedFileCount++;
+            this.#signalUpdate();
+            return manager;
+          }),
+        );
+        this.#files.push(...managers);
+        this.#signalUpdate();
+      }
+
+      this.setSelectedFile(selectedPath);
+    } finally {
+      this.#loading = false;
+      this.#signalUpdate();
+    }
   }
 
   subscribe(listener: () => void): () => void {
@@ -208,34 +266,50 @@ interface DirectoryEditorProviderProps {
 export function DirectoryEditorProvider(props: DirectoryEditorProviderProps) {
   const { directory } = props;
 
-  const [{ result, error }, { execute }] = useAsync(
-    async (dir?: TemplateDirectoryAccess) => {
-      if (!dir) {
-        return undefined;
-      }
-
-      const manager = new DirectoryEditorManager(dir);
-      await manager.reload();
-
-      const firstYaml = manager.files.find(file => file.path.match(/\.ya?ml$/));
-      if (firstYaml) {
-        manager.setSelectedFile(firstYaml.path);
-      }
-
-      return manager;
-    },
+  const manager = useMemo(
+    () => (directory ? new DirectoryEditorManager(directory) : undefined),
+    [directory],
   );
 
+  const [error, setError] = useState<Error>();
+  const generationRef = useRef(0);
+
   useEffect(() => {
-    execute(directory);
-  }, [execute, directory]);
+    const generation = ++generationRef.current;
+    if (!manager) {
+      setError(undefined);
+      return;
+    }
+
+    setError(undefined);
+
+    manager
+      .reload()
+      .then(() => {
+        if (generationRef.current !== generation) {
+          return;
+        }
+        const firstYaml = manager.files.find(file =>
+          file.path.match(/\.ya?ml$/),
+        );
+        if (firstYaml) {
+          manager.setSelectedFile(firstYaml.path);
+        }
+      })
+      .catch(cause => {
+        if (generationRef.current !== generation) {
+          return;
+        }
+        setError(cause instanceof Error ? cause : new Error(String(cause)));
+      });
+  }, [manager]);
 
   if (error) {
     return <ErrorPanel error={error} />;
   }
 
   return (
-    <DirectoryEditorContext.Provider value={result}>
+    <DirectoryEditorContext.Provider value={manager}>
       {props.children}
     </DirectoryEditorContext.Provider>
   );
