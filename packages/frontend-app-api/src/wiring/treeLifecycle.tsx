@@ -21,8 +21,8 @@ import {
   AppTree,
   coreExtensionData,
   ExtensionDataRef,
-  ExtensionFactoryMiddleware,
 } from '@backstage/frontend-plugin-api';
+import { ExtensionFactoryMiddleware } from './types';
 import { FilterPredicate } from '@backstage/filter-predicates';
 import { collectRouteIds } from '../routing/collectRouteIds';
 import { ErrorCollector } from './createErrorCollector';
