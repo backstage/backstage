@@ -233,6 +233,7 @@ json
 jsonnet
 JSONSchema
 jsx
+justfile
 JWTs
 Kaewkasi
 Kaswell
