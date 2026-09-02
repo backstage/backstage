@@ -105,6 +105,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
 
   const {
     loading,
+    pending,
     error,
     entities,
     filters,
@@ -121,7 +122,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
   if (entities.length > 0) {
     hasHadData.current = true;
   }
-  const isLoading = loading && !hasHadData.current;
+  const isLoading = pending && !hasHadData.current;
 
   const tableColumns = useMemo(
     () =>
@@ -214,7 +215,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const countIsStale = !loading && totalItemsLoading;
   const currentCount =
     typeof totalItems === 'number' && !countIsStale ? ` (${totalItems})` : '';
-  const somethingIsLoading = loading || totalItemsLoading;
+  const somethingIsLoading = pending || totalItemsLoading;
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
   const titlePreamble = capitalize(
     filters.user?.value ?? t('catalogTable.allFilters'),

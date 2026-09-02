@@ -69,6 +69,7 @@ export function MockEntityListContextProvider<
       updateFilters: value?.updateFilters ?? updateFilters,
       filters,
       loading: value?.loading ?? false,
+      pending: value?.pending ?? value?.loading ?? false,
       queryParameters: value?.queryParameters ?? defaultValues.queryParameters,
       error: value?.error,
       totalItems:
