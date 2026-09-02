@@ -222,11 +222,15 @@ async function pinYarnVersion(dir: string) {
   // Intentionally writes a minimal yarnrc rather than merging with the template's.
   // The create-app template enables `npmMinimalAgeGate`, which would block e2e runs
   // from validating freshly-published dependency bumps and ecosystem-fix releases.
+  // New Yarn defaults must be set explicitly so install does not rewrite this file.
   await fs.writeFile(
     resolvePath(dir, '.yarnrc.yml'),
     `yarnPath: ${yarnPath}
 nodeLinker: node-modules
 enableGlobalCache: true
+enableScripts: true
+npmMinimalAgeGate: 0
+approvedGitRepositories: []
 plugins:
   - path: ${yarnPluginPath}
     spec: '@yarnpkg/plugin-workspace-tools'
