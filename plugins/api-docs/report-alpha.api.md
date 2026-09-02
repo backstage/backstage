@@ -6,10 +6,13 @@
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
+import { CatalogTableRow } from '@backstage/plugin-catalog';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { defaultEntityContentGroups } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
 import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
+import { EntityListPagination } from '@backstage/plugin-catalog-react';
+import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
@@ -23,7 +26,10 @@ import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { ReactElement } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
+import { TableColumn } from '@backstage/core-components';
+import { TableProps } from '@backstage/core-components';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
+import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
 // @alpha @deprecated (undocumented)
 export const apiDocsTranslationRef: TranslationRef<
@@ -60,6 +66,20 @@ export const apiDocsTranslationRef: TranslationRef<
     readonly apisCardHelpLinkTitle: 'Learn how to change this.';
   }
 >;
+
+// @alpha
+export const ApiExplorerPage: (
+  props: ApiExplorerPageProps,
+) => React.JSX.Element;
+
+// @alpha
+export type ApiExplorerPageProps = {
+  initiallySelectedFilter?: UserListFilterKind;
+  columns?: TableColumn<CatalogTableRow>[];
+  actions?: TableProps<CatalogTableRow>['actions'];
+  ownerPickerMode?: EntityOwnerPickerProps['mode'];
+  pagination?: EntityListPagination;
+};
 
 // @public (undocumented)
 const _default: OverridableFrontendPlugin<
