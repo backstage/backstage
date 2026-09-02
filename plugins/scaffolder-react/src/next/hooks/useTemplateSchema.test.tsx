@@ -75,12 +75,14 @@ describe('useTemplateSchema', () => {
     });
 
     expect(second.uiSchema).toEqual({
+      field1: { 'ui:widget': 'hidden' },
       field2: { 'ui:field': 'MyCoolerComponent' },
     });
 
     expect(second.schema).toEqual({
       type: 'object',
       properties: {
+        field1: { type: 'string' },
         field2: { type: 'string' },
       },
     });
@@ -385,6 +387,15 @@ describe('useTemplateSchema', () => {
 
       expect(second.schema).toEqual({
         dependencies: secondStepDependencies,
+        properties: {
+          preconditions: {
+            title: 'Preconditions',
+            type: 'string',
+            description: 'Choose an option',
+            enum: ['optionA', 'optionB'],
+            enumNames: ['Option A', 'Option B'],
+          },
+        },
       });
     });
   });
