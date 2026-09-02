@@ -38,15 +38,14 @@ export default createBackendModule({
       deps: {
         config: coreServices.rootConfig,
         events: eventsExtensionPoint,
+        logger: coreServices.logger,
       },
-      async init({ config, events }) {
-        const validator = createGitlabTokenValidator(config);
-        if (validator) {
-          events.addHttpPostIngress({
-            topic: 'gitlab',
-            validator: createGitlabTokenValidator(config),
-          });
-        }
+      async init({ config, events, logger }) {
+        const validator = createGitlabTokenValidator(config, logger);
+        events.addHttpPostIngress({
+          topic: 'gitlab',
+          validator,
+        });
       },
     });
   },

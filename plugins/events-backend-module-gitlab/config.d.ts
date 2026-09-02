@@ -27,11 +27,14 @@ export interface Config {
          * See https://docs.gitlab.com/ee/user/project/integrations/webhooks.html#validate-payloads-by-using-a-secret-token
          * for more details.
          *
-         * Webhook listener will only be enabled if this is set.
-         *
          * @visibility secret
          */
         webhookSecret?: string;
+        /**
+         * Dangerously allow unauthenticated events.
+         * Only set to true for development or testing.
+         */
+        dangerouslyAllowUnauthenticatedEvents?: boolean;
       };
     };
   };

@@ -27,11 +27,14 @@ export interface Config {
          * See https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks
          * for more details.
          *
-         * Webhook listener will only be enabled if this is set.
-         *
          * @visibility secret
          */
         webhookSecret?: string;
+        /**
+         * Dangerously allow unauthenticated events.
+         * Only set to true for development or testing.
+         */
+        dangerouslyAllowUnauthenticatedEvents?: boolean;
       };
     };
   };
