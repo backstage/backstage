@@ -22,7 +22,9 @@ export interface PageSizeOption {
 
 /** @public */
 export type TablePaginationOwnProps = {
+  /** The controlled number of rows displayed per page. */
   pageSize: number;
+  /** Available page sizes. An empty array hides the page-size selector. */
   pageSizeOptions?: number[] | PageSizeOption[];
   offset?: number;
   totalCount?: number;
