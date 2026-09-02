@@ -59,7 +59,8 @@ export interface Config {
 
     /**
      * Named MCP servers, each exposed at /api/mcp-actions/v1/{key}.
-     * When not configured, the plugin serves a single server at /api/mcp-actions/v1.
+     * These are subsets of the default server at /api/mcp-actions/v1, which is
+     * always exposed and always serves every registered action.
      */
     servers?: {
       [serverKey: string]: {
