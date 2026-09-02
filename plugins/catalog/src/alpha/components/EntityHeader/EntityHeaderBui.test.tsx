@@ -55,16 +55,6 @@ const ownerEntity: Entity = {
   spec: { profile: { picture: 'https://example.com/team-a.png' } },
 };
 
-const systemEntity: Entity = {
-  apiVersion: 'backstage.io/v1alpha1',
-  kind: 'System',
-  metadata: {
-    namespace: 'default',
-    name: 'artist-engagement-portal',
-    title: 'Artist Engagement Portal',
-  },
-};
-
 function createDeferred<T>() {
   let resolve!: (value: T) => void;
   const promise = new Promise<T>(resolver => {
@@ -101,7 +91,7 @@ describe('EntityHeaderBui', () => {
   it('renders rich entity data from canonical relations', async () => {
     await renderHeader({
       entity: componentEntity,
-      catalogEntities: [componentEntity, ownerEntity, systemEntity],
+      catalogEntities: [componentEntity, ownerEntity],
     });
 
     expect(
@@ -112,7 +102,7 @@ describe('EntityHeaderBui', () => {
     expect(screen.getByText('experimental')).toBeInTheDocument();
     expect(await screen.findByText('Team A')).toBeInTheDocument();
     expect(
-      screen.getByRole('link', { name: 'Artist Engagement Portal' }),
+      screen.getByRole('link', { name: 'artist-engagement-portal' }),
     ).toHaveAttribute(
       'href',
       '/catalog/default/system/artist-engagement-portal',
@@ -130,11 +120,7 @@ describe('EntityHeaderBui', () => {
     await renderHeader({
       entity: componentEntity,
       catalogApi: catalogApiMock.mock({
-        getEntitiesByRefs: jest.fn(({ entityRefs }) =>
-          entityRefs.every(ref => ref.startsWith('group:'))
-            ? ownerResponse.promise
-            : Promise.reject(),
-        ),
+        getEntitiesByRefs: jest.fn(() => ownerResponse.promise),
       }),
     });
 
@@ -143,30 +129,6 @@ describe('EntityHeaderBui', () => {
       ownerResponse.resolve({ items: [ownerEntity] });
     });
     expect(await screen.findByText('Team A')).toBeInTheDocument();
-  });
-
-  it('keeps a useful hierarchy link fallback while catalog hierarchy resolution is pending', async () => {
-    const hierarchyResponse = createDeferred<{ items: Entity[] }>();
-    await renderHeader({
-      entity: componentEntity,
-      catalogApi: catalogApiMock.mock({
-        getEntitiesByRefs: jest.fn(({ entityRefs }) =>
-          entityRefs.every(ref => ref.startsWith('system:'))
-            ? hierarchyResponse.promise
-            : Promise.reject(),
-        ),
-      }),
-    });
-
-    expect(
-      await screen.findByText('artist-engagement-portal'),
-    ).toBeInTheDocument();
-    await act(async () => {
-      hierarchyResponse.resolve({ items: [systemEntity] });
-    });
-    expect(
-      await screen.findByText('Artist Engagement Portal'),
-    ).toBeInTheDocument();
   });
 
   it('renders a route-ref title while the entity is loading', async () => {

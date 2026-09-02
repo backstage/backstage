@@ -1,5 +1,6 @@
 ---
-'@backstage/plugin-catalog': patch
+'@backstage/plugin-catalog': minor
+'@backstage/plugin-catalog-react': minor
 ---
 
-Fetch entities for hierarchy links in BUI entity header in order to display titles
+Replace hierarchy links in BUI entity header with EntityRefLinks in order to display titles

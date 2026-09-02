@@ -16,11 +16,9 @@
 
 import { useMemo } from 'react';
 import {
-  Box,
   ButtonIcon,
   Header,
   HeaderMetadataUsers,
-  Link,
   type HeaderMetadataItem,
   type HeaderMetadataUser,
   type HeaderNavTabItem,
@@ -37,6 +35,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import {
   catalogApiRef,
   catalogReactTranslationRef,
+  EntityRefLinks,
   entityRouteRef,
   getEntityRelations,
   useAsyncEntity,
@@ -91,40 +90,6 @@ function useOwnerUsers(entity: Entity | undefined): HeaderMetadataUser[] {
   });
 }
 
-function HierarchyLinks(props: { refs: CompoundEntityRef[] }) {
-  const catalogApi = useApi(catalogApiRef);
-  const entityLink = useEntityRefLink();
-  const refStrings = useMemo(
-    () => props.refs.map(ref => stringifyEntityRef(ref)),
-    [props.refs],
-  );
-  const { value: hierarchyEntities } = useAsync(async () => {
-    if (refStrings.length === 0) return [];
-    return (
-      await catalogApi.getEntitiesByRefs({
-        entityRefs: refStrings,
-        fields: ['metadata.name', 'metadata.title'],
-      })
-    ).items;
-  }, [catalogApi, refStrings]);
-
-  return (
-    <Box as="ul" display="inline" m="0" p="0" style={{ listStyle: 'none' }}>
-      {props.refs.map((ref, index) => {
-        const entity = hierarchyEntities?.[index];
-        return (
-          <Box as="li" display="inline" key={stringifyEntityRef(ref)}>
-            {index > 0 ? ', ' : null}
-            <Link href={entityLink(ref)} standalone>
-              {entity?.metadata.title ?? entity?.metadata.name ?? ref.name}
-            </Link>
-          </Box>
-        );
-      })}
-    </Box>
-  );
-}
-
 function hierarchyLabel(
   ref: CompoundEntityRef,
 ): 'systemLabel' | 'domainLabel' | 'partOfLabel' {
@@ -174,7 +139,7 @@ function useMetadata(entity: Entity | undefined): HeaderMetadataItem[] {
             | 'entityLabels.domainLabel'
             | 'entityLabels.partOfLabel',
         ),
-        value: <HierarchyLinks refs={refs} />,
+        value: <EntityRefLinks entityRefs={refs} />,
       });
     }
     return metadata;
