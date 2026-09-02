@@ -90,7 +90,7 @@ describe('createGithubSignatureValidator', () => {
         body: payloadBuffer,
         encoding: 'utf-8',
       },
-    } as RequestDetails;
+    } as Partial<RequestDetails> as unknown as RequestDetails;
   };
 
   it('should return undefined if no secret is configured', async () => {
