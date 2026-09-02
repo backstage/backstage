@@ -61,6 +61,9 @@ export const signalsPlugin = createBackendPlugin({
             events,
           }),
         );
+        // Browser WebSockets cannot send an Authorization header, so the
+        // credentials barrier must allow the handshake through. Authentication
+        // is enforced in the WebSocket upgrade handler via Sec-WebSocket-Protocol.
         httpRouter.addAuthPolicy({
           path: '/',
           allow: 'unauthenticated',
