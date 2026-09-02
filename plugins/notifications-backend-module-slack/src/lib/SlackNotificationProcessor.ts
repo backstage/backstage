@@ -32,7 +32,6 @@ import { Notification } from '@backstage/plugin-notifications-common';
 import {
   NotificationProcessor,
   NotificationSendOptions,
-  resolveNotificationLink,
 } from '@backstage/plugin-notifications-node';
 import { durationToMilliseconds } from '@backstage/types';
 import {
@@ -310,6 +309,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
         const payload = toChatPostMessageArgs({
           channel,
           payload: formattedPayload,
+          frontendBaseUrl: this.frontendBaseUrl,
           username: this.username,
           blockKitRenderer: this.blockKitRenderer,
         });
@@ -378,6 +378,7 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       toChatPostMessageArgs({
         channel,
         payload: formattedPayload,
+        frontendBaseUrl: this.frontendBaseUrl,
         username: this.username,
         blockKitRenderer: this.blockKitRenderer,
       }),
@@ -400,7 +401,6 @@ export class SlackNotificationProcessor implements NotificationProcessor {
   ) {
     return {
       ...payload,
-      link: resolveNotificationLink(payload.link, this.frontendBaseUrl),
       description: await this.replaceUserRefsWithSlackIds(payload.description),
     };
   }
