@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-export {
-  processRawEntitiesResult,
-  processEntitiesResponseItems,
-  entitiesResponseToObjects,
-} from './process';
+export { processRawEntitiesResult, entitiesResponseToObjects } from './process';
 export { writeSingleEntityResponse, writeEntitiesResponse } from './write';
 export { createEntityArrayJsonStream } from './createEntityArrayJsonStream';

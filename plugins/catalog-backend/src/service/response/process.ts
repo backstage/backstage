@@ -36,22 +36,6 @@ export function processRawEntitiesResult(
   };
 }
 
-export function processEntitiesResponseItems(
-  response: EntitiesResponseItems,
-  transform?: (entity: Entity) => Entity,
-): EntitiesResponseItems {
-  if (!transform) {
-    return response;
-  }
-  if (response.type === 'raw') {
-    return processRawEntitiesResult(response.entities, transform);
-  }
-  return {
-    type: 'object',
-    entities: response.entities.map(e => (e !== null ? transform(e) : e)),
-  };
-}
-
 export function entitiesResponseToObjects(
   response: EntitiesResponseItems,
 ): (Entity | null)[] {
