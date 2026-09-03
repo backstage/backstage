@@ -181,7 +181,14 @@ export class TechdocsGenerator implements GeneratorBase {
         case 'local':
           await runCommand({
             command: 'mkdocs',
-            args: ['build', '-f', mkdocsYmlPath, '-d', outputDir, '-v'],
+            args: [
+              'build',
+              '-f',
+              path.relative(inputDir, mkdocsYmlPath),
+              '-d',
+              outputDir,
+              '-v',
+            ],
             options: {
               cwd: inputDir,
             },
