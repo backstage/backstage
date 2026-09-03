@@ -52,6 +52,13 @@ const middleware = MiddlewareFactory.create({
   config: mockServices.rootConfig(),
 });
 
+function createAuditorMock() {
+  const success = jest.fn().mockResolvedValue(undefined);
+  const fail = jest.fn().mockResolvedValue(undefined);
+  const createEvent = jest.fn().mockResolvedValue({ success, fail });
+  return { auditor: { createEvent }, createEvent, success, fail };
+}
+
 describe('createRouter readonly disabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
   let locationService: jest.Mocked<LocationService>;
@@ -1445,6 +1452,365 @@ describe('createRouter readonly disabled', () => {
         .send({ query: { kind: 'Component' } });
 
       expect(response.status).toBe(400);
+    });
+  });
+
+  describe('audit events', () => {
+    let auditorMock: ReturnType<typeof createAuditorMock>;
+
+    beforeEach(async () => {
+      auditorMock = createAuditorMock();
+      const router = await createRouter({
+        entitiesCatalog,
+        locationService,
+        orchestrator,
+        logger: mockServices.logger.mock(),
+        refreshService,
+        config: new ConfigReader(undefined),
+        auth: mockServices.auth(),
+        httpAuth: mockServices.httpAuth(),
+        locationAnalyzer,
+        permissionsService,
+        auditor: auditorMock.auditor,
+      });
+      router.use(middleware.error());
+      app = express().use(router);
+    });
+
+    async function expectAudited(
+      eventId: string,
+      extraMeta?: Record<string, unknown>,
+    ) {
+      expect(auditorMock.createEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          eventId,
+          ...(extraMeta && { meta: expect.objectContaining(extraMeta) }),
+        }),
+      );
+      expect(auditorMock.success).toHaveBeenCalledTimes(1);
+      expect(auditorMock.fail).not.toHaveBeenCalled();
+    }
+
+    it('POST /refresh', async () => {
+      const response = await request(app)
+        .post('/refresh')
+        .send({ entityRef: 'component:default/foo' });
+
+      expect(response.status).toEqual(200);
+      await expectAudited('entity-mutate', {
+        variant: 'update',
+        entityRef: 'component:default/foo',
+      });
+    });
+
+    it('GET /entities', async () => {
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items: { type: 'object', entities: [] },
+        pageInfo: {},
+        totalItems: 0,
+      });
+
+      const response = await request(app).get('/entities');
+
+      expect(response.status).toEqual(200);
+      await expectAudited('entity-fetch');
+    });
+
+    it('GET /entities/by-query', async () => {
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items: { type: 'object', entities: [] },
+        pageInfo: {},
+        totalItems: 0,
+      });
+
+      const response = await request(app).get('/entities/by-query');
+
+      expect(response.status).toEqual(200);
+      await expectAudited('entity-fetch');
+    });
+
+    it('POST /entities/by-query', async () => {
+      entitiesCatalog.queryEntities.mockResolvedValueOnce({
+        items: { type: 'object', entities: [] },
+        pageInfo: {},
+        totalItems: 0,
+      });
+
+      const response = await request(app).post('/entities/by-query').send({});
+
+      expect(response.status).toEqual(200);
+      await expectAudited('entity-fetch', { variant: 'fetch' });
+    });
+
+    it('GET /entities/by-uid/:uid', async () => {
+      entitiesCatalog.entities.mockResolvedValueOnce({
+        entities: {
+          type: 'object',
+          entities: [
+            { apiVersion: 'a', kind: 'b', metadata: { name: 'n', uid: 'zzz' } },
+          ],
+        },
+        pageInfo: { hasNextPage: false },
+      });
+
+      const response = await request(app).get('/entities/by-uid/zzz');
+
+      expect(response.status).toEqual(200);
+      await expectAudited('entity-fetch', { uid: 'zzz' });
+    });
+
+    it('DELETE /entities/by-uid/:uid', async () => {
+      entitiesCatalog.removeEntityByUid.mockResolvedValueOnce(undefined);
+
+      const response = await request(app).delete('/entities/by-uid/zzz');
+
+      expect(response.status).toEqual(204);
+      await expectAudited('entity-mutate', { uid: 'zzz' });
+    });
+
+    it('DELETE /entities/by-uid/:uid records a failed audit event on error', async () => {
+      entitiesCatalog.removeEntityByUid.mockRejectedValueOnce(
+        new NotFoundError('nope'),
+      );
+
+      const response = await request(app).delete('/entities/by-uid/zzz');
+
+      expect(response.status).toEqual(404);
+      expect(auditorMock.createEvent).toHaveBeenCalledWith(
+        expect.objectContaining({ eventId: 'entity-mutate' }),
+      );
+      expect(auditorMock.fail).toHaveBeenCalledTimes(1);
+      expect(auditorMock.success).not.toHaveBeenCalled();
+    });
+
+    it('GET /entities/by-name/:kind/:namespace/:name', async () => {
+      entitiesCatalog.entitiesBatch.mockResolvedValueOnce({
+        items: {
+          type: 'object',
+          entities: [
+            {
+              apiVersion: 'a',
+              kind: 'k',
+              metadata: { name: 'n', namespace: 'ns' },
+            },
+          ],
+        },
+      });
+
+      const response = await request(app).get('/entities/by-name/k/ns/n');
+
+      expect(response.status).toEqual(200);
+      await expectAudited('entity-fetch', { entityRef: 'k:ns/n' });
+    });
+
+    it('GET /entities/by-name/:kind/:namespace/:name/ancestry', async () => {
+      entitiesCatalog.entityAncestry.mockResolvedValueOnce({
+        rootEntityRef: 'k:ns/n',
+        items: [],
+      });
+
+      const response = await request(app).get(
+        '/entities/by-name/k/ns/n/ancestry',
+      );
+
+      expect(response.status).toEqual(200);
+      await expectAudited('entity-fetch', { entityRef: 'k:ns/n' });
+    });
+
+    it('POST /entities/by-refs', async () => {
+      entitiesCatalog.entitiesBatch.mockResolvedValueOnce({
+        items: { type: 'object', entities: [] },
+      });
+
+      const response = await request(app)
+        .post('/entities/by-refs')
+        .set('Content-Type', 'application/json')
+        .send(JSON.stringify({ entityRefs: ['component:default/a'] }));
+
+      expect(response.status).toEqual(200);
+      await expectAudited('entity-fetch', { variant: 'fetch' });
+    });
+
+    it('GET /entity-facets', async () => {
+      entitiesCatalog.facets.mockResolvedValueOnce({ facets: {} });
+
+      const response = await request(app).get('/entity-facets?facet=kind');
+
+      expect(response.status).toEqual(200);
+      await expectAudited('entity-facets');
+    });
+
+    it('POST /entity-facets', async () => {
+      entitiesCatalog.facets.mockResolvedValueOnce({ facets: {} });
+
+      const response = await request(app)
+        .post('/entity-facets')
+        .send({ facets: ['kind'] });
+
+      expect(response.status).toEqual(200);
+      await expectAudited('entity-facets', { variant: 'fetch' });
+    });
+
+    it('POST /locations', async () => {
+      locationService.createLocation.mockResolvedValueOnce({
+        location: {
+          id: 'a',
+          type: 'url',
+          target: 'https://example.com',
+          entityRef: 'location:default/generated-a',
+        },
+        entities: [],
+      });
+
+      const response = await request(app)
+        .post('/locations')
+        .send({ type: 'url', target: 'https://example.com' });
+
+      expect(response.status).toEqual(201);
+      await expectAudited('location-mutate', {
+        type: 'url',
+        target: 'https://example.com',
+      });
+    });
+
+    it('GET /locations', async () => {
+      locationService.listLocations.mockResolvedValueOnce([]);
+
+      const response = await request(app).get('/locations');
+
+      expect(response.status).toEqual(200);
+      await expectAudited('location-fetch', { variant: 'fetch' });
+    });
+
+    it('POST /locations/by-query', async () => {
+      locationService.queryLocations.mockResolvedValueOnce({
+        items: [],
+        totalItems: 0,
+      });
+
+      const response = await request(app)
+        .post('/locations/by-query')
+        .send({ limit: 10 });
+
+      expect(response.status).toEqual(200);
+      await expectAudited('location-fetch', { variant: 'fetch' });
+    });
+
+    it('GET /locations/:id', async () => {
+      locationService.getLocation.mockResolvedValueOnce({
+        id: 'foo',
+        type: 'url',
+        target: 'https://example.com',
+        entityRef: 'location:default/generated-foo',
+      });
+
+      const response = await request(app).get('/locations/foo');
+
+      expect(response.status).toEqual(200);
+      await expectAudited('location-fetch', { locationId: 'foo' });
+    });
+
+    it('PUT /locations/:id', async () => {
+      locationService.updateLocation.mockResolvedValueOnce({
+        id: 'foo',
+        type: 'url',
+        target: 'https://example.com/new',
+        entityRef: 'location:default/generated-foo',
+      });
+
+      const response = await request(app)
+        .put('/locations/foo')
+        .send({ type: 'url', target: 'https://example.com/new' });
+
+      expect(response.status).toEqual(200);
+      await expectAudited('location-mutate', { locationId: 'foo' });
+    });
+
+    it('DELETE /locations/:id', async () => {
+      locationService.deleteLocation.mockResolvedValueOnce(undefined);
+
+      const response = await request(app).delete('/locations/foo');
+
+      expect(response.status).toEqual(204);
+      await expectAudited('location-mutate', { locationId: 'foo' });
+    });
+
+    it('GET /locations/by-entity/:kind/:namespace/:name', async () => {
+      locationService.getLocationByEntity.mockResolvedValueOnce({
+        id: 'foo',
+        type: 'url',
+        target: 'https://example.com',
+        entityRef: 'location:default/generated-foo',
+      });
+
+      const response = await request(app).get('/locations/by-entity/c/ns/n');
+
+      expect(response.status).toEqual(200);
+      await expectAudited('location-fetch', { entityRef: 'c:ns/n' });
+    });
+
+    it('POST /analyze-location', async () => {
+      locationAnalyzer.analyzeLocation.mockResolvedValueOnce({
+        existingEntityFiles: [],
+        generateEntities: [],
+      });
+
+      const response = await request(app)
+        .post('/analyze-location')
+        .send({ location: { type: 'url', target: 'https://example.com' } });
+
+      expect(response.status).toEqual(200);
+      await expectAudited('location-analyze');
+    });
+
+    it('POST /validate-entity', async () => {
+      // This route is excluded from the schema-first auditor middleware (see
+      // ignorePaths in createRouter.ts), so it audits manually instead of via
+      // an x-backstage-auditor annotation.
+      orchestrator.process.mockResolvedValueOnce({
+        ok: true,
+        state: {},
+        completedEntity: {
+          apiVersion: 'a',
+          kind: 'b',
+          metadata: { name: 'n' },
+        },
+        deferredEntities: [],
+        refreshKeys: [],
+        relations: [],
+        errors: [],
+      });
+
+      const response = await request(app)
+        .post('/validate-entity')
+        .send({
+          entity: { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+          location: 'url:validate-entity',
+        });
+
+      expect(response.status).toEqual(200);
+      await expectAudited('entity-validate');
+    });
+
+    it('POST /validate-entity records a failed audit event on error', async () => {
+      orchestrator.process.mockResolvedValueOnce({
+        ok: false,
+        errors: [new Error('Invalid entity name')],
+      });
+
+      const response = await request(app)
+        .post('/validate-entity')
+        .send({
+          entity: { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+          location: 'url:validate-entity',
+        });
+
+      expect(response.status).toEqual(400);
+      expect(auditorMock.createEvent).toHaveBeenCalledWith(
+        expect.objectContaining({ eventId: 'entity-validate' }),
+      );
+      expect(auditorMock.fail).toHaveBeenCalledTimes(1);
+      expect(auditorMock.success).not.toHaveBeenCalled();
     });
   });
 });
