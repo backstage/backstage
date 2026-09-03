@@ -216,14 +216,14 @@ export function buildEntitySearch(
   const keys = new Set(raw.map(r => r.key));
   const lowerKeys = new Set(raw.map(r => r.key.toLocaleLowerCase('en-US')));
   if (keys.size !== lowerKeys.size) {
-    const difference = [];
+    const difference = new Set<string>();
     for (const key of keys) {
       const lower = key.toLocaleLowerCase('en-US');
       if (!lowerKeys.delete(lower)) {
-        difference.push(lower);
+        difference.add(lower);
       }
     }
-    const badKeys = `'${difference.join("', '")}'`;
+    const badKeys = `'${Array.from(difference).join("', '")}'`;
     throw new InputError(
       `Entity has duplicate keys that vary only in casing, ${badKeys}`,
     );
