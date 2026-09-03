@@ -111,7 +111,7 @@ This creates two MCP server endpoints:
 
 Each server uses include filter rules with glob patterns on action IDs to control which actions are exposed. For example, `id: 'catalog:*'` matches all actions registered by the catalog plugin.
 
-When `mcpActions.servers` is not configured, the plugin behaves exactly as before with a single server at `/api/mcp-actions/v1`.
+The default server at `/api/mcp-actions/v1` is always available and always exposes every registered action, whether or not `mcpActions.servers` is configured. Named servers are subsets of it, so an action can be exposed on the default server and on any number of named servers at the same time.
 
 ### Filter Rules
 
