@@ -558,6 +558,7 @@ export const techdocsTranslationRef: TranslationRef<
     readonly 'stateIndicator.contentStaleReady.message': 'A newer version of this documentation is now available, please refresh to view.';
     readonly 'stateIndicator.contentStaleReady.refreshButton': 'Refresh';
     readonly 'stateIndicator.contentStaleError.message': 'Building a newer version of this documentation failed.';
+    readonly 'stateIndicator.contentMetadataError.message': 'Could not load documentation metadata.';
     readonly 'redirectNotification.redirectNow': 'Redirect now';
     readonly 'readerPageHeader.source': 'Source';
     readonly 'readerPageHeader.owner': 'Owner';

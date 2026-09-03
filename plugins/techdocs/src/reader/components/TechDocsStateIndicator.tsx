@@ -19,6 +19,7 @@ import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useTechDocsReaderPage } from '@backstage/plugin-techdocs-react';
 
 import { TechDocsBuildLogs } from './TechDocsBuildLogs';
 import { TechDocsNotFound } from './TechDocsNotFound';
@@ -49,6 +50,10 @@ export const TechDocsStateIndicator = () => {
     syncErrorMessage,
     buildLog,
   } = useTechDocsReader();
+
+  const {
+    metadata: { error: metadataError, loading: metadataLoading },
+  } = useTechDocsReaderPage();
 
   if (state === 'INITIAL_BUILD') {
     StateAlert = (
@@ -122,6 +127,22 @@ export const TechDocsStateIndicator = () => {
           </Alert>
         )}
         <TechDocsNotFound errorMessage={contentErrorMessage} />
+      </>
+    );
+  }
+
+  if (!metadataLoading && metadataError && state !== 'CONTENT_NOT_FOUND') {
+    StateAlert = (
+      <>
+        {StateAlert}
+        <Alert
+          variant="outlined"
+          severity="warning"
+          classes={{ root: classes.root, message: classes.message }}
+        >
+          {t('stateIndicator.contentMetadataError.message')}{' '}
+          {metadataError.toString()}
+        </Alert>
       </>
     );
   }

@@ -51,6 +51,9 @@ export const techdocsTranslationRef = createTranslationRef({
       contentStaleError: {
         message: 'Building a newer version of this documentation failed.',
       },
+      contentMetadataError: {
+        message: 'Could not load documentation metadata.',
+      },
     },
     redirectNotification: {
       redirectNow: 'Redirect now',
