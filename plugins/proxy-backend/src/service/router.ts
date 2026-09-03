@@ -25,6 +25,7 @@ import http from 'node:http';
 import { JsonObject } from '@backstage/types';
 import {
   DiscoveryService,
+  HttpAuthService,
   HttpRouterService,
   LoggerService,
   RootConfigService,
@@ -59,8 +60,36 @@ export interface RouterOptions {
   logger: LoggerService;
   config: RootConfigService;
   discovery: DiscoveryService;
+  httpAuthService: HttpAuthService;
   httpRouterService: HttpRouterService;
   additionalEndpoints?: ProxyConfig;
+}
+
+type CredentialsPolicy =
+  | 'require'
+  | 'forward'
+  | 'dangerously-allow-unauthenticated';
+
+function readCredentialsPolicy(
+  route: string,
+  config: string | ProxyConfig,
+): CredentialsPolicy {
+  const credentialsPolicy =
+    typeof config === 'string' ? 'require' : config.credentials ?? 'require';
+  const credentialsPolicyCandidates: CredentialsPolicy[] = [
+    'require',
+    'forward',
+    'dangerously-allow-unauthenticated',
+  ];
+
+  if (!credentialsPolicyCandidates.includes(credentialsPolicy)) {
+    const valid = credentialsPolicyCandidates.map(c => `'${c}'`).join(', ');
+    throw new Error(
+      `Unknown credentials policy '${credentialsPolicy}' for proxy route '${route}'; expected one of ${valid}`,
+    );
+  }
+
+  return credentialsPolicy;
 }
 
 // Creates a proxy middleware, possibly with defaults added on top of the
@@ -70,38 +99,19 @@ export function buildMiddleware(
   logger: LoggerService,
   route: string,
   config: string | ProxyConfig,
-  httpRouterService: HttpRouterService,
+  httpAuthService: HttpAuthService,
+  disableDefaultAuthPolicy: boolean,
   reviveConsumedRequestBodies?: boolean,
 ): RequestHandler {
   let fullConfig: ProxyConfig;
-  let credentialsPolicy: string;
   if (typeof config === 'string') {
     fullConfig = { target: config };
-    credentialsPolicy = 'require';
   } else {
-    const { credentials, ...rest } = config;
+    const { credentials: _, ...rest } = config;
     fullConfig = rest;
-    credentialsPolicy = credentials ?? 'require';
   }
 
-  const credentialsPolicyCandidates = [
-    'require',
-    'forward',
-    'dangerously-allow-unauthenticated',
-  ];
-  if (!credentialsPolicyCandidates.includes(credentialsPolicy)) {
-    const valid = credentialsPolicyCandidates.map(c => `'${c}'`).join(', ');
-    throw new Error(
-      `Unknown credentials policy '${credentialsPolicy}' for proxy route '${route}'; expected one of ${valid}`,
-    );
-  }
-
-  if (credentialsPolicy === 'dangerously-allow-unauthenticated') {
-    httpRouterService.addAuthPolicy({
-      path: route,
-      allow: 'unauthenticated',
-    });
-  }
+  const credentialsPolicy = readCredentialsPolicy(route, config);
 
   // Validate that target is a valid URL.
   const targetType = typeof fullConfig.target;
@@ -182,6 +192,9 @@ export function buildMiddleware(
     requestHeaderAllowList.add('authorization');
   }
 
+  const isMethodAllowed = (method: string | undefined) =>
+    fullConfig.allowedMethods?.includes(method ?? '') ?? true;
+
   // Use the custom middleware filter to do two things:
   //  1. Remove any headers not in the allow list to stop them being forwarded
   //  2. Only permit the allowed HTTP methods if configured
@@ -198,7 +211,7 @@ export function buildMiddleware(
       }
     });
 
-    return fullConfig?.allowedMethods?.includes(req.method!) ?? true;
+    return isMethodAllowed(req.method);
   };
   // Makes http-proxy-middleware logs look nicer and include the mount path
   filter.toString = () => route;
@@ -241,7 +254,24 @@ export function buildMiddleware(
     fullConfig.onProxyReq = fixRequestBody;
   }
 
-  return createProxyMiddleware(filter, fullConfig);
+  const proxyMiddleware = createProxyMiddleware(filter, fullConfig);
+  if (
+    credentialsPolicy === 'dangerously-allow-unauthenticated' ||
+    disableDefaultAuthPolicy
+  ) {
+    return proxyMiddleware;
+  }
+
+  return (req, res, next) => {
+    if (!isMethodAllowed(req.method)) {
+      proxyMiddleware(req, res, next);
+      return;
+    }
+
+    httpAuthService
+      .credentials(req, { allow: ['user', 'service'] })
+      .then(() => proxyMiddleware(req, res, next), next);
+  };
 }
 
 function readProxyConfig(
@@ -287,6 +317,10 @@ export async function createRouter(
     options.config.getOptionalBoolean('proxy.reviveConsumedRequestBodies') ??
     false;
   const proxyOptions = {
+    disableDefaultAuthPolicy:
+      options.config.getOptionalBoolean(
+        'backend.auth.dangerouslyDisableDefaultAuthPolicy',
+      ) ?? false,
     skipInvalidProxies,
     reviveConsumedRequestBodies,
     logger: options.logger,
@@ -304,6 +338,7 @@ export async function createRouter(
     currentRouter,
     pathPrefix,
     proxyConfig,
+    options.httpAuthService,
     options.httpRouterService,
   );
   router.use((...args) => currentRouter(...args));
@@ -323,6 +358,7 @@ export async function createRouter(
           currentRouter,
           pathPrefix,
           newProxyConfig,
+          options.httpAuthService,
           options.httpRouterService,
         );
       }
@@ -335,6 +371,7 @@ export async function createRouter(
 
 function configureMiddlewares(
   options: {
+    disableDefaultAuthPolicy: boolean;
     reviveConsumedRequestBodies: boolean;
     skipInvalidProxies: boolean;
     logger: LoggerService;
@@ -342,10 +379,12 @@ function configureMiddlewares(
   router: express.Router,
   pathPrefix: string,
   proxyConfig: ProxyConfig,
+  httpAuthService: HttpAuthService,
   httpRouterService: HttpRouterService,
 ) {
   Object.entries(proxyConfig).forEach(([route, proxyRouteConfig]) => {
     try {
+      const credentialsPolicy = readCredentialsPolicy(route, proxyRouteConfig);
       router.use(
         route,
         (req, res, next) => {
@@ -365,10 +404,18 @@ function configureMiddlewares(
           options.logger,
           route,
           proxyRouteConfig,
-          httpRouterService,
+          httpAuthService,
+          options.disableDefaultAuthPolicy,
           options.reviveConsumedRequestBodies,
         ),
       );
+
+      if (credentialsPolicy === 'dangerously-allow-unauthenticated') {
+        httpRouterService.addAuthPolicy({
+          path: route,
+          allow: 'unauthenticated',
+        });
+      }
     } catch (e) {
       if (options.skipInvalidProxies) {
         options.logger.warn(`skipped configuring ${route} due to ${e.message}`);
