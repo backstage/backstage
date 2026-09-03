@@ -280,15 +280,18 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
         layout: {
           i: widgetId,
           x: 0,
-          y: Math.max(...widgets.map(w => w.layout.y + w.layout.h)) + 1,
+          y:
+            widgets.length > 0
+              ? Math.max(...widgets.map(w => w.layout.y + w.layout.h)) + 1
+              : 0,
           w: Math.min(widget.maxWidth ?? Number.MAX_VALUE, widget.width ?? 12),
           h: Math.min(widget.maxHeight ?? Number.MAX_VALUE, widget.height ?? 4),
           minW: widget.minWidth,
           maxW: widget.maxWidth,
           minH: widget.minHeight,
           maxH: widget.maxHeight,
-          isResizable: editMode,
-          isDraggable: editMode,
+          isResizable: widget.resizable !== false,
+          isDraggable: widget.movable !== false,
         },
         settings: {},
         movable: widget.movable,
@@ -296,11 +299,12 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
         resizable: widget.resizable,
       },
     ]);
+    setEditMode(true);
     setAddWidgetDialogOpen(false);
   };
 
   const handleRemove = (widgetId: string) => {
-    setWidgets(widgets.filter(w => w.id !== widgetId));
+    setWidgets(prevWidgets => prevWidgets.filter(w => w.id !== widgetId));
   };
 
   const handleSettingsSave = (
@@ -317,7 +321,7 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
   };
 
   const clearLayout = () => {
-    setWidgets(widgets.filter(w => w.deletable === false));
+    setWidgets(prevWidgets => prevWidgets.filter(w => w.deletable === false));
   };
 
   const changeEditMode = (mode: boolean) => {
