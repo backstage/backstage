@@ -205,6 +205,7 @@ This determines where generated documentation files are stored.
 - `'googleGcs'` - techdocs-backend will use a Google Cloud Storage Bucket
 - `'awsS3'` - techdocs-backend will use an Amazon Web Service (AWS) S3 bucket
 - `'azureBlobStorage'` - techdocs-backend will use Azure Blob Storage
+- `'multi'` - techdocs-backend will wrap multiple publishers, writing to all of them but reading from the first one in the list.
 
 **Example:**
 
@@ -542,6 +543,36 @@ techdocs:
       credentials:
         accountName: ${TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_NAME}
         accountKey: ${TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_KEY}
+```
+
+### Multi
+
+`techdocs.publisher.multi`
+
+This is used to configure the multi publisher option, which allows writing to multiple storage targets simultaneously for redundancy or migration, while reading from the primary one.
+
+Required when `techdocs.publisher.type` is set to `'multi'`.
+
+#### Publishers
+
+`techdocs.publisher.multi.publishers`
+
+(Required) An array of publisher types to use. The first publisher in the list is treated as the primary publisher for read operations. All write operations are broadcasted to all publishers in the list concurrently. You still need to configure each publisher type independently under its own configuration key.
+
+**Example:**
+
+```yaml
+techdocs:
+  publisher:
+    type: 'multi'
+    multi:
+      publishers:
+        - 'awsS3'
+        - 'local'
+    awsS3:
+      bucketName: 'techdocs-storage'
+    local:
+      publishDirectory: '/tmp/techdocs'
 ```
 
 ## Legacy Case Sensitive Triplet Paths

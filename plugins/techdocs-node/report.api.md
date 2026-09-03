@@ -242,7 +242,8 @@ export type PublisherType =
   | 'googleGcs'
   | 'awsS3'
   | 'azureBlobStorage'
-  | 'openStackSwift';
+  | 'openStackSwift'
+  | 'multi';
 
 // @public
 export type PublishRequest = {
