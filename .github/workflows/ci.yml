@@ -158,8 +158,9 @@ jobs:
             working-directory: docs-ui
             run: yarn build
 
-          - name: verify type dependencies
-            run: yarn lint:type-deps
+      - name: verify type dependencies
+        # requires "build all packages"
+        run: yarn lint:type-deps
 
       - &ensure-clean-working-directory
         name: ensure clean working directory
