@@ -75,6 +75,7 @@ Replace \`searchable\` and \`searchPlaceholder\` with nested \`search\` configur
     components: [],
     version: '0.16.0',
     prs: ['34567'],
+    tokens: true,
     description: `Updated the dark theme neutral background tokens to provide clearer contrast between neutral surfaces.`,
 
     commitSha: '3d6c2e4',
@@ -157,6 +158,7 @@ Replace \`searchable\` and \`searchPlaceholder\` with nested \`search\` configur
     components: [],
     version: '0.16.0',
     prs: ['34400'],
+    tokens: true,
     description: `Introduces a new set of semantic color token families — Accent, Announcement, Warning, Negative, and Positive — each providing a consistent set of background, foreground, and border tokens for both light and dark themes. A gray scale (\`--bui-gray-1\` through \`--bui-gray-11\`) and updated foreground tokens are also included.
 
   The previous tokens remain in place for backward compatibility but are now deprecated and will be removed in a future release.`,

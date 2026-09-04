@@ -1,6 +1,9 @@
 import { CodeBlock } from '@/components/CodeBlock';
 import * as Table from '@/components/Table';
 import { Chip } from '@/components/Chip';
+import { ColorTokenTable } from '@/components/ColorTokenTable';
+import { TokenPreview } from '@/components/TokenPreview';
+import { ChangelogTokens } from '@/components/ChangelogTokens';
 import { customTheme } from '@/snippets/code-snippets';
 
 # Tokens
@@ -110,12 +113,16 @@ the value, you add an object with the value and the breakpoint prefix.
 <Table.Root>
   <Table.Header>
     <Table.HeaderRow>
+      <Table.HeaderCell>Preview</Table.HeaderCell>
       <Table.HeaderCell>Prop</Table.HeaderCell>
       <Table.HeaderCell>Description</Table.HeaderCell>
     </Table.HeaderRow>
   </Table.Header>
   <Table.Body>
     <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-black" kind="color" />
+      </Table.Cell>
       <Table.Cell>
         <Chip head>--bui-black</Chip>
       </Table.Cell>
@@ -124,6 +131,9 @@ the value, you add an object with the value and the breakpoint prefix.
       </Table.Cell>
     </Table.Row>
     <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-white" kind="color" />
+      </Table.Cell>
       <Table.Cell>
         <Chip head>--bui-white</Chip>
       </Table.Cell>
@@ -134,22 +144,141 @@ the value, you add an object with the value and the breakpoint prefix.
   </Table.Body>
 </Table.Root>
 
-## Neutral background colors
+## Gray scale
 
-These colors form a layered neutral scale for your application backgrounds.
-`--bui-bg-app` is the base background color of your app. Each subsequent level
-(1 through 4) represents an elevated layer on top of the previous one, with hover,
-pressed, and disabled variants for interactive states.
+A raw neutral gray scale, from lightest to darkest, that the semantic color
+tokens are built on top of.
 
 <Table.Root>
   <Table.Header>
     <Table.HeaderRow>
+      <Table.HeaderCell>Preview</Table.HeaderCell>
       <Table.HeaderCell>Prop</Table.HeaderCell>
       <Table.HeaderCell>Description</Table.HeaderCell>
     </Table.HeaderRow>
   </Table.Header>
   <Table.Body>
     <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-gray-1" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-gray-1</Chip>
+      </Table.Cell>
+      <Table.Cell>Gray scale step 1 (lightest).</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-gray-2" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-gray-2</Chip>
+      </Table.Cell>
+      <Table.Cell>Gray scale step 2.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-gray-3" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-gray-3</Chip>
+      </Table.Cell>
+      <Table.Cell>Gray scale step 3.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-gray-4" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-gray-4</Chip>
+      </Table.Cell>
+      <Table.Cell>Gray scale step 4.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-gray-5" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-gray-5</Chip>
+      </Table.Cell>
+      <Table.Cell>Gray scale step 5.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-gray-6" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-gray-6</Chip>
+      </Table.Cell>
+      <Table.Cell>Gray scale step 6.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-gray-7" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-gray-7</Chip>
+      </Table.Cell>
+      <Table.Cell>Gray scale step 7.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-gray-8" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-gray-8</Chip>
+      </Table.Cell>
+      <Table.Cell>Gray scale step 8.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-gray-9" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-gray-9</Chip>
+      </Table.Cell>
+      <Table.Cell>Gray scale step 9.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-gray-10" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-gray-10</Chip>
+      </Table.Cell>
+      <Table.Cell>Gray scale step 10.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-gray-11" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-gray-11</Chip>
+      </Table.Cell>
+      <Table.Cell>Gray scale step 11 (darkest).</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+## Neutral background colors
+
+These colors form a layered neutral scale for your application backgrounds.
+`--bui-bg-app` is the base background color of your app. Each subsequent level
+(1 through 4) represents an elevated layer on top of the previous one.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Preview</Table.HeaderCell>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-bg-app" kind="color" />
+      </Table.Cell>
       <Table.Cell>
         <Chip head>--bui-bg-app</Chip>
       </Table.Cell>
@@ -159,6 +288,9 @@ pressed, and disabled variants for interactive states.
     </Table.Row>
     <Table.Row>
       <Table.Cell>
+        <TokenPreview token="--bui-bg-neutral-1" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
         <Chip head>--bui-bg-neutral-1</Chip>
       </Table.Cell>
       <Table.Cell>
@@ -167,23 +299,8 @@ pressed, and disabled variants for interactive states.
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-bg-neutral-1-hover</Chip>
+        <TokenPreview token="--bui-bg-neutral-2" kind="color" />
       </Table.Cell>
-      <Table.Cell>Hover state for elements on neutral-1.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-bg-neutral-1-pressed</Chip>
-      </Table.Cell>
-      <Table.Cell>Pressed state for elements on neutral-1.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-bg-neutral-1-disabled</Chip>
-      </Table.Cell>
-      <Table.Cell>Disabled state for elements on neutral-1.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
       <Table.Cell>
         <Chip head>--bui-bg-neutral-2</Chip>
       </Table.Cell>
@@ -193,23 +310,8 @@ pressed, and disabled variants for interactive states.
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-bg-neutral-2-hover</Chip>
+        <TokenPreview token="--bui-bg-neutral-3" kind="color" />
       </Table.Cell>
-      <Table.Cell>Hover state for elements on neutral-2.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-bg-neutral-2-pressed</Chip>
-      </Table.Cell>
-      <Table.Cell>Pressed state for elements on neutral-2.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-bg-neutral-2-disabled</Chip>
-      </Table.Cell>
-      <Table.Cell>Disabled state for elements on neutral-2.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
       <Table.Cell>
         <Chip head>--bui-bg-neutral-3</Chip>
       </Table.Cell>
@@ -219,47 +321,14 @@ pressed, and disabled variants for interactive states.
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-bg-neutral-3-hover</Chip>
+        <TokenPreview token="--bui-bg-neutral-4" kind="color" />
       </Table.Cell>
-      <Table.Cell>Hover state for elements on neutral-3.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-bg-neutral-3-pressed</Chip>
-      </Table.Cell>
-      <Table.Cell>Pressed state for elements on neutral-3.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-bg-neutral-3-disabled</Chip>
-      </Table.Cell>
-      <Table.Cell>Disabled state for elements on neutral-3.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
       <Table.Cell>
         <Chip head>--bui-bg-neutral-4</Chip>
       </Table.Cell>
       <Table.Cell>
         Fourth elevated layer. Use for elements on top of neutral-3.
       </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-bg-neutral-4-hover</Chip>
-      </Table.Cell>
-      <Table.Cell>Hover state for elements on neutral-4.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-bg-neutral-4-pressed</Chip>
-      </Table.Cell>
-      <Table.Cell>Pressed state for elements on neutral-4.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-bg-neutral-4-disabled</Chip>
-      </Table.Cell>
-      <Table.Cell>Disabled state for elements on neutral-4.</Table.Cell>
     </Table.Row>
   </Table.Body>
 </Table.Root>
@@ -283,12 +352,16 @@ overlapping element needs to match its surrounding bg without hardcoding a level
 <Table.Root>
   <Table.Header>
     <Table.HeaderRow>
+      <Table.HeaderCell>Preview</Table.HeaderCell>
       <Table.HeaderCell>Prop</Table.HeaderCell>
       <Table.HeaderCell>Description</Table.HeaderCell>
     </Table.HeaderRow>
   </Table.Header>
   <Table.Body>
     <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-bg-inherit" kind="color" />
+      </Table.Cell>
       <Table.Cell>
         <Chip head>--bui-bg-inherit</Chip>
       </Table.Cell>
@@ -296,80 +369,6 @@ overlapping element needs to match its surrounding bg without hardcoding a level
         Resolves to the bg color of the nearest enclosing `data-bg` ancestor,
         falling back to `--bui-bg-app`.
       </Table.Cell>
-    </Table.Row>
-  </Table.Body>
-</Table.Root>
-
-## Solid background colors
-
-<Table.Root>
-  <Table.Header>
-    <Table.HeaderRow>
-      <Table.HeaderCell>Prop</Table.HeaderCell>
-      <Table.HeaderCell>Description</Table.HeaderCell>
-    </Table.HeaderRow>
-  </Table.Header>
-  <Table.Body>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-bg-solid</Chip>
-      </Table.Cell>
-      <Table.Cell>Used for solid background colors.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-bg-solid-hover</Chip>
-      </Table.Cell>
-      <Table.Cell>Used for solid background colors when hovered.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-bg-solid-pressed</Chip>
-      </Table.Cell>
-      <Table.Cell>Used for solid background colors when pressed.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-bg-solid-disabled</Chip>
-      </Table.Cell>
-      <Table.Cell>Used for solid background colors when disabled.</Table.Cell>
-    </Table.Row>
-  </Table.Body>
-</Table.Root>
-
-## Status background colors
-
-<Table.Root>
-  <Table.Header>
-    <Table.HeaderRow>
-      <Table.HeaderCell>Prop</Table.HeaderCell>
-      <Table.HeaderCell>Description</Table.HeaderCell>
-    </Table.HeaderRow>
-  </Table.Header>
-  <Table.Body>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-bg-danger</Chip>
-      </Table.Cell>
-      <Table.Cell>Used to show errors information.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-bg-warning</Chip>
-      </Table.Cell>
-      <Table.Cell>Used to show warnings information.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-bg-success</Chip>
-      </Table.Cell>
-      <Table.Cell>Used to show success information.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-bg-info</Chip>
-      </Table.Cell>
-      <Table.Cell>Used to show informational content.</Table.Cell>
     </Table.Row>
   </Table.Body>
 </Table.Root>
@@ -383,12 +382,16 @@ are prefixed with `fg` to make it easier to identify.
 <Table.Root>
   <Table.Header>
     <Table.HeaderRow>
+      <Table.HeaderCell>Preview</Table.HeaderCell>
       <Table.HeaderCell>Prop</Table.HeaderCell>
       <Table.HeaderCell>Description</Table.HeaderCell>
     </Table.HeaderRow>
   </Table.Header>
   <Table.Body>
     <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-fg-primary" kind="color" />
+      </Table.Cell>
       <Table.Cell>
         <Chip head>--bui-fg-primary</Chip>
       </Table.Cell>
@@ -398,6 +401,9 @@ are prefixed with `fg` to make it easier to identify.
     </Table.Row>
     <Table.Row>
       <Table.Cell>
+        <TokenPreview token="--bui-fg-secondary" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
         <Chip head>--bui-fg-secondary</Chip>
       </Table.Cell>
       <Table.Cell>
@@ -405,6 +411,9 @@ are prefixed with `fg` to make it easier to identify.
       </Table.Cell>
     </Table.Row>
     <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-fg-disabled" kind="color" />
+      </Table.Cell>
       <Table.Cell>
         <Chip head>--bui-fg-disabled</Chip>
       </Table.Cell>
@@ -414,19 +423,8 @@ are prefixed with `fg` to make it easier to identify.
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-fg-solid</Chip>
+        <TokenPreview token="--bui-fg-warning" kind="color" />
       </Table.Cell>
-      <Table.Cell>
-        It should be used on top of solid background colors.
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-fg-danger</Chip>
-      </Table.Cell>
-      <Table.Cell>Used for error states and destructive actions.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
       <Table.Cell>
         <Chip head>--bui-fg-warning</Chip>
       </Table.Cell>
@@ -436,49 +434,30 @@ are prefixed with `fg` to make it easier to identify.
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-fg-success</Chip>
+        <TokenPreview token="--bui-fg-positive" kind="color" />
       </Table.Cell>
-      <Table.Cell>Used for success states and positive feedback.</Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-fg-positive</Chip>
+      </Table.Cell>
+      <Table.Cell>Used for positive states and feedback.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-fg-info</Chip>
+        <TokenPreview token="--bui-fg-negative" kind="color" />
       </Table.Cell>
       <Table.Cell>
-        Used for informational content and neutral status.
+        <Chip head>--bui-fg-negative</Chip>
       </Table.Cell>
+      <Table.Cell>Used for negative states and errors.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-fg-danger-on-bg</Chip>
+        <TokenPreview token="--bui-fg-announcement" kind="color" />
       </Table.Cell>
       <Table.Cell>
-        It should be used on top of danger background colors.
+        <Chip head>--bui-fg-announcement</Chip>
       </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-fg-warning-on-bg</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        It should be used on top of warning background colors.
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-fg-success-on-bg</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        It should be used on top of success background colors.
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-fg-info-on-bg</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        It should be used on top of info background colors.
-      </Table.Cell>
+      <Table.Cell>Used for announcements and informational states.</Table.Cell>
     </Table.Row>
   </Table.Body>
 </Table.Root>
@@ -491,6 +470,7 @@ low contrast to help as a separator with the different background colors.
 <Table.Root>
   <Table.Header>
     <Table.HeaderRow>
+      <Table.HeaderCell>Preview</Table.HeaderCell>
       <Table.HeaderCell>Prop</Table.HeaderCell>
       <Table.HeaderCell>Description</Table.HeaderCell>
     </Table.HeaderRow>
@@ -498,42 +478,33 @@ low contrast to help as a separator with the different background colors.
   <Table.Body>
     <Table.Row>
       <Table.Cell>
+        <TokenPreview token="--bui-border-1" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
         <Chip head>--bui-border-1</Chip>
       </Table.Cell>
       <Table.Cell>Subtle border for low-contrast separators.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
+        <TokenPreview token="--bui-border-2" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
         <Chip head>--bui-border-2</Chip>
       </Table.Cell>
       <Table.Cell>It should be used on top of `--bui-bg-neutral-1`.</Table.Cell>
     </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-border-danger</Chip>
-      </Table.Cell>
-      <Table.Cell>It should be used on top of `--bui-bg-danger`.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-border-warning</Chip>
-      </Table.Cell>
-      <Table.Cell>It should be used on top of `--bui-bg-warning`.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-border-success</Chip>
-      </Table.Cell>
-      <Table.Cell>It should be used on top of `--bui-bg-success`.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-border-info</Chip>
-      </Table.Cell>
-      <Table.Cell>It should be used on top of `--bui-bg-info`.</Table.Cell>
-    </Table.Row>
   </Table.Body>
 </Table.Root>
+
+## Semantic colors
+
+Backstage UI groups its accent and status colors into semantic families. Each
+family shares the same set of variants — a base and (except for accent) a
+subdued shade, both with hover and disabled states, plus border and foreground
+tokens. Use the selector to browse the tokens for each family.
+
+<ColorTokenTable />
 
 ## Special colors
 
@@ -542,6 +513,7 @@ These colors are used for special purposes like ring, scrollbar, ...
 <Table.Root>
   <Table.Header>
     <Table.HeaderRow>
+      <Table.HeaderCell>Preview</Table.HeaderCell>
       <Table.HeaderCell>Prop</Table.HeaderCell>
       <Table.HeaderCell>Description</Table.HeaderCell>
     </Table.HeaderRow>
@@ -549,17 +521,26 @@ These colors are used for special purposes like ring, scrollbar, ...
   <Table.Body>
     <Table.Row>
       <Table.Cell>
+        <TokenPreview token="--bui-ring" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
         <Chip head>--bui-ring</Chip>
       </Table.Cell>
       <Table.Cell>The color of the ring.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
+        <TokenPreview token="--bui-scrollbar" kind="color" />
+      </Table.Cell>
+      <Table.Cell>
         <Chip head>--bui-scrollbar</Chip>
       </Table.Cell>
       <Table.Cell>The color of the scrollbar.</Table.Cell>
     </Table.Row>
     <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-scrollbar-thumb" kind="color" />
+      </Table.Cell>
       <Table.Cell>
         <Chip head>--bui-scrollbar-thumb</Chip>
       </Table.Cell>
@@ -577,6 +558,7 @@ monospace font that we use for code blocks and tables.
 <Table.Root>
   <Table.Header>
     <Table.HeaderRow>
+      <Table.HeaderCell>Preview</Table.HeaderCell>
       <Table.HeaderCell>Prop</Table.HeaderCell>
       <Table.HeaderCell>Description</Table.HeaderCell>
     </Table.HeaderRow>
@@ -584,11 +566,17 @@ monospace font that we use for code blocks and tables.
   <Table.Body>
     <Table.Row>
       <Table.Cell>
+        <TokenPreview token="--bui-font-regular" kind="font-family" />
+      </Table.Cell>
+      <Table.Cell>
         <Chip head>--bui-font-regular</Chip>
       </Table.Cell>
       <Table.Cell>The sans-serif font for the theme.</Table.Cell>
     </Table.Row>
     <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-font-monospace" kind="font-family" />
+      </Table.Cell>
       <Table.Cell>
         <Chip head>--bui-font-monospace</Chip>
       </Table.Cell>
@@ -604,6 +592,7 @@ We have two font weights that we use across Backstage UI. Regular or Bold.
 <Table.Root>
   <Table.Header>
     <Table.HeaderRow>
+      <Table.HeaderCell>Preview</Table.HeaderCell>
       <Table.HeaderCell>Prop</Table.HeaderCell>
       <Table.HeaderCell>Description</Table.HeaderCell>
     </Table.HeaderRow>
@@ -611,15 +600,127 @@ We have two font weights that we use across Backstage UI. Regular or Bold.
   <Table.Body>
     <Table.Row>
       <Table.Cell>
+        <TokenPreview token="--bui-font-weight-regular" kind="font-weight" />
+      </Table.Cell>
+      <Table.Cell>
         <Chip head>--bui-font-weight-regular</Chip>
       </Table.Cell>
       <Table.Cell>The regular font weight for the theme.</Table.Cell>
     </Table.Row>
     <Table.Row>
       <Table.Cell>
+        <TokenPreview token="--bui-font-weight-bold" kind="font-weight" />
+      </Table.Cell>
+      <Table.Cell>
         <Chip head>--bui-font-weight-bold</Chip>
       </Table.Cell>
       <Table.Cell>The bold font weight for the theme.</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+## Font sizes
+
+A scale of font sizes used across Backstage UI for text and headings.
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Preview</Table.HeaderCell>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-font-size-1" kind="font-size" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-font-size-1</Chip>
+      </Table.Cell>
+      <Table.Cell>Font size of `0.625rem`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-font-size-2" kind="font-size" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-font-size-2</Chip>
+      </Table.Cell>
+      <Table.Cell>Font size of `0.75rem`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-font-size-3" kind="font-size" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-font-size-3</Chip>
+      </Table.Cell>
+      <Table.Cell>Font size of `0.875rem`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-font-size-4" kind="font-size" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-font-size-4</Chip>
+      </Table.Cell>
+      <Table.Cell>Font size of `1rem`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-font-size-5" kind="font-size" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-font-size-5</Chip>
+      </Table.Cell>
+      <Table.Cell>Font size of `1.25rem`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-font-size-6" kind="font-size" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-font-size-6</Chip>
+      </Table.Cell>
+      <Table.Cell>Font size of `1.5rem`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-font-size-7" kind="font-size" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-font-size-7</Chip>
+      </Table.Cell>
+      <Table.Cell>Font size of `2rem`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-font-size-8" kind="font-size" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-font-size-8</Chip>
+      </Table.Cell>
+      <Table.Cell>Font size of `3rem`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-font-size-9" kind="font-size" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-font-size-9</Chip>
+      </Table.Cell>
+      <Table.Cell>Font size of `4rem`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-font-size-10" kind="font-size" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-font-size-10</Chip>
+      </Table.Cell>
+      <Table.Cell>Font size of `5.75rem`.</Table.Cell>
     </Table.Row>
   </Table.Body>
 </Table.Root>
@@ -637,12 +738,16 @@ calculate the other values.
 <Table.Root>
   <Table.Header>
     <Table.HeaderRow>
+      <Table.HeaderCell>Preview</Table.HeaderCell>
       <Table.HeaderCell>Prop</Table.HeaderCell>
       <Table.HeaderCell>Description</Table.HeaderCell>
     </Table.HeaderRow>
   </Table.Header>
   <Table.Body>
     <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-space" kind="space" />
+      </Table.Cell>
       <Table.Cell>
         <Chip head>--bui-space</Chip>
       </Table.Cell>
@@ -659,6 +764,7 @@ tokens for pretty much each spacing properties like padding, margin, gaps, ...
 <Table.Root>
   <Table.Header>
     <Table.HeaderRow>
+      <Table.HeaderCell>Preview</Table.HeaderCell>
       <Table.HeaderCell>Prop</Table.HeaderCell>
       <Table.HeaderCell>Description</Table.HeaderCell>
     </Table.HeaderRow>
@@ -666,11 +772,17 @@ tokens for pretty much each spacing properties like padding, margin, gaps, ...
   <Table.Body>
     <Table.Row>
       <Table.Cell>
+        <TokenPreview token="--bui-space-0_5" kind="space" />
+      </Table.Cell>
+      <Table.Cell>
         <Chip head>--bui-space-0_5</Chip>
       </Table.Cell>
       <Table.Cell>Base unit (`--bui-space`) times 0.5.</Table.Cell>
     </Table.Row>
     <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-space-1" kind="space" />
+      </Table.Cell>
       <Table.Cell>
         <Chip head>--bui-space-1</Chip>
       </Table.Cell>
@@ -678,11 +790,17 @@ tokens for pretty much each spacing properties like padding, margin, gaps, ...
     </Table.Row>
     <Table.Row>
       <Table.Cell>
+        <TokenPreview token="--bui-space-1_5" kind="space" />
+      </Table.Cell>
+      <Table.Cell>
         <Chip head>--bui-space-1_5</Chip>
       </Table.Cell>
       <Table.Cell>Base unit (`--bui-space`) times 1.5.</Table.Cell>
     </Table.Row>
     <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-space-2" kind="space" />
+      </Table.Cell>
       <Table.Cell>
         <Chip head>--bui-space-2</Chip>
       </Table.Cell>
@@ -690,11 +808,17 @@ tokens for pretty much each spacing properties like padding, margin, gaps, ...
     </Table.Row>
     <Table.Row>
       <Table.Cell>
+        <TokenPreview token="--bui-space-3" kind="space" />
+      </Table.Cell>
+      <Table.Cell>
         <Chip head>--bui-space-3</Chip>
       </Table.Cell>
       <Table.Cell>Base unit (`--bui-space`) times 3.</Table.Cell>
     </Table.Row>
     <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-space-4" kind="space" />
+      </Table.Cell>
       <Table.Cell>
         <Chip head>--bui-space-4</Chip>
       </Table.Cell>
@@ -702,11 +826,17 @@ tokens for pretty much each spacing properties like padding, margin, gaps, ...
     </Table.Row>
     <Table.Row>
       <Table.Cell>
+        <TokenPreview token="--bui-space-5" kind="space" />
+      </Table.Cell>
+      <Table.Cell>
         <Chip head>--bui-space-5</Chip>
       </Table.Cell>
       <Table.Cell>Base unit (`--bui-space`) times 5.</Table.Cell>
     </Table.Row>
     <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-space-6" kind="space" />
+      </Table.Cell>
       <Table.Cell>
         <Chip head>--bui-space-6</Chip>
       </Table.Cell>
@@ -714,11 +844,17 @@ tokens for pretty much each spacing properties like padding, margin, gaps, ...
     </Table.Row>
     <Table.Row>
       <Table.Cell>
+        <TokenPreview token="--bui-space-7" kind="space" />
+      </Table.Cell>
+      <Table.Cell>
         <Chip head>--bui-space-7</Chip>
       </Table.Cell>
       <Table.Cell>Base unit (`--bui-space`) times 7.</Table.Cell>
     </Table.Row>
     <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-space-8" kind="space" />
+      </Table.Cell>
       <Table.Cell>
         <Chip head>--bui-space-8</Chip>
       </Table.Cell>
@@ -726,11 +862,17 @@ tokens for pretty much each spacing properties like padding, margin, gaps, ...
     </Table.Row>
     <Table.Row>
       <Table.Cell>
+        <TokenPreview token="--bui-space-9" kind="space" />
+      </Table.Cell>
+      <Table.Cell>
         <Chip head>--bui-space-9</Chip>
       </Table.Cell>
       <Table.Cell>Base unit (`--bui-space`) times 9.</Table.Cell>
     </Table.Row>
     <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-space-10" kind="space" />
+      </Table.Cell>
       <Table.Cell>
         <Chip head>--bui-space-10</Chip>
       </Table.Cell>
@@ -738,11 +880,17 @@ tokens for pretty much each spacing properties like padding, margin, gaps, ...
     </Table.Row>
     <Table.Row>
       <Table.Cell>
+        <TokenPreview token="--bui-space-11" kind="space" />
+      </Table.Cell>
+      <Table.Cell>
         <Chip head>--bui-space-11</Chip>
       </Table.Cell>
       <Table.Cell>Base unit (`--bui-space`) times 11.</Table.Cell>
     </Table.Row>
     <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-space-12" kind="space" />
+      </Table.Cell>
       <Table.Cell>
         <Chip head>--bui-space-12</Chip>
       </Table.Cell>
@@ -750,11 +898,17 @@ tokens for pretty much each spacing properties like padding, margin, gaps, ...
     </Table.Row>
     <Table.Row>
       <Table.Cell>
+        <TokenPreview token="--bui-space-13" kind="space" />
+      </Table.Cell>
+      <Table.Cell>
         <Chip head>--bui-space-13</Chip>
       </Table.Cell>
       <Table.Cell>Base unit (`--bui-space`) times 13.</Table.Cell>
     </Table.Row>
     <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-space-14" kind="space" />
+      </Table.Cell>
       <Table.Cell>
         <Chip head>--bui-space-14</Chip>
       </Table.Cell>
@@ -770,12 +924,16 @@ We use a radius system to make sure that the components have a consistent look a
 <Table.Root>
   <Table.Header>
     <Table.HeaderRow>
+      <Table.HeaderCell>Preview</Table.HeaderCell>
       <Table.HeaderCell>Prop</Table.HeaderCell>
       <Table.HeaderCell>Description</Table.HeaderCell>
     </Table.HeaderRow>
   </Table.Header>
   <Table.Body>
     <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-radius-1" kind="radius" />
+      </Table.Cell>
       <Table.Cell>
         <Chip head>--bui-radius-1</Chip>
       </Table.Cell>
@@ -785,6 +943,9 @@ We use a radius system to make sure that the components have a consistent look a
     </Table.Row>
     <Table.Row>
       <Table.Cell>
+        <TokenPreview token="--bui-radius-2" kind="radius" />
+      </Table.Cell>
+      <Table.Cell>
         <Chip head>--bui-radius-2</Chip>
       </Table.Cell>
       <Table.Cell>
@@ -792,6 +953,9 @@ We use a radius system to make sure that the components have a consistent look a
       </Table.Cell>
     </Table.Row>
     <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-radius-3" kind="radius" />
+      </Table.Cell>
       <Table.Cell>
         <Chip head>--bui-radius-3</Chip>
       </Table.Cell>
@@ -801,6 +965,9 @@ We use a radius system to make sure that the components have a consistent look a
     </Table.Row>
     <Table.Row>
       <Table.Cell>
+        <TokenPreview token="--bui-radius-4" kind="radius" />
+      </Table.Cell>
+      <Table.Cell>
         <Chip head>--bui-radius-4</Chip>
       </Table.Cell>
       <Table.Cell>
@@ -808,6 +975,9 @@ We use a radius system to make sure that the components have a consistent look a
       </Table.Cell>
     </Table.Row>
     <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-radius-5" kind="radius" />
+      </Table.Cell>
       <Table.Cell>
         <Chip head>--bui-radius-5</Chip>
       </Table.Cell>
@@ -817,6 +987,9 @@ We use a radius system to make sure that the components have a consistent look a
     </Table.Row>
     <Table.Row>
       <Table.Cell>
+        <TokenPreview token="--bui-radius-6" kind="radius" />
+      </Table.Cell>
+      <Table.Cell>
         <Chip head>--bui-radius-6</Chip>
       </Table.Cell>
       <Table.Cell>
@@ -824,6 +997,9 @@ We use a radius system to make sure that the components have a consistent look a
       </Table.Cell>
     </Table.Row>
     <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-radius-full" kind="radius" />
+      </Table.Cell>
       <Table.Cell>
         <Chip head>--bui-radius-full</Chip>
       </Table.Cell>
@@ -833,3 +1009,55 @@ We use a radius system to make sure that the components have a consistent look a
     </Table.Row>
   </Table.Body>
 </Table.Root>
+
+## Animations
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Preview</Table.HeaderCell>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-animate-pulse" kind="animation" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-animate-pulse</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Pulsing animation used for loading and skeleton states.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+## Shadow
+
+<Table.Root>
+  <Table.Header>
+    <Table.HeaderRow>
+      <Table.HeaderCell>Preview</Table.HeaderCell>
+      <Table.HeaderCell>Prop</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+    </Table.HeaderRow>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        <TokenPreview token="--bui-shadow" kind="shadow" />
+      </Table.Cell>
+      <Table.Cell>
+        <Chip head>--bui-shadow</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Elevation shadow for floating surfaces such as popovers and menus.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table.Root>
+
+<ChangelogTokens />
