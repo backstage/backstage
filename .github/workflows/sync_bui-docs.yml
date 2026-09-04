@@ -57,5 +57,5 @@ jobs:
         working-directory: bui-external-docs
         run: |
           git add .
-          git commit -am "BUI Docs build for backstage/backstage@${{ github.sha }}"
+          git commit -am "BUI Docs build for backstage/backstage@$GITHUB_SHA"
           git push

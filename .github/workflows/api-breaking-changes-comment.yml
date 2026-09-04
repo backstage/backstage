@@ -80,12 +80,17 @@ jobs:
           key: ${{ steps.hash.outputs.COMMENT_FILE_HASH }}
 
       - name: DEBUG - Print Job Outputs
+        env:
+          ACTION: ${{ steps.event.outputs.ACTION }}
+          COMMENT_FILE_HASH: ${{ steps.hash.outputs.COMMENT_FILE_HASH }}
+          GIT_REF: ${{ steps.event.outputs.GIT_REF }}
+          PR_NUMBER: ${{ steps.event.outputs.PR_NUMBER }}
         if: ${{ runner.debug }}
         run: |
-          echo "PR number: ${{ steps.event.outputs.PR_NUMBER }}"
-          echo "Git Ref: ${{ steps.event.outputs.GIT_REF }}"
-          echo "Action: ${{ steps.event.outputs.ACTION }}"
-          echo "Hash: ${{ steps.hash.outputs.COMMENT_FILE_HASH }}"
+          echo "PR number: $PR_NUMBER"
+          echo "Git Ref: $GIT_REF"
+          echo "Action: $ACTION"
+          echo "Hash: $COMMENT_FILE_HASH"
           cat event.json
 
   add-comment:
