@@ -247,11 +247,14 @@ export class ScaffolderClient implements ScaffolderApi {
         params.set('after', String(Number(after)));
       }
 
+      const ctrl = new AbortController();
+
       this.discoveryApi.getBaseUrl('scaffolder').then(
         baseUrl => {
+          const query = params.toString();
           const url = `${baseUrl}/v2/tasks/${encodeURIComponent(
             taskId,
-          )}/eventstream`;
+          )}/eventstream${query ? `?${query}` : ''}`;
 
           const processEvent = (event: any) => {
             if (event.data) {
@@ -263,10 +266,10 @@ export class ScaffolderClient implements ScaffolderApi {
             }
           };
 
-          const ctrl = new AbortController();
           void fetchEventSource(url, {
             fetch: this.fetchApi.fetch,
             signal: ctrl.signal,
+            openWhenHidden: true,
             onmessage(e: EventSourceMessage) {
               if (e.event === 'log') {
                 processEvent(e);
@@ -279,8 +282,13 @@ export class ScaffolderClient implements ScaffolderApi {
               }
               processEvent(e);
             },
+            onclose() {
+              subscriber.error(new Error('SSE connection closed unexpectedly'));
+            },
             onerror(err) {
+              ctrl.abort();
               subscriber.error(err);
+              throw err;
             },
           });
         },
@@ -288,6 +296,8 @@ export class ScaffolderClient implements ScaffolderApi {
           subscriber.error(error);
         },
       );
+
+      return () => ctrl.abort();
     });
   }
 
