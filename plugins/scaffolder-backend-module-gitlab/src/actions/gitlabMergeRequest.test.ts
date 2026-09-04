@@ -1344,6 +1344,87 @@ describe('createGitLabMergeRequest', () => {
     });
   });
 
+  describe('with commitMessage', () => {
+    it('uses the commitMessage for the commit when provided', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'new-mr',
+        description: 'MR description',
+        commitAction: 'create',
+        commitMessage: 'chore: add scaffolded changes',
+        targetPath: 'source',
+      };
+      mockDir.setContent({
+        [workspacePath]: {
+          source: { 'foo.txt': 'Hello there!' },
+        },
+      });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'chore: add scaffolded changes',
+        [
+          {
+            action: 'create',
+            filePath: 'source/foo.txt',
+            content: 'SGVsbG8gdGhlcmUh',
+            encoding: 'base64',
+            execute_filemode: false,
+          },
+        ],
+      );
+      expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'main',
+        'Create my new MR',
+        {
+          description: 'MR description',
+          removeSourceBranch: false,
+        },
+      );
+    });
+
+    it('falls back to the title for the commit when commitMessage is not provided', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        title: 'Create my new MR',
+        branchName: 'new-mr',
+        description: 'MR description',
+        commitAction: 'create',
+        targetPath: 'source',
+      };
+      mockDir.setContent({
+        [workspacePath]: {
+          source: { 'foo.txt': 'Hello there!' },
+        },
+      });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'new-mr',
+        'Create my new MR',
+        [
+          {
+            action: 'create',
+            filePath: 'source/foo.txt',
+            content: 'SGVsbG8gdGhlcmUh',
+            encoding: 'base64',
+            execute_filemode: false,
+          },
+        ],
+      );
+    });
+  });
+
   describe('with sourcePath', () => {
     it('creates a Merge Request with only relevant files', async () => {
       const input = {
