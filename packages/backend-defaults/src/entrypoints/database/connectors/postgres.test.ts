@@ -262,6 +262,7 @@ describe('postgres', () => {
         {
           client: 'pg',
           connection: mockConnection,
+          pool: { min: 0 },
           useNullAsDefault: true,
         },
       );
@@ -275,6 +276,7 @@ describe('postgres', () => {
       ).toEqual({
         client: 'pg',
         connection: mockConnectionString,
+        pool: { min: 0 },
         useNullAsDefault: true,
       });
     });
@@ -292,6 +294,7 @@ describe('postgres', () => {
           ...mockConnection,
           database: 'other_db',
         },
+        pool: { min: 0 },
         useNullAsDefault: true,
       });
     });
@@ -309,6 +312,7 @@ describe('postgres', () => {
       ).toEqual({
         client: 'pg',
         connection: mockConnection,
+        pool: { min: 0 },
         searchPath: ['schemaName'],
         useNullAsDefault: true,
       });
@@ -320,7 +324,7 @@ describe('postgres', () => {
       expect(
         await buildPgDatabaseConfig(createConfig(mockConnection), {
           connection: { database: 'other_db' },
-          pool: { min: 0, max: 7 },
+          pool: { min: 2, max: 7 },
           debug: true,
         }),
       ).toEqual({
@@ -330,7 +334,7 @@ describe('postgres', () => {
           database: 'other_db',
         },
         useNullAsDefault: true,
-        pool: { min: 0, max: 7 },
+        pool: { min: 2, max: 7 },
         debug: true,
       });
     });
@@ -350,6 +354,7 @@ describe('postgres', () => {
           port: '5432',
           database: 'other_db',
         },
+        pool: { min: 0 },
         useNullAsDefault: true,
       });
     });
@@ -640,6 +645,7 @@ describe('postgres', () => {
           port: 5423,
           database: 'other_db',
         },
+        pool: { min: 0 },
         useNullAsDefault: true,
       });
     });
@@ -698,6 +704,7 @@ describe('postgres', () => {
           stream: mockStream,
           database: 'other_db',
         },
+        pool: { min: 0 },
         useNullAsDefault: true,
       });
     });
@@ -1046,6 +1053,7 @@ describe('postgres', () => {
           port: '5432',
           database: 'other_db',
         },
+        pool: { min: 0 },
         useNullAsDefault: true,
       });
     });
