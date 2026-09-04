@@ -106,6 +106,32 @@
     }
   }
 
+  .bui-TableColumnResizer {
+    width: 1px;
+    height: 24px;
+    margin-block: -4px;
+    margin-inline-start: auto;
+    padding-inline: var(--bui-space-2);
+    margin-inline-end: calc(var(--bui-space-2) * -1);
+    flex: 0 0 auto;
+    touch-action: none;
+    box-sizing: content-box;
+    background-color: var(--bui-border-2);
+    background-clip: content-box;
+    cursor: col-resize;
+
+    &[data-hovered],
+    &[data-focus-visible],
+    &[data-resizing] {
+      background-color: var(--bui-border-1);
+    }
+
+    &[data-focus-visible] {
+      outline: 2px solid var(--bui-ring);
+      outline-offset: -2px;
+    }
+  }
+
   .bui-TableBody {
     color: var(--bui-fg-primary);
   }

@@ -362,6 +362,7 @@ export const tableColumnWidthsWithConstraintsSnippet = `const columns: ColumnCon
     id: 'name',
     label: 'Name (3fr, min 200px)',
     isRowHeader: true,
+    isResizable: true,
     defaultWidth: '3fr',
     minWidth: 200,
     cell: item => <CellText title={item.name} description={item.description} />,
@@ -369,6 +370,7 @@ export const tableColumnWidthsWithConstraintsSnippet = `const columns: ColumnCon
   {
     id: 'owner',
     label: 'Owner (2fr, min 120px, max 300px)',
+    isResizable: true,
     defaultWidth: '2fr',
     minWidth: 120,
     maxWidth: 300,
@@ -377,6 +379,7 @@ export const tableColumnWidthsWithConstraintsSnippet = `const columns: ColumnCon
   {
     id: 'type',
     label: 'Type (1fr, min 80px, max 150px)',
+    isResizable: true,
     defaultWidth: '1fr',
     minWidth: 80,
     maxWidth: 150,
@@ -385,6 +388,7 @@ export const tableColumnWidthsWithConstraintsSnippet = `const columns: ColumnCon
   {
     id: 'lifecycle',
     label: 'Lifecycle (1fr, min 80px, max 150px)',
+    isResizable: true,
     defaultWidth: '1fr',
     minWidth: 80,
     maxWidth: 150,
