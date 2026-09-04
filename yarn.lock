@@ -41784,7 +41784,6 @@ __metadata:
     fs-extra: "npm:^11.2.0"
     husky: "npm:^9.0.0"
     jest: "npm:~30.2.0"
-    js-yaml: "npm:^4.3.0"
     jsdom: "npm:^27"
     lint-staged: "npm:^16.0.0"
     madge: "npm:^8.0.0"
