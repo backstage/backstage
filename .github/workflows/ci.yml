@@ -13,9 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  actions: write
   contents: read
-  pull-requests: read
 
 jobs:
   # This step only runs yarn install to make sure that an exact match is available
