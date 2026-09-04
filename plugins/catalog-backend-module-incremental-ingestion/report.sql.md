@@ -6,13 +6,15 @@
 
 | Column              | Type                | Nullable | Max Length | Default |
 | ------------------- | ------------------- | -------- | ---------- | ------- |
+| `entity_ref`        | `character varying` | false    | 255        | -       |
 | `id`                | `uuid`              | false    | -          | -       |
 | `ingestion_mark_id` | `uuid`              | false    | -          | -       |
-| `ref`               | `character varying` | false    | 255        | -       |
+| `source_key`        | `character varying` | false    | 255        | -       |
 
 ### Indices
 
 - `ingestion_mark_entities_pkey` (`id`) unique primary
+- `ingestion_mark_entities_source_key_entity_ref_uniq` (`source_key`, `entity_ref`) unique
 - `ingestion_mark_entity_ingestion_mark_id_idx` (`ingestion_mark_id`)
 
 ## Table `ingestion_marks`
