@@ -31,7 +31,6 @@ import type {
   JSONSchema7Definition,
   JSONSchema7Type,
 } from 'json-schema';
-import { FC } from 'react';
 import { scaffolderTranslationRef } from '../../translation';
 import { SchemaRenderContext, SchemaRenderStrategy } from './types';
 
@@ -173,10 +172,13 @@ const inspectSchema = (
   };
 };
 
-export const RenderEnum: FC<{
+export function RenderEnum({
+  e,
+  ...props
+}: {
   e: JSONSchema7Type[];
   [key: string]: any;
-}> = ({ e, ...props }: { e: JSONSchema7Type[] }) => {
+}) {
   return (
     <ul {...props} style={{ listStyle: 'none', padding: 0, margin: 0 }}>
       {e.map((v, i) => {
@@ -223,7 +225,7 @@ export const RenderEnum: FC<{
       })}
     </ul>
   );
-};
+}
 
 export const RenderSchema = ({
   strategy,
