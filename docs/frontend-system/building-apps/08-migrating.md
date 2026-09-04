@@ -52,7 +52,7 @@ If you encounter issues, check [GitHub issues](https://github.com/backstage/back
 
 ## Phase 1: Minimal Changes for Hybrid Configuration
 
-There are 5 steps to minimally change your app to start experimenting with the new frontend system in a hybrid mode.
+There are 6 steps to minimally change your app to start experimenting with the new frontend system in a hybrid mode.
 
 After completing these steps you should be able to start up the app and see that it still works.
 
@@ -266,6 +266,17 @@ describe('App', () => {
     });
   });
 });
+```
+
+### 6) Avoid double headers
+
+When running in hybrid mode, a duplicate header appears if the legacy header is still active alongside the new one. To avoid this, include the following code in `packages/app/src/styles.css`.
+
+```
+/* Hide the BUI header when the legacy backstage header is present in <main> */
+#root > .MuiBox-root:has(> main > header) > .bui-PluginHeader {
+  display: none;
+}
 ```
 
 ## Phase 2: Complete Transition to the New Frontend System
