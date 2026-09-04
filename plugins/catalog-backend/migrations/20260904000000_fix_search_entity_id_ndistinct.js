@@ -43,7 +43,10 @@ exports.up = async function up(knex) {
   }
 
   const result = await knex.raw(
-    `SELECT -COUNT(*)::double precision /
+    `SELECT -NULLIF(
+              COUNT(*) FILTER (WHERE entity_id IS NOT NULL),
+              0
+            )::double precision /
               NULLIF(SUM(rows_per_entity), 0) AS n_distinct
      FROM (
        SELECT entity_id, COUNT(*) AS rows_per_entity

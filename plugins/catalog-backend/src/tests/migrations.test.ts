@@ -1493,6 +1493,7 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
       { entity_id: 'e2', key: 'kind', value: 'component' },
       { entity_id: 'e2', key: 'metadata.name', value: 'two' },
       { entity_id: 'e2', key: 'metadata.namespace', value: 'default' },
+      { entity_id: null, key: 'global', value: 'setting' },
     ]);
 
     async function readNdistinct(): Promise<{
@@ -1524,13 +1525,23 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
 
     await migrateUpOnce(knex);
     const populated = await readNdistinct();
-    expect(populated.option).toBe(isPg ? -0.4 : undefined);
-    expect(populated.statistic).toBe(isPg ? -0.4 : undefined);
+    expect({
+      option: populated.option?.toFixed(6),
+      statistic: populated.statistic?.toFixed(6),
+    }).toEqual(
+      isPg
+        ? { option: '-0.333333', statistic: '-0.333333' }
+        : { option: undefined, statistic: undefined },
+    );
 
     await migrateDownOnce(knex);
     expect((await readNdistinct()).option).toBe(isPg ? -1 : undefined);
 
     await knex('search').delete();
+    await knex('search').insert([
+      { entity_id: null, key: 'global', value: 'one' },
+      { entity_id: null, key: 'global', value: 'two' },
+    ]);
     await migrateUpOnce(knex);
     expect((await readNdistinct()).option).toBeUndefined();
 
