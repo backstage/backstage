@@ -9,6 +9,33 @@ import { JsonValue } from '@backstage/types';
 import { SerializedError } from '@backstage/errors';
 
 // @alpha
+export interface AiModelServerApiEntity
+  extends Omit<ApiEntityV1alpha1, 'spec'> {
+  // (undocumented)
+  spec: {
+    type: 'ai-model-server';
+    lifecycle: string;
+    owner: string;
+    system?: string;
+    serverType: string;
+    serverUrl: string;
+    requiresApiKey?: boolean;
+    apiEntityRef?: string;
+    models?: {
+      discoverable?: boolean;
+      available?: string[];
+      default?: string;
+    };
+  };
+}
+
+// @alpha
+export const aiModelServerApiEntityModel: CatalogModelLayer;
+
+// @alpha
+export const aiModelServerApiEntityValidator: KindValidator;
+
+// @alpha
 export const aiResourceEntityModel: CatalogModelLayer;
 
 // @alpha
@@ -506,6 +533,11 @@ export type EntityStatusItem = {
 
 // @alpha
 export type EntityStatusLevel = 'info' | 'warning' | 'error';
+
+// @alpha
+export function isAiModelServerApiEntity(
+  entity: ApiEntityV1alpha1 | AiModelServerApiEntity,
+): entity is AiModelServerApiEntity;
 
 // @alpha
 export const isAiResourceEntity: (
