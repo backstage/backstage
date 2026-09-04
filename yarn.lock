@@ -2892,8 +2892,8 @@ __metadata:
     d3-zoom: "npm:^3.0.0"
     history: "npm:^5.0.0"
     js-yaml: "npm:^4.3.0"
-    linkify-react: "npm:4.3.2"
-    linkifyjs: "npm:4.3.2"
+    linkify-react: "npm:4.3.3"
+    linkifyjs: "npm:4.3.3"
     lodash: "npm:^4.17.21"
     msw: "npm:^2.0.0"
     parse5: "npm:^6.0.0"
@@ -33895,20 +33895,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"linkify-react@npm:4.3.2":
-  version: 4.3.2
-  resolution: "linkify-react@npm:4.3.2"
+"linkify-react@npm:4.3.3":
+  version: 4.3.3
+  resolution: "linkify-react@npm:4.3.3"
   peerDependencies:
-    linkifyjs: ^4.0.0
+    linkifyjs: "*"
     react: ">= 15.0.0"
-  checksum: 10/cdf3942af0d291db6dc67adccbce381bbe7ce2eb5c2a06b9ee92a19323f540284e1768ef1df369b7aabc5d6894310addddafb8e53226f50d376b36cd4ddbd598
+  checksum: 10/8e730a2f3ebe11eed2f183aad86006f99c6c23dd9749c084cbc0bc0fca744e6512a78b1c66556749e3aec8d27240039c9412c272ffcc59fa66c0e16f73b4c17e
   languageName: node
   linkType: hard
 
-"linkifyjs@npm:4.3.2":
-  version: 4.3.2
-  resolution: "linkifyjs@npm:4.3.2"
-  checksum: 10/b03477486658d1e5531bf65ee1fdc0f79423594e689184c67b8a63c75d9f35d1cd0344edd97d5799502cde4f3163d620e2cbd9e72ad718c6a95084177c004386
+"linkifyjs@npm:4.3.3":
+  version: 4.3.3
+  resolution: "linkifyjs@npm:4.3.3"
+  checksum: 10/372b19f31ba8ddecbe50d13751d6453d5bc813e6e3b7b763e85e03a485afeb29d5d536a9cc97613931460d1c696a2e0bec44447042a0f04b1bb60402974c15a2
   languageName: node
   linkType: hard
 
