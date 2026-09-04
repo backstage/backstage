@@ -80,9 +80,6 @@ export const createTriggerGitlabPipelineAction = (options: {
       },
     },
     async handler(ctx) {
-      let pipelineTriggerToken: string | undefined = undefined;
-      let pipelineTriggerId: number | undefined = undefined;
-
       const { repoUrl, projectId, tokenDescription, token, branch, variables } =
         ctx.input;
 
@@ -94,86 +91,48 @@ export const createTriggerGitlabPipelineAction = (options: {
         requireScmUserCredentials,
       });
 
-      try {
-        ({ pipelineTriggerToken, pipelineTriggerId } = await ctx.checkpoint({
-          key: `create.pipeline.token.${projectId}`,
-          fn: async () => {
-            const res = (await api.PipelineTriggerTokens.create(
-              projectId,
-              tokenDescription,
-            )) as PipelineTriggerTokenSchema;
-            return {
-              pipelineTriggerToken: res.token,
-              pipelineTriggerId: res.id,
-            };
-          },
-        }));
-
-        if (!pipelineTriggerToken) {
-          ctx.logger.error(
-            `Failed to create pipeline token for project ${projectId}.`,
-          );
-          return;
-        }
-        ctx.logger.info(
-          `Pipeline token id ${pipelineTriggerId} created for project ${projectId}.`,
-        );
-
-        // Use the pipeline token to trigger the pipeline in the project
-        const pipelineTriggerResponse =
-          (await api.PipelineTriggerTokens.trigger(
+      const pipelineUrl = await ctx.checkpoint({
+        key: `trigger.pipeline.${projectId}.${branch}.${tokenDescription}`,
+        fn: async () => {
+          const triggerToken = (await api.PipelineTriggerTokens.create(
             projectId,
-            branch,
-            pipelineTriggerToken,
-            { variables },
-          )) as ExpandedPipelineSchema;
+            tokenDescription,
+          )) as PipelineTriggerTokenSchema;
 
-        if (!pipelineTriggerResponse.id) {
-          ctx.logger.error(
-            `Failed to trigger pipeline for project ${projectId}.`,
-          );
-          return;
-        }
-
-        ctx.logger.info(
-          `Pipeline id ${pipelineTriggerResponse.id} for project ${projectId} triggered.`,
-        );
-
-        ctx.output('pipelineUrl', pipelineTriggerResponse.web_url);
-      } catch (error: any) {
-        // Handling other errors
-        throw new InputError(
-          `Failed to trigger Pipeline: ${getErrorMessage(error)}`,
-        );
-      } finally {
-        // Delete the pipeline token if it was created
-        if (pipelineTriggerId) {
           try {
-            await ctx.checkpoint({
-              key: `create.delete.token.${projectId}`,
-              fn: async () => {
-                if (pipelineTriggerId) {
-                  // to make the current version of TypeScript happy
-                  await api.PipelineTriggerTokens.remove(
-                    projectId,
-                    pipelineTriggerId,
-                  );
-                }
-              },
-            });
-            ctx.logger.info(
-              // in version 18.0 of gitlab this was also deleting the pipeline
-              // this is a problem in gitlab which is fixed in version 18.1
-              // https://gitlab.com/gitlab-org/gitlab/-/issues/546669
-              `Deleted pipeline trigger token with token id: ${pipelineTriggerId}.`,
-            );
-          } catch (error: any) {
-            ctx.logger.error(
-              `Failed to delete pipeline trigger token with token id: ${pipelineTriggerId}.`,
-            );
+            const pipeline = (await api.PipelineTriggerTokens.trigger(
+              projectId,
+              branch,
+              triggerToken.token,
+              { variables },
+            )) as ExpandedPipelineSchema;
+
+            if (!pipeline.id) {
+              throw new InputError(
+                `Failed to trigger pipeline for project ${projectId}`,
+              );
+            }
+
+            // Only this non-secret value enters checkpoint state.
+            return pipeline.web_url;
+          } finally {
+            try {
+              await api.PipelineTriggerTokens.remove(
+                projectId,
+                triggerToken.id,
+              );
+            } catch (error) {
+              ctx.logger.error(
+                `Failed to delete pipeline trigger token ${
+                  triggerToken.id
+                }: ${getErrorMessage(error)}`,
+              );
+            }
           }
-        }
-      }
+        },
+      });
+
+      ctx.output('pipelineUrl', pipelineUrl);
     },
   });
 };
