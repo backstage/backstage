@@ -16,15 +16,27 @@
 import { createGetCatalogEntityAction } from './createGetCatalogEntityAction';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
+import { mockServices } from '@backstage/backend-test-utils';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { NotFoundError } from '@backstage/errors';
 
 describe('createGetCatalogEntityAction', () => {
-  it('should throw an error if the entity is not found', async () => {
+  let permissions: ReturnType<typeof mockServices.permissions.mock>;
+
+  beforeEach(() => {
+    permissions = mockServices.permissions.mock({
+      authorizeConditional: async () => [{ result: AuthorizeResult.ALLOW }],
+    });
+  });
+
+  it('throws NotFoundError if the entity is not found', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const mockCatalog = catalogServiceMock();
 
     createGetCatalogEntityAction({
       catalog: mockCatalog,
       actionsRegistry: mockActionsRegistry,
+      permissions,
     });
 
     await expect(
@@ -32,7 +44,10 @@ describe('createGetCatalogEntityAction', () => {
         id: 'test:get-catalog-entity',
         input: { name: 'test' },
       }),
-    ).rejects.toThrow(`No entity found with name "test"`);
+    ).rejects.toMatchObject({
+      name: 'NotFoundError',
+      message: `No entity found with name "test"`,
+    } satisfies Partial<NotFoundError>);
   });
 
   it('should throw an error if theres multiple entities found', async () => {
@@ -64,6 +79,7 @@ describe('createGetCatalogEntityAction', () => {
     createGetCatalogEntityAction({
       catalog: mockCatalog,
       actionsRegistry: mockActionsRegistry,
+      permissions,
     });
 
     await expect(
@@ -74,5 +90,31 @@ describe('createGetCatalogEntityAction', () => {
     ).rejects.toThrow(
       `Multiple entities found with name "test", please provide more specific filters. Entities found: "component:default/test", "api:default/test"`,
     );
+  });
+
+  it('does not look up entities when read permission is denied', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    const mockCatalog = catalogServiceMock();
+    const querySpy = jest.spyOn(mockCatalog, 'queryEntities');
+    permissions.authorizeConditional.mockResolvedValue([
+      { result: AuthorizeResult.DENY },
+    ]);
+
+    createGetCatalogEntityAction({
+      catalog: mockCatalog,
+      actionsRegistry: mockActionsRegistry,
+      permissions,
+    });
+
+    await expect(
+      mockActionsRegistry.invoke({
+        id: 'test:get-catalog-entity',
+        input: { name: 'test' },
+      }),
+    ).rejects.toMatchObject({
+      name: 'NotFoundError',
+      message: `No entity found with name "test"`,
+    } satisfies Partial<NotFoundError>);
+    expect(querySpy).not.toHaveBeenCalled();
   });
 });

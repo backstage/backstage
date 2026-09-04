@@ -55,6 +55,20 @@ spec:
     },
   };
 
+  it('requires entity validation permission for action visibility', () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+
+    createValidateEntityAction({
+      catalog: catalogServiceMock(),
+      actionsRegistry: mockActionsRegistry,
+    });
+
+    expect(
+      mockActionsRegistry.actions.get('test:validate-entity')
+        ?.visibilityPermission?.name,
+    ).toBe('catalog.entity.validate');
+  });
+
   it('should validate a valid entity YAML and return success', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const mockCatalog = catalogServiceMock.mock();

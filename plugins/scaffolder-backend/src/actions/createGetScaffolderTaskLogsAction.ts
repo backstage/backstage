@@ -13,15 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { PermissionsService } from '@backstage/backend-plugin-api';
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
+import { NotAllowedError } from '@backstage/errors';
+import { taskReadPermission } from '@backstage/plugin-scaffolder-common/alpha';
 import { ScaffolderService } from '@backstage/plugin-scaffolder-node';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 export const createGetScaffolderTaskLogsAction = ({
   actionsRegistry,
   scaffolderService,
+  permissions,
 }: {
   actionsRegistry: ActionsRegistryService;
   scaffolderService: ScaffolderService;
+  permissions: PermissionsService;
 }) => {
   actionsRegistry.register({
     name: 'get-scaffolder-task-logs',
@@ -87,6 +93,17 @@ Use the after parameter to fetch only events after a specific event ID for incre
           .describe('Object containing the events array'),
     },
     action: async ({ input, credentials }) => {
+      // TODO: Revisit this explicit check once service on-behalf-of
+      // authentication preserves caller identity and access restrictions
+      // across service boundaries. Until then, authorize before delegating.
+      const [readDecision] = await permissions.authorizeConditional(
+        [{ permission: taskReadPermission }],
+        { credentials },
+      );
+      if (readDecision.result === AuthorizeResult.DENY) {
+        throw new NotAllowedError();
+      }
+
       const events = await scaffolderService.getLogs(
         { taskId: input.taskId, after: input.after },
         { credentials },

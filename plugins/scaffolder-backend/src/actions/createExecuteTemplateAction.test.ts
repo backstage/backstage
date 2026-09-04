@@ -14,14 +14,101 @@
  * limitations under the License.
  */
 import { createExecuteTemplateAction } from './createExecuteTemplateAction';
+import { mockServices } from '@backstage/backend-test-utils';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
 import { scaffolderServiceMock } from '@backstage/plugin-scaffolder-node/testUtils';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { NotAllowedError } from '@backstage/errors';
 
 describe('createExecuteTemplateAction', () => {
   const mockScaffolderService = scaffolderServiceMock.mock();
+  let permissions: ReturnType<typeof mockServices.permissions.mock>;
 
   beforeEach(() => {
     jest.resetAllMocks();
+    permissions = mockServices.permissions.mock({
+      authorizeConditional: async () => [{ result: AuthorizeResult.ALLOW }],
+    });
+  });
+
+  it('rejects denied action execution before creating a task', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    mockScaffolderService.scaffold.mockResolvedValue({ taskId: 'task-id' });
+    permissions.authorizeConditional.mockResolvedValue([
+      { result: AuthorizeResult.DENY },
+    ]);
+    const options = {
+      actionsRegistry: mockActionsRegistry,
+      scaffolderService: mockScaffolderService,
+      permissions,
+    };
+    createExecuteTemplateAction(options);
+
+    await expect(
+      mockActionsRegistry.invoke({
+        id: 'test:execute-template',
+        input: {
+          templateRef: 'template:default/my-template',
+          values: { name: 'my-app' },
+        },
+      }),
+    ).rejects.toThrow(NotAllowedError);
+
+    expect(permissions.authorizeConditional).toHaveBeenCalledWith(
+      [
+        {
+          permission: expect.objectContaining({
+            name: 'scaffolder.action.execute',
+          }),
+        },
+      ],
+      { credentials: expect.any(Object) },
+    );
+    expect(mockScaffolderService.scaffold).not.toHaveBeenCalled();
+  });
+
+  it('leaves template read permission filtering to the scaffolder service', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    mockScaffolderService.scaffold.mockResolvedValue({ taskId: 'task-id' });
+    permissions.authorizeConditional.mockImplementation(async requests =>
+      requests.map(request => ({
+        result:
+          request.permission.name === 'scaffolder.action.execute'
+            ? AuthorizeResult.ALLOW
+            : AuthorizeResult.DENY,
+      })),
+    );
+
+    createExecuteTemplateAction({
+      actionsRegistry: mockActionsRegistry,
+      scaffolderService: mockScaffolderService,
+      permissions,
+    });
+
+    await expect(
+      mockActionsRegistry.invoke({
+        id: 'test:execute-template',
+        input: {
+          templateRef: 'template:default/my-template',
+          values: { name: 'my-app' },
+        },
+      }),
+    ).resolves.toEqual({ output: { taskId: 'task-id' } });
+  });
+
+  it('requires task creation permission for action visibility', () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+
+    createExecuteTemplateAction({
+      actionsRegistry: mockActionsRegistry,
+      scaffolderService: mockScaffolderService,
+      permissions,
+    });
+
+    expect(
+      mockActionsRegistry.actions.get('test:execute-template')
+        ?.visibilityPermission?.name,
+    ).toBe('scaffolder.task.create');
   });
 
   it('should scaffold a template and return the taskId', async () => {
@@ -33,6 +120,7 @@ describe('createExecuteTemplateAction', () => {
     createExecuteTemplateAction({
       actionsRegistry: mockActionsRegistry,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     const result = await mockActionsRegistry.invoke({
@@ -63,6 +151,7 @@ describe('createExecuteTemplateAction', () => {
     createExecuteTemplateAction({
       actionsRegistry: mockActionsRegistry,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     const result = await mockActionsRegistry.invoke({
@@ -94,6 +183,7 @@ describe('createExecuteTemplateAction', () => {
     createExecuteTemplateAction({
       actionsRegistry: mockActionsRegistry,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     await mockActionsRegistry.invoke({
@@ -117,6 +207,7 @@ describe('createExecuteTemplateAction', () => {
     createExecuteTemplateAction({
       actionsRegistry: mockActionsRegistry,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     await expect(
