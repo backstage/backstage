@@ -16,7 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { useAsyncEntity } from '@backstage/plugin-catalog-react';
-import { ReactNode, ReactElement } from 'react';
+import { ReactNode, ReactElement, useRef } from 'react';
 import {
   attachComponentData,
   useApiHolder,
@@ -48,11 +48,6 @@ interface EntitySwitchCase {
   children: JSX.Element;
 }
 
-type SwitchCaseResult = {
-  if?: boolean | Promise<boolean>;
-  children: JSX.Element;
-};
-
 /**
  * Props for the {@link EntitySwitch} component.
  * @public
@@ -66,8 +61,17 @@ export interface EntitySwitchProps {
 export const EntitySwitch = (props: EntitySwitchProps) => {
   const { entity, loading } = useAsyncEntity();
   const apis = useApiHolder();
+  const promiseCache = useRef(
+    new Map<
+      (
+        entity: Entity,
+        context: { apis: ApiHolder },
+      ) => boolean | Promise<boolean>,
+      { entity: Entity; result: boolean | Promise<boolean> }
+    >(),
+  );
 
-  const results = useElementFilter(
+  const cases = useElementFilter(
     props.children,
     collection =>
       collection
@@ -76,31 +80,37 @@ export const EntitySwitch = (props: EntitySwitchProps) => {
           withStrictError: 'Child of EntitySwitch is not an EntitySwitch.Case',
         })
         .getElements()
-        .flatMap<SwitchCaseResult>((element: ReactElement) => {
-          if (loading && !entity) {
-            return [];
-          }
-
-          const { if: condition, children: elementsChildren } =
-            element.props as EntitySwitchCase;
-
-          if (!entity) {
-            return [
-              {
-                if: condition === undefined,
-                children: elementsChildren,
-              },
-            ];
-          }
-          return [
-            {
-              if: condition?.(entity, { apis }),
-              children: elementsChildren,
-            },
-          ];
-        }),
-    [apis, entity, loading],
+        .map<EntitySwitchCase>(
+          (element: ReactElement) => element.props as EntitySwitchCase,
+        ),
+    [props.children],
   );
+
+  if (loading && !entity) {
+    return null;
+  }
+
+  if (!entity) {
+    return getDefaultChildren(cases);
+  }
+
+  const results = cases.map(c => {
+    if (!c.if) {
+      return { if: undefined, children: c.children };
+    }
+
+    const cached = promiseCache.current.get(c.if);
+    if (cached && cached.entity === entity) {
+      return { if: cached.result, children: c.children };
+    }
+
+    const res = c.if(entity, { apis });
+    if (typeof res === 'object' && res !== null && 'then' in res) {
+      (res as Promise<unknown>).catch(() => {});
+    }
+    promiseCache.current.set(c.if, { entity, result: res });
+    return { if: res, children: c.children };
+  });
 
   const hasAsyncCases = results.some(
     r => typeof r.if === 'object' && 'then' in r.if,
@@ -118,19 +128,19 @@ export const EntitySwitch = (props: EntitySwitchProps) => {
   if (props.renderMultipleMatches === 'all') {
     const children = results.filter(r => r.if).map(r => r.children);
     if (children.length === 0) {
-      return getDefaultChildren(results);
+      return getDefaultChildren(cases);
     }
     return <>{children}</>;
   }
 
-  return results.find(r => r.if)?.children ?? getDefaultChildren(results);
+  return results.find(r => r.if)?.children ?? getDefaultChildren(cases);
 };
 
 function AsyncEntitySwitch({
   results,
   renderMultipleMatches,
 }: {
-  results: SwitchCaseResult[];
+  results: Array<{ if?: boolean | Promise<boolean>; children: JSX.Element }>;
   renderMultipleMatches?: 'first' | 'all';
 }) {
   const { loading, value } = useAsync(async () => {
@@ -150,13 +160,14 @@ function AsyncEntitySwitch({
     if (renderMultipleMatches === 'all') {
       const children = (await Promise.all(promises)).filter(Boolean);
       if (children.length === 0) {
-        return getDefaultChildren(results);
+        return getDefaultChildrenFromResults(results);
       }
       return <>{children}</>;
     }
 
     return (
-      (await Promise.all(promises)).find(Boolean) ?? getDefaultChildren(results)
+      (await Promise.all(promises)).find(Boolean) ??
+      getDefaultChildrenFromResults(results)
     );
   }, [results]);
 
@@ -167,7 +178,13 @@ function AsyncEntitySwitch({
   return value;
 }
 
-function getDefaultChildren(results: SwitchCaseResult[]) {
+function getDefaultChildren(cases: EntitySwitchCase[]) {
+  return cases.filter(c => c.if === undefined)[0]?.children ?? null;
+}
+
+function getDefaultChildrenFromResults(
+  results: Array<{ if?: boolean | Promise<boolean>; children: JSX.Element }>,
+) {
   return results.filter(r => r.if === undefined)[0]?.children ?? null;
 }
 

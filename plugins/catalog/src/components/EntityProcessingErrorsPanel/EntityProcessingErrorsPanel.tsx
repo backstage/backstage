@@ -45,22 +45,41 @@ interface GetOwnAndAncestorsErrorsResponse {
   }[];
 }
 
+const inFlightErrorsRequests = new Map<
+  string,
+  Promise<GetOwnAndAncestorsErrorsResponse>
+>();
+
 async function getOwnAndAncestorsErrors(
   entityRef: string,
   catalogApi: CatalogApi,
 ): Promise<GetOwnAndAncestorsErrorsResponse> {
-  const ancestors = await catalogApi.getEntityAncestors({ entityRef });
-  const items = ancestors.items
-    .map(item => {
-      const statuses = (item.entity as AlphaEntity).status?.items ?? [];
-      const errors = statuses
-        .filter(errorFilter)
-        .map(e => e.error)
-        .filter((e): e is SerializedError => Boolean(e));
-      return { errors: errors, entity: item.entity };
-    })
-    .filter(item => item.errors.length > 0);
-  return { items };
+  const existing = inFlightErrorsRequests.get(entityRef);
+  if (existing) {
+    return existing;
+  }
+
+  const promise = (async () => {
+    try {
+      const ancestors = await catalogApi.getEntityAncestors({ entityRef });
+      const items = ancestors.items
+        .map(item => {
+          const statuses = (item.entity as AlphaEntity).status?.items ?? [];
+          const errors = statuses
+            .filter(errorFilter)
+            .map(e => e.error)
+            .filter((e): e is SerializedError => Boolean(e));
+          return { errors: errors, entity: item.entity };
+        })
+        .filter(item => item.errors.length > 0);
+      return { items };
+    } finally {
+      inFlightErrorsRequests.delete(entityRef);
+    }
+  })();
+
+  inFlightErrorsRequests.set(entityRef, promise);
+  return promise;
 }
 
 /**
