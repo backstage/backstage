@@ -15,7 +15,7 @@
  */
 
 import { EntityIconLinkBlueprint } from '@backstage/plugin-catalog-react/alpha';
-import { useCatalogSourceIconLinkProps } from '../components/AboutCard/AboutCard';
+import { useCatalogSourceIconLinkProps } from '../components/AboutCard/useCatalogSourceIconLinkProps';
 
 const catalogViewSourceEntityIconLink = EntityIconLinkBlueprint.make({
   name: 'view-source',

@@ -446,6 +446,14 @@ export class ElasticSearchSearchEngine implements SearchEngine {
         queryOptions: this.queryOptions,
       },
     );
+    if (documentTypes && documentTypes.length === 0) {
+      return {
+        results: [],
+        nextPageCursor: undefined,
+        previousPageCursor: undefined,
+        numberOfResults: undefined,
+      };
+    }
     const queryIndices = documentTypes
       ? documentTypes.map(it => this.constructSearchAlias(it))
       : this.constructSearchAlias('*');

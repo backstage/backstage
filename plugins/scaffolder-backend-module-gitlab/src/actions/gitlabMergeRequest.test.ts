@@ -88,6 +88,7 @@ const mockGitlabClient = {
         default_branch: 'main',
       };
     }),
+    merge: jest.fn(async () => ({})),
   },
   MergeRequestApprovals: {
     allApprovalRules: jest.fn(
@@ -1506,6 +1507,58 @@ describe('createGitLabMergeRequest', () => {
           labels: ['foo', 'bar', 'baz'],
         },
       );
+    });
+  });
+
+  describe('autoMerge', () => {
+    const baseInput = {
+      repoUrl: 'gitlab.com?repo=repo&owner=owner',
+      title: 'Auto-merge MR',
+      branchName: 'new-mr',
+      targetBranchName: 'main',
+      description: 'Will auto-merge',
+    };
+
+    beforeEach(() => {
+      mockDir.setContent({
+        [workspacePath]: {
+          source: { 'foo.txt': 'Hello there!' },
+        },
+      });
+    });
+
+    it('calls MergeRequests.merge with autoMerge:true when autoMerge input is true', async () => {
+      const ctx = createMockActionContext({
+        input: { ...baseInput, autoMerge: true },
+        workspacePath,
+      });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.MergeRequests.merge).toHaveBeenCalledWith(
+        'owner/repo',
+        4, // iid returned by the create mock for 'owner/repo'
+        { autoMerge: true },
+      );
+    });
+
+    it('does not call MergeRequests.merge when autoMerge is false', async () => {
+      const ctx = createMockActionContext({
+        input: { ...baseInput, autoMerge: false },
+        workspacePath,
+      });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.MergeRequests.merge).not.toHaveBeenCalled();
+    });
+
+    it('does not call MergeRequests.merge when autoMerge is omitted', async () => {
+      const ctx = createMockActionContext({
+        input: baseInput,
+        workspacePath,
+      });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.MergeRequests.merge).not.toHaveBeenCalled();
     });
   });
 });

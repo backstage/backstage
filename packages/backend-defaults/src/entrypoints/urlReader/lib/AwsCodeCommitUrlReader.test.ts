@@ -634,6 +634,60 @@ describe('AwsCodeCommitUrlReader', () => {
       expect(bodyRootFile.toString().trim()).toBe('site_name: Test');
       expect(bodySubfolderFile.toString().trim()).toBe('site_name: Test2');
     });
+
+    it.each([
+      ['literal dot-dot', 'uploads/../awsCodeCommit-mock-object.yaml'],
+      ['backslash', 'uploads\\../awsCodeCommit-mock-object.yaml'],
+      ['encoded dot-dot', 'uploads/%2e%2e/awsCodeCommit-mock-object.yaml'],
+      ['mixed encoded', 'uploads/.%2e/awsCodeCommit-mock-object.yaml'],
+      ['uppercase encoded', 'uploads/%2E%2E/awsCodeCommit-mock-object.yaml'],
+    ])(
+      'filters out files with %s path traversal segments',
+      async (_label, maliciousPath) => {
+        codeCommitSendMock.mockImplementation(async command => {
+          if (command instanceof GetFolderCommand) {
+            const input = command.input;
+            if (
+              input.repositoryName === 'my-test-techdocs' &&
+              input.folderPath === '/'
+            ) {
+              return {
+                files: [
+                  {
+                    absolutePath: 'awsCodeCommit-mock-object.yaml',
+                    relativePath: 'awsCodeCommit-mock-object.yaml',
+                  },
+                  {
+                    absolutePath: maliciousPath,
+                    relativePath: maliciousPath,
+                  },
+                ],
+                subFolders: [],
+              };
+            }
+          }
+          if (command instanceof GetFileCommand) {
+            return {
+              fileContent: fs.readFileSync(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsCodeCommit/awsCodeCommit-mock-object.yaml',
+                ),
+              ),
+            };
+          }
+          throw new Error(`No mock for ${command.constructor.name}`);
+        });
+
+        const response = await awsCodeCommitUrlReader.readTree(
+          'https://fakeregion.console.aws.amazon.com/codesuite/codecommit/repositories/my-test-techdocs',
+        );
+        const files = await response.files();
+
+        expect(files).toHaveLength(1);
+        expect(files[0].path).toBe('awsCodeCommit-mock-object.yaml');
+      },
+    );
   });
 
   describe('search', () => {

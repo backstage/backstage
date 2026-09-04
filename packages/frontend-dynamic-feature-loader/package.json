@@ -1,6 +1,6 @@
 {
   "name": "@backstage/frontend-dynamic-feature-loader",
-  "version": "0.1.15-next.1",
+  "version": "0.1.16-next.0",
   "backstage": {
     "role": "web-library"
   },
@@ -44,6 +44,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@types/react": "^18.0.0",

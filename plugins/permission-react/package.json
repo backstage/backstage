@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-permission-react",
-  "version": "0.5.4-next.0",
+  "version": "0.5.5-next.0",
   "backstage": {
     "role": "web-library",
     "pluginId": "permission",
@@ -51,6 +51,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@types/react": "^18.0.0",

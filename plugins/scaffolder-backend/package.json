@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend",
-  "version": "4.0.3-next.2",
+  "version": "4.2.0-next.1",
   "description": "The Backstage backend plugin that helps you create new things",
   "backstage": {
     "role": "backend-plugin",
@@ -60,7 +60,7 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "start": "backstage-cli package start",
-    "test": "backstage-cli package test"
+    "test": "NODE_OPTIONS=\"--experimental-vm-modules\" backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-openapi-utils": "workspace:^",
@@ -86,7 +86,7 @@
     "lodash": "^4.17.21",
     "logform": "^2.3.2",
     "luxon": "^3.0.0",
-    "nunjitsu": "^0.5.0",
+    "nunjitsu": "^0.6.1",
     "p-queue": "^6.6.2",
     "prom-client": "^15.0.0",
     "triple-beam": "^1.4.1",

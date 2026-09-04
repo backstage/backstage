@@ -136,6 +136,19 @@ export class DatabaseManagerImpl {
         }
       }),
     );
+
+    const connectors = new Set(Object.values(this.connectors));
+    await Promise.all(
+      Array.from(connectors, async connector => {
+        try {
+          await connector.shutdown?.();
+        } catch (error) {
+          deps?.logger?.error(
+            `Problem closing database connector: ${stringifyError(error)}`,
+          );
+        }
+      }),
+    );
   }
 
   /**

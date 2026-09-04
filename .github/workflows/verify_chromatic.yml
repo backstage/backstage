@@ -1,15 +1,22 @@
 name: Chromatic
 on:
-  # NOTE: If you change these you must update verify_storybook-noop.yml as well
+  # NOTE: If you change these you must update verify_chromatic-noop.yml as well
   workflow_dispatch:
   push:
     branches:
       - master
+    paths:
+      - '.github/workflows/verify_chromatic.yml'
+      - '.storybook/**'
+      - 'packages/ui/src/**'
+      - 'plugins/app/src/**'
+      - '**/*.stories.tsx'
   pull_request:
     paths:
       - '.github/workflows/verify_chromatic.yml'
       - '.storybook/**'
-      - 'packages/ui/**'
+      - 'packages/ui/src/**'
+      - 'plugins/app/src/**'
       - '**/*.stories.tsx'
 
 jobs:
@@ -57,8 +64,10 @@ jobs:
           # https://www.chromatic.com/docs/custom-ci-provider#run-chromatic-on-external-forks-of-open-source-projects
           projectToken: chpt_dab72dc0f97d55b
           storybookBuildDir: dist-storybook
-          autoAcceptChanges: master
           onlyChanged: true
+          # After a PR is merged (including squash merges), accept the master
+          # build as the new baseline. PR builds still require visual review.
+          autoAcceptChanges: master
           externals: |
             packages/ui/**/*.css
             packages/ui/css/**

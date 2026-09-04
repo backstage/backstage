@@ -283,6 +283,7 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'proxiedSignInPage.title': 'You do not appear to be signed in. Please try reloading the browser page.';
     readonly 'logViewer.searchField.placeholder': 'Search';
     readonly 'logViewer.downloadBtn.tooltip': 'Download logs';
+    readonly 'logViewer.copyBtn.tooltip': 'Copy logs to clipboard';
   }
 >;
 
@@ -883,6 +884,7 @@ export interface LogViewerProps {
   classes?: {
     root?: string;
   };
+  onCopyLog?: () => void | Promise<void>;
   onDownloadLog?: () => void;
   text: string;
   textWrap?: boolean;

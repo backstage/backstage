@@ -1,5 +1,20 @@
 # @backstage/core-plugin-api
 
+## 1.12.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+
+## 1.12.9
+
+### Patch Changes
+
+- 9fcfbc9: Fixed a performance issue where all components using analytics, including every link, would rerender unnecessarily whenever a surrounding analytics context rendered again without its attributes having changed, for example when a URL query parameter changed on an entity page.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.0
+
 ## 1.12.9-next.1
 
 ### Patch Changes

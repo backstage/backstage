@@ -1,5 +1,49 @@
 # @backstage/backend-defaults
 
+## 0.17.9-next.0
+
+### Patch Changes
+
+- 45d760b: Improve action handling consistency.
+- 8d71644: Reduced PostgreSQL connection churn during backend startup when many plugins initialize databases or schemas.
+- 416be1b: Updated Harness URL reading to validate cross-origin redirect destinations
+  against `backend.reading.allow`.
+- 5aac521: Improved service credential handling during plugin-to-plugin delegation.
+- 61449ae: Reduced PostgreSQL startup connections when multiple plugins share a database by reusing the database existence check.
+- 8b3c83e: Improved input validation and path handling for cloud storage URL readers.
+- 61d97c0: Improved input validation for cloud storage URL readers.
+- e895def: Fixed handling of GitLab URLs for instances configured with a relative base path.
+- e13e278: Updated URL reader allow list matching so configured paths match either the exact path or paths below it at a segment boundary.
+- e3b587c: Improve authentication reliability during signing key rotation by performing budgeted JWKS reloads when a newly published key is requested during the remote key set cooldown.
+- Updated dependencies
+  - @backstage/integration@2.1.2-next.0
+  - @backstage/backend-app-api@1.7.4-next.0
+  - @backstage/plugin-auth-node@0.7.5-next.0
+  - @backstage/plugin-permission-node@0.11.4-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-events-node@0.4.26-next.0
+
+## 0.17.7
+
+### Patch Changes
+
+- 79c1d58: Fixed a bug in the Azure DevOps URL reader where the abort signal was not forwarded to the commits API fetch, causing the fetch to hang indefinitely when a build timeout or cancellation was triggered.
+- b1b6c80: Read-only actions now default to non-destructive when the destructive attribute is omitted.
+- 78bf918: chore(deps): bump `tar` from 7.5.15 to 7.5.21
+- bb98419: TypeScript configuration schema warnings discovered while setting up secret redaction are now reported through the Backstage logger.
+- 74d8cbf: Added a new public `@backstage/backend-defaults/rootSystemMetadata` entrypoint, exporting `rootSystemMetadataServiceFactory` and `DefaultRootSystemMetadataService`. The system metadata service is now registered automatically as a default service, so backends no longer need to add it manually.
+- e56d23c: Throw an error when `payload.uip` is missing in `createLimitedUserToken` instead of constructing an invalid limited token with an undefined signature.
+- Updated dependencies
+  - @backstage/backend-app-api@1.7.3
+  - @backstage/config-loader@1.11.2
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-auth-node@0.7.4
+  - @backstage/integration@2.1.0
+  - @backstage/integration-aws-node@0.2.1
+  - @backstage/plugin-permission-common@0.9.10
+  - @backstage/plugin-permission-node@0.11.3
+  - @backstage/plugin-events-node@0.4.25
+
 ## 0.17.7-next.2
 
 ### Patch Changes

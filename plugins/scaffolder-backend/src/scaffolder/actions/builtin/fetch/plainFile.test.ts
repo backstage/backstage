@@ -93,4 +93,25 @@ describe('fetch:plain:file', () => {
       }),
     );
   });
+
+  it('requires an explicit token for SCM reads when configured', async () => {
+    const requiredAction = createFetchPlainFileAction({
+      integrations,
+      reader,
+      requireScmUserCredentials: true,
+    });
+
+    await expect(
+      requiredAction.handler({
+        ...mockContext,
+        input: {
+          url: 'https://github.com/backstage/community/blob/main/README.md',
+          targetPath: 'README.md',
+        },
+      }),
+    ).rejects.toThrow(
+      'No user credentials provided for host github.com, but scaffolder.requireScmUserCredentials is enabled',
+    );
+    expect(fetchFile).not.toHaveBeenCalled();
+  });
 });

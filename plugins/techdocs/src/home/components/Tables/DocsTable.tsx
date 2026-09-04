@@ -16,10 +16,16 @@
 
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 
-import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  configApiRef,
+  useApi,
+  useApiHolder,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { Entity } from '@backstage/catalog-model';
 import { rootDocsRouteRef } from '../../../routes';
+import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 import {
   EmptyState,
   LinkButton,
@@ -30,7 +36,7 @@ import {
 } from '@backstage/core-components';
 import { techdocsTranslationRef } from '../../../translation';
 import { actionFactories } from './actions';
-import { columnFactories, defaultColumns } from './columns';
+import { columnFactories } from './columns';
 import {
   DocsTableRow,
   DocsTableColumnFactories,
@@ -62,6 +68,8 @@ const DocsTableComponent = (props: DocsTableProps): JSX.Element | null => {
   const [, copyToClipboard] = useCopyToClipboard();
   const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
   const config = useApi(configApiRef);
+  const apiHolder = useApiHolder();
+
   const { t } = useTranslationRef(techdocsTranslationRef);
   if (!entities) return null;
 
@@ -69,7 +77,21 @@ const DocsTableComponent = (props: DocsTableProps): JSX.Element | null => {
     entities,
     getRouteToReaderPageFor,
     config,
+    apiHolder.get(entityPresentationApiRef),
   );
+
+  const tableColumns = columns || [
+    columnFactories.createTitleColumn({
+      hidden: true,
+      entityPresentationApi: apiHolder.get(entityPresentationApiRef),
+    }),
+    columnFactories.createNameColumn({
+      entityPresentationApi: apiHolder.get(entityPresentationApiRef),
+    }),
+    columnFactories.createOwnerColumn(),
+    columnFactories.createKindColumn(),
+    columnFactories.createTypeColumn(),
+  ];
 
   const defaultActions: TableProps<DocsTableRow>['actions'] = [
     actionFactories.createCopyDocsUrlAction(copyToClipboard, t),
@@ -91,7 +113,7 @@ const DocsTableComponent = (props: DocsTableProps): JSX.Element | null => {
             ...options,
           }}
           data={documents}
-          columns={columns || defaultColumns}
+          columns={tableColumns}
           actions={actions || defaultActions}
           title={
             title

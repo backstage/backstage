@@ -1,6 +1,6 @@
 {
   "name": "@backstage/core-components",
-  "version": "0.18.13-next.2",
+  "version": "0.18.14-next.1",
   "description": "Core components used by Backstage plugins and apps",
   "backstage": {
     "role": "web-library"
@@ -67,6 +67,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@react-hookz/web": "^24.0.0",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/react": "^16.0.0",
     "@types/react-sparklines": "^1.7.0",
     "ansi-regex": "^6.0.1",
@@ -103,7 +104,6 @@
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/user-event": "^14.0.0",
     "@types/ansi-regex": "^5.0.0",

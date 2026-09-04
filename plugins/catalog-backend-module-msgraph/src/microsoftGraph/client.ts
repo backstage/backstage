@@ -245,7 +245,17 @@ export class MicrosoftGraphClient {
           ...headers,
           Authorization: `Bearer ${token.token}`,
         },
-        signal,
+        // Deliberately not `signal` itself. undici registers an abort listener
+        // on whatever signal it is handed and only releases it once that
+        // request's internal controller is garbage collected. Since
+        // `requestCollection` reuses one signal for an entire paged walk, and
+        // callers such as `getGroupMembers` run that walk per group, a single
+        // long-lived signal would accumulate one listener per request until GC
+        // — crossing undici's listener cap on large directories and retaining
+        // memory for the length of the walk. A per-request dependent signal
+        // aborts identically, forwarding the same reason, and leaves nothing
+        // behind on the caller's signal.
+        signal: signal ? AbortSignal.any([signal]) : undefined,
       });
     } catch (e: any) {
       if (e?.code === 'ETIMEDOUT' && retryCount > 0) {

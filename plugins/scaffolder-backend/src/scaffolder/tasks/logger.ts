@@ -23,6 +23,7 @@ import Transport, { TransportStreamOptions } from 'winston-transport';
 import { Logger, format, createLogger, transports } from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { TaskContext } from '@backstage/plugin-scaffolder-node';
+import type { ErrorLike } from '@backstage/errors';
 import _ from 'lodash';
 
 /**
@@ -95,6 +96,8 @@ export class BackstageLoggerTransport extends Transport {
 export class WinstonLogger implements RootLoggerService {
   #winston: Logger;
   #addRedactions?: (redactions: Iterable<string>) => void;
+  #redact?: (value: string) => string;
+  #redactError?: (error: unknown) => ErrorLike;
 
   /**
    * Creates a {@link WinstonLogger} instance.
@@ -112,7 +115,12 @@ export class WinstonLogger implements RootLoggerService {
       logger = logger.child(options.meta);
     }
 
-    return new WinstonLogger(logger, redacter.add);
+    return new WinstonLogger(
+      logger,
+      redacter.add,
+      redacter.redact,
+      redacter.redactError,
+    );
   }
 
   /**
@@ -121,10 +129,110 @@ export class WinstonLogger implements RootLoggerService {
   static redacter(): {
     format: Format;
     add: (redactions: Iterable<string>) => void;
+    redact: (value: string) => string;
+    redactError: (error: unknown) => ErrorLike;
   } {
     const redactionSet = new Set<string>();
 
     let redactionPattern: RegExp | undefined = undefined;
+
+    const redact = (value: string) => {
+      if (!redactionPattern) {
+        return value;
+      }
+
+      const ranges = Array.from(value.matchAll(redactionPattern), match => ({
+        start: match.index,
+        end: match.index + match[1].length,
+      }));
+      if (ranges.length === 0) {
+        return value;
+      }
+
+      const mergedRanges: { start: number; end: number }[] = [];
+      for (const range of ranges) {
+        const previous = mergedRanges.at(-1);
+        if (previous && range.start < previous.end) {
+          previous.end = Math.max(previous.end, range.end);
+        } else {
+          mergedRanges.push(range);
+        }
+      }
+
+      let result = '';
+      let cursor = 0;
+      for (const range of mergedRanges) {
+        result += `${value.slice(cursor, range.start)}***`;
+        cursor = range.end;
+      }
+      return result + value.slice(cursor);
+    };
+
+    const createSanitizedError = (
+      name = 'Error',
+      message = 'Task failed',
+      stack?: string,
+    ): ErrorLike => {
+      const sanitizedError = new Error(message) as ErrorLike;
+      sanitizedError.name = name;
+      if (stack !== undefined) {
+        sanitizedError.stack = stack;
+      }
+      return sanitizedError;
+    };
+
+    const createUnknownError = (value: unknown): ErrorLike => {
+      try {
+        return createSanitizedError(
+          'Error',
+          redact(`unknown error '${String(value)}'`),
+        );
+      } catch {
+        return createSanitizedError(
+          'Error',
+          `unknown error of type '${typeof value}'`,
+        );
+      }
+    };
+
+    const redactError = (error: unknown): ErrorLike => {
+      if (
+        (typeof error !== 'object' || error === null) &&
+        typeof error !== 'function'
+      ) {
+        return typeof error === 'string'
+          ? createSanitizedError('Error', redact(error))
+          : createUnknownError(error);
+      }
+
+      const errorLike = error as Partial<ErrorLike>;
+      let originalName: unknown;
+      let originalMessage: unknown;
+      let originalStack: unknown;
+
+      try {
+        originalName = errorLike.name;
+        originalMessage = errorLike.message;
+        originalStack = errorLike.stack;
+      } catch {
+        return createSanitizedError();
+      }
+
+      if (
+        typeof originalName !== 'string' ||
+        !originalName ||
+        typeof originalMessage !== 'string'
+      ) {
+        return createUnknownError(error);
+      }
+
+      const name = redact(originalName);
+      const message = redact(originalMessage);
+      const stack =
+        typeof originalStack === 'string' ? redact(originalStack) : undefined;
+
+      return createSanitizedError(name, message, stack);
+    };
 
     return {
       format: format((obj: TransformableInfo) => {
@@ -133,7 +241,7 @@ export class WinstonLogger implements RootLoggerService {
         }
 
         if (typeof obj[MESSAGE] === 'string') {
-          obj[MESSAGE] = obj[MESSAGE].replace(redactionPattern, '***');
+          obj[MESSAGE] = redact(obj[MESSAGE]);
         }
 
         return obj;
@@ -162,11 +270,14 @@ export class WinstonLogger implements RootLoggerService {
         }
         if (added > 0) {
           const redactions = Array.from(redactionSet)
+            .sort((a, b) => b.length - a.length)
             .map(r => escapeRegExp(r))
             .join('|');
-          redactionPattern = new RegExp(`(${redactions})`, 'g');
+          redactionPattern = new RegExp(`(?=(${redactions}))`, 'g');
         }
       },
+      redact,
+      redactError,
     };
   }
 
@@ -213,9 +324,13 @@ export class WinstonLogger implements RootLoggerService {
   private constructor(
     winston: Logger,
     addRedactions?: (redactions: Iterable<string>) => void,
+    redact?: (value: string) => string,
+    redactError?: (error: unknown) => ErrorLike,
   ) {
     this.#winston = winston;
     this.#addRedactions = addRedactions;
+    this.#redact = redact;
+    this.#redactError = redactError;
   }
 
   error(message: string, meta?: JsonObject): void {
@@ -235,10 +350,25 @@ export class WinstonLogger implements RootLoggerService {
   }
 
   child(meta: JsonObject): LoggerService {
-    return new WinstonLogger(this.#winston.child(meta));
+    return new WinstonLogger(
+      this.#winston.child(meta),
+      this.#addRedactions,
+      this.#redact,
+      this.#redactError,
+    );
   }
 
   addRedactions(redactions: Iterable<string>) {
     this.#addRedactions?.(redactions);
+  }
+
+  redact(value: string) {
+    return this.#redact?.(value) ?? value;
+  }
+
+  redactError(error: unknown): ErrorLike {
+    return (
+      this.#redactError?.(error) ?? (new Error('Task failed') as ErrorLike)
+    );
   }
 }

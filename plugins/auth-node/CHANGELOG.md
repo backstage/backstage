@@ -1,5 +1,22 @@
 # @backstage/plugin-auth-node
 
+## 0.7.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.2-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
+## 0.7.4
+
+### Patch Changes
+
+- 7ca2955: Fix OAuth start handler crashing with a 500 error on malformed origins, now returns a 400 error.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-plugin-api@1.10.0
+
 ## 0.7.4-next.0
 
 ### Patch Changes

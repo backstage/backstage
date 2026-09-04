@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-signals",
-  "version": "0.0.34-next.1",
+  "version": "0.0.35-next.1",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "signals",
@@ -64,6 +64,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@types/react": "^18.0.0",
