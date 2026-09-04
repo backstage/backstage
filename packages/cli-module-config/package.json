@@ -41,7 +41,7 @@
     "@manypkg/get-packages": "^1.1.3",
     "chalk": "^4.0.0",
     "cleye": "^2.6.0",
-    "react-dev-utils": "^12.0.0-next.60",
+    "open": "^10.2.0",
     "yaml": "^2.0.0"
   },
   "devDependencies": {

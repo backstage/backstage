@@ -15,7 +15,7 @@
  */
 
 import crypto from 'node:crypto';
-import openBrowser from 'react-dev-utils/openBrowser';
+import { openBrowser } from '@backstage/cli-common';
 import { request } from '@octokit/request';
 import express, { Express, Request, Response } from 'express';
 
