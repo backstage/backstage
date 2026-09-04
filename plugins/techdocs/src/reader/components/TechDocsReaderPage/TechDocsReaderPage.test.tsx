@@ -189,6 +189,9 @@ describe('<TechDocsReaderPage />', () => {
       </Wrapper>,
       {
         mountedRoutes,
+        components: {
+          NotFoundErrorPage: () => <span>Custom not found page</span>,
+        },
       },
     );
 
@@ -293,6 +296,9 @@ describe('<TechDocsReaderPage />', () => {
       </Wrapper>,
       {
         mountedRoutes,
+        components: {
+          NotFoundErrorPage: () => <span>Custom not found page</span>,
+        },
       },
     );
 
@@ -370,6 +376,9 @@ describe('<TechDocsReaderPage />', () => {
         </Wrapper>,
         {
           mountedRoutes,
+          components: {
+            NotFoundErrorPage: () => <span>Custom not found page</span>,
+          },
         },
       );
 
@@ -405,6 +414,9 @@ describe('<TechDocsReaderPage />', () => {
         </Wrapper>,
         {
           mountedRoutes,
+          components: {
+            NotFoundErrorPage: () => <span>Custom not found page</span>,
+          },
         },
       );
 
@@ -430,6 +442,9 @@ describe('<TechDocsReaderPage />', () => {
         </Wrapper>,
         {
           mountedRoutes,
+          components: {
+            NotFoundErrorPage: () => <span>Custom not found page</span>,
+          },
         },
       );
 
