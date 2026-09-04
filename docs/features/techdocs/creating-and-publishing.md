@@ -36,6 +36,10 @@ For example:
      mkdocs.yml
 ```
 
+Symbolic links anywhere in the source tree must resolve within that tree, or
+TechDocs rejects the build. This applies outside `docs_dir` too, because MkDocs
+extensions can include files from anywhere in the repository.
+
 If you have an existing repository that you'd like to add documentation to, skip
 to the
 [Enable documentation for an already existing entity setup](#enable-documentation-for-an-already-existing-entity)
@@ -106,7 +110,7 @@ To add documentation to an existing entity:
     :::note
     Although `docs` is a popular directory name for storing documentation,
     it can be renamed to something else and can be configured by `mkdocs.yml`. See
-    https://www.mkdocs.org/user-guide/configuration/#docs_dir
+    <https://www.mkdocs.org/user-guide/configuration/#docs_dir>
     :::
 
 4.  Create a `docs/index.md` file, as a minimum. For example:
@@ -159,7 +163,7 @@ published as a standalone part of TechDocs.
 3. Add your `index.md` Markdown file, in a folder named `docs/` with your desired
    documentation in Markdown. Your file structure should now look like this:
 
-   ```
+   ```text
    your-great-documentation/
      docs/
        index.md

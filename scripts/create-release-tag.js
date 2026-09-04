@@ -26,6 +26,12 @@ const baseOptions = {
   repo: 'backstage',
 };
 
+const createRefRetryDelays = [4_000, 8_000];
+
+function wait(delay) {
+  return new Promise(resolve => setTimeout(resolve, delay));
+}
+
 async function getCurrentReleaseTag() {
   const rootPath = path.resolve(__dirname, '../package.json');
   return fs.readJson(rootPath).then(_ => _.version);
@@ -40,21 +46,32 @@ async function createGitTag(octokit, commitSha, tagName) {
     type: 'commit',
   });
 
-  try {
-    await octokit.git.createRef({
-      ...baseOptions,
-      ref: `refs/tags/${tagName}`,
-      sha: annotatedTag.data.sha,
-    });
-  } catch (ex) {
-    if (
-      ex.status === 422 &&
-      ex.response.data.message === 'Reference already exists'
-    ) {
-      throw new Error(`Tag ${tagName} already exists in repository`);
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      await octokit.git.createRef({
+        ...baseOptions,
+        ref: `refs/tags/${tagName}`,
+        sha: annotatedTag.data.sha,
+      });
+      break;
+    } catch (ex) {
+      const retryDelay = createRefRetryDelays[attempt];
+      if (ex.status === 404 && retryDelay !== undefined) {
+        console.warn(
+          `Tag reference creation for ${tagName} returned 404, retrying in ${retryDelay}ms`,
+        );
+        await wait(retryDelay);
+        continue;
+      }
+      if (
+        ex.status === 422 &&
+        ex.response.data.message === 'Reference already exists'
+      ) {
+        throw new Error(`Tag ${tagName} already exists in repository`);
+      }
+      console.error(`Tag creation for ${tagName} failed`);
+      throw ex;
     }
-    console.error(`Tag creation for ${tagName} failed`);
-    throw ex;
   }
 }
 

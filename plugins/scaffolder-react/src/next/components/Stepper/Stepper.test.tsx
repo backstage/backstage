@@ -673,7 +673,40 @@ describe('Stepper', () => {
     );
   });
 
-  it('should scroll the first main element to top when activeStep changes', async () => {
+  it('should scroll the window to top on step change when there is no <main> element', async () => {
+    const manifest: TemplateParameterSchema = {
+      steps: [
+        { title: 'Step 1', schema: { properties: {} } },
+        { title: 'Step 2', schema: { properties: {} } },
+      ],
+      title: 'Scroll Test (no main)',
+    };
+
+    // Apps on the new frontend system render no <main> element. With none
+    // present, the Stepper should fall back to scrolling the window.
+    // (jsdom does not implement window.scrollTo, so we stub it.)
+    const scrollToSpy = jest
+      .spyOn(window, 'scrollTo')
+      .mockImplementation(() => {});
+
+    const { getByRole, unmount } = await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+      </SecretsContextProvider>,
+    );
+
+    scrollToSpy.mockClear();
+    await act(async () => {
+      fireEvent.click(getByRole('button', { name: 'Next' }));
+    });
+
+    expect(scrollToSpy).toHaveBeenCalledWith({ top: 0, behavior: 'auto' });
+
+    scrollToSpy.mockRestore();
+    unmount();
+  });
+
+  it('should scroll the nearest scrollable ancestor to top when activeStep changes', async () => {
     const manifest: TemplateParameterSchema = {
       steps: [
         { title: 'Step 1', schema: { properties: {} } },
@@ -682,27 +715,76 @@ describe('Stepper', () => {
       title: 'Scroll Test',
     };
 
-    // Render a main element in the document for the Stepper to find
+    const windowScrollSpy = jest
+      .spyOn(window, 'scrollTo')
+      .mockImplementation(() => {});
+
+    const { getByRole, container, unmount } = await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+      </SecretsContextProvider>,
+    );
+
+    const scrollableAncestor = container as HTMLElement;
+    const scrollToMock = jest.fn();
+    scrollableAncestor.scrollTo = scrollToMock;
+    scrollableAncestor.style.overflowY = 'auto';
+    Object.defineProperty(scrollableAncestor, 'scrollHeight', {
+      configurable: true,
+      value: 1000,
+    });
+    Object.defineProperty(scrollableAncestor, 'clientHeight', {
+      configurable: true,
+      value: 500,
+    });
+
+    windowScrollSpy.mockClear();
+    await act(async () => {
+      fireEvent.click(getByRole('button', { name: 'Next' }));
+    });
+
+    expect(scrollToMock).toHaveBeenCalledWith({ top: 0, behavior: 'auto' });
+    expect(windowScrollSpy).not.toHaveBeenCalled();
+
+    windowScrollSpy.mockRestore();
+    unmount();
+  });
+
+  it('should scroll the window when a non-scrollable <main> exists', async () => {
+    const manifest: TemplateParameterSchema = {
+      steps: [
+        { title: 'Step 1', schema: { properties: {} } },
+        { title: 'Step 2', schema: { properties: {} } },
+      ],
+      title: 'Scroll Test (non-scrollable main)',
+    };
+
     const main = document.createElement('main');
     document.body.appendChild(main);
-    const scrollToMock = jest.fn();
-    main.scrollTo = scrollToMock;
+    const mainScrollTo = jest.fn();
+    main.scrollTo = mainScrollTo;
 
-    // Render Stepper as usual (do not pass container)
+    const windowScrollSpy = jest
+      .spyOn(window, 'scrollTo')
+      .mockImplementation(() => {});
+
     const { getByRole, unmount } = await renderInTestApp(
       <SecretsContextProvider>
         <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
       </SecretsContextProvider>,
     );
 
-    // Click next to change the activeStep
+    // Ignore the initial mount effect call; only measure the step change.
+    windowScrollSpy.mockClear();
+
     await act(async () => {
       fireEvent.click(getByRole('button', { name: 'Next' }));
     });
 
-    expect(scrollToMock).toHaveBeenCalledWith({ top: 0, behavior: 'auto' });
+    expect(mainScrollTo).not.toHaveBeenCalled();
+    expect(windowScrollSpy).toHaveBeenCalledWith({ top: 0, behavior: 'auto' });
 
-    // Clean up
+    windowScrollSpy.mockRestore();
     document.body.removeChild(main);
     unmount();
   });

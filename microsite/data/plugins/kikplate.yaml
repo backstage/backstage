@@ -1,0 +1,11 @@
+---
+title: Kikplate
+author: Kikplate
+authorUrl: https://github.com/kikplate
+category: Development
+description: Generate production-ready project templates and scaffolding workflows from Kikplate directly inside Backstage.
+documentation: https://github.com/kikplate/kikplate-backstage-plugin/blob/main/README.md
+iconUrl: https://kikplate.dev/kikplate-logo-on-dark.svg
+npmPackageName: '@corpobit/backstage-plugin-kikplate'
+addedDate: '2026-06-26'
+status: active

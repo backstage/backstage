@@ -67,6 +67,34 @@ describe('AnalyticsContext', () => {
       expect(result.getByTestId('route-ref')).toHaveTextContent('unknown');
     });
 
+    it('does not rerender consumers when rerendered with unchanged attributes', () => {
+      let consumerRenderCount = 0;
+      const Consumer = () => {
+        useAnalyticsContext();
+        consumerRenderCount++;
+        return null;
+      };
+      // The consumer element and attributes must be identity-stable across
+      // rerenders, so that any rerenders of the consumer are caused by the
+      // context value changing
+      const consumerElement = <Consumer />;
+      const attributes = { pluginId: 'custom' };
+
+      const { rerender } = render(
+        <AnalyticsContext attributes={attributes}>
+          {consumerElement}
+        </AnalyticsContext>,
+      );
+      expect(consumerRenderCount).toBe(1);
+
+      rerender(
+        <AnalyticsContext attributes={attributes}>
+          {consumerElement}
+        </AnalyticsContext>,
+      );
+      expect(consumerRenderCount).toBe(1);
+    });
+
     it('uses nested analytics context', () => {
       const result = render(
         <AnalyticsContext attributes={{ pluginId: 'custom' }}>

@@ -445,6 +445,7 @@ export class CatalogBuilder {
       logger,
       parser,
       policy,
+      allowedLocationTypes: this.allowedLocationType,
     });
 
     const entitiesCatalog = new AuthorizedEntitiesCatalog(

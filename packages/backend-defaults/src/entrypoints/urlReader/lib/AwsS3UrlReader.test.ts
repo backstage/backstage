@@ -237,6 +237,30 @@ describe('parseUrl', () => {
     ).toThrow('Invalid AWS S3 URL');
   });
 
+  it('decodes object path segments exactly once', () => {
+    expect(
+      parseUrl(
+        'https://bucket-1.s3.eu-west-1.amazonaws.com/sub/dir/%252e%252e/catalog-info.yaml',
+        { host: 'amazonaws.com' },
+      ),
+    ).toEqual({
+      path: 'sub/dir/%2e%2e/catalog-info.yaml',
+      bucket: 'bucket-1',
+      region: 'eu-west-1',
+    });
+  });
+
+  it.each([
+    'https://bucket-1.s3.eu-west-1.amazonaws.com/sub/dir/../catalog-info.yaml',
+    'https://bucket-1.s3.eu-west-1.amazonaws.com/sub/dir/%2e%2e/catalog-info.yaml',
+    'https://s3.eu-west-1.amazonaws.com/bucket-1/sub/dir/%2E%2E/%2e%2e/bucket-2/catalog-info.yaml',
+    String.raw`https://s3.eu-west-1.amazonaws.com\bucket-1\sub\dir\%2e%2e\catalog-info.yaml`,
+  ])('rejects dot path segments in %s', url => {
+    expect(() => parseUrl(url, { host: 'amazonaws.com' })).toThrow(
+      'Invalid AWS S3 URL',
+    );
+  });
+
   it('supports all non-aws formats', () => {
     expect(
       parseUrl('https://my-host.com/my.bucket-3/a/puppy.jpg', {
@@ -668,6 +692,51 @@ describe('AwsS3UrlReader', () => {
 
       expect(body.toString().trim()).toBe('site_name: Test');
     });
+
+    it.each([
+      ['literal dot-dot', 'prefix/uploads/../legitimate.yaml'],
+      ['deep traversal', 'prefix/uploads/../../etc/passwd'],
+      ['backslash', 'prefix/uploads\\../legitimate.yaml'],
+      ['encoded dot-dot', 'prefix/uploads/%2e%2e/legitimate.yaml'],
+      ['mixed encoded', 'prefix/uploads/.%2e/legitimate.yaml'],
+      ['uppercase encoded', 'prefix/uploads/%2E%2E/legitimate.yaml'],
+    ])(
+      'filters out objects with %s path traversal segments',
+      async (_label, maliciousKey) => {
+        const objectList: Object[] = [
+          { Key: 'prefix/legitimate.yaml' },
+          { Key: maliciousKey },
+        ];
+        const output: ListObjectsV2Output = { Contents: objectList };
+
+        s3SendMock.mockImplementation(async command => {
+          if (command instanceof ListObjectsV2Command) {
+            return output;
+          }
+          if (command instanceof GetObjectCommand) {
+            return {
+              Body: sdkStreamMixin(
+                fs.createReadStream(
+                  path.resolve(
+                    __dirname,
+                    '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                  ),
+                ),
+              ),
+            };
+          }
+          throw new Error(`No mock for ${command.constructor.name}`);
+        });
+
+        const response = await awsS3UrlReader.readTree(
+          'https://test.s3.us-east-2.amazonaws.com/prefix/',
+        );
+        const files = await response.files();
+
+        expect(files).toHaveLength(1);
+        expect(files[0].path).toBe('legitimate.yaml');
+      },
+    );
   });
 
   describe('search', () => {

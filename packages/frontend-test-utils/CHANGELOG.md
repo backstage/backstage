@@ -1,5 +1,47 @@
 # @backstage/frontend-test-utils
 
+## 0.6.4-next.1
+
+### Patch Changes
+
+- 279fdf6: Declared the DOM Testing Library dependency required by React Testing Library.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/filter-predicates@0.1.5-next.0
+  - @backstage/test-utils@1.7.22-next.1
+  - @backstage/plugin-app@0.5.3-next.1
+  - @backstage/frontend-app-api@0.16.8-next.1
+  - @backstage/core-plugin-api@1.12.10-next.0
+  - @backstage/plugin-app-react@0.2.7-next.0
+  - @backstage/core-app-api@1.20.5-next.1
+  - @backstage/plugin-permission-react@0.5.5-next.0
+
+## 0.6.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.5.3-next.0
+  - @backstage/core-app-api@1.20.5-next.0
+  - @backstage/frontend-app-api@0.16.8-next.0
+  - @backstage/test-utils@1.7.22-next.0
+
+## 0.6.3
+
+### Patch Changes
+
+- bd435c3: Identity mocks passed to `renderInTestApp` (for example via `mockApis.identity(...)`) are now applied before the app's built-in guest fallback, so the configured `userEntityRef` reliably takes effect in tests instead of being silently overwritten by the default guest user.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/core-app-api@1.20.4
+  - @backstage/test-utils@1.7.21
+  - @backstage/plugin-permission-common@0.9.10
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/plugin-app@0.5.2
+  - @backstage/frontend-app-api@0.16.7
+  - @backstage/plugin-app-react@0.2.6
+  - @backstage/plugin-permission-react@0.5.4
+
 ## 0.6.3-next.1
 
 ### Patch Changes

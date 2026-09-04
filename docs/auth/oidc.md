@@ -101,7 +101,7 @@ email` scopes. Do not configure `scope` directly, as the OIDC provider will reje
   start URL is controlled by the browser, so this feature is only for improving the
   Backstage user experience.
 
-:::note Config Reloading
+:::note[Config Reloading]
 Backstage does not yet support hot reloading of auth provider configuration. Any changes to this YAML file require a restart of Backstage.
 :::
 
@@ -273,7 +273,7 @@ export default createApp({
 
 The `id` of the API ref (e.g. `'auth.keycloak'`) and the `id` used in the `SignInPage` provider configuration (e.g. `'keycloak-auth-provider'`) can be customized. However, the `provider.id` passed to `OAuth2.create` must remain `'oidc'` to match Backstage's generic OIDC auth strategy on the backend.
 
-:::note Note
+:::note
 You can configure sign-in to use a redirect flow with no pop-up by adding `enableExperimentalRedirectFlow: true` to the root of your `app-config.yaml`.
 :::
 

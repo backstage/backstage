@@ -1,5 +1,37 @@
 # @backstage/frontend-app-api
 
+## 0.16.8-next.1
+
+### Patch Changes
+
+- 52022b9: Fixed `app.extensions` shorthand and `disabled` field to accept boolean-ish strings (`'true'`/`'false'`), so environment variable substitution can be used to toggle extensions, e.g. `${CATALOG_OVERVIEW_ENABLED}`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/filter-predicates@0.1.5-next.0
+  - @backstage/core-plugin-api@1.12.10-next.0
+  - @backstage/frontend-defaults@0.5.6-next.1
+  - @backstage/core-app-api@1.20.5-next.1
+
+## 0.16.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.20.5-next.0
+  - @backstage/frontend-defaults@0.5.6-next.0
+
+## 0.16.7
+
+### Patch Changes
+
+- 6497d0f: Respect explicit API reference plugin ownership when resolving conflicting API factories.
+- a8b5ba6: Updated dependencies.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/core-app-api@1.20.4
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/frontend-defaults@0.5.5
+
 ## 0.16.7-next.1
 
 ### Patch Changes

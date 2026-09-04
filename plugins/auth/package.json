@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth",
-  "version": "0.1.11-next.1",
+  "version": "0.1.12-next.1",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "auth",
@@ -59,6 +59,7 @@
     "@backstage/dev-utils": "workspace:^",
     "@backstage/frontend-defaults": "workspace:^",
     "@backstage/test-utils": "workspace:^",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.0.0",

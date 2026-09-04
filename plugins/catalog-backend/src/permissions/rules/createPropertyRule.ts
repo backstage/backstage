@@ -16,8 +16,8 @@
 
 import { catalogEntityPermissionResourceRef } from '@backstage/plugin-catalog-node/alpha';
 import { createPermissionRule } from '@backstage/plugin-permission-node';
-import { get } from 'lodash';
 import { z } from 'zod/v3';
+import { buildEntitySearch } from '../../database/operations/stitcher/buildEntitySearch';
 
 export const createPropertyRule = (propertyType: 'metadata' | 'spec') =>
   createPermissionRule({
@@ -34,18 +34,14 @@ export const createPropertyRule = (propertyType: 'metadata' | 'spec') =>
         .describe(`Value of the given property to match on`),
     }),
     apply: (resource, { key, value }) => {
-      const foundValue = get(resource[propertyType], key);
+      const normalizedKey = `${propertyType}.${key}`.toLocaleLowerCase('en-US');
+      const normalizedValue = value?.toLocaleLowerCase('en-US');
 
-      if (Array.isArray(foundValue)) {
-        if (value !== undefined) {
-          return foundValue.includes(value);
-        }
-        return foundValue.length > 0;
-      }
-      if (value !== undefined) {
-        return value === foundValue;
-      }
-      return !!foundValue;
+      return buildEntitySearch('', resource).some(
+        row =>
+          row.key === normalizedKey &&
+          (normalizedValue === undefined || row.value === normalizedValue),
+      );
     },
     toQuery: ({ key, value }) => ({
       key: `${propertyType}.${key}`,

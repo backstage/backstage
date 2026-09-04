@@ -28,6 +28,7 @@ import {
   DEFAULT_OBJECTS,
 } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
+import { KubernetesConnection } from './KubernetesConnection';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {
@@ -1257,7 +1258,10 @@ describe('KubernetesFanOutHandler', () => {
         const logger = mockServices.logger.mock();
         const kubernetesFanOutHandler = new KubernetesFanOutHandler({
           logger,
-          fetcher: new KubernetesClientBasedFetcher({ logger }),
+          fetcher: new KubernetesClientBasedFetcher({
+            logger,
+            connection: new KubernetesConnection({ logger }),
+          }),
           serviceLocator: fleet,
           customResources: [],
           objectTypesToFetch: [

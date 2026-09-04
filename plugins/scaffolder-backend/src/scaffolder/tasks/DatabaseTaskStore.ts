@@ -43,10 +43,6 @@ import { DateTime, Duration } from 'luxon';
 import { TaskRecovery, TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { trimEventsTillLastRecovery } from './taskRecoveryHelper';
 import { intervalFromNowTill } from './dbUtil';
-import {
-  restoreWorkspace,
-  serializeWorkspace,
-} from '@backstage/plugin-scaffolder-node/alpha';
 import { flattenParams } from '../../service/helpers';
 import { EventsService } from '@backstage/plugin-events-node';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
@@ -89,6 +85,13 @@ export type RawDbTaskEventRow = {
 export type DatabaseTaskStoreOptions = {
   database: DatabaseService | Knex;
   events?: EventsService;
+  /**
+   * Whether automatic task recovery is enabled. When enabled, task secrets are
+   * retained until the task reaches a terminal state so that a recovered task
+   * can resume. When disabled (the default), secrets are cleared as soon as the
+   * task is claimed, preserving the original security lifecycle.
+   */
+  recoverTasksEnabled?: boolean;
 };
 
 /**
@@ -120,6 +123,7 @@ const parseSqlDateToIsoString = <T>(input: T): T | string => {
 export class DatabaseTaskStore implements TaskStore {
   private readonly db: Knex;
   private readonly events?: EventsService;
+  private readonly recoverTasksEnabled: boolean;
 
   static async create(
     options: DatabaseTaskStoreOptions,
@@ -129,7 +133,11 @@ export class DatabaseTaskStore implements TaskStore {
 
     await this.runMigrations(database, client);
 
-    return new DatabaseTaskStore(client, options.events);
+    return new DatabaseTaskStore(
+      client,
+      options.events,
+      options.recoverTasksEnabled ?? false,
+    );
   }
 
   private isRecoverableTask(spec: TaskSpec): boolean {
@@ -185,12 +193,17 @@ export class DatabaseTaskStore implements TaskStore {
     }
   }
 
-  private constructor(client: Knex, events?: EventsService) {
+  private constructor(
+    client: Knex,
+    events: EventsService | undefined,
+    recoverTasksEnabled: boolean,
+  ) {
     this.db = client;
     this.events = events;
+    this.recoverTasksEnabled = recoverTasksEnabled;
   }
 
-  private getState(task: RawDbTaskRow) {
+  private getState(task: Pick<RawDbTaskRow, 'id' | 'state'>) {
     try {
       return task.state ? JSON.parse(task.state).state : undefined;
     } catch (error) {
@@ -309,7 +322,14 @@ export class DatabaseTaskStore implements TaskStore {
     }
 
     const [results, [{ count }]] = await Promise.all([
-      queryBuilder.select(),
+      queryBuilder.select([
+        'id',
+        'spec',
+        'status',
+        'created_by',
+        'last_heartbeat_at',
+        'created_at',
+      ]),
       countQuery,
     ]);
 
@@ -343,7 +363,16 @@ export class DatabaseTaskStore implements TaskStore {
   async getTask(taskId: string): Promise<SerializedTask> {
     const [result] = await this.db<RawDbTaskRow>('tasks')
       .where({ id: taskId })
-      .select();
+      .select([
+        'id',
+        'spec',
+        'status',
+        'state',
+        'last_heartbeat_at',
+        'created_at',
+        'created_by',
+        'secrets',
+      ]);
     if (!result) {
       throw new NotFoundError(`No task with id '${taskId}' found`);
     }
@@ -403,7 +432,16 @@ export class DatabaseTaskStore implements TaskStore {
           status: 'open',
         })
         .limit(1)
-        .select();
+        .select([
+          'id',
+          'spec',
+          'status',
+          'state',
+          'last_heartbeat_at',
+          'created_at',
+          'created_by',
+          'secrets',
+        ]);
 
       if (!task) {
         return undefined;
@@ -416,8 +454,14 @@ export class DatabaseTaskStore implements TaskStore {
         .update({
           status: 'processing',
           last_heartbeat_at: this.db.fn.now(),
-          // remove the secrets for non-recoverable tasks when moving to processing state.
-          secrets: this.isRecoverableTask(spec) ? task.secrets : null,
+          // Retain secrets only when recovery is enabled (globally or via the
+          // legacy per-template strategy) so recovered tasks can resume.
+          // Otherwise clear them on claim to preserve the default security
+          // lifecycle.
+          secrets:
+            this.recoverTasksEnabled || this.isRecoverableTask(spec)
+              ? task.secrets
+              : null,
         });
 
       if (updateCount < 1) {
@@ -462,7 +506,8 @@ export class DatabaseTaskStore implements TaskStore {
     const heartbeatInterval = intervalFromNowTill(timeoutS, this.db);
     const rawRows = await this.db<RawDbTaskRow>('tasks')
       .where('status', 'processing')
-      .andWhere('last_heartbeat_at', '<=', heartbeatInterval);
+      .andWhere('last_heartbeat_at', '<=', heartbeatInterval)
+      .select(['id', 'spec']);
     const tasks = rawRows.map(row => ({
       recovery: (JSON.parse(row.spec) as TaskSpec).EXPERIMENTAL_recovery,
       taskId: row.id,
@@ -492,7 +537,14 @@ export class DatabaseTaskStore implements TaskStore {
           id: taskId,
         })
         .limit(1)
-        .select();
+        .select([
+          'id',
+          'status',
+          'state',
+          'last_heartbeat_at',
+          'created_at',
+          'created_by',
+        ]);
 
       const updateTask = async (criteria: {
         id: string;
@@ -603,7 +655,7 @@ export class DatabaseTaskStore implements TaskStore {
   async listEvents(
     options: TaskStoreListEventsOptions,
   ): Promise<{ events: SerializedTaskEvent[] }> {
-    const { isTaskRecoverable, taskId, after } = options;
+    const { taskId, after, isTaskRecoverable } = options;
     const rawEvents = await this.db<RawDbTaskEventRow>('task_events')
       .where({
         task_id: taskId,
@@ -676,52 +728,26 @@ export class DatabaseTaskStore implements TaskStore {
     });
   }
 
-  async rehydrateWorkspace(options: {
-    taskId: string;
-    targetPath: string;
-  }): Promise<void> {
-    const [result] = await this.db<RawDbTaskRow>('tasks')
-      .where({ id: options.taskId })
-      .select('workspace');
-
-    await restoreWorkspace({
-      path: options.targetPath,
-      buffer: result.workspace,
-    });
-  }
-
-  async cleanWorkspace({ taskId }: { taskId: string }): Promise<void> {
-    await this.db('tasks').where({ id: taskId }).update({
-      workspace: null,
-    });
-  }
-
-  async serializeWorkspace(options: {
-    path: string;
-    taskId: string;
-  }): Promise<void> {
-    if (options.path) {
-      const workspace = (await serializeWorkspace(options)).contents;
-      await this.db<RawDbTaskRow>('tasks')
-        .where({ id: options.taskId })
-        .update({
-          workspace,
-        });
-    }
-  }
-
   async cancelTask(
     options: TaskStoreEmitOptions<{ message: string } & JsonObject>,
   ): Promise<void> {
     const { taskId, body } = options;
     const serializedBody = JSON.stringify(body);
-    const [ret] = await this.db<RawDbTaskEventRow>('task_events')
-      .insert({
-        task_id: taskId,
-        event_type: 'cancelled',
-        body: serializedBody,
-      })
-      .returning('id');
+    const ret = await this.db.transaction(async tx => {
+      await tx<RawDbTaskRow>('tasks')
+        .where({ id: taskId })
+        .update({ secrets: null });
+
+      const [event] = await tx<RawDbTaskEventRow>('task_events')
+        .insert({
+          task_id: taskId,
+          event_type: 'cancelled',
+          body: serializedBody,
+        })
+        .returning('id');
+
+      return event;
+    });
 
     this.events?.publish({
       topic: 'scaffolder.task',
@@ -741,40 +767,43 @@ export class DatabaseTaskStore implements TaskStore {
     const { secrets, taskId } = options;
 
     await this.db.transaction(async tx => {
-      const result = await tx<RawDbTaskRow>('tasks')
+      const updateCount = await tx<RawDbTaskRow>('tasks')
         .where('id', taskId)
-        .update(
-          {
-            ...(secrets && { secrets: JSON.stringify(secrets) }),
-            status: 'open',
-            last_heartbeat_at: this.db.fn.now(),
-          },
-          ['id', 'spec'],
-        );
-
-      for (const { id, spec } of result) {
-        const taskSpec = JSON.parse(spec as string) as TaskSpec;
-
-        /**
-         * Once task is picked up, all event types are replayed.
-         * We have to remove cancelled or completion event_type as these are as actions for frontend to perform.
-         * In contrary, we send 'recovered' event_type to reset the state on the frontend side.
-         *
-         */
-        await tx<RawDbTaskEventRow>('task_events')
-          .where('task_id', id)
-          .andWhere(q => q.whereIn('event_type', ['cancelled', 'completion']))
-          .del();
-
-        await tx<RawDbTaskEventRow>('task_events').insert({
-          task_id: id,
-          event_type: 'recovered',
-          body: JSON.stringify({
-            recoverStrategy:
-              taskSpec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ?? 'none',
-          }),
+        .whereIn('status', ['cancelled', 'completed', 'failed', 'skipped'])
+        .update({
+          ...(secrets && { secrets: JSON.stringify(secrets) }),
+          status: 'open',
+          last_heartbeat_at: this.db.fn.now(),
         });
+
+      if (Number(updateCount) !== 1) {
+        throw new ConflictError(`Task with taskId ${taskId} cannot be retried`);
       }
+
+      const [task] = await tx<RawDbTaskRow>('tasks')
+        .where('id', taskId)
+        .select('id', 'spec');
+      const taskSpec = JSON.parse(task.spec) as TaskSpec;
+
+      /**
+       * Once task is picked up, all event types are replayed.
+       * We have to remove cancelled or completion event_type as these are as actions for frontend to perform.
+       * In contrary, we send 'recovered' event_type to reset the state on the frontend side.
+       *
+       */
+      await tx<RawDbTaskEventRow>('task_events')
+        .where('task_id', task.id)
+        .andWhere(q => q.whereIn('event_type', ['cancelled', 'completion']))
+        .del();
+
+      await tx<RawDbTaskEventRow>('task_events').insert({
+        task_id: task.id,
+        event_type: 'recovered',
+        body: JSON.stringify({
+          recoverStrategy:
+            taskSpec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ?? 'none',
+        }),
+      });
     });
   }
 

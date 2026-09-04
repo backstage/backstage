@@ -367,7 +367,7 @@ const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
 <Route path="/catalog" element={<CatalogIndexPage columns={myColumnsFunc} />} />
 ```
 
-:::note Note
+:::note
 
 In the examples above, the contents of the files have been shortened for simplicity.
 
@@ -438,7 +438,7 @@ const customActions: TableProps<CatalogTableRow>['actions'] = [
 <Route path="/catalog" element={<CatalogIndexPage actions={customActions} />} />
 ```
 
-:::note Note
+:::note
 
 In the example above, the contents of `App.tsx` has been shortened for simplicity.
 
@@ -675,7 +675,7 @@ export const CustomCatalogPage = () => {
 
 The above is a very basic version of a fully custom `CatalogIndexPage`, you'll want to explore the various props to see what you can all do with them. This was built off the building blocks seen in the [`DefaultCatalogPage`](https://github.com/backstage/backstage/blob/master/plugins/catalog/src/components/CatalogPage/DefaultCatalogPage.tsx)
 
-:::note Note
+:::note
 
 The catalog index page is designed to have a minimal code footprint to support easy customization, but creating a replica does introduce a possibility of drifting out of date over time. Be sure to check the catalog [CHANGELOG](https://github.com/backstage/backstage/blob/master/plugins/catalog/CHANGELOG.md) periodically.
 

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-techdocs-addons-test-utils",
-  "version": "2.0.8-next.2",
+  "version": "2.0.9-next.1",
   "backstage": {
     "role": "web-library",
     "pluginId": "techdocs-addons",
@@ -61,6 +61,7 @@
     "react-router-dom": "^6.30.2"
   },
   "peerDependencies": {
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/react": "^16.0.0",
     "@types/react": "^17.0.0 || ^18.0.0",
     "react": "^17.0.0 || ^18.0.0",

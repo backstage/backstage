@@ -15,10 +15,47 @@
  */
 
 import { PackageRole, BackstagePackageFeatureType } from '@backstage/cli-node';
+import { createMockDirectory } from '@backstage/backend-test-utils';
 import createFeatureEnvironment from './__testUtils__/createFeatureEnvironment';
-import { getEntryPointDefaultFeatureType } from './typeDistProject';
+import {
+  createTypeDistProject,
+  getEntryPointDefaultFeatureType,
+} from './typeDistProject';
 
 describe('typeDistProject', () => {
+  const mockDir = createMockDirectory();
+
+  afterEach(() => {
+    mockDir.clear();
+  });
+
+  it('preloads declarations for feature-producing package roles', async () => {
+    mockDir.setContent({
+      allowed: {
+        dist: {
+          'index.d.ts': 'export declare const value: string;',
+        },
+      },
+      disallowed: {
+        dist: {
+          'index.d.ts': 'export declare const value: string;',
+        },
+      },
+    });
+
+    const project = await createTypeDistProject([
+      { dir: mockDir.resolve('allowed'), role: 'node-library' },
+      { dir: mockDir.resolve('disallowed'), role: 'cli' },
+    ]);
+
+    expect(
+      project.getSourceFile(mockDir.resolve('allowed/dist/index.d.ts')),
+    ).toBeDefined();
+    expect(
+      project.getSourceFile(mockDir.resolve('disallowed/dist/index.d.ts')),
+    ).toBeUndefined();
+  });
+
   describe('for package role', () => {
     // This Record makes sure we're checking all package roles
     const packageRoles: Record<PackageRole, boolean> = {

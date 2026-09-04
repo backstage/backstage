@@ -111,6 +111,9 @@ jobs:
         run: yarn build:api-reports:only --ci --docs
 
       - parallel:
+          - name: verify Yarn patches
+            run: yarn backstage-cli pm verify-patches
+
           - name: verify yarn dependency duplicates
             run: node scripts/verify-lockfile-duplicates.js
 
@@ -138,14 +141,17 @@ jobs:
           - name: lint openapi yaml files
             run: yarn backstage-repo-tools repo schema openapi lint
 
-          - name: verify openapi yaml file matches generated ts file
-            run: yarn backstage-repo-tools repo schema openapi verify
+          - name: validate openapi yaml file matches generated ts file
+            run: yarn backstage-repo-tools repo schema openapi validate
 
           - name: verify doc links
             run: node scripts/verify-links.js
 
           - name: verify plugin directory
             run: node scripts/verify-plugin-directory.js
+
+          - name: test release scripts
+            run: yarn node --test scripts/*.test.js
 
           - name: build all packages
             run: yarn backstage-cli repo build --all
@@ -250,15 +256,18 @@ jobs:
     steps:
       - *checkout
 
+        # Only trees and paths are needed here, to check the release and to scope
+        # linting and testing to changed packages, so skip historical blob
+        # content rather than transferring the whole branch.
       - name: fetch master branch
-        run: git fetch origin master
+        run: git fetch --filter=blob:none origin master
 
         # Need to fetch the base branch to be able to verify the release
       - name: fetch base branch
         env:
           PR_BRANCH_NAME: ${{ github.event.pull_request.base.ref }}
         if: github.event.pull_request.base.ref != 'master'
-        run: git fetch origin "$PR_BRANCH_NAME"
+        run: git fetch --filter=blob:none origin "$PR_BRANCH_NAME"
 
       - *setup-node
 

@@ -13,7 +13,7 @@ library to mock network requests by using an express style declaration for
 routes. react-testing-library suggests using this library instead of mocking
 fetch directly whether this be in a browser or in node.
 
-https://github.com/mswjs/msw
+<https://github.com/mswjs/msw>
 
 ## Decision
 

@@ -98,7 +98,7 @@ These widgets come from `@backstage/plugin-home`:
 | Starred Entities | `home-page-widget:home/starred-entities` | Shows entities you have starred in the catalog.                    |
 | Toolkit          | `home-page-widget:home/toolkit`          | A collection of configurable links and tools.                      |
 | World Clocks     | `home-page-widget:home/world-clock`      | Displays clocks for configured time zones.                         |
-| Most Visited     | `home-page-widget:home/top-visited`      | Shows your most frequently visited pages. Requires visit tracking. |
+| Most Visited     | `home-page-widget:home/most-visited`     | Shows your most frequently visited pages. Requires visit tracking. |
 | Recently Visited | `home-page-widget:home/recently-visited` | Shows pages you have recently visited. Requires visit tracking.    |
 | Random Joke      | `home-page-widget:home/random-joke`      | Shows a random programming joke.                                   |
 

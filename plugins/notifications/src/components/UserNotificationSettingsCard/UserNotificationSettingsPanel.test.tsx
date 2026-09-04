@@ -16,7 +16,7 @@
 import { screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { UserNotificationSettingsPanel } from './UserNotificationSettingsPanel';
-import { NotificationFormatProvider } from './UserNotificationSettingsCard.tsx';
+import { NotificationFormatProvider } from './NotificationFormatContext';
 
 describe('UserNotificationSettingsPanel', () => {
   it('renders each origin only once even if present in multiple channels', async () => {

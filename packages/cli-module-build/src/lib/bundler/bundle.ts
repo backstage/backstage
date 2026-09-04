@@ -74,9 +74,9 @@ export async function buildBundle(options: BuildOptions) {
       await createConfig(paths, {
         ...commonConfigOptions,
         additionalEntryPoints: [
-          ...detectedModulesEntryPoint,
           ...moduleFederationSharedDependenciesEntryPoint,
         ],
+        deferredEntryPoints: [...detectedModulesEntryPoint],
         appMode: publicPaths ? 'protected' : 'public',
       }),
     );

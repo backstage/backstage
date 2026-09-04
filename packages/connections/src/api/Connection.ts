@@ -13,18 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {
-  ConnectionAuthValue,
-  ConnectionType,
-  RootConnectionAuth,
-} from './ConnectionType';
+import type { ConnectionAuthValue, ConnectionType } from './ConnectionType';
 import type { ConnectionTypeKey, LookupConnectionType } from '../definitions';
 
 /** @public */
 export type AuthValue<T extends ConnectionType | ConnectionTypeKey> =
-  ConnectionAuthValue<
-    RootConnectionAuth<LookupConnectionType<T>['authMethods'][number]>
-  >;
+  ConnectionAuthValue<LookupConnectionType<T>['auth'][number]>;
 
 // A connection of a specific type.
 //

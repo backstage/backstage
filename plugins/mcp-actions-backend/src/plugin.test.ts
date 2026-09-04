@@ -267,6 +267,67 @@ describe('Mcp Backend', () => {
         'scaffolder-actions.create-app',
       );
     });
+
+    it('should keep serving every action on /v1 when named servers are configured', async () => {
+      const { server } = await startTestBackend({
+        features: [
+          mcpPlugin,
+          mockCatalogPlugin,
+          mockScaffolderPlugin,
+          metricsServiceMock.mock().factory,
+          tracingServiceMock.mock().factory,
+          mockServices.rootConfig.factory({
+            data: {
+              backend: {
+                actions: {
+                  pluginSources: ['catalog-actions', 'scaffolder-actions'],
+                },
+              },
+              mcpActions: {
+                servers: {
+                  catalog: {
+                    name: 'Catalog Server',
+                    filter: {
+                      include: [{ id: 'catalog-actions:*' }],
+                    },
+                  },
+                },
+              },
+            },
+          }),
+        ],
+      });
+
+      const address = server.address();
+      if (typeof address !== 'object' || !('port' in address!)) {
+        throw new Error('server broke');
+      }
+      const serverAddress = `http://localhost:${address.port}`;
+
+      const listTools = async (path: string) => {
+        const client = new Client({ name: 'test', version: '1.0' });
+        await client.connect(
+          new StreamableHTTPClientTransport(new URL(serverAddress + path)),
+        );
+        const result = await client.request(
+          { method: 'tools/list' },
+          ListToolsResultSchema,
+        );
+        return result.tools.map(tool => tool.name);
+      };
+
+      await expect(listTools('/api/mcp-actions/v1')).resolves.toEqual([
+        'catalog-actions.get-entity',
+        'scaffolder-actions.create-app',
+      ]);
+
+      // The named server is a subset of the default one, and since the default
+      // is mounted last and Express matches `use` prefixes, this also guards
+      // against /v1 swallowing /v1/catalog.
+      await expect(listTools('/api/mcp-actions/v1/catalog')).resolves.toEqual([
+        'catalog-actions.get-entity',
+      ]);
+    });
   });
 
   describe('OAuth well-known endpoints', () => {
@@ -333,17 +394,62 @@ describe('Mcp Backend', () => {
       expect(response.body.authorization_servers[0]).toContain(
         `${mockExternalBaseUrl}/`,
       );
+      expect(response.body.scopes_supported).toEqual(['openid']);
+    });
+
+    it('should include offline_access in scopes_supported when refresh tokens are enabled', async () => {
+      const mockExternalBaseUrl = 'http://external.local:0/api';
+      const mockDiscovery = mockServices.discovery.mock({
+        getExternalBaseUrl: async pluginId =>
+          `${mockExternalBaseUrl}/${pluginId}`,
+      });
+
+      const { server } = await startTestBackend({
+        features: [
+          mcpPlugin,
+          mockPluginWithActions,
+          mockDiscovery.factory,
+          mockServices.rootConfig.factory({
+            data: {
+              backend: {
+                actions: {
+                  pluginSources: ['local'],
+                },
+              },
+              auth: {
+                experimentalDynamicClientRegistration: {
+                  enabled: true,
+                },
+                experimentalRefreshToken: {
+                  enabled: true,
+                },
+              },
+            },
+          }),
+        ],
+      });
+
+      const response = await request(server).get(
+        '/.well-known/oauth-protected-resource/api/mcp-actions/v1',
+      );
+      expect(response.status).toBe(200);
+      expect(response.body.scopes_supported).toEqual([
+        'openid',
+        'offline_access',
+      ]);
     });
 
     const pathTestCases = [
-      { name: 'auth', suffix: '/v1/auth' },
-      { name: 'catalog', suffix: '/v1/catalog' },
-      { name: 'scaffolder', suffix: '/v1/scaffolder' },
+      { name: 'the default server', suffix: '/v1', status: 200 },
+      { name: 'auth', suffix: '/v1/auth', status: 200 },
+      { name: 'catalog', suffix: '/v1/catalog', status: 200 },
+      { name: 'scaffolder', suffix: '/v1/scaffolder', status: 200 },
+      { name: 'an unknown server', suffix: '/v1/unknown', status: 404 },
     ];
 
     it.each(pathTestCases)(
-      'should expose dynamic oauth-protected-resource for $name',
-      async ({ suffix }) => {
+      'should respond to oauth-protected-resource for $name',
+      async ({ suffix, status }) => {
         const mockExternalBaseUrl = 'http://external.local:0/api';
         const mockDiscovery = mockServices.discovery.mock({
           getExternalBaseUrl: async pluginId =>
@@ -382,7 +488,11 @@ describe('Mcp Backend', () => {
         const response = await request(server).get(
           `/.well-known/oauth-protected-resource/api/mcp-actions${suffix}`,
         );
-        expect(response.status).toBe(200);
+        expect(response.status).toBe(status);
+        if (status !== 200) {
+          return;
+        }
+
         const expectedResourceRegex = new RegExp(`/api/mcp-actions${suffix}$`);
         expect(response.body.resource).toMatch(expectedResourceRegex);
         expect(response.body.authorization_servers).toHaveLength(1);
@@ -391,6 +501,7 @@ describe('Mcp Backend', () => {
         expect(response.body.authorization_servers[0]).toContain(
           `${mockExternalBaseUrl}/`,
         );
+        expect(response.body.scopes_supported).toEqual(['openid']);
       },
     );
 
@@ -423,6 +534,7 @@ describe('Mcp Backend', () => {
       expect(response.body.resource).toMatch(/\/api\/mcp-actions\/v1$/);
       expect(response.body.authorization_servers).toHaveLength(1);
       expect(response.body.authorization_servers[0]).toMatch(/\/api\/auth$/);
+      expect(response.body.scopes_supported).toEqual(['openid']);
     });
 
     it('should support the deprecated experimental CIMD configuration', async () => {

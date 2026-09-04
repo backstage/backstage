@@ -4,7 +4,7 @@ title: Contributing New Provider Modules
 description: Documentation on adding new authentication providers
 ---
 
-:::note Note
+:::note
 
 The primary audience for this documentation are contributors that want to add support for new authentication providers.
 While you can follow it to implement your own custom providers it is much
@@ -21,7 +21,7 @@ interface consists of four methods. Each of these methods is hosted at an
 endpoint (by default) `/api/auth/[provider]/method`, where `method` performs a
 certain operation as follows:
 
-```
+```text
   /auth/[provider]/start -> Initiate a login from the web page
   /auth/[provider]/handler/frame -> Handle a finished authentication operation
   /auth/[provider]/refresh -> Refresh the validity of a login
@@ -260,7 +260,7 @@ The implementation is similar to the OAuth provider, but the `authenticator` fun
 > done should be invoked with false instead of a user to indicate an
 > authentication failure.
 >
-> http://www.passportjs.org/docs/configure/
+> <http://www.passportjs.org/docs/configure/>
 
 ### Add the provider to the backend
 

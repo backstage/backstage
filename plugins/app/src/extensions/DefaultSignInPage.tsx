@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 import { SignInPageBlueprint } from '@backstage/plugin-app-react';
-import { SignInPage } from '@backstage/core-components';
 
 export const DefaultSignInPage = SignInPageBlueprint.make({
   params: {
-    loader: async () => props =>
-      <SignInPage {...props} providers={['guest']} />,
+    loader: async () => {
+      const { SignInPage } = await import('@backstage/core-components');
+      return props => <SignInPage {...props} providers={['guest']} />;
+    },
   },
 });

@@ -1,15 +1,27 @@
 {
   "name": "@backstage/integration-aws-node",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Helpers for fetching AWS account credentials",
   "backstage": {
     "role": "node-library"
   },
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "module": "dist/index.esm.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha/index.ts",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha/index.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
   },
   "keywords": [
     "backstage"
@@ -42,6 +54,7 @@
     "@aws-sdk/types": "^3.347.0",
     "@aws-sdk/util-arn-parser": "^3.310.0",
     "@backstage/config": "workspace:^",
+    "@backstage/connections": "workspace:^",
     "@backstage/errors": "workspace:^"
   },
   "devDependencies": {

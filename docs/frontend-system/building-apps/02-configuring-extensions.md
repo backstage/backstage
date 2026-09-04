@@ -26,6 +26,8 @@ app:
 
 All of the top-level fields are optional: `attachTo`, `disabled`, and `config`. Every extension implementation must provide defaults for all of these fields that will be used if they are not provided in the configuration.
 
+The `disabled` field also accepts the strings 'true' and 'false', since environment variable substitution in configuration always produces a string rather than a real boolean.
+
 Note that `app.extensions` is always an array rather than an object. For example, the following is invalid:
 
 ```yaml title="INVALID"
@@ -52,3 +54,5 @@ app:
   extensions:
     - <id>: <true/false>
 ```
+
+This also accepts the strings 'true' and 'false', so the value can come from an environment variable, e.g. `- <id>: ${SOME_EXTENSION_ENABLED}`.
