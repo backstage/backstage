@@ -38,3 +38,7 @@ This is a (non-exhaustive) list of actions that are known to be part of the Acti
 ### Search
 
 - `search.query` (Query Search Engine): Query the Backstage search engine for documents across all or selected document types.
+
+### TechDocs
+
+- `techdocs.get-techdocs-metadata` (Get TechDocs Metadata): This allows you to get the metadata for a specific TechDocs site, including the site name, description, navigation structure, and pages.
