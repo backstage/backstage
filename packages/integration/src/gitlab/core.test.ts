@@ -205,6 +205,22 @@ describe('gitlab core', () => {
       );
     });
 
+    it('requires the configured relative path to be a pathname prefix', () => {
+      const validTarget =
+        'https://gitlab.mycompany.com/gitlab/group/gitlab-project/-/blob/branch/folder/file.yaml';
+      expect(
+        extractProjectPath(validTarget, configSelfHosteWithRelativePath),
+      ).toBe('group/gitlab-project');
+
+      const invalidTarget =
+        'https://gitlab.mycompany.com/group/gitlab/project/-/blob/branch/folder/file.yaml';
+      expect(() =>
+        extractProjectPath(invalidTarget, configSelfHosteWithRelativePath),
+      ).toThrow(
+        'Failed extracting project path from /group/gitlab/project/-/blob/branch/folder/file.yaml. Url path must start with /gitlab/.',
+      );
+    });
+
     it('throws error for invalid URLs without blob path', () => {
       const target = 'https://gitlab.com/some/random/endpoint';
       expect(() => extractProjectPath(target, configWithNoToken)).toThrow(

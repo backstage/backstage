@@ -58,15 +58,15 @@ Selecting `REPOSITORY` displays the `catalog-info.yaml`file and other project se
 
 The `catalog-info.yaml` file describes the entity for the Software Catalog. [Descriptor Format of Catalog Entities](../features/software-catalog/descriptor-format.md) provides additional information.
 
-```
- apiVersion: backstage.io/v1alpha1
- kind: Component
- metadata:
-   name: "tutorial"
- spec:
-   type: service
-   owner: user:guest
-   lifecycle: experimental
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: 'tutorial'
+spec:
+  type: service
+  owner: user:guest
+  lifecycle: experimental
 ```
 
 Selecting `OPEN IN CATALOG` displays details of the new component, such as its relationships, links, and subcomponents.

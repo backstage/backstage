@@ -348,6 +348,18 @@ function configureMiddlewares(
     try {
       router.use(
         route,
+        (req, res, next) => {
+          try {
+            const p = decodeURIComponent(req.url.split('?')[0]);
+            if (!p.replace(/\\/g, '/').split('/').includes('..')) {
+              next();
+              return;
+            }
+          } catch {
+            // malformed encoding
+          }
+          res.sendStatus(400);
+        },
         buildMiddleware(
           pathPrefix,
           options.logger,

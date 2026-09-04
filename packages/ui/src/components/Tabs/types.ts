@@ -92,7 +92,7 @@ export type TabOwnProps = {
  */
 export interface TabProps
   extends TabOwnProps,
-    Omit<AriaTabProps, keyof TabOwnProps> {}
+    Omit<AriaTabProps, keyof TabOwnProps | 'render'> {}
 
 /** Context for sharing refs between Tabs and TabList
  *

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/connections-node",
-  "version": "0.2.2-next.0",
+  "version": "0.2.3-next.0",
   "description": "Node.js service implementation for the Backstage connections framework",
   "backstage": {
     "role": "node-library",
@@ -33,11 +33,9 @@
   },
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/config": "workspace:^",
     "@backstage/connections": "workspace:^",
     "@backstage/errors": "workspace:^",
-    "@backstage/types": "workspace:^",
-    "zod": "^3.25.76 || ^4.0.0"
+    "@backstage/types": "workspace:^"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

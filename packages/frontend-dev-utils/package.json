@@ -1,6 +1,6 @@
 {
   "name": "@backstage/frontend-dev-utils",
-  "version": "0.1.5-next.1",
+  "version": "0.1.6-next.1",
   "description": "Utilities for developing Backstage frontend plugins using the new frontend system.",
   "backstage": {
     "role": "web-library"
@@ -44,6 +44,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@types/react": "^18.0.0",

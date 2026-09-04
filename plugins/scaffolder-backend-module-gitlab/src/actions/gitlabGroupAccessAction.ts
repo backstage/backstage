@@ -54,8 +54,9 @@ function resolveAccessLevel(level: string | number): number {
  */
 export const createGitlabGroupAccessAction = (options: {
   integrations: ScmIntegrationRegistry;
+  requireScmUserCredentials?: boolean;
 }) => {
-  const { integrations } = options;
+  const { integrations, requireScmUserCredentials } = options;
 
   return createTemplateAction({
     id: 'gitlab:group:access',
@@ -175,7 +176,12 @@ export const createGitlabGroupAccessAction = (options: {
 
       const host = parseRepoHost(repoUrl);
 
-      const api = getClient({ host, integrations, token });
+      const api = getClient({
+        host,
+        integrations,
+        token,
+        requireScmUserCredentials,
+      });
 
       // Process users
       for (const userId of userIds) {

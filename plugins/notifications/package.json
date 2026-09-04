@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-notifications",
-  "version": "0.5.20-next.1",
+  "version": "0.5.21-next.1",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "notifications",
@@ -71,6 +71,7 @@
     "@backstage/dev-utils": "workspace:^",
     "@backstage/plugin-signals": "workspace:^",
     "@backstage/test-utils": "workspace:^",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@types/react": "^18.0.0",

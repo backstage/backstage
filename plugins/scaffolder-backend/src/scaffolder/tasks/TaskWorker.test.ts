@@ -25,9 +25,13 @@ import {
   TaskWorkerOptions,
 } from './TaskWorker';
 import { ScmIntegrations } from '@backstage/integration';
-import { TemplateActionRegistry } from '../actions';
+import {
+  DefaultTemplateActionRegistry,
+  TemplateActionRegistry,
+} from '../actions';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import {
+  createTemplateAction,
   SerializedTaskEvent,
   TaskBroker,
   TaskContext,
@@ -35,8 +39,15 @@ import {
 import { WorkflowRunner } from './types';
 import ObservableImpl from 'zen-observable';
 import waitForExpect from 'wait-for-expect';
-import { mockServices } from '@backstage/backend-test-utils';
-import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import {
+  actionsRegistryServiceMock,
+  metricsServiceMock,
+} from '@backstage/backend-test-utils/alpha';
+import {
+  AuthorizeResult,
+  PermissionEvaluator,
+} from '@backstage/plugin-permission-common';
 import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
 
 jest.mock('./NunjucksWorkflowRunner');
@@ -146,6 +157,225 @@ describe('TaskWorker', () => {
     const { events } = await storage.listEvents({ taskId });
     const event = events.find(e => e.type === 'completion');
     expect(event?.body.output).toEqual({ testOutput: 'testmockoutput' });
+  });
+
+  it('should complete successfully when workspace cleanup fails', async () => {
+    const cleanWorkspace = jest
+      .fn()
+      .mockRejectedValue(new Error('Cleanup failed'));
+    const config = new ConfigReader({
+      scaffolder: {
+        taskRecovery: {
+          workspaceProvider: 'mock',
+        },
+      },
+    });
+    const broker = new StorageTaskBroker(storage, logger, config, undefined, {
+      mock: {
+        serializeWorkspace: jest.fn(),
+        rehydrateWorkspace: jest.fn(),
+        cleanWorkspace,
+      },
+    });
+    const { NunjucksWorkflowRunner: ActualNunjucksWorkflowRunner } =
+      jest.requireActual<typeof import('./NunjucksWorkflowRunner')>(
+        './NunjucksWorkflowRunner',
+      );
+    const actualWorkflowRunner = new ActualNunjucksWorkflowRunner({
+      actionRegistry,
+      integrations,
+      logger,
+      workingDirectory,
+      metrics: metricsServiceMock.mock(),
+    });
+    MockedNunjucksWorkflowRunner.mockImplementation(() => actualWorkflowRunner);
+    const taskWorker = await TaskWorker.create({
+      logger,
+      workingDirectory,
+      integrations,
+      taskBroker: broker,
+      actionRegistry,
+      config,
+      metrics: metricsServiceMock.mock(),
+    });
+
+    const { taskId } = await broker.dispatch({
+      spec: {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [],
+        output: {},
+        parameters: {},
+      },
+    });
+    const task = await broker.claim();
+
+    await taskWorker.runOneTask(task);
+
+    await expect(storage.getTask(taskId)).resolves.toMatchObject({
+      status: 'completed',
+    });
+    expect(cleanWorkspace).toHaveBeenCalledTimes(1);
+  });
+
+  it('should redact secrets from persisted failure events', async () => {
+    const ActualNunjucksWorkflowRunner = jest.requireActual<
+      typeof import('./NunjucksWorkflowRunner')
+    >('./NunjucksWorkflowRunner').NunjucksWorkflowRunner;
+    MockedNunjucksWorkflowRunner.mockImplementationOnce(
+      options => new ActualNunjucksWorkflowRunner(options),
+    );
+
+    const realActionRegistry = new DefaultTemplateActionRegistry(
+      actionsRegistryServiceMock(),
+      mockServices.logger.mock(),
+    );
+    realActionRegistry.register(
+      createTemplateAction({
+        id: 'fail-with-secret',
+        handler: async ctx => {
+          const error = new Error(`Failed to read ${ctx.input.url}`);
+          error.name = `ReadError:${ctx.input.url}`;
+          throw Object.freeze(error);
+        },
+      }),
+    );
+
+    const broker = new StorageTaskBroker(storage, logger);
+    const taskWorker = await TaskWorker.create({
+      logger,
+      workingDirectory,
+      integrations,
+      taskBroker: broker,
+      actionRegistry: realActionRegistry,
+      metrics: metricsServiceMock.mock(),
+    });
+
+    const secret = 'task-secret-value';
+    const { taskId } = await broker.dispatch({
+      spec: {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'test',
+            action: 'fail-with-secret',
+            input: {
+              url: 'https://${{ secrets.secret }}@example.com',
+            },
+          },
+        ],
+        output: {},
+        parameters: {},
+      },
+      secrets: {
+        secret,
+        __initiatorCredentials: JSON.stringify(mockCredentials.user()),
+      },
+    });
+
+    const task = await broker.claim();
+    await taskWorker.runOneTask(task);
+
+    const { events } = await storage.listEvents({ taskId });
+    const failedStepEvent = events.find(
+      event => event.type === 'log' && event.body.status === 'failed',
+    );
+    const completionEvent = events.find(event => event.type === 'completion');
+
+    expect(failedStepEvent?.body.message).toContain(
+      'ReadError:***: Failed to read ***',
+    );
+    expect(completionEvent?.body.error).toEqual({
+      name: 'ReadError:***',
+      message: 'Failed to read ***',
+    });
+    expect(JSON.stringify(events)).not.toContain(secret);
+  });
+
+  it('should redact transformed secret values and keys from rejected action events', async () => {
+    const ActualNunjucksWorkflowRunner = jest.requireActual<
+      typeof import('./NunjucksWorkflowRunner')
+    >('./NunjucksWorkflowRunner').NunjucksWorkflowRunner;
+    MockedNunjucksWorkflowRunner.mockImplementationOnce(
+      options => new ActualNunjucksWorkflowRunner(options),
+    );
+
+    const realActionRegistry = new DefaultTemplateActionRegistry(
+      actionsRegistryServiceMock(),
+      mockServices.logger.mock(),
+    );
+    realActionRegistry.register(
+      createTemplateAction({
+        id: 'rejected-action',
+        handler: async () => {},
+      }),
+    );
+    const permissions: jest.Mocked<PermissionEvaluator> = {
+      authorizeConditional: jest.fn().mockResolvedValue([
+        {
+          result: AuthorizeResult.DENY,
+        },
+      ]),
+    } as unknown as jest.Mocked<PermissionEvaluator>;
+
+    const broker = new StorageTaskBroker(storage, logger);
+    const taskWorker = await TaskWorker.create({
+      logger,
+      workingDirectory,
+      integrations,
+      taskBroker: broker,
+      actionRegistry: realActionRegistry,
+      permissions,
+      additionalTemplateFilters: {
+        keyedBy: value =>
+          value ? { nested: { [String(value).toUpperCase()]: 'value' } } : {},
+      },
+      metrics: metricsServiceMock.mock(),
+    });
+
+    const secret = 'task-secret-value';
+    const transformedSecret = secret.toUpperCase();
+    const { taskId } = await broker.dispatch({
+      spec: {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        steps: [
+          {
+            id: 'test',
+            name: 'test',
+            action: 'rejected-action',
+            input: {
+              url: 'https://${{ secrets.secret | upper }}@example.com',
+              attributes: '${{ secrets.secret | keyedBy }}',
+            },
+          },
+        ],
+        output: {},
+        parameters: {},
+      },
+      secrets: {
+        secret,
+        __initiatorCredentials: JSON.stringify(mockCredentials.user()),
+      },
+    });
+
+    const task = await broker.claim();
+    await taskWorker.runOneTask(task);
+
+    const { events } = await storage.listEvents({ taskId });
+    const failedStepEvent = events.find(
+      event => event.type === 'log' && event.body.status === 'failed',
+    );
+    const completionEvent = events.find(event => event.type === 'completion');
+
+    expect(failedStepEvent?.body.message).toContain(
+      'Unauthorized action: rejected-action. The action is not allowed.',
+    );
+    expect(completionEvent?.body.error).toEqual({
+      name: 'NotAllowedError',
+      message:
+        'Unauthorized action: rejected-action. The action is not allowed.',
+    });
+    expect(JSON.stringify(events)).not.toContain(transformedSecret);
   });
 
   it('should log an audit event with task parameters when running a task', async () => {
@@ -411,6 +641,50 @@ describe('TaskWorker internals', () => {
     // We now expect one more task to have been claimed, and two tasks in the queue again
     expect(claimedTaskCount).toBe(3);
     expect(inflightTasks.length).toBe(2);
+  });
+
+  it('should keep claiming tasks after a claim fails', async () => {
+    const workflowRunner: WorkflowRunner = {
+      // Never resolves, so the worker parks at its concurrency limit once it
+      // has successfully claimed a task.
+      execute() {
+        return new Promise<never>(() => {});
+      },
+    };
+
+    let claimedTaskCount = 0;
+    const taskWorker = new TaskWorkerConstructor({
+      runners: { workflowRunner },
+      logger: mockServices.logger.mock(),
+      taskBroker: {
+        event$() {
+          return new ObservableImpl<{ events: SerializedTaskEvent[] }>(
+            () => {},
+          );
+        },
+        async claim() {
+          claimedTaskCount++;
+          if (claimedTaskCount === 1) {
+            throw new Error('Connection terminated unexpectedly');
+          }
+          return {
+            spec: {
+              apiVersion: 'scaffolder.backstage.io/v1beta3',
+            },
+            createdBy: 'test',
+            async complete(_result, _metadata) {},
+          } as TaskContext;
+        },
+      } as unknown as TaskBroker,
+      concurrentTasksLimit: 1,
+    });
+
+    taskWorker.start();
+
+    // The first claim rejects. The worker must retry rather than stop for good.
+    await waitForExpect(() => {
+      expect(claimedTaskCount).toBe(2);
+    });
   });
 });
 

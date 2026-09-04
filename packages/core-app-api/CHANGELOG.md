@@ -1,5 +1,30 @@
 # @backstage/core-app-api
 
+## 1.20.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.18.0-next.1
+  - @backstage/core-plugin-api@1.12.10-next.0
+
+## 1.20.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.17.2-next.0
+
+## 1.20.4
+
+### Patch Changes
+
+- bd435c3: Identity mocks passed to `renderInTestApp` (for example via `mockApis.identity(...)`) are now applied before the app's built-in guest fallback, so the configured `userEntityRef` reliably takes effect in tests instead of being silently overwritten by the default guest user.
+- a4759e6: Migrated tests from MSW v1 to MSW v2.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/ui@0.17.1
+
 ## 1.20.4-next.1
 
 ### Patch Changes

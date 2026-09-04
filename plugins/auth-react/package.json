@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-react",
-  "version": "0.1.30-next.1",
+  "version": "0.1.31-next.1",
   "description": "Web library for the auth plugin",
   "backstage": {
     "role": "web-library",
@@ -48,6 +48,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.0.0",

@@ -52,6 +52,18 @@ jest.mock('@azure/storage-blob', () => {
         listBlobsFlat: jest.fn(async function* () {
           yield* createBlobList(blobs);
         }),
+        getBlobClient: jest.fn().mockImplementation((blobName: string) => {
+          const encodedBlobName = blobName
+            .split('/')
+            .map(encodeURIComponent)
+            .join('/');
+          return {
+            url: `${new URL(
+              encodedBlobName,
+              'https://myaccount.blob.core.windows.net/container-1/',
+            ).toString()}?sv=2026-01-01&sig=secret`,
+          };
+        }),
       })),
     })),
   };
@@ -68,6 +80,7 @@ describe('AzureBlobStorageEntityProvider', () => {
     expectedBaseUrl: string,
     integrationConfig?: object,
     scheduleInConfig?: boolean,
+    expectedBlobs: string[] = blobs,
   ) => {
     const config = new ConfigReader({
       integrations: {
@@ -122,8 +135,9 @@ describe('AzureBlobStorageEntityProvider', () => {
 
     await (taskDef.fn as () => Promise<void>)();
 
-    const expectedEntities = blobs.map(blob => {
-      const url = encodeURI(`${normalizedExpectedBaseUrl}${blob}`);
+    const expectedEntities = expectedBlobs.map(blob => {
+      const encodedBlobName = blob.split('/').map(encodeURIComponent).join('/');
+      const url = `${normalizedExpectedBaseUrl}${encodedBlobName}`;
       return {
         entity: {
           apiVersion: 'backstage.io/v1alpha1',
@@ -184,6 +198,46 @@ describe('AzureBlobStorageEntityProvider', () => {
         accountName: 'myaccount',
       },
     );
+  });
+
+  // eslint-disable-next-line jest/expect-expect
+  it('does not include client query credentials in locations', async () => {
+    return expectMutation(
+      'queryCredentials',
+      {
+        containerName,
+        accountName,
+      },
+      'https://myaccount.blob.core.windows.net/container-1/',
+      {
+        accountName: 'myaccount',
+      },
+    );
+  });
+
+  // eslint-disable-next-line jest/expect-expect
+  it('preserves encoded dot segments and skips literal dot segments', async () => {
+    const encodedBlobName = '%2e%2e/protected/catalog-info.yaml';
+    const literalBlobName = '../protected/catalog-info.yaml';
+    blobs.push(encodedBlobName, literalBlobName);
+
+    try {
+      await expectMutation(
+        'encodedDotSegments',
+        {
+          containerName,
+          accountName,
+        },
+        'https://myaccount.blob.core.windows.net/container-1/',
+        {
+          accountName: 'myaccount',
+        },
+        false,
+        blobs.filter(blob => blob !== literalBlobName),
+      );
+    } finally {
+      blobs.splice(-2);
+    }
   });
 
   it('fail without schedule and scheduler', () => {

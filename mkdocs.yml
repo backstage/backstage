@@ -72,6 +72,7 @@ nav:
           - Installation: 'features/kubernetes/installation.md'
           - Configuration: 'features/kubernetes/configuration.md'
           - Authentication: 'features/kubernetes/authentication.md'
+          - Watch: 'features/kubernetes/watch.md'
           - Troubleshooting: 'features/kubernetes/troubleshooting.md'
           - Audit Events: 'features/kubernetes/audit-events.md'
       - Software Templates:
@@ -115,9 +116,10 @@ nav:
           - Discovery: 'integrations/aws-s3/discovery.md'
       - AWS CodeCommit:
           - Locations: 'integrations/aws-codecommit/locations.md'
-      - Azure:
+      - Azure DevOps:
           - Locations: 'integrations/azure/locations.md'
           - Discovery: 'integrations/azure/discovery.md'
+      - Microsoft Entra ID:
           - Org Data: 'integrations/azure/org.md'
       - Bitbucket Cloud:
           - Locations: 'integrations/bitbucketCloud/locations.md'
@@ -225,7 +227,6 @@ nav:
   - Tutorials:
       - React Router 6.0 Migration: 'tutorials/react-router-stable-migration.md'
       - Package Role Migration: 'tutorials/package-role-migration.md'
-      - Migrating away from @backstage/core: 'tutorials/migrating-away-from-core.md'
       - Manual Rollback using Knex: 'tutorials/manual-knex-rollback.md'
       - Switching Backstage from SQLite to PostgreSQL: 'tutorials/switching-sqlite-postgres.md'
       - Using the Backstage Proxy from Within a Plugin: 'tutorials/using-backstage-proxy-within-plugin.md'

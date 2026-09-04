@@ -46,16 +46,11 @@ const semver = require('semver');
 // See Examples above to learn about these command line arguments.
 const [TAG_NAME, BOOL_CREATE_RELEASE] = process.argv.slice(2);
 
-if (!BOOL_CREATE_RELEASE) {
-  console.log(
-    '\nRunning script in Dry Run mode. It will output details, will create a draft release but will NOT publish it.',
-  );
-}
-
 const GH_OWNER = 'backstage';
 const GH_REPO = 'backstage';
 const EXPECTED_COMMIT_MESSAGE = /^Merge pull request #(?<prNumber>[0-9]+) from/;
 const CHANGESET_RELEASE_BRANCH = 'backstage/changeset-release/master';
+const FALLBACK_RELEASE_DESCRIPTION = 'The release notes will be updated soon.';
 
 // Initialize a GitHub client
 const octokit = new Octokit({
@@ -118,11 +113,11 @@ async function getCommitUsingTagName(tagName) {
 }
 
 // There is a PR number in our expected commit message. Get the description of that PR.
-async function getReleaseDescriptionFromCommit(commit) {
+async function getReleaseDescriptionFromCommit(commit, client = octokit) {
   let pullRequestBody = undefined;
 
   const { data: pullRequests } =
-    await octokit.repos.listPullRequestsAssociatedWithCommit({
+    await client.repos.listPullRequestsAssociatedWithCommit({
       owner: GH_OWNER,
       repo: GH_REPO,
       commit_sha: commit.sha,
@@ -134,27 +129,28 @@ async function getReleaseDescriptionFromCommit(commit) {
       `Found ${pullRequests.length} pull requests for commit ${commit.sha}, falling back to parsing commit message`,
     );
 
-    // It should exactly match the pattern of changeset commit message, or else will abort.
+    // It should exactly match the pattern of a changeset commit message.
     const expectedMessage = RegExp(EXPECTED_COMMIT_MESSAGE);
     if (!expectedMessage.test(commit.message)) {
-      throw new Error(
-        `Expected regex did not match commit message: ${commit.message}`,
+      console.warn(
+        `Expected regex did not match commit message, using placeholder release notes: ${commit.message}`,
       );
+      pullRequestBody = FALLBACK_RELEASE_DESCRIPTION;
+    } else {
+      // Get the PR description from the commit message
+      const prNumber = commit.message.match(expectedMessage).groups.prNumber;
+      console.log(
+        `Identified the changeset Pull request - https://github.com/backstage/backstage/pull/${prNumber}`,
+      );
+
+      const { data } = await client.pulls.get({
+        owner: GH_OWNER,
+        repo: GH_REPO,
+        pull_number: prNumber,
+      });
+
+      pullRequestBody = data.body;
     }
-
-    // Get the PR description from the commit message
-    const prNumber = commit.message.match(expectedMessage).groups.prNumber;
-    console.log(
-      `Identified the changeset Pull request - https://github.com/backstage/backstage/pull/${prNumber}`,
-    );
-
-    const { data } = await octokit.pulls.get({
-      owner: GH_OWNER,
-      repo: GH_REPO,
-      pull_number: prNumber,
-    });
-
-    pullRequestBody = data.body;
   }
 
   // Use the PR description to prepare for the release description
@@ -197,12 +193,22 @@ async function createRelease(releaseDescription) {
 }
 
 async function main() {
+  if (!BOOL_CREATE_RELEASE) {
+    console.log(
+      '\nRunning script in Dry Run mode. It will output details, will create a draft release but will NOT publish it.',
+    );
+  }
+
   const commit = await getCommitUsingTagName(TAG_NAME);
   const releaseDescription = await getReleaseDescriptionFromCommit(commit);
   await createRelease(releaseDescription);
 }
 
-main().catch(error => {
-  console.error(error.stack);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch(error => {
+    console.error(error.stack);
+    process.exit(1);
+  });
+}
+
+module.exports = { getReleaseDescriptionFromCommit };

@@ -42,6 +42,7 @@
     border-radius: var(--bui-radius-2);
     font-size: var(--bui-font-size-3);
     font-family: var(--bui-font-regular);
+    line-height: 1.15;
     color: var(--bui-fg-primary);
     outline: none;
 

@@ -119,6 +119,16 @@ export function expandShorthandExtensionParameters(
     };
   }
 
+  // Environment variable substitution always produces a string, so boolean-ish
+  // strings need to be coerced too. Example YAML:
+  // - catalog.page.cicd: ${CATALOG_PAGE_CICD_ENABLED}
+  if (value === 'true' || value === 'false') {
+    return {
+      id,
+      disabled: value === 'false',
+    };
+  }
+
   // The remaining case is the generic object. Example YAML:
   //  - tech-radar.page:
   //      at: core.router/routes
@@ -130,11 +140,13 @@ export function expandShorthandExtensionParameters(
   if (typeof value !== 'object' || Array.isArray(value)) {
     // We don't mention null here - we don't want people to explicitly enter
     // - entity.card.about: null
-    throw new Error(errorMsg('value must be a boolean or object', id));
+    throw new Error(
+      errorMsg("value must be a boolean, 'true', 'false', or object", id),
+    );
   }
 
   const attachTo = value.attachTo as { id: string; input: string } | undefined;
-  const disabled = value.disabled;
+  let disabled = value.disabled;
   const config = value.config;
 
   if (attachTo !== undefined) {
@@ -157,7 +169,15 @@ export function expandShorthandExtensionParameters(
     }
   }
   if (disabled !== undefined && typeof disabled !== 'boolean') {
-    throw new Error(errorMsg('must be a boolean', id, 'disabled'));
+    // Environment variable substitution always produces a string, e.g.
+    // disabled: ${CATALOG_OVERVIEW_DISABLED}
+    if (disabled === 'true' || disabled === 'false') {
+      disabled = disabled === 'true';
+    } else {
+      throw new Error(
+        errorMsg("must be a boolean, 'true', or 'false'", id, 'disabled'),
+      );
+    }
   }
   if (
     config !== undefined &&

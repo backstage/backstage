@@ -1,5 +1,20 @@
 # @backstage/plugin-connections-example-backend-module-gitlab
 
+## 0.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/connections@0.3.0
+  - @backstage/backend-plugin-api@1.10.0
+
 ## 0.1.3-next.0
 
 ### Patch Changes

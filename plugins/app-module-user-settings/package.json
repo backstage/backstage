@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-app-module-user-settings",
-  "version": "0.1.1-next.1",
+  "version": "0.1.2-next.1",
   "description": "Registers user-settings features into the app.",
   "backstage": {
     "role": "frontend-plugin-module",
@@ -8,10 +8,7 @@
     "pluginPackage": "@backstage/plugin-app"
   },
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "module": "dist/index.esm.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "repository": {
     "type": "git",

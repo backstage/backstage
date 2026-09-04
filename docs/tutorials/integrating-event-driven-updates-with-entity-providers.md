@@ -22,7 +22,7 @@ The `@backstage/plugin-events-backend` plugin provides out-of-the-box support fo
 
 To create HTTP endpoints for specific topics, you need to configure them in your app-config.yaml:
 
-```
+```yaml
 events:
   http:
     topics:

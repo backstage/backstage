@@ -78,8 +78,9 @@ const createBitbucketCloudBranchRestriction = async (opts: {
  */
 export function createBitbucketCloudBranchRestrictionAction(options: {
   integrations: ScmIntegrationRegistry;
+  requireScmUserCredentials?: boolean;
 }) {
-  const { integrations } = options;
+  const { integrations, requireScmUserCredentials } = options;
   return createTemplateAction({
     id: 'bitbucketCloud:branchRestriction:create',
     examples,
@@ -140,7 +141,16 @@ export function createBitbucketCloudBranchRestrictionAction(options: {
         );
       }
 
-      const authorization = token ? { token: token } : integrationConfig.config;
+      if (requireScmUserCredentials && !token) {
+        throw new InputError(
+          `No user credentials provided for host ${host}, but scaffolder.requireScmUserCredentials is enabled`,
+        );
+      }
+
+      const authorization =
+        token || requireScmUserCredentials
+          ? { token: token }
+          : integrationConfig.config;
 
       const response = await createBitbucketCloudBranchRestriction({
         workspace: workspace,

@@ -1,5 +1,68 @@
 # @backstage/plugin-catalog
 
+## 2.0.9-next.1
+
+### Patch Changes
+
+- e3781a3: Fixed circular dependency warnings when building the catalog plugin.
+- d421187: Reduced the initial app bundle size by loading page and optional UI implementations only when their extensions render.
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.1
+  - @backstage/plugin-scaffolder-common@2.3.0-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/plugin-catalog-react@3.2.3-next.1
+  - @backstage/ui@0.18.0-next.1
+  - @backstage/integration-react@1.2.22-next.0
+  - @backstage/core-compat-api@0.5.15-next.1
+  - @backstage/core-plugin-api@1.12.10-next.0
+  - @backstage/plugin-search-react@1.11.8-next.1
+  - @backstage/plugin-techdocs-react@1.3.15-next.1
+  - @backstage/catalog-client@1.16.2-next.0
+  - @backstage/plugin-permission-react@0.5.5-next.0
+
+## 2.0.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@2.3.0-next.0
+  - @backstage/ui@0.17.2-next.0
+  - @backstage/plugin-catalog-react@3.2.2-next.0
+  - @backstage/core-components@0.18.14-next.0
+  - @backstage/core-compat-api@0.5.15-next.0
+  - @backstage/plugin-search-react@1.11.8-next.0
+  - @backstage/plugin-techdocs-react@1.3.15-next.0
+
+## 2.0.8
+
+### Patch Changes
+
+- 80b37b3: Fixed the `AboutField` label in the About card using `variant="inherit"` instead of `variant="h2"` to prevent theme typography overrides from changing the intended 10px label size.
+- 05aed2e: Fixed a brief "Entity not found" flash when navigating between catalog entity pages.
+- 1d026b0: Added explicit type annotations to `FilterContainer` and `EntityListContainer` re-exports for forward-compatibility with TypeScript 7.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/plugin-catalog-react@3.2.1
+  - @backstage/ui@0.17.1
+  - @backstage/plugin-scaffolder-common@2.2.2
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/core-compat-api@0.5.14
+  - @backstage/integration-react@1.2.21
+  - @backstage/plugin-permission-react@0.5.4
+  - @backstage/plugin-search-react@1.11.7
+  - @backstage/plugin-techdocs-react@1.3.14
+
+## 2.0.8-next.3
+
+### Patch Changes
+
+- 05aed2e: Fixed a brief "Entity not found" flash when navigating between catalog entity pages.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9-next.1
+  - @backstage/plugin-catalog-react@3.2.1-next.3
+
 ## 2.0.8-next.2
 
 ### Patch Changes

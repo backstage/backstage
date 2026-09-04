@@ -38,13 +38,22 @@ export function isPromise<T>(value: unknown | Promise<T>): value is Promise<T> {
 export function unwrapFeature(
   feature: BackendFeature | { default: BackendFeature },
 ): BackendFeature {
-  if ('$$type' in feature) {
-    return feature;
+  let current: unknown = feature;
+  for (let i = 0; i < 2; i++) {
+    if (
+      current !== null &&
+      (typeof current === 'object' || typeof current === 'function')
+    ) {
+      if ('$$type' in current) {
+        return current as BackendFeature;
+      }
+      if ('default' in current) {
+        current = current.default;
+        continue;
+      }
+    }
+    break;
   }
 
-  if ('default' in feature) {
-    return feature.default;
-  }
-
-  return feature;
+  return current as BackendFeature;
 }

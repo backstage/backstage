@@ -82,6 +82,13 @@ export class CatalogClusterLocator implements KubernetesClustersSupplier {
     );
     return clusters.items.map(entity => {
       const annotations = entity.metadata.annotations!;
+      const authProvider = annotations[ANNOTATION_KUBERNETES_AUTH_PROVIDER];
+      if (authProvider === 'serviceAccount') {
+        throw new Error(
+          `Invalid cluster '${entity.metadata.name}': authProvider 'serviceAccount' is not supported by the catalog cluster locator`,
+        );
+      }
+
       const clusterDetails: ClusterDetails = {
         name: entity.metadata.name,
         title: entity.metadata.title,

@@ -10,10 +10,13 @@ For some use cases, you may want to define custom [rules](../references/glossary
 
 Plugins should export a rule factory that provides type-safety that ensures compatibility with the plugin's backend. The catalog plugin exports `createCatalogPermissionRule` from `@backstage/plugin-catalog-backend/alpha` for this purpose. Note: the `/alpha` path segment is temporary until this API is marked as stable. For this example, we'll define the rule and create a condition in a new file called `permissionRules.ts`. Create this file in the `src/` directory of your permission policy module (the package scaffolded by `yarn new` in the [Getting Started](./getting-started.md) section).
 
-We use `zod` and `@backstage/catalog-model` in our example below. To install them run:
+Permission rule parameter schemas accept libraries that implement Standard
+Schema, validate synchronously, and support JSON Schema conversion. Async
+refinements and transforms are not supported. We use Zod v4 and
+`@backstage/catalog-model` in the example below. To install them, run:
 
 ```bash title="from your Backstage root directory"
-yarn --cwd plugins/permission-backend-module-custom add zod@3 @backstage/catalog-model
+yarn --cwd plugins/permission-backend-module-custom add zod@4 @backstage/catalog-model
 ```
 
 ```ts title="plugins/permission-backend-module-custom/src/permissionRules.ts"
@@ -23,7 +26,7 @@ import {
   createConditionFactory,
   createPermissionRule,
 } from '@backstage/plugin-permission-node';
-import { z } from 'zod/v3';
+import * as z from 'zod';
 
 export const isInSystemRule = createPermissionRule({
   name: 'IS_IN_SYSTEM',
@@ -103,7 +106,7 @@ export class CustomPolicy implements PermissionPolicy {
 
 Now that we have a custom rule defined and added to our policy, we need provide it to the catalog plugin. This step is important because the catalog plugin will use the rule's `toQuery` and `apply` methods while evaluating conditional authorize results. There's no guarantee that the catalog and permission backends are running on the same server, so we must explicitly link the rule to ensure that it's available at runtime.
 
-:::warning Warning
+:::warning
 
 The `PermissionsRegistryService` is a fairly new addition and not yet supported by all plugins as they might still be using the old `createPermissionIntegrationRouter` that cannot be extended. If you encounter errors when installing custom rules for a plugin, the plugin may need to be switched to using the `PermissionsRegistryService` first.
 

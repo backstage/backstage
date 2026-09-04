@@ -594,6 +594,14 @@ export interface TaskContext {
   taskId?: string;
   // (undocumented)
   updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void>;
+  // (undocumented)
+  updateStepState?(options: {
+    stepId: string;
+    status: 'completed';
+    output: {
+      [name: string]: JsonValue;
+    };
+  }): Promise<void>;
 }
 
 // @public @deprecated

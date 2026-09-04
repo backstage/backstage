@@ -140,7 +140,8 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Create a merge request with a custom commit message',
+    description:
+      'Create a merge request that auto-merges when the pipeline succeeds',
     example: yaml.stringify({
       steps: [
         {

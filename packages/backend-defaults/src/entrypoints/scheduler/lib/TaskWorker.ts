@@ -34,6 +34,7 @@ import {
   serializeError,
 } from './util';
 import { SchedulerServiceTaskFunction } from '@backstage/backend-plugin-api';
+import { TaskStatePoller } from './TaskStatePoller';
 
 const DEFAULT_WORK_CHECK_FREQUENCY = Duration.fromObject({ seconds: 5 });
 
@@ -50,6 +51,7 @@ export class TaskWorker {
   private readonly fn: SchedulerServiceTaskFunction;
   private readonly knex: Knex;
   private readonly logger: LoggerService;
+  private readonly poller: TaskStatePoller;
   private readonly workCheckFrequency: Duration;
 
   constructor(
@@ -57,12 +59,14 @@ export class TaskWorker {
     fn: SchedulerServiceTaskFunction,
     knex: Knex,
     logger: LoggerService,
+    poller: TaskStatePoller,
     workCheckFrequency: Duration = DEFAULT_WORK_CHECK_FREQUENCY,
   ) {
     this.taskId = taskId;
     this.fn = fn;
     this.knex = knex;
     this.logger = logger;
+    this.poller = poller;
     this.workCheckFrequency = workCheckFrequency;
   }
 
@@ -78,10 +82,10 @@ export class TaskWorker {
     );
 
     let workCheckFrequency = this.workCheckFrequency;
-    const isDuration = settings?.cadence.startsWith('P');
+    const isDuration = settings.cadence.startsWith('P');
     if (isDuration) {
       const cadence = Duration.fromISO(settings.cadence);
-      if (cadence < workCheckFrequency) {
+      if (cadence.as('milliseconds') > 0 && cadence < workCheckFrequency) {
         workCheckFrequency = cadence;
       }
     }
@@ -93,11 +97,13 @@ export class TaskWorker {
           await this.performInitialWait(settings, options.signal);
 
           while (!options.signal.aborted) {
-            const runResult = await this.runOnce(options.signal);
+            const runResult = await this.runOnce(
+              options.signal,
+              workCheckFrequency,
+            );
             if (runResult.result === 'abort') {
               break;
             }
-            await sleep(workCheckFrequency, options.signal);
           }
 
           this.logger.info(`Task worker finished: ${this.taskId}`);
@@ -232,31 +238,39 @@ export class TaskWorker {
 
   /**
    * Makes a single attempt at running the task to completion, if ready.
-   *
-   * @returns The outcome of the attempt
+   * Waits for the shared poller to signal readiness instead of querying
+   * the database directly.
    */
   private async runOnce(
     signal: AbortSignal,
+    workCheckFrequency: Duration,
   ): Promise<
-    | { result: 'not-ready-yet' }
     | { result: 'abort' }
+    | { result: 'claim-lost' }
     | { result: 'failed' }
     | { result: 'completed' }
   > {
-    const findResult = await this.findReadyTask();
-    if (
-      findResult.result === 'not-ready-yet' ||
-      findResult.result === 'abort'
-    ) {
+    const findResult = await this.poller.waitForTask(this.taskId, {
+      signal,
+      pollInterval: workCheckFrequency,
+    });
+    if (findResult.result === 'abort') {
       return findResult;
     }
+    return this.claimAndRun(findResult.settings, signal);
+  }
 
-    const taskSettings = findResult.settings;
+  private async claimAndRun(
+    taskSettings: TaskSettingsV2,
+    signal: AbortSignal,
+  ): Promise<
+    { result: 'claim-lost' } | { result: 'failed' } | { result: 'completed' }
+  > {
     const ticket = uuid();
 
     const claimed = await this.tryClaimTask(ticket, taskSettings);
     if (!claimed) {
-      return { result: 'not-ready-yet' };
+      return { result: 'claim-lost' };
     }
 
     // Abort the task execution either if the worker is stopped, or if the
@@ -405,49 +419,6 @@ export class TaskWorker {
       this.logger.warn(
         `Failed to check liveness for task "${this.taskId}", ${e}`,
       );
-    }
-  }
-
-  /**
-   * Check if the task is ready to run
-   */
-  async findReadyTask(): Promise<
-    | { result: 'not-ready-yet' }
-    | { result: 'abort' }
-    | { result: 'ready'; settings: TaskSettingsV2 }
-  > {
-    const [row] = await this.knex<DbTasksRow>(DB_TASKS_TABLE)
-      .where('id', '=', this.taskId)
-      .select({
-        settingsJson: 'settings_json',
-        ready: this.knex.raw(
-          `CASE
-            WHEN next_run_start_at <= ? AND current_run_ticket IS NULL THEN TRUE
-            ELSE FALSE
-          END`,
-          [this.knex.fn.now()],
-        ),
-      });
-
-    if (!row) {
-      this.logger.info(
-        'No longer able to find task; aborting and assuming that it has been unregistered or expired',
-      );
-      return { result: 'abort' };
-    } else if (!row.ready) {
-      return { result: 'not-ready-yet' };
-    }
-
-    try {
-      const obj = JSON.parse(row.settingsJson);
-      const settings = taskSettingsV2Schema.parse(obj);
-      return { result: 'ready', settings };
-    } catch (e) {
-      this.logger.info(
-        `Task "${this.taskId}" is no longer able to parse task settings; aborting and assuming that a ` +
-          `newer version of the task has been issued and being handled by other workers, ${e}`,
-      );
-      return { result: 'abort' };
     }
   }
 

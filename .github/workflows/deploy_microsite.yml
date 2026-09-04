@@ -27,37 +27,65 @@ jobs:
         with:
           egress-policy: audit
 
-      - name: find latest release branch
+      - name: find latest release ref
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         id: find-release
         with:
           script: |
-            const data = await octokit.paginate(github.rest.repos.listBranches, {
+            const versionValue = version =>
+              version
+                .split('.')
+                .reduce((val, part) => val * 1000 + Number(part), 0)
+
+            const tags = await octokit.paginate(github.rest.repos.listTags, {
               owner: context.repo.owner,
               repo: context.repo.repo,
               per_page: 100,
             })
 
-            const [{branch}] = data
-              .map(i => i.name)
-              .filter(branch => branch.match(/^patch\/v\d+\.\d+\.\d+$/))
-              .map(branch => ({
-                branch,
-                val: branch
-                  .split('/')[1]
-                  .slice(1)
-                  .split('.')
-                  .reduce((val, part) => Number(val) * 1000 + Number(part))
-              }))
+            const [latest] = tags
+              .map(tag => tag.name)
+              .filter(tag => tag.match(/^v\d+\.\d+\.\d+$/))
+              .map(tag => ({ tag, val: versionValue(tag.slice(1)) }))
               .sort((a, b) => b.val - a.val)
 
-            return branch
+            if (!latest) {
+              throw new Error('Unable to find a main line release to build stable docs from')
+            }
+
+            // Each release line has a single patch branch, named after its first
+            // release, that collects any patch releases made from it. We prefer
+            // that branch over the release tag, as it allows the stable docs to be
+            // edited after the release.
+            const [major, minor] = latest.tag.slice(1).split('.')
+            const branch = `patch/v${major}.${minor}.0`
+
+            try {
+              await github.rest.repos.getBranch({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                branch,
+              })
+
+              core.info(`Building stable docs from branch ${branch}`)
+              return `refs/heads/${branch}`
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error
+              }
+            }
+
+            // The patch branch has not been created yet, which is the case in the
+            // window right after a main line release. Use the release tag until it
+            // shows up, rather than the previous release line.
+            core.info(`Found no ${branch} branch, building stable docs from tag ${latest.tag}`)
+            return `refs/tags/${latest.tag}`
           result-encoding: string
 
       - name: checkout latest release
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
-          ref: refs/heads/${{ steps.find-release.outputs.result }}
+          ref: ${{ steps.find-release.outputs.result }}
 
       - name: Use Node.js 22.x
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
@@ -233,7 +261,7 @@ jobs:
       - name: checkout latest release
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
-          ref: refs/heads/${{ needs.stable.outputs.release }}
+          ref: ${{ needs.stable.outputs.release }}
 
       - name: microsite yarn install
         run: yarn install --immutable

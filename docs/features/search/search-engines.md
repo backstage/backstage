@@ -5,7 +5,7 @@ description: Choosing and configuring your search engine for Backstage
 ---
 
 Backstage supports 3 search engines by default, an in-memory engine called [Lunr](#lunr), [Postgres](#postgres)
-and [Elasticsearch](#elasticsearch).
+and [Elasticsearch/OpenSearch](#elasticsearch-7x-and-opensearch).
 
 ## Lunr
 
@@ -31,7 +31,7 @@ backend.add(import('@backstage/plugin-search-backend'));
 backend.start();
 ```
 
-:::note Note
+:::note
 
 Lunr is appropriate as a zero-config search engine when developing
 other parts of Backstage locally, however its use is highly discouraged when
@@ -102,9 +102,9 @@ search:
 
 The Postgres documentation on [Highlighting Results](https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-HEADLINE) has more details.
 
-## Elasticsearch
+## Elasticsearch (7.x) and OpenSearch
 
-Backstage supports Elasticsearch (and OpenSearch) search engine connections,
+Backstage supports Elasticsearch and OpenSearch search engine connections,
 indexing and querying out of the box. Available configuration options enable
 usage of either AWS or Elastic.co hosted solutions, or a custom self-hosted solution.
 
@@ -348,7 +348,7 @@ backend.start();
 
 The `getAuthHeaders` method is called before each request, allowing for just-in-time token retrieval and automatic rotation. When an auth provider is configured, it takes precedence over any static authentication in `app-config.yaml`.
 
-:::note Note
+:::note
 
 Custom authentication is supported for the `elastic`, `opensearch`, and default providers. The `aws` provider uses AWS SigV4 request signing and does not support custom auth providers.
 

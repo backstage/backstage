@@ -33,8 +33,9 @@ import { getErrorMessage } from './helpers';
  */
 export const createTriggerGitlabPipelineAction = (options: {
   integrations: ScmIntegrationRegistry;
+  requireScmUserCredentials?: boolean;
 }) => {
-  const { integrations } = options;
+  const { integrations, requireScmUserCredentials } = options;
   return createTemplateAction({
     id: 'gitlab:pipeline:trigger',
     description: 'Triggers a GitLab Pipeline.',
@@ -86,7 +87,12 @@ export const createTriggerGitlabPipelineAction = (options: {
         ctx.input;
 
       const { host } = parseRepoUrl(repoUrl, integrations);
-      const api = getClient({ host, integrations, token });
+      const api = getClient({
+        host,
+        integrations,
+        token,
+        requireScmUserCredentials,
+      });
 
       try {
         ({ pipelineTriggerToken, pipelineTriggerId } = await ctx.checkpoint({

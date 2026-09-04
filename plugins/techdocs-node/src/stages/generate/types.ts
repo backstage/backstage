@@ -36,12 +36,30 @@ export type GeneratorOptions = {
 };
 
 /**
+ * TechDocs container runner pull options, which can be used to specify registry credentials for pulling private images.
+ * {@link https://github.com/apocas/dockerode?tab=readme-ov-file#pull-from-private-repos}
+ * @public
+ */
+export type ContainerRunnerPullOptions = {
+  authconfig?: {
+    username?: string;
+    password?: string;
+    auth?: string;
+    email?: string;
+    serveraddress?: string;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+};
+
+/**
  * The techdocs generator configurations options.
  */
 export type GeneratorConfig = {
   runIn: GeneratorRunInType;
   dockerImage?: string;
   pullImage?: boolean;
+  pullOptions?: ContainerRunnerPullOptions;
   omitTechdocsCoreMkdocsPlugin?: boolean;
   legacyCopyReadmeMdToIndexMd?: boolean;
   defaultPlugins?: string[];
@@ -127,16 +145,6 @@ export interface TechDocsContainerRunner {
     envVars?: Record<string, string>;
     pullImage?: boolean;
     defaultUser?: boolean;
-    pullOptions?: {
-      authconfig?: {
-        username?: string;
-        password?: string;
-        auth?: string;
-        email?: string;
-        serveraddress?: string;
-        [key: string]: unknown;
-      };
-      [key: string]: unknown;
-    };
+    pullOptions?: ContainerRunnerPullOptions;
   }): Promise<void>;
 }
