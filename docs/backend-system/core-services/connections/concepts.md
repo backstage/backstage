@@ -68,8 +68,12 @@ Most connection types have `multiton` cardinality, which allows more than one
 configured instance with a unique identity. A `singleton` type allows one
 entry of that type.
 
-The built-in `aws` type is a singleton because its authentication entries
-represent multiple AWS accounts within one connection.
+The connection type's [lookup strategy](#lookup-strategies) determines the
+identity field. For host-based types the identity is `host`, so two GitHub
+connections are valid as long as their hosts differ. The AWS type is a
+singleton, so identity is not derived from a connection field — individual
+accounts are instead represented as authentication entries within one
+connection.
 
 ## Authentication method
 

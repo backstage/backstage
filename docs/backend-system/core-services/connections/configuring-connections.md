@@ -16,7 +16,7 @@ the connections framework is developed.
 
 ## Configure a connection
 
-The following connection gives backend plugins token-authenticated access to
+The following connection gives backend plugins and modules token-authenticated access to
 GitHub:
 
 ```yaml title="app-config.yaml"

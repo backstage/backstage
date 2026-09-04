@@ -97,6 +97,35 @@ account.
 entries a plugin can see. The selection order applies only to the entries that
 remain visible to that plugin.
 
+For example, to give one plugin access to a specific account and another
+plugin access to a different account:
+
+```yaml title="app-config.yaml"
+connections:
+  - type: aws
+    auth:
+      - method: account
+        title: Catalog account
+        accountId: '111111111111'
+        match:
+          plugins:
+            - catalog
+      - method: account
+        title: Scaffolder account
+        accountId: '222222222222'
+        match:
+          plugins:
+            - scaffolder
+```
+
+The `catalog` plugin only sees account `111111111111`, and the `scaffolder`
+plugin only sees account `222222222222`.
+
+An entry marked `mainAccount` is subject to the same scoping rules. When a
+lookup falls back to the main account, the main-account entry must be visible
+to the calling plugin. If the main-account entry is scoped to other plugins,
+the fallback does not apply and the lookup returns no match.
+
 ## Consume an AWS connection
 
 ```ts

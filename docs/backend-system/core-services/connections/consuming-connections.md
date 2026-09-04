@@ -1,10 +1,10 @@
 ---
 id: consuming-connections
 title: Consume connections
-description: Declare and look up connections from a Backstage backend plugin
+description: Declare and look up connections from a Backstage backend plugin or module
 ---
 
-A backend plugin consumes a connection by adding a
+A backend plugin or module consumes a connection by adding a
 [connection declaration](./concepts.md#connection-declaration), requesting the
 plugin-scoped [connection service](./concepts.md#connection-service), and
 calling `ConnectionsService.find` with a
