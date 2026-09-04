@@ -26,8 +26,8 @@ import { FieldError } from '../FieldError';
 import type { PasswordFieldProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { PasswordFieldDefinition } from './definition';
-import { RiEyeLine } from '../../icons/RiEyeLine';
-import { RiEyeOffLine } from '../../icons/RiEyeOffLine';
+import { RiEyeLine } from '@backstage/ui-icons/RiEyeLine';
+import { RiEyeOffLine } from '@backstage/ui-icons/RiEyeOffLine';
 
 /**
  * A text input for password entry with a toggleable visibility button, integrated label, and inline error display.

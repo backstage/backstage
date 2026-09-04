@@ -1,0 +1,84 @@
+{
+  "remixIconVersion": "4.8.0",
+  "remixIconRepository": "https://github.com/Remix-Design/RemixIcon",
+  "license": "Apache-2.0",
+  "maintenance": "SVG files in svg/ are copied from Remix Icon. When adding icons, copy the SVG from Remix Icon v4.8.x into svg/ and run `yarn workspace @backstage/ui-icons generate`.",
+  "icons": {
+    "RiAddLine": {
+      "svg": "add-line.svg",
+      "remixIconSource": "remixicon@4.8.0/icons/System/add-line.svg"
+    },
+    "RiAlertLine": {
+      "svg": "alert-line.svg",
+      "remixIconSource": "remixicon@4.8.0/icons/System/alert-line.svg"
+    },
+    "RiArrowDownSLine": {
+      "svg": "arrow-down-s-line.svg",
+      "remixIconSource": "remixicon@4.8.0/icons/Arrows/arrow-down-s-line.svg"
+    },
+    "RiArrowLeftSLine": {
+      "svg": "arrow-left-s-line.svg",
+      "remixIconSource": "remixicon@4.8.0/icons/Arrows/arrow-left-s-line.svg"
+    },
+    "RiArrowRightSLine": {
+      "svg": "arrow-right-s-line.svg",
+      "remixIconSource": "remixicon@4.8.0/icons/Arrows/arrow-right-s-line.svg"
+    },
+    "RiArrowUpLine": {
+      "svg": "arrow-up-line.svg",
+      "remixIconSource": "remixicon@4.8.0/icons/Arrows/arrow-up-line.svg"
+    },
+    "RiCalendarLine": {
+      "svg": "calendar-line.svg",
+      "remixIconSource": "remixicon@4.8.0/icons/Business/calendar-line.svg"
+    },
+    "RiCheckLine": {
+      "svg": "check-line.svg",
+      "remixIconSource": "remixicon@4.8.0/icons/System/check-line.svg"
+    },
+    "RiCloseCircleLine": {
+      "svg": "close-circle-line.svg",
+      "remixIconSource": "remixicon@4.8.0/icons/System/close-circle-line.svg"
+    },
+    "RiCloseLine": {
+      "svg": "close-line.svg",
+      "remixIconSource": "remixicon@4.8.0/icons/System/close-line.svg"
+    },
+    "RiErrorWarningLine": {
+      "svg": "error-warning-line.svg",
+      "remixIconSource": "remixicon@4.8.0/icons/System/error-warning-line.svg"
+    },
+    "RiEyeLine": {
+      "svg": "eye-line.svg",
+      "remixIconSource": "remixicon@4.8.0/icons/System/eye-line.svg"
+    },
+    "RiEyeOffLine": {
+      "svg": "eye-off-line.svg",
+      "remixIconSource": "remixicon@4.8.0/icons/System/eye-off-line.svg"
+    },
+    "RiInformationLine": {
+      "svg": "information-line.svg",
+      "remixIconSource": "remixicon@4.8.0/icons/System/information-line.svg"
+    },
+    "RiLoader4Line": {
+      "svg": "loader-4-line.svg",
+      "remixIconSource": "remixicon@4.8.0/icons/System/loader-4-line.svg"
+    },
+    "RiMoreLine": {
+      "svg": "more-line.svg",
+      "remixIconSource": "remixicon@4.8.0/icons/System/more-line.svg"
+    },
+    "RiSearch2Line": {
+      "svg": "search-2-line.svg",
+      "remixIconSource": "remixicon@4.8.0/icons/System/search-2-line.svg"
+    },
+    "RiShapesLine": {
+      "svg": "shapes-line.svg",
+      "remixIconSource": "remixicon@4.8.0/icons/Design/shapes-line.svg"
+    },
+    "RiSubtractLine": {
+      "svg": "subtract-line.svg",
+      "remixIconSource": "remixicon@4.8.0/icons/System/subtract-line.svg"
+    }
+  }
+}

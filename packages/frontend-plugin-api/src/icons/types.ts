@@ -43,11 +43,12 @@ export type IconComponent = ComponentType<{
  * @remarks
  *
  * Icon elements should behave like rendering a plain icon directly, for example
- * from `@remixicon/react`, and are expected to be sized by the surrounding UI.
- * Icons should be exactly 24x24 pixels in size by default.
+ * from `@backstage/ui-icons` or `@remixicon/react`, and are expected to be sized
+ * by the surrounding UI. Icons should be exactly 24x24 pixels in size by default.
  *
- * Using icons from `@remixicon/react` is preferred. Using icons from
- * `@material-ui/icons` or `AppIcon` and its variants from
+ * Using icons from `@backstage/ui-icons` is preferred for tree-shakeable bundles.
+ * `@remixicon/react` is still supported but pulls the entire icon barrel into
+ * consumer bundles. Using icons from `@material-ui/icons` or `AppIcon` and its
  * `@backstage/core-components` is supported while migrating, but deprecated.
  * When using those icons, you must set `fontSize="inherit"` on the element.
  *

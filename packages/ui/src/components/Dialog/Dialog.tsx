@@ -29,7 +29,7 @@ import type {
   DialogBodyProps,
   DialogFooterProps,
 } from './types';
-import { RiCloseLine } from '../../icons/RiCloseLine';
+import { RiCloseLine } from '@backstage/ui-icons/RiCloseLine';
 import { Button } from '../Button';
 import { useDefinition } from '../../hooks/useDefinition';
 import {

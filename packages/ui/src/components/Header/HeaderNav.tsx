@@ -22,7 +22,7 @@ import {
   type NavigateOptions,
 } from 'react-router-dom';
 import { Button as RAButton } from 'react-aria-components';
-import { RiArrowDownSLine } from '../../icons/RiArrowDownSLine';
+import { RiArrowDownSLine } from '@backstage/ui-icons/RiArrowDownSLine';
 import {
   useDefinition,
   type UseDefinitionResult,

@@ -18,7 +18,7 @@ import type { PluginHeaderBreadcrumbEntry } from './types';
 import { Link } from '../Link';
 import { Text } from '../Text';
 import { MenuTrigger, Menu, MenuItem } from '../Menu';
-import { RiArrowRightSLine } from '../../icons/RiArrowRightSLine';
+import { RiArrowRightSLine } from '@backstage/ui-icons/RiArrowRightSLine';
 import {
   Focusable,
   Breadcrumb as RACBreadcrumb,

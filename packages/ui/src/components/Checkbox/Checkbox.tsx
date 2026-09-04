@@ -19,8 +19,8 @@ import { Checkbox as RACheckbox } from 'react-aria-components';
 import type { CheckboxProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { CheckboxDefinition } from './definition';
-import { RiCheckLine } from '../../icons/RiCheckLine';
-import { RiSubtractLine } from '../../icons/RiSubtractLine';
+import { RiCheckLine } from '@backstage/ui-icons/RiCheckLine';
+import { RiSubtractLine } from '@backstage/ui-icons/RiSubtractLine';
 
 /**
  * A form checkbox input with support for indeterminate state and accessible labeling.

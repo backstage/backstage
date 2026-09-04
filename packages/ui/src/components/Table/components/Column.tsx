@@ -18,7 +18,7 @@ import { Column as ReactAriaColumn } from 'react-aria-components';
 import { useDefinition } from '../../../hooks/useDefinition';
 import { ColumnDefinition } from '../definition';
 import { ColumnProps } from '../types';
-import { RiArrowUpLine } from '../../../icons/RiArrowUpLine';
+import { RiArrowUpLine } from '@backstage/ui-icons/RiArrowUpLine';
 
 /**
  * A table column header cell with an optional sort toggle and support for resizable widths.

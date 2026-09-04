@@ -24,8 +24,8 @@ import {
   Heading,
   Button,
 } from 'react-aria-components';
-import { RiArrowLeftSLine } from '../../icons/RiArrowLeftSLine';
-import { RiArrowRightSLine } from '../../icons/RiArrowRightSLine';
+import { RiArrowLeftSLine } from '@backstage/ui-icons/RiArrowLeftSLine';
+import { RiArrowRightSLine } from '@backstage/ui-icons/RiArrowRightSLine';
 import { useDefinition } from '../../hooks/useDefinition';
 import { DateRangePickerCalendarDefinition } from './definition';
 

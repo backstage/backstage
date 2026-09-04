@@ -22,7 +22,7 @@ import {
   type Key,
 } from 'react-aria-components';
 import { useFilter } from 'react-aria';
-import { RiCloseCircleLine } from '../../icons/RiCloseCircleLine';
+import { RiCloseCircleLine } from '@backstage/ui-icons/RiCloseCircleLine';
 import { useDefinition } from '../../hooks/useDefinition';
 import { SelectContentDefinition } from './definition';
 import { SelectListBox } from './SelectListBox';

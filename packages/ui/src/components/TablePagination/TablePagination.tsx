@@ -21,8 +21,8 @@ import { Select } from '../Select';
 import type { TablePaginationProps, PageSizeOption } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { TablePaginationDefinition } from './definition';
-import { RiArrowLeftSLine } from '../../icons/RiArrowLeftSLine';
-import { RiArrowRightSLine } from '../../icons/RiArrowRightSLine';
+import { RiArrowLeftSLine } from '@backstage/ui-icons/RiArrowLeftSLine';
+import { RiArrowRightSLine } from '@backstage/ui-icons/RiArrowRightSLine';
 import { useMemo } from 'react';
 
 function getOptionValue(option: number | PageSizeOption): number {

@@ -27,8 +27,8 @@ import {
   OverlayTriggerStateContext,
 } from 'react-aria-components';
 import { useOverlayTriggerState } from 'react-stately';
-import { RiSearch2Line } from '../../icons/RiSearch2Line';
-import { RiCloseCircleLine } from '../../icons/RiCloseCircleLine';
+import { RiSearch2Line } from '@backstage/ui-icons/RiSearch2Line';
+import { RiCloseCircleLine } from '@backstage/ui-icons/RiCloseCircleLine';
 import {
   useDefinition,
   type UseDefinitionResult,

@@ -16,11 +16,11 @@
 
 import { forwardRef, Ref, isValidElement, ReactElement } from 'react';
 import { ProgressBar } from 'react-aria-components';
-import { RiLoader4Line } from '../../icons/RiLoader4Line';
-import { RiInformationLine } from '../../icons/RiInformationLine';
-import { RiCheckLine } from '../../icons/RiCheckLine';
-import { RiErrorWarningLine } from '../../icons/RiErrorWarningLine';
-import { RiAlertLine } from '../../icons/RiAlertLine';
+import { RiLoader4Line } from '@backstage/ui-icons/RiLoader4Line';
+import { RiInformationLine } from '@backstage/ui-icons/RiInformationLine';
+import { RiCheckLine } from '@backstage/ui-icons/RiCheckLine';
+import { RiErrorWarningLine } from '@backstage/ui-icons/RiErrorWarningLine';
+import { RiAlertLine } from '@backstage/ui-icons/RiAlertLine';
 import type { AlertProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { AlertDefinition } from './definition';

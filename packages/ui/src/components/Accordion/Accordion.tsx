@@ -22,7 +22,7 @@ import {
   DisclosureGroup as RADisclosureGroup,
   Heading as RAHeading,
 } from 'react-aria-components';
-import { RiArrowDownSLine } from '../../icons/RiArrowDownSLine';
+import { RiArrowDownSLine } from '@backstage/ui-icons/RiArrowDownSLine';
 import type {
   AccordionProps,
   AccordionTriggerProps,

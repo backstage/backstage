@@ -60,9 +60,9 @@ import type {
   MenuListBoxItemProps,
   MenuAutocompleteListBoxProps,
 } from './types';
-import { RiArrowRightSLine } from '../../icons/RiArrowRightSLine';
-import { RiCheckLine } from '../../icons/RiCheckLine';
-import { RiCloseCircleLine } from '../../icons/RiCloseCircleLine';
+import { RiArrowRightSLine } from '@backstage/ui-icons/RiArrowRightSLine';
+import { RiCheckLine } from '@backstage/ui-icons/RiCheckLine';
+import { RiCloseCircleLine } from '@backstage/ui-icons/RiCloseCircleLine';
 import { isInternalLink } from '../../utils/linkUtils';
 import { getNodeText } from '../../analytics/getNodeText';
 import { Box } from '../Box';

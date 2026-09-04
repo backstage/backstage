@@ -1,0 +1,87 @@
+{
+  "name": "@backstage/ui-icons",
+  "version": "0.1.0-next.0",
+  "description": "Tree-shakeable Remix Icon components for Backstage UI and plugins",
+  "backstage": {
+    "role": "web-library"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage",
+    "icons",
+    "remixicon"
+  ],
+  "homepage": "https://ui.backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/ui-icons"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "remixIcon": {
+    "version": "4.8.0",
+    "repository": "https://github.com/Remix-Design/RemixIcon",
+    "license": "Apache-2.0",
+    "maintenance": "SVG files in svg/ are copied from Remix Icon. See svg/README.md and icons.manifest.json."
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json",
+    "./RiAddLine": "./src/icons/RiAddLine.tsx",
+    "./RiAlertLine": "./src/icons/RiAlertLine.tsx",
+    "./RiArrowDownSLine": "./src/icons/RiArrowDownSLine.tsx",
+    "./RiArrowLeftSLine": "./src/icons/RiArrowLeftSLine.tsx",
+    "./RiArrowRightSLine": "./src/icons/RiArrowRightSLine.tsx",
+    "./RiArrowUpLine": "./src/icons/RiArrowUpLine.tsx",
+    "./RiCalendarLine": "./src/icons/RiCalendarLine.tsx",
+    "./RiCheckLine": "./src/icons/RiCheckLine.tsx",
+    "./RiCloseCircleLine": "./src/icons/RiCloseCircleLine.tsx",
+    "./RiCloseLine": "./src/icons/RiCloseLine.tsx",
+    "./RiErrorWarningLine": "./src/icons/RiErrorWarningLine.tsx",
+    "./RiEyeLine": "./src/icons/RiEyeLine.tsx",
+    "./RiEyeOffLine": "./src/icons/RiEyeOffLine.tsx",
+    "./RiInformationLine": "./src/icons/RiInformationLine.tsx",
+    "./RiLoader4Line": "./src/icons/RiLoader4Line.tsx",
+    "./RiMoreLine": "./src/icons/RiMoreLine.tsx",
+    "./RiSearch2Line": "./src/icons/RiSearch2Line.tsx",
+    "./RiShapesLine": "./src/icons/RiShapesLine.tsx",
+    "./RiSubtractLine": "./src/icons/RiSubtractLine.tsx"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist",
+    "svg"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "generate": "node scripts/generate-icons.mjs",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@testing-library/dom": "^10.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^16.0.0",
+    "@types/react": "^18.0.0",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2"
+  },
+  "peerDependencies": {
+    "@types/react": "^18.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  }
+}
