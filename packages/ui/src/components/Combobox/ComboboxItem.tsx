@@ -15,7 +15,7 @@
  */
 
 import { ListBoxItem, Text } from 'react-aria-components';
-import { RiCheckLine } from '@remixicon/react';
+import { RiCheckLine } from '../../icons/RiCheckLine';
 import { Avatar } from '../Avatar';
 import {
   useDefinition,

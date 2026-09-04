@@ -29,7 +29,7 @@ import type {
   DialogBodyProps,
   DialogFooterProps,
 } from './types';
-import { RiCloseLine } from '@remixicon/react';
+import { RiCloseLine } from '../../icons/RiCloseLine';
 import { Button } from '../Button';
 import { useDefinition } from '../../hooks/useDefinition';
 import {

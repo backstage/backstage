@@ -19,7 +19,8 @@ import {
   GridListItem as RAGridListItem,
   Text,
 } from 'react-aria-components';
-import { RiCheckLine, RiMoreLine } from '@remixicon/react';
+import { RiCheckLine } from '../../icons/RiCheckLine';
+import { RiMoreLine } from '../../icons/RiMoreLine';
 import { useDefinition } from '../../hooks/useDefinition';
 import { ListDefinition, ListRowDefinition } from './definition';
 import type { ListProps, ListRowProps } from './types';

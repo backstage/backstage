@@ -15,7 +15,7 @@
  */
 
 import { Group, DateInput, DateSegment, Button } from 'react-aria-components';
-import { RiCalendarLine } from '@remixicon/react';
+import { RiCalendarLine } from '../../icons/RiCalendarLine';
 import { useDefinition } from '../../hooks/useDefinition';
 import { DatePickerGroupDefinition } from './definition';
 

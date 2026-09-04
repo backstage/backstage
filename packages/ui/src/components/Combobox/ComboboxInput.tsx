@@ -15,7 +15,7 @@
  */
 
 import { Button, Group, Input } from 'react-aria-components';
-import { RiArrowDownSLine } from '@remixicon/react';
+import { RiArrowDownSLine } from '../../icons/RiArrowDownSLine';
 import { useDefinition } from '../../hooks/useDefinition';
 import { ComboboxInputDefinition } from './definition';
 import type { ComboboxInputOwnProps } from './types';

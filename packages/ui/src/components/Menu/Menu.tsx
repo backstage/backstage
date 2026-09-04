@@ -60,11 +60,9 @@ import type {
   MenuListBoxItemProps,
   MenuAutocompleteListBoxProps,
 } from './types';
-import {
-  RiArrowRightSLine,
-  RiCheckLine,
-  RiCloseCircleLine,
-} from '@remixicon/react';
+import { RiArrowRightSLine } from '../../icons/RiArrowRightSLine';
+import { RiCheckLine } from '../../icons/RiCheckLine';
+import { RiCloseCircleLine } from '../../icons/RiCloseCircleLine';
 import { isInternalLink } from '../../utils/linkUtils';
 import { getNodeText } from '../../analytics/getNodeText';
 import { Box } from '../Box';

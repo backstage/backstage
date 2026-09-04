@@ -22,7 +22,7 @@ import {
   Button as ReactAriaButton,
 } from 'react-aria-components';
 import { forwardRef, type ReactNode } from 'react';
-import { RiCloseCircleLine } from '@remixicon/react';
+import { RiCloseCircleLine } from '../../icons/RiCloseCircleLine';
 import { useDefinition } from '../../hooks/useDefinition';
 import { TagGroupDefinition, TagDefinition } from './definition';
 import { getNodeText } from '../../analytics/getNodeText';

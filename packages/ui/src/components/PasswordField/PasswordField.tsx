@@ -26,7 +26,8 @@ import { FieldError } from '../FieldError';
 import type { PasswordFieldProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { PasswordFieldDefinition } from './definition';
-import { RiEyeLine, RiEyeOffLine } from '@remixicon/react';
+import { RiEyeLine } from '../../icons/RiEyeLine';
+import { RiEyeOffLine } from '../../icons/RiEyeOffLine';
 
 /**
  * A text input for password entry with a toggleable visibility button, integrated label, and inline error display.

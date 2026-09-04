@@ -23,7 +23,7 @@ import { Children, useMemo, useRef } from 'react';
 import { useIsomorphicLayoutEffect } from '../../hooks/useIsomorphicLayoutEffect';
 import { Box } from '../Box';
 import { Link } from '../Link';
-import { RiShapesLine } from '@remixicon/react';
+import { RiShapesLine } from '../../icons/RiShapesLine';
 import { Text } from '../Text';
 import { VisuallyHidden } from '../VisuallyHidden';
 import { PluginHeaderBreadcrumbs } from './PluginHeaderBreadcrumbs';

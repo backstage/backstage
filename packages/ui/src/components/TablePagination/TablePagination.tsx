@@ -21,7 +21,8 @@ import { Select } from '../Select';
 import type { TablePaginationProps, PageSizeOption } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { TablePaginationDefinition } from './definition';
-import { RiArrowLeftSLine, RiArrowRightSLine } from '@remixicon/react';
+import { RiArrowLeftSLine } from '../../icons/RiArrowLeftSLine';
+import { RiArrowRightSLine } from '../../icons/RiArrowRightSLine';
 import { useMemo } from 'react';
 
 function getOptionValue(option: number | PageSizeOption): number {

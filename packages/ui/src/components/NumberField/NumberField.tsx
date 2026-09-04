@@ -20,7 +20,8 @@ import {
   Input,
   NumberField as AriaNumberField,
 } from 'react-aria-components';
-import { RiAddLine, RiSubtractLine } from '@remixicon/react';
+import { RiAddLine } from '../../icons/RiAddLine';
+import { RiSubtractLine } from '../../icons/RiSubtractLine';
 import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
 import { ButtonIcon } from '../ButtonIcon';

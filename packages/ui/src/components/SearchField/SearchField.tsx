@@ -22,7 +22,8 @@ import {
 } from 'react-aria-components';
 import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
-import { RiSearch2Line, RiCloseCircleLine } from '@remixicon/react';
+import { RiSearch2Line } from '../../icons/RiSearch2Line';
+import { RiCloseCircleLine } from '../../icons/RiCloseCircleLine';
 import { useDefinition } from '../../hooks/useDefinition';
 import { SearchFieldDefinition } from './definition';
 

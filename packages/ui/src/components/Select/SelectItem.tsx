@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RiCheckLine } from '@remixicon/react';
+import { RiCheckLine } from '../../icons/RiCheckLine';
 import { ListBoxItem, Text } from 'react-aria-components';
 import { Avatar } from '../Avatar';
 import {

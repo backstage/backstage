@@ -16,7 +16,7 @@
 
 import type { HeaderProps } from './types';
 import { Text } from '../Text';
-import { RiArrowRightSLine } from '@remixicon/react';
+import { RiArrowRightSLine } from '../../icons/RiArrowRightSLine';
 import { HeaderNav } from './HeaderNav';
 import { useDefinition } from '../../hooks/useDefinition';
 import { HeaderDefinition } from './definition';

@@ -16,7 +16,7 @@
 
 import { ReactNode } from 'react';
 import { Button, SelectValue } from 'react-aria-components';
-import { RiArrowDownSLine } from '@remixicon/react';
+import { RiArrowDownSLine } from '../../icons/RiArrowDownSLine';
 import { useDefinition } from '../../hooks/useDefinition';
 import { SelectTriggerDefinition } from './definition';
 

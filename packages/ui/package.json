@@ -49,7 +49,6 @@
     "@backstage/version-bridge": "workspace:^",
     "@braintree/sanitize-url": "^7.1.2",
     "@internationalized/date": "^3.12.0",
-    "@remixicon/react": ">=4.6.0 <4.9.0",
     "@tanstack/react-table": "^8.21.3",
     "clsx": "^2.1.1",
     "marked": "^15.0.12",
@@ -60,6 +59,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@remixicon/react": ">=4.6.0 <4.9.0",
     "@backstage/core-components": "workspace:^",
     "@storybook/react-vite": "^10.4.0",
     "@testing-library/dom": "^10.0.0",

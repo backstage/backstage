@@ -16,7 +16,7 @@
 
 import { forwardRef, Ref } from 'react';
 import { Button as RAButton, ProgressBar } from 'react-aria-components';
-import { RiLoader4Line } from '@remixicon/react';
+import { RiLoader4Line } from '../../icons/RiLoader4Line';
 import type { ButtonProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { ButtonDefinition } from './definition';
