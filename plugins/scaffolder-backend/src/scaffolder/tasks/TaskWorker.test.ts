@@ -25,6 +25,7 @@ import {
   TaskWorkerOptions,
 } from './TaskWorker';
 import { ScmIntegrations } from '@backstage/integration';
+import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import {
   DefaultTemplateActionRegistry,
   TemplateActionRegistry,
@@ -36,7 +37,7 @@ import {
   TaskBroker,
   TaskContext,
 } from '@backstage/plugin-scaffolder-node';
-import { WorkflowRunner } from './types';
+import { WorkflowResponse, WorkflowRunner } from './types';
 import ObservableImpl from 'zen-observable';
 import waitForExpect from 'wait-for-expect';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
@@ -96,6 +97,28 @@ describe('TaskWorker', () => {
   });
 
   const logger = loggerToWinstonLogger(mockServices.logger.mock());
+
+  it('should use the configured logger for worker errors', async () => {
+    const workerLogger = mockServices.logger.mock();
+    const recoveryError = new Error('Failed to recover tasks');
+    const taskWorker = await TaskWorker.create({
+      logger: workerLogger,
+      workingDirectory,
+      integrations,
+      taskBroker: {
+        recoverTasks: jest.fn().mockRejectedValue(recoveryError),
+      } as unknown as TaskBroker,
+      actionRegistry,
+      metrics: metricsServiceMock.mock(),
+    });
+
+    await taskWorker.recoverTasks();
+
+    expect(workerLogger.error).toHaveBeenCalledWith(
+      'Failed to recover tasks',
+      recoveryError,
+    );
+  });
 
   it('should call the default workflow runner when the apiVersion is beta3', async () => {
     const broker = new StorageTaskBroker(storage, logger);
@@ -643,7 +666,12 @@ describe('TaskWorker internals', () => {
     expect(inflightTasks.length).toBe(2);
   });
 
-  it('should keep claiming tasks after a claim fails', async () => {
+  it('should back off and keep claiming tasks after claims fail', async () => {
+    jest.useFakeTimers();
+    const randomSpy = jest
+      .spyOn(Math, 'random')
+      .mockReturnValueOnce(0)
+      .mockReturnValue(0.5);
     const workflowRunner: WorkflowRunner = {
       // Never resolves, so the worker parks at its concurrency limit once it
       // has successfully claimed a task.
@@ -652,10 +680,12 @@ describe('TaskWorker internals', () => {
       },
     };
 
+    const logger = mockServices.logger.mock();
+    const claimError = new Error('Connection terminated unexpectedly');
     let claimedTaskCount = 0;
     const taskWorker = new TaskWorkerConstructor({
       runners: { workflowRunner },
-      logger: mockServices.logger.mock(),
+      logger,
       taskBroker: {
         event$() {
           return new ObservableImpl<{ events: SerializedTaskEvent[] }>(
@@ -664,8 +694,8 @@ describe('TaskWorker internals', () => {
         },
         async claim() {
           claimedTaskCount++;
-          if (claimedTaskCount === 1) {
-            throw new Error('Connection terminated unexpectedly');
+          if (claimedTaskCount <= 8) {
+            throw claimError;
           }
           return {
             spec: {
@@ -679,11 +709,150 @@ describe('TaskWorker internals', () => {
       concurrentTasksLimit: 1,
     });
 
+    try {
+      taskWorker.start();
+      await jest.advanceTimersByTimeAsync(0);
+
+      const retryDelays = [
+        800, 2_000, 4_000, 8_000, 16_000, 32_000, 60_000, 60_000,
+      ];
+      for (const [index, retryDelay] of retryDelays.entries()) {
+        expect(claimedTaskCount).toBe(index + 1);
+        expect(logger.error).toHaveBeenNthCalledWith(
+          index + 1,
+          `Failed to claim task, retrying in ${retryDelay}ms`,
+          claimError,
+        );
+
+        await jest.advanceTimersByTimeAsync(retryDelay - 1);
+        expect(claimedTaskCount).toBe(index + 1);
+        await jest.advanceTimersByTimeAsync(1);
+      }
+
+      expect(claimedTaskCount).toBe(9);
+    } finally {
+      await taskWorker.stop();
+      randomSpy.mockRestore();
+      jest.useRealTimers();
+    }
+  });
+
+  it('should contain unexpected task execution errors', async () => {
+    const logger = mockServices.logger.mock();
+    const task = {
+      taskId: 'task-1',
+      spec: { apiVersion: 'scaffolder.backstage.io/v1beta3' },
+    } as TaskContext;
+    let claimedTaskCount = 0;
+    const taskWorker = new TaskWorkerConstructor({
+      runners: {
+        workflowRunner: { execute: jest.fn() },
+      },
+      logger,
+      taskBroker: {
+        async claim() {
+          claimedTaskCount++;
+          if (claimedTaskCount === 1) {
+            return task;
+          }
+          return new Promise<never>(() => {});
+        },
+      } as unknown as TaskBroker,
+      concurrentTasksLimit: 1,
+    });
+    const executionError = new Error('Unexpected task execution failure');
+    jest.spyOn(taskWorker, 'runOneTask').mockRejectedValueOnce(executionError);
+
     taskWorker.start();
 
-    // The first claim rejects. The worker must retry rather than stop for good.
     await waitForExpect(() => {
-      expect(claimedTaskCount).toBe(2);
+      expect(logger.error).toHaveBeenCalledWith(
+        'Unexpected error while executing task task-1',
+        executionError,
+      );
+    });
+    await taskWorker.stop();
+  });
+
+  it('should wait for running tasks during graceful shutdown', async () => {
+    let finishTask: (value: WorkflowResponse) => void = () => {};
+    const workflowRunner: WorkflowRunner = {
+      execute: jest.fn(
+        () =>
+          new Promise<WorkflowResponse>(resolve => {
+            finishTask = resolve;
+          }),
+      ),
+    };
+    const complete = jest.fn();
+    let claimedTaskCount = 0;
+    const taskWorker = new TaskWorkerConstructor({
+      runners: { workflowRunner },
+      taskBroker: {
+        async claim() {
+          claimedTaskCount++;
+          if (claimedTaskCount === 1) {
+            return {
+              taskId: 'task-1',
+              spec: { apiVersion: 'scaffolder.backstage.io/v1beta3' },
+              complete,
+            } as unknown as TaskContext;
+          }
+          return new Promise<never>(() => {});
+        },
+      } as unknown as TaskBroker,
+      concurrentTasksLimit: 1,
+      gracefulShutdown: true,
+    });
+
+    taskWorker.start();
+    await waitForExpect(() => {
+      expect(workflowRunner.execute).toHaveBeenCalledTimes(1);
+    });
+
+    let hasStopped = false;
+    const stopping = taskWorker.stop().then(() => {
+      hasStopped = true;
+    });
+    await Promise.resolve();
+    expect(hasStopped).toBe(false);
+
+    finishTask({ output: {} });
+    await stopping;
+    expect(complete).toHaveBeenCalledWith('completed', { output: {} });
+  });
+
+  it('should not claim tasks after graceful shutdown', async () => {
+    const isolatedStorage = await createStore();
+    const broker = new StorageTaskBroker(
+      isolatedStorage,
+      loggerToWinstonLogger(mockServices.logger.mock()),
+    );
+    const claimTaskSpy = jest.spyOn(isolatedStorage, 'claimTask');
+    const workflowRunner: WorkflowRunner = {
+      execute: jest.fn().mockResolvedValue({ output: {} }),
+    };
+    const taskWorker = new TaskWorkerConstructor({
+      runners: { workflowRunner },
+      taskBroker: broker,
+      concurrentTasksLimit: 1,
+      gracefulShutdown: true,
+    });
+
+    taskWorker.start();
+    await waitForExpect(() => {
+      expect(claimTaskSpy).toHaveBeenCalled();
+    });
+    await taskWorker.stop();
+
+    const { taskId } = await broker.dispatch({
+      spec: { steps: [] } as unknown as TaskSpec,
+    });
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    expect(workflowRunner.execute).not.toHaveBeenCalled();
+    await expect(isolatedStorage.getTask(taskId)).resolves.toMatchObject({
+      status: 'open',
     });
   });
 });

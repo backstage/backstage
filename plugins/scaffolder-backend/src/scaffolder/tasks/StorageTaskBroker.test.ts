@@ -105,6 +105,24 @@ describe('StorageTaskBroker', () => {
     await expect(promise).resolves.toEqual(expect.any(TaskManager as any));
   });
 
+  it('should stop waiting for work when a claim is aborted', async () => {
+    const isolatedStorage = await createStore();
+    const broker = new StorageTaskBroker(isolatedStorage, logger);
+    const controller = new AbortController();
+    const claim = broker.claim({ signal: controller.signal });
+
+    await expect(Promise.race([claim, 'waiting'])).resolves.toBe('waiting');
+
+    controller.abort();
+
+    await expect(claim).rejects.toMatchObject({ name: 'AbortError' });
+
+    await broker.dispatch(emptyTaskSpec);
+    await expect(broker.claim()).resolves.toEqual(
+      expect.any(TaskManager as any),
+    );
+  });
+
   it('should dispatch multiple items and claim them in order', async () => {
     const broker = new StorageTaskBroker(storage, logger);
     await broker.dispatch({ spec: { steps: [{ id: 'a' }] } as TaskSpec });
