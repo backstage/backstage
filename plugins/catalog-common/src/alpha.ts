@@ -25,6 +25,8 @@ export {
   catalogLocationCreatePermission,
   catalogLocationDeletePermission,
   catalogLocationAnalyzePermission,
+  catalogIngestionReadPermission,
+  catalogIngestionManagePermission,
   catalogPermissions,
 } from './permissions';
 export type { CatalogEntityPermission } from './permissions';
