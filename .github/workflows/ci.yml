@@ -264,9 +264,9 @@ jobs:
         # Need to fetch the base branch to be able to verify the release
       - name: fetch base branch
         env:
-          PR_BRANCH_NAME: ${{ github.event.pull_request.base.ref }}
+          BASE_BRANCH_REF: ${{ github.event.pull_request.base.ref }}
         if: github.event.pull_request.base.ref != 'master'
-        run: git fetch --filter=blob:none -- origin "$PR_BRANCH_NAME"
+        run: git fetch --filter=blob:none -- origin "$BASE_BRANCH_REF"
 
       - *setup-node
 
