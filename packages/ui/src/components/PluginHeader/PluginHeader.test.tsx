@@ -241,4 +241,27 @@ describe('PluginHeader', () => {
       screen.queryByRole('button', { name: 'Show more breadcrumbs' }),
     ).not.toBeInTheDocument();
   });
+
+  it('sets header height including margin and removes it on unmount', () => {
+    jest
+      .spyOn(HTMLElement.prototype, 'offsetHeight', 'get')
+      .mockReturnValue(50);
+    jest.spyOn(window, 'getComputedStyle').mockReturnValue({
+      marginBottom: '10px',
+    } as CSSStyleDeclaration);
+
+    const { unmount } = renderPluginHeader({ title: 'Test' });
+
+    expect(
+      document.documentElement.style.getPropertyValue('--bui-header-height'),
+    ).toBe('60px');
+
+    unmount();
+
+    expect(
+      document.documentElement.style.getPropertyValue('--bui-header-height'),
+    ).toBe('');
+
+    jest.restoreAllMocks();
+  });
 });
