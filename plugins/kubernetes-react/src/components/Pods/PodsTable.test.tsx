@@ -18,9 +18,17 @@ import { screen } from '@testing-library/react';
 import * as pod from './__fixtures__/pod.json';
 import * as crashingPod from './__fixtures__/crashing-pod.json';
 import { renderInTestApp } from '@backstage/test-utils';
-import { PodsTable, READY_COLUMNS, RESOURCE_COLUMNS } from './PodsTable';
+import {
+  PodsTable,
+  PodsTablesProps,
+  READY_COLUMNS,
+  RESOURCE_COLUMNS,
+} from './PodsTable';
 import { kubernetesProviders } from '../../hooks/test-utils';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
+import { TableColumn } from '@backstage/core-components';
+import { Pod } from 'kubernetes-models/v1/Pod';
+import type { V1Pod } from '@kubernetes/client-node';
 
 describe('PodsTable', () => {
   it('should render pod', async () => {
@@ -30,11 +38,54 @@ describe('PodsTable', () => {
     expect(screen.getByText('name')).toBeInTheDocument();
     expect(screen.getByText('phase')).toBeInTheDocument();
     expect(screen.getByText('status')).toBeInTheDocument();
+    expect(screen.getByText('version')).toBeInTheDocument();
 
     // values
     expect(screen.getByText('dice-roller-6c8646bfd-2m5hv')).toBeInTheDocument();
     expect(screen.getByText('Running')).toBeInTheDocument();
     expect(screen.getByText('OK')).toBeInTheDocument();
+    expect(screen.getByText('1.14.2')).toBeInTheDocument();
+  });
+
+  it('should render a single pod passed directly (not wrapped in an array)', async () => {
+    await renderInTestApp(<PodsTable pods={pod as any} />);
+
+    expect(screen.getByText('dice-roller-6c8646bfd-2m5hv')).toBeInTheDocument();
+    expect(screen.getByText('Running')).toBeInTheDocument();
+    expect(screen.getByText('1.14.2')).toBeInTheDocument();
+  });
+
+  it('should show unknown when pod image has no version', async () => {
+    const podWithoutVersion = {
+      ...pod,
+      spec: {
+        ...pod.spec,
+        containers: [{ ...pod.spec.containers[0], image: 'busybox' }],
+      },
+    };
+
+    await renderInTestApp(<PodsTable pods={[podWithoutVersion as any]} />);
+
+    expect(screen.getByText('unknown')).toBeInTheDocument();
+  });
+
+  it('should render a version per container for multi-container pods', async () => {
+    const multiContainerPod = {
+      ...pod,
+      spec: {
+        ...pod.spec,
+        containers: [
+          { ...pod.spec.containers[0], name: 'app', image: 'nginx:1.14.2' },
+          { ...pod.spec.containers[0], name: 'side-car', image: 'busybox' },
+        ],
+      },
+    };
+
+    await renderInTestApp(<PodsTable pods={[multiContainerPod as any]} />);
+
+    expect(
+      screen.getByText('app: 1.14.2, side-car: unknown'),
+    ).toBeInTheDocument();
   });
 
   it('should render pod with extra columns', async () => {
@@ -55,6 +106,71 @@ describe('PodsTable', () => {
     expect(screen.getByText('1/1')).toBeInTheDocument();
     expect(screen.getByText('0')).toBeInTheDocument();
     expect(screen.getByText('OK')).toBeInTheDocument();
+  });
+
+  it('should render pod with custom extra column', async () => {
+    await renderInTestApp(
+      <PodsTable
+        pods={[pod as any]}
+        extraColumns={[
+          {
+            title: 'namespace',
+            render: (podData: Pod) => podData.metadata?.namespace ?? 'unknown',
+            width: 'auto',
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.getByText('namespace')).toBeInTheDocument();
+    expect(screen.getByText('default')).toBeInTheDocument();
+  });
+
+  it('should render a Pod with a custom extra column typed for Pod', async () => {
+    const podColumn: TableColumn<Pod> = {
+      title: 'pod-namespace',
+      render: (podData: Pod) => podData.metadata?.namespace ?? 'unknown',
+      width: 'auto',
+    };
+
+    await renderInTestApp(
+      <PodsTable pods={[pod as any as Pod]} extraColumns={[podColumn]} />,
+    );
+
+    expect(screen.getByText('pod-namespace')).toBeInTheDocument();
+    expect(screen.getByText('default')).toBeInTheDocument();
+  });
+
+  it('should render V1Pod data with a custom extra column typed for V1Pod', async () => {
+    const v1Pod: V1Pod = pod as any as V1Pod;
+    const v1PodColumn: TableColumn<V1Pod> = {
+      title: 'v1pod-namespace',
+      render: (podData: V1Pod) => podData.metadata?.namespace ?? 'unknown',
+      width: 'auto',
+    };
+
+    await renderInTestApp(
+      <PodsTable pods={[v1Pod]} extraColumns={[v1PodColumn]} />,
+    );
+
+    expect(screen.getByText('v1pod-namespace')).toBeInTheDocument();
+    expect(screen.getByText('default')).toBeInTheDocument();
+  });
+
+  it('should reject V1Pod extra columns for a directly passed Pod', () => {
+    const v1PodColumn: TableColumn<V1Pod> = {
+      title: 'v1pod-namespace',
+      render: (podData: V1Pod) => podData.metadata?.namespace ?? 'unknown',
+      width: 'auto',
+    };
+
+    // @ts-expect-error singleton Pod inputs only accept Pod-compatible columns.
+    const props: PodsTablesProps<V1Pod> = {
+      pods: pod as any as Pod,
+      extraColumns: [v1PodColumn],
+    };
+
+    expect(props).toBeDefined();
   });
 
   it('should render pod, with metrics context', async () => {

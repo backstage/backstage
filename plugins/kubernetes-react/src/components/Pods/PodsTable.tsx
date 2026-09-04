@@ -19,6 +19,7 @@ import { PodDrawer } from './PodDrawer';
 import {
   containersReady,
   containerStatuses,
+  parseImageTag,
   podStatusToCpuUtil,
   podStatusToMemoryUtil,
   totalRestarts,
@@ -55,15 +56,34 @@ export const RESOURCE_COLUMNS: PodColumns = 'RESOURCE';
 export type PodColumns = 'READY' | 'RESOURCE';
 
 /**
+ * A column to render in the pods table.
+ *
+ * Can either be one of the `PodColumns` presets, or a custom
+ * `TableColumn<T>`, matching the row type `T` passed to the `pods`
+ * prop of `PodsTable`.
+ *
+ * @public
+ */
+export type PodExtraColumn<T extends Pod | V1Pod = Pod> =
+  | PodColumns
+  | TableColumn<T>;
+
+/**
  *
  *
  * @public
  */
-export type PodsTablesProps = {
-  pods: Pod | V1Pod[];
-  extraColumns?: PodColumns[];
-  children?: ReactNode;
-};
+export type PodsTablesProps<T extends Pod | V1Pod = V1Pod> =
+  | {
+      pods: T[];
+      extraColumns?: PodExtraColumn<T>[];
+      children?: ReactNode;
+    }
+  | {
+      pods: Pod;
+      extraColumns?: PodExtraColumn<Pod>[];
+      children?: ReactNode;
+    };
 
 const PodDrawerTrigger = ({ pod }: { pod: Pod }) => {
   const errors = useMatchingErrors({
@@ -109,7 +129,10 @@ const Memory = ({ clusterName, pod }: { clusterName: string; pod: Pod }) => {
  *
  * @public
  */
-export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
+export const PodsTable = <T extends Pod | V1Pod = V1Pod>({
+  pods,
+  extraColumns = [],
+}: PodsTablesProps<T>) => {
   const cluster = useContext(ClusterContext);
   const { t } = useTranslationRef(kubernetesReactTranslationRef);
 
@@ -151,30 +174,66 @@ export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
       title: t('podsTable.columns.status'),
       render: containerStatuses,
     },
+    {
+      title: t('podsTable.columns.version'),
+      render: (pod: Pod) => {
+        const containers = pod.spec?.containers ?? [];
+        const tags = containers.map(container => ({
+          name: container.name,
+          tag: parseImageTag(container.image) ?? t('podsTable.unknown'),
+        }));
+        if (tags.length === 0) {
+          return t('podsTable.unknown');
+        }
+        // Only qualify the tag with the container name when there's more
+        // than one container, so a single-container pod (the common case)
+        // keeps showing a plain version string.
+        if (tags.length === 1) {
+          return tags[0].tag;
+        }
+        return tags.map(({ name, tag }) => `${name}: ${tag}`).join(', ');
+      },
+      width: 'auto',
+    },
   ];
-  const columns: TableColumn<Pod>[] = [...defaultColumns];
+  const resourceColumns: TableColumn<Pod>[] = [
+    {
+      title: t('podsTable.columns.cpuUsage'),
+      render: (pod: Pod) => {
+        return <Cpu clusterName={cluster.name} pod={pod} />;
+      },
+      width: 'auto',
+    },
+    {
+      title: t('podsTable.columns.memoryUsage'),
+      render: (pod: Pod) => {
+        return <Memory clusterName={cluster.name} pod={pod} />;
+      },
+      width: 'auto',
+    },
+  ];
 
-  if (extraColumns.includes(READY_COLUMNS)) {
-    columns.push(...READY);
-  }
-  if (extraColumns.includes(RESOURCE_COLUMNS)) {
-    const resourceColumns: TableColumn<Pod>[] = [
-      {
-        title: t('podsTable.columns.cpuUsage'),
-        render: (pod: Pod) => {
-          return <Cpu clusterName={cluster.name} pod={pod} />;
-        },
-        width: 'auto',
-      },
-      {
-        title: t('podsTable.columns.memoryUsage'),
-        render: (pod: Pod) => {
-          return <Memory clusterName={cluster.name} pod={pod} />;
-        },
-        width: 'auto',
-      },
-    ];
-    columns.push(...resourceColumns);
+  const columnsByPreset: Record<PodColumns, TableColumn<Pod>[]> = {
+    [READY_COLUMNS]: READY,
+    [RESOURCE_COLUMNS]: resourceColumns,
+  };
+
+  // The built-in columns above always operate on rows normalized to `Pod`
+  // (see the `data` mapping below), regardless of the row type `T` selected
+  // by the caller, so a single cast at this boundary is safe. Custom columns
+  // supplied via `extraColumns`, on the other hand, are already declared as
+  // `TableColumn<T>` and require no cast.
+  const columns: TableColumn<T>[] = [
+    ...(defaultColumns as unknown as TableColumn<T>[]),
+  ];
+  for (const extraColumn of extraColumns as PodExtraColumn<T>[]) {
+    if (typeof extraColumn === 'string') {
+      columns.push(
+        ...(columnsByPreset[extraColumn] as unknown as TableColumn<T>[]),
+      );
+    } else {
+      columns.push(extraColumn);
+    }
   }
 
   const tableStyle = {
@@ -189,10 +248,12 @@ export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
         // It was observed that in some instances the pod drawer closes when new data (like CPU usage) is available and the table reloads.
         // Mapping the metadata UID to the tables ID fixes this problem.
         data={
-          (pods as Pod[]).map((pod: Pod) => ({
-            ...pod,
-            id: pod?.metadata?.uid,
-          })) as any as Pod[]
+          (Array.isArray(pods) ? (pods as Pod[]) : [pods as Pod]).map(
+            (pod: Pod) => ({
+              ...pod,
+              id: pod?.metadata?.uid,
+            }),
+          ) as any as T[]
         }
         columns={columns}
       />

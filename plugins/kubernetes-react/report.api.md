@@ -34,6 +34,7 @@ import { Pod } from 'kubernetes-models/v1';
 import { Pod as Pod_2 } from 'kubernetes-models/v1/Pod';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { ReactNode } from 'react';
+import { TableColumn } from '@backstage/core-components';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 import type { TypeMeta } from '@kubernetes-models/base';
 import type { V1Job } from '@kubernetes/client-node';
@@ -578,6 +579,7 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'podsTable.columns.name': 'name';
     readonly 'podsTable.columns.id': 'ID';
     readonly 'podsTable.columns.status': 'status';
+    readonly 'podsTable.columns.version': 'version';
     readonly 'podsTable.columns.phase': 'phase';
     readonly 'podsTable.columns.containersReady': 'containers ready';
     readonly 'podsTable.columns.totalRestarts': 'total restarts';
@@ -764,6 +766,11 @@ export interface PodExecTerminalProps {
 }
 
 // @public
+export type PodExtraColumn<T extends Pod_2 | V1Pod = Pod_2> =
+  | PodColumns
+  | TableColumn<T>;
+
+// @public
 export const PodLogs: FC<PodLogsProps>;
 
 // @public
@@ -816,14 +823,22 @@ export interface PodScope {
 }
 
 // @public (undocumented)
-export const PodsTable: (input: PodsTablesProps) => JSX_2.Element;
+export const PodsTable: <T extends Pod_2 | V1Pod = V1Pod>(
+  input: PodsTablesProps<T>,
+) => JSX_2.Element;
 
 // @public (undocumented)
-export type PodsTablesProps = {
-  pods: Pod_2 | V1Pod[];
-  extraColumns?: PodColumns[];
-  children?: ReactNode;
-};
+export type PodsTablesProps<T extends Pod_2 | V1Pod = V1Pod> =
+  | {
+      pods: T[];
+      extraColumns?: PodExtraColumn<T>[];
+      children?: ReactNode;
+    }
+  | {
+      pods: Pod_2;
+      extraColumns?: PodExtraColumn<Pod_2>[];
+      children?: ReactNode;
+    };
 
 // @public (undocumented)
 export class RancherClusterLinksFormatter implements ClusterLinksFormatter {
