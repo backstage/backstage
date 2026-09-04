@@ -40,7 +40,7 @@
     "cross-fetch": "^4.0.0",
     "fs-extra": "^11.2.0",
     "handlebars": "^4.7.3",
-    "mysql2": "^3.0.0",
+    "mysql2": "^3.23.1",
     "pgtools": "^1.0.0",
     "tree-kill": "^1.2.2"
   },
