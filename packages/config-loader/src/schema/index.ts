@@ -17,6 +17,7 @@
 export { mergeConfigSchemas } from './compile';
 export { loadConfigSchema } from './load';
 export { ConfigSchemaError } from './ConfigSchemaError';
+export { enumerateConfigSecrets } from './secrets';
 export type { LoadConfigSchemaOptions } from './load';
 export type {
   ConfigSchema,

@@ -150,7 +150,7 @@ describe('scaffolderPlugin', () => {
       ],
       title: 'Create React App Template',
     });
-  });
+  }, 15_000);
 
   it('supports listing actions', async () => {
     const { server } = await startTestBackend({

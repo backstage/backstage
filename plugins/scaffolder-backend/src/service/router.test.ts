@@ -15,6 +15,7 @@
  */
 
 import { DatabaseManager } from '@backstage/backend-defaults/database';
+import { DefaultHttpAuthService } from '@backstage/backend-defaults/httpAuth';
 import { ConfigReader } from '@backstage/config';
 import { ConflictError } from '@backstage/errors';
 import express from 'express';
@@ -28,6 +29,7 @@ import {
   TemplateFilter,
   TemplateGlobal,
   SerializedTaskEvent,
+  TemplateAction,
 } from '@backstage/plugin-scaffolder-node';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { JsonValue } from '@backstage/types';
@@ -48,7 +50,7 @@ import {
   createTemplateGlobalValue,
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
-import { DatabaseService } from '@backstage/backend-plugin-api';
+import { AuditorService, DatabaseService } from '@backstage/backend-plugin-api';
 import { createDebugLogAction } from '../scaffolder/actions/builtin';
 import { ScmIntegrations } from '@backstage/integration';
 import {
@@ -57,13 +59,24 @@ import {
   extractGlobalValueMetadata,
 } from '../util/templating';
 import { createDefaultFilters } from '../lib/templating/filters/createDefaultFilters';
-import { createRouter } from './router';
+import { createRequestRedaction, createRouter } from './router';
 import { DatabaseTaskStore } from '../scaffolder/tasks/DatabaseTaskStore';
 import {
   actionsRegistryServiceMock,
   metricsServiceMock,
 } from '@backstage/backend-test-utils/alpha';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
+import fs from 'fs-extra';
+import { promises as nodeFs } from 'node:fs';
+import { SystemSecretSource } from '../scaffolder/tasks/SystemSecretSource';
+
+jest.mock('../scaffolder/tasks/SystemSecretSource', () => ({
+  SystemSecretSource: {
+    create: jest.fn(async () => ({
+      subscribe: () => ({ secrets: new Set(), unsubscribe() {} }),
+    })),
+  },
+}));
 
 function createDatabase(): DatabaseService {
   return DatabaseManager.fromConfig(
@@ -176,6 +189,8 @@ const createTestRouter = async (
       | CreatedTemplateGlobal[];
     autocompleteHandlers?: Record<string, AutocompleteHandler>;
     actionsRegistry?: ActionsService;
+    actions?: TemplateAction[];
+    auditor?: AuditorService;
     entities?: any[];
   } = {},
 ) => {
@@ -216,6 +231,7 @@ const createTestRouter = async (
     permissionsRegistry,
     auth,
     httpAuth,
+    auditor: overrides.auditor,
     events,
     additionalTemplateFilters: overrides.additionalTemplateFilters,
     additionalTemplateGlobals: overrides.additionalTemplateGlobals,
@@ -233,6 +249,7 @@ const createTestRouter = async (
         handler: async () => {},
       }),
       createDebugLogAction(),
+      ...(overrides.actions ?? []),
     ],
     actionsRegistry: overrides.actionsRegistry ?? actionsRegistryServiceMock(),
     metrics: metricsServiceMock.mock(),
@@ -255,6 +272,242 @@ describe('scaffolder router', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  it('recursively registers malformed nested request secrets', () => {
+    const secret = 'nested-request-secret';
+    const redaction = createRequestRedaction({
+      request: {
+        body: {
+          secrets: { nested: { token: secret } },
+          diagnostic: secret,
+        },
+      } as express.Request,
+      systemSecrets: {
+        subscribe: () => ({
+          secrets: new Set<string>(),
+          unsubscribe() {},
+        }),
+      },
+      secrets: { nested: { token: secret } },
+    });
+
+    expect(JSON.stringify(redaction.request.body)).not.toContain(secret);
+    expect(redaction.request.body.secrets).toEqual({});
+    redaction.dispose();
+  });
+
+  it('fails closed when request secret limits are exceeded', () => {
+    const redaction = createRequestRedaction({
+      request: {
+        body: {
+          secrets: Object.fromEntries(
+            Array.from({ length: 129 }, (_, index) => [
+              `secret-${index}`,
+              `sensitive-value-${index}`,
+            ]),
+          ),
+          diagnostic: 'otherwise public',
+        },
+        headers: {},
+      } as express.Request,
+      systemSecrets: {
+        subscribe: () => ({
+          secrets: new Set<string>(),
+          unsubscribe() {},
+        }),
+      },
+      secrets: Object.fromEntries(
+        Array.from({ length: 129 }, (_, index) => [
+          `secret-${index}`,
+          `sensitive-value-${index}`,
+        ]),
+      ),
+    });
+
+    expect(redaction.redacter.redactString('otherwise public')).toBe('***');
+    expect(JSON.stringify(redaction.request.body)).not.toContain(
+      'sensitive-value',
+    );
+    redaction.dispose();
+  });
+
+  it('registers and redacts authorization credentials for audit sinks', () => {
+    const token = 'request-bearer-secret';
+    const redaction = createRequestRedaction({
+      request: {
+        body: {},
+        headers: { authorization: `Bearer ${token}` },
+      } as express.Request,
+      systemSecrets: {
+        subscribe: () => ({
+          secrets: new Set<string>(),
+          unsubscribe() {},
+        }),
+      },
+    });
+
+    expect(redaction.request.headers.authorization).toBe('***');
+    expect(redaction.redacter.redactString(`auth failed for ${token}`)).toBe(
+      'auth failed for ***',
+    );
+    redaction.dispose();
+  });
+
+  it('preserves cached auditor authentication with redacted headers', async () => {
+    const token = 'request-bearer-secret';
+    const cachedCredentials = mockCredentials.user();
+    const auth = mockServices.auth.mock();
+    auth.authenticate.mockResolvedValue(cachedCredentials);
+    const httpAuth = DefaultHttpAuthService.create({
+      auth,
+      discovery: mockServices.discovery.mock(),
+      pluginId: 'scaffolder',
+    });
+    const originalRequest = {
+      body: {},
+      headers: { authorization: `Bearer ${token}` },
+    } as express.Request;
+    const redaction = createRequestRedaction({
+      request: originalRequest,
+      systemSecrets: {
+        subscribe: () => ({
+          secrets: new Set<string>(),
+          unsubscribe() {},
+        }),
+      },
+    });
+
+    await expect(httpAuth.credentials(originalRequest)).resolves.toBe(
+      cachedCredentials,
+    );
+    await expect(httpAuth.credentials(redaction.request)).resolves.toBe(
+      cachedCredentials,
+    );
+    expect(auth.authenticate).toHaveBeenCalledTimes(1);
+    expect(redaction.request.headers.authorization).toBe('***');
+    redaction.dispose();
+  });
+
+  it('redacts request metadata exposed to audit sinks', () => {
+    const secret = 'request-metadata-secret';
+    const requestWithMetadata = {
+      body: { secrets: { value: secret } },
+      headers: {
+        authorization: `Bearer ${secret}`,
+        'user-agent': secret,
+        'x-diagnostic': `detail=${secret}`,
+        [secret]: 'diagnostic',
+      },
+      rawHeaders: ['user-agent', secret],
+      originalUrl: `/v2/tasks?detail=${secret}`,
+      url: `/v2/tasks?detail=${secret}`,
+      query: { detail: secret },
+      params: { taskId: secret },
+      get(name: string) {
+        return (this as express.Request).headers[name.toLowerCase()];
+      },
+    } as unknown as express.Request;
+    const redaction = createRequestRedaction({
+      request: requestWithMetadata,
+      systemSecrets: {
+        subscribe: () => ({
+          secrets: new Set<string>(),
+          unsubscribe() {},
+        }),
+      },
+      secrets: { value: secret },
+    });
+
+    expect(redaction.request.get('user-agent')).toBe('***');
+    expect(redaction.request.headers.authorization).toBe('***');
+    expect(redaction.request.headers['x-diagnostic']).toBe('detail=***');
+    expect(redaction.request.headers).not.toHaveProperty(secret);
+    expect(redaction.request.headers).toHaveProperty('***', 'diagnostic');
+    expect(redaction.request.rawHeaders).toEqual(['user-agent', '***']);
+    expect(redaction.request.originalUrl).toBe('/v2/tasks?detail=***');
+    expect(redaction.request.url).toBe('/v2/tasks?detail=***');
+    expect(redaction.request.query).toEqual({ detail: '***' });
+    expect(redaction.request.params).toEqual({ taskId: '***' });
+    redaction.dispose();
+  });
+
+  it('applies newly learned system secrets to audit request metadata', () => {
+    const secret = 'rotated-request-metadata-secret';
+    let update: ((secrets: ReadonlySet<string>) => void) | undefined;
+    const redaction = createRequestRedaction({
+      request: {
+        body: {},
+        headers: { 'user-agent': secret },
+        originalUrl: `/v2/tasks?detail=${secret}`,
+        get(name: string) {
+          return (this as express.Request).headers[name.toLowerCase()];
+        },
+      } as express.Request,
+      systemSecrets: {
+        subscribe: listener => {
+          update = listener;
+          return { secrets: new Set(), unsubscribe() {} };
+        },
+      },
+    });
+
+    expect(redaction.request.get('user-agent')).toBe(secret);
+    update?.(new Set([secret]));
+    expect(redaction.request.get('user-agent')).toBe('***');
+    expect(redaction.request.originalUrl).toBe('/v2/tasks?detail=***');
+    redaction.dispose();
+  });
+
+  it('does not interpret non-HTTP whitespace as a bearer separator', () => {
+    const token = 'request-bearer-secret';
+    const redaction = createRequestRedaction({
+      request: {
+        body: {},
+        headers: { authorization: `Bearer\v${token}` },
+      } as express.Request,
+      systemSecrets: {
+        subscribe: () => ({
+          secrets: new Set<string>(),
+          unsubscribe() {},
+        }),
+      },
+    });
+
+    expect(redaction.redacter.redactString(`auth failed for ${token}`)).toBe(
+      `auth failed for ${token}`,
+    );
+    redaction.dispose();
+  });
+
+  it('sanitizes errors thrown by protected audit sinks', async () => {
+    const secret = 'audit-sink-secret';
+    const redaction = createRequestRedaction({
+      request: { body: { secrets: { value: secret } } } as express.Request,
+      systemSecrets: {
+        subscribe: () => ({
+          secrets: new Set<string>(),
+          unsubscribe() {},
+        }),
+      },
+      secrets: { value: secret },
+    });
+    const event = {
+      success: jest.fn(),
+      fail: jest.fn().mockRejectedValue(
+        Object.assign(new Error(`audit failed with ${secret}`), {
+          detail: secret,
+        }),
+      ),
+    };
+
+    const protectedEvent = redaction.protectAuditorEvent(event);
+    const error = await protectedEvent
+      ?.fail({ error: new Error('task failed') })
+      .catch(e => e);
+    expect(error).toMatchObject({ message: 'audit failed with ***' });
+    expect(error).not.toHaveProperty('detail');
+    redaction.dispose();
   });
 
   describe('GET /v2/actions', () => {
@@ -485,6 +738,34 @@ describe('scaffolder router', () => {
           nul: expect.any(Object),
         }),
       });
+    });
+
+    it('redacts system secrets from templating extension metadata', async () => {
+      const secret = 'templating-extension-system-secret';
+      jest.mocked(SystemSecretSource.create).mockResolvedValueOnce({
+        subscribe: () => ({
+          secrets: new Set([secret]),
+          unsubscribe() {},
+        }),
+        close() {},
+      } as unknown as SystemSecretSource);
+      const { router } = await createTestRouter({
+        additionalTemplateGlobals: [
+          createTemplateGlobalValue({
+            id: 'sensitive',
+            description: `description ${secret}`,
+            value: { nested: secret },
+          }),
+        ],
+      });
+
+      const response = await request(router)
+        .get('/v2/templating-extensions')
+        .send();
+
+      expect(response.status).toEqual(200);
+      expect(JSON.stringify(response.body)).not.toContain(secret);
+      expect(JSON.stringify(response.body)).toContain('***');
     });
   });
 
@@ -726,6 +1007,47 @@ describe('scaffolder router', () => {
       );
     });
 
+    it('redacts secret keys from validation errors', async () => {
+      const secret = 'sensitive-secret-name';
+      const templateWithSecrets = generateMockTemplate({
+        secrets: {
+          schema: {
+            type: 'object',
+            additionalProperties: false,
+          },
+        },
+      });
+
+      const { router } = await createTestRouter({
+        entities: [templateWithSecrets, mockUser],
+      });
+
+      const response = await request(router)
+        .post('/v2/tasks')
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            requiredParameter1: 'required-value-1',
+            requiredParameter2: 'required-value-2',
+          },
+          secrets: { [secret]: 'secret-value' },
+        });
+
+      expect(response.status).toEqual(400);
+      expect(JSON.stringify(response.body)).not.toContain(secret);
+      expect(response.body.errors).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            message: expect.stringContaining('***'),
+            argument: '***',
+          }),
+        ]),
+      );
+    });
+
     it('accepts valid secrets matching the schema', async () => {
       const templateWithSecrets = generateMockTemplate({
         secrets: {
@@ -766,6 +1088,52 @@ describe('scaffolder router', () => {
 
       expect(response.status).toEqual(201);
       expect(response.body.id).toBe('a-random-id');
+    });
+
+    it('redacts request bodies and thrown errors at the audit and API boundaries', async () => {
+      const secret = 'request-secret-value';
+      const auditor = mockServices.auditor.mock();
+      const auditEvent = { success: jest.fn(), fail: jest.fn() };
+      auditor.createEvent.mockResolvedValue(auditEvent);
+      const { unwrappedRouter, taskBroker } = await createTestRouter({
+        auditor,
+      });
+      const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+      broker.mockRejectedValue(
+        Object.assign(new Error(`dispatch failed with ${secret}`), {
+          cause: new Error(`nested ${secret}`),
+          detail: secret,
+        }),
+      );
+
+      const response = await request(unwrappedRouter)
+        .post('/v2/tasks')
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            requiredParameter1: 'required-value-1',
+            requiredParameter2: 'required-value-2',
+          },
+          secrets: { token: secret },
+        });
+
+      expect(response.status).toBe(500);
+      expect(JSON.stringify(response.body)).not.toContain(secret);
+      expect(
+        JSON.stringify(auditor.createEvent.mock.calls[0][0].request?.body),
+      ).not.toContain(secret);
+      expect(auditEvent.fail).toHaveBeenCalledWith({
+        error: expect.objectContaining({
+          message: 'dispatch failed with ***',
+        }),
+        meta: undefined,
+      });
+      const failedError = auditEvent.fail.mock.calls[0][0].error;
+      expect(failedError).not.toHaveProperty('cause');
+      expect(failedError).not.toHaveProperty('detail');
     });
 
     it('return the template id', async () => {
@@ -1205,23 +1573,23 @@ describe('scaffolder router', () => {
   });
 
   describe('GET /v2/tasks/:taskId', () => {
-    it('does not divulge secrets', async () => {
+    it('uses the broker public task projection', async () => {
       const { router, taskBroker } = await createTestRouter();
       (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
         id: 'a-random-id',
         spec: {} as TaskSpec,
         status: 'completed',
         createdAt: '',
-        secrets: {
-          __initiatorCredentials: JSON.stringify(credentials),
-        },
         createdBy: '',
+        secrets: { leaked: 'task-secret' },
+        state: { checkpoint: 'task-state' },
       });
 
       const response = await request(router).get(`/v2/tasks/a-random-id`);
       expect(response.status).toEqual(200);
       expect(response.body.status).toBe('completed');
       expect(response.body.secrets).toBeUndefined();
+      expect(response.body.state).toBeUndefined();
     });
 
     it('does not divulge internal task state', async () => {
@@ -1609,6 +1977,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
   describe('GET /v2/tasks/:taskId/events', () => {
     it('should return log messages', async () => {
+      const eventSecret = 'historical-event-secret';
       const { router, taskBroker } = await createTestRouter();
       (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
         id: 'a-random-id',
@@ -1617,6 +1986,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         createdAt: '',
         secrets: {
           __initiatorCredentials: JSON.stringify(credentials),
+          value: eventSecret,
         },
         createdBy: '',
       });
@@ -1635,7 +2005,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
                 taskId,
                 type: 'log',
                 createdAt: '',
-                body: { message: 'My log message' },
+                body: { message: `My log message ${eventSecret}` },
               },
               {
                 id: 1,
@@ -1660,7 +2030,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           taskId: 'a-random-id',
           type: 'log',
           createdAt: '',
-          body: { message: 'My log message' },
+          body: { message: 'My log message ***' },
         },
         {
           id: 1,
@@ -1821,6 +2191,124 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       expect(response.status).toEqual(403);
     });
 
+    it('redacts logs, output, paths, and file bytes', async () => {
+      const secret = 'dry-run-secret';
+      const action = createTemplateAction({
+        id: 'test:redaction-egress',
+        supportsDryRun: true,
+        async handler(ctx) {
+          ctx.logger.info(`log=${ctx.input.secret}`);
+          ctx.output('secret', ctx.input.secret);
+          await fs.writeFile(
+            `${ctx.workspacePath}/generated-${ctx.input.secret}.txt`,
+            `content=${ctx.input.secret}`,
+          );
+        },
+      });
+      const template = generateMockTemplate({
+        steps: [
+          {
+            id: 'test',
+            name: secret,
+            action: action.id,
+            input: { secret: '${{ secrets.value }}' },
+          },
+        ],
+        output: { secret: '${{ steps.test.output.secret }}' },
+      });
+      const { unwrappedRouter: router } = await createTestRouter({
+        actions: [action],
+      });
+
+      const response = await request(router)
+        .post('/v2/dry-run')
+        .set('Authorization', `Bearer ${mockCredentials.user.token()}`)
+        .send({
+          template,
+          values: {
+            requiredParameter1: 'required-value-1',
+            requiredParameter2: 'required-value-2',
+          },
+          secrets: { value: secret },
+          directoryContents: [],
+        });
+
+      expect(response.status).toBe(200);
+      expect(JSON.stringify(response.body)).not.toContain(secret);
+      expect(response.body.output).toEqual({ secret: '***' });
+      expect(response.body.log).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            body: expect.objectContaining({
+              message: expect.stringContaining('log=***'),
+            }),
+          }),
+        ]),
+      );
+      const file = response.body.directoryContents.find(
+        (item: { path: string }) => item.path === 'generated-***.txt',
+      );
+      expect(file).toBeDefined();
+      const content = Buffer.from(file.base64Content, 'base64');
+      expect(content.toString('utf8')).toBe('content=***');
+    });
+
+    it('redacts sensitive values learned before post-execution failures', async () => {
+      const secret = 'late-dry-run-secret';
+      const action = createTemplateAction({
+        id: 'test:late-redaction-failure',
+        supportsDryRun: true,
+        async handler(ctx) {
+          ctx.registerSensitiveValue(secret);
+          await fs.writeFile(`${ctx.workspacePath}/generated.txt`, 'content');
+        },
+      });
+      const auditor = mockServices.auditor.mock();
+      const auditEvent = { success: jest.fn(), fail: jest.fn() };
+      auditor.createEvent.mockResolvedValue(auditEvent);
+      const template = generateMockTemplate({
+        steps: [
+          {
+            id: 'test',
+            name: 'test',
+            action: action.id,
+          },
+        ],
+      });
+      const { unwrappedRouter: router } = await createTestRouter({
+        actions: [action],
+        auditor,
+      });
+      const readFile = jest
+        .spyOn(nodeFs, 'readFile')
+        .mockRejectedValueOnce(new Error(`extraction failed with ${secret}`));
+
+      try {
+        const response = await request(router)
+          .post('/v2/dry-run')
+          .set('Authorization', `Bearer ${mockCredentials.user.token()}`)
+          .send({
+            template,
+            values: {
+              requiredParameter1: 'required-value-1',
+              requiredParameter2: 'required-value-2',
+            },
+            directoryContents: [],
+          });
+
+        expect(response.status).toBe(500);
+        expect(JSON.stringify(response.body)).not.toContain(secret);
+        expect(auditEvent.fail).toHaveBeenCalledWith({
+          error: expect.objectContaining({
+            message: 'extraction failed with ***',
+          }),
+          meta: undefined,
+        });
+      } finally {
+        readFile.mockRestore();
+      }
+    });
+
     it('should get user entity', async () => {
       const { router, catalog } = await createTestRouter();
       const mockToken = mockCredentials.user.token();
@@ -1970,6 +2458,43 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         context,
         resource: 'resource',
       });
+    });
+
+    it('redacts provider tokens from results and errors', async () => {
+      const secret = 'autocomplete-provider-token';
+      const handleAutocompleteRequest = jest
+        .fn()
+        .mockResolvedValueOnce({
+          results: [{ id: secret, title: `result=${secret}` }],
+        })
+        .mockRejectedValueOnce(new Error(`provider failed with ${secret}`));
+      const { unwrappedRouter } = await createTestRouter({
+        autocompleteHandlers: {
+          'test-provider': handleAutocompleteRequest,
+        },
+      });
+
+      const success = await request(unwrappedRouter)
+        .post('/v2/autocomplete/test-provider/resource')
+        .send({ token: secret, context: {} });
+      const failure = await request(unwrappedRouter)
+        .post('/v2/autocomplete/test-provider/resource')
+        .send({ token: secret, context: {} });
+
+      expect(success.status).toEqual(200);
+      expect(JSON.stringify(success.body)).not.toContain(secret);
+      expect(success.body).toEqual({
+        results: [{ id: '***', title: 'result=***' }],
+      });
+      expect(failure.status).toEqual(500);
+      expect(JSON.stringify(failure.body)).not.toContain(secret);
+      expect(failure.body).toEqual(
+        expect.objectContaining({
+          error: expect.objectContaining({
+            message: 'provider failed with ***',
+          }),
+        }),
+      );
     });
   });
 });

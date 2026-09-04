@@ -234,6 +234,20 @@ spec:
 
 You may want to mark things as secret and make sure that these values are protected and not available through REST endpoints. You can do this by using the built in `ui:field: Secret`.
 
+The Scaffolder uses a task-scoped redactor throughout each task attempt. It
+includes task secrets, configuration values marked as secret, default
+environment secrets, and sensitive values discovered while rendering the
+template. Retries and recovered tasks create a fresh redactor that combines
+the latest system values with the task secrets available to that attempt.
+Sensitive keys and values in restored checkpoint and step-output payloads are
+added before that state is used. The Scaffolder does not persist a separate
+history of exact redaction values.
+
+Redaction matches exact values. It does not automatically recognize encoded,
+concatenated, hashed, truncated, or otherwise transformed forms. Avoid placing
+secrets in outputs or persisted task state, and register sensitive values
+created by [custom actions](./writing-custom-actions.md#the-context-object).
+
 You can define this property as any normal parameter, however the consumption of this parameter will not be available through `${{ parameters.myKey }}` you will instead need to use `${{ secrets.myKey }}` in your `template.yaml`.
 
 Parameters will be automatically masked in the review step.

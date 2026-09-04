@@ -192,11 +192,20 @@ argument. It looks like the following:
   `schema.input` part of the action definition
 - `ctx.output` - a function which you can call to set outputs that match the
   `zod` schema in `schema.output` for ex. `ctx.output('downloadUrl', myDownloadUrl)`
+- `ctx.registerSensitiveValue` - registers credentials or other sensitive
+  values that your action discovers or creates during execution. The Scaffolder
+  redacts exact registered string keys and values from later task diagnostics.
 - `createTemporaryDirectory` a function to call to give you a temporary
   directory somewhere on the runner, so you can store some files there rather
   than polluting the `workspacePath`
 - `ctx.metadata` - an object containing a `name` field, indicating the template
   name. More metadata fields may be added later.
+
+Call `ctx.registerSensitiveValue` before a sensitive value can reach a log,
+error, output, checkpoint, or other task state. Registration matches exact
+values after normalizing surrounding whitespace, and ignores one-character
+values. Register encoded, concatenated, truncated, or otherwise transformed
+forms separately if your action can expose them.
 
 ### Using Core Services in Custom Actions
 

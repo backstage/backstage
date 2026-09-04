@@ -42,6 +42,7 @@ import {
   JsonObject,
   Observable,
   createDeferred,
+  JsonValue,
 } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 import {
@@ -58,6 +59,38 @@ import {
   TaskState,
 } from './types';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import { TaskRedacter } from './TaskRedacter';
+import { collectTaskSecretValues } from './taskSecrets';
+import type { SystemSecretProvider } from './TaskRunContext';
+
+function projectTask(
+  task: SerializedTask,
+  redacter = new TaskRedacter(),
+): SerializedTask {
+  const { secrets: _secrets, state: _state, ...projected } = task;
+  if (task.secrets) {
+    redacter.add(collectTaskSecretValues(task.secrets));
+  }
+  return {
+    ...projected,
+    spec: redacter.redactJson(
+      projected.spec as unknown as JsonValue,
+    ) as unknown as TaskSpec,
+  };
+}
+
+function projectEvents(
+  events: SerializedTaskEvent[],
+  redacter: TaskRedacter,
+): SerializedTaskEvent[] {
+  return events.map(event => ({
+    ...event,
+    body: redacter.redactJson(
+      event.body,
+    ) as unknown as SerializedTaskEvent['body'],
+  }));
+}
+
 /**
  * TaskManager
  */
@@ -85,6 +118,7 @@ export class TaskManager implements TaskContext {
       abortSignal,
       logger,
       workspaceService,
+      Boolean(workspaceProvider),
       auth,
     );
     agent.startTimeout();
@@ -94,9 +128,10 @@ export class TaskManager implements TaskContext {
   private readonly task: CurrentClaimedTask;
   private readonly storage: TaskStore;
   private readonly signal: AbortSignal;
-  private readonly logger: LoggerService;
+  private logger: LoggerService;
   private readonly workspaceService: WorkspaceService;
   private readonly auth?: AuthService;
+  readonly serializeWorkspace?: (options: { path: string }) => Promise<void>;
 
   // Runs heartbeat internally
   private constructor(
@@ -105,6 +140,7 @@ export class TaskManager implements TaskContext {
     signal: AbortSignal,
     logger: LoggerService,
     workspaceService: WorkspaceService,
+    workspaceSerializationEnabled: boolean,
     auth?: AuthService,
   ) {
     this.task = task;
@@ -113,6 +149,14 @@ export class TaskManager implements TaskContext {
     this.logger = logger;
     this.workspaceService = workspaceService;
     this.auth = auth;
+    if (workspaceSerializationEnabled) {
+      this.serializeWorkspace = options =>
+        this.workspaceService.serializeWorkspace(options);
+    }
+  }
+
+  setTaskLogger(logger: LoggerService): void {
+    this.logger = logger;
   }
 
   get taskId() {
@@ -192,10 +236,6 @@ export class TaskManager implements TaskContext {
       taskId: this.task.taskId,
       state: this.task.state,
     });
-  }
-
-  async serializeWorkspace?(options: { path: string }): Promise<void> {
-    await this.workspaceService.serializeWorkspace(options);
   }
 
   async cleanWorkspace?(): Promise<void> {
@@ -303,6 +343,7 @@ export class StorageTaskBroker implements TaskBroker {
   private readonly auth?: AuthService;
   private readonly workspaceProvider?: WorkspaceProvider;
   private readonly auditor?: AuditorService;
+  private readonly systemSecrets?: SystemSecretProvider;
 
   constructor(
     storage: TaskStore,
@@ -311,6 +352,7 @@ export class StorageTaskBroker implements TaskBroker {
     auth?: AuthService,
     additionalWorkspaceProviders?: Record<string, WorkspaceProvider>,
     auditor?: AuditorService,
+    systemSecrets?: SystemSecretProvider,
   ) {
     this.storage = storage;
     this.logger = logger;
@@ -321,6 +363,7 @@ export class StorageTaskBroker implements TaskBroker {
       config,
     );
     this.auditor = auditor;
+    this.systemSecrets = systemSecrets;
   }
 
   async list(options?: {
@@ -342,10 +385,38 @@ export class StorageTaskBroker implements TaskBroker {
         'TaskStore does not implement the list method. Please implement the list method to be able to list tasks',
       );
     }
-    return await this.storage.list(options ?? {});
+    const result = await this.storage.list(options ?? {});
+    return {
+      ...result,
+      tasks: await Promise.all(
+        result.tasks.map(async task =>
+          projectTask(task, await this.createTaskRedacter(task)),
+        ),
+      ),
+    };
   }
 
   private deferredDispatch = createDeferred();
+
+  private async createTaskRedacter(
+    task: SerializedTask,
+  ): Promise<TaskRedacter> {
+    const redacter = new TaskRedacter();
+    const systemSubscription = this.systemSecrets?.subscribe(secrets => {
+      redacter.add(secrets);
+    });
+    if (systemSubscription) {
+      redacter.add(systemSubscription.secrets);
+    }
+    try {
+      if (task.secrets) {
+        redacter.add(collectTaskSecretValues(task.secrets));
+      }
+      return redacter;
+    } finally {
+      systemSubscription?.unsubscribe();
+    }
+  }
 
   private async registerCancellable(
     taskId: string,
@@ -449,7 +520,8 @@ export class StorageTaskBroker implements TaskBroker {
    * {@inheritdoc TaskBroker.get}
    */
   async get(taskId: string): Promise<SerializedTask> {
-    return this.storage.getTask(taskId);
+    const task = await this.storage.getTask(taskId);
+    return projectTask(task, await this.createTaskRedacter(task));
   }
 
   /**
@@ -464,9 +536,19 @@ export class StorageTaskBroker implements TaskBroker {
 
       let after = options.after;
       let cancelled = false;
+      const redacter = new TaskRedacter();
+      const systemSubscription = this.systemSecrets?.subscribe(secrets => {
+        redacter.add(secrets);
+      });
+      if (systemSubscription) {
+        redacter.add(systemSubscription.secrets);
+      }
 
       (async () => {
         const task = await this.storage.getTask(taskId);
+        if (task.secrets) {
+          redacter.add(collectTaskSecretValues(task.secrets));
+        }
         const isTaskRecoverable =
           task.spec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ===
           'startOver';
@@ -480,15 +562,18 @@ export class StorageTaskBroker implements TaskBroker {
           const { events } = result;
           if (events.length) {
             after = events[events.length - 1].id;
-            observer.next(result);
+            observer.next({
+              events: projectEvents(events, redacter),
+            });
           }
 
           await new Promise(resolve => setTimeout(resolve, 1000));
         }
-      })();
+      })().catch(error => observer.error(redacter.redactError(error)));
 
       return () => {
         cancelled = true;
+        systemSubscription?.unsubscribe();
       };
     });
   }
@@ -497,30 +582,70 @@ export class StorageTaskBroker implements TaskBroker {
    * {@inheritdoc TaskBroker.vacuumTasks}
    */
   async vacuumTasks(options: { timeoutS: number }): Promise<void> {
-    const { tasks } = await this.storage.listStaleTasks(options);
+    const discoveryRedacter = new TaskRedacter();
+    const discoverySubscription = this.systemSecrets?.subscribe(secrets => {
+      discoveryRedacter.add(secrets);
+    });
+    if (discoverySubscription) {
+      discoveryRedacter.add(discoverySubscription.secrets);
+    }
+    let tasks: { taskId: string }[];
+    try {
+      ({ tasks } = await this.storage.listStaleTasks(options));
+    } catch (error) {
+      throw discoveryRedacter.redactError(error);
+    } finally {
+      discoverySubscription?.unsubscribe();
+    }
+
     await Promise.all(
       tasks.map(async task => {
-        const auditorEvent = await this.auditor?.createEvent({
-          eventId: 'task',
-          severityLevel: 'medium',
-          meta: {
-            actionType: 'stale-cancel',
-            taskId: task.taskId,
-          },
+        const redacter = new TaskRedacter();
+        const systemSubscription = this.systemSecrets?.subscribe(secrets => {
+          redacter.add(secrets);
         });
+        if (systemSubscription) {
+          redacter.add(systemSubscription.secrets);
+        }
+
         try {
-          await this.storage.completeTask({
-            taskId: task.taskId,
-            status: 'failed',
-            eventBody: {
-              message:
-                'The task was cancelled because the task worker lost connection to the task broker',
-            },
+          const storedTask = await this.storage.getTask(task.taskId);
+          if (storedTask.secrets) {
+            redacter.add(collectTaskSecretValues(storedTask.secrets));
+          }
+
+          const auditorEvent = await this.auditor?.createEvent({
+            eventId: 'task',
+            severityLevel: 'medium',
+            meta: redacter.redactJson({
+              actionType: 'stale-cancel',
+              taskId: task.taskId,
+            }) as JsonObject,
           });
-          await auditorEvent?.success();
+
+          try {
+            await this.storage.completeTask({
+              taskId: task.taskId,
+              status: 'failed',
+              eventBody: {
+                message:
+                  'The task was cancelled because the task worker lost connection to the task broker',
+              },
+            });
+            await auditorEvent?.success();
+          } catch (error) {
+            const projectedError = redacter.redactError(error);
+            this.logger.warn(
+              redacter.redactString(
+                `Failed to cancel task '${task.taskId}', ${projectedError}`,
+              ),
+            );
+            await auditorEvent?.fail({ error: projectedError });
+          }
         } catch (error) {
-          this.logger.warn(`Failed to cancel task '${task.taskId}', ${error}`);
-          await auditorEvent?.fail({ error: error });
+          throw redacter.redactError(error);
+        } finally {
+          systemSubscription?.unsubscribe();
         }
       }),
     );

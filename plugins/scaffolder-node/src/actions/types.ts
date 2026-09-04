@@ -49,6 +49,18 @@ export type ActionContext<
     name: keyof TActionOutput,
     value: TActionOutput[keyof TActionOutput],
   ): void;
+
+  /**
+   * Registers a sensitive value produced by the action for task redaction.
+   *
+   * Use this for credentials or other sensitive values that were not derived
+   * by rendering the action input. Nested string keys and values are included.
+   * Surrounding whitespace is normalized and one-character values are ignored.
+   * Exact-value registration does not cover encoded, hashed, truncated, or
+   * otherwise transformed forms unless those forms are registered separately.
+   */
+  registerSensitiveValue(value: JsonValue): void;
+
   /**
    * Creates a temporary directory for use by the action, which is then cleaned up automatically.
    */

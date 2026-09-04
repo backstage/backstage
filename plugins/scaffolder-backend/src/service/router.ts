@@ -68,6 +68,7 @@ import {
   TaskBroker,
   TaskFilters,
   SerializedTask,
+  SerializedTaskEvent,
   TaskStatus,
   TemplateAction,
   TemplateFilter,
@@ -82,7 +83,7 @@ import {
   scaffolderTemplatePermissionResourceRef,
   WorkspaceProvider,
 } from '@backstage/plugin-scaffolder-node/alpha';
-import { HumanDuration, JsonObject } from '@backstage/types';
+import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import express from 'express';
 import { Duration } from 'luxon';
 import { pathToFileURL } from 'node:url';
@@ -118,6 +119,10 @@ import {
   extractGlobalFunctionMetadata,
   extractGlobalValueMetadata,
 } from '../util/templating';
+import { SystemSecretSource } from '../scaffolder/tasks/SystemSecretSource';
+import { TaskRedacter } from '../scaffolder/tasks/TaskRedacter';
+import { SystemSecretProvider } from '../scaffolder/tasks/TaskRunContext';
+import { collectTaskSecretValues } from '../scaffolder/tasks/taskSecrets';
 import { createDefaultFilters } from '../lib/templating/filters/createDefaultFilters';
 import {
   ActionPermissionRuleInput,
@@ -215,8 +220,9 @@ async function validateSecrets(options: {
   secrets: Record<string, unknown>;
   res: express.Response;
   auditorEvent?: AuditorServiceEvent;
+  redacter: TaskRedacter;
 }): Promise<boolean> {
-  const { template, secrets, res, auditorEvent } = options;
+  const { template, secrets, res, auditorEvent, redacter } = options;
   if (!template.spec.secrets?.schema) {
     return true;
   }
@@ -230,8 +236,11 @@ async function validateSecrets(options: {
     error: new InputError('Secrets validation failed'),
   });
 
+  const errors = formatSecretsValidationErrors(result);
   res.status(400).json({
-    errors: formatSecretsValidationErrors(result),
+    errors: redacter.redactJson(
+      errors as unknown as JsonValue,
+    ) as unknown as typeof errors,
   });
   return false;
 }
@@ -247,6 +256,162 @@ function serializeTask(task: SerializedTask): SerializedTaskResponse {
   };
 }
 
+export function createRequestRedaction(options: {
+  request: express.Request<any, any, any, any>;
+  systemSecrets: SystemSecretProvider;
+  secrets?: Record<string, unknown>;
+}) {
+  const redacter = new TaskRedacter({
+    maxValues: 128,
+    maxTotalLength: 16 * 1024,
+  });
+  const subscription = options.systemSecrets.subscribe(secrets => {
+    redacter.add(secrets);
+  });
+  redacter.add(subscription.secrets);
+  if (options.secrets) {
+    redacter.addJson(options.secrets as JsonValue);
+  }
+  const authorization = options.request.headers?.authorization;
+  if (typeof authorization === 'string') {
+    redacter.add([authorization]);
+    if (authorization.slice(0, 6).toLowerCase() === 'bearer') {
+      let index = 6;
+      if (authorization[index] === ' ' || authorization[index] === '\t') {
+        while (authorization[index] === ' ' || authorization[index] === '\t') {
+          index += 1;
+        }
+        if (index < authorization.length) {
+          redacter.add([authorization.slice(index)]);
+        }
+      }
+    }
+  }
+
+  let requestBody = options.request.body as JsonValue;
+  if (
+    options.secrets &&
+    requestBody &&
+    typeof requestBody === 'object' &&
+    !Array.isArray(requestBody)
+  ) {
+    requestBody = Object.fromEntries(
+      Object.entries(requestBody).map(([key, value]) => [
+        key,
+        key === 'secrets' ? {} : value,
+      ]),
+    ) as JsonObject;
+  }
+
+  // Routes resolve credentials on the original request before passing this
+  // facade to the auditor. The default HTTP auth service then reads its cached
+  // credentials through the prototype without needing raw headers here.
+  const request = Object.create(options.request) as express.Request;
+  Object.defineProperties(request, {
+    body: {
+      configurable: true,
+      enumerable: true,
+      get: () => redacter.redactJson(requestBody),
+    },
+    headers: {
+      configurable: true,
+      enumerable: true,
+      get: () =>
+        redacter.redactJson(
+          options.request.headers as JsonValue,
+        ) as express.Request['headers'],
+    },
+    rawHeaders: {
+      configurable: true,
+      enumerable: true,
+      get: () =>
+        options.request.rawHeaders?.map(value => redacter.redactString(value)),
+    },
+    originalUrl: {
+      configurable: true,
+      enumerable: true,
+      get: () =>
+        typeof options.request.originalUrl === 'string'
+          ? redacter.redactString(options.request.originalUrl)
+          : options.request.originalUrl,
+    },
+    url: {
+      configurable: true,
+      enumerable: true,
+      get: () =>
+        typeof options.request.url === 'string'
+          ? redacter.redactString(options.request.url)
+          : options.request.url,
+    },
+    query: {
+      configurable: true,
+      enumerable: true,
+      get: () => redacter.redactJson(options.request.query as JsonValue),
+    },
+    params: {
+      configurable: true,
+      enumerable: true,
+      get: () => redacter.redactJson(options.request.params as JsonValue),
+    },
+  });
+  const protectCall = async <T>(operation: () => Promise<T>): Promise<T> => {
+    try {
+      return await operation();
+    } catch (error) {
+      throw redacter.redactError(error);
+    }
+  };
+
+  return {
+    redacter,
+    request,
+    protectAuditorEvent(
+      event: AuditorServiceEvent | undefined,
+    ): AuditorServiceEvent | undefined {
+      if (!event) {
+        return undefined;
+      }
+      return {
+        success: async eventOptions => {
+          await protectCall(() =>
+            event.success(
+              eventOptions?.meta
+                ? {
+                    meta: redacter.redactJson(eventOptions.meta) as JsonObject,
+                  }
+                : undefined,
+            ),
+          );
+        },
+        fail: async eventOptions => {
+          await protectCall(() =>
+            event.fail({
+              error: redacter.redactError(eventOptions.error),
+              meta: eventOptions.meta
+                ? (redacter.redactJson(eventOptions.meta) as JsonObject)
+                : undefined,
+            }),
+          );
+        },
+      };
+    },
+    dispose() {
+      subscription.unsubscribe();
+    },
+  };
+}
+
+function projectPublicEvents(
+  events: SerializedTaskEvent[],
+  redacter: TaskRedacter,
+): SerializedTaskEvent[] {
+  return events.map(event => ({
+    ...event,
+    body: redacter.redactJson(
+      event.body,
+    ) as unknown as SerializedTaskEvent['body'],
+  }));
+}
 /**
  * A method to create a router for the scaffolder backend plugin.
  */
@@ -290,12 +455,14 @@ export async function createRouter(
 
   const workingDirectory = await getWorkingDirectory(config, logger);
   const integrations = ScmIntegrations.fromConfig(config);
+  const systemSecrets = await SystemSecretSource.create({ config, logger });
 
   let taskBroker: TaskBroker;
   if (!options.taskBroker) {
     const databaseTaskStore = await DatabaseTaskStore.create({
       database,
       events: eventsService,
+      systemSecrets,
       recoverTasksEnabled: isTaskRecoveryEnabled(config),
     });
     taskBroker = new StorageTaskBroker(
@@ -305,6 +472,7 @@ export async function createRouter(
       auth,
       additionalWorkspaceProviders,
       auditor,
+      systemSecrets,
     );
 
     if (scheduler && databaseTaskStore.listStaleTasks) {
@@ -353,11 +521,10 @@ export async function createRouter(
   };
 
   const workers: TaskWorker[] = [];
+  const gracefulShutdown = config.getOptionalBoolean(
+    'scaffolder.EXPERIMENTAL_gracefulShutdown',
+  );
   if (concurrentTasksLimit !== 0) {
-    const gracefulShutdown = config.getOptionalBoolean(
-      'scaffolder.EXPERIMENTAL_gracefulShutdown',
-    );
-
     const worker = await TaskWorker.create({
       taskBroker,
       actionRegistry,
@@ -370,6 +537,7 @@ export async function createRouter(
       permissions,
       gracefulShutdown,
       metrics,
+      systemSecrets,
       ...templateExtensions,
     });
 
@@ -384,6 +552,16 @@ export async function createRouter(
 
   const shutdownWorkers = async () => {
     await Promise.allSettled(workers.map(worker => worker.stop()));
+    const closeSystemSecrets = Promise.all(
+      workers.map(worker => worker.waitUntilIdle()),
+    ).then(() => systemSecrets.close());
+    if (gracefulShutdown || workers.length === 0) {
+      await closeSystemSecrets;
+    } else {
+      void closeSystemSecrets.catch(() => {
+        logger.error('Failed to close the Scaffolder system secret source');
+      });
+    }
   };
 
   if (options.lifecycle) {
@@ -402,6 +580,7 @@ export async function createRouter(
     permissions,
     config,
     metrics,
+    systemSecrets,
     ...templateExtensions,
   });
 
@@ -466,15 +645,22 @@ export async function createRouter(
       '/v2/templates/:namespace/:kind/:name/parameter-schema',
       async (req, res) => {
         const requestedTemplateRef = `${req.params.kind}:${req.params.namespace}/${req.params.name}`;
-
-        const auditorEvent = await auditor?.createEvent({
-          eventId: 'template-parameter-schema',
+        const requestRedaction = createRequestRedaction({
           request: req,
-          meta: { templateRef: requestedTemplateRef },
+          systemSecrets,
         });
+        let auditorEvent: AuditorServiceEvent | undefined;
 
         try {
           const credentials = await httpAuth.credentials(req);
+          requestRedaction.redacter.add([(credentials as any).token]);
+          auditorEvent = requestRedaction.protectAuditorEvent(
+            await auditor?.createEvent({
+              eventId: 'template-parameter-schema',
+              request: requestRedaction.request,
+              meta: { templateRef: requestedTemplateRef },
+            }),
+          );
 
           const template = await authorizeTemplate(req.params, credentials);
 
@@ -488,7 +674,7 @@ export async function createRouter(
 
           await auditorEvent?.success({ meta: { templateRef: templateRef } });
 
-          res.json({
+          const response = {
             title: template.metadata.title ?? template.metadata.name,
             ...(presentation ? { presentation } : {}),
             description: template.metadata.description,
@@ -503,21 +689,37 @@ export async function createRouter(
             formDecorators:
               template.spec.formDecorators ??
               template.spec.EXPERIMENTAL_formDecorators,
-          });
+          };
+          res.json(
+            requestRedaction.redacter.redactJson(
+              response as unknown as JsonValue,
+            ) as unknown as typeof response,
+          );
         } catch (err) {
-          await auditorEvent?.fail({ error: err });
-          throw err;
+          const error = requestRedaction.redacter.redactError(err);
+          await auditorEvent?.fail({ error });
+          throw error;
+        } finally {
+          requestRedaction.dispose();
         }
       },
     )
     .get('/v2/actions', async (req, res) => {
-      const auditorEvent = await auditor?.createEvent({
-        eventId: 'action-fetch',
+      const requestRedaction = createRequestRedaction({
         request: req,
+        systemSecrets,
       });
-      const credentials = await httpAuth.credentials(req);
+      let auditorEvent: AuditorServiceEvent | undefined;
 
       try {
+        const credentials = await httpAuth.credentials(req);
+        requestRedaction.redacter.add([(credentials as any).token]);
+        auditorEvent = requestRedaction.protectAuditorEvent(
+          await auditor?.createEvent({
+            eventId: 'action-fetch',
+            request: requestRedaction.request,
+          }),
+        );
         const list = await actionRegistry.list({ credentials });
         const actionsList = Array.from(list.values())
           .map(action => {
@@ -532,30 +734,45 @@ export async function createRouter(
 
         await auditorEvent?.success();
 
-        res.json(actionsList);
+        res.json(
+          requestRedaction.redacter.redactJson(
+            actionsList as unknown as JsonValue,
+          ) as unknown as typeof actionsList,
+        );
       } catch (err) {
-        await auditorEvent?.fail({ error: err });
-        throw err;
+        const error = requestRedaction.redacter.redactError(err);
+        await auditorEvent?.fail({ error });
+        throw error;
+      } finally {
+        requestRedaction.dispose();
       }
     })
     .post('/v2/tasks', async (req, res) => {
-      const templateRef: string = req.body.templateRef;
-      const { kind, namespace, name } = parseEntityRef(templateRef, {
-        defaultKind: 'template',
-      });
-
-      const auditorEvent = await auditor?.createEvent({
-        eventId: 'task',
-        severityLevel: 'medium',
+      const requestRedaction = createRequestRedaction({
         request: req,
-        meta: {
-          actionType: 'create',
-          templateRef: templateRef,
-        },
+        systemSecrets,
+        secrets: req.body.secrets,
       });
+      let auditorEvent: AuditorServiceEvent | undefined;
 
       try {
+        const templateRef: string = req.body.templateRef;
+        const { kind, namespace, name } = parseEntityRef(templateRef, {
+          defaultKind: 'template',
+        });
         const credentials = await httpAuth.credentials(req);
+        requestRedaction.redacter.add([(credentials as any).token]);
+        auditorEvent = requestRedaction.protectAuditorEvent(
+          await auditor?.createEvent({
+            eventId: 'task',
+            severityLevel: 'medium',
+            request: requestRedaction.request,
+            meta: requestRedaction.redacter.redactJson({
+              actionType: 'create',
+              templateRef: templateRef,
+            }) as JsonObject,
+          }),
+        );
         await checkPermission({
           credentials,
           permissions: [taskCreatePermission],
@@ -574,7 +791,7 @@ export async function createRouter(
         if (userEntityRef) {
           auditLog += ` created by ${userEntityRef}`;
         }
-        logger.info(auditLog);
+        logger.info(requestRedaction.redacter.redactString(auditLog));
 
         const values = req.body.values;
 
@@ -595,7 +812,11 @@ export async function createRouter(
               ),
             });
 
-            res.status(400).json({ errors: result.errors });
+            res.status(400).json({
+              errors: requestRedaction.redacter.redactJson(
+                result.errors as unknown as JsonValue,
+              ) as unknown as typeof result.errors,
+            });
             return;
           }
         }
@@ -605,6 +826,7 @@ export async function createRouter(
           secrets: req.body.secrets ?? {},
           res,
           auditorEvent,
+          redacter: requestRedaction.redacter,
         });
         if (!secretsValid) {
           return;
@@ -655,21 +877,30 @@ export async function createRouter(
 
         res.status(201).json({ id: result.taskId });
       } catch (err) {
-        await auditorEvent?.fail({ error: err });
-        throw err;
+        const error = requestRedaction.redacter.redactError(err);
+        await auditorEvent?.fail({ error });
+        throw error;
+      } finally {
+        requestRedaction.dispose();
       }
     })
     .get('/v2/tasks', async (req, res) => {
-      const auditorEvent = await auditor?.createEvent({
-        eventId: 'task',
+      const requestRedaction = createRequestRedaction({
         request: req,
-        meta: {
-          actionType: 'list',
-        },
+        systemSecrets,
       });
+      let auditorEvent: AuditorServiceEvent | undefined;
 
       try {
         const credentials = await httpAuth.credentials(req);
+        requestRedaction.redacter.add([(credentials as any).token]);
+        auditorEvent = requestRedaction.protectAuditorEvent(
+          await auditor?.createEvent({
+            eventId: 'task',
+            request: requestRedaction.request,
+            meta: { actionType: 'list' },
+          }),
+        );
 
         if (!taskBroker.list) {
           throw new Error(
@@ -722,31 +953,55 @@ export async function createRouter(
 
         await auditorEvent?.success();
 
-        res.status(200).json({
+        for (const task of taskList.tasks) {
+          if (task.secrets) {
+            requestRedaction.redacter.add(
+              collectTaskSecretValues(task.secrets),
+            );
+          }
+        }
+        const response = {
           tasks: taskList.tasks.map(serializeTask),
           totalTasks: taskList.totalTasks,
-        });
+        };
+        res
+          .status(200)
+          .json(
+            requestRedaction.redacter.redactJson(
+              response as unknown as JsonValue,
+            ) as unknown as typeof response,
+          );
       } catch (err) {
-        await auditorEvent?.fail({ error: err });
-        throw err;
+        const error = requestRedaction.redacter.redactError(err);
+        await auditorEvent?.fail({ error });
+        throw error;
+      } finally {
+        requestRedaction.dispose();
       }
     })
     .get('/v2/tasks/:taskId', async (req, res) => {
       const { taskId } = req.params;
-
-      const auditorEvent = await auditor?.createEvent({
-        eventId: 'task',
+      const requestRedaction = createRequestRedaction({
         request: req,
-        meta: {
-          actionType: 'get',
-          taskId: taskId,
-        },
+        systemSecrets,
       });
+      let auditorEvent: AuditorServiceEvent | undefined;
 
       try {
         const credentials = await httpAuth.credentials(req);
+        requestRedaction.redacter.add([(credentials as any).token]);
+        auditorEvent = requestRedaction.protectAuditorEvent(
+          await auditor?.createEvent({
+            eventId: 'task',
+            request: requestRedaction.request,
+            meta: { actionType: 'get', taskId: taskId },
+          }),
+        );
 
         const task = await taskBroker.get(taskId);
+        if (task.secrets) {
+          requestRedaction.redacter.add(collectTaskSecretValues(task.secrets));
+        }
 
         await checkTaskPermission({
           credentials,
@@ -762,28 +1017,45 @@ export async function createRouter(
 
         await auditorEvent?.success();
 
-        res.status(200).json(serializeTask(task));
+        const response = serializeTask(task);
+        res
+          .status(200)
+          .json(
+            requestRedaction.redacter.redactJson(
+              response as unknown as JsonValue,
+            ) as unknown as SerializedTaskResponse,
+          );
       } catch (err) {
-        await auditorEvent?.fail({ error: err });
-        throw err;
+        const error = requestRedaction.redacter.redactError(err);
+        await auditorEvent?.fail({ error });
+        throw error;
+      } finally {
+        requestRedaction.dispose();
       }
     })
     .post('/v2/tasks/:taskId/cancel', async (req, res) => {
       const { taskId } = req.params;
-
-      const auditorEvent = await auditor?.createEvent({
-        eventId: 'task',
-        severityLevel: 'medium',
+      const requestRedaction = createRequestRedaction({
         request: req,
-        meta: {
-          actionType: 'cancel',
-          taskId: taskId,
-        },
+        systemSecrets,
       });
+      let auditorEvent: AuditorServiceEvent | undefined;
 
       try {
         const credentials = await httpAuth.credentials(req);
+        requestRedaction.redacter.add([(credentials as any).token]);
+        auditorEvent = requestRedaction.protectAuditorEvent(
+          await auditor?.createEvent({
+            eventId: 'task',
+            severityLevel: 'medium',
+            request: requestRedaction.request,
+            meta: { actionType: 'cancel', taskId: taskId },
+          }),
+        );
         const task = await taskBroker.get(taskId);
+        if (task.secrets) {
+          requestRedaction.redacter.add(collectTaskSecretValues(task.secrets));
+        }
         // Requires both read and cancel permissions
         await checkTaskPermission({
           credentials,
@@ -799,25 +1071,33 @@ export async function createRouter(
 
         res.status(200).json({ status: 'cancelled' });
       } catch (err) {
-        await auditorEvent?.fail({ error: err });
-        throw err;
+        const error = requestRedaction.redacter.redactError(err);
+        await auditorEvent?.fail({ error });
+        throw error;
+      } finally {
+        requestRedaction.dispose();
       }
     })
     .post('/v2/tasks/:taskId/retry', async (req, res) => {
       const { taskId } = req.params;
-
-      const auditorEvent = await auditor?.createEvent({
-        eventId: 'task',
-        severityLevel: 'medium',
+      const requestRedaction = createRequestRedaction({
         request: req,
-        meta: {
-          actionType: 'retry',
-          taskId: taskId,
-        },
+        systemSecrets,
+        secrets: req.body.secrets,
       });
+      let auditorEvent: AuditorServiceEvent | undefined;
 
       try {
         const credentials = await httpAuth.credentials(req);
+        requestRedaction.redacter.add([(credentials as any).token]);
+        auditorEvent = requestRedaction.protectAuditorEvent(
+          await auditor?.createEvent({
+            eventId: 'task',
+            severityLevel: 'medium',
+            request: requestRedaction.request,
+            meta: { actionType: 'retry', taskId: taskId },
+          }),
+        );
         const task = await taskBroker.get(taskId);
 
         // Requires both read and create permissions
@@ -851,18 +1131,18 @@ export async function createRouter(
             secrets: req.body.secrets ?? {},
             res,
             auditorEvent,
+            redacter: requestRedaction.redacter,
           });
           if (!secretsValid) {
             return;
           }
         }
 
-        await auditorEvent?.success();
-
         const { token } = await auth.getPluginRequestToken({
           onBehalfOf: credentials,
           targetPluginId: 'catalog',
         });
+        requestRedaction.redacter.add([token]);
 
         const secrets: InternalTaskSecrets = {
           ...req.body.secrets,
@@ -875,29 +1155,40 @@ export async function createRouter(
         };
 
         await taskBroker.retry?.({ secrets, taskId });
+        await auditorEvent?.success();
         res.status(201).json({ id: taskId });
       } catch (err) {
-        await auditorEvent?.fail({ error: err });
-        throw err;
+        const error = requestRedaction.redacter.redactError(err);
+        await auditorEvent?.fail({ error });
+        throw error;
+      } finally {
+        requestRedaction.dispose();
       }
     });
   (router as express.Router).get(
     '/v2/tasks/:taskId/eventstream',
     async (req, res) => {
       const { taskId } = req.params;
-
-      const auditorEvent = await auditor?.createEvent({
-        eventId: 'task',
+      const requestRedaction = createRequestRedaction({
         request: req,
-        meta: {
-          actionType: 'stream',
-          taskId: taskId,
-        },
+        systemSecrets,
       });
+      let auditorEvent: AuditorServiceEvent | undefined;
 
       try {
         const credentials = await httpAuth.credentials(req);
+        requestRedaction.redacter.add([(credentials as any).token]);
+        auditorEvent = requestRedaction.protectAuditorEvent(
+          await auditor?.createEvent({
+            eventId: 'task',
+            request: requestRedaction.request,
+            meta: { actionType: 'stream', taskId: taskId },
+          }),
+        );
         const task = await taskBroker.get(taskId);
+        if (task.secrets) {
+          requestRedaction.redacter.add(collectTaskSecretValues(task.secrets));
+        }
 
         await checkTaskPermission({
           credentials,
@@ -922,17 +1213,29 @@ export async function createRouter(
         // After client opens connection send all events as string
         const subscription = taskBroker.event$({ taskId, after }).subscribe({
           error: async error => {
+            const projectedError = requestRedaction.redacter.redactError(error);
             logger.error(
-              `Received error from event stream when observing taskId '${taskId}', ${error}`,
+              requestRedaction.redacter.redactString(
+                `Received error from event stream when observing taskId '${taskId}', ${projectedError.message}`,
+              ),
             );
-            await auditorEvent?.fail({ error: error });
+            await auditorEvent?.fail({ error: projectedError });
             res.end();
+            requestRedaction.dispose();
           },
           next: ({ events }) => {
             let shouldUnsubscribe = false;
-            for (const event of events) {
+            const projectedEvents = projectPublicEvents(
+              events,
+              requestRedaction.redacter,
+            );
+            for (let index = 0; index < events.length; index += 1) {
+              const event = events[index];
+              const projectedEvent = projectedEvents[index];
               res.write(
-                `event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`,
+                `event: ${event.type}\ndata: ${JSON.stringify(
+                  projectedEvent,
+                )}\n\n`,
               );
               if (event.type === 'completion' && !event.isTaskRecoverable) {
                 shouldUnsubscribe = true;
@@ -943,6 +1246,7 @@ export async function createRouter(
             if (shouldUnsubscribe) {
               subscription.unsubscribe();
               res.end();
+              requestRedaction.dispose();
             }
           },
         });
@@ -953,29 +1257,39 @@ export async function createRouter(
           subscription.unsubscribe();
           logger.debug(`Event stream observing taskId '${taskId}' closed`);
           await auditorEvent?.success();
+          requestRedaction.dispose();
         });
       } catch (err) {
-        await auditorEvent?.fail({ error: err });
-        throw err;
+        const error = requestRedaction.redacter.redactError(err);
+        await auditorEvent?.fail({ error });
+        requestRedaction.dispose();
+        throw error;
       }
     },
   );
   router
     .get('/v2/tasks/:taskId/events', async (req, res) => {
       const { taskId } = req.params;
-
-      const auditorEvent = await auditor?.createEvent({
-        eventId: 'task',
+      const requestRedaction = createRequestRedaction({
         request: req,
-        meta: {
-          actionType: 'events',
-          taskId: taskId,
-        },
+        systemSecrets,
       });
+      let auditorEvent: AuditorServiceEvent | undefined;
 
       try {
         const credentials = await httpAuth.credentials(req);
+        requestRedaction.redacter.add([(credentials as any).token]);
+        auditorEvent = requestRedaction.protectAuditorEvent(
+          await auditor?.createEvent({
+            eventId: 'task',
+            request: requestRedaction.request,
+            meta: { actionType: 'events', taskId: taskId },
+          }),
+        );
         const task = await taskBroker.get(taskId);
+        if (task.secrets) {
+          requestRedaction.redacter.add(collectTaskSecretValues(task.secrets));
+        }
 
         await checkTaskPermission({
           credentials,
@@ -991,21 +1305,27 @@ export async function createRouter(
         // cancel the request after 30 seconds. this aligns with the recommendations of RFC 6202.
         const timeout = setTimeout(() => {
           res.json([]);
+          requestRedaction.dispose();
         }, 30_000);
 
         // Get all known events after an id (always includes the completion event) and return the first callback
         const subscription = taskBroker.event$({ taskId, after }).subscribe({
           error: async error => {
+            const projectedError = requestRedaction.redacter.redactError(error);
             logger.error(
-              `Received error from event stream when observing taskId '${taskId}', ${error}`,
+              requestRedaction.redacter.redactString(
+                `Received error from event stream when observing taskId '${taskId}', ${projectedError.message}`,
+              ),
             );
-            await auditorEvent?.fail({ error: error });
+            await auditorEvent?.fail({ error: projectedError });
+            requestRedaction.dispose();
           },
           next: async ({ events }) => {
             clearTimeout(timeout);
             subscription.unsubscribe();
             await auditorEvent?.success();
-            res.json(events);
+            res.json(projectPublicEvents(events, requestRedaction.redacter));
+            requestRedaction.dispose();
           },
         });
 
@@ -1014,23 +1334,33 @@ export async function createRouter(
         req.on('close', () => {
           subscription.unsubscribe();
           clearTimeout(timeout);
+          requestRedaction.dispose();
         });
       } catch (err) {
-        await auditorEvent?.fail({ error: err });
-        throw err;
+        const error = requestRedaction.redacter.redactError(err);
+        await auditorEvent?.fail({ error });
+        requestRedaction.dispose();
+        throw error;
       }
     })
     .post('/v2/dry-run', async (req, res) => {
-      const auditorEvent = await auditor?.createEvent({
-        eventId: 'task',
+      const requestRedaction = createRequestRedaction({
         request: req,
-        meta: {
-          actionType: 'dry-run',
-        },
+        systemSecrets,
+        secrets: req.body.secrets,
       });
+      let auditorEvent: AuditorServiceEvent | undefined;
 
       try {
         const credentials = await httpAuth.credentials(req);
+        requestRedaction.redacter.add([(credentials as any).token]);
+        auditorEvent = requestRedaction.protectAuditorEvent(
+          await auditor?.createEvent({
+            eventId: 'task',
+            request: requestRedaction.request,
+            meta: { actionType: 'dry-run' },
+          }),
+        );
         await checkPermission({
           credentials,
           permissions: [taskCreatePermission, templateDryRunPermission],
@@ -1081,7 +1411,11 @@ export async function createRouter(
               },
             });
 
-            res.status(400).json({ errors: result.errors });
+            res.status(400).json({
+              errors: requestRedaction.redacter.redactJson(
+                result.errors as unknown as JsonValue,
+              ) as unknown as typeof result.errors,
+            });
             return;
           }
         }
@@ -1091,6 +1425,7 @@ export async function createRouter(
           secrets: body.secrets ?? {},
           res,
           auditorEvent,
+          redacter: requestRedaction.redacter,
         });
         if (!secretsValid) {
           return;
@@ -1147,7 +1482,7 @@ export async function createRouter(
           },
         });
 
-        res.status(200).json({
+        const response = {
           ...result,
           steps,
           directoryContents: result.directoryContents.map(file => ({
@@ -1155,41 +1490,85 @@ export async function createRouter(
             executable: file.executable,
             base64Content: file.content.toString('base64'),
           })),
-        });
+        };
+        res
+          .status(200)
+          .json(
+            requestRedaction.redacter.redactJson(
+              response as unknown as JsonValue,
+            ) as unknown as typeof response,
+          );
       } catch (err) {
-        await auditorEvent?.fail({ error: err });
-        throw err;
+        const error = requestRedaction.redacter.redactError(err);
+        await auditorEvent?.fail({ error });
+        throw error;
+      } finally {
+        requestRedaction.dispose();
       }
     })
     .post('/v2/autocomplete/:provider/:resource', async (req, res) => {
-      const { token, context } = req.body;
-      const { provider, resource } = req.params;
+      const requestRedaction = createRequestRedaction({
+        request: req,
+        systemSecrets,
+      });
 
-      if (!token) throw new InputError('Missing token query parameter');
+      try {
+        const { token, context } = req.body;
+        const { provider, resource } = req.params;
+        requestRedaction.redacter.add([token]);
 
-      if (!autocompleteHandlers[provider]) {
-        throw new InputError(`Unsupported provider: ${provider}`);
+        if (!token) throw new InputError('Missing token query parameter');
+
+        if (!autocompleteHandlers[provider]) {
+          throw new InputError(`Unsupported provider: ${provider}`);
+        }
+
+        const { results } = await autocompleteHandlers[provider]({
+          resource,
+          token,
+          context,
+        });
+
+        res.status(200).json(
+          requestRedaction.redacter.redactJson({
+            results,
+          }) as JsonObject,
+        );
+      } catch (error) {
+        throw requestRedaction.redacter.redactError(error);
+      } finally {
+        requestRedaction.dispose();
       }
-
-      const { results } = await autocompleteHandlers[provider]({
-        resource,
-        token,
-        context,
-      });
-
-      res.status(200).json({ results });
     })
-    .get('/v2/templating-extensions', async (_req, res) => {
-      res.status(200).json({
-        filters: {
-          ...extractFilterMetadata(createDefaultFilters({ integrations })),
-          ...extractFilterMetadata(additionalTemplateFilters),
-        },
-        globals: {
-          functions: extractGlobalFunctionMetadata(additionalTemplateGlobals),
-          values: extractGlobalValueMetadata(additionalTemplateGlobals),
-        },
+    .get('/v2/templating-extensions', async (req, res) => {
+      const requestRedaction = createRequestRedaction({
+        request: req,
+        systemSecrets,
       });
+
+      try {
+        const response = {
+          filters: {
+            ...extractFilterMetadata(createDefaultFilters({ integrations })),
+            ...extractFilterMetadata(additionalTemplateFilters),
+          },
+          globals: {
+            functions: extractGlobalFunctionMetadata(additionalTemplateGlobals),
+            values: extractGlobalValueMetadata(additionalTemplateGlobals),
+          },
+        };
+        res
+          .status(200)
+          .json(
+            requestRedaction.redacter.redactJson(
+              response as unknown as JsonValue,
+            ) as unknown as typeof response,
+          );
+      } catch (error) {
+        throw requestRedaction.redacter.redactError(error);
+      } finally {
+        requestRedaction.dispose();
+      }
     });
 
   const app = express();
