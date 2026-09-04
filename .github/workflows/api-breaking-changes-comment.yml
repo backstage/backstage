@@ -27,7 +27,9 @@ jobs:
           disable-sudo: true
           egress-policy: block
           allowed-endpoints: >
+            *.blob.core.windows.net:443
             api.github.com:443
+            results-receiver.actions.githubusercontent.com:443
 
       - name: 'Download artifacts'
         # Fetch output (zip archive) from the workflow run that triggered this workflow.
