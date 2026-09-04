@@ -17,7 +17,6 @@ creation-date: 2026-08-24
 - [Summary](#summary)
 - [Motivation](#motivation)
   - [Goals](#goals)
-  - [Non-Goals](#non-goals)
 - [Proposal](#proposal)
 - [Design Details](#design-details)
 - [Release Plan](#release-plan)
