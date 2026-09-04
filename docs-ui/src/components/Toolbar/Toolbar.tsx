@@ -103,26 +103,36 @@ export const Toolbar = ({ version }: ToolbarProps) => {
         >
           Version {version}
         </a>
-        <a
-          href="https://github.com/backstage/backstage/tree/master/packages/ui"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.bubble}
+        <span
+          className={styles.tooltipWrapper}
+          data-tooltip="GitHub"
           data-hide-tablet
-          aria-label="View source on GitHub"
         >
-          <RiGithubLine size={16} />
-        </a>
-        <a
-          href="https://discord.gg/backstage-687207715902193673"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.bubble}
+          <a
+            href="https://github.com/backstage/backstage/tree/master/packages/ui"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.bubble}
+            aria-label="View source on GitHub"
+          >
+            <RiGithubLine size={16} />
+          </a>
+        </span>
+        <span
+          className={styles.tooltipWrapper}
+          data-tooltip="Discord"
           data-hide-tablet
-          aria-label="Join Backstage on Discord"
         >
-          <RiDiscordLine size={16} />
-        </a>
+          <a
+            href="https://discord.gg/backstage-687207715902193673"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.bubble}
+            aria-label="Join Backstage on Discord"
+          >
+            <RiDiscordLine size={16} />
+          </a>
+        </span>
         <ToggleButtonGroup
           defaultSelectedKeys={['light']}
           selectedKeys={selectedTheme}
@@ -131,10 +141,18 @@ export const Toolbar = ({ version }: ToolbarProps) => {
           className={styles.buttonGroup}
           aria-label="Color scheme"
         >
-          <ToggleButton id="light" aria-label="Light theme">
+          <ToggleButton
+            id="light"
+            aria-label="Light theme"
+            data-tooltip="Light theme"
+          >
             <RiSunLine aria-hidden="true" size={16} />
           </ToggleButton>
-          <ToggleButton id="dark" aria-label="Dark theme">
+          <ToggleButton
+            id="dark"
+            aria-label="Dark theme"
+            data-tooltip="Dark theme"
+          >
             <RiMoonLine aria-hidden="true" size={16} />
           </ToggleButton>
         </ToggleButtonGroup>
