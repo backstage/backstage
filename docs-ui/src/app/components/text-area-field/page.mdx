@@ -6,8 +6,16 @@ import {
   withLabelSnippet,
   sizesSnippet,
   withDescriptionSnippet,
+  scrollingSnippet,
+  showErrorSnippet,
 } from './snippets';
-import { WithLabel, Sizes, WithDescription } from './components';
+import {
+  WithLabel,
+  Sizes,
+  WithDescription,
+  Scrolling,
+  ShowError,
+} from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { TextAreaFieldDefinition } from '../../../utils/definitions';
@@ -62,6 +70,28 @@ export const reactAriaUrls = {
   open
   preview={<WithDescription />}
   code={withDescriptionSnippet}
+  layout="side-by-side"
+/>
+
+### Scrolling
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Scrolling />}
+  code={scrollingSnippet}
+  layout="side-by-side"
+/>
+
+### Show error
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ShowError />}
+  code={showErrorSnippet}
   layout="side-by-side"
 />
 
