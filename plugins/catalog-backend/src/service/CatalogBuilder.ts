@@ -394,10 +394,6 @@ export class CatalogBuilder {
       metrics,
     } = this.env;
 
-    const enableRelationsCompatibility = Boolean(
-      config.getOptionalBoolean('catalog.enableRelationsCompatibility'),
-    );
-
     const policy = this.buildEntityPolicy();
     const processors = this.buildProcessors();
     const parser = this.parser || defaultEntityDataParser;
@@ -435,7 +431,6 @@ export class CatalogBuilder {
     const unauthorizedEntitiesCatalog = new DefaultEntitiesCatalog({
       database: dbClient,
       logger,
-      enableRelationsCompatibility,
     });
 
     const orchestrator = new DefaultCatalogProcessingOrchestrator({
@@ -553,7 +548,6 @@ export class CatalogBuilder {
       httpAuth,
       permissionsService: permissions,
       auditor,
-      enableRelationsCompatibility,
     });
 
     await connectEntityProviders(providerDatabase, enabledProviderEntries);

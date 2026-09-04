@@ -15,11 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import {
-  entitiesResponseToObjects,
-  processEntitiesResponseItems,
-  processRawEntitiesResult,
-} from './process';
+import { entitiesResponseToObjects, processRawEntitiesResult } from './process';
 
 const mockTransform = (entity: Entity): Entity => ({
   ...entity,
@@ -35,58 +31,6 @@ describe('processRawEntitiesResult', () => {
 
     expect(
       processRawEntitiesResult(['{"kind":"test"}', null], mockTransform),
-    ).toEqual({
-      type: 'object',
-      entities: [{ kind: 'transformed-test' }, null],
-    });
-  });
-});
-
-describe('processEntitiesResponseItems', () => {
-  it('should transform entities in object form', () => {
-    expect(
-      processEntitiesResponseItems({
-        type: 'object',
-        entities: [{ kind: 'test' } as Entity, null],
-      }),
-    ).toEqual({
-      type: 'object',
-      entities: [{ kind: 'test' }, null],
-    });
-
-    expect(
-      processEntitiesResponseItems(
-        {
-          type: 'object',
-          entities: [{ kind: 'test' } as Entity, null],
-        },
-        mockTransform,
-      ),
-    ).toEqual({
-      type: 'object',
-      entities: [{ kind: 'transformed-test' }, null],
-    });
-  });
-
-  it('should transform entities in raw form', () => {
-    expect(
-      processEntitiesResponseItems({
-        type: 'raw',
-        entities: ['{"kind":"test"}', null],
-      }),
-    ).toEqual({
-      type: 'raw',
-      entities: ['{"kind":"test"}', null],
-    });
-
-    expect(
-      processEntitiesResponseItems(
-        {
-          type: 'raw',
-          entities: ['{"kind":"test"}', null],
-        },
-        mockTransform,
-      ),
     ).toEqual({
       type: 'object',
       entities: [{ kind: 'transformed-test' }, null],
