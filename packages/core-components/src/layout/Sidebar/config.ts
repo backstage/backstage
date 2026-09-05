@@ -30,6 +30,7 @@ export type SidebarOptions = {
 export type SubmenuOptions = {
   drawerWidthClosed?: number;
   drawerWidthOpen?: number;
+  defaultCloseDelayMs?: number;
 };
 
 /** @internal */
@@ -83,12 +84,14 @@ export type SubmenuConfig = {
   drawerWidthClosed: number;
   drawerWidthOpen: number;
   defaultOpenDelayMs: number;
+  defaultCloseDelayMs: number;
 };
 
 export const submenuConfig = {
   drawerWidthClosed: 0,
   drawerWidthOpen: 202,
   defaultOpenDelayMs: sidebarConfig.defaultOpenDelayMs + 200,
+  defaultCloseDelayMs: 0,
 };
 
 export const makeSidebarSubmenuConfig = (
