@@ -297,7 +297,7 @@ export function parseIsoDuration(input: string): HumanDuration {
     throw new Error('Invalid ISO format, no values given');
   }
 
-  return {
+  const result: HumanDuration = {
     ...(years ? { years } : {}),
     ...(months ? { months } : {}),
     ...(weeks ? { weeks } : {}),
@@ -307,4 +307,13 @@ export function parseIsoDuration(input: string): HumanDuration {
     ...(seconds ? { seconds } : {}),
     ...(milliseconds ? { milliseconds } : {}),
   };
+
+  // A valid but entirely-zero duration (such as 'PT0S') would otherwise yield
+  // an empty object here, since the spreads above drop zero-valued units. Match
+  // the ms-string form, which represents a zero duration as { milliseconds: 0 }.
+  if (Object.keys(result).length === 0) {
+    return { milliseconds: 0 };
+  }
+
+  return result;
 }
