@@ -415,9 +415,24 @@ function applyRemoveTag(tags: Map<string, TagState>, op: OpRemoveTagV1): void {
   tags.delete(op.name);
 }
 
+// Builds a schema $id that's guaranteed to be unique per kind, apiVersion,
+// and specType combination, regardless of whatever $id (if any) the input
+// kind schema declares. Each component is percent-encoded so that the '/'
+// separators added here can't be produced by the components themselves,
+// keeping the combination unambiguous.
+function buildSchemaId(
+  kind: string,
+  apiVersion: string,
+  specType: string | undefined,
+): string {
+  const parts = [kind, apiVersion, ...(specType ? [specType] : [])];
+  return parts.map(encodeURIComponent).join('/');
+}
+
 function buildFullSchema(options: {
   kind: string;
   apiVersion: string;
+  specType?: string;
   kindSchema: JsonObject;
   annotations: Map<string, AnnotationState>;
   labels: Map<string, LabelState>;
@@ -514,6 +529,11 @@ function buildFullSchema(options: {
     : [];
 
   const generatedSchema: JsonObject = {
+    // Always override any $id declared on the kind schema itself, so that
+    // distinct kind/apiVersion/specType combinations never end up sharing an
+    // $id even if their underlying kind schemas do (e.g. because a model
+    // source reuses the same schema document across apiVersions).
+    $id: buildSchemaId(options.kind, options.apiVersion, options.specType),
     type: 'object',
     required: [...new Set([...kindRequired, 'apiVersion', 'kind', 'metadata'])],
     additionalProperties: false,
@@ -640,6 +660,7 @@ export function compileCatalogModel(
           jsonSchema: buildFullSchema({
             kind: kindName,
             apiVersion: version.apiVersion,
+            specType,
             kindSchema: specificKind.jsonSchema,
             annotations,
             labels,
