@@ -157,22 +157,17 @@ export class DefaultProviderDatabase implements ProviderDatabase {
         const entityRef = stringifyEntityRef(entity);
 
         try {
-          let ok = await updateUnprocessedEntity({
-            tx,
-            entity,
-            hash,
-            locationKey,
-          });
-          if (!ok) {
-            ok = await insertUnprocessedEntity({
+          const { updated, claimedFromNullLocationKey } =
+            await updateUnprocessedEntity({
               tx,
               entity,
               hash,
               locationKey,
-              logger: this.options.logger,
             });
-          }
-          if (ok) {
+
+          if (updated && claimedFromNullLocationKey) {
+            // Entity was claimed from weak (null-key) ownership to strong
+            // ownership - delete all old references and insert the new one
             await tx<DbRefreshStateReferencesRow>('refresh_state_references')
               .where('target_entity_ref', entityRef)
               .delete();
@@ -183,7 +178,37 @@ export class DefaultProviderDatabase implements ProviderDatabase {
               source_key: options.sourceKey,
               target_entity_ref: entityRef,
             });
+          } else if (updated) {
+            // Normal update - ensure this provider's reference exists
+            await tx<DbRefreshStateReferencesRow>('refresh_state_references')
+              .where('target_entity_ref', entityRef)
+              .andWhere({ source_key: options.sourceKey })
+              .delete();
+
+            await tx<DbRefreshStateReferencesRow>(
+              'refresh_state_references',
+            ).insert({
+              source_key: options.sourceKey,
+              target_entity_ref: entityRef,
+            });
+          } else if (
+            await insertUnprocessedEntity({
+              tx,
+              entity,
+              hash,
+              locationKey,
+              logger: this.options.logger,
+            })
+          ) {
+            // New entity inserted - add the reference
+            await tx<DbRefreshStateReferencesRow>(
+              'refresh_state_references',
+            ).insert({
+              source_key: options.sourceKey,
+              target_entity_ref: entityRef,
+            });
           } else {
+            // Neither update nor insert succeeded - conflict
             await tx<DbRefreshStateReferencesRow>('refresh_state_references')
               .where('target_entity_ref', entityRef)
               .andWhere({ source_key: options.sourceKey })
