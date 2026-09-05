@@ -10,13 +10,13 @@
 
 Here's an example of what the Group Page looks like:
 
-![Group Page example](./docs/group-page-example.png)
+![Group Page example](https://raw.githubusercontent.com/backstage/backstage/master/plugins/org/docs/group-page-example.png)
 
 ### User Profile
 
 Here's an example of what the User Profile looks like:
 
-![Group Page example](./docs/user-profile-example.png)
+![Group Page example](https://raw.githubusercontent.com/backstage/backstage/master/plugins/org/docs/user-profile-example.png)
 
 ## Installation
 
@@ -78,8 +78,8 @@ Once added MyGroupsSidebarItem will work in three ways:
 1. The user is not logged in or the logged in user is not a member of any group: the MyGroupsSidebarItem will not display anything in the sidebar
 2. The user is logged in and a member of only one group: the MyGroupsSidebarItem will display a single item in the sidebar like this:
 
-   ![MyGroupsSidebarItem single example](./docs/mygroupssidebaritem-single.png)
+   ![MyGroupsSidebarItem single example](https://raw.githubusercontent.com/backstage/backstage/master/plugins/org/docs/mygroupssidebaritem-single.png)
 
 3. The user is logged in and a member of more than one group: the MyGroupsSidebarItem will display a single items with a sub-menu with all the related groups like this:
 
-   ![MyGroupsSidebarItem multiple example](./docs/mygroupssidebaritem-multiple.png)
+   ![MyGroupsSidebarItem multiple example](https://raw.githubusercontent.com/backstage/backstage/master/plugins/org/docs/mygroupssidebaritem-multiple.png)

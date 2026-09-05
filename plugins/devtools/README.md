@@ -10,7 +10,7 @@ The DevTools plugin comes with two tabs out of the box.
 
 Lists helpful information about your current running Backstage instance such as: OS, NodeJS version, Backstage version, and package versions.
 
-![Example of Info tab](./docs/devtools-info-tab.png)
+![Example of Info tab](https://raw.githubusercontent.com/backstage/backstage/master/plugins/devtools/docs/devtools-info-tab.png)
 
 #### Backstage Version Reporting
 
@@ -32,13 +32,13 @@ Lists the configuration being used by your current running Backstage instance.
 
 **Note:** The Config tab uses the configuration schema [defined by each plugin](https://backstage.io/docs/conf/defining) to be able to mask secrets. It does this by checking that the [visibility](https://backstage.io/docs/conf/defining#visibility) has been marked as `secret`. If this is not set then the secret will appear in clear text. To mitigate this it is highly recommended that you enable the [permission framework](https://backstage.io/docs/permissions/overview) and [apply the proper permissions](#permissions)). If you do see secrets in clear text please contact the plugin's author to get the visibility set to secret for the applicable property.
 
-![Example of Config tab](./docs/devtools-config-tab.png)
+![Example of Config tab](https://raw.githubusercontent.com/backstage/backstage/master/plugins/devtools/docs/devtools-config-tab.png)
 
 ### Scheduled Tasks
 
 Scheduled tasks can be viewed and triggered under the `Scheduled Tasks` tab. [See below to configure](#scheduled-tasks-configuration).
 
-![Example of Scheduled Tasks tab](./docs/devtools-scheduled-tasks-tab.png)
+![Example of Scheduled Tasks tab](https://raw.githubusercontent.com/backstage/backstage/master/plugins/devtools/docs/devtools-scheduled-tasks-tab.png)
 
 ## Optional Features
 
@@ -48,13 +48,13 @@ The DevTools plugin can be setup with other tabs with additional helpful feature
 
 Lists the status of configured External Dependencies based on your current running Backstage instance's ability to reach them.
 
-![Example of external dependencies tab](./docs/devtools-external-dependencies.png)
+![Example of external dependencies tab](https://raw.githubusercontent.com/backstage/backstage/master/plugins/devtools/docs/devtools-external-dependencies.png)
 
 ### Catalog Unprocessed Entities
 
 The [Catalog Unprocessed Entities plugin](https://github.com/backstage/backstage/tree/master/plugins/catalog-unprocessed-entities) has an optional tab that you can also be added that will show unprocessed entities:
 
-![Example of unprocessed entities tab](./docs/catalog-unprocessed-entities-tab.png)
+![Example of unprocessed entities tab](https://raw.githubusercontent.com/backstage/backstage/master/plugins/devtools/docs/catalog-unprocessed-entities-tab.png)
 
 ## Setup
 
