@@ -32,7 +32,12 @@ import {
   ReplaceUnprocessedEntitiesOptions,
   Transaction,
 } from './types';
-import { generateStableHash, isDeadlockError, retryOnDeadlock } from './util';
+import {
+  generateStableHash,
+  isDeadlockError,
+  retryOnDeadlock,
+  whereInArray,
+} from './util';
 import {
   LoggerService,
   isDatabaseConflictError,
@@ -251,7 +256,9 @@ export class DefaultProviderDatabase implements ProviderDatabase {
         const entityRefs = chunk.map(e => stringifyEntityRef(e.entity));
         const rows = await tx<DbRefreshStateRow>('refresh_state')
           .select(['entity_ref', 'unprocessed_hash', 'location_key'])
-          .whereIn('entity_ref', entityRefs);
+          .modify<DbRefreshStateRow, DbRefreshStateRow[]>(
+            whereInArray('entity_ref', entityRefs),
+          );
         const oldStates = new Map(
           rows.map(row => [
             row.entity_ref,

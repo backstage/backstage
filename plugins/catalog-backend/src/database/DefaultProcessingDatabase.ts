@@ -40,7 +40,7 @@ import {
 import { checkLocationKeyConflict } from './operations/refreshState/checkLocationKeyConflict';
 import { insertUnprocessedEntity } from './operations/refreshState/insertUnprocessedEntity';
 import { updateUnprocessedEntity } from './operations/refreshState/updateUnprocessedEntity';
-import { generateStableHash, generateTargetKey } from './util';
+import { generateStableHash, generateTargetKey, whereInArray } from './util';
 import {
   syncRelations,
   SyncRelationsResult,
@@ -231,9 +231,11 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
 
       if (items.length > 0) {
         await tx('refresh_state')
-          .whereIn(
-            'entity_ref',
-            items.map(i => i.entity_ref),
+          .modify(
+            whereInArray(
+              'entity_ref',
+              items.map(i => i.entity_ref),
+            ),
           )
           .update({
             next_update_at: nextUpdateAt(tx, interval),
