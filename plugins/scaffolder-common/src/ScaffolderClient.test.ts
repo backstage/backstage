@@ -123,7 +123,9 @@ describe('api', () => {
           {
             fetch: fetchApi.fetch,
             onmessage: expect.any(Function),
+            onclose: expect.any(Function),
             onerror: expect.any(Function),
+            openWhenHidden: true,
             signal: expect.any(AbortSignal),
           },
         );
@@ -143,6 +145,85 @@ describe('api', () => {
           createdAt: '',
           body: { message: 'Finished!' },
         });
+      });
+
+      it('should append the after cursor to the eventstream URL', async () => {
+        mockFetchEventSource.mockImplementation(async (_url, options) => {
+          options.onmessage?.({
+            id: '',
+            event: 'completion',
+            data: '{"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{"message":"Done"}}',
+          });
+        });
+
+        await new Promise<void>(complete => {
+          apiClient
+            .streamLogs({ taskId: 'a-random-task-id', after: 42 })
+            .subscribe({ complete });
+        });
+
+        expect(mockFetchEventSource).toHaveBeenCalledWith(
+          'http://backstage/api/v2/tasks/a-random-task-id/eventstream?after=42',
+          expect.any(Object),
+        );
+      });
+
+      it('should abort the connection when unsubscribing', async () => {
+        let capturedSignal: AbortSignal | undefined;
+
+        mockFetchEventSource.mockImplementation(async (_url, options) => {
+          capturedSignal = options.signal as AbortSignal;
+          // Simulate a long-lived connection that never completes
+          await new Promise(() => {});
+        });
+
+        const subscription = apiClient
+          .streamLogs({ taskId: 'a-random-task-id' })
+          .subscribe({});
+
+        // Wait for fetchEventSource to be called
+        await new Promise(resolve => setTimeout(resolve, 0));
+
+        expect(capturedSignal?.aborted).toBe(false);
+        subscription.unsubscribe();
+        expect(capturedSignal?.aborted).toBe(true);
+      });
+
+      it('should emit an error when the server closes the connection', async () => {
+        mockFetchEventSource.mockImplementation(async (_url, options) => {
+          options.onclose?.();
+        });
+
+        const error = await new Promise<Error>(resolve => {
+          apiClient
+            .streamLogs({ taskId: 'a-random-task-id' })
+            .subscribe({ error: resolve });
+        });
+
+        expect(error.message).toBe('SSE connection closed unexpectedly');
+      });
+
+      it('should emit an error and abort when onerror is called', async () => {
+        let capturedSignal: AbortSignal | undefined;
+        const testError = new Error('connection refused');
+
+        mockFetchEventSource.mockImplementation(async (_url, options) => {
+          capturedSignal = options.signal as AbortSignal;
+          try {
+            options.onerror?.(testError);
+          } catch {
+            // onerror throws to prevent the library's built-in retry
+          }
+        });
+
+        const error = await new Promise<Error>(resolve => {
+          apiClient
+            .streamLogs({ taskId: 'a-random-task-id' })
+            .subscribe({ error: resolve });
+        });
+
+        expect(error).toBe(testError);
+        expect(capturedSignal?.aborted).toBe(true);
       });
     });
 
