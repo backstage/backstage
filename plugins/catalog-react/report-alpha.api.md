@@ -22,8 +22,61 @@ import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { TableColumn } from '@backstage/core-components';
 import { TableItem } from '@backstage/ui';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
+
+// @alpha
+export const CatalogColumnBlueprint: ExtensionBlueprint<{
+  kind: 'catalog-column';
+  params: {
+    column: TableColumn<{}>;
+    filter?: CatalogColumnFilterFn;
+  };
+  output:
+    | ExtensionDataRef<TableColumn<{}>, 'catalog.table-column', {}>
+    | ExtensionDataRef<
+        CatalogColumnFilterFn,
+        'catalog.table-column-filter',
+        {
+          optional: true;
+        }
+      >;
+  inputs: {};
+  config: {
+    filter: FilterPredicate | undefined;
+  };
+  configInput: {
+    filter?: FilterPredicate | undefined;
+  };
+  dataRefs: {
+    column: ConfigurableExtensionDataRef<
+      TableColumn<{}>,
+      'catalog.table-column',
+      {}
+    >;
+    filter: ConfigurableExtensionDataRef<
+      CatalogColumnFilterFn,
+      'catalog.table-column-filter',
+      {}
+    >;
+  };
+}>;
+
+// @alpha
+export interface CatalogColumnFilterContext {
+  // (undocumented)
+  entities: Entity[];
+  // (undocumented)
+  kind?: string;
+  // (undocumented)
+  type?: string | string[];
+}
+
+// @alpha
+export type CatalogColumnFilterFn = (
+  context: CatalogColumnFilterContext,
+) => boolean;
 
 // @alpha
 export const CatalogFilterBlueprint: ExtensionBlueprint<{

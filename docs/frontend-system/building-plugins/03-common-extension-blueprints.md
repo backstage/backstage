@@ -71,6 +71,25 @@ Router extensions allow you to replace the router component used by the app. The
 
 These are the [extension blueprints](../architecture/23-extension-blueprints.md) provided by the Catalog plugin.
 
+### CatalogColumn - [Example](https://github.com/backstage/backstage/blob/master/plugins/catalog/src/alpha/columns.tsx)
+
+Creates catalog table columns for the catalog index page. Exported as `CatalogColumnBlueprint`.
+
+Each column extension attaches to the `page:catalog` extension's `columns` input. The blueprint accepts a `column` param (the `TableColumn` definition) and an optional `filter` param (a function that controls visibility based on the currently selected entity kind or type).
+
+Columns support a `filter` config option using the standard [entity predicate query](../../features/software-catalog/catalog-customization.md#entity-predicate-queries) format, allowing adopters to control column visibility per entity kind from `app-config.yaml`:
+
+```yaml
+app:
+  extensions:
+    - catalog-column:catalog/type:
+        config:
+          filter:
+            kind: component
+```
+
+Columns can also be disabled, reordered, or extended via config. See the [catalog customization guide](../../features/software-catalog/catalog-customization.md#customizing-catalog-table-columns) for full details.
+
 ### EntityCard - [Example](https://github.com/backstage/backstage/blob/75e79518eafc6e6eb55585f166667418419662de/plugins/org/src/alpha.tsx#L27-L36)
 
 Creates entity cards to be displayed on the entity pages of the catalog plugin. Exported as `EntityCardBlueprint`.
