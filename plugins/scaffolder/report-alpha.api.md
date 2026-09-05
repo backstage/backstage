@@ -261,6 +261,21 @@ const _default: OverridableFrontendPlugin<
         noHeader?: boolean;
       };
     }>;
+    'scaffolder-form-field:scaffolder/accordion-field': OverridableExtensionDefinition<{
+      kind: 'scaffolder-form-field';
+      name: 'accordion-field';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        () => Promise<FormField>,
+        'scaffolder.form-field-loader',
+        {}
+      >;
+      inputs: {};
+      params: {
+        field: () => Promise<FormField>;
+      };
+    }>;
     'scaffolder-form-field:scaffolder/entity-name-picker': OverridableExtensionDefinition<{
       kind: 'scaffolder-form-field';
       name: 'entity-name-picker';

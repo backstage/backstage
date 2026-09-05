@@ -1,0 +1,91 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: accordion-field-demo
+  title: AccordionField Demo
+  description: Demonstrates the built-in AccordionField layout component for grouping optional or advanced template fields.
+  tags:
+    - demo
+spec:
+  owner: user:guest
+  type: service
+
+  parameters:
+    - title: Basic Configuration
+      required:
+        - serviceName
+      properties:
+        serviceName:
+          title: Service Name
+          type: string
+          description: A required field outside the accordion
+
+        advanced_section:
+          title: Advanced Configuration
+          type: object
+          ui:field: AccordionField
+          ui:options:
+            accordionTitle: '⚙️ Advanced Configuration'
+            defaultExpanded: false
+          ui:order:
+            - enableMetrics
+            - '*'
+          description: Expand to configure advanced options
+          required:
+            - replicas
+            - memoryLimit
+          properties:
+            replicas:
+              title: Replica Count
+              type: integer
+              description: Number of pod replicas
+            memoryLimit:
+              title: Memory Limit
+              type: string
+              description: Container memory limit (e.g. 256Mi)
+            enableMetrics:
+              title: Enable Metrics
+              type: boolean
+              description: Expose a /metrics endpoint
+
+            nested_section:
+              title: Networking
+              type: object
+              ui:field: AccordionField
+              ui:options:
+                accordionTitle: '🌐 Networking'
+                defaultExpanded: false
+              description: Nested accordion for networking options
+              required:
+                - port
+              properties:
+                port:
+                  title: Port
+                  type: integer
+                  description: Container port to expose
+                ingressEnabled:
+                  title: Enable Ingress
+                  type: boolean
+                  description: Create an Ingress resource
+
+  steps:
+    - id: log
+      name: Log Parameters
+      action: debug:log
+      input:
+        message: |
+          Service Name:   ${{ parameters.serviceName }}
+          Replicas:       ${{ parameters.advanced_section.replicas }}
+          Memory Limit:   ${{ parameters.advanced_section.memoryLimit }}
+          Enable Metrics: ${{ parameters.advanced_section.enableMetrics }}
+          Port:           ${{ parameters.advanced_section.nested_section.port }}
+          Ingress:        ${{ parameters.advanced_section.nested_section.ingressEnabled }}
+
+  output:
+    text:
+      - title: Summary
+        content: |
+          **Service:** `${{ parameters.serviceName }}`
+          **Replicas:** ${{ parameters.advanced_section.replicas }}
+          **Memory:** ${{ parameters.advanced_section.memoryLimit }}
+          **Port:** ${{ parameters.advanced_section.nested_section.port }}

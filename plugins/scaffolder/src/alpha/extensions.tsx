@@ -254,6 +254,13 @@ export const repoOwnerPickerFormField = FormFieldBlueprint.make({
   },
 });
 
+export const accordionFormField = FormFieldBlueprint.make({
+  name: 'accordion-field',
+  params: {
+    field: () => import('./fields/AccordionField').then(m => m.AccordionField),
+  },
+});
+
 export const scaffolderApi = ApiBlueprint.make({
   params: defineParams =>
     defineParams({
