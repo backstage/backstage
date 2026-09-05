@@ -475,7 +475,7 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
     ).resolves.not.toThrow();
   });
 
-  it('should not throw when paginate response is an object with a property containing an array of repositories', async () => {
+  it('should not throw when paginate response is an array of repositories for selected installation', async () => {
     const repoName = 'foobar';
     octokit.apps.listInstallations.mockResolvedValue({
       headers: {
@@ -501,10 +501,8 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
     } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
 
     octokit.apps.listReposAccessibleToInstallation.mockReturnValue({
-      data: {
-        repositories: [{ name: repoName }],
-      },
-    } as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']);
+      data: [{ name: repoName }],
+    } as unknown as RestEndpointMethodTypes['apps']['listReposAccessibleToInstallation']['response']);
 
     await expect(
       github.getCredentials({
