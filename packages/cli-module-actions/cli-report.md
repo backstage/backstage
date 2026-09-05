@@ -83,6 +83,7 @@ Options:
 Usage: @backstage/cli-module-actions actions sources list [flags...]
 
 Options:
+  --instance <string>
   -h, --help
 ```
 

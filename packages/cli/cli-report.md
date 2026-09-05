@@ -100,6 +100,7 @@ Options:
 Usage: backstage-cli actions sources list [flags...]
 
 Options:
+  --instance <string>
   -h, --help
 ```
 

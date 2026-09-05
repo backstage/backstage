@@ -16,7 +16,12 @@
 
 import { cli } from 'cleye';
 import { CliAuth, type CliCommandContext } from '@backstage/cli-node';
-import { pluginSourcesSchema } from '../lib/pluginSources';
+import {
+  pluginSourcesSchema,
+  excludedSourcesSchema,
+  mergePluginSources,
+} from '../lib/pluginSources';
+import { ActionsClient } from '../lib/ActionsClient';
 
 export default async ({ args, info }: CliCommandContext) => {
   const parsed = cli(
@@ -31,15 +36,27 @@ export default async ({ args, info }: CliCommandContext) => {
   const pluginIds: string[] = parsed._.pluginIds;
 
   const auth = await CliAuth.create();
-  const existing = pluginSourcesSchema.parse(
+  const localAdditions = pluginSourcesSchema.parse(
     await auth.getMetadata('pluginSources'),
   );
+  const localExclusions = excludedSourcesSchema.parse(
+    await auth.getMetadata('excludedPluginSources'),
+  );
+
+  const client = new ActionsClient(auth.getBaseUrl(), '');
+  const serverSources = await client.listSources();
+
+  const effective = mergePluginSources({
+    serverSources,
+    localAdditions,
+    localExclusions,
+  });
 
   const removed: string[] = [];
   const skipped: string[] = [];
 
   for (const pluginId of pluginIds) {
-    if (existing.includes(pluginId)) {
+    if (effective.includes(pluginId)) {
       removed.push(pluginId);
     } else {
       skipped.push(pluginId);
@@ -47,10 +64,24 @@ export default async ({ args, info }: CliCommandContext) => {
   }
 
   if (removed.length > 0) {
-    await auth.setMetadata(
-      'pluginSources',
-      existing.filter(s => !removed.includes(s)),
+    const fromLocal = removed.filter(id => localAdditions.includes(id));
+    if (fromLocal.length > 0) {
+      await auth.setMetadata(
+        'pluginSources',
+        localAdditions.filter(s => !fromLocal.includes(s)),
+      );
+    }
+
+    const toExclude = removed.filter(
+      id => serverSources.includes(id) && !localExclusions.includes(id),
     );
+    if (toExclude.length > 0) {
+      await auth.setMetadata('excludedPluginSources', [
+        ...localExclusions,
+        ...toExclude,
+      ]);
+    }
+
     process.stdout.write(
       `Removed plugin source${removed.length > 1 ? 's' : ''}: ${removed.join(
         ', ',
