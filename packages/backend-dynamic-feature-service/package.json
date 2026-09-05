@@ -67,7 +67,7 @@
     "@backstage/plugin-search-common": "workspace:^",
     "@backstage/types": "workspace:^",
     "@manypkg/get-packages": "^1.1.3",
-    "@module-federation/sdk": "^2.3.3",
+    "@module-federation/sdk": "~2.8.2",
     "chokidar": "^3.5.3",
     "express": "^4.22.0",
     "express-promise-router": "^4.1.0",

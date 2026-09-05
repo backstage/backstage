@@ -24,7 +24,7 @@ import { Module } from '@module-federation/sdk';
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { InternalFrontendFeatureLoader } from '../../frontend-plugin-api/src/wiring/createFrontendFeatureLoader';
-import { resetFederationGlobalInfo } from '@module-federation/runtime/core';
+import { resetFederationGlobalInfo } from '@module-federation/runtime-core';
 import { Config } from '@backstage/config';
 
 const baseUrl = 'http://localhost:7007';
@@ -942,8 +942,16 @@ describe('dynamicFrontendFeaturesLoader', () => {
 
     expect(warnCalls).toEqual(['[ Federation Runtime ]']);
     expect(errorCalls).toEqual([
-      `Failed loading remote module 'plugin_1' of dynamic plugin 'plugin-1': Error: [ Federation Runtime ]: "http://localhost:7007/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json" is not a valid federation manifest for remote "plugin_1". Missing required fields: metaData, exposes, shared.`,
+      expect.stringContaining(
+        "Failed loading remote module 'plugin_1' of dynamic plugin 'plugin-1'",
+      ),
     ]);
+    expect(errorCalls[0]).toContain(
+      '"manifestUrl":"http://localhost:7007/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json"',
+    );
+    expect(errorCalls[0]).toContain(
+      '"missingFields":"metaData,exposes,shared"',
+    );
     expect(features).toMatchObject([
       {
         $$type: '@backstage/FrontendPlugin',
@@ -1034,8 +1042,16 @@ describe('dynamicFrontendFeaturesLoader', () => {
     const warnCalls = mocks.console.warn.mock.calls.flatMap(e => e[0]);
     expect(warnCalls).toEqual(['[ Federation Runtime ]']);
     expect(errorCalls).toEqual([
-      `Failed loading remote module 'plugin_1' of dynamic plugin 'plugin-1': Error: [ Federation Runtime ]: "http://localhost:7007/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json" is not a valid federation manifest for remote "plugin_1". Missing required fields: metaData, exposes, shared.`,
+      expect.stringContaining(
+        "Failed loading remote module 'plugin_1' of dynamic plugin 'plugin-1'",
+      ),
     ]);
+    expect(errorCalls[0]).toContain(
+      '"manifestUrl":"http://localhost:7007/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json"',
+    );
+    expect(errorCalls[0]).toContain(
+      '"missingFields":"metaData,exposes,shared"',
+    );
     expect(features).toMatchObject([
       {
         $$type: '@backstage/FrontendPlugin',
