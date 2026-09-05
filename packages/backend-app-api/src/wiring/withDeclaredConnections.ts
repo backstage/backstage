@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 import type { ConnectionRegistration } from '@backstage/backend-plugin-api/alpha';
-import type { ConnectionsService } from '@backstage/connections';
+import type {
+  ConnectionsService,
+  ConnectionTypeKey,
+  LookupConnectionType,
+} from '@backstage/connections';
 import { InputError } from '@backstage/errors';
 
 /** @internal */
@@ -32,9 +36,13 @@ export function withDeclaredConnections(
     }
   };
   return {
-    async find(options) {
+    async find<TType extends ConnectionTypeKey>(options: {
+      type: TType;
+      query: LookupConnectionType<TType>['query'];
+      authMethods?: readonly string[];
+    }) {
       assertDeclared(options.type);
-      return service.find(options);
+      return service.find(options as Parameters<ConnectionsService['find']>[0]);
     },
-  };
+  } as ConnectionsService;
 }

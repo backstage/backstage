@@ -27,4 +27,9 @@ export interface ConnectionsService {
     query: LookupConnectionType<TType>['query'];
     authMethods: readonly [TAuthMethod, ...TAuthMethod[]];
   }): Promise<Connection<TType, TAuthMethod>>;
+
+  find<TType extends ConnectionTypeKey>(options: {
+    type: TType;
+    query: LookupConnectionType<TType>['query'];
+  }): Promise<Omit<Connection<TType>, 'auth'>>;
 }
