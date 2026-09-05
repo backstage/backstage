@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  DEFAULT_NAMESPACE,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   DependencyGraph,
   DependencyGraphTypes,
@@ -34,7 +30,7 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../../api';
-import { entityRouteRef } from '../../../routes';
+import { entityRouteParams, entityRouteRef } from '../../../routes';
 import { useEntityPresentation } from '../../../apis';
 import { EntityKindIcon } from './EntityKindIcon';
 import { catalogReactTranslationRef } from '../../../translation';
@@ -139,13 +135,7 @@ function CustomNode({ node }: DependencyGraphTypes.RenderNodeProps<NodeType>) {
   const { primaryTitle: displayTitle } = useEntityPresentation(node);
 
   const onClick = () => {
-    navigate(
-      entityRoute({
-        kind: node.kind,
-        namespace: node.metadata.namespace || DEFAULT_NAMESPACE,
-        name: node.metadata.name,
-      }),
-    );
+    navigate(entityRoute(entityRouteParams(node, { encodeParams: true })));
   };
 
   return (
