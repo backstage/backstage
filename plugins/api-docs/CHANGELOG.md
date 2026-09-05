@@ -1,5 +1,14 @@
 # @backstage/plugin-api-docs
 
+## 0.14.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.2.0-next.0
+  - @backstage/ui@0.18.0-next.2
+  - @backstage/plugin-catalog@2.0.9-next.2
+
 ## 0.14.5-next.1
 
 ### Patch Changes

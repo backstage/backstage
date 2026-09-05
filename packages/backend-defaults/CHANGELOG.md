@@ -1,5 +1,11 @@
 # @backstage/backend-defaults
 
+## 0.17.9-next.1
+
+### Patch Changes
+
+- 55f30b8: Reduced scheduler database polling overhead by batching readiness checks for global tasks registered by each plugin into one query per poll cycle on each backend instance.
+
 ## 0.17.9-next.0
 
 ### Patch Changes

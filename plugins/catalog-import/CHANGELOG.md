@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-import
 
+## 0.13.18-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.2.0-next.0
+  - @backstage/catalog-client@1.16.2-next.1
+
 ## 0.13.18-next.1
 
 ### Patch Changes

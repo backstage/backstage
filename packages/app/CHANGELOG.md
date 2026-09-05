@@ -1,5 +1,20 @@
 # example-app
 
+## 0.0.39-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.2.0-next.0
+  - @backstage/plugin-scaffolder@1.39.0-next.2
+  - @backstage/ui@0.18.0-next.2
+  - @backstage/plugin-api-docs@0.14.5-next.2
+  - @backstage/plugin-catalog@2.0.9-next.2
+  - @backstage/plugin-catalog-import@0.13.18-next.2
+  - @backstage/plugin-org@0.7.9-next.2
+  - @backstage/plugin-kubernetes@0.12.23-next.2
+  - @backstage/plugin-kubernetes-cluster@0.0.41-next.2
+
 ## 0.0.39-next.1
 
 ### Patch Changes

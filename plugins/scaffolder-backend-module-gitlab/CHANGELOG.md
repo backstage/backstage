@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.11.11-next.2
+
+### Patch Changes
+
+- 20595f0: The `gitlab:projectVariable:create` action no longer includes the variable value in its checkpoint key, preventing secret values from being persisted in scaffolder task state. The `gitlab:pipeline:trigger` action has been refactored so that the temporary pipeline trigger token is never serialized into checkpoint state.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.7-next.2
+
 ## 0.11.11-next.1
 
 ### Patch Changes
