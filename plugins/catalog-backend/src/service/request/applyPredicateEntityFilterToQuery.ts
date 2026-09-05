@@ -21,6 +21,7 @@ import {
 } from '@backstage/filter-predicates';
 import { InputError } from '@backstage/errors';
 import { Knex } from 'knex';
+import { whereInArray } from '../../database/util';
 import { searchExists, SEARCH_FLT_ALIAS as S } from './searchSubquery';
 
 function isPrimitive(value: unknown): value is FilterPredicatePrimitive {
@@ -151,7 +152,7 @@ function applyFieldCondition(options: {
       return targetQuery.whereExists(
         searchExists(knex, onEntityIdField)
           .where(`${S}.key`, key)
-          .whereIn(`${S}.value`, values),
+          .where(whereInArray(`${S}.value`, values)),
       );
     }
 
@@ -322,7 +323,7 @@ function applyContainsRelation(options: {
   );
 
   if (targetRef) {
-    subquery.whereIn(`${S}.value`, targetRef);
+    subquery.where(whereInArray(`${S}.value`, targetRef));
   }
 
   return targetQuery.whereExists(subquery);
