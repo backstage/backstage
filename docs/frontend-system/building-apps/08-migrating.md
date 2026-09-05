@@ -930,6 +930,20 @@ Once the cleanup is complete you should be left with clean entity pages that are
 
 Migrating across the tabs for the Entity Pages should be as simple as removing the `EntityLayout.Route` for each of the plugins that provide tab content, and then this tab should be sourced from the `EntityContent` extensions created by the plugins themselves which will be automatically detected and added to the App.
 
+##### Adding custom cards and tabs
+
+To add new content to an entity page, use `EntityCardBlueprint` for overview
+cards and `EntityContentBlueprint` for tab content. These extensions are
+discovered by the catalog plugin and avoid adding new components to the legacy
+`EntityPage` tree. `EntityContentBlueprint` also supports grouping tab content
+through its `group` configuration; see
+[Configure groups, titles, and icons](../../features/software-catalog/catalog-customization.md#configure-groups-titles-and-icons)
+for how the groups themselves are defined. See
+[Plugin specific extensions](../building-plugins/01-index.md#plugin-specific-extensions)
+for an entity content example and
+[Common Extension Blueprints](../building-plugins/03-common-extension-blueprints.md)
+for card, content, and tab configuration details.
+
 ### Retire `convertLegacyAppRoot`
 
 Treat the removal of `convertLegacyAppRoot` as a Phase 2 milestone. You can
