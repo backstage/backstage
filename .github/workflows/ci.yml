@@ -12,16 +12,21 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   # This step only runs yarn install to make sure that an exact match is available
   # in the cache. The two following verify and tests jobs then always install from cache.
   install:
     runs-on: ubuntu-latest
 
-    strategy:
+    strategy: &strategy
       fail-fast: false
       matrix:
-        node-version: [22.x, 24.x]
+        node-version:
+          - 22.x
+          - 24.x
 
     env:
       CI: true
@@ -29,8 +34,9 @@ jobs:
 
     name: Install ${{ matrix.node-version }}
     steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
+      - &harden-runner
+        name: Harden Runner
+        uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
         with:
           egress-policy: audit
 
@@ -40,21 +46,27 @@ jobs:
         run: |
           mkdir -p ./context
           echo "${{ github.event.pull_request.number }}" > ./context/pr-number
+
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: matrix.node-version == '22.x'
         with:
           name: pr-context
           path: context/
 
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+      - &checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
 
-      - name: use node.js ${{ matrix.node-version }}
+      - &setup-node
+        name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
-      - name: yarn install
+      - &yarn-install
+        name: yarn install
         uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
@@ -66,10 +78,7 @@ jobs:
 
     needs: install
 
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: [22.x, 24.x]
+    strategy: *strategy
 
     env:
       CI: true
@@ -77,112 +86,104 @@ jobs:
 
     name: Verify ${{ matrix.node-version }}
     steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
-        with:
-          egress-policy: audit
+      - *harden-runner
 
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+      - *checkout
 
-      - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
-        with:
-          node-version: ${{ matrix.node-version }}
-          registry-url: https://registry.npmjs.org/ # Needed for auth
+      - *setup-node
 
-      - name: yarn install
-        uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
-        with:
-          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
+      - *yarn-install
 
-      - name: verify Yarn patches
-        run: yarn backstage-cli pm verify-patches
+      - parallel:
+          - name: type checking and declarations
+            run: yarn tsc:full
 
-      - name: verify yarn dependency duplicates
-        run: node scripts/verify-lockfile-duplicates.js
+          # Build docs-ui to ensure documentation site builds successfully
+          - name: install docs-ui dependencies
+            working-directory: docs-ui
+            run: yarn install
 
-      - name: verify changesets
-        run: node scripts/verify-changesets.js
-
-      - name: verify local dependency ranges
-        run: node scripts/verify-local-dependencies.js
-
-      - name: verify peer dependency ranges
-        run: yarn lint:peer-deps
-
-      - name: check for missing repo fixes
-        run: yarn fix --check
-
-      - name: validate config
-        run: yarn backstage-cli config:check --lax
-
-      - name: type checking and declarations
-        run: yarn tsc:full
-
-        # We need to generate the API references as well, so that we can verify the doc links
+      # We need to generate the API references as well, so that we can verify the doc links
       - name: check api reports and generate API reference
+        # requires yarn tsc
         run: yarn build:api-reports:only --ci --docs
 
-      - name: verify api reference
-        run: node scripts/verify-api-reference.js
+      - parallel:
+          - name: verify Yarn patches
+            run: yarn backstage-cli pm verify-patches
 
-      - name: verify catalog-info.yaml consistency
-        run: yarn backstage-repo-tools generate-catalog-info --ci
+          - name: verify yarn dependency duplicates
+            run: node scripts/verify-lockfile-duplicates.js
 
-      - name: lint openapi yaml files
-        run: yarn backstage-repo-tools repo schema openapi lint
+          - name: verify changesets
+            run: node scripts/verify-changesets.js
 
-      - name: validate openapi yaml file matches generated ts file
-        run: yarn backstage-repo-tools repo schema openapi validate
+          - name: verify local dependency ranges
+            run: node scripts/verify-local-dependencies.js
 
-      - name: verify doc links
-        run: node scripts/verify-links.js
+          - name: verify peer dependency ranges
+            run: yarn lint:peer-deps
 
-      - name: verify plugin directory
-        run: node scripts/verify-plugin-directory.js
+          - name: check for missing repo fixes
+            run: yarn fix --check
 
-      - name: test release scripts
-        run: yarn node --test scripts/*.test.js
+          - name: validate config
+            run: yarn backstage-cli config:check --lax
 
-      - name: build all packages
-        run: yarn backstage-cli repo build --all
+          - name: verify api reference
+            run: node scripts/verify-api-reference.js
 
-        # Build docs-ui to ensure documentation site builds successfully
-      - name: install docs-ui dependencies
-        working-directory: docs-ui
-        run: yarn install
+          - name: verify catalog-info.yaml consistency
+            run: yarn backstage-repo-tools generate-catalog-info --ci
 
-      - name: build docs-ui
-        working-directory: docs-ui
-        run: yarn build
+          - name: lint openapi yaml files
+            run: yarn backstage-repo-tools repo schema openapi lint
+
+          - name: validate openapi yaml file matches generated ts file
+            run: yarn backstage-repo-tools repo schema openapi validate
+
+          - name: verify doc links
+            run: node scripts/verify-links.js
+
+          - name: verify plugin directory
+            run: node scripts/verify-plugin-directory.js
+
+          - name: test release scripts
+            run: yarn node --test scripts/*.test.js
+
+          - name: build all packages
+            run: yarn backstage-cli repo build --all
+
+          - name: build docs-ui
+            working-directory: docs-ui
+            run: yarn build
 
       - name: verify type dependencies
+        # requires "build all packages"
         run: yarn lint:type-deps
 
-      - name: ensure clean working directory
+      - &ensure-clean-working-directory
+        name: ensure clean working directory
         run: |
-          if files=$(git ls-files --exclude-standard --others --modified) && [[ -z "$files" ]]; then
+          if [ -z "$(git ls-files --exclude-standard --others --modified)" ]; then
             exit 0
-          else
-            echo ""
-            echo "Working directory has been modified:"
-            echo ""
-            git status --short
-            echo ""
-            exit 1
           fi
+
+          echo ""
+          echo "Working directory has been modified:"
+          echo ""
+          git status --short
+          echo ""
+          exit 1
 
   typos:
     runs-on: ubuntu-latest
 
     name: Spell Check
     steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
-        with:
-          egress-policy: audit
+      - *harden-runner
 
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+      - *checkout
 
       - name: check for typos
         uses: crate-ci/typos@bee27e3a4fd1ea2111cf90ab89cd076c870fce14 # v1.48.0
@@ -196,10 +197,7 @@ jobs:
 
     needs: install
 
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: [22.x, 24.x]
+    strategy: *strategy
 
     name: Test ${{ matrix.node-version }}
     services:
@@ -255,7 +253,7 @@ jobs:
       INTEGRATION_TEST_AZURE_TOKEN: ${{ secrets.INTEGRATION_TEST_AZURE_TOKEN }}
 
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+      - *checkout
 
         # Only trees and paths are needed here, to check the release and to scope
         # linting and testing to changed packages, so skip historical blob
@@ -265,19 +263,14 @@ jobs:
 
         # Need to fetch the base branch to be able to verify the release
       - name: fetch base branch
+        env:
+          BASE_BRANCH_REF: ${{ github.event.pull_request.base.ref }}
         if: github.event.pull_request.base.ref != 'master'
-        run: git fetch --filter=blob:none origin ${{ github.event.pull_request.base.ref }}
+        run: git fetch --filter=blob:none -- origin "$BASE_BRANCH_REF"
 
-      - name: use node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
-        with:
-          node-version: ${{ matrix.node-version }}
-          registry-url: https://registry.npmjs.org/ # Needed for auth
+      - *setup-node
 
-      - name: yarn install
-        uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
-        with:
-          cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
+      - *yarn-install
 
       # This check is done here since it needs git history
       - name: verify release
@@ -292,39 +285,29 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-
 
-      - name: prettier
-        run: yarn prettier:check --cache --cache-location .cache/backstage-cli/.prettier-cache
+      - parallel:
+          - name: prettier
+            run: yarn prettier:check --cache --cache-location .cache/backstage-cli/.prettier-cache
 
-      - name: lint changed packages
-        run: yarn backstage-cli repo lint --since origin/master --success-cache --success-cache-dir .cache/backstage-cli
+          - name: lint changed packages
+            run: yarn backstage-cli repo lint --since origin/master --success-cache --success-cache-dir .cache/backstage-cli
 
-      - name: test changed packages
-        id: test
-        run: yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --since origin/master --success-cache --success-cache-dir .cache/backstage-cli
-        env:
-          BACKSTAGE_TEST_DISABLE_DOCKER: 1
-          BACKSTAGE_TEST_DATABASE_POSTGRES18_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres18.ports[5432] }}
-          BACKSTAGE_TEST_DATABASE_POSTGRES14_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres14.ports[5432] }}
-          BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
-          BACKSTAGE_TEST_CACHE_REDIS7_CONNECTION_STRING: redis://localhost:${{ job.services.redis.ports[6379] }}
+          - name: test changed packages
+            id: test
+            run: yarn backstage-cli repo test --since origin/master --success-cache --success-cache-dir .cache/backstage-cli --maxWorkers=3 --workerIdleMemoryLimit=1300M
+            env:
+              BACKSTAGE_TEST_DISABLE_DOCKER: 1
+              BACKSTAGE_TEST_DATABASE_POSTGRES18_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres18.ports[5432] }}
+              BACKSTAGE_TEST_DATABASE_POSTGRES14_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres14.ports[5432] }}
+              BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
+              BACKSTAGE_TEST_CACHE_REDIS7_CONNECTION_STRING: redis://localhost:${{ job.services.redis.ports[6379] }}
 
       # Save successful test results even if other tests failed
       - name: save backstage-cli cache
         uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5
-        if: ${{ !cancelled() && steps.test.outcome != 'skipped' }}
+        if: always() && !cancelled() && steps.test.outcome != 'skipped'
         with:
           path: .cache/backstage-cli
           key: ${{ runner.os }}-v${{ matrix.node-version }}-backstage-cli-${{ github.run_id }}
 
-      - name: ensure clean working directory
-        run: |
-          if files=$(git ls-files --exclude-standard --others --modified) && [[ -z "$files" ]]; then
-            exit 0
-          else
-            echo ""
-            echo "Working directory has been modified:"
-            echo ""
-            git status --short
-            echo ""
-            exit 1
-          fi
+      - *ensure-clean-working-directory
