@@ -601,6 +601,18 @@ export interface PluginAiResourceEntityV1alpha1
 export const pluginAiResourceEntityV1alpha1Validator: KindValidator;
 
 // @alpha
+export const RELATION_HAS_PLUGIN = 'hasPlugin';
+
+// @alpha
+export const RELATION_HAS_SKILL = 'hasSkill';
+
+// @alpha
+export const RELATION_PLUGIN_OF = 'pluginOf';
+
+// @alpha
+export const RELATION_SKILL_OF = 'skillOf';
+
+// @alpha
 export interface RuleAiResourceEntityV1alpha1
   extends AiResourceEntityV1alpha1Default {
   // (undocumented)
