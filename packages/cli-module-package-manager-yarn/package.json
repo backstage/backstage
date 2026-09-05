@@ -36,7 +36,7 @@
     "@backstage/cli-common": "workspace:^",
     "@backstage/cli-node": "workspace:^",
     "@backstage/release-manifests": "workspace:^",
-    "@yarnpkg/core": "^4.4.1",
+    "@yarnpkg/core": "^4.9.1",
     "@yarnpkg/fslib": "^3.1.2",
     "@yarnpkg/parsers": "^3.0.0",
     "@yarnpkg/plugin-patch": "^4.0.2",
