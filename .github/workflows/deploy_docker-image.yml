@@ -9,6 +9,10 @@ env:
   RELEASE_VERSION: v${{ github.event.client_payload.version }}
   TAG_VERSION: ghcr.io/${{ github.repository_owner }}/backstage:${{ github.event.client_payload.version }}
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,6 +32,7 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           path: backstage
+          persist-credentials: false
           ref: ${{ github.event.client_payload.version && env.RELEASE_VERSION || github.ref }}
 
       - name: use node.js ${{ matrix.node-version }}
@@ -69,7 +74,76 @@ jobs:
           push: ${{ (github.event_name == 'repository_dispatch') && (github.event.action == 'release-published') }}
           platforms: linux/amd64,linux/arm64
           tags: |
-            ghcr.io/${{ github.repository_owner }}/backstage:latest
             ${{ github.event.client_payload.version && env.TAG_VERSION || '' }}
           labels: |
             org.opencontainers.image.description=Docker image generated from the latest Backstage release; this contains what you would get out of the box by running npx @backstage/create-app and building a Docker image from the generated source. This is meant to ease the process of evaluating Backstage for the first time, but also has the severe limitation that there is no way to install additional plugins relevant to your infrastructure.
+
+  promote-latest:
+    if: ${{ (github.event_name == 'repository_dispatch') && (github.event.action == 'release-published') }}
+    needs: build
+    runs-on: ubuntu-latest
+    concurrency:
+      group: backstage-docker-latest-promotion
+      queue: max
+      cancel-in-progress: false
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
+        with:
+          egress-policy: audit
+
+      - name: checkout workflow scripts
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          path: backstage
+          persist-credentials: false
+          ref: ${{ github.sha }}
+
+      - name: Check whether this is the latest stable release
+        id: latest-release
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          retries: 3
+          script: |
+            const { findLatestStableRelease } = require(`${process.env.GITHUB_WORKSPACE}/backstage/scripts/find-latest-stable-release`);
+            const tags = await github.paginate(github.rest.repos.listTags, {
+              ...context.repo,
+              per_page: 100,
+            });
+            const latestVersion = findLatestStableRelease(tags.map(tag => tag.name));
+            const releaseVersion = context.payload.client_payload.version;
+            const shouldPromote = releaseVersion === latestVersion;
+
+            core.info(`Latest stable release is v${latestVersion}`);
+            core.setOutput('should-promote', shouldPromote);
+
+      - name: Login to GitHub Container Registry
+        if: steps.latest-release.outputs.should-promote == 'true'
+        uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2 # v4.0.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        if: steps.latest-release.outputs.should-promote == 'true'
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
+
+      - name: Promote image to latest
+        if: steps.latest-release.outputs.should-promote == 'true'
+        env:
+          IMAGE: ghcr.io/${{ github.repository_owner }}/backstage
+          VERSION: ${{ github.event.client_payload.version }}
+        run: |
+          for attempt in 1 2 3; do
+            if docker buildx imagetools create --tag "${IMAGE}:latest" "${IMAGE}:${VERSION}"; then
+              exit 0
+            fi
+
+            if [ "${attempt}" -lt 3 ]; then
+              sleep $((attempt * 5))
+            fi
+          done
+
+          exit 1
