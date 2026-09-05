@@ -44,6 +44,14 @@ jest.setTimeout(60_000);
 
 const databases = TestDatabases.create();
 
+it('runs the search entity ID statistics migration without a transaction wrapper', () => {
+  const migration = jest.requireActual<{
+    config?: { transaction?: boolean };
+  }>('../../migrations/20260904000000_fix_search_entity_id_ndistinct');
+
+  expect(migration.config).toEqual({ transaction: false });
+});
+
 describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
   it('latest version correctly cascades deletions', async () => {
     const knex = await databases.init(databaseId);
@@ -1443,5 +1451,109 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
       expect(await hasAutovacuumOptions(table)).toBe(false);
     }
     expect(await hasNdistinctOverride()).toBe(false);
+  });
+
+  it('20260904000000_fix_search_entity_id_ndistinct.js', async () => {
+    const knex = await databases.init(databaseId);
+    const client = knex.client.config.client;
+    const isPg = typeof client === 'string' && client.includes('pg');
+
+    await migrateUntilBefore(
+      knex,
+      '20260904000000_fix_search_entity_id_ndistinct.js',
+    );
+
+    await knex('refresh_state').insert([
+      {
+        entity_id: 'e1',
+        entity_ref: 'k:ns/n1',
+        unprocessed_entity: '{}',
+        errors: '[]',
+        next_update_at: knex.fn.now(),
+        last_discovery_at: knex.fn.now(),
+      },
+      {
+        entity_id: 'e2',
+        entity_ref: 'k:ns/n2',
+        unprocessed_entity: '{}',
+        errors: '[]',
+        next_update_at: knex.fn.now(),
+        last_discovery_at: knex.fn.now(),
+      },
+    ]);
+    await knex('final_entities').insert([
+      {
+        entity_id: 'e1',
+        entity_ref: 'k:ns/n1',
+        hash: 'h1',
+        final_entity: '{}',
+      },
+      {
+        entity_id: 'e2',
+        entity_ref: 'k:ns/n2',
+        hash: 'h2',
+        final_entity: '{}',
+      },
+    ]);
+    await knex('search').insert([
+      { entity_id: 'e1', key: 'kind', value: 'component' },
+      { entity_id: 'e1', key: 'metadata.name', value: 'one' },
+      { entity_id: 'e2', key: 'kind', value: 'component' },
+      { entity_id: 'e2', key: 'metadata.name', value: 'two' },
+      { entity_id: 'e2', key: 'metadata.namespace', value: 'default' },
+      { entity_id: null, key: 'global', value: 'setting' },
+    ]);
+
+    async function readNdistinct(): Promise<{
+      option?: number;
+      statistic?: number;
+    }> {
+      if (!isPg) return {};
+
+      const result = await knex.raw(
+        `SELECT a.attoptions, s.n_distinct
+         FROM pg_attribute AS a
+         LEFT JOIN pg_stats AS s
+           ON s.schemaname = current_schema()
+          AND s.tablename = 'search'
+          AND s.attname = a.attname
+         WHERE a.attrelid = 'search'::regclass
+           AND a.attname = 'entity_id'`,
+      );
+      const option = result.rows[0]?.attoptions?.find((item: string) =>
+        item.startsWith('n_distinct='),
+      );
+      return {
+        option: option ? Number(option.split('=')[1]) : undefined,
+        statistic: result.rows[0]?.n_distinct,
+      };
+    }
+
+    expect((await readNdistinct()).option).toBe(isPg ? -1 : undefined);
+
+    await migrateUpOnce(knex);
+    const populated = await readNdistinct();
+    expect({
+      option: populated.option?.toFixed(6),
+      statistic: populated.statistic?.toFixed(6),
+    }).toEqual(
+      isPg
+        ? { option: '-0.333333', statistic: '-0.333333' }
+        : { option: undefined, statistic: undefined },
+    );
+
+    await migrateDownOnce(knex);
+    expect((await readNdistinct()).option).toBe(isPg ? -1 : undefined);
+
+    await knex('search').delete();
+    await knex('search').insert([
+      { entity_id: null, key: 'global', value: 'one' },
+      { entity_id: null, key: 'global', value: 'two' },
+    ]);
+    await migrateUpOnce(knex);
+    expect((await readNdistinct()).option).toBeUndefined();
+
+    await migrateDownOnce(knex);
+    expect((await readNdistinct()).option).toBe(isPg ? -1 : undefined);
   });
 });
