@@ -1306,6 +1306,15 @@ export interface Config {
          */
         level: 'debug' | 'info' | 'warn' | 'error';
       }>;
+
+      /**
+       * List of values to allow through redaction.
+       *
+       * This allows to avoid redacting certain values that are known to be safe to log.
+       *
+       * @visibility backend
+       */
+      redactAllowlist?: string[];
     };
 
     /**
