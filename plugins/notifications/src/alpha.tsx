@@ -24,6 +24,7 @@ import {
 import { RiNotification3Line } from '@remixicon/react';
 import { rootRouteRef } from './routes';
 import { NotificationsClient, notificationsApiRef } from './api';
+import { unreadNotificationsHomeWidget } from './alpha/extensions/unreadNotificationsHomeWidget';
 
 const page = PageBlueprint.make({
   params: {
@@ -56,7 +57,7 @@ export default createFrontendPlugin({
     root: rootRouteRef,
   },
   // TODO(Rugvip): Nav item (i.e. NotificationsSidebarItem) currently needs to be installed manually
-  extensions: [page, api],
+  extensions: [page, api, unreadNotificationsHomeWidget],
 });
 
 import { notificationsTranslationRef as _notificationsTranslationRef } from './translation';
