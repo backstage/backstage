@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { glob } from 'glob';
+import { glob, hasMagic } from 'glob';
 import path from 'node:path';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
@@ -26,6 +26,48 @@ import {
 } from '@backstage/plugin-catalog-node';
 
 const LOCATION_TYPE = 'file';
+
+// Shared by the glob() call and the hasMagic() check below, so that both agree
+// on how to interpret the target. In particular this makes backslashes path
+// separators rather than escape characters, on all platforms.
+const GLOB_OPTIONS = { windowsPathsNoEscape: true };
+
+/**
+ * The leading part of a glob pattern that contains no meta-characters, i.e. the
+ * directory that the pattern is rooted in. Returns '.' for patterns that start
+ * matching immediately, such as '*.yaml'.
+ */
+function globRootDir(target: string): string {
+  const segments = target.replace(/\\/g, '/').split('/');
+  const staticSegments: string[] = [];
+  for (const segment of segments) {
+    if (hasMagic(segment, GLOB_OPTIONS)) {
+      break;
+    }
+    staticSegments.push(segment);
+  }
+  // The final segment is a file name rather than a directory, but we only get
+  // here when at least one segment was magic, so it is always dropped by the
+  // loop above.
+  return staticSegments.join('/') || '.';
+}
+
+/**
+ * Whether a target that matched no files at all should be reported as a
+ * not-found error.
+ *
+ * Concrete paths always are. Glob patterns are only reported when the directory
+ * that the pattern is rooted in is missing as well, because that points at a
+ * misconfigured target. A pattern such as './components/*.yaml' whose directory
+ * does exist but has no matching files in it is not an error - there just
+ * aren't any entities there (yet).
+ */
+async function isMissingTarget(target: string): Promise<boolean> {
+  if (!hasMagic(target, GLOB_OPTIONS)) {
+    return true;
+  }
+  return !(await fs.pathExists(globRootDir(target)));
+}
 
 /** @public */
 export class FileReaderProcessor implements CatalogProcessor {
@@ -44,9 +86,7 @@ export class FileReaderProcessor implements CatalogProcessor {
     }
 
     try {
-      const fileMatches = await glob(location.target, {
-        windowsPathsNoEscape: true,
-      });
+      const fileMatches = await glob(location.target, GLOB_OPTIONS);
 
       if (fileMatches.length > 0) {
         for (const fileMatch of fileMatches) {
@@ -70,7 +110,7 @@ export class FileReaderProcessor implements CatalogProcessor {
             );
           }
         }
-      } else if (!optional) {
+      } else if (!optional && (await isMissingTarget(location.target))) {
         const message = `${location.type} ${location.target} does not exist`;
         emit(processingResult.notFoundError(location, message));
       }
