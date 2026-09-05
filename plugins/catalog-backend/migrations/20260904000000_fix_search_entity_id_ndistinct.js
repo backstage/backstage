@@ -90,3 +90,9 @@ exports.down = async function down(knex) {
   );
   await knex.raw(`ANALYZE search`);
 };
+
+// Let ALTER TABLE commit before ANALYZE scans the table so that the
+// AccessExclusiveLock is not held for the duration of the scan.
+exports.config = {
+  transaction: false,
+};

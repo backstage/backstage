@@ -44,6 +44,14 @@ jest.setTimeout(60_000);
 
 const databases = TestDatabases.create();
 
+it('runs the search entity ID statistics migration without a transaction wrapper', () => {
+  const migration = jest.requireActual<{
+    config?: { transaction?: boolean };
+  }>('../../migrations/20260904000000_fix_search_entity_id_ndistinct');
+
+  expect(migration.config).toEqual({ transaction: false });
+});
+
 describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
   it('latest version correctly cascades deletions', async () => {
     const knex = await databases.init(databaseId);
