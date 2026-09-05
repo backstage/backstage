@@ -21,6 +21,7 @@ import type {
   Connection,
   ConnectionAuthMethodKey,
   ConnectionsService,
+  ConnectionType,
   ConnectionTypeKey,
   LookupConnectionType,
   LookupStrategy,
@@ -30,6 +31,11 @@ import { buildConnectionsFromConfig } from '@backstage/connections';
 import { getConnectionType } from './lookup';
 import { lookupStrategies } from './lookupStrategies';
 import { NotAllowedError, NotFoundError } from '@backstage/errors';
+
+type ConnectionQuery<TType extends ConnectionTypeKey> =
+  LookupConnectionType<TType> extends ConnectionType<infer TDefinition>
+    ? TDefinition['query']
+    : never;
 
 function getLookupStrategy<K extends LookupStrategy>(
   name: K,
@@ -64,7 +70,7 @@ class PluginConnectionsService implements ConnectionsService {
     TAuthMethod extends ConnectionAuthMethodKey<TType>,
   >(options: {
     type: TType;
-    query: LookupConnectionType<TType>['query'];
+    query: ConnectionQuery<TType>;
     authMethods: readonly [TAuthMethod, ...TAuthMethod[]];
   }): Promise<Connection<TType, TAuthMethod>> {
     const result = await this.findOptional(options);
@@ -85,7 +91,7 @@ class PluginConnectionsService implements ConnectionsService {
     authMethods,
   }: {
     type: TType;
-    query: LookupConnectionType<TType>['query'];
+    query: ConnectionQuery<TType>;
     authMethods: readonly [TAuthMethod, ...TAuthMethod[]];
   }): Promise<Connection<TType, TAuthMethod> | undefined> {
     const connectionType = getConnectionType(type);

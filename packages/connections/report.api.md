@@ -7,10 +7,6 @@ import { Config } from '@backstage/config';
 import type { Expand } from '@backstage/types';
 import type { JsonObject } from '@backstage/types';
 
-// @public (undocumented)
-export type AuthValue<T extends ConnectionType | ConnectionTypeKey> =
-  ConnectionAuthValue<LookupConnectionType<T>['auth'][number]>;
-
 // @public
 export function buildConnectionsFromConfig(options: {
   config: Config;
@@ -54,18 +50,20 @@ export type ConfiguredConnectionAuth<M> = M extends {
 export type Connection<
   T extends ConnectionType | ConnectionTypeKey = ConnectionType,
   TAuthMethod extends string = string,
-> = {
-  type: LookupConnectionType<T>['type'];
-  title: string;
-  auth: string extends TAuthMethod
-    ? AuthValue<T>[]
-    : Extract<
-        AuthValue<T>,
-        {
-          method: TAuthMethod;
-        }
-      >;
-} & ReturnType<LookupConnectionType<T>['configSchema']['parse']>;
+> = LookupConnectionType<T> extends ConnectionType<infer TDefinition>
+  ? {
+      type: LookupConnectionType<T>['type'];
+      title: string;
+      auth: string extends TAuthMethod
+        ? ConnectionAuthValue<TDefinition['auth'][number]>[]
+        : Extract<
+            ConnectionAuthValue<TDefinition['auth'][number]>,
+            {
+              method: TAuthMethod;
+            }
+          >;
+    } & ReturnType<LookupConnectionType<T>['configSchema']['parse']>
+  : never;
 
 // @public
 export type ConnectionAuthMatch = {
@@ -98,7 +96,9 @@ export interface ConnectionsService {
     TAuthMethod extends ConnectionAuthMethodKey<TType>,
   >(options: {
     type: TType;
-    query: LookupConnectionType<TType>['query'];
+    query: LookupConnectionType<TType> extends ConnectionType<infer TDefinition>
+      ? TDefinition['query']
+      : never;
     authMethods: readonly [TAuthMethod, ...TAuthMethod[]];
   }): Promise<Connection<TType, TAuthMethod>>;
 }
@@ -141,8 +141,6 @@ export type ConnectionType<
         }
       : never
     : never)[];
-  readonly query: T['query'];
-  readonly auth: T['auth'];
   matchAuth?(
     authMethods: ConnectionAuthValue<T['auth'][number]>[],
     query: T['query'],
