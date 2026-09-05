@@ -87,13 +87,13 @@ export async function createRouter(
       }
     } catch (e) {
       logger.error(`Failed to authenticate WebSocket connection: ${e}`);
-      socket.write(
-        'HTTP/1.1 401 Web Socket Protocol Handshake\r\n' +
-          'Upgrade: WebSocket\r\n' +
-          'Connection: Upgrade\r\n' +
+      socket.end(
+        'HTTP/1.1 401 Unauthorized\r\n' +
+          'Content-Length: 0\r\n' +
+          'Connection: close\r\n' +
           '\r\n',
+        () => socket.destroy(),
       );
-      socket.destroy();
       return;
     }
 
@@ -108,13 +108,13 @@ export async function createRouter(
       );
     } catch (e) {
       logger.error(`Failed to handle WebSocket upgrade: ${e}`);
-      socket.write(
-        'HTTP/1.1 500 Web Socket Protocol Handshake\r\n' +
-          'Upgrade: WebSocket\r\n' +
-          'Connection: Upgrade\r\n' +
+      socket.end(
+        'HTTP/1.1 500 Internal Server Error\r\n' +
+          'Content-Length: 0\r\n' +
+          'Connection: close\r\n' +
           '\r\n',
+        () => socket.destroy(),
       );
-      socket.destroy();
     }
   };
 
