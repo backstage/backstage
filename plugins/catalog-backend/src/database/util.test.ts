@@ -37,11 +37,11 @@ describe('whereInArray', () => {
 
     const query = knex('refresh_state')
       .select('*')
-      .modify(whereInArray('entity_ref', ['a', 'b']))
+      .where(whereInArray('entity_ref', ['a', 'b']))
       .toSQL();
 
     expect(query.sql).toBe(
-      'select * from "refresh_state" where "entity_ref" = ANY(?::text[])',
+      'select * from "refresh_state" where ("entity_ref" = ANY(?::text[]))',
     );
     expect(query.bindings).toEqual([['a', 'b']]);
   });
@@ -51,11 +51,11 @@ describe('whereInArray', () => {
 
     const query = knex('refresh_state')
       .select('*')
-      .modify(whereInArray('entity_ref', []))
+      .where(whereInArray('entity_ref', []))
       .toSQL();
 
     expect(query.sql).toBe(
-      'select * from "refresh_state" where "entity_ref" = ANY(?::text[])',
+      'select * from "refresh_state" where ("entity_ref" = ANY(?::text[]))',
     );
     expect(query.bindings).toEqual([[]]);
   });
@@ -65,11 +65,11 @@ describe('whereInArray', () => {
 
     const query = knex('refresh_state')
       .select('*')
-      .modify(whereInArray('entity_ref', ['a', 'b']))
+      .where(whereInArray('entity_ref', ['a', 'b']))
       .toSQL();
 
     expect(query.sql).toBe(
-      'select * from `refresh_state` where `entity_ref` in (?, ?)',
+      'select * from `refresh_state` where (`entity_ref` in (?, ?))',
     );
     expect(query.bindings).toEqual(['a', 'b']);
   });
@@ -79,10 +79,10 @@ describe('whereInArray', () => {
 
     const query = knex('refresh_state')
       .select('*')
-      .modify(whereInArray('entity_ref', []))
+      .where(whereInArray('entity_ref', []))
       .toSQL();
 
-    expect(query.sql).toBe('select * from `refresh_state` where 1 = ?');
+    expect(query.sql).toBe('select * from `refresh_state` where (1 = ?)');
     expect(query.bindings).toEqual([0]);
   });
 });

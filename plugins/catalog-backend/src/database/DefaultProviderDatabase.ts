@@ -256,9 +256,7 @@ export class DefaultProviderDatabase implements ProviderDatabase {
         const entityRefs = chunk.map(e => stringifyEntityRef(e.entity));
         const rows = await tx<DbRefreshStateRow>('refresh_state')
           .select(['entity_ref', 'unprocessed_hash', 'location_key'])
-          .modify<DbRefreshStateRow, DbRefreshStateRow[]>(
-            whereInArray('entity_ref', entityRefs),
-          );
+          .where(whereInArray('entity_ref', entityRefs));
         const oldStates = new Map(
           rows.map(row => [
             row.entity_ref,

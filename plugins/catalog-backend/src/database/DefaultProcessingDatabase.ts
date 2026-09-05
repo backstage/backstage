@@ -231,7 +231,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
 
       if (items.length > 0) {
         await tx('refresh_state')
-          .modify(
+          .where(
             whereInArray(
               'entity_ref',
               items.map(i => i.entity_ref),
