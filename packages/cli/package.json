@@ -61,7 +61,6 @@
     "cross-fetch": "^4.0.0",
     "eslint": "^8.6.0",
     "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-deprecation": "^3.0.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-jest": "^28.9.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
