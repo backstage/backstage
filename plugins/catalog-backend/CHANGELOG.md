@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend
 
+## 4.0.0-next.1
+
+### Major Changes
+
+- d2cf99f: **BREAKING**: Removed the deprecated `catalog.enableRelationsCompatibility` config option and its associated compatibility layer. Entity relations are now always returned in the standard format with only `targetRef`. If you were relying on the `target` field in relations, update your code to use `targetRef` instead.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.2.0-next.0
+  - @backstage/catalog-client@1.16.2-next.1
+  - @backstage/plugin-catalog-node@2.2.5-next.1
+
 ## 3.9.2-next.0
 
 ### Patch Changes

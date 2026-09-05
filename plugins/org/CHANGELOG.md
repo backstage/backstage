@@ -1,5 +1,13 @@
 # @backstage/plugin-org
 
+## 0.7.9-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.2.0-next.0
+  - @backstage/ui@0.18.0-next.2
+
 ## 0.7.9-next.1
 
 ### Patch Changes

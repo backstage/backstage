@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.8.0-next.1
+
+### Minor Changes
+
+- 305e2f7: **BREAKING**: The incremental ingestion administrative routes now enforce separate read and manage permissions. Installations with custom permission policies must add decisions for the new permissions.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.2.0-next.0
+  - @backstage/plugin-catalog-backend@4.0.0-next.1
+  - @backstage/backend-defaults@0.17.9-next.1
+  - @backstage/plugin-catalog-node@2.2.5-next.1
+
 ## 0.7.16-next.0
 
 ### Patch Changes

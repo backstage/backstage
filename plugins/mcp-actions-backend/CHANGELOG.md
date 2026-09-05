@@ -1,5 +1,14 @@
 # @backstage/plugin-mcp-actions-backend
 
+## 0.2.2-next.1
+
+### Patch Changes
+
+- 4a27653: The default MCP server at `/api/mcp-actions/v1` is now always exposed. Previously, configuring `mcpActions.servers` replaced it, so the default endpoint was no longer served once a single named server was added. Named servers are now subsets of the default one, which continues to expose every registered action, so the same action can be exposed both there and on as many named servers as you like.
+- Updated dependencies
+  - @backstage/catalog-client@1.16.2-next.1
+  - @backstage/plugin-catalog-node@2.2.5-next.1
+
 ## 0.2.2-next.0
 
 ### Patch Changes
