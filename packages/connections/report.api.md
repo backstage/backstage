@@ -509,6 +509,22 @@ export const connectionTypes: {
       apiKey?: string | undefined;
     }[];
   }>;
+  readonly vault: ConnectionType<{
+    type: 'vault';
+    cardinality: 'multiton';
+    lookupStrategy: 'host';
+    query: {
+      url: string;
+    };
+    configSchema: {
+      host: string;
+      baseUrl?: string | undefined;
+    };
+    auth: readonly {
+      method: 'token';
+      token: string;
+    }[];
+  }>;
 };
 
 // @public (undocumented)
