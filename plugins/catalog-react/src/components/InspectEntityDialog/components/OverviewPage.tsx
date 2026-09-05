@@ -103,7 +103,10 @@ const useStyles = makeStyles({
 });
 
 // Extracts a link from a value, if possible
-function findLink(value: string): string | undefined {
+function findLink(value: unknown): string | undefined {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
   if (value.match(/^url:https?:\/\//)) {
     return value.slice('url:'.length);
   }
@@ -113,14 +116,36 @@ function findLink(value: string): string | undefined {
   return undefined;
 }
 
-function entriesToItems(entries: [string, string][]) {
-  return entries.map(([key, value]) => {
-    const link = findLink(value);
-    return {
-      key,
-      value: link ? <Link to={link}>{value}</Link> : value,
-    };
-  });
+// Renders annotation/label values defensively. Entities created
+// programmatically can carry non-string values (e.g. null), and the inspect
+// dialog must not crash on them.
+function renderEntryValue(value: unknown): ReactNode {
+  const link = findLink(value);
+  if (link) {
+    return <Link to={link}>{String(value)}</Link>;
+  }
+  if (typeof value === 'string') {
+    return value;
+  }
+  // JSON.stringify can return undefined (e.g. for symbol/function/undefined)
+  // and can throw (BigInt, circular references). Fall back to String() so the
+  // value stays visible and the dialog never crashes.
+  try {
+    const stringified = JSON.stringify(value);
+    if (stringified === undefined) {
+      return String(value);
+    }
+    return stringified;
+  } catch {
+    return String(value);
+  }
+}
+
+function entriesToItems(entries: [string, unknown][]) {
+  return entries.map(([key, value]) => ({
+    key,
+    value: renderEntryValue(value),
+  }));
 }
 
 function CopyButton({ text, label }: { text: string; label: string }) {

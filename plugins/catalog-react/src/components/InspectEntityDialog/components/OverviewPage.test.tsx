@@ -15,7 +15,7 @@
  */
 
 import { renderInTestApp } from '@backstage/test-utils';
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { entityRouteRef } from '../../../routes';
 import { OverviewPage } from './OverviewPage';
 
@@ -99,5 +99,52 @@ describe('OverviewPage', () => {
 
     expect(await screen.findByText('java')).toBeInTheDocument();
     expect(screen.getByText('data')).toBeInTheDocument();
+  });
+
+  it('renders without crashing when annotations or labels carry non-string values', async () => {
+    const bigintValue = BigInt('9007199254740993');
+    const entityWithNullAnnotation = {
+      ...entity,
+      metadata: {
+        ...entity.metadata,
+        annotations: {
+          ...entity.metadata.annotations,
+          'my-custom-annotation': null,
+          // BigInt makes JSON.stringify throw — exercise the catch path.
+          'bigint-annotation': bigintValue,
+        },
+        labels: {
+          ...entity.metadata.labels,
+          'numeric-label': 42,
+        },
+      },
+    } as any;
+
+    await renderInTestApp(<OverviewPage entity={entityWithNullAnnotation} />, {
+      mountedRoutes,
+    });
+
+    // Scope assertions to the specific Annotations/Labels lists so unrelated
+    // sections with matching text can't produce false positives.
+    const annotations = within(screen.getByLabelText('Annotations'));
+    const annotationTerms = annotations
+      .getAllByRole('term')
+      .map(el => el.textContent);
+    const annotationValues = annotations
+      .getAllByRole('definition')
+      .map(el => el.textContent);
+    expect(annotationTerms).toContain('my-custom-annotation');
+    expect(annotationTerms).toContain('bigint-annotation');
+    // Non-string values must still surface to the user, not silently disappear.
+    expect(annotationValues).toContain('null');
+    expect(annotationValues).toContain(String(bigintValue));
+
+    const labels = within(screen.getByLabelText('Labels'));
+    const labelTerms = labels.getAllByRole('term').map(el => el.textContent);
+    const labelValues = labels
+      .getAllByRole('definition')
+      .map(el => el.textContent);
+    expect(labelTerms).toContain('numeric-label');
+    expect(labelValues).toContain('42');
   });
 });
