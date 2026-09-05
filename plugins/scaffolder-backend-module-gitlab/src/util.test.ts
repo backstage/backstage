@@ -15,10 +15,13 @@
  */
 
 import * as util from './util';
-import { Gitlab, GroupSchema } from '@gitbeaker/rest';
+import { Gitlab, GroupSchema, RepositoryTreeSchema } from '@gitbeaker/rest';
 import { InputError } from '@backstage/errors';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
+import { mockServices } from '@backstage/backend-test-utils';
+import { SerializedFile } from '@backstage/plugin-scaffolder-node';
+import { createHash } from 'node:crypto';
 
 // Mock the Gitlab client and its methods
 const mockGitlabClient = {
@@ -425,5 +428,170 @@ describe('convertDate', () => {
 
     // Expecting an InputError to be thrown
     expect(() => util.convertDate(inputDate, defaultDate)).toThrow(InputError);
+  });
+});
+
+describe('getFileAction', () => {
+  // Object ids below are real `git hash-object` output for the contents they sit next to.
+  const BLOB_FOO_BAR_BAZ = '6463ca9e2f99a4e9b97e1e9e24e752b52228ccef';
+  const BLOB_CHANGED_CONTENT = '8a4c7293b2b39d7581915204c5f5f6e3b7023203';
+  const BLOB_EMPTY = 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391';
+  const BLOB_LINK_TARGET = '567dcc0008aa3e8791fb5bb9781d252fc461075a';
+
+  const logger = mockServices.logger.mock();
+  const show = jest.fn();
+  const api = {
+    RepositoryFiles: { show },
+  } as unknown as InstanceType<typeof Gitlab>;
+  const target = { repoID: 'owner/repo', branch: 'main' };
+
+  const file = (path: string, content: string): SerializedFile => ({
+    path,
+    content: Buffer.from(content),
+    executable: false,
+    symlink: false,
+  });
+
+  const treeEntry = (path: string, id?: string) =>
+    ({ path, id } as RepositoryTreeSchema);
+
+  const getFileAction = (
+    f: SerializedFile,
+    remoteFiles: RepositoryTreeSchema[],
+    opts: {
+      targetPath?: string;
+      commitAction?: 'create' | 'delete' | 'update' | 'skip' | 'auto';
+    } = {},
+  ) =>
+    util.getFileAction(
+      { file: f, targetPath: opts.targetPath },
+      target,
+      api,
+      logger,
+      remoteFiles,
+      opts.commitAction,
+    );
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should skip an unchanged file without requesting its contents', async () => {
+    const f = file('a.txt', 'foo-bar-baz');
+
+    await expect(
+      getFileAction(f, [treeEntry('a.txt', BLOB_FOO_BAR_BAZ)]),
+    ).resolves.toEqual('skip');
+    expect(show).not.toHaveBeenCalled();
+  });
+
+  it('should update a changed file without requesting its contents', async () => {
+    const f = file('a.txt', 'changed content');
+
+    await expect(
+      getFileAction(f, [treeEntry('a.txt', BLOB_FOO_BAR_BAZ)]),
+    ).resolves.toEqual('update');
+    expect(show).not.toHaveBeenCalled();
+  });
+
+  it('should create a file that is absent from the tree', async () => {
+    await expect(
+      getFileAction(file('new.txt', 'x'), [
+        treeEntry('a.txt', BLOB_FOO_BAR_BAZ),
+      ]),
+    ).resolves.toEqual('create');
+    expect(show).not.toHaveBeenCalled();
+  });
+
+  it('should join targetPath before matching against the tree', async () => {
+    const f = file('a.txt', 'changed content');
+
+    await expect(
+      getFileAction(f, [treeEntry('sub/a.txt', BLOB_CHANGED_CONTENT)], {
+        targetPath: 'sub',
+      }),
+    ).resolves.toEqual('skip');
+  });
+
+  it('should hash an empty file correctly', async () => {
+    await expect(
+      getFileAction(file('empty', ''), [treeEntry('empty', BLOB_EMPTY)]),
+    ).resolves.toEqual('skip');
+  });
+
+  it('should hash binary content containing NUL bytes correctly', async () => {
+    const f: SerializedFile = {
+      path: 'b.bin',
+      content: Buffer.from([0, 1, 2, 0, 255, 0]),
+      executable: false,
+      symlink: false,
+    };
+    const id = createHash('sha1')
+      .update(`blob ${f.content.length}\0`)
+      .update(f.content)
+      .digest('hex');
+
+    await expect(getFileAction(f, [treeEntry('b.bin', id)])).resolves.toEqual(
+      'skip',
+    );
+  });
+
+  it('should compare a symlink against the blob of its target path', async () => {
+    // serializeDirectoryContents stores readlink() output as the content, as git does.
+    const f: SerializedFile = {
+      path: 'link',
+      content: Buffer.from('../target/file'),
+      executable: false,
+      symlink: true,
+    };
+
+    await expect(
+      getFileAction(f, [treeEntry('link', BLOB_LINK_TARGET)]),
+    ).resolves.toEqual('skip');
+  });
+
+  it('should compare with sha256 in a repository using the sha256 object format', async () => {
+    const f = file('a.txt', 'foo-bar-baz');
+    const id =
+      '6ae59be0528e3485c1ceabf48c2dfb18a4dae525e55b828a3a2325119c7fe86e';
+
+    await expect(getFileAction(f, [treeEntry('a.txt', id)])).resolves.toEqual(
+      'skip',
+    );
+    expect(show).not.toHaveBeenCalled();
+  });
+
+  it('should fall back to comparing contents when the tree id is unusable', async () => {
+    show.mockResolvedValue({
+      content_sha256:
+        '269dce1a5bb90188b2d9cf542a7c30e410c7d8251e34a97bfea56062df51ae23',
+    });
+
+    await expect(
+      getFileAction(file('a.txt', 'foo-bar-baz'), [
+        treeEntry('a.txt', 'not-a-valid-object-id'),
+      ]),
+    ).resolves.toEqual('skip');
+    expect(show).toHaveBeenCalledWith('owner/repo', 'a.txt', 'main');
+  });
+
+  it('should fall back to comparing contents when the tree id is missing', async () => {
+    show.mockResolvedValue({ content_sha256: 'something-else' });
+
+    await expect(
+      getFileAction(file('a.txt', 'foo-bar-baz'), [treeEntry('a.txt')]),
+    ).resolves.toEqual('update');
+    expect(show).toHaveBeenCalledTimes(1);
+  });
+
+  it('should return an explicit commitAction without inspecting the tree', async () => {
+    await expect(
+      getFileAction(
+        file('a.txt', 'foo-bar-baz'),
+        [treeEntry('a.txt', BLOB_FOO_BAR_BAZ)],
+        { commitAction: 'create' },
+      ),
+    ).resolves.toEqual('create');
+    expect(show).not.toHaveBeenCalled();
   });
 });

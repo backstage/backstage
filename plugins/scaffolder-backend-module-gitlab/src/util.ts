@@ -211,6 +211,28 @@ function computeSha256(file: SerializedFile): string {
   return hash.digest('hex');
 }
 
+/**
+ * The hash a repository uses for its object ids, derived from the width of one of them. Git's
+ * default object format is sha1; repositories created with `--object-format=sha256` use sha256.
+ */
+function blobIdAlgorithm(id: unknown): 'sha1' | 'sha256' | undefined {
+  if (typeof id !== 'string') return undefined;
+  if (/^[0-9a-f]{40}$/.test(id)) return 'sha1';
+  if (/^[0-9a-f]{64}$/.test(id)) return 'sha256';
+  return undefined;
+}
+
+/** A file's git object id: hash of `blob <byte length>\0` followed by its contents. */
+function computeGitBlobId(
+  file: SerializedFile,
+  algorithm: 'sha1' | 'sha256',
+): string {
+  const hash = createHash(algorithm);
+  hash.update(`blob ${file.content.length}\0`);
+  hash.update(file.content);
+  return hash.digest('hex');
+}
+
 export async function getFileAction(
   fileInfo: { file: SerializedFile; targetPath?: string },
   target: { repoID: string; branch: string },
@@ -227,7 +249,19 @@ export async function getFileAction(
   if (defaultCommitAction === 'auto') {
     const filePath = path.join(fileInfo.targetPath ?? '', fileInfo.file.path);
 
-    if (remoteFiles?.some(remoteFile => remoteFile.path === filePath)) {
+    const remoteFile = remoteFiles?.find(entry => entry.path === filePath);
+
+    if (remoteFile) {
+      // The tree listing already carries every blob's object id, so an unchanged file can be
+      // recognised without fetching its contents. Fall through to the request below only if
+      // the id isn't one we can compare against.
+      const algorithm = blobIdAlgorithm(remoteFile.id);
+      if (algorithm) {
+        return computeGitBlobId(fileInfo.file, algorithm) === remoteFile.id
+          ? 'skip'
+          : 'update';
+      }
+
       try {
         const targetFile = await api.RepositoryFiles.show(
           target.repoID,
