@@ -330,11 +330,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@asyncapi/parser@npm:^3.1.0, @asyncapi/parser@npm:^3.3.0, @asyncapi/parser@npm:^3.4.0":
-  version: 3.4.0
-  resolution: "@asyncapi/parser@npm:3.4.0"
+"@asyncapi/parser@npm:^3.1.0, @asyncapi/parser@npm:^3.4.0, @asyncapi/parser@npm:^3.6.0":
+  version: 3.6.2
+  resolution: "@asyncapi/parser@npm:3.6.2"
   dependencies:
-    "@asyncapi/specs": "npm:^6.8.0"
+    "@asyncapi/specs": "npm:^6.11.1"
     "@openapi-contrib/openapi-schema-to-json-schema": "npm:~3.2.0"
     "@stoplight/json": "npm:3.21.0"
     "@stoplight/json-ref-readers": "npm:^1.2.2"
@@ -346,14 +346,14 @@ __metadata:
     "@stoplight/types": "npm:^13.12.0"
     "@types/json-schema": "npm:^7.0.11"
     "@types/urijs": "npm:^1.19.19"
-    ajv: "npm:^8.17.1"
+    ajv: "npm:^8.18.0"
     ajv-errors: "npm:^3.0.0"
     ajv-formats: "npm:^2.1.1"
     avsc: "npm:^5.7.5"
-    js-yaml: "npm:^4.1.0"
-    jsonpath-plus: "npm:^10.0.0"
+    js-yaml: "npm:^4.3.0"
+    jsonpath-plus: "npm:^10.0.7"
     node-fetch: "npm:2.6.7"
-  checksum: 10/67de9ca4a5257b9fb39e16349d9e3aa0f5d34b0343e5d9c0ea05f35171b604f356ab54ac769783caf580f5f3ef90914267aa60b17783ffbfa07af6af071f9f64
+  checksum: 10/047f427a7cb1cd4a1d22ec5443e27ea0668f63fe4c52144c58c1575e1e7b757405a48a6b70acb08862bbb8b6302f47051cdeffd0d376b9a546573e5df07b23e5
   languageName: node
   linkType: hard
 
@@ -368,13 +368,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@asyncapi/react-component@npm:^2.3.3":
-  version: 2.6.5
-  resolution: "@asyncapi/react-component@npm:2.6.5"
+"@asyncapi/react-component@npm:^3.1.4":
+  version: 3.1.4
+  resolution: "@asyncapi/react-component@npm:3.1.4"
   dependencies:
     "@asyncapi/avro-schema-parser": "npm:^3.0.24"
     "@asyncapi/openapi-schema-parser": "npm:^3.0.24"
-    "@asyncapi/parser": "npm:^3.3.0"
+    "@asyncapi/parser": "npm:^3.6.0"
     "@asyncapi/protobuf-schema-parser": "npm:^3.6.0"
     highlight.js: "npm:^10.7.2"
     isomorphic-dompurify: "npm:^2.14.0"
@@ -385,11 +385,11 @@ __metadata:
   peerDependencies:
     react: ">=18.0.0"
     react-dom: ">=18.0.0"
-  checksum: 10/3af09244a8bf59aefadc0dcf7203865a964af014869b3e9f952be9655127fcca5d151c252b15b1b8acbf266ef239a70ac50b588d1040a876694b5345964560e7
+  checksum: 10/14709b654339edfbf188694b4c1517460f3c7cee5480ea0a38a109e67f1e6fcbc46d735913d0d26d4cef39bd9fbde859ba5137cf9ea4cf8635759c7872845ab0
   languageName: node
   linkType: hard
 
-"@asyncapi/specs@npm:6.11.1, @asyncapi/specs@npm:^6.8.0":
+"@asyncapi/specs@npm:6.11.1, @asyncapi/specs@npm:^6.11.1":
   version: 6.11.1
   resolution: "@asyncapi/specs@npm:6.11.1"
   dependencies:
@@ -3417,7 +3417,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-api-docs@workspace:plugins/api-docs"
   dependencies:
-    "@asyncapi/react-component": "npm:^2.3.3"
+    "@asyncapi/react-component": "npm:^3.1.4"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
@@ -33405,7 +33405,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsonpath-plus@npm:^10.0.0, jsonpath-plus@npm:^10.3.0, jsonpath-plus@npm:^6.0.1 || ^10.1.0":
+"jsonpath-plus@npm:^10.0.7, jsonpath-plus@npm:^10.3.0, jsonpath-plus@npm:^6.0.1 || ^10.1.0":
   version: 10.4.0
   resolution: "jsonpath-plus@npm:10.4.0"
   dependencies:
