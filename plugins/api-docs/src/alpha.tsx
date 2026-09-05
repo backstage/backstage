@@ -21,6 +21,7 @@ import {
   PageBlueprint,
   createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
+import { z } from 'zod/v4';
 
 import {
   ApiEntity,
