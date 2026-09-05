@@ -127,7 +127,7 @@
     "@backstage/repo-tools": "workspace:*",
     "@changesets/cli": "^2.14.0",
     "@jest/environment-jsdom-abstract": "~30.2.0",
-    "@octokit/rest": "^19.0.3",
+    "@octokit/rest": "^20.1.2",
     "@playwright/test": "^1.32.3",
     "@spotify/eslint-plugin": "^15.0.0",
     "@storybook/addon-a11y": "^10.4.0",
