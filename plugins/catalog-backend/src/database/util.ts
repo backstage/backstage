@@ -35,6 +35,17 @@ export function generateTargetKey(target: string) {
     : target;
 }
 
+/** Applies an array-backed WHERE clause with a stable query shape on PostgreSQL. */
+export function whereInArray(column: string, values: string[]) {
+  return (qb: Knex.QueryBuilder) => {
+    if (qb.client.config.client === 'pg') {
+      qb.whereRaw('?? = ANY(?::text[])', [column, values]);
+    } else {
+      qb.whereIn(column, values);
+    }
+  };
+}
+
 /**
  * Retries an operation on database deadlock errors.
  */
