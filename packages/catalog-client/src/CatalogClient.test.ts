@@ -488,6 +488,51 @@ describe('CatalogClient', () => {
         'c',
       ]);
     });
+    it('falls back to POST endpoint when filter would produce an oversized URL', async () => {
+      const getMockedEndpoint = jest
+        .fn()
+        .mockImplementation(() =>
+          HttpResponse.json({ items: [], totalItems: 0 }),
+        );
+      const postMockedEndpoint = jest
+        .fn()
+        .mockImplementation(async ({ request }: { request: Request }) => {
+          expect(request.method).toBe('POST');
+          const body = await request.json();
+          expect(body.query).toBeDefined();
+          return HttpResponse.json({ items: [], totalItems: 0 });
+        });
+      server.use(
+        http.get(`${mockBaseUrl}/entities/by-query`, getMockedEndpoint),
+        http.post(`${mockBaseUrl}/entities/by-query`, postMockedEndpoint),
+      );
+      const manyGroups = Array.from(
+        { length: 200 },
+        (_, i) => `group:default/team-${i}`,
+      );
+      const response = await client.queryEntities({
+        filter: {
+          'relations.ownedBy': manyGroups,
+        },
+      });
+      expect(getMockedEndpoint).not.toHaveBeenCalled();
+      expect(postMockedEndpoint).toHaveBeenCalledTimes(1);
+      expect(response).toEqual({ items: [], totalItems: 0 });
+    });
+    it('still uses GET endpoint when filter is small', async () => {
+      const getMockedEndpoint = jest
+        .fn()
+        .mockImplementation(() =>
+          HttpResponse.json({ items: [], totalItems: 0 }),
+        );
+      server.use(
+        http.get(`${mockBaseUrl}/entities/by-query`, getMockedEndpoint),
+      );
+      await client.queryEntities({
+        filter: { 'relations.ownedBy': 'group:default/team-a' },
+      });
+      expect(getMockedEndpoint).toHaveBeenCalledTimes(1);
+    });
 
     it('builds search filters property even those with URL unsafe values', async () => {
       const mockedEndpoint = jest

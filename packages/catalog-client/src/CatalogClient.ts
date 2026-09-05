@@ -328,8 +328,29 @@ export class CatalogClient implements CatalogApi {
         fullTextFilter,
         totalItems,
       } = request;
-      params.filter = this.getFilterValue(filter);
+      const filterValue = this.getFilterValue(filter);
 
+      // Fall back to the POST endpoint when the serialized filter would
+      // produce a URL that risks exceeding safe length limits (e.g. for
+      // users belonging to many groups, producing hundreds of `filter=`
+      // params).
+      const MAX_FILTER_URL_LENGTH = 2000;
+      let estimatedFilterLength = 0;
+      let filterExceedsUrlLimit = false;
+      for (const f of filterValue) {
+        estimatedFilterLength +=
+          encodeURIComponent(f).length + 'filter='.length + 1;
+        if (estimatedFilterLength > MAX_FILTER_URL_LENGTH) {
+          filterExceedsUrlLimit = true;
+          break;
+        }
+      }
+
+      if (filter !== undefined && filterExceedsUrlLimit) {
+        return this.queryEntitiesByPredicate(request, options);
+      }
+
+      params.filter = filterValue;
       if (limit !== undefined) {
         params.limit = limit;
       }
