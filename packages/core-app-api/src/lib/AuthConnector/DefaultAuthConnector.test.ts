@@ -15,6 +15,7 @@
  */
 
 import { DefaultAuthConnector } from './DefaultAuthConnector';
+import { AuthConnectionError } from './errors';
 import MockOAuthApi from '../../apis/implementations/OAuthRequestApi/MockOAuthApi';
 import * as loginPopup from '../loginPopup';
 import { UrlPatternDiscovery } from '../../apis';
@@ -111,6 +112,15 @@ describe('DefaultAuthConnector', () => {
     const connector = new DefaultAuthConnector(defaultOptions);
     await expect(connector.refreshSession()).rejects.toThrow(
       'Auth refresh request failed, NOPE',
+    );
+  });
+
+  it('should throw an AuthConnectionError when the refresh request cannot reach the backend', async () => {
+    server.use(rest.get('*', (_req, res) => res.networkError('offline')));
+
+    const connector = new DefaultAuthConnector(defaultOptions);
+    await expect(connector.refreshSession()).rejects.toThrow(
+      AuthConnectionError,
     );
   });
 
