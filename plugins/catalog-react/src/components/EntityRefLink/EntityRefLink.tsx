@@ -15,7 +15,7 @@
  */
 
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
-import { Link, LinkProps } from '@backstage/core-components';
+import { Link, LinkProps } from '@backstage/ui';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { ReactNode, forwardRef, useCallback } from 'react';
 import { entityRouteParams, entityRouteRef } from '../../routes';
@@ -35,7 +35,7 @@ export type EntityRefLinkProps = {
   children?: ReactNode;
   hideIcon?: boolean;
   disableTooltip?: boolean;
-} & Omit<LinkProps, 'to'>;
+} & Omit<LinkProps, 'href'>;
 
 /**
  * Shows a clickable link to an entity.
@@ -67,7 +67,12 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
     );
 
     return (
-      <Link {...linkProps} ref={ref} to={entityLink(props.entityRef)}>
+      <Link
+        {...linkProps}
+        ref={ref}
+        href={entityLink(props.entityRef)}
+        standalone
+      >
         {content}
       </Link>
     );
