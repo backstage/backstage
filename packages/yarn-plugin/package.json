@@ -33,11 +33,11 @@
     "@backstage/cli-common": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/release-manifests": "workspace:^",
-    "@yarnpkg/core": "^4.4.1",
+    "@yarnpkg/core": "^4.9.1",
     "@yarnpkg/fslib": "^3.1.2",
     "@yarnpkg/plugin-essentials": "^4.4.0",
-    "@yarnpkg/plugin-npm": "patch:@yarnpkg/plugin-npm@npm%3A3.1.0#~/.yarn/patches/@yarnpkg-plugin-npm-npm-3.1.0-6533d0f5a1.patch",
-    "@yarnpkg/plugin-pack": "^4.0.1",
+    "@yarnpkg/plugin-npm": "patch:@yarnpkg/plugin-npm@npm%3A3.7.1#~/.yarn/patches/@yarnpkg-plugin-npm-npm-3.7.1-ab2f1a850e.patch",
+    "@yarnpkg/plugin-pack": "^4.0.5",
     "semver": "^7.6.0"
   },
   "devDependencies": {
