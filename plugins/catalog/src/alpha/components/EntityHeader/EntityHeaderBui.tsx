@@ -15,6 +15,7 @@
  */
 
 import { useMemo } from 'react';
+import { useNavigate, useResolvedPath } from 'react-router-dom';
 import {
   Box,
   ButtonIcon,
@@ -44,13 +45,14 @@ import {
   useEntityRefLink,
   useStarredEntity,
 } from '@backstage/plugin-catalog-react';
-import { RiStarFill, RiStarLine } from '@remixicon/react';
+import { RiArrowLeftLine, RiStarFill, RiStarLine } from '@remixicon/react';
 import useAsync from 'react-use/esm/useAsync';
 import { catalogTranslationRef } from '../../translation';
 import {
   EntityContextMenu,
   type EntityContextMenuItemDataWithNode,
 } from '../EntityContextMenu';
+import { useEntryReferrer } from '../../hooks/useEntryReferrer';
 
 function useOwnerUsers(entity: Entity | undefined): HeaderMetadataUser[] {
   const catalogApi = useApi(catalogApiRef);
@@ -186,16 +188,32 @@ export function EntityHeaderBui(props: {
   tabs: HeaderNavTabItem[];
   activeTabId?: string;
   contextMenuItems?: EntityContextMenuItemDataWithNode[];
+  showBackButton?: boolean;
 }) {
   const { entity } = useAsyncEntity();
   const routeParams = useRouteRefParams(entityRouteRef);
   const presentation = useEntityPresentation(entity ?? routeParams);
   const metadata = useMetadata(entity);
   const type = entity?.spec?.type?.toString();
+  const navigate = useNavigate();
+  const entityBasePath = useResolvedPath('.').pathname;
+  const detectedReferrer = useEntryReferrer(entityBasePath);
+  const referrer = props.showBackButton ? detectedReferrer : undefined;
 
   return (
     <Header
       title={presentation.primaryTitle}
+      leadingAction={
+        referrer ? (
+          <ButtonIcon
+            size="small"
+            variant="tertiary"
+            aria-label="Back to previous page"
+            icon={<RiArrowLeftLine />}
+            onPress={() => navigate(referrer)}
+          />
+        ) : undefined
+      }
       tags={[
         { label: entity?.kind ?? routeParams.kind },
         ...(type ? [{ label: type }] : []),

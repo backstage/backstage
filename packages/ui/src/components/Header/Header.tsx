@@ -89,6 +89,7 @@ export const Header = (props: HeaderProps) => {
     tabs,
     activeTabId,
     customActions,
+    leadingAction,
     breadcrumbs,
     description,
     tags,
@@ -156,7 +157,9 @@ export const Header = (props: HeaderProps) => {
       <Container
         className={classes.headerTop}
         data-sticky={sticky || undefined}
+        data-has-leading={leadingAction ? '' : undefined}
       >
+        {leadingAction}
         {tags && tags.length > 0 && (
           <ul className={classes.tags}>
             {tags.map((tag, i) => (

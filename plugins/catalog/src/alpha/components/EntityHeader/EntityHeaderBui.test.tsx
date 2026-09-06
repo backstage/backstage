@@ -67,10 +67,15 @@ async function renderHeader(options: {
   entity?: Entity;
   catalogEntities?: Entity[];
   catalogApi?: ReturnType<typeof catalogApiMock>;
+  showBackButton?: boolean;
 }) {
   return renderInTestApp(
     <EntityProvider entity={options.entity}>
-      <EntityHeaderBui tabs={[]} contextMenuItems={[]} />
+      <EntityHeaderBui
+        tabs={[]}
+        contextMenuItems={[]}
+        showBackButton={options.showBackButton}
+      />
     </EntityProvider>,
     {
       apis: [
@@ -87,7 +92,21 @@ async function renderHeader(options: {
   );
 }
 
+function mockNavigation(entries: { url: string }[], currentIndex: number) {
+  Object.defineProperty(window, 'navigation', {
+    value: {
+      currentEntry: { url: entries[currentIndex]?.url, index: currentIndex },
+      entries: () => entries.map((e, i) => ({ url: e.url, index: i })),
+    },
+    writable: true,
+    configurable: true,
+  });
+}
+
 describe('EntityHeaderBui', () => {
+  afterEach(() => {
+    delete (window as any).navigation;
+  });
   it('renders rich entity data from canonical relations', async () => {
     await renderHeader({
       entity: componentEntity,
@@ -136,5 +155,37 @@ describe('EntityHeaderBui', () => {
     expect(
       screen.getByRole('heading', { name: 'artist-lookup' }),
     ).toBeInTheDocument();
+  });
+
+  it('renders a back button inline with tags when showBackButton is enabled', async () => {
+    mockNavigation(
+      [
+        { url: 'http://localhost/ai-explorer?q=test' },
+        { url: 'http://localhost/catalog/default/component/artist-lookup' },
+      ],
+      1,
+    );
+
+    await renderHeader({
+      entity: componentEntity,
+      catalogEntities: [componentEntity, ownerEntity],
+      showBackButton: true,
+    });
+
+    expect(
+      await screen.findByRole('button', { name: 'Back to previous page' }),
+    ).toBeInTheDocument();
+  });
+
+  it('does not render a back button when no referrer exists', async () => {
+    await renderHeader({
+      entity: componentEntity,
+      catalogEntities: [componentEntity, ownerEntity],
+    });
+
+    await screen.findByRole('heading', { name: 'Artist Lookup' });
+    expect(
+      screen.queryByRole('button', { name: 'Back to previous page' }),
+    ).not.toBeInTheDocument();
   });
 });
