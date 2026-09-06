@@ -159,6 +159,7 @@ export const changelog_0_3_0: ChangelogProps[] = [
     components: [],
     version: '0.3.0',
     prs: ['29543'],
+    tokens: true,
     description: `Added a new gray scale for Canon for both light and dark theme.`,
 
     commitSha: 'f25a5be',

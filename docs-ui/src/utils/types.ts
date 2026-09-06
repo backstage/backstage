@@ -102,6 +102,8 @@ export type ChangelogProps = {
   breaking?: boolean;
   commitSha?: string;
   migration?: string;
+  /** Marks an entry as a change to the design token / theming system. */
+  tokens?: boolean;
 } & AtLeastOne<{
   components: Component[];
   hooks: Hook[];
