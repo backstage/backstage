@@ -31,6 +31,20 @@
   "workspaces": [
     "packages/*"
   ],
+  "dependenciesMeta": {
+    "@swc/core": {
+      "built": true
+    },
+    "esbuild": {
+      "built": true
+    },
+    "keytar": {
+      "built": true
+    },
+    "unrs-resolver": {
+      "built": true
+    }
+  },
   "devDependencies": {
     "@backstage/cli": "^0.36.1",
     "@backstage/cli-defaults": "^0.1.1",
@@ -56,5 +70,5 @@
       "prettier --write"
     ]
   },
-  "packageManager": "yarn@4.8.1"
+  "packageManager": "yarn@4.18.0"
 }
