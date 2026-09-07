@@ -33,12 +33,6 @@ import { TypesToApiRefs } from '@backstage/frontend-plugin-api';
 // @public
 export function compatWrapper(element: ReactNode): JSX_3.Element;
 
-// @public @deprecated (undocumented)
-export const convertLegacyApp: typeof convertLegacyAppRoot;
-
-// @public @deprecated (undocumented)
-export type ConvertLegacyAppOptions = ConvertLegacyAppRootOptions;
-
 // @public (undocumented)
 export function convertLegacyAppOptions(options?: {
   apis?: Iterable<AnyApiFactory>;
@@ -68,7 +62,6 @@ export function convertLegacyPageExtension(
   overrides?: {
     name?: string;
     path?: string;
-    defaultPath?: [Error: `Use the 'path' override instead`];
   },
 ): ExtensionDefinition;
 

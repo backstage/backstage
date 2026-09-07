@@ -39,8 +39,6 @@ export const AppRootWrapperBlueprint = createExtensionBlueprint({
     component: componentDataRef,
   },
   *factory(params: {
-    /** @deprecated use the `component` parameter instead */
-    Component?: [error: 'Use the `component` parameter instead'];
     component: (props: { children: ReactNode }) => JSX.Element | null;
   }) {
     yield componentDataRef(params.component);
