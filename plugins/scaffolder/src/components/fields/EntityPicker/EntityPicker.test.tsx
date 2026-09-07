@@ -21,7 +21,7 @@ import {
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { EntityPicker } from './EntityPicker';
 import { EntityPickerProps } from './schema';
@@ -51,15 +51,17 @@ describe('<EntityPicker />', () => {
 
   let props: FieldProps<string>;
 
-  const catalogApi = catalogApiMock.mock({
-    streamEntities: jest.fn(async function* () {
-      yield entities;
-    }),
-  });
+  const catalogApi = catalogApiMock.mock();
 
   let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
+    catalogApi.queryEntities.mockResolvedValue({
+      items: entities,
+      totalItems: 0,
+      pageInfo: {},
+    });
+    catalogApi.getEntitiesByRefs.mockResolvedValue({ items: [] });
     Wrapper = ({ children }: { children?: ReactNode }) => (
       <TestApiProvider
         apis={[
@@ -97,7 +99,7 @@ describe('<EntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.streamEntities).toHaveBeenCalledWith({
+      expect(catalogApi.queryEntities).toHaveBeenCalledWith({
         fields: [
           'kind',
           'metadata.name',
@@ -107,7 +109,28 @@ describe('<EntityPicker />', () => {
           'spec.profile.displayName',
           'spec.type',
         ],
+        limit: 20,
+        orderFields: [{ field: 'metadata.name', order: 'asc' }],
+        totalItems: 'exclude',
       });
+    });
+
+    it('filters entities through the catalog as the user types', async () => {
+      const { getByRole } = await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      fireEvent.change(getByRole('textbox'), { target: { value: 'team' } });
+
+      await waitFor(() =>
+        expect(catalogApi.queryEntities).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            fullTextFilter: expect.objectContaining({ term: 'team' }),
+          }),
+        ),
+      );
     });
 
     it('updates even if there is not an exact match', async () => {
@@ -150,9 +173,8 @@ describe('<EntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.streamEntities).toHaveBeenCalledWith(
+      expect(catalogApi.queryEntities).toHaveBeenCalledWith(
         expect.objectContaining({
-          query: {},
           filter: { kind: ['User'] },
         }),
       );
@@ -196,9 +218,8 @@ describe('<EntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.streamEntities).toHaveBeenCalledWith(
+      expect(catalogApi.queryEntities).toHaveBeenCalledWith(
         expect.objectContaining({
-          query: {},
           filter: [
             {
               kind: ['Group'],
@@ -232,9 +253,8 @@ describe('<EntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.streamEntities).toHaveBeenCalledWith(
+      expect(catalogApi.queryEntities).toHaveBeenCalledWith(
         expect.objectContaining({
-          query: {},
           filter: {
             kind: ['Group'],
             'metadata.name': 'test-entity',
@@ -261,9 +281,8 @@ describe('<EntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.streamEntities).toHaveBeenCalledWith(
+      expect(catalogApi.queryEntities).toHaveBeenCalledWith(
         expect.objectContaining({
-          query: {},
           filter: [
             {
               kind: ['User'],
@@ -378,9 +397,8 @@ describe('<EntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.streamEntities).toHaveBeenCalledWith(
+      expect(catalogApi.queryEntities).toHaveBeenCalledWith(
         expect.objectContaining({
-          query: {},
           filter: [
             {
               kind: ['Group'],
@@ -563,8 +581,10 @@ describe('<EntityPicker />', () => {
           profile: { displayName: item.metadata.name.replace('-', ' ') },
         },
       }));
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield items;
+      catalogApi.queryEntities.mockResolvedValue({
+        items,
+        totalItems: 0,
+        pageInfo: {},
       });
 
       const { getByRole, getByText } = await renderInTestApp(
@@ -594,8 +614,10 @@ describe('<EntityPicker />', () => {
           title: item.metadata.name.replace('-', ' ').toUpperCase(),
         },
       }));
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield items;
+      catalogApi.queryEntities.mockResolvedValue({
+        items,
+        totalItems: 0,
+        pageInfo: {},
       });
 
       const { getByRole, getByText } = await renderInTestApp(
