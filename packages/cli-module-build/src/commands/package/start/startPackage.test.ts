@@ -17,6 +17,9 @@
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { resolveEntryPath } from './startPackage';
 
+// The bundler pulls in Rspack, which is ESM only and can't be loaded by Jest.
+jest.mock('./startFrontend', () => ({ startFrontend: jest.fn() }));
+
 describe('resolveEntryPath', () => {
   const mockDir = createMockDirectory();
 
