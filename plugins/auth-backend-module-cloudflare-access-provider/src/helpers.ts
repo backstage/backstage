@@ -39,6 +39,7 @@ export class AuthHelper {
     options?: { cache?: CacheService },
   ): AuthHelper {
     const teamName = config.getString('teamName');
+    const audience = config.getString('audience');
     const jwtHeaderName =
       config.getOptionalString('jwtHeaderName') ?? CF_JWT_HEADER;
     const authorizationCookieName =
@@ -58,6 +59,7 @@ export class AuthHelper {
 
     return new AuthHelper(
       teamName,
+      audience,
       serviceTokens,
       jwtHeaderName,
       authorizationCookieName,
@@ -67,6 +69,7 @@ export class AuthHelper {
   }
 
   private readonly teamName: string;
+  private readonly audience: string;
   private readonly serviceTokens: ServiceToken[];
   private readonly jwtHeaderName: string;
   private readonly authorizationCookieName: string;
@@ -75,6 +78,7 @@ export class AuthHelper {
 
   private constructor(
     teamName: string,
+    audience: string,
     serviceTokens: ServiceToken[],
     jwtHeaderName: string,
     authorizationCookieName: string,
@@ -82,6 +86,7 @@ export class AuthHelper {
     cache?: CacheService,
   ) {
     this.teamName = teamName;
+    this.audience = audience;
     this.serviceTokens = serviceTokens;
     this.jwtHeaderName = jwtHeaderName;
     this.authorizationCookieName = authorizationCookieName;
@@ -109,6 +114,7 @@ export class AuthHelper {
     // a separate public key verifies the signature.
     const verifyResult = await jwtVerify(jwt, this.keySet, {
       issuer: `https://${this.teamName}.cloudflareaccess.com`,
+      audience: this.audience,
     });
 
     const isServiceToken = !verifyResult.payload.sub;
