@@ -134,7 +134,7 @@ const ALLOWED_PYTHON_YAML_TAGS = new Set([
   'tag:yaml.org,2002:python/object/apply:pymdownx.slugs.slugify',
 ]);
 
-class UnknownTag {
+export class UnknownTag {
   public readonly data: any;
   public readonly type?: string;
 

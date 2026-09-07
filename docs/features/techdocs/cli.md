@@ -150,7 +150,8 @@ Options:
   --etag <ETAG>                   A unique identifier for the prepared tree e.g. commit SHA. If provided it will be stored
                                   in techdocs_metadata.json. If omitted, a sha256 content hash of the generated site output is
                                   computed automatically.
-  --defaultPlugin <PLUGIN_NAME>   Plugins which should be added automatically to the mkdocs.yaml file. (default: [])
+  --defaultPlugin <PLUGIN_NAME>   Plugins which should be added automatically to the mkdocs.yaml file. Also permits these
+                                  plugins through plugin validation. (default: [])
   --omitTechdocsCoreMkdocsPlugin  An option to disable automatic addition of techdocs-core plugin to the mkdocs.yaml files.
                                   Defaults to false, which means that the techdocs-core plugin is always added to the mkdocs file.
   --dangerouslyAllowAdditionalKeys [additionalKeys...]
