@@ -8,6 +8,7 @@ import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstagePalette } from '@backstage/theme';
 import { BackstageUserIdentity } from '@backstage/core-plugin-api';
 import { BottomNavigationActionProps } from '@material-ui/core/BottomNavigationAction';
+import { ButtonIconProps } from '@backstage/ui';
 import { ButtonProps as ButtonProps_2 } from '@material-ui/core/Button';
 import { CardHeaderProps } from '@material-ui/core/CardHeader';
 import { ChangeEvent } from 'react';
@@ -221,6 +222,7 @@ export interface CopyTextButtonProps {
   text: string;
   tooltipDelay?: number;
   tooltipText?: string;
+  variant?: ButtonIconProps['variant'];
 }
 
 // @public (undocumented)
