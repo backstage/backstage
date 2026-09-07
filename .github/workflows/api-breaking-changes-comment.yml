@@ -110,7 +110,7 @@ jobs:
 
       # Identify comment to be updated
       - name: Find comment for API Changes
-        uses: peter-evans/find-comment@3eae4d37986fb5a8592848f6a574fdf654e61f9e # v3
+        uses: peter-evans/find-comment@b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad # v4.0.0
         id: find-comment
         with:
           issue-number: ${{ needs.setup.outputs.pr-number }}
@@ -119,7 +119,7 @@ jobs:
           direction: last
 
       - name: Create or Update Comment with API Changes
-        uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
         with:
           comment-id: ${{ steps.find-comment.outputs.comment-id }}
           issue-number: ${{ needs.setup.outputs.pr-number }}
