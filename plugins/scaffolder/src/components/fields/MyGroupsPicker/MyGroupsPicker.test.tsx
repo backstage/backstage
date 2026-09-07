@@ -15,6 +15,7 @@
  */
 
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
+import { type CatalogApi } from '@backstage/catalog-client';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { MyGroupsPicker } from './MyGroupsPicker';
 import {
@@ -26,7 +27,7 @@ import {
   catalogApiRef,
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import {
   ErrorApi,
   errorApiRef,
@@ -47,6 +48,9 @@ jest.mock('@backstage/plugin-scaffolder-react/alpha', () => ({
 
 const mockUseScaffolderTheme = jest.mocked(useScaffolderTheme);
 
+type SpiedCatalogApi = CatalogApi &
+  Pick<jest.Mocked<CatalogApi>, 'getEntitiesByRefs' | 'queryEntities'>;
+
 const mockIdentityApi = mockApis.identity({
   userEntityRef: 'user:default/bob',
 });
@@ -57,16 +61,7 @@ describe('<MyGroupsPicker />', () => {
   const schema = {};
   const required = false;
 
-  const catalogApi = catalogApiMock.mock({
-    queryEntities: jest.fn(async () => {
-      return { items: entities, totalItems: 0, pageInfo: {} };
-    }),
-    getEntitiesByRefs: jest.fn(async ({ entityRefs }) => ({
-      items: entityRefs.map((entityRef: string) =>
-        entities.find(entity => stringifyEntityRef(entity) === entityRef),
-      ),
-    })),
-  });
+  let catalogApi: SpiedCatalogApi;
 
   const mockErrorApi: jest.Mocked<ErrorApi> = {
     post: jest.fn(),
@@ -96,8 +91,13 @@ describe('<MyGroupsPicker />', () => {
       },
     ];
 
+    const api = catalogApiMock({ entities });
+    catalogApi = Object.assign(api, {
+      queryEntities: jest.spyOn(api, 'queryEntities'),
+      getEntitiesByRefs: jest.spyOn(api, 'getEntitiesByRefs'),
+    });
+
     onChange.mockClear();
-    catalogApi.queryEntities.mockClear();
   });
 
   afterEach(() => {
