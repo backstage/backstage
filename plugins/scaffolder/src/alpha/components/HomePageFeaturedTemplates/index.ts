@@ -13,6 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { default } from './plugin';
-export { featuredTemplatesTranslationRef } from './translation';
+export { FeaturedTemplates } from './FeaturedTemplates';
+export type { FeaturedTemplatesProps } from './FeaturedTemplates';

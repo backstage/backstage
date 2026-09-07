@@ -23,7 +23,7 @@ import { mockIsIntersecting } from 'react-intersection-observer/test-utils';
 import { useLocation } from 'react-router-dom';
 import { template as makeTemplate } from './fixtures';
 import { FeaturedTemplates } from './FeaturedTemplates';
-import { selectedTemplateRouteRef, templatesRouteRef } from './routes';
+import { rootRouteRef } from '../../../routes';
 
 jest.mock('@backstage/plugin-scaffolder-react/alpha', () => ({
   TemplateCard: ({ template, onSelected }: TemplateCardComponentProps) => (
@@ -37,8 +37,7 @@ const templates = [
 ];
 
 const mountedRoutes = {
-  '/create': templatesRouteRef,
-  '/create/templates/:namespace/:templateName': selectedTemplateRouteRef,
+  '/create': rootRouteRef,
 };
 
 function mockScrollGeometry(region: HTMLElement) {

@@ -42,22 +42,3 @@ export const template = (
     steps: [],
   },
 });
-
-export const templateFixtures = [
-  template('node-service', 'Node.js Service'),
-  template('react-app', 'React Application', { type: 'website' }),
-  template('data-pipeline', 'Data Pipeline', {
-    namespace: 'data',
-    owner: 'group:data/data-team',
-  }),
-  template('scheduled-job', 'Scheduled Job'),
-  template('event-consumer', 'Event Consumer'),
-  template('documentation', 'Documentation Site', { type: 'documentation' }),
-  template('mobile-backend', 'Mobile Backend', { namespace: 'mobile' }),
-  template('library', 'Shared Library', { type: 'library' }),
-  template('experimental', 'Experimental Service', { tags: ['experimental'] }),
-  template('unpromoted', 'Unpromoted Website', {
-    tags: ['internal'],
-    type: 'website',
-  }),
-];

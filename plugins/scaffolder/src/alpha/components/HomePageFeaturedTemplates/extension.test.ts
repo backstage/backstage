@@ -18,15 +18,15 @@ import { homePageWidgetDataRef } from '@backstage/plugin-home-react/alpha';
 import { createExtensionTester } from '@backstage/frontend-test-utils';
 import type { ReactElement } from 'react';
 import type { FeaturedTemplatesProps } from './FeaturedTemplates';
-import plugin from './plugin';
+import { scaffolderFeaturedTemplatesWidget } from '../../extensions';
 
 type FeaturedTemplatesElement = ReactElement<FeaturedTemplatesProps>;
 
-const extension = plugin.getExtension('home-page-widget:featured-templates');
-
-describe('featured-templates plugin', () => {
+describe('scaffolderFeaturedTemplatesWidget', () => {
   it('uses the default widget configuration', () => {
-    const widget = createExtensionTester(extension).get(homePageWidgetDataRef);
+    const widget = createExtensionTester(scaffolderFeaturedTemplatesWidget).get(
+      homePageWidgetDataRef,
+    );
 
     expect(widget.title).toBe('Featured Templates');
     expect(widget.name).toBe('HomePageFeaturedTemplates');
@@ -36,7 +36,7 @@ describe('featured-templates plugin', () => {
   });
 
   it('applies configuration overrides', () => {
-    const tester = createExtensionTester(extension, {
+    const tester = createExtensionTester(scaffolderFeaturedTemplatesWidget, {
       config: { title: 'Golden Paths', tag: 'golden-path' },
     });
     const widget = tester.get(homePageWidgetDataRef);

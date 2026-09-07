@@ -17,7 +17,7 @@
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { ButtonIcon } from '@backstage/ui';
 import { RiArrowLeftSLine, RiArrowRightSLine } from '@remixicon/react';
-import { featuredTemplatesTranslationRef } from './translation';
+import { scaffolderTranslationRef } from '../../../translation';
 import styles from './ScrollControls.module.css';
 
 function cardStep(track: HTMLElement) {
@@ -37,7 +37,7 @@ export function ScrollControls({
   canScrollPrevious: boolean;
   canScrollNext: boolean;
 }) {
-  const { t } = useTranslationRef(featuredTemplatesTranslationRef);
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const scroll = (direction: -1 | 1) => {
     track.scrollBy({
@@ -51,7 +51,7 @@ export function ScrollControls({
       {canScrollPrevious && (
         <ButtonIcon
           className={`${styles.control} ${styles.previous}`}
-          aria-label={t('scrollPreviousButtonTitle')}
+          aria-label={t('featuredTemplatesWidget.scrollPreviousButtonTitle')}
           variant="primary"
           icon={<RiArrowLeftSLine />}
           onPress={() => scroll(-1)}
@@ -60,7 +60,7 @@ export function ScrollControls({
       {canScrollNext && (
         <ButtonIcon
           className={`${styles.control} ${styles.next}`}
-          aria-label={t('scrollNextButtonTitle')}
+          aria-label={t('featuredTemplatesWidget.scrollNextButtonTitle')}
           variant="primary"
           icon={<RiArrowRightSLine />}
           onPress={() => scroll(1)}

@@ -18,11 +18,8 @@ import {
   DEFAULT_NAMESPACE,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import {
-  useApi,
-  useRouteRef,
-  useTranslationRef,
-} from '@backstage/frontend-plugin-api';
+import { useApi, useTranslationRef } from '@backstage/frontend-plugin-api';
+import { useRouteRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import {
   isTemplateEntityV1beta3,
@@ -35,8 +32,8 @@ import { useState } from 'react';
 import { useInView } from 'react-intersection-observer';
 import useAsyncRetry from 'react-use/esm/useAsyncRetry';
 import { useNavigate } from 'react-router-dom';
-import { selectedTemplateRouteRef, templatesRouteRef } from './routes';
-import { featuredTemplatesTranslationRef } from './translation';
+import { rootRouteRef, selectedTemplateRouteRef } from '../../../routes';
+import { scaffolderTranslationRef } from '../../../translation';
 import styles from './FeaturedTemplates.module.css';
 import { ScrollControls } from './ScrollControls';
 import { StateMessage } from './StateMessage';
@@ -46,10 +43,10 @@ export interface FeaturedTemplatesProps {
 }
 
 export function FeaturedTemplates({ tag }: FeaturedTemplatesProps) {
-  const { t } = useTranslationRef(featuredTemplatesTranslationRef);
+  const { t } = useTranslationRef(scaffolderTranslationRef);
   const catalogApi = useApi(catalogApiRef);
   const selectedTemplateRoute = useRouteRef(selectedTemplateRouteRef);
-  const templatesRoute = useRouteRef(templatesRouteRef);
+  const templatesRoute = useRouteRef(rootRouteRef);
   const navigate = useNavigate();
   const [track, setTrack] = useState<HTMLDivElement | null>(null);
   const { ref: firstCardRef, inView: firstCardInView } = useInView({
@@ -73,7 +70,6 @@ export function FeaturedTemplates({ tag }: FeaturedTemplatesProps) {
   const templates = (value?.items ?? []).filter(isTemplateEntityV1beta3);
 
   const openTemplate = (template: TemplateEntityV1beta3) => {
-    if (!selectedTemplateRoute) return;
     navigate(
       selectedTemplateRoute({
         namespace: template.metadata.namespace ?? DEFAULT_NAMESPACE,
@@ -102,9 +98,12 @@ export function FeaturedTemplates({ tag }: FeaturedTemplatesProps) {
 
   if (error) {
     return (
-      <StateMessage icon={RiErrorWarningLine} message={t('errorMessage')}>
+      <StateMessage
+        icon={RiErrorWarningLine}
+        message={t('featuredTemplatesWidget.errorMessage')}
+      >
         <Button size="small" variant="secondary" onPress={retry}>
-          {t('errorRetryButtonTitle')}
+          {t('featuredTemplatesWidget.errorRetryButtonTitle')}
         </Button>
       </StateMessage>
     );
@@ -112,12 +111,13 @@ export function FeaturedTemplates({ tag }: FeaturedTemplatesProps) {
 
   if (!templates.length) {
     return (
-      <StateMessage icon={RiShapesLine} message={t('emptyMessage')}>
-        {templatesRoute && (
-          <ButtonLink size="small" variant="secondary" href={templatesRoute()}>
-            {t('emptyBrowseAllButtonTitle')}
-          </ButtonLink>
-        )}
+      <StateMessage
+        icon={RiShapesLine}
+        message={t('featuredTemplatesWidget.emptyMessage')}
+      >
+        <ButtonLink size="small" variant="secondary" href={templatesRoute()}>
+          {t('featuredTemplatesWidget.emptyBrowseAllButtonTitle')}
+        </ButtonLink>
       </StateMessage>
     );
   }
