@@ -30,7 +30,7 @@ jobs:
         with:
           node-version: 22.x
       - name: yarn install
-        uses: backstage/actions/yarn-install@bcd97bfdb9e7993af770d96f76a36037df3a8b0d # v0.7.9
+        uses: backstage/actions/yarn-install@0d281eb2e96927466db49d4cd01d52b14809a66b # v0.7.10
         with:
           cache-prefix: ${{ runner.os }}-v22.x
       - name: run Lighthouse CI
