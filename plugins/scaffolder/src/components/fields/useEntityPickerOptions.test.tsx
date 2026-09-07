@@ -23,10 +23,7 @@ import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { TestApiProvider } from '@backstage/test-utils';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
-import {
-  ENTITY_PICKER_FIELDS,
-  useEntityPickerOptions,
-} from './useEntityPickerOptions';
+import { useEntityPickerOptions } from './useEntityPickerOptions';
 
 const entity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -113,7 +110,6 @@ describe('useEntityPickerOptions', () => {
 
     expect(catalogApi.queryEntities).toHaveBeenCalledWith({
       filter: catalogFilter,
-      fields: ENTITY_PICKER_FIELDS,
       limit: 20,
       orderFields: [{ field: 'metadata.name', order: 'asc' }],
       totalItems: 'exclude',
@@ -122,6 +118,41 @@ describe('useEntityPickerOptions', () => {
     expect(
       result.current.entityRefToPresentation.get('group:default/team-a'),
     ).toMatchObject({ primaryTitle: 'team-a' });
+  });
+
+  it('provides complete entities to custom presentation APIs', async () => {
+    const completeEntity: Entity = {
+      ...entity,
+      spec: { customPresentation: 'Friendly Team A' },
+    };
+    catalogApi.queryEntities.mockImplementationOnce(async request => ({
+      items: request?.fields ? [entity] : [completeEntity],
+      totalItems: 0,
+      pageInfo: {},
+    }));
+    forEntity.mockImplementationOnce(item => {
+      const primaryTitle = String(item.spec?.customPresentation);
+      return {
+        snapshot: {
+          entityRef: 'group:default/team-a',
+          primaryTitle,
+        },
+        promise: Promise.resolve({
+          entityRef: 'group:default/team-a',
+          primaryTitle,
+        }),
+      };
+    });
+    const { result } = renderHook(
+      () => useEntityPickerOptions({ selectedEntityRefs: [] }),
+      { wrapper },
+    );
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(
+      result.current.entityRefToPresentation.get('group:default/team-a'),
+    ).toMatchObject({ primaryTitle: 'Friendly Team A' });
   });
 
   it('debounces server-side filtering', async () => {
@@ -138,7 +169,6 @@ describe('useEntityPickerOptions', () => {
 
     await act(async () => jest.advanceTimersByTime(1));
     expect(catalogApi.queryEntities).toHaveBeenLastCalledWith({
-      fields: ENTITY_PICKER_FIELDS,
       fullTextFilter: {
         term: 'team',
         fields: [
@@ -152,6 +182,41 @@ describe('useEntityPickerOptions', () => {
       orderFields: [{ field: 'metadata.name', order: 'asc' }],
       totalItems: 'exclude',
     });
+  });
+
+  it('recovers when input returns to the active query before the debounce', async () => {
+    jest.useFakeTimers();
+    const initialSearch = deferred<{
+      items: Entity[];
+      totalItems: number;
+      pageInfo: {};
+    }>();
+    catalogApi.queryEntities.mockReturnValueOnce(initialSearch.promise);
+    const { result } = renderHook(
+      () => useEntityPickerOptions({ selectedEntityRefs: [] }),
+      { wrapper },
+    );
+    await act(async () => {});
+
+    act(() => result.current.setSearchText('team'));
+    act(() => result.current.setSearchText(''));
+    await act(async () => {
+      initialSearch.resolve({
+        items: [entity],
+        totalItems: 0,
+        pageInfo: {},
+      });
+    });
+
+    expect(result.current.entities).toEqual([entity]);
+    expect(result.current.loadingState).toBe('idle');
+
+    act(() => result.current.setSearchText('team'));
+    act(() => result.current.setSearchText(''));
+    await act(async () => jest.advanceTimersByTime(250));
+
+    expect(result.current.entities).toEqual([entity]);
+    expect(result.current.loadingState).toBe('idle');
   });
 
   it('loads and appends the next page on demand', async () => {
@@ -179,9 +244,40 @@ describe('useEntityPickerOptions', () => {
 
     expect(catalogApi.queryEntities).toHaveBeenLastCalledWith({
       cursor: 'next-page',
-      fields: ENTITY_PICKER_FIELDS,
       limit: 20,
     });
+  });
+
+  it('allows retrying a page after it fails to load', async () => {
+    catalogApi.queryEntities
+      .mockResolvedValueOnce({
+        items: [entity],
+        totalItems: 0,
+        pageInfo: { nextCursor: 'next-page' },
+      })
+      .mockRejectedValueOnce(new Error('temporary failure'))
+      .mockResolvedValueOnce({
+        items: [otherEntity],
+        totalItems: 0,
+        pageInfo: {},
+      });
+    const { result } = renderHook(
+      () => useEntityPickerOptions({ selectedEntityRefs: [] }),
+      { wrapper },
+    );
+    await waitFor(() => expect(result.current.entities).toEqual([entity]));
+
+    act(() => result.current.loadMore());
+    await waitFor(() =>
+      expect(catalogApi.queryEntities).toHaveBeenCalledTimes(2),
+    );
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    act(() => result.current.loadMore());
+
+    await waitFor(() =>
+      expect(result.current.entities).toEqual([entity, otherEntity]),
+    );
+    expect(catalogApi.queryEntities).toHaveBeenCalledTimes(3);
   });
 
   it('does not let an obsolete search replace newer results', async () => {
@@ -240,7 +336,6 @@ describe('useEntityPickerOptions', () => {
     );
     expect(catalogApi.getEntitiesByRefs).toHaveBeenCalledWith({
       entityRefs: ['group:default/team-b'],
-      fields: ENTITY_PICKER_FIELDS,
     });
     expect(result.current.entities).toEqual([entity]);
     expect(

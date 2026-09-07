@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { waitFor } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { MyGroupsPicker } from './MyGroupsPicker';
 import {
@@ -38,7 +38,14 @@ import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 import { ComponentType, PropsWithChildren, ReactNode } from 'react';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { scaffolderTranslationRef } from '../../../translation';
-import { ENTITY_PICKER_FIELDS } from '../useEntityPickerOptions';
+import { useScaffolderTheme } from '@backstage/plugin-scaffolder-react/alpha';
+
+jest.mock('@backstage/plugin-scaffolder-react/alpha', () => ({
+  ...jest.requireActual('@backstage/plugin-scaffolder-react/alpha'),
+  useScaffolderTheme: jest.fn(),
+}));
+
+const mockUseScaffolderTheme = jest.mocked(useScaffolderTheme);
 
 const mockIdentityApi = mockApis.identity({
   userEntityRef: 'user:default/bob',
@@ -67,6 +74,7 @@ describe('<MyGroupsPicker />', () => {
   };
 
   beforeEach(() => {
+    mockUseScaffolderTheme.mockReturnValue('mui');
     entities = [
       {
         apiVersion: 'backstage.io/v1alpha1',
@@ -141,7 +149,6 @@ describe('<MyGroupsPicker />', () => {
         kind: 'Group',
         'relations.hasMember': ['user:default/bob'],
       },
-      fields: ENTITY_PICKER_FIELDS,
       limit: 20,
       orderFields: [{ field: 'metadata.name', order: 'asc' }],
       totalItems: 'exclude',
@@ -204,6 +211,54 @@ describe('<MyGroupsPicker />', () => {
 
     // Assert that 'group3' is not rendered in the component
     expect(queryByText('group3')).not.toBeInTheDocument();
+  });
+
+  it('keeps BUI search input while filtered groups arrive', async () => {
+    mockUseScaffolderTheme.mockReturnValue('bui');
+    const userGroups = entities.slice(0, 2);
+    let resolveFilteredResults = () => {};
+    catalogApi.queryEntities
+      .mockResolvedValueOnce({
+        items: userGroups,
+        totalItems: 0,
+        pageInfo: {},
+      })
+      .mockReturnValueOnce(
+        new Promise(resolve => {
+          resolveFilteredResults = () =>
+            resolve({ items: [userGroups[0]], totalItems: 0, pageInfo: {} });
+        }),
+      );
+    const props = {
+      onChange,
+      schema,
+      required,
+      uiSchema: {},
+    } as unknown as FieldProps<string>;
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [identityApiRef, mockIdentityApi],
+          [catalogApiRef, catalogApi],
+          [errorApiRef, mockErrorApi],
+          [
+            entityPresentationApiRef,
+            DefaultEntityPresentationApi.create({ catalogApi }),
+          ],
+        ]}
+      >
+        <MyGroupsPicker {...props} />
+      </TestApiProvider>,
+    );
+    const input = screen.getByRole('combobox');
+
+    fireEvent.change(input, { target: { value: 'group' } });
+    await waitFor(() =>
+      expect(catalogApi.queryEntities).toHaveBeenCalledTimes(2),
+    );
+    await act(async () => resolveFilteredResults());
+
+    expect(input).toHaveValue('group');
   });
 
   it('should call the onChange handler with the correct entityRef and and use a nice display name', async () => {
@@ -329,6 +384,56 @@ describe('<MyGroupsPicker />', () => {
     const inputFieldValue = inputField?.querySelector('input')?.value;
 
     expect(inputFieldValue).toEqual(userGroups[0].metadata.title);
+  });
+
+  it('accepts a selected group that is not on the current page', async () => {
+    const selectedGroup: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Group',
+      metadata: { name: 'off-page' },
+    };
+    catalogApi.queryEntities.mockResolvedValue({
+      items: entities.slice(0, 2),
+      totalItems: 0,
+      pageInfo: {},
+    });
+    catalogApi.getEntitiesByRefs.mockResolvedValue({
+      items: [selectedGroup],
+    });
+    const props = {
+      onChange,
+      schema,
+      required,
+      uiSchema: {},
+      formData: 'group:default/off-page',
+    } as unknown as FieldProps<string>;
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [identityApiRef, mockIdentityApi],
+          [catalogApiRef, catalogApi],
+          [errorApiRef, mockErrorApi],
+          [
+            entityPresentationApiRef,
+            DefaultEntityPresentationApi.create({ catalogApi }),
+          ],
+        ]}
+      >
+        <MyGroupsPicker {...props} />
+      </TestApiProvider>,
+    );
+    await waitFor(() =>
+      expect(screen.getByRole('combobox').querySelector('input')).toHaveValue(
+        'off-page',
+      ),
+    );
+
+    expect(warn).not.toHaveBeenCalledWith(
+      expect.stringContaining('value provided to Autocomplete is invalid'),
+    );
+    warn.mockRestore();
   });
 
   describe('MyGroupsPicker description', () => {

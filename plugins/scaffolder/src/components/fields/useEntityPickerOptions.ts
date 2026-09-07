@@ -26,16 +26,6 @@ import { LoadingState } from '@backstage/ui';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
 
-export const ENTITY_PICKER_FIELDS = [
-  'kind',
-  'metadata.name',
-  'metadata.namespace',
-  'metadata.title',
-  'metadata.description',
-  'spec.profile.displayName',
-  'spec.type',
-];
-
 const ENTITY_PICKER_SEARCH_FIELDS = [
   'metadata.name',
   'kind',
@@ -83,6 +73,8 @@ export function useEntityPickerOptions(options: {
   }>({ entities: [], entityRefToPresentation: new Map() });
   const requestGeneration = useRef(0);
   const selectedRequestGeneration = useRef(0);
+  const searchTextRef = useRef('');
+  const settledSearchTextRef = useRef<string>();
 
   const presentEntities = useCallback(
     async (entities: Entity[]) =>
@@ -105,11 +97,14 @@ export function useEntityPickerOptions(options: {
       if (value === searchText) {
         return;
       }
-      requestGeneration.current += 1;
+      searchTextRef.current = value;
       setSearchTextState(value);
       setState(previous => ({
         ...previous,
-        loadingState: enabled ? 'filtering' : 'idle',
+        loadingState:
+          enabled && value !== settledSearchTextRef.current
+            ? 'filtering'
+            : 'idle',
       }));
     },
     [enabled, searchText],
@@ -137,7 +132,6 @@ export function useEntityPickerOptions(options: {
     catalogApi
       .queryEntities({
         ...(catalogFilter ? { filter: catalogFilter } : {}),
-        fields: ENTITY_PICKER_FIELDS,
         ...(debouncedSearchText
           ? {
               fullTextFilter: {
@@ -153,7 +147,11 @@ export function useEntityPickerOptions(options: {
       .then(async response => {
         const entityRefToPresentation = await presentEntities(response.items);
 
-        if (generation === requestGeneration.current) {
+        if (
+          generation === requestGeneration.current &&
+          debouncedSearchText === searchTextRef.current
+        ) {
+          settledSearchTextRef.current = debouncedSearchText;
           setState({
             entities: response.items,
             entityRefToPresentation,
@@ -167,7 +165,10 @@ export function useEntityPickerOptions(options: {
         }
       })
       .catch(() => {
-        if (generation === requestGeneration.current) {
+        if (
+          generation === requestGeneration.current &&
+          debouncedSearchText === searchTextRef.current
+        ) {
           setState(previous => ({ ...previous, loadingState: 'error' }));
         }
       });
@@ -190,7 +191,6 @@ export function useEntityPickerOptions(options: {
     catalogApi
       .queryEntities({
         cursor,
-        fields: ENTITY_PICKER_FIELDS,
         limit: 20,
       })
       .then(async response => {
@@ -210,7 +210,7 @@ export function useEntityPickerOptions(options: {
       })
       .catch(() => {
         if (generation === requestGeneration.current) {
-          setState(previous => ({ ...previous, loadingState: 'error' }));
+          setState(previous => ({ ...previous, loadingState: 'idle' }));
         }
       });
   }, [
@@ -234,7 +234,7 @@ export function useEntityPickerOptions(options: {
     }
 
     catalogApi
-      .getEntitiesByRefs({ entityRefs, fields: ENTITY_PICKER_FIELDS })
+      .getEntitiesByRefs({ entityRefs })
       .then(async response => {
         const entities = response.items.filter(
           (item): item is Entity => item !== undefined,

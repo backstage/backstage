@@ -112,13 +112,21 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
 
   // MUI: update handler
   const updateChange = (_: ChangeEvent<{}>, value: Entity | null) => {
+    setSearchText('');
     onChange(value ? stringifyEntityRef(value) : '');
   };
 
   const selectedEntity =
-    selectedEntities.find(e => stringifyEntityRef(e) === formData) ??
     entities.find(e => stringifyEntityRef(e) === formData) ??
+    selectedEntities.find(e => stringifyEntityRef(e) === formData) ??
     null;
+  const muiOptions = useMemo(
+    () =>
+      selectedEntity && !entities.includes(selectedEntity)
+        ? [selectedEntity, ...entities]
+        : entities,
+    [entities, selectedEntity],
+  );
 
   // BUI: options
   const buiOptions = useMemo(
@@ -135,27 +143,27 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
   );
 
   const [inputValue, setInputValue] = useState('');
+  const selectedPresentationTitle = formData
+    ? entityRefToPresentation.get(formData)?.primaryTitle
+    : undefined;
 
   useEffect(() => {
     if (formData) {
-      setInputValue(
-        buiOptions.find(o => o.value === formData)?.label ||
-          entityRefToPresentation.get(formData)?.primaryTitle ||
-          formData,
-      );
+      setInputValue(selectedPresentationTitle || formData);
     } else {
       setInputValue('');
     }
-  }, [entityRefToPresentation, formData, buiOptions]);
+  }, [formData, selectedPresentationTitle]);
 
   const selectedKey =
     formData && buiOptions.some(o => o.value === formData) ? formData : null;
 
   const handleSelectionChange = useCallback(
     (key: Key | null) => {
+      setSearchText('');
       onChange(key !== null ? String(key) : '');
     },
-    [onChange],
+    [onChange, setSearchText],
   );
 
   useEffect(() => {
@@ -210,7 +218,7 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
       <Autocomplete
         disabled={isDisabled || (required && initialResultIsOnlyOption)}
         id="OwnershipEntityRefPicker-dropdown"
-        options={entities}
+        options={muiOptions}
         value={selectedEntity}
         loading={identityLoading || loading}
         onChange={updateChange}
@@ -222,6 +230,10 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
         getOptionLabel={option =>
           entityRefToPresentation.get(stringifyEntityRef(option))?.primaryTitle!
         }
+        getOptionSelected={(option, value) =>
+          stringifyEntityRef(option) === stringifyEntityRef(value)
+        }
+        filterSelectedOptions
         autoSelect
         renderInput={params => (
           <TextField
