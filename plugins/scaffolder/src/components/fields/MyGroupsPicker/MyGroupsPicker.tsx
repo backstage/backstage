@@ -17,6 +17,7 @@
 import {
   type Key,
   ChangeEvent,
+  type MouseEvent,
   useCallback,
   useEffect,
   useMemo,
@@ -29,15 +30,8 @@ import {
 } from '@backstage/core-plugin-api';
 import TextField from '@material-ui/core/TextField';
 import { MyGroupsPickerProps, MyGroupsPickerSchema } from './schema';
-import Autocomplete, {
-  createFilterOptions,
-} from '@material-ui/lab/Autocomplete';
-import {
-  catalogApiRef,
-  EntityDisplayName,
-  entityPresentationApiRef,
-  EntityRefPresentationSnapshot,
-} from '@backstage/plugin-catalog-react';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { EntityDisplayName } from '@backstage/plugin-catalog-react';
 import { NotFoundError } from '@backstage/errors';
 import useAsync from 'react-use/esm/useAsync';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
@@ -49,6 +43,7 @@ import {
   useScaffolderTheme,
 } from '@backstage/plugin-scaffolder-react/alpha';
 import { Autocomplete as BuiAutocomplete } from '../Autocomplete';
+import { useEntityPickerOptions } from '../useEntityPickerOptions';
 
 export { MyGroupsPickerSchema };
 
@@ -70,47 +65,49 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
   } = props;
 
   const identityApi = useApi(identityApiRef);
-  const catalogApi = useApi(catalogApiRef);
   const errorApi = useApi(errorApiRef);
-  const entityPresentationApi = useApi(entityPresentationApiRef);
   const isDisabled = uiSchema?.['ui:disabled'] ?? false;
 
-  const { value: groups, loading } = useAsync(async () => {
-    const { userEntityRef } = await identityApi.getBackstageIdentity();
+  const { value: userEntityRef, loading: identityLoading } = useAsync(
+    async () => {
+      const { userEntityRef: identityEntityRef } =
+        await identityApi.getBackstageIdentity();
 
-    if (!userEntityRef) {
-      errorApi.post(new NotFoundError('No user entity ref found'));
-      return { catalogEntities: [], entityRefToPresentation: new Map() };
-    }
+      if (!identityEntityRef) {
+        errorApi.post(new NotFoundError('No user entity ref found'));
+        return undefined;
+      }
 
-    const items: Entity[] = [];
-    for await (const batch of catalogApi.streamEntities({
-      query: {},
-      filter: {
-        kind: 'Group',
-        ['relations.hasMember']: [userEntityRef],
-      },
-    })) {
-      items.push(...batch);
-    }
-
-    const entityRefToPresentation = new Map<
-      string,
-      EntityRefPresentationSnapshot
-    >(
-      await Promise.all(
-        items.map(async item => {
-          const presentation = await entityPresentationApi.forEntity(item)
-            .promise;
-          return [stringifyEntityRef(item), presentation] as [
-            string,
-            EntityRefPresentationSnapshot,
-          ];
-        }),
-      ),
-    );
-
-    return { catalogEntities: items, entityRefToPresentation };
+      return identityEntityRef;
+    },
+  );
+  const catalogFilter = useMemo(
+    () =>
+      userEntityRef
+        ? {
+            kind: 'Group',
+            ['relations.hasMember']: [userEntityRef],
+          }
+        : undefined,
+    [userEntityRef],
+  );
+  const selectedEntityRefs = useMemo(
+    () => (formData ? [formData] : []),
+    [formData],
+  );
+  const {
+    entities,
+    selectedEntities,
+    entityRefToPresentation,
+    loading,
+    loadingState,
+    setSearchText,
+    loadMore,
+    initialResultIsOnlyOption,
+  } = useEntityPickerOptions({
+    catalogFilter,
+    enabled: !identityLoading && Boolean(userEntityRef),
+    selectedEntityRefs,
   });
 
   // MUI: update handler
@@ -119,33 +116,37 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
   };
 
   const selectedEntity =
-    groups?.catalogEntities.find(e => stringifyEntityRef(e) === formData) ||
+    selectedEntities.find(e => stringifyEntityRef(e) === formData) ??
+    entities.find(e => stringifyEntityRef(e) === formData) ??
     null;
 
   // BUI: options
   const buiOptions = useMemo(
     () =>
-      (groups?.catalogEntities || []).map(entity => {
+      entities.map(entity => {
         const entityRef = stringifyEntityRef(entity);
-        const presentation = groups?.entityRefToPresentation.get(entityRef);
+        const presentation = entityRefToPresentation.get(entityRef);
         return {
           value: entityRef,
           label: presentation?.primaryTitle || entityRef,
         };
       }),
-    [groups],
+    [entities, entityRefToPresentation],
   );
 
   const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
     if (formData) {
-      const opt = buiOptions.find(o => o.value === formData);
-      setInputValue(opt?.label || formData);
+      setInputValue(
+        buiOptions.find(o => o.value === formData)?.label ||
+          entityRefToPresentation.get(formData)?.primaryTitle ||
+          formData,
+      );
     } else {
       setInputValue('');
     }
-  }, [formData, buiOptions]);
+  }, [entityRefToPresentation, formData, buiOptions]);
 
   const selectedKey =
     formData && buiOptions.some(o => o.value === formData) ? formData : null;
@@ -158,13 +159,13 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
   );
 
   useEffect(() => {
-    if (required && groups?.catalogEntities.length === 1 && !selectedEntity) {
-      onChange(stringifyEntityRef(groups.catalogEntities[0]));
+    if (required && initialResultIsOnlyOption && !selectedEntity) {
+      onChange(stringifyEntityRef(entities[0]));
     }
-  }, [groups, onChange, selectedEntity, required]);
+  }, [entities, initialResultIsOnlyOption, onChange, selectedEntity, required]);
 
   if (theme === 'bui') {
-    const isAutoSelected = required && groups?.catalogEntities.length === 1;
+    const isAutoSelected = required && initialResultIsOnlyOption;
 
     return (
       <ScaffolderField
@@ -180,11 +181,17 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
           isRequired={required}
           isDisabled={isDisabled || isAutoSelected}
           selectedKey={selectedKey}
-          inputValue={inputValue}
-          onInputChange={setInputValue}
           onSelectionChange={handleSelectionChange}
-          isLoading={loading}
           options={buiOptions}
+          search={{
+            mode: 'server',
+            inputValue,
+            onInputChange: value => {
+              setInputValue(value);
+              setSearchText(value);
+            },
+          }}
+          loading={{ state: loadingState, onLoadMore: loadMore }}
           allowsCustomValue={false}
           isInvalid={rawErrors && rawErrors.length > 0}
         />
@@ -201,15 +208,19 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
       errors={errors}
     >
       <Autocomplete
-        disabled={required && groups?.catalogEntities.length === 1}
+        disabled={isDisabled || (required && initialResultIsOnlyOption)}
         id="OwnershipEntityRefPicker-dropdown"
-        options={groups?.catalogEntities || []}
+        options={entities}
         value={selectedEntity}
-        loading={loading}
+        loading={identityLoading || loading}
         onChange={updateChange}
+        onInputChange={(_event, value, reason) => {
+          if (reason === 'input' || reason === 'clear') {
+            setSearchText(value);
+          }
+        }}
         getOptionLabel={option =>
-          groups?.entityRefToPresentation.get(stringifyEntityRef(option))
-            ?.primaryTitle!
+          entityRefToPresentation.get(stringifyEntityRef(option))?.primaryTitle!
         }
         autoSelect
         renderInput={params => (
@@ -224,12 +235,20 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
           />
         )}
         renderOption={option => <EntityDisplayName entityRef={option} />}
-        filterOptions={createFilterOptions<Entity>({
-          stringify: option =>
-            groups?.entityRefToPresentation.get(stringifyEntityRef(option))
-              ?.primaryTitle!,
-        })}
+        filterOptions={options => options}
         ListboxComponent={VirtualizedListbox}
+        ListboxProps={{
+          onScroll: (event: MouseEvent) => {
+            const element = event.currentTarget;
+            if (
+              Math.abs(
+                element.scrollHeight - element.clientHeight - element.scrollTop,
+              ) < 1
+            ) {
+              loadMore();
+            }
+          },
+        }}
       />
     </ScaffolderField>
   );

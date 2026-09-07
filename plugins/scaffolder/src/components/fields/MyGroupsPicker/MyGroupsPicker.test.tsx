@@ -26,7 +26,7 @@ import {
   catalogApiRef,
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   ErrorApi,
   errorApiRef,
@@ -38,6 +38,7 @@ import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 import { ComponentType, PropsWithChildren, ReactNode } from 'react';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { scaffolderTranslationRef } from '../../../translation';
+import { ENTITY_PICKER_FIELDS } from '../useEntityPickerOptions';
 
 const mockIdentityApi = mockApis.identity({
   userEntityRef: 'user:default/bob',
@@ -50,9 +51,14 @@ describe('<MyGroupsPicker />', () => {
   const required = false;
 
   const catalogApi = catalogApiMock.mock({
-    streamEntities: jest.fn(async function* () {
-      yield entities;
+    queryEntities: jest.fn(async () => {
+      return { items: entities, totalItems: 0, pageInfo: {} };
     }),
+    getEntitiesByRefs: jest.fn(async ({ entityRefs }) => ({
+      items: entityRefs.map((entityRef: string) =>
+        entities.find(entity => stringifyEntityRef(entity) === entityRef),
+      ),
+    })),
   });
 
   const mockErrorApi: jest.Mocked<ErrorApi> = {
@@ -83,7 +89,7 @@ describe('<MyGroupsPicker />', () => {
     ];
 
     onChange.mockClear();
-    catalogApi.streamEntities.mockClear();
+    catalogApi.queryEntities.mockClear();
   });
 
   afterEach(() => {
@@ -98,10 +104,11 @@ describe('<MyGroupsPicker />', () => {
         entity.spec.members.includes('Bob'),
     );
 
-    catalogApi.streamEntities.mockImplementation(async function* () {
-      yield userGroups;
+    catalogApi.queryEntities.mockResolvedValue({
+      items: userGroups,
+      totalItems: 0,
+      pageInfo: {},
     });
-
     const props = {
       onChange,
       schema,
@@ -126,15 +133,18 @@ describe('<MyGroupsPicker />', () => {
     );
 
     await waitFor(() =>
-      expect(catalogApi.streamEntities).toHaveBeenCalledTimes(1),
+      expect(catalogApi.queryEntities).toHaveBeenCalledTimes(1),
     );
 
-    expect(catalogApi.streamEntities).toHaveBeenCalledWith({
-      query: {},
+    expect(catalogApi.queryEntities).toHaveBeenCalledWith({
       filter: {
         kind: 'Group',
         'relations.hasMember': ['user:default/bob'],
       },
+      fields: ENTITY_PICKER_FIELDS,
+      limit: 20,
+      orderFields: [{ field: 'metadata.name', order: 'asc' }],
+      totalItems: 'exclude',
     });
   });
 
@@ -146,8 +156,10 @@ describe('<MyGroupsPicker />', () => {
         entity.spec.members.includes('Bob'),
     );
 
-    catalogApi.streamEntities.mockImplementation(async function* () {
-      yield userGroups;
+    catalogApi.queryEntities.mockResolvedValue({
+      items: userGroups,
+      totalItems: 0,
+      pageInfo: {},
     });
 
     const props = {
@@ -174,7 +186,7 @@ describe('<MyGroupsPicker />', () => {
     );
 
     await waitFor(() =>
-      expect(catalogApi.streamEntities).toHaveBeenCalledTimes(1),
+      expect(catalogApi.queryEntities).toHaveBeenCalledTimes(1),
     );
 
     // Simulate user input
@@ -210,8 +222,10 @@ describe('<MyGroupsPicker />', () => {
       },
     ];
 
-    catalogApi.streamEntities.mockImplementation(async function* () {
-      yield userGroups;
+    catalogApi.queryEntities.mockResolvedValue({
+      items: userGroups,
+      totalItems: 0,
+      pageInfo: {},
     });
 
     const props = {
@@ -238,7 +252,7 @@ describe('<MyGroupsPicker />', () => {
     );
 
     await waitFor(() =>
-      expect(catalogApi.streamEntities).toHaveBeenCalledTimes(1),
+      expect(catalogApi.queryEntities).toHaveBeenCalledTimes(1),
     );
 
     const inputField = getByRole('combobox');
@@ -276,9 +290,12 @@ describe('<MyGroupsPicker />', () => {
       },
     ];
 
-    catalogApi.streamEntities.mockImplementation(async function* () {
-      yield userGroups;
+    catalogApi.queryEntities.mockResolvedValue({
+      items: userGroups,
+      totalItems: 0,
+      pageInfo: {},
     });
+    catalogApi.getEntitiesByRefs.mockResolvedValue({ items: [userGroups[0]] });
 
     const props = {
       onChange,
@@ -305,7 +322,7 @@ describe('<MyGroupsPicker />', () => {
     );
 
     await waitFor(() =>
-      expect(catalogApi.streamEntities).toHaveBeenCalledTimes(1),
+      expect(catalogApi.queryEntities).toHaveBeenCalledTimes(1),
     );
 
     const inputField = getByRole('combobox');
