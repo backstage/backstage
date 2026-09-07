@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
+import {
+  type CatalogApi,
+  CATALOG_FILTER_EXISTS,
+} from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
   catalogApiRef,
@@ -39,6 +42,9 @@ jest.mock('@backstage/plugin-scaffolder-react/alpha', () => ({
 
 const mockUseScaffolderTheme = jest.mocked(useScaffolderTheme);
 
+type SpiedCatalogApi = CatalogApi &
+  Pick<jest.Mocked<CatalogApi>, 'getEntitiesByRefs' | 'queryEntities'>;
+
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'scaffolder.backstage.io/v1beta3',
   kind,
@@ -59,18 +65,17 @@ describe('<EntityPicker />', () => {
 
   let props: FieldProps<string>;
 
-  const catalogApi = catalogApiMock.mock();
+  let catalogApi: SpiedCatalogApi;
 
   let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
     mockUseScaffolderTheme.mockReturnValue('mui');
-    catalogApi.queryEntities.mockResolvedValue({
-      items: entities,
-      totalItems: 0,
-      pageInfo: {},
+    const api = catalogApiMock({ entities });
+    catalogApi = Object.assign(api, {
+      queryEntities: jest.spyOn(api, 'queryEntities'),
+      getEntitiesByRefs: jest.spyOn(api, 'getEntitiesByRefs'),
     });
-    catalogApi.getEntitiesByRefs.mockResolvedValue({ items: [] });
     Wrapper = ({ children }: { children?: ReactNode }) => (
       <TestApiProvider
         apis={[
@@ -368,10 +373,6 @@ describe('<EntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('searches for users and groups', async () => {
@@ -413,10 +414,6 @@ describe('<EntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('searches for a specific group entity', async () => {
@@ -450,10 +447,6 @@ describe('<EntityPicker />', () => {
           },
         },
       };
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
 
       await renderInTestApp(
         <Wrapper>
@@ -526,10 +519,6 @@ describe('<EntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
     it('Prevents user from modifying input when ui:disabled is true', async () => {
       props.uiSchema = { 'ui:disabled': true };
@@ -592,10 +581,6 @@ describe('<EntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('searches for a Group entity', async () => {
@@ -633,10 +618,6 @@ describe('<EntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('default behavior', async () => {
@@ -729,10 +710,6 @@ describe('<EntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('returns the full entityRef when entity exists in the list', async () => {
@@ -903,10 +880,6 @@ describe('<EntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('User enters clear input', async () => {
@@ -1002,10 +975,6 @@ describe('<EntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('User enters clear input', async () => {
@@ -1102,10 +1071,6 @@ describe('<EntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('User enters clear input', async () => {
@@ -1202,10 +1167,6 @@ describe('<EntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('User enters clear input', async () => {
