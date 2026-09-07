@@ -125,6 +125,15 @@ GitHub provider, but you could also choose to use the
 resolvers, which are common to all auth providers.
 
 :::warning
+When using an email-based sign-in resolver, ensure that the configured auth
+provider only permits the intended users to sign in and supplies an
+authoritative email address for each identity. The address should either be
+verified by the provider or be immutable and provisioned from a trusted
+organizational source. A matching catalog user does not by itself establish
+that the user signing in controls the supplied address.
+:::
+
+:::warning
 When using the `emailLocalPartMatchingUserEntityName` resolver it is strongly
 recommended to set the `allowedDomains` option to ensure that only authorized users
 are able to sign-in.
