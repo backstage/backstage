@@ -114,6 +114,18 @@ This widget comes from `@backstage/plugin-search`:
 The search bar widget requires `@backstage/plugin-search` to be installed.
 :::
 
+### Scaffolder plugin widget
+
+This widget comes from `@backstage/plugin-scaffolder`:
+
+| Widget             | Extension ID                                     | Description                                                                                |
+| :----------------- | :----------------------------------------------- | :----------------------------------------------------------------------------------------- |
+| Featured Templates | `home-page-widget:scaffolder/featured-templates` | Shows software templates that carry a configurable catalog tag as a row of template cards. |
+
+:::note
+The featured templates widget requires `@backstage/plugin-scaffolder` to be installed.
+:::
+
 ### Community widgets
 
 The [Backstage community-plugins repository](https://github.com/backstage/community-plugins)
@@ -171,6 +183,35 @@ app:
               timeZone: Europe/Stockholm
             - label: TYO
               timeZone: Asia/Tokyo
+```
+
+### Featured Templates
+
+The featured templates widget shows every template in the catalog whose
+`metadata.tags` contains a configurable tag, in the order the catalog returns
+them. Selecting a card opens the template form, and the empty state links to the
+templates page. By default the widget is titled `Featured Templates` and looks
+for the `featured` tag:
+
+```yaml
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: nodejs-service
+  title: Node.js Service
+  tags:
+    - featured
+```
+
+Both the title and the tag can be changed:
+
+```yaml
+app:
+  extensions:
+    - home-page-widget:scaffolder/featured-templates:
+        config:
+          title: Golden Paths
+          tag: golden-path
 ```
 
 ### Disabling a widget

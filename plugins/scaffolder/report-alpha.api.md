@@ -20,6 +20,8 @@ import { FormField } from '@backstage/plugin-scaffolder-react/alpha';
 import { formFieldsApiRef } from '@backstage/plugin-scaffolder-react/alpha';
 import type { FormProps as FormProps_2 } from '@rjsf/core';
 import { FormProps as FormProps_3 } from '@backstage/plugin-scaffolder-react';
+import { HomePageWidgetBlueprintParams } from '@backstage/plugin-home-react/alpha';
+import { HomePageWidgetData } from '@backstage/plugin-home-react/alpha';
 import { IconElement } from '@backstage/frontend-plugin-api';
 import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
@@ -172,6 +174,21 @@ const _default: OverridableFrontendPlugin<
         useProps: () => Omit<IconLinkVerticalProps, 'color'>;
         filter?: FilterPredicate | ((entity: Entity) => boolean);
       };
+    }>;
+    'home-page-widget:scaffolder/featured-templates': OverridableExtensionDefinition<{
+      config: {
+        title: string;
+        tag: string;
+      };
+      configInput: {
+        title?: string | undefined;
+        tag?: string | undefined;
+      };
+      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
+      inputs: {};
+      kind: 'home-page-widget';
+      name: 'featured-templates';
+      params: HomePageWidgetBlueprintParams;
     }>;
     'page:scaffolder': OverridableExtensionDefinition<{
       config: {
@@ -909,6 +926,12 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateEditorToolbarFileMenu.options.createDirectory': 'Create template directory';
     readonly 'templateEditorToolbarFileMenu.options.closeEditor': 'Close template editor';
     readonly 'templateEditorToolbarTemplatesMenu.button': 'Templates';
+    readonly 'featuredTemplatesWidget.errorMessage': 'Could not load templates.';
+    readonly 'featuredTemplatesWidget.scrollPreviousButtonTitle': 'Previous templates';
+    readonly 'featuredTemplatesWidget.scrollNextButtonTitle': 'Next templates';
+    readonly 'featuredTemplatesWidget.errorRetryButtonTitle': 'Retry';
+    readonly 'featuredTemplatesWidget.emptyMessage': 'There are currently no templates to show.';
+    readonly 'featuredTemplatesWidget.emptyBrowseAllButtonTitle': 'Browse all templates';
   }
 >;
 
