@@ -27,7 +27,6 @@ import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { OwnerPicker } from './OwnerPicker';
 import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 import { fireEvent, screen } from '@testing-library/react';
-import { ENTITY_PICKER_FIELDS } from '../useEntityPickerOptions';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'backstage.io/v1beta1',
@@ -106,7 +105,6 @@ describe('<OwnerPicker />', () => {
 
       expect(catalogApi.queryEntities).toHaveBeenCalledWith({
         filter: { kind: ['Group', 'User'] },
-        fields: ENTITY_PICKER_FIELDS,
         limit: 20,
         orderFields: [{ field: 'metadata.name', order: 'asc' }],
         totalItems: 'exclude',
@@ -201,7 +199,6 @@ describe('<OwnerPicker />', () => {
 
       expect(catalogApi.queryEntities).toHaveBeenCalledWith({
         filter: { kind: ['User'] },
-        fields: ENTITY_PICKER_FIELDS,
         limit: 20,
         orderFields: [{ field: 'metadata.name', order: 'asc' }],
         totalItems: 'exclude',

@@ -32,6 +32,15 @@ import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { scaffolderTranslationRef } from '../../../translation';
+import { useScaffolderTheme } from '@backstage/plugin-scaffolder-react/alpha';
+
+jest.mock('@backstage/plugin-scaffolder-react/alpha', () => ({
+  ...jest.requireActual('@backstage/plugin-scaffolder-react/alpha'),
+  useScaffolderTheme: jest.fn(),
+}));
+
+const mockUseScaffolderTheme = jest.mocked(useScaffolderTheme);
+const originalIntersectionObserver = globalThis.IntersectionObserver;
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'scaffolder.backstage.io/v1beta3',
@@ -57,6 +66,21 @@ describe('<MultiEntityPicker />', () => {
   let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
+    mockUseScaffolderTheme.mockReturnValue('mui');
+    Object.defineProperty(globalThis, 'IntersectionObserver', {
+      configurable: true,
+      value: class {
+        readonly root = null;
+        readonly rootMargin = '';
+        readonly thresholds = [];
+        disconnect() {}
+        observe() {}
+        takeRecords() {
+          return [];
+        }
+        unobserve() {}
+      },
+    });
     catalogApi.queryEntities.mockResolvedValue({
       items: entities,
       totalItems: 0,
@@ -78,7 +102,13 @@ describe('<MultiEntityPicker />', () => {
     );
   });
 
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => {
+    jest.resetAllMocks();
+    Object.defineProperty(globalThis, 'IntersectionObserver', {
+      configurable: true,
+      value: originalIntersectionObserver,
+    });
+  });
 
   describe('without allowedKinds and catalogFilter', () => {
     beforeEach(() => {
@@ -101,15 +131,6 @@ describe('<MultiEntityPicker />', () => {
       );
 
       expect(catalogApi.queryEntities).toHaveBeenCalledWith({
-        fields: [
-          'kind',
-          'metadata.name',
-          'metadata.namespace',
-          'metadata.title',
-          'metadata.description',
-          'spec.profile.displayName',
-          'spec.type',
-        ],
         limit: 20,
         orderFields: [{ field: 'metadata.name', order: 'asc' }],
         totalItems: 'exclude',
@@ -146,6 +167,35 @@ describe('<MultiEntityPicker />', () => {
             fullTextFilter: expect.objectContaining({ term: 'team' }),
           }),
         ),
+      );
+    });
+
+    it('clears BUI server filtering after selecting an entity', async () => {
+      mockUseScaffolderTheme.mockReturnValue('bui');
+      await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+      const input = screen.getByRole('combobox');
+
+      fireEvent.change(input, { target: { value: 'team' } });
+      await waitFor(() =>
+        expect(catalogApi.queryEntities).toHaveBeenCalledTimes(2),
+      );
+      await userEvent.click(
+        screen.getByRole('button', { name: /Show suggestions/ }),
+      );
+      await userEvent.click(
+        await screen.findByRole('option', { name: 'team-a' }),
+      );
+
+      expect(onChange).toHaveBeenCalledWith(['group:default/team-a']);
+      await waitFor(() =>
+        expect(catalogApi.queryEntities).toHaveBeenCalledTimes(3),
+      );
+      expect(catalogApi.queryEntities).toHaveBeenLastCalledWith(
+        expect.not.objectContaining({ fullTextFilter: expect.anything() }),
       );
     });
   });

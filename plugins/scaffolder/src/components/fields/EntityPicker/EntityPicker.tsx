@@ -119,6 +119,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
 
   const onSelect = useCallback(
     (_: any, ref: string | Entity | null, reason: AutocompleteChangeReason) => {
+      setSearchText('');
       // ref can either be a string from free solo entry or
       if (typeof ref !== 'string') {
         // if ref does not exist: pass 'undefined' to trigger validation for required value
@@ -145,15 +146,32 @@ export const EntityPicker = (props: EntityPickerProps) => {
         }
       }
     },
-    [onChange, formData, defaultKind, defaultNamespace, allowArbitraryValues],
+    [
+      onChange,
+      formData,
+      defaultKind,
+      defaultNamespace,
+      allowArbitraryValues,
+      setSearchText,
+    ],
   );
 
   // Since free solo can be enabled, attempt to parse as a full entity ref first, then
   // fall back to the given value.
   const selectedEntity =
-    selectedEntities.find(e => stringifyEntityRef(e) === formData) ??
     entities.find(e => stringifyEntityRef(e) === formData) ??
+    selectedEntities.find(e => stringifyEntityRef(e) === formData) ??
     (allowArbitraryValues && formData ? getLabel(formData) : '');
+  const muiOptions = useMemo(() => {
+    if (
+      typeof selectedEntity !== 'string' &&
+      selectedEntity &&
+      !entities.includes(selectedEntity)
+    ) {
+      return [selectedEntity, ...entities];
+    }
+    return entities;
+  }, [entities, selectedEntity]);
 
   // BUI: options for autocomplete
   const buiOptions = useMemo(
@@ -171,19 +189,17 @@ export const EntityPicker = (props: EntityPickerProps) => {
 
   // BUI: controlled input value
   const [inputValue, setInputValue] = useState(formData || '');
+  const selectedPresentationTitle = formData
+    ? entityRefToPresentation.get(formData)?.primaryTitle
+    : undefined;
 
   useEffect(() => {
     if (formData) {
-      const opt = buiOptions.find(o => o.value === formData);
-      setInputValue(
-        opt?.label ||
-          entityRefToPresentation.get(formData)?.primaryTitle ||
-          formData,
-      );
+      setInputValue(selectedPresentationTitle || formData);
     } else {
       setInputValue('');
     }
-  }, [entityRefToPresentation, formData, buiOptions]);
+  }, [formData, selectedPresentationTitle]);
 
   const selectedKey =
     formData && buiOptions.some(o => o.value === formData) ? formData : null;
@@ -196,6 +212,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
 
   const handleSelectionChange = useCallback(
     (key: Key | null) => {
+      setSearchText('');
       if (key !== null) {
         const value = String(key);
         lastCommittedRef.current = value;
@@ -216,7 +233,14 @@ export const EntityPicker = (props: EntityPickerProps) => {
         onChange(undefined);
       }
     },
-    [onChange, allowArbitraryValues, inputValue, defaultKind, defaultNamespace],
+    [
+      onChange,
+      allowArbitraryValues,
+      inputValue,
+      defaultKind,
+      defaultNamespace,
+      setSearchText,
+    ],
   );
 
   const handleBlur = useCallback(() => {
@@ -231,6 +255,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
       }
       if (lastCommittedRef.current !== entityRef) {
         lastCommittedRef.current = entityRef;
+        setSearchText('');
         onChange(entityRef);
       }
     }
@@ -240,6 +265,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
     defaultKind,
     defaultNamespace,
     onChange,
+    setSearchText,
   ]);
 
   // Auto-select when only one entity and required
@@ -328,7 +354,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
         value={selectedEntity}
         loading={loading}
         onChange={onSelect}
-        options={entities}
+        options={muiOptions}
         onInputChange={(_event, value, reason) => {
           if (reason === 'input' || reason === 'clear') {
             setSearchText(value);
@@ -341,6 +367,11 @@ export const EntityPicker = (props: EntityPickerProps) => {
             : entityRefToPresentation.get(stringifyEntityRef(option))
                 ?.entityRef!
         }
+        getOptionSelected={(option, value) =>
+          typeof value !== 'string' &&
+          stringifyEntityRef(option) === stringifyEntityRef(value)
+        }
+        filterSelectedOptions
         autoSelect={autoSelect}
         freeSolo={allowArbitraryValues}
         renderInput={params => (

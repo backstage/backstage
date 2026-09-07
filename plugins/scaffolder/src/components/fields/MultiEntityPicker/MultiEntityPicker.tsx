@@ -146,9 +146,17 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
         .filter(ref => ref !== undefined) as string[];
 
       setNoOfItemsSelected(values.length);
+      setSearchText('');
       onChange(values);
     },
-    [onChange, formData, defaultKind, defaultNamespace, allowArbitraryValues],
+    [
+      onChange,
+      formData,
+      defaultKind,
+      defaultNamespace,
+      allowArbitraryValues,
+      setSearchText,
+    ],
   );
 
   // BUI: options and selection state
@@ -198,6 +206,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
         }
       }
       setInputValue('');
+      setSearchText('');
     },
     [
       atMaxItems,
@@ -207,6 +216,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
       inputValue,
       defaultKind,
       defaultNamespace,
+      setSearchText,
     ],
   );
 

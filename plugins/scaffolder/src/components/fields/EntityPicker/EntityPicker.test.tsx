@@ -21,7 +21,7 @@ import {
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { EntityPicker } from './EntityPicker';
 import { EntityPickerProps } from './schema';
@@ -30,6 +30,14 @@ import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { scaffolderTranslationRef } from '../../../translation';
+import { useScaffolderTheme } from '@backstage/plugin-scaffolder-react/alpha';
+
+jest.mock('@backstage/plugin-scaffolder-react/alpha', () => ({
+  ...jest.requireActual('@backstage/plugin-scaffolder-react/alpha'),
+  useScaffolderTheme: jest.fn(),
+}));
+
+const mockUseScaffolderTheme = jest.mocked(useScaffolderTheme);
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'scaffolder.backstage.io/v1beta3',
@@ -56,6 +64,7 @@ describe('<EntityPicker />', () => {
   let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
+    mockUseScaffolderTheme.mockReturnValue('mui');
     catalogApi.queryEntities.mockResolvedValue({
       items: entities,
       totalItems: 0,
@@ -100,15 +109,6 @@ describe('<EntityPicker />', () => {
       );
 
       expect(catalogApi.queryEntities).toHaveBeenCalledWith({
-        fields: [
-          'kind',
-          'metadata.name',
-          'metadata.namespace',
-          'metadata.title',
-          'metadata.description',
-          'spec.profile.displayName',
-          'spec.type',
-        ],
         limit: 20,
         orderFields: [{ field: 'metadata.name', order: 'asc' }],
         totalItems: 'exclude',
@@ -131,6 +131,38 @@ describe('<EntityPicker />', () => {
           }),
         ),
       );
+    });
+
+    it('keeps BUI search input while filtered results arrive', async () => {
+      mockUseScaffolderTheme.mockReturnValue('bui');
+      const filteredEntity = makeEntity('Group', 'default', 'filtered-result');
+      let resolveFilteredResults = () => {};
+      catalogApi.queryEntities
+        .mockResolvedValueOnce({
+          items: entities,
+          totalItems: 0,
+          pageInfo: {},
+        })
+        .mockReturnValueOnce(
+          new Promise(resolve => {
+            resolveFilteredResults = () =>
+              resolve({ items: [filteredEntity], totalItems: 0, pageInfo: {} });
+          }),
+        );
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+      const input = screen.getByRole('combobox');
+
+      fireEvent.change(input, { target: { value: 'team' } });
+      await waitFor(() =>
+        expect(catalogApi.queryEntities).toHaveBeenCalledTimes(2),
+      );
+      await act(async () => resolveFilteredResults());
+
+      expect(input).toHaveValue('team');
     });
 
     it('updates even if there is not an exact match', async () => {
@@ -637,6 +669,37 @@ describe('<EntityPicker />', () => {
       expect(getByText('SQUAD B')).toBeInTheDocument();
 
       fireEvent.blur(input);
+    });
+
+    it('accepts a selected entity that is not on the current page', async () => {
+      const selectedEntity = makeEntity('Group', 'default', 'off-page');
+      catalogApi.getEntitiesByRefs.mockResolvedValue({
+        items: [selectedEntity],
+      });
+      props = {
+        ...props,
+        formData: 'group:default/off-page',
+        uiSchema: {
+          'ui:options': { allowArbitraryValues: false },
+        },
+      } as unknown as FieldProps<any>;
+      const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+      await waitFor(() =>
+        expect(screen.getByRole('textbox')).toHaveValue(
+          'group:default/off-page',
+        ),
+      );
+
+      expect(warn).not.toHaveBeenCalledWith(
+        expect.stringContaining('value provided to Autocomplete is invalid'),
+      );
+      warn.mockRestore();
     });
   });
 
