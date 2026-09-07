@@ -290,6 +290,27 @@ describe('AzureUrlReader', () => {
       expect(mkDocsFile.toString()).toBe('site_name: Test\n');
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
     });
+
+    it('passes the abort signal to the commits fetch', async () => {
+      const controller = new AbortController();
+      const fetchSpy = jest.spyOn(global, 'fetch');
+
+      try {
+        await processor.readTree(
+          'https://dev.azure.com/organization/project/_git/repository',
+          { signal: controller.signal },
+        );
+
+        const commitsCall = fetchSpy.mock.calls.find(([url]) =>
+          String(url).includes('/commits'),
+        );
+        expect(commitsCall?.[1]).toEqual(
+          expect.objectContaining({ signal: controller.signal }),
+        );
+      } finally {
+        fetchSpy.mockRestore();
+      }
+    });
   });
 
   describe('search', () => {

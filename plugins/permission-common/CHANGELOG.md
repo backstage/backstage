@@ -1,5 +1,11 @@
 # @backstage/plugin-permission-common
 
+## 0.9.10
+
+### Patch Changes
+
+- b754e32: Migrated tests from MSW v1 to MSW v2.
+
 ## 0.9.9
 
 ### Patch Changes

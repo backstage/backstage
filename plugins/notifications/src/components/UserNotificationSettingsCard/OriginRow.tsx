@@ -22,7 +22,7 @@ import {
 import { ButtonIcon, Switch, Tooltip, TooltipTrigger } from '@backstage/ui';
 import { RiArrowDownSLine, RiArrowUpSLine } from '@remixicon/react';
 import { NoBorderTableCell } from './NoBorderTableCell';
-import { useNotificationFormat } from './UserNotificationSettingsCard';
+import { useNotificationFormat } from './NotificationFormatContext';
 
 export const OriginRow = (props: {
   origin: OriginSetting;

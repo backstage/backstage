@@ -18,7 +18,6 @@ import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { ConflictError } from '@backstage/errors';
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { Knex } from 'knex';
-import lodash from 'lodash';
 import { ProcessingIntervalFunction } from '../processing/refresh';
 import { rethrowError, timestampToDateTime } from './conversion';
 import { initDatabaseMetrics } from './metrics';
@@ -42,6 +41,10 @@ import { checkLocationKeyConflict } from './operations/refreshState/checkLocatio
 import { insertUnprocessedEntity } from './operations/refreshState/insertUnprocessedEntity';
 import { updateUnprocessedEntity } from './operations/refreshState/updateUnprocessedEntity';
 import { generateStableHash, generateTargetKey } from './util';
+import {
+  syncRelations,
+  SyncRelationsResult,
+} from './operations/relations/syncRelations';
 import { EventParams, EventsService } from '@backstage/plugin-events-node';
 import { DateTime } from 'luxon';
 import { CATALOG_CONFLICTS_TOPIC } from '../constants';
@@ -78,7 +81,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
   async updateProcessedEntity(
     txOpaque: Transaction,
     options: UpdateProcessedEntityOptions,
-  ): Promise<{ previous: { relations: DbRelationsRow[] } }> {
+  ): Promise<{ relationsChange: SyncRelationsResult }> {
     const tx = txOpaque as Knex.Transaction;
     const {
       id,
@@ -90,7 +93,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       refreshKeys,
       locationKey,
     } = options;
-    const configClient = tx.client.config.client;
     const refreshResult = await tx<DbRefreshStateRow>('refresh_state')
       .update({
         processed_entity: JSON.stringify(processedEntity),
@@ -120,24 +122,8 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       sourceEntityRef,
     });
 
-    // Delete old relations
-    // NOTE(freben): knex implemented support for returning() on update queries for sqlite, but at the current time of writing (Sep 2022) not for delete() queries.
-    let previousRelationRows: DbRelationsRow[];
-    if (configClient.includes('sqlite3') || configClient.includes('mysql')) {
-      previousRelationRows = await tx<DbRelationsRow>('relations')
-        .select('*')
-        .where({ originating_entity_id: id });
-      await tx<DbRelationsRow>('relations')
-        .where({ originating_entity_id: id })
-        .delete();
-    } else {
-      previousRelationRows = await tx<DbRelationsRow>('relations')
-        .where({ originating_entity_id: id })
-        .delete()
-        .returning('*');
-    }
-
-    // Batch insert new relations
+    // Sync relations using a diff-based approach — only touches rows that
+    // actually changed, eliminating steady-state write churn.
     const relationRows: DbRelationsRow[] = relations.map(
       ({ source, target, type }) => ({
         originating_entity_id: id,
@@ -147,11 +133,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       }),
     );
 
-    await tx.batchInsert(
-      'relations',
-      this.deduplicateRelations(relationRows),
-      BATCH_SIZE,
-    );
+    const relationsResult = await syncRelations(tx, id, relationRows);
 
     // Delete old refresh keys
     await tx<DbRefreshKeysRow>('refresh_keys')
@@ -169,9 +151,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     );
 
     return {
-      previous: {
-        relations: previousRelationRows,
-      },
+      relationsChange: relationsResult,
     };
   }
 
@@ -323,13 +303,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       this.options.logger.debug(`Error during transaction, ${e}`);
       throw rethrowError(e);
     }
-  }
-
-  private deduplicateRelations(rows: DbRelationsRow[]): DbRelationsRow[] {
-    return lodash.uniqBy(
-      rows,
-      r => `${r.source_entity_ref}:${r.target_entity_ref}:${r.type}`,
-    );
   }
 
   /**

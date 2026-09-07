@@ -17,6 +17,7 @@
 import {
   CATALOG_FILTER_EXISTS,
   EntityFilterQuery,
+  QueryEntitiesInitialRequest,
 } from '@backstage/catalog-client';
 import {
   Entity,
@@ -135,34 +136,27 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
     const limit = pLimit(this.parallelismLimit);
     const techDocsBaseUrl = await this.discovery.getBaseUrl('techdocs');
 
-    let entitiesRetrieved = 0;
-    let moreEntitiesToGet = true;
+    let cursor: string | undefined;
 
-    // Offset/limit pagination is used on the Catalog Client in order to
-    // limit (and allow some control over) memory used by the search backend
-    // at index-time. The batchSize is calculated as a factor of the given
-    // parallelism limit to simplify configuration.
+    // The batchSize is calculated as a factor of the given parallelism limit
+    // to simplify configuration while bounding index-time memory use.
     const batchSize = this.parallelismLimit * 50;
-    while (moreEntitiesToGet) {
-      const credentials = await this.auth.getOwnServiceCredentials();
-      const entities = (
-        await this.catalog.getEntities(
-          {
-            filter: {
-              'metadata.annotations.backstage.io/techdocs-ref':
-                CATALOG_FILTER_EXISTS,
-              ...this.customCatalogApiFilters,
-            },
-            limit: batchSize,
-            offset: entitiesRetrieved,
-          },
-          { credentials },
-        )
-      ).items;
+    const initialRequest: QueryEntitiesInitialRequest = {
+      filter: {
+        'metadata.annotations.backstage.io/techdocs-ref': CATALOG_FILTER_EXISTS,
+        ...this.customCatalogApiFilters,
+      },
+      limit: batchSize,
+      totalItems: 'exclude',
+    };
 
-      // Control looping through entity batches.
-      moreEntitiesToGet = entities.length === batchSize;
-      entitiesRetrieved += entities.length;
+    do {
+      const response = await this.catalog.queryEntities(
+        cursor ? { cursor, limit: batchSize } : initialRequest,
+        { credentials: await this.auth.getOwnServiceCredentials() },
+      );
+      cursor = response.pageInfo.nextCursor;
+      const entities = response.items;
 
       const filteredEntities = this.entityFilterFunction
         ? this.entityFilterFunction(entities)
@@ -230,7 +224,7 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
         }),
       );
       yield* (await Promise.all(docPromises)).flat();
-    }
+    } while (cursor);
   }
 
   private applyArgsToFormat(

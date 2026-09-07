@@ -4,7 +4,7 @@ title: Backend plugins
 description: Creating and Developing Backend plugins
 ---
 
-:::caution Legacy Documentation
+:::caution[Legacy Documentation]
 
 This section is part of the legacy plugins documentation. While this page already describes the new backend system patterns, the canonical documentation for building backend plugins has moved to [Building Backend Plugins and Modules](../backend-system/building-plugins-and-modules/01-index.md).
 
@@ -59,7 +59,9 @@ You should see the following response:
 }
 ```
 
-:::note Note: The route shown here matches the default in the current backend plugin template. If you want a `/health` endpoint for health checks, you can add it to your router yourself.
+:::note
+
+The route shown here matches the default in the current backend plugin template. If you want a `/health` endpoint for health checks, you can add it to your router yourself.
 
 :::
 

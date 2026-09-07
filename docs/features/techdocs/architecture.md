@@ -13,7 +13,7 @@ out-of-the box experience.
 
 ![TechDocs Architecture diagram](../../assets/techdocs/architecture-basic.drawio.svg)
 
-:::note Note
+:::note
 
 See below for our recommended deployment architecture which takes care
 of stability, scalability and speed. Also look at the

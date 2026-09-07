@@ -155,7 +155,7 @@ Backstage as _the_ platform:
 Again, any feedback is appreciated. Please use the Edit button at the bottom of the
 page to make a suggestion.
 
-:::note Note
+:::note
 
 It might be tempting to try to optimize Backstage usage and
 "engagement". Even though you want to consolidate all your tooling and technical

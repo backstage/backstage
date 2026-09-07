@@ -15,7 +15,7 @@ export function createPublishGerritAction(options: {
 }): TemplateAction<
   {
     repoUrl: string;
-    description: string;
+    description?: string | undefined;
     defaultBranch?: string | undefined;
     gitCommitMessage?: string | undefined;
     gitAuthorName?: string | undefined;

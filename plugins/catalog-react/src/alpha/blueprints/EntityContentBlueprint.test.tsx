@@ -26,6 +26,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { waitFor, screen } from '@testing-library/react';
+import { z } from 'zod';
 
 describe('EntityContentBlueprint', () => {
   it('should return an extension with sane defaults', () => {
@@ -186,10 +187,8 @@ describe('EntityContentBlueprint', () => {
       inputs: {
         mock: createExtensionInput([coreExtensionData.reactElement]),
       },
-      config: {
-        schema: {
-          mock: z => z.string(),
-        },
+      configSchema: {
+        mock: z.string(),
       },
       factory(originalFactory, { inputs, config }) {
         return originalFactory({

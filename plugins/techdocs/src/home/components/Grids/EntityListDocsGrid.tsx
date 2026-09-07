@@ -25,9 +25,12 @@ import {
   WarningPanel,
 } from '@backstage/core-components';
 import {
+  entityPresentationApiRef,
+  entityPresentationSnapshot,
   useEntityList,
   useEntityOwnership,
 } from '@backstage/plugin-catalog-react';
+import { useApiHolder } from '@backstage/core-plugin-api';
 import Typography from '@material-ui/core/Typography';
 import { ReactNode } from 'react';
 
@@ -103,6 +106,8 @@ const EntityListDocsGridGroup = (props: {
  */
 export const EntityListDocsGrid = (props: EntityListDocsGridPageProps) => {
   const { loading, error, entities } = useEntityList();
+  const apiHolder = useApiHolder();
+  const presentationApi = apiHolder.get(entityPresentationApiRef);
 
   if (error) {
     return (
@@ -133,17 +138,25 @@ export const EntityListDocsGrid = (props: EntityListDocsGridPageProps) => {
     );
   }
 
-  entities.sort((a, b) =>
-    (a.metadata.title ?? a.metadata.name).localeCompare(
-      b.metadata.title ?? b.metadata.name,
-    ),
-  );
+  const sortedEntities = [...entities].sort((a, b) => {
+    const titleA = entityPresentationSnapshot(
+      a,
+      undefined,
+      presentationApi,
+    ).primaryTitle.toLocaleLowerCase();
+    const titleB = entityPresentationSnapshot(
+      b,
+      undefined,
+      presentationApi,
+    ).primaryTitle.toLocaleLowerCase();
+    return titleA.localeCompare(titleB);
+  });
 
   return (
     <Content>
       {(props.groups || [allEntitiesGroup]).map((group, index: number) => (
         <EntityListDocsGridGroup
-          entities={entities}
+          entities={sortedEntities}
           group={group}
           key={`${group.title}-${index}`}
         />

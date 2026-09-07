@@ -17,6 +17,8 @@
 import * as util from './util';
 import { Gitlab, GroupSchema } from '@gitbeaker/rest';
 import { InputError } from '@backstage/errors';
+import { ConfigReader } from '@backstage/config';
+import { ScmIntegrations } from '@backstage/integration';
 
 // Mock the Gitlab client and its methods
 const mockGitlabClient = {
@@ -52,6 +54,45 @@ const mockConfig = {
     },
   ],
 };
+
+describe('getToken', () => {
+  const integrations = ScmIntegrations.fromConfig(
+    new ConfigReader({
+      integrations: {
+        gitlab: [{ host: 'gitlab.com', token: 'integration-token' }],
+      },
+    }),
+  );
+  const integrationsWithoutCredentials = ScmIntegrations.fromConfig(
+    new ConfigReader({
+      integrations: { gitlab: [{ host: 'gitlab.com' }] },
+    }),
+  );
+
+  it('requires an explicit user token when configured', () => {
+    expect(() =>
+      util.getToken(
+        { repoUrl: 'gitlab.com?owner=backstage&repo=backstage' },
+        integrations,
+        true,
+      ),
+    ).toThrow(
+      'No user credentials provided for host gitlab.com, but scaffolder.requireScmUserCredentials is enabled',
+    );
+
+    expect(
+      util.getToken(
+        {
+          repoUrl: 'gitlab.com?owner=backstage&repo=backstage',
+          token: 'user-token',
+        },
+        integrationsWithoutCredentials,
+        true,
+      ).token,
+    ).toBe('user-token');
+  });
+});
+
 describe('getTopLevelParentGroup', () => {
   afterEach(() => jest.resetAllMocks());
 

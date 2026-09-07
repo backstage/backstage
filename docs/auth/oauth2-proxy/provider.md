@@ -13,7 +13,7 @@ a cluster. In general the `oauth2-proxy` supports all OpenID Connect providers,
 for more details check this
 [list of supported providers](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/).
 
-:::note Note
+:::note
 
 OAuth2 Proxy does not provide a way to authenticate requests, you must instead ensure that your Backstage instance is only accessible through the OAuth2 Proxy. If you need more strict validation, consider using a different provider.
 
@@ -44,7 +44,7 @@ This provider includes several resolvers out of the box that you can use:
 - `forwardedUserMatchingUserEntityName`: Matches the value in the `x-forwarded-user` header from the auth provider with the User entity that has a matching `name`. If no match is found it will throw a `NotFoundError`.
 - `forwardedPreferredUsernameMatchingUserEntityName`: Matches the value in the `x-forwarded-preferred-username` header from the auth provider with the User entity that has a matching `name`. If no match is found it will throw a `NotFoundError`.
 
-:::note Note
+:::note
 
 The resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
 

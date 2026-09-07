@@ -51,7 +51,7 @@ import { CursorPaginatedCatalogTable } from './CursorPaginatedCatalogTable';
 import { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc';
 import { useApiHolder } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { catalogTranslationRef } from '../../alpha';
+import { catalogTranslationRef } from '../../alpha/translation';
 import { FavoriteToggleIcon } from '@backstage/core-components';
 
 /**

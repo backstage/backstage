@@ -28,10 +28,12 @@ export const FilteredEntityLayout = CatalogFilterLayout as (props: {
  * @public
  * @deprecated Use `CatalogFilterLayout.Filters` from `@backstage/plugin-catalog-react` instead.
  */
-export const FilterContainer = CatalogFilterLayout.Filters;
+export const FilterContainer: typeof CatalogFilterLayout.Filters =
+  CatalogFilterLayout.Filters;
 
 /**
  * @public
  * @deprecated Use `CatalogFilterLayout.Content` from `@backstage/plugin-catalog-react` instead.
  */
-export const EntityListContainer = CatalogFilterLayout.Content;
+export const EntityListContainer: typeof CatalogFilterLayout.Content =
+  CatalogFilterLayout.Content;

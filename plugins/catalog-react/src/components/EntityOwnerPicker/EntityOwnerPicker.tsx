@@ -38,6 +38,7 @@ import {
   entityPresentationSnapshot,
 } from '../../apis';
 import { useFetchEntities } from './useFetchEntities';
+import { VirtualizedListbox } from './VirtualizedListbox';
 import { withStyles } from '@material-ui/core/styles';
 import { useEntityPresentation } from '../../apis';
 import { catalogReactTranslationRef } from '../../translation';
@@ -88,10 +89,19 @@ export type EntityOwnerPickerProps = {
   mode?: 'owners-only' | 'all';
 };
 
-function RenderOptionLabel(props: { entity: Entity; isSelected: boolean }) {
+function RenderOptionLabel(props: {
+  entity: Entity;
+  isSelected: boolean;
+  mode: 'owners-only' | 'all';
+}) {
   const classes = useStyles();
   const isGroup = props.entity.kind.toLocaleLowerCase('en-US') === 'group';
-  const { primaryTitle: title } = useEntityPresentation(props.entity);
+  // owners-only stubs lack title/displayName; pass ref string so the presentation API fetches the full entity.
+  const entityOrRef: Entity | string =
+    props.mode === 'owners-only'
+      ? stringifyEntityRef(props.entity)
+      : props.entity;
+  const { primaryTitle: title } = useEntityPresentation(entityOrRef);
   return (
     <Box className={classes.fullWidth}>
       <FixedWidthFormControlLabel
@@ -144,8 +154,12 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
     [ownersParameter],
   );
 
+  // Query parameters may contain humanized refs (e.g. `guests` rather than
+  // `group:default/guests`), so they are normalized before being stored.
   const [selectedOwners, setSelectedOwners] = useState<string[]>(
-    queryParamOwners.length ? queryParamOwners : filters.owners?.values ?? [],
+    queryParamOwners.length
+      ? new EntityOwnerFilter(queryParamOwners).values
+      : filters.owners?.values ?? [],
   );
 
   const [{ value, loading }, handleFetch, cache] = useFetchEntities({
@@ -201,6 +215,15 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
           return o === v;
         }}
         getOptionLabel={o => {
+          if (mode === 'owners-only') {
+            // Stubs have no title; use string ref so entityPresentationSnapshot hits the API cache.
+            const ref = typeof o === 'string' ? o : stringifyEntityRef(o);
+            return entityPresentationSnapshot(
+              ref,
+              undefined,
+              entityPresentationApi,
+            ).primaryTitle;
+          }
           const entity =
             typeof o === 'string'
               ? cache.getEntity(o) ||
@@ -231,12 +254,19 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
         }}
         filterOptions={x => x}
         renderOption={(entity, { selected }) => {
-          return <RenderOptionLabel entity={entity} isSelected={selected} />;
+          return (
+            <RenderOptionLabel
+              entity={entity}
+              isSelected={selected}
+              mode={mode}
+            />
+          );
         }}
         name="owner-picker"
         onInputChange={(_e, inputValue) => {
           setText(inputValue);
         }}
+        ListboxComponent={VirtualizedListbox}
         ListboxProps={{
           onScroll: (e: MouseEvent) => {
             const element = e.currentTarget;

@@ -4,11 +4,14 @@ title: Templating Extensions
 description: Templating extensions system
 ---
 
-Backstage templating is powered by [Nunjucks][]. The basics:
+Backstage templating is powered by [Nunjitsu][], a secure template engine that
+supports a focused subset of [Nunjucks][] syntax. Use the Nunjucks templating
+documentation as a general syntax reference, and check the
+[Nunjitsu compatibility guide][] for the supported features.
 
 # Templating Filters
 
-The [filter][] is a critical mechanism for the rendering of Nunjucks templates,
+The [filter][] is a critical mechanism for rendering Scaffolder templates,
 providing a means of transforming values in a familiar [piped][] fashion.
 Templating filters are functions that help you transform data, extract specific
 information, and perform various operations in Scaffolder templates.
@@ -105,10 +108,10 @@ The `projectSlug` filter generates a project slug from a repository URL.
 
 # Templating Globals
 
-In addition to its powerful filtering functionality, the Nunjucks engine allows
-access from the template expression context to specified globally-accessible
-references. Backstage propagates this capability via the scaffolder backend
-plugin, which we shall soon see in action.
+In addition to its powerful filtering functionality, Nunjitsu allows access from
+the template expression context to specified globally-accessible references.
+Backstage propagates this capability via the scaffolder backend plugin, which we
+shall soon see in action.
 
 # Customizing the templating environment
 
@@ -124,7 +127,7 @@ be accelerated using the Backstage CLI.
 
 Start by using the `yarn backstage-cli new` command to generate a scaffolder module. This command sets up the necessary boilerplate code, providing a smooth start:
 
-```
+```shell-session
 $ yarn backstage-cli new
 ? What do you want to create?
   frontend-plugin - A new frontend plugin
@@ -140,7 +143,7 @@ When prompted, use the arrow keys to select the option to generate a `backend-pl
 Since we want to extend the Scaffolder backend, enter `scaffolder` when prompted for the ID of the plugin to extend.
 Next, enter the ID (name) of your module. This will be appended to the `scaffolder-backend-module-` prefix. The CLI will then generate the required files and directory structure, for example:
 
-```
+```text
 ? Enter the ID of the plugin [required] scaffolder
 ? Enter the ID of the module [required] foo-bar
   templating    plugins/scaffolder-backend-module-foo-bar ✔
@@ -153,7 +156,7 @@ Next, enter the ID (name) of your module. This will be appended to the `scaffold
 
 **Directory Structure**
 
-```
+```text
 plugins
 ├── README.md
 ├── scaffolder-backend-module-foo-bar
@@ -311,7 +314,7 @@ implementation function to make `times` optional? Code:
       ...,
       filter: (arg: string, substring: string, times?: number) => {
         if (times === undefined) {
-          // note that, in real life, simply calling this function directly with Nunjucks would suffice rather than implementing a filter:
+          // note that, in real life, calling a global function directly from the template would suffice rather than implementing a filter:
           return arg.includes(substring);
         }
         // original implementation follows
@@ -382,7 +385,7 @@ Our filter documentation may benefit from examples which we specify thus:
 ### Custom Global Function
 
 In case your template needs access to a value generated from a function not
-appropriately modeled as a filter, Nunjucks supports the direct invocation of
+appropriately modeled as a filter, Nunjitsu supports the direct invocation of
 [global functions][global-fn]. We might, for example, add to `init`:
 
 ```ts
@@ -514,6 +517,8 @@ specifying options to the scaffolder backend plugin's `createRouter` function
   - array of documented global functions and values as returned by the utility
     functions `createTemplateGlobalFunction` and `createTemplateGlobalValue`
 
+[nunjitsu]: https://github.com/Rugvip/nunjitsu
+[nunjitsu compatibility guide]: https://github.com/Rugvip/nunjitsu/blob/main/docs/compatibility.md
 [nunjucks]: https://mozilla.github.io/nunjucks
 [filter]: https://mozilla.github.io/nunjucks/templating.html#filters
 [global-fn]: https://mozilla.github.io/nunjucks/templating.html#global-functions

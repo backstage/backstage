@@ -36,7 +36,7 @@ const createGerritProject = async (
     projectName: string;
     parent: string;
     owner?: string;
-    description: string;
+    description?: string;
     defaultBranch: string;
   },
 ): Promise<void> => {
@@ -104,9 +104,11 @@ export function createPublishGerritAction(options: {
             description: 'Repository Location',
           }),
         description: z =>
-          z.string({
-            description: 'Repository Description',
-          }),
+          z
+            .string({
+              description: 'Repository Description',
+            })
+            .optional(),
         defaultBranch: z =>
           z
             .string({

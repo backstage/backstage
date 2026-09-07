@@ -259,6 +259,9 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     }
 
     const entityRefs = [options.recipients.entityRef].flat();
+    const metadataChannel = options.payload.metadata?.slackChannel as
+      | string
+      | undefined;
 
     const outbound: ChatPostMessageArguments[] = [];
     await Promise.all(
@@ -269,14 +272,18 @@ export class SlackNotificationProcessor implements NotificationProcessor {
           return;
         }
 
-        let channel;
-        try {
-          channel = await this.getSlackNotificationTarget(entityRef);
-        } catch (error) {
-          this.logger.error(
-            `Failed to get Slack channel for entity: ${toError(error).message}`,
-          );
-          return;
+        let channel = metadataChannel;
+        if (!channel) {
+          try {
+            channel = await this.getSlackNotificationTarget(entityRef);
+          } catch (error) {
+            this.logger.error(
+              `Failed to get Slack channel for entity: ${
+                toError(error).message
+              }`,
+            );
+            return;
+          }
         }
 
         if (!channel) {

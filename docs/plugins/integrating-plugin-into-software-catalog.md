@@ -4,7 +4,7 @@ title: Integrate into the Software Catalog
 description: How to integrate a plugin into software catalog
 ---
 
-:::caution Legacy Documentation
+:::caution[Legacy Documentation]
 
 This page describes integrating plugins into the Software Catalog using the **old frontend system** patterns (`EntitySwitch`, `EntityLayout`, `EntityLayout.Route`). For the new frontend system, entity page integrations are done using `EntityCardBlueprint` and `EntityContentBlueprint` — see [Common Extension Blueprints](../frontend-system/building-plugins/03-common-extension-blueprints.md).
 
@@ -26,7 +26,7 @@ should have a separate package in a folder, which represents your plugin.
 
 Example:
 
-```
+```shell-session
 $ yarn new
 # Select `frontend-plugin`
 > ? Enter an ID for the plugin [required] my-plugin

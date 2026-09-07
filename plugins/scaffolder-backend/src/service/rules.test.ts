@@ -364,6 +364,54 @@ describe('hasStringProperty', () => {
         ).toEqual(true);
       },
     );
+
+    it.each(['path', '[path]', '["path"]', "['path']"])(
+      'matches group paths regardless of casing for %s',
+      key => {
+        expect(
+          hasStringProperty.apply(
+            {
+              action: 'gitlab:group:access',
+              input: { path: 'ExAmPlE/TeAm' },
+            },
+            { key, value: 'example/team' },
+          ),
+        ).toEqual(true);
+      },
+    );
+
+    it.each([
+      ['gitlab:issues:create', 'projectId', 'Example/Project'],
+      ['github:repo:create', 'owner', 'Example'],
+      ['publish:github', 'repoName', 'Example'],
+      ['publish:bitbucketCloud', 'repoUrl', 'BitBucket.org?repo=Example'],
+      ['publish:bitbucketServer', 'repoUrl', 'BitBucket.example?repo=Team'],
+      ['github:group:access', 'path', 'Example/Team'],
+      ['bitbucketCloud:group:access', 'path', 'Example/Team'],
+      ['custom:gitlab:group:access', 'path', 'Example/Team'],
+    ])('matches %s identifiers for %s', (action, key, value) => {
+      expect(
+        hasStringProperty.apply(
+          { action, input: { [key]: value } },
+          { key, value: value.toLocaleLowerCase('en-US') },
+        ),
+      ).toEqual(true);
+    });
+
+    it.each([
+      ['publish:github:pull-request', 'path', 'MAIN'],
+      ['gitlab:issues:create', 'path', 'MAIN'],
+      ['gitlab:group:access', 'branchName', 'MAIN'],
+      ['publish:github:pull-request', 'branchName', 'MAIN'],
+      ['custom:action', 'owner', 'Example'],
+    ])('preserves case-sensitive %s values for %s', (action, key, value) => {
+      expect(
+        hasStringProperty.apply(
+          { action, input: { [key]: value } },
+          { key, value: value.toLocaleLowerCase('en-US') },
+        ),
+      ).toEqual(false);
+    });
   });
 });
 

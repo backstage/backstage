@@ -44,8 +44,14 @@ export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
   githubCredentialsProvider?: GithubCredentialsProvider;
+  requireScmUserCredentials?: boolean;
 }) {
-  const { integrations, config, githubCredentialsProvider } = options;
+  const {
+    integrations,
+    config,
+    githubCredentialsProvider,
+    requireScmUserCredentials,
+  } = options;
 
   return createTemplateAction({
     id: 'publish:github',
@@ -157,6 +163,7 @@ export function createPublishGithubAction(options: {
 
       const octokitOptions = await getOctokitOptions({
         integrations,
+        requireScmUserCredentials,
         credentialsProvider: githubCredentialsProvider,
         token: providedToken,
         host,

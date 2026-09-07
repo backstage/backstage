@@ -1,0 +1,9 @@
+.errorBox {
+  color: var(--bui-fg-danger-on-bg);
+  border: 1px solid var(--bui-border-danger);
+  border-radius: var(--bui-radius-2);
+}
+
+.errorText {
+  color: var(--bui-fg-danger-on-bg);
+}

@@ -858,6 +858,26 @@ describe('ElasticSearchSearchEngine', () => {
       elasticSearchQuerySpy.mockClear();
     });
 
+    it('should return empty results without querying when types is an empty array', async () => {
+      const elasticSearchQuerySpy = jest.spyOn(clientWrapper, 'search');
+
+      const result = await testSearchEngine.query({
+        term: 'testTerm',
+        filters: {},
+        types: [],
+      });
+
+      expect(result).toEqual({
+        results: [],
+        nextPageCursor: undefined,
+        previousPageCursor: undefined,
+        numberOfResults: undefined,
+      });
+      expect(elasticSearchQuerySpy).not.toHaveBeenCalled();
+
+      elasticSearchQuerySpy.mockClear();
+    });
+
     it('should throws missing index error', async () => {
       jest.spyOn(clientWrapper, 'search').mockRejectedValue({
         meta: {

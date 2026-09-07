@@ -29,6 +29,7 @@ import { BackendInitializer } from './BackendInitializer';
 import { mockServices } from '@backstage/backend-test-utils';
 import { BackendStartupError } from './BackendStartupError';
 import { createExtensionPointFactoryMiddleware } from './types';
+import { InputError } from '@backstage/errors';
 
 const baseFactories = [
   mockServices.rootLifecycle.factory(),
@@ -407,6 +408,199 @@ describe('BackendInitializer', () => {
     await expect(init.start()).rejects.toThrow(
       /^Feature loaders can only depend on root scoped services, but 'service1' is scoped to 'plugin'. Offending loader is created at '.*'$/,
     );
+  });
+
+  it('should report the first malformed installed feature field', async () => {
+    const init = new BackendInitializer(baseFactories);
+    init.add({
+      $$type: '@backstage/BackendFeature',
+      version: 'v1',
+      featureType: 'service',
+      service: {
+        $$type: '@backstage/ServiceRef',
+        id: 'test',
+        scope: 'plugin',
+      },
+      deps: { broken: undefined },
+      factory: async () => ({}),
+    } as any);
+    init.add(null as any);
+
+    const error = await init.start().catch(e => e);
+    expect(error).toBeInstanceOf(InputError);
+    expect(error.message).toBe(
+      'Invalid backend feature at service factory for "test".deps.broken, expected a service reference object, received undefined',
+    );
+  });
+
+  it('should identify malformed feature loader output', async () => {
+    const init = new BackendInitializer(baseFactories);
+    init.add(
+      createBackendFeatureLoader({
+        loader() {
+          return [
+            {
+              $$type: '@backstage/BackendFeature',
+              version: 'v1',
+              featureType: 'service',
+              service: {
+                $$type: '@backstage/ServiceRef',
+                id: 'loaded',
+                scope: 'plugin',
+              },
+              deps: { broken: undefined },
+              factory: async () => ({}),
+            },
+          ] as any;
+        },
+      }),
+    );
+
+    const error = await init.start().catch(e => e);
+    expect(error).toBeInstanceOf(InputError);
+    expect(error.message).toMatch(
+      /^Invalid backend feature at service factory for "loaded" \(returned by feature loader created at '.*', output\[0\]\)\.deps\.broken, expected a service reference object, received undefined$/,
+    );
+  });
+
+  it('should attribute malformed registration fields to the plugin', async () => {
+    const init = new BackendInitializer(baseFactories);
+    init.add({
+      $$type: '@backstage/BackendFeature',
+      version: 'v1',
+      featureType: 'registrations',
+      getRegistrations: () => [
+        {
+          type: 'plugin-v1.1',
+          pluginId: 'test',
+          extensionPoints: undefined,
+          connections: [],
+          init: { deps: {}, func: async () => {} },
+        },
+      ],
+    } as any);
+
+    const error = await init.start().catch(e => e);
+    expect(error).toBeInstanceOf(BackendStartupError);
+    const failure = error.result.plugins.find(
+      (plugin: { pluginId: string }) => plugin.pluginId === 'test',
+    )?.failure;
+    expect(failure?.error).toBeInstanceOf(InputError);
+    expect(failure?.error.message).toBe(
+      'Invalid backend feature at plugin "test".extensionPoints, expected an array, received undefined',
+    );
+    expect(failure?.allowed).toBe(false);
+  });
+
+  it('should permit attributable malformed registration fields', async () => {
+    const testInit = jest.fn(async () => {});
+    const init = new BackendInitializer([
+      ...baseFactories,
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            startup: {
+              plugins: {
+                catalog: { onPluginBootFailure: 'continue' },
+                test: {
+                  modules: {
+                    bad: { onPluginModuleBootFailure: 'continue' },
+                  },
+                },
+              },
+            },
+          },
+        },
+      }),
+    ]);
+    init.add(
+      createBackendPlugin({
+        pluginId: 'catalog',
+        register(reg) {
+          reg.registerInit({
+            deps: { broken: undefined as any },
+            async init() {},
+          });
+        },
+      }),
+    );
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'bad',
+        register(reg) {
+          reg.registerInit({
+            deps: { broken: undefined as any },
+            async init() {},
+          });
+        },
+      }),
+    );
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            init: testInit,
+          });
+        },
+      }),
+    );
+
+    const { result } = await init.start();
+
+    expect(testInit).toHaveBeenCalled();
+    expect(result.outcome).toBe('success');
+    const catalog = result.plugins.find(p => p.pluginId === 'catalog');
+    expect(catalog?.failure?.error).toBeInstanceOf(InputError);
+    expect(catalog?.failure).toMatchObject({
+      allowed: true,
+      error: {
+        message:
+          'Invalid backend feature at plugin "catalog".init.deps.broken, expected a service reference object, received undefined',
+      },
+    });
+    const test = result.plugins.find(p => p.pluginId === 'test');
+    expect(test?.failure).toBeUndefined();
+    expect(test?.modules).toEqual([
+      expect.objectContaining({
+        moduleId: 'bad',
+        failure: {
+          allowed: true,
+          error: expect.objectContaining({
+            message:
+              'Invalid backend feature at module "bad" for plugin "test".init.deps.broken, expected a service reference object, received undefined',
+          }),
+        },
+      }),
+    ]);
+  });
+
+  it('should accept legacy duck-typed features', async () => {
+    const ref = createServiceRef<{}>({ id: 'legacy' });
+    const service = createServiceFactory({
+      service: ref,
+      deps: {},
+      factory: async () => ({}),
+    }) as any;
+    delete service.featureType;
+
+    const pluginInit = jest.fn(async () => {});
+    const plugin = createBackendPlugin({
+      pluginId: 'legacy',
+      register(reg) {
+        reg.registerInit({ deps: { ref }, init: pluginInit });
+      },
+    }) as any;
+    delete plugin.featureType;
+
+    const init = new BackendInitializer(baseFactories);
+    init.add(service);
+    init.add(plugin);
+    await init.start();
+
+    expect(pluginInit).toHaveBeenCalled();
   });
 
   it('should initialize plugin scoped services with eager initialization', async () => {

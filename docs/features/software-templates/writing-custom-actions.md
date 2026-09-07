@@ -184,10 +184,8 @@ When the action `handler` is called, we provide you a `context` as the only
 argument. It looks like the following:
 
 - `ctx.baseUrl` - a string where the template is located
-- `ctx.checkpoint` - _Experimental_ allows to
-  implement [idempotency of the actions](https://github.com/backstage/backstage/tree/master/beps/0004-scaffolder-task-idempotency)
-  by not re-running the same function again if it was
-  executed successfully on the previous run.
+- `ctx.checkpoint` - allows you to implement [idempotent actions](https://github.com/backstage/backstage/tree/master/beps/0004-scaffolder-task-idempotency)
+  by skipping functions that already executed successfully on a previous run. Used with [task recovery](./configuration.md#task-recovery).
 - `ctx.logger` - a [LoggerService](../../backend-system/core-services/logger.md) instance for additional logging inside your action
 - `ctx.workspacePath` - a string of the working directory of the template run
 - `ctx.input` - an object which should match the `zod` schema provided in the
@@ -226,7 +224,7 @@ env.registerInit({
   })
 ```
 
-### Using Checkpoints in Custom Actions (Experimental)
+### Using Checkpoints in Custom Actions
 
 Idempotent action could be achieved via the usage of checkpoints, for example:
 

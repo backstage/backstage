@@ -21,12 +21,7 @@ import { useBgProvider, useBgConsumer, BgProvider } from '../useBg';
 import { resolveDefinitionProps, processUtilityProps } from './helpers';
 import { useAnalytics } from '../../analytics/useAnalytics';
 import { noopTracker } from '../../analytics/useAnalytics';
-import {
-  useResolvedPath,
-  useInRouterContext,
-  createPath,
-} from 'react-router-dom';
-import { isExternalLink } from '../../utils/linkUtils';
+import { useDefinitionNavigation } from './useDefinitionNavigation';
 import type {
   ComponentConfig,
   UseDefinitionOptions,
@@ -44,22 +39,19 @@ export function useDefinition<
 ): UseDefinitionResult<D, P> {
   const { breakpoint } = useBreakpoint();
 
-  let hrefResolvedProps = props;
-  const hasRouter = useInRouterContext();
-  if (hasRouter) {
-    const rawHref = (props as any).href;
-    const resolved = useResolvedPath(rawHref ?? '');
-    if (rawHref !== undefined && !isExternalLink(rawHref)) {
-      hrefResolvedProps = { ...props, href: createPath(resolved) } as P;
-    }
-  }
-
   // Resolve all props centrally — applies responsive values and defaults
   const { ownPropsResolved, restProps } = resolveDefinitionProps(
     definition,
-    hrefResolvedProps,
+    props,
     breakpoint,
   );
+
+  let navigation;
+  if (definition.navigation) {
+    // Component definitions are module constants, so this hook condition is
+    // stable for the lifetime of the component.
+    navigation = useDefinitionNavigation(definition.navigation);
+  }
 
   const dataAttributes: Record<string, string | undefined> = {};
 
@@ -148,5 +140,6 @@ export function useDefinition<
     dataAttributes,
     utilityStyle,
     ...(definition.analytics ? { analytics } : {}),
+    ...(definition.navigation ? { navigation } : {}),
   } as unknown as UseDefinitionResult<D, P>;
 }

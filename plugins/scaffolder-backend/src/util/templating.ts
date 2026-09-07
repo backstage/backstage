@@ -26,6 +26,12 @@ import {
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { JsonValue } from '@backstage/types';
 import { Schema } from 'jsonschema';
+import {
+  TemplateCapabilities,
+  TemplateFilter as NunjitsuTemplateFilter,
+  TemplateGlobal as NunjitsuTemplateGlobal,
+  TemplateValue as NunjitsuTemplateValue,
+} from 'nunjitsu';
 import { ZodType, z } from 'zod/v3';
 import zodToJsonSchema from 'zod-to-json-schema';
 
@@ -284,4 +290,31 @@ export function convertGlobalsToRecord(
       : (global as CreatedTemplateGlobalValue).value;
   }
   return result;
+}
+
+/** Adapts registered Backstage capabilities for reuse by Nunjitsu renderers. */
+export function collectTemplateCapabilities(options: {
+  filters?: Record<string, TemplateFilter>;
+  globals?: Record<string, TemplateGlobal>;
+}): TemplateCapabilities {
+  const filters: Record<string, NunjitsuTemplateFilter> = {};
+  for (const [name, filter] of Object.entries(options.filters ?? {})) {
+    filters[name] = (input, ...args) =>
+      filter(input as JsonValue, ...(args as JsonValue[])) as
+        | NunjitsuTemplateValue
+        | undefined;
+  }
+
+  const globals: Record<string, NunjitsuTemplateGlobal> = {};
+  for (const [name, global] of Object.entries(options.globals ?? {})) {
+    globals[name] =
+      typeof global === 'function'
+        ? (...args) =>
+            global(...(args as JsonValue[])) as
+              | NunjitsuTemplateValue
+              | undefined
+        : (global as NunjitsuTemplateGlobal);
+  }
+
+  return { filters, globals };
 }

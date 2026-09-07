@@ -11,7 +11,7 @@ The main concept is that routes, components, apis are now extensions. You can us
 
 ## Migrating the plugin
 
-:::note Note
+:::note
 
 Unless you are migrating a plugin that is only used within your own project, we recommend all plugins to keep support for the old system intact. The code added in these examples should be added to a new `src/alpha.tsx` entry point of your plugin.
 

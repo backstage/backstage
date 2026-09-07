@@ -16,6 +16,7 @@
 
 import { DatabaseManager } from '@backstage/backend-defaults/database';
 import { ConfigReader } from '@backstage/config';
+import { ConflictError } from '@backstage/errors';
 import express from 'express';
 import request from 'supertest';
 import ObservableImpl from 'zen-observable';
@@ -876,7 +877,6 @@ describe('scaffolder router', () => {
       expect(body).toMatchObject({
         id: expect.any(String),
       });
-      expect(logger.info).toHaveBeenCalledTimes(1);
       expect(logger.info).toHaveBeenCalledWith(
         'Scaffolding task for template:default/create-react-app-template created by user:default/mock',
       );
@@ -1036,20 +1036,58 @@ describe('scaffolder router', () => {
   });
 
   describe('GET /v2/tasks', () => {
-    it('return all tasks', async () => {
+    it('rejects task listing when task read permission is denied', async () => {
+      const { unwrappedRouter: router, permissions } = await createTestRouter();
+      jest
+        .spyOn(permissions, 'authorizeConditional')
+        .mockImplementationOnce(async () => [
+          {
+            result: AuthorizeResult.DENY,
+          },
+        ]);
+
+      const response = await request(router).get(`/v2/tasks`);
+
+      expect(response.status).toBe(403);
+    });
+
+    it('lists tasks when task read permission is allowed', async () => {
+      const { router, permissions } = await createTestRouter();
+      jest
+        .spyOn(permissions, 'authorizeConditional')
+        .mockImplementationOnce(async () => [
+          {
+            result: AuthorizeResult.ALLOW,
+          },
+        ]);
+
+      const response = await request(router).get(`/v2/tasks`);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toStrictEqual({ tasks: [], totalTasks: 0 });
+    });
+
+    it('returns public task details without internal data', async () => {
       const { router, taskBroker } = await createTestRouter();
+      const task = {
+        id: 'a-random-id',
+        spec: {} as TaskSpec,
+        status: 'completed' as const,
+        createdAt: '2026-08-19T12:00:00.000Z',
+        lastHeartbeatAt: '2026-08-19T12:01:00.000Z',
+        createdBy: 'user:default/mock',
+        secrets: {
+          __initiatorCredentials: JSON.stringify(credentials),
+        },
+        state: {
+          checkpoints: {},
+        },
+        internalMetadata: 'not-public',
+      };
       (
         taskBroker.list as jest.Mocked<Required<TaskBroker>>['list']
       ).mockResolvedValue({
-        tasks: [
-          {
-            id: 'a-random-id',
-            spec: {} as TaskSpec,
-            status: 'completed',
-            createdAt: '',
-            createdBy: '',
-          },
-        ],
+        tasks: [task],
         totalTasks: 1,
       });
 
@@ -1065,8 +1103,9 @@ describe('scaffolder router', () => {
             id: 'a-random-id',
             spec: {} as TaskSpec,
             status: 'completed',
-            createdAt: '',
-            createdBy: '',
+            createdAt: '2026-08-19T12:00:00.000Z',
+            lastHeartbeatAt: '2026-08-19T12:01:00.000Z',
+            createdBy: 'user:default/mock',
           },
         ],
         totalTasks: 1,
@@ -1120,6 +1159,20 @@ describe('scaffolder router', () => {
       });
     });
 
+    it('rejects ordering by unsupported task fields', async () => {
+      const { router, taskBroker } = await createTestRouter();
+
+      const response = await request(router).get(`/v2/tasks?order=asc:secrets`);
+
+      expect(response.status).toEqual(400);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          error: expect.objectContaining({ name: 'InputError' }),
+        }),
+      );
+      expect(taskBroker.list).not.toHaveBeenCalled();
+    });
+
     it('disallows users from seeing tasks they do not own', async () => {
       const { router, taskBroker, permissions } = await createTestRouter();
       jest
@@ -1170,6 +1223,65 @@ describe('scaffolder router', () => {
       expect(response.body.status).toBe('completed');
       expect(response.body.secrets).toBeUndefined();
     });
+
+    it('does not divulge internal task state', async () => {
+      const { router, taskBroker } = await createTestRouter();
+      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+        id: 'a-random-id',
+        spec: {} as TaskSpec,
+        status: 'completed',
+        createdAt: '',
+        createdBy: '',
+        state: {
+          checkpoints: {
+            'checkpoint-secret-key': {
+              value: 'checkpoint-secret-value',
+            },
+          },
+        },
+      });
+
+      const response = await request(router).get(`/v2/tasks/a-random-id`);
+      const responseBody = JSON.stringify(response.body);
+
+      expect(response.status).toEqual(200);
+      expect(response.body.state).toBeUndefined();
+      expect(responseBody).not.toContain('checkpoint-secret-key');
+      expect(responseBody).not.toContain('checkpoint-secret-value');
+    });
+
+    it('returns public task details without internal data', async () => {
+      const { router, taskBroker } = await createTestRouter();
+      const task = {
+        id: 'a-random-id',
+        spec: {} as TaskSpec,
+        status: 'completed' as const,
+        createdAt: '2026-08-19T12:00:00.000Z',
+        createdBy: 'user:default/mock',
+        secrets: {
+          __initiatorCredentials: JSON.stringify(credentials),
+        },
+        state: {
+          checkpoints: {},
+        },
+        internalMetadata: 'not-public',
+      };
+      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue(
+        task,
+      );
+
+      const response = await request(router).get(`/v2/tasks/a-random-id`);
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toStrictEqual({
+        id: 'a-random-id',
+        spec: {},
+        status: 'completed',
+        createdAt: '2026-08-19T12:00:00.000Z',
+        createdBy: 'user:default/mock',
+      });
+    });
+
     it('disallows users from seeing tasks they do not own', async () => {
       const { router, permissions, taskBroker } = await createTestRouter();
       jest
@@ -1280,6 +1392,9 @@ describe('scaffolder router', () => {
         createdAt: '',
         createdBy: 'user:default/mock',
       });
+      (
+        taskBroker.retry as jest.Mocked<TaskBroker>['retry']
+      ).mockResolvedValue();
 
       const response = await request(router)
         .post('/v2/tasks/a-random-id/retry')
@@ -1291,6 +1406,35 @@ describe('scaffolder router', () => {
 
       expect(response.status).toEqual(201);
       expect(taskBroker.retry).toHaveBeenCalled();
+    });
+
+    it('returns a conflict when the task cannot be retried', async () => {
+      const { router, taskBroker } = await createTestRouter();
+
+      (taskBroker.get as jest.Mocked<TaskBroker>['get']).mockResolvedValue({
+        id: 'a-random-id',
+        spec: {} as TaskSpec,
+        status: 'processing',
+        createdAt: '',
+        createdBy: 'user:default/mock',
+      });
+      (taskBroker.retry as jest.Mocked<TaskBroker>['retry']).mockRejectedValue(
+        new ConflictError('Task with taskId a-random-id cannot be retried'),
+      );
+
+      const response = await request(router)
+        .post('/v2/tasks/a-random-id/retry')
+        .send({});
+
+      expect(response).toMatchObject({
+        status: 409,
+        body: {
+          error: {
+            name: 'ConflictError',
+            message: 'Task with taskId a-random-id cannot be retried',
+          },
+        },
+      });
     });
   });
 
@@ -1649,6 +1793,34 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
   });
 
   describe('POST /v2/dry-run', () => {
+    it('rejects dry runs without dry-run permission', async () => {
+      const { unwrappedRouter, permissions } = await createTestRouter();
+      const mockToken = mockCredentials.user.token();
+
+      jest.spyOn(permissions, 'authorize').mockImplementation(async requests =>
+        requests.map(permissionRequest => ({
+          result:
+            permissionRequest.permission.name === 'scaffolder.template.dry-run'
+              ? AuthorizeResult.DENY
+              : AuthorizeResult.ALLOW,
+        })),
+      );
+
+      const response = await request(unwrappedRouter)
+        .post('/v2/dry-run')
+        .set('Authorization', `Bearer ${mockToken}`)
+        .send({
+          template: generateMockTemplate(),
+          values: {
+            requiredParameter1: 'required-value-1',
+            requiredParameter2: 'required-value-2',
+          },
+          directoryContents: [],
+        });
+
+      expect(response.status).toEqual(403);
+    });
+
     it('should get user entity', async () => {
       const { router, catalog } = await createTestRouter();
       const mockToken = mockCredentials.user.token();

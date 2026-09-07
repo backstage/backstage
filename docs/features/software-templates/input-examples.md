@@ -342,7 +342,9 @@ parameters:
 
 ## Conditionally set parameters
 
-The `if` keyword within the parameter uses [nunjucks templating](https://mozilla.github.io/nunjucks/templating.html#if). The `not` keyword is unavailable; instead, use javascript equality.
+The inline `if` expression uses
+[Nunjitsu's supported Nunjucks-compatible syntax](https://github.com/Rugvip/nunjitsu/blob/main/docs/compatibility.md#supported-model).
+The `not` keyword is unavailable; instead, use JavaScript equality.
 
 ```yaml
 spec:

@@ -161,7 +161,7 @@ If you need to authenticate against an Azure DevOps organization in a different 
 - [Create a multi-tenant application in Entra ID](https://learn.microsoft.com/en-us/entra/identity-platform/single-and-multi-tenant-apps).
 - [Convert the existing application to a multi-tenant application](https://learn.microsoft.com/en-gb/entra/identity-platform/howto-convert-app-to-be-multi-tenant#update-registration-to-be-multitenant).
 
-:::note Note
+:::note
 
 Make sure that your application requests at least one Graph API permission. This is required to be able to install the application in another tenant. The least privileged permission you can request is the [`email` permission](https://learn.microsoft.com/en-us/graph/permissions-reference#email) with type `Delegated`. This allows the application to read the e-mail address of the signed-in user, but without the [`openid` permission](https://learn.microsoft.com/en-us/graph/permissions-reference#openid) users cannot actually sign in.
 
@@ -189,7 +189,7 @@ integrations:
 
 Where `${APP_REGISTRATION_CLIENT_ID}` is the client ID of the multi-tenant app registration in you created in your own tenant, and `${OTHER_TENANT_ID}` is the tenant ID of the other tenant where you .
 
-:::note Note
+:::note
 
 The example above uses a [system-assigned managed identity to generate the client assertion](#using-a-system-assigned-managed-identity-to-generate-the-client-assertion). You can also use a [user-assigned managed identity to generate the client assertion](#using-a-user-assigned-managed-identity-to-generate-the-client-assertion) or a client secret to authenticate for the application.
 
@@ -266,7 +266,7 @@ The `credentials` element is an array where each entry is a structure with exact
 - For personal access token:
   - `personalAccessToken`: The personal access token
 
-:::note Note
+:::note
 
 - You cannot use a service principal or managed identity for Azure DevOps Server (on-premises) organizations
 - You can only use a service principal or managed identity for Microsoft Entra ID (formerly Azure Active Directory) backed Azure DevOps organizations

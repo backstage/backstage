@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { z } from 'zod/v4';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
 import { coreExtensionData, createExtensionBlueprint } from '../wiring';
 import { ExtensionBoundary } from '../components';
+import { optionalStringSchema } from '../schema/optionalStringSchema';
 
 /**
  * Creates extensions that are sub-page React components attached to a parent page.
@@ -52,8 +52,8 @@ export const SubPageBlueprint = createExtensionBlueprint({
     coreExtensionData.icon.optional(),
   ],
   configSchema: {
-    path: z.string().optional(),
-    title: z.string().optional(),
+    path: optionalStringSchema,
+    title: optionalStringSchema,
   },
   *factory(
     params: {

@@ -35,6 +35,19 @@ jobs:
               return;
             }
 
+            const reviews = await github.paginate(github.rest.pulls.listReviews, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+            });
+            const hasActiveApproval = reviews.some(
+              r => r.user.login === 'backstage-service' && r.state === 'APPROVED'
+            );
+            if (hasActiveApproval) {
+              console.log("Already approved by backstage-service, skipping");
+              return;
+            }
+
             await github.rest.pulls.createReview({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -43,7 +56,7 @@ jobs:
             });
 
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 2
           ref: ${{ github.head_ref }}

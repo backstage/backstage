@@ -224,6 +224,7 @@ export const kubernetesPlugin = createBackendPlugin({
         permissions: coreServices.permissions,
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
+        auditor: coreServices.auditor,
       },
       async init({
         http,
@@ -234,6 +235,7 @@ export const kubernetesPlugin = createBackendPlugin({
         permissions,
         auth,
         httpAuth,
+        auditor,
       }) {
         // TODO: this could do with a cleanup and push some of this initialization somewhere else
         if (config.has('kubernetes')) {
@@ -265,6 +267,7 @@ export const kubernetesPlugin = createBackendPlugin({
             discovery,
             auth,
             httpAuth,
+            auditor,
             authStrategyMap: Object.fromEntries(authStrategyMap.entries()),
             fetcher,
             clusterSupplier,

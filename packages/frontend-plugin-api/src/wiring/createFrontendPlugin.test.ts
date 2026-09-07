@@ -25,6 +25,7 @@ import { createExtensionDataRef } from './createExtensionDataRef';
 import { coreExtensionData } from './coreExtensionData';
 import { mockApis, renderWithEffects } from '@backstage/test-utils';
 import { createExtensionInput } from './createExtensionInput';
+import { z } from 'zod/v4';
 
 const nameExtensionDataRef = createExtensionDataRef<string>().with({
   id: 'name',
@@ -43,10 +44,8 @@ const Extension2 = createExtension({
   name: '2',
   attachTo: { id: 'test/output', input: 'names' },
   output: [nameExtensionDataRef],
-  config: {
-    schema: {
-      name: z => z.string().default('extension-2'),
-    },
+  configSchema: {
+    name: z.string().default('extension-2'),
   },
   factory({ config }) {
     return [nameExtensionDataRef(config.name)];
@@ -75,10 +74,8 @@ const Child = createExtension({
   name: 'child',
   attachTo: { id: 'test/3', input: 'addons' },
   output: [nameExtensionDataRef],
-  config: {
-    schema: {
-      name: z => z.string().default('child'),
-    },
+  configSchema: {
+    name: z.string().default('child'),
   },
   factory({ config }) {
     return [nameExtensionDataRef(config.name)];
@@ -89,10 +86,8 @@ const Child2 = createExtension({
   name: 'child2',
   attachTo: { id: 'test/3', input: 'addons' },
   output: [nameExtensionDataRef],
-  config: {
-    schema: {
-      name: z => z.string().default('child2'),
-    },
+  configSchema: {
+    name: z.string().default('child2'),
   },
   factory({ config }) {
     return [nameExtensionDataRef(config.name)];

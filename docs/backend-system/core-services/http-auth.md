@@ -61,7 +61,7 @@ The default is to accept both service and user credentials (excluding limited
 access), but in the example above, any attempt to call this endpoint with
 service credentials will result in an Unauthorized error being thrown.
 
-:::note Note
+:::note
 
 You don't need to call `httpAuth.credentials` _just_ to ensure that incoming
 credentials are valid in the first place; only use this method if you actually
@@ -93,7 +93,7 @@ Due to the above, we do not document the `httpAuth.issueUserCookie` method here.
 
 ## Configuring the service
 
-:::note Note
+:::note
 
 The `httpAuth` service is not suitable for having its implementation replaced
 entirely in your private repo. If you desire additional service auth related

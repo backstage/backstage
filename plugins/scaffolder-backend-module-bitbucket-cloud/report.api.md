@@ -15,6 +15,7 @@ export default bitbucketCloudModule;
 // @public
 export const createBitbucketPipelinesRunAction: (options: {
   integrations: ScmIntegrationRegistry;
+  requireScmUserCredentials?: boolean;
 }) => TemplateAction<
   {
     workspace: string;
@@ -75,6 +76,7 @@ export const createBitbucketPipelinesRunAction: (options: {
 export function createPublishBitbucketCloudAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
+  requireScmUserCredentials?: boolean;
 }): TemplateAction<
   {
     repoUrl: string;
@@ -98,6 +100,7 @@ export function createPublishBitbucketCloudAction(options: {
 export function createPublishBitbucketCloudPullRequestAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
+  requireScmUserCredentials?: boolean;
 }): TemplateAction<
   {
     repoUrl: string;

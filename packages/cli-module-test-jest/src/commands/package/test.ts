@@ -70,14 +70,6 @@ export default async ({ args }: CliCommandContext) => {
     process.env.TZ = 'UTC';
   }
 
-  // Unless the user explicitly toggles node-snapshot, default to provide --no-node-snapshot to reduce number of steps to run scaffolder
-  //  on Node LTS.
-  if (!process.env.NODE_OPTIONS?.includes('--node-snapshot')) {
-    process.env.NODE_OPTIONS = `${
-      process.env.NODE_OPTIONS ? `${process.env.NODE_OPTIONS} ` : ''
-    }--no-node-snapshot`;
-  }
-
   // Because of the ongoing migration to v30 of jest, jest is no longer hard-depended to allow
   // opt-in migration. Users instead need to add jest as a devDependency themselves and specify
   // the version they want. This prints a helpful error message if jest is not found, i.e. they

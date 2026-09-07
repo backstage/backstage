@@ -1,5 +1,11 @@
 # @backstage/filter-predicates
 
+## 0.1.5-next.0
+
+### Patch Changes
+
+- 6dcb08a: Reduced the frontend bundle size by letting bundlers tree-shake zod, which previously pulled every zod locale into the bundle. Takes effect on zod 4.5.0 and newer.
+
 ## 0.1.4
 
 ### Patch Changes

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { screen, fireEvent } from '@testing-library/react';
 import { mockApis, TestApiProvider } from '@backstage/frontend-test-utils';
 import {
@@ -22,6 +22,8 @@ import {
   createRouteRef,
   createExternalRouteRef,
   useRouteRef,
+  identityApiRef,
+  useApi,
 } from '@backstage/frontend-plugin-api';
 import { Routes, Route } from 'react-router-dom';
 import { renderInTestApp } from './renderInTestApp';
@@ -148,5 +150,55 @@ describe('renderInTestApp', () => {
     });
 
     expect(screen.getByText('Link: /items/test')).toBeInTheDocument();
+  });
+
+  describe('identity api', () => {
+    const IdentityPage = () => {
+      const identityApi = useApi(identityApiRef);
+      const [userEntityRef, setUserEntityRef] = useState<string>();
+
+      useEffect(() => {
+        identityApi
+          .getBackstageIdentity()
+          .then(identity => setUserEntityRef(identity.userEntityRef));
+      }, [identityApi]);
+
+      return <div>{userEntityRef ?? 'Loading...'}</div>;
+    };
+
+    it('should use the overridden identity API instead of the default proxy', async () => {
+      renderInTestApp(<IdentityPage />, {
+        apis: [
+          mockApis.identity({
+            userEntityRef: 'user:default/i-just-made-this-up',
+          }),
+        ],
+      });
+
+      expect(
+        await screen.findByText('user:default/i-just-made-this-up'),
+      ).toBeInTheDocument();
+    });
+
+    it('should render with test user entity when no custom value provided', async () => {
+      renderInTestApp(<IdentityPage />, {
+        apis: [mockApis.identity()],
+      });
+
+      expect(await screen.findByText('user:default/test')).toBeInTheDocument();
+    });
+
+    it('should not render guest user entity when custom identity is provided', async () => {
+      renderInTestApp(<IdentityPage />, {
+        apis: [
+          mockApis.identity({
+            userEntityRef: 'user:default/i-just-made-this-up',
+          }),
+        ],
+      });
+
+      await screen.findByText('user:default/i-just-made-this-up');
+      expect(screen.queryByText('user:default/guest')).not.toBeInTheDocument();
+    });
   });
 });

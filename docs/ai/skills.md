@@ -1,6 +1,6 @@
 ---
 id: skills
-title: AI Skills
+title: Published skills
 description: Reusable AI skills for common Backstage development tasks.
 ---
 

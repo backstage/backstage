@@ -95,6 +95,15 @@ const useStyles = makeStyles((theme: Theme) =>
         cursor: 'move',
       },
     },
+    layoutLabel: {
+      position: 'absolute',
+      bottom: 4,
+      left: 8,
+      fontSize: '0.7rem',
+      color: theme.palette.text.disabled,
+      pointerEvents: 'none',
+      zIndex: 1,
+    },
   }),
 );
 
@@ -446,14 +455,19 @@ export const CustomHomepageGrid = (props: CustomHomepageGridProps) => {
                 <widget.component.type {...widgetProps} />
               </ErrorBoundary>
               {editMode && (
-                <WidgetSettingsOverlay
-                  id={l.i}
-                  widget={widget}
-                  handleRemove={handleRemove}
-                  handleSettingsSave={handleSettingsSave}
-                  settings={w.settings}
-                  deletable={w.deletable}
-                />
+                <>
+                  <Typography variant="caption" className={styles.layoutLabel}>
+                    column: {l.x}, row: {l.y}, width: {l.w}, height: {l.h}
+                  </Typography>
+                  <WidgetSettingsOverlay
+                    id={l.i}
+                    widget={widget}
+                    handleRemove={handleRemove}
+                    handleSettingsSave={handleSettingsSave}
+                    settings={w.settings}
+                    deletable={w.deletable}
+                  />
+                </>
               )}
             </div>
           );

@@ -71,8 +71,13 @@ export type ActionsRegistryActionOptions<
   examples?: Array<ActionsRegistryActionExample<TInputSchema, TOutputSchema>>;
   visibilityPermission?: BasicPermission;
   attributes?: {
+    /**
+     * Whether the action may perform destructive updates. Defaults to `false`
+     * when `readOnly` is `true`, and `true` otherwise.
+     */
     destructive?: boolean;
     idempotent?: boolean;
+    /** Whether the action only reads from its environment. Defaults to `false`. */
     readOnly?: boolean;
   };
   action: (

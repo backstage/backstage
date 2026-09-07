@@ -35,7 +35,10 @@ import { version as backendDefaults } from '../../../backend-defaults/package.js
 import { version as backendPluginApi } from '../../../backend-plugin-api/package.json';
 import { version as backendTestUtils } from '../../../backend-test-utils/package.json';
 import { version as catalogClient } from '../../../catalog-client/package.json';
+import { version as catalogModel } from '../../../catalog-model/package.json';
 import { version as cli } from '../../../cli/package.json';
+import { version as cliCommon } from '../../../cli-common/package.json';
+import { version as cliNode } from '../../../cli-node/package.json';
 import { version as config } from '../../../config/package.json';
 import { version as coreAppApi } from '../../../core-app-api/package.json';
 import { version as coreComponents } from '../../../core-components/package.json';
@@ -50,18 +53,36 @@ import { version as testUtils } from '../../../test-utils/package.json';
 import { version as theme } from '../../../theme/package.json';
 import { version as types } from '../../../types/package.json';
 import { version as ui } from '../../../ui/package.json';
+import { version as appBackend } from '../../../../plugins/app-backend/package.json';
 import { version as authBackend } from '../../../../plugins/auth-backend/package.json';
 import { version as authBackendModuleGuestProvider } from '../../../../plugins/auth-backend-module-guest-provider/package.json';
+import { version as catalogBackend } from '../../../../plugins/catalog-backend/package.json';
 import { version as catalogNode } from '../../../../plugins/catalog-node/package.json';
+import { version as eventsBackend } from '../../../../plugins/events-backend/package.json';
+import { version as kubernetesBackend } from '../../../../plugins/kubernetes-backend/package.json';
+import { version as notificationsBackend } from '../../../../plugins/notifications-backend/package.json';
+import { version as permissionBackend } from '../../../../plugins/permission-backend/package.json';
+import { version as permissionCommon } from '../../../../plugins/permission-common/package.json';
+import { version as permissionNode } from '../../../../plugins/permission-node/package.json';
+import { version as proxyBackend } from '../../../../plugins/proxy-backend/package.json';
+import { version as scaffolderBackend } from '../../../../plugins/scaffolder-backend/package.json';
 import { version as scaffolderNode } from '../../../../plugins/scaffolder-node/package.json';
 import { version as scaffolderNodeTestUtils } from '../../../../plugins/scaffolder-node-test-utils/package.json';
+import { version as scaffolderReact } from '../../../../plugins/scaffolder-react/package.json';
+import { version as searchBackend } from '../../../../plugins/search-backend/package.json';
+import { version as searchBackendNode } from '../../../../plugins/search-backend-node/package.json';
+import { version as searchCommon } from '../../../../plugins/search-common/package.json';
+import { version as techdocsBackend } from '../../../../plugins/techdocs-backend/package.json';
 
 export const packageVersions: Record<string, string> = {
   '@backstage/backend-defaults': backendDefaults,
   '@backstage/backend-plugin-api': backendPluginApi,
   '@backstage/backend-test-utils': backendTestUtils,
   '@backstage/catalog-client': catalogClient,
+  '@backstage/catalog-model': catalogModel,
   '@backstage/cli': cli,
+  '@backstage/cli-common': cliCommon,
+  '@backstage/cli-node': cliNode,
   '@backstage/config': config,
   '@backstage/core-app-api': coreAppApi,
   '@backstage/core-components': coreComponents,
@@ -78,10 +99,25 @@ export const packageVersions: Record<string, string> = {
   '@backstage/ui': ui,
   '@backstage/plugin-scaffolder-node': scaffolderNode,
   '@backstage/plugin-scaffolder-node-test-utils': scaffolderNodeTestUtils,
+  '@backstage/plugin-scaffolder-react': scaffolderReact,
+  '@backstage/plugin-app-backend': appBackend,
   '@backstage/plugin-auth-backend': authBackend,
   '@backstage/plugin-auth-backend-module-guest-provider':
     authBackendModuleGuestProvider,
+  '@backstage/plugin-catalog-backend': catalogBackend,
   '@backstage/plugin-catalog-node': catalogNode,
+  '@backstage/plugin-events-backend': eventsBackend,
+  '@backstage/plugin-kubernetes-backend': kubernetesBackend,
+  '@backstage/plugin-notifications-backend': notificationsBackend,
+  '@backstage/plugin-permission-backend': permissionBackend,
+  '@backstage/plugin-permission-common': permissionCommon,
+  '@backstage/plugin-permission-node': permissionNode,
+  '@backstage/plugin-proxy-backend': proxyBackend,
+  '@backstage/plugin-scaffolder-backend': scaffolderBackend,
+  '@backstage/plugin-search-backend': searchBackend,
+  '@backstage/plugin-search-backend-node': searchBackendNode,
+  '@backstage/plugin-search-common': searchCommon,
+  '@backstage/plugin-techdocs-backend': techdocsBackend,
 };
 
 export function createPackageVersionProvider(
@@ -90,7 +126,7 @@ export function createPackageVersionProvider(
     preferBackstageProtocol?: boolean;
   },
 ) {
-  return (name: string, versionHint?: string): string => {
+  return (name: string, versionHint?: string): string | undefined => {
     const packageVersion = packageVersions[name];
 
     // 1) workspace precedence (existing logic) - check this first
@@ -110,7 +146,7 @@ export function createPackageVersionProvider(
     // 3) fallback to current npm resolution
     const targetVersion = versionHint || packageVersion;
     if (!targetVersion) {
-      throw new Error(`No version available for package ${name}`);
+      return undefined;
     }
 
     const validRanges = lockfileEntries?.filter(entry =>

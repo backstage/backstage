@@ -627,6 +627,58 @@ describe.each(databases.eachSupportedId())(
         });
       });
 
+      it('ignores location.moved for untracked locations', async () => {
+        const { store, knex, connection } = await createLocationStore();
+        expect(subscriber).not.toBeUndefined();
+
+        // Prepare
+        const untrackedTarget =
+          'https://github.com/backstage/demo/blob/master/untracked/catalog-info.yaml';
+        const trackedTarget =
+          'https://github.com/backstage/other/blob/master/folder/catalog-info.yaml';
+
+        await store.createLocation({
+          type: 'url',
+          target: trackedTarget,
+        });
+
+        // Act
+        await subscriber!.onEvents([
+          {
+            type: 'location.moved',
+            fromUrl: untrackedTarget,
+            toUrl:
+              'https://github.com/backstage/demo/blob/master/new-location/catalog-info.yaml',
+          },
+        ]);
+
+        // Verify
+        await waitFor(async () => {
+          await expect(
+            knex<DbLocationsRow>('locations')
+              .where('type', 'url')
+              .orderBy('target', 'asc'),
+          ).resolves.toEqual([
+            {
+              id: expect.any(String),
+              type: 'url',
+              target: trackedTarget,
+              location_entity_ref: expect.any(String),
+            },
+          ]);
+        });
+
+        expect(connection.applyMutation).not.toHaveBeenCalledWith(
+          expect.objectContaining({
+            added: expect.arrayContaining([
+              expect.objectContaining({
+                locationKey: expect.stringContaining('new-location'),
+              }),
+            ]),
+          }),
+        );
+      });
+
       it('handles repository.deleted', async () => {
         const { store, knex, connection } = await createLocationStore();
         expect(subscriber).not.toBeUndefined();

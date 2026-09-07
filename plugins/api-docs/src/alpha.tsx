@@ -32,6 +32,7 @@ import { defaultDefinitionWidgets } from './components/ApiDefinitionCard';
 import { rootRoute, registerComponentRouteRef } from './routes';
 import { apiDocsConfigRef } from './config';
 import { AppIcon } from '@backstage/core-components';
+import { z } from 'zod';
 
 import {
   EntityCardBlueprint,
@@ -56,12 +57,9 @@ const apiDocsConfigApi = ApiBlueprint.make({
 });
 
 const apiDocsExplorerPage = PageBlueprint.makeWithOverrides({
-  config: {
-    schema: {
-      // Omitting columns and actions for now as their types are too complex to map to zod
-      initiallySelectedFilter: z =>
-        z.enum(['owned', 'starred', 'all']).optional(),
-    },
+  configSchema: {
+    // Omitting columns and actions for now as their types are too complex to map to zod
+    initiallySelectedFilter: z.enum(['owned', 'starred', 'all']).optional(),
   },
   factory(originalFactory, { config }) {
     return originalFactory({

@@ -31,14 +31,14 @@ troubleshoot MkDocs build issues locally. Note this requires you have Docker
 available to launch images. First, `git clone` the target repository locally,
 then in the root of the repository, run:
 
-```
+```shell
 npx @techdocs/cli serve
 ```
 
 For example, if you have forgotten to put an MkDocs configuration file in your
 repo, the resulting error will be:
 
-```
+```log
 npx: installed 278 in 9.089s
 [techdocs-preview-bundle] Running local version of Backstage at http://localhost:3000
 INFO    -  Building documentation...
@@ -49,7 +49,7 @@ Config file '/content/mkdocs.yml' does not exist.
 When it works, a local copy of both Backstage and your site will be launched
 locally:
 
-```
+```log
 npx: installed 278 in 9.682s
 [techdocs-preview-bundle] Running local version of Backstage at http://localhost:3000
 INFO    -  Building documentation...

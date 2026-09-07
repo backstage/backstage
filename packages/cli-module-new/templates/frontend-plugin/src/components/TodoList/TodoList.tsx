@@ -11,6 +11,7 @@ const columns: ColumnConfig<TodoItem>[] = [
   {
     id: 'title',
     label: 'Title',
+    isRowHeader: true,
     cell: item => <CellText title={item.title} />,
   },
   {

@@ -280,9 +280,53 @@ export function DependencyGraph<NodeData, EdgeData>(
   );
   const [graphNodes, setGraphNodes] = useState<string[]>([]);
   const [graphEdges, setGraphEdges] = useState<dagre.Edge[]>([]);
+  const [settled, setSettled] = useState(false);
+  const [transitionsReady, setTransitionsReady] = useState(false);
+  const settledRef = useRef(false);
+  const pendingInitialFlush = useRef(false);
+  const measuredLayoutCount = useRef(0);
+
+  useEffect(() => {
+    if (settled && !transitionsReady) {
+      const frame = requestAnimationFrame(() => {
+        setTransitionsReady(true);
+      });
+      return () => cancelAnimationFrame(frame);
+    }
+    return undefined;
+  }, [settled, transitionsReady]);
+
+  // Fallback: if getBBox() returns zero dimensions (e.g. in jsdom or hidden
+  // containers), setNode is never called and the normal settlement path never
+  // triggers. This timeout ensures the graph still becomes visible.
+  useEffect(() => {
+    if (graphNodes.length > 0 && !settledRef.current) {
+      const timeout = setTimeout(() => {
+        if (!settledRef.current) {
+          settledRef.current = true;
+          setSettled(true);
+        }
+      }, 500);
+      return () => clearTimeout(timeout);
+    }
+    return undefined;
+  }, [graphNodes]);
 
   const maxWidth = Math.max(graphWidth, containerWidth);
   const maxHeight = Math.max(graphHeight, containerHeight);
+
+  const dimensionsRef = useRef({
+    containerWidth,
+    containerHeight,
+    maxWidth,
+    maxHeight,
+  });
+  dimensionsRef.current = {
+    containerWidth,
+    containerHeight,
+    maxWidth,
+    maxHeight,
+  };
 
   const [_measureRef] = useMeasure();
   const measureRef = once(_measureRef);
@@ -314,18 +358,19 @@ export function DependencyGraph<NodeData, EdgeData>(
               .zoom<SVGSVGElement, null>()
               .scaleExtent([1, Infinity])
               .on('zoom', event => {
+                const dims = dimensionsRef.current;
                 event.transform.x = Math.min(
                   0,
                   Math.max(
                     event.transform.x,
-                    maxWidth - maxWidth * event.transform.k,
+                    dims.maxWidth - dims.maxWidth * event.transform.k,
                   ),
                 );
                 event.transform.y = Math.min(
                   0,
                   Math.max(
                     event.transform.y,
-                    maxHeight - maxHeight * event.transform.k,
+                    dims.maxHeight - dims.maxHeight * event.transform.k,
                   ),
                 );
                 workspace.attr('transform', event.transform);
@@ -341,20 +386,21 @@ export function DependencyGraph<NodeData, EdgeData>(
 
         const { width: newContainerWidth, height: newContainerHeight } =
           root.getBoundingClientRect();
+        const dims = dimensionsRef.current;
         if (
-          containerWidth !== newContainerWidth &&
-          newContainerWidth <= maxWidth
+          dims.containerWidth !== newContainerWidth &&
+          newContainerWidth <= dims.maxWidth
         ) {
           setContainerWidth(newContainerWidth);
         }
         if (
-          containerHeight !== newContainerHeight &&
-          newContainerHeight <= maxHeight
+          dims.containerHeight !== newContainerHeight &&
+          newContainerHeight <= dims.maxHeight
         ) {
           setContainerHeight(newContainerHeight);
         }
       }, 100),
-    [measureRef, containerHeight, containerWidth, maxWidth, maxHeight, zoom],
+    [measureRef, zoom],
   );
 
   const setNodesAndEdges = useCallback(() => {
@@ -419,6 +465,23 @@ export function DependencyGraph<NodeData, EdgeData>(
 
           setGraphNodes(graph.current.nodes());
           setGraphEdges(graph.current.edges());
+
+          if (!settledRef.current) {
+            const nodeIds = graph.current.nodes();
+            const hasMeasuredNodes =
+              nodeIds.length > 0 &&
+              nodeIds.some(id => {
+                const n = graph.current.node(id);
+                return n && n.width > 0 && n.height > 0;
+              });
+            if (hasMeasuredNodes) {
+              measuredLayoutCount.current += 1;
+            }
+            if (measuredLayoutCount.current >= 2 || nodeIds.length === 0) {
+              settledRef.current = true;
+              setSettled(true);
+            }
+          }
         },
         250,
         { leading: true },
@@ -461,6 +524,13 @@ export function DependencyGraph<NodeData, EdgeData>(
     (id: string, node: Types.DependencyNode<NodeData>) => {
       graph.current.setNode(id, node);
       updateGraph();
+      if (!settledRef.current && !pendingInitialFlush.current) {
+        pendingInitialFlush.current = true;
+        queueMicrotask(() => {
+          pendingInitialFlush.current = false;
+          updateGraph.flush();
+        });
+      }
       return graph.current;
     },
     [updateGraph],
@@ -501,7 +571,14 @@ export function DependencyGraph<NodeData, EdgeData>(
         </Tooltip>
       )}
 
-      <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
+      <div
+        ref={containerRef}
+        style={{
+          width: '100%',
+          height: '100%',
+          visibility: settled ? 'visible' : 'hidden',
+        }}
+      >
         <svg
           {...svgProps}
           width="100%"
@@ -527,6 +604,9 @@ export function DependencyGraph<NodeData, EdgeData>(
             </marker>
             {defs}
           </defs>
+          {!transitionsReady && (
+            <style>{`#${DEPENDENCY_GRAPH_SVG} * { transition: none !important; }`}</style>
+          )}
           <g id={WORKSPACE_ID}>
             <svg
               width={graphWidth}

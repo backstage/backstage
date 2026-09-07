@@ -62,7 +62,7 @@ export async function retryOnDeadlock<T>(
 /**
  * Checks if the given error is a deadlock error for the database engine in use.
  */
-function isDeadlockError(
+export function isDeadlockError(
   knex: Knex | Knex.Transaction,
   e: unknown,
 ): e is ErrorLike {
@@ -71,6 +71,9 @@ function isDeadlockError(
     return isError(e) && e.code === '40P01';
   }
 
-  // Add more database engine checks here as needed
+  if (knex.client.config.client.includes('mysql')) {
+    return isError(e) && (e as any).errno === 1213;
+  }
+
   return false;
 }

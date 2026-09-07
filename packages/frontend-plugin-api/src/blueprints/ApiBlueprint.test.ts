@@ -15,6 +15,7 @@
  */
 
 import { createExtensionInput } from '../wiring';
+import { z } from 'zod/v4';
 import { ApiBlueprint } from './ApiBlueprint';
 import { createApiRef } from '../apis/system';
 
@@ -157,10 +158,8 @@ describe('ApiBlueprint', () => {
     const factory = jest.fn(() => ({ foo: 'bar' }));
 
     const extension = ApiBlueprint.makeWithOverrides({
-      config: {
-        schema: {
-          test: z => z.string().default('test'),
-        },
+      configSchema: {
+        test: z.string().default('test'),
       },
       inputs: {
         test: createExtensionInput([ApiBlueprint.dataRefs.factory]),

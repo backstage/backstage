@@ -15,8 +15,6 @@
  */
 
 import { JsonObject } from '@backstage/types';
-import { z as zodV3, type ZodType } from 'zod/v3';
-import zodToJsonSchema from 'zod-to-json-schema';
 import { PortableSchema } from './types';
 
 /**
@@ -25,19 +23,6 @@ import { PortableSchema } from './types';
  */
 export type { StandardSchemaV1 } from '@standard-schema/spec';
 import { type StandardSchemaV1 } from '@standard-schema/spec';
-
-/** @internal */
-export function createDeprecatedConfigSchema(
-  fields: Record<string, (zImpl: typeof zodV3) => ZodType>,
-): MergeablePortableSchema {
-  const resolved: Record<string, ResolvedField> = {};
-
-  for (const [key, field] of Object.entries(fields)) {
-    resolved[key] = resolveZodField(key, field(zodV3));
-  }
-
-  return buildPortableSchema(resolved);
-}
 
 /**
  * Per-field resolved schema — validation is eager, JSON Schema is lazy.
@@ -50,24 +35,13 @@ interface ResolvedField {
 }
 
 /**
- * Internal representation that carries per-field resolvers alongside the
- * public PortableSchema surface, enabling schema merging.
- * @internal
- */
-export interface MergeablePortableSchema<TOutput = any, TInput = any>
-  extends PortableSchema<TOutput, TInput> {
-  /** @internal */
-  readonly _fields: Record<string, ResolvedField>;
-}
-
-/**
  * Resolves each field, eagerly validates JSON Schema support, and returns
  * a PortableSchema whose JSON Schema conversion is lazy.
  * @internal
  */
 export function createConfigSchema(
   fields: Record<string, StandardSchemaV1>,
-): MergeablePortableSchema {
+): PortableSchema {
   const resolved: Record<string, ResolvedField> = {};
 
   for (const [key, field] of Object.entries(fields)) {
@@ -78,39 +52,12 @@ export function createConfigSchema(
 }
 
 /**
- * Combines schemas from different sources for blueprint + override
- * composition. Each source may use a completely different schema library.
- * Because we track per-field resolvers, merging is just combining the
- * field maps.
- * @internal
- */
-export function mergePortableSchemas<A, B>(
-  a: MergeablePortableSchema<A> | undefined,
-  b: MergeablePortableSchema<B> | undefined,
-): MergeablePortableSchema<A & B> | undefined {
-  if (!a && !b) {
-    return undefined;
-  }
-  if (!a) {
-    return b as MergeablePortableSchema<A & B>;
-  }
-  if (!b) {
-    return a as MergeablePortableSchema<A & B>;
-  }
-
-  return buildPortableSchema<A & B>({
-    ...a._fields,
-    ...b._fields,
-  });
-}
-
-/**
  * Assembles resolved fields into a PortableSchema with per-field
  * validation (eager) and lazy JSON Schema generation.
  */
 function buildPortableSchema<TOutput = unknown>(
   fields: Record<string, ResolvedField>,
-): MergeablePortableSchema<TOutput> {
+): PortableSchema<TOutput> {
   function parse(input: unknown) {
     if (
       input !== undefined &&
@@ -145,7 +92,7 @@ function buildPortableSchema<TOutput = unknown>(
 
   let cached: { schema: JsonObject } | undefined;
 
-  const result: MergeablePortableSchema<TOutput> = {
+  return {
     parse,
     schema() {
       if (!cached) {
@@ -153,14 +100,7 @@ function buildPortableSchema<TOutput = unknown>(
       }
       return cached;
     },
-  } as MergeablePortableSchema<TOutput>;
-
-  Object.defineProperty(result, '_fields', {
-    value: fields,
-    enumerable: false,
-  });
-
-  return result;
+  };
 }
 
 /**
@@ -191,25 +131,6 @@ function resolveField(key: string, schema: unknown): ResolvedField {
   throw new Error(
     `Config schema for field '${key}' is not a valid Standard Schema`,
   );
-}
-
-function resolveZodField(key: string, schema: ZodType): ResolvedField {
-  const wrapper = zodV3.object({ [key]: schema });
-
-  return {
-    validate(value) {
-      const result = wrapper.safeParse({ [key]: value });
-      if (result.success) {
-        return { value: result.data[key] };
-      }
-      return { errors: result.error.issues.map(formatZodIssue) };
-    },
-    toJsonSchema() {
-      const wholeJsonSchema = zodToJsonSchema(wrapper) as Record<string, any>;
-      return (wholeJsonSchema.properties?.[key] ?? {}) as JsonObject;
-    },
-    required: !schema.isOptional(),
-  };
 }
 
 function resolveStandardField(
@@ -273,7 +194,7 @@ function buildObjectJsonSchema(
   return schema as JsonObject;
 }
 
-function isZodV3Type(value: unknown): value is ZodType {
+function isZodV3Type(value: unknown): boolean {
   return (
     typeof value === 'object' &&
     value !== null &&
@@ -308,25 +229,6 @@ function isFieldRequired(schema: StandardSchemaV1): boolean {
   return (result.issues?.length ?? 0) > 0;
 }
 
-function formatZodIssue(issue: {
-  code: string;
-  message: string;
-  path: Array<string | number>;
-  unionErrors?: Array<{ issues: Array<any> }>;
-}): string {
-  if (issue.code === 'invalid_union' && issue.unionErrors?.[0]?.issues?.[0]) {
-    return formatZodIssue(issue.unionErrors[0].issues[0]);
-  }
-  let message = issue.message;
-  if (message === 'Required') {
-    message = 'Missing required value';
-  }
-  if (issue.path.length) {
-    message += ` at '${issue.path.join('.')}'`;
-  }
-  return message;
-}
-
 function formatStandardIssue(
   fieldKey: string,
   issue: StandardSchemaV1.Issue,
@@ -343,15 +245,4 @@ function formatStandardIssue(
         .join('.')}`
     : fieldKey;
   return `${message} at '${path}'`;
-}
-
-/** @internal */
-export function warnConfigSchemaPropDeprecation(callSite: string) {
-  // eslint-disable-next-line no-console
-  console.warn(
-    `DEPRECATION WARNING: The \`config.schema\` option for extension config is deprecated. ` +
-      `Use the \`configSchema\` option instead with Standard Schema values, for example ` +
-      `\`configSchema: { title: z.string() }\` using the \`zod\` v4 package ` +
-      `(\`zod@^4.0.0\`). Declared at ${callSite}`,
-  );
 }

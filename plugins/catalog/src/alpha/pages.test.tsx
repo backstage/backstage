@@ -30,6 +30,7 @@ import {
 } from '@backstage/plugin-catalog-react/alpha';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import {
+  EntityRefLink,
   entityRouteRef,
   MockStarredEntitiesApi,
   starredEntitiesApiRef,
@@ -37,10 +38,57 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import { rootRouteRef } from '../routes';
-import { Entity } from '@backstage/catalog-model';
+import {
+  CompoundEntityRef,
+  Entity,
+  parseEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { useAppNode } from '@backstage/frontend-plugin-api';
 
 jest.setTimeout(30_000);
+
+const mockEntityProviderStatuses: Array<{
+  hasEntity: boolean;
+  loading: boolean;
+  hasError: boolean;
+}> = [];
+let mockRecordEntityProviderStatuses = false;
+
+jest.mock('./components/EntityLayout/EntityLayoutBui', () => {
+  const actual = jest.requireActual(
+    './components/EntityLayout/EntityLayoutBui',
+  ) as typeof import('./components/EntityLayout/EntityLayoutBui');
+  const { useAsyncEntity: useAsyncEntityMocked } =
+    require('@backstage/plugin-catalog-react') as typeof import('@backstage/plugin-catalog-react');
+
+  function EntityLayoutBuiWithProbe(
+    props: Parameters<typeof actual.EntityLayoutBui>[0],
+  ) {
+    function EntityProviderStatusProbe() {
+      const { entity, loading, error } = useAsyncEntityMocked();
+      if (mockRecordEntityProviderStatuses) {
+        mockEntityProviderStatuses.push({
+          hasEntity: Boolean(entity),
+          loading,
+          hasError: Boolean(error),
+        });
+      }
+      return null;
+    }
+    return (
+      <>
+        <EntityProviderStatusProbe />
+        <actual.EntityLayoutBui {...props} />
+      </>
+    );
+  }
+
+  return {
+    ...actual,
+    EntityLayoutBui: EntityLayoutBuiWithProbe,
+  };
+});
 
 // The entity page extension uses React.lazy (via ExtensionBoundary.lazy) to
 // dynamically import EntityLayout and its large dependency tree. Pre-warming
@@ -712,6 +760,105 @@ describe('Entity page', () => {
       expect(screen.getByText('Refresh header')).toBeInTheDocument();
       expect(mounts).toBe(1);
       expect(unmounts).toBe(0);
+    });
+
+    it('does not flash Entity not found when navigating to another entity', async () => {
+      mockEntityProviderStatuses.length = 0;
+      mockRecordEntityProviderStatuses = true;
+
+      const entityB: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'www-artist',
+          namespace: 'default',
+        },
+        spec: {
+          type: 'website',
+          lifecycle: 'production',
+          owner: 'team-a',
+        },
+      };
+
+      let resolveEntityB!: (entity: Entity | undefined) => void;
+      const entityBResponse = new Promise<Entity | undefined>(resolve => {
+        resolveEntityB = resolve;
+      });
+      const getEntityByRef = jest.fn((ref: string | CompoundEntityRef) => {
+        const entityRef = stringifyEntityRef(parseEntityRef(ref));
+        if (entityRef === stringifyEntityRef(entityMock)) {
+          return Promise.resolve(entityMock);
+        }
+        if (entityRef === stringifyEntityRef(entityB)) {
+          return entityBResponse;
+        }
+        return Promise.resolve(undefined);
+      });
+
+      function RelatedEntityNavContent() {
+        const { entity } = useAsyncEntity();
+        return (
+          <div>
+            <div>Current entity: {entity?.metadata.name}</div>
+            <EntityRefLink entityRef={entityB}>Go to entity B</EntityRefLink>
+          </div>
+        );
+      }
+
+      const navContent = EntityContentBlueprint.make({
+        name: 'nav',
+        params: {
+          // Index route so EntityRefLink's entity-root href still matches.
+          path: '/',
+          title: 'Nav',
+          loader: async () => <RelatedEntityNavContent />,
+        },
+      });
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+      ).add(navContent);
+
+      try {
+        await renderInTestApp(tester.reactElement(), {
+          apis: [
+            catalogApiMock.mock({ getEntityByRef }),
+            [starredEntitiesApiRef, mockStarredEntitiesApi],
+          ],
+          mountPath: '/catalog/:namespace/:kind/:name',
+          initialRouteEntries: [entityPath],
+          config: {
+            app: { title: 'Custom app' },
+            backend: { baseUrl: 'http://localhost:7000' },
+          },
+          mountedRoutes: {
+            '/catalog': convertLegacyRouteRef(rootRouteRef),
+            '/catalog/:namespace/:kind/:name':
+              convertLegacyRouteRef(entityRouteRef),
+          },
+        });
+
+        expect(
+          await screen.findByText('Current entity: artist-lookup'),
+        ).toBeInTheDocument();
+
+        await userEvent.click(
+          screen.getByRole('link', { name: 'Go to entity B' }),
+        );
+
+        expect(
+          mockEntityProviderStatuses.some(
+            status => !status.loading && !status.hasError && !status.hasEntity,
+          ),
+        ).toBe(false);
+
+        await act(async () => resolveEntityB(entityB));
+        expect(
+          await screen.findByText('Current entity: www-artist'),
+        ).toBeInTheDocument();
+      } finally {
+        mockRecordEntityProviderStatuses = false;
+        mockEntityProviderStatuses.length = 0;
+      }
     });
 
     it('Should use the default header', async () => {

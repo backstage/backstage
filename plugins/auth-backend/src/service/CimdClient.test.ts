@@ -233,6 +233,45 @@ describe('CimdClient', () => {
           }),
         ).rejects.toThrow('Invalid client_id URL');
       });
+
+      it('should allow private IPs when skipSsrfCheck is set', async () => {
+        mockDnsLookup.mockResolvedValue([
+          { address: '10.0.0.1', family: 4 },
+        ] as any);
+
+        const metadata = {
+          client_id: 'https://internal.example.com/metadata',
+          client_name: 'Internal Client',
+          redirect_uris: ['http://localhost:8080/callback'],
+        };
+
+        server.use(
+          http.get('https://internal.example.com/metadata', () =>
+            HttpResponse.json(metadata),
+          ),
+        );
+
+        const result = await fetchCimdMetadata({
+          clientId: 'https://internal.example.com/metadata',
+          skipSsrfCheck: true,
+        });
+
+        expect(result.clientId).toBe('https://internal.example.com/metadata');
+        expect(result.clientName).toBe('Internal Client');
+      });
+
+      it('should still block private IPs when skipSsrfCheck is false', async () => {
+        mockDnsLookup.mockResolvedValue([
+          { address: '10.0.0.1', family: 4 },
+        ] as any);
+
+        await expect(
+          fetchCimdMetadata({
+            clientId: 'https://internal.example.com/metadata',
+            skipSsrfCheck: false,
+          }),
+        ).rejects.toThrow('Invalid client_id URL');
+      });
     });
 
     describe('redirect protection', () => {

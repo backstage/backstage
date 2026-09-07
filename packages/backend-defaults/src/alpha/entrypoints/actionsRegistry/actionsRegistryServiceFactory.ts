@@ -32,6 +32,7 @@ export const actionsRegistryServiceFactory = createServiceFactory({
     httpAuth: coreServices.httpAuth,
     logger: coreServices.logger,
     auth: coreServices.auth,
+    config: coreServices.rootConfig,
     permissions: coreServices.permissions,
     permissionsRegistry: coreServices.permissionsRegistry,
   },
@@ -41,6 +42,7 @@ export const actionsRegistryServiceFactory = createServiceFactory({
     httpAuth,
     logger,
     auth,
+    config,
     permissions,
     permissionsRegistry,
   }) => {
@@ -48,6 +50,7 @@ export const actionsRegistryServiceFactory = createServiceFactory({
       httpAuth,
       logger,
       auth,
+      config,
       metadata,
       permissions,
       permissionsRegistry,

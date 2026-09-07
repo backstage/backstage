@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import { useRef } from 'react';
-import {
-  createVersionedContext,
-  useVersionedContext,
-} from '@backstage/version-bridge';
+import { useContext, useRef } from 'react';
 import type { AnalyticsTracker, UseAnalyticsFn } from './types';
+import { BUIContext } from '../provider/BUIContext';
 
 /** @internal */
 export const noopTracker: AnalyticsTracker = {
@@ -27,16 +24,6 @@ export const noopTracker: AnalyticsTracker = {
 };
 
 const noopUseAnalytics: UseAnalyticsFn = () => noopTracker;
-
-/** @internal */
-export type BUIContextValue = {
-  useAnalytics?: UseAnalyticsFn;
-};
-
-/** @internal */
-export const BUIContext = createVersionedContext<{
-  1: BUIContextValue;
-}>('bui');
 
 /**
  * Returns an AnalyticsTracker for capturing analytics events.
@@ -47,7 +34,8 @@ export const BUIContext = createVersionedContext<{
  * @public
  */
 export function useAnalytics(): AnalyticsTracker {
-  const ctx = useVersionedContext<{ 1: BUIContextValue }>('bui')?.atVersion(1);
+  const context = useContext(BUIContext);
+  const ctx = context?.atVersion(2) ?? context?.atVersion(1);
   const impl = ctx?.useAnalytics ?? noopUseAnalytics;
 
   if (process.env.NODE_ENV !== 'production') {

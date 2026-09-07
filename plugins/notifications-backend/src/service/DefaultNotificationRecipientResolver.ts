@@ -61,115 +61,79 @@ export class DefaultNotificationRecipientResolver
   }): Promise<{ userEntityRefs: string[] }> {
     const { entityRefs, excludedEntityRefs = [] } = options;
 
-    const [userEntityRefs, otherEntityRefs] = partitionEntityRefs(entityRefs);
-    const users: string[] = userEntityRefs.filter(
-      ref => !excludedEntityRefs.includes(ref),
-    );
-    const filtered = otherEntityRefs.filter(
-      ref => !excludedEntityRefs.includes(ref),
-    );
+    const users = new Set<string>();
+    const seen = new Set<string>();
+
+    const todo = [...new Set(entityRefs)];
+    todo.forEach(ref => seen.add(ref));
 
     const fields = ['kind', 'metadata.name', 'metadata.namespace', 'relations'];
-    let entities: Array<Entity | undefined> = [];
-    if (filtered.length > 0) {
-      const fetchedEntities = await this.catalog.getEntitiesByRefs(
-        {
-          entityRefs: filtered,
-          fields,
-        },
-        { credentials: await this.auth.getOwnServiceCredentials() },
+
+    while (todo.length) {
+      const [userEntityRefs, otherEntityRefs] = partitionEntityRefs(todo);
+      todo.length = 0;
+
+      userEntityRefs.forEach(user => users.add(user));
+
+      // Filter excluded refs to avoid unnecessary catalog lookups
+      const filtered = otherEntityRefs.filter(
+        ref => !excludedEntityRefs.includes(ref),
       );
-      entities = fetchedEntities.items;
-    }
-
-    const cachedEntityRefs = new Map<string, string[]>();
-
-    const mapEntity = async (entity: Entity | undefined): Promise<string[]> => {
-      if (!entity) {
-        return [];
+      let entities: Array<Entity> = [];
+      if (filtered.length > 0) {
+        const fetchedEntities = await this.catalog.getEntitiesByRefs(
+          {
+            entityRefs: filtered,
+            fields,
+          },
+          { credentials: await this.auth.getOwnServiceCredentials() },
+        );
+        entities = fetchedEntities.items.filter(
+          (entity): entity is Entity => entity !== undefined,
+        );
       }
 
-      const currentEntityRef = stringifyEntityRef(entity);
-      if (excludedEntityRefs.includes(currentEntityRef)) {
-        return [];
-      }
-
-      if (cachedEntityRefs.has(currentEntityRef)) {
-        return cachedEntityRefs.get(currentEntityRef)!;
-      }
-
-      if (isUserEntity(entity)) {
-        return [currentEntityRef];
-      }
-
-      if (isGroupEntity(entity)) {
-        if (!entity.relations?.length) {
-          return [];
+      entities.forEach(entity => {
+        const currentEntityRef = stringifyEntityRef(entity);
+        if (excludedEntityRefs.includes(currentEntityRef)) {
+          return;
         }
 
-        const groupUsers = entity.relations
-          .filter(
-            relation =>
+        if (isUserEntity(entity)) {
+          users.add(currentEntityRef);
+          return;
+        }
+
+        if (isGroupEntity(entity)) {
+          for (const relation of entity.relations ?? []) {
+            if (
               relation.type === RELATION_HAS_MEMBER &&
-              isUserEntityRef(relation.targetRef),
-          )
-          .map(r => r.targetRef);
-
-        const childGroupRefs = entity.relations
-          .filter(relation => relation.type === RELATION_PARENT_OF)
-          .map(r => r.targetRef);
-
-        let childGroupUsers: string[][] = [];
-        if (childGroupRefs.length > 0) {
-          const childGroups = await this.catalog.getEntitiesByRefs(
-            {
-              entityRefs: childGroupRefs,
-              fields,
-            },
-            { credentials: await this.auth.getOwnServiceCredentials() },
-          );
-          childGroupUsers = await Promise.all(childGroups.items.map(mapEntity));
+              isUserEntityRef(relation.targetRef)
+            ) {
+              users.add(relation.targetRef);
+            } else if (
+              relation.type === RELATION_PARENT_OF &&
+              !seen.has(relation.targetRef)
+            ) {
+              seen.add(relation.targetRef);
+              todo.push(relation.targetRef);
+            }
+          }
+          return;
         }
 
-        const ret = [
-          ...new Set([...groupUsers, ...childGroupUsers.flat(2)]),
-        ].filter(ref => !excludedEntityRefs.includes(ref));
-        cachedEntityRefs.set(currentEntityRef, ret);
-        return ret;
-      }
-
-      if (entity.relations?.length) {
-        const ownerRef = entity.relations.find(
+        // Any other kind (component, template, ...): route to its owner and
+        // let the next pass classify and expand it.
+        const ownerRef = entity.relations?.find(
           relation => relation.type === RELATION_OWNED_BY,
         )?.targetRef;
 
-        if (!ownerRef) {
-          return [];
+        if (ownerRef && !seen.has(ownerRef)) {
+          seen.add(ownerRef);
+          todo.push(ownerRef);
         }
-
-        if (isUserEntityRef(ownerRef)) {
-          if (excludedEntityRefs.includes(ownerRef)) {
-            return [];
-          }
-          return [ownerRef];
-        }
-
-        const owner = await this.catalog.getEntityByRef(ownerRef, {
-          credentials: await this.auth.getOwnServiceCredentials(),
-        });
-        const ret = await mapEntity(owner);
-        cachedEntityRefs.set(currentEntityRef, ret);
-        return ret;
-      }
-
-      return [];
-    };
-
-    for (const entity of entities) {
-      const u = await mapEntity(entity);
-      users.push(...u);
+      });
     }
-
     return {
       userEntityRefs: [...new Set(users)]
         .filter(Boolean)

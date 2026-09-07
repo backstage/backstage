@@ -420,4 +420,4 @@ The exported JSON files are standard key-value pairs compatible with most extern
 3. Download the translated files back into the translations directory
 4. Run `translations import` to regenerate the wiring code
 
-For full command reference, see the [CLI commands documentation](../../tooling/cli/03-commands.md#translations-export).
+For full command reference, see the [CLI commands documentation](../../tooling/cli/module-translations.md#translations-export).

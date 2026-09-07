@@ -4,7 +4,7 @@ title: Plugin Directory Audit
 description: Details about the process for auditing plugins in the directory
 ---
 
-:::caution Legacy Documentation
+:::caution[Legacy Documentation]
 
 This section is part of the legacy plugins documentation. The audit process described here is still current.
 

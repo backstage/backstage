@@ -326,10 +326,17 @@ async function moveToDistWorkspace(
       FAST_PACK_SCRIPTS.includes(pkg.packageJson.scripts?.prepack),
   );
 
-  const configSchemas = await compilePackageConfigSchemas(fastPackPackages);
+  const configSchemas = await compilePackageConfigSchemas(fastPackPackages, {
+    onSchemaError: error => logger.warn(error.message),
+  });
   const featureDetectionProject =
     fastPackPackages.length > 0 && enableFeatureDetection
-      ? await createTypeDistProject()
+      ? await createTypeDistProject(
+          fastPackPackages.map(pkg => ({
+            dir: pkg.dir,
+            role: pkg.packageJson.backstage?.role,
+          })),
+        )
       : undefined;
 
   // New an improved flow where we avoid calling `yarn pack`

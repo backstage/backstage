@@ -345,4 +345,54 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
       );
     });
   });
+
+  describe('allowed location types', () => {
+    it('enforces allowedLocationTypes during processing', async () => {
+      const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
+      const processor: jest.Mocked<CatalogProcessor> = {
+        getProcessorName: jest.fn(),
+        validateEntityKind: jest.fn(async () => true),
+        readLocation: jest.fn(async () => true),
+      };
+      const orchestrator = new DefaultCatalogProcessingOrchestrator({
+        processors: [processor],
+        integrations,
+        logger: mockServices.logger.mock(),
+        parser: jest.fn(),
+        policy: EntityPolicies.allOf([]),
+        rulesEnforcer: { isAllowed: jest.fn().mockReturnValue(true) },
+        allowedLocationTypes: ['url'],
+      });
+
+      const makeEntity = (
+        locationType: string,
+        specType: string,
+      ): LocationEntity => ({
+        apiVersion: 'backstage.io/v1beta1',
+        kind: 'Location',
+        metadata: {
+          name: 'test',
+          annotations: {
+            [ANNOTATION_ORIGIN_LOCATION]: `${locationType}:https://example.com/c.yaml`,
+            [ANNOTATION_LOCATION]: `${locationType}:https://example.com/c.yaml`,
+          },
+        },
+        spec: { type: specType, target: 'https://example.com/other.yaml' },
+      });
+
+      const disallowed = await orchestrator.process({
+        entity: makeEntity('url', 'file'),
+        state: {},
+      });
+      expect(disallowed.ok).toBe(false);
+      expect(processor.readLocation).not.toHaveBeenCalled();
+
+      const inherited = await orchestrator.process({
+        entity: makeEntity('file', 'file'),
+        state: {},
+      });
+      expect(inherited.ok).toBe(true);
+      expect(processor.readLocation).toHaveBeenCalled();
+    });
+  });
 });

@@ -285,11 +285,8 @@ describe.each(databases.eachSupportedId())(
           logger: mockServices.logger.mock(),
         });
 
-        const testFilter = {
-          key: 'spec.test',
-        };
         const res = await catalog.entities({
-          filter: testFilter,
+          filter: { 'spec.test': { $exists: true } },
           credentials: mockCredentials.none(),
         });
         const entities = entitiesResponseToObjects(res.entities);
@@ -322,8 +319,8 @@ describe.each(databases.eachSupportedId())(
         });
 
         const testFilter = {
-          not: {
-            key: 'spec.test',
+          $not: {
+            'spec.test': { $exists: true },
           },
         };
         const res = await catalog.entities({
@@ -371,29 +368,16 @@ describe.each(databases.eachSupportedId())(
           logger: mockServices.logger.mock(),
         });
 
-        const testFilter1 = {
-          key: 'metadata.org',
-          values: ['b'],
-        };
-        const testFilter2 = {
-          key: 'metadata.desc',
-        };
-        const testFilter3 = {
-          key: 'metadata.color',
-          values: ['blue'],
-        };
-        const testFilter4 = {
-          not: {
-            key: 'metadata.color',
-            values: ['red'],
-          },
-        };
         const res = await catalog.entities({
           filter: {
-            allOf: [
-              testFilter1,
+            $all: [
+              { 'metadata.org': 'b' },
               {
-                anyOf: [testFilter2, testFilter3, testFilter4],
+                $any: [
+                  { 'metadata.desc': { $exists: true } },
+                  { 'metadata.color': 'blue' },
+                  { $not: { 'metadata.color': 'red' } },
+                ],
               },
             ],
           },
@@ -427,17 +411,13 @@ describe.each(databases.eachSupportedId())(
           logger: mockServices.logger.mock(),
         });
 
-        const testFilter1 = {
-          key: 'metadata.org',
-          values: ['b'],
-        };
-        const testFilter2 = {
-          key: 'metadata.desc',
-        };
         const res = await catalog.entities({
           filter: {
-            not: {
-              allOf: [testFilter1, testFilter2],
+            $not: {
+              $all: [
+                { 'metadata.org': 'b' },
+                { 'metadata.desc': { $exists: true } },
+              ],
             },
           },
 
@@ -471,74 +451,13 @@ describe.each(databases.eachSupportedId())(
           logger: mockServices.logger.mock(),
         });
 
-        const testFilter = {
-          key: 'kind',
-          values: [],
-        };
         const res = await catalog.entities({
-          filter: testFilter,
+          filter: { kind: { $in: [] } },
           credentials: mockCredentials.none(),
         });
         const entities = entitiesResponseToObjects(res.entities);
 
         expect(entities.length).toBe(0);
-      });
-
-      it('should return both target and targetRef for entities in compat mode', async () => {
-        await createDatabase();
-        await addEntity(
-          {
-            apiVersion: 'a',
-            kind: 'k',
-            metadata: { name: 'one' },
-            spec: {},
-            relations: [{ type: 'r', targetRef: 'x:y/z' } as any],
-          },
-          [],
-        );
-        await addEntity(
-          {
-            apiVersion: 'a',
-            kind: 'k',
-            metadata: { name: 'two' },
-            spec: {},
-            relations: [
-              {
-                type: 'r',
-                target: { kind: 'x', namespace: 'y', name: 'z' },
-              } as any,
-            ],
-          },
-          [],
-        );
-        const catalog = new DefaultEntitiesCatalog({
-          database: knex,
-          logger: mockServices.logger.mock(),
-
-          enableRelationsCompatibility: true,
-        });
-
-        const res = await catalog.entities();
-        const entities = entitiesResponseToObjects(res.entities);
-
-        expect(
-          entities.find(e => e?.metadata.name === 'one')!.relations,
-        ).toEqual([
-          {
-            type: 'r',
-            targetRef: 'x:y/z',
-            target: { kind: 'x', namespace: 'y', name: 'z' },
-          },
-        ]);
-        expect(
-          entities.find(e => e?.metadata.name === 'two')!.relations,
-        ).toEqual([
-          {
-            type: 'r',
-            targetRef: 'x:y/z',
-            target: { kind: 'x', namespace: 'y', name: 'z' },
-          },
-        ]);
       });
 
       it('handles inversion both for existing and missing keys', async () => {
@@ -585,13 +504,13 @@ describe.each(databases.eachSupportedId())(
 
         await expect(
           f({
-            filter: { key: 'spec.b', values: ['lonely'] },
+            filter: { 'spec.b': 'lonely' },
           }),
         ).resolves.toEqual(['n2']);
 
         await expect(
           f({
-            filter: { not: { key: 'spec.b', values: ['lonely'] } },
+            filter: { $not: { 'spec.b': 'lonely' } },
           }),
         ).resolves.toEqual(['n1', 'n3']);
       });
@@ -664,7 +583,7 @@ describe.each(databases.eachSupportedId())(
 
         await expect(
           f({
-            filter: { not: { key: 'spec.b', values: ['lonely'] } },
+            filter: { $not: { 'spec.b': 'lonely' } },
             order: [
               { field: 'spec.a', order: 'asc' },
               { field: 'metadata.name', order: 'desc' },
@@ -978,7 +897,7 @@ describe.each(databases.eachSupportedId())(
 
         const res = await catalog.entitiesBatch({
           entityRefs: ['k:default/two', 'k:default/one'],
-          filter: { key: 'spec.owner', values: ['me'] },
+          filter: { 'spec.owner': 'me' },
           credentials: mockCredentials.none(),
         });
         const items = entitiesResponseToObjects(res.items);
@@ -1022,7 +941,7 @@ describe.each(databases.eachSupportedId())(
         });
 
         const filter = {
-          key: 'spec.should_include_this',
+          'spec.should_include_this': { $exists: true },
         };
 
         const limit = 2;
@@ -1195,7 +1114,7 @@ describe.each(databases.eachSupportedId())(
         });
 
         const filter = {
-          key: 'spec.should_include_this',
+          'spec.should_include_this': { $exists: true },
         };
 
         const limit = 2;
@@ -1369,7 +1288,7 @@ describe.each(databases.eachSupportedId())(
         });
 
         const filter = {
-          key: 'spec.should_include_this',
+          'spec.should_include_this': { $exists: true },
         };
 
         const request: QueryEntitiesInitialRequest = {
@@ -1475,7 +1394,7 @@ describe.each(databases.eachSupportedId())(
         });
 
         const filter = {
-          key: 'spec.should_include_this',
+          'spec.should_include_this': { $exists: true },
         };
 
         const request: QueryEntitiesInitialRequest = {
@@ -1570,7 +1489,7 @@ describe.each(databases.eachSupportedId())(
         });
 
         const filter = {
-          key: 'spec.should_include_this',
+          'spec.should_include_this': { $exists: true },
         };
 
         const request: QueryEntitiesInitialRequest = {
@@ -1849,10 +1768,7 @@ describe.each(databases.eachSupportedId())(
         // initial request
         const request1: QueryEntitiesInitialRequest = {
           limit,
-          filter: {
-            key: 'kind',
-            values: ['included'],
-          },
+          filter: { kind: 'included' },
           orderFields: [{ field: 'metadata.name', order: 'asc' }],
           credentials: mockCredentials.none(),
         };
@@ -2161,8 +2077,7 @@ describe.each(databases.eachSupportedId())(
 
         // Use filter to restrict to kind=component, and query to restrict to name=A
         const response = await catalog.queryEntities({
-          filter: { key: 'kind', values: ['component'] },
-          query: { 'metadata.name': 'a' },
+          filter: { $all: [{ kind: 'component' }, { 'metadata.name': 'a' }] },
           orderFields: [{ field: 'metadata.name', order: 'asc' }],
           credentials: mockCredentials.none(),
         });
@@ -2221,7 +2136,7 @@ describe.each(databases.eachSupportedId())(
           logger: mockServices.logger.mock(),
         });
 
-        const filter = { key: 'spec.should_include_this' };
+        const filter = { 'spec.should_include_this': { $exists: true } };
 
         // Page through all entities with limit=2, sorting by spec.b ASC.
         // We expect to see n1(alpha), n2(beta), n3(gamma) — and NOT n4 or n5.
@@ -2429,7 +2344,7 @@ describe.each(databases.eachSupportedId())(
         await expect(
           catalog.facets({
             facets: ['kind'],
-            filter: { key: 'metadata.name', values: ['two'] },
+            filter: { 'metadata.name': 'two' },
             credentials: mockCredentials.none(),
           }),
         ).resolves.toEqual({
@@ -2444,7 +2359,7 @@ describe.each(databases.eachSupportedId())(
         await expect(
           catalog.facets({
             facets: ['kind'],
-            filter: { not: { key: 'metadata.name', values: ['two'] } },
+            filter: { $not: { 'metadata.name': 'two' } },
             credentials: mockCredentials.none(),
           }),
         ).resolves.toEqual({
@@ -2689,7 +2604,7 @@ describe.each(databases.eachSupportedId())(
         await expect(
           catalog.facets({
             facets: ['metadata.name'],
-            filter: { key: 'kind', values: ['component'] },
+            filter: { kind: 'component' },
             credentials: mockCredentials.none(),
           }),
         ).resolves.toEqual({
@@ -2723,7 +2638,7 @@ describe.each(databases.eachSupportedId())(
 
         const result = await catalog.facets({
           facets: ['spec.type'],
-          query: { kind: 'component' },
+          filter: { kind: 'component' },
           credentials: mockCredentials.none(),
         });
         expect(result.facets['spec.type']).toHaveLength(2);
@@ -2761,7 +2676,7 @@ describe.each(databases.eachSupportedId())(
 
         const result = await catalog.facets({
           facets: ['kind'],
-          query: { kind: { $in: ['component', 'api'] } },
+          filter: { kind: { $in: ['component', 'api'] } },
           credentials: mockCredentials.none(),
         });
         expect(result.facets.kind).toHaveLength(2);
@@ -2801,10 +2716,7 @@ describe.each(databases.eachSupportedId())(
           catalog.facets({
             facets: ['metadata.name'],
             filter: {
-              allOf: [
-                { key: 'kind', values: ['component'] },
-                { key: 'spec.type', values: ['service'] },
-              ],
+              $all: [{ kind: 'component' }, { 'spec.type': 'service' }],
             },
             credentials: mockCredentials.none(),
           }),
@@ -2841,10 +2753,7 @@ describe.each(databases.eachSupportedId())(
           catalog.facets({
             facets: ['metadata.name'],
             filter: {
-              anyOf: [
-                { key: 'kind', values: ['component'] },
-                { key: 'kind', values: ['api'] },
-              ],
+              $any: [{ kind: 'component' }, { kind: 'api' }],
             },
             credentials: mockCredentials.none(),
           }),
@@ -2883,8 +2792,9 @@ describe.each(databases.eachSupportedId())(
         await expect(
           catalog.facets({
             facets: ['spec.type'],
-            filter: { key: 'kind', values: ['component'] },
-            query: { 'metadata.name': 'one' },
+            filter: {
+              $all: [{ kind: 'component' }, { 'metadata.name': 'one' }],
+            },
             credentials: mockCredentials.none(),
           }),
         ).resolves.toEqual({

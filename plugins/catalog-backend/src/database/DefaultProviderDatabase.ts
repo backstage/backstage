@@ -32,7 +32,7 @@ import {
   ReplaceUnprocessedEntitiesOptions,
   Transaction,
 } from './types';
-import { generateStableHash } from './util';
+import { generateStableHash, isDeadlockError, retryOnDeadlock } from './util';
 import {
   LoggerService,
   isDatabaseConflictError,
@@ -54,26 +54,34 @@ export class DefaultProviderDatabase implements ProviderDatabase {
     this.options = options;
   }
 
+  /**
+   * Executes `fn` inside a database transaction, retrying automatically on
+   * deadlock (PostgreSQL error 40P01). Because the callback may be invoked
+   * more than once, it must not perform non-database side effects such as
+   * emitting events, mutating in-memory state, or calling external services.
+   */
   async transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T> {
-    try {
-      let result: T | undefined = undefined;
-      await this.options.database.transaction(
-        async tx => {
-          // We can't return here, as knex swallows the return type in case the
-          // transaction is rolled back:
-          // https://github.com/knex/knex/blob/e37aeaa31c8ef9c1b07d2e4d3ec6607e557d800d/lib/transaction.js#L136
-          result = await fn(tx);
-        },
-        {
-          // If we explicitly trigger a rollback, don't fail.
-          doNotRejectOnRollback: true,
-        },
-      );
-      return result!;
-    } catch (e) {
-      this.options.logger.debug(`Error during transaction, ${e}`);
-      throw rethrowError(e);
-    }
+    return retryOnDeadlock(async () => {
+      try {
+        let result: T | undefined = undefined;
+        await this.options.database.transaction(
+          async tx => {
+            // We can't return here, as knex swallows the return type in case the
+            // transaction is rolled back:
+            // https://github.com/knex/knex/blob/e37aeaa31c8ef9c1b07d2e4d3ec6607e557d800d/lib/transaction.js#L136
+            result = await fn(tx);
+          },
+          {
+            // If we explicitly trigger a rollback, don't fail.
+            doNotRejectOnRollback: true,
+          },
+        );
+        return result!;
+      } catch (e) {
+        this.options.logger.debug(`Error during transaction, ${e}`);
+        throw rethrowError(e);
+      }
+    }, this.options.database);
   }
 
   async replaceUnprocessedEntities(
@@ -193,6 +201,9 @@ export class DefaultProviderDatabase implements ProviderDatabase {
             }
           }
         } catch (error) {
+          if (isDeadlockError(tx, error)) {
+            throw error;
+          }
           this.options.logger.error(
             `Failed to add '${entityRef}' from source '${options.sourceKey}', ${error}`,
           );

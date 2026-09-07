@@ -29,9 +29,7 @@ ENV NODE_ENV=production
 RUN --mount=type=cache,target=/var/cache/apk,sharing=locked,uid=65532,gid=65532 \
     --mount=type=cache,target=/var/lib/apk,sharing=locked,uid=65532,gid=65532 \
     apk update && \
-    apk add nodejs-$NODE_VERSION yarn \
-    # Install isolate-vm dependencies, these are needed by the @backstage/plugin-scaffolder-backend.
-    openssl-dev brotli-dev c-ares-dev nghttp2-dev icu-dev zlib-dev gcc-12 libuv-dev build-base
+    apk add nodejs-$NODE_VERSION yarn
 
 WORKDIR /app
 RUN chown -R nonroot:nonroot /app
@@ -80,7 +78,6 @@ COPY --from=node-builder --chown=65532:65532 /app/node_modules ./node_modules
 COPY --from=python-builder --chown=65532:65532 /home/nonroot/venv /home/nonroot/venv
 ENV PATH=/home/nonroot/venv/bin:$PATH
 
-ENV NODE_OPTIONS="--no-node-snapshot"
 ENV GIT_PYTHON_REFRESH="quiet"
 
 ENTRYPOINT ["tini", "--"]

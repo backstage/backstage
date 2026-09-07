@@ -95,25 +95,8 @@ export const StepReviewLocation = ({
       });
     } catch (e) {
       const caughtError = toError(e);
-      // TODO: this error should be handled differently. We add it as 'optional' and
-      //       it is not uncommon that a PR has not been merged yet.
-      if (
-        prepareResult.type === 'repository' &&
-        caughtError.message.startsWith(
-          'Location was added but has no entities specified yet',
-        )
-      ) {
-        onReview({
-          ...prepareResult,
-          locations: prepareResult.locations.map(l => ({
-            target: l.target,
-            entities: [],
-          })),
-        });
-      } else {
-        setError(caughtError.message);
-        setSubmitted(false);
-      }
+      setError(caughtError.message);
+      setSubmitted(false);
     }
   }, [prepareResult, onReview, catalogApi, analytics]);
 

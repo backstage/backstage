@@ -64,7 +64,7 @@ This provider includes several resolvers out of the box that you can use:
 - `userIdMatchingUserEntityAnnotation`: Matches the `userId` from the auth provider with the User entity that has a matching `bitbucket.org/user-id` annotation. If no match is found, it will throw a `NotFoundError`.
 - `usernameMatchingUserEntityAnnotation`: Matches the `username` from the auth provider with the User entity that has a matching `bitbucket.org/username` annotation. If no match is found, it will throw a `NotFoundError`.
 
-:::note Note
+:::note
 
 The resolvers will be tried in order but will only be skipped if they throw a `NotFoundError`.
 

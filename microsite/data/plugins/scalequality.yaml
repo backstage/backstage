@@ -1,0 +1,10 @@
+title: ScaleQuality
+author: ScaleQuality
+authorUrl: https://scalequality.io
+category: Code Quality
+description: Surface ScaleQuality's measured quality signals (AI code durability, engineering maturity, code maturity, tech radar) on any entity in your catalog.
+documentation: https://github.com/scalequality-io/backstage-plugin#readme
+iconUrl: https://raw.githubusercontent.com/scalequality-io/backstage-plugin/main/assets/scalequality-icon.png
+npmPackageName: '@scalequality/backstage-plugin'
+addedDate: '2026-07-22'
+status: active

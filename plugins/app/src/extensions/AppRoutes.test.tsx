@@ -586,6 +586,280 @@ describe('AppRoutes', () => {
     });
   });
 
+  it('should preserve query string through a redirect', async () => {
+    const LocationDisplay = () => {
+      const location = useLocation();
+      return (
+        <div>
+          <div data-testid="location">{location.pathname}</div>
+          <div data-testid="search">{location.search}</div>
+        </div>
+      );
+    };
+
+    const catalogPage = PageBlueprint.make({
+      name: 'catalog',
+      params: {
+        path: '/catalog',
+        loader: async () => (
+          <div>
+            Catalog Page
+            <LocationDisplay />
+          </div>
+        ),
+      },
+    });
+
+    renderTestApp({
+      extensions: [catalogPage],
+      initialRouteEntries: ['/old-catalog?id=abc&view=detail'],
+      config: {
+        ...DEFAULT_CONFIG,
+        app: {
+          ...DEFAULT_CONFIG.app,
+          extensions: [
+            {
+              'app/routes': {
+                config: {
+                  redirects: [{ from: '/old-catalog', to: '/catalog' }],
+                },
+              },
+            },
+          ],
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Catalog Page')).toBeInTheDocument();
+      expect(screen.getByTestId('location')).toHaveTextContent('/catalog');
+      expect(screen.getByTestId('search')).toHaveTextContent(
+        '?id=abc&view=detail',
+      );
+    });
+  });
+
+  it('should preserve fragment through a redirect', async () => {
+    const LocationDisplay = () => {
+      const location = useLocation();
+      return (
+        <div>
+          <div data-testid="location">{location.pathname}</div>
+          <div data-testid="hash">{location.hash}</div>
+        </div>
+      );
+    };
+
+    const catalogPage = PageBlueprint.make({
+      name: 'catalog',
+      params: {
+        path: '/catalog',
+        loader: async () => (
+          <div>
+            Catalog Page
+            <LocationDisplay />
+          </div>
+        ),
+      },
+    });
+
+    renderTestApp({
+      extensions: [catalogPage],
+      initialRouteEntries: ['/old-catalog#section'],
+      config: {
+        ...DEFAULT_CONFIG,
+        app: {
+          ...DEFAULT_CONFIG.app,
+          extensions: [
+            {
+              'app/routes': {
+                config: {
+                  redirects: [{ from: '/old-catalog', to: '/catalog' }],
+                },
+              },
+            },
+          ],
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Catalog Page')).toBeInTheDocument();
+      expect(screen.getByTestId('location')).toHaveTextContent('/catalog');
+      expect(screen.getByTestId('hash')).toHaveTextContent('#section');
+    });
+  });
+
+  it('should preserve both query and fragment through a redirect', async () => {
+    const LocationDisplay = () => {
+      const location = useLocation();
+      return (
+        <div>
+          <div data-testid="location">{location.pathname}</div>
+          <div data-testid="search">{location.search}</div>
+          <div data-testid="hash">{location.hash}</div>
+        </div>
+      );
+    };
+
+    const catalogPage = PageBlueprint.make({
+      name: 'catalog',
+      params: {
+        path: '/catalog',
+        loader: async () => (
+          <div>
+            Catalog Page
+            <LocationDisplay />
+          </div>
+        ),
+      },
+    });
+
+    renderTestApp({
+      extensions: [catalogPage],
+      initialRouteEntries: ['/old-catalog?id=abc&q=hello?world#section'],
+      config: {
+        ...DEFAULT_CONFIG,
+        app: {
+          ...DEFAULT_CONFIG.app,
+          extensions: [
+            {
+              'app/routes': {
+                config: {
+                  redirects: [{ from: '/old-catalog', to: '/catalog' }],
+                },
+              },
+            },
+          ],
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Catalog Page')).toBeInTheDocument();
+      expect(screen.getByTestId('location')).toHaveTextContent('/catalog');
+      expect(screen.getByTestId('search')).toHaveTextContent(
+        '?id=abc&q=hello?world',
+      );
+      expect(screen.getByTestId('hash')).toHaveTextContent('#section');
+    });
+  });
+
+  it('should preserve query through a redirect with named params and splat', async () => {
+    const LocationDisplay = () => {
+      const location = useLocation();
+      return (
+        <div>
+          <div data-testid="location">{location.pathname}</div>
+          <div data-testid="search">{location.search}</div>
+        </div>
+      );
+    };
+
+    const catalogPage = PageBlueprint.make({
+      name: 'catalog',
+      params: {
+        path: '/catalog',
+        loader: async () => (
+          <div>
+            Catalog Page
+            <LocationDisplay />
+          </div>
+        ),
+      },
+    });
+
+    renderTestApp({
+      extensions: [catalogPage],
+      initialRouteEntries: [
+        '/apps/my-service/crashes/info?id=c1ccbebaffb4919d',
+      ],
+      config: {
+        ...DEFAULT_CONFIG,
+        app: {
+          ...DEFAULT_CONFIG.app,
+          extensions: [
+            {
+              'app/routes': {
+                config: {
+                  redirects: [
+                    {
+                      from: '/apps/:name',
+                      to: '/catalog/default/component/:name/*',
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Catalog Page')).toBeInTheDocument();
+      expect(screen.getByTestId('location')).toHaveTextContent(
+        '/catalog/default/component/my-service/crashes/info',
+      );
+      expect(screen.getByTestId('search')).toHaveTextContent(
+        '?id=c1ccbebaffb4919d',
+      );
+    });
+  });
+
+  it('should prefer the query from the redirect template over the incoming one', async () => {
+    const LocationDisplay = () => {
+      const location = useLocation();
+      return (
+        <div>
+          <div data-testid="location">{location.pathname}</div>
+          <div data-testid="search">{location.search}</div>
+        </div>
+      );
+    };
+
+    const catalogPage = PageBlueprint.make({
+      name: 'catalog',
+      params: {
+        path: '/catalog',
+        loader: async () => (
+          <div>
+            Catalog Page
+            <LocationDisplay />
+          </div>
+        ),
+      },
+    });
+
+    renderTestApp({
+      extensions: [catalogPage],
+      initialRouteEntries: ['/old-catalog?view=list'],
+      config: {
+        ...DEFAULT_CONFIG,
+        app: {
+          ...DEFAULT_CONFIG.app,
+          extensions: [
+            {
+              'app/routes': {
+                config: {
+                  redirects: [
+                    { from: '/old-catalog', to: '/catalog?view=table' },
+                  ],
+                },
+              },
+            },
+          ],
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Catalog Page')).toBeInTheDocument();
+      expect(screen.getByTestId('location')).toHaveTextContent('/catalog');
+      expect(screen.getByTestId('search')).toHaveTextContent('?view=table');
+    });
+  });
+
   it('should not interfere with normal routes when redirects are configured', async () => {
     const homePage = PageBlueprint.make({
       name: 'home',
