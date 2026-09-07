@@ -34,15 +34,17 @@ import useAsyncRetry from 'react-use/esm/useAsyncRetry';
 import { useNavigate } from 'react-router-dom';
 import { rootRouteRef, selectedTemplateRouteRef } from '../../../routes';
 import { scaffolderTranslationRef } from '../../../translation';
-import styles from './FeaturedTemplates.module.css';
+import styles from './HomePageFeaturedTemplates.module.css';
 import { ScrollControls } from './ScrollControls';
 import { StateMessage } from './StateMessage';
 
-export interface FeaturedTemplatesProps {
+export interface HomePageFeaturedTemplatesProps {
   tag: string;
 }
 
-export function FeaturedTemplates({ tag }: FeaturedTemplatesProps) {
+export function HomePageFeaturedTemplates({
+  tag,
+}: HomePageFeaturedTemplatesProps) {
   const { t } = useTranslationRef(scaffolderTranslationRef);
   const catalogApi = useApi(catalogApiRef);
   const selectedTemplateRoute = useRouteRef(selectedTemplateRouteRef);
@@ -80,14 +82,10 @@ export function FeaturedTemplates({ tag }: FeaturedTemplatesProps) {
 
   if (loading) {
     return (
-      <div
-        className={styles.root}
-        aria-busy="true"
-        data-testid="featured-templates-loading"
-      >
-        <div className={styles.track}>
+      <div className={styles.root}>
+        <div className={styles.track} role="list" aria-busy="true">
           {Array.from({ length: 3 }, (_, index) => (
-            <div className={styles.card} key={index}>
+            <div className={styles.card} role="listitem" key={index}>
               <Skeleton width="100%" height="100%" />
             </div>
           ))}
@@ -124,14 +122,11 @@ export function FeaturedTemplates({ tag }: FeaturedTemplatesProps) {
 
   return (
     <div className={styles.root}>
-      <div
-        ref={setTrack}
-        className={styles.track}
-        data-testid="featured-templates-track"
-      >
+      <div ref={setTrack} className={styles.track} role="list">
         {templates.map((template, index) => (
           <div
             className={styles.card}
+            role="listitem"
             key={stringifyEntityRef(template)}
             ref={element => {
               if (index === 0) firstCardRef(element);

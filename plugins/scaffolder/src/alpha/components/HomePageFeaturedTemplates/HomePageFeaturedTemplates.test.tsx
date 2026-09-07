@@ -19,10 +19,9 @@ import { renderInTestApp } from '@backstage/frontend-test-utils';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { mockIsIntersecting } from 'react-intersection-observer/test-utils';
 import { useLocation } from 'react-router-dom';
 import { template as makeTemplate } from './fixtures';
-import { FeaturedTemplates } from './FeaturedTemplates';
+import { HomePageFeaturedTemplates } from './HomePageFeaturedTemplates';
 import { rootRouteRef } from '../../../routes';
 
 jest.mock('@backstage/plugin-scaffolder-react/alpha', () => ({
@@ -40,6 +39,13 @@ const mountedRoutes = {
   '/create': rootRouteRef,
 };
 
+// Loaded by name because the package's type declarations reference vitest
+// globals, which fail the strict library type check. The runtime detects jest
+// on its own and installs the IntersectionObserver mock before each test.
+const { mockIsIntersecting } = jest.requireActual<{
+  mockIsIntersecting: (element: Element, ratio: number) => void;
+}>('react-intersection-observer/test-utils');
+
 function mockScrollGeometry(region: HTMLElement) {
   const scrollBy = jest.fn();
   Object.defineProperty(region, 'scrollBy', { value: scrollBy });
@@ -50,13 +56,13 @@ function mockScrollGeometry(region: HTMLElement) {
 
 const Location = () => <output>{useLocation().pathname}</output>;
 
-describe('FeaturedTemplates', () => {
+describe('HomePageFeaturedTemplates', () => {
   it('queries tagged templates, preserves order, and opens the selected form', async () => {
     const getEntities = jest.fn().mockResolvedValue({ items: templates });
 
     renderInTestApp(
       <>
-        <FeaturedTemplates tag="featured" />
+        <HomePageFeaturedTemplates tag="featured" />
         <Location />
       </>,
       {
@@ -65,10 +71,8 @@ describe('FeaturedTemplates', () => {
       },
     );
 
-    expect(
-      screen.getByTestId('featured-templates-loading'),
-    ).toBeInTheDocument();
-    const track = await screen.findByTestId('featured-templates-track');
+    expect(screen.getByRole('list', { busy: true })).toBeInTheDocument();
+    const track = await screen.findByRole('list', { busy: false });
     expect(
       within(track)
         .getAllByRole('button')
@@ -87,7 +91,7 @@ describe('FeaturedTemplates', () => {
   });
 
   it('shows an empty state linking to all templates', async () => {
-    renderInTestApp(<FeaturedTemplates tag="golden-path" />, {
+    renderInTestApp(<HomePageFeaturedTemplates tag="golden-path" />, {
       apis: [
         catalogApiMock.mock({
           getEntities: async () => ({ items: [] }),
@@ -109,7 +113,7 @@ describe('FeaturedTemplates', () => {
       .fn()
       .mockRejectedValueOnce(new Error('catalog unavailable'))
       .mockResolvedValueOnce({ items: templates });
-    renderInTestApp(<FeaturedTemplates tag="featured" />, {
+    renderInTestApp(<HomePageFeaturedTemplates tag="featured" />, {
       apis: [catalogApiMock.mock({ getEntities })],
       mountedRoutes,
     });
@@ -123,7 +127,7 @@ describe('FeaturedTemplates', () => {
   });
 
   it('scrolls by exactly one card', async () => {
-    renderInTestApp(<FeaturedTemplates tag="featured" />, {
+    renderInTestApp(<HomePageFeaturedTemplates tag="featured" />, {
       apis: [
         catalogApiMock.mock({
           getEntities: async () => ({ items: templates }),
@@ -131,7 +135,7 @@ describe('FeaturedTemplates', () => {
       ],
       mountedRoutes,
     });
-    const track = await screen.findByTestId('featured-templates-track');
+    const track = await screen.findByRole('list', { busy: false });
     const scrollBy = mockScrollGeometry(track);
     const [firstCard, lastCard] = Array.from(track.children) as HTMLElement[];
     mockIsIntersecting(firstCard, 1);

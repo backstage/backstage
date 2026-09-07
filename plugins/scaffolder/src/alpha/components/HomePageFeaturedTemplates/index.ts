@@ -13,5 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { FeaturedTemplates } from './FeaturedTemplates';
-export type { FeaturedTemplatesProps } from './FeaturedTemplates';
+export { HomePageFeaturedTemplates } from './HomePageFeaturedTemplates';
+export type { HomePageFeaturedTemplatesProps } from './HomePageFeaturedTemplates';

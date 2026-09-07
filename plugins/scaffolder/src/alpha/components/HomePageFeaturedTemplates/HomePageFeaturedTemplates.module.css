@@ -26,11 +26,11 @@
   scroll-snap-align: start;
 }
 
-.card > :global([class*='MuiCard-root']) {
+.card > * {
   flex: 1;
 }
 
-.card :global([class*='MuiTypography-h6']) {
+.card h4 {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

@@ -17,10 +17,10 @@
 import { homePageWidgetDataRef } from '@backstage/plugin-home-react/alpha';
 import { createExtensionTester } from '@backstage/frontend-test-utils';
 import type { ReactElement } from 'react';
-import type { FeaturedTemplatesProps } from './FeaturedTemplates';
+import type { HomePageFeaturedTemplatesProps } from './HomePageFeaturedTemplates';
 import { scaffolderFeaturedTemplatesWidget } from '../../extensions';
 
-type FeaturedTemplatesElement = ReactElement<FeaturedTemplatesProps>;
+type FeaturedTemplatesElement = ReactElement<HomePageFeaturedTemplatesProps>;
 
 describe('scaffolderFeaturedTemplatesWidget', () => {
   it('uses the default widget configuration', () => {

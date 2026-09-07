@@ -286,9 +286,10 @@ export const scaffolderFeaturedTemplatesWidget =
       return originalFactory({
         name: 'HomePageFeaturedTemplates',
         title: config.title,
+        description: 'Software templates that carry a configurable catalog tag',
         components: () =>
           import('./components/HomePageFeaturedTemplates').then(m => ({
-            Content: m.FeaturedTemplates,
+            Content: m.HomePageFeaturedTemplates,
           })),
         componentProps: { tag: config.tag },
         layout: {
