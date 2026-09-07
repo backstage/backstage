@@ -46,6 +46,7 @@ export type GeneratorConfig = {
   legacyCopyReadmeMdToIndexMd?: boolean;
   defaultPlugins?: string[];
   dangerouslyAllowAdditionalKeys?: string[];
+  dangerouslyAllowAdditionalPlugins?: string[];
   disableExternalFonts?: boolean;
 };
 

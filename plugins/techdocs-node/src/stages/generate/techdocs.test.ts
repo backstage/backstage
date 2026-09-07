@@ -17,6 +17,7 @@
 import { ConfigReader } from '@backstage/config';
 import { readGeneratorConfig, TechdocsGenerator } from './techdocs';
 import { getMkdocsYml, runCommand } from './helpers';
+import { sanitizeMkdocsYml } from './mkdocsPatchers';
 
 jest.mock('fs-extra');
 jest.mock('./helpers');
@@ -184,6 +185,31 @@ describe('readGeneratorConfig', () => {
       defaultPlugins: ['mkdocs-custom-plugin'],
     });
   });
+
+  it('should read the additional plugins config', () => {
+    const config = new ConfigReader({
+      techdocs: {
+        generator: {
+          runIn: 'docker',
+          mkdocs: {
+            dangerouslyAllowAdditionalPlugins: ['mkdocs-custom-plugin'],
+          },
+        },
+      },
+    });
+
+    expect(readGeneratorConfig(config, logger)).toEqual({
+      runIn: 'docker',
+      dockerImage: undefined,
+      pullImage: undefined,
+      omitTechdocsCoreMkdocsPlugin: undefined,
+      legacyCopyReadmeMdToIndexMd: undefined,
+      defaultPlugins: undefined,
+      dangerouslyAllowAdditionalKeys: undefined,
+      dangerouslyAllowAdditionalPlugins: ['mkdocs-custom-plugin'],
+      disableExternalFonts: undefined,
+    });
+  });
 });
 
 describe('TechdocsGenerator.run', () => {
@@ -213,6 +239,36 @@ describe('TechdocsGenerator.run', () => {
         command: 'mkdocs',
         args: expect.arrayContaining(['-f', '/tmp/inputDir/mkdocs.yaml']),
       }),
+    );
+  });
+
+  it('permits plugins configured as defaults during sanitization', async () => {
+    const generator = TechdocsGenerator.fromConfig(
+      new ConfigReader({
+        techdocs: {
+          generator: {
+            runIn: 'local',
+            mkdocs: {
+              defaultPlugins: ['default-plugin'],
+              dangerouslyAllowAdditionalPlugins: ['additional-plugin'],
+            },
+          },
+        },
+      }),
+      { logger: mockLogger as any },
+    );
+
+    await generator.run({
+      inputDir: '/tmp/inputDir',
+      outputDir: '/tmp/outputDir',
+      logger: mockLogger as any,
+    });
+
+    expect(jest.mocked(sanitizeMkdocsYml)).toHaveBeenCalledWith(
+      '/tmp/inputDir/mkdocs.yaml',
+      mockLogger,
+      undefined,
+      ['additional-plugin', 'default-plugin'],
     );
   });
 
