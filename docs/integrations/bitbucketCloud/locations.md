@@ -23,13 +23,21 @@ integrations:
       token: my-token
 ```
 
-Legacy:
+Legacy (avoid):
 
 ```yaml
 integrations:
   bitbucketCloud:
     - username: username
       appPassword: my-password
+```
+
+Using Bearer authentication:
+
+```yaml
+integrations:
+  bitbucketCloud:
+    - token: my-token
 ```
 
 OAuth 2.0 client credentials flow:
