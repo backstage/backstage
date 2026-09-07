@@ -44,6 +44,7 @@ import {
   type KubernetesServiceLocatorExtensionPoint,
   KubernetesServiceLocatorFactory,
 } from '@backstage/plugin-kubernetes-node';
+import { kubernetesPermissions } from '@backstage/plugin-kubernetes-common';
 import { KubernetesRouter } from './service/KubernetesRouter';
 import { KubernetesInitializer } from './service/KubernetesInitializer';
 
@@ -222,6 +223,7 @@ export const kubernetesPlugin = createBackendPlugin({
         discovery: coreServices.discovery,
         catalog: catalogServiceRef,
         permissions: coreServices.permissions,
+        permissionsRegistry: coreServices.permissionsRegistry,
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
         auditor: coreServices.auditor,
@@ -233,10 +235,13 @@ export const kubernetesPlugin = createBackendPlugin({
         discovery,
         catalog,
         permissions,
+        permissionsRegistry,
         auth,
         httpAuth,
         auditor,
       }) {
+        permissionsRegistry.addPermissions(kubernetesPermissions);
+
         // TODO: this could do with a cleanup and push some of this initialization somewhere else
         if (config.has('kubernetes')) {
           const initializer = KubernetesInitializer.create({
