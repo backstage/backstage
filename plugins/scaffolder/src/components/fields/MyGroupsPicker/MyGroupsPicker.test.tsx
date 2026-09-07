@@ -261,6 +261,95 @@ describe('<MyGroupsPicker />', () => {
     expect(input).toHaveValue('group');
   });
 
+  it('keeps BUI search input when a selected group presentation arrives late', async () => {
+    mockUseScaffolderTheme.mockReturnValue('bui');
+    const selectedGroup: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Group',
+      metadata: { name: 'off-page', title: 'Off Page Group' },
+    };
+    let resolveSelectedGroup = () => {};
+    catalogApi.getEntitiesByRefs.mockReturnValueOnce(
+      new Promise(resolve => {
+        resolveSelectedGroup = () => resolve({ items: [selectedGroup] });
+      }),
+    );
+    const props = {
+      onChange,
+      schema,
+      required,
+      uiSchema: {},
+      formData: 'group:default/off-page',
+    } as unknown as FieldProps<string>;
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [identityApiRef, mockIdentityApi],
+          [catalogApiRef, catalogApi],
+          [errorApiRef, mockErrorApi],
+          [
+            entityPresentationApiRef,
+            DefaultEntityPresentationApi.create({ catalogApi }),
+          ],
+        ]}
+      >
+        <MyGroupsPicker {...props} />
+      </TestApiProvider>,
+    );
+    const input = screen.getByRole('combobox');
+
+    fireEvent.change(input, { target: { value: 'replacement' } });
+    await act(async () => {
+      resolveSelectedGroup();
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(input).toHaveValue('replacement');
+  });
+
+  it('does not clear a BUI group outside the current page on blur', async () => {
+    mockUseScaffolderTheme.mockReturnValue('bui');
+    const selectedGroup: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Group',
+      metadata: { name: 'off-page' },
+      spec: { members: ['Bob'] },
+    };
+    catalogApi.getEntitiesByRefs.mockResolvedValueOnce({
+      items: [selectedGroup],
+    });
+    const props = {
+      onChange,
+      schema,
+      required,
+      uiSchema: {},
+      formData: 'group:default/off-page',
+    } as unknown as FieldProps<string>;
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [identityApiRef, mockIdentityApi],
+          [catalogApiRef, catalogApi],
+          [errorApiRef, mockErrorApi],
+          [
+            entityPresentationApiRef,
+            DefaultEntityPresentationApi.create({ catalogApi }),
+          ],
+        ]}
+      >
+        <MyGroupsPicker {...props} />
+      </TestApiProvider>,
+    );
+    const input = screen.getByRole('combobox');
+    await waitFor(() => expect(input).toHaveValue('off-page'));
+
+    fireEvent.focus(input);
+    fireEvent.blur(input);
+
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
   it('should call the onChange handler with the correct entityRef and and use a nice display name', async () => {
     const userGroups = [
       {
