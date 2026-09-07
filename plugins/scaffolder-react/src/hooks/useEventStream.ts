@@ -72,6 +72,7 @@ type ReducerAction =
   | { type: 'RECOVERED'; data: ReducerLogEntry }
   | { type: 'LOGS'; data: ReducerLogEntry[] }
   | { type: 'COMPLETED'; data: ReducerLogEntry }
+  | { type: 'RECONNECTING' }
   | { type: 'ERROR'; data: Error };
 
 function reducer(draft: TaskStream, action: ReducerAction) {
@@ -163,6 +164,12 @@ function reducer(draft: TaskStream, action: ReducerAction) {
       return;
     }
 
+    case 'RECONNECTING': {
+      draft.error = undefined;
+      draft.completed = false;
+      return;
+    }
+
     case 'ERROR': {
       draft.error = action.data;
       draft.loading = false;
@@ -201,8 +208,11 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
     let isStreamComplete = false;
     let hasInitialized = false;
     let startGeneration = 0;
+    let currentEmitLogs: (() => void) | undefined;
 
     const cleanUpStream = () => {
+      currentEmitLogs?.();
+      currentEmitLogs = undefined;
       if (subscription) {
         subscription.unsubscribe();
         subscription = undefined;
@@ -218,6 +228,7 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
     };
 
     function reconnectStream() {
+      dispatch({ type: 'RECONNECTING' });
       const generation = ++startGeneration;
       cleanUpStream();
       subscribeToStream(generation);
@@ -239,6 +250,7 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
         }
       }
 
+      currentEmitLogs = emitLogs;
       logPusher = setInterval(emitLogs, 500);
 
       subscription = observable.subscribe({
@@ -252,6 +264,7 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
               return collectedLogEvents.push(event);
             case 'cancelled':
               isStreamComplete = true;
+              emitLogs();
               dispatch({ type: 'CANCELLED' });
               return undefined;
             case 'completion':
@@ -260,6 +273,7 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
               dispatch({ type: 'COMPLETED', data: event });
               return undefined;
             case 'recovered':
+              isStreamComplete = false;
               dispatch({ type: 'RECOVERED', data: event });
               return undefined;
             default:
@@ -267,10 +281,11 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
           }
         },
         error: error => {
-          emitLogs();
           cleanUpStream();
 
-          if (generation !== startGeneration || didCancel) return;
+          if (isStreamComplete || generation !== startGeneration || didCancel) {
+            return;
+          }
 
           const maxRetries = 3;
 
@@ -330,10 +345,8 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
     document.addEventListener('visibilitychange', onVisibilityChange);
 
     return () => {
-      if (!isTaskRecoverable) {
-        didCancel = true;
-        cleanUpStream();
-      }
+      didCancel = true;
+      cleanUpStream();
       document.removeEventListener('visibilitychange', onVisibilityChange);
     };
   }, [scaffolderApi, dispatch, taskId]);

@@ -251,6 +251,10 @@ export class ScaffolderClient implements ScaffolderApi {
 
       this.discoveryApi.getBaseUrl('scaffolder').then(
         baseUrl => {
+          if (ctrl.signal.aborted) {
+            return;
+          }
+
           const query = params.toString();
           const url = `${baseUrl}/v2/tasks/${encodeURIComponent(
             taskId,

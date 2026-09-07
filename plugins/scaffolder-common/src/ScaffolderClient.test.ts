@@ -225,6 +225,34 @@ describe('api', () => {
         expect(error).toBe(testError);
         expect(capturedSignal?.aborted).toBe(true);
       });
+
+      it('should not open SSE connection when unsubscribed before discovery resolves', async () => {
+        mockFetchEventSource.mockClear();
+
+        let resolveDiscovery!: (url: string) => void;
+        const client = new ScaffolderClient({
+          scmIntegrationsApi,
+          discoveryApi: {
+            getBaseUrl: () =>
+              new Promise<string>(resolve => {
+                resolveDiscovery = resolve;
+              }),
+          },
+          fetchApi,
+          identityApi,
+        });
+
+        const subscription = client
+          .streamLogs({ taskId: 'a-random-task-id' })
+          .subscribe({});
+
+        subscription.unsubscribe();
+        resolveDiscovery(mockBaseUrl);
+
+        await new Promise(resolve => setTimeout(resolve, 0));
+
+        expect(mockFetchEventSource).not.toHaveBeenCalled();
+      });
     });
 
     describe('longPolling', () => {
