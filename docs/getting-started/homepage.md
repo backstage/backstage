@@ -120,7 +120,7 @@ This widget comes from `@backstage/plugin-scaffolder`:
 
 | Widget             | Extension ID                                     | Description                                                                                |
 | :----------------- | :----------------------------------------------- | :----------------------------------------------------------------------------------------- |
-| Featured Templates | `home-page-widget:scaffolder/featured-templates` | Shows software templates that carry a configurable catalog tag as a row of template cards. |
+| Featured Templates | `home-page-widget:scaffolder/featured-templates` | Shows software templates tagged with a configurable catalog tag, defaulting to `featured`. |
 
 :::note
 The featured templates widget requires `@backstage/plugin-scaffolder` to be installed.

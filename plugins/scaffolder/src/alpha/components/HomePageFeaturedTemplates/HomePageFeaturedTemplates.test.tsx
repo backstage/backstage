@@ -40,8 +40,7 @@ const mountedRoutes = {
 };
 
 // Loaded by name because the package's type declarations reference vitest
-// globals, which fail the strict library type check. The runtime detects jest
-// on its own and installs the IntersectionObserver mock before each test.
+// globals, which fail the strict library type check.
 const { mockIsIntersecting } = jest.requireActual<{
   mockIsIntersecting: (element: Element, ratio: number) => void;
 }>('react-intersection-observer/test-utils');

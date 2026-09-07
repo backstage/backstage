@@ -322,12 +322,11 @@ binding the template to `onSelected`, so the card just calls
 `packages/app/src/modules/BuiTemplateCard.tsx` shows a Backstage UI (BUI)
 implementation you can use as a starting point.
 
-## Featuring templates on the homepage
+## Featuring templates on the homepage (requires the new frontend system)
 
-The scaffolder plugin provides a homepage widget for the new frontend system
-that promotes a curated set of templates. It shows every template carrying a
-configurable catalog tag (`featured` by default) as a row of template cards, and
-uses the same swappable `TemplateCard` as the templates page.
+The scaffolder plugin provides a homepage widget that promotes a curated set of templates.
+It shows templates tagged with a configurable catalog tag (`featured` by default) as a row of template cards,
+and uses the same swappable `TemplateCard` as the templates page.
 
 Add the tag to the templates you want to promote:
 
@@ -341,10 +340,7 @@ metadata:
     - featured
 ```
 
-The widget is registered as `home-page-widget:scaffolder/featured-templates`
-and appears in the **Add Widget** dialog of the homepage as soon as the
-scaffolder plugin is installed. Its title and tag can be configured in
-`app-config.yaml`:
+This widget can be configured in `app-config.yaml`:
 
 ```yaml
 app:
@@ -354,6 +350,3 @@ app:
           title: Golden Paths
           tag: golden-path
 ```
-
-See the [homepage documentation](../../getting-started/homepage.md) for how to
-add the widget to the default layout.

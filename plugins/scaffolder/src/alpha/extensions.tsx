@@ -279,14 +279,13 @@ export const scaffolderFeaturedTemplatesWidget =
   HomePageWidgetBlueprint.makeWithOverrides({
     name: 'featured-templates',
     configSchema: {
-      title: z.string().trim().min(1).default('Featured Templates'),
-      tag: z.string().trim().min(1).default('featured'),
+      title: z.string().default('Featured Templates'),
+      tag: z.string().default('featured'),
     },
     factory(originalFactory, { config }) {
       return originalFactory({
         name: 'HomePageFeaturedTemplates',
         title: config.title,
-        description: 'Software templates that carry a configurable catalog tag',
         components: () =>
           import('./components/HomePageFeaturedTemplates').then(m => ({
             Content: m.HomePageFeaturedTemplates,

@@ -22,14 +22,6 @@ yarn --cwd packages/app add @backstage/plugin-scaffolder
 
 Once installed, the plugin is automatically available in your app through the default feature discovery. For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
 
-### Homepage widget
-
-In the new frontend system, this plugin also provides a `Featured Templates`
-homepage widget (`home-page-widget:scaffolder/featured-templates`) that shows
-templates carrying a configurable catalog tag. See the
-[homepage documentation](https://backstage.io/docs/getting-started/homepage#featured-templates)
-for how to configure it.
-
 ### Troubleshooting
 
 If you encounter [issues with early closure of the `EventStream`](https://github.com/backstage/backstage/issues/5535)
