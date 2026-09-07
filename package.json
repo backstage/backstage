@@ -174,7 +174,7 @@
     "vite": "^7.1.5",
     "zod": "^3.25.76 || ^4.0.0"
   },
-  "packageManager": "yarn@4.8.1",
+  "packageManager": "yarn@4.17.1",
   "engines": {
     "node": "22 || 24"
   },
