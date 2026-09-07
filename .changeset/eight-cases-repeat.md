@@ -14,4 +14,4 @@ pages.
 For a merge request against a repository of a few hundred files this cuts the number of requests
 from roughly 300 to under ten, taking a step that took 5-15 seconds against a self-hosted GitLab
 down to about 3 seconds. Which files are created, updated or skipped is unchanged, including for
-repositories using git's sha256 object format.
+repositories using git sha256 object format.
