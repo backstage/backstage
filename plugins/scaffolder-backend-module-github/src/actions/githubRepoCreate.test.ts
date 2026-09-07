@@ -894,6 +894,49 @@ describe('github:repo:create', () => {
     });
   });
 
+  it('should include supported properties in input schema', () => {
+    const inputProperties = Object.keys(
+      (action.schema?.input as any)?.properties ?? {},
+    );
+
+    expect(inputProperties).toEqual(
+      expect.arrayContaining([
+        'repoUrl',
+        'description',
+        'homepage',
+        'access',
+        'repoVisibility',
+        'deleteBranchOnMerge',
+        'allowMergeCommit',
+        'allowSquashMerge',
+        'squashMergeCommitTitle',
+        'squashMergeCommitMessage',
+        'allowRebaseMerge',
+        'allowAutoMerge',
+        'allowUpdateBranch',
+        'collaborators',
+        'hasProjects',
+        'hasWiki',
+        'hasIssues',
+        'topics',
+        'repoVariables',
+        'secrets',
+        'oidcCustomization',
+        'customProperties',
+        'subscribe',
+        'token',
+        'autoInit',
+        'workflowAccess',
+      ]),
+    );
+    expect(inputProperties).toHaveLength(26);
+
+    expect(inputProperties).not.toContain('protectDefaultBranch');
+    expect(inputProperties).not.toContain('requireCodeOwnerReviews');
+    expect(inputProperties).not.toContain('gitCommitMessage');
+    expect(inputProperties).not.toContain('sourcePath');
+  });
+
   it.each(['none', 'organization', 'user'])(
     'should set workflow access level - %s',
     async expected => {
