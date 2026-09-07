@@ -120,6 +120,90 @@ describe('verifyYarnPatches', () => {
     );
   });
 
+  it('reports root resolutions that match no lockfile dependency request', async () => {
+    mockDir.setContent({
+      'package.json': packageJson({
+        name: 'root',
+        resolutions: {
+          'used@npm:^1.0.0':
+            'patch:used@npm%3A1.2.3#./.yarn/patches/used.patch::locator=root%40workspace%3A.',
+          'unused@npm:^2.0.0':
+            'patch:unused@npm%3A2.1.0#./.yarn/patches/unused.patch::locator=root%40workspace%3A.',
+          'parent@npm:1.0.0/child@npm:^3.0.0': '3.1.0',
+          'parent@npm:2.0.0/child@npm:^3.0.0': '3.1.0',
+          'peer-only@npm:^5.0.0': '5.1.0',
+          'range-free': '4.1.0',
+        },
+        dependencies: {
+          used: '^1.0.0',
+          parent: '^1.0.0',
+          'range-free': '^4.0.0',
+        },
+      }),
+      '.yarn': {
+        patches: {
+          'unused.patch': 'patch',
+          'used.patch': 'patch',
+        },
+      },
+      'yarn.lock': `${LOCKFILE_HEADER}
+"root@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "root@workspace:."
+  dependencies:
+    parent: "npm:^1.0.0"
+    range-free: "npm:^4.0.0"
+    used: "npm:^1.0.0"
+  languageName: unknown
+  linkType: soft
+
+"parent@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "parent@npm:1.0.0"
+  dependencies:
+    child: "npm:^3.0.0"
+  peerDependencies:
+    peer-only: "npm:^5.0.0"
+  languageName: node
+  linkType: hard
+
+"used@patch:used@npm%3A1.2.3#./.yarn/patches/used.patch::locator=root%40workspace%3A.":
+  version: 1.2.3
+  resolution: "used@patch:used@npm%3A1.2.3#./.yarn/patches/used.patch::version=1.2.3&hash=aaaaaa&locator=root%40workspace%3A."
+  languageName: node
+  linkType: hard
+`,
+    });
+
+    await expect(verifyYarnPatches({ rootDir: mockDir.path })).resolves.toEqual(
+      {
+        patchCount: 1,
+        backstageCheck: 'skipped',
+        errors: [
+          {
+            kind: 'unused-resolution',
+            message:
+              "Resolution 'parent@npm:2.0.0/child@npm:^3.0.0' does not match any dependency request in yarn.lock",
+            location:
+              'package.json#resolutions.parent@npm:2.0.0/child@npm:^3.0.0',
+          },
+          {
+            kind: 'unused-resolution',
+            message:
+              "Resolution 'peer-only@npm:^5.0.0' does not match any dependency request in yarn.lock",
+            location: 'package.json#resolutions.peer-only@npm:^5.0.0',
+          },
+          {
+            kind: 'unused-resolution',
+            message:
+              "Resolution 'unused@npm:^2.0.0' does not match any dependency request in yarn.lock",
+            location: 'package.json#resolutions.unused@npm:^2.0.0',
+          },
+        ],
+      },
+    );
+  });
+
   it('does not load plugins from ambient YARN_PLUGINS', async () => {
     mockDir.setContent({
       'package.json': packageJson({ name: 'root' }),

@@ -22421,21 +22421,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ast-types@npm:0.16.1":
-  version: 0.16.1
-  resolution: "ast-types@npm:0.16.1"
+"ast-types@npm:0.16.3, ast-types@npm:^0.16.1":
+  version: 0.16.3
+  resolution: "ast-types@npm:0.16.3"
   dependencies:
     tslib: "npm:^2.0.1"
-  checksum: 10/f569b475eb1c8cb93888cb6e7b7e36dc43fa19a77e4eb132cbff6e3eb1598ca60f850db6e60b070e5a0ee8c1559fca921dac0916e576f2f104e198793b0bdd8d
-  languageName: node
-  linkType: hard
-
-"ast-types@patch:ast-types@npm%3A0.16.1#./.yarn/patches/ast-types-npm-0.16.1-43c4ac4b0d.patch::locator=root%40workspace%3A.":
-  version: 0.16.1
-  resolution: "ast-types@patch:ast-types@npm%3A0.16.1#./.yarn/patches/ast-types-npm-0.16.1-43c4ac4b0d.patch::version=0.16.1&hash=538845&locator=root%40workspace%3A."
-  dependencies:
-    tslib: "npm:^2.0.1"
-  checksum: 10/15c639f8c04116cc3ef0941569549e7cc389b47901ca8b851ad87d3461d9e1dbf85da25a84c2e135864efdcc1bc833b90be216868b7dc7ac4613afcaa98939e0
+  checksum: 10/f1ec706fb384e1c93c23d55b875efc1a84528d6497e17f3c4faecb24b2eb17bfe83dd776d3ea885328b203b6a020681510ca1a3eec54a6c21a0dc2db7293842c
   languageName: node
   linkType: hard
 
@@ -25313,10 +25304,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csstype@npm:^3.0.10":
-  version: 3.1.3
-  resolution: "csstype@npm:3.1.3"
-  checksum: 10/f593cce41ff5ade23f44e77521e3a1bcc2c64107041e1bf6c3c32adc5187d0d60983292fda326154d20b01079e24931aa5b08e4467cc488b60bb1e7f6d478ade
+"csstype@npm:^3.0.10, csstype@npm:^3.1.2, csstype@npm:^3.1.3":
+  version: 3.2.3
+  resolution: "csstype@npm:3.2.3"
+  checksum: 10/ad41baf7e2ffac65ab544d79107bf7cd1a4bb9bab9ac3302f59ab4ba655d5e30942a8ae46e10ba160c6f4ecea464cc95b975ca2fefbdeeacd6ac63f12f99fe1f
   languageName: node
   linkType: hard
 

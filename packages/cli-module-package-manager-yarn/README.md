@@ -1,7 +1,7 @@
 # @backstage/cli-module-package-manager-yarn
 
 Adds `backstage-cli pm verify-patches`, a read-only check for Yarn patch
-references and patched Backstage package versions.
+references, root resolutions, and patched Backstage package versions.
 
 The command verifies Yarn's native `patch:` protocol, available in Yarn 2 and
 later. It does not inspect patches managed by tools such as `patch-package` in
@@ -19,7 +19,9 @@ The command scans the root `package.json` and every workspace manifest for
 `patch:` references in `resolutions`, `dependencies`, `devDependencies`,
 `optionalDependencies`, and `peerDependencies`. It verifies that referenced
 local patch files exist, files in Yarn's configured `patchFolder` are
-referenced, and manifest declarations agree with `yarn.lock`.
+referenced, and manifest declarations agree with `yarn.lock`. It also reports
+root `resolutions` entries whose selectors no longer match any dependency
+request in the lockfile.
 
 When a repository both patches an `@backstage/*` package and declares a
 Backstage release in `backstage.json`, the command also verifies that the
@@ -31,7 +33,8 @@ the Backstage release check is reported as skipped.
 The command does not run Yarn, install dependencies, or write project files.
 Use it alongside `yarn install --immutable`: immutable installs protect the
 resolved dependency state, while this command verifies that patch declarations,
-patch files, the lockfile, and the selected Backstage release remain aligned.
+patch files, resolutions, the lockfile, and the selected Backstage release
+remain aligned.
 
 ## Release manifest environment
 
