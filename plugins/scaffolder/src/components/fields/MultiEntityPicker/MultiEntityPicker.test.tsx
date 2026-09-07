@@ -472,6 +472,9 @@ describe('<MultiEntityPicker />', () => {
       const input = getByRole('textbox');
 
       fireEvent.mouseDown(input);
+      expect(
+        screen.queryByRole('option', { name: 'team-a' }),
+      ).not.toBeInTheDocument();
       const optionA = screen.getByText('squad-b');
       await userEvent.click(optionA as HTMLElement);
 

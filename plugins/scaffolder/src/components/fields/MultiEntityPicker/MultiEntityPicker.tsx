@@ -120,6 +120,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
   );
   const {
     entities,
+    selectedEntities,
     entityRefToPresentation,
     loading,
     loadingState,
@@ -133,41 +134,45 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
 
   const onSelect = useCallback(
     (_: any, refs: (string | Entity)[], reason: AutocompleteChangeReason) => {
-      const values = refs
-        .map(ref => {
-          // If the ref is not a string, then it was a selected option in the picker
-          if (typeof ref !== 'string') {
-            // if ref does not exist: pass 'undefined' to trigger validation for required value
-            return ref ? stringifyEntityRef(ref as Entity) : undefined;
-          }
+      const values = Array.from(
+        new Set(
+          refs
+            .map(ref => {
+              // If the ref is not a string, then it was a selected option in the picker
+              if (typeof ref !== 'string') {
+                // if ref does not exist: pass 'undefined' to trigger validation for required value
+                return ref ? stringifyEntityRef(ref as Entity) : undefined;
+              }
 
-          // Add in default namespace, etc.
-          let entityRef = ref;
-          try {
-            // Attempt to parse the entity ref into it's full form.
-            entityRef = stringifyEntityRef(
-              parseEntityRef(ref as string, {
-                defaultKind,
-                defaultNamespace,
-              }),
-            );
-          } catch (err) {
-            // If the passed in value isn't an entity ref, do nothing.
-          }
+              // Add in default namespace, etc.
+              let entityRef = ref;
+              try {
+                // Attempt to parse the entity ref into it's full form.
+                entityRef = stringifyEntityRef(
+                  parseEntityRef(ref as string, {
+                    defaultKind,
+                    defaultNamespace,
+                  }),
+                );
+              } catch (err) {
+                // If the passed in value isn't an entity ref, do nothing.
+              }
 
-          // We need to check against formData here as that's the previous value for this field.
-          if (
-            // If value already matches what exists in form data, allow it
-            formData?.includes(ref) ||
-            // If arbitrary values are allowed and the reason is a free solo event, allow it
-            (allowArbitraryValues && FREE_SOLO_EVENTS.includes(reason))
-          ) {
-            return entityRef;
-          }
+              // We need to check against formData here as that's the previous value for this field.
+              if (
+                // If value already matches what exists in form data, allow it
+                formData?.includes(ref) ||
+                // If arbitrary values are allowed and the reason is a free solo event, allow it
+                (allowArbitraryValues && FREE_SOLO_EVENTS.includes(reason))
+              ) {
+                return entityRef;
+              }
 
-          return undefined;
-        })
-        .filter(ref => ref !== undefined) as string[];
+              return undefined;
+            })
+            .filter(ref => ref !== undefined) as string[],
+        ),
+      );
 
       setNoOfItemsSelected(values.length);
       setSearchText('');
@@ -201,6 +206,16 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
     () => allOptions.filter(o => !selectedEntityRefs.includes(o.value)),
     [allOptions, selectedEntityRefs],
   );
+
+  const muiOptions = useMemo(() => {
+    const entityRefs = new Set(entities.map(stringifyEntityRef));
+    return [
+      ...selectedEntities.filter(
+        entity => !entityRefs.has(stringifyEntityRef(entity)),
+      ),
+      ...entities,
+    ];
+  }, [entities, selectedEntities]);
 
   const [inputValue, setInputValue] = useState('');
 
@@ -357,7 +372,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
         defaultValue={formData}
         loading={loading}
         onChange={onSelect}
-        options={entities}
+        options={muiOptions}
         onInputChange={(_event, value, reason) => {
           if (reason === 'input' || reason === 'clear') {
             setSearchText(value);
@@ -371,6 +386,22 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
             : entityRefToPresentation.get(stringifyEntityRef(option))
                 ?.entityRef!
         }
+        getOptionSelected={(option, value) => {
+          const normalizeRef = (item: string | Entity) => {
+            if (typeof item !== 'string') {
+              return stringifyEntityRef(item);
+            }
+            try {
+              return stringifyEntityRef(
+                parseEntityRef(item, { defaultKind, defaultNamespace }),
+              );
+            } catch {
+              return undefined;
+            }
+          };
+          const optionRef = normalizeRef(option);
+          return optionRef !== undefined && optionRef === normalizeRef(value);
+        }}
         getOptionDisabled={_options =>
           maxItems ? noOfItemsSelected >= maxItems : false
         }
