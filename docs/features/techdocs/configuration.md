@@ -114,6 +114,25 @@ techdocs:
       defaultPlugins: ['techdocs-core']
 ```
 
+#### Permitted MkDocs Plugins
+
+TechDocs validates MkDocs plugin declarations in `mkdocs.yml` during documentation generation. By default, it permits `techdocs-core`, `search`, `material/search`, `redirects`, `group`, and `material/group`. Other plugins are removed before the build runs, and a warning is logged.
+
+If your documentation requires another plugin, you can extend the permitted set using `dangerouslyAllowAdditionalPlugins`. Only allow plugins that have been audited for use in your environment, including every configuration option that documentation authors can supply. MkDocs plugins run as part of documentation generation and may, for example, make outbound requests or execute code.
+
+**Example:**
+
+```yaml
+techdocs:
+  generator:
+    mkdocs:
+      dangerouslyAllowAdditionalPlugins:
+        - my-custom-plugin
+        - another-plugin
+```
+
+Plugins listed in `defaultPlugins` are also automatically permitted and carry the same trust considerations. When using the TechDocs CLI, use `--defaultPlugin` to both add and permit a plugin.
+
 ## Builder Configuration
 
 `techdocs.builder`

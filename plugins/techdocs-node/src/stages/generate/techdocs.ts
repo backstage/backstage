@@ -129,11 +129,17 @@ export class TechdocsGenerator implements GeneratorBase {
     // validate the docs_dir first
     const docsDir = await validateMkdocsYaml(inputDir, content);
 
-    // Remove unsupported configuration keys
+    const defaultPlugins = [...(this.options.defaultPlugins ?? [])];
+
+    // Remove unsupported configuration keys and plugins
     await sanitizeMkdocsYml(
       mkdocsYmlPath,
       childLogger,
       this.options.dangerouslyAllowAdditionalKeys,
+      [
+        ...(this.options.dangerouslyAllowAdditionalPlugins ?? []),
+        ...defaultPlugins,
+      ],
     );
 
     // Validate that no symlinks in the docs directory point outside the input directory
@@ -155,8 +161,6 @@ export class TechdocsGenerator implements GeneratorBase {
     }
 
     // patch the list of mkdocs plugins
-    const defaultPlugins = this.options.defaultPlugins ?? [];
-
     if (
       !this.options.omitTechdocsCoreMkdocsPlugin &&
       !defaultPlugins.includes('techdocs-core')
@@ -284,6 +288,9 @@ export function readGeneratorConfig(
     ),
     dangerouslyAllowAdditionalKeys: config.getOptionalStringArray(
       'techdocs.generator.mkdocs.dangerouslyAllowAdditionalKeys',
+    ),
+    dangerouslyAllowAdditionalPlugins: config.getOptionalStringArray(
+      'techdocs.generator.mkdocs.dangerouslyAllowAdditionalPlugins',
     ),
   };
 }

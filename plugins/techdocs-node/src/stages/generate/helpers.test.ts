@@ -145,6 +145,12 @@ const mkdocsYmlWithMultiKeyDangerousExtension = fs.readFileSync(
 const mkdocsYmlWithThemeCustomDir = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs_with_theme_custom_dir.yml'),
 );
+const mkdocsYmlWithUnsupportedPlugins = fs.readFileSync(
+  resolvePath(
+    __filename,
+    '../__fixtures__/mkdocs_with_unsupported_plugins.yml',
+  ),
+);
 const mockLogger = mockServices.logger.mock();
 const warn = jest.spyOn(mockLogger, 'warn');
 
@@ -866,6 +872,126 @@ extra_templates:
       expect(warn).toHaveBeenCalledWith(
         expect.stringContaining('extra_templates'),
       );
+    });
+
+    it('should keep only supported MkDocs plugins and preserve their configuration', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': mkdocsYmlWithUnsupportedPlugins,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        plugins: unknown[];
+      };
+
+      expect(parsedYml.plugins).toEqual([
+        'search',
+        {
+          group: {
+            plugins: ['redirects'],
+          },
+        },
+        {
+          'material/group': {
+            plugins: [{ search: null }],
+          },
+        },
+        {
+          redirects: {
+            redirect_maps: {
+              'old.md': 'new.md',
+            },
+          },
+        },
+      ]);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'privacy, material/privacy, table-reader, dynamically configured plugin name, custom-plugin, malformed plugin declaration, projects',
+        ),
+      );
+    });
+
+    it('should preserve explicitly allowed MkDocs plugins', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+plugins:
+  - table-reader:
+      data_path: data.csv
+  - custom-plugin
+`,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs.yml'),
+        mockLogger,
+        undefined,
+        ['table-reader', 'custom-plugin'],
+      );
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        plugins: unknown[];
+      };
+
+      expect(parsedYml.plugins).toEqual([
+        { 'table-reader': { data_path: 'data.csv' } },
+        'custom-plugin',
+      ]);
+    });
+
+    it('should normalize mapping-style MkDocs plugin declarations before filtering', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+plugins:
+  search:
+  material/privacy:
+    enabled: true
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        plugins: unknown[];
+      };
+
+      expect(parsedYml.plugins).toEqual([{ search: null }]);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('material/privacy'),
+      );
+    });
+
+    it('should fail when the configuration cannot be sanitized', async () => {
+      await expect(
+        sanitizeMkdocsYml(mockDir.resolve('missing.yml'), mockLogger),
+      ).rejects.toThrow();
+
+      mockDir.setContent({
+        'mkdocs.yml': 'site_name: [unterminated',
+      });
+
+      await expect(
+        sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger),
+      ).rejects.toThrow();
+
+      mockDir.setContent({
+        'mkdocs.yml': 'site_name: Test\n',
+      });
+      const writeFile = jest
+        .spyOn(fs, 'writeFile')
+        .mockImplementationOnce(() => {
+          throw new Error('write failed');
+        });
+      try {
+        await expect(
+          sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger),
+        ).rejects.toThrow('write failed');
+      } finally {
+        writeFile.mockRestore();
+      }
     });
 
     it('should allow extra templates when explicitly configured', async () => {

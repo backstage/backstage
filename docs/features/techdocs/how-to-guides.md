@@ -754,7 +754,11 @@ Then publish the image and use it in your config under the `techdocs.generator.d
 
 To use the plugin, it has to be listed in the `mkdocs.yaml` file. You can either add the plugin to your applicable files, or specify defaults.
 
-To make a mkdocs plugin available for all your TechDocs components you can either list it in the `techdocs.generator.mkdocs.defaultPlugins` [config](https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend/config.d.ts#L64C14-L64C14), or use the `--defaultPlugin` [cli option](https://backstage.io/docs/features/techdocs/cli#generate-techdocs-site-from-a-documentation-project) depending on your setup.
+TechDocs validates MkDocs plugin declarations and permits a small built-in set by default. If your plugin is not in that set, explicitly allow it using `techdocs.generator.mkdocs.dangerouslyAllowAdditionalPlugins` in your app-config.
+
+To also make the plugin available by default for all your TechDocs components, add it to `techdocs.generator.mkdocs.defaultPlugins` or use the `--defaultPlugin` CLI option. Plugins listed in `defaultPlugins` are automatically permitted, so you do not need to list them in both places.
+
+See the [Permitted MkDocs Plugins](./configuration.md#permitted-mkdocs-plugins) configuration reference for more details.
 
 ## Reference another components TechDocs
 
