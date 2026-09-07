@@ -75,6 +75,8 @@ export function useEntityPickerOptions(options: {
   const selectedRequestGeneration = useRef(0);
   const searchTextRef = useRef('');
   const settledSearchTextRef = useRef<string>();
+  const nextLoadMoreRequest = useRef(0);
+  const activeLoadMoreRequest = useRef<number>();
 
   const presentEntities = useCallback(
     async (entities: Entity[]) =>
@@ -94,7 +96,7 @@ export function useEntityPickerOptions(options: {
 
   const setSearchText = useCallback(
     (value: string) => {
-      if (value === searchText) {
+      if (value === searchTextRef.current) {
         return;
       }
       searchTextRef.current = value;
@@ -107,13 +109,14 @@ export function useEntityPickerOptions(options: {
             : 'idle',
       }));
     },
-    [enabled, searchText],
+    [enabled],
   );
 
   useDebounce(() => setDebouncedSearchText(searchText), 250, [searchText]);
 
   useEffect(() => {
     const generation = ++requestGeneration.current;
+    activeLoadMoreRequest.current = undefined;
     if (!enabled) {
       setState({
         entities: [],
@@ -181,12 +184,19 @@ export function useEntityPickerOptions(options: {
   ]);
 
   const loadMore = useCallback(() => {
-    if (!enabled || !state.nextCursor || state.loadingState !== 'idle') {
+    if (
+      !enabled ||
+      !state.nextCursor ||
+      state.loadingState !== 'idle' ||
+      activeLoadMoreRequest.current !== undefined
+    ) {
       return;
     }
 
     const generation = requestGeneration.current;
     const cursor = state.nextCursor;
+    const loadMoreRequest = ++nextLoadMoreRequest.current;
+    activeLoadMoreRequest.current = loadMoreRequest;
     setState(previous => ({ ...previous, loadingState: 'loadingMore' }));
     catalogApi
       .queryEntities({
@@ -195,7 +205,14 @@ export function useEntityPickerOptions(options: {
       })
       .then(async response => {
         const presentations = await presentEntities(response.items);
-        if (generation === requestGeneration.current) {
+        if (activeLoadMoreRequest.current !== loadMoreRequest) {
+          return;
+        }
+        activeLoadMoreRequest.current = undefined;
+        if (
+          generation === requestGeneration.current &&
+          debouncedSearchText === searchTextRef.current
+        ) {
           setState(previous => ({
             ...previous,
             entities: [...previous.entities, ...response.items],
@@ -209,12 +226,20 @@ export function useEntityPickerOptions(options: {
         }
       })
       .catch(() => {
-        if (generation === requestGeneration.current) {
+        if (activeLoadMoreRequest.current !== loadMoreRequest) {
+          return;
+        }
+        activeLoadMoreRequest.current = undefined;
+        if (
+          generation === requestGeneration.current &&
+          debouncedSearchText === searchTextRef.current
+        ) {
           setState(previous => ({ ...previous, loadingState: 'idle' }));
         }
       });
   }, [
     catalogApi,
+    debouncedSearchText,
     enabled,
     presentEntities,
     state.loadingState,

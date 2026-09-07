@@ -198,8 +198,10 @@ describe('useEntityPickerOptions', () => {
     );
     await act(async () => {});
 
-    act(() => result.current.setSearchText('team'));
-    act(() => result.current.setSearchText(''));
+    act(() => {
+      result.current.setSearchText('team');
+      result.current.setSearchText('');
+    });
     await act(async () => {
       initialSearch.resolve({
         items: [entity],
@@ -237,7 +239,11 @@ describe('useEntityPickerOptions', () => {
     );
     await waitFor(() => expect(result.current.entities).toEqual([entity]));
 
-    act(() => result.current.loadMore());
+    act(() => {
+      result.current.loadMore();
+      result.current.loadMore();
+    });
+    expect(catalogApi.queryEntities).toHaveBeenCalledTimes(2);
     await waitFor(() =>
       expect(result.current.entities).toEqual([entity, otherEntity]),
     );
@@ -278,6 +284,40 @@ describe('useEntityPickerOptions', () => {
       expect(result.current.entities).toEqual([entity, otherEntity]),
     );
     expect(catalogApi.queryEntities).toHaveBeenCalledTimes(3);
+  });
+
+  it('ignores a page that resolves after the search input changes', async () => {
+    jest.useFakeTimers();
+    const nextPage = deferred<{
+      items: Entity[];
+      totalItems: number;
+      pageInfo: {};
+    }>();
+    catalogApi.queryEntities
+      .mockResolvedValueOnce({
+        items: [entity],
+        totalItems: 0,
+        pageInfo: { nextCursor: 'next-page' },
+      })
+      .mockReturnValueOnce(nextPage.promise);
+    const { result } = renderHook(
+      () => useEntityPickerOptions({ selectedEntityRefs: [] }),
+      { wrapper },
+    );
+    await waitFor(() => expect(result.current.entities).toEqual([entity]));
+
+    act(() => result.current.loadMore());
+    act(() => result.current.setSearchText('team'));
+    await act(async () => {
+      nextPage.resolve({
+        items: [otherEntity],
+        totalItems: 0,
+        pageInfo: {},
+      });
+    });
+
+    expect(result.current.entities).toEqual([entity]);
+    expect(result.current.loadingState).toBe('filtering');
   });
 
   it('does not let an obsolete search replace newer results', async () => {

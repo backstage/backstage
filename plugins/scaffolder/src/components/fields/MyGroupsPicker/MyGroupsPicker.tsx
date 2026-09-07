@@ -21,6 +21,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import {
@@ -131,7 +132,7 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
   // BUI: options
   const buiOptions = useMemo(
     () =>
-      entities.map(entity => {
+      muiOptions.map(entity => {
         const entityRef = stringifyEntityRef(entity);
         const presentation = entityRefToPresentation.get(entityRef);
         return {
@@ -139,19 +140,23 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
           label: presentation?.primaryTitle || entityRef,
         };
       }),
-    [entities, entityRefToPresentation],
+    [muiOptions, entityRefToPresentation],
   );
 
   const [inputValue, setInputValue] = useState('');
+  const inputIsDirtyRef = useRef(false);
+  const previousFormDataRef = useRef(formData);
   const selectedPresentationTitle = formData
     ? entityRefToPresentation.get(formData)?.primaryTitle
     : undefined;
 
   useEffect(() => {
-    if (formData) {
-      setInputValue(selectedPresentationTitle || formData);
-    } else {
-      setInputValue('');
+    if (previousFormDataRef.current !== formData) {
+      previousFormDataRef.current = formData;
+      inputIsDirtyRef.current = false;
+    }
+    if (!inputIsDirtyRef.current) {
+      setInputValue(formData ? selectedPresentationTitle || formData : '');
     }
   }, [formData, selectedPresentationTitle]);
 
@@ -160,6 +165,7 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
 
   const handleSelectionChange = useCallback(
     (key: Key | null) => {
+      inputIsDirtyRef.current = false;
       setSearchText('');
       onChange(key !== null ? String(key) : '');
     },
@@ -195,6 +201,7 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
             mode: 'server',
             inputValue,
             onInputChange: value => {
+              inputIsDirtyRef.current = true;
               setInputValue(value);
               setSearchText(value);
             },

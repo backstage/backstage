@@ -85,10 +85,22 @@ export const EntityPicker = (props: EntityPickerProps) => {
 
   const allowArbitraryValues =
     uiSchema['ui:options']?.allowArbitraryValues ?? true;
-  const selectedEntityRefs = useMemo(
-    () => (formData ? [formData] : []),
-    [formData],
-  );
+  const selectedEntityRefs = useMemo(() => {
+    if (!formData) {
+      return [];
+    }
+
+    try {
+      return [
+        stringifyEntityRef(
+          parseEntityRef(formData, { defaultKind, defaultNamespace }),
+        ),
+      ];
+    } catch {
+      return [];
+    }
+  }, [formData, defaultKind, defaultNamespace]);
+  const normalizedFormData = selectedEntityRefs[0] ?? formData;
   const {
     entities,
     selectedEntities,
@@ -159,8 +171,8 @@ export const EntityPicker = (props: EntityPickerProps) => {
   // Since free solo can be enabled, attempt to parse as a full entity ref first, then
   // fall back to the given value.
   const selectedEntity =
-    entities.find(e => stringifyEntityRef(e) === formData) ??
-    selectedEntities.find(e => stringifyEntityRef(e) === formData) ??
+    entities.find(e => stringifyEntityRef(e) === normalizedFormData) ??
+    selectedEntities.find(e => stringifyEntityRef(e) === normalizedFormData) ??
     (allowArbitraryValues && formData ? getLabel(formData) : '');
   const muiOptions = useMemo(() => {
     if (
@@ -176,7 +188,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
   // BUI: options for autocomplete
   const buiOptions = useMemo(
     () =>
-      entities.map(entity => {
+      muiOptions.map(entity => {
         const entityRef = stringifyEntityRef(entity);
         const presentation = entityRefToPresentation.get(entityRef);
         return {
@@ -184,25 +196,31 @@ export const EntityPicker = (props: EntityPickerProps) => {
           label: presentation?.primaryTitle || entityRef,
         };
       }),
-    [entities, entityRefToPresentation],
+    [muiOptions, entityRefToPresentation],
   );
 
   // BUI: controlled input value
   const [inputValue, setInputValue] = useState(formData || '');
+  const inputIsDirtyRef = useRef(false);
+  const previousFormDataRef = useRef(formData);
   const selectedPresentationTitle = formData
-    ? entityRefToPresentation.get(formData)?.primaryTitle
+    ? entityRefToPresentation.get(normalizedFormData)?.primaryTitle
     : undefined;
 
   useEffect(() => {
-    if (formData) {
-      setInputValue(selectedPresentationTitle || formData);
-    } else {
-      setInputValue('');
+    if (previousFormDataRef.current !== formData) {
+      previousFormDataRef.current = formData;
+      inputIsDirtyRef.current = false;
+    }
+    if (!inputIsDirtyRef.current) {
+      setInputValue(formData ? selectedPresentationTitle || formData : '');
     }
   }, [formData, selectedPresentationTitle]);
 
   const selectedKey =
-    formData && buiOptions.some(o => o.value === formData) ? formData : null;
+    normalizedFormData && buiOptions.some(o => o.value === normalizedFormData)
+      ? normalizedFormData
+      : null;
 
   const lastCommittedRef = useRef(formData);
 
@@ -212,6 +230,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
 
   const handleSelectionChange = useCallback(
     (key: Key | null) => {
+      inputIsDirtyRef.current = false;
       setSearchText('');
       if (key !== null) {
         const value = String(key);
@@ -255,6 +274,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
       }
       if (lastCommittedRef.current !== entityRef) {
         lastCommittedRef.current = entityRef;
+        inputIsDirtyRef.current = false;
         setSearchText('');
         onChange(entityRef);
       }
@@ -325,6 +345,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
             mode: 'server',
             inputValue,
             onInputChange: value => {
+              inputIsDirtyRef.current = true;
               setInputValue(value);
               setSearchText(value);
             },

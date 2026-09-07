@@ -198,6 +198,26 @@ describe('<MultiEntityPicker />', () => {
         expect.not.objectContaining({ fullTextFilter: expect.anything() }),
       );
     });
+
+    it('looks up valid selected refs without arbitrary values', async () => {
+      props = {
+        ...props,
+        formData: ['arbitrary-value', 'group:default/team-a'],
+      } as unknown as FieldProps<string[]>;
+
+      await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+      await waitFor(() =>
+        expect(catalogApi.queryEntities).toHaveBeenCalledTimes(1),
+      );
+
+      expect(catalogApi.getEntitiesByRefs).toHaveBeenCalledWith({
+        entityRefs: ['group:default/team-a'],
+      });
+    });
   });
 
   describe('with catalogFilter', () => {

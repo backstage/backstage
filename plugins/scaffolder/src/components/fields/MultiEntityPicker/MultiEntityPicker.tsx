@@ -94,6 +94,21 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
   const [noOfItemsSelected, setNoOfItemsSelected] = useState(0);
 
   const selectedValues = useMemo(() => formData || [], [formData]);
+  const selectedEntityRefs = useMemo(
+    () =>
+      selectedValues.flatMap(value => {
+        try {
+          return [
+            stringifyEntityRef(
+              parseEntityRef(value, { defaultKind, defaultNamespace }),
+            ),
+          ];
+        } catch {
+          return [];
+        }
+      }),
+    [selectedValues, defaultKind, defaultNamespace],
+  );
   const {
     entities,
     entityRefToPresentation,
@@ -104,7 +119,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
     initialResultIsOnlyOption,
   } = useEntityPickerOptions({
     catalogFilter,
-    selectedEntityRefs: selectedValues,
+    selectedEntityRefs,
   });
 
   const onSelect = useCallback(
