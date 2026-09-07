@@ -350,6 +350,39 @@ describe('<MyGroupsPicker />', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
+  it('does not clear a BUI group while its entity is loading', async () => {
+    mockUseScaffolderTheme.mockReturnValue('bui');
+    catalogApi.getEntitiesByRefs.mockReturnValueOnce(new Promise(() => {}));
+    const props = {
+      onChange,
+      schema,
+      required,
+      uiSchema: {},
+      formData: 'group:default/off-page',
+    } as unknown as FieldProps<string>;
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [identityApiRef, mockIdentityApi],
+          [catalogApiRef, catalogApi],
+          [errorApiRef, mockErrorApi],
+          [
+            entityPresentationApiRef,
+            DefaultEntityPresentationApi.create({ catalogApi }),
+          ],
+        ]}
+      >
+        <MyGroupsPicker {...props} />
+      </TestApiProvider>,
+    );
+    const input = screen.getByRole('combobox');
+
+    fireEvent.focus(input);
+    fireEvent.blur(input);
+
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
   it('should call the onChange handler with the correct entityRef and and use a nice display name', async () => {
     const userGroups = [
       {

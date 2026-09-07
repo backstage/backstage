@@ -35,7 +35,11 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { EntityDisplayName } from '@backstage/plugin-catalog-react';
 import { NotFoundError } from '@backstage/errors';
 import useAsync from 'react-use/esm/useAsync';
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  Entity,
+  parseEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { VirtualizedListbox } from '../VirtualizedListbox';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
@@ -92,9 +96,19 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
         : undefined,
     [userEntityRef],
   );
+  const selectedEntityRef = useMemo(() => {
+    if (!formData) {
+      return undefined;
+    }
+    try {
+      return stringifyEntityRef(parseEntityRef(formData));
+    } catch {
+      return undefined;
+    }
+  }, [formData]);
   const selectedEntityRefs = useMemo(
-    () => (formData ? [formData] : []),
-    [formData],
+    () => (selectedEntityRef ? [selectedEntityRef] : []),
+    [selectedEntityRef],
   );
   const {
     entities,
@@ -118,8 +132,8 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
   };
 
   const selectedEntity =
-    entities.find(e => stringifyEntityRef(e) === formData) ??
-    selectedEntities.find(e => stringifyEntityRef(e) === formData) ??
+    entities.find(e => stringifyEntityRef(e) === selectedEntityRef) ??
+    selectedEntities.find(e => stringifyEntityRef(e) === selectedEntityRef) ??
     null;
   const muiOptions = useMemo(
     () =>
@@ -130,24 +144,35 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
   );
 
   // BUI: options
-  const buiOptions = useMemo(
-    () =>
-      muiOptions.map(entity => {
-        const entityRef = stringifyEntityRef(entity);
-        const presentation = entityRefToPresentation.get(entityRef);
-        return {
-          value: entityRef,
-          label: presentation?.primaryTitle || entityRef,
-        };
-      }),
-    [muiOptions, entityRefToPresentation],
-  );
+  const buiOptions = useMemo(() => {
+    const options = muiOptions.map(entity => {
+      const entityRef = stringifyEntityRef(entity);
+      const presentation = entityRefToPresentation.get(entityRef);
+      return {
+        value: entityRef,
+        label: presentation?.primaryTitle || entityRef,
+      };
+    });
+    if (
+      selectedEntityRef &&
+      !options.some(option => option.value === selectedEntityRef)
+    ) {
+      options.unshift({
+        value: selectedEntityRef,
+        label:
+          entityRefToPresentation.get(selectedEntityRef)?.primaryTitle ||
+          formData ||
+          selectedEntityRef,
+      });
+    }
+    return options;
+  }, [entityRefToPresentation, formData, muiOptions, selectedEntityRef]);
 
   const [inputValue, setInputValue] = useState('');
   const inputIsDirtyRef = useRef(false);
   const previousFormDataRef = useRef(formData);
   const selectedPresentationTitle = formData
-    ? entityRefToPresentation.get(formData)?.primaryTitle
+    ? entityRefToPresentation.get(selectedEntityRef ?? formData)?.primaryTitle
     : undefined;
 
   useEffect(() => {
@@ -161,7 +186,9 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
   }, [formData, selectedPresentationTitle]);
 
   const selectedKey =
-    formData && buiOptions.some(o => o.value === formData) ? formData : null;
+    selectedEntityRef && buiOptions.some(o => o.value === selectedEntityRef)
+      ? selectedEntityRef
+      : null;
 
   const handleSelectionChange = useCallback(
     (key: Key | null) => {

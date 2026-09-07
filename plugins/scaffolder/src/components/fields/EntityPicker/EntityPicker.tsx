@@ -186,18 +186,30 @@ export const EntityPicker = (props: EntityPickerProps) => {
   }, [entities, selectedEntity]);
 
   // BUI: options for autocomplete
-  const buiOptions = useMemo(
-    () =>
-      muiOptions.map(entity => {
-        const entityRef = stringifyEntityRef(entity);
-        const presentation = entityRefToPresentation.get(entityRef);
-        return {
-          value: entityRef,
-          label: presentation?.primaryTitle || entityRef,
-        };
-      }),
-    [muiOptions, entityRefToPresentation],
-  );
+  const buiOptions = useMemo(() => {
+    const options = muiOptions.map(entity => {
+      const entityRef = stringifyEntityRef(entity);
+      const presentation = entityRefToPresentation.get(entityRef);
+      return {
+        value: entityRef,
+        label: presentation?.primaryTitle || entityRef,
+      };
+    });
+    const selectedEntityRef = selectedEntityRefs[0];
+    if (
+      selectedEntityRef &&
+      !options.some(option => option.value === selectedEntityRef)
+    ) {
+      options.unshift({
+        value: selectedEntityRef,
+        label:
+          entityRefToPresentation.get(selectedEntityRef)?.primaryTitle ||
+          formData ||
+          selectedEntityRef,
+      });
+    }
+    return options;
+  }, [entityRefToPresentation, formData, muiOptions, selectedEntityRefs]);
 
   // BUI: controlled input value
   const [inputValue, setInputValue] = useState(formData || '');
@@ -245,8 +257,10 @@ export const EntityPicker = (props: EntityPickerProps) => {
         } catch {
           // If the input isn't a valid entity ref, use it as-is
         }
-        lastCommittedRef.current = entityRef;
-        onChange(entityRef);
+        if (lastCommittedRef.current !== entityRef) {
+          lastCommittedRef.current = entityRef;
+          onChange(entityRef);
+        }
       } else {
         lastCommittedRef.current = undefined;
         onChange(undefined);
@@ -263,7 +277,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
   );
 
   const handleBlur = useCallback(() => {
-    if (allowArbitraryValues && inputValue) {
+    if (allowArbitraryValues && inputIsDirtyRef.current && inputValue) {
       let entityRef = inputValue;
       try {
         entityRef = stringifyEntityRef(

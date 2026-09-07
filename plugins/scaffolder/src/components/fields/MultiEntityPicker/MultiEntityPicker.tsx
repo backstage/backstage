@@ -94,20 +94,29 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
   const [noOfItemsSelected, setNoOfItemsSelected] = useState(0);
 
   const selectedValues = useMemo(() => formData || [], [formData]);
-  const selectedEntityRefs = useMemo(
+  const selectedValueToEntityRef = useMemo(
     () =>
-      selectedValues.flatMap(value => {
-        try {
-          return [
-            stringifyEntityRef(
-              parseEntityRef(value, { defaultKind, defaultNamespace }),
-            ),
-          ];
-        } catch {
-          return [];
-        }
-      }),
+      new Map(
+        selectedValues.flatMap(value => {
+          try {
+            return [
+              [
+                value,
+                stringifyEntityRef(
+                  parseEntityRef(value, { defaultKind, defaultNamespace }),
+                ),
+              ] as const,
+            ];
+          } catch {
+            return [];
+          }
+        }),
+      ),
     [selectedValues, defaultKind, defaultNamespace],
+  );
+  const selectedEntityRefs = useMemo(
+    () => Array.from(new Set(selectedValueToEntityRef.values())),
+    [selectedValueToEntityRef],
   );
   const {
     entities,
@@ -189,8 +198,8 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
   );
 
   const availableOptions = useMemo(
-    () => allOptions.filter(o => !selectedValues.includes(o.value)),
-    [allOptions, selectedValues],
+    () => allOptions.filter(o => !selectedEntityRefs.includes(o.value)),
+    [allOptions, selectedEntityRefs],
   );
 
   const [inputValue, setInputValue] = useState('');
@@ -204,7 +213,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
 
       if (key !== null) {
         const newValue = String(key);
-        if (!selectedValues.includes(newValue)) {
+        if (!selectedEntityRefs.includes(newValue)) {
           onChange([...selectedValues, newValue]);
         }
       } else if (allowArbitraryValues && inputValue) {
@@ -216,7 +225,10 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
         } catch {
           // If the input isn't a valid entity ref, use it as-is
         }
-        if (!selectedValues.includes(entityRef)) {
+        if (
+          !selectedValues.includes(entityRef) &&
+          !selectedEntityRefs.includes(entityRef)
+        ) {
           onChange([...selectedValues, entityRef]);
         }
       }
@@ -225,6 +237,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
     },
     [
       atMaxItems,
+      selectedEntityRefs,
       selectedValues,
       onChange,
       allowArbitraryValues,
@@ -277,9 +290,10 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
               }}
             >
               {selectedValues.map(value => {
+                const entityRef = selectedValueToEntityRef.get(value) ?? value;
                 const label =
-                  allOptions.find(o => o.value === value)?.label ||
-                  entityRefToPresentation.get(value)?.primaryTitle ||
+                  allOptions.find(o => o.value === entityRef)?.label ||
+                  entityRefToPresentation.get(entityRef)?.primaryTitle ||
                   value;
                 return (
                   <span key={value} style={chipStyle}>
