@@ -218,6 +218,40 @@ describe('<MultiEntityPicker />', () => {
         entityRefs: ['group:default/team-a'],
       });
     });
+
+    it('does not offer or add a canonical duplicate of a shorthand BUI value', async () => {
+      mockUseScaffolderTheme.mockReturnValue('bui');
+      catalogApi.getEntitiesByRefs.mockResolvedValueOnce({
+        items: [
+          {
+            ...entities[0],
+            metadata: { ...entities[0].metadata, title: 'Team A' },
+          },
+        ],
+      });
+      props = {
+        ...props,
+        formData: ['team-a'],
+        uiSchema: { 'ui:options': { defaultKind: 'Group' } },
+      } as unknown as FieldProps<string[]>;
+      await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+      const input = screen.getByRole('combobox');
+      await userEvent.click(
+        screen.getByRole('button', { name: /Show suggestions/ }),
+      );
+
+      expect(screen.getByText('Team A')).toBeInTheDocument();
+      expect(
+        screen.queryByRole('option', { name: 'Team A' }),
+      ).not.toBeInTheDocument();
+      fireEvent.change(input, { target: { value: 'team-a' } });
+      fireEvent.blur(input);
+      expect(onChange).not.toHaveBeenCalled();
+    });
   });
 
   describe('with catalogFilter', () => {

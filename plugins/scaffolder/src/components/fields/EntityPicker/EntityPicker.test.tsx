@@ -232,6 +232,97 @@ describe('<EntityPicker />', () => {
       expect(onChange).not.toHaveBeenCalled();
     });
 
+    it('does not clear a BUI selection while its entity is loading', async () => {
+      mockUseScaffolderTheme.mockReturnValue('bui');
+      catalogApi.getEntitiesByRefs.mockReturnValueOnce(new Promise(() => {}));
+      props = {
+        ...props,
+        formData: 'group:default/off-page',
+        uiSchema: {
+          'ui:options': { allowArbitraryValues: false },
+        },
+      } as unknown as FieldProps<any>;
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+      const input = screen.getByRole('combobox');
+
+      fireEvent.focus(input);
+      fireEvent.blur(input);
+
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it.each(['missing', 'failed'] as const)(
+      'does not clear a BUI selection when its entity lookup is %s',
+      async outcome => {
+        mockUseScaffolderTheme.mockReturnValue('bui');
+        if (outcome === 'missing') {
+          catalogApi.getEntitiesByRefs.mockResolvedValueOnce({
+            items: [undefined],
+          });
+        } else {
+          catalogApi.getEntitiesByRefs.mockRejectedValueOnce(
+            new Error('catalog unavailable'),
+          );
+        }
+        props = {
+          ...props,
+          formData: 'group:default/off-page',
+          uiSchema: {
+            'ui:options': { allowArbitraryValues: false },
+          },
+        } as unknown as FieldProps<any>;
+        await renderInTestApp(
+          <Wrapper>
+            <EntityPicker {...props} />
+          </Wrapper>,
+        );
+        const input = screen.getByRole('combobox');
+        await waitFor(() =>
+          expect(catalogApi.getEntitiesByRefs).toHaveBeenCalled(),
+        );
+
+        fireEvent.focus(input);
+        fireEvent.blur(input);
+
+        expect(onChange).not.toHaveBeenCalled();
+      },
+    );
+
+    it('does not commit a BUI presentation title as an arbitrary value on blur', async () => {
+      mockUseScaffolderTheme.mockReturnValue('bui');
+      const selectedEntity = {
+        ...makeEntity('Group', 'default', 'off-page'),
+        metadata: {
+          namespace: 'default',
+          name: 'off-page',
+          title: 'Off Page Group',
+        },
+      };
+      catalogApi.getEntitiesByRefs.mockResolvedValueOnce({
+        items: [selectedEntity],
+      });
+      props = {
+        ...props,
+        formData: 'group:default/off-page',
+      } as unknown as FieldProps<any>;
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+      const input = screen.getByRole('combobox');
+      await waitFor(() => expect(input).toHaveValue('Off Page Group'));
+
+      fireEvent.focus(input);
+      fireEvent.blur(input);
+
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
     it('updates even if there is not an exact match', async () => {
       const { getByRole } = await renderInTestApp(
         <Wrapper>
