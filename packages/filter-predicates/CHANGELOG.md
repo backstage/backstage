@@ -1,5 +1,12 @@
 # @backstage/filter-predicates
 
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+
 ## 0.1.5-next.0
 
 ### Patch Changes

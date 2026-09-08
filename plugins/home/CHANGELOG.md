@@ -1,5 +1,18 @@
 # @backstage/plugin-home
 
+## 0.9.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/catalog-client@1.16.2-next.1
+  - @backstage/plugin-catalog-react@3.2.3-next.2
+  - @backstage/core-app-api@1.20.5-next.2
+  - @backstage/core-components@0.18.14-next.2
+  - @backstage/core-plugin-api@1.12.10-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.1
+
 ## 0.9.10-next.1
 
 ### Patch Changes

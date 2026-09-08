@@ -1,5 +1,13 @@
 # @backstage/ui
 
+## 0.18.0-next.2
+
+### Patch Changes
+
+- 0dd80f7: Fixed pagination state handling in `useTable`, including initial offsets, shrinking complete datasets, controlled loading transitions, valid zero and empty cursors, cached error recovery, immediately resolving reloads, and unnecessary reloads when controlled callback identities change.
+
+  **Affected components:** `useTable`
+
 ## 0.18.0-next.1
 
 ### Minor Changes

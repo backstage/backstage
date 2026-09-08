@@ -1,5 +1,18 @@
 # @backstage/plugin-techdocs-node
 
+## 1.16.0-next.1
+
+### Patch Changes
+
+- 1711594: Fixed local TechDocs generation when temporary source paths resolve through filesystem aliases.
+- e582b56: Fixed AWS S3 publishing to paginate existing objects in order to properly remove all stale TechDocs files.
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/integration@2.1.2-next.1
+  - @backstage/integration-aws-node@0.2.2-next.0
+  - @backstage/plugin-search-common@1.2.25-next.0
+
 ## 1.16.0-next.0
 
 ### Minor Changes
