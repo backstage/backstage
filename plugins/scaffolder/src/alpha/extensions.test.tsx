@@ -158,7 +158,7 @@ describe('scaffolder extensions', () => {
         ['false', false],
         ['empty string', ''],
       ])(
-'should filter out everything with falsy value (%s)',
+        'should filter out everything with falsy value (%s)',
         async (_name, value) => {
           const catalogMock = catalogApiMock({
             entities: [
