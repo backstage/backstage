@@ -35,6 +35,7 @@
   "dependencies": {
     "@backstage/cli-common": "workspace:^",
     "@backstage/cli-node": "workspace:^",
+    "@typescript-eslint/eslint-plugin": "^8.17.0",
     "chalk": "^4.0.0",
     "cleye": "^2.6.0",
     "eslint": "^8.6.0",

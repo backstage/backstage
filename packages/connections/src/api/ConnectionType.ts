@@ -164,10 +164,15 @@ export type ConnectionType<
   type: T['type'];
   title: string;
   cardinality: T['cardinality'];
+  /** Determines the query accepted by `ConnectionsService.find`. */
   lookupStrategy: T['lookupStrategy'];
   /** Schema for a complete connection configuration. */
   configSchema: PortableSchema<T['configSchema'], unknown>;
-  /** Supported auth methods and their method-specific configuration schemas. */
+  /**
+   * Supported auth methods and their method-specific configuration schemas.
+   * These schemas determine the auth values returned by
+   * `ConnectionsService.find`.
+   */
   authMethods: readonly (T['auth'][number] extends infer TAuth
     ? TAuth extends { method: string }
       ? {
@@ -177,16 +182,6 @@ export type ConnectionType<
         }
       : never
     : never)[];
-  /** Type-level accessor for the query shape accepted by `find()`. */
-  readonly query: T['query'];
-  /**
-   * Type-level accessor for the configured auth entry shapes. Each entry is
-   * the method discriminator plus the fields declared by that method's own
-   * config schema; framework-managed fields such as `title` and `match` are
-   * added by the shapes that need them rather than being part of the entries
-   * themselves.
-   */
-  readonly auth: T['auth'];
   matchAuth?(
     authMethods: ConnectionAuthValue<T['auth'][number]>[],
     query: T['query'],

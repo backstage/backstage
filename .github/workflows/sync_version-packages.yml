@@ -40,13 +40,43 @@ jobs:
         run: yarn --immutable
 
       - name: Create Release Pull Request
-        uses: backstage/changesets-action@a39baf18913e669734ffb00c2fd9900472cfa240 # v2.3.2
+        id: changesets
+        uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
         with:
+          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           # Calls out to `changeset version`, but also runs prettier
           version: yarn release
+          commit: |-
+            Version Packages
+
+            Signed-off-by: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+            Generated-by: changesets/action
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
           HUSKY: '0'
+
+      - name: Link Next Release Changelog
+        if: ${{ steps.changesets.outputs.pullRequestNumber != '' }}
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+          script: |
+            const fs = require('node:fs');
+            const { isNextReleaseVersion } = require('./scripts/create-release-changelog');
+            const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            if (!isNextReleaseVersion(packageJson.version)) {
+              core.info(`Keeping the generated pull request body for stable release ${packageJson.version}`);
+              return;
+            }
+            const changelogPath = `docs/releases/v${packageJson.version}-changelog.md`;
+            const pull_number = Number('${{ steps.changesets.outputs.pullRequestNumber }}');
+            const { stdout } = await exec.getExecOutput('git', ['rev-parse', 'HEAD']);
+            const releaseCommit = stdout.trim();
+            const body = `See [${changelogPath}](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/${releaseCommit}/${changelogPath}) for more information.`;
+            await github.rest.pulls.update({
+              ...context.repo,
+              pull_number,
+              body,
+            });
 
       - name: Discord notification
         if: ${{ failure() }}

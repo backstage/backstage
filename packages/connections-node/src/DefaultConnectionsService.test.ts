@@ -41,8 +41,9 @@ describe('DefaultConnectionsService', () => {
         authMethods: ['token'],
       });
 
-      expect(connection?.host).toBe('github.com');
-      expect(connection?.auth.method).toBe('token');
+      expect(connection.host).toBe('github.com');
+      expect(connection.auth.method).toBe('token');
+      expect(connection.auth.token).toBe('public-token');
     });
 
     it('hides connections that match a different plugin', async () => {

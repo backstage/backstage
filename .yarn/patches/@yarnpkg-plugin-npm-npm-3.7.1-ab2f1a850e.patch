@@ -1,0 +1,13 @@
+diff --git a/lib/npmPublishUtils.d.ts b/lib/npmPublishUtils.d.ts
+index 2991fd93b1614adfefe4ea6dfa2abd88c1575528..9d42daf33e239ff2a2367cb07c4d0e31080f8bf6 100644
+--- a/lib/npmPublishUtils.d.ts
++++ b/lib/npmPublishUtils.d.ts
+@@ -20,7 +20,7 @@ export declare function makePublishBody(workspace: Workspace, buffer: Buffer, {
+     name: string;
+     access: string;
+     "dist-tags": {
+-        [tag]: string;
++        [x: string]: string;
+     };
+     versions: {
+         [x: string]: {

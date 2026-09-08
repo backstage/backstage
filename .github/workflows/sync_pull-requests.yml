@@ -6,6 +6,10 @@ on:
     types:
       - completed
 
+permissions:
+  actions: read
+  pull-requests: read
+
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -36,15 +40,53 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            function read(path, fallback) {
+
+            function read(path, fallback = '') {
               try { return fs.readFileSync(path, 'utf8').trim(); }
               catch { return fallback; }
             }
-            core.setOutput('pr-number', read('./context/pr-number', ''));
-            core.setOutput('label-added', read('./context/label-added', ''));
-            core.setOutput('review-state', read('./context/review-state', ''));
-            core.setOutput('actor', read('./context/actor', ''));
-            core.setOutput('action', read('./context/action', 'synchronize'));
+
+            const workflowRun = context.payload.workflow_run;
+            const rawPrNumber = read('./context/pr-number');
+            const prNumber = Number(rawPrNumber);
+
+            if (
+              !/^[1-9]\d*$/.test(rawPrNumber) ||
+              !Number.isSafeInteger(prNumber)
+            ) {
+              core.setFailed('Invalid PR number in workflow artifact');
+              return;
+            }
+
+            if (workflowRun.event === 'pull_request') {
+              const { data: pullRequest } = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+              });
+
+              if (
+                pullRequest.head.sha !== workflowRun.head_sha ||
+                pullRequest.head.repo?.id !== workflowRun.head_repository?.id
+              ) {
+                core.setFailed(
+                  'PR context does not match the triggering workflow run',
+                );
+                return;
+              }
+
+              core.setOutput('label-added', '');
+              core.setOutput('review-state', '');
+              core.setOutput('actor', workflowRun.actor.login);
+              core.setOutput('action', 'synchronize');
+            } else {
+              core.setOutput('label-added', read('./context/label-added'));
+              core.setOutput('review-state', read('./context/review-state'));
+              core.setOutput('actor', read('./context/actor'));
+              core.setOutput('action', read('./context/action', 'synchronize'));
+            }
+
+            core.setOutput('pr-number', prNumber);
 
       - name: Backstage PR automation
         if: steps.context.outputs.pr-number
