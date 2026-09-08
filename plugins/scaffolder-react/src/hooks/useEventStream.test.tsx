@@ -259,6 +259,127 @@ describe('useTaskEventStream', () => {
     expect(mockApi.streamLogs).toHaveBeenCalledTimes(2);
   });
 
+  it('retries after transport error following completion on a recoverable task', async () => {
+    let streamSubscriber: ZenObservable.SubscriptionObserver<LogEvent>;
+    const mockApi = {
+      getTask: jest.fn().mockResolvedValue(
+        makeTask({
+          spec: {
+            apiVersion: 'scaffolder.backstage.io/v1beta3',
+            parameters: {},
+            steps: [{ id: 'step-1', name: 'Step 1', action: 'debug:log' }],
+            output: {},
+            EXPERIMENTAL_recovery: {
+              EXPERIMENTAL_strategy: 'startOver',
+            },
+          } as ScaffolderTask['spec'],
+        }),
+      ),
+      streamLogs: jest.fn().mockImplementation(
+        () =>
+          new ObservableImpl<LogEvent>(subscriber => {
+            streamSubscriber = subscriber;
+          }),
+      ),
+    };
+
+    const { result } = setup(mockApi);
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    act(() => {
+      streamSubscriber.next({
+        id: 1,
+        taskId: 'test-task-id',
+        type: 'completion',
+        createdAt: '2026-01-01T00:00:00Z',
+        body: { output: {} },
+      } as unknown as LogEvent);
+    });
+
+    expect(result.current.completed).toBe(true);
+
+    act(() => {
+      streamSubscriber.error(new Error('SSE connection closed'));
+    });
+
+    await act(async () => {
+      jest.advanceTimersByTime(15000);
+    });
+
+    expect(mockApi.streamLogs).toHaveBeenCalledTimes(2);
+    expect(result.current.error).toBeUndefined();
+    expect(result.current.completed).toBe(false);
+  });
+
+  it('does not open a stream when getTask resolves after tab was hidden', async () => {
+    let resolveGetTask: (task: ScaffolderTask) => void;
+    const task = makeTask();
+    const mockApi = {
+      getTask: jest
+        .fn()
+        .mockImplementationOnce(
+          () =>
+            new Promise<ScaffolderTask>(resolve => {
+              resolveGetTask = resolve;
+            }),
+        )
+        .mockResolvedValue(task),
+      streamLogs: jest.fn().mockImplementation(
+        () =>
+          new ObservableImpl<LogEvent>(() => {
+            // no-op
+          }),
+      ),
+    };
+
+    setup(mockApi);
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(mockApi.getTask).toHaveBeenCalledTimes(1);
+    expect(mockApi.streamLogs).not.toHaveBeenCalled();
+
+    Object.defineProperty(document, 'hidden', {
+      value: true,
+      writable: true,
+      configurable: true,
+    });
+    act(() => {
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+
+    await act(async () => {
+      resolveGetTask!(task);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(mockApi.streamLogs).not.toHaveBeenCalled();
+
+    Object.defineProperty(document, 'hidden', {
+      value: false,
+      writable: true,
+      configurable: true,
+    });
+    act(() => {
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(mockApi.getTask).toHaveBeenCalledTimes(2);
+    expect(mockApi.streamLogs).toHaveBeenCalledTimes(1);
+  });
+
   it('does not retry after stream completes via cancellation', async () => {
     let streamSubscriber: ZenObservable.SubscriptionObserver<LogEvent>;
     const mockApi = {

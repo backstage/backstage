@@ -263,12 +263,16 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
             case 'log':
               return collectedLogEvents.push(event);
             case 'cancelled':
-              isStreamComplete = true;
+              if (!isTaskRecoverable) {
+                isStreamComplete = true;
+              }
               emitLogs();
               dispatch({ type: 'CANCELLED' });
               return undefined;
             case 'completion':
-              isStreamComplete = true;
+              if (!isTaskRecoverable) {
+                isStreamComplete = true;
+              }
               emitLogs();
               dispatch({ type: 'COMPLETED', data: event });
               return undefined;
@@ -335,6 +339,7 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
     const onVisibilityChange = () => {
       if (didCancel || isStreamComplete) return;
       if (document.hidden) {
+        startGeneration++;
         cleanUpStream();
       } else if (hasInitialized) {
         reconnectStream();
