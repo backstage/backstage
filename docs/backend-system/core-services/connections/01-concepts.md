@@ -267,7 +267,9 @@ the connection service does not:
 A configured token may be directly usable, but the consumer is responsible for
 handling rejection or expiration. Other methods, such as an application, role,
 profile, or managed identity, return the fields needed by a separate credential
-provider.
+provider. See
+[Known credential providers](./consuming-connections.md#known-credential-providers)
+for a list of the built-in authentication methods that require one.
 
 For example, a GitHub `app` entry returns the application ID and private key. It
 does not return a GitHub installation token. A GitHub credential provider must

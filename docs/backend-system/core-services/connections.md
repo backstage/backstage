@@ -84,3 +84,14 @@ If you configure a Backstage instance, begin with
 If you maintain a backend plugin, read
 [Connection concepts](./connections/concepts.md) followed by
 [Consume connections](./connections/consuming-connections.md).
+
+## Migrating from legacy integrations
+
+The connection service can read existing `integrations` and top-level `aws`
+configuration at startup and convert it to connections automatically.
+Adopters do not need to change their existing configuration immediately.
+
+See [Migrate from legacy integrations](./connections/configuring-connections.md#migrate-from-legacy-integrations)
+for how automatic conversion works, precedence rules when legacy and explicit
+entries coexist, and a step-by-step guide for moving one connection type at a
+time.
