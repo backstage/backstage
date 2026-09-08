@@ -37,7 +37,7 @@ git log --diff-filter=A -n 1 --format='%H' -- <changeset-path>
 Then find the PR and author using `gh`:
 
 ```shell
-gh api repos/backstage/backstage/commits/<commit-sha>/pulls --jq '.[0] | {number: .number, login: .user.login}'
+gh api repos/backstage/backstage/commits/<commit-sha>/pulls --jq '.[0] // empty | {number: .number, login: .user.login}'
 ```
 
 If `gh` returns nothing, check the commit message for a `#NNN` reference. If neither works, flag the entry for manual review and use the git author name without a GitHub link.
