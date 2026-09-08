@@ -198,20 +198,24 @@ describe('KubernetesFetcher', () => {
     it('does not follow HTTP redirects when fetching resources', async () => {
       let redirectTargetCalled = false;
       worker.use(
-        rest.get('http://localhost:9999/api/v1/pods', (_, res, ctx) =>
-          res(
-            ctx.status(302),
-            ctx.set('Location', 'http://evil.example.com/api/v1/pods'),
-          ),
+        http.get(
+          'http://localhost:9999/api/v1/pods',
+          () =>
+            new HttpResponse(null, {
+              status: 302,
+              headers: {
+                Location: 'http://evil.example.com/api/v1/pods',
+              },
+            }),
         ),
-        rest.get('http://evil.example.com/api/v1/pods', () => {
+        http.get('http://evil.example.com/api/v1/pods', () => {
           redirectTargetCalled = true;
           throw new Error('redirect target must not be requested');
         }),
-        rest.get('http://localhost:9999/api/v1/services', (req, res, ctx) =>
-          res(
-            checkToken(req, ctx, 'token'),
-            withLabels(req, ctx, {
+        http.get('http://localhost:9999/api/v1/services', ({ request: req }) =>
+          response(
+            checkToken(req, 'token'),
+            withLabels(req, {
               items: [{ metadata: { name: 'service-name' } }],
             }),
           ),
@@ -1443,10 +1447,10 @@ describe('KubernetesFetcher', () => {
 
     it('should mask secret data requested as a custom resource, leaving other custom resources intact', async () => {
       worker.use(
-        rest.get('http://localhost:9999/api/v1/secrets', (req, res, ctx) =>
-          res(
-            checkToken(req, ctx, 'token'),
-            withLabels(req, ctx, {
+        http.get('http://localhost:9999/api/v1/secrets', ({ request: req }) =>
+          response(
+            checkToken(req, 'token'),
+            withLabels(req, {
               kind: 'SecretList',
               items: [
                 {
@@ -1460,12 +1464,12 @@ describe('KubernetesFetcher', () => {
             }),
           ),
         ),
-        rest.get(
+        http.get(
           'http://localhost:9999/apis/some-group/v2/things',
-          (req, res, ctx) =>
-            res(
-              checkToken(req, ctx, 'token'),
-              withLabels(req, ctx, {
+          ({ request: req }) =>
+            response(
+              checkToken(req, 'token'),
+              withLabels(req, {
                 kind: 'ThingList',
                 items: [
                   {
