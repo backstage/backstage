@@ -69,8 +69,8 @@ jobs:
                 pullRequest.head.sha !== workflowRun.head_sha ||
                 pullRequest.head.repo?.id !== workflowRun.head_repository?.id
               ) {
-                core.setFailed(
-                  'PR context does not match the triggering workflow run',
+                core.notice(
+                  'Ignoring stale PR context that does not match the triggering workflow run',
                 );
                 return;
               }
