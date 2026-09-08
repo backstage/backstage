@@ -31,7 +31,7 @@ For each valid changeset, extract:
 For each changeset file, find the commit that added it:
 
 ```shell
-git log --diff-filter=A --format='%H' -- <changeset-path>
+git log --diff-filter=A -n 1 --format='%H' -- <changeset-path>
 ```
 
 Then find the PR and author using `gh`:
