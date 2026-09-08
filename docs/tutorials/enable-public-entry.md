@@ -53,7 +53,7 @@ With that, Backstage's cli and backend will detect public entry point and serve 
    );
    ```
 
-   The `signInPageModule` is your custom sign-in page extension that you should already have configured in your app. The `appModulePublicSignIn` from `@backstage/plugin-app/alpha` provides the `CookieAuthRedirect` component that triggers an authenticated redirect to the main app after sign-in.
+   The `signInPageModule` is your custom sign-in page extension that you should already have configured in your app. The `appModulePublicSignIn` from `@backstage/plugin-app/alpha` provides the `CookieAuthRedirect` component that triggers an authenticated redirect to the main app after sign-in. Repeated redirect handoffs are safe and continue to the main app when the user is already authenticated.
 
    :::note
    The frontend will handle cookie refreshing automatically, so you don't have to worry about it.

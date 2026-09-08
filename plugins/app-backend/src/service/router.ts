@@ -166,29 +166,8 @@ export async function createRouter(
 
     const publicRouter = Router();
 
-    publicRouter.use(async (req, res, next) => {
-      try {
-        const credentials = await httpAuth.credentials(req, {
-          allow: ['user', 'service', 'none'],
-          allowLimitedAccess: true,
-        });
-
-        if (credentials.principal.type === 'none') {
-          next();
-        } else {
-          next('router');
-        }
-      } catch {
-        // If we fail to authenticate, make sure the session cookie is cleared
-        // and continue as unauthenticated. If the user is logged in they will
-        // immediately be redirected back to the protected app via the POST.
-        await httpAuth.issueUserCookie(res, {
-          credentials: await auth.getNoneCredentials(),
-        });
-        next();
-      }
-    });
-
+    // Handle sign-in before checking the existing session cookie so repeated
+    // handoffs remain idempotent for users that are already authenticated.
     publicRouter.post(
       '*',
       express.urlencoded({ extended: true }),
@@ -214,6 +193,29 @@ export async function createRouter(
         }
       },
     );
+
+    publicRouter.use(async (req, res, next) => {
+      try {
+        const credentials = await httpAuth.credentials(req, {
+          allow: ['user', 'service', 'none'],
+          allowLimitedAccess: true,
+        });
+
+        if (credentials.principal.type === 'none') {
+          next();
+        } else {
+          next('router');
+        }
+      } catch {
+        // If we fail to authenticate, make sure the session cookie is cleared
+        // and continue as unauthenticated. If the user is logged in they will
+        // immediately be redirected back to the protected app via the POST.
+        await httpAuth.issueUserCookie(res, {
+          credentials: await auth.getNoneCredentials(),
+        });
+        next();
+      }
+    });
 
     publicRouter.use(
       await createEntryPointRouter({

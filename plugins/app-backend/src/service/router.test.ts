@@ -192,6 +192,18 @@ describe('createRouter with public entry point', () => {
     expect(response.text.trim()).toBe('this is index.html');
   });
 
+  it('handles repeated sign-in from an authenticated user', async () => {
+    const response = await request(app)
+      .post('/')
+      .set('Cookie', mockCredentials.limitedUser.cookie())
+      .set('Content-Type', 'application/x-www-form-urlencoded')
+      .send(`type=sign-in&token=${mockCredentials.user.token()}`);
+
+    expect(response.status).toBe(200);
+    expect(response.header['set-cookie']).toBeDefined();
+    expect(response.text.trim()).toBe('this is index.html');
+  });
+
   it('rejects POST requests without a sign-in type', async () => {
     const response = await request(app)
       .post('/')
