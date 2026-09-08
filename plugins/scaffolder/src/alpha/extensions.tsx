@@ -80,9 +80,10 @@ export const scaffolderTemplatesSubPage = SubPageBlueprint.makeWithOverrides({
         filter: filterPredicateToFilterFunction(group.filter),
       }),
     );
-    const templateFilter = config.templateFilter
-      ? filterPredicateToFilterFunction(config.templateFilter)
-      : undefined;
+    const templateFilter =
+      config.templateFilter === undefined
+        ? undefined
+        : filterPredicateToFilterFunction(config.templateFilter);
 
     return originalFactory({
       path: 'templates',
