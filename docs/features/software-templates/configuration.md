@@ -188,6 +188,24 @@ are also supported — see the
 [entity predicate queries reference](https://backstage.io/docs/features/software-catalog/catalog-customization#entity-predicate-queries)
 for the full grammar.
 
+### Filtering templates in `app-config.yaml`
+
+The `sub-page:scaffolder/templates` extension accepts a `templateFilter` config
+field. It is an [entity predicate query](https://backstage.io/docs/features/software-catalog/catalog-customization#entity-predicate-queries)
+applied to every template before it is displayed. For example, exclude templates
+tagged `wip`:
+
+```yaml
+app:
+  extensions:
+    - sub-page:scaffolder/templates:
+        config:
+          templateFilter:
+            $not:
+              metadata.tags:
+                $contains: wip
+```
+
 ### Replacing the default `TemplateCard`
 
 The `TemplateCard` exported from `@backstage/plugin-scaffolder-react/alpha`
