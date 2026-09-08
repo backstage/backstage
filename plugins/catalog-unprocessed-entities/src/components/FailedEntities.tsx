@@ -27,9 +27,10 @@ import { Alert, Box, ButtonIcon, Text } from '@backstage/ui';
 import { RiDeleteBinLine } from '@remixicon/react';
 import { useApi } from '@backstage/core-plugin-api';
 
+import { entityRefFilterAndSearch } from './filterEntities';
 import { EntityDialog } from './EntityDialog';
 import { catalogUnprocessedEntitiesApiRef } from '../api';
-import useAsync from 'react-use/esm/useAsync';
+import useAsyncRetry from 'react-use/esm/useAsyncRetry';
 import { DeleteEntityConfirmationDialog } from './DeleteEntityConfirmationDialog';
 import { UnprocessedEntity } from '@backstage/plugin-catalog-unprocessed-entities-common';
 import { toastApiRef } from '@backstage/frontend-plugin-api';
@@ -47,8 +48,8 @@ const RenderErrorContext = ({
       <>
         <Text className={styles.errorText}>Tags</Text>
         <ul>
-          {rowData.unprocessed_entity.metadata.tags?.map(t => (
-            <li key={t}>{t}</li>
+          {rowData.unprocessed_entity.metadata.tags?.map((t, idx) => (
+            <li key={`${t}-${idx}`}>{t}</li>
           ))}
         </ul>
       </>
@@ -70,18 +71,24 @@ const RenderErrorContext = ({
 };
 
 /**
- * Converts input datetime which lacks timezone info into user's local time so that they can
- * easily understand the times.
+ * Converts an input datetime into a human-readable, zone-aware string.
+ *
+ * String inputs are parsed as ISO; `Date` inputs are normalised via their ISO
+ * representation. The value is rendered in the provided `zone`, which defaults
+ * to the user's local timezone so that the times are easy to understand.
+ *
+ * @param dateTime - The datetime to convert, as an ISO string or `Date`.
+ * @param zone - The IANA timezone to render in. Defaults to the local zone.
  */
-export const convertTimeToLocalTimezone = (dateTime: string | Date) => {
+export const convertTimeToLocalTimezone = (
+  dateTime: string | Date,
+  zone: string = DateTime.local().zoneName,
+) => {
   const isoDateTime =
     typeof dateTime === 'string' ? dateTime : dateTime.toISOString();
-
-  const strDateTime = DateTime.fromISO(isoDateTime, {
-    zone: DateTime.local().zoneName,
-  });
-
-  return strDateTime.toFormat('yyyy-MM-dd hh:mm:ss ZZZZ');
+  return DateTime.fromISO(isoDateTime, { zone }).toFormat(
+    'yyyy-MM-dd HH:mm:ss ZZZZ',
+  );
 };
 
 export const FailedEntities = () => {
@@ -90,7 +97,8 @@ export const FailedEntities = () => {
     loading,
     error,
     value: data,
-  } = useAsync(async () => await unprocessedApi.failed());
+    retry,
+  } = useAsyncRetry(() => unprocessedApi.failed());
   const toastApi = useApi(toastApiRef);
   const [selectedEntityId, setSelectedEntityId] = useState<string | undefined>(
     undefined,
@@ -112,7 +120,7 @@ export const FailedEntities = () => {
     entityRef,
   }: {
     entityId: string;
-    entityRef: string;
+    entityRef: string | undefined;
   }) => {
     setSelectedEntityId(entityId);
     setSelectedEntityRef(entityRef);
@@ -124,13 +132,18 @@ export const FailedEntities = () => {
       if (selectedEntityId) {
         await unprocessedApi.delete(selectedEntityId);
         toastApi.post({
-          title: `Entity ${selectedEntityRef} has been deleted`,
+          title: `Entity ${
+            selectedEntityRef ?? selectedEntityId ?? 'unknown'
+          } has been deleted`,
           status: 'success',
         });
+        retry();
       }
     } catch (e) {
       toastApi.post({
-        title: `Failed to delete entity ${selectedEntityRef}`,
+        title: `Failed to delete entity ${
+          selectedEntityRef ?? selectedEntityId ?? 'unknown'
+        }`,
         status: 'danger',
       });
     }
@@ -142,26 +155,24 @@ export const FailedEntities = () => {
       title: <Text>entityRef</Text>,
       sorting: true,
       field: 'entity_ref',
-      customFilterAndSearch: (query, row: any) =>
-        row.entity_ref
-          .toLocaleUpperCase('en-US')
-          .includes(query.toLocaleUpperCase('en-US')),
+      customFilterAndSearch: (query, row) =>
+        entityRefFilterAndSearch(query, row),
       render: (rowData: UnprocessedEntity | {}) =>
-        (rowData as UnprocessedEntity).entity_ref,
+        (rowData as UnprocessedEntity).entity_ref || '-',
     },
     {
       title: <Text>Location Path</Text>,
       sorting: true,
       field: 'location_key',
       render: (rowData: UnprocessedEntity | {}) =>
-        (rowData as UnprocessedEntity).location_key,
+        (rowData as UnprocessedEntity).location_key || '-',
     },
     {
       title: <Text>Kind</Text>,
       sorting: true,
-      field: 'kind',
+      field: 'unprocessed_entity.kind',
       render: (rowData: UnprocessedEntity | {}) =>
-        (rowData as UnprocessedEntity).unprocessed_entity.kind,
+        (rowData as UnprocessedEntity).unprocessed_entity.kind || '-',
     },
     {
       title: <Text>Owner</Text>,
@@ -175,19 +186,19 @@ export const FailedEntities = () => {
       title: <Text>Last Discovery At</Text>,
       sorting: true,
       field: 'last_discovery_at',
-      render: (rowData: UnprocessedEntity | {}) =>
-        convertTimeToLocalTimezone(
-          (rowData as UnprocessedEntity).last_discovery_at,
-        ) || 'unknown',
+      render: (rowData: UnprocessedEntity | {}) => {
+        const value = (rowData as UnprocessedEntity).last_discovery_at;
+        return value ? convertTimeToLocalTimezone(value) : '-';
+      },
     },
     {
       title: <Text>Next Refresh At</Text>,
       sorting: true,
       field: 'next_update_at',
-      render: (rowData: UnprocessedEntity | {}) =>
-        convertTimeToLocalTimezone(
-          (rowData as UnprocessedEntity).next_update_at,
-        ) || 'unknown',
+      render: (rowData: UnprocessedEntity | {}) => {
+        const value = (rowData as UnprocessedEntity).next_update_at;
+        return value ? convertTimeToLocalTimezone(value) : '-';
+      },
     },
     {
       title: <Text>Raw Entity Definition</Text>,
@@ -204,12 +215,12 @@ export const FailedEntities = () => {
         return (
           <ButtonIcon
             variant="tertiary"
-            aria-label="delete"
+            aria-label={`Delete entity ${entity_ref ?? 'unknown'}`}
             icon={<RiDeleteBinLine />}
             onPress={() =>
               handleDelete({
                 entityId: entity_id,
-                entityRef: entity_ref,
+                entityRef: entity_ref ?? undefined,
               })
             }
           />

@@ -23,27 +23,25 @@ describe('catalog-unprocessed-entities', () => {
 });
 
 describe('components/FailedEntities/convertTimeToLocalTimezone', () => {
-  it('should correctly a UTC ISO string to local time', () => {
-    const utcTime = '2024-09-03T08:15:08.088Z';
-    const localTime = convertTimeToLocalTimezone(utcTime);
-    expect(localTime).toBe('2024-09-03 08:15:08 UTC');
+  it('should correctly convert a UTC ISO string to the given zone', () => {
+    expect(convertTimeToLocalTimezone('2026-09-03T08:15:08.088Z', 'UTC')).toBe(
+      '2026-09-03 08:15:08 UTC',
+    );
   });
 
-  it('should correctly convert a UTC Date object to local time', () => {
-    const utcTime = new Date('2024-09-03T08:15:08.088Z');
-    const localTime = convertTimeToLocalTimezone(utcTime);
-    expect(localTime).toBe('2024-09-03 08:15:08 UTC');
+  it('should correctly convert a UTC Date object to the given zone', () => {
+    expect(
+      convertTimeToLocalTimezone(new Date('2026-09-03T08:15:08.088Z'), 'UTC'),
+    ).toBe('2026-09-03 08:15:08 UTC');
   });
 
-  it('should return "Invalid Date" for an invalid date string', () => {
-    const invalidTime = 'invalid-date-string';
-    const localTime = convertTimeToLocalTimezone(invalidTime);
-    expect(localTime).toBe('Invalid DateTime');
+  it('should return "Invalid DateTime" for an invalid date string', () => {
+    expect(convertTimeToLocalTimezone('invalid-date-string', 'UTC')).toBe(
+      'Invalid DateTime',
+    );
   });
 
   it('should handle empty string input', () => {
-    const emptyString = '';
-    const localTime = convertTimeToLocalTimezone(emptyString);
-    expect(localTime).toBe('Invalid DateTime');
+    expect(convertTimeToLocalTimezone('', 'UTC')).toBe('Invalid DateTime');
   });
 });
