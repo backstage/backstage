@@ -1,5 +1,22 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.21.11-next.2
+
+### Patch Changes
+
+- 5268d63: Migrated tests from MSW v1 to MSW v2.
+- 97a7e8e: The catalog cluster locator now validates Kubernetes API server URLs to block SSRF targets (non-public addresses, cloud metadata endpoints, and non-HTTPS URLs by default). Operators may list trusted hostnames in `dangerouslyAllowClusterUrls` on the catalog locator method to permit HTTP or non-public addresses for those hosts only (for example local minikube). Catalog entities cannot use the `serviceAccount` auth provider, cannot enable TLS verification skipping unless `dangerouslyAllowSkipTLSVerify` is set on the locator method, and only permitted annotations are passed through as auth metadata. Kubernetes API fetches no longer follow HTTP redirects automatically.
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/plugin-kubernetes-node@0.4.8-next.2
+  - @backstage/catalog-client@1.16.2-next.1
+  - @backstage/plugin-catalog-node@2.2.5-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/integration-aws-node@0.2.2-next.0
+  - @backstage/plugin-permission-common@0.9.11-next.0
+  - @backstage/plugin-permission-node@0.11.4-next.1
+  - @backstage/plugin-kubernetes-common@0.9.13-next.1
+
 ## 0.21.11-next.1
 
 ### Patch Changes

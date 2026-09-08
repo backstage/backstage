@@ -1,5 +1,26 @@
 # @backstage/plugin-catalog
 
+## 2.0.9-next.2
+
+### Patch Changes
+
+- 4611178: Add support for legacy props in catalog entity card exports by widening the public TypeScript prop types. This ensures compatibility for consumers still using legacy properties such as `variant` and `columns`.
+- acc6666: Fixed entity context menus to report errors from contributed items without disrupting the menu.
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.2.0-next.0
+  - @backstage/ui@0.18.0-next.2
+  - @backstage/catalog-client@1.16.2-next.1
+  - @backstage/plugin-catalog-react@3.2.3-next.2
+  - @backstage/core-components@0.18.14-next.2
+  - @backstage/core-plugin-api@1.12.10-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.1
+  - @backstage/integration-react@1.2.22-next.1
+  - @backstage/plugin-permission-react@0.5.5-next.1
+  - @backstage/plugin-techdocs-react@1.3.15-next.2
+  - @backstage/plugin-scaffolder-common@2.3.0-next.2
+  - @backstage/plugin-search-common@1.2.25-next.0
+  - @backstage/plugin-search-react@1.11.8-next.2
+
 ## 2.0.9-next.1
 
 ### Patch Changes
