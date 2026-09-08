@@ -241,12 +241,12 @@ responsible for.
 
 | Provider | Connection type | Auth method | What the provider does |
 | --- | --- | --- | --- |
-| GitHub App | [github](./types/github.md) | `app` | Exchanges the application ID and private key for an installation token and caches it for its lifetime. |
-| AWS STS | [aws](./types/aws.md), [aws-codecommit](./types/aws-codecommit.md), [aws-s3](./types/aws-s3.md) | `account` (with roleName), `assumeRole` | Assumes a role via STS to obtain temporary session credentials and refreshes them before expiry. |
-| Azure / Entra ID client credentials | [azure](./types/azure.md), [azure-blob-storage](./types/azure-blob-storage.md) | `clientCredentials`, `aadCredential` | Performs an OAuth 2.0 client-credentials token exchange against Entra ID. |
-| Azure managed identity | [azure](./types/azure.md) | `managedIdentity` | Acquires a token from the managed identity endpoint available to the running host. |
-| Bitbucket Cloud OAuth | [bitbucket-cloud](./types/bitbucket-cloud.md) | `oauth` | Exchanges a client ID and secret for an OAuth 2.0 access token. |
-| Google Cloud service account | [google-gcs](./types/google-gcs.md) | `serviceAccount` | Signs a JWT from the service account key and exchanges it for a Google access token. |
+| GitHub App | [`github`](./types/github.md) | `app` | Exchanges the application ID and private key for an installation token and caches it for its lifetime. |
+| AWS STS | [`aws`](./types/aws.md), [`aws-codecommit`](./types/aws-codecommit.md), [`aws-s3`](./types/aws-s3.md) | `account` (with `roleName`), `assumeRole` | Assumes a role via STS to obtain temporary session credentials and refreshes them before expiry. |
+| Azure / Entra ID client credentials | [`azure`](./types/azure.md), [`azure-blob-storage`](./types/azure-blob-storage.md) | `clientCredentials`, `aadCredential` | Performs an OAuth 2.0 client-credentials token exchange against Entra ID. |
+| Azure managed identity | [`azure`](./types/azure.md) | `managedIdentity` | Acquires a token from the managed identity endpoint available to the running host. |
+| Bitbucket Cloud OAuth | [`bitbucket-cloud`](./types/bitbucket-cloud.md) | `oauth` | Exchanges a client ID and secret for an OAuth 2.0 access token. |
+| Google Cloud service account | [`google-gcs`](./types/google-gcs.md) | `serviceAccount` | Signs a JWT from the service account key and exchanges it for a Google access token. |
 
 Authentication methods not listed here, such as `token`, `basic`, `pat`,
 `accessKey`, and `accountKey`, return credentials that are directly usable
