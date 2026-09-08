@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   registerMswTestHooks,
@@ -13,14 +13,12 @@ describe('TodoPage', () => {
 
   it('renders todos from the backend', async () => {
     server.use(
-      rest.get('*/api/{{pluginId}}/todos', (_, res, ctx) =>
-        res(
-          ctx.json({
-            items: [
-              { id: '1', title: 'Mocked task', createdBy: 'user:default/guest', createdAt: '2025-01-01T00:00:00.000Z' },
-            ],
-          }),
-        ),
+      http.get('*/api/{{pluginId}}/todos', () =>
+        HttpResponse.json({
+          items: [
+            { id: '1', title: 'Mocked task', createdBy: 'user:default/guest', createdAt: '2025-01-01T00:00:00.000Z' },
+          ],
+        }),
       ),
     );
 
@@ -31,8 +29,11 @@ describe('TodoPage', () => {
 
   it('falls back to example data when the backend fails', async () => {
     server.use(
-      rest.get('*/api/{{pluginId}}/todos', (_, res, ctx) =>
-        res(ctx.status(500), ctx.json({ message: 'Internal Server Error' })),
+      http.get('*/api/{{pluginId}}/todos', () =>
+        HttpResponse.json(
+          { message: 'Internal Server Error' },
+          { status: 500 },
+        ),
       ),
     );
 
