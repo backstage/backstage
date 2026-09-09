@@ -147,9 +147,12 @@ const ALLOWED_PYTHON_YAML_TAGS = new Set([
   'tag:yaml.org,2002:python/name:pymdownx.emoji.to_svg_sprite',
   'tag:yaml.org,2002:python/name:materialx.emoji.to_svg',
   'tag:yaml.org,2002:python/name:material.extensions.emoji.to_svg',
-  // Custom fence formats, used for Mermaid diagrams
+  // Custom fence formats, used for Mermaid diagrams. The mermaid2 ones come
+  // from mkdocs-mermaid2, which mkdocs-techdocs-core does not bundle.
   'tag:yaml.org,2002:python/name:pymdownx.superfences.fence_code_format',
   'tag:yaml.org,2002:python/name:pymdownx.superfences.fence_div_format',
+  'tag:yaml.org,2002:python/name:mermaid2.fence_mermaid',
+  'tag:yaml.org,2002:python/name:mermaid2.fence_mermaid_custom',
   // Slug factory for toc and pymdownx.tabbed
   'tag:yaml.org,2002:python/object/apply:pymdownx.slugs.slugify',
 ]);
