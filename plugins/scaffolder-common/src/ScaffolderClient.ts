@@ -270,7 +270,7 @@ export class ScaffolderClient implements ScaffolderApi {
             }
           };
 
-          void fetchEventSource(url, {
+          fetchEventSource(url, {
             fetch: this.fetchApi.fetch,
             signal: ctrl.signal,
             openWhenHidden: true,
@@ -294,6 +294,10 @@ export class ScaffolderClient implements ScaffolderApi {
               subscriber.error(err);
               throw err;
             },
+          }).catch(() => {
+            // The throw in onerror is the documented way to stop fetchEventSource
+            // from retrying, but it also rejects this promise. The error is already
+            // forwarded via subscriber.error above, so we consume the rejection here.
           });
         },
         error => {
