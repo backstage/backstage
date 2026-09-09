@@ -71,7 +71,7 @@ export class GoogleGCSPublish implements PublisherBase {
   static fromConfig(
     config: Config,
     logger: LoggerService,
-    options?: StorageOptions,
+    options?: unknown,
   ): PublisherBase {
     let bucketName = '';
     try {
@@ -107,7 +107,7 @@ export class GoogleGCSPublish implements PublisherBase {
       }
     }
 
-    const clientOpts: StorageOptions = options ?? {};
+    const clientOpts = (options ?? {}) as StorageOptions;
     if (projectId) {
       clientOpts.projectId = projectId;
     }
