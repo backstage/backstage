@@ -157,7 +157,12 @@ export class ServiceUnavailableError extends CustomErrorBase {
 }
 
 // @public
-export function stringifyError(error: unknown): string;
+export function stringifyError(
+  error: unknown,
+  options?: {
+    includeCause?: boolean;
+  },
+): string;
 
 // @public
 export function toError(value: unknown): ErrorLike;
