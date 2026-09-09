@@ -27,7 +27,7 @@ import {
   JsonObject,
 } from '@backstage/types';
 import knexFactory, { Knex } from 'knex';
-import { merge, omit } from 'lodash';
+import lodash from 'lodash';
 import limiterFactory from 'p-limit';
 import { Client } from 'pg';
 import { Connector } from '../types';
@@ -216,7 +216,7 @@ export async function buildPgDatabaseConfig(
       typeof connectionValue === 'string' || connectionValue instanceof String
         ? connectionValue
         : // connection is an object, omit config-only props
-          omit(connectionValue as Record<string, unknown>, [
+          lodash.omit(connectionValue as Record<string, unknown>, [
             'type',
             'instance',
             'tokenCredential',
@@ -301,7 +301,7 @@ export async function buildAzurePgConfig(config: Config): Promise<Knex.Config> {
   const rawConfig = config.get() as Record<string, unknown>;
 
   const normalized = normalizeConnection(rawConfig.connection as any);
-  const sanitizedConnection = omit(normalized, [
+  const sanitizedConnection = lodash.omit(normalized, [
     'type',
     'instance',
     'tokenCredential',
@@ -383,7 +383,7 @@ export async function buildCloudSqlConfig(
 
   const rawConfig = config.get() as Record<string, unknown>;
   const normalized = normalizeConnection(rawConfig.connection as any);
-  const sanitizedConnection = omit(normalized, [
+  const sanitizedConnection = lodash.omit(normalized, [
     'type',
     'instance',
   ]) as Partial<Knex.StaticConnectionConfig>;
@@ -426,7 +426,7 @@ export async function buildRdsPgConfig(config: Config): Promise<Knex.Config> {
   }
 
   const rawConfig = config.get() as Record<string, unknown>;
-  const sanitizedConnection = omit(
+  const sanitizedConnection = lodash.omit(
     config.get('connection') as Record<string, unknown>,
     ['type', 'region'],
   ) as Partial<Knex.StaticConnectionConfig>;
@@ -712,7 +712,7 @@ export function computePgPluginConfig(
   const baseKnexConfig = config
     .getOptionalConfig('knexConfig')
     ?.get<JsonObject>();
-  const additionalKnexConfig = merge(baseKnexConfig, pluginKnexConfig);
+  const additionalKnexConfig = lodash.merge(baseKnexConfig, pluginKnexConfig);
 
   // Ensure exists flags
   const baseEnsureExists = config.getOptionalBoolean('ensureExists') ?? true;
@@ -738,7 +738,7 @@ export function computePgPluginConfig(
   // The `database` property from the base connection is omitted unless
   // `pluginDivisionMode` is set to `schema`.
   if (pluginDivisionMode !== 'schema') {
-    baseConnection = omit(baseConnection, 'database');
+    baseConnection = lodash.omit(baseConnection, 'database');
   }
 
   // Get and normalize optional plugin specific database connection

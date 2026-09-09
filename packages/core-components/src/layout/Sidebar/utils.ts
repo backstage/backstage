@@ -15,7 +15,7 @@
  */
 
 import type { Location, Path } from 'history';
-import { isEqual, isMatch } from 'lodash';
+import lodash from 'lodash';
 import qs from 'qs';
 
 export function isLocationMatch(
@@ -31,10 +31,10 @@ export function isLocationMatch(
   ).toString();
   const currentQueryParameters = qs.parse(currentDecodedSearch);
 
-  const queryStringMatcher = exact ? isEqual : isMatch;
+  const queryStringMatcher = exact ? lodash.isEqual : lodash.isMatch;
 
   const matching =
-    isEqual(toLocation.pathname, currentLocation.pathname) &&
+    lodash.isEqual(toLocation.pathname, currentLocation.pathname) &&
     queryStringMatcher(currentQueryParameters, toQueryParameters);
 
   return matching;

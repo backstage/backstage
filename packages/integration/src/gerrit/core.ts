@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { join, takeWhile, trimEnd, trimStart } from 'lodash';
+import lodash from 'lodash';
 import { GerritIntegrationConfig } from './config';
 
 const GERRIT_BODY_PREFIX = ")]}'";
@@ -53,7 +53,7 @@ export function parseGitilesUrlRef(
   // In case of the gitilesBaseUrl is https://review.gerrit.com/plugins/gitiles
   // and the url provided is https://review.gerrit.com/a/plugins/gitiles/...
   // remove the prefix only if the pathname start with '/a/'
-  const urlPath = trimStart(
+  const urlPath = lodash.trimStart(
     urlParse.pathname
       .substring(urlParse.pathname.startsWith('/a/') ? 2 : 0)
       .replace(baseUrlParse.pathname, ''),
@@ -62,39 +62,39 @@ export function parseGitilesUrlRef(
 
   // Find the project by taking everything up to "/+/".
   const parts = urlPath.split('/').filter(p => !!p);
-  const projectParts = takeWhile(parts, p => p !== '+');
+  const projectParts = lodash.takeWhile(parts, p => p !== '+');
   if (projectParts.length === 0) {
     throw new Error(`Unable to parse gitiles url: ${url}`);
   }
   // Also remove the "+" after the project.
   const rest = parts.slice(projectParts.length + 1);
-  const project = join(projectParts, '/');
+  const project = lodash.join(projectParts, '/');
 
   // match <project>/+/HEAD/<path>
   if (rest.length > 0 && rest[0] === 'HEAD') {
     const ref = rest.shift()!;
-    const path = join(rest, '/');
+    const path = lodash.join(rest, '/');
     return {
       project,
       ref,
       refType: 'head' as const,
       path: path || '/',
-      basePath: trimEnd(url.replace(path, ''), '/'),
+      basePath: lodash.trimEnd(url.replace(path, ''), '/'),
     };
   }
   // match <project>/+/<sha>/<path>
   if (rest.length > 0 && rest[0].length === 40) {
     const ref = rest.shift()!;
-    const path = join(rest, '/');
+    const path = lodash.join(rest, '/');
     return {
       project,
       ref,
       refType: 'sha' as const,
       path: path || '/',
-      basePath: trimEnd(url.replace(path, ''), '/'),
+      basePath: lodash.trimEnd(url.replace(path, ''), '/'),
     };
   }
-  const remainingPath = join(rest, '/');
+  const remainingPath = lodash.join(rest, '/');
   // Regexp for matching "refs/tags/<tag>" or "refs/heads/<branch>/"
   const refsRegexp = /^refs\/(?<refsReference>heads|tags)\/(?<ref>.*?)(\/|$)/;
   const result = refsRegexp.exec(remainingPath);
@@ -118,7 +118,7 @@ export function parseGitilesUrlRef(
       ref,
       refType,
       path: path || '/',
-      basePath: trimEnd(url.replace(path, ''), '/'),
+      basePath: lodash.trimEnd(url.replace(path, ''), '/'),
     };
   }
   throw new Error(`Unable to parse gitiles : ${url}`);
@@ -141,7 +141,7 @@ export function buildGerritGitilesUrl(
 ): string {
   return `${
     config.gitilesBaseUrl
-  }/${project}/+/refs/heads/${branch}/${trimStart(filePath, '/')}`;
+  }/${project}/+/refs/heads/${branch}/${lodash.trimStart(filePath, '/')}`;
 }
 
 /**
@@ -161,7 +161,7 @@ export function buildGerritEditUrl(
 ): string {
   return `${
     config.baseUrl
-  }/admin/repos/edit/repo/${project}/branch/refs/heads/${branch}/file/${trimStart(
+  }/admin/repos/edit/repo/${project}/branch/refs/heads/${branch}/file/${lodash.trimStart(
     filePath,
     '/',
   )}`;

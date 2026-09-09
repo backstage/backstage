@@ -26,7 +26,7 @@ import MaterialLink, {
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import classnames from 'classnames';
-import { trimEnd } from 'lodash';
+import lodash from 'lodash';
 import {
   ReactNode,
   ReactElement,
@@ -138,7 +138,7 @@ const useBasePath = () => {
   const base = 'http://sample.dev';
   const url = useBaseUrl() ?? '/';
   const { pathname } = new URL(url, base);
-  return trimEnd(pathname, '/');
+  return lodash.trimEnd(pathname, '/');
 };
 
 /** @deprecated Remove once we no longer support React Router v6 beta */

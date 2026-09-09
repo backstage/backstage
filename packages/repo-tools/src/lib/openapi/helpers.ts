@@ -17,7 +17,7 @@
 import Parser from '@apidevtools/swagger-parser';
 import fs, { pathExists } from 'fs-extra';
 import YAML from 'js-yaml';
-import { cloneDeep } from 'lodash';
+import lodash from 'lodash';
 import { targetPaths } from '@backstage/cli-common';
 import { resolve } from 'node:path';
 import { YAML_SCHEMA_PATH } from './constants';
@@ -47,7 +47,7 @@ export const getPathToCurrentOpenApiSpec = async () => {
 
 export async function loadAndValidateOpenApiYaml(path: string) {
   const yaml = YAML.load(await fs.readFile(path, 'utf8'));
-  await Parser.validate(cloneDeep(yaml) as any);
+  await Parser.validate(lodash.cloneDeep(yaml) as any);
   return yaml;
 }
 

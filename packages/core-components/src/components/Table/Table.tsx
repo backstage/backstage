@@ -51,7 +51,7 @@ import LastPage from '@material-ui/icons/LastPage';
 import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import { isEqual, transform } from 'lodash';
+import lodash from 'lodash';
 import {
   CSSProperties,
   forwardRef,
@@ -250,8 +250,8 @@ function convertColumns<T extends object>(
 }
 
 function removeDefaultValues(state: any, defaultState: any): any {
-  return transform(state, (result, value, key) => {
-    if (!isEqual(value, defaultState[key])) {
+  return lodash.transform(state, (result, value, key) => {
+    if (!lodash.isEqual(value, defaultState[key])) {
       result[key] = value;
     }
   });
