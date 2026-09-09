@@ -899,42 +899,34 @@ describe('github:repo:create', () => {
       (action.schema?.input as any)?.properties ?? {},
     );
 
-    expect(inputProperties).toEqual(
-      expect.arrayContaining([
-        'repoUrl',
-        'description',
-        'homepage',
-        'access',
-        'repoVisibility',
-        'deleteBranchOnMerge',
-        'allowMergeCommit',
-        'allowSquashMerge',
-        'squashMergeCommitTitle',
-        'squashMergeCommitMessage',
-        'allowRebaseMerge',
-        'allowAutoMerge',
-        'allowUpdateBranch',
-        'collaborators',
-        'hasProjects',
-        'hasWiki',
-        'hasIssues',
-        'topics',
-        'repoVariables',
-        'secrets',
-        'oidcCustomization',
-        'customProperties',
-        'subscribe',
-        'token',
-        'autoInit',
-        'workflowAccess',
-      ]),
-    );
-    expect(inputProperties).toHaveLength(26);
-
-    expect(inputProperties).not.toContain('protectDefaultBranch');
-    expect(inputProperties).not.toContain('requireCodeOwnerReviews');
-    expect(inputProperties).not.toContain('gitCommitMessage');
-    expect(inputProperties).not.toContain('sourcePath');
+    expect(inputProperties).toEqual([
+      'access',
+      'allowAutoMerge',
+      'allowMergeCommit',
+      'allowRebaseMerge',
+      'allowSquashMerge',
+      'allowUpdateBranch',
+      'autoInit',
+      'collaborators',
+      'customProperties',
+      'deleteBranchOnMerge',
+      'description',
+      'hasIssues',
+      'hasProjects',
+      'hasWiki',
+      'homepage',
+      'oidcCustomization',
+      'repoUrl',
+      'repoVariables',
+      'repoVisibility',
+      'secrets',
+      'squashMergeCommitMessage',
+      'squashMergeCommitTitle',
+      'subscribe',
+      'token',
+      'topics',
+      'workflowAccess',
+    ]);
   });
 
   it.each(['none', 'organization', 'user'])(

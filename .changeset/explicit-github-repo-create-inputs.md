@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder-backend-module-github': patch
+'@backstage/plugin-scaffolder-backend-module-github': minor
 ---
 
-Explicitly defined the supported inputs in the `github:repo:create` action schema to ensure properties handled by the action are accepted.
+**BREAKING**: Explicitly defined the supported inputs in the `github:repo:create` action schema to ensure properties handled by the action are accepted.

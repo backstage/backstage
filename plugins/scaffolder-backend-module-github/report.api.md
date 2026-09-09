@@ -241,22 +241,13 @@ export function createGithubRepoCreateAction(options: {
 }): TemplateAction<
   {
     repoUrl: string;
-    description?: string | undefined;
-    homepage?: string | undefined;
     access?: string | undefined;
-    repoVisibility?: 'internal' | 'private' | 'public' | undefined;
-    deleteBranchOnMerge?: boolean | undefined;
-    allowMergeCommit?: boolean | undefined;
-    allowSquashMerge?: boolean | undefined;
-    squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE' | undefined;
-    squashMergeCommitMessage?:
-      | 'PR_BODY'
-      | 'COMMIT_MESSAGES'
-      | 'BLANK'
-      | undefined;
-    allowRebaseMerge?: boolean | undefined;
     allowAutoMerge?: boolean | undefined;
+    allowMergeCommit?: boolean | undefined;
+    allowRebaseMerge?: boolean | undefined;
+    allowSquashMerge?: boolean | undefined;
     allowUpdateBranch?: boolean | undefined;
+    autoInit?: boolean | undefined;
     collaborators?:
       | (
           | {
@@ -269,22 +260,31 @@ export function createGithubRepoCreateAction(options: {
             }
         )[]
       | undefined;
+    customProperties?: Record<string, string | string[]> | undefined;
+    deleteBranchOnMerge?: boolean | undefined;
+    description?: string | undefined;
+    hasIssues?: boolean | undefined;
     hasProjects?: boolean | undefined;
     hasWiki?: boolean | undefined;
-    hasIssues?: boolean | undefined;
-    topics?: string[] | undefined;
-    repoVariables?: Record<string, string> | undefined;
-    secrets?: Record<string, string> | undefined;
+    homepage?: string | undefined;
     oidcCustomization?:
       | {
           useDefault: boolean;
           includeClaimKeys?: string[] | undefined;
         }
       | undefined;
-    customProperties?: Record<string, string | string[]> | undefined;
+    repoVariables?: Record<string, string> | undefined;
+    repoVisibility?: 'internal' | 'private' | 'public' | undefined;
+    secrets?: Record<string, string> | undefined;
+    squashMergeCommitMessage?:
+      | 'PR_BODY'
+      | 'COMMIT_MESSAGES'
+      | 'BLANK'
+      | undefined;
+    squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE' | undefined;
     subscribe?: boolean | undefined;
     token?: string | undefined;
-    autoInit?: boolean | undefined;
+    topics?: string[] | undefined;
     workflowAccess?: 'none' | 'organization' | 'user' | undefined;
   },
   {
