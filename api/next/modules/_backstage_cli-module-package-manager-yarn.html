@@ -15,7 +15,7 @@
 </div></section>
 <section class="tsd-panel tsd-typography"><h1 id="backstagecli-module-package-manager-yarn" class="tsd-anchor-link">@backstage/cli-module-package-manager-yarn<a href="#backstagecli-module-package-manager-yarn" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h1>
 <p>Adds <code>backstage-cli pm verify-patches</code>, a read-only check for Yarn patch
-references and patched Backstage package versions.</p>
+references, root resolutions, and patched Backstage package versions.</p>
 <p>The command verifies Yarn's native <code>patch:</code> protocol, available in Yarn 2 and
 later. It does not inspect patches managed by tools such as <code>patch-package</code> in
 Yarn Classic repositories.</p>
@@ -28,7 +28,9 @@ Yarn Classic repositories.</p>
 <code>patch:</code> references in <code>resolutions</code>, <code>dependencies</code>, <code>devDependencies</code>,
 <code>optionalDependencies</code>, and <code>peerDependencies</code>. It verifies that referenced
 local patch files exist, files in Yarn's configured <code>patchFolder</code> are
-referenced, and manifest declarations agree with <code>yarn.lock</code>.</p>
+referenced, and manifest declarations agree with <code>yarn.lock</code>. It also reports
+root <code>resolutions</code> entries whose selectors no longer match any dependency
+request in the lockfile.</p>
 <p>When a repository both patches an <code>@backstage/*</code> package and declares a
 Backstage release in <code>backstage.json</code>, the command also verifies that the
 patched package version matches the selected release manifest. All findings
@@ -38,7 +40,8 @@ the Backstage release check is reported as skipped.</p>
 <p>The command does not run Yarn, install dependencies, or write project files.
 Use it alongside <code>yarn install --immutable</code>: immutable installs protect the
 resolved dependency state, while this command verifies that patch declarations,
-patch files, the lockfile, and the selected Backstage release remain aligned.</p>
+patch files, resolutions, the lockfile, and the selected Backstage release
+remain aligned.</p>
 <h2 id="release-manifest-environment" class="tsd-anchor-link">Release manifest environment<a href="#release-manifest-environment" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <p>For patched Backstage packages, the command loads the manifest for the release
 selected in <code>backstage.json</code>. It supports the same manifest environment
