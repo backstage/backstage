@@ -89,12 +89,10 @@ export function deserializeError<T extends Error = Error>(
 }
 
 /**
- * Stringifies an error, including its name and message where available.
- *
- * @param error - The error.
- * @public
+ * Stringifies a single error, using its name and message where available and
+ * falling back to a generic representation otherwise.
  */
-export function stringifyError(error: unknown): string {
+function stringifyOne(error: unknown): string {
   if (isError(error)) {
     // Prefer error.toString, but if it's not implemented we use a nicer fallback
     const str = String(error);
@@ -102,4 +100,53 @@ export function stringifyError(error: unknown): string {
   }
 
   return `unknown error '${error}'`;
+}
+
+/**
+ * Stringifies an error, including its name and message where available.
+ *
+ * @remarks
+ *
+ * When the `includeCause` option is set, the chain of underlying causes is
+ * appended to the output, each separated by `'; caused by: '`. The chain
+ * traversal is bounded and safe against cyclic causes. The default behavior,
+ * with no options, only stringifies the outermost error.
+ *
+ * @param error - The error.
+ * @param options - Optional stringification options.
+ * @public
+ * @example
+ *
+ * ```ts
+ * const err = new Error('failed to load', { cause: new Error('timeout') });
+ * stringifyError(err);
+ * // 'Error: failed to load'
+ * stringifyError(err, { includeCause: true });
+ * // 'Error: failed to load; caused by: Error: timeout'
+ * ```
+ */
+export function stringifyError(
+  error: unknown,
+  options?: {
+    /** Append the chain of underlying error causes to the output (default false) */
+    includeCause?: boolean;
+  },
+): string {
+  if (!options?.includeCause) {
+    return stringifyOne(error);
+  }
+
+  const parts: string[] = [];
+  const seen = new Set<unknown>();
+  let current: unknown = error;
+  while (current !== undefined && current !== null && !seen.has(current)) {
+    seen.add(current);
+    parts.push(stringifyOne(current));
+    current =
+      typeof current === 'object'
+        ? (current as { cause?: unknown }).cause
+        : undefined;
+  }
+
+  return parts.join('; caused by: ');
 }
