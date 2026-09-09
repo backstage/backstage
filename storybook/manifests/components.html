@@ -594,7 +594,7 @@
 <main>
   <div class="wrap">
     <div class="note info" style="margin-bottom: 16px;">
-            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.8s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
+            <strong>Tip:</strong> You are using <code>react-docgen</code> (the default). Generation took <strong>3.6s</strong>. For higher quality prop types, consider switching to <code>react-docgen-typescript</code> in your <code>main.ts</code>:
             <pre><code>typescript: {
   reactDocgen: 'react-docgen-typescript',
 }</code></pre>
@@ -9356,7 +9356,7 @@ import {
       &lt;Menu items={pokemon} virtualized&gt;
         {pokemon.map((p, index) =&gt; (
           &lt;MenuItem key={index} id={p.name}&gt;
-            {p.name.charAt(0).toLocaleUpperCase(&#39;en-US&#39;) + p.name.slice(1)}
+            {p.name.charAt(0).toUpperCase() + p.name.slice(1)}
           &lt;/MenuItem&gt;
         ))}
       &lt;/Menu&gt;
@@ -9393,7 +9393,7 @@ import {
       &lt;Menu items={pokemon} virtualized maxHeight=&quot;300px&quot;&gt;
         {pokemon.map((p, index) =&gt; (
           &lt;MenuItem key={index} id={p.name}&gt;
-            {p.name.charAt(0).toLocaleUpperCase(&#39;en-US&#39;) + p.name.slice(1)}
+            {p.name.charAt(0).toUpperCase() + p.name.slice(1)}
           &lt;/MenuItem&gt;
         ))}
       &lt;/Menu&gt;
@@ -9574,7 +9574,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       &gt;
         {pokemon.map((p, index) =&gt; (
           &lt;MenuItem key={index} id={p.name}&gt;
-            {p.name.charAt(0).toLocaleUpperCase(&#39;en-US&#39;) + p.name.slice(1)}
+            {p.name.charAt(0).toUpperCase() + p.name.slice(1)}
           &lt;/MenuItem&gt;
         ))}
       &lt;/MenuAutocomplete&gt;
@@ -9616,7 +9616,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       &gt;
         {pokemon.map((p, index) =&gt; (
           &lt;MenuItem key={index} id={p.name}&gt;
-            {p.name.charAt(0).toLocaleUpperCase(&#39;en-US&#39;) + p.name.slice(1)}
+            {p.name.charAt(0).toUpperCase() + p.name.slice(1)}
           &lt;/MenuItem&gt;
         ))}
       &lt;/MenuAutocomplete&gt;
@@ -9888,7 +9888,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       &gt;
         {pokemon.map((p, index) =&gt; (
           &lt;MenuListBoxItem key={index} id={p.name}&gt;
-            {p.name.charAt(0).toLocaleUpperCase(&#39;en-US&#39;) + p.name.slice(1)}
+            {p.name.charAt(0).toUpperCase() + p.name.slice(1)}
           &lt;/MenuListBoxItem&gt;
         ))}
       &lt;/MenuAutocompleteListbox&gt;
@@ -9930,7 +9930,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       &gt;
         {pokemon.map((p, index) =&gt; (
           &lt;MenuListBoxItem key={index} id={p.name}&gt;
-            {p.name.charAt(0).toLocaleUpperCase(&#39;en-US&#39;) + p.name.slice(1)}
+            {p.name.charAt(0).toUpperCase() + p.name.slice(1)}
           &lt;/MenuListBoxItem&gt;
         ))}
       &lt;/MenuAutocompleteListbox&gt;
@@ -10079,7 +10079,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       &lt;MenuListBox items={pokemon} virtualized&gt;
         {pokemon.map((p, index) =&gt; (
           &lt;MenuListBoxItem key={index} id={p.name}&gt;
-            {p.name.charAt(0).toLocaleUpperCase(&#39;en-US&#39;) + p.name.slice(1)}
+            {p.name.charAt(0).toUpperCase() + p.name.slice(1)}
           &lt;/MenuListBoxItem&gt;
         ))}
       &lt;/MenuListBox&gt;
@@ -10116,7 +10116,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       &lt;MenuListBox items={pokemon} virtualized maxHeight=&quot;300px&quot;&gt;
         {pokemon.map((p, index) =&gt; (
           &lt;MenuListBoxItem key={index} id={p.name}&gt;
-            {p.name.charAt(0).toLocaleUpperCase(&#39;en-US&#39;) + p.name.slice(1)}
+            {p.name.charAt(0).toUpperCase() + p.name.slice(1)}
           &lt;/MenuListBoxItem&gt;
         ))}
       &lt;/MenuListBox&gt;

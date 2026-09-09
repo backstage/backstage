@@ -1,0 +1,20 @@
+import{bQ as e,a4 as n}from"./iframe-wUGVZK80.js";import{H as a,r as i}from"./plugin-D32suxyb.js";import{S as o}from"./Grid-B4FlnJ2g.js";import{O as c}from"./appWrappers-CLZx3X6D.js";import{m}from"./makeStyles-Cw8l4FUa.js";import{s as p}from"./api-R7srMSe2.js";import"./preload-helper-PPVm8Dsz.js";import"./index-Cl3gFGO_.js";import"./Plugin-gNmuCZ1f.js";import"./componentData-Buq09psZ.js";import"./useAnalytics-Cx9_3Zxd.js";import"./useApp-YEoBNPcr.js";import"./useRouteRef-s1TbaLNV.js";import"./WebStorage-By6TSt6T.js";import"./useAsync-D5qz_x2U.js";import"./useMountedState-CsruVelL.js";import"./isSymbol-BtnOBEK7.js";import"./isObject--vsEa_js.js";import"./toString-ls7O60t3.js";import"./useObservable-B7i_eRI-.js";import"./useIsomorphicLayoutEffect-CknHDTyt.js";import"./BUIProvider-BRk5MhI6.js";import"./BUIRoutingProvider-CBGIGxDQ.js";import"./openLink-D6ixiiSG.js";import"./useResolvedHref-DV-Il6Xp.js";const N={title:"Plugins/Home/Components/SearchBar",decorators:[r=>c(e.jsx(e.Fragment,{children:e.jsx(n,{apis:[[p,{query:()=>Promise.resolve({results:[]})}]],children:e.jsx(r,{})})}),{mountedRoutes:{"/hello-search":i}})],tags:["!manifest"]},t=()=>e.jsx(o,{container:!0,justifyContent:"center",spacing:6,children:e.jsx(o,{container:!0,item:!0,xs:12,alignItems:"center",direction:"row",children:e.jsx(a,{placeholder:"Search"})})}),d=m(r=>({searchBar:{display:"flex",maxWidth:"60vw",backgroundColor:r.palette.background.paper,boxShadow:r.shadows[1],padding:"8px 0",borderRadius:"50px",margin:"auto"},searchBarOutline:{borderStyle:"none"}})),s=()=>{const r=d();return e.jsx(o,{container:!0,justifyContent:"center",spacing:6,children:e.jsx(o,{container:!0,item:!0,xs:12,alignItems:"center",direction:"row",children:e.jsx(a,{classes:{root:r.searchBar},InputProps:{classes:{notchedOutline:r.searchBarOutline}},placeholder:"Search"})})})};t.__docgenInfo={description:"",methods:[],displayName:"Default"};s.__docgenInfo={description:"",methods:[],displayName:"CustomStyles"};t.parameters={...t.parameters,docs:{...t.parameters?.docs,source:{originalSource:`() => {
+  return <Grid container justifyContent="center" spacing={6}>
+      <Grid container item xs={12} alignItems="center" direction="row">
+        <HomePageSearchBar placeholder="Search" />
+      </Grid>
+    </Grid>;
+}`,...t.parameters?.docs?.source}}};s.parameters={...s.parameters,docs:{...s.parameters?.docs,source:{originalSource:`() => {
+  const classes = useStyles();
+  return <Grid container justifyContent="center" spacing={6}>
+      <Grid container item xs={12} alignItems="center" direction="row">
+        <HomePageSearchBar classes={{
+        root: classes.searchBar
+      }} InputProps={{
+        classes: {
+          notchedOutline: classes.searchBarOutline
+        }
+      }} placeholder="Search" />
+      </Grid>
+    </Grid>;
+}`,...s.parameters?.docs?.source}}};const T=["Default","CustomStyles"];export{s as CustomStyles,t as Default,T as __namedExportsOrder,N as default};
