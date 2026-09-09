@@ -6,4 +6,4 @@
 '@backstage/repo-tools': patch
 ---
 
-Fixed lodash named-import from breaking ESM consumers importing from the package's `import` exports-map condition.
+Fixed `lodash` named-import from breaking ESM consumers importing from the package's `import` exports-map condition.
