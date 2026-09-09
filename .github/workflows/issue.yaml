@@ -27,7 +27,7 @@ jobs:
           sparse-checkout: .github
 
       - name: Add issue labels
-        uses: github/issue-labeler@c1b0f9f52a63158c4adc09425e858e87b32e9685 # v3.4
+        uses: github/issue-labeler@ccca1e16fcb66762200e616fc29b57b940c1cb67 # v3.5
         with:
           include-title: 1
           include-body: 0
