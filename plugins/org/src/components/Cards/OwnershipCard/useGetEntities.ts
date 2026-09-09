@@ -46,7 +46,7 @@ const getQueryParams = (
 ): string => {
   const { kind, type } = selectedEntity;
   const filters = {
-    kind: kind.toLocaleLowerCase('en-US'),
+    kind: kind.toLowerCase(),
     type,
     owners: ownersEntityRef,
     user: 'all',

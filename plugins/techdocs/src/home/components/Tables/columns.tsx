@@ -82,20 +82,14 @@ export const columnFactories = {
       searchable: true,
       defaultSort: 'asc',
       customSort: (row1, row2) => {
-        const title1 = customTitle(
-          row1.entity,
-          presentationApi,
-        ).toLocaleLowerCase();
-        const title2 = customTitle(
-          row2.entity,
-          presentationApi,
-        ).toLocaleLowerCase();
+        const title1 = customTitle(row1.entity, presentationApi).toLowerCase();
+        const title2 = customTitle(row2.entity, presentationApi).toLowerCase();
         return title1.localeCompare(title2);
       },
       customFilterAndSearch: (filter, row) =>
         customTitle(row.entity, presentationApi)
-          .toLocaleLowerCase()
-          .includes(filter.toLocaleLowerCase()),
+          .toLowerCase()
+          .includes(filter.toLowerCase()),
       render: (row: DocsTableRow) => (
         <SubvalueCell
           value={

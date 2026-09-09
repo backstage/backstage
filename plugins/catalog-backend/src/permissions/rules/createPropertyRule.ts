@@ -34,8 +34,8 @@ export const createPropertyRule = (propertyType: 'metadata' | 'spec') =>
         .describe(`Value of the given property to match on`),
     }),
     apply: (resource, { key, value }) => {
-      const normalizedKey = `${propertyType}.${key}`.toLocaleLowerCase('en-US');
-      const normalizedValue = value?.toLocaleLowerCase('en-US');
+      const normalizedKey = `${propertyType}.${key}`.toLowerCase();
+      const normalizedValue = value?.toLowerCase();
 
       return buildEntitySearch('', resource).some(
         row =>

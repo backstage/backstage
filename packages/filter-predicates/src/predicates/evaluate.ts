@@ -124,9 +124,7 @@ function evaluateFilterPredicateValue(
     if (typeof value !== 'string') {
       return false;
     }
-    return value
-      .toLocaleUpperCase('en-US')
-      .startsWith(filter.$hasPrefix.toLocaleUpperCase('en-US'));
+    return value.toUpperCase().startsWith(filter.$hasPrefix.toUpperCase());
   }
 
   return false;
@@ -140,7 +138,7 @@ function valuesAreEqual(a: unknown, b: unknown): boolean {
     return true;
   }
   if (typeof a === 'string' && typeof b === 'string') {
-    return a.toLocaleUpperCase('en-US') === b.toLocaleUpperCase('en-US');
+    return a.toUpperCase() === b.toUpperCase();
   }
   if (typeof a === 'number' || typeof b === 'number') {
     return String(a) === String(b);

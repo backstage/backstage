@@ -97,7 +97,7 @@ export async function findTemplate(options: {
 }): Promise<TemplateEntityV1beta3> {
   const { entityRef, catalog, credentials } = options;
 
-  if (entityRef.kind.toLocaleLowerCase('en-US') !== 'template') {
+  if (entityRef.kind.toLowerCase() !== 'template') {
     throw new InputError(`Invalid kind, only 'Template' kind is supported`);
   }
 

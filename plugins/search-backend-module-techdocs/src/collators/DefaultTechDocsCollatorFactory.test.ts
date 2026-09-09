@@ -144,7 +144,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
           componentType: entity!.spec!.type,
           lifecycle: entity!.spec!.lifecycle,
           owner: '',
-          kind: entity.kind.toLocaleLowerCase('en-US'),
+          kind: entity.kind.toLowerCase(),
           name: entity.metadata.name,
         });
       });
@@ -314,7 +314,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
           componentType: entity!.spec!.type,
           lifecycle: entity!.spec!.lifecycle,
           owner: '',
-          kind: entity.kind.toLocaleLowerCase('en-US'),
+          kind: entity.kind.toLowerCase(),
           name: entity.metadata.name,
           tags: entity.metadata.tags,
         });
@@ -351,7 +351,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
           componentType: entity!.spec!.type,
           lifecycle: entity!.spec!.lifecycle,
           owner: '',
-          kind: entity.kind.toLocaleLowerCase('en-US'),
+          kind: entity.kind.toLowerCase(),
           name: entity.metadata.name,
           tags: ['static-tag'],
         });

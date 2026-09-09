@@ -56,9 +56,7 @@ export const TopicRow = (props: {
                 handleChange(ch.id, origin.id, topic.id, isSelected);
               }}
             />
-            <Tooltip>{`Enable or disable ${ch.id.toLocaleLowerCase(
-              'en-US',
-            )} notifications for the ${formatTopicName(
+            <Tooltip>{`Enable or disable ${ch.id.toLowerCase()} notifications for the ${formatTopicName(
               topic.id,
             )} topic from ${formatOriginName(origin.id)}`}</Tooltip>
           </TooltipTrigger>

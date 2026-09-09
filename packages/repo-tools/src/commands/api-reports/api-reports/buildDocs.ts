@@ -166,7 +166,7 @@ class ApiModelTransforms {
 
     // First letter in name must be uppercase
     const [firstChar] = name;
-    if (firstChar.toLocaleUpperCase('en-US') !== firstChar) {
+    if (firstChar.toUpperCase() !== firstChar) {
       return member;
     }
 

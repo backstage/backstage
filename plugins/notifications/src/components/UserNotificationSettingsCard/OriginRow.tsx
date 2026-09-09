@@ -77,9 +77,9 @@ export const OriginRow = (props: {
                 handleChange(ch.id, origin.id, null, isSelected);
               }}
             />
-            <Tooltip>{`Enable or disable ${ch.id.toLocaleLowerCase(
-              'en-US',
-            )} notifications from ${formatOriginName(origin.id)}`}</Tooltip>
+            <Tooltip>{`Enable or disable ${ch.id.toLowerCase()} notifications from ${formatOriginName(
+              origin.id,
+            )}`}</Tooltip>
           </TooltipTrigger>
         </NoBorderTableCell>
       ))}

@@ -49,7 +49,7 @@ function parseHelpPage(helpPageContent: string) {
     }
     if (lines.length > 0) {
       // Start of a new section, e.g. "Options:" or "FLAGS:"
-      const sectionName = lines.shift()?.toLocaleLowerCase('en-US');
+      const sectionName = lines.shift()?.toLowerCase();
       // Take lines until we hit the next section or the end
       const sectionEndIndex = lines.findIndex(
         line => line && !line.match(/^\s/),
