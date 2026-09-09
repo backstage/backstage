@@ -380,14 +380,16 @@ describe('useTaskEventStream', () => {
     expect(mockApi.streamLogs).toHaveBeenCalledTimes(1);
   });
 
-  it('does not retry after stream completes via cancellation', async () => {
+  it('tears down the subscription when a non-recoverable task is cancelled', async () => {
     let streamSubscriber: ZenObservable.SubscriptionObserver<LogEvent>;
+    const unsubscribeSpy = jest.fn();
     const mockApi = {
       getTask: jest.fn().mockResolvedValue(makeTask()),
       streamLogs: jest.fn().mockImplementation(
         () =>
           new ObservableImpl<LogEvent>(subscriber => {
             streamSubscriber = subscriber;
+            return () => unsubscribeSpy();
           }),
       ),
     };
@@ -417,15 +419,43 @@ describe('useTaskEventStream', () => {
     expect(result.current.stepLogs['step-1']).toContainEqual(
       expect.stringContaining('before cancel'),
     );
+    expect(unsubscribeSpy).toHaveBeenCalled();
+    expect(mockApi.streamLogs).toHaveBeenCalledTimes(1);
+  });
 
-    act(() => {
-      streamSubscriber.error(new Error('SSE connection closed'));
-    });
+  it('tears down the subscription when a non-recoverable task completes', async () => {
+    let streamSubscriber: ZenObservable.SubscriptionObserver<LogEvent>;
+    const unsubscribeSpy = jest.fn();
+    const mockApi = {
+      getTask: jest.fn().mockResolvedValue(makeTask()),
+      streamLogs: jest.fn().mockImplementation(
+        () =>
+          new ObservableImpl<LogEvent>(subscriber => {
+            streamSubscriber = subscriber;
+            return () => unsubscribeSpy();
+          }),
+      ),
+    };
+
+    const { result } = setup(mockApi);
 
     await act(async () => {
-      jest.advanceTimersByTime(15000);
+      await Promise.resolve();
+      await Promise.resolve();
     });
 
+    act(() => {
+      streamSubscriber.next({
+        id: 1,
+        taskId: 'test-task-id',
+        type: 'completion',
+        createdAt: '2026-01-01T00:00:00Z',
+        body: { output: {} },
+      } as unknown as LogEvent);
+    });
+
+    expect(result.current.completed).toBe(true);
+    expect(unsubscribeSpy).toHaveBeenCalled();
     expect(mockApi.streamLogs).toHaveBeenCalledTimes(1);
   });
 });

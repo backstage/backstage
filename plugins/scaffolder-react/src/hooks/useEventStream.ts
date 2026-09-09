@@ -268,6 +268,9 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
               }
               emitLogs();
               dispatch({ type: 'CANCELLED' });
+              if (isStreamComplete) {
+                cleanUpStream();
+              }
               return undefined;
             case 'completion':
               if (!isTaskRecoverable) {
@@ -275,6 +278,9 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
               }
               emitLogs();
               dispatch({ type: 'COMPLETED', data: event });
+              if (isStreamComplete) {
+                cleanUpStream();
+              }
               return undefined;
             case 'recovered':
               isStreamComplete = false;
