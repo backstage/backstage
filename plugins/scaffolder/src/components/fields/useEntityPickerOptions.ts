@@ -42,6 +42,9 @@ type EntityPickerOptionsState = {
   searchText: string;
   setSearchText: (value: string) => void;
   loadMore: () => void;
+  hasMore: boolean;
+  loadMoreError: boolean;
+  retry: () => void;
   initialResultIsOnlyOption: boolean;
 };
 
@@ -55,11 +58,13 @@ export function useEntityPickerOptions(options: {
   const entityPresentationApi = useApi(entityPresentationApiRef);
   const [searchText, setSearchTextState] = useState('');
   const [debouncedSearchText, setDebouncedSearchText] = useState('');
+  const [retryCount, setRetryCount] = useState(0);
   const [state, setState] = useState<{
     generation?: number;
     entities: Entity[];
     entityRefToPresentation: Map<string, EntityRefPresentationSnapshot>;
     nextCursor?: string;
+    loadMoreError?: boolean;
     loadingState: LoadingState;
     initialResultIsOnlyOption: boolean;
   }>({
@@ -117,6 +122,7 @@ export function useEntityPickerOptions(options: {
     setState(previous => ({
       ...previous,
       loadingState: debouncedSearchText ? 'filtering' : 'loading',
+      loadMoreError: false,
     }));
 
     catalogApi
@@ -162,6 +168,7 @@ export function useEntityPickerOptions(options: {
     debouncedSearchText,
     enabled,
     presentEntities,
+    retryCount,
   ]);
 
   const loadMore = useCallback(() => {
@@ -180,7 +187,11 @@ export function useEntityPickerOptions(options: {
     const cursor = state.nextCursor;
     const loadMoreRequest = ++nextLoadMoreRequest.current;
     activeLoadMoreRequest.current = loadMoreRequest;
-    setState(previous => ({ ...previous, loadingState: 'loadingMore' }));
+    setState(previous => ({
+      ...previous,
+      loadingState: 'loadingMore',
+      loadMoreError: false,
+    }));
     catalogApi
       .queryEntities({
         cursor,
@@ -211,7 +222,11 @@ export function useEntityPickerOptions(options: {
         }
         activeLoadMoreRequest.current = undefined;
         if (generation === requestGeneration.current) {
-          setState(previous => ({ ...previous, loadingState: 'idle' }));
+          setState(previous => ({
+            ...previous,
+            loadingState: 'idle',
+            loadMoreError: true,
+          }));
         }
       });
   }, [
@@ -282,6 +297,9 @@ export function useEntityPickerOptions(options: {
     searchText,
     setSearchText,
     loadMore,
+    hasMore: Boolean(state.nextCursor),
+    loadMoreError: Boolean(state.loadMoreError),
+    retry: () => setRetryCount(count => count + 1),
     initialResultIsOnlyOption:
       loadingState === 'idle' && !searchText && state.initialResultIsOnlyOption,
   };

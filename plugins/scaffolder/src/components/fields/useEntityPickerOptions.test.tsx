@@ -309,12 +309,34 @@ describe('useEntityPickerOptions', () => {
       expect(catalogApi.queryEntities).toHaveBeenCalledTimes(2),
     );
     await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.loadMoreError).toBe(true);
+    expect(result.current.hasMore).toBe(true);
     act(() => result.current.loadMore());
 
     await waitFor(() =>
       expect(result.current.entities).toEqual([entity, otherEntity]),
     );
     expect(catalogApi.queryEntities).toHaveBeenCalledTimes(3);
+    expect(result.current.loadMoreError).toBe(false);
+    expect(result.current.hasMore).toBe(false);
+  });
+
+  it('retries a failed initial query without changing its search', async () => {
+    catalogApi.queryEntities
+      .mockRejectedValueOnce(new Error('temporary failure'))
+      .mockResolvedValueOnce({ items: [entity], totalItems: 0, pageInfo: {} });
+    const { result } = renderHook(
+      () => useEntityPickerOptions({ selectedEntityRefs: [] }),
+      { wrapper },
+    );
+    await waitFor(() => expect(result.current.loadingState).toBe('error'));
+    act(() => result.current.retry());
+    await waitFor(() => expect(result.current.entities).toEqual([entity]));
+    expect(result.current.loadingState).toBe('idle');
+    expect(catalogApi.queryEntities).toHaveBeenCalledTimes(2);
+    expect(catalogApi.queryEntities.mock.calls[1]).toEqual(
+      catalogApi.queryEntities.mock.calls[0],
+    );
   });
 
   it('retains an active page while the input is temporarily different', async () => {
