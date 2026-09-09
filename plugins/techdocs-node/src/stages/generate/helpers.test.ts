@@ -1055,16 +1055,18 @@ theme:
       },
     );
 
-    it('should accept superfences custom fence formats', async () => {
+    it.each([
+      'pymdownx.superfences.fence_code_format',
+      'pymdownx.superfences.fence_div_format',
+      'mermaid2.fence_mermaid',
+      'mermaid2.fence_mermaid_custom',
+    ])('should accept the custom fence format %s', async format => {
       const content = `markdown_extensions:
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
           class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
-        - name: math
-          class: arithmatex
-          format: !!python/name:pymdownx.superfences.fence_div_format`;
+          format: !!python/name:${format}`;
 
       await expect(
         validateMkdocsYaml(inputDir, content),
