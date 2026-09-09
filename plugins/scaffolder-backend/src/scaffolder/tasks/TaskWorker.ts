@@ -16,7 +16,7 @@
 
 import { AuditorService, LoggerService } from '@backstage/backend-plugin-api';
 import type { MetricsService } from '@backstage/backend-plugin-api/alpha';
-import { InputError, stringifyError, toError } from '@backstage/errors';
+import { InputError, toError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import {
@@ -29,15 +29,15 @@ import PQueue from 'p-queue';
 import { TemplateActionRegistry } from '../actions/TemplateActionRegistry';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { WorkflowRunner } from './types';
-import { setTimeout } from 'node:timers/promises';
 import { JsonObject } from '@backstage/types';
 import { Config } from '@backstage/config';
 import { collectTemplateCapabilities } from '../../util/templating';
 
 const DEFAULT_TASK_PARAMETER_MAX_LENGTH = 256;
-
-/** How long to wait before trying to claim again after a failed claim. */
-const CLAIM_RETRY_DELAY_MS = 1000;
+const TASK_RECOVERY_INTERVAL_MS = 10_000;
+const CLAIM_RETRY_INITIAL_DELAY_MS = 1_000;
+const CLAIM_RETRY_MAX_DELAY_MS = 60_000;
+const CLAIM_RETRY_JITTER_FACTOR = 0.2;
 
 /**
  * TaskWorkerOptions
@@ -95,6 +95,8 @@ export class TaskWorker {
   private auditor: AuditorService | undefined;
   private parameterAuditTransform: ParameterAuditTransform;
   private stopWorkers: boolean;
+  private workerLoops: Promise<void> | undefined;
+  private readonly workerAbortController = new AbortController();
 
   private readonly options: TaskWorkerOptions & {
     parameterAuditTransform: ParameterAuditTransform;
@@ -151,6 +153,7 @@ export class TaskWorker {
       taskBroker: taskBroker,
       runners: { workflowRunner },
       concurrentTasksLimit,
+      logger,
       permissions,
       auditor,
       config,
@@ -162,48 +165,105 @@ export class TaskWorker {
   async recoverTasks() {
     try {
       await this.options.taskBroker.recoverTasks?.();
-    } catch (err) {
-      this.logger?.error(stringifyError(err));
+    } catch (error) {
+      this.logger?.error('Failed to recover tasks', toError(error));
     }
   }
 
   start() {
-    (async () => {
-      while (!this.stopWorkers) {
-        await setTimeout(10000);
-        await this.recoverTasks();
-      }
-    })();
-    (async () => {
-      while (!this.stopWorkers) {
-        try {
-          await this.onReadyToClaimTask();
-          if (!this.stopWorkers) {
-            const task = await this.options.taskBroker.claim();
-            void this.taskQueue.add(() => this.runOneTask(task));
-          }
-        } catch (err) {
-          // Without this the loop exits on the first rejection and the worker
-          // stops claiming tasks for the rest of the process lifetime, leaving
-          // every new task queued with no indication that anything is wrong.
-          this.logger?.error(
-            `Failed to claim task, retrying in ${CLAIM_RETRY_DELAY_MS}ms; caused by ${stringifyError(
-              err,
-            )}`,
-          );
-          await setTimeout(CLAIM_RETRY_DELAY_MS);
-        }
-      }
-    })();
+    if (this.workerLoops) {
+      return;
+    }
+
+    this.workerLoops = Promise.all([
+      this.runTaskRecoveryLoop(),
+      this.runTaskClaimLoop(),
+    ])
+      .then(() => undefined)
+      .catch(error => {
+        this.logger?.error(
+          'Unexpected task worker loop failure',
+          toError(error),
+        );
+      });
   }
 
   async stop() {
     this.stopWorkers = true;
+    this.workerAbortController.abort();
     if (this.options?.gracefulShutdown) {
-      while (this.taskQueue.size > 0) {
-        await setTimeout(1000);
+      await this.workerLoops;
+      await this.taskQueue.onIdle();
+    }
+  }
+
+  private async runTaskRecoveryLoop() {
+    while (!this.stopWorkers) {
+      await this.wait(TASK_RECOVERY_INTERVAL_MS);
+      if (!this.stopWorkers) {
+        await this.recoverTasks();
       }
     }
+  }
+
+  private async runTaskClaimLoop() {
+    let retryDelayMs = CLAIM_RETRY_INITIAL_DELAY_MS;
+
+    while (!this.stopWorkers) {
+      await this.onReadyToClaimTask();
+      if (this.stopWorkers) {
+        break;
+      }
+
+      try {
+        const task = await this.options.taskBroker.claim({
+          signal: this.workerAbortController.signal,
+        });
+        retryDelayMs = CLAIM_RETRY_INITIAL_DELAY_MS;
+        void this.taskQueue
+          .add(() => this.runOneTask(task))
+          .catch(error => {
+            this.logger?.error(
+              `Unexpected error while executing task ${task.taskId}`,
+              toError(error),
+            );
+          });
+      } catch (error) {
+        if (this.stopWorkers) {
+          break;
+        }
+        const jitter = retryDelayMs * CLAIM_RETRY_JITTER_FACTOR;
+        const actualDelayMs = Math.min(
+          CLAIM_RETRY_MAX_DELAY_MS,
+          Math.round(retryDelayMs - jitter + Math.random() * jitter * 2),
+        );
+        this.logger?.error(
+          `Failed to claim task, retrying in ${actualDelayMs}ms`,
+          toError(error),
+        );
+        await this.wait(actualDelayMs);
+        retryDelayMs = Math.min(retryDelayMs * 2, CLAIM_RETRY_MAX_DELAY_MS);
+      }
+    }
+  }
+
+  private wait(delayMs: number) {
+    return new Promise<void>(resolve => {
+      const signal = this.workerAbortController.signal;
+      const timeout = setTimeout(onDone, delayMs);
+
+      function onDone() {
+        clearTimeout(timeout);
+        signal.removeEventListener('abort', onDone);
+        resolve();
+      }
+
+      timeout.unref();
+      signal.addEventListener('abort', onDone, { once: true });
+      if (signal.aborted) {
+        onDone();
+      }
+    });
   }
 
   protected onReadyToClaimTask(): Promise<void> {

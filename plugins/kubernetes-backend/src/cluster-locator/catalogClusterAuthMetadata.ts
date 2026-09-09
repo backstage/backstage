@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 
-export type { ConnectionsService } from './ConnectionsService';
-export type { Connection, AnyConnection, AuthValue } from './Connection';
-export type {
-  ConnectionType,
-  ConnectionAuthMatch,
-  ConnectionAuthMethodKey,
-  ConnectionAuthValue,
-  LookupStrategy,
-  ConfiguredConnectionAuth,
-  PortableSchema,
-} from './ConnectionType';
+const KUBERNETES_IO_PREFIX = 'kubernetes.io/';
+
+const BLOCKED_AUTH_METADATA_KEYS = new Set(['serviceAccountToken']);
+
+export function filterCatalogClusterAuthMetadata(
+  annotations: Record<string, string>,
+): Record<string, string> {
+  const filtered: Record<string, string> = {};
+
+  for (const [key, value] of Object.entries(annotations)) {
+    if (BLOCKED_AUTH_METADATA_KEYS.has(key)) {
+      continue;
+    }
+    if (key.startsWith(KUBERNETES_IO_PREFIX)) {
+      filtered[key] = value;
+    }
+  }
+
+  return filtered;
+}

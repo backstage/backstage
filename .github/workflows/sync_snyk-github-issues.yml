@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
+        uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
         with:
           egress-policy: audit
 
@@ -25,7 +25,7 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
+        uses: backstage/actions/yarn-install@0d281eb2e96927466db49d4cd01d52b14809a66b # v0.7.10
         with:
           cache-prefix: ${{ runner.os }}-v22.x
 
@@ -44,6 +44,6 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
           NODE_OPTIONS: --max-old-space-size=7168
       - name: Update Github issues
-        run: ./scripts/snyk-github-issue-sync.ts
+        run: node --require @backstage/cli/config/nodeTransform.cjs ./scripts/snyk-github-issue-sync.ts
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

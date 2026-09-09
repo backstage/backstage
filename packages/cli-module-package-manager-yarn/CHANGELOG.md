@@ -1,5 +1,11 @@
 # @backstage/cli-module-package-manager-yarn
 
+## 0.1.1-next.1
+
+### Patch Changes
+
+- 064c2de: Updated the Yarn tooling dependencies to versions that avoid known security vulnerabilities.
+
 ## 0.1.1-next.0
 
 ### Patch Changes

@@ -21,6 +21,7 @@ import type {
   Connection,
   ConnectionAuthMethodKey,
   ConnectionsService,
+  ConnectionType,
   ConnectionTypeKey,
   LookupConnectionType,
   LookupStrategy,
@@ -30,6 +31,11 @@ import { buildConnectionsFromConfig } from '@backstage/connections';
 import { getConnectionType } from './lookup';
 import { lookupStrategies } from './lookupStrategies';
 import { NotAllowedError, NotFoundError } from '@backstage/errors';
+
+type ConnectionQuery<TType extends ConnectionTypeKey> =
+  LookupConnectionType<TType> extends ConnectionType<infer TDefinition>
+    ? TDefinition['query']
+    : never;
 
 function getLookupStrategy<K extends LookupStrategy>(
   name: K,
@@ -64,9 +70,11 @@ class PluginConnectionsService implements ConnectionsService {
     TAuthMethod extends ConnectionAuthMethodKey<TType>,
   >(options: {
     type: TType;
-    query: LookupConnectionType<TType>['query'];
-    authMethods: readonly [TAuthMethod, ...TAuthMethod[]];
-  }): Promise<Connection<TType, TAuthMethod>> {
+    query: ConnectionQuery<TType>;
+    authMethods?: readonly [TAuthMethod, ...TAuthMethod[]];
+  }): Promise<
+    Connection<TType, TAuthMethod> | Omit<Connection<TType>, 'auth'>
+  > {
     const result = await this.findOptional(options);
     if (!result) {
       throw new NotFoundError(
@@ -76,7 +84,7 @@ class PluginConnectionsService implements ConnectionsService {
     return result;
   }
 
-  async findOptional<
+  private async findOptional<
     TType extends ConnectionTypeKey,
     TAuthMethod extends ConnectionAuthMethodKey<TType>,
   >({
@@ -85,9 +93,11 @@ class PluginConnectionsService implements ConnectionsService {
     authMethods,
   }: {
     type: TType;
-    query: LookupConnectionType<TType>['query'];
-    authMethods: readonly [TAuthMethod, ...TAuthMethod[]];
-  }): Promise<Connection<TType, TAuthMethod> | undefined> {
+    query: ConnectionQuery<TType>;
+    authMethods?: readonly [TAuthMethod, ...TAuthMethod[]];
+  }): Promise<
+    Connection<TType, TAuthMethod> | Omit<Connection<TType>, 'auth'> | undefined
+  > {
     const connectionType = getConnectionType(type);
     const strategy = getLookupStrategy(connectionType.lookupStrategy);
     const identity = strategy.identityFromQuery(query);
@@ -111,6 +121,11 @@ class PluginConnectionsService implements ConnectionsService {
 
     if (!connection) {
       return undefined;
+    }
+
+    if (!authMethods) {
+      const { auth: _, ...info } = connection;
+      return info as Omit<Connection<TType>, 'auth'>;
     }
 
     if (connection.auth.length === 0) {

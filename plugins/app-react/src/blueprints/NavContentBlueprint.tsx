@@ -17,11 +17,10 @@
 import { ComponentType } from 'react';
 import {
   AppNode,
+  ExtensionBoundary,
   IconComponent,
   IconElement,
   RouteRef,
-} from '@backstage/frontend-plugin-api';
-import {
   createExtensionBlueprint,
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
@@ -138,7 +137,12 @@ export const NavContentBlueprint = createExtensionBlueprint({
   dataRefs: {
     component: componentDataRef,
   },
-  *factory(params: { component: NavContentComponent }) {
-    yield componentDataRef(params.component);
+  *factory(params: { component: NavContentComponent }, { node }) {
+    const Component = params.component;
+    yield componentDataRef(props => (
+      <ExtensionBoundary node={node} errorPresentation="error-api">
+        <Component {...props} />
+      </ExtensionBoundary>
+    ));
   },
 });

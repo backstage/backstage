@@ -45,7 +45,6 @@ import {
 import { markForStitching } from '../database/operations/stitcher/markForStitching';
 
 import {
-  expandLegacyCompoundRelationsInEntity,
   isQueryEntitiesCursorRequest,
   isQueryEntitiesInitialRequest,
 } from './util';
@@ -104,18 +103,10 @@ function stringifyPagination(
 export class DefaultEntitiesCatalog implements EntitiesCatalog {
   private readonly database: Knex;
   private readonly logger: LoggerService;
-  private readonly enableRelationsCompatibility: boolean;
 
-  constructor(options: {
-    database: Knex;
-    logger: LoggerService;
-    enableRelationsCompatibility?: boolean;
-  }) {
+  constructor(options: { database: Knex; logger: LoggerService }) {
     this.database = options.database;
     this.logger = options.logger;
-    this.enableRelationsCompatibility = Boolean(
-      options.enableRelationsCompatibility,
-    );
   }
 
   async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
@@ -221,15 +212,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     return {
       entities: processRawEntitiesResult(
         rows.map(r => r.final_entity!),
-        this.enableRelationsCompatibility
-          ? e => {
-              expandLegacyCompoundRelationsInEntity(e);
-              if (request?.fields) {
-                return request.fields(e);
-              }
-              return e;
-            }
-          : request?.fields,
+        request?.fields,
       ),
       pageInfo,
     };

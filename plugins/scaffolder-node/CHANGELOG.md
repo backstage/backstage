@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.13.7-next.2
+
+### Patch Changes
+
+- 3bb3710: Added optional cancellation support when waiting to claim a scaffolder task.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/integration@2.1.2-next.1
+  - @backstage/plugin-permission-common@0.9.11-next.0
+  - @backstage/plugin-permission-node@0.11.4-next.1
+  - @backstage/plugin-scaffolder-common@2.3.0-next.2
+
 ## 0.13.7-next.1
 
 ### Patch Changes

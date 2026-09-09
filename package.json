@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.55.0-next.1",
+  "version": "1.55.0-next.2",
   "backstage": {
     "cli": {
       "new": {
@@ -48,7 +48,7 @@
     "prepare": "husky",
     "prettier:check": "prettier --check .",
     "prettier:fix": "prettier --write .",
-    "release": "node scripts/prepare-release.js && changeset version && yarn prettier --write '{packages,plugins}/*/{package.json,CHANGELOG.md}' '.changeset/*.json' && yarn install --no-immutable",
+    "release": "node scripts/prepare-release.js && changeset version && yarn prettier --write '{packages,plugins}/*/{package.json,CHANGELOG.md}' '.changeset/*.json' && node scripts/create-release-changelog.js && yarn install --no-immutable",
     "snyk:test": "npx snyk test --yarn-workspaces --strict-out-of-sync=false",
     "snyk:test:package": "yarn snyk:test --include",
     "start": "backstage-cli repo start",
@@ -100,18 +100,17 @@
   },
   "resolutions": {
     "@material-ui/pickers@^3.2.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
-    "@material-ui/pickers@^3.3.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
     "@remixicon/react": ">=4.6.0 <4.9.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
-    "@yarnpkg/plugin-npm@npm:^3.1.0": "patch:@yarnpkg/plugin-npm@npm%3A3.1.0#~/.yarn/patches/@yarnpkg-plugin-npm-npm-3.1.0-6533d0f5a1.patch",
+    "@yarnpkg/plugin-npm@npm:^3.1.0": "patch:@yarnpkg/plugin-npm@npm%3A3.7.1#~/.yarn/patches/@yarnpkg-plugin-npm-npm-3.7.1-ab2f1a850e.patch",
     "GendocuPublicApis": "npm:gendocu-public-apis@^1.0.0",
-    "ast-types@npm:0.14.2": "patch:ast-types@npm%3A0.16.1#./.yarn/patches/ast-types-npm-0.16.1-43c4ac4b0d.patch",
-    "ast-types@npm:^0.13.4": "patch:ast-types@npm%3A0.16.1#./.yarn/patches/ast-types-npm-0.16.1-43c4ac4b0d.patch",
-    "ast-types@npm:^0.16.1": "patch:ast-types@npm%3A0.16.1#./.yarn/patches/ast-types-npm-0.16.1-43c4ac4b0d.patch",
-    "csstype@npm:^3.0.2": "3.0.9",
-    "csstype@npm:^3.1.2": "3.0.9",
-    "csstype@npm:^3.1.3": "3.0.9"
+    "ast-types@npm:^0.13.4": "0.16.3",
+    "csstype@npm:^3.0.2": "3.0.9"
+  },
+  "resolutionsComments": {
+    "ast-types@npm:^0.13.4": "Some transitive dependencies request ast-types 0.13.x, which predates the TypeScript 5.4 isolatedModules compatibility fix released in ast-types 0.16.2.",
+    "csstype@npm:^3.0.2": "Material UI v4 types typography font weights through React CSS types while its styling API uses csstype 2.x. csstype 3.0.10 widened numeric CSS properties to include arbitrary strings, making those types incompatible."
   },
   "dependencies": {
     "@backstage/errors": "workspace:^",

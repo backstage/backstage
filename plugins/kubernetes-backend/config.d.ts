@@ -80,6 +80,19 @@ export interface Config {
       | {
           /** @visibility frontend */
           type: 'catalog';
+          /**
+           * Hostname patterns (for example `127.0.0.1` or `*.example.com`) for
+           * which catalog cluster API server URLs may use HTTP or non-public
+           * addresses. Omitted hostnames must use HTTPS and pass SSRF checks.
+           * @visibility frontend
+           */
+          dangerouslyAllowClusterUrls?: string[];
+          /**
+           * When true, catalog cluster entities may set skip TLS verify via
+           * annotation. Defaults to false.
+           * @visibility frontend
+           */
+          dangerouslyAllowSkipTLSVerify?: boolean;
         }
       | {
           /** @visibility frontend */

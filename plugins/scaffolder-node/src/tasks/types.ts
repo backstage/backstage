@@ -210,7 +210,10 @@ export interface TaskBroker {
 
   retry(options: { secrets?: TaskSecrets; taskId: string }): Promise<void>;
 
-  claim(): Promise<TaskContext>;
+  claim(options?: {
+    /** Stops waiting before a task has been claimed. */
+    signal?: AbortSignal;
+  }): Promise<TaskContext>;
 
   recoverTasks(): Promise<void>;
 

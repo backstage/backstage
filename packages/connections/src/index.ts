@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 export type { ConnectionsService } from './api/ConnectionsService';
-export type { Connection, AuthValue } from './api/Connection';
+export type { Connection } from './api/Connection';
 export type {
   ConnectionAuthMatch,
   ConnectionType,

@@ -18,17 +18,24 @@ import {
   NotificationPayload,
   NotificationSeverity,
 } from '@backstage/plugin-notifications-common';
+import { resolveNotificationLink } from '@backstage/plugin-notifications-node';
 import { ChatPostMessageArguments, KnownBlock } from '@slack/web-api';
 import { SlackBlockKitRenderer } from '../extensions';
 
 export function toChatPostMessageArgs(options: {
   channel: string;
   payload: NotificationPayload;
+  frontendBaseUrl: string;
   username?: string;
   blockKitRenderer?: SlackBlockKitRenderer;
 }): ChatPostMessageArguments {
-  const { channel, payload, username, blockKitRenderer } = options;
-  const blocks = (blockKitRenderer ?? toSlackBlockKit)(payload);
+  const { channel, payload, frontendBaseUrl, username, blockKitRenderer } =
+    options;
+  const normalizedPayload = {
+    ...payload,
+    link: resolveNotificationLink(payload.link, frontendBaseUrl),
+  };
+  const blocks = (blockKitRenderer ?? toSlackBlockKit)(normalizedPayload);
 
   const args: ChatPostMessageArguments = {
     channel,

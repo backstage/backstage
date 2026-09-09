@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder-common
 
+## 2.3.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.2-next.1
+  - @backstage/plugin-permission-common@0.9.11-next.0
+
 ## 2.3.0-next.1
 
 ### Patch Changes

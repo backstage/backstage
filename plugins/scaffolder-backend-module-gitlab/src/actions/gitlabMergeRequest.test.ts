@@ -195,7 +195,9 @@ const mockGitlabClient = {
         else {
           return [
             {
-              id: 'a1e8f8d745cc87e3a9248358d9352bb7f9a0aeba',
+              // `git hash-object` of this entry's contents ('foo-bar-baz'), which is what
+              // GitLab returns here and what getFileAction compares against.
+              id: '6463ca9e2f99a4e9b97e1e9e24e752b52228ccef',
               name: 'auto.txt',
               type: 'blob',
               path: 'source/auto.txt',
@@ -221,7 +223,7 @@ const mockGitlabClient = {
           content_sha256:
             '269dce1a5bb90188b2d9cf542a7c30e410c7d8251e34a97bfea56062df51ae23',
           ref,
-          blob_id: 'a1e8f8d745cc87e3a9248358d9352bb7f9a0aeba',
+          blob_id: '6463ca9e2f99a4e9b97e1e9e24e752b52228ccef',
           commit_id: 'd5a3ff139356ce33e37e73add446f16869741b50',
           last_commit_id: '570e7b2abdd848b95f2f578043fc23bd6f6fd24d',
         };
@@ -1321,7 +1323,7 @@ describe('createGitLabMergeRequest', () => {
         'owner/repo',
         'new-mr',
         'Create my new MR',
-        expect.arrayContaining([
+        [
           {
             action: 'create',
             filePath: 'source/foo.txt',
@@ -1329,8 +1331,10 @@ describe('createGitLabMergeRequest', () => {
             encoding: 'base64',
             execute_filemode: false,
           },
-        ]),
+        ],
       );
+      // The unmodified file is recognised from the tree listing alone.
+      expect(mockGitlabClient.RepositoryFiles.show).not.toHaveBeenCalled();
       expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
         'owner/repo',
         'new-mr',

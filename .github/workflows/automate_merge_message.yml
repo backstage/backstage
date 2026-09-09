@@ -19,12 +19,15 @@ permissions:
 
 jobs:
   message:
+    env:
+      PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
     # prevent running towards forks, and only run on merged PRs
     if: github.repository == 'backstage/backstage' && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
+        uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
         with:
           egress-policy: audit
 
@@ -36,7 +39,7 @@ jobs:
           allow-unsafe-pr-checkout: true
 
       - name: fetch head & base
-        run: git fetch --depth 1 origin ${{ github.event.pull_request.head.sha }} ${{ github.event.pull_request.base.sha }}
+        run: git fetch --depth 1 origin "$PR_HEAD_SHA" "$PR_BASE_SHA"
 
         # We avoid using the in-source script since this workflow has elevated permissions that we don't want to expose
       - name: Generate Message
@@ -44,7 +47,7 @@ jobs:
         run: |
           rm -f generate.js
           wget -O generate.js https://raw.githubusercontent.com/backstage/backstage/master/scripts/generate-merge-message.js 1>&2
-          node generate.js ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} > message.txt
+          node generate.js "$PR_BASE_SHA" "$PR_HEAD_SHA" > message.txt
 
       - name: Post Message
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
