@@ -25,7 +25,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { MultiEntityPicker } from './MultiEntityPicker';
@@ -140,6 +140,102 @@ describe('<MultiEntityPicker />', () => {
         orderFields: [{ field: 'metadata.name', order: 'asc' }],
         totalItems: 'exclude',
       });
+    });
+
+    it('loads past a fully selected first page, but only when opened', async () => {
+      catalogApi.queryEntities
+        .mockResolvedValueOnce({
+          items: [entities[0]],
+          totalItems: 0,
+          pageInfo: { nextCursor: 'next-page' },
+        })
+        .mockResolvedValueOnce({
+          items: [entities[1]],
+          totalItems: 0,
+          pageInfo: {},
+        });
+      await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} formData={['group:default/team-a']} />
+        </Wrapper>,
+      );
+      expect(catalogApi.queryEntities).toHaveBeenCalledTimes(1);
+      fireEvent.mouseDown(screen.getByRole('textbox'));
+      fireEvent.click(await screen.findByRole('option', { name: 'squad-b' }));
+      expect(catalogApi.queryEntities).toHaveBeenLastCalledWith({
+        cursor: 'next-page',
+        limit: 20,
+      });
+      expect(onChange).toHaveBeenCalledWith([
+        'group:default/team-a',
+        'group:default/squad-b',
+      ]);
+    });
+
+    it('loads another page when scrolling near the bottom, including keyboard padding', async () => {
+      const page = Array.from({ length: 20 }, (_, i) =>
+        makeEntity('Group', 'default', `team-${i}`),
+      );
+      catalogApi.queryEntities
+        .mockResolvedValueOnce({
+          items: page,
+          totalItems: 0,
+          pageInfo: { nextCursor: 'next-page' },
+        })
+        .mockResolvedValueOnce({
+          items: [entities[1]],
+          totalItems: 0,
+          pageInfo: {},
+        });
+      await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} />
+        </Wrapper>,
+      );
+      fireEvent.mouseDown(screen.getByRole('textbox'));
+      const listbox = await screen.findByRole('listbox');
+      Object.defineProperties(listbox, {
+        scrollHeight: { value: 736 },
+        clientHeight: { value: 378 },
+      });
+      fireEvent.scroll(listbox, { target: { scrollTop: 342 } });
+      await waitFor(() =>
+        expect(catalogApi.queryEntities).toHaveBeenCalledTimes(2),
+      );
+      expect(catalogApi.queryEntities).toHaveBeenLastCalledWith({
+        cursor: 'next-page',
+        limit: 20,
+      });
+    });
+
+    it('does not automatically retry a failed underfilled page until reopened', async () => {
+      catalogApi.queryEntities
+        .mockResolvedValueOnce({
+          items: [entities[0]],
+          totalItems: 0,
+          pageInfo: { nextCursor: 'next-page' },
+        })
+        .mockRejectedValueOnce(new Error('Temporary failure'))
+        .mockResolvedValueOnce({
+          items: [entities[1]],
+          totalItems: 0,
+          pageInfo: {},
+        });
+      await renderInTestApp(
+        <Wrapper>
+          <MultiEntityPicker {...props} formData={['group:default/team-a']} />
+        </Wrapper>,
+      );
+      await act(async () => fireEvent.mouseDown(screen.getByRole('textbox')));
+      expect(catalogApi.queryEntities).toHaveBeenCalledTimes(2);
+      expect(screen.queryByRole('option')).not.toBeInTheDocument();
+
+      fireEvent.keyDown(screen.getByRole('textbox'), { key: 'Escape' });
+      fireEvent.mouseDown(screen.getByRole('textbox'));
+      expect(
+        await screen.findByRole('option', { name: 'squad-b' }),
+      ).toBeInTheDocument();
+      expect(catalogApi.queryEntities).toHaveBeenCalledTimes(3);
     });
 
     it('updates even if there is not an exact match', async () => {

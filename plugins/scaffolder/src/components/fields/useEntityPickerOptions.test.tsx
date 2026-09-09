@@ -22,7 +22,7 @@ import {
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { TestApiProvider } from '@backstage/test-utils';
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useEffect } from 'react';
 import { useEntityPickerOptions } from './useEntityPickerOptions';
 
 const entity: Entity = {
@@ -254,6 +254,37 @@ describe('useEntityPickerOptions', () => {
     });
   });
 
+  it.each(['success', 'error'])(
+    'retains an initial %s received while the input is temporarily different',
+    async outcome => {
+      jest.useFakeTimers();
+      const response = deferred<void>();
+      catalogApi.queryEntities.mockImplementationOnce(async () => {
+        await response.promise;
+        if (outcome === 'error') throw new Error('Search failed');
+        return { items: [entity], totalItems: 0, pageInfo: {} };
+      });
+      const { result } = renderHook(
+        () => useEntityPickerOptions({ selectedEntityRefs: [] }),
+        { wrapper },
+      );
+
+      act(() => result.current.setSearchText('team'));
+      await act(async () => response.resolve());
+      expect(result.current.loadingState).toBe('filtering');
+
+      act(() => result.current.setSearchText(''));
+      await act(async () => jest.advanceTimersByTime(250));
+      expect(result.current.loadingState).toBe(
+        outcome === 'success' ? 'idle' : 'error',
+      );
+      expect(result.current.entities).toEqual(
+        outcome === 'success' ? [entity] : [],
+      );
+      expect(catalogApi.queryEntities).toHaveBeenCalledTimes(1);
+    },
+  );
+
   it('allows retrying a page after it fails to load', async () => {
     catalogApi.queryEntities
       .mockResolvedValueOnce({
@@ -286,7 +317,7 @@ describe('useEntityPickerOptions', () => {
     expect(catalogApi.queryEntities).toHaveBeenCalledTimes(3);
   });
 
-  it('ignores a page that resolves after the search input changes', async () => {
+  it('retains an active page while the input is temporarily different', async () => {
     jest.useFakeTimers();
     const nextPage = deferred<{
       items: Entity[];
@@ -316,8 +347,10 @@ describe('useEntityPickerOptions', () => {
       });
     });
 
-    expect(result.current.entities).toEqual([entity]);
+    expect(result.current.entities).toEqual([entity, otherEntity]);
     expect(result.current.loadingState).toBe('filtering');
+    act(() => result.current.setSearchText(''));
+    expect(result.current.loadingState).toBe('idle');
   });
 
   it('does not let an obsolete search replace newer results', async () => {
@@ -359,6 +392,38 @@ describe('useEntityPickerOptions', () => {
     });
 
     expect(result.current.entities).toEqual([otherEntity]);
+  });
+
+  it('does not reuse the previous cursor while a new catalog filter is starting', async () => {
+    catalogApi.queryEntities
+      .mockResolvedValueOnce({
+        items: [entity],
+        totalItems: 0,
+        pageInfo: { nextCursor: 'group-page' },
+      })
+      .mockReturnValueOnce(new Promise(() => {}));
+    const { result, rerender } = renderHook(
+      ({ catalogFilter }) => {
+        const options = useEntityPickerOptions({
+          catalogFilter,
+          selectedEntityRefs: [],
+        });
+        const { loadMore } = options;
+        // An open menu may try to refill in the same render as a filter change.
+        useEffect(() => {
+          if (catalogFilter.kind === 'User') loadMore();
+        }, [catalogFilter, loadMore]);
+        return options;
+      },
+      { wrapper, initialProps: { catalogFilter: { kind: 'Group' } } },
+    );
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    rerender({ catalogFilter: { kind: 'User' } });
+    expect(catalogApi.queryEntities).toHaveBeenCalledTimes(2);
+    expect(catalogApi.queryEntities).toHaveBeenLastCalledWith(
+      expect.objectContaining({ filter: { kind: 'User' } }),
+    );
   });
 
   it('loads selected entities without adding them to the search results', async () => {

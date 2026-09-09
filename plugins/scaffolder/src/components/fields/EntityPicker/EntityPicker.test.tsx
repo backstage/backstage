@@ -93,6 +93,43 @@ describe('<EntityPicker />', () => {
 
   afterEach(() => jest.resetAllMocks());
 
+  it('preserves typed MUI search when the selected entity moves outside the results', async () => {
+    catalogApi.queryEntities
+      .mockResolvedValueOnce({ items: entities, totalItems: 0, pageInfo: {} })
+      .mockResolvedValueOnce({
+        items: [entities[1]],
+        totalItems: 0,
+        pageInfo: {},
+      });
+    // Separate requests return distinct objects, even for the same entity.
+    catalogApi.getEntitiesByRefs.mockResolvedValue({
+      items: [{ ...entities[0] }],
+    });
+    await renderInTestApp(
+      <Wrapper>
+        <EntityPicker
+          {...({
+            onChange,
+            schema,
+            uiSchema: {},
+            formData: 'group:default/team-a',
+          } as unknown as FieldProps<string>)}
+        />
+      </Wrapper>,
+    );
+    const input = screen.getByRole('textbox');
+    expect(input).toHaveValue('group:default/team-a');
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: 'squad' } });
+    await screen.findByRole('option', { name: 'squad-b' });
+    await waitFor(() =>
+      expect(catalogApi.queryEntities).toHaveBeenCalledTimes(2),
+    );
+    expect(input).toHaveValue('squad');
+    fireEvent.click(screen.getByRole('option', { name: 'squad-b' }));
+    expect(onChange).toHaveBeenCalledWith('group:default/squad-b');
+  });
+
   describe('without allowedKinds and catalogFilter', () => {
     beforeEach(() => {
       uiSchema = { 'ui:options': {} };
@@ -170,45 +207,50 @@ describe('<EntityPicker />', () => {
       expect(input).toHaveValue('team');
     });
 
-    it('keeps BUI search input when a selected presentation arrives late', async () => {
-      mockUseScaffolderTheme.mockReturnValue('bui');
-      const selectedEntity = {
-        ...makeEntity('Group', 'default', 'off-page'),
-        metadata: {
-          namespace: 'default',
-          name: 'off-page',
-          title: 'Off Page Group',
-        },
-      };
-      let resolveSelectedEntity = () => {};
-      catalogApi.getEntitiesByRefs.mockReturnValueOnce(
-        new Promise(resolve => {
-          resolveSelectedEntity = () => resolve({ items: [selectedEntity] });
-        }),
-      );
-      props = {
-        ...props,
-        formData: 'group:default/off-page',
-        uiSchema: {
-          'ui:options': { allowArbitraryValues: false },
-        },
-      } as unknown as FieldProps<any>;
-      await renderInTestApp(
-        <Wrapper>
-          <EntityPicker {...props} />
-        </Wrapper>,
-      );
-      const input = screen.getByRole('combobox');
+    it.each(['bui', 'mui'] as const)(
+      'keeps %s search input when a selected presentation arrives late',
+      async theme => {
+        mockUseScaffolderTheme.mockReturnValue(theme);
+        const selectedEntity = {
+          ...makeEntity('Group', 'default', 'off-page'),
+          metadata: {
+            namespace: 'default',
+            name: 'off-page',
+            title: 'Off Page Group',
+          },
+        };
+        let resolveSelectedEntity = () => {};
+        catalogApi.getEntitiesByRefs.mockReturnValueOnce(
+          new Promise(resolve => {
+            resolveSelectedEntity = () => resolve({ items: [selectedEntity] });
+          }),
+        );
+        props = {
+          ...props,
+          formData: 'group:default/off-page',
+          uiSchema: {
+            'ui:options': { allowArbitraryValues: false },
+          },
+        } as unknown as FieldProps<any>;
+        await renderInTestApp(
+          <Wrapper>
+            <EntityPicker {...props} />
+          </Wrapper>,
+        );
+        const input = screen.getByRole(
+          theme === 'bui' ? 'combobox' : 'textbox',
+        );
 
-      fireEvent.change(input, { target: { value: 'replacement' } });
-      await act(async () => {
-        resolveSelectedEntity();
-        await Promise.resolve();
-        await Promise.resolve();
-      });
+        fireEvent.change(input, { target: { value: 'replacement' } });
+        await act(async () => {
+          resolveSelectedEntity();
+          await Promise.resolve();
+          await Promise.resolve();
+        });
 
-      expect(input).toHaveValue('replacement');
-    });
+        expect(input).toHaveValue('replacement');
+      },
+    );
 
     it('does not clear a BUI selection outside the current page on blur', async () => {
       mockUseScaffolderTheme.mockReturnValue('bui');

@@ -17,7 +17,6 @@
 import {
   type Key,
   ChangeEvent,
-  type MouseEvent,
   useCallback,
   useEffect,
   useMemo,
@@ -49,6 +48,7 @@ import {
 } from '@backstage/plugin-scaffolder-react/alpha';
 import { Autocomplete as BuiAutocomplete } from '../Autocomplete';
 import { useEntityPickerOptions } from '../useEntityPickerOptions';
+import { useEntityPickerPagination } from '../useEntityPickerPagination';
 
 export { MyGroupsPickerSchema };
 
@@ -205,6 +205,13 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
     }
   }, [entities, initialResultIsOnlyOption, onChange, selectedEntity, required]);
 
+  const pagination = useEntityPickerPagination({
+    entities,
+    selectedEntityRefs,
+    loading,
+    loadMore,
+  });
+
   if (theme === 'bui') {
     const isAutoSelected = required && initialResultIsOnlyOption;
 
@@ -254,9 +261,14 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
         id="OwnershipEntityRefPicker-dropdown"
         options={muiOptions}
         value={selectedEntity}
+        inputValue={inputValue}
         loading={identityLoading || loading}
         onChange={updateChange}
-        onInputChange={(_event, value, reason) => {
+        onInputChange={(event, value, reason) => {
+          // A new object for the same selection must not replace typed search.
+          if (reason === 'reset' && !event && inputIsDirtyRef.current) return;
+          inputIsDirtyRef.current = reason === 'input';
+          setInputValue(value);
           if (reason === 'input' || reason === 'clear') {
             setSearchText(value);
           }
@@ -283,18 +295,7 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
         renderOption={option => <EntityDisplayName entityRef={option} />}
         filterOptions={options => options}
         ListboxComponent={VirtualizedListbox}
-        ListboxProps={{
-          onScroll: (event: MouseEvent) => {
-            const element = event.currentTarget;
-            if (
-              Math.abs(
-                element.scrollHeight - element.clientHeight - element.scrollTop,
-              ) < 1
-            ) {
-              loadMore();
-            }
-          },
-        }}
+        {...pagination}
       />
     </ScaffolderField>
   );
