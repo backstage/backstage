@@ -18,7 +18,10 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
+import { catalogScmEventsServiceRef } from '@backstage/plugin-catalog-node/alpha';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 
+import { GiteaScmEventsBridge } from './events/GiteaScmEventsBridge';
 import { GiteaEntityProvider } from './providers/GiteaEntityProvider';
 /**
  * @public
@@ -30,17 +33,41 @@ export const catalogModuleGitea = createBackendModule({
     reg.registerInit({
       deps: {
         catalog: catalogProcessingExtensionPoint,
+        catalogScmEvents: catalogScmEventsServiceRef,
         config: coreServices.rootConfig,
+        events: eventsServiceRef,
+        lifecycle: coreServices.lifecycle,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
       },
 
-      async init({ catalog, config, logger, scheduler }) {
+      async init({
+        catalog,
+        catalogScmEvents,
+        config,
+        events,
+        lifecycle,
+        logger,
+        scheduler,
+      }) {
         const providers = GiteaEntityProvider.fromConfig(config, {
           logger,
           scheduler,
         });
         catalog.addEntityProvider(providers);
+
+        const bridge = new GiteaScmEventsBridge({
+          logger,
+          events,
+          catalogScmEvents,
+        });
+
+        lifecycle.addStartupHook(async () => {
+          await bridge.start();
+        });
+        lifecycle.addShutdownHook(async () => {
+          await bridge.stop();
+        });
       },
     });
   },
