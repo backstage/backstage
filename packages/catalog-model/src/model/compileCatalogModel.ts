@@ -539,15 +539,28 @@ function buildFullSchema(options: {
  * @alpha
  * @param inputs - The layers to compile.
  * @returns The compiled catalog model.
+ * @throws An `InputError` if layers with the same ID have conflicting
+ * definitions, or if the combined model is invalid.
  */
 export function compileCatalogModel(
   inputs: Iterable<CatalogModelLayer>,
 ): CatalogModel {
-  // Collect all ops from all inputs
-  let allOps: CatalogModelOp[] = [];
+  // Collect all ops from all unique inputs
+  const allOps: CatalogModelOp[] = [];
+  const layerOpsById = new Map<string, CatalogModelOp[]>();
   for (const input of inputs) {
     const internal = OpaqueCatalogModelLayer.toInternal(input);
-    allOps = allOps.concat(internal.ops);
+    const existingOps = layerOpsById.get(internal.layerId);
+    if (existingOps) {
+      if (!lodash.isEqual(existingOps, internal.ops)) {
+        throw new InputError(
+          `Catalog model layer ID "${internal.layerId}" has conflicting definitions`,
+        );
+      }
+      continue;
+    }
+    layerOpsById.set(internal.layerId, internal.ops);
+    allOps.push(...internal.ops);
   }
 
   const sortedOps = sortOps(allOps);
