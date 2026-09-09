@@ -77,7 +77,7 @@ export async function loadPortableTemplate(
   const loadedFiles = new Array<PortableTemplateFile>();
 
   for (const filePath of filePaths) {
-    const path = relativePath(templatePath, filePath);
+    const path = relativePath(templatePath, filePath).split('\\').join('/');
     if (filePath === pointer.target) {
       continue;
     }
