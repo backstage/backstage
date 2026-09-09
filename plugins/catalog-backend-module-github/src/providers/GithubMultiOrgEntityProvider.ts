@@ -1041,21 +1041,32 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     team: GithubTeam,
     ctx: TransformerContext,
   ): Promise<Entity | undefined> {
-    if (this.options.teamTransformer) {
-      return await this.options.teamTransformer(team, ctx);
-    }
+    const result = this.options.teamTransformer
+      ? await this.options.teamTransformer(team, ctx)
+      : await defaultOrganizationTeamTransformer(team, ctx);
 
-    const result = await defaultOrganizationTeamTransformer(team, ctx);
-
-    if (result && result.spec) {
-      if (!this.options.alwaysUseDefaultNamespace) {
+    if (result) {
+      if (
+        !this.options.alwaysUseDefaultNamespace &&
+        !result.metadata.namespace
+      ) {
         result.metadata.namespace = ctx.org.toLocaleLowerCase('en-US');
       }
 
-      // Group `spec.members` inherits the namespace of it's group so need to explicitly specify refs here
-      result.spec.members = team.members.map(
-        user => `${DEFAULT_NAMESPACE}/${user.login}`,
-      );
+      if (isGroupEntity(result) && result.spec.members) {
+        result.spec.members = result.spec.members.map(m => {
+          const { namespace, name } = parseEntityRef(m, {
+            defaultKind: 'user',
+            defaultNamespace: DEFAULT_NAMESPACE,
+          });
+          return `${namespace}/${name}`;
+        });
+      } else if (result.spec && !this.options.teamTransformer) {
+        // Group `spec.members` inherits the namespace of it's group so need to explicitly specify refs here
+        result.spec.members = team.members.map(
+          user => `${DEFAULT_NAMESPACE}/${user.login}`,
+        );
+      }
     }
 
     return result;
