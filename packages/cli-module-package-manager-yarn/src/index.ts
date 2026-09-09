@@ -28,7 +28,7 @@ export default createCliModule({
     reg.addCommand({
       path: ['pm', 'verify-patches'],
       description:
-        'Verify Yarn patch references and Backstage package versions',
+        'Verify Yarn patches, resolutions, and Backstage package versions',
       execute: {
         loader: () => import('./commands/pm/verifyPatches'),
       },
