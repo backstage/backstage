@@ -1853,6 +1853,87 @@ markdown_extensions:
       expect(warn).not.toHaveBeenCalled();
     });
 
+    it('should keep a custom_icons list whose entries all resolve inside the input dir', async () => {
+      // Matches the documented mkdocs-material shape:
+      // https://squidfunk.github.io/mkdocs-material/setup/changing-the-logo-and-icons/#additional-icons
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+markdown_extensions:
+  - pymdownx.emoji:
+      options:
+        custom_icons:
+          - overrides/.icons
+          - theme/icons
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      const extensions = parsedYml.markdown_extensions as Array<
+        Record<string, { options?: { custom_icons?: unknown } }>
+      >;
+      const emojiConfig = extensions.find(
+        e => typeof e === 'object' && 'pymdownx.emoji' in e,
+      );
+      expect(emojiConfig!['pymdownx.emoji'].options?.custom_icons).toEqual([
+        'overrides/.icons',
+        'theme/icons',
+      ]);
+      expect(warn).not.toHaveBeenCalledWith(
+        expect.stringContaining('custom_icons'),
+      );
+    });
+
+    it('should drop the whole custom_icons option when any entry is invalid or the value is not a plain string array', async () => {
+      const kept = { classes: 'e' };
+      const cases = [
+        ['escape', '{custom_icons: [a, ../outside], classes: e}', kept],
+        ['absolute', '{custom_icons: [/etc/icons], classes: e}', kept],
+        ['nonstring', '{custom_icons: [123], classes: e}', kept],
+        ['dynamic', '{custom_icons: [!ENV [DIR, a]], classes: e}', kept],
+        ['nonarray', '{custom_icons: a, classes: e}', kept],
+        // A tagged options value cannot be inspected, so it goes whole.
+        ['dynamic-options', '!ENV [OPTS, {custom_icons: [/etc]}]', undefined],
+      ] as const;
+      const styles = [
+        ['list', '  - pymdownx.emoji:\n      options:'],
+        ['mapping', '  pymdownx.emoji:\n    options:'],
+      ] as const;
+
+      for (const [name, options, expected] of cases) {
+        for (const [style, prefix] of styles) {
+          const file = `${name}-${style}.yml`;
+          warn.mockClear();
+          mockDir.setContent({
+            [file]: `site_name: Test\nmarkdown_extensions:\n${prefix} ${options}\n`,
+          });
+
+          await sanitizeMkdocsYml(mockDir.resolve(file), mockLogger);
+
+          const { markdown_extensions: extensions } = yaml.load(
+            (await fs.readFile(mockDir.resolve(file))).toString(),
+          ) as { markdown_extensions: unknown };
+          const emojiConfig = (
+            Array.isArray(extensions)
+              ? Object.assign({}, ...extensions)
+              : extensions
+          )['pymdownx.emoji'];
+          expect(emojiConfig.options).toEqual(expected);
+          expect(warn).toHaveBeenCalledWith(
+            expect.stringContaining(
+              'Removed the custom_icons option from markdown_extensions',
+            ),
+          );
+        }
+      }
+    });
+
     it('should strip custom_dir from theme while preserving safe keys', async () => {
       mockDir.setContent({
         'mkdocs_theme_custom_dir.yml': mkdocsYmlWithThemeCustomDir,
