@@ -18,6 +18,8 @@ import { InputError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import lodash from 'lodash';
 import { mergeJsonSchemas } from './jsonSchema/mergeJsonSchemas';
+import { validateMetaSchema } from './jsonSchema/validateMetaSchema';
+import { validateKindRootSchemaSemantics } from './jsonSchema/validateKindRootSchemaSemantics';
 import { CatalogModelOp } from './operations';
 import { ops } from './operations/util';
 import { OpDeclareAnnotationV1 } from './operations/declareAnnotation';
@@ -281,6 +283,13 @@ function applyUpdateRelation(
     relation.forward.title = op.properties.title;
     relation.reverse.title = op.properties.title;
   }
+  if (op.properties.reverseTitle !== undefined) {
+    relation.reverse.title = op.properties.reverseTitle;
+    const reverse = relations.get(relation.reverse.type);
+    if (reverse) {
+      reverse.forward.title = op.properties.reverseTitle;
+    }
+  }
   if (op.properties.description !== undefined) {
     relation.description = op.properties.description;
   }
@@ -423,6 +432,10 @@ function buildFullSchema(options: {
   labels: Map<string, LabelState>;
   tags: Map<string, TagState>;
 }): JsonObject {
+  // Patches may contain deletion markers and are not standalone schemas.
+  // Validate the final kind definition before adding the generated envelope.
+  validateMetaSchema(options.kindSchema);
+  validateKindRootSchemaSemantics(options.kindSchema);
   const annotationProperties: JsonObject = {};
   for (const [name, state] of options.annotations) {
     annotationProperties[name] = state.schema?.jsonSchema ?? { type: 'string' };
@@ -527,7 +540,9 @@ function buildFullSchema(options: {
   // The kind schema is the base, and the generated schema (apiVersion, kind,
   // metadata) takes priority in case of overlap — though they should not
   // overlap in practice.
-  return mergeJsonSchemas(options.kindSchema, generatedSchema);
+  const schema = mergeJsonSchemas(options.kindSchema, generatedSchema);
+  validateMetaSchema(schema);
+  return schema;
 }
 
 // #region Main compilation

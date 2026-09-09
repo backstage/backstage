@@ -86,6 +86,8 @@ export class ModelProcessor implements CatalogProcessor {
    * For all fields in the entity that the model says are relations: if the
    * field is a string or an array of strings, emit both the forward and reverse
    * relations that the model says apply for it.
+   * References without a namespace inherit the entity namespace unless the
+   * relation field explicitly selects the default namespace.
    */
   async postProcessEntity(
     entity: Entity,
@@ -116,9 +118,9 @@ export class ModelProcessor implements CatalogProcessor {
         const targetRef = parseEntityRef(shorthandRef, {
           defaultKind: fieldModel.defaultKind,
           defaultNamespace:
-            fieldModel.defaultNamespace === 'inherit'
-              ? selfNamespace
-              : DEFAULT_NAMESPACE,
+            fieldModel.defaultNamespace === 'default'
+              ? DEFAULT_NAMESPACE
+              : selfNamespace,
         });
 
         const targetKind = targetRef.kind.toLowerCase();
