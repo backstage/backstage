@@ -29,7 +29,6 @@ import Autocomplete, {
 } from '@material-ui/lab/Autocomplete';
 import {
   type Key,
-  type MouseEvent,
   useCallback,
   useEffect,
   useMemo,
@@ -51,6 +50,7 @@ import {
 } from '@backstage/plugin-scaffolder-react/alpha';
 import { Autocomplete as BuiAutocomplete } from '../Autocomplete';
 import { useEntityPickerOptions } from '../useEntityPickerOptions';
+import { useEntityPickerPagination } from '../useEntityPickerPagination';
 
 export { EntityPickerSchema } from './schema';
 
@@ -211,13 +211,21 @@ export const EntityPicker = (props: EntityPickerProps) => {
     return options;
   }, [entityRefToPresentation, formData, muiOptions, selectedEntityRefs]);
 
-  // BUI: controlled input value
+  // Keep input independent of refreshed entity objects in the search results.
   const [inputValue, setInputValue] = useState(formData || '');
   const inputIsDirtyRef = useRef(false);
   const previousFormDataRef = useRef(formData);
   const selectedPresentationTitle = formData
     ? entityRefToPresentation.get(normalizedFormData)?.primaryTitle
     : undefined;
+  const muiInputValue =
+    typeof selectedEntity === 'string'
+      ? selectedEntity
+      : stringifyEntityRef(selectedEntity);
+  const selectedInputValue =
+    theme === 'bui'
+      ? selectedPresentationTitle || formData || ''
+      : muiInputValue;
 
   useEffect(() => {
     if (previousFormDataRef.current !== formData) {
@@ -225,9 +233,9 @@ export const EntityPicker = (props: EntityPickerProps) => {
       inputIsDirtyRef.current = false;
     }
     if (!inputIsDirtyRef.current) {
-      setInputValue(formData ? selectedPresentationTitle || formData : '');
+      setInputValue(selectedInputValue);
     }
-  }, [formData, selectedPresentationTitle]);
+  }, [formData, selectedInputValue]);
 
   const selectedKey =
     normalizedFormData && buiOptions.some(o => o.value === normalizedFormData)
@@ -334,6 +342,13 @@ export const EntityPicker = (props: EntityPickerProps) => {
     theme,
   ]);
 
+  const pagination = useEntityPickerPagination({
+    entities,
+    selectedEntityRefs,
+    loading,
+    loadMore,
+  });
+
   if (theme === 'bui') {
     const isAutoSelected =
       required && !allowArbitraryValues && initialResultIsOnlyOption;
@@ -387,10 +402,16 @@ export const EntityPicker = (props: EntityPickerProps) => {
         }
         id={idSchema?.$id}
         value={selectedEntity}
+        inputValue={inputValue}
         loading={loading}
         onChange={onSelect}
         options={muiOptions}
-        onInputChange={(_event, value, reason) => {
+        onInputChange={(event, value, reason) => {
+          // MUI resets the input when the selected entity object is refreshed.
+          // Only user actions or a changed form value should replace an edit.
+          if (reason === 'reset' && !event && inputIsDirtyRef.current) return;
+          inputIsDirtyRef.current = reason === 'input';
+          setInputValue(value);
           if (reason === 'input' || reason === 'clear') {
             setSearchText(value);
           }
@@ -423,18 +444,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
         renderOption={option => <EntityDisplayName entityRef={option} />}
         filterOptions={options => options}
         ListboxComponent={VirtualizedListbox}
-        ListboxProps={{
-          onScroll: (event: MouseEvent) => {
-            const element = event.currentTarget;
-            if (
-              Math.abs(
-                element.scrollHeight - element.clientHeight - element.scrollTop,
-              ) < 1
-            ) {
-              loadMore();
-            }
-          },
-        }}
+        {...pagination}
       />
     </ScaffolderField>
   );

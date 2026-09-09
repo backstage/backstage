@@ -56,6 +56,7 @@ export function useEntityPickerOptions(options: {
   const [searchText, setSearchTextState] = useState('');
   const [debouncedSearchText, setDebouncedSearchText] = useState('');
   const [state, setState] = useState<{
+    generation?: number;
     entities: Entity[];
     entityRefToPresentation: Map<string, EntityRefPresentationSnapshot>;
     nextCursor?: string;
@@ -74,7 +75,6 @@ export function useEntityPickerOptions(options: {
   const requestGeneration = useRef(0);
   const selectedRequestGeneration = useRef(0);
   const searchTextRef = useRef('');
-  const settledSearchTextRef = useRef<string>();
   const nextLoadMoreRequest = useRef(0);
   const activeLoadMoreRequest = useRef<number>();
 
@@ -94,23 +94,10 @@ export function useEntityPickerOptions(options: {
     [entityPresentationApi],
   );
 
-  const setSearchText = useCallback(
-    (value: string) => {
-      if (value === searchTextRef.current) {
-        return;
-      }
-      searchTextRef.current = value;
-      setSearchTextState(value);
-      setState(previous => ({
-        ...previous,
-        loadingState:
-          enabled && value !== settledSearchTextRef.current
-            ? 'filtering'
-            : 'idle',
-      }));
-    },
-    [enabled],
-  );
+  const setSearchText = useCallback((value: string) => {
+    searchTextRef.current = value;
+    setSearchTextState(value);
+  }, []);
 
   useDebounce(() => setDebouncedSearchText(searchText), 250, [searchText]);
 
@@ -150,12 +137,9 @@ export function useEntityPickerOptions(options: {
       .then(async response => {
         const entityRefToPresentation = await presentEntities(response.items);
 
-        if (
-          generation === requestGeneration.current &&
-          debouncedSearchText === searchTextRef.current
-        ) {
-          settledSearchTextRef.current = debouncedSearchText;
+        if (generation === requestGeneration.current) {
           setState({
+            generation,
             entities: response.items,
             entityRefToPresentation,
             nextCursor: response.pageInfo.nextCursor,
@@ -168,10 +152,7 @@ export function useEntityPickerOptions(options: {
         }
       })
       .catch(() => {
-        if (
-          generation === requestGeneration.current &&
-          debouncedSearchText === searchTextRef.current
-        ) {
+        if (generation === requestGeneration.current) {
           setState(previous => ({ ...previous, loadingState: 'error' }));
         }
       });
@@ -186,6 +167,8 @@ export function useEntityPickerOptions(options: {
   const loadMore = useCallback(() => {
     if (
       !enabled ||
+      debouncedSearchText !== searchTextRef.current ||
+      state.generation !== requestGeneration.current ||
       !state.nextCursor ||
       state.loadingState !== 'idle' ||
       activeLoadMoreRequest.current !== undefined
@@ -209,10 +192,7 @@ export function useEntityPickerOptions(options: {
           return;
         }
         activeLoadMoreRequest.current = undefined;
-        if (
-          generation === requestGeneration.current &&
-          debouncedSearchText === searchTextRef.current
-        ) {
+        if (generation === requestGeneration.current) {
           setState(previous => ({
             ...previous,
             entities: [...previous.entities, ...response.items],
@@ -230,10 +210,7 @@ export function useEntityPickerOptions(options: {
           return;
         }
         activeLoadMoreRequest.current = undefined;
-        if (
-          generation === requestGeneration.current &&
-          debouncedSearchText === searchTextRef.current
-        ) {
+        if (generation === requestGeneration.current) {
           setState(previous => ({ ...previous, loadingState: 'idle' }));
         }
       });
@@ -242,6 +219,7 @@ export function useEntityPickerOptions(options: {
     debouncedSearchText,
     enabled,
     presentEntities,
+    state.generation,
     state.loadingState,
     state.nextCursor,
   ]);
@@ -288,15 +266,23 @@ export function useEntityPickerOptions(options: {
     [selectedState.entityRefToPresentation, state.entityRefToPresentation],
   );
 
+  // Input can change and return to the active query before the debounce fires.
+  // Keep that query's result (including errors) independently of the input.
+  const loadingState =
+    enabled && searchText !== debouncedSearchText
+      ? 'filtering'
+      : state.loadingState;
+
   return {
     entities: state.entities,
     selectedEntities: selectedState.entities,
     entityRefToPresentation,
-    loading: state.loadingState !== 'idle' && state.loadingState !== 'error',
-    loadingState: state.loadingState,
+    loading: loadingState !== 'idle' && loadingState !== 'error',
+    loadingState,
     searchText,
     setSearchText,
     loadMore,
-    initialResultIsOnlyOption: state.initialResultIsOnlyOption,
+    initialResultIsOnlyOption:
+      loadingState === 'idle' && !searchText && state.initialResultIsOnlyOption,
   };
 }

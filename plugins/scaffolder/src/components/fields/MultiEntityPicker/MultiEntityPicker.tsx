@@ -27,14 +27,7 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete, {
   AutocompleteChangeReason,
 } from '@material-ui/lab/Autocomplete';
-import {
-  type Key,
-  type MouseEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { type Key, useCallback, useEffect, useMemo, useState } from 'react';
 import { FieldValidation } from '@rjsf/utils';
 import {
   MultiEntityPickerFilterQueryValue,
@@ -52,6 +45,7 @@ import { scaffolderTranslationRef } from '../../../translation';
 import { Autocomplete as BuiAutocomplete } from '../Autocomplete';
 import { chipStyle, chipRemoveStyle } from '../buiChipStyles';
 import { useEntityPickerOptions } from '../useEntityPickerOptions';
+import { useEntityPickerPagination } from '../useEntityPickerPagination';
 
 export { MultiEntityPickerSchema } from './schema';
 
@@ -282,6 +276,13 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
     required,
   ]);
 
+  const pagination = useEntityPickerPagination({
+    entities,
+    selectedEntityRefs,
+    loading,
+    loadMore,
+  });
+
   if (theme === 'bui') {
     const isAutoSelected =
       required && !allowArbitraryValues && initialResultIsOnlyOption;
@@ -427,18 +428,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
         )}
         filterOptions={options => options}
         ListboxComponent={VirtualizedListbox}
-        ListboxProps={{
-          onScroll: (event: MouseEvent) => {
-            const element = event.currentTarget;
-            if (
-              Math.abs(
-                element.scrollHeight - element.clientHeight - element.scrollTop,
-              ) < 1
-            ) {
-              loadMore();
-            }
-          },
-        }}
+        {...pagination}
       />
     </ScaffolderField>
   );
