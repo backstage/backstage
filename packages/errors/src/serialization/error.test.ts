@@ -112,4 +112,44 @@ describe('serialization', () => {
     expect(stringifyError(new Error('m3'))).toEqual('Error: m3');
     expect(stringifyError(new TypeError('m4'))).toEqual('TypeError: m4');
   });
+
+  it('appends the cause chain only when includeCause is set', () => {
+    const leaf = new Error('leaf');
+    const middle = new Error('middle', { cause: leaf });
+    const root = new Error('root', { cause: middle });
+
+    // By default and with includeCause disabled, only the outermost error is
+    // stringified and the cause chain is dropped.
+    expect(stringifyError(root)).toEqual('Error: root');
+    expect(stringifyError(root, { includeCause: false })).toEqual(
+      'Error: root',
+    );
+
+    // With includeCause enabled, every level of the chain is appended.
+    expect(stringifyError(root, { includeCause: true })).toEqual(
+      'Error: root; caused by: Error: middle; caused by: Error: leaf',
+    );
+
+    // An error without a cause is unchanged by the option.
+    expect(stringifyError(new Error('solo'), { includeCause: true })).toEqual(
+      'Error: solo',
+    );
+
+    // Non-error causes and non-error inputs are stringified with the same
+    // fallback used for the outermost value.
+    const withStringCause = new Error('wrap', { cause: 'boom' });
+    expect(stringifyError(withStringCause, { includeCause: true })).toEqual(
+      "Error: wrap; caused by: unknown error 'boom'",
+    );
+    expect(stringifyError('plain', { includeCause: true })).toEqual(
+      "unknown error 'plain'",
+    );
+
+    // A cyclic cause chain terminates instead of looping forever.
+    const cyclic: Error & { cause?: unknown } = new Error('cyclic');
+    cyclic.cause = cyclic;
+    expect(stringifyError(cyclic, { includeCause: true })).toEqual(
+      'Error: cyclic',
+    );
+  });
 });
