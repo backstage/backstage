@@ -105,29 +105,33 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
       provider.bind,
       provider.tls,
     );
-    const { users, groups } = await readLdapOrg(
-      client,
-      provider.users,
-      provider.groups,
-      provider.vendor,
-      {
-        groupTransformer: this.groupTransformer,
-        userTransformer: this.userTransformer,
-        logger: this.logger,
-      },
-    );
+    try {
+      const { users, groups } = await readLdapOrg(
+        client,
+        provider.users,
+        provider.groups,
+        provider.vendor,
+        {
+          groupTransformer: this.groupTransformer,
+          userTransformer: this.userTransformer,
+          logger: this.logger,
+        },
+      );
 
-    const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
-    this.logger.debug(
-      `Read ${users.length} LDAP users and ${groups.length} LDAP groups in ${duration} seconds`,
-    );
+      const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
+      this.logger.debug(
+        `Read ${users.length} LDAP users and ${groups.length} LDAP groups in ${duration} seconds`,
+      );
 
-    // Done!
-    for (const group of groups) {
-      emit(processingResult.entity(location, group));
-    }
-    for (const user of users) {
-      emit(processingResult.entity(location, user));
+      // Done!
+      for (const group of groups) {
+        emit(processingResult.entity(location, group));
+      }
+      for (const user of users) {
+        emit(processingResult.entity(location, user));
+      }
+    } finally {
+      await client.unbind();
     }
 
     return true;

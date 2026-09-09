@@ -96,6 +96,7 @@ export class LdapClient {
   getRootDSE(): Promise<Entry | undefined>;
   getVendor(): Promise<LdapVendor>;
   search(dn: string, options: SearchOptions): Promise<SearchResult>;
+  unbind(): Promise<void>;
 }
 
 // @public
@@ -220,6 +221,7 @@ export function readLdapOrg(
   groupConfig: GroupConfig[],
   vendorConfig: VendorConfig | undefined,
   options: {
+    groupClient?: LdapClient;
     groupTransformer?: GroupTransformer;
     userTransformer?: UserTransformer;
     logger: LoggerService;

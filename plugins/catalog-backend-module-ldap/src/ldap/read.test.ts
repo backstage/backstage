@@ -15,7 +15,8 @@
  */
 
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
-import { Entry } from 'ldapts';
+import { createDeferred } from '@backstage/types';
+import { Entry, SearchResult } from 'ldapts';
 import merge from 'lodash/merge';
 import { LdapClient } from './client';
 import { GroupConfig, UserConfig, VendorConfig } from './config';
@@ -28,6 +29,7 @@ import {
   defaultGroupTransformer,
   defaultUserTransformer,
   readLdapGroups,
+  readLdapOrg,
   readLdapUsers,
   resolveRelations,
 } from './read';
@@ -1542,5 +1544,172 @@ describe('defaultGroupTransformerWithCaseSensitiveDNs', () => {
         profile: { displayName: 'cn-value', email: 'mail-value' },
       },
     });
+  });
+});
+
+describe('readLdapOrg', () => {
+  type EntryOverrides = Record<string, string | string[] | Buffer | Buffer[]>;
+  const userClient: jest.Mocked<LdapClient> = {
+    search: jest.fn(),
+    getVendor: jest.fn(),
+  } as any;
+  const groupClient: jest.Mocked<LdapClient> = {
+    search: jest.fn(),
+    getVendor: jest.fn(),
+  } as any;
+  const logger = {
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    debug: jest.fn(),
+    child: jest.fn(),
+  } as any;
+
+  const searchResult = (entries: Entry[]): SearchResult => ({
+    searchEntries: entries,
+    searchReferences: [],
+  });
+
+  const userEntry = (overrides: EntryOverrides = {}): Entry => ({
+    dn: 'user-dn',
+    uid: 'user',
+    cn: 'User',
+    mail: 'user@example.com',
+    entryDN: 'user-dn',
+    entryUUID: 'user-uuid',
+    ...overrides,
+  });
+
+  const groupEntry = (overrides: EntryOverrides = {}): Entry => ({
+    dn: 'group-dn',
+    cn: 'group',
+    description: 'Group',
+    groupType: 'team',
+    entryDN: 'group-dn',
+    entryUUID: 'group-uuid',
+    ...overrides,
+  });
+
+  const userConfig = (
+    overrides: {
+      dn?: string;
+      options?: UserConfig['options'];
+      map?: Partial<UserConfig['map']>;
+    } = {},
+  ): UserConfig => ({
+    dn: overrides.dn ?? 'ou=users',
+    options: overrides.options ?? {
+      attributes: ['uid', 'cn', 'mail', 'entryDN', 'entryUUID'],
+    },
+    map: {
+      rdn: 'uid',
+      name: 'uid',
+      displayName: 'cn',
+      email: 'mail',
+      memberOf: null,
+      ...overrides.map,
+    },
+  });
+
+  const groupConfig = (
+    overrides: {
+      dn?: string;
+      options?: GroupConfig['options'];
+      map?: Partial<GroupConfig['map']>;
+    } = {},
+  ): GroupConfig => ({
+    dn: overrides.dn ?? 'ou=groups',
+    options: overrides.options ?? {
+      attributes: ['cn', 'description', 'groupType', 'entryDN', 'entryUUID'],
+    },
+    map: {
+      rdn: 'cn',
+      name: 'cn',
+      description: 'description',
+      displayName: 'cn',
+      type: 'groupType',
+      memberOf: null,
+      members: null,
+      ...overrides.map,
+    },
+  });
+
+  afterEach(() => jest.resetAllMocks());
+
+  beforeEach(() => {
+    userClient.getVendor.mockResolvedValue(DefaultLdapVendor);
+    groupClient.getVendor.mockResolvedValue(DefaultLdapVendor);
+  });
+
+  it('reads users and groups in parallel using separate clients', async () => {
+    const userSearch = createDeferred<SearchResult>();
+    userClient.search.mockReturnValue(userSearch);
+    groupClient.search.mockResolvedValue(searchResult([groupEntry()]));
+
+    const readPromise = readLdapOrg(
+      userClient,
+      [userConfig()],
+      [groupConfig()],
+      undefined,
+      {
+        groupClient,
+        logger,
+      },
+    );
+
+    await Promise.resolve();
+
+    expect(groupClient.search).toHaveBeenCalledWith(
+      'ou=groups',
+      expect.any(Object),
+    );
+
+    userSearch.resolve(searchResult([userEntry()]));
+    await readPromise;
+
+    expect(userClient.search).toHaveBeenCalledWith(
+      'ou=users',
+      expect.any(Object),
+    );
+  });
+
+  it('reads users and groups sequentially when sharing one client', async () => {
+    const sharedClient: jest.Mocked<LdapClient> = {
+      search: jest.fn(),
+      getVendor: jest.fn(),
+    } as any;
+    const userSearch = createDeferred<SearchResult>();
+    sharedClient.getVendor.mockResolvedValue(DefaultLdapVendor);
+    sharedClient.search
+      .mockReturnValueOnce(userSearch)
+      .mockResolvedValueOnce(searchResult([groupEntry()]));
+
+    const readPromise = readLdapOrg(
+      sharedClient,
+      [userConfig()],
+      [groupConfig()],
+      undefined,
+      {
+        logger,
+      },
+    );
+
+    await Promise.resolve();
+
+    expect(sharedClient.search).toHaveBeenCalledTimes(1);
+    expect(sharedClient.search).toHaveBeenCalledWith(
+      'ou=users',
+      expect.any(Object),
+    );
+
+    userSearch.resolve(searchResult([userEntry()]));
+    await readPromise;
+
+    expect(sharedClient.search).toHaveBeenCalledTimes(2);
+    expect(sharedClient.search).toHaveBeenNthCalledWith(
+      2,
+      'ou=groups',
+      expect.any(Object),
+    );
   });
 });
