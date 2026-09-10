@@ -411,5 +411,18 @@ describe('createFrontendPlugin', () => {
         screen.findByText('Names: overridden, extension-2, extension-new'),
       ).resolves.toBeInTheDocument();
     });
+
+    it('should throw when overriding the same extension multiple times', () => {
+      const plugin = createFrontendPlugin({
+        pluginId: 'test',
+        extensions: [Extension1, Extension2],
+      });
+
+      expect(() =>
+        plugin.withOverrides({
+          extensions: [Extension1, Extension1],
+        }),
+      ).toThrow("Plugin 'test' provided duplicate extensions: test/1");
+    });
   });
 });

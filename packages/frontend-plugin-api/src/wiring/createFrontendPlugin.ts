@@ -313,12 +313,29 @@ export function createFrontendPlugin<
         ifPredicate = overrides.if;
       }
       const overrideExtensions = overrides.extensions ?? [];
-      const overrideExtensionsById = new Map(
-        overrideExtensions.map(e => [
-          resolveExtensionDefinition(e, { namespace: pluginId }).id,
-          e,
-        ]),
+      const overrideExtensionEntries = overrideExtensions.map(
+        extension =>
+          [
+            resolveExtensionDefinition(extension, { namespace: pluginId }).id,
+            extension,
+          ] as const,
       );
+      const overrideExtensionIds = overrideExtensionEntries.map(([id]) => id);
+      const duplicateIds = Array.from(
+        new Set(
+          overrideExtensionIds.filter(
+            (id, index) => overrideExtensionIds.indexOf(id) !== index,
+          ),
+        ),
+      );
+      if (duplicateIds.length > 0) {
+        throw new Error(
+          `Plugin '${pluginId}' provided duplicate extensions: ${duplicateIds.join(
+            ', ',
+          )}`,
+        );
+      }
+      const overrideExtensionsById = new Map(overrideExtensionEntries);
       // Extensions that override an existing one replace it in place, keeping
       // the original registration order, since the order affects the order of
       // attachments in the app. Remaining extensions are appended at the end.
