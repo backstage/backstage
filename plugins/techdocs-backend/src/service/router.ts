@@ -42,6 +42,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 import { durationToMilliseconds } from '@backstage/types';
+import path from 'node:path';
 
 /**
  * Required dependencies for running TechDocs in the "out-of-the-box"
@@ -293,6 +294,20 @@ export async function createRouter(
       async (req, _res, next) => {
         const { kind, namespace, name } = req.params;
         const entityName = { kind, namespace, name };
+
+        const entityRoot = '/entity';
+        const decodedPath = decodeURI(req.path);
+        const contentPath = path.posix.resolve(entityRoot, `.${decodedPath}`);
+        const relativePath = path.posix.relative(entityRoot, contentPath);
+        if (
+          decodedPath.includes('\\') ||
+          relativePath === '..' ||
+          relativePath.startsWith('../')
+        ) {
+          throw new NotFoundError(
+            `Content not found for ${stringifyEntityRef(entityName)}`,
+          );
+        }
 
         const credentials = await httpAuth.credentials(req, {
           allowLimitedAccess: true,

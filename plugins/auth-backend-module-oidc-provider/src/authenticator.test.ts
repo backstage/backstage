@@ -28,7 +28,7 @@ import { ConfigReader } from '@backstage/config';
 import { JWK, SignJWT, exportJWK, generateKeyPair } from 'jose';
 import { http, HttpResponse } from 'msw';
 import express from 'express';
-import { custom } from 'openid-client';
+import { custom, TokenSet } from 'openid-client';
 
 describe('oidcAuthenticator', () => {
   let implementation: any;
@@ -66,6 +66,77 @@ describe('oidcAuthenticator', () => {
     ],
     request_object_signing_alg_values_supported: ['RS256', 'RS512', 'HS256'],
   };
+
+  function createAuthenticatorResult(emailVerified?: boolean) {
+    return {
+      fullProfile: {
+        tokenset: new TokenSet(),
+        userinfo: {
+          sub: 'test',
+          name: 'Alice Adams',
+          email: 'alice@test.com',
+          picture: 'http://testPictureUrl/photo.jpg',
+          ...(emailVerified === undefined
+            ? {}
+            : { email_verified: emailVerified }),
+        },
+      },
+      session: {
+        accessToken: 'accessToken',
+        tokenType: 'bearer',
+        scope: 'openid profile email',
+      },
+    };
+  }
+
+  describe('#defaultProfileTransform', () => {
+    const resolverContext = {} as Parameters<
+      typeof oidcAuthenticator.defaultProfileTransform
+    >[1];
+
+    it('includes an email that the identity provider verified', async () => {
+      await expect(
+        oidcAuthenticator.defaultProfileTransform(
+          createAuthenticatorResult(true),
+          resolverContext,
+        ),
+      ).resolves.toEqual({
+        profile: {
+          displayName: 'Alice Adams',
+          email: 'alice@test.com',
+          picture: 'http://testPictureUrl/photo.jpg',
+        },
+      });
+    });
+
+    it('omits an email that the identity provider did not verify', async () => {
+      await expect(
+        oidcAuthenticator.defaultProfileTransform(
+          createAuthenticatorResult(false),
+          resolverContext,
+        ),
+      ).resolves.toEqual({
+        profile: {
+          displayName: 'Alice Adams',
+          picture: 'http://testPictureUrl/photo.jpg',
+        },
+      });
+    });
+
+    it('omits an email without a verification claim', async () => {
+      await expect(
+        oidcAuthenticator.defaultProfileTransform(
+          createAuthenticatorResult(),
+          resolverContext,
+        ),
+      ).resolves.toEqual({
+        profile: {
+          displayName: 'Alice Adams',
+          picture: 'http://testPictureUrl/photo.jpg',
+        },
+      });
+    });
+  });
 
   beforeEach(() => {
     mswServer.use(

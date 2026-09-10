@@ -26,6 +26,7 @@ import type { ListProps, ListRowProps } from './types';
 import { Box } from '../Box/Box';
 import { ButtonIcon } from '../ButtonIcon';
 import { MenuTrigger, Menu } from '../Menu';
+import { BUIRoutingProvider } from '../../navigation/BUIRoutingProvider';
 
 /**
  * A list displays a list of interactive rows with support for keyboard
@@ -41,15 +42,17 @@ export const List = <T extends object>(props: ListProps<T>) => {
   const { classes, items, children, renderEmptyState } = ownProps;
 
   return (
-    <RAGridList
-      className={classes.root}
-      items={items}
-      renderEmptyState={renderEmptyState}
-      {...dataAttributes}
-      {...restProps}
-    >
-      {children}
-    </RAGridList>
+    <BUIRoutingProvider>
+      <RAGridList
+        className={classes.root}
+        items={items}
+        renderEmptyState={renderEmptyState}
+        {...dataAttributes}
+        {...restProps}
+      >
+        {children}
+      </RAGridList>
+    </BUIRoutingProvider>
   );
 };
 

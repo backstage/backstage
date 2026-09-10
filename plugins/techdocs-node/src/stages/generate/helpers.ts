@@ -128,11 +128,24 @@ export const getRepoUrlFromLocationAnnotation = (
   return {};
 };
 
+const ALLOWED_PYTHON_YAML_TAGS = new Set([
+  'tag:yaml.org,2002:python/name:materialx.emoji.twemoji',
+  'tag:yaml.org,2002:python/object.apply:materialx.emoji.to_svg',
+  'tag:yaml.org,2002:python/object/apply:pymdownx.slugs.slugify',
+]);
+
 class UnknownTag {
   public readonly data: any;
   public readonly type?: string;
 
   constructor(data: any, type?: string) {
+    if (
+      type?.startsWith('tag:yaml.org,2002:python/') &&
+      !ALLOWED_PYTHON_YAML_TAGS.has(type)
+    ) {
+      throw new Error(`Unsupported Python YAML tag '${type}'`);
+    }
+
     this.data = data;
     this.type = type;
   }
@@ -295,7 +308,6 @@ export const ALLOWED_MKDOCS_KEYS = new Set([
   'markdown_extensions',
   'extra',
   'extra_css',
-  'extra_templates',
   // Preview controls
   'use_directory_urls',
   'strict',
@@ -308,6 +320,29 @@ export const ALLOWED_MKDOCS_KEYS = new Set([
   'validation',
   // Deprecated
   'google_analytics',
+]);
+
+/**
+ * Denylist of configuration keys that must be stripped from extension
+ * configurations nested within `markdown_extensions`.
+ */
+export const DANGEROUS_EXTENSION_CONFIG_KEYS = new Set(['plantuml_cmd']);
+
+/**
+ * Allowlist of theme configuration keys supported by TechDocs.
+ *
+ * @see https://squidfunk.github.io/mkdocs-material/setup/
+ */
+export const ALLOWED_THEME_KEYS = new Set([
+  'name',
+  'font',
+  'icon',
+  'logo',
+  'favicon',
+  'language',
+  'direction',
+  'palette',
+  'features',
 ]);
 
 /**
@@ -346,23 +381,34 @@ export const validateMkdocsYaml = async (
 };
 
 /**
- * Validates that the docs directory doesn't contain symlinks pointing outside
- * the input directory. This prevents path traversal attacks where malicious
- * symlinks could be used to read arbitrary files from the host filesystem.
+ * Validates that the input directory doesn't contain symlinks pointing outside
+ * of it. This prevents path traversal attacks where malicious symlinks could be
+ * used to read arbitrary files from the host filesystem.
  *
- * @param docsDir - The docs directory to validate (absolute path)
- * @param inputDir - The root input directory that symlinks must stay within
+ * The whole input directory is checked rather than only the docs directory,
+ * because MkDocs extensions can read files from anywhere in the input directory.
+ *
+ * @param inputDir - The input directory to validate (absolute path)
  */
-export const validateDocsDirectory = async (
-  docsDir: string,
+export const validateInputDirectory = async (
   inputDir: string,
 ): Promise<void> => {
-  const files = await getFileTreeRecursively(docsDir);
+  const entries = await fs.readdir(inputDir, {
+    recursive: true,
+    withFileTypes: true,
+  });
 
-  for (const file of files) {
-    if (!isChildPath(inputDir, file)) {
+  for (const entry of entries) {
+    if (!entry.isSymbolicLink()) {
+      continue;
+    }
+
+    const entryPath = path.join(entry.parentPath, entry.name);
+    // isChildPath resolves both paths through realpath, so this also catches
+    // relative, chained and dangling links
+    if (!isChildPath(inputDir, entryPath)) {
       throw new NotAllowedError(
-        `Path ${file} is not allowed to refer to a location outside ${inputDir}`,
+        `Path ${entryPath} is not allowed to refer to a location outside ${inputDir}`,
       );
     }
   }

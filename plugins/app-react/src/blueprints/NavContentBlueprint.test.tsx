@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-import { AppNode, createRouteRef } from '@backstage/frontend-plugin-api';
+import {
+  AppNode,
+  createRouteRef,
+  errorApiRef,
+} from '@backstage/frontend-plugin-api';
 import {
   NavContentBlueprint,
   NavContentNavItem,
   NavContentNavItems,
 } from './NavContentBlueprint';
-import { createExtensionTester } from '@backstage/frontend-test-utils';
+import {
+  createExtensionTester,
+  renderInTestApp,
+} from '@backstage/frontend-test-utils';
+import { withLogCollector } from '@backstage/test-utils';
 import { render, screen } from '@testing-library/react';
 
 const routeRef = createRouteRef();
@@ -154,11 +162,12 @@ describe('NavContentBlueprint', () => {
     });
 
     const tester = createExtensionTester(extension);
+    const Component = tester.get(NavContentBlueprint.dataRefs.component);
 
-    expect(
-      tester.get(NavContentBlueprint.dataRefs.component)({
-        navItems: mockNavItems([]),
-        items: [
+    render(
+      <Component
+        navItems={mockNavItems([])}
+        items={[
           {
             to: '/',
             text: 'Home',
@@ -166,17 +175,50 @@ describe('NavContentBlueprint', () => {
             icon: () => null,
             routeRef,
           },
-        ],
-      }),
-    ).toEqual(
-      <div>
-        Items:
-        {[
-          <a key={0} href="/">
-            Home
-          </a>,
         ]}
-      </div>,
+      />,
+    );
+
+    expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute(
+      'href',
+      '/',
+    );
+  });
+
+  it('should isolate errors thrown by nav content', async () => {
+    const extension = NavContentBlueprint.make({
+      name: 'test',
+      params: {
+        component: () => {
+          throw new Error('nav content failed');
+        },
+      },
+    });
+    const tester = createExtensionTester(extension);
+    const Component = tester.get(NavContentBlueprint.dataRefs.component);
+    const errorApi = {
+      post: jest.fn(),
+      error$: jest.fn(),
+    };
+
+    const { error } = await withLogCollector(['error'], async () => {
+      renderInTestApp(<Component navItems={mockNavItems([])} items={[]} />, {
+        apis: [[errorApiRef, errorApi]],
+      });
+    });
+
+    expect(errorApi.post).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: expect.stringContaining('nav content failed'),
+      }),
+    );
+    expect(screen.queryByText('nav content failed')).not.toBeInTheDocument();
+    expect(error).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          message: expect.stringContaining('nav content failed'),
+        }),
+      ]),
     );
   });
 
@@ -221,26 +263,21 @@ describe('NavContentBlueprint', () => {
     });
 
     const tester = createExtensionTester(extension);
+    const Component = tester.get(NavContentBlueprint.dataRefs.component);
 
-    expect(
-      tester.get(NavContentBlueprint.dataRefs.component)({
-        navItems: mockNavItems(items),
-        items: [],
-      }),
-    ).toEqual(
-      <div>
-        {[
-          <a key="page:home" href="/">
-            Home
-          </a>,
-          <a key="page:catalog" href="/catalog">
-            Catalog
-          </a>,
-          <a key="page:docs" href="/docs">
-            Docs
-          </a>,
-        ]}
-      </div>,
+    render(<Component navItems={mockNavItems(items)} items={[]} />);
+
+    expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute(
+      'href',
+      '/',
+    );
+    expect(screen.getByRole('link', { name: 'Catalog' })).toHaveAttribute(
+      'href',
+      '/catalog',
+    );
+    expect(screen.getByRole('link', { name: 'Docs' })).toHaveAttribute(
+      'href',
+      '/docs',
     );
   });
 

@@ -34,7 +34,6 @@ import type {
   TabsContextValue,
   TabProps,
 } from './types';
-import { useLocation } from 'react-router-dom';
 import { TabsIndicators } from './TabsIndicators';
 import {
   Tabs as AriaTabs,
@@ -43,15 +42,22 @@ import {
   TabPanel as AriaTabPanel,
   TabProps as AriaTabProps,
 } from 'react-aria-components';
-import { useDefinition } from '../../hooks/useDefinition';
+import {
+  useDefinition,
+  type UseDefinitionResult,
+} from '../../hooks/useDefinition';
 import {
   TabsDefinition,
   TabListDefinition,
   TabDefinition,
   TabPanelDefinition,
 } from './definition';
-import { isInternalLink } from '../../utils/linkUtils';
 import { getNodeText } from '../../analytics/getNodeText';
+import { useRoutingIntegration } from '../../navigation/useRouting';
+import {
+  getReactAriaAnchorProps,
+  type AnchorNavigation,
+} from '../../navigation/useNavigation';
 
 const TabsContext = createContext<TabsContextValue | undefined>(undefined);
 
@@ -289,7 +295,9 @@ function RoutedTabEffects({
   matchStrategy?: 'exact' | 'prefix';
 }) {
   const selectionCtx = useContext(TabSelectionContext);
-  const location = useLocation();
+  const routing = useRoutingIntegration({ fallback: true });
+  const location = routing.useLocation();
+  const resolvedPath = routing.useResolvedPath(href);
 
   // Register as a routed tab (for controlled vs uncontrolled mode)
   useEffect(() => {
@@ -301,8 +309,12 @@ function RoutedTabEffects({
   }, [id, selectionCtx]);
 
   // Register as active tab when URL matches (for tab selection)
-  const isActive = isTabActive(href, location.pathname, matchStrategy);
-  const segmentCount = hrefPathname(href).split('/').filter(Boolean).length;
+  const isActive = isTabActive(
+    resolvedPath.pathname,
+    location.pathname,
+    matchStrategy,
+  );
+  const segmentCount = resolvedPath.pathname.split('/').filter(Boolean).length;
 
   useEffect(() => {
     if (isActive && selectionCtx) {
@@ -315,18 +327,20 @@ function RoutedTabEffects({
   return null;
 }
 
-/**
- * A component that renders a tab.
- *
- * @public
- */
-export const Tab = (props: TabProps) => {
-  const { ownProps, restProps, analytics } = useDefinition(
-    TabDefinition,
-    props,
-  );
-  const { classes, matchStrategy, href, id } = ownProps;
+type TabViewProps = {
+  definitionResult: UseDefinitionResult<typeof TabDefinition, TabProps>;
+  navigation: AnchorNavigation;
+};
+
+const TabView = ({ definitionResult, navigation }: TabViewProps) => {
+  const { ownProps, restProps, analytics } = definitionResult;
+  const { classes, matchStrategy, id } = ownProps;
+  const { href } = ownProps;
   const { setTabRef } = useTabsContext();
+  const navigationProps = getReactAriaAnchorProps(navigation, {
+    href,
+    routerOptions: restProps.routerOptions,
+  });
 
   const handlePress = () => {
     if (href) {
@@ -342,7 +356,7 @@ export const Tab = (props: TabProps) => {
 
   return (
     <>
-      {isInternalLink(href) && (
+      {navigation.canMatchRoute && href && (
         <RoutedTabEffects
           id={id as string}
           href={href}
@@ -353,14 +367,35 @@ export const Tab = (props: TabProps) => {
         id={id}
         className={classes.root}
         ref={el => setTabRef(id as string, el as HTMLDivElement)}
-        href={href}
         {...restProps}
+        {...navigationProps}
         onPress={e => {
           restProps.onPress?.(e);
           handlePress();
         }}
       />
     </>
+  );
+};
+
+/**
+ * A component that renders a tab.
+ *
+ * @public
+ */
+export const Tab = (props: TabProps) => {
+  const definitionResult = useDefinition(TabDefinition, props);
+  const Navigation = definitionResult.navigation;
+
+  return (
+    <Navigation
+      props={{
+        ...definitionResult.restProps,
+        href: definitionResult.ownProps.href,
+      }}
+      view={TabView}
+      viewProps={{ definitionResult }}
+    />
   );
 };
 

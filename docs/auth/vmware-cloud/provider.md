@@ -59,7 +59,7 @@ Where `APP_ID` refers to the ID retrieved when creating the OAuth App, and
 `ORG_ID` is the [long ID of the Organization](https://docs.vmware.com/en/VMware-Cloud-services/services/Using-VMware-Cloud-Services/GUID-CF9E9318-B811-48CF-8499-9419997DC1F8.html#view-the-organization-id-1)
 in VMware Cloud for which you wish to enable sign-in.
 
-:::note Note
+:::note
 
 VMware Cloud requires OAuth Apps to use
 [PKCE](https://oauth.net/2/pkce/) when performing authorization code flows; the
@@ -81,7 +81,7 @@ This provider includes several resolvers out of the box that you can use:
 - `emailMatchingUserEntityProfileEmail`: Matches the email address from the auth provider with the User entity that has a matching `spec.profile.email`. If no match is found it will throw a `NotFoundError`.
 - `emailLocalPartMatchingUserEntityName`: Matches the [local part](https://en.wikipedia.org/wiki/Email_address#Local-part) of the email address from the auth provider with the User entity that has a matching `name`. If no match is found it will throw a `NotFoundError`.
 
-:::note Note
+:::note
 
 The resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
 

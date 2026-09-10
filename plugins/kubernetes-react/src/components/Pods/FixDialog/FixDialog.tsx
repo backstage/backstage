@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FC, useState } from 'react';
+import { useState } from 'react';
 
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
@@ -66,12 +66,7 @@ export interface FixDialogProps {
  *
  * @public
  */
-export const FixDialog: FC<FixDialogProps> = ({
-  open,
-  pod,
-  error,
-  clusterName,
-}: FixDialogProps) => {
+export function FixDialog({ open, pod, error, clusterName }: FixDialogProps) {
   const [isOpen, setOpen] = useState(!!open);
   const classes = useStyles();
   const { t } = useTranslationRef(kubernetesReactTranslationRef);
@@ -198,4 +193,4 @@ export const FixDialog: FC<FixDialogProps> = ({
       </Dialog>
     </>
   );
-};
+}

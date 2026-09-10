@@ -17,6 +17,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import parseGitUrl from 'git-url-parse';
 import yaml from 'yaml';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
@@ -217,6 +218,37 @@ async function readTextLocation(
   }
 }
 
+function assertSameRepository(resolvedUrl: string, baseUrl: string): void {
+  let resolved;
+  let base;
+  try {
+    resolved = parseGitUrl(resolvedUrl);
+    base = parseGitUrl(baseUrl);
+  } catch {
+    return;
+  }
+
+  if (
+    !resolved.owner ||
+    !resolved.name ||
+    !resolved.filepath ||
+    !base.owner ||
+    !base.name ||
+    !base.filepath
+  ) {
+    return;
+  }
+
+  if (
+    resolved.resource !== base.resource ||
+    resolved.full_name !== base.full_name
+  ) {
+    throw new Error(
+      `Placeholder may only reference files from the same repository as the entity`,
+    );
+  }
+}
+
 function relativeUrl({
   key,
   value,
@@ -230,7 +262,9 @@ function relativeUrl({
   }
 
   try {
-    return resolveUrl(value, baseUrl);
+    const resolved = resolveUrl(value, baseUrl);
+    assertSameRepository(resolved, baseUrl);
+    return resolved;
   } catch (e) {
     // The only remaining case that isn't support is a relative file path that should be
     // resolved using a relative file location. Accessing local file paths can lead to

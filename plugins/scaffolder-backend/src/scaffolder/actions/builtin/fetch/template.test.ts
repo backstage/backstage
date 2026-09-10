@@ -26,6 +26,7 @@ import {
   resolvePackagePath,
 } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
+import { ConfigReader } from '@backstage/config';
 import { createFetchTemplateAction } from './template';
 import {
   fetchContents,
@@ -90,6 +91,30 @@ describe('fetch:template', () => {
   });
 
   describe('handler', () => {
+    it('requires an explicit token for SCM reads when configured', async () => {
+      const integrations = ScmIntegrations.fromConfig(
+        new ConfigReader({
+          integrations: { github: [{ host: 'github.com' }] },
+        }),
+      );
+      const requiredAction = createFetchTemplateAction({
+        reader: Symbol('UrlReader') as unknown as UrlReaderService,
+        integrations,
+        requireScmUserCredentials: true,
+      });
+
+      await expect(
+        requiredAction.handler(
+          mockContext({
+            url: 'https://github.com/backstage/community/tree/main',
+          }),
+        ),
+      ).rejects.toThrow(
+        'No user credentials provided for host github.com, but scaffolder.requireScmUserCredentials is enabled',
+      );
+      expect(mockFetchContents).not.toHaveBeenCalled();
+    });
+
     it('throws if output directory is outside the workspace', async () => {
       await expect(() =>
         action.handler(mockContext({ targetPath: '../' })),

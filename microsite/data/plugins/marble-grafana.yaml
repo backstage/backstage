@@ -1,0 +1,11 @@
+---
+title: Grafana
+author: Cassidy Marble
+authorUrl: https://github.com/marble-sh
+category: Monitoring
+description: Backend-centric Grafana Suite - entity dashboards, alerts, catalog discovery of instances and dashboards, and scaffolder action.
+documentation: https://github.com/marble-sh/backstage-plugins-grafana/blob/main/plugins/grafana/README.md
+iconUrl: https://raw.githubusercontent.com/marble-sh/backstage-plugins-grafana/refs/heads/main/icon.svg
+npmPackageName: '@marble-sh/backstage-plugin-grafana'
+addedDate: '2026-08-31'
+status: active

@@ -152,28 +152,24 @@ function getShortRef(options: {
   name?: string;
   context?: { defaultKind?: string; defaultNamespace?: string };
 }): string {
-  const kind = options.kind?.toLocaleLowerCase('en-US') || 'unknown';
+  const kind = options.kind?.toLowerCase() || 'unknown';
   const namespace = options.namespace || DEFAULT_NAMESPACE;
   const name = options.name || 'unknown';
-  const defaultKindLower =
-    options.context?.defaultKind?.toLocaleLowerCase('en-US');
+  const defaultKindLower = options.context?.defaultKind?.toLowerCase();
   const defaultNamespaceLower =
-    options.context?.defaultNamespace?.toLocaleLowerCase('en-US');
+    options.context?.defaultNamespace?.toLowerCase();
 
   let result = name;
 
   if (
     (defaultNamespaceLower &&
-      namespace.toLocaleLowerCase('en-US') !== defaultNamespaceLower) ||
+      namespace.toLowerCase() !== defaultNamespaceLower) ||
     namespace !== DEFAULT_NAMESPACE
   ) {
     result = `${namespace}/${result}`;
   }
 
-  if (
-    defaultKindLower &&
-    kind.toLocaleLowerCase('en-US') !== defaultKindLower
-  ) {
+  if (defaultKindLower && kind.toLowerCase() !== defaultKindLower) {
     result = `${kind}:${result}`;
   }
 

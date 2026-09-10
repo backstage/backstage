@@ -114,7 +114,7 @@ Options:
 
 ## package bundle
 
-:::caution Experimental
+:::caution[Experimental]
 This command is experimental and may receive breaking changes in future releases
 without a deprecation period. It is hidden from the main `--help` output.
 :::

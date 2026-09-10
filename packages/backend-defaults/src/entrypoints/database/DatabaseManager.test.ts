@@ -171,11 +171,13 @@ describe('DatabaseManagerImpl', () => {
     // Given a database manager that is provided a rootLifecycle service
     const rootLifecycle = { addShutdownHook: jest.fn() } as unknown as any;
     const destroy = jest.fn();
+    const shutdownConnector = jest.fn().mockResolvedValue(undefined);
     const connector1 = {
       getClient: jest
         .fn()
         .mockResolvedValue({ destroy, client: { config: 'pg' } }),
-    } satisfies Connector;
+      shutdown: shutdownConnector,
+    } satisfies Connector & { shutdown(): Promise<void> };
     const impl = new DatabaseManagerImpl(
       new ConfigReader({
         client: 'pg',
@@ -198,6 +200,7 @@ describe('DatabaseManagerImpl', () => {
 
     // Then the destroy method should have been called on the resolved client
     expect(destroy).toHaveBeenCalled();
+    expect(shutdownConnector).toHaveBeenCalled();
   });
 
   it('does not attempt to destroy connection when using SQLite', async () => {

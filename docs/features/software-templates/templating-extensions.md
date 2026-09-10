@@ -127,7 +127,7 @@ be accelerated using the Backstage CLI.
 
 Start by using the `yarn backstage-cli new` command to generate a scaffolder module. This command sets up the necessary boilerplate code, providing a smooth start:
 
-```
+```shell-session
 $ yarn backstage-cli new
 ? What do you want to create?
   frontend-plugin - A new frontend plugin
@@ -143,7 +143,7 @@ When prompted, use the arrow keys to select the option to generate a `backend-pl
 Since we want to extend the Scaffolder backend, enter `scaffolder` when prompted for the ID of the plugin to extend.
 Next, enter the ID (name) of your module. This will be appended to the `scaffolder-backend-module-` prefix. The CLI will then generate the required files and directory structure, for example:
 
-```
+```text
 ? Enter the ID of the plugin [required] scaffolder
 ? Enter the ID of the module [required] foo-bar
   templating    plugins/scaffolder-backend-module-foo-bar ✔
@@ -156,7 +156,7 @@ Next, enter the ID (name) of your module. This will be appended to the `scaffold
 
 **Directory Structure**
 
-```
+```text
 plugins
 ├── README.md
 ├── scaffolder-backend-module-foo-bar

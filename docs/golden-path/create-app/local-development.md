@@ -15,7 +15,7 @@ yarn start
 
 Here again, there's a small wait for the frontend to start up. Once the frontend is built, your browser window should automatically open.
 
-:::tip Browser window didn't open
+:::tip[Browser window didn't open]
 
 When you see the message `[0] webpack compiled successfully`, you can navigate directly to `http://localhost:3000` to see your Backstage app.
 
@@ -27,7 +27,7 @@ Once its spun up, you should see something similar to the below.
 
 ## Architecture of local development
 
-:::note Deploy architecture
+:::note[Deploy architecture]
 
 This section only touches on local development, we'll walk through what a Golden Path production architecture looks like in the `deployment` Golden Path.
 
@@ -45,13 +45,13 @@ Speaking of hot reloads, these are supported for both the frontend and backend.
 
 In the frontend, whenever you save a file used by your React app, after a slight delay, you should see a message like
 
-```
+```text
 Rspack compiled successfully
 ```
 
 In the backend, you should see a
 
-```
+```text
 Change detected, restarting the development server...
 ```
 

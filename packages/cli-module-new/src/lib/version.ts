@@ -37,6 +37,8 @@ import { version as backendTestUtils } from '../../../backend-test-utils/package
 import { version as catalogClient } from '../../../catalog-client/package.json';
 import { version as catalogModel } from '../../../catalog-model/package.json';
 import { version as cli } from '../../../cli/package.json';
+import { version as cliCommon } from '../../../cli-common/package.json';
+import { version as cliNode } from '../../../cli-node/package.json';
 import { version as config } from '../../../config/package.json';
 import { version as coreAppApi } from '../../../core-app-api/package.json';
 import { version as coreComponents } from '../../../core-components/package.json';
@@ -60,11 +62,16 @@ import { version as eventsBackend } from '../../../../plugins/events-backend/pac
 import { version as kubernetesBackend } from '../../../../plugins/kubernetes-backend/package.json';
 import { version as notificationsBackend } from '../../../../plugins/notifications-backend/package.json';
 import { version as permissionBackend } from '../../../../plugins/permission-backend/package.json';
+import { version as permissionCommon } from '../../../../plugins/permission-common/package.json';
+import { version as permissionNode } from '../../../../plugins/permission-node/package.json';
 import { version as proxyBackend } from '../../../../plugins/proxy-backend/package.json';
 import { version as scaffolderBackend } from '../../../../plugins/scaffolder-backend/package.json';
 import { version as scaffolderNode } from '../../../../plugins/scaffolder-node/package.json';
 import { version as scaffolderNodeTestUtils } from '../../../../plugins/scaffolder-node-test-utils/package.json';
+import { version as scaffolderReact } from '../../../../plugins/scaffolder-react/package.json';
 import { version as searchBackend } from '../../../../plugins/search-backend/package.json';
+import { version as searchBackendNode } from '../../../../plugins/search-backend-node/package.json';
+import { version as searchCommon } from '../../../../plugins/search-common/package.json';
 import { version as techdocsBackend } from '../../../../plugins/techdocs-backend/package.json';
 
 export const packageVersions: Record<string, string> = {
@@ -74,6 +81,8 @@ export const packageVersions: Record<string, string> = {
   '@backstage/catalog-client': catalogClient,
   '@backstage/catalog-model': catalogModel,
   '@backstage/cli': cli,
+  '@backstage/cli-common': cliCommon,
+  '@backstage/cli-node': cliNode,
   '@backstage/config': config,
   '@backstage/core-app-api': coreAppApi,
   '@backstage/core-components': coreComponents,
@@ -90,6 +99,7 @@ export const packageVersions: Record<string, string> = {
   '@backstage/ui': ui,
   '@backstage/plugin-scaffolder-node': scaffolderNode,
   '@backstage/plugin-scaffolder-node-test-utils': scaffolderNodeTestUtils,
+  '@backstage/plugin-scaffolder-react': scaffolderReact,
   '@backstage/plugin-app-backend': appBackend,
   '@backstage/plugin-auth-backend': authBackend,
   '@backstage/plugin-auth-backend-module-guest-provider':
@@ -100,9 +110,13 @@ export const packageVersions: Record<string, string> = {
   '@backstage/plugin-kubernetes-backend': kubernetesBackend,
   '@backstage/plugin-notifications-backend': notificationsBackend,
   '@backstage/plugin-permission-backend': permissionBackend,
+  '@backstage/plugin-permission-common': permissionCommon,
+  '@backstage/plugin-permission-node': permissionNode,
   '@backstage/plugin-proxy-backend': proxyBackend,
   '@backstage/plugin-scaffolder-backend': scaffolderBackend,
   '@backstage/plugin-search-backend': searchBackend,
+  '@backstage/plugin-search-backend-node': searchBackendNode,
+  '@backstage/plugin-search-common': searchCommon,
   '@backstage/plugin-techdocs-backend': techdocsBackend,
 };
 

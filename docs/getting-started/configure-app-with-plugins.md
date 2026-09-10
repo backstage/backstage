@@ -13,7 +13,7 @@ instead.
 
 Audience: Developers
 
-:::note Note
+:::note
 Backstage plugins are primarily written using [TypeScript](https://www.typescriptlang.org), [Node.js](https://nodejs.org) and [React](https://reactjs.org). Having an understanding of these technologies will be beneficial on your journey to customizing Backstage!
 :::
 

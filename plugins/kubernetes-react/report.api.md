@@ -17,7 +17,6 @@ import { DetectedErrorsByCluster } from '@backstage/plugin-kubernetes-common';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { Event as Event_2 } from 'kubernetes-models/v1';
-import { FC } from 'react';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { GroupedResponses } from '@backstage/plugin-kubernetes-common';
 import { IContainer } from 'kubernetes-models/v1';
@@ -93,7 +92,7 @@ export type ClusterProps = {
 };
 
 // @public
-export const ContainerCard: FC<ContainerCardProps>;
+export function ContainerCard(input: ContainerCardProps): JSX_2.Element;
 
 // @public
 export interface ContainerCardProps {
@@ -215,7 +214,7 @@ export interface EventsProps {
 }
 
 // @public
-export const FixDialog: FC<FixDialogProps>;
+export function FixDialog(input: FixDialogProps): JSX_2.Element;
 
 // @public
 export interface FixDialogProps {
@@ -764,7 +763,7 @@ export interface PodExecTerminalProps {
 }
 
 // @public
-export const PodLogs: FC<PodLogsProps>;
+export function PodLogs(input: PodLogsProps): JSX_2.Element;
 
 // @public
 export const PodLogsDialog: (input: PodLogsDialogProps) => JSX_2.Element;

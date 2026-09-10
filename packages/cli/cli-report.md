@@ -26,6 +26,7 @@ Commands:
   migrate
   new
   package
+  pm
   repo
   translations
   versions:bump
@@ -595,6 +596,29 @@ Options:
   -t, --testNamePattern
   -u, --updateSnapshot
   -w, --maxWorkers
+```
+
+### `backstage-cli pm`
+
+```
+Usage: backstage-cli pm [flags...]
+
+Options:
+  -V, --version
+  -h, --help
+
+Commands:
+  help
+  verify-patches
+```
+
+### `backstage-cli pm verify-patches`
+
+```
+Usage: backstage-cli pm verify-patches [flags...]
+
+Options:
+  -h, --help
 ```
 
 ### `backstage-cli repo`

@@ -4,7 +4,7 @@ title: Plugin Analytics
 description: Measuring usage of your Backstage instance.
 ---
 
-:::caution Legacy Documentation
+:::caution[Legacy Documentation]
 
 This section is part of the legacy plugins documentation. For the new frontend system version, see [Plugin Analytics](../frontend-system/building-plugins/08-analytics.md). The concepts and events described here apply to both the old and new frontend systems.
 

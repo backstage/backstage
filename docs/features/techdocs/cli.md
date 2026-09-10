@@ -7,7 +7,7 @@ description: TechDocs CLI - a utility command line interface for managing TechDo
 Utility command line interface for managing TechDocs sites in
 [Backstage](https://github.com/backstage/backstage).
 
-https://backstage.io/docs/features/techdocs/
+<https://backstage.io/docs/features/techdocs/>
 
 ## Features
 
@@ -63,6 +63,11 @@ By default, Docker and
 [techdocs-container](https://github.com/backstage/techdocs-container) is used to
 make sure all the dependencies are installed. However, Docker can be disabled
 with `--no-docker` flag.
+
+Note that the `serve` command does not pull the Docker image and keeps using the
+one available locally. If serving misbehaves, for example changes to
+documentation files are no longer detected, update the image with
+`docker pull spotify/techdocs`.
 
 The command starts two local servers - an MkDocs preview server on port 8000 and
 a Backstage app server on port 3000. The Backstage app has a custom TechDocs API

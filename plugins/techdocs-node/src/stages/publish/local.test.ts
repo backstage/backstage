@@ -20,6 +20,7 @@ import express from 'express';
 import request from 'supertest';
 import * as os from 'node:os';
 import { LocalPublish } from './local';
+import fs from 'fs-extra';
 import path from 'node:path';
 import {
   createMockDirectory,
@@ -150,6 +151,72 @@ describe('local publisher', () => {
       await expect(() =>
         publisher.publish({ entity: mockEntity, directory: mockDir.path }),
       ).rejects.toThrow('Unable to publish TechDocs site');
+    });
+
+    it('should reject symlinks pointing outside the output directory', async () => {
+      const mockConfig = new ConfigReader({});
+      const publisher = LocalPublish.fromConfig(
+        mockConfig,
+        logger,
+        testDiscovery,
+      );
+      const mockEntity = createMockEntity();
+
+      mockDir.setContent({
+        'index.html': '',
+      });
+      await fs.symlink('/etc/passwd', path.join(mockDir.path, 'leaked'));
+
+      await expect(() =>
+        publisher.publish({ entity: mockEntity, directory: mockDir.path }),
+      ).rejects.toThrow('points outside the output directory');
+    });
+
+    it('should reject external symlinks in nested subdirectories', async () => {
+      const mockConfig = new ConfigReader({});
+      const publisher = LocalPublish.fromConfig(
+        mockConfig,
+        logger,
+        testDiscovery,
+      );
+      const mockEntity = createMockEntity();
+
+      mockDir.setContent({
+        'index.html': '',
+        subdir: {
+          'page.html': '',
+        },
+      });
+      await fs.symlink(
+        '/etc/passwd',
+        path.join(mockDir.path, 'subdir', 'secret'),
+      );
+
+      await expect(() =>
+        publisher.publish({ entity: mockEntity, directory: mockDir.path }),
+      ).rejects.toThrow('points outside the output directory');
+    });
+
+    it('should allow symlinks pointing within the output directory', async () => {
+      const mockConfig = new ConfigReader({});
+      const publisher = LocalPublish.fromConfig(
+        mockConfig,
+        logger,
+        testDiscovery,
+      );
+      const mockEntity = createMockEntity();
+
+      mockDir.setContent({
+        'index.html': 'content',
+      });
+      await fs.symlink(
+        path.join(mockDir.path, 'index.html'),
+        path.join(mockDir.path, 'linked.html'),
+      );
+
+      await expect(
+        publisher.publish({ entity: mockEntity, directory: mockDir.path }),
+      ).resolves.toBeDefined();
     });
   });
 

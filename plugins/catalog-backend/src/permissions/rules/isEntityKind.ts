@@ -33,13 +33,13 @@ export const isEntityKind = createPermissionRule({
       .describe('List of kinds to match at least one of'),
   }),
   apply(resource, { kinds }) {
-    const resourceKind = resource.kind.toLocaleLowerCase('en-US');
-    return kinds.some(kind => kind.toLocaleLowerCase('en-US') === resourceKind);
+    const resourceKind = resource.kind.toLowerCase();
+    return kinds.some(kind => kind.toLowerCase() === resourceKind);
   },
   toQuery({ kinds }) {
     return {
       key: 'kind',
-      values: kinds.map(kind => kind.toLocaleLowerCase('en-US')),
+      values: kinds.map(kind => kind.toLowerCase()),
     };
   },
 });

@@ -331,7 +331,12 @@ async function moveToDistWorkspace(
   });
   const featureDetectionProject =
     fastPackPackages.length > 0 && enableFeatureDetection
-      ? await createTypeDistProject()
+      ? await createTypeDistProject(
+          fastPackPackages.map(pkg => ({
+            dir: pkg.dir,
+            role: pkg.packageJson.backstage?.role,
+          })),
+        )
       : undefined;
 
   // New an improved flow where we avoid calling `yarn pack`

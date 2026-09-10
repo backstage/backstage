@@ -598,6 +598,42 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
   });
 
+  it('should ignore push events from non-configured branches', async () => {
+    const config = new ConfigReader(mock.config_single_integration);
+    const schedule = new PersistingTaskRunner();
+    const events = DefaultEventsService.create({ logger });
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+      events,
+    })[0];
+
+    await provider.connect(entityProviderConnection);
+
+    const basePayload = mock.push_remove_event.eventPayload as Record<
+      string,
+      unknown
+    >;
+    const featureBranchEvent = {
+      topic: 'gitlab.push',
+      metadata: { 'x-gitlab-event': 'Push Hook' },
+      eventPayload: {
+        ...basePayload,
+        ref: 'refs/heads/feature-branch',
+        ref_protected: false,
+      },
+    };
+
+    await events.publish(featureBranchEvent);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
+    expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(0);
+  });
+
   it('should ignore projects when none of the groups regex patterns match', async () => {
     const config = new ConfigReader(mock.config_groupPatterns_only_noMatch);
 

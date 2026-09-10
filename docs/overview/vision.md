@@ -12,7 +12,7 @@ engineers. Our belief is that engineers should not have to be experts in various
 infrastructure tools to be productive. Infrastructure should be abstracted away
 so that you can return to building and scaling, quickly and safely.
 
-![](https://backstage.io/animations/backstage-logos-hero-8.gif)
+![Animated Backstage logo](https://backstage.io/animations/backstage-logos-hero-8.gif)
 
 We are working on making Backstage the trusted standard toolbox (read: UX layer)
 for the open source infrastructure landscape. Think of it like Kubernetes for

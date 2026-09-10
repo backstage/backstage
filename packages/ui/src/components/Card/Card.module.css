@@ -22,6 +22,7 @@
     flex-direction: column;
     border-radius: var(--bui-radius-3);
     color: var(--bui-fg-primary);
+    line-height: 1.15;
     overflow: auto;
     min-height: 0;
     width: 100%;

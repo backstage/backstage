@@ -24,19 +24,16 @@ integrations:
 
 This most basic example can only be used if you are running Backstage on an instance that has an IAM identity with the following policies:
 
-```
+```json
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Action": [
-                "codecommit:GetFile",
-                "codecommit:GetFolder"
-            ],
-            "Resource": "*",
-            "Effect": "Allow"
-        }
-    ]
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": ["codecommit:GetFile", "codecommit:GetFolder"],
+      "Resource": "*",
+      "Effect": "Allow"
+    }
+  ]
 }
 ```
 

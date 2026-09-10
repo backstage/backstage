@@ -59,6 +59,13 @@ function registerPackageCommand(program: Command) {
     .action(lazy(() => import('./package/schema/openapi/generate'), 'command'));
 
   openApiCommand
+    .command('validate')
+    .description(
+      'Validate that the OpenAPI spec is a valid OpenAPI 3.x document.',
+    )
+    .action(lazy(() => import('./package/schema/openapi/validate'), 'command'));
+
+  openApiCommand
     .command('fuzz')
     .description(
       'Fuzz an OpenAPI schema by generating random data and sending it to the server.',
@@ -97,11 +104,24 @@ function registerRepoCommand(program: Command) {
     .description('Tooling for OpenApi schema');
 
   openApiCommand
-    .command('verify [paths...]')
+    .command('validate [paths...]')
     .description(
-      'Verify that all OpenAPI schemas are valid and set up correctly.',
+      'Validate that all OpenAPI schemas are valid and set up correctly.',
     )
-    .action(lazy(() => import('./repo/schema/openapi/verify'), 'bulkCommand'));
+    .action(
+      lazy(() => import('./repo/schema/openapi/validate'), 'bulkCommand'),
+    );
+
+  openApiCommand
+    .command('verify', { hidden: true })
+    .description('Deprecated: use validate instead.')
+    .action(async () => {
+      exitWithError(
+        new Error(
+          `This command has been removed, use 'repo schema openapi validate' instead`,
+        ),
+      );
+    });
 
   openApiCommand
     .command('lint [paths...]')

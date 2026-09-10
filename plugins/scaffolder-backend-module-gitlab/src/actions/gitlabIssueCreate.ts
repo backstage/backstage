@@ -31,8 +31,9 @@ import { getErrorMessage } from './helpers';
  */
 export const createGitlabIssueAction = (options: {
   integrations: ScmIntegrationRegistry;
+  requireScmUserCredentials?: boolean;
 }) => {
-  const { integrations } = options;
+  const { integrations, requireScmUserCredentials } = options;
   return createTemplateAction({
     id: 'gitlab:issues:create',
     description: 'Creates a Gitlab issue.',
@@ -188,7 +189,12 @@ export const createGitlabIssueAction = (options: {
         } = ctx.input;
 
         const { host } = parseRepoUrl(repoUrl, integrations);
-        const api = getClient({ host, integrations, token });
+        const api = getClient({
+          host,
+          integrations,
+          token,
+          requireScmUserCredentials,
+        });
 
         let isEpicScoped = false;
 

@@ -144,7 +144,7 @@ browser at `http://localhost:7007`
 
 ## Multi-stage Build
 
-:::note Note
+:::note
 
 The `.dockerignore` is different in this setup, read on for more
 details.
@@ -299,7 +299,7 @@ browser at `http://localhost:7007`
 
 ## Separate Frontend
 
-:::note Note
+:::note
 
 This is an optional step, and you will lose out on the features of the
 `@backstage/plugin-app-backend` plugin. Most notably the frontend configuration

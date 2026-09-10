@@ -80,6 +80,7 @@ export default async function serveMkdocs(opts: OptionValues) {
     dockerEntrypoint: opts.dockerEntrypoint,
     dockerOptions: opts.dockerOption,
     useDocker: opts.docker,
+    mkdocsConfigFileName: mkdocsYmlPath,
     onStdout: logFunc,
     onStderr: logFunc,
   });

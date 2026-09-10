@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 import type { z } from 'zod/v4';
-import type { JsonObject } from '@backstage/types';
+import type { Expand, JsonObject } from '@backstage/types';
 import type { ConnectionTypeKey, LookupConnectionType } from '../definitions';
+
+/** @public */
+export type LookupStrategy = 'host' | 'aws';
+
+export type LookupStrategyQuery = {
+  host: { url: string };
+  aws: { accountId?: string; arn?: string };
+};
 
 // Field names the framework owns at the connection level. Connection-type
 // authors must not declare these in their `configSchema`.
@@ -66,15 +74,53 @@ export type WithoutReservedAuthMethods<
     : TAuthMethods[I];
 };
 
-/** @public */
-export type ConnectionAuthValue<TAuthConfig extends { method: string }> =
-  TAuthConfig extends any
-    ? Omit<TAuthConfig, 'title' | 'match'> & { title: string }
-    : never;
+/**
+ * Restricts an auth entry to only be handed out to the given plugins.
+ *
+ * @public
+ */
+export type ConnectionAuthMatch = {
+  plugins: string[];
+};
 
-export type MatchAuth<TAuthConfig extends { method: string }> = (
+// Expand flattens intersections and Omit into plain object literals so that
+// editor tooltips stay readable.
+/**
+ * The shape of an auth entry as written in configuration: the fields declared
+ * by the auth method's own schema plus the framework-managed `title` and
+ * `match` fields.
+ *
+ * @public
+ */
+export type ConfiguredConnectionAuth<M> = M extends {
+  method: infer TMethod extends string;
+  configSchema: { parse: (...args: any[]) => infer TConfig };
+}
+  ? Expand<
+      {
+        method: TMethod;
+        title?: string;
+        match?: ConnectionAuthMatch;
+      } & TConfig
+    >
+  : never;
+
+/**
+ * A resolved auth entry as handed to plugins and `matchAuth` implementations:
+ * the fields declared by the auth method's own schema plus a guaranteed
+ * display title.
+ *
+ * @public
+ */
+export type ConnectionAuthValue<TAuthConfig extends { method: string }> =
+  TAuthConfig extends any ? Expand<TAuthConfig & { title: string }> : never;
+
+export type MatchAuth<
+  TAuthConfig extends { method: string },
+  TQuery = { url: string },
+> = (
   authMethods: ConnectionAuthValue<TAuthConfig>[],
-  query: string,
+  query: TQuery,
 ) => ConnectionAuthValue<TAuthConfig> | undefined;
 
 /**
@@ -97,44 +143,65 @@ export type PortableSchema<TOutput = unknown, TInput = TOutput> = {
 export type ConnectionType<
   T extends {
     type: string;
+    cardinality: 'singleton' | 'multiton';
+    lookupStrategy: LookupStrategy;
+    query: unknown;
+    configSchema: unknown;
     auth: readonly {
       method: string;
     }[];
   } = {
     type: string;
-    title?: string;
-    match?: { plugins: string[] };
+    cardinality: 'singleton' | 'multiton';
+    lookupStrategy: LookupStrategy;
+    query: unknown;
+    configSchema: unknown;
     auth: readonly {
       method: string;
-      title?: string;
-      match?: { plugins: string[] };
     }[];
   },
 > = {
   type: T['type'];
   title: string;
+  cardinality: T['cardinality'];
+  /** Determines the query accepted by `ConnectionsService.find`. */
+  lookupStrategy: T['lookupStrategy'];
   /** Schema for a complete connection configuration. */
-  configSchema: PortableSchema<T, unknown>;
-  /** Supported auth methods and their method-specific configuration schemas. */
+  configSchema: PortableSchema<T['configSchema'], unknown>;
+  /**
+   * Supported auth methods and their method-specific configuration schemas.
+   * These schemas determine the auth values returned by
+   * `ConnectionsService.find`.
+   */
   authMethods: readonly (T['auth'][number] extends infer TAuth
     ? TAuth extends { method: string }
       ? {
           method: TAuth['method'];
           title: string;
-          configSchema: PortableSchema<
-            Omit<TAuth, 'method' | 'match' | 'title'>,
-            unknown
-          >;
+          configSchema: PortableSchema<Expand<Omit<TAuth, 'method'>>, unknown>;
         }
       : never
     : never)[];
-  // Method shorthand keeps parameter checking bivariant so a narrow
-  // ConnectionType (e.g. github) is still assignable to ConnectionType.
-  // TODO a default match auth method so this is no longer optional
   matchAuth?(
     authMethods: ConnectionAuthValue<T['auth'][number]>[],
-    query: string,
+    query: T['query'],
   ): ConnectionAuthValue<T['auth'][number]> | undefined;
+  /**
+   * Validates the connection as a whole, after each schema has accepted
+   * its own part.
+   *
+   * Use this for rules that no single auth entry can check by itself, for
+   * example "account IDs must be unique across entries". Receives the
+   * parsed connection config and all parsed auth entries, each including
+   * its plugin `match` so that rules can take scoping into account; throw
+   * an error to reject the connection.
+   */
+  validate?(connection: {
+    config: T['configSchema'];
+    auth: readonly Expand<
+      T['auth'][number] & { match?: ConnectionAuthMatch }
+    >[];
+  }): void;
 };
 
 /** @public */

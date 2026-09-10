@@ -15,10 +15,18 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { readGeneratorConfig } from './techdocs';
+import path from 'node:path';
+import { readGeneratorConfig, TechdocsGenerator } from './techdocs';
+import { getMkdocsYml, runCommand } from './helpers';
+
+jest.mock('fs-extra');
+jest.mock('./helpers');
+jest.mock('./mkdocsPatchers');
 
 const mockLogger = {
   warn: jest.fn(),
+  info: jest.fn(),
+  debug: jest.fn(),
 };
 
 describe('readGeneratorConfig', () => {
@@ -104,6 +112,29 @@ describe('readGeneratorConfig', () => {
     });
   });
 
+  it('should read pull options config', () => {
+    const pullOptions = {
+      authconfig: {
+        username: 'user',
+        password: 'pass',
+      },
+    };
+
+    const config = new ConfigReader({
+      techdocs: {
+        generator: {
+          runIn: 'docker',
+          pullOptions,
+        },
+      },
+    });
+
+    expect(readGeneratorConfig(config, logger)).toEqual({
+      runIn: 'docker',
+      pullOptions,
+    });
+  });
+
   describe('with legacy techdocs.generators.techdocs config', () => {
     it('should read legacy docker option', () => {
       const config = new ConfigReader({
@@ -176,5 +207,72 @@ describe('readGeneratorConfig', () => {
       pullImage: false,
       defaultPlugins: ['mkdocs-custom-plugin'],
     });
+  });
+});
+
+describe('TechdocsGenerator.run', () => {
+  const inputDir = '/var/folders/inputDir';
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+    jest.mocked(getMkdocsYml).mockResolvedValue({
+      path: `${inputDir}/mkdocs.yaml`,
+      content: 'site_name: Test',
+      configIsTemporary: false,
+    });
+  });
+
+  it('passes -f with the config path relative to the working directory in local mode', async () => {
+    jest.mocked(getMkdocsYml).mockResolvedValueOnce({
+      path: `${inputDir}/config/mkdocs.yaml`,
+      content: 'site_name: Test',
+      configIsTemporary: false,
+    });
+
+    const generator = TechdocsGenerator.fromConfig(
+      new ConfigReader({ techdocs: { generator: { runIn: 'local' } } }),
+      { logger: mockLogger as any },
+    );
+
+    await generator.run({
+      inputDir,
+      outputDir: '/tmp/outputDir',
+      logger: mockLogger as any,
+    });
+
+    expect(jest.mocked(runCommand)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        command: 'mkdocs',
+        args: expect.arrayContaining([
+          '-f',
+          path.join('config', 'mkdocs.yaml'),
+        ]),
+        options: { cwd: inputDir },
+      }),
+    );
+  });
+
+  it('passes -f with the container-relative config path in docker mode', async () => {
+    const containerRunner = { runContainer: jest.fn() };
+    const generator = new TechdocsGenerator({
+      logger: mockLogger as any,
+      containerRunner,
+      config: new ConfigReader({
+        techdocs: { generator: { runIn: 'docker' } },
+      }),
+      scmIntegrations: { list: () => [] } as any,
+    });
+
+    await generator.run({
+      inputDir,
+      outputDir: '/tmp/outputDir',
+      logger: mockLogger as any,
+    });
+
+    expect(containerRunner.runContainer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        args: expect.arrayContaining(['-f', '/input/mkdocs.yaml']),
+      }),
+    );
   });
 });

@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: AiResource
+metadata:
+  name: company-ai-tools
+  description: Company marketplace for AI coding tools used across engineering teams
+spec:
+  type: marketplace
+  lifecycle: production
+  owner: team-a
+  system: artist-engagement-portal
+  plugins:
+    - airesource:default/code-review-plugin
+    - airesource:default/testing-plugin
+  version: '1.0.0'

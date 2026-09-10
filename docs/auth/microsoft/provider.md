@@ -83,7 +83,7 @@ The Microsoft provider is a structure with three mandatory configuration keys:
   When specified, this reduces login friction for users with accounts in multiple tenants by automatically filtering away accounts from other tenants.
   For more details, see [Home Realm Discovery](https://learn.microsoft.com/en-us/azure/active-directory/manage-apps/home-realm-discovery-policy)
 - `additionalScopes` (optional): List of scopes for the App Registration, to be requested in addition to the required ones.
-- `skipUserProfile` (optional): If true, skips loading the user profile even if the `User.Read` scope is present. This is a performance optimization during login and can be used with resolvers that only needs the email address in `spec.profile.email` obtained when the `email` OAuth2 scope is present.
+- `skipUserProfile` (optional): If true, skips loading the user profile even if the `User.Read` scope is present. This also disables the separate Microsoft Graph call that is otherwise made to fetch the profile when acquiring tokens for non-Graph resources (for example the Azure Management API). This is a performance optimization and can be used with resolvers that only needs the email address in `spec.profile.email` obtained when the `email` OAuth2 scope is present.
 - `sessionDuration` (optional): Lifespan of the user session.
 
 ### Resolvers
@@ -95,7 +95,7 @@ This provider includes several resolvers out of the box that you can use:
 - `emailMatchingUserEntityAnnotation`: Matches the email address from the auth provider with the User entity where the value of the `microsoft.com/email` annotation matches. If no match is found it will throw a `NotFoundError`.
 - `userIdMatchingUserEntityAnnotation`: Matches the user profile ID from the auth provider with the User entity where the value of the `graph.microsoft.com/user-id` annotation matches. This resolver is recommended to resolve users without an email in their profile. If no match is found it will throw a `NotFoundError`.
 
-:::note Note
+:::note
 
 The resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
 

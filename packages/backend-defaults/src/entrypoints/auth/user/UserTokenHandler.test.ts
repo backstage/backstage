@@ -331,6 +331,27 @@ describe('UserTokenHandler', () => {
       );
     });
 
+    it('should throw if payload.uip is missing', async () => {
+      const backstageToken = await createToken({
+        header: { typ: 'vnd.backstage.user', alg: 'ES256' },
+        payload: {
+          aud: 'backstage',
+          sub: 'mock',
+          ent: ['mock'],
+          iat: 1,
+          exp: 2,
+        },
+      });
+
+      expect(() =>
+        userTokenHandler.createLimitedUserToken(backstageToken),
+      ).toThrow(
+        new AuthenticationError(
+          'Failed to create limited user token, missing user identity proof',
+        ),
+      );
+    });
+
     it('should create a limited user token from a user token', async () => {
       const backstageToken = await createToken({
         header: { typ: 'vnd.backstage.user', alg: 'ES256' },

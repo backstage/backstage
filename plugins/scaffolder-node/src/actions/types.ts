@@ -38,6 +38,10 @@ export type ActionContext<
   secrets?: TaskSecrets;
   workspacePath: string;
   input: TActionInput;
+  /**
+   * Execute a function with checkpoint support for recovery.
+   * The return value is serialized to JSON for storage.
+   */
   checkpoint<T extends JsonValue | void>(
     opts: CheckpointContext<T>,
   ): Promise<T>;

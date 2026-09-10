@@ -378,11 +378,25 @@ export class OidcService {
 
     const cliClientId = `${this.baseUrl}/.well-known/oauth-client/cli.json`;
 
+    // This backend serves the CLI client metadata document itself at
+    // /.well-known/oauth-client/cli.json whenever CIMD is enabled, so its
+    // client_id is always accepted. Configuring allowedClientIdPatterns
+    // narrows which third-party clients are allowed, it does not turn off the
+    // built-in CLI.
+    const configuredClientIdPatterns = this.config.getOptionalStringArray(
+      `${configPath}.allowedClientIdPatterns`,
+    );
+
     return {
       enabled,
-      allowedClientIdPatterns: this.config.getOptionalStringArray(
-        `${configPath}.allowedClientIdPatterns`,
-      ) ?? ['https://claude.ai/*', 'https://vscode.dev/*', cliClientId],
+      allowedClientIdPatterns: configuredClientIdPatterns
+        ? [...new Set([...configuredClientIdPatterns, cliClientId])]
+        : [
+            'https://claude.ai/*',
+            'https://vscode.dev/*',
+            'https://chatgpt.com/oauth/codex/*/client.json',
+            cliClientId,
+          ],
       allowedRedirectUriPatterns:
         this.config.getOptionalStringArray(
           `${configPath}.allowedRedirectUriPatterns`,
@@ -734,7 +748,7 @@ export class OidcService {
       return (
         cimd.enabled &&
         cimd.allowedClientIdPatterns.some(pattern =>
-          matcher.isMatch(clientId, pattern),
+          createUrlPatternMatcher(pattern)(cimdUrl),
         )
       );
     }

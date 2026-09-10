@@ -1,5 +1,44 @@
 # @backstage/plugin-app-backend
 
+## 0.5.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/config-loader@1.11.3-next.0
+  - @backstage/plugin-auth-node@0.7.5-next.1
+  - @backstage/plugin-app-node@0.1.49-next.1
+
+## 0.5.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.5-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-app-node@0.1.49-next.0
+
+## 0.5.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.11.2
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-auth-node@0.7.4
+  - @backstage/plugin-app-node@0.1.48
+
+## 0.5.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.11.2-next.0
+  - @backstage/backend-plugin-api@1.10.0-next.1
+  - @backstage/plugin-app-node@0.1.48-next.1
+
 ## 0.5.17-next.0
 
 ### Patch Changes

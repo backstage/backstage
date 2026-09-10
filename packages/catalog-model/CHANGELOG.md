@@ -1,5 +1,17 @@
 # @backstage/catalog-model
 
+## 1.10.0
+
+### Minor Changes
+
+- ad18743: Added `marketplace` spec type to the `@alpha` AiResource kind, representing a curated registry of plugins for discovery and distribution. Marketplaces reference their contained plugins via `spec.plugins` entity references, generating `hasPart` catalog relations.
+- f501302: Added `plugin` spec type to the `@alpha` AiResource kind, representing a packaged collection of skills distributed as a unit. Plugins reference their contained skills via `spec.skills` entity references, generating `hasPart` catalog relations.
+- 0b9b3bf: Added optional `allowedTools`, `license`, and `compatibility` fields to the `@alpha` AiResource skill spec, aligned with the agentskills.io specification.
+
+### Patch Changes
+
+- 9a6955c: Corrected catalog relation generation to honor declared kind combinations, and completed reverse relations for existing `AiResource` fields.
+
 ## 1.9.0
 
 ### Minor Changes

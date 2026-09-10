@@ -58,8 +58,6 @@ export class UserTokenHandler {
       return undefined;
     }
 
-    await this.jwksClient.refreshKeyStore(token);
-
     // Verify a limited token, ensuring the necessarily claims are present and token type is correct
     const { payload } = await jwtVerify(
       token,
@@ -131,6 +129,12 @@ export class UserTokenHandler {
     if (tokenType !== tokenTypes.user.typParam) {
       throw new AuthenticationError(
         'Failed to create limited user token, invalid token type',
+      );
+    }
+
+    if (!payload.uip) {
+      throw new AuthenticationError(
+        'Failed to create limited user token, missing user identity proof',
       );
     }
 

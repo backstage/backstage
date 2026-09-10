@@ -42,7 +42,7 @@ For details on filtering actions, see the [filtering actions documentation](../b
 
 When registering an action, set the `attributes` field to describe the action's behavior. This allows clients to make informed decisions, for example: warning users before invoking a destructive action, or allowing a read-only action to run without confirmation.
 
-The defaults are conservative. When unset, an action is assumed to be destructive, non-idempotent, and not read-only. **Always set these explicitly so clients can correctly represent the action's capabilities.**
+The defaults are conservative. When unset, an action is assumed to be non-idempotent and not read-only. `destructive` defaults to `true` unless `readOnly` is `true`, in which case it defaults to `false`. **Set these explicitly when the defaults do not represent the action's capabilities.**
 See the [Action Attributes Reference](../backend-system/core-services/actions-registry.md#action-attributes-reference) for the full attribute definitions and defaults.
 
 ## Single MCP Server Name & Description
@@ -111,7 +111,7 @@ This creates two MCP server endpoints:
 
 Each server uses include filter rules with glob patterns on action IDs to control which actions are exposed. For example, `id: 'catalog:*'` matches all actions registered by the catalog plugin.
 
-When `mcpActions.servers` is not configured, the plugin behaves exactly as before with a single server at `/api/mcp-actions/v1`.
+The default server at `/api/mcp-actions/v1` is always available and always exposes every registered action, whether or not `mcpActions.servers` is configured. Named servers are subsets of it, so an action can be exposed on the default server and on any number of named servers at the same time.
 
 ### Filter Rules
 
@@ -214,13 +214,14 @@ auth:
   clientIdMetadataDocuments:
     enabled: true
     # Optional: override which client_id URLs are allowed.
-    # Defaults to Claude, VS Code, and the built-in Backstage CLI.
-    # Note: setting this replaces the defaults entirely. The built-in
-    # CLI pattern is derived from your auth backend's base URL and
-    # must be re-added manually if you override this list.
+    # Defaults to Claude, VS Code, ChatGPT Codex, and the built-in Backstage CLI.
+    # Note: setting this replaces the Claude, VS Code, and ChatGPT Codex
+    # defaults entirely. The built-in CLI client is always allowed, since
+    # this backend serves its metadata document itself.
     # allowedClientIdPatterns:
     #   - 'https://claude.ai/*'
     #   - 'https://vscode.dev/*'
+    #   - 'https://chatgpt.com/oauth/codex/*/client.json'
     #   - 'https://my-custom-client.example.com/*'
     # Optional: override which redirect URIs are allowed.
     # Defaults to loopback addresses (localhost, 127.0.0.1, [::1]).

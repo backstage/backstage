@@ -211,7 +211,7 @@ indexBuilder.addCollator({
 });
 ```
 
-:::note Note
+:::note
 
 if you are using the in-memory Lunr search engine, you probably want to
 implement a non-distributed `SchedulerServiceTaskRunner` like the following to ensure consistency

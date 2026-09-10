@@ -29,7 +29,7 @@ Creating the plugin will take a little while, so be patient. If it runs with no 
 
 Once the commands complete, you should see a new folder `plugins/todo-backend` with content like the below tree:
 
-```
+```text
 / <- your Backstage app's root directory
     /plugins/
         /todo-backend/

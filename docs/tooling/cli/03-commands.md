@@ -140,3 +140,9 @@ help [command]                                 display help for command
 | --------------------- | ----------------------------------------- |
 | `translations export` | Export translation messages to JSON files |
 | `translations import` | Generate translation resource wiring code |
+
+### [Yarn Package Manager Module](./module-package-manager-yarn.md)
+
+| Command             | Description                             |
+| ------------------- | --------------------------------------- |
+| `pm verify-patches` | Verify Yarn patch references and health |

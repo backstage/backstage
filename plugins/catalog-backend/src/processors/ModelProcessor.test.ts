@@ -19,6 +19,8 @@ import {
   CatalogModel,
   CatalogModelKind,
   CatalogModelRelation,
+  compileCatalogModel,
+  defaultCatalogEntityModel,
 } from '@backstage/catalog-model/alpha';
 import { ModelProcessor } from './ModelProcessor';
 import { ModelHolder } from '../model/ModelHolder';
@@ -342,6 +344,47 @@ describe('ModelProcessor', () => {
               name: 'service-b',
             },
           },
+        }),
+      );
+    });
+
+    it('does not emit an inverse for an undeclared kind pair', async () => {
+      const model = compileCatalogModel([defaultCatalogEntityModel]);
+      const processor = new ModelProcessor(
+        ModelHolder.modelPassthroughForTest(model),
+      );
+      const emit = jest.fn();
+      const entity = createEntity({
+        type: 'service',
+        lifecycle: 'production',
+        owner: 'group:default/my-team',
+        system: 'domain:default/not-a-system',
+      });
+
+      await processor.postProcessEntity(entity, location, emit);
+
+      expect(emit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          relation: expect.objectContaining({
+            type: 'partOf',
+            target: {
+              kind: 'domain',
+              namespace: 'default',
+              name: 'not-a-system',
+            },
+          }),
+        }),
+      );
+      expect(emit).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          relation: expect.objectContaining({
+            type: 'hasPart',
+            source: {
+              kind: 'domain',
+              namespace: 'default',
+              name: 'not-a-system',
+            },
+          }),
         }),
       );
     });

@@ -18,12 +18,18 @@ import {
   createVersionedContext,
   createVersionedValueMap,
 } from '@backstage/version-bridge';
-import { ComponentType, ReactNode, useContext } from 'react';
+import { ComponentType, ReactNode, useContext, useMemo } from 'react';
 import { AnalyticsContextValue } from './types';
 
 const AnalyticsReactContext = createVersionedContext<{
   1: AnalyticsContextValue;
 }>('analytics-context');
+
+const defaultAnalyticsContext: AnalyticsContextValue = Object.freeze({
+  routeRef: 'unknown',
+  pluginId: 'root',
+  extension: 'App',
+});
 
 /**
  * A "private" (to this package) hook that enables context inheritance and a
@@ -36,11 +42,7 @@ export const useAnalyticsContext = (): AnalyticsContextValue => {
 
   // Provide a default value if no value exists.
   if (theContext === undefined) {
-    return {
-      routeRef: 'unknown',
-      pluginId: 'root',
-      extension: 'App',
-    };
+    return defaultAnalyticsContext;
   }
 
   // This should probably never happen, but check for it.
@@ -70,12 +72,14 @@ export const AnalyticsContext = (options: {
   const { attributes, children } = options;
 
   const parentValues = useAnalyticsContext();
-  const combinedValue = {
-    ...parentValues,
-    ...attributes,
-  };
-
-  const versionedCombinedValue = createVersionedValueMap({ 1: combinedValue });
+  // The versioned value is memoized so that context consumers don't get
+  // rerendered when this provider rerenders without the attributes having
+  // changed. Note that this requires callers to pass a stable attributes
+  // object for the memoization to be effective.
+  const versionedCombinedValue = useMemo(
+    () => createVersionedValueMap({ 1: { ...parentValues, ...attributes } }),
+    [parentValues, attributes],
+  );
   return (
     <AnalyticsReactContext.Provider value={versionedCombinedValue}>
       {children}

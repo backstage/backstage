@@ -15,8 +15,13 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   build:
+    permissions:
+      contents: read
+
     runs-on: ubuntu-latest
 
     services:
@@ -43,23 +48,28 @@ jobs:
     name: E2E Linux ${{ matrix.node-version }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
+        uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
         with:
           egress-policy: audit
 
       # Store the PR number for the Sync Pull Requests workflow
       - name: Save PR context
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         if: matrix.node-version == '22.x' && github.event_name == 'pull_request'
         run: |
           mkdir -p ./context
-          echo "${{ github.event.pull_request.number }}" > ./context/pr-number
+          echo "$PR_NUMBER" > ./context/pr-number
+
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: matrix.node-version == '22.x' && github.event_name == 'pull_request'
         with:
           name: pr-context
           path: context/
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
 
       - name: Configure Git
         run: |
@@ -73,12 +83,14 @@ jobs:
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@2cd6978b476cbdc39fec48346f8b6ca13199dd6a # v0.7.8
+        uses: backstage/actions/yarn-install@7137f70a0e1e756bd3693c8570ae496d87637af5 # v0.7.11
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
       - run: yarn tsc
+
       - run: yarn backstage-cli repo build
+
       - name: run E2E test
         run: |
           sudo sysctl fs.inotify.max_user_watches=524288

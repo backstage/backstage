@@ -4,7 +4,7 @@ title: Plugin Development
 description: Documentation on Plugin Development
 ---
 
-:::caution Legacy Documentation
+:::caution[Legacy Documentation]
 
 This page covers plugin development patterns for the **old frontend system**, including `createPlugin`, `createRoutableExtension`, and `RouteRef` from `@backstage/core-plugin-api`. For the new frontend system equivalents, see [Building Frontend Plugins](../frontend-system/building-plugins/01-index.md) and [Routes](../frontend-system/architecture/36-routes.md).
 

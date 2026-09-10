@@ -20,7 +20,7 @@ import {
   mockApis,
   registerMswTestHooks,
 } from '@backstage/test-utils';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { ScaffolderClient } from './ScaffolderClient';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
@@ -123,7 +123,9 @@ describe('api', () => {
           {
             fetch: fetchApi.fetch,
             onmessage: expect.any(Function),
+            onclose: expect.any(Function),
             onerror: expect.any(Function),
+            openWhenHidden: true,
             signal: expect.any(AbortSignal),
           },
         );
@@ -144,6 +146,113 @@ describe('api', () => {
           body: { message: 'Finished!' },
         });
       });
+
+      it('should append the after cursor to the eventstream URL', async () => {
+        mockFetchEventSource.mockImplementation(async (_url, options) => {
+          options.onmessage?.({
+            id: '',
+            event: 'completion',
+            data: '{"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{"message":"Done"}}',
+          });
+        });
+
+        await new Promise<void>(complete => {
+          apiClient
+            .streamLogs({ taskId: 'a-random-task-id', after: 42 })
+            .subscribe({ complete });
+        });
+
+        expect(mockFetchEventSource).toHaveBeenCalledWith(
+          'http://backstage/api/v2/tasks/a-random-task-id/eventstream?after=42',
+          expect.any(Object),
+        );
+      });
+
+      it('should abort the connection when unsubscribing', async () => {
+        let capturedSignal: AbortSignal | undefined;
+
+        mockFetchEventSource.mockImplementation(async (_url, options) => {
+          capturedSignal = options.signal as AbortSignal;
+          // Simulate a long-lived connection that never completes
+          await new Promise(() => {});
+        });
+
+        const subscription = apiClient
+          .streamLogs({ taskId: 'a-random-task-id' })
+          .subscribe({});
+
+        // Wait for fetchEventSource to be called
+        await new Promise(resolve => setTimeout(resolve, 0));
+
+        expect(capturedSignal?.aborted).toBe(false);
+        subscription.unsubscribe();
+        expect(capturedSignal?.aborted).toBe(true);
+      });
+
+      it('should emit an error when the server closes the connection', async () => {
+        mockFetchEventSource.mockImplementation(async (_url, options) => {
+          options.onclose?.();
+        });
+
+        const error = await new Promise<Error>(resolve => {
+          apiClient
+            .streamLogs({ taskId: 'a-random-task-id' })
+            .subscribe({ error: resolve });
+        });
+
+        expect(error.message).toBe('SSE connection closed unexpectedly');
+      });
+
+      it('should emit an error and abort when onerror is called', async () => {
+        let capturedSignal: AbortSignal | undefined;
+        const testError = new Error('connection refused');
+
+        mockFetchEventSource.mockImplementation(async (_url, options) => {
+          capturedSignal = options.signal as AbortSignal;
+          try {
+            options.onerror?.(testError);
+          } catch {
+            // onerror throws to prevent the library's built-in retry
+          }
+        });
+
+        const error = await new Promise<Error>(resolve => {
+          apiClient
+            .streamLogs({ taskId: 'a-random-task-id' })
+            .subscribe({ error: resolve });
+        });
+
+        expect(error).toBe(testError);
+        expect(capturedSignal?.aborted).toBe(true);
+      });
+
+      it('should not open SSE connection when unsubscribed before discovery resolves', async () => {
+        mockFetchEventSource.mockClear();
+
+        let resolveDiscovery!: (url: string) => void;
+        const client = new ScaffolderClient({
+          scmIntegrationsApi,
+          discoveryApi: {
+            getBaseUrl: () =>
+              new Promise<string>(resolve => {
+                resolveDiscovery = resolve;
+              }),
+          },
+          fetchApi,
+          identityApi,
+        });
+
+        const subscription = client
+          .streamLogs({ taskId: 'a-random-task-id' })
+          .subscribe({});
+
+        subscription.unsubscribe();
+        resolveDiscovery(mockBaseUrl);
+
+        await new Promise(resolve => setTimeout(resolve, 0));
+
+        expect(mockFetchEventSource).not.toHaveBeenCalled();
+      });
     });
 
     describe('longPolling', () => {
@@ -159,41 +268,37 @@ describe('api', () => {
 
       it('should work', async () => {
         server.use(
-          rest.get(
+          http.get(
             `${mockBaseUrl}/v2/tasks/:taskId/events`,
-            (req, res, ctx) => {
-              const { taskId } = req.params;
-              const after = req.url.searchParams.get('after');
+            ({ request, params }) => {
+              const { taskId } = params;
+              const after = new URL(request.url).searchParams.get('after');
 
               if (taskId === 'a-random-task-id') {
                 if (!after) {
-                  return res(
-                    ctx.json([
-                      {
-                        id: 1,
-                        taskId: 'a-random-id',
-                        type: 'log',
-                        createdAt: '',
-                        body: { message: 'My log message' },
-                      },
-                    ]),
-                  );
+                  return HttpResponse.json([
+                    {
+                      id: 1,
+                      taskId: 'a-random-id',
+                      type: 'log',
+                      createdAt: '',
+                      body: { message: 'My log message' },
+                    },
+                  ]);
                 } else if (after === '1') {
-                  return res(
-                    ctx.json([
-                      {
-                        id: 2,
-                        taskId: 'a-random-id',
-                        type: 'completion',
-                        createdAt: '',
-                        body: { message: 'Finished!' },
-                      },
-                    ]),
-                  );
+                  return HttpResponse.json([
+                    {
+                      id: 2,
+                      taskId: 'a-random-id',
+                      type: 'completion',
+                      createdAt: '',
+                      body: { message: 'Finished!' },
+                    },
+                  ]);
                 }
               }
 
-              return res(ctx.status(500));
+              return new HttpResponse(null, { status: 500 });
             },
           ),
         );
@@ -227,31 +332,29 @@ describe('api', () => {
         expect.assertions(3);
 
         server.use(
-          rest.get(
+          http.get(
             `${mockBaseUrl}/v2/tasks/:taskId/events`,
-            (req, res, ctx) => {
-              const { taskId } = req.params;
+            ({ request, params }) => {
+              const { taskId } = params;
 
-              const after = req.url.searchParams.get('after');
+              const after = new URL(request.url).searchParams.get('after');
 
               // use assertion to make sure it is not called after unsubscribing
               expect(after).toBe(null);
 
               if (taskId === 'a-random-task-id') {
-                return res(
-                  ctx.json([
-                    {
-                      id: 1,
-                      taskId: 'a-random-id',
-                      type: 'log',
-                      createdAt: '',
-                      body: { message: 'My log message' },
-                    },
-                  ]),
-                );
+                return HttpResponse.json([
+                  {
+                    id: 1,
+                    taskId: 'a-random-id',
+                    type: 'log',
+                    createdAt: '',
+                    body: { message: 'My log message' },
+                  },
+                ]);
               }
 
-              return res(ctx.status(500));
+              return new HttpResponse(null, { status: 500 });
             },
           ),
         );
@@ -284,28 +387,23 @@ describe('api', () => {
         const called = jest.fn();
 
         server.use(
-          rest.get(
-            `${mockBaseUrl}/v2/tasks/:taskId/events`,
-            (_req, res, ctx) => {
-              called();
+          http.get(`${mockBaseUrl}/v2/tasks/:taskId/events`, () => {
+            called();
 
-              if (called.mock.calls.length > 1) {
-                return res(
-                  ctx.json([
-                    {
-                      id: 2,
-                      taskId: 'a-random-id',
-                      type: 'completion',
-                      createdAt: '',
-                      body: { message: 'Finished!' },
-                    },
-                  ]),
-                );
-              }
+            if (called.mock.calls.length > 1) {
+              return HttpResponse.json([
+                {
+                  id: 2,
+                  taskId: 'a-random-id',
+                  type: 'completion',
+                  createdAt: '',
+                  body: { message: 'Finished!' },
+                },
+              ]);
+            }
 
-              return res(ctx.status(500));
-            },
-          ),
+            return new HttpResponse(null, { status: 500 });
+          }),
         );
 
         const next = jest.fn();
@@ -333,29 +431,21 @@ describe('api', () => {
   describe('listTasks', () => {
     it('should list all tasks', async () => {
       server.use(
-        rest.get(`${mockBaseUrl}/v2/tasks`, (req, res, ctx) => {
-          const createdBy = req.url.searchParams.get('createdBy');
+        http.get(`${mockBaseUrl}/v2/tasks`, ({ request }) => {
+          const createdBy = new URL(request.url).searchParams.get('createdBy');
 
           if (createdBy) {
-            return res(
-              ctx.json([
-                {
-                  createdBy,
-                },
-              ]),
-            );
+            return HttpResponse.json([{ createdBy }]);
           }
 
-          return res(
-            ctx.json([
-              {
-                createdBy: null,
-              },
-              {
-                createdBy: null,
-              },
-            ]),
-          );
+          return HttpResponse.json([
+            {
+              createdBy: null,
+            },
+            {
+              createdBy: null,
+            },
+          ]);
         }),
       );
 
@@ -365,21 +455,19 @@ describe('api', () => {
 
     it('should list tasks with limit and offset', async () => {
       server.use(
-        rest.get(
-          `${mockBaseUrl}/v2/tasks?limit=5&offset=0`,
-          (_req, res, ctx) => {
-            return res(
-              ctx.json([
-                {
-                  createdBy: null,
-                },
-                {
-                  createdBy: null,
-                },
-              ]),
-            );
-          },
-        ),
+        http.get(`${mockBaseUrl}/v2/tasks`, ({ request }) => {
+          const url = new URL(request.url);
+          expect(url.searchParams.get('limit')).toBe('5');
+          expect(url.searchParams.get('offset')).toBe('0');
+          return HttpResponse.json([
+            {
+              createdBy: null,
+            },
+            {
+              createdBy: null,
+            },
+          ]);
+        }),
       );
 
       const result = await apiClient.listTasks({
@@ -392,33 +480,23 @@ describe('api', () => {
 
     it('should list task using the current user as owner', async () => {
       server.use(
-        rest.get(`${mockBaseUrl}/v2/tasks`, (req, res, ctx) => {
-          const createdBy = req.url.searchParams.get('createdBy');
+        http.get(`${mockBaseUrl}/v2/tasks`, ({ request }) => {
+          const createdBy = new URL(request.url).searchParams.get('createdBy');
 
           if (createdBy) {
-            return res(
-              ctx.json({
-                tasks: [
-                  {
-                    createdBy,
-                  },
-                ],
-              }),
-            );
+            return HttpResponse.json({ tasks: [{ createdBy }] });
           }
 
-          return res(
-            ctx.json({
-              tasks: [
-                {
-                  createdBy: null,
-                },
-                {
-                  createdBy: null,
-                },
-              ],
-            }),
-          );
+          return HttpResponse.json({
+            tasks: [
+              {
+                createdBy: null,
+              },
+              {
+                createdBy: null,
+              },
+            ],
+          });
         }),
       );
 
