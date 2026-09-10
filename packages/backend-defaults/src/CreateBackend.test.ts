@@ -16,11 +16,35 @@
 
 import {
   coreServices,
+  createBackendPlugin,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { createBackend } from './CreateBackend';
 
 describe('createBackend', () => {
+  it('should use the provided instance ID', async () => {
+    expect.assertions(1);
+    const backend = createBackend({ instanceId: 'my-instance' });
+    backend.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {
+              instanceMetadata: coreServices.rootInstanceMetadata,
+            },
+            async init({ instanceMetadata }) {
+              expect(instanceMetadata.getId()).toBe('my-instance');
+            },
+          });
+        },
+      }),
+    );
+
+    await backend.start();
+    await backend.stop();
+  });
+
   it('should not throw when overriding a default service implementation', async () => {
     const backend = createBackend();
 

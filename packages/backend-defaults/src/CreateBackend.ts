@@ -79,9 +79,23 @@ export const defaultServiceFactories: ServiceFactory[] = [
   instanceMetadataServiceFactory,
 ];
 
+/** @public */
+export interface CreateBackendOptions {
+  /**
+   * The globally unique identifier of this Backstage backend instance.
+   *
+   * If omitted, a UUID is generated. Any provided value must be globally
+   * unique.
+   */
+  instanceId?: string;
+}
+
 /**
  * @public
  */
-export function createBackend(): Backend {
-  return createSpecializedBackend({ defaultServiceFactories });
+export function createBackend(options: CreateBackendOptions = {}): Backend {
+  return createSpecializedBackend({
+    defaultServiceFactories,
+    instanceId: options.instanceId,
+  });
 }

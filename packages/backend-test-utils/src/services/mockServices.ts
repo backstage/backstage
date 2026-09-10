@@ -566,6 +566,7 @@ export namespace mockServices {
 
   export function rootInstanceMetadata(): RootInstanceMetadataService {
     return {
+      getId: () => 'mock',
       getInstalledPlugins: () => Promise.resolve([]),
     };
   }
@@ -573,6 +574,7 @@ export namespace mockServices {
     export const mock = createServiceMock(
       coreServices.rootInstanceMetadata,
       () => ({
+        getId: jest.fn().mockReturnValue('mock'),
         getInstalledPlugins: jest.fn(),
       }),
     );

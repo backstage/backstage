@@ -64,6 +64,14 @@ export interface Backend {
 export interface CreateSpecializedBackendOptions {
   defaultServiceFactories: ServiceFactory[];
   extensionPointFactoryMiddleware?: ExtensionPointFactoryMiddleware[];
+
+  /**
+   * The globally unique identifier of this Backstage backend instance.
+   *
+   * If omitted, a UUID is generated. Any provided value must be globally
+   * unique.
+   */
+  instanceId?: string;
 }
 
 /**
