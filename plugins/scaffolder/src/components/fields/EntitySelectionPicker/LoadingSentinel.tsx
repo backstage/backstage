@@ -54,5 +54,19 @@ export function LoadingSentinel(props: {
     // sentinel visible, without crossing a threshold on the existing observer.
   }, [hasMore, loading, error, onLoadMore]);
 
-  return <div ref={ref} style={{ minHeight: 1 }} aria-hidden="true" />;
+  return (
+    <div
+      ref={ref}
+      // Reserve the same space while idle so loading never changes the layout.
+      style={{
+        height: 24,
+        lineHeight: '24px',
+        fontSize: '0.85em',
+        opacity: 0.6,
+      }}
+      aria-hidden="true"
+    >
+      {loading ? 'Loading…' : null}
+    </div>
+  );
 }

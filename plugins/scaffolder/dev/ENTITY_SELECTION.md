@@ -36,6 +36,8 @@ Try the single-owner, multiple-owner, and membership-filtered group scenarios,
 - More results load automatically when the bottom of the results approaches the
   viewport, including when the initial list is too short to scroll. A failed
   request shows a retry button in that same position instead of retrying repeatedly.
+- Loading feedback occupies a reserved slot at the bottom of the results, so
+  starting or completing a page request does not resize the popup.
 - `Clear selection` removes all selected values while keeping the popup and
   current filter open. It is disabled when nothing is selected.
 
