@@ -940,12 +940,13 @@ export class PgConnector implements Connector {
     if (pluginDbConfig.pluginDivisionMode === 'schema') {
       if (pluginDbConfig.ensureSchemaExists || pluginDbConfig.ensureExists) {
         try {
+          const schemaName = `${this.schemaPrefix}${pluginId}`;
           await ddlLimiter(() =>
             this.runAdminOperation(this.schemaAdminPool, admin =>
               ensurePgSchema(
                 admin,
                 this.config.getOptionalString('role'),
-                pluginId,
+                schemaName,
               ),
             ),
           );
