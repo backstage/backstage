@@ -219,12 +219,10 @@ export function resolveExtensionDefinitions(
     });
   }
 
-  if (extensions.length !== extensionDefinitionsById.size) {
-    throwOnDuplicateExtensionIds(
-      extensions.map(e => e.id),
-      context,
-    );
-  }
+  throwOnDuplicateExtensionIds(
+    extensions.map(e => e.id),
+    context,
+  );
 
   return { extensions, extensionDefinitionsById };
 }
@@ -238,16 +236,20 @@ export function throwOnDuplicateExtensionIds(
   extensionIds: string[],
   context: { namespace: string; featureType: string },
 ): void {
-  const duplicates = Array.from(
-    new Set(
-      extensionIds.filter((id, index) => extensionIds.indexOf(id) !== index),
-    ),
-  );
-  if (duplicates.length > 0) {
+  const seen = new Set<string>();
+  const duplicates = new Set<string>();
+  for (const id of extensionIds) {
+    if (seen.has(id)) {
+      duplicates.add(id);
+    } else {
+      seen.add(id);
+    }
+  }
+  if (duplicates.size > 0) {
     throw new Error(
       `${context.featureType} '${
         context.namespace
-      }' provided duplicate extensions: ${duplicates.join(', ')}`,
+      }' provided duplicate extensions: ${Array.from(duplicates).join(', ')}`,
     );
   }
 }
