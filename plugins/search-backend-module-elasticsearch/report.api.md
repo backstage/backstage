@@ -142,15 +142,19 @@ export type ElasticSearchClientOptions =
   | OpenSearchElasticSearchClientOptions;
 
 // @public
-export type ElasticSearchClientResponse = {
-  body: any;
+export type ElasticSearchClientResponse<TBody = any> = {
+  body: TBody;
+  headers: Record<string, any> | null;
+  statusCode: number | null;
+  warnings: string[] | null;
 };
 
 // @public
-export type ElasticSearchClientResponsePromise =
-  Promise<ElasticSearchClientResponse> & {
-    abort?: () => void;
-  };
+export type ElasticSearchClientResponsePromise<TBody = any> = Promise<
+  ElasticSearchClientResponse<TBody>
+> & {
+  abort?: () => void;
+};
 
 // @public
 export class ElasticSearchClientWrapper {
@@ -177,7 +181,7 @@ export class ElasticSearchClientWrapper {
   // (undocumented)
   indexExists(options: {
     index: string | string[];
-  }): ElasticSearchClientResponsePromise;
+  }): ElasticSearchClientResponsePromise<boolean>;
   // (undocumented)
   listIndices(options: { index: string }): ElasticSearchClientResponsePromise;
   // (undocumented)

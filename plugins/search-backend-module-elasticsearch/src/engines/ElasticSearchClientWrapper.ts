@@ -58,13 +58,18 @@ export type ElasticSearchIndexAction = {
  * The normalized response shape returned by the wrapped client methods.
  *
  * Both the Elasticsearch and Opensearch clients expose the response payload
- * under a `body` property, so consumers can read `response.body` regardless of
- * the configured provider.
+ * under a `body` property together with the HTTP status code, the response
+ * headers and any deprecation warnings, so consumers can read these regardless
+ * of the configured provider. The client specific `meta` envelope is not part
+ * of this type because its shape differs between the two clients.
  *
  * @public
  */
-export type ElasticSearchClientResponse = {
-  body: any;
+export type ElasticSearchClientResponse<TBody = any> = {
+  body: TBody;
+  headers: Record<string, any> | null;
+  statusCode: number | null;
+  warnings: string[] | null;
 };
 
 /**
@@ -77,10 +82,11 @@ export type ElasticSearchClientResponse = {
  *
  * @public
  */
-export type ElasticSearchClientResponsePromise =
-  Promise<ElasticSearchClientResponse> & {
-    abort?: () => void;
-  };
+export type ElasticSearchClientResponsePromise<TBody = any> = Promise<
+  ElasticSearchClientResponse<TBody>
+> & {
+  abort?: () => void;
+};
 
 /**
  * Adapts the provider-agnostic client options to the shape expected by the
@@ -224,7 +230,7 @@ export class ElasticSearchClientWrapper {
 
   indexExists(options: {
     index: string | string[];
-  }): ElasticSearchClientResponsePromise {
+  }): ElasticSearchClientResponsePromise<boolean> {
     if (this.openSearchClient) {
       return this.openSearchClient.indices.exists(options);
     }
