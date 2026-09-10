@@ -126,6 +126,11 @@
   cursor: default;
 }
 
+.option[data-disabled] .presentation,
+.option[data-disabled] .detail {
+  color: var(--bui-fg-disabled);
+}
+
 .optionText {
   display: grid;
   flex: 1;
