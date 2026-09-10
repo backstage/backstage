@@ -17,8 +17,13 @@ Try the single-owner, multiple-owner, and membership-filtered group scenarios,
 
 ## Interaction
 
-- Selected values are removable chips. Opening a chip or the selection button
-  shows a separate search field and paginated list.
+- The entire title row opens the popup, including when nothing is selected.
+  A visible popup title describes the action, separately from the field label.
+- Selected values below the title are links when the entity and its destination
+  are known, and plain text otherwise. They do not open the picker. The playground
+  links to mock catalog destinations and can render selections inline or as a list.
+- Inside the popup, selected values stay above the matching options even while
+  filtering, with explicit removal buttons. Each selection appears only once.
 - Typing only filters; choosing a row commits its canonical entity reference.
   Escape, Done, or clicking outside discards the search, not the selections.
 - When missing references are allowed, a valid name such as `freben` offers
@@ -35,6 +40,11 @@ The selection/popover primitives are composed from React Aria locally. Whether
 that generic composition belongs in BUI is an open design question, not a new
 Scaffolder API commitment. The palette switch previews BUI colors only; it is not
 a finished BUI component or a full accessibility certification.
+
+The internal experiment accepts `renderItem` for non-interactive selected-item
+content, `itemLayout` for inline/list layout, and `getItemHref` for caller-owned
+destinations. It owns the links, trigger, and removal controls itself. None of
+these props are exported as public APIs.
 
 Normal results use catalog-side search and filtering. Exact reference choices
 honor kind/name/namespace constraints, but intentionally bypass other filters

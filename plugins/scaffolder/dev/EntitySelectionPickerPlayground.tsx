@@ -23,7 +23,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, parseEntityRef } from '@backstage/catalog-model';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
   catalogApiRef,
@@ -63,6 +63,7 @@ export function EntitySelectionPickerPlayground() {
   const [frebenExists, setFrebenExists] = useState(false);
   const [allowMissing, setAllowMissing] = useState(true);
   const [palette, setPalette] = useState<'mui' | 'bui'>('mui');
+  const [itemLayout, setItemLayout] = useState<'inline' | 'list'>('inline');
   const [value, setValue] = useState<string[]>([]);
   const [legacyValue, setLegacyValue] = useState<string[]>([]);
   const calls = useRef<string[]>([]);
@@ -239,6 +240,17 @@ export function EntitySelectionPickerPlayground() {
           <FormControlLabel
             control={
               <Checkbox
+                checked={itemLayout === 'list'}
+                onChange={event =>
+                  setItemLayout(event.target.checked ? 'list' : 'inline')
+                }
+              />
+            }
+            label="List selected items"
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
                 checked={allowMissing}
                 onChange={event => setAllowMissing(event.target.checked)}
               />
@@ -278,6 +290,36 @@ export function EntitySelectionPickerPlayground() {
               </Typography>
               <EntitySelectionPicker
                 label={mode === 'groups' ? 'My groups' : 'Owners'}
+                popupTitle={
+                  mode === 'groups'
+                    ? 'Choose a group for this component'
+                    : 'Choose owners for this component'
+                }
+                itemLayout={itemLayout}
+                getItemHref={ref => {
+                  const { kind, namespace, name } = parseEntityRef(ref);
+                  return `/catalog/${encodeURIComponent(
+                    kind,
+                  )}/${encodeURIComponent(namespace)}/${encodeURIComponent(
+                    name,
+                  )}`;
+                }}
+                renderItem={item => (
+                  <div
+                    style={
+                      itemLayout === 'inline'
+                        ? {
+                            padding: '2px 10px',
+                            borderRadius: 16,
+                            background: '#e8eaf6',
+                            color: '#283593',
+                          }
+                        : undefined
+                    }
+                  >
+                    {item.label}
+                  </div>
+                )}
                 value={value}
                 onChange={setValue}
                 catalogFilter={filter}

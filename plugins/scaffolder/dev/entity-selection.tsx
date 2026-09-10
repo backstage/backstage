@@ -18,14 +18,46 @@ import { createApp } from '@backstage/app-defaults';
 import { AppRouter } from '@backstage/core-app-api';
 import { createRoot } from 'react-dom/client';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import Typography from '@material-ui/core/Typography';
+import { Link, Route, Routes, useParams } from 'react-router-dom';
+import { Content, Header, Page } from '@backstage/core-components';
 import { EntitySelectionPickerPlayground } from './EntitySelectionPickerPlayground';
 
 const app = createApp();
 const App = app.createRoot(
   <AppRouter>
     <CssBaseline />
-    <EntitySelectionPickerPlayground />
+    <Routes>
+      <Route path="/" element={<EntitySelectionPickerPlayground />} />
+      <Route
+        path="/catalog/:kind/:namespace/:name"
+        element={<MockCatalogDestination />}
+      />
+    </Routes>
   </AppRouter>,
 );
 
 createRoot(document.getElementById('root')!).render(<App />);
+
+function MockCatalogDestination() {
+  const { kind, namespace, name } = useParams();
+  return (
+    <Page themeId="tool">
+      <Header title={name ?? 'Entity'} subtitle="Mock catalog destination" />
+      <Content>
+        <Typography paragraph>
+          The selected item links to its entity, independently of editing the
+          selection.
+        </Typography>
+        <pre>
+          {kind}:{namespace}/{name}
+        </pre>
+        <Typography paragraph>
+          This mock-backed playground only demonstrates navigation; an
+          application would open its catalog entity page.
+        </Typography>
+        <Link to="/">Back to the picker playground</Link>
+      </Content>
+    </Page>
+  );
+}

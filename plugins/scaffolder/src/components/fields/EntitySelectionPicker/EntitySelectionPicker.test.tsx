@@ -51,6 +51,47 @@ const entities = Array.from(
 );
 
 describe('EntitySelectionPicker', () => {
+  it('opens from the title and keeps linked selections separate from filtered options', async () => {
+    const { onChange } = await setup({
+      multiple: true,
+      value: ['user:default/freben', 'user:default/missing'],
+      popupTitle: 'Choose owners for this component',
+      getItemHref: ref => `/entities/${encodeURIComponent(ref)}`,
+      renderItem: item => <strong>Owner: {item.label}</strong>,
+      itemLayout: 'list',
+    });
+    expect(
+      await screen.findByRole('link', { name: 'Owner: Fredrik Adelöw' }),
+    ).toHaveAttribute('href', '/entities/user%3Adefault%2Ffreben');
+    expect(screen.getByText('Owner: User missing')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', { name: 'Owner: User missing' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: /Remove/ }),
+    ).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    expect(
+      screen.getByRole('heading', { name: 'Choose owners for this component' }),
+    ).toBeVisible();
+    const selected = screen.getByRole('list', { name: 'Selected Owners' });
+    expect(within(selected).getAllByRole('listitem')).toHaveLength(2);
+    await userEvent.type(screen.getByRole('searchbox'), 'person-30');
+    await screen.findByRole('option', { name: /person-30/ });
+    expect(within(selected).getByText('Fredrik Adelöw')).toBeInTheDocument();
+    expect(within(selected).getByText('User missing')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('option', { name: /Fredrik/ }),
+    ).not.toBeInTheDocument();
+    await userEvent.click(
+      within(selected).getByRole('button', { name: 'Remove User missing' }),
+    );
+    expect(onChange).toHaveBeenLastCalledWith(['user:default/freben']);
+    expect(screen.getByRole('searchbox')).toHaveFocus();
+    await userEvent.keyboard('{Escape}');
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
   async function setup(
     props: Partial<EntitySelectionPickerProps> = {},
     items = [entity, ...entities],
@@ -63,6 +104,8 @@ describe('EntitySelectionPicker', () => {
       return (
         <EntitySelectionPicker
           label="Owners"
+          popupTitle="Choose owners for this component"
+          getItemHref={ref => `/entities/${encodeURIComponent(ref)}`}
           defaultKind="User"
           {...props}
           value={value}
@@ -73,21 +116,55 @@ describe('EntitySelectionPicker', () => {
         />
       );
     }
-    await renderInTestApp(
+    const tree = (api = catalogApi) => (
       <TestApiProvider
         apis={[
-          [catalogApiRef, catalogApi],
+          [catalogApiRef, api],
           [
             entityPresentationApiRef,
-            DefaultEntityPresentationApi.create({ catalogApi }),
+            DefaultEntityPresentationApi.create({ catalogApi: api }),
           ],
         ]}
       >
         <Picker />
-      </TestApiProvider>,
+      </TestApiProvider>
     );
-    return { onChange, getEntitiesByRefs };
+    const rendered = await renderInTestApp(tree());
+    return {
+      onChange,
+      getEntitiesByRefs,
+      updateCatalog: (api: typeof catalogApi) => rendered.rerender(tree(api)),
+    };
   }
+
+  it('updates links when selected entities appear or disappear but not when lookups fail', async () => {
+    const { onChange, updateCatalog } = await setup({
+      value: ['user:default/freben'],
+    });
+    await screen.findByRole('link', { name: 'Fredrik Adelöw' });
+    const failedApi = catalogApiMock({ entities: [] });
+    failedApi.getEntitiesByRefs = jest
+      .fn()
+      .mockRejectedValue(new Error('Unavailable'));
+    failedApi.queryEntities = jest
+      .fn()
+      .mockRejectedValue(new Error('Unavailable'));
+    updateCatalog(failedApi);
+    await act(async () => {});
+    expect(
+      screen.getByRole('link', { name: 'Fredrik Adelöw' }),
+    ).toBeInTheDocument();
+    updateCatalog(catalogApiMock({ entities: [] }));
+    await waitFor(() =>
+      expect(screen.queryByRole('link')).not.toBeInTheDocument(),
+    );
+    expect(screen.getByText('Fredrik Adelöw')).toBeInTheDocument();
+    updateCatalog(catalogApiMock({ entities: [entity] }));
+    expect(
+      await screen.findByRole('link', { name: 'Fredrik Adelöw' }),
+    ).toBeInTheDocument();
+    expect(onChange).not.toHaveBeenCalled();
+  });
 
   it.each(['mui', 'bui'] as const)(
     'separates selection from search and does not commit dismissed input (%s)',
@@ -97,26 +174,20 @@ describe('EntitySelectionPicker', () => {
         value: ['user:default/freben'],
       });
       expect(
-        await screen.findByRole('button', { name: 'Change Fredrik Adelöw' }),
+        await screen.findByRole('link', { name: 'Fredrik Adelöw' }),
       ).toBeInTheDocument();
       expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Choose Owners' }),
-      );
+      await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
       const search = screen.getByRole('searchbox');
       await userEvent.type(search, 'someone else');
       await userEvent.keyboard('{Escape}');
       expect(onChange).not.toHaveBeenCalled();
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
       await waitFor(() =>
-        expect(
-          screen.getByRole('button', { name: 'Choose Owners' }),
-        ).toHaveFocus(),
+        expect(screen.getByRole('button', { name: 'Owners' })).toHaveFocus(),
       );
 
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Change Fredrik Adelöw' }),
-      );
+      await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
       expect(screen.getByRole('searchbox')).toHaveValue('');
       await userEvent.type(screen.getByRole('searchbox'), 'person-30');
       await userEvent.click(
@@ -124,13 +195,12 @@ describe('EntitySelectionPicker', () => {
       );
       expect(onChange).toHaveBeenLastCalledWith(['user:default/person-30']);
       expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Choose Owners' }),
-      );
+      await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
       await userEvent.type(screen.getByRole('searchbox'), 'person-30');
-      await userEvent.click(
-        await screen.findByRole('option', { name: /person-30/ }),
-      );
+      expect(
+        screen.getByRole('button', { name: 'Remove person-30' }),
+      ).toBeInTheDocument();
+      await userEvent.click(screen.getByRole('button', { name: 'Done' }));
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
       expect(onChange).toHaveBeenLastCalledWith(['user:default/person-30']);
     },
@@ -146,9 +216,7 @@ describe('EntitySelectionPicker', () => {
       },
       [],
     );
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Choose Owners' }),
-    );
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
     await userEvent.type(screen.getByRole('searchbox'), 'freben');
     const user = await screen.findByRole('option', { name: /User freben/ });
     expect(within(user).getByText(/Not found in catalog/)).toBeInTheDocument();
@@ -161,28 +229,25 @@ describe('EntitySelectionPicker', () => {
     await userEvent.type(screen.getByRole('searchbox'), 'another');
     await userEvent.keyboard('{Escape}');
     expect(
-      screen.getByRole('button', { name: 'Change User freben' }),
+      within(screen.getByRole('list', { name: 'Current Owners' })).getByText(
+        'User freben',
+      ),
     ).toBeInTheDocument();
 
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Choose Owners' }),
-    );
-    await userEvent.keyboard('{Escape}');
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
     expect(onChange).toHaveBeenCalledTimes(1);
     await userEvent.click(
       screen.getByRole('button', { name: 'Remove User freben' }),
     );
     expect(onChange).toHaveBeenLastCalledWith([]);
-    expect(screen.getByRole('button', { name: 'Choose Owners' })).toHaveFocus();
+    expect(screen.getByRole('searchbox')).toHaveFocus();
   });
 
   it('does not label a failed lookup as a missing entity or offer duplicate real and virtual refs', async () => {
     const { getEntitiesByRefs, onChange } = await setup({
       allowMissingEntities: true,
     });
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Choose Owners' }),
-    );
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
     await userEvent.type(screen.getByRole('searchbox'), 'freben');
     await screen.findByRole('option', { name: /Fredrik Adelöw/ });
     // Wait for the debounced exact lookup, in addition to catalog search.
@@ -210,9 +275,7 @@ describe('EntitySelectionPicker', () => {
       { multiple: true, value: ['user:default/person-44'], maxItems: 2 },
       entities,
     );
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Choose Owners' }),
-    );
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
     await userEvent.click(
       await screen.findByRole('button', { name: 'Load more' }),
     );
@@ -227,7 +290,9 @@ describe('EntitySelectionPicker', () => {
       'aria-disabled',
       'true',
     );
-    await userEvent.click(screen.getByRole('option', { name: /person-20/ }));
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Remove person-20' }),
+    );
     expect(onChange).toHaveBeenLastCalledWith(['user:default/person-44']);
   });
 
@@ -236,12 +301,11 @@ describe('EntitySelectionPicker', () => {
       value: ['legacy value'],
       disabled: true,
     });
+    expect(screen.getByRole('button', { name: 'Owners' })).toBeDisabled();
+    expect(screen.getByText('legacy value')).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Choose Owners' }),
-    ).toBeDisabled();
-    expect(
-      screen.getByRole('button', { name: 'Remove legacy value' }),
-    ).toBeDisabled();
+      screen.queryByRole('button', { name: /Remove/ }),
+    ).not.toBeInTheDocument();
     await act(async () => {});
     expect(onChange).not.toHaveBeenCalled();
     expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
