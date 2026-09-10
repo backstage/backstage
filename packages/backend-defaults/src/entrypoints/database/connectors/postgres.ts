@@ -691,6 +691,7 @@ export function computePgPluginConfig(
   config: Config,
   pluginId: string,
   prefix: string,
+  schemaPrefix: string = '',
 ): PgPluginDatabaseConfig {
   // Client type
   const pluginClient = config.getOptionalString(
