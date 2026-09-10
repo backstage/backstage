@@ -1067,6 +1067,7 @@ describe('postgres', () => {
       const connector = new PgConnector(
         createConnectorConfig(),
         'backstage_plugin_',
+        '',
         { ensureDatabaseExists },
       );
 
@@ -1092,6 +1093,7 @@ describe('postgres', () => {
       const connector = new PgConnector(
         createConnectorConfig(),
         'backstage_plugin_',
+        '',
         { ensureDatabaseExists },
       );
 
@@ -1122,6 +1124,7 @@ describe('postgres', () => {
           },
         }),
         'backstage_plugin_',
+        '',
         { createAdminClient, adminPoolIdleTimeoutMillis: 10_000 },
       );
 
@@ -1152,6 +1155,7 @@ describe('postgres', () => {
           ensureSchemaExists: true,
         }),
         'backstage_plugin_',
+        '',
         { createAdminClient, adminPoolIdleTimeoutMillis: 10_000 },
       );
 
@@ -1204,6 +1208,7 @@ describe('postgres', () => {
           plugin: { plugin1: { connection: { database: 'database1' } } },
         }),
         'backstage_plugin_',
+        '',
         { createAdminClient },
       );
 
@@ -1236,6 +1241,7 @@ describe('postgres', () => {
           plugin: { plugin1: { connection: { database: 'database1' } } },
         }),
         'backstage_plugin_',
+        '',
         { createAdminClient },
       );
 
@@ -1277,6 +1283,7 @@ describe('postgres', () => {
           ensureSchemaExists: true,
         }),
         'backstage_plugin_',
+        '',
         { createAdminClient },
       );
       const client = await connector.getClient('plugin1', deps);
