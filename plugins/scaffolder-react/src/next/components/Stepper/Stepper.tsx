@@ -243,6 +243,42 @@ export const Stepper = (stepperProps: StepperProps) => {
     }
   }, [activeStep]);
 
+  // Without this, activeStep lives only in React state: the stepper never
+  // pushes a browser history entry, so the browser's (or a mouse's)
+  // back/forward buttons skip the whole wizard instead of stepping back and
+  // forward like the on-page Back/Next buttons do.
+  const isPopStateStepRef = useRef(false);
+
+  useEffect(() => {
+    if (isPopStateStepRef.current) {
+      // This change came from the popstate listener below, not from
+      // handleNext/handleBack/a step-label click — the browser already
+      // moved the history pointer, so pushing again would create a
+      // duplicate entry.
+      isPopStateStepRef.current = false;
+      return;
+    }
+    window.history.pushState({ scaffolderStep: activeStep }, '');
+  }, [activeStep]);
+
+  useEffect(() => {
+    window.history.replaceState({ scaffolderStep: 0 }, '');
+
+    const onPopState = (event: PopStateEvent) => {
+      const step = (event.state as { scaffolderStep?: number } | null)
+        ?.scaffolderStep;
+      // No `scaffolderStep` means the entry predates the wizard (or belongs
+      // to a different page) — let the browser navigate away as normal.
+      if (typeof step === 'number') {
+        isPopStateStepRef.current = true;
+        setActiveStep(step);
+      }
+    };
+
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
   const mergedUiSchema = merge({}, propUiSchema, currentStep?.uiSchema);
 
   const [isCreating, setIsCreating] = useState(false);

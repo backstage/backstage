@@ -789,6 +789,62 @@ describe('Stepper', () => {
     unmount();
   });
 
+  describe('browser back/forward navigation', () => {
+    it('should step back and forward through the wizard on history navigation, matching the Back/Next buttons', async () => {
+      const manifest: TemplateParameterSchema = {
+        steps: [
+          {
+            title: 'Step 1',
+            schema: { properties: { name: { type: 'string' } } },
+          },
+          {
+            title: 'Step 2',
+            schema: { properties: { description: { type: 'string' } } },
+          },
+        ],
+        title: 'History navigation test',
+      };
+
+      const { getByRole, queryByRole } = await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+        </SecretsContextProvider>,
+      );
+
+      expect(getByRole('textbox', { name: 'name' })).toBeInTheDocument();
+
+      await act(async () => {
+        fireEvent.click(getByRole('button', { name: 'Next' }));
+      });
+
+      expect(getByRole('textbox', { name: 'description' })).toBeInTheDocument();
+
+      // Simulate the browser's (or a mouse's) back button: it pops the
+      // history entry the Next click pushed and fires `popstate`.
+      await act(async () => {
+        window.history.back();
+      });
+
+      await waitFor(() => {
+        expect(getByRole('textbox', { name: 'name' })).toBeInTheDocument();
+      });
+      expect(
+        queryByRole('textbox', { name: 'description' }),
+      ).not.toBeInTheDocument();
+
+      // Forward should restore the step Next led to, same as clicking it.
+      await act(async () => {
+        window.history.forward();
+      });
+
+      await waitFor(() => {
+        expect(
+          getByRole('textbox', { name: 'description' }),
+        ).toBeInTheDocument();
+      });
+    });
+  });
+
   describe('Scaffolder Layouts', () => {
     it('should render the step in the scaffolder layout', async () => {
       const ScaffolderLayout: LayoutTemplate = ({ properties }) => (
