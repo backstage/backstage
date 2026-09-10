@@ -1814,6 +1814,38 @@ describe('computePgPluginConfig', () => {
       });
     });
 
+    it('applies schemaPrefix to searchPath in schema mode', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost', database: 'shared_db' },
+        pluginDivisionMode: 'schema',
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix, 'test_');
+
+      expect(result.databaseClientOverrides).toEqual({
+        connection: { database: 'shared_db' },
+        searchPath: ['test_catalog'],
+      });
+    });
+
+    it('throws error when schema name exceeds 63 characters', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+        pluginDivisionMode: 'schema',
+      });
+
+      expect(() => {
+        computePgPluginConfig(
+          config,
+          'catalog',
+          prefix,
+          'this_is_a_very_long_prefix_that_will_exceed_the_limit_when_combined_',
+        );
+      }).toThrow(/exceeds the 63-character limit/);
+    });
+
     it('returns empty object when no databaseName in schema mode', () => {
       const config = new ConfigReader({
         client: 'pg',
