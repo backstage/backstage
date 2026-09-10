@@ -304,22 +304,6 @@ export function EntitySelectionPickerPlayground() {
                     name,
                   )}`;
                 }}
-                renderItem={item => (
-                  <div
-                    style={
-                      itemLayout === 'inline'
-                        ? {
-                            padding: '2px 10px',
-                            borderRadius: 16,
-                            background: '#e8eaf6',
-                            color: '#283593',
-                          }
-                        : undefined
-                    }
-                  >
-                    {item.label}
-                  </div>
-                )}
                 value={value}
                 onChange={setValue}
                 catalogFilter={filter}

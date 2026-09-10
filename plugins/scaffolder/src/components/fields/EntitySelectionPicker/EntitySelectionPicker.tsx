@@ -19,6 +19,7 @@ import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { makeStyles } from '@material-ui/core/styles';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { Link } from '@backstage/core-components';
+import { EntityDisplayName } from '@backstage/plugin-catalog-react';
 import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Autocomplete,
@@ -243,6 +244,7 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
       const ref = stringifyEntityRef(entity);
       result.set(ref, {
         ref,
+        entity,
         label:
           options.entityRefToPresentation.get(ref)?.primaryTitle ||
           referenceLabel(ref),
@@ -252,8 +254,22 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
       if (!result.has(candidate.ref)) result.set(candidate.ref, candidate);
     return Array.from(result.values());
   }, [options.entities, options.entityRefToPresentation, candidates.options]);
+  const entitiesByRef = useMemo(
+    () =>
+      new Map(
+        [...options.entities, ...options.selectedEntities].map(entity => [
+          stringifyEntityRef(entity),
+          entity,
+        ]),
+      ),
+    [options.entities, options.selectedEntities],
+  );
   const selections = value.map(ref => ({
     ref,
+    entity:
+      entitiesByRef.get(ref) ??
+      rows.find(row => row.ref === ref)?.entity ??
+      selectionSnapshots.current.get(ref)?.entity,
     label:
       options.entityRefToPresentation.get(ref)?.primaryTitle ||
       rows.find(row => row.ref === ref)?.label ||
@@ -438,7 +454,13 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
                             {isSelected ? '✓' : null}
                           </div>
                           <div className={classes.optionText}>
-                            <Text>{row.label}</Text>
+                            <Text>
+                              {row.entity && !row.missing ? (
+                                <EntityDisplayName entityRef={row.entity} />
+                              ) : (
+                                row.label
+                              )}
+                            </Text>
                             <Text slot="description" className={classes.detail}>
                               {row.ref}
                               {row.missing
@@ -530,9 +552,15 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
             const href = item.missing
               ? undefined
               : props.getItemHref?.(item.ref);
+            const defaultContent =
+              item.entity && !item.missing ? (
+                <EntityDisplayName entityRef={item.entity} />
+              ) : (
+                item.label
+              );
             const content = props.renderItem
               ? props.renderItem(item)
-              : item.label;
+              : defaultContent;
             return (
               <li key={item.ref} className={classes.item}>
                 {href ? <Link to={href}>{content}</Link> : content}

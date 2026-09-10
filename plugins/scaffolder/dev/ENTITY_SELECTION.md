@@ -22,6 +22,9 @@ Try the single-owner, multiple-owner, and membership-filtered group scenarios,
 - Selected values below the title are links when the entity and its destination
   are known, and plain text otherwise. They do not open the picker. The playground
   links to mock catalog destinations and can render selections inline or as a list.
+- Real entities use the standard compact entity display name, including the
+  presentation API's icon and tooltip. Popup rows are not links, and missing
+  references keep their plain-text labels. No chip or extra padding is added.
 - The popup uses one scrollable list. Existing selections are placed first when
   it opens; selecting or removing an item does not move any rows until reopening.
   Selected rows show a checkmark and removal button in reserved spaces, without
