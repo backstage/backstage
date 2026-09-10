@@ -819,8 +819,7 @@ describe('Stepper', () => {
 
       expect(getByRole('textbox', { name: 'description' })).toBeInTheDocument();
 
-      // Simulate the browser's (or a mouse's) back button: it pops the
-      // history entry the Next click pushed and fires `popstate`.
+      // Simulate the browser back button.
       await act(async () => {
         window.history.back();
       });
@@ -832,7 +831,7 @@ describe('Stepper', () => {
         queryByRole('textbox', { name: 'description' }),
       ).not.toBeInTheDocument();
 
-      // Forward should restore the step Next led to, same as clicking it.
+      // And forward.
       await act(async () => {
         window.history.forward();
       });
