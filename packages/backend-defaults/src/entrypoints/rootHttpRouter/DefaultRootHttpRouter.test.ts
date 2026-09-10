@@ -38,6 +38,7 @@ describe('DefaultRootHttpRouter', () => {
     [['/a'], '/a', '/a'],
     [['/a'], '/a/b', '/a'],
     [['/a/b'], '/a', '/a/b'],
+    [['/api/Catalog'], '/api/catalog', '/api/Catalog'],
   ])(
     `find conflict when existing paths %s, adds %s`,
     (existing, added, conflict) => {

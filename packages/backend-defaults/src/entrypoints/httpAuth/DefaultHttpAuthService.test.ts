@@ -15,7 +15,7 @@
  */
 
 import { DefaultHttpAuthService } from './httpAuthServiceFactory';
-import { mockServices } from '@backstage/backend-test-utils';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { createRequest } from 'node-mocks-http';
 
 describe('DefaultHttpAuthService', () => {
@@ -38,5 +38,34 @@ describe('DefaultHttpAuthService', () => {
       createRequest({ headers: { test: 'mock-user-token' } }),
     );
     expect(auth.authenticate).toHaveBeenCalledWith('mock-user-token');
+  });
+
+  it('keeps credentials scoped to each service instance', async () => {
+    const request = createRequest({
+      headers: {
+        authorization: mockCredentials.service.header({
+          onBehalfOf: mockCredentials.service('external:test'),
+          targetPluginId: 'Catalog',
+        }),
+      },
+    });
+    const firstService = DefaultHttpAuthService.create({
+      discovery: mockServices.discovery(),
+      auth: mockServices.auth({ pluginId: 'Catalog' }),
+      pluginId: 'Catalog',
+    });
+    const secondAuth = mockServices.auth({ pluginId: 'catalog' });
+    const secondAuthenticate = jest.spyOn(secondAuth, 'authenticate');
+    const secondService = DefaultHttpAuthService.create({
+      discovery: mockServices.discovery(),
+      auth: secondAuth,
+      pluginId: 'catalog',
+    });
+
+    await expect(firstService.credentials(request)).resolves.toEqual(
+      mockCredentials.service('external:test'),
+    );
+    await expect(secondService.credentials(request)).rejects.toThrow();
+    expect(secondAuthenticate).toHaveBeenCalledTimes(1);
   });
 });
