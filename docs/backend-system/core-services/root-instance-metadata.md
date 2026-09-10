@@ -5,7 +5,9 @@ sidebar_label: Root Instance Metadata
 description: Documentation for the Root Instance Metadata service
 ---
 
-The root instance metadata service provides information about the running Backstage backend instance, including its globally unique instance ID and a list of all installed backend plugins.
+The root instance metadata service provides information about a specific running Backstage backend instance, including its globally unique instance ID and a list of all installed backend plugins.
+
+A _backend instance_ is the individual `Backend` object returned by each call to `createBackend` or `createSpecializedBackend`. Every backend instance has its own ID, including multiple instances created in the same process. An instance ID must never be shared with or reused for another backend instance, even after the original instance has stopped.
 
 :::note
 
@@ -41,21 +43,21 @@ createBackendPlugin({
 });
 ```
 
-The instance ID is stable for the lifetime of the backend instance and should be treated as an opaque string. By default, each backend instance is assigned a random UUID.
+The instance ID is stable for the lifetime of the backend instance and should be treated as an opaque string. By default, a new random UUID is generated separately for every backend instance that is created.
 
 ## Setting the instance ID
 
-You can provide the instance ID when you create the backend. This is useful when your deployment environment already provides a suitable identifier, such as a Kubernetes pod UID.
+You can provide the instance ID when you create the backend. This is useful when your deployment environment assigns a fresh, globally unique identifier to every backend instance.
 
 ```ts
 import { createBackend } from '@backstage/backend-defaults';
 
 const backend = createBackend({
-  instanceId: process.env.POD_UID,
+  instanceId: process.env.BACKSTAGE_INSTANCE_ID,
 });
 ```
 
-A configured instance ID must be globally unique. Backstage does not validate the uniqueness of provided IDs.
+A configured instance ID must be globally unique and must not be reused by another backend instance. Backstage does not validate the uniqueness of provided IDs, so the caller is responsible for upholding this requirement.
 
 ## Dynamic plugin registration
 

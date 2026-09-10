@@ -66,10 +66,11 @@ export interface CreateSpecializedBackendOptions {
   extensionPointFactoryMiddleware?: ExtensionPointFactoryMiddleware[];
 
   /**
-   * The globally unique identifier of this Backstage backend instance.
+   * The globally unique identifier of this specific Backstage backend
+   * instance.
    *
-   * If omitted, a UUID is generated. Any provided value must be globally
-   * unique.
+   * If omitted, a UUID is generated. Any provided value must not be used by
+   * any other backend instance, including after this instance has stopped.
    */
   instanceId?: string;
 }
