@@ -268,11 +268,13 @@ export class DatabaseManager {
     const databaseConfig = config.getConfig('backend.database');
     const prefix =
       databaseConfig.getOptionalString('prefix') || 'backstage_plugin_';
+    const schemaPrefix =
+      databaseConfig.getOptionalString('schemaPrefix') || '';
     return new DatabaseManager(
       new DatabaseManagerImpl(
         databaseConfig,
         {
-          pg: new PgConnector(databaseConfig, prefix),
+          pg: new PgConnector(databaseConfig, prefix, schemaPrefix),
           sqlite3: new Sqlite3Connector(databaseConfig),
           'better-sqlite3': new Sqlite3Connector(databaseConfig),
           mysql: new MysqlConnector(databaseConfig, prefix),
