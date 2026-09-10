@@ -807,6 +807,7 @@ export function computePgPluginConfig(
 export class PgConnector implements Connector {
   private readonly config: Config;
   private readonly prefix: string;
+  private readonly schemaPrefix: string;
   private readonly databaseEnsureCache = new Map<string, Promise<void>>();
   private readonly customEnsureDatabaseExists?: typeof ensurePgDatabaseExists;
   private readonly databaseAdminPool: PgAdminPool;
@@ -815,6 +816,7 @@ export class PgConnector implements Connector {
   constructor(
     config: Config,
     prefix: string,
+    schemaPrefix: string,
     options: {
       ensureDatabaseExists?: typeof ensurePgDatabaseExists;
       createAdminClient?: (overrides: Knex.Config) => Promise<Knex>;
@@ -823,6 +825,7 @@ export class PgConnector implements Connector {
   ) {
     this.config = config;
     this.prefix = prefix;
+    this.schemaPrefix = schemaPrefix;
     this.customEnsureDatabaseExists = options.ensureDatabaseExists;
 
     const createAdminClient =
