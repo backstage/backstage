@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { LookupStrategy } from '../api/ConnectionType';
+import type { ConnectionLookupStrategy } from '../api/ConnectionType';
 import { connectionTypes } from '../definitions/types';
 import type {
   ConnectionTypeKey,
@@ -40,10 +40,13 @@ export function isConnectionTypeKey(
  * The connection field that holds the identity of each connection, per lookup
  * strategy, used to key connections of multiton connection types. Mirrors the
  * `identityField` of each strategy definition in the connections-node
- * package's lookupStrategies; the Record over LookupStrategy keeps both sides
+ * package's lookupStrategies; the Record over ConnectionLookupStrategy keeps both sides
  * exhaustive.
  */
-export const identityFields: Record<LookupStrategy, string | undefined> = {
+export const identityFields: Record<
+  ConnectionLookupStrategy,
+  string | undefined
+> = {
   host: 'host',
   aws: undefined,
 };

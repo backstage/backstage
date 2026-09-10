@@ -254,7 +254,12 @@ function assignDefaultAuthTitles(connections: ConfiguredConnection[]): void {
  */
 export function buildConnectionsFromConfig(options: {
   config: Config;
-  logger?: { debug(message: string): void; warn(message: string): void };
+  logger?: {
+    error(message: string): void;
+    warn(message: string): void;
+    info(message: string): void;
+    debug(message: string): void;
+  };
 }): ConfiguredConnection[] {
   const { config, logger } = options;
 

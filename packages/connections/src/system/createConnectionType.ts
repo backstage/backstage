@@ -17,9 +17,8 @@ import { z } from 'zod/v4';
 import { InputError } from '@backstage/errors';
 import type { Expand, JsonObject } from '@backstage/types';
 import type {
-  ConnectionAuthMatch,
   ConnectionType,
-  LookupStrategy,
+  ConnectionLookupStrategy,
   LookupStrategyQuery,
   MatchAuth,
   PortableSchema,
@@ -85,7 +84,7 @@ export function createConnectionType<
   TType extends string,
   TConfigSchema extends z.ZodObject,
   const TAuthMethods extends readonly ConnectionAuthMethodSchema[],
-  TLookupStrategy extends LookupStrategy = 'host',
+  TLookupStrategy extends ConnectionLookupStrategy = 'host',
   TCardinality extends 'singleton' | 'multiton' = 'multiton',
 >({
   configSchema,
@@ -115,7 +114,7 @@ export function createConnectionType<
     config: ConfigFromSchema<TConfigSchema>;
     auth: readonly Expand<
       ConfiguredConnectionAuthFromSchema<TAuthMethods[number]> & {
-        match?: ConnectionAuthMatch;
+        match?: { plugins: string[] };
       }
     >[];
   }) => void;
