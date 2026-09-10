@@ -30,15 +30,17 @@ Try the single-owner, multiple-owner, and membership-filtered group scenarios,
   and surrounding controls rather than around the scroll area. Existing selections are placed first when
   it opens; selecting or removing an item does not move any rows until reopening.
   Selected rows show a checkmark and removal button in reserved spaces, without
-  changing the row layout. Filtering applies to both selected and unselected rows.
-- Typing only filters; choosing a row commits its canonical entity reference.
+  changing the row layout.
+- Typing starts a server-side search; it does not locally filter or reorder rows.
+  Choosing a row commits its canonical entity reference.
   Escape, Done, or clicking outside discards the search, not the selections.
 - When missing references are allowed, a valid name such as `freben` offers
   explicit User and Group choices. Exact lookups distinguish missing entities
   from entities outside the current page, and errors do not create missing choices.
-- Picked references remain available for the rest of the popup session, including
+- Picked references are remembered for the rest of the popup session, including
   after deselection, even when absent from the catalog or the current page.
-  Selected missing references remain removable after searching or reopening.
+  Clearing the search or reopening makes these references available again.
+  Nonempty searches show only server matches and resolved reference choices.
   Toggle `User freben exists in catalog` to see a saved selection acquire its
   catalog display name without changing its reference.
 - Multi-selection preserves off-page choices and enforces its maximum of three.
@@ -50,12 +52,14 @@ Try the single-owner, multiple-owner, and membership-filtered group scenarios,
 - On the first load, a spinner replaces the search icon without changing layout.
   The list does not claim there are no matches
   before both catalog search and reference lookups finish.
-- After typing, previous catalog results and reference choices stay visible while
-  new results are fetched, with the same search-field spinner. Rows remain
-  selectable and removable throughout. Lookup failures retain previous choices
-  with an error message, rather than presenting unchecked references as missing.
-  Clearing the filter discards previous reference choices unless they have been
-  picked during this popup session; closing also discards that session history.
+- After typing, the complete visible list stays unchanged while new results are
+  fetched, with the same search-field spinner. Catalog search, exact-reference
+  lookups, and presentation work must all succeed before the latest search replaces
+  that snapshot. Older responses cannot overwrite it. Rows remain selectable and
+  removable throughout; only their selection indicators change immediately.
+  Failure retains the complete previous list and offers an explicit retry.
+  Clearing the filter follows the same publication rule; closing discards the
+  popup's selection history.
 - Loading another page keeps current rows selectable and appends the new results.
 - `Clear selection` removes all selected values while keeping the popup and
   current filter open. It is disabled when nothing is selected.

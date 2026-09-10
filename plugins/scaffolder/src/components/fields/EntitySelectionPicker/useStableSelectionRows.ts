@@ -14,68 +14,76 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef } from 'react';
-import { EntitySelectionOption } from './useEntityRefCandidates';
+import { useEffect, useRef, useState } from 'react';
+import { EntitySelectionOption } from './entitySelectionOptions';
 
-/** Keep selected rows and their positions for the lifetime of an open picker. */
+type Snapshot = { rows: EntitySelectionOption[]; search: string };
+
+/** Only a committed result or reopening may change the displayed rows. */
 export function useStableSelectionRows(props: {
-  rows: EntitySelectionOption[];
+  snapshot: Snapshot;
   selections: EntitySelectionOption[];
-  search: string;
   open: boolean;
 }) {
-  const { rows, selections, search, open } = props;
+  const { snapshot, selections, open } = props;
+  const [items, setItems] = useState<EntitySelectionOption[]>([]);
   const session = useRef({
+    source: snapshot,
     initialRefs: [] as string[],
     selections: new Map<string, EntitySelectionOption>(),
     search: '',
     order: [] as string[],
   });
-  const retained = new Map([
-    ...session.current.selections,
-    ...selections.map(item => [item.ref, item] as const),
-  ]);
-  const incoming = new Map(rows.map(item => [item.ref, item]));
-  const matches = (item: EntitySelectionOption) =>
-    `${item.label} ${item.ref}`
-      .toLocaleLowerCase('en-US')
-      .includes(search.trim().toLocaleLowerCase('en-US'));
-  const visible = new Map<string, EntitySelectionOption>();
-  for (const ref of session.current.initialRefs) {
-    const item = incoming.get(ref) ?? retained.get(ref);
-    if (item && (incoming.has(ref) || matches(item))) visible.set(ref, item);
-  }
-  for (const item of rows) visible.set(item.ref, item);
-  for (const item of retained.values()) {
-    if (!visible.has(item.ref) && matches(item)) visible.set(item.ref, item);
-  }
-  const ranks = new Map(
-    (session.current.search === search ? session.current.order : []).map(
-      (ref, index) => [ref, index],
-    ),
-  );
-  const items = Array.from(visible.values()).sort(
-    (a, b) =>
-      (ranks.get(a.ref) ?? ranks.size) - (ranks.get(b.ref) ?? ranks.size),
-  );
+  const publish = (next: Snapshot) => {
+    const current = session.current;
+    const incoming = new Map(next.rows.map(row => [row.ref, row]));
+    const visible = new Map<string, EntitySelectionOption>();
+    for (const ref of current.initialRefs) {
+      const item =
+        incoming.get(ref) ??
+        (!next.search ? current.selections.get(ref) : undefined);
+      if (item) visible.set(ref, item);
+    }
+    for (const row of next.rows) visible.set(row.ref, row);
+    // An unfiltered list includes remembered selections. A search uses exactly
+    // the server results and resolved candidates, with no client text matching.
+    if (!next.search)
+      for (const row of current.selections.values()) {
+        if (!visible.has(row.ref)) visible.set(row.ref, row);
+      }
+    const ranks = new Map(
+      (current.search === next.search ? current.order : []).map(
+        (ref, index) => [ref, index],
+      ),
+    );
+    const rows = [...visible.values()].sort(
+      (a, b) =>
+        (ranks.get(a.ref) ?? ranks.size) - (ranks.get(b.ref) ?? ranks.size),
+    );
+    current.search = next.search;
+    current.order = rows.map(row => row.ref);
+    setItems(rows);
+  };
   useEffect(() => {
     if (!open) return;
-    // Only remember selections, plus the current result order, not every search.
     for (const item of selections)
       session.current.selections.set(item.ref, item);
-    session.current.search = search;
-    session.current.order = items.map(item => item.ref);
+    if (session.current.source !== snapshot) {
+      session.current.source = snapshot;
+      publish(snapshot);
+    }
   });
-
   return {
     items,
     beginSession() {
       session.current = {
+        source: snapshot,
         initialRefs: selections.map(item => item.ref),
         selections: new Map(selections.map(item => [item.ref, item])),
-        search,
+        search: '',
         order: [],
       };
+      publish(snapshot.search ? { rows: [], search: '' } : snapshot);
     },
   };
 }

@@ -422,6 +422,9 @@ describe('EntitySelectionPicker', () => {
       expect(screen.queryByRole('link')).not.toBeInTheDocument(),
     );
     expect(screen.getByText('Fredrik Adelöw')).toBeInTheDocument();
+    expect(
+      screen.getByRole('list', { name: 'Current Owners' }).querySelector('svg'),
+    ).not.toBeInTheDocument();
     updateCatalog(catalogApiMock({ entities: [entity] }));
     expect(
       await screen.findByRole('link', { name: 'Fredrik Adelöw' }),
@@ -527,11 +530,6 @@ describe('EntitySelectionPicker', () => {
         entityRefs: ['user:default/first'],
       }),
     );
-    await waitFor(() =>
-      expect(
-        screen.queryByText(/Loading catalog results/),
-      ).not.toBeInTheDocument(),
-    );
     expect(
       screen.queryByRole('row', { name: /User first/ }),
     ).not.toBeInTheDocument();
@@ -542,6 +540,57 @@ describe('EntitySelectionPicker', () => {
     expect(
       await screen.findByRole('row', { name: /User first/ }),
     ).not.toHaveAttribute('aria-disabled', 'true');
+  });
+
+  it('publishes server results and reference choices together without filtering the visible snapshot', async () => {
+    const { queryEntities, getEntitiesByRefs, onChange } = await setup({
+      multiple: true,
+      value: ['group:default/belugas'],
+      allowMissingEntities: true,
+      catalogFilter: { kind: ['User', 'Group'] },
+    });
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    await screen.findByRole('row', { name: /Fredrik Adelöw/ });
+    const before = screen.getAllByRole('row');
+    const contents = before.map(row => row.textContent);
+    let finishLookup!: (response: { items: undefined[] }) => void;
+    getEntitiesByRefs.mockReturnValueOnce(
+      new Promise(resolve => {
+        finishLookup = resolve;
+      }),
+    );
+    // Deliberately not a substring match: the server, not this component,
+    // determines whether an entity belongs in the result.
+    queryEntities.mockResolvedValueOnce({
+      items: [entity],
+      pageInfo: {},
+      totalItems: 1,
+    });
+    fireEvent.change(screen.getByRole('searchbox'), {
+      target: { value: 'asd' },
+    });
+    expect(screen.getAllByRole('row')).toEqual(before);
+    await waitFor(() => expect(finishLookup).toBeDefined());
+    expect(screen.getAllByRole('row').map(row => row.textContent)).toEqual(
+      contents,
+    );
+    expect(
+      screen.queryByRole('row', { name: /User asd/ }),
+    ).not.toBeInTheDocument();
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Remove Group belugas' }),
+    );
+    expect(onChange).toHaveBeenLastCalledWith([]);
+    expect(screen.getAllByRole('row')).toEqual(before);
+    await act(async () => finishLookup({ items: [undefined, undefined] }));
+    await screen.findByRole('row', { name: /User asd/ });
+    expect(screen.getAllByRole('row')).toHaveLength(3);
+    expect(
+      screen.getByRole('row', { name: /Fredrik Adelöw/ }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('row', { name: /Group belugas/ }),
+    ).not.toBeInTheDocument();
   });
 
   it('keeps previous reference choices selectable and removable through filtering and errors', async () => {
@@ -602,7 +651,9 @@ describe('EntitySelectionPicker', () => {
 
     getEntitiesByRefs.mockRejectedValueOnce(new Error('Unavailable'));
     fireEvent.change(search, { target: { value: 'unavailable' } });
-    expect(await screen.findByText(/Could not check/)).toBeInTheDocument();
+    expect(
+      await screen.findByRole('button', { name: /Couldn't load results/ }),
+    ).toBeInTheDocument();
     expect(secondUser).toBeInTheDocument();
     expect(secondUser).not.toHaveAttribute('aria-disabled', 'true');
     expect(
@@ -663,7 +714,7 @@ describe('EntitySelectionPicker', () => {
     expect(onChange).toHaveBeenLastCalledWith(['user:default/person-30']);
   });
 
-  it('prefers a fresh exact lookup over stale catalog data when catalog revalidation fails', async () => {
+  it('preserves the entire snapshot when one lookup fails and retries the whole search', async () => {
     const { queryEntities, getEntitiesByRefs, onChange } = await setup({
       allowMissingEntities: true,
     });
@@ -686,16 +737,30 @@ describe('EntitySelectionPicker', () => {
       target: { value: 'freben' },
     });
     expect(row).not.toHaveAttribute('aria-disabled', 'true');
-    // The exact lookup succeeds independently of the catalog search.
-    expect(await screen.findByRole('row', { name: /Updated name/ })).toBe(row);
+    await waitFor(() =>
+      expect(getEntitiesByRefs).toHaveBeenCalledWith({
+        entityRefs: ['user:default/freben'],
+      }),
+    );
+    expect(
+      screen.queryByRole('row', { name: /Updated name/ }),
+    ).not.toBeInTheDocument();
     await act(async () => finishSearch());
     expect(
       await screen.findByRole('button', { name: /Couldn't load results/ }),
     ).toBeInTheDocument();
-    expect(screen.getAllByRole('row', { name: /Updated name/ })).toHaveLength(
+    expect(screen.getAllByRole('row', { name: /Fredrik Adelöw/ })).toHaveLength(
       1,
     );
     expect(row).not.toHaveAttribute('aria-disabled', 'true');
+    await userEvent.click(
+      screen.getByRole('button', { name: /Couldn't load results/ }),
+    );
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('button', { name: /Couldn't load results/ }),
+      ).not.toBeInTheDocument(),
+    );
     await userEvent.click(row);
     expect(onChange).toHaveBeenLastCalledWith(['user:default/freben']);
   });
@@ -719,7 +784,9 @@ describe('EntitySelectionPicker', () => {
     fireEvent.change(screen.getByRole('searchbox'), {
       target: { value: 'unavailable' },
     });
-    expect(await screen.findByText(/Could not check/)).toBeInTheDocument();
+    expect(
+      await screen.findByRole('button', { name: /Couldn't load results/ }),
+    ).toBeInTheDocument();
     expect(
       screen.queryByRole('row', { name: /User unavailable/ }),
     ).not.toBeInTheDocument();
