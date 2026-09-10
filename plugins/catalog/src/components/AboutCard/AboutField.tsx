@@ -34,6 +34,7 @@ const useStyles = makeStyles(theme => ({
     fontSize: '10px',
     fontWeight: 'bold',
     letterSpacing: 0.5,
+    marginBottom: '4px',
     overflow: 'hidden',
     whiteSpace: 'nowrap',
   },
