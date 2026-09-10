@@ -116,6 +116,38 @@ describe('EntitySelectionPicker', () => {
     globalThis.IntersectionObserver = originalObserver;
   });
 
+  it('keeps loading feedback in a reserved slot inside the results', async () => {
+    const { catalogApi, queryEntities } = await setup({}, entities);
+    let finishPage!: () => void;
+    const pending = new Promise<void>(resolve => {
+      finishPage = resolve;
+    });
+    const query = queryEntities.getMockImplementation()!;
+    queryEntities.mockImplementationOnce(async request => {
+      await pending;
+      return query.call(catalogApi, request);
+    });
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    const observation = currentSentinel();
+    const idleHeight = window.getComputedStyle(observation.target!).height;
+    await act(async () => intersect(observation));
+    const loading = within(screen.getByRole('listbox')).getByText('Loading…');
+    expect(loading).toBe(observation.target);
+    expect(parseFloat(idleHeight)).toBeGreaterThan(0);
+    expect(window.getComputedStyle(loading).height).toBe(idleHeight);
+    expect(screen.getByText('Loading catalog results…')).toHaveStyle({
+      position: 'absolute',
+    });
+    expect(screen.getAllByRole('option')).toHaveLength(20);
+
+    await act(async () => finishPage());
+    await screen.findByRole('option', { name: /person-39/ });
+    expect(screen.queryByText('Loading…')).not.toBeInTheDocument();
+    expect(window.getComputedStyle(observation.target!).height).toBe(
+      idleHeight,
+    );
+  });
+
   it('fills a short list through the sentinel without scrolling or a load-more button', async () => {
     const { queryEntities } = await setup(
       {
@@ -262,6 +294,7 @@ describe('EntitySelectionPicker', () => {
     );
     const rendered = await renderInTestApp(tree());
     return {
+      catalogApi,
       onChange,
       getEntitiesByRefs,
       queryEntities,

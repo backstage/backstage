@@ -32,6 +32,7 @@ import {
   Popover,
   SearchField,
   Text,
+  VisuallyHidden,
 } from 'react-aria-components';
 import { useEntityPickerOptions } from '../useEntityPickerOptions';
 import { entityRefCandidates } from './entityRefCandidates';
@@ -406,8 +407,8 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
                     else setIsOpen(false);
                   }}
                   renderEmptyState={() => {
-                    if (options.loading) return 'Searching…';
-                    if (options.loadingState === 'error') return null;
+                    if (options.loading || options.loadingState === 'error')
+                      return null;
                     return 'No matching entities';
                   }}
                 >
@@ -445,9 +446,11 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
                   </div>
                 )}
               </Autocomplete>
-              <div role="status" className={classes.status}>
+              <VisuallyHidden role="status">
                 {options.loading && 'Loading catalog results…'}
                 {candidates.loading && ' Checking reference…'}
+              </VisuallyHidden>
+              <div role="status" className={classes.status}>
                 {candidates.error &&
                   ' Could not check the reference. Try searching again.'}
                 {allowMissingEntities &&
