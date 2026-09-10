@@ -97,6 +97,22 @@
   outline: none;
 }
 
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}
+
 .empty {
   padding: 10px calc(var(--bui-space-3) + var(--bui-space-2));
 }

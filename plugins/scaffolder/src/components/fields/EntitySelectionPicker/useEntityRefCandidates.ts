@@ -28,6 +28,8 @@ export type EntitySelectionOption = {
   label: string;
   missing?: boolean;
   entity?: Entity;
+  /** Previous lookup result; prefer fresh data when merging duplicate refs. */
+  stale?: boolean;
 };
 
 export function referenceLabel(ref: string): string {
@@ -41,24 +43,33 @@ export function referenceLabel(ref: string): string {
   }
 }
 
-/** Exact lookups distinguish missing entities from paginated or failed results. */
+/**
+ * Retain the last successful choices while checking a new set of references.
+ * Disable for a closed picker or empty filter; an enabled empty refs array means
+ * the user is still typing but the input has no valid candidates yet.
+ */
 export function useEntityRefCandidates(refs: string[], enabled: boolean) {
   const catalogApi = useApi(catalogApiRef);
   const presentationApi = useApi(entityPresentationApiRef);
-  const key = JSON.stringify(enabled ? refs : []);
-  const [debouncedKey, setDebouncedKey] = useState('[]');
+  const key = enabled ? JSON.stringify(refs) : undefined;
+  const [debouncedKey, setDebouncedKey] = useState<string>();
   const [state, setState] = useState<{
-    key: string;
+    key: string | undefined;
     status: 'loading' | 'ready' | 'error';
     options: EntitySelectionOption[];
-  }>({ key: '[]', status: 'ready', options: [] });
+  }>({ key: undefined, status: 'ready', options: [] });
   useDebounce(() => setDebouncedKey(key), 250, [key]);
 
   useEffect(() => {
-    const entityRefs = JSON.parse(debouncedKey) as string[];
+    if (key === undefined) {
+      setState({ key, status: 'ready', options: [] });
+      return undefined;
+    }
+    // Cancel immediately on input changes, including during the debounce.
+    if (key === '[]' || key !== debouncedKey) return undefined;
+    const entityRefs = JSON.parse(key) as string[];
     let cancelled = false;
-    if (!entityRefs.length) return undefined;
-    setState({ key: debouncedKey, status: 'loading', options: [] });
+    setState(previous => ({ ...previous, key, status: 'loading' }));
     catalogApi
       .getEntitiesByRefs({ entityRefs })
       .then(async response =>
@@ -77,23 +88,26 @@ export function useEntityRefCandidates(refs: string[], enabled: boolean) {
         ),
       )
       .then(options => {
-        if (!cancelled)
-          setState({ key: debouncedKey, status: 'ready', options });
+        if (!cancelled) setState({ key, status: 'ready', options });
       })
       .catch(() => {
         if (!cancelled)
-          setState({ key: debouncedKey, status: 'error', options: [] });
+          setState(previous => ({ ...previous, key, status: 'error' }));
       });
     return () => {
       cancelled = true;
     };
-  }, [catalogApi, presentationApi, debouncedKey]);
+  }, [catalogApi, presentationApi, debouncedKey, key]);
 
   const current = key === debouncedKey && key === state.key;
+  const active = enabled && refs.length > 0;
+  const stale = !current || state.status !== 'ready';
+  const options = enabled ? state.options : [];
   return {
-    options: enabled && current ? state.options : [],
-    loading:
-      enabled && refs.length > 0 && (!current || state.status === 'loading'),
-    error: enabled && current && state.status === 'error',
+    options: stale
+      ? options.map(option => ({ ...option, stale: true }))
+      : options,
+    loading: active && (!current || state.status === 'loading'),
+    error: active && current && state.status === 'error',
   };
 }

@@ -45,8 +45,18 @@ Try the single-owner, multiple-owner, and membership-filtered group scenarios,
 - More results load automatically when the bottom of the results approaches the
   viewport, including when the initial list is too short to scroll. A failed
   request shows a retry button in that same position instead of retrying repeatedly.
-- Loading feedback occupies a reserved slot at the bottom of the results, so
+- Pagination feedback occupies a reserved slot at the bottom of the results, so
   starting or completing a page request does not resize the popup.
+- On the first load, a spinner replaces the search icon without changing layout.
+  The list does not claim there are no matches
+  before both catalog search and reference lookups finish.
+- After typing, previous catalog results and reference choices stay visible while
+  new results are fetched, with the same search-field spinner. Rows remain
+  selectable and removable throughout. Lookup failures retain previous choices
+  with an error message, rather than presenting unchecked references as missing.
+  Clearing the filter discards previous reference choices unless they have been
+  picked during this popup session; closing also discards that session history.
+- Loading another page keeps current rows selectable and appends the new results.
 - `Clear selection` removes all selected values while keeping the popup and
   current filter open. It is disabled when nothing is selected.
 

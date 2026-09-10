@@ -30,7 +30,7 @@ import {
   SearchField,
   Text as BuiText,
 } from '@backstage/ui';
-import { RiSettings3Line, RiCloseLine } from '@remixicon/react';
+import { RiSettings3Line, RiCloseLine, RiLoader4Line } from '@remixicon/react';
 import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Autocomplete,
@@ -121,7 +121,7 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
   const candidateRefs = entityRefCandidates(options.searchText, props);
   const candidates = useEntityRefCandidates(
     candidateRefs,
-    open && allowMissingEntities,
+    open && allowMissingEntities && Boolean(options.searchText.trim()),
   );
   const selectionSnapshots = useRef(new Map<string, EntitySelectionOption>());
   const rows = useMemo(() => {
@@ -131,15 +131,27 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
       result.set(ref, {
         ref,
         entity,
+        stale:
+          options.loadingState === 'loading' ||
+          options.loadingState === 'filtering' ||
+          options.loadingState === 'error',
         label:
           options.entityRefToPresentation.get(ref)?.primaryTitle ||
           referenceLabel(ref),
       });
     }
-    for (const candidate of candidates.options)
-      if (!result.has(candidate.ref)) result.set(candidate.ref, candidate);
+    for (const candidate of candidates.options) {
+      const existing = result.get(candidate.ref);
+      if (!existing || (existing.stale && !candidate.stale))
+        result.set(candidate.ref, candidate);
+    }
     return Array.from(result.values());
-  }, [options.entities, options.entityRefToPresentation, candidates.options]);
+  }, [
+    options.entities,
+    options.entityRefToPresentation,
+    options.loadingState,
+    candidates.options,
+  ]);
   const entitiesByRef = useMemo(
     () =>
       new Map(
@@ -198,6 +210,10 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
   const disabledKeys = stableRows.items
     .filter(row => disabled || (atMax && !value.includes(row.ref)))
     .map(row => row.ref);
+  const refreshing =
+    options.loadingState === 'loading' ||
+    options.loadingState === 'filtering' ||
+    candidates.loading;
 
   return (
     <div className={classes.root} role="group" aria-label={label}>
@@ -256,6 +272,11 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
                     className={classes.search}
                     aria-label={`Search ${label}`}
                     placeholder="Filter by name or entity reference"
+                    icon={
+                      refreshing ? (
+                        <RiLoader4Line className={classes.spinner} />
+                      ) : undefined
+                    }
                     // Focus belongs in the search field when its dialog opens.
                     // eslint-disable-next-line jsx-a11y/no-autofocus
                     autoFocus
@@ -268,11 +289,13 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
                   // Keep the list as React Aria's keyboard scroll root,
                   // with the sentinel outside its selectable collection.
                   render={listProps => (
-                    <div {...listProps}>
+                    <div {...listProps} aria-busy={refreshing}>
                       {listProps.children}
                       <LoadingSentinel
-                        hasMore={options.hasMore && !disabled}
-                        loading={options.loading}
+                        hasMore={
+                          options.hasMore && !disabled && !options.loading
+                        }
+                        loading={options.loadingState === 'loadingMore'}
                         error={
                           options.loadingState === 'error' ||
                           options.loadMoreError
@@ -316,7 +339,12 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
                     else setIsOpen(false);
                   }}
                   renderEmptyState={() => {
-                    if (options.loading || options.loadingState === 'error')
+                    if (
+                      options.loading ||
+                      candidates.loading ||
+                      options.loadingState === 'error' ||
+                      candidates.error
+                    )
                       return null;
                     return (
                       <div className={classes.empty}>No matching entities</div>

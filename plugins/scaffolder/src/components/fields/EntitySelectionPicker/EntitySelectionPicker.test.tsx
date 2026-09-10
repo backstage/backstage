@@ -144,7 +144,10 @@ describe('EntitySelectionPicker', () => {
   });
 
   it('keeps loading feedback in a reserved slot inside the results', async () => {
-    const { catalogApi, queryEntities } = await setup({}, entities);
+    const { catalogApi, queryEntities, onChange } = await setup(
+      { multiple: true },
+      entities,
+    );
     let finishPage!: () => void;
     const pending = new Promise<void>(resolve => {
       finishPage = resolve;
@@ -166,6 +169,10 @@ describe('EntitySelectionPicker', () => {
       position: 'absolute',
     });
     expect(screen.getAllByRole('row')).toHaveLength(20);
+    const first = screen.getByRole('row', { name: /person-00/ });
+    expect(first).not.toHaveAttribute('aria-disabled', 'true');
+    await userEvent.click(first);
+    expect(onChange).toHaveBeenLastCalledWith(['user:default/person-00']);
 
     await act(async () => finishPage());
     await screen.findByRole('row', { name: /person-39/ });
@@ -500,6 +507,197 @@ describe('EntitySelectionPicker', () => {
     expect(screen.getByRole('row', { name: /User freben/ })).toBe(retained);
     expect(retained).toHaveAttribute('aria-selected', 'false');
     expect(screen.getByRole('searchbox')).toHaveFocus();
+  });
+
+  it('waits for the first reference lookup before showing choices or an empty result', async () => {
+    const { getEntitiesByRefs } = await setup(
+      { allowMissingEntities: true },
+      [],
+    );
+    let finishLookup!: (result: { items: undefined[] }) => void;
+    getEntitiesByRefs.mockReturnValueOnce(
+      new Promise(resolve => {
+        finishLookup = resolve;
+      }),
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    await userEvent.type(screen.getByRole('searchbox'), 'first');
+    await waitFor(() =>
+      expect(getEntitiesByRefs).toHaveBeenCalledWith({
+        entityRefs: ['user:default/first'],
+      }),
+    );
+    await waitFor(() =>
+      expect(
+        screen.queryByText(/Loading catalog results/),
+      ).not.toBeInTheDocument(),
+    );
+    expect(
+      screen.queryByRole('row', { name: /User first/ }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('No matching entities')).not.toBeInTheDocument();
+    expect(screen.getByRole('grid')).toHaveAttribute('aria-busy', 'true');
+    expect(screen.queryByText('Loading…')).not.toBeInTheDocument();
+    await act(async () => finishLookup({ items: [undefined] }));
+    expect(
+      await screen.findByRole('row', { name: /User first/ }),
+    ).not.toHaveAttribute('aria-disabled', 'true');
+  });
+
+  it('keeps previous reference choices selectable and removable through filtering and errors', async () => {
+    const { catalogApi, getEntitiesByRefs, onChange } = await setup(
+      {
+        multiple: true,
+        allowMissingEntities: true,
+        catalogFilter: { kind: ['User', 'Group'] },
+        defaultKind: 'Group',
+      },
+      [],
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    const search = screen.getByRole('searchbox');
+    await userEvent.type(search, 'first');
+    const firstUser = await screen.findByRole('row', { name: /User first/ });
+    const firstGroup = screen.getByRole('row', { name: /Group first/ });
+    await userEvent.click(firstUser);
+    let finishLookup!: () => void;
+    const pending = new Promise<void>(resolve => {
+      finishLookup = resolve;
+    });
+    const lookup = getEntitiesByRefs.getMockImplementation()!;
+    getEntitiesByRefs.mockImplementation(async request => {
+      if (request.entityRefs.includes('user:default/second')) await pending;
+      return lookup.call(catalogApi, request);
+    });
+    fireEvent.change(search, { target: { value: 'second' } });
+    expect(screen.getByRole('row', { name: /Group first/ })).toBe(firstGroup);
+    expect(firstGroup).not.toHaveAttribute('aria-disabled', 'true');
+    expect(firstUser).not.toHaveAttribute('aria-disabled', 'true');
+    await userEvent.click(firstGroup);
+    expect(onChange).toHaveBeenLastCalledWith([
+      'user:default/first',
+      'group:default/first',
+    ]);
+    await userEvent.click(firstGroup);
+    expect(onChange).toHaveBeenLastCalledWith(['user:default/first']);
+    await waitFor(() =>
+      expect(getEntitiesByRefs).toHaveBeenCalledWith({
+        entityRefs: ['user:default/second', 'group:default/second'],
+      }),
+    );
+    expect(screen.getByRole('row', { name: /Group first/ })).toBe(firstGroup);
+    expect(screen.getByRole('grid')).toHaveAttribute('aria-busy', 'true');
+    expect(screen.queryByText('Loading…')).not.toBeInTheDocument();
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Remove User first' }),
+    );
+    expect(onChange).toHaveBeenLastCalledWith([]);
+    expect(firstUser).not.toHaveAttribute('aria-disabled', 'true');
+    await act(async () => finishLookup());
+    const secondUser = await screen.findByRole('row', { name: /User second/ });
+    expect(secondUser).not.toHaveAttribute('aria-disabled', 'true');
+    expect(
+      screen.queryByRole('row', { name: /Group first/ }),
+    ).not.toBeInTheDocument();
+
+    getEntitiesByRefs.mockRejectedValueOnce(new Error('Unavailable'));
+    fireEvent.change(search, { target: { value: 'unavailable' } });
+    expect(await screen.findByText(/Could not check/)).toBeInTheDocument();
+    expect(secondUser).toBeInTheDocument();
+    expect(secondUser).not.toHaveAttribute('aria-disabled', 'true');
+    expect(
+      screen.queryByRole('row', { name: /User unavailable/ }),
+    ).not.toBeInTheDocument();
+    await userEvent.click(secondUser);
+    expect(onChange).toHaveBeenLastCalledWith(['user:default/second']);
+    await userEvent.click(secondUser);
+    expect(onChange).toHaveBeenLastCalledWith([]);
+    await userEvent.click(screen.getByRole('button', { name: 'Clear search' }));
+    // Once picked, a reference remains available for this popup session even
+    // after removal. Reopening starts a new session without that reference.
+    expect(secondUser).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Done' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    expect(secondUser).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('row', { name: /User second/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('keeps previous catalog results selectable while replacing a typed search', async () => {
+    const { catalogApi, queryEntities, onChange } = await setup({
+      multiple: true,
+    });
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    const previous = await screen.findByRole('row', { name: /Fredrik Adelöw/ });
+    let finishSearch!: () => void;
+    const pending = new Promise<void>(resolve => {
+      finishSearch = resolve;
+    });
+    const query = queryEntities.getMockImplementation()!;
+    queryEntities.mockImplementationOnce(async request => {
+      await pending;
+      return query.call(catalogApi, request);
+    });
+    fireEvent.change(screen.getByRole('searchbox'), {
+      target: { value: 'person-30' },
+    });
+    expect(previous).toBeInTheDocument();
+    expect(previous).not.toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByRole('grid')).toHaveAttribute('aria-busy', 'true');
+    await userEvent.click(previous);
+    expect(onChange).toHaveBeenLastCalledWith(['user:default/freben']);
+    await userEvent.click(previous);
+    expect(onChange).toHaveBeenLastCalledWith([]);
+    await waitFor(() =>
+      expect(queryEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          fullTextFilter: expect.objectContaining({ term: 'person-30' }),
+        }),
+      ),
+    );
+    await act(async () => finishSearch());
+    const fresh = await screen.findByRole('row', { name: /person-30/ });
+    expect(fresh).not.toHaveAttribute('aria-disabled', 'true');
+    await userEvent.click(fresh);
+    expect(onChange).toHaveBeenLastCalledWith(['user:default/person-30']);
+  });
+
+  it('prefers a fresh exact lookup over stale catalog data when catalog revalidation fails', async () => {
+    const { queryEntities, getEntitiesByRefs, onChange } = await setup({
+      allowMissingEntities: true,
+    });
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    const row = await screen.findByRole('row', { name: /Fredrik Adelöw/ });
+    getEntitiesByRefs.mockResolvedValueOnce({
+      items: [
+        { ...entity, metadata: { ...entity.metadata, title: 'Updated name' } },
+      ],
+    });
+    let finishSearch!: () => void;
+    const pending = new Promise<void>(resolve => {
+      finishSearch = resolve;
+    });
+    queryEntities.mockImplementationOnce(async () => {
+      await pending;
+      throw new Error('Catalog search unavailable');
+    });
+    fireEvent.change(screen.getByRole('searchbox'), {
+      target: { value: 'freben' },
+    });
+    expect(row).not.toHaveAttribute('aria-disabled', 'true');
+    // The exact lookup succeeds independently of the catalog search.
+    expect(await screen.findByRole('row', { name: /Updated name/ })).toBe(row);
+    await act(async () => finishSearch());
+    expect(
+      await screen.findByRole('button', { name: /Couldn't load results/ }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByRole('row', { name: /Updated name/ })).toHaveLength(
+      1,
+    );
+    expect(row).not.toHaveAttribute('aria-disabled', 'true');
+    await userEvent.click(row);
+    expect(onChange).toHaveBeenLastCalledWith(['user:default/freben']);
   });
 
   it('does not label a failed lookup as a missing entity or offer duplicate real and virtual refs', async () => {
