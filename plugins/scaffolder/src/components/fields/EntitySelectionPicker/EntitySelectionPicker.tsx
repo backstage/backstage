@@ -17,12 +17,15 @@
 import { EntityFilterQuery } from '@backstage/catalog-client';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { makeStyles } from '@material-ui/core/styles';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import SettingsIcon from '@material-ui/icons/Settings';
+import { Link } from '@backstage/core-components';
+import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Autocomplete,
   Button,
   Dialog,
   DialogTrigger,
+  Heading,
   Input,
   ListBox,
   ListBoxItem,
@@ -40,6 +43,12 @@ import {
 
 export type EntitySelectionPickerProps = {
   label: string;
+  popupTitle: string;
+  /** Non-interactive content; links and selection controls are owned by the picker. */
+  renderItem?: (item: EntitySelectionOption) => ReactNode;
+  itemLayout?: 'list' | 'inline';
+  /** Supplied by the caller, so destinations respect the surrounding app's routes. */
+  getItemHref?: (ref: string) => string | undefined;
   value: string[];
   onChange: (value: string[]) => void;
   catalogFilter?: EntityFilterQuery;
@@ -54,14 +63,38 @@ export type EntitySelectionPickerProps = {
 
 const useStyles = makeStyles(theme => ({
   root: { ...theme.typography.body1, display: 'grid', gap: 8 },
-  tokens: { display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' },
-  token: {
-    display: 'inline-flex',
+  items: {
+    listStyle: 'none',
+    margin: 0,
+    padding: 0,
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: 8,
+    '&[data-layout=list]': {
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+    },
+  },
+  item: { maxWidth: '100%', overflowWrap: 'anywhere' },
+  selected: {
+    listStyle: 'none',
+    margin: '0 0 8px',
+    padding: 0,
+    maxHeight: 144,
+    overflowY: 'auto',
+    borderBottom: `1px solid ${theme.palette.divider}`,
+  },
+  selectedItem: {
+    display: 'flex',
     alignItems: 'center',
-    borderRadius: 16,
-    border: `1px solid ${theme.palette.divider}`,
-    background: theme.palette.action.selected,
-    maxWidth: '100%',
+    gap: 10,
+    padding: '8px 0',
+  },
+  selectedText: { flex: 1, minWidth: 0, overflowWrap: 'anywhere' },
+  heading: {
+    ...theme.typography.subtitle1,
+    fontWeight: 600,
+    margin: '0 0 12px',
   },
   button: {
     font: 'inherit',
@@ -78,13 +111,22 @@ const useStyles = makeStyles(theme => ({
     '&[data-disabled]': { opacity: 0.5, cursor: 'default' },
   },
   trigger: {
-    border: `1px solid ${theme.palette.divider}`,
-    borderRadius: 6,
-    padding: '8px 12px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+    width: '100%',
+    border: 0,
+    borderRadius: 4,
+    padding: '4px 0',
+    textAlign: 'left',
     font: 'inherit',
     background: 'transparent',
     color: 'inherit',
     cursor: 'pointer',
+    fontWeight: 600,
+    '&:hover': { color: theme.palette.primary.main },
+    '&[data-disabled]': { opacity: 0.5, cursor: 'default' },
     '&[data-focus-visible]': {
       outline: `2px solid ${theme.palette.primary.main}`,
     },
@@ -164,7 +206,7 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
   } = props;
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-  const triggerRef = useRef<HTMLButtonElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
   const value = useMemo(
     () =>
       Array.from(
@@ -202,7 +244,7 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
     candidateRefs,
     open && allowMissingEntities,
   );
-  const selectionLabels = useRef(new Map<string, string>());
+  const selectionSnapshots = useRef(new Map<string, EntitySelectionOption>());
   const rows = useMemo(() => {
     const result = new Map<string, EntitySelectionOption>();
     for (const entity of options.entities) {
@@ -223,13 +265,19 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
     label:
       options.entityRefToPresentation.get(ref)?.primaryTitle ||
       rows.find(row => row.ref === ref)?.label ||
-      selectionLabels.current.get(ref) ||
+      selectionSnapshots.current.get(ref)?.label ||
       referenceLabel(ref),
+    missing: options.resolvedSelectedEntityRefs.includes(ref)
+      ? !options.selectedEntities.some(
+          entity => stringifyEntityRef(entity) === ref,
+        )
+      : selectionSnapshots.current.get(ref)?.missing ??
+        !rows.some(row => row.ref === ref && !row.missing),
   }));
   useEffect(() => {
     // Keep snapshots only for the selected set, not an unbounded search cache.
-    selectionLabels.current = new Map(
-      selections.map(item => [item.ref, item.label]),
+    selectionSnapshots.current = new Map(
+      selections.map(item => [item.ref, item]),
     );
   });
   const setIsOpen = (next: boolean) => {
@@ -246,208 +294,198 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
   }, [disabled, setSearchText]);
   const atMax =
     multiple && props.maxItems !== undefined && value.length >= props.maxItems;
-  const disabledKeys = rows
-    .filter(row => atMax && !value.includes(row.ref))
-    .map(row => row.ref);
+  const availableRows = rows.filter(row => !value.includes(row.ref));
+  const disabledKeys = atMax ? availableRows.map(row => row.ref) : [];
 
   return (
     <div className={classes.root} role="group" aria-label={label}>
-      <div>{label}</div>
-      <div className={classes.tokens}>
-        {selections.map(item => (
-          <div key={item.ref} className={classes.token}>
-            <Button
-              className={classes.button}
-              isDisabled={disabled}
-              aria-label={`Change ${item.label}`}
-              aria-haspopup="dialog"
-              aria-expanded={open}
-              onPress={() => setIsOpen(true)}
-            >
-              {item.label}
-            </Button>
-            <Button
-              className={classes.button}
-              isDisabled={disabled}
-              aria-label={`Remove ${item.label}`}
-              onPress={() => {
-                onChange(value.filter(ref => ref !== item.ref));
-                triggerRef.current?.focus();
+      <DialogTrigger isOpen={open} onOpenChange={setIsOpen}>
+        <Button
+          className={classes.trigger}
+          isDisabled={disabled}
+          aria-label={label}
+        >
+          {label}
+          <SettingsIcon fontSize="small" />
+        </Button>
+        <Popover
+          className={classes.popover}
+          placement="bottom start"
+          data-theme={props.theme}
+        >
+          <Dialog className={classes.dialog}>
+            <div
+              onKeyDownCapture={event => {
+                if (event.key === 'Escape') {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  setIsOpen(false);
+                }
               }}
             >
-              ×
-            </Button>
-          </div>
-        ))}
-        <DialogTrigger isOpen={open} onOpenChange={setIsOpen}>
-          <Button
-            ref={triggerRef}
-            className={classes.trigger}
-            isDisabled={disabled}
-            aria-label={`Choose ${label}`}
-          >
-            {value.length ? 'Change selection' : 'Choose…'} ▾
-          </Button>
-          <Popover
-            className={classes.popover}
-            placement="bottom start"
-            data-theme={props.theme}
-          >
-            <Dialog className={classes.dialog} aria-label={`Choose ${label}`}>
-              <div
-                onKeyDownCapture={event => {
-                  if (event.key === 'Escape') {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    setIsOpen(false);
-                  }
-                }}
+              <Heading slot="title" className={classes.heading}>
+                {props.popupTitle}
+              </Heading>
+              <Autocomplete
+                inputValue={options.searchText}
+                onInputChange={options.setSearchText}
               >
-                <Autocomplete
-                  inputValue={options.searchText}
-                  onInputChange={options.setSearchText}
+                <SearchField
+                  className={classes.search}
+                  aria-label={`Search ${label}`}
+                  // Focus belongs in the search field when its dialog opens.
+                  // eslint-disable-next-line jsx-a11y/no-autofocus
+                  autoFocus
                 >
-                  <SearchField
-                    className={classes.search}
-                    aria-label={`Search ${label}`}
-                    // Focus belongs in the search field when its dialog opens.
-                    // eslint-disable-next-line jsx-a11y/no-autofocus
-                    autoFocus
+                  <Input
+                    ref={searchRef}
+                    className={classes.input}
+                    placeholder="Filter by name or entity reference"
+                  />
+                  <Button className={classes.button} aria-label="Clear search">
+                    ×
+                  </Button>
+                </SearchField>
+                {selections.length > 0 && (
+                  <ul
+                    className={classes.selected}
+                    aria-label={`Selected ${label}`}
                   >
-                    <Input
-                      className={classes.input}
-                      placeholder="Search names, or enter an entity reference"
-                    />
+                    {selections.map(item => (
+                      <li key={item.ref} className={classes.selectedItem}>
+                        <div aria-hidden="true">✓</div>
+                        <div className={classes.selectedText}>
+                          <div>{item.label}</div>
+                          <div className={classes.detail}>{item.ref}</div>
+                        </div>
+                        <Button
+                          className={classes.button}
+                          isDisabled={disabled}
+                          aria-label={`Remove ${item.label}`}
+                          onPress={() => {
+                            onChange(value.filter(ref => ref !== item.ref));
+                            searchRef.current?.focus();
+                          }}
+                        >
+                          ×
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <ListBox
+                  className={classes.list}
+                  aria-label={label}
+                  items={availableRows}
+                  selectionMode={multiple ? 'multiple' : 'single'}
+                  selectedKeys={[]}
+                  disabledKeys={disabledKeys}
+                  onSelectionChange={keys => {
+                    if (keys === 'all' || disabled || atMax) return;
+                    const next = availableRows.find(row => keys.has(row.ref));
+                    if (!next) return;
+                    onChange(multiple ? [...value, next.ref] : [next.ref]);
+                    if (multiple) searchRef.current?.focus();
+                    else setIsOpen(false);
+                  }}
+                  onScroll={event => {
+                    const node = event.currentTarget;
+                    if (
+                      node.scrollHeight - node.clientHeight - node.scrollTop <
+                        80 &&
+                      !options.loadMoreError
+                    )
+                      options.loadMore();
+                  }}
+                  renderEmptyState={() =>
+                    options.loading ? 'Searching…' : 'No matching entities'
+                  }
+                >
+                  {row => (
+                    <ListBoxItem
+                      id={row.ref}
+                      textValue={`${row.label} ${row.ref}`}
+                      className={classes.option}
+                    >
+                      <div className={classes.optionText}>
+                        <Text slot="label">{row.label}</Text>
+                        <Text slot="description" className={classes.detail}>
+                          {row.ref}
+                          {row.missing
+                            ? ' · Not found in catalog — reference only'
+                            : ''}
+                        </Text>
+                      </div>
+                    </ListBoxItem>
+                  )}
+                </ListBox>
+              </Autocomplete>
+              <div role="status" className={classes.status}>
+                {options.loading && 'Loading catalog results…'}
+                {candidates.loading && ' Checking reference…'}
+                {candidates.error &&
+                  ' Could not check the reference. Try searching again.'}
+                {options.loadingState === 'error' &&
+                  ' Could not load catalog results.'}
+                {options.loadMoreError &&
+                  ' Could not load the next page. You can retry below.'}
+                {allowMissingEntities &&
+                  options.searchText &&
+                  !candidateRefs.length &&
+                  ' Enter a valid name and a kind, for example user:default/freben.'}
+              </div>
+              <div className={classes.footer}>
+                {options.loadingState === 'error' ? (
+                  <Button className={classes.button} onPress={options.retry}>
+                    Retry
+                  </Button>
+                ) : (
+                  options.hasMore && (
                     <Button
                       className={classes.button}
-                      aria-label="Clear search"
+                      isDisabled={options.loading}
+                      onPress={options.loadMore}
                     >
-                      ×
+                      {options.loadMoreError
+                        ? 'Retry loading more'
+                        : 'Load more'}
                     </Button>
-                  </SearchField>
-                  <ListBox
-                    className={classes.list}
-                    aria-label={label}
-                    items={rows}
-                    selectionMode={multiple ? 'multiple' : 'single'}
-                    selectedKeys={new Set(value)}
-                    disabledKeys={disabledKeys}
-                    onSelectionChange={keys => {
-                      if (keys === 'all' || disabled) return;
-                      if (multiple) {
-                        // Update visible options while retaining selections outside the current results.
-                        const next = value.filter(
-                          ref =>
-                            !rows.some(row => row.ref === ref) || keys.has(ref),
-                        );
-                        for (const row of rows)
-                          if (keys.has(row.ref) && !next.includes(row.ref))
-                            next.push(row.ref);
-                        if (
-                          props.maxItems !== undefined &&
-                          next.length > props.maxItems &&
-                          next.length > value.length
-                        )
-                          return;
-                        onChange(next);
-                      } else {
-                        // Toggling the selected row accepts the existing value;
-                        // clearing a selection is the chip's explicit action.
-                        const next =
-                          rows.find(row => keys.has(row.ref)) ??
-                          rows.find(row => value.includes(row.ref));
-                        if (next) {
-                          onChange([next.ref]);
-                          setIsOpen(false);
-                        }
-                      }
-                    }}
-                    onScroll={event => {
-                      const node = event.currentTarget;
-                      if (
-                        node.scrollHeight - node.clientHeight - node.scrollTop <
-                          80 &&
-                        !options.loadMoreError
-                      )
-                        options.loadMore();
-                    }}
-                    renderEmptyState={() =>
-                      options.loading ? 'Searching…' : 'No matching entities'
-                    }
-                  >
-                    {row => (
-                      <ListBoxItem
-                        id={row.ref}
-                        textValue={`${row.label} ${row.ref}`}
-                        className={classes.option}
-                      >
-                        {({ isSelected }) => (
-                          <>
-                            <div aria-hidden="true">
-                              {isSelected ? '✓' : '○'}
-                            </div>
-                            <div className={classes.optionText}>
-                              <Text slot="label">{row.label}</Text>
-                              <Text
-                                slot="description"
-                                className={classes.detail}
-                              >
-                                {row.ref}
-                                {row.missing
-                                  ? ' · Not found in catalog — reference only'
-                                  : ''}
-                              </Text>
-                            </div>
-                          </>
-                        )}
-                      </ListBoxItem>
-                    )}
-                  </ListBox>
-                </Autocomplete>
-                <div role="status" className={classes.status}>
-                  {options.loading && 'Loading catalog results…'}
-                  {candidates.loading && ' Checking reference…'}
-                  {candidates.error &&
-                    ' Could not check the reference. Try searching again.'}
-                  {options.loadingState === 'error' &&
-                    ' Could not load catalog results.'}
-                  {options.loadMoreError &&
-                    ' Could not load the next page. You can retry below.'}
-                  {allowMissingEntities &&
-                    options.searchText &&
-                    !candidateRefs.length &&
-                    ' Enter a valid name and a kind, for example user:default/freben.'}
-                </div>
-                <div className={classes.footer}>
-                  {options.loadingState === 'error' ? (
-                    <Button className={classes.button} onPress={options.retry}>
-                      Retry
-                    </Button>
-                  ) : (
-                    options.hasMore && (
-                      <Button
-                        className={classes.button}
-                        isDisabled={options.loading}
-                        onPress={options.loadMore}
-                      >
-                        {options.loadMoreError
-                          ? 'Retry loading more'
-                          : 'Load more'}
-                      </Button>
-                    )
-                  )}
-                  <Button
-                    className={classes.button}
-                    onPress={() => setIsOpen(false)}
-                  >
-                    Done
-                  </Button>
-                </div>
+                  )
+                )}
+                <Button
+                  className={classes.button}
+                  onPress={() => setIsOpen(false)}
+                >
+                  Done
+                </Button>
               </div>
-            </Dialog>
-          </Popover>
-        </DialogTrigger>
-      </div>
+            </div>
+          </Dialog>
+        </Popover>
+      </DialogTrigger>
+      {selections.length ? (
+        <ul
+          className={classes.items}
+          data-layout={props.itemLayout ?? 'inline'}
+          aria-label={`Current ${label}`}
+        >
+          {selections.map(item => {
+            const href = item.missing
+              ? undefined
+              : props.getItemHref?.(item.ref);
+            const content = props.renderItem
+              ? props.renderItem(item)
+              : item.label;
+            return (
+              <li key={item.ref} className={classes.item}>
+                {href ? <Link to={href}>{content}</Link> : content}
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <div className={classes.detail}>None selected</div>
+      )}
     </div>
   );
 }
