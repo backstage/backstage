@@ -33,14 +33,7 @@ import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 import { identityApiRef } from '@backstage/core-plugin-api';
 import { TestApiProvider, mockApis } from '@backstage/test-utils';
-import { Content, Header, Page } from '@backstage/core-components';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
+import { Box, Button, Checkbox, Select, Text } from '@backstage/ui';
 import { EntitySelectionPicker } from '../src/components/fields/EntitySelectionPicker/EntitySelectionPicker';
 import { OwnerPicker } from '../src/components/fields/OwnerPicker/OwnerPicker';
 import { MultiEntityPicker } from '../src/components/fields/MultiEntityPicker/MultiEntityPicker';
@@ -62,7 +55,6 @@ export function EntitySelectionPickerPlayground() {
   const [failure, setFailure] = useState('none');
   const [frebenExists, setFrebenExists] = useState(false);
   const [allowMissing, setAllowMissing] = useState(true);
-  const [palette, setPalette] = useState<'mui' | 'bui'>('mui');
   const [itemLayout, setItemLayout] = useState<'inline' | 'list'>('inline');
   const [value, setValue] = useState<string[]>([]);
   const [legacyValue, setLegacyValue] = useState<string[]>([]);
@@ -160,209 +152,175 @@ export function EntitySelectionPickerPlayground() {
   );
 
   return (
-    <Page themeId="tool">
-      <Header
-        title="Entity selection playground"
-        subtitle="Experimental alternative — not enabled in application fields"
-      />
-      <Content>
-        <Typography paragraph>
-          Search is only a filter. Select a row to commit a reference; Escape or
-          Done dismisses the search. Try “freben” with virtual references
-          enabled.
-        </Typography>
+    <Box p="6" bg="neutral">
+      <Text as="h1" variant="title-large">
+        Entity selection playground
+      </Text>
+      <Text as="p" color="secondary">
+        Experimental alternative — not enabled in application fields
+      </Text>
+      <Text as="p">
+        Search is only a filter. Select a row to commit a reference; Escape or
+        Done dismisses the search. Try “freben” with virtual references enabled.
+      </Text>
+      <div
+        style={{
+          display: 'flex',
+          gap: 16,
+          flexWrap: 'wrap',
+          marginBottom: 24,
+        }}
+      >
+        <Select
+          label="Scenario"
+          value={mode}
+          onChange={next => {
+            setMode(String(next));
+            setValue([]);
+            setLegacyValue([]);
+          }}
+          options={[
+            { value: 'owner', label: 'Single owner' },
+            { value: 'multiple', label: 'Multiple entities (maximum 3)' },
+            { value: 'groups', label: 'My groups' },
+          ]}
+        />
+        <Select
+          label="Catalog size"
+          value={String(count)}
+          onChange={next => setCount(Number(next))}
+          options={[
+            { value: '100', label: '100' },
+            { value: '9000', label: '9,000' },
+          ]}
+        />
+        <Select
+          label="Latency"
+          value={String(delay)}
+          onChange={next => setDelay(Number(next))}
+          options={[
+            { value: '0', label: 'None' },
+            { value: '300', label: '300 ms' },
+            { value: '1500', label: '1.5 seconds' },
+          ]}
+        />
+        <Select
+          label="Failure"
+          value={failure}
+          onChange={next => setFailure(String(next))}
+          options={[
+            { value: 'none', label: 'None' },
+            { value: 'catalog', label: 'Catalog queries' },
+            { value: 'references', label: 'Exact lookups' },
+            { value: 'page', label: 'Next page' },
+          ]}
+        />
+        <Checkbox
+          isSelected={itemLayout === 'list'}
+          onChange={checked => setItemLayout(checked ? 'list' : 'inline')}
+        >
+          List selected items
+        </Checkbox>
+        <Checkbox isSelected={allowMissing} onChange={setAllowMissing}>
+          Allow missing references
+        </Checkbox>
+        <Checkbox isSelected={frebenExists} onChange={setFrebenExists}>
+          User freben exists in catalog
+        </Checkbox>
+        <Checkbox isSelected={disabled} onChange={setDisabled}>
+          Disabled
+        </Checkbox>
+      </div>
+      <TestApiProvider apis={apis}>
         <div
           style={{
-            display: 'flex',
-            gap: 16,
-            flexWrap: 'wrap',
-            marginBottom: 24,
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: 24,
           }}
         >
-          <TextField
-            style={{ minWidth: 140 }}
-            select
-            label="Scenario"
-            value={mode}
-            onChange={event => {
-              setMode(event.target.value);
-              setValue([]);
-              setLegacyValue([]);
-            }}
-          >
-            <MenuItem value="owner">Single owner</MenuItem>
-            <MenuItem value="multiple">Multiple entities (maximum 3)</MenuItem>
-            <MenuItem value="groups">My groups</MenuItem>
-          </TextField>
-          <TextField
-            style={{ minWidth: 100 }}
-            select
-            label="Catalog size"
-            value={count}
-            onChange={event => setCount(Number(event.target.value))}
-          >
-            <MenuItem value={100}>100</MenuItem>
-            <MenuItem value={9000}>9,000</MenuItem>
-          </TextField>
-          <TextField
-            style={{ minWidth: 100 }}
-            select
-            label="Latency"
-            value={delay}
-            onChange={event => setDelay(Number(event.target.value))}
-          >
-            <MenuItem value={0}>None</MenuItem>
-            <MenuItem value={300}>300 ms</MenuItem>
-            <MenuItem value={1500}>1.5 seconds</MenuItem>
-          </TextField>
-          <TextField
-            style={{ minWidth: 140 }}
-            select
-            label="Failure"
-            value={failure}
-            onChange={event => setFailure(event.target.value)}
-          >
-            <MenuItem value="none">None</MenuItem>
-            <MenuItem value="catalog">Catalog queries</MenuItem>
-            <MenuItem value="references">Exact lookups</MenuItem>
-            <MenuItem value="page">Next page</MenuItem>
-          </TextField>
-          <TextField
-            style={{ minWidth: 140 }}
-            select
-            label="Popover palette"
-            value={palette}
-            onChange={event => setPalette(event.target.value as 'mui' | 'bui')}
-          >
-            <MenuItem value="mui">MUI</MenuItem>
-            <MenuItem value="bui">BUI tokens</MenuItem>
-          </TextField>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={itemLayout === 'list'}
-                onChange={event =>
-                  setItemLayout(event.target.checked ? 'list' : 'inline')
-                }
+          <Box p="6" bg="neutral">
+            <Text as="h2" variant="title-small">
+              Selection-first prototype
+            </Text>
+            <EntitySelectionPicker
+              label={mode === 'groups' ? 'My groups' : 'Owners'}
+              popupTitle={
+                mode === 'groups'
+                  ? 'Choose a group for this component'
+                  : 'Choose owners for this component'
+              }
+              itemLayout={itemLayout}
+              getItemHref={ref => {
+                const { kind, namespace, name } = parseEntityRef(ref);
+                return `/catalog/${encodeURIComponent(
+                  kind,
+                )}/${encodeURIComponent(namespace)}/${encodeURIComponent(
+                  name,
+                )}`;
+              }}
+              value={value}
+              onChange={setValue}
+              catalogFilter={filter}
+              defaultKind="Group"
+              multiple={multiple}
+              maxItems={multiple ? 3 : undefined}
+              allowMissingEntities={allowMissing && mode !== 'groups'}
+              disabled={disabled}
+            />
+            <Text variant="body-x-small" color="secondary">
+              Committed references
+            </Text>
+            <pre style={{ whiteSpace: 'pre-wrap' }}>
+              {JSON.stringify(value, null, 2)}
+            </pre>
+          </Box>
+          <Box p="6" bg="neutral">
+            <Text as="h2" variant="title-small">
+              Current paginated picker
+            </Text>
+            {mode === 'groups' ? (
+              <ComparisonMyGroupsPicker
+                {...(oldProps as unknown as ComponentProps<
+                  typeof MyGroupsPicker
+                >)}
               />
-            }
-            label="List selected items"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={allowMissing}
-                onChange={event => setAllowMissing(event.target.checked)}
+            ) : null}
+            {multiple ? (
+              <ComparisonMultiEntityPicker
+                {...(oldProps as unknown as ComponentProps<
+                  typeof MultiEntityPicker
+                >)}
               />
-            }
-            label="Allow missing references"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={frebenExists}
-                onChange={event => setFrebenExists(event.target.checked)}
+            ) : null}
+            {mode === 'owner' ? (
+              <ComparisonOwnerPicker
+                {...(oldProps as unknown as ComponentProps<typeof OwnerPicker>)}
               />
-            }
-            label="User freben exists in catalog"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={disabled}
-                onChange={event => setDisabled(event.target.checked)}
-              />
-            }
-            label="Disabled"
-          />
+            ) : null}
+            <Text variant="body-x-small" color="secondary">
+              Committed references
+            </Text>
+            <pre style={{ whiteSpace: 'pre-wrap' }}>
+              {JSON.stringify(legacyValue, null, 2)}
+            </pre>
+          </Box>
         </div>
-        <TestApiProvider apis={apis}>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-              gap: 24,
-            }}
-          >
-            <Paper style={{ padding: 24 }}>
-              <Typography variant="h6" gutterBottom>
-                Selection-first prototype
-              </Typography>
-              <EntitySelectionPicker
-                label={mode === 'groups' ? 'My groups' : 'Owners'}
-                popupTitle={
-                  mode === 'groups'
-                    ? 'Choose a group for this component'
-                    : 'Choose owners for this component'
-                }
-                itemLayout={itemLayout}
-                getItemHref={ref => {
-                  const { kind, namespace, name } = parseEntityRef(ref);
-                  return `/catalog/${encodeURIComponent(
-                    kind,
-                  )}/${encodeURIComponent(namespace)}/${encodeURIComponent(
-                    name,
-                  )}`;
-                }}
-                value={value}
-                onChange={setValue}
-                catalogFilter={filter}
-                defaultKind="Group"
-                multiple={multiple}
-                maxItems={multiple ? 3 : undefined}
-                allowMissingEntities={allowMissing && mode !== 'groups'}
-                disabled={disabled}
-                theme={palette}
-              />
-              <Typography variant="caption">Committed references</Typography>
-              <pre style={{ whiteSpace: 'pre-wrap' }}>
-                {JSON.stringify(value, null, 2)}
-              </pre>
-            </Paper>
-            <Paper style={{ padding: 24 }}>
-              <Typography variant="h6" gutterBottom>
-                Current paginated picker
-              </Typography>
-              {mode === 'groups' ? (
-                <ComparisonMyGroupsPicker
-                  {...(oldProps as unknown as ComponentProps<
-                    typeof MyGroupsPicker
-                  >)}
-                />
-              ) : null}
-              {multiple ? (
-                <ComparisonMultiEntityPicker
-                  {...(oldProps as unknown as ComponentProps<
-                    typeof MultiEntityPicker
-                  >)}
-                />
-              ) : null}
-              {mode === 'owner' ? (
-                <ComparisonOwnerPicker
-                  {...(oldProps as unknown as ComponentProps<
-                    typeof OwnerPicker
-                  >)}
-                />
-              ) : null}
-              <Typography variant="caption">Committed references</Typography>
-              <pre style={{ whiteSpace: 'pre-wrap' }}>
-                {JSON.stringify(legacyValue, null, 2)}
-              </pre>
-            </Paper>
-          </div>
-        </TestApiProvider>
-        <Button
-          onClick={() => {
-            setValue(['user:default/freben']);
-            setLegacyValue(['user:default/freben']);
-          }}
-        >
-          Load a saved freben selection
-        </Button>
-        <Typography variant="h6">Recent catalog requests</Typography>
-        <RequestLog calls={calls} />
-      </Content>
-    </Page>
+      </TestApiProvider>
+      <Button
+        variant="secondary"
+        onPress={() => {
+          setValue(['user:default/freben']);
+          setLegacyValue(['user:default/freben']);
+        }}
+      >
+        Load a saved freben selection
+      </Button>
+      <Text as="h2" variant="title-small">
+        Recent catalog requests
+      </Text>
+      <RequestLog calls={calls} />
+    </Box>
   );
 }
 

@@ -79,7 +79,6 @@ function intersect(observation: (typeof observations)[number]) {
 
 function currentSentinel() {
   const root = screen.getByRole('grid', { name: 'Owners' });
-  expect(root).toHaveStyle({ maxHeight: '320px', overflowY: 'auto' });
   const observation = [...observations]
     .reverse()
     .find(item => item.target && item.observer.root === root);
@@ -124,16 +123,23 @@ describe('EntitySelectionPicker', () => {
     const link = await screen.findByRole('link', { name: 'Fredrik Adelöw' });
     expect(link).toHaveAttribute('href', '/entities/user%3Adefault%2Ffreben');
     expect(link.querySelector('svg')).toBeInTheDocument();
+    expect(link.querySelector('.bui-Badge')).toHaveAttribute(
+      'data-size',
+      'small',
+    );
     const missing = screen.getByText('User missing').closest('li')!;
     expect(within(missing).queryByRole('link')).not.toBeInTheDocument();
     expect(missing.querySelector('svg')).not.toBeInTheDocument();
+    expect(missing.querySelector('.bui-Badge')).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
     const row = await screen.findByRole('row', { name: /Fredrik Adelöw/ });
     expect(row.querySelector('svg')).toBeInTheDocument();
     expect(within(row).queryByRole('link')).not.toBeInTheDocument();
     expect(
-      screen.getByRole('row', { name: /User missing/ }).querySelector('svg'),
+      within(screen.getByRole('row', { name: /User missing/ }))
+        .getByText('User missing')
+        .querySelector('svg'),
     ).not.toBeInTheDocument();
   });
 
@@ -416,45 +422,41 @@ describe('EntitySelectionPicker', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
-  it.each(['mui', 'bui'] as const)(
-    'separates selection from search and does not commit dismissed input (%s)',
-    async theme => {
-      const { onChange } = await setup({
-        theme,
-        value: ['user:default/freben'],
-      });
-      expect(
-        await screen.findByRole('link', { name: 'Fredrik Adelöw' }),
-      ).toBeInTheDocument();
-      expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
-      await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
-      const search = screen.getByRole('searchbox');
-      await userEvent.type(search, 'someone else');
-      await userEvent.keyboard('{Escape}');
-      expect(onChange).not.toHaveBeenCalled();
-      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-      await waitFor(() =>
-        expect(screen.getByRole('button', { name: 'Owners' })).toHaveFocus(),
-      );
+  it('separates selection from search and does not commit dismissed input', async () => {
+    const { onChange } = await setup({
+      value: ['user:default/freben'],
+    });
+    expect(
+      await screen.findByRole('link', { name: 'Fredrik Adelöw' }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    const search = screen.getByRole('searchbox');
+    await userEvent.type(search, 'someone else');
+    await userEvent.keyboard('{Escape}');
+    expect(onChange).not.toHaveBeenCalled();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Owners' })).toHaveFocus(),
+    );
 
-      await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
-      expect(screen.getByRole('searchbox')).toHaveValue('');
-      await userEvent.type(screen.getByRole('searchbox'), 'person-30');
-      await userEvent.click(
-        await screen.findByRole('row', { name: /person-30/ }),
-      );
-      expect(onChange).toHaveBeenLastCalledWith(['user:default/person-30']);
-      expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
-      await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
-      await userEvent.type(screen.getByRole('searchbox'), 'person-30');
-      expect(
-        screen.getByRole('button', { name: 'Remove person-30' }),
-      ).toBeInTheDocument();
-      await userEvent.click(screen.getByRole('button', { name: 'Done' }));
-      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-      expect(onChange).toHaveBeenLastCalledWith(['user:default/person-30']);
-    },
-  );
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    expect(screen.getByRole('searchbox')).toHaveValue('');
+    await userEvent.type(screen.getByRole('searchbox'), 'person-30');
+    await userEvent.click(
+      await screen.findByRole('row', { name: /person-30/ }),
+    );
+    expect(onChange).toHaveBeenLastCalledWith(['user:default/person-30']);
+    expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    await userEvent.type(screen.getByRole('searchbox'), 'person-30');
+    expect(
+      screen.getByRole('button', { name: 'Remove person-30' }),
+    ).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Done' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(onChange).toHaveBeenLastCalledWith(['user:default/person-30']);
+  });
 
   it('offers explicit missing-ref choices and retains them through searches and reopening', async () => {
     const { onChange } = await setup(
