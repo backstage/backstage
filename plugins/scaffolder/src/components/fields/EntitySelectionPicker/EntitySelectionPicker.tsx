@@ -318,7 +318,9 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
                   renderEmptyState={() => {
                     if (options.loading || options.loadingState === 'error')
                       return null;
-                    return 'No matching entities';
+                    return (
+                      <div className={classes.empty}>No matching entities</div>
+                    );
                   }}
                 >
                   {row => (
@@ -371,7 +373,7 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
                 </GridList>
                 {(options.loadingState === 'error' ||
                   options.loadMoreError) && (
-                  <div role="status">
+                  <div role="status" className={classes.retry}>
                     <Button
                       variant="tertiary"
                       size="small"
