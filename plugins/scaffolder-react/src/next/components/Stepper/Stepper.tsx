@@ -245,6 +245,12 @@ export const Stepper = (stepperProps: StepperProps) => {
 
   // Keeps browser/mouse back-forward in sync with activeStep.
   const isPopStateStepRef = useRef(false);
+  const hasMountedHistoryRef = useRef(false);
+  const stepsStateRef = useRef(stepsState);
+
+  useEffect(() => {
+    stepsStateRef.current = stepsState;
+  }, [stepsState]);
 
   useEffect(() => {
     if (isPopStateStepRef.current) {
@@ -252,25 +258,57 @@ export const Stepper = (stepperProps: StepperProps) => {
       isPopStateStepRef.current = false;
       return;
     }
+    if (!hasMountedHistoryRef.current) {
+      // Replace, don't push: the current entry is already the wizard's
+      // entry, so pushing here would leave a duplicate behind it and Back
+      // would have to be pressed twice to actually leave the wizard.
+      hasMountedHistoryRef.current = true;
+      window.history.replaceState({ scaffolderStep: activeStep }, '');
+      return;
+    }
     window.history.pushState({ scaffolderStep: activeStep }, '');
   }, [activeStep]);
 
   useEffect(() => {
-    window.history.replaceState({ scaffolderStep: 0 }, '');
-
     const onPopState = (event: PopStateEvent) => {
       const step = (event.state as { scaffolderStep?: number } | null)
         ?.scaffolderStep;
-      // No scaffolderStep = entry predates the wizard; let navigation proceed.
-      if (typeof step === 'number') {
+      // No scaffolderStep = entry predates the wizard; let navigation
+      // proceed. Same step = the pointer already matches; nothing to sync.
+      if (typeof step !== 'number' || step === activeStep) {
+        return;
+      }
+
+      if (step < activeStep) {
         isPopStateStepRef.current = true;
         setActiveStep(step);
+        return;
       }
+
+      // Stepping forward must pass the same validation as the Next button,
+      // otherwise Forward could reach a step whose prior data is now invalid.
+      (async () => {
+        setErrors(undefined);
+        setIsValidating(true);
+        const returnedValidation = await validation(stepsStateRef.current);
+        setIsValidating(false);
+
+        if (hasErrors(returnedValidation)) {
+          setErrors(returnedValidation);
+          // Undo the browser's forward move; the step didn't actually change.
+          window.history.go(-1);
+          return;
+        }
+
+        setErrors(undefined);
+        isPopStateStepRef.current = true;
+        setActiveStep(step);
+      })();
     };
 
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
-  }, []);
+  }, [activeStep, validation]);
 
   const mergedUiSchema = merge({}, propUiSchema, currentStep?.uiSchema);
 
