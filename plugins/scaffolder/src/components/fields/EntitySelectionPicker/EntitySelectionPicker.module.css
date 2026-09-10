@@ -1,0 +1,159 @@
+.root,
+.popover {
+  font-family: var(--bui-font-regular);
+  font-size: var(--bui-font-size-3);
+  color: var(--bui-fg-primary);
+}
+
+.root {
+  display: grid;
+  gap: var(--bui-space-2);
+}
+
+.items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bui-space-2);
+}
+
+.items[data-layout='list'] {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.item {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.badge {
+  max-width: 100%;
+  height: auto;
+  min-height: 26px;
+}
+
+.presentation {
+  font: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bui-space-1);
+}
+
+.presentation > svg {
+  flex-shrink: 0;
+}
+
+.heading {
+  font-size: var(--bui-font-size-3);
+  font-weight: var(--bui-font-weight-bold);
+  margin: 0 0 var(--bui-space-3);
+}
+
+.trigger {
+  width: 100%;
+  padding-inline: 0;
+  font-weight: var(--bui-font-weight-bold);
+}
+
+.trigger > :global(.bui-ButtonContent) {
+  width: 100%;
+  justify-content: space-between;
+}
+
+.popover {
+  width: 420px;
+  max-width: calc(100vw - 32px);
+}
+
+/* The grid owns scrolling, including React Aria's page navigation. */
+.popover > :global(.bui-PopoverContent) {
+  overflow: hidden;
+  display: flex;
+  padding: var(--bui-space-3);
+}
+
+.dialog,
+.dialog > div {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+  outline: none;
+}
+
+.search {
+  margin-bottom: var(--bui-space-2);
+  flex-shrink: 0;
+}
+
+.list {
+  max-height: 320px;
+  overflow-y: auto;
+  min-height: 0;
+  outline: none;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--bui-space-2);
+  border-radius: var(--bui-radius-2);
+  padding: 10px var(--bui-space-2);
+  cursor: pointer;
+  outline: none;
+}
+
+.option[data-selected] {
+  background: var(--bui-bg-neutral-2);
+}
+
+.option[data-focused] {
+  background: var(--bui-bg-neutral-2);
+  outline: 2px solid var(--bui-ring);
+  outline-offset: -2px;
+}
+
+.option[data-disabled] {
+  color: var(--bui-fg-disabled);
+  cursor: default;
+}
+
+.optionText {
+  display: grid;
+  flex: 1;
+  gap: 2px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.check {
+  width: 20px;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.remove {
+  width: 32px;
+  min-height: 32px;
+  flex-shrink: 0;
+}
+
+.detail,
+.status {
+  font-size: var(--bui-font-size-1);
+  color: var(--bui-fg-secondary);
+}
+
+.status {
+  margin: var(--bui-space-2) 0;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--bui-space-2);
+  flex-shrink: 0;
+}

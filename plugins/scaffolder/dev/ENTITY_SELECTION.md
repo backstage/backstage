@@ -20,11 +20,12 @@ Try the single-owner, multiple-owner, and membership-filtered group scenarios,
 - The entire title row opens the popup, including when nothing is selected.
   A visible popup title describes the action, separately from the field label.
 - Selected values below the title are links when the entity and its destination
-  are known, and plain text otherwise. They do not open the picker. The playground
+  are known, and non-linked badges otherwise. They do not open the picker. The playground
   links to mock catalog destinations and can render selections inline or as a list.
-- Real entities use the standard compact entity display name, including the
-  presentation API's icon and tooltip. Popup rows are not links, and missing
-  references keep their plain-text labels. No chip or extra padding is added.
+- Selected items use small neutral BUI badges, with minimal padding and rounded
+  corners. Real entities retain the presentation API's title, icon, and secondary
+  title (as a native tooltip). Popup rows are not links or badges, and missing
+  references keep their reference-derived labels.
 - The popup uses one scrollable list. Existing selections are placed first when
   it opens; selecting or removing an item does not move any rows until reopening.
   Selected rows show a checkmark and removal button in reserved spaces, without
@@ -50,10 +51,12 @@ Try the single-owner, multiple-owner, and membership-filtered group scenarios,
 
 ## Deliberate boundaries
 
-The selection/popover primitives are composed from React Aria locally. Whether
+The picker uses BUI badges, links, buttons, search field, and popover, with a
+custom React Aria selection list styled using BUI tokens. Whether
 that generic composition belongs in BUI is an open design question, not a new
-Scaffolder API commitment. The palette switch previews BUI colors only; it is not
-a finished BUI component or a full accessibility certification.
+Scaffolder API commitment. The experiment has no direct MUI dependency; icons
+supplied by the app's presentation API remain app-owned. The comparison picker
+is unchanged. This is not a full accessibility certification.
 
 The internal experiment accepts `renderItem` for non-interactive selected-item
 content, `itemLayout` for inline/list layout, and `getItemHref` for caller-owned

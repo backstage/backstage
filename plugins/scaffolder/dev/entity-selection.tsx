@@ -17,16 +17,16 @@
 import { createApp } from '@backstage/app-defaults';
 import { AppRouter } from '@backstage/core-app-api';
 import { createRoot } from 'react-dom/client';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Typography from '@material-ui/core/Typography';
-import { Link, Route, Routes, useParams } from 'react-router-dom';
-import { Content, Header, Page } from '@backstage/core-components';
+import { Route, Routes, useParams } from 'react-router-dom';
+import { Box, Link, Text } from '@backstage/ui';
+// This dev-only entrypoint is a standalone app, not a published plugin entrypoint.
+// eslint-disable-next-line @backstage/no-ui-css-imports-in-non-frontend
+import '@backstage/ui/css/styles.css';
 import { EntitySelectionPickerPlayground } from './EntitySelectionPickerPlayground';
 
 const app = createApp();
 const App = app.createRoot(
   <AppRouter>
-    <CssBaseline />
     <Routes>
       <Route path="/" element={<EntitySelectionPickerPlayground />} />
       <Route
@@ -42,22 +42,25 @@ createRoot(document.getElementById('root')!).render(<App />);
 function MockCatalogDestination() {
   const { kind, namespace, name } = useParams();
   return (
-    <Page themeId="tool">
-      <Header title={name ?? 'Entity'} subtitle="Mock catalog destination" />
-      <Content>
-        <Typography paragraph>
-          The selected item links to its entity, independently of editing the
-          selection.
-        </Typography>
-        <pre>
-          {kind}:{namespace}/{name}
-        </pre>
-        <Typography paragraph>
-          This mock-backed playground only demonstrates navigation; an
-          application would open its catalog entity page.
-        </Typography>
-        <Link to="/">Back to the picker playground</Link>
-      </Content>
-    </Page>
+    <Box p="6" bg="neutral">
+      <Text as="h1" variant="title-large">
+        {name ?? 'Entity'}
+      </Text>
+      <Text as="p" color="secondary">
+        Mock catalog destination
+      </Text>
+      <Text as="p">
+        The selected item links to its entity, independently of editing the
+        selection.
+      </Text>
+      <pre>
+        {kind}:{namespace}/{name}
+      </pre>
+      <Text as="p">
+        This mock-backed playground only demonstrates navigation; an application
+        would open its catalog entity page.
+      </Text>
+      <Link href="/">Back to the picker playground</Link>
+    </Box>
   );
 }
