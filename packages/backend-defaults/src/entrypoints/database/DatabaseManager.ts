@@ -268,8 +268,7 @@ export class DatabaseManager {
     const databaseConfig = config.getConfig('backend.database');
     const prefix =
       databaseConfig.getOptionalString('prefix') || 'backstage_plugin_';
-    const schemaPrefix =
-      databaseConfig.getOptionalString('schemaPrefix') || '';
+    const schemaPrefix = databaseConfig.getOptionalString('schemaPrefix') || '';
     return new DatabaseManager(
       new DatabaseManagerImpl(
         databaseConfig,

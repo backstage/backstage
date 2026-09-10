@@ -782,8 +782,8 @@ export function computePgPluginConfig(
     if (schemaName.length > 63) {
       throw new Error(
         `PostgreSQL schema name "${schemaName}" exceeds the 63-character limit. ` +
-        `Consider using a shorter schemaPrefix (current: "${schemaPrefix}") or ` +
-        `plugin ID (current: "${pluginId}").`
+          `Consider using a shorter schemaPrefix (current: "${schemaPrefix}") or ` +
+          `plugin ID (current: "${pluginId}").`,
       );
     }
 
