@@ -35,6 +35,7 @@ import {
 } from 'react-aria-components';
 import { useEntityPickerOptions } from '../useEntityPickerOptions';
 import { entityRefCandidates } from './entityRefCandidates';
+import { LoadingSentinel } from './LoadingSentinel';
 import {
   EntitySelectionOption,
   referenceLabel,
@@ -376,6 +377,22 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
                 <ListBox
                   className={classes.list}
                   aria-label={label}
+                  // Keep the listbox as React Aria's keyboard scroll root,
+                  // with the sentinel outside its selectable collection.
+                  render={listProps => (
+                    <div {...listProps}>
+                      {listProps.children}
+                      <LoadingSentinel
+                        hasMore={options.hasMore && !disabled}
+                        loading={options.loading}
+                        error={
+                          options.loadingState === 'error' ||
+                          options.loadMoreError
+                        }
+                        onLoadMore={options.loadMore}
+                      />
+                    </div>
+                  )}
                   items={availableRows}
                   selectionMode={multiple ? 'multiple' : 'single'}
                   selectedKeys={[]}
@@ -388,18 +405,11 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
                     if (multiple) searchRef.current?.focus();
                     else setIsOpen(false);
                   }}
-                  onScroll={event => {
-                    const node = event.currentTarget;
-                    if (
-                      node.scrollHeight - node.clientHeight - node.scrollTop <
-                        80 &&
-                      !options.loadMoreError
-                    )
-                      options.loadMore();
+                  renderEmptyState={() => {
+                    if (options.loading) return 'Searching…';
+                    if (options.loadingState === 'error') return null;
+                    return 'No matching entities';
                   }}
-                  renderEmptyState={() =>
-                    options.loading ? 'Searching…' : 'No matching entities'
-                  }
                 >
                   {row => (
                     <ListBoxItem
@@ -419,39 +429,43 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
                     </ListBoxItem>
                   )}
                 </ListBox>
+                {(options.loadingState === 'error' ||
+                  options.loadMoreError) && (
+                  <div role="status">
+                    <Button
+                      className={classes.button}
+                      onPress={() => {
+                        searchRef.current?.focus();
+                        if (options.loadingState === 'error') options.retry();
+                        else options.loadMore();
+                      }}
+                    >
+                      Couldn't load results. Retry
+                    </Button>
+                  </div>
+                )}
               </Autocomplete>
               <div role="status" className={classes.status}>
                 {options.loading && 'Loading catalog results…'}
                 {candidates.loading && ' Checking reference…'}
                 {candidates.error &&
                   ' Could not check the reference. Try searching again.'}
-                {options.loadingState === 'error' &&
-                  ' Could not load catalog results.'}
-                {options.loadMoreError &&
-                  ' Could not load the next page. You can retry below.'}
                 {allowMissingEntities &&
                   options.searchText &&
                   !candidateRefs.length &&
                   ' Enter a valid name and a kind, for example user:default/freben.'}
               </div>
               <div className={classes.footer}>
-                {options.loadingState === 'error' ? (
-                  <Button className={classes.button} onPress={options.retry}>
-                    Retry
-                  </Button>
-                ) : (
-                  options.hasMore && (
-                    <Button
-                      className={classes.button}
-                      isDisabled={options.loading}
-                      onPress={options.loadMore}
-                    >
-                      {options.loadMoreError
-                        ? 'Retry loading more'
-                        : 'Load more'}
-                    </Button>
-                  )
-                )}
+                <Button
+                  className={classes.button}
+                  isDisabled={disabled || value.length === 0}
+                  onPress={() => {
+                    onChange([]);
+                    searchRef.current?.focus();
+                  }}
+                >
+                  Clear selection
+                </Button>
                 <Button
                   className={classes.button}
                   onPress={() => setIsOpen(false)}

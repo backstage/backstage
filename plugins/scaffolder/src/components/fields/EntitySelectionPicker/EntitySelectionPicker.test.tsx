@@ -50,7 +50,137 @@ const entities = Array.from(
   }),
 );
 
+const originalObserver = globalThis.IntersectionObserver;
+let observations: Array<{
+  observer: IntersectionObserver;
+  callback: IntersectionObserverCallback;
+  target?: Element;
+}>;
+let sentinelVisible = false;
+
+function intersect(observation: (typeof observations)[number]) {
+  const target = observation.target!;
+  const rect = target.getBoundingClientRect();
+  observation.callback(
+    [
+      {
+        target,
+        isIntersecting: true,
+        intersectionRatio: 1,
+        time: 0,
+        boundingClientRect: rect,
+        intersectionRect: rect,
+        rootBounds: rect,
+      },
+    ],
+    observation.observer,
+  );
+}
+
+function currentSentinel() {
+  const root = screen.getByRole('listbox', { name: 'Owners' });
+  expect(root).toHaveStyle({ maxHeight: '320px', overflowY: 'auto' });
+  const observation = [...observations]
+    .reverse()
+    .find(item => item.target && item.observer.root === root);
+  expect(observation).toBeDefined();
+  return observation!;
+}
+
 describe('EntitySelectionPicker', () => {
+  beforeEach(() => {
+    observations = [];
+    sentinelVisible = false;
+    globalThis.IntersectionObserver = jest.fn((callback, options) => {
+      const observation: (typeof observations)[number] = {
+        callback,
+        observer: {
+          root: options?.root ?? null,
+          rootMargin: options?.rootMargin ?? '0px',
+          thresholds: [0],
+          observe: target => {
+            observation.target = target;
+            if (sentinelVisible && options?.root)
+              queueMicrotask(() => intersect(observation));
+          },
+          unobserve: () => {},
+          disconnect: () => {},
+          takeRecords: () => [],
+        },
+      };
+      observations.push(observation);
+      return observation.observer;
+    });
+  });
+  afterEach(() => {
+    globalThis.IntersectionObserver = originalObserver;
+  });
+
+  it('fills a short list through the sentinel without scrolling or a load-more button', async () => {
+    const { queryEntities } = await setup(
+      {
+        multiple: true,
+        value: entities
+          .slice(0, 40)
+          .map(item => `user:default/${item.metadata.name}`),
+      },
+      entities,
+    );
+    sentinelVisible = true;
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    await screen.findByRole('option', { name: /person-44/ });
+    expect(queryEntities).toHaveBeenCalledTimes(3);
+    expect(
+      screen.queryByRole('button', { name: 'Load more' }),
+    ).not.toBeInTheDocument();
+    expect(screen.getAllByRole('option')).toHaveLength(5);
+  });
+
+  it('stops automatic loading on errors and retries the same page explicitly', async () => {
+    const { queryEntities } = await setup({}, entities);
+    queryEntities.mockRejectedValueOnce(new Error('Unavailable'));
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    const observation = currentSentinel();
+    await act(async () => {
+      intersect(observation);
+      intersect(observation);
+    });
+    const retry = await screen.findByRole('button', { name: /Retry/ });
+    expect(queryEntities).toHaveBeenCalledTimes(2);
+    await act(async () => {
+      intersect(observation);
+    });
+    expect(queryEntities).toHaveBeenCalledTimes(2);
+    await userEvent.click(retry);
+    await screen.findByRole('option', { name: /person-39/ });
+    expect(queryEntities.mock.calls[2]).toEqual(queryEntities.mock.calls[1]);
+    expect(screen.getByRole('searchbox')).toHaveFocus();
+    expect(
+      screen.queryByRole('button', { name: /Retry/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('clears all selections without dismissing the popup or clearing the filter', async () => {
+    const { onChange } = await setup({
+      multiple: true,
+      value: ['user:default/freben', 'user:default/missing'],
+    });
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    await userEvent.type(screen.getByRole('searchbox'), 'person-30');
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Clear selection' }),
+    );
+    expect(onChange).toHaveBeenLastCalledWith([]);
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByRole('searchbox')).toHaveValue('person-30');
+    expect(screen.getByRole('searchbox')).toHaveFocus();
+    expect(
+      screen.getByRole('button', { name: 'Clear selection' }),
+    ).toBeDisabled();
+    expect(
+      screen.queryByRole('list', { name: 'Selected Owners' }),
+    ).not.toBeInTheDocument();
+  });
   it('opens from the title and keeps linked selections separate from filtered options', async () => {
     const { onChange } = await setup({
       multiple: true,
@@ -98,6 +228,7 @@ describe('EntitySelectionPicker', () => {
   ) {
     const catalogApi = catalogApiMock({ entities: items });
     const getEntitiesByRefs = jest.spyOn(catalogApi, 'getEntitiesByRefs');
+    const queryEntities = jest.spyOn(catalogApi, 'queryEntities');
     const onChange = jest.fn();
     function Picker() {
       const [value, setValue] = useState(props.value ?? []);
@@ -133,6 +264,7 @@ describe('EntitySelectionPicker', () => {
     return {
       onChange,
       getEntitiesByRefs,
+      queryEntities,
       updateCatalog: (api: typeof catalogApi) => rendered.rerender(tree(api)),
     };
   }
@@ -276,9 +408,9 @@ describe('EntitySelectionPicker', () => {
       entities,
     );
     await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
-    await userEvent.click(
-      await screen.findByRole('button', { name: 'Load more' }),
-    );
+    await act(async () => {
+      intersect(currentSentinel());
+    });
     await userEvent.click(
       await screen.findByRole('option', { name: /person-20/ }),
     );
