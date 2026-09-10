@@ -33,6 +33,11 @@ Try the single-owner, multiple-owner, and membership-filtered group scenarios,
   Toggle `User freben exists in catalog` to see a saved selection acquire its
   catalog display name without changing its reference.
 - Multi-selection preserves off-page choices and enforces its maximum of three.
+- More results load automatically when the bottom of the results approaches the
+  viewport, including when the initial list is too short to scroll. A failed
+  request shows a retry button in that same position instead of retrying repeatedly.
+- `Clear selection` removes all selected values while keeping the popup and
+  current filter open. It is disabled when nothing is selected.
 
 ## Deliberate boundaries
 
