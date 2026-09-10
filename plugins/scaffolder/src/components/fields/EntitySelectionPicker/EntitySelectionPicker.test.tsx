@@ -78,7 +78,7 @@ function intersect(observation: (typeof observations)[number]) {
 }
 
 function currentSentinel() {
-  const root = screen.getByRole('listbox', { name: 'Owners' });
+  const root = screen.getByRole('grid', { name: 'Owners' });
   expect(root).toHaveStyle({ maxHeight: '320px', overflowY: 'auto' });
   const observation = [...observations]
     .reverse()
@@ -131,41 +131,107 @@ describe('EntitySelectionPicker', () => {
     const observation = currentSentinel();
     const idleHeight = window.getComputedStyle(observation.target!).height;
     await act(async () => intersect(observation));
-    const loading = within(screen.getByRole('listbox')).getByText('Loading…');
+    const loading = within(screen.getByRole('grid')).getByText('Loading…');
     expect(loading).toBe(observation.target);
     expect(parseFloat(idleHeight)).toBeGreaterThan(0);
     expect(window.getComputedStyle(loading).height).toBe(idleHeight);
     expect(screen.getByText('Loading catalog results…')).toHaveStyle({
       position: 'absolute',
     });
-    expect(screen.getAllByRole('option')).toHaveLength(20);
+    expect(screen.getAllByRole('row')).toHaveLength(20);
 
     await act(async () => finishPage());
-    await screen.findByRole('option', { name: /person-39/ });
+    await screen.findByRole('row', { name: /person-39/ });
     expect(screen.queryByText('Loading…')).not.toBeInTheDocument();
     expect(window.getComputedStyle(observation.target!).height).toBe(
       idleHeight,
     );
   });
 
-  it('fills a short list through the sentinel without scrolling or a load-more button', async () => {
-    const { queryEntities } = await setup(
-      {
-        multiple: true,
-        value: entities
-          .slice(0, 40)
-          .map(item => `user:default/${item.metadata.name}`),
-      },
-      entities,
-    );
+  it('continues loading while the sentinel stays visible without another scroll event', async () => {
+    const { queryEntities } = await setup({}, entities);
     sentinelVisible = true;
     await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
-    await screen.findByRole('option', { name: /person-44/ });
+    await screen.findByRole('row', { name: /person-44/ });
     expect(queryEntities).toHaveBeenCalledTimes(3);
     expect(
       screen.queryByRole('button', { name: 'Load more' }),
     ).not.toBeInTheDocument();
-    expect(screen.getAllByRole('option')).toHaveLength(5);
+    expect(screen.getAllByRole('row')).toHaveLength(45);
+  });
+
+  it('keeps one list in place while toggling selections and sorts selected rows first only on reopening', async () => {
+    const { onChange } = await setup(
+      {
+        multiple: true,
+        value: ['user:default/person-10'],
+      },
+      entities,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    const initial = await screen.findByRole('row', { name: /person-10/ });
+    const rows = screen.getAllByRole('row');
+    expect(rows[0]).toBe(initial);
+    expect(initial).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getAllByRole('grid')).toHaveLength(1);
+    expect(
+      screen.queryByRole('list', { name: 'Selected Owners' }),
+    ).not.toBeInTheDocument();
+
+    const next = screen.getByRole('row', { name: /person-12/ });
+    await userEvent.click(next);
+    expect(next).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getAllByRole('row')).toEqual(rows);
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Remove person-10' }),
+    );
+    expect(initial).toHaveAttribute('aria-selected', 'false');
+    expect(screen.getAllByRole('row')).toEqual(rows);
+    expect(onChange).toHaveBeenLastCalledWith(['user:default/person-12']);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Done' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    expect(screen.getAllByRole('row')[0]).toHaveTextContent('person-12');
+    const reopenedRows = screen.getAllByRole('row');
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Clear selection' }),
+    );
+    expect(screen.getAllByRole('row')).toEqual(reopenedRows);
+    expect(screen.queryAllByRole('row', { selected: true })).toHaveLength(0);
+  });
+
+  it('supports entering the list from the filter and reducing an over-limit selection with the keyboard', async () => {
+    const { onChange } = await setup(
+      {
+        multiple: true,
+        maxItems: 1,
+        value: [
+          'user:default/person-02',
+          'user:default/person-03',
+          'user:default/person-04',
+        ],
+      },
+      entities,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    fireEvent.keyDown(screen.getByRole('searchbox'), {
+      key: 'ArrowDown',
+      isComposing: true,
+    });
+    expect(screen.getByRole('searchbox')).toHaveFocus();
+    expect(onChange).not.toHaveBeenCalled();
+    await userEvent.keyboard('{ArrowDown}');
+    expect(screen.getByRole('row', { name: /person-02/ })).toHaveFocus();
+    await userEvent.keyboard('{Enter}');
+    expect(onChange).toHaveBeenLastCalledWith([
+      'user:default/person-03',
+      'user:default/person-04',
+    ]);
+    expect(screen.getByRole('searchbox')).toHaveFocus();
+    await userEvent.keyboard('{ArrowUp}');
+    expect(screen.getByRole('row', { name: /person-04/ })).toHaveFocus();
+    await userEvent.keyboard('{Enter}');
+    expect(onChange).toHaveBeenLastCalledWith(['user:default/person-03']);
   });
 
   it('stops automatic loading on errors and retries the same page explicitly', async () => {
@@ -184,7 +250,7 @@ describe('EntitySelectionPicker', () => {
     });
     expect(queryEntities).toHaveBeenCalledTimes(2);
     await userEvent.click(retry);
-    await screen.findByRole('option', { name: /person-39/ });
+    await screen.findByRole('row', { name: /person-39/ });
     expect(queryEntities.mock.calls[2]).toEqual(queryEntities.mock.calls[1]);
     expect(screen.getByRole('searchbox')).toHaveFocus();
     expect(
@@ -236,17 +302,15 @@ describe('EntitySelectionPicker', () => {
     expect(
       screen.getByRole('heading', { name: 'Choose owners for this component' }),
     ).toBeVisible();
-    const selected = screen.getByRole('list', { name: 'Selected Owners' });
-    expect(within(selected).getAllByRole('listitem')).toHaveLength(2);
+    expect(screen.getAllByRole('row', { selected: true })).toHaveLength(2);
     await userEvent.type(screen.getByRole('searchbox'), 'person-30');
-    await screen.findByRole('option', { name: /person-30/ });
-    expect(within(selected).getByText('Fredrik Adelöw')).toBeInTheDocument();
-    expect(within(selected).getByText('User missing')).toBeInTheDocument();
+    await screen.findByRole('row', { name: /person-30/ });
     expect(
-      screen.queryByRole('option', { name: /Fredrik/ }),
+      screen.queryByRole('row', { name: /Fredrik/ }),
     ).not.toBeInTheDocument();
+    await userEvent.clear(screen.getByRole('searchbox'));
     await userEvent.click(
-      within(selected).getByRole('button', { name: 'Remove User missing' }),
+      await screen.findByRole('button', { name: 'Remove User missing' }),
     );
     expect(onChange).toHaveBeenLastCalledWith(['user:default/freben']);
     expect(screen.getByRole('searchbox')).toHaveFocus();
@@ -356,7 +420,7 @@ describe('EntitySelectionPicker', () => {
       expect(screen.getByRole('searchbox')).toHaveValue('');
       await userEvent.type(screen.getByRole('searchbox'), 'person-30');
       await userEvent.click(
-        await screen.findByRole('option', { name: /person-30/ }),
+        await screen.findByRole('row', { name: /person-30/ }),
       );
       expect(onChange).toHaveBeenLastCalledWith(['user:default/person-30']);
       expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
@@ -383,14 +447,18 @@ describe('EntitySelectionPicker', () => {
     );
     await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
     await userEvent.type(screen.getByRole('searchbox'), 'freben');
-    const user = await screen.findByRole('option', { name: /User freben/ });
+    const user = await screen.findByRole('row', { name: /User freben/ });
     expect(within(user).getByText(/Not found in catalog/)).toBeInTheDocument();
     expect(
-      screen.getByRole('option', { name: /Group freben/ }),
+      screen.getByRole('row', { name: /Group freben/ }),
     ).toBeInTheDocument();
     await userEvent.click(user);
     expect(onChange).toHaveBeenLastCalledWith(['user:default/freben']);
+    expect(user).toHaveAttribute('aria-selected', 'true');
     await userEvent.clear(screen.getByRole('searchbox'));
+    expect(
+      await screen.findByRole('row', { name: /User freben/ }),
+    ).toHaveAttribute('aria-selected', 'true');
     await userEvent.type(screen.getByRole('searchbox'), 'another');
     await userEvent.keyboard('{Escape}');
     expect(
@@ -401,10 +469,13 @@ describe('EntitySelectionPicker', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
     expect(onChange).toHaveBeenCalledTimes(1);
+    const retained = screen.getByRole('row', { name: /User freben/ });
     await userEvent.click(
       screen.getByRole('button', { name: 'Remove User freben' }),
     );
     expect(onChange).toHaveBeenLastCalledWith([]);
+    expect(screen.getByRole('row', { name: /User freben/ })).toBe(retained);
+    expect(retained).toHaveAttribute('aria-selected', 'false');
     expect(screen.getByRole('searchbox')).toHaveFocus();
   });
 
@@ -414,14 +485,14 @@ describe('EntitySelectionPicker', () => {
     });
     await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
     await userEvent.type(screen.getByRole('searchbox'), 'freben');
-    await screen.findByRole('option', { name: /Fredrik Adelöw/ });
+    await screen.findByRole('row', { name: /Fredrik Adelöw/ });
     // Wait for the debounced exact lookup, in addition to catalog search.
     await waitFor(() =>
       expect(getEntitiesByRefs).toHaveBeenCalledWith({
         entityRefs: ['user:default/freben'],
       }),
     );
-    expect(screen.getAllByRole('option')).toHaveLength(1);
+    expect(screen.getAllByRole('row')).toHaveLength(1);
     expect(screen.queryByText(/Not found in catalog/)).not.toBeInTheDocument();
     getEntitiesByRefs.mockRejectedValueOnce(new Error('Unavailable'));
     fireEvent.change(screen.getByRole('searchbox'), {
@@ -429,7 +500,7 @@ describe('EntitySelectionPicker', () => {
     });
     expect(await screen.findByText(/Could not check/)).toBeInTheDocument();
     expect(
-      screen.queryByRole('option', { name: /User unavailable/ }),
+      screen.queryByRole('row', { name: /User unavailable/ }),
     ).not.toBeInTheDocument();
     await userEvent.keyboard('{Escape}');
     expect(onChange).not.toHaveBeenCalled();
@@ -441,17 +512,19 @@ describe('EntitySelectionPicker', () => {
       entities,
     );
     await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    const offPageSelection = screen.getByRole('row', { name: /person-44/ });
+    expect(screen.getAllByRole('row')[0]).toBe(offPageSelection);
     await act(async () => {
       intersect(currentSentinel());
     });
     await userEvent.click(
-      await screen.findByRole('option', { name: /person-20/ }),
+      await screen.findByRole('row', { name: /person-20/ }),
     );
     expect(onChange).toHaveBeenLastCalledWith([
       'user:default/person-44',
       'user:default/person-20',
     ]);
-    expect(screen.getByRole('option', { name: /person-21/ })).toHaveAttribute(
+    expect(screen.getByRole('row', { name: /person-21/ })).toHaveAttribute(
       'aria-disabled',
       'true',
     );
@@ -459,6 +532,10 @@ describe('EntitySelectionPicker', () => {
       screen.getByRole('button', { name: 'Remove person-20' }),
     );
     expect(onChange).toHaveBeenLastCalledWith(['user:default/person-44']);
+    await act(async () => intersect(currentSentinel()));
+    await screen.findByRole('row', { name: /person-43/ });
+    expect(screen.getAllByRole('row')[0]).toBe(offPageSelection);
+    expect(screen.getAllByRole('row', { name: /person-44/ })).toHaveLength(1);
   });
 
   it('keeps external values while disabled without exposing editable text', async () => {

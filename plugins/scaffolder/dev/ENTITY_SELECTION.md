@@ -22,14 +22,18 @@ Try the single-owner, multiple-owner, and membership-filtered group scenarios,
 - Selected values below the title are links when the entity and its destination
   are known, and plain text otherwise. They do not open the picker. The playground
   links to mock catalog destinations and can render selections inline or as a list.
-- Inside the popup, selected values stay above the matching options even while
-  filtering, with explicit removal buttons. Each selection appears only once.
+- The popup uses one scrollable list. Existing selections are placed first when
+  it opens; selecting or removing an item does not move any rows until reopening.
+  Selected rows show a checkmark and removal button in reserved spaces, without
+  changing the row layout. Filtering applies to both selected and unselected rows.
 - Typing only filters; choosing a row commits its canonical entity reference.
   Escape, Done, or clicking outside discards the search, not the selections.
 - When missing references are allowed, a valid name such as `freben` offers
   explicit User and Group choices. Exact lookups distinguish missing entities
   from entities outside the current page, and errors do not create missing choices.
-- Selected missing references remain removable after searching or reopening.
+- Picked references remain available for the rest of the popup session, including
+  after deselection, even when absent from the catalog or the current page.
+  Selected missing references remain removable after searching or reopening.
   Toggle `User freben exists in catalog` to see a saved selection acquire its
   catalog display name without changing its reference.
 - Multi-selection preserves off-page choices and enforces its maximum of three.
