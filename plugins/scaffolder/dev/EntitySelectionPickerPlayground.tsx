@@ -268,12 +268,14 @@ export function EntitySelectionPickerPlayground() {
               allowMissingEntities={allowMissing && mode !== 'groups'}
               disabled={disabled}
             />
-            <Text variant="body-x-small" color="secondary">
-              Committed references
-            </Text>
-            <pre style={{ whiteSpace: 'pre-wrap' }}>
-              {JSON.stringify(value, null, 2)}
-            </pre>
+            <Box mt="4">
+              <Text variant="body-x-small" color="secondary">
+                Committed references
+              </Text>
+              <pre style={{ whiteSpace: 'pre-wrap' }}>
+                {JSON.stringify(value, null, 2)}
+              </pre>
+            </Box>
           </Box>
           <Box p="6" bg="neutral">
             <Text as="h2" variant="title-small">
@@ -298,12 +300,14 @@ export function EntitySelectionPickerPlayground() {
                 {...(oldProps as unknown as ComponentProps<typeof OwnerPicker>)}
               />
             ) : null}
-            <Text variant="body-x-small" color="secondary">
-              Committed references
-            </Text>
-            <pre style={{ whiteSpace: 'pre-wrap' }}>
-              {JSON.stringify(legacyValue, null, 2)}
-            </pre>
+            <Box mt="4">
+              <Text variant="body-x-small" color="secondary">
+                Committed references
+              </Text>
+              <pre style={{ whiteSpace: 'pre-wrap' }}>
+                {JSON.stringify(legacyValue, null, 2)}
+              </pre>
+            </Box>
           </Box>
         </div>
       </TestApiProvider>
