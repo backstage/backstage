@@ -15,6 +15,7 @@
  */
 
 import { useEffect, useRef } from 'react';
+import classes from './EntitySelectionPicker.module.css';
 
 /** Observes the end of the scrolling list without becoming a collection item. */
 export function LoadingSentinel(props: {
@@ -57,6 +58,7 @@ export function LoadingSentinel(props: {
   return (
     <div
       ref={ref}
+      className={classes.sentinel}
       // Reserve the same space while idle so loading never changes the layout.
       style={{
         height: 24,

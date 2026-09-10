@@ -49,7 +49,7 @@
 .heading {
   font-size: var(--bui-font-size-3);
   font-weight: var(--bui-font-weight-bold);
-  margin: 0 0 var(--bui-space-3);
+  margin: var(--bui-space-3);
 }
 
 .trigger {
@@ -72,7 +72,7 @@
 .popover > :global(.bui-PopoverContent) {
   overflow: hidden;
   display: flex;
-  padding: var(--bui-space-3);
+  padding: 0;
 }
 
 .dialog,
@@ -85,7 +85,8 @@
 }
 
 .search {
-  margin-bottom: var(--bui-space-2);
+  width: auto;
+  margin: 0 var(--bui-space-3) var(--bui-space-2);
   flex-shrink: 0;
 }
 
@@ -96,12 +97,16 @@
   outline: none;
 }
 
+.empty {
+  padding: 10px calc(var(--bui-space-3) + var(--bui-space-2));
+}
+
 .option {
   display: flex;
   align-items: center;
   gap: var(--bui-space-2);
   border-radius: var(--bui-radius-2);
-  padding: 10px var(--bui-space-2);
+  padding: 10px calc(var(--bui-space-3) + var(--bui-space-2));
   cursor: pointer;
   outline: none;
 }
@@ -148,12 +153,20 @@
 }
 
 .status {
-  margin: var(--bui-space-2) 0;
+  margin: var(--bui-space-2) var(--bui-space-3);
+}
+
+.retry {
+  padding-inline: var(--bui-space-3);
+}
+
+.sentinel {
+  padding-inline: calc(var(--bui-space-3) + var(--bui-space-2));
 }
 
 .footer {
   display: flex;
   justify-content: space-between;
-  margin-top: var(--bui-space-2);
+  margin: var(--bui-space-2) var(--bui-space-3) var(--bui-space-3);
   flex-shrink: 0;
 }

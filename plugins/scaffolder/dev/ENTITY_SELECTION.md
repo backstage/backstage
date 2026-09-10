@@ -26,7 +26,8 @@ Try the single-owner, multiple-owner, and membership-filtered group scenarios,
   corners. Real entities retain the presentation API's title, icon, and secondary
   title (as a native tooltip). Popup rows are not links or badges, and missing
   references keep their reference-derived labels.
-- The popup uses one scrollable list. Existing selections are placed first when
+- The popup uses one edge-to-edge scrollable list, with padding inside its rows
+  and surrounding controls rather than around the scroll area. Existing selections are placed first when
   it opens; selecting or removing an item does not move any rows until reopening.
   Selected rows show a checkmark and removal button in reserved spaces, without
   changing the row layout. Filtering applies to both selected and unselected rows.
