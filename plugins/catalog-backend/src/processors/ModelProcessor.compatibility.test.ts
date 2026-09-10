@@ -26,6 +26,8 @@ import { ModelProcessor } from './ModelProcessor';
 const fixtures: Array<{
   kind: string;
   spec: Entity['spec'];
+  requiredSpecFields: string[];
+  invalidSpecOverrides: NonNullable<Entity['spec']>[];
   relations: Array<{
     forward: string;
     reverse: string;
@@ -36,6 +38,14 @@ const fixtures: Array<{
 }> = [
   {
     kind: 'Component',
+    requiredSpecFields: ['type', 'lifecycle', 'owner'],
+    invalidSpecOverrides: [
+      { type: 7 },
+      { lifecycle: '' },
+      { owner: 7 },
+      { providesApis: 'api-a' },
+      { providesApis: ['api-a', 7] },
+    ],
     spec: {
       type: 'service',
       lifecycle: 'production',
@@ -91,6 +101,8 @@ const fixtures: Array<{
   },
   {
     kind: 'API',
+    requiredSpecFields: ['type', 'lifecycle', 'owner', 'definition'],
+    invalidSpecOverrides: [{ owner: '' }, { definition: 7 }],
     spec: {
       type: 'openapi',
       lifecycle: 'production',
@@ -111,6 +123,8 @@ const fixtures: Array<{
   },
   {
     kind: 'Resource',
+    requiredSpecFields: ['type', 'owner'],
+    invalidSpecOverrides: [{ owner: 7 }, { dependsOn: ['resource-a', ''] }],
     spec: {
       type: 'database',
       owner: 'team',
@@ -137,6 +151,8 @@ const fixtures: Array<{
   },
   {
     kind: 'System',
+    requiredSpecFields: ['owner'],
+    invalidSpecOverrides: [{ owner: '' }, { domain: 7 }],
     spec: { owner: 'team', domain: 'domain' },
     relations: [
       { forward: 'ownedBy', reverse: 'ownerOf', kind: 'Group', name: 'team' },
@@ -145,6 +161,8 @@ const fixtures: Array<{
   },
   {
     kind: 'Domain',
+    requiredSpecFields: ['owner'],
+    invalidSpecOverrides: [{ owner: 7 }, { subdomainOf: '' }],
     spec: { owner: 'team', subdomainOf: 'parent' },
     relations: [
       { forward: 'ownedBy', reverse: 'ownerOf', kind: 'Group', name: 'team' },
@@ -153,6 +171,12 @@ const fixtures: Array<{
   },
   {
     kind: 'Group',
+    requiredSpecFields: ['type', 'children'],
+    invalidSpecOverrides: [
+      { children: 'child' },
+      { children: ['child', 7] },
+      { profile: { displayName: 7 } },
+    ],
     spec: {
       type: 'team',
       parent: 'parent',
@@ -194,6 +218,12 @@ const fixtures: Array<{
   },
   {
     kind: 'User',
+    requiredSpecFields: ['memberOf'],
+    invalidSpecOverrides: [
+      { memberOf: 'team' },
+      { memberOf: ['team', ''] },
+      { profile: { email: 7 } },
+    ],
     spec: { memberOf: ['team-b', 'team-a'] },
     relations: [
       {
@@ -212,12 +242,74 @@ const fixtures: Array<{
   },
   {
     kind: 'Location',
+    requiredSpecFields: [],
+    invalidSpecOverrides: [
+      { target: 7 },
+      { targets: ['https://example.com/valid.yaml', ''] },
+      { presence: 'sometimes' },
+    ],
     spec: { type: 'url', target: 'https://example.com/catalog-info.yaml' },
     relations: [],
   },
 ];
 
 describe('ModelProcessor compatibility with built-in kinds', () => {
+  it.each(fixtures)(
+    'rejects malformed $kind entities across versions and namespaces like the legacy processor',
+    async ({ kind, spec, requiredSpecFields, invalidSpecOverrides }) => {
+      const processors = [
+        new ModelProcessor(
+          ModelHolder.modelPassthroughForTest(
+            compileCatalogModel([defaultCatalogEntityModel]),
+          ),
+        ),
+        new BuiltinKindsEntityProcessor(),
+      ];
+
+      for (const apiVersion of [
+        'backstage.io/v1alpha1',
+        'backstage.io/v1beta1',
+      ]) {
+        for (const namespace of [undefined, 'custom-ns']) {
+          const valid: Entity = {
+            apiVersion,
+            kind,
+            metadata: { name: 'entity', ...(namespace ? { namespace } : {}) },
+            spec,
+          };
+          const invalidEntities: Entity[] = [
+            { ...valid, spec: undefined },
+            { ...valid, metadata: { ...valid.metadata, name: '' } },
+            ...requiredSpecFields.map(field => {
+              const incompleteSpec = { ...spec };
+              delete incompleteSpec[field];
+              return { ...valid, spec: incompleteSpec };
+            }),
+            ...invalidSpecOverrides.map(overrides => ({
+              ...valid,
+              spec: { ...spec, ...overrides },
+            })),
+          ];
+
+          for (const processor of processors) {
+            for (const input of invalidEntities) {
+              const entity = await processor.preProcessEntity(
+                structuredClone(input),
+              );
+              await expect(
+                processor.validateEntityKind(entity),
+              ).rejects.toThrow(TypeError);
+            }
+            // Rejected inputs must not poison a cached validator for valid data.
+            await expect(
+              processor.validateEntityKind(structuredClone(valid)),
+            ).resolves.toBe(true);
+          }
+        }
+      }
+    },
+  );
+
   it.each(fixtures)(
     'processes $kind across versions and namespaces like the legacy processor',
     async ({ kind, spec, relations }) => {
