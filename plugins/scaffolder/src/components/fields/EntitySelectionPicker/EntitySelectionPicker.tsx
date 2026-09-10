@@ -15,12 +15,8 @@
  */
 
 import { EntityFilterQuery } from '@backstage/catalog-client';
-import {
-  Entity,
-  parseEntityRef,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
-import { useEntityPresentation } from '@backstage/plugin-catalog-react';
+import { parseEntityRef } from '@backstage/catalog-model';
+import { EntityRefPresentationSnapshot } from '@backstage/plugin-catalog-react';
 import {
   Badge,
   Button,
@@ -33,7 +29,6 @@ import {
 import { RiSettings3Line, RiCloseLine, RiLoader4Line } from '@remixicon/react';
 import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Autocomplete,
   Dialog,
   DialogTrigger,
   Heading,
@@ -42,15 +37,14 @@ import {
   Text,
   VisuallyHidden,
 } from 'react-aria-components';
-import { useEntityPickerOptions } from '../useEntityPickerOptions';
+import { useEntitySelectionOptions } from './useEntitySelectionOptions';
 import { entityRefCandidates } from './entityRefCandidates';
 import { LoadingSentinel } from './LoadingSentinel';
 import { useStableSelectionRows } from './useStableSelectionRows';
 import {
   EntitySelectionOption,
   referenceLabel,
-  useEntityRefCandidates,
-} from './useEntityRefCandidates';
+} from './entitySelectionOptions';
 import classes from './EntitySelectionPicker.module.css';
 
 export type EntitySelectionPickerProps = {
@@ -114,72 +108,25 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
       }),
     [value],
   );
-  const options = useEntityPickerOptions({
+  const options = useEntitySelectionOptions({
     catalogFilter: props.catalogFilter,
+    defaultKind: props.defaultKind,
+    defaultNamespace: props.defaultNamespace,
+    allowMissingEntities,
     selectedEntityRefs,
   });
   const candidateRefs = entityRefCandidates(options.searchText, props);
-  const candidates = useEntityRefCandidates(
-    candidateRefs,
-    open && allowMissingEntities && Boolean(options.searchText.trim()),
-  );
   const selectionSnapshots = useRef(new Map<string, EntitySelectionOption>());
-  const rows = useMemo(() => {
-    const result = new Map<string, EntitySelectionOption>();
-    for (const entity of options.entities) {
-      const ref = stringifyEntityRef(entity);
-      result.set(ref, {
+  const selections = value.map(
+    ref =>
+      options.selectedOptions.find(row => row.ref === ref) ??
+      options.snapshot.rows.find(row => row.ref === ref) ??
+      selectionSnapshots.current.get(ref) ?? {
         ref,
-        entity,
-        stale:
-          options.loadingState === 'loading' ||
-          options.loadingState === 'filtering' ||
-          options.loadingState === 'error',
-        label:
-          options.entityRefToPresentation.get(ref)?.primaryTitle ||
-          referenceLabel(ref),
-      });
-    }
-    for (const candidate of candidates.options) {
-      const existing = result.get(candidate.ref);
-      if (!existing || (existing.stale && !candidate.stale))
-        result.set(candidate.ref, candidate);
-    }
-    return Array.from(result.values());
-  }, [
-    options.entities,
-    options.entityRefToPresentation,
-    options.loadingState,
-    candidates.options,
-  ]);
-  const entitiesByRef = useMemo(
-    () =>
-      new Map(
-        [...options.entities, ...options.selectedEntities].map(entity => [
-          stringifyEntityRef(entity),
-          entity,
-        ]),
-      ),
-    [options.entities, options.selectedEntities],
+        label: referenceLabel(ref),
+        missing: true,
+      },
   );
-  const selections = value.map(ref => ({
-    ref,
-    entity:
-      entitiesByRef.get(ref) ??
-      rows.find(row => row.ref === ref)?.entity ??
-      selectionSnapshots.current.get(ref)?.entity,
-    label:
-      options.entityRefToPresentation.get(ref)?.primaryTitle ||
-      rows.find(row => row.ref === ref)?.label ||
-      selectionSnapshots.current.get(ref)?.label ||
-      referenceLabel(ref),
-    missing: options.resolvedSelectedEntityRefs.includes(ref)
-      ? !options.selectedEntities.some(
-          entity => stringifyEntityRef(entity) === ref,
-        )
-      : selectionSnapshots.current.get(ref)?.missing ??
-        !rows.some(row => row.ref === ref && !row.missing),
-  }));
   useEffect(() => {
     // Keep snapshots only for the selected set, not an unbounded search cache.
     selectionSnapshots.current = new Map(
@@ -187,9 +134,8 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
     );
   });
   const stableRows = useStableSelectionRows({
-    rows,
+    snapshot: options.snapshot,
     selections,
-    search: options.searchText,
     open,
   });
   const setIsOpen = (next: boolean) => {
@@ -210,10 +156,7 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
   const disabledKeys = stableRows.items
     .filter(row => disabled || (atMax && !value.includes(row.ref)))
     .map(row => row.ref);
-  const refreshing =
-    options.loadingState === 'loading' ||
-    options.loadingState === 'filtering' ||
-    candidates.loading;
+  const refreshing = options.loadingState === 'loading';
 
   return (
     <div className={classes.root} role="group" aria-label={label}>
@@ -242,10 +185,7 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
               <Heading slot="title" className={classes.heading}>
                 {props.popupTitle}
               </Heading>
-              <Autocomplete
-                inputValue={options.searchText}
-                onInputChange={options.setSearchText}
-              >
+              <>
                 <div
                   onKeyDownCapture={event => {
                     if (event.nativeEvent.isComposing) return;
@@ -268,6 +208,8 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
                   }}
                 >
                   <SearchField
+                    value={options.searchText}
+                    onChange={options.setSearchText}
                     ref={searchRef}
                     className={classes.search}
                     aria-label={`Search ${label}`}
@@ -339,12 +281,7 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
                     else setIsOpen(false);
                   }}
                   renderEmptyState={() => {
-                    if (
-                      options.loading ||
-                      candidates.loading ||
-                      options.loadingState === 'error' ||
-                      candidates.error
-                    )
+                    if (options.loading || options.loadingState === 'error')
                       return null;
                     return (
                       <div className={classes.empty}>No matching entities</div>
@@ -364,8 +301,10 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
                           </div>
                           <div className={classes.optionText}>
                             <Text>
-                              {row.entity && !row.missing ? (
-                                <EntityPresentation entity={row.entity} />
+                              {row.presentation && !row.missing ? (
+                                <EntityPresentation
+                                  presentation={row.presentation}
+                                />
                               ) : (
                                 row.label
                               )}
@@ -415,14 +354,11 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
                     </Button>
                   </div>
                 )}
-              </Autocomplete>
+              </>
               <VisuallyHidden role="status">
                 {options.loading && 'Loading catalog results…'}
-                {candidates.loading && ' Checking reference…'}
               </VisuallyHidden>
               <div role="status" className={classes.status}>
-                {candidates.error &&
-                  ' Could not check the reference. Try searching again.'}
                 {allowMissingEntities &&
                   options.searchText &&
                   !candidateRefs.length &&
@@ -463,8 +399,8 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
               ? undefined
               : props.getItemHref?.(item.ref);
             const defaultContent =
-              item.entity && !item.missing ? (
-                <EntityPresentation entity={item.entity} />
+              item.presentation && !item.missing ? (
+                <EntityPresentation presentation={item.presentation} />
               ) : (
                 item.label
               );
@@ -490,8 +426,12 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
 }
 
 /** Keep app-provided presentation, without depending on the MUI display component. */
-function EntityPresentation({ entity }: { entity: Entity }) {
-  const { primaryTitle, secondaryTitle, Icon } = useEntityPresentation(entity);
+function EntityPresentation({
+  presentation,
+}: {
+  presentation: EntityRefPresentationSnapshot;
+}) {
+  const { primaryTitle, secondaryTitle, Icon } = presentation;
   return (
     <BuiText className={classes.presentation} title={secondaryTitle}>
       {Icon && <Icon fontSize="inherit" />}
