@@ -27,8 +27,8 @@ import {
   DialogTrigger,
   Heading,
   Input,
-  ListBox,
-  ListBoxItem,
+  GridList,
+  GridListItem,
   Popover,
   SearchField,
   Text,
@@ -37,6 +37,7 @@ import {
 import { useEntityPickerOptions } from '../useEntityPickerOptions';
 import { entityRefCandidates } from './entityRefCandidates';
 import { LoadingSentinel } from './LoadingSentinel';
+import { useStableSelectionRows } from './useStableSelectionRows';
 import {
   EntitySelectionOption,
   referenceLabel,
@@ -78,21 +79,6 @@ const useStyles = makeStyles(theme => ({
     },
   },
   item: { maxWidth: '100%', overflowWrap: 'anywhere' },
-  selected: {
-    listStyle: 'none',
-    margin: '0 0 8px',
-    padding: 0,
-    maxHeight: 144,
-    overflowY: 'auto',
-    borderBottom: `1px solid ${theme.palette.divider}`,
-  },
-  selectedItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 10,
-    padding: '8px 0',
-  },
-  selectedText: { flex: 1, minWidth: 0, overflowWrap: 'anywhere' },
   heading: {
     ...theme.typography.subtitle1,
     fontWeight: 600,
@@ -188,10 +174,13 @@ const useStyles = makeStyles(theme => ({
   },
   optionText: {
     display: 'grid',
+    flex: 1,
     gap: 2,
     minWidth: 0,
     overflowWrap: 'anywhere',
   },
+  check: { width: 20, flexShrink: 0, textAlign: 'center' },
+  remove: { width: 36, flexShrink: 0 },
   detail: { fontSize: '0.8em', opacity: 0.7 },
   status: { fontSize: '0.85em', margin: '8px 0', opacity: 0.8 },
   footer: { display: 'flex', justifyContent: 'space-between', marginTop: 8 },
@@ -209,6 +198,7 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const value = useMemo(
     () =>
       Array.from(
@@ -282,7 +272,14 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
       selections.map(item => [item.ref, item]),
     );
   });
+  const stableRows = useStableSelectionRows({
+    rows,
+    selections,
+    search: options.searchText,
+    open,
+  });
   const setIsOpen = (next: boolean) => {
+    if (next && !open && !disabled) stableRows.beginSession();
     setOpen(next && !disabled);
     if (!next) options.setSearchText('');
     if (next && options.loadingState === 'error') options.retry();
@@ -296,8 +293,9 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
   }, [disabled, setSearchText]);
   const atMax =
     multiple && props.maxItems !== undefined && value.length >= props.maxItems;
-  const availableRows = rows.filter(row => !value.includes(row.ref));
-  const disabledKeys = atMax ? availableRows.map(row => row.ref) : [];
+  const disabledKeys = stableRows.items
+    .filter(row => disabled || (atMax && !value.includes(row.ref)))
+    .map(row => row.ref);
 
   return (
     <div className={classes.root} role="group" aria-label={label}>
@@ -343,42 +341,35 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
                     ref={searchRef}
                     className={classes.input}
                     placeholder="Filter by name or entity reference"
+                    onKeyDown={event => {
+                      if (event.nativeEvent.isComposing) return;
+                      if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp')
+                        return;
+                      // Interactive rows take actual focus so their remove
+                      // buttons remain reachable, rather than virtual focus.
+                      const enabledRows =
+                        listRef.current?.querySelectorAll<HTMLElement>(
+                          '[role="row"][tabindex]:not([aria-disabled="true"])',
+                        );
+                      const target =
+                        event.key === 'ArrowDown'
+                          ? enabledRows?.[0]
+                          : enabledRows?.[enabledRows.length - 1];
+                      if (target) {
+                        event.preventDefault();
+                        target.focus();
+                      }
+                    }}
                   />
                   <Button className={classes.button} aria-label="Clear search">
                     ×
                   </Button>
                 </SearchField>
-                {selections.length > 0 && (
-                  <ul
-                    className={classes.selected}
-                    aria-label={`Selected ${label}`}
-                  >
-                    {selections.map(item => (
-                      <li key={item.ref} className={classes.selectedItem}>
-                        <div aria-hidden="true">✓</div>
-                        <div className={classes.selectedText}>
-                          <div>{item.label}</div>
-                          <div className={classes.detail}>{item.ref}</div>
-                        </div>
-                        <Button
-                          className={classes.button}
-                          isDisabled={disabled}
-                          aria-label={`Remove ${item.label}`}
-                          onPress={() => {
-                            onChange(value.filter(ref => ref !== item.ref));
-                            searchRef.current?.focus();
-                          }}
-                        >
-                          ×
-                        </Button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                <ListBox
+                <GridList
+                  ref={listRef}
                   className={classes.list}
                   aria-label={label}
-                  // Keep the listbox as React Aria's keyboard scroll root,
+                  // Keep the list as React Aria's keyboard scroll root,
                   // with the sentinel outside its selectable collection.
                   render={listProps => (
                     <div {...listProps}>
@@ -394,16 +385,39 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
                       />
                     </div>
                   )}
-                  items={availableRows}
+                  items={stableRows.items}
+                  dependencies={[classes, disabled, onChange, value]}
                   selectionMode={multiple ? 'multiple' : 'single'}
-                  selectedKeys={[]}
+                  selectedKeys={value}
                   disabledKeys={disabledKeys}
                   onSelectionChange={keys => {
-                    if (keys === 'all' || disabled || atMax) return;
-                    const next = availableRows.find(row => keys.has(row.ref));
-                    if (!next) return;
-                    onChange(multiple ? [...value, next.ref] : [next.ref]);
-                    if (multiple) searchRef.current?.focus();
+                    if (keys === 'all' || disabled) return;
+                    const visibleRefs = new Set(
+                      stableRows.items.map(row => row.ref),
+                    );
+                    const added = stableRows.items
+                      .filter(
+                        row => keys.has(row.ref) && !value.includes(row.ref),
+                      )
+                      .map(row => row.ref);
+                    const next = multiple
+                      ? [
+                          ...value.filter(
+                            ref => !visibleRefs.has(ref) || keys.has(ref),
+                          ),
+                          ...added,
+                        ]
+                      : Array.from(keys, String);
+                    if (
+                      multiple &&
+                      added.length > 0 &&
+                      props.maxItems !== undefined &&
+                      next.length > props.maxItems
+                    )
+                      return;
+                    onChange(next);
+                    if (multiple || !next.length)
+                      searchRef.current?.focus({ preventScroll: true });
                     else setIsOpen(false);
                   }}
                   renderEmptyState={() => {
@@ -413,23 +427,49 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
                   }}
                 >
                   {row => (
-                    <ListBoxItem
+                    <GridListItem
                       id={row.ref}
                       textValue={`${row.label} ${row.ref}`}
                       className={classes.option}
                     >
-                      <div className={classes.optionText}>
-                        <Text slot="label">{row.label}</Text>
-                        <Text slot="description" className={classes.detail}>
-                          {row.ref}
-                          {row.missing
-                            ? ' · Not found in catalog — reference only'
-                            : ''}
-                        </Text>
-                      </div>
-                    </ListBoxItem>
+                      {({ isSelected }) => (
+                        <>
+                          <div className={classes.check} aria-hidden="true">
+                            {isSelected ? '✓' : null}
+                          </div>
+                          <div className={classes.optionText}>
+                            <Text>{row.label}</Text>
+                            <Text slot="description" className={classes.detail}>
+                              {row.ref}
+                              {row.missing
+                                ? ' · Not found in catalog — reference only'
+                                : ''}
+                            </Text>
+                          </div>
+                          <div className={classes.remove}>
+                            {isSelected && (
+                              <Button
+                                className={classes.button}
+                                isDisabled={disabled}
+                                aria-label={`Remove ${row.label}`}
+                                onPress={() => {
+                                  onChange(
+                                    value.filter(ref => ref !== row.ref),
+                                  );
+                                  searchRef.current?.focus({
+                                    preventScroll: true,
+                                  });
+                                }}
+                              >
+                                ×
+                              </Button>
+                            )}
+                          </div>
+                        </>
+                      )}
+                    </GridListItem>
                   )}
-                </ListBox>
+                </GridList>
                 {(options.loadingState === 'error' ||
                   options.loadMoreError) && (
                   <div role="status">
