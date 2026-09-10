@@ -15,13 +15,13 @@
  */
 import { ConnectionTypeKey, LookupConnectionType } from '../definitions';
 import { Connection } from './Connection';
-import { ConnectionAuthMethodKey, ConnectionType } from './ConnectionType';
+import { ConnectionType } from './ConnectionType';
 
 /** @public */
 export interface ConnectionsService {
   find<
     TType extends ConnectionTypeKey,
-    TAuthMethod extends ConnectionAuthMethodKey<TType>,
+    TAuthMethod extends LookupConnectionType<TType>['authMethods'][number]['method'],
   >(options: {
     type: TType;
     query: LookupConnectionType<TType> extends ConnectionType<infer IDefinition>

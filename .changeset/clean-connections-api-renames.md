@@ -1,0 +1,11 @@
+---
+'@backstage/connections': minor
+---
+
+**BREAKING**: Cleaned up the public API surface with the following changes:
+
+- Renamed `ConnectionAuthValue` to `ConnectionAuth`
+- Renamed `LookupStrategy` to `ConnectionLookupStrategy`
+- Removed `ConnectionAuthMatch` (inlined as `{ plugins: string[] }`)
+- Removed `ConnectionAuthMethodKey` (inlined where used)
+- Broadened the `buildConnectionsFromConfig` logger option to accept any logger with `error`, `warn`, `info`, and `debug` methods

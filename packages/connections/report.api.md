@@ -11,8 +11,10 @@ import type { JsonObject } from '@backstage/types';
 export function buildConnectionsFromConfig(options: {
   config: Config;
   logger?: {
-    debug(message: string): void;
+    error(message: string): void;
     warn(message: string): void;
+    info(message: string): void;
+    debug(message: string): void;
   };
 }): ConfiguredConnection[];
 
@@ -41,7 +43,9 @@ export type ConfiguredConnectionAuth<M> = M extends {
       {
         method: TMethod;
         title?: string;
-        match?: ConnectionAuthMatch;
+        match?: {
+          plugins: string[];
+        };
       } & TConfig
     >
   : never;
@@ -55,9 +59,9 @@ export type Connection<
       type: LookupConnectionType<T>['type'];
       title: string;
       auth: string extends TAuthMethod
-        ? ConnectionAuthValue<IDefinition['auth'][number]>[]
+        ? ConnectionAuth<IDefinition['auth'][number]>[]
         : Extract<
-            ConnectionAuthValue<IDefinition['auth'][number]>,
+            ConnectionAuth<IDefinition['auth'][number]>,
             {
               method: TAuthMethod;
             }
@@ -66,17 +70,7 @@ export type Connection<
   : never;
 
 // @public
-export type ConnectionAuthMatch = {
-  plugins: string[];
-};
-
-// @public (undocumented)
-export type ConnectionAuthMethodKey<
-  T extends ConnectionType | ConnectionTypeKey,
-> = LookupConnectionType<T>['authMethods'][number]['method'];
-
-// @public
-export type ConnectionAuthValue<
+export type ConnectionAuth<
   TAuthConfig extends {
     method: string;
   },
@@ -89,11 +83,14 @@ export type ConnectionAuthValue<
   : never;
 
 // @public (undocumented)
+export type ConnectionLookupStrategy = 'host' | 'aws';
+
+// @public (undocumented)
 export interface ConnectionsService {
   // (undocumented)
   find<
     TType extends ConnectionTypeKey,
-    TAuthMethod extends ConnectionAuthMethodKey<TType>,
+    TAuthMethod extends LookupConnectionType<TType>['authMethods'][number]['method'],
   >(options: {
     type: TType;
     query: LookupConnectionType<TType> extends ConnectionType<infer IDefinition>
@@ -115,7 +112,7 @@ export type ConnectionType<
   T extends {
     type: string;
     cardinality: 'singleton' | 'multiton';
-    lookupStrategy: LookupStrategy;
+    lookupStrategy: ConnectionLookupStrategy;
     query: unknown;
     configSchema: unknown;
     auth: readonly {
@@ -124,7 +121,7 @@ export type ConnectionType<
   } = {
     type: string;
     cardinality: 'singleton' | 'multiton';
-    lookupStrategy: LookupStrategy;
+    lookupStrategy: ConnectionLookupStrategy;
     query: unknown;
     configSchema: unknown;
     auth: readonly {
@@ -149,14 +146,16 @@ export type ConnectionType<
       : never
     : never)[];
   matchAuth?(
-    authMethods: ConnectionAuthValue<T['auth'][number]>[],
+    authMethods: ConnectionAuth<T['auth'][number]>[],
     query: T['query'],
-  ): ConnectionAuthValue<T['auth'][number]> | undefined;
+  ): ConnectionAuth<T['auth'][number]> | undefined;
   validate?(connection: {
     config: T['configSchema'];
     auth: readonly Expand<
       T['auth'][number] & {
-        match?: ConnectionAuthMatch;
+        match?: {
+          plugins: string[];
+        };
       }
     >[];
   }): void;
@@ -519,9 +518,6 @@ export const connectionTypes: {
 // @public (undocumented)
 export type LookupConnectionType<T extends ConnectionTypeKey | ConnectionType> =
   T extends ConnectionTypeKey ? (typeof connectionTypes)[T] : T;
-
-// @public (undocumented)
-export type LookupStrategy = 'host' | 'aws';
 
 // @public
 export type PortableSchema<TOutput = unknown, TInput = TOutput> = {
