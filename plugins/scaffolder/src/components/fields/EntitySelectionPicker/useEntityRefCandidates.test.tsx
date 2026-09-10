@@ -80,7 +80,15 @@ it('ignores stale lookups and distinguishes a missing ref from a later catalog e
   rerender({ refs: ['user:default/freben'] });
   await waitFor(() =>
     expect(result.current.options).toEqual([
-      { ref: 'user:default/freben', label: 'Fredrik Adelöw' },
+      {
+        ref: 'user:default/freben',
+        label: 'Fredrik Adelöw',
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'User',
+          metadata: { name: 'freben', title: 'Fredrik Adelöw' },
+        },
+      },
     ]),
   );
 });

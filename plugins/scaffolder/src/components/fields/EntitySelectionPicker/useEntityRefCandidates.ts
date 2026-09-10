@@ -21,12 +21,13 @@ import {
   catalogApiRef,
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
-import { parseEntityRef } from '@backstage/catalog-model';
+import { Entity, parseEntityRef } from '@backstage/catalog-model';
 
 export type EntitySelectionOption = {
   ref: string;
   label: string;
   missing?: boolean;
+  entity?: Entity;
 };
 
 export function referenceLabel(ref: string): string {
@@ -67,6 +68,7 @@ export function useEntityRefCandidates(refs: string[], enabled: boolean) {
             return entity
               ? {
                   ref,
+                  entity,
                   label: (await presentationApi.forEntity(entity).promise)
                     .primaryTitle,
                 }

@@ -116,6 +116,27 @@ describe('EntitySelectionPicker', () => {
     globalThis.IntersectionObserver = originalObserver;
   });
 
+  it('uses entity presentation icons for real entries without linking picker rows or missing references', async () => {
+    await setup({
+      multiple: true,
+      value: ['user:default/freben', 'user:default/missing'],
+    });
+    const link = await screen.findByRole('link', { name: 'Fredrik Adelöw' });
+    expect(link).toHaveAttribute('href', '/entities/user%3Adefault%2Ffreben');
+    expect(link.querySelector('svg')).toBeInTheDocument();
+    const missing = screen.getByText('User missing').closest('li')!;
+    expect(within(missing).queryByRole('link')).not.toBeInTheDocument();
+    expect(missing.querySelector('svg')).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    const row = await screen.findByRole('row', { name: /Fredrik Adelöw/ });
+    expect(row.querySelector('svg')).toBeInTheDocument();
+    expect(within(row).queryByRole('link')).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('row', { name: /User missing/ }).querySelector('svg'),
+    ).not.toBeInTheDocument();
+  });
+
   it('keeps loading feedback in a reserved slot inside the results', async () => {
     const { catalogApi, queryEntities } = await setup({}, entities);
     let finishPage!: () => void;
