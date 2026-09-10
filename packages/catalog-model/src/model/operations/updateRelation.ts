@@ -51,6 +51,10 @@ export const opUpdateRelationV1Schema = z.strictObject({
      */
     reverseType: z.string().optional(),
     /**
+     * A human-readable title for the currently declared reverse relation.
+     */
+    reverseTitle: z.string().optional(),
+    /**
      * A human-readable title for the relation type, e.g. "owned by".
      */
     title: z.string().optional(),

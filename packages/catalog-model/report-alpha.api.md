@@ -220,7 +220,6 @@ export interface CatalogModelKindVersionDefinition {
   description?: string;
   name: string | string[];
   relationFields?: CatalogModelKindRelationFieldDefinition[];
-  // (undocumented)
   schema: {
     jsonSchema: JsonObject;
   };

@@ -32,6 +32,31 @@ const schema = {
 };
 
 describe('SchemaValidator', () => {
+  it('resolves local and root-ID references independently for each schema', () => {
+    const validator = new SchemaValidator();
+    const createSchema = (minimum: number) => ({
+      $id: 'https://example.com/widget',
+      type: 'object',
+      definitions: { size: { type: 'number', minimum } },
+      properties: {
+        local: { $ref: '#/definitions/size' },
+        absolute: { $ref: 'https://example.com/widget#/definitions/size' },
+      },
+    });
+    const original = createSchema(1);
+    const stricter = createSchema(5);
+
+    expect(validator.validate(original, { local: 3, absolute: 3 })).toEqual([]);
+    expect(validator.validate(stricter, { local: 5, absolute: 5 })).toEqual([]);
+    expect(validator.validate(stricter, { local: 3, absolute: 5 })).not.toEqual(
+      [],
+    );
+    expect(validator.validate(stricter, { local: 5, absolute: 3 })).not.toEqual(
+      [],
+    );
+    expect(validator.validate(original, { local: 3, absolute: 3 })).toEqual([]);
+  });
+
   it('returns no errors for valid data', () => {
     const validator = new SchemaValidator();
     const errors = validator.validate(schema, {
