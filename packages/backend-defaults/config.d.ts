@@ -681,6 +681,11 @@ export interface Config {
       /** Database name prefix override */
       prefix?: string;
       /**
+       * Prefix for schema names when using pluginDivisionMode: schema.
+       * @default ''
+       */
+      schemaPrefix?: string;
+      /**
        * Whether to ensure the given database exists by creating it if it does not.
        * Defaults to true if unspecified.
        */
