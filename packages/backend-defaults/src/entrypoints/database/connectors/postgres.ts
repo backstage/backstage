@@ -924,6 +924,7 @@ export class PgConnector implements Connector {
       this.config,
       pluginId,
       this.prefix,
+      this.schemaPrefix,
     );
 
     if (pluginDbConfig.databaseName && pluginDbConfig.ensureExists) {
