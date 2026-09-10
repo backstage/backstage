@@ -94,6 +94,15 @@ const Child2 = createExtension({
   },
 });
 
+const NewExtension = createExtension({
+  name: 'new',
+  attachTo: { id: 'test/output', input: 'names' },
+  output: [nameExtensionDataRef],
+  factory() {
+    return [nameExtensionDataRef('extension-new')];
+  },
+});
+
 const outputExtension = createExtension({
   name: 'output',
   attachTo: { id: 'app', input: 'root' },
@@ -373,16 +382,7 @@ describe('createFrontendPlugin', () => {
     it('should allow overriding extensions that have a matching ID, keeping the original extension order and appending extensions that do not have overlapping IDs', async () => {
       const plugin = createFrontendPlugin({
         pluginId: 'test',
-        extensions: [Extension1, Extension2, outputExtension],
-      });
-
-      const NewExtension = createExtension({
-        name: 'new',
-        attachTo: { id: 'test/output', input: 'names' },
-        output: [nameExtensionDataRef],
-        factory() {
-          return [nameExtensionDataRef('extension-new')];
-        },
+        extensions: [Extension1, Extension2, Extension3, outputExtension],
       });
 
       await renderWithEffects(
@@ -394,6 +394,11 @@ describe('createFrontendPlugin', () => {
                 plugin.getExtension('test/1').override({
                   factory() {
                     return [nameExtensionDataRef('overridden')];
+                  },
+                }),
+                plugin.getExtension('test/2').override({
+                  factory() {
+                    return [nameExtensionDataRef('overridden-2')];
                   },
                 }),
               ],
@@ -408,7 +413,9 @@ describe('createFrontendPlugin', () => {
       );
 
       await expect(
-        screen.findByText('Names: overridden, extension-2, extension-new'),
+        screen.findByText(
+          'Names: overridden, overridden-2, extension-3:, extension-new',
+        ),
       ).resolves.toBeInTheDocument();
     });
 

@@ -220,20 +220,36 @@ export function resolveExtensionDefinitions(
   }
 
   if (extensions.length !== extensionDefinitionsById.size) {
-    const extensionIds = extensions.map(e => e.id);
-    const duplicates = Array.from(
-      new Set(
-        extensionIds.filter((id, index) => extensionIds.indexOf(id) !== index),
-      ),
+    throwOnDuplicateExtensionIds(
+      extensions.map(e => e.id),
+      context,
     );
+  }
+
+  return { extensions, extensionDefinitionsById };
+}
+
+/**
+ * Throws if the provided list of resolved extension IDs contains duplicates.
+ *
+ * @internal
+ */
+export function throwOnDuplicateExtensionIds(
+  extensionIds: string[],
+  context: { namespace: string; featureType: string },
+): void {
+  const duplicates = Array.from(
+    new Set(
+      extensionIds.filter((id, index) => extensionIds.indexOf(id) !== index),
+    ),
+  );
+  if (duplicates.length > 0) {
     throw new Error(
       `${context.featureType} '${
         context.namespace
       }' provided duplicate extensions: ${duplicates.join(', ')}`,
     );
   }
-
-  return { extensions, extensionDefinitionsById };
 }
 
 /** @internal */
