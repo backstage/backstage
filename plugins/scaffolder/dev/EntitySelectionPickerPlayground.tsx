@@ -243,32 +243,41 @@ export function EntitySelectionPickerPlayground() {
             <Text as="h2" variant="title-small">
               Selection-first prototype
             </Text>
-            <EntitySelectionPicker
-              label={mode === 'groups' ? 'My groups' : 'Owners'}
-              popupTitle={
-                mode === 'groups'
-                  ? 'Choose a group for this component'
-                  : 'Choose owners for this component'
-              }
-              itemLayout={itemLayout}
-              getItemHref={ref => {
-                const { kind, namespace, name } = parseEntityRef(ref);
-                return `/catalog/${encodeURIComponent(
-                  kind,
-                )}/${encodeURIComponent(namespace)}/${encodeURIComponent(
-                  name,
-                )}`;
+            <Box my="12">
+              <EntitySelectionPicker
+                label={mode === 'groups' ? 'My groups' : 'Owners'}
+                popupTitle={
+                  mode === 'groups'
+                    ? 'Choose a group for this component'
+                    : 'Choose owners for this component'
+                }
+                itemLayout={itemLayout}
+                getItemHref={ref => {
+                  const { kind, namespace, name } = parseEntityRef(ref);
+                  return `/catalog/${encodeURIComponent(
+                    kind,
+                  )}/${encodeURIComponent(namespace)}/${encodeURIComponent(
+                    name,
+                  )}`;
+                }}
+                value={value}
+                onChange={setValue}
+                catalogFilter={filter}
+                defaultKind="Group"
+                multiple={multiple}
+                maxItems={multiple ? 3 : undefined}
+                allowMissingEntities={allowMissing && mode !== 'groups'}
+                disabled={disabled}
+              />
+            </Box>
+            <Box
+              p="4"
+              style={{
+                background:
+                  'color-mix(in srgb, var(--bui-fg-primary) 6%, transparent)',
+                borderRadius: 'var(--bui-radius-2)',
               }}
-              value={value}
-              onChange={setValue}
-              catalogFilter={filter}
-              defaultKind="Group"
-              multiple={multiple}
-              maxItems={multiple ? 3 : undefined}
-              allowMissingEntities={allowMissing && mode !== 'groups'}
-              disabled={disabled}
-            />
-            <Box mt="4">
+            >
               <Text variant="body-x-small" color="secondary">
                 Committed references
               </Text>
@@ -281,26 +290,37 @@ export function EntitySelectionPickerPlayground() {
             <Text as="h2" variant="title-small">
               Current paginated picker
             </Text>
-            {mode === 'groups' ? (
-              <ComparisonMyGroupsPicker
-                {...(oldProps as unknown as ComponentProps<
-                  typeof MyGroupsPicker
-                >)}
-              />
-            ) : null}
-            {multiple ? (
-              <ComparisonMultiEntityPicker
-                {...(oldProps as unknown as ComponentProps<
-                  typeof MultiEntityPicker
-                >)}
-              />
-            ) : null}
-            {mode === 'owner' ? (
-              <ComparisonOwnerPicker
-                {...(oldProps as unknown as ComponentProps<typeof OwnerPicker>)}
-              />
-            ) : null}
-            <Box mt="4">
+            <Box my="12">
+              {mode === 'groups' ? (
+                <ComparisonMyGroupsPicker
+                  {...(oldProps as unknown as ComponentProps<
+                    typeof MyGroupsPicker
+                  >)}
+                />
+              ) : null}
+              {multiple ? (
+                <ComparisonMultiEntityPicker
+                  {...(oldProps as unknown as ComponentProps<
+                    typeof MultiEntityPicker
+                  >)}
+                />
+              ) : null}
+              {mode === 'owner' ? (
+                <ComparisonOwnerPicker
+                  {...(oldProps as unknown as ComponentProps<
+                    typeof OwnerPicker
+                  >)}
+                />
+              ) : null}
+            </Box>
+            <Box
+              p="4"
+              style={{
+                background:
+                  'color-mix(in srgb, var(--bui-fg-primary) 6%, transparent)',
+                borderRadius: 'var(--bui-radius-2)',
+              }}
+            >
               <Text variant="body-x-small" color="secondary">
                 Committed references
               </Text>
