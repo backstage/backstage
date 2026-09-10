@@ -2,4 +2,4 @@
 '@backstage/backend-plugin-api': minor
 ---
 
-Added an instance ID to the root instance metadata service. The globally unique ID identifies the running backend instance and remains stable for its lifetime.
+**BREAKING PRODUCERS**: Added an instance ID to the root instance metadata service. Custom implementations and mocks must now provide a globally unique ID that remains stable for the lifetime of the running backend instance.

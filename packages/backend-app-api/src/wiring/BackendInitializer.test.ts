@@ -1536,9 +1536,9 @@ describe('BackendInitializer', () => {
     await init.start();
   });
 
-  it('should properly add plugins + modules to the instance metadata service', async () => {
+  it('should add plugins and modules and default an empty instance ID', async () => {
     expect.assertions(2);
-    const backend = new BackendInitializer(baseFactories);
+    const backend = new BackendInitializer(baseFactories, undefined, '');
     const plugin = createBackendPlugin({
       pluginId: 'test',
       register(reg) {

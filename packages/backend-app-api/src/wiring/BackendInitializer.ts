@@ -273,7 +273,7 @@ export class BackendInitializer {
     this.#serviceRegistry = ServiceRegistry.create([...defaultApiFactories]);
     this.#extensionPointFactoryMiddleware =
       extensionPointFactoryMiddleware ?? [];
-    this.#instanceId = instanceId ?? randomUUID();
+    this.#instanceId = instanceId || randomUUID();
   }
 
   async #getInitDeps(
