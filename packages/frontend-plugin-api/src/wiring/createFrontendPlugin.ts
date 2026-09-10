@@ -313,14 +313,30 @@ export function createFrontendPlugin<
         ifPredicate = overrides.if;
       }
       const overrideExtensions = overrides.extensions ?? [];
-      const overriddenExtensionIds = new Set(
-        overrideExtensions.map(
-          e => resolveExtensionDefinition(e, { namespace: pluginId }).id,
-        ),
+      const overrideExtensionsById = new Map(
+        overrideExtensions.map(e => [
+          resolveExtensionDefinition(e, { namespace: pluginId }).id,
+          e,
+        ]),
       );
-      const nonOverriddenExtensions = (options.extensions ?? []).filter(
+      // Extensions that override an existing one replace it in place, keeping
+      // the original registration order, since the order affects the order of
+      // attachments in the app. Remaining extensions are appended at the end.
+      const replacedExtensionIds = new Set<string>();
+      const mergedExtensions = (options.extensions ?? []).map(extension => {
+        const id = resolveExtensionDefinition(extension, {
+          namespace: pluginId,
+        }).id;
+        const overrideExtension = overrideExtensionsById.get(id);
+        if (overrideExtension) {
+          replacedExtensionIds.add(id);
+          return overrideExtension;
+        }
+        return extension;
+      });
+      const newExtensions = overrideExtensions.filter(
         e =>
-          !overriddenExtensionIds.has(
+          !replacedExtensionIds.has(
             resolveExtensionDefinition(e, { namespace: pluginId }).id,
           ),
       );
@@ -330,7 +346,7 @@ export function createFrontendPlugin<
         if: ifPredicate,
         title: overrides.title ?? options.title,
         icon: overrides.icon ?? options.icon,
-        extensions: [...nonOverriddenExtensions, ...overrideExtensions],
+        extensions: [...mergedExtensions, ...newExtensions],
         info: {
           ...options.info,
           ...overrides.info,
