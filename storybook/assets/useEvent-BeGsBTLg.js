@@ -1,1 +1,0 @@
-import{G as l}from"./useFocusRing-o6_0h1DB.js";import{c8 as s}from"./iframe-CJeP2vvm.js";function i(e,t,f,r){let c=l(f),a=f==null;s.useEffect(()=>{if(a||!e.current)return;let n=e.current;return n.addEventListener(t,c,r),()=>{n.removeEventListener(t,c,r)}},[e,t,r,a])}export{i as $};
