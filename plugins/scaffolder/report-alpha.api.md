@@ -867,8 +867,10 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'templateEditorPage.templateEditorBrowser.saveIconTooltip': 'Save all files';
     readonly 'templateEditorPage.templateEditorBrowser.reloadIconTooltip': 'Reload directory';
     readonly 'templateEditorPage.templateEditorBrowser.closeIconTooltip': 'Close directory';
-    readonly 'templateEditorPage.templateEditorBrowser.loadingFiles': 'Loading {{total}} files...';
-    readonly 'templateEditorPage.templateEditorBrowser.loadingFilesProgress': 'Loading {{loaded}} of {{total}} files...';
+    readonly 'templateEditorPage.templateEditorBrowser.loadingFiles_one': 'Loading {{count}} file...';
+    readonly 'templateEditorPage.templateEditorBrowser.loadingFiles_other': 'Loading {{count}} files...';
+    readonly 'templateEditorPage.templateEditorBrowser.loadingFilesProgress_one': 'Loading {{loaded}} of {{count}} file...';
+    readonly 'templateEditorPage.templateEditorBrowser.loadingFilesProgress_other': 'Loading {{loaded}} of {{count}} files...';
     readonly 'templateEditorPage.templateEditorIntro.title': 'Get started by choosing one of the options below';
     readonly 'templateEditorPage.templateEditorIntro.loadLocal.title': 'Load Template Directory';
     readonly 'templateEditorPage.templateEditorIntro.loadLocal.description': 'Load a local template directory, allowing you to both edit and try executing your own template.';

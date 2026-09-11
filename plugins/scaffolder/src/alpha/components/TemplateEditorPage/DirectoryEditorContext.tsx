@@ -22,7 +22,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import {
@@ -147,6 +146,8 @@ class DirectoryEditorManager implements DirectoryEditor {
   #loading = false;
   #loadedFileCount = 0;
   #totalFileCount = 0;
+  #reloadGeneration = 0;
+  #reloadPromise: Promise<void> | null = null;
 
   constructor(access: TemplateDirectoryAccess) {
     this.#access = access;
@@ -186,51 +187,127 @@ class DirectoryEditorManager implements DirectoryEditor {
   }
 
   async save(): Promise<void> {
-    await Promise.all(this.#files.map(file => file.save()));
-  }
-
-  async reload(): Promise<void> {
     if (this.#loading) {
       return;
     }
+    await Promise.all(this.#files.map(file => file.save()));
+  }
+
+  reload(): Promise<void> {
+    if (this.#reloadPromise) {
+      return this.#reloadPromise;
+    }
 
     const selectedPath = this.#selectedFile?.path;
+    const currentGeneration = ++this.#reloadGeneration;
 
     this.#loading = true;
     this.#loadedFileCount = 0;
     this.#totalFileCount = 0;
     this.#signalUpdate();
 
-    try {
-      const fileAccesses = await this.#access.listFiles();
+    let reloadPromise: Promise<void> | null = null;
 
-      this.#files.length = 0;
-      this.#totalFileCount = fileAccesses.length;
-      this.#signalUpdate();
+    const doReload = async () => {
+      try {
+        const fileAccesses = await this.#access.listFiles();
+        if (this.#reloadGeneration !== currentGeneration) {
+          return;
+        }
 
-      for (let i = 0; i < fileAccesses.length; i += FILE_READ_CONCURRENCY) {
-        const chunk = fileAccesses.slice(i, i + FILE_READ_CONCURRENCY);
-        const managers = await Promise.all(
-          chunk.map(async fileAccess => {
-            const manager = new DirectoryEditorFileManager(
-              fileAccess,
-              this.#signalUpdate,
-            );
-            await manager.reload({ silent: true });
-            this.#loadedFileCount++;
-            this.#signalUpdate();
-            return manager;
-          }),
-        );
-        this.#files.push(...managers);
+        this.#totalFileCount = fileAccesses.length;
         this.#signalUpdate();
-      }
 
-      this.setSelectedFile(selectedPath);
-    } finally {
-      this.#loading = false;
-      this.#signalUpdate();
-    }
+        const results = new Array<DirectoryEditorFileManager>(
+          fileAccesses.length,
+        );
+
+        if (fileAccesses.length > 0) {
+          await new Promise<void>((resolve, reject) => {
+            let nextIndex = 0;
+            let activeCount = 0;
+            let firstError: unknown = null;
+
+            const launchNext = () => {
+              if (this.#reloadGeneration !== currentGeneration) {
+                resolve();
+                return;
+              }
+
+              if (firstError) {
+                if (activeCount === 0) {
+                  reject(firstError);
+                }
+                return;
+              }
+
+              if (nextIndex >= fileAccesses.length) {
+                if (activeCount === 0) {
+                  resolve();
+                }
+                return;
+              }
+
+              const runTask = (index: number) => {
+                const fileAccess = fileAccesses[index];
+                activeCount++;
+
+                const manager = new DirectoryEditorFileManager(
+                  fileAccess,
+                  this.#signalUpdate,
+                );
+
+                manager
+                  .reload({ silent: true })
+                  .then(() => {
+                    results[index] = manager;
+                    if (this.#reloadGeneration === currentGeneration) {
+                      this.#loadedFileCount++;
+                      this.#signalUpdate();
+                    }
+                  })
+                  .catch(err => {
+                    if (!firstError) {
+                      firstError = err;
+                    }
+                  })
+                  .finally(() => {
+                    activeCount--;
+                    launchNext();
+                  });
+              };
+
+              while (
+                activeCount < FILE_READ_CONCURRENCY &&
+                nextIndex < fileAccesses.length &&
+                !firstError
+              ) {
+                runTask(nextIndex++);
+              }
+            };
+
+            launchNext();
+          });
+        }
+
+        if (this.#reloadGeneration === currentGeneration) {
+          this.#files = results;
+          this.setSelectedFile(selectedPath);
+        }
+      } finally {
+        if (this.#reloadPromise === reloadPromise) {
+          this.#reloadPromise = null;
+        }
+        if (this.#reloadGeneration === currentGeneration) {
+          this.#loading = false;
+          this.#signalUpdate();
+        }
+      }
+    };
+
+    reloadPromise = doReload();
+    this.#reloadPromise = reloadPromise;
+    return reloadPromise;
   }
 
   subscribe(listener: () => void): () => void {
@@ -272,13 +349,12 @@ export function DirectoryEditorProvider(props: DirectoryEditorProviderProps) {
   );
 
   const [error, setError] = useState<Error>();
-  const generationRef = useRef(0);
 
   useEffect(() => {
-    const generation = ++generationRef.current;
+    let isCurrent = true;
     if (!manager) {
       setError(undefined);
-      return;
+      return undefined;
     }
 
     setError(undefined);
@@ -286,7 +362,7 @@ export function DirectoryEditorProvider(props: DirectoryEditorProviderProps) {
     manager
       .reload()
       .then(() => {
-        if (generationRef.current !== generation) {
+        if (!isCurrent) {
           return;
         }
         const firstYaml = manager.files.find(file =>
@@ -297,11 +373,15 @@ export function DirectoryEditorProvider(props: DirectoryEditorProviderProps) {
         }
       })
       .catch(cause => {
-        if (generationRef.current !== generation) {
+        if (!isCurrent) {
           return;
         }
         setError(cause instanceof Error ? cause : new Error(String(cause)));
       });
+
+    return () => {
+      isCurrent = false;
+    };
   }, [manager]);
 
   if (error) {

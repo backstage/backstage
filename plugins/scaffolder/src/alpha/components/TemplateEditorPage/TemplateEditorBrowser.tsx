@@ -56,7 +56,7 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const handleClose = () => {
-    if (!props.onClose) {
+    if (!props.onClose || directoryEditor?.loading) {
       return;
     }
     if (changedFiles?.length) {
@@ -81,10 +81,10 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
       directoryEditor.loadedFileCount > 0
         ? t('templateEditorPage.templateEditorBrowser.loadingFilesProgress', {
             loaded: `${directoryEditor.loadedFileCount}`,
-            total: `${directoryEditor.totalFileCount}`,
+            count: directoryEditor.totalFileCount,
           })
         : t('templateEditorPage.templateEditorBrowser.loadingFiles', {
-            total: `${directoryEditor.totalFileCount}`,
+            count: directoryEditor.totalFileCount,
           });
   }
 
@@ -95,6 +95,9 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
           title={t('templateEditorPage.templateEditorBrowser.saveIconTooltip')}
         >
           <IconButton
+            aria-label={t(
+              'templateEditorPage.templateEditorBrowser.saveIconTooltip',
+            )}
             size="small"
             disabled={
               directoryEditor.loading ||
@@ -111,6 +114,9 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
           )}
         >
           <IconButton
+            aria-label={t(
+              'templateEditorPage.templateEditorBrowser.reloadIconTooltip',
+            )}
             size="small"
             disabled={directoryEditor.loading}
             onClick={() => directoryEditor.reload()}
@@ -122,8 +128,12 @@ export function TemplateEditorBrowser(props: { onClose?: () => void }) {
           title={t('templateEditorPage.templateEditorBrowser.closeIconTooltip')}
         >
           <IconButton
+            aria-label={t(
+              'templateEditorPage.templateEditorBrowser.closeIconTooltip',
+            )}
             size="small"
             className={classes.closeButton}
+            disabled={directoryEditor.loading}
             onClick={handleClose}
           >
             <CloseIcon />
