@@ -798,34 +798,38 @@ describe('AwsS3UrlReader', () => {
   });
 
   describe('buildCredentials with roleArn', () => {
-    const getCredProviderMock = jest.spyOn(
-      DefaultAwsCredentialsManager.prototype,
-      'getCredentialProvider',
-    );
+    let getCredProviderMock: jest.SpyInstance;
 
     beforeEach(() => {
-      s3Client.reset();
-      getCredProviderMock.mockReset();
-
-      s3Client.on(GetObjectCommand).resolves({
-        Body: sdkStreamMixin(
-          fs.createReadStream(
-            path.resolve(
-              __dirname,
-              '__fixtures__/awsS3/awsS3-mock-object.yaml',
+      getCredProviderMock = jest.spyOn(
+        DefaultAwsCredentialsManager.prototype,
+        'getCredentialProvider',
+      );
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+      s3SendMock.mockReset();
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          return {
+            Body: sdkStreamMixin(
+              fs.createReadStream(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                ),
+              ),
             ),
-          ),
-        ),
-        ETag: '123abc',
+            ETag: '123abc',
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
       });
     });
 
-    afterAll(() => {
-      getCredProviderMock.mockRestore();
-    });
-
     it('uses account-specific credentials as master credentials when account config exists for the role ARN', async () => {
-      const accountCreds = { accessKeyId: 'account-key', secretAccessKey: 'account-secret' };
+      const accountCreds = {
+        accessKeyId: 'account-key',
+        secretAccessKey: 'account-secret',
+      };
       getCredProviderMock.mockImplementation(async (opts?: any) => {
         if (opts?.arn) {
           return {
@@ -834,7 +838,10 @@ describe('AwsS3UrlReader', () => {
           };
         }
         return {
-          sdkCredentialProvider: async () => ({ accessKeyId: 'default-key', secretAccessKey: 'default-secret' }),
+          sdkCredentialProvider: async () => ({
+            accessKeyId: 'default-key',
+            secretAccessKey: 'default-secret',
+          }),
         };
       });
 
@@ -860,7 +867,10 @@ describe('AwsS3UrlReader', () => {
     });
 
     it('falls back to default credentials when no account config exists for the role ARN', async () => {
-      const defaultCreds = { accessKeyId: 'default-key', secretAccessKey: 'default-secret' };
+      const defaultCreds = {
+        accessKeyId: 'default-key',
+        secretAccessKey: 'default-secret',
+      };
       getCredProviderMock.mockImplementation(async (opts?: any) => {
         if (opts?.arn) {
           throw new Error('No matching account');

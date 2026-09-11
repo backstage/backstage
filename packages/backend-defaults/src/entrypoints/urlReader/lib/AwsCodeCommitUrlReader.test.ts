@@ -749,31 +749,37 @@ describe('AwsCodeCommitUrlReader', () => {
   });
 
   describe('buildCredentials with roleArn', () => {
-    const getCredProviderMock = jest.spyOn(
-      DefaultAwsCredentialsManager.prototype,
-      'getCredentialProvider',
-    );
+    let getCredProviderMock: jest.SpyInstance;
 
     beforeEach(() => {
-      codeCommitClient.reset();
-      getCredProviderMock.mockReset();
-
-      codeCommitClient.on(GetFileCommand).resolves({
-        fileContent: Buffer.from('site_name: Test\n'),
-        commitId: 'abc123',
-        filePath: 'catalog-info.yaml',
-        fileMode: 'NORMAL',
-        fileSize: 16,
-        blobId: 'blob1',
+      getCredProviderMock = jest.spyOn(
+        DefaultAwsCredentialsManager.prototype,
+        'getCredentialProvider',
+      );
+      jest
+        .spyOn(CodeCommitClient.prototype, 'send')
+        .mockImplementation(codeCommitSendMock);
+      codeCommitSendMock.mockReset();
+      codeCommitSendMock.mockImplementation(async command => {
+        if (command instanceof GetFileCommand) {
+          return {
+            fileContent: Buffer.from('site_name: Test\n'),
+            commitId: 'abc123',
+            filePath: 'catalog-info.yaml',
+            fileMode: 'NORMAL',
+            fileSize: 16,
+            blobId: 'blob1',
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
       });
     });
 
-    afterAll(() => {
-      getCredProviderMock.mockRestore();
-    });
-
     it('uses account-specific credentials as master credentials when account config exists for the role ARN', async () => {
-      const accountCreds = { accessKeyId: 'account-key', secretAccessKey: 'account-secret' };
+      const accountCreds = {
+        accessKeyId: 'account-key',
+        secretAccessKey: 'account-secret',
+      };
       getCredProviderMock.mockImplementation(async (opts?: any) => {
         if (opts?.arn) {
           return {
@@ -782,19 +788,25 @@ describe('AwsCodeCommitUrlReader', () => {
           };
         }
         return {
-          sdkCredentialProvider: async () => ({ accessKeyId: 'default-key', secretAccessKey: 'default-secret' }),
+          sdkCredentialProvider: async () => ({
+            accessKeyId: 'default-key',
+            secretAccessKey: 'default-secret',
+          }),
         };
       });
 
       const config = new ConfigReader({
         host: AMAZON_AWS_CODECOMMIT_HOST,
+        region: 'us-east-1',
         roleArn: 'arn:aws:iam::123456789012:role/MyRole',
       });
 
       const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
       const reader = new AwsCodeCommitUrlReader(
         credsManager,
-        new AwsCodeCommitIntegration(readAwsCodeCommitIntegrationConfig(config)),
+        new AwsCodeCommitIntegration(
+          readAwsCodeCommitIntegrationConfig(config),
+        ),
         { treeResponseFactory },
       );
 
@@ -808,7 +820,10 @@ describe('AwsCodeCommitUrlReader', () => {
     });
 
     it('falls back to default credentials when no account config exists for the role ARN', async () => {
-      const defaultCreds = { accessKeyId: 'default-key', secretAccessKey: 'default-secret' };
+      const defaultCreds = {
+        accessKeyId: 'default-key',
+        secretAccessKey: 'default-secret',
+      };
       getCredProviderMock.mockImplementation(async (opts?: any) => {
         if (opts?.arn) {
           throw new Error('No matching account');
@@ -820,13 +835,16 @@ describe('AwsCodeCommitUrlReader', () => {
 
       const config = new ConfigReader({
         host: AMAZON_AWS_CODECOMMIT_HOST,
+        region: 'us-east-1',
         roleArn: 'arn:aws:iam::123456789012:role/MyRole',
       });
 
       const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
       const reader = new AwsCodeCommitUrlReader(
         credsManager,
-        new AwsCodeCommitIntegration(readAwsCodeCommitIntegrationConfig(config)),
+        new AwsCodeCommitIntegration(
+          readAwsCodeCommitIntegrationConfig(config),
+        ),
         { treeResponseFactory },
       );
 
