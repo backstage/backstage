@@ -34,7 +34,7 @@ Route refs do not have any behavior themselves. They are an opaque value that re
 
 ### Providing Route References to Plugins
 
-The `extensionId` identifies the routable extension. The page supplies its path and content; it does not need to receive the route reference:
+The `extensionId` identifies the routable extension. The page supplies its path and content:
 
 ```tsx title="plugins/catalog/src/plugin.tsx"
 import {
@@ -492,8 +492,7 @@ Modules for plugins that are not installed are ignored. Modules do not provide
 
 For native extensions, add `extensionId` to each `createRouteRef` call and remove the corresponding
 `PageBlueprint` or `SubPageBlueprint` `routeRef` parameter. Keep `params` unchanged
-and ensure they match the target extension's route path. Sub routes and external
-bindings do not need to change.
+and ensure they match the target extension's route path.
 
 The runtime continues to support plugins built with earlier versions, including
 page-emitted refs and historical aliases. The `aliasFor` creation option is no
@@ -509,11 +508,10 @@ ID.
 For compatibility with hybrid conversion utilities, a structural ref can still
 be registered through an extension's deprecated `routeRef` output. If the target
 extension ID is absent from the app, the runtime uses that explicit mount as a
-fallback, including for equivalent ref copies. The wrapper's ID does not need to
-match the ref's target ID. Multiple fallback mounts for the same target are
+fallback, including for equivalent ref copies. Multiple fallback mounts for the same target are
 ambiguous and are rejected when the fallback is needed.
 
 An installed target always takes precedence over deprecated registrations. If
 that target is disabled or conditionally unavailable, the route remains
 unavailable. Keep the deprecated registration when migrating a shared ref used
-by hybrid wrappers; native replacement pages do not need it.
+by hybrid wrappers.

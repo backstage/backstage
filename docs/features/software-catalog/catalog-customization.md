@@ -221,9 +221,7 @@ component. In the new frontend system, these customizations are done by
 overriding the `page:catalog` extension.
 
 For example, to customize the catalog index page with custom columns or actions,
-you can override the page extension using a frontend module. Catalog route
-references target `page:catalog`, so the replacement page does not need to
-register a route reference:
+you can override the page extension using a frontend module:
 
 ```tsx title="packages/app/src/catalog/customCatalogPage.tsx"
 import {
