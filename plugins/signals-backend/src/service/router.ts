@@ -42,6 +42,45 @@ export interface RouterOptions {
   auth: AuthService;
 }
 
+function readWebSocketToken(
+  header: string | string[] | undefined,
+): string | undefined {
+  const value = Array.isArray(header) ? header[0] : header;
+  if (!value) {
+    return undefined;
+  }
+  // Sec-WebSocket-Protocol may list multiple protocols; the Backstage token is
+  // expected to be the first (and typically only) value.
+  const token = value.split(',')[0]?.trim();
+  return token || undefined;
+}
+
+function rejectUpgrade(
+  socket: Duplex,
+  statusLine: string,
+  logger: LoggerService,
+  details: {
+    remoteAddress?: string;
+    reason: string;
+  },
+) {
+  logger.warn('WebSocket upgrade rejected', {
+    remoteAddress: details.remoteAddress,
+    timestamp: new Date().toISOString(),
+    reason: details.reason,
+  });
+  // Flush the HTTP response, then destroy so the socket cannot linger.
+  socket.end(
+    `${statusLine}\r\n` +
+      'Connection: close\r\n' +
+      'Content-Length: 0\r\n' +
+      '\r\n',
+    () => {
+      socket.destroy();
+    },
+  );
+}
+
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
@@ -73,27 +112,39 @@ export async function createRouter(
       return;
     }
 
-    let userIdentity: BackstageUserInfo | undefined = undefined;
-
     // Authentication token is passed in Sec-WebSocket-Protocol header as there
     // is no other way to pass the token with plain websockets
+    const token = readWebSocketToken(request.headers['sec-websocket-protocol']);
+    if (!token) {
+      rejectUpgrade(socket, 'HTTP/1.1 401 Unauthorized', logger, {
+        remoteAddress: request.socket.remoteAddress,
+        reason: 'missing_token',
+      });
+      return;
+    }
+
+    let userIdentity: BackstageUserInfo;
     try {
-      const token = request.headers['sec-websocket-protocol'];
-      if (token) {
-        const credentials = await auth.authenticate(token);
-        if (auth.isPrincipal(credentials, 'user')) {
-          userIdentity = await userInfo.getUserInfo(credentials);
-        }
+      const credentials = await auth.authenticate(token);
+      if (!auth.isPrincipal(credentials, 'user')) {
+        rejectUpgrade(socket, 'HTTP/1.1 401 Unauthorized', logger, {
+          remoteAddress: request.socket.remoteAddress,
+          reason: 'non_user_principal',
+        });
+        return;
       }
+      userIdentity = await userInfo.getUserInfo(credentials);
     } catch (e) {
-      logger.error(`Failed to authenticate WebSocket connection: ${e}`);
-      socket.write(
-        'HTTP/1.1 401 Web Socket Protocol Handshake\r\n' +
-          'Upgrade: WebSocket\r\n' +
-          'Connection: Upgrade\r\n' +
-          '\r\n',
-      );
-      socket.destroy();
+      logger.debug('WebSocket authentication failed', {
+        remoteAddress: request.socket.remoteAddress,
+        reason: 'invalid_token',
+        errorName: e instanceof Error ? e.name : undefined,
+        errorMessage: e instanceof Error ? e.message : String(e),
+      });
+      rejectUpgrade(socket, 'HTTP/1.1 401 Unauthorized', logger, {
+        remoteAddress: request.socket.remoteAddress,
+        reason: 'invalid_token',
+      });
       return;
     }
 
@@ -108,35 +159,31 @@ export async function createRouter(
       );
     } catch (e) {
       logger.error(`Failed to handle WebSocket upgrade: ${e}`);
-      socket.write(
-        'HTTP/1.1 500 Web Socket Protocol Handshake\r\n' +
-          'Upgrade: WebSocket\r\n' +
-          'Connection: Upgrade\r\n' +
-          '\r\n',
-      );
-      socket.destroy();
+      rejectUpgrade(socket, 'HTTP/1.1 500 Internal Server Error', logger, {
+        remoteAddress: request.socket.remoteAddress,
+        reason: 'upgrade_failed',
+      });
     }
   };
 
+  // The HTTP server is only available via the request socket, so the upgrade
+  // listener is registered on the first request that reaches this router.
+  // Until then, WebSocket upgrades for this plugin are not handled (same
+  // constraint as before; registering on any first request is slightly more
+  // reliable than waiting for an Upgrade request through Express).
   const upgradeMiddleware = async (
     req: Request,
     _: Response,
     next: NextFunction,
   ) => {
-    const server: https.Server | http.Server = (req.socket as any)?.server;
-    if (
-      subscribedToUpgradeRequests ||
-      !server ||
-      !req.headers ||
-      req.headers.upgrade === undefined ||
-      req.headers.upgrade.toLowerCase() !== 'websocket'
-    ) {
-      next();
-      return;
+    if (!subscribedToUpgradeRequests) {
+      const server: https.Server | http.Server = (req.socket as any)?.server;
+      if (server) {
+        subscribedToUpgradeRequests = true;
+        server.on('upgrade', handleUpgrade);
+      }
     }
-
-    subscribedToUpgradeRequests = true;
-    server.on('upgrade', handleUpgrade);
+    next();
   };
 
   const router = Router();
