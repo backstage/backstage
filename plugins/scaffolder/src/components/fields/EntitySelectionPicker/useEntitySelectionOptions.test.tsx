@@ -56,18 +56,43 @@ async function setup(catalogFilter?: {
     </TestApiProvider>
   );
   const hook = renderHook(
-    () =>
+    ({ enabled }) =>
       useEntitySelectionOptions({
+        enabled,
         allowMissingEntities: true,
         defaultKind: 'User',
         catalogFilter,
         selectedEntityRefs: [],
       }),
-    { wrapper },
+    { wrapper, initialProps: { enabled: true } },
   );
   await waitFor(() => expect(hook.result.current.loading).toBe(false));
   return { ...hook, catalogApi, presentationApi };
 }
+
+it('ignores pending results after closing and only retries after reopening', async () => {
+  const { result, rerender, catalogApi } = await setup();
+  const pending = deferred<QueryEntitiesResponse>();
+  const query = jest
+    .spyOn(catalogApi, 'queryEntities')
+    .mockReturnValueOnce(pending.promise);
+  const initial = result.current.snapshot;
+  act(() => result.current.setSearchText('first'));
+  await waitFor(() => expect(query).toHaveBeenCalledTimes(1));
+  rerender({ enabled: false });
+  await act(async () =>
+    pending.resolve({ items: [], pageInfo: {}, totalItems: 0 }),
+  );
+  expect(result.current.snapshot).toBe(initial);
+  expect(result.current.loading).toBe(false);
+  act(() => result.current.retry());
+  await act(async () => result.current.loadMore());
+  expect(query).toHaveBeenCalledTimes(1);
+  rerender({ enabled: true });
+  await waitFor(() => expect(result.current.loading).toBe(false));
+  expect(query).toHaveBeenCalledTimes(2);
+  expect(result.current.snapshot.search).toBe('first');
+});
 
 it('preserves existence filters when querying the catalog', async () => {
   const { catalogApi, result } = await setup({

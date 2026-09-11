@@ -29,12 +29,18 @@ Try the single-owner, multiple-owner, and membership-filtered group scenarios,
 - The popup uses one edge-to-edge scrollable list, with padding inside its rows
   and surrounding controls rather than around the scroll area. Existing selections are placed first when
   it opens; selecting or removing an item does not move any rows until reopening.
-  Selected rows show a checkmark and removal button in reserved spaces, without
-  changing the row layout. Enabled rows highlight on hover, including when selected;
-  disabled rows do not. Keyboard navigation retains a separate focus ring.
+  Rows use the default BUI selection, hover, disabled, and keyboard-focus styling.
+  The focus ring is inset locally so the scroll viewport does not clip it.
+  Selected rows show the BUI checkmark and a removal action. A picker-scoped indent
+  reserves space for the checkmark in unselected rows so labels stay aligned when
+  toggling selection. Each row has a display-name line
+  and a secondary entity-reference description.
 - Typing starts a server-side search; it does not locally filter or reorder rows.
   Choosing a row commits its canonical entity reference.
   Escape, Done, or clicking outside discards the search, not the selections.
+- Options load only while the popup is open. Closing stops pending searches from
+  updating the results, and reopening refreshes the list. Already-selected
+  references still resolve while closed so their names and icons can be shown.
 - When missing references are allowed, a valid name such as `freben` offers
   explicit User and Group choices. Exact lookups distinguish missing entities
   from entities outside the current page, and errors do not create missing choices.
@@ -57,7 +63,7 @@ Try the single-owner, multiple-owner, and membership-filtered group scenarios,
   fetched, with the same search-field spinner. Catalog search, exact-reference
   lookups, and presentation work must all succeed before the latest search replaces
   that snapshot. Older responses cannot overwrite it. Rows remain selectable and
-  removable throughout; only their selection indicators change immediately.
+  removable throughout; selection changes apply immediately.
   Failure retains the complete previous list and offers an explicit retry.
   Clearing the filter follows the same publication rule; closing discards the
   popup's selection history.
@@ -67,9 +73,8 @@ Try the single-owner, multiple-owner, and membership-filtered group scenarios,
 
 ## Deliberate boundaries
 
-The picker uses BUI badges, links, buttons, search field, and popover, with a
-custom React Aria selection list styled using BUI tokens. Whether
-that generic composition belongs in BUI is an open design question, not a new
+The picker uses BUI badges, links, buttons, search field, popover, and List/ListRow.
+Whether the overall selection-picker composition belongs in BUI is an open design question, not a new
 Scaffolder API commitment. The experiment has no direct MUI dependency; icons
 supplied by the app's presentation API remain app-owned. The comparison picker
 is unchanged. This is not a full accessibility certification.

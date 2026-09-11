@@ -97,6 +97,16 @@
   outline: none;
 }
 
+.list :global(.bui-ListRow[data-focus-visible]) {
+  /* Keep BUI's focus ring inside the edge-to-edge scroll viewport. */
+  outline-offset: -2px;
+}
+
+.list :global(.bui-ListRow[data-selection-mode]:not([data-selected])) {
+  /* Reserve BUI's 1rem checkmark and row gap when no checkmark is rendered. */
+  padding-inline-start: calc(var(--bui-space-2) + 1rem + var(--bui-space-3));
+}
+
 .spinner {
   animation: spin 1s linear infinite;
 }
@@ -117,64 +127,6 @@
   padding: 10px calc(var(--bui-space-3) + var(--bui-space-2));
 }
 
-.option {
-  display: flex;
-  align-items: center;
-  gap: var(--bui-space-2);
-  border-radius: var(--bui-radius-2);
-  padding: 10px calc(var(--bui-space-3) + var(--bui-space-2));
-  cursor: pointer;
-  outline: none;
-}
-
-.option[data-selected] {
-  background: var(--bui-bg-neutral-2);
-}
-
-.option[data-focused] {
-  background: var(--bui-bg-neutral-2);
-  outline: 2px solid var(--bui-ring);
-  outline-offset: -2px;
-}
-
-.option[data-hovered]:not([data-disabled]) {
-  background: var(--bui-bg-neutral-1-hover);
-}
-
-.option[data-selected][data-hovered]:not([data-disabled]) {
-  background: var(--bui-bg-neutral-2-hover);
-}
-
-.option[data-disabled] {
-  color: var(--bui-fg-disabled);
-  cursor: default;
-}
-
-.option[data-disabled] .presentation,
-.option[data-disabled] .detail {
-  color: var(--bui-fg-disabled);
-}
-
-.optionText {
-  display: grid;
-  flex: 1;
-  gap: 2px;
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
-.check {
-  width: 20px;
-  flex-shrink: 0;
-  text-align: center;
-}
-
-.remove {
-  width: 32px;
-  min-height: 32px;
-  flex-shrink: 0;
-}
-
 .detail,
 .status {
   font-size: var(--bui-font-size-1);
@@ -190,6 +142,7 @@
 }
 
 .sentinel {
+  flex-shrink: 0;
   padding-inline: calc(var(--bui-space-3) + var(--bui-space-2));
 }
 
