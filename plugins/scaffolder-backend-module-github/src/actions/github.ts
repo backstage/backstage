@@ -103,6 +103,7 @@ export function createPublishGithubAction(options: {
         requiredLinearHistory: inputProps.requiredLinearHistory,
         customProperties: inputProps.customProperties,
         subscribe: inputProps.subscribe,
+        delay: inputProps.delay,
       },
       output: {
         remoteUrl: outputProps.remoteUrl,
@@ -153,6 +154,7 @@ export function createPublishGithubAction(options: {
         subscribe = false,
         requiredCommitSigning = false,
         requiredLinearHistory = false,
+        delay = 0,
       } = ctx.input;
 
       const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
@@ -205,6 +207,9 @@ export function createPublishGithubAction(options: {
             customProperties,
             subscribe,
             ctx.logger,
+            undefined,
+            undefined,
+            delay,
           );
 
           return {

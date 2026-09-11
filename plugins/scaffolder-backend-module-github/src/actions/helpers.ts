@@ -82,6 +82,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
   logger: LoggerService,
   autoInit?: boolean | undefined,
   workflowAccess?: 'none' | 'organization' | 'user',
+  delay: number = 0,
 ) {
   const user = await client.rest.users.getByUsername({
     username: owner,
@@ -136,6 +137,10 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
         toError(e).message
       }`,
     );
+  }
+
+  if (delay > 0) {
+    await new Promise(resolve => setTimeout(resolve, delay * 1000)); // wait for GitHub to finish creating the repository
   }
 
   if (access?.startsWith(`${owner}/`)) {

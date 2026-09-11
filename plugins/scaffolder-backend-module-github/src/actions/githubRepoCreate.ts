@@ -84,6 +84,7 @@ export function createGithubRepoCreateAction(options: {
         token: providedToken,
         autoInit = undefined,
         workflowAccess,
+        delay = 0,
       } = ctx.input;
 
       const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
@@ -138,6 +139,7 @@ export function createGithubRepoCreateAction(options: {
             ctx.logger,
             autoInit,
             workflowAccess,
+            delay,
           );
           return newRepo.clone_url;
         },
