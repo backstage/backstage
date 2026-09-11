@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkbackstage_microsite=self.webpackChunkbackstage_microsite||[]).push([["36762"],{337089(e,c,s){s.d(c,{createArchitectureServices:()=>t.S});var t=s(245796);s(504954)}}]);
