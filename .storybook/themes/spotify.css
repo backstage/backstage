@@ -207,6 +207,47 @@
   .bui-Tag {
     border-radius: var(--bui-radius-full);
   }
+
+  /* ── Radio: align with Encore FormRadio ──────────────────── */
+
+  .bui-Radio {
+    font-size: var(--bui-font-size-3);
+    gap: 0.75rem;
+    min-height: 2rem;
+    padding-block: 0.25rem;
+  }
+
+  .bui-Radio::before {
+    border-width: 1px;
+  }
+
+  .bui-Radio[data-selected]::before {
+    background-color: var(--bui-bg-solid);
+    border-color: var(--bui-bg-solid);
+    border-width: 1px;
+  }
+
+  .bui-Radio[data-selected]::after {
+    content: '';
+    position: absolute;
+    left: 0.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: var(--bui-bg-neutral-1);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .bui-Radio:not([data-selected]):not([data-disabled]):hover::before {
+    border-color: var(--bui-bg-solid);
+  }
+
+  .bui-Radio:not([data-selected]):not([data-disabled])[data-pressed]::before {
+    border-color: var(--bui-bg-solid);
+    box-shadow: inset 0 0 0 1px var(--bui-bg-solid);
+  }
 }
 
 [data-theme-mode='light'][data-theme-name='spotify'] {
@@ -229,6 +270,10 @@
   --bui-border-danger: #f87a7a;
   --bui-border-warning: #e36d05;
   --bui-border-success: #53db83;
+
+  .bui-Radio::before {
+    border-color: #818181;
+  }
 }
 
 [data-theme-mode='dark'][data-theme-name='spotify'] {
@@ -265,4 +310,8 @@
   --bui-border-danger: #f87a7a;
   --bui-border-warning: #e36d05;
   --bui-border-success: #53db83;
+
+  .bui-Radio::before {
+    border-color: #7c7c7c;
+  }
 }
