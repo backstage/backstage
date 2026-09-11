@@ -82,6 +82,12 @@ export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 export const CatalogEntityPage: () => JSX.Element;
 
 // @public
+export const CatalogExportButton: (input: {
+  settings?: CatalogExportSettings;
+  iconOnly?: boolean;
+}) => JSX_2.Element;
+
+// @public
 export type CatalogExporter = (options: {
   apis: ApiHolder;
   columns: CatalogExportSettingsColumn[];

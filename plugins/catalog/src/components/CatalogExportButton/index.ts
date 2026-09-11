@@ -17,5 +17,6 @@ export type {
   CatalogExportSettings,
   CatalogExporterConfig,
 } from './CatalogExportButton';
+export { CatalogExportButton } from './CatalogExportButton';
 export type { CatalogExportSettingsColumn } from './file-download/serializeEntities';
 export type { CatalogExporter } from './file-download/useStreamingExport';
