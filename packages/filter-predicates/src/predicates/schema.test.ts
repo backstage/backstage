@@ -15,8 +15,10 @@
  */
 
 import { z } from 'zod/v3';
+import { z as zodV4 } from 'zod/v4';
 import {
   createZodV3FilterPredicateSchema,
+  createZodV4FilterPredicateSchema,
   parseFilterPredicate,
 } from './schema';
 import { FilterPredicate } from './types';
@@ -108,6 +110,8 @@ describe('createZodV3FilterPredicateSchema', () => {
       { $not: { $all: [{ x: { $unknown: true } }] } },
       { $unknown: 'foo' },
       { 'metadata.tags': ['foo', 'bar'] },
+      { '\nkind': 'component' },
+      { 'kind\n': 'component' },
       { kind: 'API', $not: { 'spec.type': 'dataset' } },
       { kind: 'API', $all: [{ 'spec.type': 'service' }] },
       { kind: 'API', $any: [{ 'spec.type': 'service' }] },
@@ -117,6 +121,37 @@ describe('createZodV3FilterPredicateSchema', () => {
       const result = schema.safeParse(predicate);
       expect(result.success).toBe(false);
     });
+  });
+});
+
+describe('createZodV4FilterPredicateSchema', () => {
+  const schema = createZodV4FilterPredicateSchema();
+
+  it.each([
+    { kind: 'component', 'spec.type': 'service' },
+    { 'metadata.tags': { $in: ['java'] } },
+    { $not: { 'spec.type': 'service' } },
+  ])('should accept valid predicate %j', predicate => {
+    expect(schema.safeParse(predicate).success).toBe(true);
+  });
+
+  it.each([
+    { '\nkind': 'component' },
+    { 'kind\n': 'component' },
+    { '\rkind': 'component' },
+    { $unknown: 'foo' },
+    { kind: { $unknown: 'foo' } },
+  ])('should reject invalid predicate %j', predicate => {
+    expect(schema.safeParse(predicate).success).toBe(false);
+  });
+
+  it('should export a JSON Schema without lookahead patterns', () => {
+    // RE2-based validators (e.g. Go's regexp) reject lookahead, and the
+    // exported schema is what MCP clients validate arguments against.
+    const jsonSchema = JSON.stringify(
+      zodV4.toJSONSchema(createZodV4FilterPredicateSchema()),
+    );
+    expect(jsonSchema).not.toMatch(/\(\?[=!<]/);
   });
 });
 
@@ -210,6 +245,8 @@ describe('parseFilterPredicate', () => {
       { $unknown: 'foo' },
       { kind: { $hasPrefix: 1 } },
       { 'metadata.tags': ['foo', 'bar'] },
+      { '\nkind': 'component' },
+      { 'kind\n': 'component' },
       { kind: 'API', $not: { 'spec.type': 'dataset' } },
       { kind: 'API', $all: [{ 'spec.type': 'service' }] },
       { kind: 'API', $any: [{ 'spec.type': 'service' }] },
