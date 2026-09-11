@@ -1829,7 +1829,7 @@ describe('computePgPluginConfig', () => {
       });
     });
 
-    it('throws error when schema name exceeds 63 characters', () => {
+    it('throws error when schema name exceeds 63 bytes', () => {
       const config = new ConfigReader({
         client: 'pg',
         connection: { host: 'localhost' },
@@ -1843,7 +1843,28 @@ describe('computePgPluginConfig', () => {
           prefix,
           'this_is_a_very_long_prefix_that_will_exceed_the_limit_when_combined_',
         );
-      }).toThrow(/exceeds the 63-character limit/);
+      }).toThrow(/exceeds the 63-byte limit/);
+    });
+
+    it('throws error when schema name with multibyte UTF-8 characters exceeds 63 bytes', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+        pluginDivisionMode: 'schema',
+      });
+
+      // 'café_' is 6 bytes (café = 5 bytes, underscore = 1 byte)
+      // Repeat to create a schema name that exceeds 63 bytes
+      const multibytePrefixThatExceeds63Bytes = 'café_'.repeat(11); // 66 bytes
+
+      expect(() => {
+        computePgPluginConfig(
+          config,
+          'catalog',
+          prefix,
+          multibytePrefixThatExceeds63Bytes,
+        );
+      }).toThrow(/exceeds the 63-byte limit/);
     });
 
     it('returns empty object when no databaseName in schema mode', () => {
