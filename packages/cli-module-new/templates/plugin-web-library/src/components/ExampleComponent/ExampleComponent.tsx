@@ -1,4 +1,4 @@
-import { Typography } from '@material-ui/core';
+import { Text } from '@backstage/ui';
 
 /**
  * Props for {@link ExampleComponent}.
@@ -24,5 +24,5 @@ export function ExampleComponent(props: ExampleComponentProps) {
   // By destructuring props here rather than in the signature the API docs will look nicer
   const { message = 'Hello World' } = props;
 
-  return <Typography variant="h1">{message}</Typography>;
+  return <Text as="h1">{message}</Text>;
 }
