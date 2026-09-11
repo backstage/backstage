@@ -673,6 +673,8 @@ export interface PgPluginDatabaseConfig {
   connection: Knex.PgConnectionConfig;
   /** The database name, if any */
   databaseName: string | undefined;
+  /** The schema name, if using schema division mode */
+  schemaName: string | undefined;
   /** Database client overrides including schema overrides if applicable */
   databaseClientOverrides: Knex.Config;
   /** The full knex config for the plugin */
@@ -773,11 +775,13 @@ export function computePgPluginConfig(
 
   // Database client overrides
   let databaseClientOverrides: Knex.Config = {};
+  let schemaName: string | undefined;
+
   if (databaseName) {
     databaseClientOverrides = { connection: { database: databaseName } };
   }
   if (pluginDivisionMode === 'schema') {
-    const schemaName = `${schemaPrefix}${pluginId}`;
+    schemaName = `${schemaPrefix}${pluginId}`;
 
     if (Buffer.byteLength(schemaName, 'utf8') > 63) {
       throw new Error(
@@ -810,6 +814,7 @@ export function computePgPluginConfig(
     pluginDivisionMode,
     connection,
     databaseName,
+    schemaName,
     databaseClientOverrides,
     knexConfig,
   };
@@ -940,13 +945,17 @@ export class PgConnector implements Connector {
     if (pluginDbConfig.pluginDivisionMode === 'schema') {
       if (pluginDbConfig.ensureSchemaExists || pluginDbConfig.ensureExists) {
         try {
-          const schemaName = `${this.schemaPrefix}${pluginId}`;
+          if (!pluginDbConfig.schemaName) {
+            throw new Error(
+              `Schema name is required when pluginDivisionMode is 'schema'`,
+            );
+          }
           await ddlLimiter(() =>
             this.runAdminOperation(this.schemaAdminPool, admin =>
               ensurePgSchema(
                 admin,
                 this.config.getOptionalString('role'),
-                schemaName,
+                pluginDbConfig.schemaName!,
               ),
             ),
           );
