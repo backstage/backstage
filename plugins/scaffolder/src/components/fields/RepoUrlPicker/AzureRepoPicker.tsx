@@ -30,6 +30,8 @@ export const AzureRepoPicker = (
   props: BaseRepoUrlPickerProps<{
     allowedOrganizations?: string[];
     allowedProject?: string[];
+    ownerLabel?: string;
+    ownerDescription?: string;
   }>,
 ) => {
   const theme = useScaffolderTheme();
@@ -40,6 +42,8 @@ export const AzureRepoPicker = (
     state,
     onChange,
     isDisabled,
+    ownerLabel,
+    ownerDescription,
   } = props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
@@ -56,8 +60,11 @@ export const AzureRepoPicker = (
         return (
           <BuiSelect
             className={overrides.select}
-            label={t('fields.azureRepoPicker.organization.title')}
-            description={t('fields.azureRepoPicker.organization.description')}
+            label={ownerLabel ?? t('fields.azureRepoPicker.organization.title')}
+            description={
+              ownerDescription ??
+              t('fields.azureRepoPicker.organization.description')
+            }
             isDisabled={isDisabled || allowedOrganizations.length === 1}
             isInvalid={rawErrors?.length > 0 && !organization}
             selectedKey={organization ?? null}
@@ -72,8 +79,11 @@ export const AzureRepoPicker = (
 
       return (
         <BuiTextField
-          label={t('fields.azureRepoPicker.organization.title')}
-          description={t('fields.azureRepoPicker.organization.description')}
+          label={ownerLabel ?? t('fields.azureRepoPicker.organization.title')}
+          description={
+            ownerDescription ??
+            t('fields.azureRepoPicker.organization.description')
+          }
           onChange={value => onChange({ organization: value })}
           isDisabled={isDisabled}
           value={organization ?? ''}
@@ -147,7 +157,9 @@ export const AzureRepoPicker = (
           <>
             <MuiSelect
               native
-              label={t('fields.azureRepoPicker.organization.title')}
+              label={
+                ownerLabel ?? t('fields.azureRepoPicker.organization.title')
+              }
               onChange={s =>
                 onChange({ organization: String(Array.isArray(s) ? s[0] : s) })
               }
@@ -156,15 +168,19 @@ export const AzureRepoPicker = (
               items={organizationItems}
             />
             <FormHelperText>
-              {t('fields.azureRepoPicker.organization.description')}
+              {ownerDescription ??
+                t('fields.azureRepoPicker.organization.description')}
             </FormHelperText>
           </>
         ) : (
           <MuiTextField
             id="orgInput"
-            label={t('fields.azureRepoPicker.organization.title')}
+            label={ownerLabel ?? t('fields.azureRepoPicker.organization.title')}
             onChange={e => onChange({ organization: e.target.value })}
-            helperText={t('fields.azureRepoPicker.organization.description')}
+            helperText={
+              ownerDescription ??
+              t('fields.azureRepoPicker.organization.description')
+            }
             disabled={isDisabled}
             value={organization}
           />

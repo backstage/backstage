@@ -85,6 +85,13 @@ export const RepoUrlPicker = (
     () => uiSchema?.['ui:disabled'] ?? false,
     [uiSchema],
   );
+  const ownerLabel = uiSchema?.['ui:options']?.ownerLabel;
+  const ownerDescription = uiSchema?.['ui:options']?.ownerDescription;
+  const repoLabel = uiSchema?.['ui:options']?.repoLabel;
+  const repoDescription = uiSchema?.['ui:options']?.repoDescription;
+  const disableRepoAutocomplete =
+    uiSchema?.['ui:options']?.disableRepoAutocomplete ?? false;
+
   const { owner, organization, project, repoName } = state;
 
   useEffect(() => {
@@ -194,6 +201,9 @@ export const RepoUrlPicker = (
           state={state}
           isDisabled={isDisabled}
           accessToken={accessToken}
+          ownerLabel={ownerLabel}
+          ownerDescription={ownerDescription}
+          disableRepoAutocomplete={disableRepoAutocomplete}
         />
       )}
       {hostType === 'gitea' && (
@@ -204,6 +214,8 @@ export const RepoUrlPicker = (
           state={state}
           isDisabled={isDisabled}
           onChange={updateLocalState}
+          ownerLabel={ownerLabel}
+          ownerDescription={ownerDescription}
         />
       )}
       {hostType === 'gitlab' && (
@@ -214,6 +226,9 @@ export const RepoUrlPicker = (
           onChange={updateLocalState}
           isDisabled={isDisabled}
           accessToken={accessToken}
+          ownerLabel={ownerLabel}
+          ownerDescription={ownerDescription}
+          disableRepoAutocomplete={disableRepoAutocomplete}
         />
       )}
       {(hostType === 'bitbucket' ||
@@ -227,6 +242,8 @@ export const RepoUrlPicker = (
           onChange={updateLocalState}
           isDisabled={isDisabled}
           accessToken={accessToken}
+          ownerLabel={ownerLabel}
+          ownerDescription={ownerDescription}
         />
       )}
       {hostType === 'azure' && (
@@ -237,6 +254,8 @@ export const RepoUrlPicker = (
           state={state}
           isDisabled={isDisabled}
           onChange={updateLocalState}
+          ownerLabel={ownerLabel}
+          ownerDescription={ownerDescription}
         />
       )}
       {hostType === 'gerrit' && (
@@ -245,6 +264,8 @@ export const RepoUrlPicker = (
           state={state}
           onChange={updateLocalState}
           isDisabled={isDisabled}
+          ownerLabel={ownerLabel}
+          ownerDescription={ownerDescription}
         />
       )}
       <RepoUrlPickerRepoName
@@ -259,6 +280,9 @@ export const RepoUrlPicker = (
         isDisabled={isDisabled}
         rawErrors={rawErrors}
         availableRepos={state.availableRepos}
+        repoLabel={repoLabel}
+        repoDescription={repoDescription}
+        disableRepoAutocomplete={disableRepoAutocomplete}
       />
     </>
   );
