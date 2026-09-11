@@ -817,7 +817,7 @@ export interface PodScope {
 // @public (undocumented)
 export const PodsTable: (input: PodsTablesProps) => JSX_2.Element;
 
-// @public (undocumented)
+// @public
 export type PodsTablesProps = {
   pods: Pod_2 | V1Pod[];
   extraColumns?: PodColumns[];

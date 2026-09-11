@@ -55,7 +55,9 @@ export const RESOURCE_COLUMNS: PodColumns = 'RESOURCE';
 export type PodColumns = 'READY' | 'RESOURCE';
 
 /**
+ * Props for the PodsTable component.
  *
+ * Clicking any non-button cell in a row opens the pod drawer for that pod.
  *
  * @public
  */
@@ -185,7 +187,19 @@ export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
   return (
     <div style={tableStyle}>
       <Table
-        options={{ paging: true, search: false, emptyRowsWhenPaging: false }}
+        options={{
+          paging: true,
+          search: false,
+          emptyRowsWhenPaging: false,
+          rowStyle: { cursor: 'pointer' },
+        }}
+        onRowClick={(event?: React.MouseEvent) => {
+          if ((event?.target as HTMLElement)?.closest('button')) return;
+          (event?.target as HTMLElement)
+            ?.closest('tr')
+            ?.querySelector('button')
+            ?.click();
+        }}
         // It was observed that in some instances the pod drawer closes when new data (like CPU usage) is available and the table reloads.
         // Mapping the metadata UID to the tables ID fixes this problem.
         data={

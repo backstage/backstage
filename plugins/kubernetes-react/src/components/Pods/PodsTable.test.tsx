@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { screen } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import * as pod from './__fixtures__/pod.json';
 import * as crashingPod from './__fixtures__/crashing-pod.json';
 import { renderInTestApp } from '@backstage/test-utils';
@@ -176,5 +176,22 @@ describe('PodsTable', () => {
     expect(screen.getByText('Container: side-car')).toBeInTheDocument();
     expect(screen.getByText('Container: other-side-car')).toBeInTheDocument();
     expect(screen.getAllByText('CrashLoopBackOff')).toHaveLength(2);
+  });
+
+  it('should have pointer cursor style on rows', async () => {
+    await renderInTestApp(<PodsTable pods={[pod as any]} />);
+
+    const row = screen.getByText('dice-roller-6c8646bfd-2m5hv').closest('tr');
+    expect(row).toHaveStyle({ cursor: 'pointer' });
+  });
+
+  it('should open the pod drawer when clicking a non-button cell', async () => {
+    await renderInTestApp(<PodsTable pods={[pod as any]} />);
+
+    expect(screen.queryByText('Pod (172.17.0.11)')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Running'));
+
+    expect(await screen.findByText('Pod (172.17.0.11)')).toBeInTheDocument();
   });
 });
