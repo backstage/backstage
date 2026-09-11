@@ -23,15 +23,22 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 
 import { scaffolderTranslationRef } from '../../../translation';
+import { useDirectoryEditor } from './DirectoryEditorContext';
 
 export function TemplateEditorToolbarFileMenu(props: {
   onOpenDirectory?: () => void;
   onCreateDirectory?: () => void;
   onCloseDirectory?: () => void;
+  disabled?: boolean;
 }) {
-  const { onOpenDirectory, onCreateDirectory, onCloseDirectory } = props;
+  const { onOpenDirectory, onCreateDirectory, onCloseDirectory, disabled } =
+    props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
+  const directoryEditor = useDirectoryEditor();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const isCloseDisabled =
+    !onCloseDirectory || Boolean(disabled || directoryEditor?.loading);
 
   const handleOpenMenu = useCallback(
     (event: MouseEvent<HTMLButtonElement>) => {
@@ -55,9 +62,12 @@ export function TemplateEditorToolbarFileMenu(props: {
   }, [handleCloseMenu, onCreateDirectory]);
 
   const handleCloseEditor = useCallback(() => {
+    if (isCloseDisabled) {
+      return;
+    }
     handleCloseMenu();
     onCloseDirectory?.();
-  }, [handleCloseMenu, onCloseDirectory]);
+  }, [handleCloseMenu, onCloseDirectory, isCloseDisabled]);
 
   return (
     <>
@@ -93,7 +103,7 @@ export function TemplateEditorToolbarFileMenu(props: {
         >
           {t('templateEditorToolbarFileMenu.options.createDirectory')}
         </MenuItem>
-        <MenuItem onClick={handleCloseEditor} disabled={!onCloseDirectory}>
+        <MenuItem onClick={handleCloseEditor} disabled={isCloseDisabled}>
           {t('templateEditorToolbarFileMenu.options.closeEditor')}
         </MenuItem>
       </Menu>

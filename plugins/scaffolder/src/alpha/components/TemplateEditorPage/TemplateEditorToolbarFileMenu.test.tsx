@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderInTestApp } from '@backstage/test-utils';
+import { DirectoryEditorProvider } from './DirectoryEditorContext';
 import { TemplateEditorToolbarFileMenu } from './TemplateEditorToolbarFileMenu';
 import { rootRouteRef } from '../../../routes';
 
@@ -148,5 +149,60 @@ describe('TemplateEditorToolbarFileMenu', () => {
     );
 
     expect(onCloseDirectory).toHaveBeenCalled();
+  });
+
+  it('should disable close editor when disabled prop is true', async () => {
+    const onCloseDirectory = jest.fn();
+
+    await renderInTestApp(
+      <TemplateEditorToolbarFileMenu
+        onCloseDirectory={onCloseDirectory}
+        disabled
+      />,
+      {
+        mountedRoutes: {
+          '/': rootRouteRef,
+        },
+      },
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'File' }));
+
+    const closeItem = screen.getByRole('menuitem', {
+      name: 'Close template editor',
+    });
+    expect(closeItem).toHaveAttribute('aria-disabled', 'true');
+
+    fireEvent.click(closeItem);
+    expect(onCloseDirectory).not.toHaveBeenCalled();
+  });
+
+  it('should disable close editor when directory editor is loading', async () => {
+    const onCloseDirectory = jest.fn();
+    const mockDirectory = {
+      listFiles: jest.fn(() => new Promise<never>(() => {})),
+      createFile: jest.fn(),
+    };
+
+    await renderInTestApp(
+      <DirectoryEditorProvider directory={mockDirectory}>
+        <TemplateEditorToolbarFileMenu onCloseDirectory={onCloseDirectory} />
+      </DirectoryEditorProvider>,
+      {
+        mountedRoutes: {
+          '/': rootRouteRef,
+        },
+      },
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'File' }));
+
+    const closeItem = screen.getByRole('menuitem', {
+      name: 'Close template editor',
+    });
+    expect(closeItem).toHaveAttribute('aria-disabled', 'true');
+
+    fireEvent.click(closeItem);
+    expect(onCloseDirectory).not.toHaveBeenCalled();
   });
 });
