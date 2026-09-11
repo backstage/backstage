@@ -19,7 +19,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
-import { LinkProps } from '@backstage/core-components';
+import { LinkProps } from '@backstage/ui';
 import { Observable } from '@backstage/types';
 import { OutlinedTextFieldProps } from '@material-ui/core/TextField';
 import { Overrides } from '@material-ui/core/styles/overrides';
@@ -641,7 +641,7 @@ export type EntityRefLinkProps = {
   children?: ReactNode;
   hideIcon?: boolean;
   disableTooltip?: boolean;
-} & Omit<LinkProps, 'to'>;
+} & Omit<LinkProps, 'href'>;
 
 // @public
 export function EntityRefLinks<
@@ -657,7 +657,7 @@ export type EntityRefLinksProps<
   hideIcons?: boolean;
   fetchEntities?: boolean;
   getTitle?(entity: TRef): string | undefined;
-} & Omit<LinkProps, 'to'>;
+} & Omit<LinkProps, 'href'>;
 
 // @public
 export interface EntityRefPresentation {

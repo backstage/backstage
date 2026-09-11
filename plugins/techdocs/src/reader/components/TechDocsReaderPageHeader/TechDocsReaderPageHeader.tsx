@@ -93,23 +93,13 @@ export const TechDocsReaderPageHeader = (
     <>
       <HeaderLabel
         label={capitalize(entityMetadata?.kind || 'entity')}
-        value={
-          <EntityRefLink
-            color="inherit"
-            entityRef={entityRef}
-            defaultKind="Component"
-          />
-        }
+        value={<EntityRefLink entityRef={entityRef} defaultKind="Component" />}
       />
       {ownedByRelations.length > 0 && (
         <HeaderLabel
           label={t('readerPageHeader.owner')}
           value={
-            <EntityRefLinks
-              color="inherit"
-              entityRefs={ownedByRelations}
-              defaultKind="group"
-            />
+            <EntityRefLinks entityRefs={ownedByRelations} defaultKind="group" />
           }
         />
       )}

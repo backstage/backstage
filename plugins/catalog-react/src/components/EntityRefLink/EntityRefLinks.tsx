@@ -20,7 +20,7 @@ import {
 } from '@backstage/catalog-model';
 import { Fragment } from 'react';
 import { EntityRefLink } from './EntityRefLink';
-import { LinkProps } from '@backstage/core-components';
+import { LinkProps } from '@backstage/ui';
 
 /**
  * Props for {@link EntityRefLink}.
@@ -37,7 +37,7 @@ export type EntityRefLinksProps<
   fetchEntities?: boolean;
   /** @deprecated This option is no longer used; presentation is handled by entityPresentationApiRef instead */
   getTitle?(entity: TRef): string | undefined;
-} & Omit<LinkProps, 'to'>;
+} & Omit<LinkProps, 'href'>;
 
 /**
  * Shows a list of clickable links to entities.

@@ -16,11 +16,9 @@
 
 import { useMemo } from 'react';
 import {
-  Box,
   ButtonIcon,
   Header,
   HeaderMetadataUsers,
-  Link,
   type HeaderMetadataItem,
   type HeaderMetadataUser,
   type HeaderNavTabItem,
@@ -37,6 +35,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import {
   catalogApiRef,
   catalogReactTranslationRef,
+  EntityRefLinks,
   entityRouteRef,
   getEntityRelations,
   useAsyncEntity,
@@ -91,22 +90,6 @@ function useOwnerUsers(entity: Entity | undefined): HeaderMetadataUser[] {
   });
 }
 
-function HierarchyLinks(props: { refs: CompoundEntityRef[] }) {
-  const entityLink = useEntityRefLink();
-  return (
-    <Box as="ul" display="inline" m="0" p="0" style={{ listStyle: 'none' }}>
-      {props.refs.map((ref, index) => (
-        <Box as="li" display="inline" key={stringifyEntityRef(ref)}>
-          {index > 0 ? ', ' : null}
-          <Link href={entityLink(ref)} standalone>
-            {ref.name}
-          </Link>
-        </Box>
-      ))}
-    </Box>
-  );
-}
-
 function hierarchyLabel(
   ref: CompoundEntityRef,
 ): 'systemLabel' | 'domainLabel' | 'partOfLabel' {
@@ -156,7 +139,7 @@ function useMetadata(entity: Entity | undefined): HeaderMetadataItem[] {
             | 'entityLabels.domainLabel'
             | 'entityLabels.partOfLabel',
         ),
-        value: <HierarchyLinks refs={refs} />,
+        value: <EntityRefLinks entityRefs={refs} />,
       });
     }
     return metadata;
