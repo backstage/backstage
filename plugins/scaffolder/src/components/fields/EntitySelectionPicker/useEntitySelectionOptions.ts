@@ -36,6 +36,8 @@ type Snapshot = {
 
 /** Publish a complete search result, never a mixture of independent lookups. */
 export function useEntitySelectionOptions(props: {
+  /** Load search results only while the popup is open. */
+  enabled: boolean;
   catalogFilter?: EntityFilterQuery;
   defaultKind?: string;
   defaultNamespace?: string;
@@ -44,7 +46,7 @@ export function useEntitySelectionOptions(props: {
 }) {
   const catalogApi = useApi(catalogApiRef);
   const presentationApi = useApi(entityPresentationApiRef);
-  const { catalogFilter } = props;
+  const { catalogFilter, enabled } = props;
   const [input, setInput] = useState({ text: '', revision: 0 });
   const searchText = input.text;
   const inputRef = useRef('');
@@ -105,6 +107,7 @@ export function useEntitySelectionOptions(props: {
     const requestGeneration = generation;
     const current = ++generation.current;
     paging.current = false;
+    if (!enabled) return undefined;
     const request = JSON.parse(requestKey) as {
       search: string;
       refs: string[];
@@ -112,6 +115,7 @@ export function useEntitySelectionOptions(props: {
     setState(previous => ({
       ...previous,
       requestKey,
+      generation: current,
       status: 'loading',
       loadMoreError: false,
     }));
@@ -180,11 +184,12 @@ export function useEntitySelectionOptions(props: {
       clearTimeout(timer);
       ++requestGeneration.current;
     };
-  }, [catalogApi, catalogFilter, present, requestKey, retryCount]);
+  }, [catalogApi, catalogFilter, enabled, present, requestKey, retryCount]);
 
   const loadMore = useCallback(async () => {
     const { snapshot } = state;
     if (
+      !enabled ||
       paging.current ||
       state.generation !== generation.current ||
       state.status !== 'idle' ||
@@ -228,7 +233,7 @@ export function useEntitySelectionOptions(props: {
     } finally {
       if (current === generation.current) paging.current = false;
     }
-  }, [catalogApi, present, requestKey, state]);
+  }, [catalogApi, enabled, present, requestKey, state]);
 
   // Hydrate the closed control independently. These results never mutate the
   // displayed search snapshot, and changing selection never restarts a search.
@@ -267,8 +272,15 @@ export function useEntitySelectionOptions(props: {
     };
   }, [catalogApi, present, selectionKey]);
 
-  const loadingState =
-    state.requestKey !== requestKey ? 'loading' : state.status;
+  let loadingState = state.status;
+  if (!enabled) {
+    loadingState = 'idle';
+  } else if (
+    state.requestKey !== requestKey ||
+    state.generation !== generation.current
+  ) {
+    loadingState = 'loading';
+  }
   return {
     snapshot: state.snapshot,
     selectedOptions,
@@ -278,7 +290,7 @@ export function useEntitySelectionOptions(props: {
     loadMore,
     loadingState,
     loading: loadingState === 'loading' || loadingState === 'loadingMore',
-    hasMore: Boolean(state.snapshot.cursor),
+    hasMore: enabled && Boolean(state.snapshot.cursor),
     loadMoreError: state.loadMoreError,
   };
 }

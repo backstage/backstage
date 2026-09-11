@@ -22,6 +22,8 @@ import {
   Button,
   ButtonIcon,
   Link,
+  List,
+  ListRow,
   Popover,
   SearchField,
   Text as BuiText,
@@ -32,9 +34,6 @@ import {
   Dialog,
   DialogTrigger,
   Heading,
-  GridList,
-  GridListItem,
-  Text,
   VisuallyHidden,
 } from 'react-aria-components';
 import { useEntitySelectionOptions } from './useEntitySelectionOptions';
@@ -79,7 +78,7 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
   const searchRef = useRef<HTMLDivElement>(null);
   const focusSearch = (preventScroll = false) =>
     searchRef.current?.querySelector('input')?.focus({ preventScroll });
-  const listRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
   const value = useMemo(
     () =>
       Array.from(
@@ -109,6 +108,7 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
     [value],
   );
   const options = useEntitySelectionOptions({
+    enabled: open && !disabled,
     catalogFilter: props.catalogFilter,
     defaultKind: props.defaultKind,
     defaultNamespace: props.defaultNamespace,
@@ -172,7 +172,7 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
           {label}
         </Button>
         <Popover className={classes.popover} placement="bottom start" hideArrow>
-          <Dialog className={classes.dialog}>
+          <Dialog ref={dialogRef} className={classes.dialog}>
             <div
               onKeyDownCapture={event => {
                 if (event.key === 'Escape') {
@@ -194,7 +194,7 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
                     // Interactive rows take actual focus so their remove
                     // buttons remain reachable, rather than virtual focus.
                     const enabledRows =
-                      listRef.current?.querySelectorAll<HTMLElement>(
+                      dialogRef.current?.querySelectorAll<HTMLElement>(
                         '[role="row"][tabindex]:not([aria-disabled="true"])',
                       );
                     const target =
@@ -224,8 +224,7 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
                     autoFocus
                   />
                 </div>
-                <GridList
-                  ref={listRef}
+                <List
                   className={classes.list}
                   aria-label={label}
                   // Keep the list as React Aria's keyboard scroll root,
@@ -289,55 +288,38 @@ export function EntitySelectionPicker(props: EntitySelectionPickerProps) {
                   }}
                 >
                   {row => (
-                    <GridListItem
+                    <ListRow
                       id={row.ref}
                       textValue={`${row.label} ${row.ref}`}
-                      className={classes.option}
+                      description={`${row.ref}${
+                        row.missing
+                          ? ' · Not found in catalog — reference only'
+                          : ''
+                      }`}
+                      customActions={
+                        value.includes(row.ref) && (
+                          <ButtonIcon
+                            variant="tertiary"
+                            size="small"
+                            icon={<RiCloseLine aria-hidden="true" />}
+                            isDisabled={disabled}
+                            aria-label={`Remove ${row.label}`}
+                            onPress={() => {
+                              onChange(value.filter(ref => ref !== row.ref));
+                              focusSearch(true);
+                            }}
+                          />
+                        )
+                      }
                     >
-                      {({ isSelected }) => (
-                        <>
-                          <div className={classes.check} aria-hidden="true">
-                            {isSelected ? '✓' : null}
-                          </div>
-                          <div className={classes.optionText}>
-                            <Text>
-                              {row.presentation && !row.missing ? (
-                                <EntityPresentation
-                                  presentation={row.presentation}
-                                />
-                              ) : (
-                                row.label
-                              )}
-                            </Text>
-                            <Text slot="description" className={classes.detail}>
-                              {row.ref}
-                              {row.missing
-                                ? ' · Not found in catalog — reference only'
-                                : ''}
-                            </Text>
-                          </div>
-                          <div className={classes.remove}>
-                            {isSelected && (
-                              <ButtonIcon
-                                variant="tertiary"
-                                size="small"
-                                icon={<RiCloseLine aria-hidden="true" />}
-                                isDisabled={disabled}
-                                aria-label={`Remove ${row.label}`}
-                                onPress={() => {
-                                  onChange(
-                                    value.filter(ref => ref !== row.ref),
-                                  );
-                                  focusSearch(true);
-                                }}
-                              />
-                            )}
-                          </div>
-                        </>
+                      {row.presentation && !row.missing ? (
+                        <EntityPresentation presentation={row.presentation} />
+                      ) : (
+                        row.label
                       )}
-                    </GridListItem>
+                    </ListRow>
                   )}
-                </GridList>
+                </List>
                 {(options.loadingState === 'error' ||
                   options.loadMoreError) && (
                   <div role="status" className={classes.retry}>

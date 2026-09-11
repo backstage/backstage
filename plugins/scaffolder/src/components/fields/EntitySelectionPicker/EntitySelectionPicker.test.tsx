@@ -115,6 +115,32 @@ describe('EntitySelectionPicker', () => {
     globalThis.IntersectionObserver = originalObserver;
   });
 
+  it('hydrates selected references while closed but queries options only while open', async () => {
+    const { queryEntities, getEntitiesByRefs } = await setup({
+      value: ['user:default/freben'],
+    });
+    expect(
+      await screen.findByRole('link', { name: 'Fredrik Adelöw' }),
+    ).toBeInTheDocument();
+    expect(getEntitiesByRefs).toHaveBeenCalledWith({
+      entityRefs: ['user:default/freben'],
+    });
+    expect(queryEntities).not.toHaveBeenCalled();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    await screen.findByRole('row', { name: /Fredrik Adelöw/ });
+    expect(queryEntities).toHaveBeenCalledTimes(1);
+    await userEvent.type(screen.getByRole('searchbox'), 'nonexistent');
+    await screen.findByText('No matching entities');
+    expect(queryEntities).toHaveBeenCalledTimes(2);
+    await userEvent.click(screen.getByRole('button', { name: 'Done' }));
+    expect(queryEntities).toHaveBeenCalledTimes(2);
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    await screen.findByRole('row', { name: /Fredrik Adelöw/ });
+    expect(queryEntities).toHaveBeenCalledTimes(3);
+    expect(queryEntities.mock.calls[2][0]).not.toHaveProperty('fullTextFilter');
+  });
+
   it('uses entity presentation icons for real entries without linking picker rows or missing references', async () => {
     await setup({
       multiple: true,
@@ -148,6 +174,8 @@ describe('EntitySelectionPicker', () => {
       { multiple: true },
       entities,
     );
+    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    await screen.findByRole('row', { name: /person-00/ });
     let finishPage!: () => void;
     const pending = new Promise<void>(resolve => {
       finishPage = resolve;
@@ -157,7 +185,6 @@ describe('EntitySelectionPicker', () => {
       await pending;
       return query.call(catalogApi, request);
     });
-    await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
     const observation = currentSentinel();
     const idleHeight = window.getComputedStyle(observation.target!).height;
     await act(async () => intersect(observation));
@@ -270,8 +297,9 @@ describe('EntitySelectionPicker', () => {
 
   it('stops automatic loading on errors and retries the same page explicitly', async () => {
     const { queryEntities } = await setup({}, entities);
-    queryEntities.mockRejectedValueOnce(new Error('Unavailable'));
     await userEvent.click(screen.getByRole('button', { name: 'Owners' }));
+    await screen.findByRole('row', { name: /person-00/ });
+    queryEntities.mockRejectedValueOnce(new Error('Unavailable'));
     const observation = currentSentinel();
     await act(async () => {
       intersect(observation);
