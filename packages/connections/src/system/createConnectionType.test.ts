@@ -189,7 +189,7 @@ describe('createConnectionType', () => {
     });
 
     expect(() =>
-      ValidatedType.validate?.({
+      (ValidatedType as any).validate?.({
         config: {},
         auth: [
           { method: 'token', token: 'a', primary: true },
@@ -198,7 +198,7 @@ describe('createConnectionType', () => {
       }),
     ).not.toThrow();
     expect(() =>
-      ValidatedType.validate?.({
+      (ValidatedType as any).validate?.({
         config: {},
         auth: [
           { method: 'token', token: 'a', primary: true },
@@ -207,7 +207,7 @@ describe('createConnectionType', () => {
       }),
     ).toThrow('At most one auth entry may be primary');
     expect(() =>
-      ValidatedType.validate?.({
+      (ValidatedType as any).validate?.({
         config: { defaultToken: 't' },
         auth: [{ method: 'token', token: 'a', primary: true }],
       }),

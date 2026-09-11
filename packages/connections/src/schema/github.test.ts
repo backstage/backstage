@@ -33,9 +33,12 @@ describe('GithubConnectionType', () => {
       const second = app(2, ['second']);
 
       expect(
-        GithubConnectionType.matchAuth?.([unrestricted, first, second], {
-          url: 'https://github.com/second/repository',
-        }),
+        (GithubConnectionType as any).matchAuth?.(
+          [unrestricted, first, second],
+          {
+            url: 'https://github.com/second/repository',
+          },
+        ),
       ).toBe(second);
     });
 
@@ -48,7 +51,7 @@ describe('GithubConnectionType', () => {
       };
 
       expect(
-        GithubConnectionType.matchAuth?.(
+        (GithubConnectionType as any).matchAuth?.(
           [app(1, ['first']), token, unrestricted, app(2, ['second'])],
           { url: 'https://github.com/example/repository' },
         ),
@@ -59,9 +62,12 @@ describe('GithubConnectionType', () => {
       const unrestricted = app(3, []);
 
       expect(
-        GithubConnectionType.matchAuth?.([app(1, ['first']), unrestricted], {
-          url: 'https://github.com/example/repository',
-        }),
+        (GithubConnectionType as any).matchAuth?.(
+          [app(1, ['first']), unrestricted],
+          {
+            url: 'https://github.com/example/repository',
+          },
+        ),
       ).toBe(unrestricted);
     });
 
@@ -74,7 +80,7 @@ describe('GithubConnectionType', () => {
       };
 
       expect(
-        GithubConnectionType.matchAuth?.([onlyApp, token], {
+        (GithubConnectionType as any).matchAuth?.([onlyApp, token], {
           url: 'https://github.com/example/repository',
         }),
       ).toBe(onlyApp);
@@ -88,7 +94,7 @@ describe('GithubConnectionType', () => {
       };
 
       expect(
-        GithubConnectionType.matchAuth?.(
+        (GithubConnectionType as any).matchAuth?.(
           [app(1, ['first']), app(2, ['second']), token],
           { url: 'https://github.com/example/repository' },
         ),

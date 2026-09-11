@@ -24,9 +24,9 @@ import type {
   ConnectionType,
   ConnectionTypeKey,
   LookupConnectionType,
-  ConfiguredConnection,
 } from '@backstage/connections';
-import { buildConnectionsFromConfig } from '@backstage/connections';
+import type { ConfiguredConnection } from '@backstage/connections/config';
+import { buildConnectionsFromConfig } from '@backstage/connections/config';
 import { getConnectionType } from './lookup';
 import { lookupStrategies } from './lookupStrategies';
 import { NotAllowedError, NotFoundError } from '@backstage/errors';
@@ -135,7 +135,7 @@ class PluginConnectionsService implements ConnectionsService {
       );
     }
 
-    const matchAuth = connectionType.matchAuth as
+    const matchAuth = (connectionType as any).matchAuth as
       | ((authMethods: any[], query: any) => any | undefined)
       | undefined;
 
