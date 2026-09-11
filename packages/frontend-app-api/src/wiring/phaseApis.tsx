@@ -147,7 +147,7 @@ export class RouteResolutionApiProxy implements RouteResolutionApi {
   initialize(
     routeInfo: RouteInfo,
     routeRefsById: Map<string, RouteRef | SubRouteRef>,
-    validation?: { tree: AppTree; refs: Iterable<RouteRef | SubRouteRef> },
+    validation?: { tree: AppTree; refs?: Iterable<RouteRef | SubRouteRef> },
   ) {
     this.#delegate = new RouteResolver(
       routeInfo.routePaths,
@@ -157,8 +157,9 @@ export class RouteResolutionApiProxy implements RouteResolutionApi {
       this.appBasePath,
       routeInfo.routeAliasResolver,
       routeRefsById,
+      validation?.tree.nodes.keys(),
     );
-    if (validation) {
+    if (validation?.refs) {
       this.#delegate.validate(validation.tree, validation.refs);
     }
     this.#routeObjects = routeInfo.routeObjects;
@@ -281,14 +282,13 @@ export function instantiateAndInitializePhaseTree(options: {
   options.routeResolutionApi.initialize(
     routeInfo,
     options.routeRefsById.routes,
-    options.stopAtAttachment
-      ? undefined
-      : {
-          tree: options.tree,
-          refs:
-            options.routeRefsById.allRoutes ??
-            options.routeRefsById.routes.values(),
-        },
+    {
+      tree: options.tree,
+      refs: options.stopAtAttachment
+        ? undefined
+        : options.routeRefsById.allRoutes ??
+          options.routeRefsById.routes.values(),
+    },
   );
   options.appTreeApi.initialize(routeInfo);
 }

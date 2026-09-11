@@ -490,7 +490,7 @@ Modules for plugins that are not installed are ignored. Modules do not provide
 
 ## Migrating existing references
 
-Add `extensionId` to each `createRouteRef` call and remove the corresponding
+For native extensions, add `extensionId` to each `createRouteRef` call and remove the corresponding
 `PageBlueprint` or `SubPageBlueprint` `routeRef` parameter. Keep `params` unchanged
 and ensure they match the target extension's route path. Sub routes and external
 bindings do not need to change.
@@ -505,3 +505,15 @@ routing-shim association. A structural ref can also be converted for use in the
 old frontend system, provided the plugin explicitly uses that same ref as its
 legacy mount point. The old system cannot infer a mount point from an extension
 ID.
+
+For compatibility with hybrid conversion utilities, a structural ref can still
+be registered through an extension's deprecated `routeRef` output. If the target
+extension ID is absent from the app, the runtime uses that explicit mount as a
+fallback, including for equivalent ref copies. The wrapper's ID does not need to
+match the ref's target ID. Multiple fallback mounts for the same target are
+ambiguous and are rejected when the fallback is needed.
+
+An installed target always takes precedence over deprecated registrations. If
+that target is disabled or conditionally unavailable, the route remains
+unavailable. Keep the deprecated registration when migrating a shared ref used
+by hybrid wrappers; native replacement pages do not need it.
