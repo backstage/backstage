@@ -6,9 +6,9 @@ They are defined in machine readable formats and provide a human readable docume
 
 The plugin provides a standalone list of APIs, as well as an integration into the API tab of a catalog entity.
 
-![Standalone API list](./docs/api_list.png)
-![OpenAPI Definition](./docs/openapi_definition.png)
-![Integration into components](./docs/entity_tab_api.png)
+![Standalone API list](https://raw.githubusercontent.com/backstage/backstage/master/plugins/api-docs/docs/api_list.png)
+![OpenAPI Definition](https://raw.githubusercontent.com/backstage/backstage/master/plugins/api-docs/docs/openapi_definition.png)
+![Integration into components](https://raw.githubusercontent.com/backstage/backstage/master/plugins/api-docs/docs/entity_tab_api.png)
 
 Right now, the following API formats are supported:
 
