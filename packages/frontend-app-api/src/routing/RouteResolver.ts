@@ -49,7 +49,8 @@ function resolveTargetRef(
   routePaths: Map<RouteRef, string>,
   routeBindings: Map<AnyRouteRef, AnyRouteRef | undefined>,
   routeRefsById: Map<string, RouteRef | SubRouteRef>,
-  extensionRoutes: Map<string, RouteRef>,
+  extensionRoutes: Map<string, RouteRef | undefined>,
+  fallbackRoutes: Map<string, RouteRef | undefined>,
 ): readonly [RouteRef | undefined, string] {
   // First we figure out which absolute route ref we're dealing with, an if there was an sub route path to append.
   // For sub routes it will be the parent path, while for external routes it will be the bound route.
@@ -94,13 +95,25 @@ function resolveTargetRef(
   const internal = OpaqueRouteRef.toInternal(ref);
   const extensionId = internal.getExtensionId?.();
   if (extensionId !== undefined) {
-    const mountedRef = extensionRoutes.get(extensionId);
+    const hasTarget = extensionRoutes.has(extensionId);
+    if (
+      !hasTarget &&
+      fallbackRoutes.has(extensionId) &&
+      !fallbackRoutes.get(extensionId)
+    ) {
+      throw new Error(`Ambiguous deprecated route mounts for '${extensionId}'`);
+    }
+    const mountedRef = hasTarget
+      ? extensionRoutes.get(extensionId)
+      : fallbackRoutes.get(extensionId);
     if (!mountedRef) {
       return [undefined, ''];
     }
     const expected = [
-      ...OpaqueRouteRef.toInternal(mountedRef).getParams(),
-    ].sort();
+      ...(routePaths.get(mountedRef) ?? '').matchAll(/:([\w-]+)/g),
+    ]
+      .map(match => match[1])
+      .sort();
     const actual = [...internal.getParams()].sort();
     if (JSON.stringify(actual) !== JSON.stringify(expected)) {
       throw new Error(
@@ -197,7 +210,8 @@ function resolveBasePath(
 }
 
 export class RouteResolver implements RouteResolutionApi {
-  private readonly extensionRoutes = new Map<string, RouteRef>();
+  private readonly extensionRoutes = new Map<string, RouteRef | undefined>();
+  private readonly fallbackRoutes = new Map<string, RouteRef | undefined>();
   private readonly routePaths: Map<RouteRef, string>;
   private readonly routeParents: Map<RouteRef, RouteRef | undefined>;
   private readonly routeObjects: BackstageRouteObject[];
@@ -217,7 +231,12 @@ export class RouteResolver implements RouteResolutionApi {
     appBasePath: string, // base path without a trailing slash
     routeAliasResolver: RouteAliasResolver,
     routeRefsById: Map<string, RouteRef | SubRouteRef>,
+    installedExtensionIds: Iterable<string> = [],
   ) {
+    // An installed but unmounted target must not resolve through a fallback.
+    for (const id of installedExtensionIds) {
+      this.extensionRoutes.set(id, undefined);
+    }
     this.routePaths = new Map(routePaths);
     this.routeParents = new Map(routeParents);
     // Canonical refs let extension-ID lookups share the path resolver while
@@ -229,6 +248,19 @@ export class RouteResolver implements RouteResolutionApi {
       objects.map(object => {
         let ref = parent;
         const refs = new Set(object.routeRefs);
+        const mountedIds = new Set<string>();
+        for (const emittedRef of refs) {
+          const id = OpaqueRouteRef.toInternal(emittedRef).getExtensionId?.();
+          if (id !== undefined && !mountedIds.has(id)) {
+            // Deprecated registrations are fallback candidates only. Multiple
+            // copies emitted at the same mount describe the same association.
+            this.fallbackRoutes.set(
+              id,
+              this.fallbackRoutes.has(id) ? undefined : emittedRef,
+            );
+            mountedIds.add(id);
+          }
+        }
         if (object.appNode) {
           const extensionId = object.appNode.spec.id;
           ref = createRouteRef({
@@ -289,13 +321,14 @@ export class RouteResolver implements RouteResolutionApi {
       }
       contracts.set(extensionId, contract);
       const node = tree.nodes.get(extensionId);
-      if (!node) {
+      if (!node && !this.fallbackRoutes.has(extensionId)) {
         throw new Error(
           `Route reference targets unknown extension '${extensionId}'`,
         );
       }
-      const extension = toInternalExtension(node.spec.extension);
+      const extension = node && toInternalExtension(node.spec.extension);
       if (
+        extension &&
         !Object.values(extension.output).some(
           data => data.id === coreExtensionData.routePath.id,
         )
@@ -311,6 +344,7 @@ export class RouteResolver implements RouteResolutionApi {
         this.routeBindings,
         this.routeRefsById,
         this.extensionRoutes,
+        this.fallbackRoutes,
       );
     }
     for (const [externalRef, target] of this.routeBindings) {
@@ -345,6 +379,7 @@ export class RouteResolver implements RouteResolutionApi {
       this.routeBindings,
       this.routeRefsById,
       this.extensionRoutes,
+      this.fallbackRoutes,
     );
     if (!targetRef) {
       return undefined;

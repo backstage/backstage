@@ -280,11 +280,63 @@ it('validates ownership and complete installed targets without rejecting disable
   expect(() => createSpecializedApp({ features: [app, mismatch] })).toThrow(
     'parameters',
   );
-  const wrongEmission = createFrontendPlugin({
-    pluginId: 'test',
-    extensions: [page('wrong', '/', { ref })],
+});
+
+it('uses deprecated mounts only when the structural target is absent', () => {
+  const ref = createRouteRef({
+    extensionId: 'page:test/target',
+    params: ['id'],
   });
+  const copy = createRouteRef({
+    extensionId: 'page:test/target',
+    params: ['id'],
+  });
+  const sub = createSubRouteRef({ parent: copy, path: '/edit' });
+  const external = createExternalRouteRef({
+    params: ['id'],
+    defaultTarget: 'test.sub',
+  });
+  const fallback = page('converted', '/legacy/:id', { ref });
+  const plugin = createFrontendPlugin({
+    pluginId: 'test',
+    routes: { ref, copy, sub },
+    externalRoutes: { external },
+    extensions: [fallback],
+  });
+  const routes = createSpecializedApp({ features: [app, plugin] }).apis.get(
+    routeResolutionApiRef,
+  )!;
+  expect(routes.resolve(copy)?.({ id: 'one' })).toBe('/legacy/one');
+  expect(routes.resolve(external)?.({ id: 'one' })).toBe('/legacy/one/edit');
+
+  const withTarget = (target: ReturnType<typeof page>) =>
+    createSpecializedApp({
+      features: [app, plugin.withOverrides({ extensions: [target] })],
+    }).apis.get(routeResolutionApiRef)!;
+  expect(
+    withTarget(page('target', '/native/:id')).resolve(copy)?.({ id: 'one' }),
+  ).toBe('/native/one');
+  expect(
+    withTarget(page('target', '/native/:id', { disabled: true })).resolve(copy),
+  ).toBeUndefined();
+  expect(
+    withTarget(page('target', '/native/:id', { if: false })).resolve(copy),
+  ).toBeUndefined();
+
+  const duplicates = plugin.withOverrides({
+    extensions: [page('second', '/other/:id', { ref: copy })],
+  });
+  expect(() => createSpecializedApp({ features: [app, duplicates] })).toThrow(
+    'Ambiguous deprecated route mounts',
+  );
   expect(() =>
-    createSpecializedApp({ features: [app, wrongEmission] }),
-  ).toThrow("targets 'page:test/root'");
+    createSpecializedApp({
+      features: [
+        app,
+        duplicates.withOverrides({
+          extensions: [page('target', '/native/:id')],
+        }),
+      ],
+    }),
+  ).not.toThrow();
 });
