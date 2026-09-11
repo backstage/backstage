@@ -44,31 +44,47 @@ export function createRouteRef<
   // ParamKey is narrowed to the literal union of param name strings.
   // Defaulting to never means we get undefined params when the array is empty or omitted.
   TParamKey extends string = never,
->(config?: {
+>(config: {
   /** A list of parameter names that the path that this route ref is bound to must contain */
   readonly params?: TParamKey[];
 
-  aliasFor?: string;
+  /** The ID of the routable extension that this reference resolves through. */
+  readonly extensionId: string;
 }): RouteRef<
   [TParamKey] extends [never] ? undefined : { [param in TParamKey]: string }
 > {
   const params = (config?.params ?? []) as string[];
+  const extensionId = config?.extensionId;
+  if (
+    extensionId !== undefined &&
+    (typeof extensionId !== 'string' || !extensionId)
+  ) {
+    throw new Error('RouteRef extensionId must be a non-empty string');
+  }
   const creationSite = describeParentCallSite();
 
   let id: string | undefined = undefined;
 
   return OpaqueRouteRef.createInstance('v1', {
     T: undefined as any,
+    ...(extensionId === undefined ? {} : { getExtensionId: () => extensionId }),
     getParams() {
       return params;
     },
     getDescription() {
+      if (extensionId) {
+        return extensionId;
+      }
       if (id) {
         return id;
       }
       return `created at '${creationSite}'`;
     },
-    alias: config?.aliasFor,
+    // Older compiled callers may still supply aliases.
+    alias:
+      extensionId === undefined
+        ? (config as { aliasFor?: string } | undefined)?.aliasFor
+        : undefined,
     setId(newId: string) {
       if (!newId) {
         throw new Error(`RouteRef id must be a non-empty string`);

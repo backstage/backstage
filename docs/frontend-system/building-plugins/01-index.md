@@ -55,7 +55,7 @@ import { createRouteRef } from '@backstage/frontend-plugin-api';
 
 // This will be the route reference for our example page. If you want to link
 // to the page from somewhere else, you can use this reference to generate the target path.
-export const rootRouteRef = createRouteRef();
+export const rootRouteRef = createRouteRef({ extensionId: 'page:example' });
 ```
 
 ```tsx title="in src/plugin.ts"
@@ -70,8 +70,6 @@ import { rootRouteRef } from './routes';
 // You can export it locally for testing purposes, but don't export it from the plugin package.
 const examplePage = PageBlueprint.make({
   params: {
-    routeRef: rootRouteRef,
-
     // This is the default path of this page, but integrators are free to override it
     path: '/example',
 

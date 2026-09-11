@@ -42,7 +42,7 @@ import type { CreateSpecializedAppInternalOptions } from '../../../frontend-app-
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { getBasePath } from '../../../frontend-app-api/src/routing/getBasePath';
 import { TestApiPairs } from '../apis/TestApiProvider';
-import { OpaqueExternalRouteRef } from '@internal/frontend';
+import { OpaqueExternalRouteRef, OpaqueRouteRef } from '@internal/frontend';
 
 const DEFAULT_MOCK_CONFIG = {
   app: { baseUrl: 'http://localhost:3000' },
@@ -135,16 +135,30 @@ export function renderTestApp<const TApiPairs extends any[] = any[]>(
 
       if (OpaqueExternalRouteRef.isType(optionRef)) {
         // Create an actual route ref for the external route, then bind the external ref to it
-        routeRef = createRouteRef();
+        routeRef = createRouteRef({
+          extensionId: `test-route:test/${encodeURIComponent(path)}`,
+          params: OpaqueExternalRouteRef.toInternal(optionRef).getParams(),
+        });
         externalBindings.set(optionRef, routeRef);
       } else {
         routeRef = optionRef;
       }
 
+      const extensionId =
+        OpaqueRouteRef.toInternal(routeRef).getExtensionId?.();
+      const kind = extensionId?.match(/^([^/:]+):/)?.[1];
+      const scopedName = extensionId?.replace(/^[^/:]+:/, '');
+      const [namespace, ...name] = scopedName?.split('/') ?? [];
+
       extensions.push(
         createExtension({
           kind: 'test-route',
           name: path,
+          ...(extensionId && {
+            kind,
+            namespace,
+            name: name.join('/') || undefined,
+          }),
           attachTo: { id: 'app/routes', input: 'routes' },
           output: [
             coreExtensionData.reactElement,

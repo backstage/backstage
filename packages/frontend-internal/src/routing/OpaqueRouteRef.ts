@@ -22,6 +22,7 @@ export const OpaqueRouteRef = OpaqueType.create<{
   versions: {
     readonly version: 'v1';
 
+    getExtensionId?(): string;
     getParams(): string[];
     getDescription(): string;
 
