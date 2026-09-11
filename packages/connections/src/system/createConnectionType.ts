@@ -17,10 +17,10 @@ import { z } from 'zod/v4';
 import { InputError } from '@backstage/errors';
 import type { Expand, JsonObject } from '@backstage/types';
 import type {
+  ConnectionAuth,
   ConnectionType,
   ConnectionLookupStrategy,
   LookupStrategyQuery,
-  MatchAuth,
   PortableSchema,
   WithoutReservedAuthMethods,
   WithoutReservedFields,
@@ -102,10 +102,14 @@ export function createConnectionType<
   lookupStrategy?: TLookupStrategy;
   configSchema: WithoutReservedFields<TConfigSchema>;
   authMethods: WithoutReservedAuthMethods<TAuthMethods>;
-  matchAuth?: MatchAuth<
-    ConfiguredConnectionAuthFromSchema<TAuthMethods[number]>,
-    LookupStrategyQuery[TLookupStrategy]
-  >;
+  matchAuth?: (
+    authMethods: ConnectionAuth<
+      ConfiguredConnectionAuthFromSchema<TAuthMethods[number]>
+    >[],
+    query: LookupStrategyQuery[TLookupStrategy],
+  ) =>
+    | ConnectionAuth<ConfiguredConnectionAuthFromSchema<TAuthMethods[number]>>
+    | undefined;
   // Checks the connection as a whole once every schema has accepted its own
   // part — for rules like "only one entry may be the fallback" that no
   // single entry can verify. Entries include their plugin `match` so that

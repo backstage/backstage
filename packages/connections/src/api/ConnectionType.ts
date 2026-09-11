@@ -103,14 +103,6 @@ export type ConfiguredConnectionAuth<M> = M extends {
 export type ConnectionAuth<TAuthConfig extends { method: string }> =
   TAuthConfig extends any ? Expand<TAuthConfig & { title: string }> : never;
 
-export type MatchAuth<
-  TAuthConfig extends { method: string },
-  TQuery = { url: string },
-> = (
-  authMethods: ConnectionAuth<TAuthConfig>[],
-  query: TQuery,
-) => ConnectionAuth<TAuthConfig> | undefined;
-
 /**
  * A schema that can validate values and expose a JSON-serializable schema.
  *
@@ -170,24 +162,4 @@ export type ConnectionType<
         }
       : never
     : never)[];
-  matchAuth?(
-    authMethods: ConnectionAuth<T['auth'][number]>[],
-    query: T['query'],
-  ): ConnectionAuth<T['auth'][number]> | undefined;
-  /**
-   * Validates the connection as a whole, after each schema has accepted
-   * its own part.
-   *
-   * Use this for rules that no single auth entry can check by itself, for
-   * example "account IDs must be unique across entries". Receives the
-   * parsed connection config and all parsed auth entries, each including
-   * its plugin `match` so that rules can take scoping into account; throw
-   * an error to reject the connection.
-   */
-  validate?(connection: {
-    config: T['configSchema'];
-    auth: readonly Expand<
-      T['auth'][number] & { match?: { plugins: string[] } }
-    >[];
-  }): void;
 };

@@ -773,8 +773,7 @@ describe('DefaultConnectionsService', () => {
     });
 
     it('passes plugin match along to cross-entry validation', () => {
-      const aws = connectionTypes.aws as Required<typeof connectionTypes.aws>;
-      const validateSpy = jest.spyOn(aws, 'validate');
+      const validateSpy = jest.spyOn(connectionTypes.aws as any, 'validate');
 
       DefaultConnectionsService.create({
         logger: mockServices.logger.mock(),

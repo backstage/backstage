@@ -101,7 +101,7 @@ function validateConnection(connection: JsonObject): ConfiguredConnection {
   // Let the connection type check rules that span the whole connection,
   // such as uniqueness across auth entries. Entries keep their plugin
   // `match` so that rules can take scoping into account.
-  const validate = connectionType.validate as
+  const validate = (connectionType as any).validate as
     | ((connection: { config: unknown; auth: unknown[] }) => void)
     | undefined;
   validate?.({ config: parsed, auth });
