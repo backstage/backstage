@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-export {
-  AnalyticsImplementationBlueprint,
-  type AnalyticsImplementationFactory,
-} from './AnalyticsImplementationBlueprint';
 export { ApiBlueprint } from './ApiBlueprint';
 export { AppRootElementBlueprint } from './AppRootElementBlueprint';
 export { PageBlueprint } from './PageBlueprint';

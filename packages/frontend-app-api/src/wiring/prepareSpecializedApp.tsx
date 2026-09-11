@@ -23,12 +23,12 @@ import {
   ConfigApi,
   coreExtensionData,
   AppNode,
-  ExtensionFactoryMiddleware,
   FrontendFeature,
   IdentityApi,
   identityApiRef,
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
+import { ExtensionFactoryMiddleware } from './types';
 import {
   createExtensionDataContainer,
   OpaqueFrontendPlugin,
