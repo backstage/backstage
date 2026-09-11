@@ -21,8 +21,8 @@ import type {
   Connection,
   ConnectionLookupStrategy,
   ConnectionsService,
+  ConnectionTypeDefinition,
   ConnectionType,
-  ConnectionTypeKey,
   LookupConnectionType,
 } from '@backstage/connections';
 import type { ConfiguredConnection } from '@backstage/connections/config';
@@ -31,8 +31,10 @@ import { getConnectionType } from './lookup';
 import { lookupStrategies } from './lookupStrategies';
 import { NotAllowedError, NotFoundError } from '@backstage/errors';
 
-type ConnectionQuery<TType extends ConnectionTypeKey> =
-  LookupConnectionType<TType> extends ConnectionType<infer TDefinition>
+type ConnectionQuery<TType extends ConnectionType> =
+  LookupConnectionType<TType> extends ConnectionTypeDefinition<
+    infer TDefinition
+  >
     ? TDefinition['query']
     : never;
 
@@ -65,7 +67,7 @@ class PluginConnectionsService implements ConnectionsService {
   }
 
   async find<
-    TType extends ConnectionTypeKey,
+    TType extends ConnectionType,
     TAuthMethod extends LookupConnectionType<TType>['authMethods'][number]['method'],
   >(options: {
     type: TType;
@@ -84,7 +86,7 @@ class PluginConnectionsService implements ConnectionsService {
   }
 
   private async findOptional<
-    TType extends ConnectionTypeKey,
+    TType extends ConnectionType,
     TAuthMethod extends LookupConnectionType<TType>['authMethods'][number]['method'],
   >({
     type,

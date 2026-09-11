@@ -120,7 +120,7 @@ export type PortableSchema<TOutput = unknown, TInput = TOutput> = {
  *
  * @public
  */
-export type ConnectionType<
+export type ConnectionTypeDefinition<
   T extends {
     type: string;
     cardinality: 'singleton' | 'multiton';
