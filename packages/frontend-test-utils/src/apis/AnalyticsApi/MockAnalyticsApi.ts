@@ -20,8 +20,6 @@ import { AnalyticsApi, AnalyticsEvent } from '@backstage/frontend-plugin-api';
  * Mock implementation of {@link frontend-plugin-api#AnalyticsApi} with helpers to ensure that events are sent correctly.
  * Use getEvents in tests to verify captured events.
  *
- * @public
- * @deprecated Use `mockApis.analytics()` instead.
  */
 export class MockAnalyticsApi implements AnalyticsApi {
   private events: AnalyticsEvent[] = [];

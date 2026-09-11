@@ -23,8 +23,6 @@ import { Observable } from '@backstage/types';
 
 /**
  * Constructor arguments for {@link MockErrorApi}
- * @public
- * @deprecated Use `mockApis.error()` instead.
  */
 export type MockErrorApiOptions = {
   collect?: boolean;
@@ -32,8 +30,6 @@ export type MockErrorApiOptions = {
 
 /**
  * ErrorWithContext contains error and ErrorApiErrorContext
- * @public
- * @deprecated Use the return type of `MockErrorApi.getErrors` instead.
  */
 export type ErrorWithContext = {
   error: ErrorApiError;
@@ -59,8 +55,6 @@ const nullObservable = {
 /**
  * Mock implementation of the {@link core-plugin-api#ErrorApi} to be used in tests.
  * Includes withForError and getErrors methods for error testing.
- * @public
- * @deprecated Use `mockApis.error()` instead.
  */
 export class MockErrorApi implements ErrorApi {
   private readonly errors = new Array<{

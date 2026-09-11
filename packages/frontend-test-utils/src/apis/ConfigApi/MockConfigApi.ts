@@ -22,8 +22,6 @@ import { ConfigApi } from '@backstage/core-plugin-api';
  * MockConfigApi is a thin wrapper around {@link @backstage/config#ConfigReader}
  * that can be used to mock configuration using a plain object.
  *
- * @public
- * @deprecated Use `mockApis.config()` instead.
  * @example
  * ```tsx
  * const mockConfig = mockApis.config({
