@@ -16,17 +16,8 @@
 
 import { Auth0Strategy } from './strategy';
 import { InputError } from '@backstage/errors';
+import { PassportOAuthAuthenticatorHelper } from '@backstage/plugin-auth-node';
 import express from 'express';
-
-jest.mock('passport-auth0', () => {
-  class MockAuth0Strategy {
-    authenticate() {}
-    authorizationParams() {
-      return {};
-    }
-  }
-  return { __esModule: true, default: MockAuth0Strategy };
-});
 
 describe('Auth0Strategy', () => {
   const defaultOptions = {
@@ -47,17 +38,25 @@ describe('Auth0Strategy', () => {
 
   const noopVerify = () => {};
 
-  function createRequest(query: Record<string, string> = {}): express.Request {
+  function createRequest(
+    query: express.Request['query'] = {},
+  ): express.Request {
     return { query } as unknown as express.Request;
   }
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
 
   describe('authenticate', () => {
     it('forwards organization and invitation from req.query', () => {
       const strategy = new Auth0Strategy(defaultOptions, noopVerify);
-      const superAuth = jest.spyOn(
-        Object.getPrototypeOf(Object.getPrototypeOf(strategy)),
-        'authenticate',
-      );
+      const superAuth = jest
+        .spyOn(
+          Object.getPrototypeOf(Object.getPrototypeOf(strategy)),
+          'authenticate',
+        )
+        .mockImplementation(() => {});
 
       const req = createRequest({
         organization: 'org_abc',
@@ -75,10 +74,12 @@ describe('Auth0Strategy', () => {
 
     it('forwards screen_hint and login_hint from req.query', () => {
       const strategy = new Auth0Strategy(defaultOptions, noopVerify);
-      const superAuth = jest.spyOn(
-        Object.getPrototypeOf(Object.getPrototypeOf(strategy)),
-        'authenticate',
-      );
+      const superAuth = jest
+        .spyOn(
+          Object.getPrototypeOf(Object.getPrototypeOf(strategy)),
+          'authenticate',
+        )
+        .mockImplementation(() => {});
 
       const req = createRequest({
         screen_hint: 'signup',
@@ -96,10 +97,12 @@ describe('Auth0Strategy', () => {
 
     it('does not include absent query params', () => {
       const strategy = new Auth0Strategy(defaultOptions, noopVerify);
-      const superAuth = jest.spyOn(
-        Object.getPrototypeOf(Object.getPrototypeOf(strategy)),
-        'authenticate',
-      );
+      const superAuth = jest
+        .spyOn(
+          Object.getPrototypeOf(Object.getPrototypeOf(strategy)),
+          'authenticate',
+        )
+        .mockImplementation(() => {});
 
       const req = createRequest({});
 
@@ -124,16 +127,50 @@ describe('Auth0Strategy', () => {
         { ...defaultOptions, organization: 'org_abc' },
         noopVerify,
       );
-      const superAuth = jest.spyOn(
-        Object.getPrototypeOf(Object.getPrototypeOf(strategy)),
-        'authenticate',
-      );
+      const superAuth = jest
+        .spyOn(
+          Object.getPrototypeOf(Object.getPrototypeOf(strategy)),
+          'authenticate',
+        )
+        .mockImplementation(() => {});
 
       const req = createRequest({ organization: 'org_abc' });
 
       strategy.authenticate(req, {});
 
       expect(superAuth).toHaveBeenCalledWith(req, { organization: 'org_abc' });
+    });
+
+    it('preserves the provider error description when authentication is rejected', async () => {
+      const strategy = new Auth0Strategy(defaultOptions, noopVerify);
+      const helper = PassportOAuthAuthenticatorHelper.from(strategy);
+      const req = createRequest({
+        error: 'access_denied',
+        error_description: 'invitation not found or already used',
+      });
+
+      await expect(helper.authenticate({ req })).rejects.toThrow(
+        'Authentication rejected, invitation not found or already used',
+      );
+    });
+
+    it('falls back to the provider error code for absent or invalid descriptions', async () => {
+      const strategy = new Auth0Strategy(defaultOptions, noopVerify);
+      const helper = PassportOAuthAuthenticatorHelper.from(strategy);
+      const requestWithoutDescription = createRequest({
+        error: 'access_denied',
+      });
+      const requestWithInvalidDescription = createRequest({
+        error: 'access_denied',
+        error_description: ['untrusted', 'description'],
+      });
+
+      await expect(
+        helper.authenticate({ req: requestWithoutDescription }),
+      ).rejects.toThrow('Authentication rejected, access_denied');
+      await expect(
+        helper.authenticate({ req: requestWithInvalidDescription }),
+      ).rejects.toThrow('Authentication rejected, access_denied');
     });
   });
 
