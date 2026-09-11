@@ -69,6 +69,7 @@ const testNotification1: Notification = {
     link: '/catalog',
     severity: 'critical',
     icon: 'docs',
+    metadata: { some_key: 'some_value' },
   },
 };
 const testNotification2: Notification = {
@@ -226,6 +227,24 @@ describe.each(databases.eachSupportedId())(
           id3,
           id1,
         ]);
+      });
+
+      it('should preserve metadata', async () => {
+        const metadataNotification = {
+          ...testNotification1,
+          id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+          payload: {
+            ...testNotification1.payload,
+            metadata: { key: 'value' },
+          },
+        };
+        await storage.saveNotification(metadataNotification);
+
+        const notifications = await storage.getNotifications({ user });
+        const saved = notifications.find(
+          n => n.id === 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+        );
+        expect(saved?.payload.metadata).toEqual({ key: 'value' });
       });
 
       it('should return null value for user for broadcast notifications', async () => {
