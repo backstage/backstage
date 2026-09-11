@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import type { z, ZodType } from 'zod/v3';
-import { SignInResolver } from '../types';
-import zodToJsonSchema from 'zod-to-json-schema';
-import { JsonObject } from '@backstage/types';
-import { fromError } from 'zod-validation-error/v3';
 import { InputError } from '@backstage/errors';
+import { JsonObject } from '@backstage/types';
+import type {
+  StandardJSONSchemaV1,
+  StandardSchemaV1,
+} from '@standard-schema/spec';
+import { SignInResolver } from '../types';
 
 /** @public */
 export interface SignInResolverFactory<TAuthResult = any, TOptions = any> {
@@ -34,22 +35,39 @@ export interface SignInResolverFactory<TAuthResult = any, TOptions = any> {
 /** @public */
 export interface SignInResolverFactoryOptions<
   TAuthResult,
-  TSchema extends ZodType = ZodType<unknown>,
+  TSchema extends StandardSchemaV1 & StandardJSONSchemaV1 = StandardSchemaV1 &
+    StandardJSONSchemaV1,
 > {
+  /**
+   * A schema that supports synchronous Standard Schema validation and Standard
+   * JSON Schema conversion.
+   */
   optionsSchema?: TSchema;
-  create(options: z.output<TSchema>): SignInResolver<TAuthResult>;
+  create(
+    options: StandardSchemaV1.InferOutput<TSchema>,
+  ): SignInResolver<TAuthResult>;
 }
 
-/** @public */
+/**
+ * Creates a configurable sign-in resolver factory.
+ *
+ * The options schema must validate synchronously and provide a Standard JSON
+ * Schema input converter. When using Zod, pass a schema from the full Zod v4
+ * package, for example `optionsSchema: z.object({ ... })` after importing
+ * `z` from `zod`.
+ *
+ * @public
+ */
 export function createSignInResolverFactory<
   TAuthResult,
-  TSchema extends ZodType = ZodType<unknown>,
+  TSchema extends StandardSchemaV1 & StandardJSONSchemaV1 = StandardSchemaV1 &
+    StandardJSONSchemaV1,
 >(
   options: SignInResolverFactoryOptions<TAuthResult, TSchema>,
-): SignInResolverFactory<TAuthResult, z.input<TSchema>> {
+): SignInResolverFactory<TAuthResult, StandardSchemaV1.InferInput<TSchema>> {
   const { optionsSchema } = options;
   if (!optionsSchema) {
-    return (resolverOptions?: z.input<TSchema>) => {
+    return (resolverOptions?: StandardSchemaV1.InferInput<TSchema>) => {
       if (resolverOptions) {
         throw new InputError('sign-in resolver does not accept options');
       }
@@ -57,21 +75,47 @@ export function createSignInResolverFactory<
     };
   }
   const factory = (
-    ...[resolverOptions]: undefined extends z.input<TSchema>
-      ? [options?: z.input<TSchema>]
-      : [options: z.input<TSchema>]
+    ...[resolverOptions]: undefined extends StandardSchemaV1.InferInput<TSchema>
+      ? [options?: StandardSchemaV1.InferInput<TSchema>]
+      : [options: StandardSchemaV1.InferInput<TSchema>]
   ) => {
-    let parsedOptions;
+    let result;
     try {
-      parsedOptions = optionsSchema.parse(resolverOptions);
+      result = optionsSchema['~standard'].validate(resolverOptions);
     } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
       throw new InputError(
-        `Invalid sign-in resolver options, ${fromError(error)}`,
+        `Invalid sign-in resolver options, validation failed: ${message}`,
       );
     }
-    return options.create(parsedOptions);
+
+    if (result instanceof Promise) {
+      result.catch(() => {});
+      throw new InputError(
+        'Sign-in resolver option schemas must validate synchronously; asynchronous schemas are not supported by sign-in resolver factories',
+      );
+    }
+
+    if (result.issues) {
+      const issues = result.issues.map(issue => {
+        const path = issue.path
+          ?.map(segment =>
+            typeof segment === 'object' ? segment.key : segment,
+          )
+          .map(String)
+          .join('.');
+        return path ? `${issue.message} at '${path}'` : issue.message;
+      });
+      throw new InputError(
+        `Invalid sign-in resolver options, ${issues.join('; ')}`,
+      );
+    }
+
+    return options.create(result.value);
   };
 
-  factory.optionsJsonSchema = zodToJsonSchema(optionsSchema) as JsonObject;
+  factory.optionsJsonSchema = optionsSchema['~standard'].jsonSchema.input({
+    target: 'draft-07',
+  }) as JsonObject;
   return factory;
 }

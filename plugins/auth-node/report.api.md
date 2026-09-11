@@ -15,9 +15,9 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { Profile } from 'passport';
 import { Request as Request_2 } from 'express';
 import { Response as Response_2 } from 'express';
+import type { StandardJSONSchemaV1 } from '@standard-schema/spec';
+import type { StandardSchemaV1 } from '@standard-schema/spec';
 import { Strategy } from 'passport';
-import type { z } from 'zod/v3';
-import type { ZodType } from 'zod/v3';
 
 // @public (undocumented)
 export interface AuthOwnershipResolutionExtensionPoint {
@@ -224,13 +224,14 @@ export function createProxyAuthRouteHandlers<TResult>(
   options: ProxyAuthRouteHandlersOptions<TResult>,
 ): AuthProviderRouteHandlers;
 
-// @public (undocumented)
+// @public
 export function createSignInResolverFactory<
   TAuthResult,
-  TSchema extends ZodType = ZodType<unknown>,
+  TSchema extends StandardSchemaV1 & StandardJSONSchemaV1 = StandardSchemaV1 &
+    StandardJSONSchemaV1,
 >(
   options: SignInResolverFactoryOptions<TAuthResult, TSchema>,
-): SignInResolverFactory<TAuthResult, z.input<TSchema>>;
+): SignInResolverFactory<TAuthResult, StandardSchemaV1.InferInput<TSchema>>;
 
 // @public (undocumented)
 export function decodeOAuthState(encodedState: string): OAuthState;
@@ -679,11 +680,13 @@ export interface SignInResolverFactory<TAuthResult = any, TOptions = any> {
 // @public (undocumented)
 export interface SignInResolverFactoryOptions<
   TAuthResult,
-  TSchema extends ZodType = ZodType<unknown>,
+  TSchema extends StandardSchemaV1 & StandardJSONSchemaV1 = StandardSchemaV1 &
+    StandardJSONSchemaV1,
 > {
   // (undocumented)
-  create(options: z.output<TSchema>): SignInResolver<TAuthResult>;
-  // (undocumented)
+  create(
+    options: StandardSchemaV1.InferOutput<TSchema>,
+  ): SignInResolver<TAuthResult>;
   optionsSchema?: TSchema;
 }
 

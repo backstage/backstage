@@ -19,7 +19,7 @@ import {
   SignInInfo,
 } from '@backstage/plugin-auth-node';
 import { AzureEasyAuthResult } from './types';
-import { z } from 'zod/v3';
+import { z } from 'zod';
 
 /** @public */
 export namespace azureEasyAuthSignInResolvers {

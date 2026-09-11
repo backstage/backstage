@@ -19,7 +19,7 @@ import {
   SignInInfo,
 } from '@backstage/plugin-auth-node';
 import { CloudflareAccessResult } from './types';
-import { z } from 'zod/v3';
+import { z } from 'zod';
 
 /**
  * Available sign-in resolvers for the Cloudflare Access auth provider.

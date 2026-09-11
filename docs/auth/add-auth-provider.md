@@ -173,6 +173,55 @@ export const authModuleFoobarProvider = createBackendModule({
 });
 ```
 
+You can expose provider-specific configurable sign-in resolvers with the
+`createSignInResolverFactory` function. Pass the options schema directly. The
+schema must support synchronous [Standard Schema](https://standardschema.dev/)
+validation and Standard JSON Schema conversion. If you use Zod, install the
+full Zod v4 package and import from `zod`:
+
+```ts
+import {
+  createSignInResolverFactory,
+  OAuthAuthenticatorResult,
+  PassportProfile,
+  SignInInfo,
+} from '@backstage/plugin-auth-node';
+import { z } from 'zod';
+
+export const usernameMatchingUserEntityName = createSignInResolverFactory({
+  optionsSchema: z
+    .object({
+      dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+    })
+    .optional(),
+  create(options = {}) {
+    return async (
+      info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
+      ctx,
+    ) => {
+      const username = info.result.fullProfile.username;
+      if (!username) {
+        throw new Error('User profile does not contain a username');
+      }
+
+      return ctx.signInWithCatalogUser(
+        { entityRef: { name: username } },
+        {
+          dangerousEntityRefFallback:
+            options.dangerouslyAllowSignInWithoutUserInCatalog
+              ? { entityRef: { name: username } }
+              : undefined,
+        },
+      );
+    };
+  },
+});
+```
+
+Add the resolver factory to the `signInResolverFactories` option of your auth
+provider factory so that adopters can select and configure it through
+`app-config.yaml`.
+
 Now let's implement the actual authenticator for our provider using `Strategy` from a passport package.
 The authenticator is responsible for creating the passport strategy and handling the authentication flow using secrets from the config file.
 

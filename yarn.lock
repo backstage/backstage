@@ -3640,7 +3640,7 @@ __metadata:
     passport: "npm:^0.7.0"
     passport-atlassian-oauth2: "npm:^2.1.0"
     supertest: "npm:^7.0.0"
-    zod: "npm:^3.25.76 || ^4.0.0"
+    zod: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -3684,7 +3684,7 @@ __metadata:
     jose: "npm:^5.0.0"
     msw: "npm:^2.0.8"
     node-cache: "npm:^5.1.2"
-    zod: "npm:^3.25.76 || ^4.0.0"
+    zod: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -3703,7 +3703,7 @@ __metadata:
     express: "npm:^4.22.0"
     jose: "npm:^5.0.0"
     passport: "npm:^0.7.0"
-    zod: "npm:^3.25.76 || ^4.0.0"
+    zod: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -3722,7 +3722,7 @@ __metadata:
     passport: "npm:^0.7.0"
     passport-bitbucket-oauth2: "npm:^0.1.2"
     supertest: "npm:^7.0.0"
-    zod: "npm:^3.25.76 || ^4.0.0"
+    zod: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -3741,7 +3741,7 @@ __metadata:
     passport: "npm:^0.7.0"
     passport-oauth2: "npm:^1.6.1"
     supertest: "npm:^7.0.0"
-    zod: "npm:^3.25.76 || ^4.0.0"
+    zod: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -3762,7 +3762,7 @@ __metadata:
     jose: "npm:^5.0.0"
     msw: "npm:^2.0.0"
     node-mocks-http: "npm:^1.0.0"
-    zod: "npm:^3.25.76 || ^4.0.0"
+    zod: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -3778,7 +3778,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     express: "npm:^4.22.0"
     google-auth-library: "npm:^9.0.0"
-    zod: "npm:^3.25.76 || ^4.0.0"
+    zod: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -3796,7 +3796,7 @@ __metadata:
     "@types/passport-github2": "npm:^1.2.4"
     passport-github2: "npm:^0.1.12"
     supertest: "npm:^7.0.0"
-    zod: "npm:^3.25.76 || ^4.0.0"
+    zod: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -3815,7 +3815,7 @@ __metadata:
     passport: "npm:^0.7.0"
     passport-gitlab2: "npm:^5.0.0"
     supertest: "npm:^7.0.0"
-    zod: "npm:^3.25.76 || ^4.0.0"
+    zod: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -3833,7 +3833,7 @@ __metadata:
     google-auth-library: "npm:^9.0.0"
     passport-google-oauth20: "npm:^2.0.0"
     supertest: "npm:^7.0.0"
-    zod: "npm:^3.25.76 || ^4.0.0"
+    zod: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -3871,7 +3871,7 @@ __metadata:
     msw: "npm:^2.0.0"
     passport-microsoft: "npm:^1.0.0"
     supertest: "npm:^7.0.0"
-    zod: "npm:^3.25.76 || ^4.0.0"
+    zod: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -3889,7 +3889,7 @@ __metadata:
     passport: "npm:^0.7.0"
     passport-oauth2: "npm:^1.6.1"
     supertest: "npm:^7.0.0"
-    zod: "npm:^3.25.76 || ^4.0.0"
+    zod: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -3903,7 +3903,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     jose: "npm:^5.0.0"
-    zod: "npm:^3.25.76 || ^4.0.0"
+    zod: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -3928,7 +3928,6 @@ __metadata:
     openid-client: "npm:^5.5.0"
     passport: "npm:^0.7.0"
     supertest: "npm:^7.0.0"
-    zod: "npm:^3.25.76 || ^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -3947,7 +3946,7 @@ __metadata:
     express: "npm:^4.22.0"
     passport: "npm:^0.7.0"
     supertest: "npm:^7.0.0"
-    zod: "npm:^3.25.76 || ^4.0.0"
+    zod: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -3966,7 +3965,7 @@ __metadata:
     passport: "npm:^0.7.0"
     passport-onelogin-oauth: "npm:^0.0.1"
     supertest: "npm:^7.0.0"
-    zod: "npm:^3.25.76 || ^4.0.0"
+    zod: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -3987,7 +3986,7 @@ __metadata:
     msw: "npm:^2.7.3"
     passport-oauth2: "npm:^1.8.0"
     supertest: "npm:^7.1.0"
-    zod: "npm:^3.25.76 || ^4.0.0"
+    zod: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
@@ -4091,6 +4090,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/types": "workspace:^"
+    "@standard-schema/spec": "npm:^1.1.0"
     "@types/express": "npm:^4.17.6"
     "@types/passport": "npm:^1.0.3"
     cookie-parser: "npm:^1.4.6"
@@ -4101,9 +4101,7 @@ __metadata:
     msw: "npm:^2.0.0"
     passport: "npm:^0.7.0"
     supertest: "npm:^7.0.0"
-    zod: "npm:^3.25.76 || ^4.0.0"
-    zod-to-json-schema: "npm:^3.25.1"
-    zod-validation-error: "npm:^5.0.0"
+    zod: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
 
