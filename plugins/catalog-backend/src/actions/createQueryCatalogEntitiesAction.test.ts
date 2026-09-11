@@ -275,6 +275,41 @@ describe('createQueryCatalogEntitiesAction', () => {
     expect(output.nextPageCursor).toBeDefined();
   });
 
+  it('should coerce string limit and offset into numbers', async () => {
+    const { invoke } = createCatalogQueryAction();
+    const result = await invoke({
+      id: 'test:query-catalog-entities',
+      input: { limit: '2', offset: '0' } as any,
+    });
+
+    const output = result.output as any;
+    expect(output.items).toHaveLength(2);
+    expect(output.totalItems).toBe(4);
+    expect(output.hasMoreEntities).toBe(true);
+    expect(output.nextPageCursor).toBeDefined();
+  });
+
+  it('should reject invalid limit and offset values', async () => {
+    const { invoke } = createCatalogQueryAction();
+
+    for (const badInput of [
+      { limit: true },
+      { limit: '' },
+      { limit: 'abc' },
+      { offset: null },
+      { offset: false },
+      { offset: '' },
+      { offset: 'abc' },
+    ]) {
+      await expect(
+        invoke({
+          id: 'test:query-catalog-entities',
+          input: badInput as any,
+        }),
+      ).rejects.toThrow('Invalid input to action');
+    }
+  });
+
   it('should support cursor-based pagination', async () => {
     const { invoke } = createCatalogQueryAction();
 
