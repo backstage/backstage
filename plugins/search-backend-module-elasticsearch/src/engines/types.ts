@@ -40,7 +40,7 @@ export type ElasticSearchCustomIndexTemplateBody = {
   composed_of?: string[];
   /**
    * See available properties of template
-   * https://www.elastic.co/guide/en/elasticsearch/reference/7.15/indices-put-template.html#put-index-template-api-request-body
+   * https://www.elastic.co/guide/en/elasticsearch/reference/8.19/indices-put-template.html#put-index-template-api-request-body
    */
   template?: Record<string, any>;
 };
