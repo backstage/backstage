@@ -30,7 +30,8 @@ Try the single-owner, multiple-owner, and membership-filtered group scenarios,
   and surrounding controls rather than around the scroll area. Existing selections are placed first when
   it opens; selecting or removing an item does not move any rows until reopening.
   Selected rows show a checkmark and removal button in reserved spaces, without
-  changing the row layout.
+  changing the row layout. Enabled rows highlight on hover, including when selected;
+  disabled rows do not. Keyboard navigation retains a separate focus ring.
 - Typing starts a server-side search; it does not locally filter or reorder rows.
   Choosing a row commits its canonical entity reference.
   Escape, Done, or clicking outside discards the search, not the selections.
