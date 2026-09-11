@@ -56,6 +56,14 @@
  * hand), both the dedup and index creation are skipped — startup is
  * instant.
  *
+ * ## Rolling deployments
+ *
+ * The previous implementation did not deduplicate its input before inserting.
+ * During a mixed-version rollout, an old instance that emits the same child
+ * more than once can therefore conflict with these unique indices. Operators
+ * that allow duplicate emissions need to roll this out in two phases, updating
+ * writers to deduplicate before applying this migration.
+ *
  * ## Cost
  *
  * - Postgres: CREATE INDEX CONCURRENTLY on a ~490K row table takes a few
@@ -104,51 +112,16 @@ exports.config = { transaction: false };
 
 /** @param {import('knex').Knex} knex */
 async function upPostgres(knex) {
-  // Fast path: if both unique indices are already valid, skip everything.
-  const entityIdx = await pgIndexIsValid(
+  await ensurePgUniqueIndex(
     knex,
     'refresh_state_references_source_entity_target_uniq',
+    'source_entity_ref',
   );
-  const keyIdx = await pgIndexIsValid(
+  await ensurePgUniqueIndex(
     knex,
     'refresh_state_references_source_key_target_uniq',
+    'source_key',
   );
-
-  if (!entityIdx) {
-    // Deduplicate source_entity_ref rows before creating the unique index.
-    await knex.raw(`
-      DELETE FROM refresh_state_references a
-      USING refresh_state_references b
-      WHERE a.id > b.id
-        AND a.source_entity_ref IS NOT NULL
-        AND a.source_entity_ref = b.source_entity_ref
-        AND a.target_entity_ref = b.target_entity_ref
-    `);
-    await knex.raw(`
-      CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS
-        refresh_state_references_source_entity_target_uniq
-        ON refresh_state_references (source_entity_ref, target_entity_ref)
-        WHERE source_entity_ref IS NOT NULL
-    `);
-  }
-
-  if (!keyIdx) {
-    // Deduplicate source_key rows before creating the unique index.
-    await knex.raw(`
-      DELETE FROM refresh_state_references a
-      USING refresh_state_references b
-      WHERE a.id > b.id
-        AND a.source_key IS NOT NULL
-        AND a.source_key = b.source_key
-        AND a.target_entity_ref = b.target_entity_ref
-    `);
-    await knex.raw(`
-      CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS
-        refresh_state_references_source_key_target_uniq
-        ON refresh_state_references (source_key, target_entity_ref)
-        WHERE source_key IS NOT NULL
-    `);
-  }
 
   // Drop old single-column indices that the new composites supersede.
   await knex.raw(
@@ -183,18 +156,55 @@ async function downPostgres(knex) {
 /**
  * @param {import('knex').Knex} knex
  * @param {string} name
- * @returns {Promise<boolean>}
+ * @param {'source_entity_ref' | 'source_key'} sourceColumn
  */
-async function pgIndexIsValid(knex, name) {
+async function ensurePgUniqueIndex(knex, name, sourceColumn) {
   const result = await knex.raw(
-    `SELECT indisvalid
-     FROM pg_index
-     WHERE indexrelid = (
-       SELECT oid FROM pg_class WHERE relname = ? AND relkind = 'i'
-     ) AND indisunique = true`,
+    `SELECT
+       i.indisvalid,
+       i.indisunique,
+       pg_get_indexdef(i.indexrelid) AS definition
+     FROM pg_index i
+     JOIN pg_class index_class ON index_class.oid = i.indexrelid
+     JOIN pg_class table_class ON table_class.oid = i.indrelid
+     JOIN pg_namespace namespace ON namespace.oid = index_class.relnamespace
+     WHERE index_class.relname = ?
+       AND namespace.nspname = current_schema()
+       AND table_class.relnamespace = namespace.oid
+       AND table_class.relname = 'refresh_state_references'`,
     [name],
   );
-  return result.rows[0]?.indisvalid === true;
+  const index = result.rows[0];
+  const expectedColumns = `(${sourceColumn}, target_entity_ref)`;
+  const expectedPredicate = `WHERE (${sourceColumn} IS NOT NULL)`;
+  const isUsable =
+    index?.indisvalid === true &&
+    index?.indisunique === true &&
+    index.definition.includes(expectedColumns) &&
+    index.definition.includes(expectedPredicate);
+
+  if (isUsable) {
+    return;
+  }
+  if (index) {
+    await knex.raw(`DROP INDEX CONCURRENTLY ??`, [name]);
+  }
+
+  await knex.raw(
+    `DELETE FROM refresh_state_references a
+     USING refresh_state_references b
+     WHERE a.id > b.id
+       AND a.?? IS NOT NULL
+       AND a.?? = b.??
+       AND a.target_entity_ref = b.target_entity_ref`,
+    [sourceColumn, sourceColumn, sourceColumn],
+  );
+  await knex.raw(
+    `CREATE UNIQUE INDEX CONCURRENTLY ??
+       ON refresh_state_references (??, target_entity_ref)
+       WHERE ?? IS NOT NULL`,
+    [name, sourceColumn, sourceColumn],
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -260,13 +270,26 @@ async function upMysql(knex) {
 
 /** @param {import('knex').Knex} knex */
 async function downMysql(knex) {
-  await knex.schema.alterTable('refresh_state_references', table => {
-    table.index(
-      ['source_entity_ref'],
+  if (
+    !(await mysqlIndexExists(
+      knex,
       'refresh_state_references_source_entity_ref_idx',
-    );
-    table.index(['source_key'], 'refresh_state_references_source_key_idx');
-  });
+    ))
+  ) {
+    await knex.schema.alterTable('refresh_state_references', table => {
+      table.index(
+        ['source_entity_ref'],
+        'refresh_state_references_source_entity_ref_idx',
+      );
+    });
+  }
+  if (
+    !(await mysqlIndexExists(knex, 'refresh_state_references_source_key_idx'))
+  ) {
+    await knex.schema.alterTable('refresh_state_references', table => {
+      table.index(['source_key'], 'refresh_state_references_source_key_idx');
+    });
+  }
   await mysqlDropIndexIfExists(
     knex,
     'refresh_state_references_source_entity_target_uniq',

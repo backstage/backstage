@@ -188,5 +188,158 @@ describe.each(databases.eachSupportedId())(
 
       expect(after1).toEqual(after2);
     });
+
+    it('rolls back the entire replacement if an insert fails', async () => {
+      await setup();
+      await knex('refresh_state_references').insert([
+        { source_entity_ref: 'k:ns/a', target_entity_ref: 'k:ns/b' },
+        { source_entity_ref: 'k:ns/a', target_entity_ref: 'k:ns/c' },
+      ]);
+
+      await expect(
+        syncRefreshStateReferences(knex, { sourceEntityRef: 'k:ns/a' }, [
+          'k:ns/d',
+          'k:ns/missing',
+        ]),
+      ).rejects.toThrow();
+
+      expect(await getRefs({ source_entity_ref: 'k:ns/a' })).toEqual([
+        'k:ns/b',
+        'k:ns/c',
+      ]);
+    });
+
+    it('serializes concurrent replacements of the same source', async () => {
+      if (!databaseId.includes('POSTGRES')) {
+        return;
+      }
+      await setup();
+
+      let releaseFirst!: () => void;
+      const holdFirst = new Promise<void>(resolve => {
+        releaseFirst = resolve;
+      });
+      let firstReady!: () => void;
+      const waitForFirst = new Promise<void>(resolve => {
+        firstReady = resolve;
+      });
+
+      const first = knex.transaction(async trx => {
+        await syncRefreshStateReferences(trx, { sourceEntityRef: 'k:ns/a' }, [
+          'k:ns/b',
+        ]);
+        firstReady();
+        await holdFirst;
+      });
+      await waitForFirst;
+
+      let secondPid: number | undefined;
+      let secondReady!: () => void;
+      const waitForSecond = new Promise<void>(resolve => {
+        secondReady = resolve;
+      });
+      const second = knex.transaction(async trx => {
+        secondPid = Number(
+          (await trx.raw('SELECT pg_backend_pid() AS pid')).rows[0].pid,
+        );
+        secondReady();
+        await syncRefreshStateReferences(trx, { sourceEntityRef: 'k:ns/a' }, [
+          'k:ns/c',
+        ]);
+      });
+      await waitForSecond;
+
+      let sawLockWait = false;
+      for (let attempt = 0; attempt < 100; attempt++) {
+        const waiting = await knex.raw(
+          `SELECT EXISTS (
+             SELECT 1 FROM pg_locks
+             WHERE pid = ?
+               AND locktype = 'advisory'
+               AND NOT granted
+           ) AS waiting`,
+          [secondPid],
+        );
+        if (waiting.rows[0].waiting) {
+          sawLockWait = true;
+          break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 10));
+      }
+
+      releaseFirst();
+      await Promise.all([first, second]);
+
+      expect(sawLockWait).toBe(true);
+      expect(await getRefs({ source_entity_ref: 'k:ns/a' })).toEqual([
+        'k:ns/c',
+      ]);
+    });
+
+    it('serializes concurrent MySQL replacements of the same source', async () => {
+      if (!databaseId.includes('MYSQL')) {
+        return;
+      }
+      await setup();
+
+      let releaseFirst!: () => void;
+      const holdFirst = new Promise<void>(resolve => {
+        releaseFirst = resolve;
+      });
+      let firstReady!: () => void;
+      const waitForFirst = new Promise<void>(resolve => {
+        firstReady = resolve;
+      });
+
+      const first = knex.transaction(async trx => {
+        await syncRefreshStateReferences(trx, { sourceEntityRef: 'k:ns/a' }, [
+          'k:ns/b',
+        ]);
+        firstReady();
+        await holdFirst;
+      });
+      await waitForFirst;
+
+      let secondReady!: () => void;
+      const waitForSecond = new Promise<void>(resolve => {
+        secondReady = resolve;
+      });
+      let secondSettled = false;
+      const second = knex
+        .transaction(async trx => {
+          secondReady();
+          await syncRefreshStateReferences(trx, { sourceEntityRef: 'k:ns/a' }, [
+            'k:ns/c',
+          ]);
+        })
+        .finally(() => {
+          secondSettled = true;
+        });
+      await waitForSecond;
+      await new Promise(resolve => setTimeout(resolve, 100));
+      const secondWaitedForFirst = !secondSettled;
+
+      releaseFirst();
+      await Promise.all([first, second]);
+
+      expect(secondWaitedForFirst).toBe(true);
+      expect(await getRefs({ source_entity_ref: 'k:ns/a' })).toEqual([
+        'k:ns/c',
+      ]);
+    });
   },
 );
+
+it('propagates MySQL deadlocks to the owning transaction', async () => {
+  const deadlock = Object.assign(new Error('deadlock'), { errno: 1213 });
+  const transaction = jest.fn().mockRejectedValue(deadlock);
+  const knex = {
+    client: { config: { client: 'mysql2' } },
+    transaction,
+  } as unknown as Knex;
+
+  await expect(
+    syncRefreshStateReferences(knex, { sourceKey: 'provider' }, []),
+  ).rejects.toBe(deadlock);
+  expect(transaction).toHaveBeenCalledTimes(1);
+});

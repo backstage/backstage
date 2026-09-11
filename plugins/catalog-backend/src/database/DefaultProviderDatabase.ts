@@ -119,6 +119,7 @@ export class DefaultProviderDatabase implements ProviderDatabase {
       ...toRemove,
     ]);
     const claimedRefs = new Array<string>();
+    const takeoverRefs = new Array<string>();
     if (options.type === 'full') {
       for (const item of options.items) {
         const ref = stringifyEntityRef(item.entity);
@@ -187,12 +188,13 @@ export class DefaultProviderDatabase implements ProviderDatabase {
         const entityRef = stringifyEntityRef(entity);
 
         try {
-          let ok = await updateUnprocessedEntity({
+          const updateResult = await updateUnprocessedEntity({
             tx,
             entity,
             hash,
             locationKey,
           });
+          let ok = updateResult.updated;
           if (!ok) {
             ok = await insertUnprocessedEntity({
               tx,
@@ -204,15 +206,8 @@ export class DefaultProviderDatabase implements ProviderDatabase {
           }
           if (ok) {
             claimedRefs.push(entityRef);
-            // When a locationKey is set, this may be a takeover of an entity
-            // that was previously owned by another source. Remove any stale
-            // refs from other sourceKeys so orphan detection works correctly.
-            if (locationKey) {
-              await tx('refresh_state_references')
-                .where('target_entity_ref', entityRef)
-                .andWhereNot('source_key', options.sourceKey)
-                .whereNotNull('source_key')
-                .delete();
+            if (updateResult.claimed) {
+              takeoverRefs.push(entityRef);
             }
           } else {
             const conflictingKey = await checkLocationKeyConflict({
@@ -235,6 +230,12 @@ export class DefaultProviderDatabase implements ProviderDatabase {
           );
         }
       }
+    }
+
+    if (takeoverRefs.length > 0) {
+      await tx('refresh_state_references')
+        .whereIn('target_entity_ref', takeoverRefs)
+        .delete();
     }
 
     await syncRefreshStateReferences(

@@ -1555,8 +1555,11 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
 
     await migrateDownOnce(knex);
     expect((await readNdistinct()).option).toBe(isPg ? -1 : undefined);
+  });
+
   it('20260616000000_refresh_state_references_sync_indices.js', async () => {
     const knex = await databases.init(databaseId);
+    const isPg = knex.client.config.client.includes('pg');
 
     await migrateUntilBefore(
       knex,
@@ -1594,7 +1597,23 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
       ])
       .into('refresh_state_references');
 
-    // Run the migration — it should dedup and add unique indices
+    let concurrentIndexCreationFailed = false;
+    if (isPg) {
+      try {
+        await knex.raw(`
+          CREATE UNIQUE INDEX CONCURRENTLY
+            refresh_state_references_source_entity_target_uniq
+            ON refresh_state_references (source_entity_ref, target_entity_ref)
+            WHERE source_entity_ref IS NOT NULL
+        `);
+      } catch {
+        concurrentIndexCreationFailed = true;
+      }
+    }
+    expect(concurrentIndexCreationFailed).toBe(isPg);
+
+    // Run the migration — it should recover any invalid concurrent index,
+    // deduplicate the data, and add valid unique indices.
     await migrateUpOnce(knex);
 
     // Duplicates should be gone

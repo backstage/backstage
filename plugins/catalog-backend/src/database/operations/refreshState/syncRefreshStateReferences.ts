@@ -41,8 +41,9 @@ export type RefreshStateReferenceSource =
  * reference the same child.
  *
  * Uses database-specific strategies:
- * - Postgres: Single writable CTE (one round-trip, fully atomic)
- * - MySQL/SQLite: In-memory diff with targeted deletes and inserts
+ * - Postgres: Source lock followed by a writable CTE
+ * - MySQL: Temporary table merge in a transaction
+ * - SQLite: Transactional diff
  */
 export async function syncRefreshStateReferences(
   knex: Knex | Knex.Transaction,
@@ -55,8 +56,10 @@ export async function syncRefreshStateReferences(
 
   if (client === 'pg') {
     await syncPostgres(knex, col, uniqueTargets);
+  } else if (client.includes('mysql')) {
+    await syncMysql(knex, col, uniqueTargets);
   } else {
-    await syncSimple(knex, col, uniqueTargets);
+    await syncTransactionalDiff(knex, col, uniqueTargets);
   }
 }
 
@@ -77,14 +80,14 @@ function sourceColumn(source: RefreshStateReferenceSource): SourceColumn {
 }
 
 // ---------------------------------------------------------------------------
-// Postgres: writable CTE
+// Postgres: source serialization + writable CTE
 //
-// All CTE branches see the same pre-modification snapshot, so the DELETE
-// and INSERT do not interfere with each other. This is a single atomic
-// statement — no explicit transaction wrapper needed.
+// The advisory transaction lock serializes updates to each source. It is
+// acquired in a separate statement so a caller that waits for the lock gets
+// a fresh READ COMMITTED snapshot for the CTE. All CTE branches then see that
+// same snapshot, so the DELETE and INSERT do not interfere with each other.
 //
-// ON CONFLICT uses the matching partial unique index to handle concurrent
-// callers that race on the same source:
+// ON CONFLICT uses the matching partial unique index as an integrity guard:
 //   (source_entity_ref, target_entity_ref) WHERE source_entity_ref IS NOT NULL
 //   (source_key, target_entity_ref)        WHERE source_key IS NOT NULL
 // ---------------------------------------------------------------------------
@@ -93,76 +96,129 @@ async function syncPostgres(
   src: SourceColumn,
   targetEntityRefs: string[],
 ): Promise<void> {
-  const col = `"${src.column}"`;
-  await knex.raw(
-    `
-    WITH desired(target_entity_ref) AS (
-      SELECT unnest(?::text[])
-    ),
-    deleted AS (
-      DELETE FROM refresh_state_references r
-      WHERE r.${col} = ?
-        AND NOT EXISTS (
-          SELECT 1 FROM desired d
-          WHERE d.target_entity_ref = r.target_entity_ref
-        )
-    )
-    INSERT INTO refresh_state_references (${col}, target_entity_ref)
-    SELECT ?, d.target_entity_ref
-    FROM desired d
-    WHERE NOT EXISTS (
-      SELECT 1 FROM refresh_state_references r
-      WHERE r.${col} = ?
-        AND r.target_entity_ref = d.target_entity_ref
-    )
-    ON CONFLICT (${col}, target_entity_ref)
-      WHERE ${col} IS NOT NULL
-    DO NOTHING
-    `,
-    [targetEntityRefs, src.value, src.value, src.value],
-  );
+  await knex.transaction(async trx => {
+    await trx.raw(
+      'SELECT pg_advisory_xact_lock(hashtextextended(?::text, 0))',
+      [`refresh_state_references:${src.column}:${src.value}`],
+    );
+
+    const col = `"${src.column}"`;
+    await trx.raw(
+      `
+      WITH desired(target_entity_ref) AS (
+        SELECT unnest(?::text[])
+      ),
+      deleted AS (
+        DELETE FROM refresh_state_references r
+        WHERE r.${col} = ?
+          AND NOT EXISTS (
+            SELECT 1 FROM desired d
+            WHERE d.target_entity_ref = r.target_entity_ref
+          )
+      )
+      INSERT INTO refresh_state_references (${col}, target_entity_ref)
+      SELECT ?, d.target_entity_ref
+      FROM desired d
+      WHERE NOT EXISTS (
+        SELECT 1 FROM refresh_state_references r
+        WHERE r.${col} = ?
+          AND r.target_entity_ref = d.target_entity_ref
+      )
+      ON CONFLICT (${col}, target_entity_ref)
+        WHERE ${col} IS NOT NULL
+      DO NOTHING
+      `,
+      [targetEntityRefs, src.value, src.value, src.value],
+    );
+  });
 }
 
 // ---------------------------------------------------------------------------
-// MySQL / SQLite: in-memory diff
-//
-// Read existing refs, compute the diff, then issue targeted deletes and
-// inserts. The data volume per source is small (typically 0-5 rows), so
-// the extra SELECT round-trip is negligible.
+// MySQL: temporary table merge
 // ---------------------------------------------------------------------------
-async function syncSimple(
+async function syncMysql(
   knex: Knex | Knex.Transaction,
   src: SourceColumn,
   targetEntityRefs: string[],
 ): Promise<void> {
-  const existing = new Set(
-    (
-      await knex('refresh_state_references')
-        .where({ [src.column]: src.value })
-        .select('target_entity_ref')
-    ).map((r: { target_entity_ref: string }) => r.target_entity_ref),
-  );
-
-  const desired = new Set(targetEntityRefs);
-
-  const toDelete = [...existing].filter(ref => !desired.has(ref));
-  const toInsert = targetEntityRefs.filter(ref => !existing.has(ref));
-
-  if (toDelete.length > 0) {
-    await knex('refresh_state_references')
-      .where({ [src.column]: src.value })
-      .whereIn('target_entity_ref', toDelete)
-      .delete();
-  }
-
-  if (toInsert.length > 0) {
-    await knex.batchInsert(
-      'refresh_state_references',
-      toInsert.map(ref => ({
-        [src.column]: src.value,
-        target_entity_ref: ref,
-      })),
-      BATCH_SIZE,
+  await knex.transaction(async trx => {
+    await trx.raw(
+      'CREATE TEMPORARY TABLE IF NOT EXISTS `_desired_refresh_state_references` (' +
+        '`target_entity_ref` VARCHAR(255) NOT NULL PRIMARY KEY' +
+        ')',
     );
-  }
+    await trx.raw('DELETE FROM `_desired_refresh_state_references`');
+
+    if (targetEntityRefs.length > 0) {
+      await trx.batchInsert(
+        '_desired_refresh_state_references',
+        targetEntityRefs.map(targetEntityRef => ({
+          target_entity_ref: targetEntityRef,
+        })),
+        BATCH_SIZE,
+      );
+    }
+
+    await trx.raw(
+      `DELETE r FROM refresh_state_references r
+           WHERE r.?? = ?
+             AND NOT EXISTS (
+               SELECT 1 FROM _desired_refresh_state_references d
+               WHERE d.target_entity_ref = r.target_entity_ref
+             )`,
+      [src.column, src.value],
+    );
+
+    await trx.raw(
+      `INSERT INTO refresh_state_references (??, target_entity_ref)
+           SELECT ?, d.target_entity_ref
+           FROM _desired_refresh_state_references d
+           WHERE NOT EXISTS (
+             SELECT 1 FROM refresh_state_references r
+             WHERE r.?? = ?
+               AND r.target_entity_ref = d.target_entity_ref
+           )`,
+      [src.column, src.value, src.column, src.value],
+    );
+  });
+}
+
+// ---------------------------------------------------------------------------
+// SQLite (and fallback): transactional diff
+// ---------------------------------------------------------------------------
+async function syncTransactionalDiff(
+  knex: Knex | Knex.Transaction,
+  src: SourceColumn,
+  targetEntityRefs: string[],
+): Promise<void> {
+  await knex.transaction(async trx => {
+    const existing = new Set(
+      (
+        await trx('refresh_state_references')
+          .where({ [src.column]: src.value })
+          .select('target_entity_ref')
+      ).map((row: { target_entity_ref: string }) => row.target_entity_ref),
+    );
+
+    const desired = new Set(targetEntityRefs);
+    const stale = [...existing].filter(ref => !desired.has(ref));
+    const missing = targetEntityRefs.filter(ref => !existing.has(ref));
+
+    if (stale.length > 0) {
+      await trx('refresh_state_references')
+        .where({ [src.column]: src.value })
+        .whereIn('target_entity_ref', stale)
+        .delete();
+    }
+    if (missing.length > 0) {
+      await trx.batchInsert(
+        'refresh_state_references',
+        missing.map(ref => ({
+          [src.column]: src.value,
+          target_entity_ref: ref,
+        })),
+        BATCH_SIZE,
+      );
+    }
+  });
 }

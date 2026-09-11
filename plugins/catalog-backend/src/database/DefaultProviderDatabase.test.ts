@@ -539,6 +539,74 @@ describe.each(databases.eachSupportedId())(
         ]);
       });
 
+      it('only removes other references on a weak-to-strong claim', async () => {
+        const { knex, db } = await createDatabase();
+        await createLocations(knex, [
+          'component:default/child',
+          'component:default/other-parent',
+        ]);
+        await insertRefRow(knex, {
+          source_entity_ref: 'component:default/other-parent',
+          target_entity_ref: 'component:default/child',
+        });
+        await insertRefRow(knex, {
+          source_key: 'other-provider',
+          target_entity_ref: 'component:default/child',
+        });
+
+        const replace = (version: string) =>
+          db.transaction(tx =>
+            db.replaceUnprocessedEntities(tx, {
+              type: 'full',
+              sourceKey: 'owner-provider',
+              items: [
+                {
+                  entity: {
+                    apiVersion: '1',
+                    kind: 'Component',
+                    metadata: { name: 'child' },
+                    spec: { version },
+                  },
+                  locationKey: 'owned',
+                },
+              ],
+            }),
+          );
+
+        await replace('one');
+        await expect(
+          knex<DbRefreshStateReferencesRow>('refresh_state_references')
+            .where({ target_entity_ref: 'component:default/child' })
+            .select(['source_entity_ref', 'source_key']),
+        ).resolves.toEqual([
+          { source_entity_ref: null, source_key: 'owner-provider' },
+        ]);
+
+        await insertRefRow(knex, {
+          source_entity_ref: 'component:default/other-parent',
+          target_entity_ref: 'component:default/child',
+        });
+        await insertRefRow(knex, {
+          source_key: 'other-provider',
+          target_entity_ref: 'component:default/child',
+        });
+
+        await replace('two');
+        await expect(
+          knex<DbRefreshStateReferencesRow>('refresh_state_references')
+            .where({ target_entity_ref: 'component:default/child' })
+            .orderBy(['source_entity_ref', 'source_key'])
+            .select(['source_entity_ref', 'source_key']),
+        ).resolves.toEqual([
+          { source_entity_ref: null, source_key: 'other-provider' },
+          { source_entity_ref: null, source_key: 'owner-provider' },
+          {
+            source_entity_ref: 'component:default/other-parent',
+            source_key: null,
+          },
+        ]);
+      });
+
       it('should support replacing modified entities during a full update', async () => {
         const { knex, db } = await createDatabase();
 
