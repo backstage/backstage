@@ -137,6 +137,14 @@
   outline-offset: -2px;
 }
 
+.option[data-hovered]:not([data-disabled]) {
+  background: var(--bui-bg-neutral-1-hover);
+}
+
+.option[data-selected][data-hovered]:not([data-disabled]) {
+  background: var(--bui-bg-neutral-2-hover);
+}
+
 .option[data-disabled] {
   color: var(--bui-fg-disabled);
   cursor: default;
