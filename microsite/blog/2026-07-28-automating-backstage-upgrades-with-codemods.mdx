@@ -1,0 +1,63 @@
+---
+title: Automating Backstage upgrades with codemods
+author: Paul Schultz, Red Hat
+authorURL: https://github.com/schultzp2020
+authorImageURL: https://avatars.githubusercontent.com/u/52387464?v=4
+---
+
+**TL;DR:** Backstage now publishes official codemod recipes on the [Codemod Registry](https://go.codemod.com/backstage) and in the [backstage/codemods](https://github.com/backstage/codemods) repository. After you bump packages and apply `create-app` diffs, run the _versioned_ recipe for your target release. Use _misc_ recipes, like Material UI (MUI) to Backstage UI (BUI), when you are ready for a bigger migration.
+
+{/* truncate */}
+
+## Upgrades have two automation layers
+
+If you have upgraded a Backstage app more than once, you already know the rhythm: run `yarn backstage-cli versions:bump`, open the [Backstage Upgrade Helper](https://backstage.github.io/upgrade-helper/), and apply the `create-app` template changes that do not land automatically in your `app` and `backend` packages.
+
+That first layer still matters. Package bumps and template diffs answer "what should my scaffolding look like for this release?" They leave your own plugins alone: deprecated props, config keys, imports. That cleanup has always been a second job.
+
+The [backstage/codemods](https://github.com/backstage/codemods) repository publishes recipes (ordered bundles of source transforms) as `@backstage/*` packages on the [Codemod Registry](https://go.codemod.com/backstage). You run them with the [Codemod CLI](https://docs.codemod.com/cli), typically via `yarn dlx codemod run …`, and they rewrite that plugin code for you.
+
+These recipes are not the old `@backstage/codemods` npm package.
+
+## Versioned recipes: part of the upgrade path
+
+Recipes come in two groups, and the first is tied to releases. For a target release `1.XX.0`, look for `@backstage/v1-XX-0-migration-recipe`. For example, when moving toward 1.52.0:
+
+```shell
+yarn dlx codemod run @backstage/v1-52-0-migration-recipe \
+  --target . \
+  --dry-run
+
+yarn dlx codemod run @backstage/v1-52-0-migration-recipe \
+  --target .
+```
+
+Dry-run first, then apply. Afterwards, search your repo for `TODO(backstage-codemod)` markers, and check the recipe's README for out-of-scope items you will need to change by hand. If a release has no recipe yet, skip this step.
+
+Make it a standard part of the routine: bump, Upgrade Helper, then codemods. The [Keeping Backstage Updated](https://backstage.io/docs/getting-started/keeping-backstage-updated) guide walks through the full flow.
+
+## Misc recipes: opt-in migrations
+
+Not every migration belongs to a single monthly release. _Misc_ recipes cover larger, cross-cutting work you schedule when your team is ready. The first misc recipe available is the Material UI 4 to Backstage UI migration:
+
+```shell
+yarn dlx codemod run @backstage/mui4-to-bui-migration-recipe \
+  --target . \
+  --dry-run
+
+yarn dlx codemod run @backstage/mui4-to-bui-migration-recipe \
+  --target .
+```
+
+That recipe runs an ordered set of deterministic transforms (bootstrap, icons, components, layout, then dependency cleanup). It is optional during a routine bump. Run it when you are intentionally leaving MUI behind.
+
+Browse the [codemods README](https://github.com/backstage/codemods) for the full list of published packages.
+
+## Where to go next
+
+- Upgrade process: [Keeping Backstage Updated](https://backstage.io/docs/getting-started/keeping-backstage-updated)
+- Recipe index: [github.com/backstage/codemods](https://github.com/backstage/codemods)
+- MUI → BUI details: [mui4-to-bui-migration-recipe](https://github.com/backstage/codemods/tree/main/codemods/misc/mui4-to-bui-migration-recipe)
+- AI-assisted leftover cleanup: the [`mui-to-bui-migration` skill](https://backstage.io/docs/ai/skills)
+
+Contributions are welcome in the codemods repository, especially transforms that automate recurring changelog chores.
