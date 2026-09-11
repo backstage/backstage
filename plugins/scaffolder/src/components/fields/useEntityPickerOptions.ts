@@ -36,12 +36,17 @@ const ENTITY_PICKER_SEARCH_FIELDS = [
 type EntityPickerOptionsState = {
   entities: Entity[];
   selectedEntities: Entity[];
+  /** References covered by the latest successful selected-entity lookup. */
+  resolvedSelectedEntityRefs: string[];
   entityRefToPresentation: Map<string, EntityRefPresentationSnapshot>;
   loading: boolean;
   loadingState: LoadingState;
   searchText: string;
   setSearchText: (value: string) => void;
   loadMore: () => void;
+  hasMore: boolean;
+  loadMoreError: boolean;
+  retry: () => void;
   initialResultIsOnlyOption: boolean;
 };
 
@@ -55,11 +60,13 @@ export function useEntityPickerOptions(options: {
   const entityPresentationApi = useApi(entityPresentationApiRef);
   const [searchText, setSearchTextState] = useState('');
   const [debouncedSearchText, setDebouncedSearchText] = useState('');
+  const [retryCount, setRetryCount] = useState(0);
   const [state, setState] = useState<{
     generation?: number;
     entities: Entity[];
     entityRefToPresentation: Map<string, EntityRefPresentationSnapshot>;
     nextCursor?: string;
+    loadMoreError?: boolean;
     loadingState: LoadingState;
     initialResultIsOnlyOption: boolean;
   }>({
@@ -70,6 +77,7 @@ export function useEntityPickerOptions(options: {
   });
   const [selectedState, setSelectedState] = useState<{
     entities: Entity[];
+    resolvedRefs?: string[];
     entityRefToPresentation: Map<string, EntityRefPresentationSnapshot>;
   }>({ entities: [], entityRefToPresentation: new Map() });
   const requestGeneration = useRef(0);
@@ -117,6 +125,7 @@ export function useEntityPickerOptions(options: {
     setState(previous => ({
       ...previous,
       loadingState: debouncedSearchText ? 'filtering' : 'loading',
+      loadMoreError: false,
     }));
 
     catalogApi
@@ -162,6 +171,7 @@ export function useEntityPickerOptions(options: {
     debouncedSearchText,
     enabled,
     presentEntities,
+    retryCount,
   ]);
 
   const loadMore = useCallback(() => {
@@ -180,7 +190,11 @@ export function useEntityPickerOptions(options: {
     const cursor = state.nextCursor;
     const loadMoreRequest = ++nextLoadMoreRequest.current;
     activeLoadMoreRequest.current = loadMoreRequest;
-    setState(previous => ({ ...previous, loadingState: 'loadingMore' }));
+    setState(previous => ({
+      ...previous,
+      loadingState: 'loadingMore',
+      loadMoreError: false,
+    }));
     catalogApi
       .queryEntities({
         cursor,
@@ -211,7 +225,11 @@ export function useEntityPickerOptions(options: {
         }
         activeLoadMoreRequest.current = undefined;
         if (generation === requestGeneration.current) {
-          setState(previous => ({ ...previous, loadingState: 'idle' }));
+          setState(previous => ({
+            ...previous,
+            loadingState: 'idle',
+            loadMoreError: true,
+          }));
         }
       });
   }, [
@@ -236,6 +254,8 @@ export function useEntityPickerOptions(options: {
       return;
     }
 
+    setSelectedState(previous => ({ ...previous, resolvedRefs: undefined }));
+
     catalogApi
       .getEntitiesByRefs({ entityRefs })
       .then(async response => {
@@ -244,7 +264,11 @@ export function useEntityPickerOptions(options: {
         );
         const entityRefToPresentation = await presentEntities(entities);
         if (generation === selectedRequestGeneration.current) {
-          setSelectedState({ entities, entityRefToPresentation });
+          setSelectedState({
+            entities,
+            entityRefToPresentation,
+            resolvedRefs: entityRefs,
+          });
         }
       })
       .catch(() => {
@@ -276,12 +300,16 @@ export function useEntityPickerOptions(options: {
   return {
     entities: state.entities,
     selectedEntities: selectedState.entities,
+    resolvedSelectedEntityRefs: selectedState.resolvedRefs ?? [],
     entityRefToPresentation,
     loading: loadingState !== 'idle' && loadingState !== 'error',
     loadingState,
     searchText,
     setSearchText,
     loadMore,
+    hasMore: Boolean(state.nextCursor),
+    loadMoreError: Boolean(state.loadMoreError),
+    retry: () => setRetryCount(count => count + 1),
     initialResultIsOnlyOption:
       loadingState === 'idle' && !searchText && state.initialResultIsOnlyOption,
   };

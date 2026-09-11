@@ -6559,6 +6559,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder@workspace:plugins/scaffolder"
   dependencies:
+    "@backstage/app-defaults": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"

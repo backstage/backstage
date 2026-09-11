@@ -108,6 +108,7 @@
     "zod-to-json-schema": "^3.25.1"
   },
   "devDependencies": {
+    "@backstage/app-defaults": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
