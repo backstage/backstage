@@ -673,6 +673,8 @@ export interface PgPluginDatabaseConfig {
   connection: Knex.PgConnectionConfig;
   /** The database name, if any */
   databaseName: string | undefined;
+  /** The schema name, if using schema division mode */
+  schemaName: string | undefined;
   /** Database client overrides including schema overrides if applicable */
   databaseClientOverrides: Knex.Config;
   /** The full knex config for the plugin */
@@ -691,6 +693,7 @@ export function computePgPluginConfig(
   config: Config,
   pluginId: string,
   prefix: string,
+  schemaPrefix: string = '',
 ): PgPluginDatabaseConfig {
   // Client type
   const pluginClient = config.getOptionalString(
@@ -772,12 +775,24 @@ export function computePgPluginConfig(
 
   // Database client overrides
   let databaseClientOverrides: Knex.Config = {};
+  let schemaName: string | undefined;
+
   if (databaseName) {
     databaseClientOverrides = { connection: { database: databaseName } };
   }
   if (pluginDivisionMode === 'schema') {
+    schemaName = `${schemaPrefix}${pluginId}`;
+
+    if (Buffer.byteLength(schemaName, 'utf8') > 63) {
+      throw new Error(
+        `PostgreSQL schema name "${schemaName}" exceeds the 63-byte limit. ` +
+          `Consider using a shorter schemaPrefix (current: "${schemaPrefix}") or ` +
+          `plugin ID (current: "${pluginId}").`,
+      );
+    }
+
     databaseClientOverrides = mergeDatabaseConfig({}, databaseClientOverrides, {
-      searchPath: [pluginId],
+      searchPath: [schemaName],
     });
   }
 
@@ -799,6 +814,7 @@ export function computePgPluginConfig(
     pluginDivisionMode,
     connection,
     databaseName,
+    schemaName,
     databaseClientOverrides,
     knexConfig,
   };
@@ -807,6 +823,7 @@ export function computePgPluginConfig(
 export class PgConnector implements Connector {
   private readonly config: Config;
   private readonly prefix: string;
+  private readonly schemaPrefix: string;
   private readonly databaseEnsureCache = new Map<string, Promise<void>>();
   private readonly customEnsureDatabaseExists?: typeof ensurePgDatabaseExists;
   private readonly databaseAdminPool: PgAdminPool;
@@ -815,6 +832,7 @@ export class PgConnector implements Connector {
   constructor(
     config: Config,
     prefix: string,
+    schemaPrefix: string,
     options: {
       ensureDatabaseExists?: typeof ensurePgDatabaseExists;
       createAdminClient?: (overrides: Knex.Config) => Promise<Knex>;
@@ -823,6 +841,7 @@ export class PgConnector implements Connector {
   ) {
     this.config = config;
     this.prefix = prefix;
+    this.schemaPrefix = schemaPrefix;
     this.customEnsureDatabaseExists = options.ensureDatabaseExists;
 
     const createAdminClient =
@@ -910,6 +929,7 @@ export class PgConnector implements Connector {
       this.config,
       pluginId,
       this.prefix,
+      this.schemaPrefix,
     );
 
     if (pluginDbConfig.databaseName && pluginDbConfig.ensureExists) {
@@ -930,7 +950,7 @@ export class PgConnector implements Connector {
               ensurePgSchema(
                 admin,
                 this.config.getOptionalString('role'),
-                pluginId,
+                pluginDbConfig.schemaName!,
               ),
             ),
           );

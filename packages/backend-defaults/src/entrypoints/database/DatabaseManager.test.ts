@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { DatabaseManagerImpl } from './DatabaseManager';
+import { DatabaseManager, DatabaseManagerImpl } from './DatabaseManager';
 import { Connector } from './types';
 import { mockServices } from '@backstage/backend-test-utils';
 
@@ -241,5 +241,57 @@ describe('DatabaseManagerImpl', () => {
     // Destroy should not have been called, but we should have read the config
     expect(destroy).not.toHaveBeenCalled();
     expect(getConfig).toHaveBeenCalled();
+  });
+});
+
+describe('DatabaseManager.fromConfig', () => {
+  describe('schemaPrefix validation', () => {
+    it('throws error when schemaPrefix contains invalid characters', () => {
+      const invalidPrefixes = ['test"--', 'test-prefix', '123test', 'test@'];
+
+      invalidPrefixes.forEach(schemaPrefix => {
+        const config = new ConfigReader({
+          backend: {
+            database: {
+              client: 'pg',
+              schemaPrefix,
+            },
+          },
+        });
+
+        expect(() => DatabaseManager.fromConfig(config)).toThrow(
+          /Invalid schemaPrefix/,
+        );
+      });
+    });
+
+    it('accepts valid schemaPrefix values', () => {
+      const validPrefixes = ['test_prefix_', '_test_prefix', 'backstage_'];
+
+      validPrefixes.forEach(schemaPrefix => {
+        const config = new ConfigReader({
+          backend: {
+            database: {
+              client: 'pg',
+              schemaPrefix,
+            },
+          },
+        });
+
+        expect(() => DatabaseManager.fromConfig(config)).not.toThrow();
+      });
+    });
+
+    it('accepts when schemaPrefix is not configured', () => {
+      const config = new ConfigReader({
+        backend: {
+          database: {
+            client: 'pg',
+          },
+        },
+      });
+
+      expect(() => DatabaseManager.fromConfig(config)).not.toThrow();
+    });
   });
 });
