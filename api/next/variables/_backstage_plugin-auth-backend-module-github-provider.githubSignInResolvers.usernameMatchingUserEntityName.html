@@ -11,12 +11,17 @@
 <li><a href="../modules/_backstage_plugin-auth-backend-module-github-provider.html">@backstage/plugin-auth-backend-module-github-provider</a></li>
 <li><a href="../modules/_backstage_plugin-auth-backend-module-github-provider.githubSignInResolvers.html">githubSignInResolvers</a></li>
 <li><a href="" aria-current="page">usernameMatchingUserEntityName</a></li></ul>
-<h1>Variable usernameMatchingUserEntityName<code class="tsd-tag">Const</code></h1></div>
+<h1 class="deprecated">Variable usernameMatchingUserEntityName<code class="tsd-tag">Const</code></h1></div>
 <div class="tsd-signature"><span class="tsd-kind-variable">usernameMatchingUserEntityName</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/_backstage_plugin-auth-node.SignInResolverFactory.html" class="tsd-signature-type tsd-kind-interface">SignInResolverFactory</a><span class="tsd-signature-symbol">&lt;</span><br/>    <a href="../interfaces/_backstage_plugin-auth-node.OAuthAuthenticatorResult.html" class="tsd-signature-type tsd-kind-interface">OAuthAuthenticatorResult</a><span class="tsd-signature-symbol">&lt;</span><a href="../types/_backstage_plugin-auth-backend-module-github-provider.GithubProfile.html" class="tsd-signature-type tsd-kind-type-alias">GithubProfile</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">dangerouslyAllowSignInWithoutUserInCatalog</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span> <span class="tsd-signature-symbol">}</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div>
 <div class="tsd-comment tsd-typography"><p>Looks up the user by matching their GitHub username to the entity name.</p>
-</div><aside class="tsd-sources">
+</div>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-deprecated">
+<h4 class="tsd-anchor-link" id="deprecated">Deprecated<a href="#deprecated" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>Use <a href="_backstage_plugin-auth-backend-module-github-provider.githubSignInResolvers.userIdMatchingUserEntityAnnotation.html" class="tsd-kind-variable">githubSignInResolvers.userIdMatchingUserEntityAnnotation</a>
+instead, because GitHub usernames can change and be reassigned.</p>
+</div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/backstage/backstage/blob/335f0a0bb4d13c7209f929a730a35379c5684b8e/plugins/auth-backend-module-github-provider/src/resolvers.ts#L35">plugins/auth-backend-module-github-provider/src/resolvers.ts:35</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/backstage/backstage/blob/ff327e0341e4d37fa55cc609015071fd3a931760/plugins/auth-backend-module-github-provider/src/resolvers.ts#L85">plugins/auth-backend-module-github-provider/src/resolvers.ts:85</a></li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
