@@ -15,7 +15,6 @@
  */
 
 import { ReactNode } from 'react';
-
 import List, { ListProps } from '@material-ui/core/List';
 
 import {
@@ -31,6 +30,7 @@ import { useSearchResultListItemExtensions } from '../../extensions';
 import { DefaultResultListItem } from '../DefaultResultListItem';
 import { SearchResultState, SearchResultStateProps } from '../SearchResult';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { useOptionalSearch } from '../../context';
 import { searchReactTranslationRef } from '../../translation';
 
 /**
@@ -53,6 +53,8 @@ export type SearchResultListLayoutProps = ListProps & {
   /**
    * Function to customize how result items are rendered.
    */
+  hasQuery?: boolean;
+
   renderResultItem?: (
     value: SearchResult,
     index: number,
@@ -79,6 +81,7 @@ export const SearchResultListLayout = (props: SearchResultListLayoutProps) => {
     error,
     loading,
     resultItems,
+    hasQuery,
     renderResultItem = resultItem => (
       <DefaultResultListItem
         key={resultItem.document.location}
@@ -106,7 +109,7 @@ export const SearchResultListLayout = (props: SearchResultListLayoutProps) => {
   }
 
   if (!resultItems?.length) {
-    return <>{noResultsComponent}</>;
+    return hasQuery ? <>{noResultsComponent}</> : null;
   }
 
   return <List {...rest}>{resultItems.map(renderResultItem)}</List>;
@@ -128,6 +131,14 @@ export const SearchResultList = (props: SearchResultListProps) => {
   const { query, renderResultItem, children, ...rest } = props;
 
   const defaultRenderResultItem = useSearchResultListItemExtensions(children);
+  const contextSearch = useOptionalSearch();
+  const effectiveTerm = query?.term ?? contextSearch?.term ?? '';
+  const effectiveTypes = query?.types ?? contextSearch?.types ?? [];
+  const effectiveFilters = query?.filters ?? contextSearch?.filters ?? {};
+  const hasQuery =
+    Boolean(effectiveTerm) ||
+    effectiveTypes.length > 0 ||
+    Object.keys(effectiveFilters).length > 0;
 
   return (
     <AnalyticsContext
@@ -142,6 +153,7 @@ export const SearchResultList = (props: SearchResultListProps) => {
             {...rest}
             error={error}
             loading={loading}
+            hasQuery={hasQuery}
             resultItems={value?.results}
             renderResultItem={renderResultItem ?? defaultRenderResultItem}
           />
