@@ -19,4 +19,3 @@ jobs:
           app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
           private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}
           installation-id: ${{ secrets.BACKSTAGE_GOALIE_INSTALLATION_ID }}
-          merge-token: ${{ secrets.GH_DEPENDENCY_MERGE_TOKEN }}
