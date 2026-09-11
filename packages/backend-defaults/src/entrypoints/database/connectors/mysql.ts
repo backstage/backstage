@@ -19,7 +19,7 @@ import { Config, ConfigReader } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import knexFactory, { Knex } from 'knex';
-import { merge, omit } from 'lodash';
+import lodash from 'lodash';
 import limiterFactory from 'p-limit';
 import yn from 'yn';
 import { Connector } from '../types';
@@ -359,7 +359,7 @@ export class MysqlConnector implements Connector {
       .getOptionalConfig('knexConfig')
       ?.get<JsonObject>();
 
-    return merge(baseConfig, pluginConfig);
+    return lodash.merge(baseConfig, pluginConfig);
   }
 
   private getEnsureExistsConfig(pluginId: string): boolean {
@@ -393,7 +393,7 @@ export class MysqlConnector implements Connector {
     // `database` property from the base connection is omitted unless `pluginDivisionMode`
     // is set to `schema`.
     if (this.getPluginDivisionModeConfig() !== 'schema') {
-      baseConnection = omit(baseConnection, 'database');
+      baseConnection = lodash.omit(baseConnection, 'database');
     }
 
     // get and normalize optional plugin specific database connection

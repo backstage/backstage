@@ -22,7 +22,7 @@ import {
   getPathToCurrentOpenApiSpec,
   loadAndValidateOpenApiYaml,
 } from '../../../../../lib/openapi/helpers';
-import { debounce } from 'lodash';
+import lodash from 'lodash';
 import { block } from '../../../../../lib/runner';
 
 export async function command(opts: OptionValues) {
@@ -63,7 +63,7 @@ export async function command(opts: OptionValues) {
       const watcher = chokidar.watch(resolvedOpenapiPath);
 
       // The generate command currently takes ~8 seconds to run, so let's debounce calling it so we don't have to cancel it so much.
-      const debouncedCommand = debounce(() => {
+      const debouncedCommand = lodash.debounce(() => {
         console.log('Detected changes! Regenerating...');
         abortController.abort();
         abortController = new AbortController();

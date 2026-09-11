@@ -15,7 +15,7 @@
  */
 
 import { render, within, waitFor } from '@testing-library/react';
-import { startCase } from 'lodash';
+import lodash from 'lodash';
 import { StructuredMetadataTable } from './StructuredMetadataTable';
 
 describe('<StructuredMetadataTable />', () => {
@@ -38,7 +38,7 @@ describe('<StructuredMetadataTable />', () => {
         <StructuredMetadataTable metadata={metadata} />,
       );
       for (const [key, value] of Object.entries(metadata)) {
-        expect(getByText(startCase(key))).toBeInTheDocument();
+        expect(getByText(lodash.startCase(key))).toBeInTheDocument();
         expect(getByText(value)).toBeInTheDocument();
       }
     });
@@ -50,7 +50,7 @@ describe('<StructuredMetadataTable />', () => {
       );
 
       for (const [key, value] of Object.entries(metadata)) {
-        expect(getByText(startCase(key))).toBeInTheDocument();
+        expect(getByText(lodash.startCase(key))).toBeInTheDocument();
         expect(getByText(value.toString())).toBeInTheDocument();
       }
     });
@@ -62,7 +62,7 @@ describe('<StructuredMetadataTable />', () => {
       );
       const keys = Object.keys(metadata);
       keys.forEach(value => {
-        expect(getByText(startCase(value))).toBeInTheDocument();
+        expect(getByText(lodash.startCase(value))).toBeInTheDocument();
       });
       metadata.arrayField.forEach(value => {
         expect(getByText(new RegExp(value))).toBeInTheDocument();
@@ -107,7 +107,9 @@ describe('<StructuredMetadataTable />', () => {
       );
 
       for (const [key, value] of Object.entries(metadata.config)) {
-        expect(getByText(startCase(key), { exact: false })).toBeInTheDocument();
+        expect(
+          getByText(lodash.startCase(key), { exact: false }),
+        ).toBeInTheDocument();
         expect(
           getByText(value.toString(), { exact: false }),
         ).toBeInTheDocument();

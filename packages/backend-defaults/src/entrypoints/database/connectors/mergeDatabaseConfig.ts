@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { merge } from 'lodash';
+import lodash from 'lodash';
 
 /**
  * Merges database objects together
@@ -24,5 +24,5 @@ import { merge } from 'lodash';
  * @param overrides - Any additional overrides
  */
 export function mergeDatabaseConfig(config: any, ...overrides: any[]) {
-  return merge({}, config, ...overrides);
+  return lodash.merge({}, config, ...overrides);
 }

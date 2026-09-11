@@ -22,7 +22,7 @@ import {
   RootLifecycleService,
   SchedulerService,
 } from '@backstage/backend-plugin-api';
-import { once } from 'lodash';
+import lodash from 'lodash';
 import { Duration } from 'luxon';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import { PluginTaskSchedulerImpl } from './PluginTaskSchedulerImpl';
@@ -43,7 +43,7 @@ export class DefaultSchedulerService {
     httpRouter: HttpRouterService;
     pluginMetadata: PluginMetadataService;
   }): SchedulerService {
-    const databaseFactory = once(async () => {
+    const databaseFactory = lodash.once(async () => {
       const knex = await options.database.getClient();
 
       if (!options.database.migrations?.skip) {
