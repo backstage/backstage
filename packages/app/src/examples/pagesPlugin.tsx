@@ -31,12 +31,14 @@ import {
 import { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
-const indexRouteRef = createRouteRef();
-const page1RouteRef = createRouteRef();
+const indexRouteRef = createRouteRef({ extensionId: 'page:pages/index' });
+const page1RouteRef = createRouteRef({ extensionId: 'page:pages/page1' });
 export const externalPageXRouteRef = createExternalRouteRef({
   defaultTarget: 'pages.pageX',
 });
-export const pageXRouteRef = createRouteRef();
+export const pageXRouteRef = createRouteRef({
+  extensionId: 'page:pages/pageX',
+});
 
 function PluginInfo() {
   const node = useAppNode();
@@ -58,7 +60,7 @@ const IndexPage = PageBlueprint.make({
   name: 'index',
   params: {
     path: '/',
-    routeRef: indexRouteRef,
+
     loader: async () => {
       const Component = () => {
         const page1Link = useRouteRef(page1RouteRef);
@@ -151,7 +153,7 @@ const Page1 = PageBlueprint.make({
   name: 'page1',
   params: {
     path: '/page1',
-    routeRef: page1RouteRef,
+
     loader: async () => {
       const Component = () => {
         const indexLink = useRouteRef(indexRouteRef);
@@ -202,7 +204,7 @@ const ExternalPage = PageBlueprint.make({
   name: 'pageX',
   params: {
     path: '/pageX',
-    routeRef: pageXRouteRef,
+
     loader: async () => {
       const Component = () => {
         const indexLink = useRouteRef(indexRouteRef);

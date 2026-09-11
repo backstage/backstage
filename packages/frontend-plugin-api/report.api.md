@@ -804,6 +804,7 @@ export interface CreateFrontendModuleOptions<
   if?: FilterPredicate;
   // (undocumented)
   pluginId: TPluginId;
+  routes?: Record<string, RouteRef | SubRouteRef>;
 }
 
 // @public
@@ -859,9 +860,9 @@ export interface CreateFrontendPluginOptions<
 }
 
 // @public
-export function createRouteRef<TParamKey extends string = never>(config?: {
+export function createRouteRef<TParamKey extends string = never>(config: {
   readonly params?: TParamKey[];
-  aliasFor?: string;
+  readonly extensionId: string;
 }): RouteRef<
   [TParamKey] extends [never]
     ? undefined

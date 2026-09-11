@@ -27,6 +27,7 @@ import {
 import { waitFor } from '@testing-library/react';
 
 describe('PageBlueprint', () => {
+  // @ts-expect-error Historical refs intentionally omit extensionId
   const mockRouteRef = createRouteRef();
 
   it('should return an extension when calling make with sensible defaults', () => {

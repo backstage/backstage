@@ -35,6 +35,7 @@ afterEach(() => {
 
 describe('collectRouteIds', () => {
   it('should assign IDs to routes', () => {
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const ref = createRouteRef();
     const extRef = createExternalRouteRef();
 
@@ -71,6 +72,7 @@ describe('collectRouteIds', () => {
   });
 
   it('should report duplicate route IDs', () => {
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const ref = createRouteRef();
     const extRef = createExternalRouteRef();
 
