@@ -16,12 +16,66 @@
 
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+import { createHash } from 'node:crypto';
+import {
+  createTemplateAction,
+  parseRepoUrl,
+} from '@backstage/plugin-scaffolder-node';
 import { IssueType } from '../commonGitlabConfig';
 import { examples } from './gitlabIssueCreate.examples';
-import { checkEpicScope, convertDate, getClient, parseRepoUrl } from '../util';
+import { checkEpicScope, convertDate, getClient } from '../util';
 import { CreateIssueOptions, IssueSchema } from '@gitbeaker/rest';
 import { getErrorMessage } from './helpers';
+
+/**
+ * Resolves the GitLab project reference (numeric id or full path) used by the
+ * GitLab client, preferring an explicit `projectId` and otherwise deriving it
+ * from the parsed `repoUrl`.
+ *
+ * A digit-only `projectId` string (e.g. `"123"`) is normalized to a number so
+ * that numeric ids and full project paths are handled unambiguously.
+ */
+function resolveProjectRef(options: {
+  projectId?: string | number;
+  project?: string;
+  owner?: string;
+  repo?: string;
+}): string | number {
+  const { projectId, project, owner, repo } = options;
+  if (projectId !== undefined) {
+    return typeof projectId === 'string' && /^\d+$/.test(projectId)
+      ? Number(projectId)
+      : projectId;
+  }
+  if (project) {
+    return project;
+  }
+  if (owner && repo) {
+    return `${owner}/${repo}`;
+  }
+  throw new InputError(
+    'Unable to determine the GitLab project. Provide `projectId` (numeric id or full project path), ' +
+      'or a `repoUrl` with `owner` and `repo`, or a URL-encoded `project` (e.g. `project=group%2Fsub-group%2Fproject`).',
+  );
+}
+
+/**
+ * Builds a safe, bounded checkpoint key. `projectRef` may be a full project
+ * path and `title` is free-form (slashes, newlines, arbitrary length), so the
+ * host, `projectRef` and `title` are folded into a stable short hash to avoid
+ * collisions (including across GitLab instances) and oversized keys.
+ */
+function issueCheckpointKey(
+  prefix: string,
+  host: string,
+  projectRef: string | number,
+  title: string,
+): string {
+  const digest = createHash('sha256')
+    .update(`${host}\u0000${projectRef}\u0000${title}`)
+    .digest('hex');
+  return `${prefix}.${digest}`;
+}
 
 /**
  * Creates a `gitlab:issues:create` Scaffolder action.
@@ -51,9 +105,17 @@ export const createGitlabIssueAction = (options: {
             })
             .optional(),
         projectId: z =>
-          z.number({
-            description: 'Project Id',
-          }),
+          z
+            .union([
+              z.number(),
+              z.string().trim().min(1, 'Project path must not be empty'),
+            ])
+            .describe(
+              'Project Id or full project path (e.g. `group/sub-group/project`). ' +
+                'A digit-only string is treated as a numeric id. ' +
+                'If omitted, the project is derived from `repoUrl`.',
+            )
+            .optional(),
         title: z =>
           z.string({
             description: 'Title of the issue',
@@ -188,7 +250,10 @@ export const createGitlabIssueAction = (options: {
           token,
         } = ctx.input;
 
-        const { host } = parseRepoUrl(repoUrl, integrations);
+        const { host, owner, repo, project } = parseRepoUrl(
+          repoUrl,
+          integrations,
+        );
         const api = getClient({
           host,
           integrations,
@@ -196,23 +261,33 @@ export const createGitlabIssueAction = (options: {
           requireScmUserCredentials,
         });
 
-        let isEpicScoped = false;
+        const projectRef = resolveProjectRef({
+          projectId,
+          project,
+          owner,
+          repo,
+        });
 
-        isEpicScoped = await ctx.checkpoint({
-          key: `is.epic.scoped.${projectId}.${title}`,
+        // `projectRef` may be a full project path and `title` is free-form, so
+        // derive a safe, bounded checkpoint key via a stable hash of both.
+        const isEpicScoped = await ctx.checkpoint({
+          key: issueCheckpointKey('is.epic.scoped', host, projectRef, title),
           fn: async () => {
-            if (epicId) {
-              isEpicScoped = await checkEpicScope(api, projectId, epicId);
-
-              if (isEpicScoped) {
-                ctx.logger.info('Epic is within Project Scope');
-              } else {
-                ctx.logger.warn(
-                  'Chosen epic is not within the Project Scope. The issue will be created without an associated epic.',
-                );
-              }
+            if (!epicId) {
+              return false;
             }
-            return isEpicScoped;
+
+            const scoped = await checkEpicScope(api, projectRef, epicId);
+
+            if (scoped) {
+              ctx.logger.info('Epic is within Project Scope');
+            } else {
+              ctx.logger.warn(
+                'Chosen epic is not within the Project Scope. The issue will be created without an associated epic.',
+              );
+            }
+
+            return scoped;
           },
         });
 
@@ -240,10 +315,10 @@ export const createGitlabIssueAction = (options: {
         };
 
         const response = await ctx.checkpoint({
-          key: `issue.${projectId}.${title}`,
+          key: issueCheckpointKey('issue', host, projectRef, title),
           fn: async () => {
             const issue = (await api.Issues.create(
-              projectId,
+              projectRef,
               title,
               issueOptions,
             )) as IssueSchema;
