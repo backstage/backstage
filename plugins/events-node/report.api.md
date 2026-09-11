@@ -142,9 +142,20 @@ export interface HttpPostIngressOptions {
 }
 
 // @public
+export interface ParsedQueryString {
+  // (undocumented)
+  [key: string]:
+    | (ParsedQueryString | string)[]
+    | ParsedQueryString
+    | string
+    | undefined;
+}
+
+// @public
 export interface RequestDetails {
   body: unknown;
   headers: Record<string, string | string[] | undefined>;
+  query: ParsedQueryString;
   raw: {
     body: Buffer;
     encoding: BufferEncoding;
@@ -153,6 +164,8 @@ export interface RequestDetails {
 
 // @public
 export interface RequestRejectionDetails {
+  // (undocumented)
+  contentType: 'application/json' | 'text/plain';
   // (undocumented)
   payload: unknown;
   // (undocumented)

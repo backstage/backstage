@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-/**
- * Details for how to respond to the rejection
- * of the received HTTP request transmitting an event payload.
- *
- * @public
- */
-export interface RequestRejectionDetails {
-  status: number;
-  payload: unknown;
-  contentType: 'application/json' | 'text/plain';
+import { resolvePackagePath } from '@backstage/backend-plugin-api';
+import type { Knex } from 'knex';
+
+export const DB_MIGRATIONS_TABLE = 'module_msgraph__knex_migrations';
+
+export function applyDatabaseMigrations(knex: Knex): Promise<void> {
+  const migrationsDir = resolvePackagePath(
+    '@backstage/plugin-events-backend-module-msgraph',
+    'migrations',
+  );
+
+  return knex.migrate.latest({
+    directory: migrationsDir,
+    tableName: DB_MIGRATIONS_TABLE,
+  });
 }
