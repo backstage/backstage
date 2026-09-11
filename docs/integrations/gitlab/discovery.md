@@ -251,6 +251,7 @@ catalog:
         useSearch: false # Optional. Whether to use the GitLab group search API to find files. Requires Gitlab 'Premium' or 'Ultimate' licenses.  Defaults to `false`
         projectPattern: '[\s\S]*' # Optional. Filters found projects based on provided pattern. Defaults to `[\s\S]*`, which means to not filter anything
         excludeRepos: [] # Optional. A list of project paths that should be excluded from discovery, e.g. group/subgroup/repo. Should not start or end with a slash.
+        excludeGroups: [] # Optional. A list of group paths to exclude from discovery. Matching groups will be skipped during both project and organization discovery (including membership ingestion), and all projects under the excluded groups and their subgroups will also be skipped, e.g. group/subgroup. Should not start or end with a slash.
         schedule: # Same options as in SchedulerServiceTaskScheduleDefinition. Optional for the Legacy Backend System
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { minutes: 30 }
