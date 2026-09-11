@@ -14170,8 +14170,14 @@ onPageSizeChange?: (size: number) =&gt; void
 
 onPreviousPage: () =&gt; void
 
+/**
+ * The controlled number of rows displayed per page.
+ */
 pageSize: number
 
+/**
+ * Available page sizes. An empty array hides the page-size selector.
+ */
 pageSizeOptions?: number[] | PageSizeOption[]
 
 showPageSizeOptions?: boolean
