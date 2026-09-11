@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { OpaqueFrontendPlugin } from '@internal/frontend';
+import {
+  OpaqueFrontendPlugin,
+  OpaqueExternalRouteRef,
+} from '@internal/frontend';
 import {
   ExtensionDefinition,
   OverridableExtensionDefinition,
@@ -29,6 +32,7 @@ import { MakeSortedExtensionsMap } from './MakeSortedExtensionsMap';
 import { JsonObject } from '@backstage/types';
 import { IconElement } from '../icons/types';
 import { RouteRef, SubRouteRef, ExternalRouteRef } from '../routing';
+import { validateRouteNamespace } from '../routing/validateRouteNamespace';
 import { ID_PATTERN } from './constants';
 import { FilterPredicate } from '@backstage/filter-predicates';
 
@@ -267,6 +271,10 @@ export function createFrontendPlugin<
   MakeSortedExtensionsMap<TExtensions[number], TId>
 > {
   const pluginId = options.pluginId;
+  validateRouteNamespace(pluginId, options.routes ?? {});
+  for (const [name, ref] of Object.entries(options.externalRoutes ?? {})) {
+    OpaqueExternalRouteRef.toInternal(ref).setId(`${pluginId}.${name}`);
+  }
 
   if (!ID_PATTERN.test(pluginId)) {
     // eslint-disable-next-line no-console

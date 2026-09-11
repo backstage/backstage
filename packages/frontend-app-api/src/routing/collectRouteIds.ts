@@ -26,11 +26,16 @@ import {
   OpaqueExternalRouteRef,
   OpaqueFrontendPlugin,
 } from '@internal/frontend';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { isInternalFrontendModule } from '../../../frontend-plugin-api/src/wiring/createFrontendModule';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { validateRouteNamespace } from '../../../frontend-plugin-api/src/routing/validateRouteNamespace';
 import { ErrorCollector } from '../wiring/createErrorCollector';
 
 /** @internal */
 export interface RouteRefsById {
   routes: Map<string, RouteRef | SubRouteRef>;
+  allRoutes?: Set<RouteRef | SubRouteRef>;
   externalRoutes: Map<string, ExternalRouteRef>;
 }
 
@@ -39,6 +44,7 @@ export function collectRouteIds(
   features: FrontendFeature[],
   collector: ErrorCollector,
 ): RouteRefsById {
+  const allRoutes = new Set<RouteRef | SubRouteRef>();
   const routesById = new Map<string, RouteRef | SubRouteRef>();
   const externalRoutesById = new Map<string, ExternalRouteRef>();
 
@@ -47,8 +53,10 @@ export function collectRouteIds(
       continue;
     }
 
+    validateRouteNamespace(feature.id, feature.routes);
     for (const [name, ref] of Object.entries(feature.routes)) {
       const refId = `${feature.id}.${name}`;
+      allRoutes.add(ref);
       if (routesById.has(refId)) {
         collector.report({
           code: 'ROUTE_DUPLICATE',
@@ -60,7 +68,9 @@ export function collectRouteIds(
 
       if (OpaqueRouteRef.isType(ref)) {
         const internalRef = OpaqueRouteRef.toInternal(ref);
-        internalRef.setId(refId);
+        if (!internalRef.getExtensionId) {
+          internalRef.setId(refId);
+        }
         routesById.set(refId, ref);
       } else {
         const internalRef = OpaqueSubRouteRef.toInternal(ref);
@@ -84,5 +94,28 @@ export function collectRouteIds(
     }
   }
 
-  return { routes: routesById, externalRoutes: externalRoutesById };
+  // This is the same resolved feature order used by resolveAppNodeSpecs:
+  // plugins first, then modules, with the last module winning.
+  const pluginIds = new Set(
+    features.filter(OpaqueFrontendPlugin.isType).map(p => p.id),
+  );
+  for (const module of features.filter(isInternalFrontendModule)) {
+    if (!pluginIds.has(module.pluginId)) {
+      continue;
+    }
+    validateRouteNamespace(module.pluginId, module.routes ?? {});
+    for (const [name, ref] of Object.entries(module.routes ?? {})) {
+      const refId = `${module.pluginId}.${name}`;
+      allRoutes.add(ref);
+      if (OpaqueRouteRef.isType(ref)) {
+        const internal = OpaqueRouteRef.toInternal(ref);
+        if (!internal.getExtensionId) {
+          internal.setId(refId);
+        }
+      }
+      routesById.set(refId, ref);
+    }
+  }
+
+  return { routes: routesById, externalRoutes: externalRoutesById, allRoutes };
 }

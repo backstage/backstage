@@ -220,6 +220,8 @@ function convertOldToNew(
     const legacyRef = ref as LegacyRouteRef;
     const legacyRefStr = String(legacyRef);
     const newRef = OpaqueRouteRef.toInternal(
+      // Legacy refs deliberately retain the historical page association.
+      // @ts-expect-error Runtime compatibility with creation options before extensionId
       createRouteRef({
         params: legacyRef.params as string[],
       }),
@@ -285,6 +287,9 @@ function convertOldToNew(
       $$type: '@backstage/ExternalRouteRef' as const,
       version: 'v1',
       T: newRef.T,
+      getId() {
+        return newRef.getId?.();
+      },
       getParams() {
         return newRef.getParams();
       },

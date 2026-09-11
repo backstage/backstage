@@ -56,6 +56,7 @@ describe('createFrontendModule', () => {
         "featureFlags": [],
         "if": undefined,
         "pluginId": "test",
+        "routes": {},
         "toString": [Function],
         "version": "v1",
       }

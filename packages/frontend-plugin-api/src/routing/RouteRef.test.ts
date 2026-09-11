@@ -20,10 +20,12 @@ import { OpaqueRouteRef } from '@internal/frontend';
 
 describe('RouteRef', () => {
   it('should be created and have a mutable ID', () => {
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const routeRef: RouteRef<undefined> = createRouteRef();
     const internal = OpaqueRouteRef.toInternal(routeRef);
     expect(internal.T).toBe(undefined);
     expect(internal.getParams()).toEqual([]);
+    expect(internal.getExtensionId).toBeUndefined();
     expect(internal.getDescription()).toMatch(/RouteRef\.test\.ts/);
 
     expect(String(internal)).toMatch(
@@ -49,12 +51,12 @@ describe('RouteRef', () => {
     const routeRef: RouteRef<{
       x: string;
       y: string;
-    }> = createRouteRef({
-      params: ['x', 'y'],
-    });
+    }> = createRouteRef({ extensionId: 'page:test', params: ['x', 'y'] });
     const internal = OpaqueRouteRef.toInternal(routeRef);
     expect(internal.getParams()).toEqual(['x', 'y']);
-    expect(internal.getDescription()).toMatch(/RouteRef\.test\.ts/);
+    expect(internal.getExtensionId?.()).toBe('page:test');
+    expect(internal.version).toBe('v1');
+    expect(internal.getDescription()).toBe('page:test');
   });
 
   it('should properly infer and validate parameter types and assignments', () => {
@@ -63,14 +65,14 @@ describe('RouteRef', () => {
       _params: T extends undefined ? undefined : T,
     ) {}
 
-    const _1 = createRouteRef({ params: ['x'] });
+    const _1 = createRouteRef({ extensionId: 'page:test', params: ['x'] });
     checkRouteRef(_1, { x: '' });
     // @ts-expect-error
     checkRouteRef(_1, { y: '' });
     // @ts-expect-error
     checkRouteRef(_1, undefined);
 
-    const _2 = createRouteRef({ params: ['x', 'y'] });
+    const _2 = createRouteRef({ extensionId: 'page:test', params: ['x', 'y'] });
     checkRouteRef(_2, { x: '', y: '' });
     // @ts-expect-error
     checkRouteRef(_2, { x: '' });
@@ -81,12 +83,12 @@ describe('RouteRef', () => {
     // @ts-expect-error
     checkRouteRef(_2, { x: '', y: '', z: '' });
 
-    const _3 = createRouteRef({ params: [] });
+    const _3 = createRouteRef({ extensionId: 'page:test', params: [] });
     checkRouteRef(_3, undefined);
     // @ts-expect-error
     checkRouteRef(_3, { x: '' });
 
-    const _4 = createRouteRef();
+    const _4 = createRouteRef({ extensionId: 'page:test' });
     checkRouteRef(_4, undefined);
     // @ts-expect-error
     checkRouteRef(_4, { x: '' });

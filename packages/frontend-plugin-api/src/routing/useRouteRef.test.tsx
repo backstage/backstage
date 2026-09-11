@@ -33,6 +33,7 @@ describe('v1 consumer', () => {
   });
 
   it('should infer all nested sub-route parameters', () => {
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const rootRouteRef = createRouteRef();
     const revisionRouteRef = createSubRouteRef({
       parent: rootRouteRef,
@@ -59,6 +60,7 @@ describe('v1 consumer', () => {
   it('should resolve routes', () => {
     const resolve = jest.fn(() => () => '/hello');
 
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const routeRef = createRouteRef();
 
     const renderedHook = renderHook(() => useRouteRef(routeRef), {
@@ -80,6 +82,7 @@ describe('v1 consumer', () => {
   });
 
   it('should ignore missing routes', () => {
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const routeRef = createRouteRef();
 
     const renderedHook = renderHook(() => useRouteRef(routeRef), {
@@ -99,6 +102,7 @@ describe('v1 consumer', () => {
   it('re-resolves the routeFunc when the search parameters change', () => {
     const resolve = jest.fn(() => () => '/hello');
 
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const routeRef = createRouteRef();
     const history = createBrowserHistory();
     history.push('/my-page');
@@ -127,6 +131,7 @@ describe('v1 consumer', () => {
     const resolve = jest.fn(() => () => '/hello');
     const api = { resolve };
 
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const routeRef = createRouteRef();
     const history = createBrowserHistory();
     history.push('/my-page');
@@ -155,6 +160,7 @@ describe('v1 consumer', () => {
     const resolve = jest.fn(() => () => '/hello');
     const api = { resolve };
 
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const routeRef = createRouteRef();
     const history = createBrowserHistory();
     history.push('/my-page');
@@ -183,6 +189,7 @@ describe('v1 consumer', () => {
     const resolve = jest.fn(() => () => '/hello');
     const api = { resolve };
 
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const routeRef = createRouteRef();
     const history = createBrowserHistory();
     history.push('/my-page');
