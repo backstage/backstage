@@ -112,14 +112,14 @@ auth:
         enterpriseInstanceUrl: ${AUTH_GITHUB_ENTERPRISE_INSTANCE_URL}
         signIn:
           resolvers:
-            - resolver: usernameMatchingUserEntityName
+            - resolver: userIdMatchingUserEntityAnnotation
 ```
 
 The list of available resolvers is different for each provider, since they often
 depend on the information model returned from the upstream provider service.
 Consult the documentation of the respective provider to find the list.
 
-In the example above, the `usernameMatchingUserEntityName` is specific to the
+In the example above, `userIdMatchingUserEntityAnnotation` is specific to the
 GitHub provider, but you could also choose to use the
 `emailMatchingUserEntityProfileEmail` or `emailLocalPartMatchingUserEntityName`
 resolvers, which are common to all auth providers.
@@ -179,7 +179,7 @@ auth:
 /* highlight-remove-start */
         signIn:
           resolvers:
-            - resolver: usernameMatchingUserEntityName
+            - resolver: userIdMatchingUserEntityAnnotation
 /* highlight-remove-end */
 ```
 
