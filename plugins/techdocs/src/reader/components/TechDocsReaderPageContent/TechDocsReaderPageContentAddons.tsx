@@ -21,6 +21,34 @@ import {
   useTechDocsReaderPage,
 } from '@backstage/plugin-techdocs-react';
 
+/** Keeps sidebar addons in the same scrollable region as their content. */
+const getSidebarAddonLocation = (
+  sidebarElement: Element | null | undefined,
+  location: string,
+) => {
+  if (!sidebarElement) {
+    return undefined;
+  }
+
+  const scrollWrap = Array.from(sidebarElement.children).find(child =>
+    child.classList.contains('md-sidebar__scrollwrap'),
+  );
+  const container = scrollWrap ?? sidebarElement;
+  let addonLocation = sidebarElement.querySelector(
+    `[data-techdocs-addons-location="${location}"]`,
+  );
+
+  if (!addonLocation) {
+    addonLocation = document.createElement('div');
+    addonLocation.setAttribute('data-techdocs-addons-location', location);
+  }
+  if (addonLocation.parentElement !== container) {
+    container.prepend(addonLocation);
+  }
+
+  return addonLocation;
+};
+
 export const TechDocsReaderPageContentAddons = () => {
   const addons = useTechDocsAddons();
 
@@ -33,32 +61,18 @@ export const TechDocsReaderPageContentAddons = () => {
   const primarySidebarElement = shadowRoot?.querySelector(
     'div[data-md-component="sidebar"][data-md-type="navigation"], div[data-md-component="navigation"]',
   );
-  let primarySidebarAddonLocation = primarySidebarElement?.querySelector(
-    '[data-techdocs-addons-location="primary sidebar"]',
+  const primarySidebarAddonLocation = getSidebarAddonLocation(
+    primarySidebarElement,
+    'primary sidebar',
   );
-  if (!primarySidebarAddonLocation) {
-    primarySidebarAddonLocation = document.createElement('div');
-    primarySidebarAddonLocation.setAttribute(
-      'data-techdocs-addons-location',
-      'primary sidebar',
-    );
-    primarySidebarElement?.prepend(primarySidebarAddonLocation);
-  }
 
   const secondarySidebarElement = shadowRoot?.querySelector(
     'div[data-md-component="sidebar"][data-md-type="toc"], div[data-md-component="toc"]',
   );
-  let secondarySidebarAddonLocation = secondarySidebarElement?.querySelector(
-    '[data-techdocs-addons-location="secondary sidebar"]',
+  const secondarySidebarAddonLocation = getSidebarAddonLocation(
+    secondarySidebarElement,
+    'secondary sidebar',
   );
-  if (!secondarySidebarAddonLocation) {
-    secondarySidebarAddonLocation = document.createElement('div');
-    secondarySidebarAddonLocation.setAttribute(
-      'data-techdocs-addons-location',
-      'secondary sidebar',
-    );
-    secondarySidebarElement?.prepend(secondarySidebarAddonLocation);
-  }
 
   return (
     <>
