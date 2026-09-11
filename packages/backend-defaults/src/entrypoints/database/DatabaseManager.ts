@@ -269,6 +269,15 @@ export class DatabaseManager {
     const prefix =
       databaseConfig.getOptionalString('prefix') || 'backstage_plugin_';
     const schemaPrefix = databaseConfig.getOptionalString('schemaPrefix') || '';
+
+    // Validate schemaPrefix contains only safe PostgreSQL identifier characters
+    if (schemaPrefix && !/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(schemaPrefix)) {
+      throw new Error(
+        `Invalid schemaPrefix "${schemaPrefix}". ` +
+          `Schema prefix must start with a letter or underscore and contain only letters, numbers, and underscores.`,
+      );
+    }
+
     return new DatabaseManager(
       new DatabaseManagerImpl(
         databaseConfig,

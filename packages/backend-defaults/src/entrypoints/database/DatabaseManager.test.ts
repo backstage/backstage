@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { DatabaseManagerImpl } from './DatabaseManager';
+import { DatabaseManager, DatabaseManagerImpl } from './DatabaseManager';
 import { Connector } from './types';
 import { mockServices } from '@backstage/backend-test-utils';
 
@@ -241,5 +241,95 @@ describe('DatabaseManagerImpl', () => {
     // Destroy should not have been called, but we should have read the config
     expect(destroy).not.toHaveBeenCalled();
     expect(getConfig).toHaveBeenCalled();
+  });
+});
+
+describe('DatabaseManager.fromConfig', () => {
+  describe('schemaPrefix validation', () => {
+    it('throws error when schemaPrefix contains double quotes', () => {
+      const config = new ConfigReader({
+        backend: {
+          database: {
+            client: 'pg',
+            schemaPrefix: 'test"--',
+          },
+        },
+      });
+
+      expect(() => DatabaseManager.fromConfig(config)).toThrow(
+        /Invalid schemaPrefix "test"--"/,
+      );
+      expect(() => DatabaseManager.fromConfig(config)).toThrow(
+        /Schema prefix must start with a letter or underscore and contain only letters, numbers, and underscores/,
+      );
+    });
+
+    it('throws error when schemaPrefix contains special characters', () => {
+      const config = new ConfigReader({
+        backend: {
+          database: {
+            client: 'pg',
+            schemaPrefix: 'test-prefix',
+          },
+        },
+      });
+
+      expect(() => DatabaseManager.fromConfig(config)).toThrow(
+        /Invalid schemaPrefix "test-prefix"/,
+      );
+    });
+
+    it('throws error when schemaPrefix starts with a number', () => {
+      const config = new ConfigReader({
+        backend: {
+          database: {
+            client: 'pg',
+            schemaPrefix: '123test',
+          },
+        },
+      });
+
+      expect(() => DatabaseManager.fromConfig(config)).toThrow(
+        /Invalid schemaPrefix "123test"/,
+      );
+    });
+
+    it('accepts valid schemaPrefix with underscores', () => {
+      const config = new ConfigReader({
+        backend: {
+          database: {
+            client: 'pg',
+            schemaPrefix: 'test_prefix_',
+          },
+        },
+      });
+
+      expect(() => DatabaseManager.fromConfig(config)).not.toThrow();
+    });
+
+    it('accepts valid schemaPrefix starting with underscore', () => {
+      const config = new ConfigReader({
+        backend: {
+          database: {
+            client: 'pg',
+            schemaPrefix: '_test_prefix',
+          },
+        },
+      });
+
+      expect(() => DatabaseManager.fromConfig(config)).not.toThrow();
+    });
+
+    it('accepts when schemaPrefix is not configured', () => {
+      const config = new ConfigReader({
+        backend: {
+          database: {
+            client: 'pg',
+          },
+        },
+      });
+
+      expect(() => DatabaseManager.fromConfig(config)).not.toThrow();
+    });
   });
 });
