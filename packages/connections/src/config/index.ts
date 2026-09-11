@@ -17,12 +17,12 @@ export { buildConnectionsFromConfig } from './buildConnectionsFromConfig';
 export type { ConfiguredConnection } from './types';
 export type { ConfiguredConnectionAuth } from '../api/ConnectionType';
 export type {
-  ConnectionType,
+  ConnectionTypeDefinition,
   ConnectionLookupStrategy,
   PortableSchema,
 } from '../api/ConnectionType';
 export { connectionTypes } from '../definitions/types';
 export type {
-  ConnectionTypeKey,
+  ConnectionType,
   LookupConnectionType,
 } from '../definitions/types';

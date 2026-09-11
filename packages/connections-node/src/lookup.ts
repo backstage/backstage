@@ -15,21 +15,21 @@
  */
 import {
   LookupConnectionType,
-  ConnectionTypeKey,
+  ConnectionType,
   connectionTypes,
 } from '@backstage/connections';
 
 const connectionTypesMap = new Map(Object.entries(connectionTypes));
 
-export function getConnectionType<T extends ConnectionTypeKey>(
+export function getConnectionType<T extends ConnectionType>(
   key: T,
 ): LookupConnectionType<T> {
   return connectionTypesMap.get(key) as LookupConnectionType<T>;
 }
 
-export function isConnectionTypeKey(
+export function isConnectionType(
   value: string | undefined,
-): value is ConnectionTypeKey {
+): value is ConnectionType {
   if (!value) return false;
 
   return connectionTypesMap.has(value);

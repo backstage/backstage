@@ -18,7 +18,7 @@ import { InputError } from '@backstage/errors';
 import type { Expand, JsonObject } from '@backstage/types';
 import type {
   ConnectionAuth,
-  ConnectionType,
+  ConnectionTypeDefinition,
   ConnectionLookupStrategy,
   LookupStrategyQuery,
   PortableSchema,
@@ -122,7 +122,7 @@ export function createConnectionType<
       }
     >[];
   }) => void;
-}): ConnectionType<{
+}): ConnectionTypeDefinition<{
   type: TType;
   cardinality: TCardinality;
   lookupStrategy: TLookupStrategy;
@@ -159,7 +159,7 @@ export function createConnectionType<
     configSchema: portableConfigSchema,
     matchAuth,
     validate,
-  } as unknown as ConnectionType<{
+  } as unknown as ConnectionTypeDefinition<{
     type: TType;
     cardinality: TCardinality;
     lookupStrategy: TLookupStrategy;

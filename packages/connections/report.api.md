@@ -8,9 +8,11 @@ import type { JsonObject } from '@backstage/types';
 
 // @public (undocumented)
 export type Connection<
-  T extends ConnectionType | ConnectionTypeKey = ConnectionType,
+  T extends
+    | ConnectionTypeDefinition
+    | ConnectionType = ConnectionTypeDefinition,
   TAuthMethod extends string = string,
-> = LookupConnectionType<T> extends ConnectionType<infer IDefinition>
+> = LookupConnectionType<T> extends ConnectionTypeDefinition<infer IDefinition>
   ? {
       type: LookupConnectionType<T>['type'];
       title: string;
@@ -45,26 +47,33 @@ export type ConnectionLookupStrategy = 'host' | 'aws';
 export interface ConnectionsService {
   // (undocumented)
   find<
-    TType extends ConnectionTypeKey,
+    TType extends ConnectionType,
     TAuthMethod extends LookupConnectionType<TType>['authMethods'][number]['method'],
   >(options: {
     type: TType;
-    query: LookupConnectionType<TType> extends ConnectionType<infer IDefinition>
+    query: LookupConnectionType<TType> extends ConnectionTypeDefinition<
+      infer IDefinition
+    >
       ? IDefinition['query']
       : never;
     authMethods: readonly [TAuthMethod, ...TAuthMethod[]];
   }): Promise<Connection<TType, TAuthMethod>>;
   // (undocumented)
-  find<TType extends ConnectionTypeKey>(options: {
+  find<TType extends ConnectionType>(options: {
     type: TType;
-    query: LookupConnectionType<TType> extends ConnectionType<infer IDefinition>
+    query: LookupConnectionType<TType> extends ConnectionTypeDefinition<
+      infer IDefinition
+    >
       ? IDefinition['query']
       : never;
   }): Promise<Omit<Connection<TType>, 'auth'>>;
 }
 
+// @public (undocumented)
+export type ConnectionType = keyof typeof connectionTypes;
+
 // @public
-export type ConnectionType<
+export type ConnectionTypeDefinition<
   T extends {
     type: string;
     cardinality: 'singleton' | 'multiton';
@@ -104,11 +113,8 @@ export type ConnectionType<
 };
 
 // @public (undocumented)
-export type ConnectionTypeKey = keyof typeof connectionTypes;
-
-// @public (undocumented)
 export const connectionTypes: {
-  readonly aws: ConnectionType<{
+  readonly aws: ConnectionTypeDefinition<{
     type: 'aws';
     cardinality: 'singleton';
     lookupStrategy: 'aws';
@@ -137,7 +143,7 @@ export const connectionTypes: {
       webIdentityTokenFile?: string | undefined;
     }[];
   }>;
-  readonly 'aws-codecommit': ConnectionType<{
+  readonly 'aws-codecommit': ConnectionTypeDefinition<{
     type: 'aws-codecommit';
     cardinality: 'multiton';
     lookupStrategy: 'host';
@@ -161,7 +167,7 @@ export const connectionTypes: {
         }
     )[];
   }>;
-  readonly 'aws-s3': ConnectionType<{
+  readonly 'aws-s3': ConnectionTypeDefinition<{
     type: 'aws-s3';
     cardinality: 'multiton';
     lookupStrategy: 'host';
@@ -189,7 +195,7 @@ export const connectionTypes: {
         }
     )[];
   }>;
-  readonly 'azure-blob-storage': ConnectionType<{
+  readonly 'azure-blob-storage': ConnectionTypeDefinition<{
     type: 'azure-blob-storage';
     cardinality: 'multiton';
     lookupStrategy: 'host';
@@ -226,7 +232,7 @@ export const connectionTypes: {
         }
     )[];
   }>;
-  readonly azure: ConnectionType<{
+  readonly azure: ConnectionTypeDefinition<{
     type: 'azure';
     cardinality: 'multiton';
     lookupStrategy: 'host';
@@ -261,7 +267,7 @@ export const connectionTypes: {
         }
     )[];
   }>;
-  readonly 'bitbucket-cloud': ConnectionType<{
+  readonly 'bitbucket-cloud': ConnectionTypeDefinition<{
     type: 'bitbucket-cloud';
     cardinality: 'multiton';
     lookupStrategy: 'host';
@@ -292,7 +298,7 @@ export const connectionTypes: {
         }
     )[];
   }>;
-  readonly 'bitbucket-server': ConnectionType<{
+  readonly 'bitbucket-server': ConnectionTypeDefinition<{
     type: 'bitbucket-server';
     cardinality: 'multiton';
     lookupStrategy: 'host';
@@ -318,7 +324,7 @@ export const connectionTypes: {
         }
     )[];
   }>;
-  readonly gerrit: ConnectionType<{
+  readonly gerrit: ConnectionTypeDefinition<{
     type: 'gerrit';
     cardinality: 'multiton';
     lookupStrategy: 'host';
@@ -342,7 +348,7 @@ export const connectionTypes: {
         }
     )[];
   }>;
-  readonly gitea: ConnectionType<{
+  readonly gitea: ConnectionTypeDefinition<{
     type: 'gitea';
     cardinality: 'multiton';
     lookupStrategy: 'host';
@@ -364,7 +370,7 @@ export const connectionTypes: {
         }
     )[];
   }>;
-  readonly github: ConnectionType<{
+  readonly github: ConnectionTypeDefinition<{
     type: 'github';
     cardinality: 'multiton';
     lookupStrategy: 'host';
@@ -396,7 +402,7 @@ export const connectionTypes: {
         }
     )[];
   }>;
-  readonly gitlab: ConnectionType<{
+  readonly gitlab: ConnectionTypeDefinition<{
     type: 'gitlab';
     cardinality: 'multiton';
     lookupStrategy: 'host';
@@ -418,7 +424,7 @@ export const connectionTypes: {
         }
     )[];
   }>;
-  readonly 'google-gcs': ConnectionType<{
+  readonly 'google-gcs': ConnectionTypeDefinition<{
     type: 'google-gcs';
     cardinality: 'multiton';
     lookupStrategy: 'host';
@@ -439,7 +445,7 @@ export const connectionTypes: {
         }
     )[];
   }>;
-  readonly harness: ConnectionType<{
+  readonly harness: ConnectionTypeDefinition<{
     type: 'harness';
     cardinality: 'multiton';
     lookupStrategy: 'host';
@@ -458,8 +464,9 @@ export const connectionTypes: {
 };
 
 // @public (undocumented)
-export type LookupConnectionType<T extends ConnectionTypeKey | ConnectionType> =
-  T extends ConnectionTypeKey ? (typeof connectionTypes)[T] : T;
+export type LookupConnectionType<
+  T extends ConnectionType | ConnectionTypeDefinition,
+> = T extends ConnectionType ? (typeof connectionTypes)[T] : T;
 
 // @public
 export type PortableSchema<TOutput = unknown, TInput = TOutput> = {

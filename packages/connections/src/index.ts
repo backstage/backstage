@@ -16,13 +16,10 @@
 export type { ConnectionsService } from './api/ConnectionsService';
 export type { Connection } from './api/Connection';
 export type {
-  ConnectionType,
+  ConnectionTypeDefinition,
   ConnectionAuth,
   ConnectionLookupStrategy,
   PortableSchema,
 } from './api/ConnectionType';
 export { connectionTypes } from './definitions/types';
-export type {
-  ConnectionTypeKey,
-  LookupConnectionType,
-} from './definitions/types';
+export type { ConnectionType, LookupConnectionType } from './definitions/types';
