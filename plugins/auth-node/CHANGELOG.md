@@ -1,5 +1,11 @@
 # @backstage/plugin-auth-node
 
+## 0.6.15
+
+### Patch Changes
+
+- f0a43da: OAuth profile normalization now respects matching negative email verification information supplied by the provider.
+
 ## 0.6.14
 
 ### Patch Changes
