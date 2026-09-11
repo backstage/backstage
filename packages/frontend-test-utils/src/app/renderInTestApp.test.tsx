@@ -117,6 +117,7 @@ describe('renderInTestApp', () => {
   });
 
   it('should allow mounting route refs', () => {
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const testRouteRef = createRouteRef({
       params: ['name'],
     });

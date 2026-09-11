@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { RouteRef, SubRouteRef } from '../routing';
+import { validateRouteNamespace } from '../routing/validateRouteNamespace';
 import { ExtensionDefinition } from './createExtension';
 import {
   Extension,
@@ -29,6 +31,8 @@ export interface CreateFrontendModuleOptions<
 > {
   pluginId: TPluginId;
   extensions?: TExtensions;
+  /** Named routes to add or override in the owning plugin. Later modules take precedence. */
+  routes?: Record<string, RouteRef | SubRouteRef>;
   featureFlags?: FeatureFlagConfig[];
   if?: FilterPredicate;
 }
@@ -42,6 +46,7 @@ export interface FrontendModule {
 /** @internal */
 export interface InternalFrontendModule extends FrontendModule {
   readonly version: 'v1';
+  readonly routes?: Record<string, RouteRef | SubRouteRef>;
   readonly extensions: Extension<unknown>[];
   readonly featureFlags: FeatureFlagConfig[];
   readonly if?: FilterPredicate;
@@ -91,6 +96,7 @@ export function createFrontendModule<
   TExtensions extends readonly ExtensionDefinition[],
 >(options: CreateFrontendModuleOptions<TId, TExtensions>): FrontendModule {
   const { pluginId } = options;
+  validateRouteNamespace(pluginId, options.routes ?? {});
 
   const { extensions } = resolveExtensionDefinitions(options.extensions ?? [], {
     namespace: pluginId,
@@ -104,6 +110,7 @@ export function createFrontendModule<
     featureFlags: options.featureFlags ?? [],
     if: options.if,
     extensions,
+    routes: options.routes ?? {},
     toString() {
       return `Module{pluginId=${pluginId}}`;
     },

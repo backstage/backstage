@@ -221,19 +221,22 @@ component. In the new frontend system, these customizations are done by
 overriding the `page:catalog` extension.
 
 For example, to customize the catalog index page with custom columns or actions,
-you can override the page extension using a frontend module:
+you can override the page extension using a frontend module. The Catalog plugin
+still uses a converted legacy route reference, so the replacement page retains
+that reference:
 
 ```tsx title="packages/app/src/catalog/customCatalogPage.tsx"
 import {
   PageBlueprint,
   createFrontendModule,
-  createRouteRef,
 } from '@backstage/frontend-plugin-api';
+
+import catalogPlugin from '@backstage/plugin-catalog/alpha';
 
 const customCatalogPage = PageBlueprint.make({
   params: {
     path: '/catalog',
-    routeRef: createRouteRef({ aliasFor: 'catalog.catalogIndex' }),
+    routeRef: catalogPlugin.routes.catalogIndex,
     loader: async () => {
       const { CustomCatalogPage } = await import('./CustomCatalogPage');
       return <CustomCatalogPage />;

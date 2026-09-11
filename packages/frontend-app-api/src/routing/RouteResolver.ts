@@ -17,6 +17,9 @@
 import { generatePath, matchRoutes } from 'react-router-dom';
 import {
   RouteRef,
+  createRouteRef,
+  AppTree,
+  coreExtensionData,
   ExternalRouteRef,
   SubRouteRef,
   AnyRouteRefParams,
@@ -31,6 +34,8 @@ import {
   OpaqueSubRouteRef,
 } from '@internal/frontend';
 import { RouteAliasResolver } from './RouteAliasResolver';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 import { joinPaths } from './joinPaths';
 
 /**
@@ -44,6 +49,7 @@ function resolveTargetRef(
   routePaths: Map<RouteRef, string>,
   routeBindings: Map<AnyRouteRef, AnyRouteRef | undefined>,
   routeRefsById: Map<string, RouteRef | SubRouteRef>,
+  extensionRoutes: Map<string, RouteRef>,
 ): readonly [RouteRef | undefined, string] {
   // First we figure out which absolute route ref we're dealing with, an if there was an sub route path to append.
   // For sub routes it will be the parent path, while for external routes it will be the bound route.
@@ -51,8 +57,16 @@ function resolveTargetRef(
   let path = '';
 
   if (OpaqueExternalRouteRef.isType(ref)) {
-    let resolvedRoute = routeBindings.get(ref);
-    if (!resolvedRoute) {
+    const id = OpaqueExternalRouteRef.toInternal(ref).getId?.();
+    const bindingRef = id
+      ? [...routeBindings.keys()].find(
+          candidate =>
+            OpaqueExternalRouteRef.isType(candidate) &&
+            OpaqueExternalRouteRef.toInternal(candidate).getId?.() === id,
+        ) ?? ref
+      : ref;
+    let resolvedRoute = routeBindings.get(bindingRef);
+    if (!routeBindings.has(bindingRef)) {
       const internal = OpaqueExternalRouteRef.toInternal(ref);
       const defaultTarget = internal.getDefaultTarget();
       if (defaultTarget) {
@@ -75,6 +89,25 @@ function resolveTargetRef(
     throw new Error(
       `Unexpectedly resolved ${targetRouteRef} to a non-route ref ${ref}`,
     );
+  }
+
+  const internal = OpaqueRouteRef.toInternal(ref);
+  const extensionId = internal.getExtensionId?.();
+  if (extensionId !== undefined) {
+    const mountedRef = extensionRoutes.get(extensionId);
+    if (!mountedRef) {
+      return [undefined, ''];
+    }
+    const expected = [
+      ...OpaqueRouteRef.toInternal(mountedRef).getParams(),
+    ].sort();
+    const actual = [...internal.getParams()].sort();
+    if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+      throw new Error(
+        `Route reference for '${extensionId}' has parameters [${actual}], but its mounted path requires [${expected}]`,
+      );
+    }
+    ref = mountedRef;
   }
 
   // Find the path that our target route is bound to
@@ -164,10 +197,14 @@ function resolveBasePath(
 }
 
 export class RouteResolver implements RouteResolutionApi {
+  private readonly extensionRoutes = new Map<string, RouteRef>();
   private readonly routePaths: Map<RouteRef, string>;
   private readonly routeParents: Map<RouteRef, RouteRef | undefined>;
   private readonly routeObjects: BackstageRouteObject[];
-  private readonly routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>;
+  private readonly routeBindings: Map<
+    ExternalRouteRef,
+    RouteRef | SubRouteRef | undefined
+  >;
   private readonly appBasePath: string; // base path without a trailing slash
   private readonly routeAliasResolver: RouteAliasResolver;
   private readonly routeRefsById: Map<string, RouteRef | SubRouteRef>;
@@ -176,18 +213,120 @@ export class RouteResolver implements RouteResolutionApi {
     routePaths: Map<RouteRef, string>,
     routeParents: Map<RouteRef, RouteRef | undefined>,
     routeObjects: BackstageRouteObject[],
-    routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>,
+    routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef | undefined>,
     appBasePath: string, // base path without a trailing slash
     routeAliasResolver: RouteAliasResolver,
     routeRefsById: Map<string, RouteRef | SubRouteRef>,
   ) {
-    this.routePaths = routePaths;
-    this.routeParents = routeParents;
-    this.routeObjects = routeObjects;
+    this.routePaths = new Map(routePaths);
+    this.routeParents = new Map(routeParents);
+    // Canonical refs let extension-ID lookups share the path resolver while
+    // leaving historical page associations and their parent chains intact.
+    const indexRoutes = (
+      objects: BackstageRouteObject[],
+      parent?: RouteRef,
+    ): BackstageRouteObject[] =>
+      objects.map(object => {
+        let ref = parent;
+        const refs = new Set(object.routeRefs);
+        if (object.appNode) {
+          const extensionId = object.appNode.spec.id;
+          ref = createRouteRef({
+            extensionId,
+            params: [...object.path.matchAll(/:([\w-]+)/g)].map(
+              match => match[1],
+            ),
+          });
+          this.extensionRoutes.set(extensionId, ref);
+          this.routePaths.set(ref, object.path);
+          this.routeParents.set(ref, parent);
+          refs.add(ref);
+        }
+        return {
+          ...object,
+          routeRefs: refs,
+          ...(object.children && {
+            children: indexRoutes(object.children, ref),
+          }),
+        };
+      });
+    this.routeObjects = indexRoutes(routeObjects);
     this.routeBindings = routeBindings;
     this.appBasePath = appBasePath;
     this.routeAliasResolver = routeAliasResolver;
     this.routeRefsById = routeRefsById;
+  }
+
+  validate(tree: AppTree, refs: Iterable<RouteRef | SubRouteRef>) {
+    const contracts = new Map<string, string>();
+    const targets = [...refs, ...this.routeBindings.values()];
+    for (const node of tree.nodes.values()) {
+      const ref = node.instance?.getData(coreExtensionData.routeRef);
+      if (ref) {
+        targets.push(ref);
+      }
+    }
+    for (const ref of targets) {
+      if (!ref) {
+        continue;
+      }
+      const root = OpaqueSubRouteRef.isType(ref)
+        ? OpaqueSubRouteRef.toInternal(ref).getParent()
+        : ref;
+      const internal = OpaqueRouteRef.toInternal(root);
+      const extensionId = internal.getExtensionId?.();
+      if (extensionId === undefined) {
+        continue;
+      }
+      const contract = JSON.stringify([...internal.getParams()].sort());
+      if (
+        contracts.has(extensionId) &&
+        contracts.get(extensionId) !== contract
+      ) {
+        throw new Error(
+          `Conflicting route parameter contracts for extension '${extensionId}'`,
+        );
+      }
+      contracts.set(extensionId, contract);
+      const node = tree.nodes.get(extensionId);
+      if (!node) {
+        throw new Error(
+          `Route reference targets unknown extension '${extensionId}'`,
+        );
+      }
+      const extension = toInternalExtension(node.spec.extension);
+      if (
+        !Object.values(extension.output).some(
+          data => data.id === coreExtensionData.routePath.id,
+        )
+      ) {
+        throw new Error(
+          `Route reference targets non-routable extension '${extensionId}'`,
+        );
+      }
+      // Disabled and conditional targets can be known without having a mounted path.
+      resolveTargetRef(
+        ref,
+        this.routePaths,
+        this.routeBindings,
+        this.routeRefsById,
+        this.extensionRoutes,
+      );
+    }
+    for (const [externalRef, target] of this.routeBindings) {
+      if (!target) {
+        continue;
+      }
+      const params = OpaqueExternalRouteRef.toInternal(externalRef).getParams();
+      const targetParams = OpaqueSubRouteRef.isType(target)
+        ? OpaqueSubRouteRef.toInternal(target).getParams()
+        : OpaqueRouteRef.toInternal(target).getParams();
+      if (targetParams.some(param => !params.includes(param))) {
+        throw new Error(
+          `External route ${externalRef} does not provide the parameters required by ${target}`,
+        );
+      }
+    }
   }
 
   resolve<TParams extends AnyRouteRefParams>(
@@ -205,6 +344,7 @@ export class RouteResolver implements RouteResolutionApi {
       this.routePaths,
       this.routeBindings,
       this.routeRefsById,
+      this.extensionRoutes,
     );
     if (!targetRef) {
       return undefined;

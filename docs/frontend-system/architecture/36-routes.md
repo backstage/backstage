@@ -24,8 +24,8 @@ Route references, also known as "absolute" or "regular" routes, are created as f
 ```tsx title="plugins/catalog/src/routes.ts"
 import { createRouteRef } from '@backstage/frontend-plugin-api';
 
-// Creates a route reference, which is not yet associated with any plugin page
-export const indexRouteRef = createRouteRef();
+// Targets the catalog index page extension, regardless of its configured path
+export const indexRouteRef = createRouteRef({ extensionId: 'page:catalog' });
 ```
 
 Note that you often want to create the route references themselves in a different file than the one that creates the plugin instance, for example a top-level `routes.ts`. This is to avoid circular imports when you use the route references from other parts of the same plugin.
@@ -34,21 +34,20 @@ Route refs do not have any behavior themselves. They are an opaque value that re
 
 ### Providing Route References to Plugins
 
-The code snippet in the previous section does not indicate which plugin the route belongs to. To do so, you have to use it in the creation of any kind of routable extension, such as a page extension:
+The `extensionId` identifies the routable extension. The page supplies its path and content; it does not need to receive the route reference:
 
 ```tsx title="plugins/catalog/src/plugin.tsx"
 import {
   createFrontendPlugin,
-  createPageExtension,
+  PageBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { indexRouteRef } from './routes';
 
-const catalogIndexPage = createPageExtension({
-  // The `name` option is omitted because this is an index page
-  path: '/entities',
-  // highlight-next-line
-  routeRef: indexRouteRef,
-  loader: () => import('./components').then(m => <m.IndexPage />),
+const catalogIndexPage = PageBlueprint.make({
+  params: {
+    path: '/entities',
+    loader: () => import('./components').then(m => <m.IndexPage />),
+  },
 });
 
 export default createFrontendPlugin({
@@ -62,9 +61,21 @@ export default createFrontendPlugin({
 });
 ```
 
-In the example above we associated the `indexRouteRef` with the `catalogIndexPage` extension and provided both the route ref and page via the Catalog plugin. So, when this plugin is installed in the app, the index page will become associated with the newly created `RouteRef`, making it possible to use the route ref to navigate the page extension.
+The page above has the ID `page:catalog`: its kind is `page`, its plugin
+namespace is `catalog`, and it has no name. A page named `index` would instead
+have the ID `page:catalog/index`.
 
-It may seem unclear why we configure the `routes` option when creating a plugin as the route has already been passed to the extension. We do that to make it possible for other plugins to route to our page, which is explained in detail in the [binding routes](#binding-external-route-references) section.
+The plugin's `routes` option exposes named targets such as `catalog.index` for
+external defaults and application configuration. It does not establish the
+reference's target. References can be used without being listed in `routes`.
+References listed in a plugin or module must target its plugin namespace,
+including the absolute parent of a sub route. The target extension may be
+provided by a module.
+
+Separate references with the same extension ID and parameters resolve to the
+same route. Conflicting parameter contracts, unknown targets, and targets that
+do not expose a route path are errors. Disabled or conditionally unavailable
+extensions resolve to `undefined`.
 
 ### Defining References with Path Parameters
 
@@ -74,6 +85,7 @@ Route references optionally accept a `params` option, which will require the lis
 import { createRouteRef } from '@backstage/frontend-plugin-api';
 
 export const detailsRouteRef = createRouteRef({
+  extensionId: 'page:catalog/entity',
   // The parameters that must be included in the path of this route reference
   // highlight-next-line
   params: ['kind', 'namespace', 'name'],
@@ -189,15 +201,16 @@ Now the only thing left is to provide the page and external route via a plugin:
 ```tsx title="plugins/catalog/src/plugin.tsx"
 import {
   createFrontendPlugin,
-  createPageExtension,
+  PageBlueprint,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { indexRouteRef, createComponentExternalRouteRef } from './routes';
 
-const catalogIndexPage = createPageExtension({
-  path: '/entities',
-  routeRef: indexRouteRef,
-  loader: () => import('./components').then(m => <m.IndexPage />),
+const catalogIndexPage = PageBlueprint.make({
+  params: {
+    path: '/entities',
+    loader: () => import('./components').then(m => <m.IndexPage />),
+  },
 });
 
 export default createFrontendPlugin({
@@ -302,7 +315,7 @@ import {
   createSubRouteRef,
 } from '@backstage/frontend-plugin-api';
 
-export const indexRouteRef = createRouteRef();
+export const indexRouteRef = createRouteRef({ extensionId: 'page:catalog' });
 // highlight-start
 export const detailsSubRouteRef = createSubRouteRef({
   parent: indexRouteRef,
@@ -417,14 +430,15 @@ Finally, see how a plugin can provide subroutes:
 ```tsx title="plugins/catalog/src/plugin.tsx"
 import {
   createFrontendPlugin,
-  createPageExtension,
+  PageBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { indexRouteRef, detailsSubRouteRef } from './routes';
 
-const catalogIndexPage = createPageExtension({
-  path: '/entities',
-  routeRef: indexRouteRef,
-  loader: () => import('./components').then(m => <m.IndexPage />),
+const catalogIndexPage = PageBlueprint.make({
+  params: {
+    path: '/entities',
+    loader: () => import('./components').then(m => <m.IndexPage />),
+  },
 });
 
 export default createFrontendPlugin({
@@ -438,41 +452,56 @@ export default createFrontendPlugin({
 });
 ```
 
-## Route Aliases - Overriding Routed Extensions in Modules
+## Overriding routes with modules
 
-It is possible to [override extensions of a plugin using a module](./25-extension-overrides.md#creating-a-frontend-module). In some cases the extension you're overriding may require a route reference. You could import the plugin instance and access the it via the `routes` property, but this creates a direct dependency on the plugin and risks leading to package duplication issues that would also break the route reference.
+A module can [override a page extension](./25-extension-overrides.md#creating-a-frontend-module)
+by providing the same extension ID. References targeting that ID resolve through
+the replacement page automatically.
 
-Instead of accessing the route reference directly, you can create a new route reference that acts as an alias for the original one from the plugin. For example, you can override the catalog index page with a custom one like this:
+Modules can also add or override named routes using `routes`:
 
 ```tsx
-const indexRouteRef = createRouteRef({ aliasFor: 'catalog.catalogIndex' });
+const customIndexRouteRef = createRouteRef({
+  extensionId: 'page:example/custom-index',
+});
 
 export default createFrontendModule({
-  pluginId: 'catalog',
+  pluginId: 'example',
+  routes: { root: customIndexRouteRef },
   extensions: [
     PageBlueprint.make({
+      name: 'custom-index',
       params: {
-        defaultPath: '/catalog',
-        routeRef: indexRouteRef,
+        path: '/custom',
         loader: () =>
-          import('./CustomCatalogIndexPage').then(m => (
-            <m.CustomCatalogIndexPage />
-          )),
+          import('./CustomIndexPage').then(m => <m.CustomIndexPage />),
       },
     }),
   ],
 });
 ```
 
-Aliases are limited to the plugin that they are defined in. These aliases can also be imported and used as usual with for example `useRouteRef`, but they must always be registered in the app via an extension for this to work. For example, the following will not work:
+This changes the named target `example.root` used in external defaults and
+configuration. A reference already targeting `page:example` continues to target
+that extension. Module routes use the same resolved feature order as module
+extensions: modules override the base plugin, and the last module wins.
+Modules for plugins that are not installed are ignored. Modules do not provide
+`externalRoutes`.
 
-```tsx
-function MyInvalidComponent() {
-  // This is NOT valid
-  const link = useRouteRef(
-    createRouteRef({ aliasFor: 'catalog.catalogIndex' }),
-  );
+## Migrating existing references
 
-  // ...
-}
-```
+Add `extensionId` to each `createRouteRef` call and remove the corresponding
+`PageBlueprint` or `SubPageBlueprint` `routeRef` parameter. Keep `params` unchanged
+and ensure they match the target extension's route path. Sub routes and external
+bindings do not need to change.
+
+The runtime continues to support plugins built with earlier versions, including
+page-emitted refs and historical aliases. The `aliasFor` creation option is no
+longer available in TypeScript. When overriding a page that still uses a
+historical ref, keep emitting that ref, obtained from the plugin's `routes`.
+
+Legacy refs converted with `convertLegacyRouteRef` keep their historical page or
+routing-shim association. A structural ref can also be converted for use in the
+old frontend system, provided the plugin explicitly uses that same ref as its
+legacy mount point. The old system cannot infer a mount point from an extension
+ID.

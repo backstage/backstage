@@ -19,11 +19,14 @@ import { SubRouteRef, createSubRouteRef } from './SubRouteRef';
 import { createRouteRef } from './RouteRef';
 import { OpaqueRouteRef, OpaqueSubRouteRef } from '@internal/frontend';
 
+// @ts-expect-error Historical refs intentionally omit extensionId
 const parent = createRouteRef();
+// @ts-expect-error Historical refs intentionally omit extensionId
 const parentX = createRouteRef({ params: ['x'] });
 
 describe('SubRouteRef', () => {
   it('should be created', () => {
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const internalParent = OpaqueRouteRef.toInternal(createRouteRef());
     const routeRef: SubRouteRef = createSubRouteRef({
       parent: internalParent,

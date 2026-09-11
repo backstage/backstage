@@ -21,6 +21,7 @@ import {
   createExactRouteAliasResolver,
   RouteAliasResolver,
 } from './RouteAliasResolver';
+import { OpaqueRouteRef } from '@internal/frontend';
 import { joinPaths } from './joinPaths';
 
 /** @internal */
@@ -71,8 +72,23 @@ export function extractRouteInfoFromAppNode(
       ?.replace(/^\//, '');
 
     const foundRouteRef = current.instance?.getData(coreExtensionData.routeRef);
-    const routeRef = routeAliasResolver(foundRouteRef, current.spec.plugin?.id);
-    if (foundRouteRef && routeRef !== foundRouteRef) {
+    const extensionId =
+      foundRouteRef &&
+      OpaqueRouteRef.toInternal(foundRouteRef).getExtensionId?.();
+    if (extensionId !== undefined && extensionId !== current.spec.id) {
+      throw new Error(
+        `Route reference emitted by '${current.spec.id}' targets '${extensionId}'`,
+      );
+    }
+    const routeRef =
+      extensionId === undefined
+        ? routeAliasResolver(foundRouteRef, current.spec.plugin?.id)
+        : undefined;
+    if (
+      foundRouteRef &&
+      extensionId === undefined &&
+      routeRef !== foundRouteRef
+    ) {
       routeAliases.set(foundRouteRef, routeRef);
     }
 

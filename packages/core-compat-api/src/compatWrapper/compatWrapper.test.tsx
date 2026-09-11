@@ -158,6 +158,7 @@ describe('ForwardsCompatProvider', () => {
   });
 
   it('should convert the routing context', async () => {
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const routeRef = createNewRouteRef();
 
     function Component() {
