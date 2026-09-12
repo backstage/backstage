@@ -108,10 +108,6 @@
     "ast-types@npm:^0.13.4": "0.16.3",
     "csstype@npm:^3.0.2": "3.0.9"
   },
-  "resolutionsComments": {
-    "ast-types@npm:^0.13.4": "Some transitive dependencies request ast-types 0.13.x, which predates the TypeScript 5.4 isolatedModules compatibility fix released in ast-types 0.16.2.",
-    "csstype@npm:^3.0.2": "Material UI v4 types typography font weights through React CSS types while its styling API uses csstype 2.x. csstype 3.0.10 widened numeric CSS properties to include arbitrary strings, making those types incompatible."
-  },
   "dependencies": {
     "@backstage/errors": "workspace:^",
     "@manypkg/get-packages": "^1.1.3",
@@ -173,7 +169,7 @@
     "vite": "^7.1.5",
     "zod": "^3.25.76 || ^4.0.0"
   },
-  "packageManager": "yarn@4.8.1",
+  "packageManager": "yarn@4.18.0",
   "engines": {
     "node": "22 || 24"
   },
@@ -193,5 +189,9 @@
       }
     },
     "tsConfig": "./tsconfig.json"
+  },
+  "resolutionsComments": {
+    "ast-types@npm:^0.13.4": "Some transitive dependencies request ast-types 0.13.x, which predates the TypeScript 5.4 isolatedModules compatibility fix released in ast-types 0.16.2.",
+    "csstype@npm:^3.0.2": "Material UI v4 types typography font weights through React CSS types while its styling API uses csstype 2.x. csstype 3.0.10 widened numeric CSS properties to include arbitrary strings, making those types incompatible."
   }
 }
