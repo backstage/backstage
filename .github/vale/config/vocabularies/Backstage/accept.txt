@@ -496,6 +496,8 @@ subkey
 subpage
 subpath
 subpaths
+subplan
+subplans
 subroute
 subroutes
 subquery
