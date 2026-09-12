@@ -101,10 +101,12 @@ describe('readGiteaConfigs', () => {
       id: 'default',
       host: 'gitea.com',
       organization: 'default-org',
-      branch: 'main',
       catalogPath: 'catalog-info.yaml',
       schedule: undefined,
     });
+    // branch is intentionally left undefined when not configured so that each
+    // repository's actual default branch can be used instead of assuming 'main'.
+    expect(result[0].branch).toBeUndefined();
   });
 
   it('throws if required fields are missing', () => {
