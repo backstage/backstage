@@ -37,6 +37,7 @@ import {
   scaffolderTemplateOutputTemplateRefsRef,
 } from '@backstage/plugin-scaffolder-react/alpha';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
+import { HomePageWidgetBlueprint } from '@backstage/plugin-home-react/alpha';
 import {
   scaffolderApiRef,
   TemplateGroupFilter,
@@ -273,3 +274,27 @@ export const scaffolderApi = ApiBlueprint.make({
         }),
     }),
 });
+
+export const scaffolderFeaturedTemplatesWidget =
+  HomePageWidgetBlueprint.makeWithOverrides({
+    name: 'featured-templates',
+    configSchema: {
+      title: z.string().default('Featured Templates'),
+      tag: z.string().default('featured'),
+    },
+    factory(originalFactory, { config }) {
+      return originalFactory({
+        name: 'HomePageFeaturedTemplates',
+        title: config.title,
+        components: () =>
+          import('./components/HomePageFeaturedTemplates').then(m => ({
+            Content: m.HomePageFeaturedTemplates,
+          })),
+        componentProps: { tag: config.tag },
+        layout: {
+          width: { defaultColumns: 6, minColumns: 2 },
+          height: { defaultRows: 6, minRows: 5 },
+        },
+      });
+    },
+  });

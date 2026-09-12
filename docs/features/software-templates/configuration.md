@@ -321,3 +321,32 @@ binding the template to `onSelected`, so the card just calls
 `props.onSelected?.()` to choose itself. The example app under
 `packages/app/src/modules/BuiTemplateCard.tsx` shows a Backstage UI (BUI)
 implementation you can use as a starting point.
+
+## Featuring templates on the homepage (requires the new frontend system)
+
+The scaffolder plugin provides a homepage widget that promotes a curated set of templates.
+It shows templates tagged with a configurable catalog tag (`featured` by default) as a row of template cards,
+and uses the same swappable `TemplateCard` as the templates page.
+
+Add the tag to the templates you want to promote:
+
+```yaml
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: nodejs-service
+  title: Node.js Service
+  tags:
+    - featured
+```
+
+This widget can be configured in `app-config.yaml`:
+
+```yaml
+app:
+  extensions:
+    - home-page-widget:scaffolder/featured-templates:
+        config:
+          title: Golden Paths
+          tag: golden-path
+```
