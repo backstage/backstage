@@ -20,4 +20,10 @@ export const disabledSnippet = `<Flex direction="row" gap="2">
   <ButtonIcon isDisabled icon={<RiCloudLine />} variant="tertiary" aria-label="Cloud" />
 </Flex>`;
 
+export const destructiveSnippet = `<Flex align="center" gap="2">
+  <ButtonIcon destructive icon={<RiCloudLine />} variant="primary" aria-label="Cloud" />
+  <ButtonIcon destructive icon={<RiCloudLine />} variant="secondary" aria-label="Cloud" />
+  <ButtonIcon destructive icon={<RiCloudLine />} variant="tertiary" aria-label="Cloud" />
+</Flex>`;
+
 export const isPendingSnippet = `<ButtonIcon icon={<RiCloudLine />} variant="primary" isPending aria-label="Cloud" />`;
