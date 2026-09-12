@@ -61,8 +61,8 @@ exports.down = async function down(knex) {
   );
 };
 
-// Let ALTER TABLE commit before ANALYZE scans the table so that the
-// AccessExclusiveLock is not held for the duration of the scan.
+// Let ALTER TABLE commit before ANALYZE scans the table. Both operations use
+// SHARE UPDATE EXCLUSIVE locks, which allow ordinary reads and writes.
 exports.config = {
   transaction: false,
 };
