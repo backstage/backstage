@@ -15,18 +15,22 @@
  */
 
 import { CliAuth } from '@backstage/cli-node';
-import { pluginSourcesSchema } from './pluginSources';
+import { pluginSourcesSchema, excludedSourcesSchema } from './pluginSources';
 
 export async function resolveAuth(instanceFlag?: string): Promise<{
   baseUrl: string;
   instanceName: string;
   accessToken: string;
   pluginSources: string[];
+  excludedPluginSources: string[];
 }> {
   const auth = await CliAuth.create({ instanceName: instanceFlag });
   const accessToken = await auth.getAccessToken();
   const pluginSources = pluginSourcesSchema.parse(
     await auth.getMetadata('pluginSources'),
+  );
+  const excludedPluginSources = excludedSourcesSchema.parse(
+    await auth.getMetadata('excludedPluginSources'),
   );
 
   return {
@@ -34,5 +38,6 @@ export async function resolveAuth(instanceFlag?: string): Promise<{
     instanceName: auth.getInstanceName(),
     accessToken,
     pluginSources,
+    excludedPluginSources,
   };
 }

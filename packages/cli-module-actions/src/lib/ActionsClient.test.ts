@@ -33,6 +33,53 @@ describe('ActionsClient', () => {
     client = new ActionsClient(baseUrl, accessToken);
   });
 
+  describe('listSources', () => {
+    it('fetches sources from the server', async () => {
+      mockHttpJson.mockResolvedValue({
+        sources: ['catalog', 'scaffolder'],
+      });
+
+      const result = await client.listSources();
+
+      expect(mockHttpJson).toHaveBeenCalledWith(
+        'https://backstage.example.com/.backstage/actions/v1/sources',
+        expect.objectContaining({
+          signal: expect.any(AbortSignal),
+        }),
+      );
+      expect(result).toEqual(['catalog', 'scaffolder']);
+    });
+
+    it('returns empty array when no sources configured', async () => {
+      mockHttpJson.mockResolvedValue({ sources: [] });
+
+      const result = await client.listSources();
+
+      expect(result).toEqual([]);
+    });
+
+    it('returns empty array on 404 from older backends', async () => {
+      const cause = Object.assign(new Error('Not Found'), {
+        statusCode: 404,
+      });
+      mockHttpJson.mockRejectedValue(
+        Object.assign(new Error('Request failed with 404 Not Found'), {
+          cause,
+        }),
+      );
+
+      const result = await client.listSources();
+
+      expect(result).toEqual([]);
+    });
+
+    it('propagates non-404 errors', async () => {
+      mockHttpJson.mockRejectedValue(new Error('Network error'));
+
+      await expect(client.listSources()).rejects.toThrow('Network error');
+    });
+  });
+
   describe('list', () => {
     it('returns empty array when no plugin sources provided', async () => {
       const result = await client.list([]);

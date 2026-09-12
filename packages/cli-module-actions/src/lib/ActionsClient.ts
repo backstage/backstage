@@ -60,6 +60,25 @@ export class ActionsClient {
     private readonly accessToken: string,
   ) {}
 
+  async listSources(): Promise<string[]> {
+    const url = new URL(
+      '/.backstage/actions/v1/sources',
+      this.baseUrl,
+    ).toString();
+    try {
+      const response = await httpJson<{ sources: string[] }>(url, {
+        signal: AbortSignal.timeout(30_000),
+      });
+      return response.sources;
+    } catch (error) {
+      const cause = error instanceof Error ? (error as any).cause : undefined;
+      if (cause?.statusCode === 404) {
+        return [];
+      }
+      throw error;
+    }
+  }
+
   async list(pluginSources: string[]): Promise<GroupedActions> {
     return Promise.all(
       pluginSources.map(async pluginId => {

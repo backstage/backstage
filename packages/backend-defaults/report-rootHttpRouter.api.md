@@ -22,6 +22,11 @@ import type { Server } from 'node:http';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
+export function createActionsSourcesRouter(options: {
+  config: RootConfigService;
+}): Router;
+
+// @public (undocumented)
 export function createHealthRouter(options: {
   health: RootHealthService;
   config: RootConfigService;
@@ -121,6 +126,8 @@ export function readHttpServerOptions(config?: Config): HttpServerOptions;
 
 // @public (undocumented)
 export interface RootHttpRouterConfigureContext {
+  // (undocumented)
+  actionsSourcesRouter: RequestHandler;
   // (undocumented)
   app: Express_2;
   // (undocumented)
