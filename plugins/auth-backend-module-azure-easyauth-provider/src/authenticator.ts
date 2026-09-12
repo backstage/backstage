@@ -23,6 +23,9 @@ import { decodeJwt } from 'jose';
 
 export const ID_TOKEN_HEADER = 'x-ms-token-aad-id-token';
 export const ACCESS_TOKEN_HEADER = 'x-ms-token-aad-access-token';
+export const ACA_PRINCIPAL_ID_HEADER = 'x-ms-client-principal-id';
+export const ACA_PRINCIPAL_NAME_HEADER = 'x-ms-client-principal-name';
+export const ACA_CLIENT_PRINCIPAL_HEADER = 'x-ms-client-principal';
 
 /** @public */
 export const azureEasyAuthAuthenticator = createProxyAuthenticator({
@@ -48,6 +51,23 @@ export const azureEasyAuthAuthenticator = createProxyAuthenticator({
 });
 
 async function getResult(req: Request): Promise<AzureEasyAuthResult> {
+  const acaPrincipalId = req.header(ACA_PRINCIPAL_ID_HEADER);
+  const acaPrincipalName = req.header(ACA_PRINCIPAL_NAME_HEADER);
+  const acaClientPrincipal = req.header(ACA_CLIENT_PRINCIPAL_HEADER);
+
+  if (acaPrincipalId !== undefined || acaClientPrincipal !== undefined) {
+    const fullProfile = clientPrincipalToProfile(
+      acaPrincipalId,
+      acaPrincipalName,
+      acaClientPrincipal,
+    );
+    const accessToken = req.header(ACCESS_TOKEN_HEADER);
+    return {
+      fullProfile,
+      accessToken,
+    };
+  }
+
   const idToken = req.header(ID_TOKEN_HEADER);
   const accessToken = req.header(ACCESS_TOKEN_HEADER);
   if (idToken === undefined) {
@@ -58,6 +78,77 @@ async function getResult(req: Request): Promise<AzureEasyAuthResult> {
     fullProfile: idTokenToProfile(idToken),
     accessToken: accessToken,
   };
+}
+
+function clientPrincipalToProfile(
+  principalId: string | undefined,
+  principalName: string | undefined,
+  clientPrincipalBase64: string | undefined,
+): Profile {
+  let id = principalId;
+  let displayName = principalName;
+  let username = principalName;
+  let email = principalName;
+
+  if (clientPrincipalBase64) {
+    try {
+      const decodedJson = Buffer.from(clientPrincipalBase64, 'base64').toString(
+        'utf-8',
+      );
+      const principal = JSON.parse(decodedJson);
+      const claims: Record<string, string> = {};
+      if (principal && Array.isArray(principal.claims)) {
+        for (const claim of principal.claims) {
+          if (claim && claim.typ && claim.val) {
+            claims[claim.typ] = claim.val;
+          }
+        }
+      }
+
+      id =
+        id ||
+        claims[
+          'http://schemas.microsoft.com/identity/claims/objectidentifier'
+        ] ||
+        claims.oid;
+      displayName =
+        claims.name ||
+        claims['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] ||
+        displayName;
+      username =
+        claims.preferred_username ||
+        claims['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn'] ||
+        claims.upn ||
+        username;
+      email =
+        claims.email ||
+        claims[
+          'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'
+        ] ||
+        claims.preferred_username ||
+        email;
+    } catch (error) {
+      throw new AuthenticationError(
+        `Invalid x-ms-client-principal header: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
+  }
+
+  if (!id) {
+    throw new AuthenticationError(
+      `Missing user identity in Azure Container Apps authentication headers`,
+    );
+  }
+
+  return {
+    id,
+    displayName: displayName || id,
+    provider: 'easyauth',
+    emails: email ? [{ value: email }] : undefined,
+    username,
+  } as Profile;
 }
 
 function idTokenToProfile(idToken: string) {
