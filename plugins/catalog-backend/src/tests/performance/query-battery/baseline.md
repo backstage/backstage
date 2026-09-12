@@ -96,7 +96,8 @@
 
 - **Measurement date**: 2026-09-12
 - **Database**: Production-scale staging replica, with approximately 739K
-  `final_entities` rows and 22.3M `search` rows according to planner statistics
+  `final_entities` rows. The `search` table contained 17.1M rows for 735,764
+  distinct entities; planner statistics estimated 22.3M rows.
 - **Data shape**: 1,084 matching workflow relations and 934 matching dataset
   relations, the same branch cardinalities observed in production
 - **Execution time**: 2.91-3.07s on repeated warm runs; approximately 12.0s on
@@ -111,8 +112,11 @@
   isolation, respectively.
 - **Buffers**: warm runs shared hit=1299489; cold run shared hit=1247058
   read=52411
-- **Statistics note**: This database did not have a custom `n_distinct` value
-  configured for `search.key` at measurement time.
+- **Statistics note**: This database still had the legacy
+  `search.entity_id n_distinct = -1` override at measurement time. Its measured
+  distinct-entity fraction was `-0.0429023` (23.31 search rows per entity), so
+  the override overstated the number of distinct entity IDs by approximately
+  23 times.
 
 ---
 
