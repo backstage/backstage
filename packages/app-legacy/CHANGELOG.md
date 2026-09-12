@@ -1,5 +1,48 @@
 # example-app-legacy
 
+## 0.2.125
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@2.0.9
+  - @backstage/core-components@0.18.14
+  - @backstage/plugin-catalog-common@1.2.0
+  - @backstage/ui@0.18.0
+  - @backstage/catalog-model@1.10.1
+  - @backstage/core-app-api@1.20.5
+  - @backstage/plugin-api-docs@0.14.5
+  - @backstage/plugin-catalog-graph@0.6.8
+  - @backstage/plugin-catalog-import@0.13.18
+  - @backstage/plugin-catalog-react@3.2.3
+  - @backstage/plugin-catalog-unprocessed-entities@0.2.35
+  - @backstage/plugin-home@0.9.10
+  - @backstage/plugin-notifications@0.6.0
+  - @backstage/plugin-org@0.7.9
+  - @backstage/plugin-scaffolder@1.39.0
+  - @backstage/plugin-scaffolder-react@2.1.0
+  - @backstage/plugin-techdocs@1.18.1
+  - @backstage/plugin-techdocs-module-addons-contrib@1.1.40
+  - @backstage/plugin-techdocs-react@1.3.15
+  - @backstage/plugin-user-settings@0.9.7
+  - @backstage/cli@0.36.6
+  - @backstage/config@1.3.9
+  - @backstage/plugin-home-react@0.1.42
+  - @backstage/plugin-kubernetes@0.12.23
+  - @backstage/plugin-devtools@0.1.43
+  - @backstage/plugin-search@1.7.8
+  - @backstage/frontend-app-api@0.16.8
+  - @backstage/app-defaults@1.7.12
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/integration-react@1.2.22
+  - @backstage/plugin-auth-react@0.1.31
+  - @backstage/plugin-kubernetes-cluster@0.0.41
+  - @backstage/plugin-mui-to-bui@0.2.11
+  - @backstage/plugin-permission-react@0.5.5
+  - @backstage/plugin-search-common@1.2.25
+  - @backstage/plugin-search-react@1.11.8
+  - @backstage/plugin-signals@0.0.35
+
 ## 0.2.125-next.2
 
 ### Patch Changes

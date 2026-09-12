@@ -1,5 +1,24 @@
 # @backstage/plugin-notifications
 
+## 0.6.0
+
+### Minor Changes
+
+- cd4a9c7: Added an unread notifications home page card and NFS home widget.
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- b31afcf: Fixed circular dependency warnings when building the notification settings UI.
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/ui@0.18.0
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/plugin-home-react@0.1.42
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/plugin-notifications-common@0.2.4
+  - @backstage/plugin-signals-react@0.0.26
+
 ## 0.5.21-next.2
 
 ### Patch Changes

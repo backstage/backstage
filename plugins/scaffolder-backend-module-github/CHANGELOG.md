@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.9.14
+
+### Patch Changes
+
+- bbba6b5: Added support for requiring user-provided credentials for GitHub mutation actions when `scaffolder.requireScmUserCredentials` is enabled.
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- Updated dependencies
+  - @backstage/integration@2.1.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/config@1.3.9
+  - @backstage/plugin-scaffolder-node@0.13.7
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-catalog-node@2.2.5
+
 ## 0.9.14-next.2
 
 ### Patch Changes

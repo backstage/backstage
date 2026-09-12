@@ -1,5 +1,19 @@
 # @backstage/repo-tools
 
+## 0.19.1
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- c0ebaa7: chore(deps): bump `js-yaml` from 4.3.1 to 4.3.2
+- bf1f82d: Added the required OpenAPI types dependency for Swagger Parser.
+- 0c1b8ee: Updated the OpenAPI generator tooling to avoid known security vulnerabilities.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.1
+  - @backstage/cli-common@0.3.1
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/config-loader@1.11.3
+
 ## 0.19.1-next.1
 
 ### Patch Changes

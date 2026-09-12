@@ -1,5 +1,25 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.3.0
+
+### Minor Changes
+
+- ee97130: Added support for `techdocs.generator.pullOptions` when pulling the TechDocs generator Docker image from private registries that require authentication.
+
+### Patch Changes
+
+- 932986c: Improve validation of TechDocs static content paths.
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- 1b0e277: Improved path validation for TechDocs content serving.
+- Updated dependencies
+  - @backstage/integration@2.1.2
+  - @backstage/catalog-client@1.16.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-techdocs-node@1.16.0
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-catalog-node@2.2.5
+
 ## 2.3.0-next.1
 
 ### Patch Changes

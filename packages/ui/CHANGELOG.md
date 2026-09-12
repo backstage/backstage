@@ -1,5 +1,36 @@
 # @backstage/ui
 
+## 0.18.0
+
+### Minor Changes
+
+- d07e99e: Updated BUI links to use the hosting application's client-side router, including relative destinations and the application's configured router base path, while preserving native browser navigation where required.
+
+  **BREAKING**: Anchor-based components no longer accept the React Aria `render` prop. BUI now owns the underlying anchor so routing behavior remains consistent across application and plugin package versions.
+
+  ListRow, Tag, and table Row now retain client-side navigation when application and plugin packages load separate React Aria copies. Their existing modifier-key, target, download, and link-metadata behavior is unchanged.
+
+  **Migration:**
+
+  Remove `render` props from ButtonLink, ComboboxItem, Link, MenuItem, MenuListBoxItem, SearchAutocompleteItem, SelectItem, and Tab. BUI now selects and renders the appropriate anchor or router link automatically.
+
+  **Affected components:** ButtonLink, Card, ComboboxItem, Header, Link, ListRow, MenuItem, MenuListBoxItem, Row, SearchAutocompleteItem, SelectItem, Tab, Tag
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+
+  **Affected components:** Avatar
+
+- f914343: Prevent BUI styles from overriding document and native control line heights while preserving BUI component typography.
+- 947c612: Fixed `TablePagination` page-size controls to stay synchronized with controlled values and handle empty option lists without crashing.
+
+  **Affected components:** `TablePagination`
+
+- 0dd80f7: Fixed pagination state handling in `useTable`, including initial offsets, shrinking complete datasets, controlled loading transitions, valid zero and empty cursors, cached error recovery, immediately resolving reloads, and unnecessary reloads when controlled callback identities change.
+
+  **Affected components:** `useTable`
+
 ## 0.18.0-next.2
 
 ### Patch Changes

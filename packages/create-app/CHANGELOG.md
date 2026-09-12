@@ -1,5 +1,16 @@
 # @backstage/create-app
 
+## 0.9.2
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- 1a8a90c: Bumped create-app version.
+- 6eec9b5: Bumped create-app version.
+- c3150c3: Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.3.1
+
 ## 0.9.2-next.2
 
 ### Patch Changes

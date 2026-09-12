@@ -1,5 +1,15 @@
 # @backstage/catalog-client
 
+## 1.16.2
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.2.0
+  - @backstage/catalog-model@1.10.1
+  - @backstage/filter-predicates@0.1.5
+
 ## 1.16.2-next.1
 
 ### Patch Changes

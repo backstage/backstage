@@ -1,5 +1,18 @@
 # @backstage/connections
 
+## 0.4.0
+
+### Minor Changes
+
+- 06cd10c: Removed the nonexistent `query` and `auth` properties from connection type descriptors, along with the unused `AuthValue` type. Query and returned authentication types remain inferred through `ConnectionsService.find`.
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- 9cf2287: Added support for calling `find` without `authMethods`, which returns connection info (type, title, and config fields) without any auth data. This is useful for consumers that only need connection metadata like API base URLs and don't handle authentication themselves.
+- Updated dependencies
+  - @backstage/config@1.3.9
+
 ## 0.4.0-next.0
 
 ### Minor Changes

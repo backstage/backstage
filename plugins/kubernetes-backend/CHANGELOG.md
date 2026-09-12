@@ -1,5 +1,29 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.21.11
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- 1d7b704: Reject unsupported service account authentication in catalog-provided cluster definitions.
+- b11c9b4: Improved entity resolution on the deprecated services endpoint.
+- 5268d63: Migrated tests from MSW v1 to MSW v2.
+- ad8f2a8: Added actions to get kubernetes clusters and entity resources
+- 28bdf75: Improved handling of Kubernetes resource response data.
+- 97a7e8e: The catalog cluster locator now validates Kubernetes API server URLs to block SSRF targets (non-public addresses, cloud metadata endpoints, and non-HTTPS URLs by default). Operators may list trusted hostnames in `dangerouslyAllowClusterUrls` on the catalog locator method to permit HTTP or non-public addresses for those hosts only (for example local minikube). Catalog entities cannot use the `serviceAccount` auth provider, cannot enable TLS verification skipping unless `dangerouslyAllowSkipTLSVerify` is set on the locator method, and only permitted annotations are passed through as auth metadata. Kubernetes API fetches no longer follow HTTP redirects automatically.
+- d9a57de: Add `KubernetesWatcher` interface for streaming Kubernetes resource changes via an async iterator. The watcher is separated from `KubernetesFetcher` because watching is a long-lived streaming connection that only works with server-side auth providers. Watch supports all event types (ADDED, MODIFIED, DELETED, BOOKMARK, ERROR) with errors yielded as data rather than thrown.
+- Updated dependencies
+  - @backstage/catalog-client@1.16.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/config@1.3.9
+  - @backstage/plugin-kubernetes-node@0.4.8
+  - @backstage/plugin-kubernetes-common@0.9.13
+  - @backstage/plugin-permission-node@0.11.4
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/integration-aws-node@0.2.2
+  - @backstage/plugin-catalog-node@2.2.5
+  - @backstage/plugin-permission-common@0.9.11
+
 ## 0.21.11-next.2
 
 ### Patch Changes

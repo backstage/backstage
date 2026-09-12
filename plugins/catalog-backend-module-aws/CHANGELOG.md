@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-backend-module-aws
 
+## 0.4.28
+
+### Patch Changes
+
+- 8b3c83e: Improved handling of AWS S3 object keys when creating catalog locations.
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- Updated dependencies
+  - @backstage/backend-defaults@0.18.0
+  - @backstage/integration@2.1.2
+  - @backstage/plugin-catalog-common@1.2.0
+  - @backstage/catalog-model@1.10.1
+  - @backstage/config@1.3.9
+  - @backstage/plugin-kubernetes-common@0.9.13
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/integration-aws-node@0.2.2
+  - @backstage/plugin-catalog-node@2.2.5
+
 ## 0.4.28-next.2
 
 ### Patch Changes

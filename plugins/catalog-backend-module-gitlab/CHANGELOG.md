@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.8.8
+
+### Patch Changes
+
+- 348bea1: Fixed `GitlabDiscoveryEntityProvider` to only process push events targeting the configured branch.
+- b7db066: Fixed a scope validation issue in GitLab organization discovery.
+- Updated dependencies
+  - @backstage/backend-defaults@0.18.0
+  - @backstage/integration@2.1.2
+  - @backstage/plugin-catalog-common@1.2.0
+  - @backstage/catalog-model@1.10.1
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-catalog-node@2.2.5
+  - @backstage/plugin-events-node@0.4.26
+
 ## 0.8.8-next.2
 
 ### Patch Changes

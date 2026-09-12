@@ -1,5 +1,22 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.6.0
+
+### Minor Changes
+
+- cfba1bc: **BREAKING PRODUCERS:** The `FixDialog`, `ContainerCard`, and `PodLogs` components no longer accept an implicit `children` prop. This aligns them with ADR006. If you were passing children to these components, remove them as they were never rendered.
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- c0ebaa7: chore(deps): bump `js-yaml` from 4.3.1 to 4.3.2
+- 83f34f2: The pod exec terminal now loads `@xterm/xterm` and its stylesheet when a terminal is opened, instead of including them in the initial bundle.
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-kubernetes-common@0.9.13
+  - @backstage/core-plugin-api@1.12.10
+
 ## 0.6.0-next.2
 
 ### Minor Changes

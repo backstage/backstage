@@ -1,5 +1,15 @@
 # @backstage/core-app-api
 
+## 1.20.5
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- Updated dependencies
+  - @backstage/ui@0.18.0
+  - @backstage/config@1.3.9
+  - @backstage/core-plugin-api@1.12.10
+
 ## 1.20.5-next.2
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @backstage/plugin-proxy-backend
 
+## 0.6.18
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- 42580a2: Improved request path handling in the proxy-backend.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-proxy-node@0.1.19
+
 ## 0.6.18-next.0
 
 ### Patch Changes
