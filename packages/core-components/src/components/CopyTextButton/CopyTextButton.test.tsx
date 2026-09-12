@@ -145,4 +145,16 @@ describe('<CopyTextButton />', () => {
     );
     expect(getByLabelText('text for aria-label')).toBeInTheDocument();
   });
+
+  it('forwards variant to the button element', async () => {
+    const { getByLabelText } = await renderInTestApp(
+      <TestApiProvider apis={apis}>
+        <CopyTextButton {...props} variant="secondary" />
+      </TestApiProvider>,
+    );
+    expect(getByLabelText('Copy text')).toHaveAttribute(
+      'data-variant',
+      'secondary',
+    );
+  });
 });
