@@ -15,10 +15,9 @@
  */
 
 import { OptionValues } from 'commander';
-import openBrowser from 'react-dev-utils/openBrowser';
 import { createLogger } from '../../lib/utility';
 import { runMkdocsServer } from '../../lib/mkdocsServer';
-import { RunOnOutput } from '@backstage/cli-common';
+import { openBrowser, RunOnOutput } from '@backstage/cli-common';
 import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
 import { checkIfDockerIsOperational } from './utils';
