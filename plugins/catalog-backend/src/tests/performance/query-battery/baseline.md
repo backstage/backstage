@@ -120,6 +120,46 @@
 
 ---
 
+## Controlled `search.entity_id n_distinct` comparison
+
+The full battery was run on the same production-scale staging replica on
+2026-09-12 with two statistics settings. Each setting was applied on the
+primary followed by `ANALYZE search`, and was verified on the replica before
+measurement. Each result below is the median of three measured warm runs after
+one warm-up run. The representative SQL is recorded in `queries.md`.
+
+The corrected value, `-0.0429023`, was calculated from the staging data. The
+legacy value, `-1`, tells PostgreSQL to treat every search row as having a
+different entity ID.
+
+| Scenario                          | Legacy `-1` | Corrected `-0.0429023` | Effective plan comparison                                                   |
+| --------------------------------- | ----------: | ---------------------: | --------------------------------------------------------------------------- |
+| 1. Paginated component list       |     22.1 ms |                24.2 ms | Same ordered parallel index plan                                            |
+| 2. Component count                |    465.2 ms |               404.0 ms | Corrected statistics avoid a hash join and sequential `final_entities` scan |
+| 3. Unfiltered page                |    0.147 ms |               0.141 ms | Same `final_entities` index scan                                            |
+| 4. Template facets                |    0.883 ms |               0.823 ms | Same nested-loop index plan                                                 |
+| 5. Component facets               |    641.6 ms |               697.7 ms | Same parallel hash-join plan; no sequential `search` scan                   |
+| 6. Entity lookup                  |    0.126 ms |               0.112 ms | Same unique-index lookup                                                    |
+| 7. Full-text component filter     |     15.2 ms |                16.0 ms | Same ordered parallel index plan                                            |
+| 8. Ancestry step                  |    0.156 ms |               0.147 ms | Same nested-loop index plan                                                 |
+| 9. Incoming reference count       |    0.162 ms |               0.213 ms | Same index-only scan; sub-millisecond variance                              |
+| 10. Unfiltered count              |    556.0 ms |               734.1 ms | Same parallel hash-join plan and buffer work; runtime variance              |
+| 11. Orphan anti-join              |      11.67s |                 12.83s | Same nested-loop anti-join; independent of `search` statistics              |
+| 12. Ordered selective disjunction |       2.90s |                  2.94s | Same ordered candidate scan and correlated probes                           |
+
+The corrected statistic materially changed the chosen plan only for scenario 2. The large differences from the May baseline, particularly scenario 7, are
+therefore changes in the wider database, data, and planner state rather than
+effects of this setting. Scenario 12 inspected the same 77,199 ordered
+`metadata.name` candidates under both settings, confirming that its expensive
+combination of ordering and disjunction is unaffected by this statistic.
+
+Scenario 11 is a separate regression. Both settings chose a Nested Loop Anti
+Join that scanned approximately 387K `refresh_state` rows to find 100 orphans.
+Forcing an alternative plan for diagnosis produced a Merge Anti Join in about
+996ms, compared with approximately 10-13s for the default warm plan.
+
+---
+
 ## Summary
 
 | Scenario                           | Execution Time | Verdict                                                     |
