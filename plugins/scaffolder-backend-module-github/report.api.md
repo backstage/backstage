@@ -248,15 +248,6 @@ export function createGithubRepoCreateAction(options: {
     allowSquashMerge?: boolean | undefined;
     allowUpdateBranch?: boolean | undefined;
     autoInit?: boolean | undefined;
-    blockCreations?: boolean | undefined;
-    branch?: string | undefined;
-    bypassPullRequestAllowances?:
-      | {
-          users?: string[] | undefined;
-          apps?: string[] | undefined;
-          teams?: string[] | undefined;
-        }
-      | undefined;
     collaborators?:
       | (
           | {
@@ -270,13 +261,8 @@ export function createGithubRepoCreateAction(options: {
         )[]
       | undefined;
     customProperties?: Record<string, string | string[]> | undefined;
-    defaultBranch?: string | undefined;
     deleteBranchOnMerge?: boolean | undefined;
     description?: string | undefined;
-    dismissStaleReviews?: boolean | undefined;
-    gitAuthorEmail?: string | undefined;
-    gitAuthorName?: string | undefined;
-    gitCommitMessage?: string | undefined;
     hasIssues?: boolean | undefined;
     hasProjects?: boolean | undefined;
     hasWiki?: boolean | undefined;
@@ -287,27 +273,9 @@ export function createGithubRepoCreateAction(options: {
           includeClaimKeys?: string[] | undefined;
         }
       | undefined;
-    protectDefaultBranch?: boolean | undefined;
-    protectEnforceAdmins?: boolean | undefined;
     repoVariables?: Record<string, string> | undefined;
     repoVisibility?: 'internal' | 'private' | 'public' | undefined;
-    requireBranchesToBeUpToDate?: boolean | undefined;
-    requireCodeOwnerReviews?: boolean | undefined;
-    requiredApprovingReviewCount?: number | undefined;
-    requiredCommitSigning?: boolean | undefined;
-    requiredConversationResolution?: boolean | undefined;
-    requiredLinearHistory?: boolean | undefined;
-    requiredStatusCheckContexts?: string[] | undefined;
-    requireLastPushApproval?: boolean | undefined;
-    restrictions?:
-      | {
-          users: string[];
-          teams: string[];
-          apps?: string[] | undefined;
-        }
-      | undefined;
     secrets?: Record<string, string> | undefined;
-    sourcePath?: string | undefined;
     squashMergeCommitMessage?:
       | 'PR_BODY'
       | 'COMMIT_MESSAGES'

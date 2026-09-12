@@ -894,6 +894,41 @@ describe('github:repo:create', () => {
     });
   });
 
+  it('should include supported properties in input schema', () => {
+    const inputProperties = Object.keys(
+      (action.schema?.input as any)?.properties ?? {},
+    );
+
+    expect(inputProperties).toEqual([
+      'access',
+      'allowAutoMerge',
+      'allowMergeCommit',
+      'allowRebaseMerge',
+      'allowSquashMerge',
+      'allowUpdateBranch',
+      'autoInit',
+      'collaborators',
+      'customProperties',
+      'deleteBranchOnMerge',
+      'description',
+      'hasIssues',
+      'hasProjects',
+      'hasWiki',
+      'homepage',
+      'oidcCustomization',
+      'repoUrl',
+      'repoVariables',
+      'repoVisibility',
+      'secrets',
+      'squashMergeCommitMessage',
+      'squashMergeCommitTitle',
+      'subscribe',
+      'token',
+      'topics',
+      'workflowAccess',
+    ]);
+  });
+
   it.each(['none', 'organization', 'user'])(
     'should set workflow access level - %s',
     async expected => {
