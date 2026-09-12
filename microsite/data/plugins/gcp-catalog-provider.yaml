@@ -1,0 +1,10 @@
+---
+title: GCP Catalog Provider
+author: Simon Bordeyne
+authorUrl: https://github.com/sbordeyne
+category: Catalog
+description: Import your GCP resources into Backstage as Resource entities, including relations and links.
+documentation: https://github.com/sbordeyne/backstage-plugins/blob/master/plugins/catalog-backend-module-gcp-provider/README.md
+npmPackageName: '@sbordeyne/plugin-catalog-backend-module-gcp-provider'
+addedDate: '2026-08-13'
+status: active
