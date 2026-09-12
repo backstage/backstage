@@ -28,6 +28,7 @@ import {
   mockApis,
 } from '@backstage/test-utils';
 import { configApiRef } from '@backstage/core-plugin-api';
+import { appTreeApiRef, type AppTreeApi } from '@backstage/frontend-plugin-api';
 
 const useTechDocsReaderDom = jest.fn();
 jest.mock('../reader/components/TechDocsReaderPageContent/dom', () => ({
@@ -66,6 +67,10 @@ const mockTechDocsMetadata = {
 
 const getEntityMetadata = jest.fn();
 const getTechDocsMetadata = jest.fn();
+const appTreeApi = {
+  getTree: jest.fn(),
+  getNodesByRoutePath: jest.fn().mockReturnValue({ nodes: [] }),
+} as unknown as AppTreeApi;
 
 const Wrapper = ({
   entityRef = {
@@ -73,15 +78,18 @@ const Wrapper = ({
     name: mockEntityMetadata.metadata.name,
     namespace: mockEntityMetadata.metadata.namespace!!,
   },
+  isNfs = false,
   children,
 }: {
   entityRef?: CompoundEntityRef;
+  isNfs?: boolean;
   children: ReactNode;
 }) => (
   <TestApiProvider
     apis={[
       [techdocsApiRef, { getEntityMetadata, getTechDocsMetadata }],
       [configApiRef, mockApis.config()],
+      ...(isNfs ? ([[appTreeApiRef, appTreeApi]] as const) : []),
     ]}
   >
     <TechDocsReaderPageProvider entityRef={entityRef}>
@@ -129,6 +137,32 @@ describe('useTechDocsReaderContentData', () => {
 
     expect(screen.getByTestId('isNotFound')).toHaveTextContent('false');
     expect(screen.getByTestId('showProgress')).toHaveTextContent('false');
+    expect(useTechDocsReaderDom).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'test-name' }),
+      undefined,
+      'legacy',
+    );
+  });
+
+  it('uses the BUI DOM layout in a new frontend system app', async () => {
+    getEntityMetadata.mockResolvedValue(mockEntityMetadata);
+    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
+    useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
+    useTechDocsReader.mockReturnValue({ state: 'cached' });
+
+    await renderInTestApp(
+      <Wrapper isNfs>
+        <HookRenderer />
+      </Wrapper>,
+    );
+
+    await waitFor(() => {
+      expect(useTechDocsReaderDom).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'test-name' }),
+        undefined,
+        'bui',
+      );
+    });
   });
 
   it('should return not found when entity metadata is missing', async () => {

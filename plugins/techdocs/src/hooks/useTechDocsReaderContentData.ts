@@ -22,9 +22,9 @@ import {
   useTechDocsReaderPage,
 } from '@backstage/plugin-techdocs-react';
 import { useApp } from '@backstage/core-plugin-api';
+import { appTreeApiRef, useApiHolder } from '@backstage/frontend-plugin-api';
 import { useTechDocsReaderDom } from '../reader/components/TechDocsReaderPageContent/dom';
 import { useTechDocsReader } from '../reader/components/TechDocsReaderProvider';
-import type { TechDocsReaderLayout } from '../reader/TechDocsReaderLayout';
 
 /**
  * Shared hook for TechDocs reader content data.
@@ -34,9 +34,11 @@ import type { TechDocsReaderLayout } from '../reader/TechDocsReaderLayout';
 export function useTechDocsReaderContentData(options: {
   defaultPath?: string;
   onReady?: () => void;
-  layout?: TechDocsReaderLayout;
 }) {
-  const { defaultPath, onReady, layout = 'legacy' } = options;
+  const { defaultPath, onReady } = options;
+  // The app tree API is registered by the new frontend system. Legacy apps
+  // receive an empty frontend API holder through the compatibility layer.
+  const layout = useApiHolder().get(appTreeApiRef) ? 'bui' : 'legacy';
 
   const {
     entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
