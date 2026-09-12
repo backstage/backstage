@@ -23,7 +23,16 @@ import {
   DbRefreshStateRow,
   DbRelationsRow,
 } from '../../tables';
+import { markForStitching } from '../stitcher/markForStitching';
 import { deleteOrphanedEntities } from './deleteOrphanedEntities';
+
+jest.mock('../stitcher/markForStitching', () => {
+  const actual = jest.requireActual('../stitcher/markForStitching');
+  return {
+    ...actual,
+    markForStitching: jest.fn(actual.markForStitching),
+  };
+});
 
 jest.setTimeout(60_000);
 
@@ -189,9 +198,13 @@ describe.each(databases.eachSupportedId())(
         target_entity_ref: 'E2',
       });
       await insertRelation(knex, 'E2', 'E1');
-      await knex.schema.dropTable('stitch_queue');
 
-      await expect(deleteOrphanedEntities({ knex })).rejects.toThrow();
+      jest
+        .mocked(markForStitching)
+        .mockRejectedValueOnce(new Error('stitching failed'));
+      await expect(deleteOrphanedEntities({ knex })).rejects.toThrow(
+        'stitching failed',
+      );
       await expect(refreshState(knex)).resolves.toEqual([
         { entity_ref: 'E1', result_hash: 'original' },
         { entity_ref: 'E2', result_hash: 'original' },
