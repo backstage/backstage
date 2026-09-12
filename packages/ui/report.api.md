@@ -987,6 +987,8 @@ export interface ColumnConfig<T extends TableItem> {
   // (undocumented)
   isHidden?: boolean;
   // (undocumented)
+  isResizable?: boolean;
+  // (undocumented)
   isRowHeader?: boolean;
   // (undocumented)
   isSortable?: boolean;
@@ -1004,6 +1006,7 @@ export interface ColumnConfig<T extends TableItem> {
 export type ColumnOwnProps = {
   children?: React.ReactNode;
   className?: string;
+  isResizable?: boolean;
 };
 
 // @public (undocumented)

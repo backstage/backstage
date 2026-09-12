@@ -40,6 +40,14 @@ import { SearchField } from '../../SearchField';
 const meta = {
   title: 'Backstage UI/Table/dev',
   ...tableStoriesMeta,
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Tables display structured data in rows and columns. Columns can support sorting, resizing, custom widths, and custom cell content.',
+      },
+    },
+  },
 } satisfies Meta;
 
 export default meta;
@@ -75,6 +83,67 @@ export const BasicLocalData: Story = {
         id: 'lifecycle',
         label: 'Lifecycle',
         defaultWidth: '1fr',
+        cell: item => <CellText title={item.lifecycle} />,
+      },
+    ];
+
+    const { tableProps } = useTable({
+      mode: 'complete',
+      getData: () => data1,
+      paginationOptions: { pageSize: 5 },
+    });
+
+    return <Table columnConfig={columns} {...tableProps} />;
+  },
+};
+
+export const ResizableColumns: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Set `isResizable` on a column to let users adjust its width with a pointer or keyboard. Use `defaultWidth`, `minWidth`, and `maxWidth` to configure its initial size and constraints.',
+      },
+    },
+  },
+  render: () => {
+    const columns: ColumnConfig<Data1Item>[] = [
+      {
+        id: 'name',
+        label: 'Name',
+        isRowHeader: true,
+        isResizable: true,
+        defaultWidth: '3fr',
+        minWidth: 200,
+        cell: item => (
+          <CellText title={item.name} description={item.description} />
+        ),
+      },
+      {
+        id: 'owner',
+        label: 'Owner',
+        isResizable: true,
+        defaultWidth: '2fr',
+        minWidth: 120,
+        maxWidth: 300,
+        cell: item => <CellText title={item.owner.name} />,
+      },
+      {
+        id: 'type',
+        label: 'Type',
+        isResizable: true,
+        defaultWidth: '1fr',
+        minWidth: 80,
+        maxWidth: 200,
+        cell: item => <CellText title={item.type} />,
+      },
+      {
+        id: 'lifecycle',
+        label: 'Lifecycle',
+        isResizable: true,
+        defaultWidth: '1fr',
+        minWidth: 80,
+        maxWidth: 200,
         cell: item => <CellText title={item.lifecycle} />,
       },
     ];

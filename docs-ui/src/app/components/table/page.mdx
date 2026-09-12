@@ -198,9 +198,9 @@ Columns with larger `fr` values take more space — for example, a `3fr` column 
   code={tableColumnWidthsWithFrSnippet}
 />
 
-#### With Constraints
+#### Resizable Columns
 
-Use `defaultWidth` with `fr` units for the initial proportional layout, then add `minWidth` and `maxWidth` in pixels to prevent columns from becoming too narrow or too wide when the table is resized.
+Set `isResizable` to let users resize a column with a pointer or keyboard. Use `defaultWidth` with `fr` units for the initial proportional layout, then add `minWidth` and `maxWidth` in pixels to constrain the available sizes.
 
 <Snippet
   preview={<ColumnWidthsWithConstraintsExample />}

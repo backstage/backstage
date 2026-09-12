@@ -159,6 +159,7 @@ export function Table<T extends TableItem>({
 
   const manualColumnSizing = columnConfig.some(
     col =>
+      col.isResizable ||
       col.width != null ||
       col.minWidth != null ||
       col.maxWidth != null ||
@@ -222,6 +223,7 @@ export function Table<T extends TableItem>({
                       id={column.id}
                       isRowHeader={column.isRowHeader}
                       allowsSorting={column.isSortable}
+                      isResizable={column.isResizable}
                       width={column.width}
                       defaultWidth={column.defaultWidth}
                       minWidth={column.minWidth}
