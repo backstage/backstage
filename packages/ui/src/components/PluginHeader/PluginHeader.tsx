@@ -91,16 +91,22 @@ export const PluginHeader = (props: PluginHeaderProps) => {
       );
     };
 
+    const getHeight = () => {
+      const marginBottom =
+        parseFloat(window.getComputedStyle(el).marginBottom) || 0;
+      return el.offsetHeight + marginBottom;
+    };
+
     const scheduleHeightUpdate = () => {
       cancelScheduledUpdate();
       animationFrameRef.current = requestAnimationFrame(() => {
         animationFrameRef.current = undefined;
-        applyHeight(el.offsetHeight);
+        applyHeight(getHeight());
       });
     };
 
     // Set height once immediately so the initial layout is correct.
-    applyHeight(el.offsetHeight);
+    applyHeight(getHeight());
 
     // Observe for resize changes if ResizeObserver is available
     // (not present in Jest/jsdom by default)
