@@ -92,6 +92,28 @@
 - **Anti-patterns detected**: Seq Scans on both `refresh_state` and `refresh_state_references`, but this is expected for a Hash Anti Join strategy. Temp file spills observed (temp read=7144, written=11160) due to the hash table exceeding `work_mem`. Despite the seq scans, the Parallel Hash Anti Join completes in ~256ms, which is a dramatic improvement over the previous Nested Loop Anti Join that timed out at >30s.
 - **Buffers**: shared hit=279619, temp read=7144 written=11160
 
+## Scenario 12: Ordered disjunction with selective branches
+
+- **Measurement date**: 2026-09-12
+- **Database**: Production-scale staging replica, with approximately 739K
+  `final_entities` rows and 22.3M `search` rows according to planner statistics
+- **Data shape**: 1,084 matching workflow relations and 934 matching dataset
+  relations, the same branch cardinalities observed in production
+- **Execution time**: 2.91-3.07s on repeated warm runs; approximately 12.0s on
+  the first cold run
+- **Plan shape**: Index Only Scan on `search_key_value_entity_idx` for
+  `metadata.name` -> Index Scan on `final_entities_pkey` -> correlated index
+  probes for both sides of the disjunction; LIMIT short-circuits after 77,199
+  ordered candidates have been inspected to return 2,001 rows
+- **Anti-patterns detected**: The plan uses indexes throughout, but the
+  disjunction prevents either selective relation predicate from driving the
+  query. The workflow and dataset branches take 115.7ms and 120.4ms in
+  isolation, respectively.
+- **Buffers**: warm runs shared hit=1299489; cold run shared hit=1247058
+  read=52411
+- **Statistics note**: This database did not have a custom `n_distinct` value
+  configured for `search.key` at measurement time.
+
 ---
 
 ## Summary
@@ -109,6 +131,7 @@
 | 9. Stitching ref count             | 0.1 ms         | Excellent                                                   |
 | 10. Unfiltered count               | 1317.4 ms      | OK -- improved (smaller catalog)                            |
 | 11. Orphan detection               | 255.7 ms       | **FIXED** -- Hash Anti Join replaces Nested Loop (was >30s) |
+| 12. Ordered selective disjunction  | 2.9s warm      | Known slow case; branches are individually faster           |
 
 ---
 

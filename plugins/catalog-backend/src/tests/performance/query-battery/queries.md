@@ -422,6 +422,103 @@ Execution time <500ms.
 
 ---
 
+## 12. Ordered disjunction with selective branches
+
+**User action**: List workflows and datasets belonging to the same component.
+This scenario captures a case where each branch is fast by itself, but combining
+them with `$any` makes the ordered query substantially slower.
+
+**Method call**:
+
+```ts
+client.queryEntities({
+  query: {
+    $any: [
+      {
+        kind: 'subcomponent',
+        'spec.type': 'workflow',
+        'relations.partOf': 'component:default/content_analytics_dbt',
+      },
+      {
+        kind: 'api',
+        'spec.type': 'dataset',
+        'relations.apiProvidedBy': 'component:default/content_analytics_dbt',
+      },
+    ],
+  },
+  orderFields: [{ field: 'metadata.name', order: 'asc' }],
+  fields: ['kind', 'metadata.name', 'metadata.namespace'],
+  limit: 2000,
+  totalItems: 'exclude',
+});
+```
+
+**Reference SQL**:
+
+```sql
+SELECT final_entities.entity_id, final_entities.final_entity, search.value
+FROM search
+INNER JOIN final_entities ON final_entities.entity_id = search.entity_id
+WHERE search.key = 'metadata.name'
+  AND search.value IS NOT NULL
+  AND final_entities.final_entity IS NOT NULL
+  AND (
+    (
+      EXISTS (
+        SELECT 1 FROM search AS s
+        WHERE s.entity_id = final_entities.entity_id
+          AND s.key = 'kind' AND s.value = 'subcomponent'
+      )
+      AND EXISTS (
+        SELECT 1 FROM search AS s
+        WHERE s.entity_id = final_entities.entity_id
+          AND s.key = 'spec.type' AND s.value = 'workflow'
+      )
+      AND EXISTS (
+        SELECT 1 FROM search AS s
+        WHERE s.entity_id = final_entities.entity_id
+          AND s.key = 'relations.partof'
+          AND s.value = 'component:default/content_analytics_dbt'
+      )
+    )
+    OR
+    (
+      EXISTS (
+        SELECT 1 FROM search AS s
+        WHERE s.entity_id = final_entities.entity_id
+          AND s.key = 'kind' AND s.value = 'api'
+      )
+      AND EXISTS (
+        SELECT 1 FROM search AS s
+        WHERE s.entity_id = final_entities.entity_id
+          AND s.key = 'spec.type' AND s.value = 'dataset'
+      )
+      AND EXISTS (
+        SELECT 1 FROM search AS s
+        WHERE s.entity_id = final_entities.entity_id
+          AND s.key = 'relations.apiprovidedby'
+          AND s.value = 'component:default/content_analytics_dbt'
+      )
+    )
+  )
+ORDER BY search.value ASC, final_entities.entity_id ASC
+LIMIT 2001;
+```
+
+**Healthy plan**: Uses indexes for every lookup. Track the number of ordered
+`metadata.name` candidates inspected before the limit is satisfied, because a
+large value makes the correlated branch checks expensive. Compare the combined
+query with each branch in isolation when investigating a regression.
+
+**Anti-patterns**:
+
+- Execution time substantially higher than the two branches in isolation.
+- Tens of thousands of ordered candidates inspected to return approximately
+  2,000 rows.
+- Repeated correlated index probes for both branches on most candidates.
+
+---
+
 ## Global anti-patterns
 
 These should NEVER appear in any of the above queries:
