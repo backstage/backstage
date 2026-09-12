@@ -57,7 +57,7 @@ LIMIT 21;
 
 **Healthy plan**: Index Scan on `search_key_value_entity_idx` driving
 the query in sort order, LIMIT short-circuit after 21 rows. Execution
-time <5ms.
+time <50ms on a production-scale catalog.
 
 **Anti-patterns**:
 
@@ -100,10 +100,10 @@ WHERE search.key = 'metadata.name'
   );
 ```
 
-**Healthy plan**: Index scan on `search_key_value_entity_idx` with
-nested loop for the EXISTS filter. This is inherently expensive for
-large result sets — the execution time is the floor for any query that
-needs the count.
+**Healthy plan**: Index-backed lookups on `search`; a parallel hash join with a
+Sequential Scan on `final_entities` is also healthy for a large result set.
+This is inherently expensive because the execution time is the floor for any
+query that needs the count.
 
 **Anti-patterns**:
 
@@ -254,8 +254,9 @@ Execution time <1ms.
 
 ## 7. Full-text filter (LIKE '%player%', kind=component)
 
-**User action**: Typing in the search box on the catalog table. The
-leading wildcard prevents index-ordered short-circuiting.
+**User action**: Typing in the search box on the catalog table. The leading
+wildcard prevents an index seek for the term, but an ordered scan can still
+short-circuit after finding enough matches for the requested page.
 
 **Method call**:
 
@@ -288,9 +289,10 @@ ORDER BY search.value ASC, final_entities.entity_id ASC
 LIMIT 21;
 ```
 
-**Healthy plan**: Index Scan on `search_key_value_entity_idx` for
-`key = 'metadata.name'`, Filter for the LIKE. The LIKE cannot use an
-index (leading wildcard) but the rest of the query should be
+**Healthy plan**: Ordered Index Scan on `search_key_value_entity_idx` for
+`key = 'metadata.name'`, with the LIKE applied as a filter and LIMIT
+short-circuiting after enough matches. The LIKE cannot perform an index seek
+because of the leading wildcard, but the rest of the query should be
 index-driven.
 
 **Anti-patterns**:
@@ -428,10 +430,11 @@ Execution time <500ms.
 This scenario captures a case where each branch is fast by itself, but combining
 them with `$any` makes the ordered query substantially slower.
 
-**Method call**:
+**Catalog client call** (`catalogClient` implements `CatalogApi` and uses the
+POST predicate endpoint):
 
 ```ts
-client.queryEntities({
+catalogClient.queryEntities({
   query: {
     $any: [
       {

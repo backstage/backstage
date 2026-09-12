@@ -24,7 +24,7 @@ and compare the results to the baseline in
 
 3. **Read the previous baseline** from `baseline.md`.
 
-4. **Run each scenario** (11 total). For each one, record:
+4. **Run each scenario** (12 total). For each one, record:
 
    - Execution time
    - Planning time
