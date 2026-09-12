@@ -92,7 +92,7 @@ export async function getBitbucketServerDownloadUrl(
   const path = filepath
     ? `&path=${encodeURIComponent(decodeURIComponent(filepath))}`
     : '';
-  const at = encodeURIComponent(decodeURIComponent(branch));
+  const at = encodeURIComponent(branch);
   return `${config.apiBaseUrl}/projects/${project}/repos/${repoName}/archive?format=tgz&at=${at}&prefix=${project}-${repoName}${path}`;
 }
 
