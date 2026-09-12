@@ -189,15 +189,18 @@ describe('<TechDocsReaderContent />', () => {
       <Wrapper>
         <TechDocsReaderContent />
       </Wrapper>,
+      {
+        components: {
+          NotFoundErrorPage: () => <span>Custom not found page</span>,
+        },
+      },
     );
 
     await waitFor(() => {
       expect(
         rendered.queryByTestId('techdocs-native-shadowroot'),
       ).not.toBeInTheDocument();
-      expect(
-        rendered.getByText('ERROR 404: Documentation not found'),
-      ).toBeInTheDocument();
+      expect(rendered.getByText('Custom not found page')).toBeInTheDocument();
     });
   });
 

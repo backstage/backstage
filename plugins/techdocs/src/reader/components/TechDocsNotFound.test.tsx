@@ -47,12 +47,16 @@ jest.mock('react-router-dom', () => {
 });
 
 describe('<TechDocsNotFound />', () => {
-  it('should render with status code, status message and go back link', async () => {
-    await renderInTestApp(<TechDocsNotFound />);
-    screen.getByText(/Documentation not found/i);
-    screen.getByText(/404/i);
-    screen.getByText(/Looks like someone dropped the mic!/i);
-    expect(screen.getByTestId('go-back-link')).toBeDefined();
+  it("should render the app's overridable NotFoundErrorPage component", async () => {
+    await renderInTestApp(<TechDocsNotFound />, {
+      components: {
+        NotFoundErrorPage: () => <span>Custom not found page</span>,
+      },
+    });
+
+    expect(
+      await screen.findByText('Custom not found page'),
+    ).toBeInTheDocument();
   });
 
   it('should trigger analytics event not-found', async () => {
@@ -62,6 +66,11 @@ describe('<TechDocsNotFound />', () => {
       <TestApiProvider apis={[[analyticsApiRef, mockAnalyticsApi]]}>
         <TechDocsNotFound />
       </TestApiProvider>,
+      {
+        components: {
+          NotFoundErrorPage: () => <span>Custom not found page</span>,
+        },
+      },
     );
 
     await waitFor(() => {
@@ -76,17 +85,5 @@ describe('<TechDocsNotFound />', () => {
         context: expect.anything(),
       });
     });
-  });
-});
-
-describe('<TechDocsNotFound errorMessage="This is a custom error message" />', () => {
-  it('should render with a 404 code, custom error message and go back link', async () => {
-    await renderInTestApp(
-      <TechDocsNotFound errorMessage="This is a custom error message" />,
-    );
-    screen.getByText(/This is a custom error message/i);
-    screen.getByText(/404/i);
-    screen.getByText(/Looks like someone dropped the mic!/i);
-    expect(screen.getByTestId('go-back-link')).toBeDefined();
   });
 });
