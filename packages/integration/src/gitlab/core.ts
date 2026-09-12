@@ -101,7 +101,7 @@ function buildProjectUrl(
       'raw',
     ].join('/');
 
-    url.search = `?ref=${branch}`;
+    url.search = `?ref=${encodeURIComponent(decodeURIComponent(branch))}`;
 
     return url;
   } catch (e) {
