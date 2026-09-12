@@ -26,6 +26,7 @@ import { SerializedError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { createHash } from 'node:crypto';
 import stableStringify from 'fast-json-stable-stringify';
+import { z } from 'zod/v3';
 import { DbFinalEntitiesRow, DbStitchQueueRow } from '../../tables';
 import { buildEntitySearch } from './buildEntitySearch';
 import { markDeferredStitchCompleted } from './markDeferredStitchCompleted';
@@ -42,6 +43,15 @@ function generateStableHash(entity: Entity) {
 const scriptProtocolPattern =
   // eslint-disable-next-line no-control-regex
   /^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*\:/i;
+
+const processedEntitySchema = z.object({
+  apiVersion: z.string(),
+  kind: z.string(),
+  metadata: z.object({
+    name: z.string(),
+    annotations: z.record(z.string()).optional(),
+  }),
+});
 
 /**
  * Performs the act of stitching - to take all of the various outputs from the
@@ -133,7 +143,26 @@ export async function performStitching(options: {
 
     // Grab the processed entity and stitch all of the relevant data into
     // it
-    const entity = JSON.parse(processedEntity) as AlphaEntity;
+
+    const parsedEntity = (() => {
+      try {
+        return JSON.parse(processedEntity);
+      } catch (e) {
+        throw new Error(
+          `Failed to parse processed_entity column for ${entityRef} (${entityId}): ${
+            (e as Error).message
+          }`,
+        );
+      }
+    })();
+
+    const result = processedEntitySchema.safeParse(parsedEntity);
+    if (!result.success) {
+      throw new Error(
+        `Unexpected entity shape found in processed_entity column for ${entityRef} (${entityId})`,
+      );
+    }
+    const entity = parsedEntity as AlphaEntity;
     const isOrphan = Number(incomingReferenceCount) === 0;
     let statusItems: EntityStatusItem[] = [];
 

@@ -434,6 +434,62 @@ describe.each(databases.eachSupportedId())(
       const freshEntity = JSON.parse(afterFresh[0].final_entity!);
       expect(freshEntity.spec).toEqual({ original: false, stale: true });
     });
+
+    it('throws an error if the processed entity is malformed', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+
+      await knex<DbRefreshStateRow>('refresh_state').insert([
+        {
+          entity_id: 'my-id',
+          entity_ref: 'k:ns/n',
+          unprocessed_entity: JSON.stringify({}),
+          processed_entity: 'null', // simulate unexpected entity shape from database
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+        },
+      ]);
+
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+
+      const stitchLogger = mockServices.logger.mock();
+
+      await expect(
+        performStitching({
+          knex,
+          logger: stitchLogger,
+          entityRef: 'k:ns/n',
+          stitchTicket: await getStitchTicket(knex, 'k:ns/n'),
+        }),
+      ).rejects.toThrow(
+        'Unexpected entity shape found in processed_entity column',
+      );
+    });
+    it('throws an error if the processed entity JSON is invalid', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+      await knex<DbRefreshStateRow>('refresh_state').insert([
+        {
+          entity_id: 'my-id',
+          entity_ref: 'k:ns/n',
+          unprocessed_entity: JSON.stringify({}),
+          processed_entity: '{', // invalid JSON
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+        },
+      ]);
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+      await expect(
+        performStitching({
+          knex,
+          logger: mockServices.logger.mock(),
+          entityRef: 'k:ns/n',
+          stitchTicket: await getStitchTicket(knex, 'k:ns/n'),
+        }),
+      ).rejects.toThrow('Failed to parse processed_entity column');
+    });
   },
 );
 
