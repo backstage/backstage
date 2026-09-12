@@ -27,6 +27,7 @@ import { TechDocsStateIndicator } from '../TechDocsStateIndicator';
 import { withTechDocsReaderProvider } from '../TechDocsReaderProvider';
 import { TechDocsReaderPageContentAddons } from './TechDocsReaderPageContentAddons';
 import { useTechDocsReaderContentData } from '../../../hooks/useTechDocsReaderContentData';
+import type { TechDocsReaderLayout } from '../../TechDocsReaderLayout';
 
 const useStyles = makeStyles({
   search: {
@@ -72,12 +73,13 @@ export type TechDocsReaderPageContentProps = {
   onReady?: () => void;
 };
 
-/**
- * Renders the reader page content
- * @public
- */
-export const TechDocsReaderPageContent = withTechDocsReaderProvider(
-  (props: TechDocsReaderPageContentProps) => {
+/** @internal */
+export const TechDocsReaderPageContentInternal = withTechDocsReaderProvider(
+  (
+    props: TechDocsReaderPageContentProps & {
+      layout: TechDocsReaderLayout;
+    },
+  ) => {
     const { withSearch = true, searchResultUrlMapper } = props;
     const classes = useStyles();
 
@@ -93,7 +95,7 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
     } = useTechDocsReaderContentData({
       defaultPath: props.defaultPath,
       onReady: props.onReady,
-      layout: 'legacy',
+      layout: props.layout,
     });
 
     if (isNotFound) return <NotFoundErrorPage />;
@@ -137,6 +139,14 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
     );
   },
 );
+
+/**
+ * Renders the reader page content
+ * @public
+ */
+export const TechDocsReaderPageContent = (
+  props: TechDocsReaderPageContentProps,
+) => <TechDocsReaderPageContentInternal {...props} layout="legacy" />;
 
 /**
  * Props for {@link Reader}

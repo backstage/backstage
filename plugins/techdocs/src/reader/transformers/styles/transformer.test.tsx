@@ -68,6 +68,19 @@ describe('Transformers > Styles', () => {
     expect(style).toHaveTextContent('var(--bui-header-height, 0px)');
   });
 
+  it('resets the BUI mobile drawer to the top of its viewport', () => {
+    const { result } = renderHook(() => useStylesTransformer('bui'));
+
+    const dom = document.createElement('html');
+    dom.innerHTML = '<head></head>';
+    result.current(dom);
+
+    const styles = dom.querySelector('head > style')?.textContent;
+    expect(styles).toMatch(
+      /BUI Layout[\s\S]*max-width: 76\.1875em[\s\S]*\.md-sidebar \{[\s\S]*top: 0;/,
+    );
+  });
+
   it('should use headers relative font-size value as the factor for the md-typeset variable', () => {
     const theme = createTheme({
       typography: {

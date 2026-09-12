@@ -23,9 +23,10 @@ import { TECHDOCS_EXTERNAL_ANNOTATION } from '@backstage/plugin-techdocs-common'
 import { getEntityRootTechDocsPath } from '@backstage/plugin-techdocs-react';
 
 import { TechDocsReaderPage } from './plugin';
-import { TechDocsReaderPageContent } from './reader/components/TechDocsReaderPageContent';
+import { TechDocsReaderPageContentInternal } from './reader/components/TechDocsReaderPageContent/TechDocsReaderPageContent';
 import { TechDocsReaderPageSubheader } from './reader/components/TechDocsReaderPageSubheader';
 import { useEntityPageTechDocsRedirect } from './search/hooks/useTechDocsLocation';
+import type { TechDocsReaderLayout } from './reader/TechDocsReaderLayout';
 
 type EntityPageDocsProps = {
   entity: Entity;
@@ -33,11 +34,13 @@ type EntityPageDocsProps = {
    * Show or hide the content search bar, defaults to true.
    */
   withSearch?: boolean;
+  layout: TechDocsReaderLayout;
 };
 
 export const EntityPageDocs = ({
   entity,
   withSearch = true,
+  layout,
 }: EntityPageDocsProps) => {
   let entityRef = getCompoundEntityRef(entity);
 
@@ -58,10 +61,11 @@ export const EntityPageDocs = ({
   return (
     <TechDocsReaderPage entityRef={entityRef}>
       <TechDocsReaderPageSubheader />
-      <TechDocsReaderPageContent
+      <TechDocsReaderPageContentInternal
         withSearch={withSearch}
         searchResultUrlMapper={searchResultUrlMapper}
         defaultPath={defaultPath}
+        layout={layout}
       />
     </TechDocsReaderPage>
   );

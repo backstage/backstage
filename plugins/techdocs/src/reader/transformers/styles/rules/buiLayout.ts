@@ -65,4 +65,10 @@ export const buiLayout = `
     margin-left: 0;
   }
 }
+
+@media screen and (max-width: 76.1875em) {
+  .md-sidebar {
+    top: 0;
+  }
+}
 `;
