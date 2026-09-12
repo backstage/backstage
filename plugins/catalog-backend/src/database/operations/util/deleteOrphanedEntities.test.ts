@@ -23,7 +23,16 @@ import {
   DbRefreshStateRow,
   DbRelationsRow,
 } from '../../tables';
+import { markForStitching } from '../stitcher/markForStitching';
 import { deleteOrphanedEntities } from './deleteOrphanedEntities';
+
+jest.mock('../stitcher/markForStitching', () => {
+  const actual = jest.requireActual('../stitcher/markForStitching');
+  return {
+    ...actual,
+    markForStitching: jest.fn(actual.markForStitching),
+  };
+});
 
 jest.setTimeout(60_000);
 
@@ -128,6 +137,79 @@ describe.each(databases.eachSupportedId())(
           next_stitch_at: 'stitch_queue.next_stitch_at',
         });
     }
+
+    it('discovers orphan candidates with a narrow CTE', async () => {
+      const knex = await createDatabase();
+      await insertEntity(knex, 'E1');
+      await insertReference(knex, {
+        source_key: 'P1',
+        target_entity_ref: 'E1',
+      });
+
+      const queries: string[] = [];
+      const onQuery = (query: { sql: string }) => queries.push(query.sql);
+      knex.on('query', onQuery);
+      try {
+        await expect(run(knex)).resolves.toEqual(0);
+      } finally {
+        knex.off('query', onQuery);
+      }
+
+      const candidateQueries = queries.filter(query =>
+        query.includes('orphan_refs'),
+      );
+      expect(candidateQueries).toHaveLength(1);
+
+      const expectedCte = knex.client.config.client.includes('pg')
+        ? 'with "orphan_refs"("entity_ref") as materialized ' +
+          '(select "refresh_state"."entity_ref" from "refresh_state"'
+        : 'with `orphan_refs`(`entity_ref`) as ' +
+          '(select `refresh_state`.`entity_ref` from `refresh_state`';
+      expect(candidateQueries[0]).toContain(expectedCte);
+    });
+
+    it('rechecks orphan status in the deletion statement', async () => {
+      const knex = await createDatabase();
+      await insertEntity(knex, 'E1');
+
+      const queries: string[] = [];
+      const onQuery = (query: { sql: string }) => queries.push(query.sql);
+      knex.on('query', onQuery);
+      try {
+        await expect(run(knex)).resolves.toEqual(1);
+      } finally {
+        knex.off('query', onQuery);
+      }
+
+      const deletionQuery = queries.find(
+        query => query.startsWith('delete from') && query.includes('entity_id'),
+      );
+      expect(deletionQuery).toMatch(/not exists/);
+      expect(deletionQuery).toMatch(
+        /target_entity_ref.*refresh_state.*entity_ref/,
+      );
+    });
+
+    it('rolls back deletion when affected entities cannot be marked', async () => {
+      const knex = await createDatabase();
+      await insertEntity(knex, 'E1', 'E2');
+      await insertReference(knex, {
+        source_key: 'P1',
+        target_entity_ref: 'E2',
+      });
+      await insertRelation(knex, 'E2', 'E1');
+
+      jest
+        .mocked(markForStitching)
+        .mockRejectedValueOnce(new Error('stitching failed'));
+      await expect(deleteOrphanedEntities({ knex })).rejects.toThrow(
+        'stitching failed',
+      );
+      await expect(refreshState(knex)).resolves.toEqual([
+        { entity_ref: 'E1', result_hash: 'original' },
+        { entity_ref: 'E2', result_hash: 'original' },
+      ]);
+    });
 
     it('works for some mixed paths', async () => {
       /*

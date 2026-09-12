@@ -52,6 +52,14 @@ it('runs the search entity ID statistics migration without a transaction wrapper
   expect(migration.config).toEqual({ transaction: false });
 });
 
+it('runs the refresh state maintenance migration without a transaction wrapper', () => {
+  const migration = jest.requireActual<{
+    config?: { transaction?: boolean };
+  }>('../../migrations/20260912000000_refresh_state_maintenance');
+
+  expect(migration.config).toEqual({ transaction: false });
+});
+
 describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
   it('latest version correctly cascades deletions', async () => {
     const knex = await databases.init(databaseId);
@@ -1555,5 +1563,58 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
 
     await migrateDownOnce(knex);
     expect((await readNdistinct()).option).toBe(isPg ? -1 : undefined);
+  });
+
+  it('20260912000000_refresh_state_maintenance.js', async () => {
+    const knex = await databases.init(databaseId);
+    const client = knex.client.config.client;
+    const isPg = typeof client === 'string' && client.includes('pg');
+
+    await migrateUntilBefore(
+      knex,
+      '20260912000000_refresh_state_maintenance.js',
+    );
+
+    await knex('refresh_state').insert({
+      entity_id: 'e1',
+      entity_ref: 'k:ns/n1',
+      unprocessed_entity: '{}',
+      errors: '[]',
+      next_update_at: knex.fn.now(),
+      last_discovery_at: knex.fn.now(),
+    });
+
+    async function hasAutovacuumOptions(): Promise<boolean> {
+      if (!isPg) return false;
+      const result = await knex.raw(
+        `SELECT reloptions FROM pg_class WHERE oid = 'refresh_state'::regclass`,
+      );
+      const options: string[] | null = result.rows[0]?.reloptions;
+      return (
+        !!options &&
+        options.includes('autovacuum_vacuum_scale_factor=0.01') &&
+        options.includes('autovacuum_analyze_scale_factor=0.01')
+      );
+    }
+
+    async function estimatedRows(): Promise<number | undefined> {
+      if (!isPg) return undefined;
+      const result = await knex.raw(
+        `SELECT reltuples::bigint AS rows
+         FROM pg_class
+         WHERE oid = 'refresh_state'::regclass`,
+      );
+      return Number(result.rows[0]?.rows);
+    }
+
+    expect(await hasAutovacuumOptions()).toBe(false);
+    expect(await estimatedRows()).not.toBe(1);
+
+    await migrateUpOnce(knex);
+    expect(await hasAutovacuumOptions()).toBe(isPg);
+    expect(await estimatedRows()).toBe(isPg ? 1 : undefined);
+
+    await migrateDownOnce(knex);
+    expect(await hasAutovacuumOptions()).toBe(false);
   });
 });
