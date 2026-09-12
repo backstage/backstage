@@ -92,7 +92,8 @@ export async function getBitbucketServerDownloadUrl(
   const path = filepath
     ? `&path=${encodeURIComponent(decodeURIComponent(filepath))}`
     : '';
-  return `${config.apiBaseUrl}/projects/${project}/repos/${repoName}/archive?format=tgz&at=${branch}&prefix=${project}-${repoName}${path}`;
+  const at = encodeURIComponent(decodeURIComponent(branch));
+  return `${config.apiBaseUrl}/projects/${project}/repos/${repoName}/archive?format=tgz&at=${at}&prefix=${project}-${repoName}${path}`;
 }
 
 /**
@@ -126,7 +127,8 @@ export function getBitbucketServerFileFetchUrl(
     }
 
     const pathWithoutSlash = filepath.replace(/^\//, '');
-    return `${config.apiBaseUrl}/projects/${owner}/repos/${name}/raw/${pathWithoutSlash}?at=${ref}`;
+    const at = encodeURIComponent(decodeURIComponent(ref));
+    return `${config.apiBaseUrl}/projects/${owner}/repos/${name}/raw/${pathWithoutSlash}?at=${at}`;
   } catch (e) {
     throw new Error(`Incorrect URL: ${url}, ${e}`);
   }
