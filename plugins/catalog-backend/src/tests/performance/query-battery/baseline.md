@@ -1,5 +1,9 @@
 # Query Performance Baseline
 
+Readable representative `EXPLAIN (ANALYZE, BUFFERS)` output is recorded in
+[`plans.md`](./plans.md), with the exact canonical final-run JSON output in
+[`plans.json`](./plans.json).
+
 **Date**: 2026-09-12
 **Database**: Production-scale staging replica
 **Catalog size**: ~739K `final_entities`, ~21.9M planner-estimated `search`

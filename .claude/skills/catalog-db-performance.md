@@ -8,7 +8,11 @@ description: Run the catalog query performance battery against a database replic
 Run the query performance battery defined in
 `plugins/catalog-backend/src/tests/performance/query-battery/queries.md`
 and compare the results to the baseline in
-`plugins/catalog-backend/src/tests/performance/query-battery/baseline.md`.
+`plugins/catalog-backend/src/tests/performance/query-battery/baseline.md` and
+the full representative plans in
+`plugins/catalog-backend/src/tests/performance/query-battery/plans.md`, with
+exact machine-diffable output in
+`plugins/catalog-backend/src/tests/performance/query-battery/plans.json`.
 
 ## Steps
 
@@ -22,7 +26,8 @@ and compare the results to the baseline in
    isn't practical, run the reference SQL directly with
    `EXPLAIN (ANALYZE, BUFFERS)` via `psql`.
 
-3. **Read the previous baseline** from `baseline.md`.
+3. **Read the previous baseline** from `baseline.md`, its readable full plans
+   from `plans.md`, and its exact plan output from `plans.json`.
 
 4. **Run each scenario** (12 total). For each one, record:
 
@@ -41,8 +46,11 @@ and compare the results to the baseline in
    - Note: catalog size differences affect absolute timings. Focus on
      plan shape changes and proportional regressions.
 
-6. **Update `baseline.md`** with the new results. Keep the same format.
-   Add a comparison section at the bottom noting significant changes.
+6. **Update `baseline.md`** with the new results, `plans.md` with one readable
+   representative `EXPLAIN (ANALYZE, BUFFERS)` output per scenario, and
+   `plans.json` with the exact final measured plans. Keep the same format. Add
+   a comparison section at the bottom noting significant changes in execution
+   time, estimates, plan choices, and buffer work.
 
 7. **Report** a summary to the user: which scenarios improved, which
    regressed, and whether any global anti-patterns were detected.

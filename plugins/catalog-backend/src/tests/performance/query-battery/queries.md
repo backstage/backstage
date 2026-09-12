@@ -18,7 +18,9 @@ production-scale replica using `psql`. The SQL is a snapshot of what the
 code produced at the time of writing — verify it still matches before
 drawing conclusions.
 
-Record execution time, plan shape, and buffer usage in `baseline.md`.
+Record execution time, plan shape, and buffer usage in `baseline.md`. Keep one
+readable representative full plan per scenario in `plans.md` and the exact
+machine-diffable final-run output in `plans.json`.
 
 ---
 
