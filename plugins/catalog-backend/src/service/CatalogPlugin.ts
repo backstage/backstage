@@ -287,6 +287,7 @@ export const catalogPlugin = createBackendPlugin({
         createCatalogActions({
           catalog,
           actionsRegistry,
+          permissions,
           modelHolder,
           useExperimentalCatalogLayersDescriptions:
             config.getOptionalBoolean(

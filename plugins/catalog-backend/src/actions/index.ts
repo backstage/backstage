@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { PermissionsService } from '@backstage/backend-plugin-api';
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { CatalogService } from '@backstage/plugin-catalog-node';
 import { ModelHolder } from '../model/ModelHolder';
@@ -29,6 +30,7 @@ export const createCatalogActions = (options: {
   actionsRegistry: ActionsRegistryService;
   catalog: CatalogService;
   modelHolder: ModelHolder | undefined;
+  permissions: PermissionsService;
   useExperimentalCatalogLayersDescriptions?: boolean;
 }) => {
   createGetCatalogModelDescriptionAction(options);

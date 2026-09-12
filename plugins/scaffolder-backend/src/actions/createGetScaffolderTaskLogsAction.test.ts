@@ -14,11 +14,22 @@
  * limitations under the License.
  */
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
+import { mockServices } from '@backstage/backend-test-utils';
 import { scaffolderServiceMock } from '@backstage/plugin-scaffolder-node/testUtils';
 import { LogEvent } from '@backstage/plugin-scaffolder-common';
 import { createGetScaffolderTaskLogsAction } from './createGetScaffolderTaskLogsAction';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { NotAllowedError } from '@backstage/errors';
 
 describe('createGetScaffolderTaskLogsAction', () => {
+  let permissions: ReturnType<typeof mockServices.permissions.mock>;
+
+  beforeEach(() => {
+    permissions = mockServices.permissions.mock({
+      authorizeConditional: async () => [{ result: AuthorizeResult.ALLOW }],
+    });
+  });
+
   it('should return log events for a task', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const mockScaffolderService = scaffolderServiceMock.mock();
@@ -52,6 +63,7 @@ describe('createGetScaffolderTaskLogsAction', () => {
     createGetScaffolderTaskLogsAction({
       actionsRegistry: mockActionsRegistry,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     const result = await mockActionsRegistry.invoke({
@@ -111,6 +123,7 @@ describe('createGetScaffolderTaskLogsAction', () => {
     createGetScaffolderTaskLogsAction({
       actionsRegistry: mockActionsRegistry,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     const result = await mockActionsRegistry.invoke({
@@ -136,6 +149,7 @@ describe('createGetScaffolderTaskLogsAction', () => {
     createGetScaffolderTaskLogsAction({
       actionsRegistry: mockActionsRegistry,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     await expect(
@@ -144,5 +158,27 @@ describe('createGetScaffolderTaskLogsAction', () => {
         input: { taskId: 'task-3' },
       }),
     ).rejects.toThrow('Internal Server Error');
+  });
+
+  it('does not fetch logs when task read permission is denied', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    const mockScaffolderService = scaffolderServiceMock.mock();
+    permissions.authorizeConditional.mockResolvedValue([
+      { result: AuthorizeResult.DENY },
+    ]);
+
+    createGetScaffolderTaskLogsAction({
+      actionsRegistry: mockActionsRegistry,
+      scaffolderService: mockScaffolderService,
+      permissions,
+    });
+
+    await expect(
+      mockActionsRegistry.invoke({
+        id: 'test:get-scaffolder-task-logs',
+        input: { taskId: 'task-3' },
+      }),
+    ).rejects.toThrow(NotAllowedError);
+    expect(mockScaffolderService.getLogs).not.toHaveBeenCalled();
   });
 });

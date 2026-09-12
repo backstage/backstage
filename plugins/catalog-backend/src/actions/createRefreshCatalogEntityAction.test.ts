@@ -16,8 +16,21 @@
 import { createRefreshCatalogEntityAction } from './createRefreshCatalogEntityAction';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
+import { mockServices } from '@backstage/backend-test-utils';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { NotAllowedError, NotFoundError } from '@backstage/errors';
 
 describe('createRefreshCatalogEntityAction', () => {
+  let permissions: ReturnType<typeof mockServices.permissions.mock>;
+
+  beforeEach(() => {
+    permissions = mockServices.permissions.mock({
+      authorizeConditional: async () => [
+        { result: AuthorizeResult.ALLOW },
+        { result: AuthorizeResult.ALLOW },
+      ],
+    });
+  });
   const componentEntity = {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Component',
@@ -45,6 +58,7 @@ describe('createRefreshCatalogEntityAction', () => {
     createRefreshCatalogEntityAction({
       catalog: mockCatalog,
       actionsRegistry: mockActionsRegistry,
+      permissions,
     });
 
     const result = await mockActionsRegistry.invoke({
@@ -71,6 +85,7 @@ describe('createRefreshCatalogEntityAction', () => {
     createRefreshCatalogEntityAction({
       catalog: mockCatalog,
       actionsRegistry: mockActionsRegistry,
+      permissions,
     });
 
     const result = await mockActionsRegistry.invoke({
@@ -95,6 +110,7 @@ describe('createRefreshCatalogEntityAction', () => {
     createRefreshCatalogEntityAction({
       catalog: mockCatalog,
       actionsRegistry: mockActionsRegistry,
+      permissions,
     });
 
     const result = await mockActionsRegistry.invoke({
@@ -109,7 +125,7 @@ describe('createRefreshCatalogEntityAction', () => {
     );
   });
 
-  it('throws when no entity matches the name', async () => {
+  it('throws NotFoundError when no entity matches the name', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const mockCatalog = catalogServiceMock({ entities: [] });
     const refreshSpy = jest.spyOn(mockCatalog, 'refreshEntity');
@@ -117,6 +133,7 @@ describe('createRefreshCatalogEntityAction', () => {
     createRefreshCatalogEntityAction({
       catalog: mockCatalog,
       actionsRegistry: mockActionsRegistry,
+      permissions,
     });
 
     await expect(
@@ -124,7 +141,10 @@ describe('createRefreshCatalogEntityAction', () => {
         id: 'test:refresh-catalog-entity',
         input: { name: 'missing-entity' },
       }),
-    ).rejects.toThrow(`No entity found with name "missing-entity"`);
+    ).rejects.toMatchObject({
+      name: 'NotFoundError',
+      message: `No entity found with name "missing-entity"`,
+    } satisfies Partial<NotFoundError>);
 
     expect(refreshSpy).not.toHaveBeenCalled();
   });
@@ -139,6 +159,7 @@ describe('createRefreshCatalogEntityAction', () => {
     createRefreshCatalogEntityAction({
       catalog: mockCatalog,
       actionsRegistry: mockActionsRegistry,
+      permissions,
     });
 
     await expect(
@@ -163,6 +184,7 @@ describe('createRefreshCatalogEntityAction', () => {
     createRefreshCatalogEntityAction({
       catalog: mockCatalog,
       actionsRegistry: mockActionsRegistry,
+      permissions,
     });
 
     await expect(
@@ -171,5 +193,121 @@ describe('createRefreshCatalogEntityAction', () => {
         input: { name: 'orders-api' },
       }),
     ).rejects.toThrow('processor unavailable');
+  });
+
+  it('rejects denied refresh permission before looking up the entity', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    const mockCatalog = catalogServiceMock({ entities: [componentEntity] });
+    const querySpy = jest.spyOn(mockCatalog, 'queryEntities');
+    const refreshSpy = jest.spyOn(mockCatalog, 'refreshEntity');
+    permissions.authorizeConditional.mockResolvedValue([
+      { result: AuthorizeResult.DENY },
+      { result: AuthorizeResult.ALLOW },
+    ]);
+
+    createRefreshCatalogEntityAction({
+      catalog: mockCatalog,
+      actionsRegistry: mockActionsRegistry,
+      permissions,
+    });
+
+    await expect(
+      mockActionsRegistry.invoke({
+        id: 'test:refresh-catalog-entity',
+        input: { name: 'orders-api' },
+      }),
+    ).rejects.toThrow(NotAllowedError);
+
+    expect(permissions.authorizeConditional).toHaveBeenCalledWith(
+      [
+        {
+          permission: expect.objectContaining({
+            name: 'catalog.entity.refresh',
+          }),
+        },
+        {
+          permission: expect.objectContaining({ name: 'catalog.entity.read' }),
+        },
+      ],
+      { credentials: expect.any(Object) },
+    );
+    expect(querySpy).not.toHaveBeenCalled();
+    expect(refreshSpy).not.toHaveBeenCalled();
+  });
+
+  it('rejects denied read permission before looking up the entity', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    const mockCatalog = catalogServiceMock({ entities: [componentEntity] });
+    const querySpy = jest.spyOn(mockCatalog, 'queryEntities');
+    const refreshSpy = jest.spyOn(mockCatalog, 'refreshEntity');
+    permissions.authorizeConditional.mockResolvedValue([
+      { result: AuthorizeResult.ALLOW },
+      { result: AuthorizeResult.DENY },
+    ]);
+
+    createRefreshCatalogEntityAction({
+      catalog: mockCatalog,
+      actionsRegistry: mockActionsRegistry,
+      permissions,
+    });
+
+    await expect(
+      mockActionsRegistry.invoke({
+        id: 'test:refresh-catalog-entity',
+        input: { name: 'orders-api' },
+      }),
+    ).rejects.toMatchObject({
+      name: 'NotFoundError',
+      message: 'No entity found with name "orders-api"',
+    } satisfies Partial<NotFoundError>);
+
+    expect(querySpy).not.toHaveBeenCalled();
+    expect(refreshSpy).not.toHaveBeenCalled();
+  });
+
+  it('checks conditional refresh permission for the resolved entity', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    const mockCatalog = catalogServiceMock({ entities: [componentEntity] });
+    const refreshSpy = jest.spyOn(mockCatalog, 'refreshEntity');
+    permissions.authorizeConditional.mockResolvedValue([
+      {
+        result: AuthorizeResult.CONDITIONAL,
+        pluginId: 'catalog',
+        resourceType: 'catalog-entity',
+        conditions: {
+          resourceType: 'catalog-entity',
+          rule: 'IS_ENTITY_OWNER',
+          params: { claims: ['group:default/team-a'] },
+        },
+      },
+      { result: AuthorizeResult.ALLOW },
+    ]);
+    permissions.authorize.mockResolvedValue([{ result: AuthorizeResult.DENY }]);
+
+    createRefreshCatalogEntityAction({
+      catalog: mockCatalog,
+      actionsRegistry: mockActionsRegistry,
+      permissions,
+    });
+
+    await expect(
+      mockActionsRegistry.invoke({
+        id: 'test:refresh-catalog-entity',
+        input: { name: 'orders-api' },
+      }),
+    ).rejects.toThrow(NotAllowedError);
+
+    expect(permissions.authorize).toHaveBeenCalledWith(
+      [
+        {
+          permission: expect.objectContaining({
+            name: 'catalog.entity.refresh',
+          }),
+          resourceRef: 'component:default/orders-api',
+        },
+      ],
+      { credentials: expect.any(Object) },
+    );
+    expect(refreshSpy).not.toHaveBeenCalled();
   });
 });

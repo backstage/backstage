@@ -16,6 +16,7 @@
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import yaml from 'yaml';
 import { CatalogService } from '@backstage/plugin-catalog-node';
+import { catalogEntityValidatePermission } from '@backstage/plugin-catalog-common/alpha';
 
 export const createValidateEntityAction = (options: {
   actionsRegistry: ActionsRegistryService;
@@ -34,6 +35,7 @@ export const createValidateEntityAction = (options: {
       idempotent: true,
       destructive: false,
     },
+    visibilityPermission: catalogEntityValidatePermission,
     schema: {
       input: z =>
         z.object({

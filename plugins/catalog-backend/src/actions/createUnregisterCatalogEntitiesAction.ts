@@ -13,16 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { PermissionsService } from '@backstage/backend-plugin-api';
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { NotFoundError } from '@backstage/errors';
+import {
+  catalogLocationDeletePermission,
+  catalogLocationReadPermission,
+} from '@backstage/plugin-catalog-common/alpha';
 import { CatalogService } from '@backstage/plugin-catalog-node';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 export const createUnregisterCatalogEntitiesAction = ({
   catalog,
   actionsRegistry,
+  permissions,
 }: {
   catalog: CatalogService;
   actionsRegistry: ActionsRegistryService;
+  permissions: PermissionsService;
 }) => {
   actionsRegistry.register({
     name: 'unregister-entity',
@@ -32,6 +40,7 @@ export const createUnregisterCatalogEntitiesAction = ({
       readOnly: false,
       idempotent: true,
     },
+    visibilityPermission: catalogLocationDeletePermission,
     description: `Unregisters a Location entity and all entities it owns from the Backstage catalog.
 
 This action is similar to the "Unregister location" function in the Backstage UI, where you provide the unique identifier (locationId) of a Location entity. Alternatively, you can provide the URL used to register the location. The action will remove the specified Location from the catalog as well as all entities that were created when the Location was imported.
@@ -68,6 +77,16 @@ Once completed, all entities associated with the Location will be deleted from t
           credentials,
         });
       } else {
+        // Looking up a location by URL requires read permission in addition to
+        // the registry-enforced location deletion permission.
+        const [readDecision] = await permissions.authorize(
+          [{ permission: catalogLocationReadPermission }],
+          { credentials },
+        );
+        if (readDecision.result !== AuthorizeResult.ALLOW) {
+          throw new NotFoundError('No matching location found');
+        }
+
         const locations = await catalog
           .getLocations(
             {},

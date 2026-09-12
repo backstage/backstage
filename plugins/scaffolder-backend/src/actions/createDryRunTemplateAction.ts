@@ -13,9 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { PermissionsService } from '@backstage/backend-plugin-api';
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
-import { templateDryRunPermission } from '@backstage/plugin-scaffolder-common/alpha';
+import { NotAllowedError } from '@backstage/errors';
+import {
+  taskCreatePermission,
+  templateDryRunPermission,
+} from '@backstage/plugin-scaffolder-common/alpha';
 import { ScaffolderService } from '@backstage/plugin-scaffolder-node';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { JsonObject } from '@backstage/types';
 import yaml from 'yaml';
 
@@ -31,9 +37,11 @@ function base64EncodeContent(content: string): string {
 export const createDryRunTemplateAction = ({
   actionsRegistry,
   scaffolderService,
+  permissions,
 }: {
   actionsRegistry: ActionsRegistryService;
   scaffolderService: ScaffolderService;
+  permissions: PermissionsService;
 }) => {
   actionsRegistry.register({
     name: 'dry-run-template',
@@ -107,6 +115,16 @@ export const createDryRunTemplateAction = ({
         }),
     },
     action: async ({ input, credentials }) => {
+      // The action registry enforces dry-run permission, while the operation
+      // also requires task creation permission.
+      const [createDecision] = await permissions.authorize(
+        [{ permission: taskCreatePermission }],
+        { credentials },
+      );
+      if (createDecision.result !== AuthorizeResult.ALLOW) {
+        throw new NotAllowedError();
+      }
+
       const { templateYaml, values = {}, files = [] } = input;
 
       let template;

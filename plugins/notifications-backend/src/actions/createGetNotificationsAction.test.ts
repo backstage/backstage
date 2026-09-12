@@ -194,7 +194,7 @@ describe('createGetNotificationsAction', () => {
     );
   });
 
-  it('throws InputError when called without user credentials', async () => {
+  it('throws NotAllowedError when called without user credentials', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const store = createMockStore();
 

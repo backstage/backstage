@@ -20,8 +20,17 @@ import { ScaffolderTask } from '@backstage/plugin-scaffolder-common';
 import { scaffolderServiceMock } from '@backstage/plugin-scaffolder-node/testUtils';
 import { createListScaffolderTasksAction } from './listScaffolderTasksAction';
 import { ListTasksResponse } from '../schema/openapi/generated/models/ListTasksResponse.model';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 describe('createListScaffolderTasksAction', () => {
+  let permissions: ReturnType<typeof mockServices.permissions.mock>;
+
+  beforeEach(() => {
+    permissions = mockServices.permissions.mock({
+      authorizeConditional: async () => [{ result: AuthorizeResult.ALLOW }],
+    });
+  });
+
   it('should list tasks successfully', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const mockAuth = mockServices.auth.mock();
@@ -43,6 +52,7 @@ describe('createListScaffolderTasksAction', () => {
       actionsRegistry: mockActionsRegistry,
       auth: mockAuth,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     const result = await mockActionsRegistry.invoke({
@@ -103,6 +113,7 @@ describe('createListScaffolderTasksAction', () => {
       actionsRegistry: mockActionsRegistry,
       auth: mockAuth,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     const result = await mockActionsRegistry.invoke({
@@ -142,6 +153,7 @@ describe('createListScaffolderTasksAction', () => {
       actionsRegistry: mockActionsRegistry,
       auth: mockAuth,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     await expect(
@@ -180,6 +192,7 @@ describe('createListScaffolderTasksAction', () => {
       actionsRegistry: mockActionsRegistry,
       auth: mockAuth,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     await mockActionsRegistry.invoke({
@@ -216,6 +229,7 @@ describe('createListScaffolderTasksAction', () => {
       actionsRegistry: mockActionsRegistry,
       auth: mockAuth,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     const result = await mockActionsRegistry.invoke({
@@ -261,6 +275,7 @@ describe('createListScaffolderTasksAction', () => {
       actionsRegistry: mockActionsRegistry,
       auth: mockAuth,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     const result = await mockActionsRegistry.invoke({
@@ -300,6 +315,7 @@ describe('createListScaffolderTasksAction', () => {
       actionsRegistry: mockActionsRegistry,
       auth: mockAuth,
       scaffolderService: mockScaffolderService,
+      permissions,
     });
 
     await expect(
@@ -310,6 +326,30 @@ describe('createListScaffolderTasksAction', () => {
       }),
     ).rejects.toThrow(NotAllowedError);
 
+    expect(mockScaffolderService.listTasks).not.toHaveBeenCalled();
+  });
+
+  it('does not list tasks when task read permission is denied', async () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+    const mockAuth = mockServices.auth.mock();
+    const mockScaffolderService = scaffolderServiceMock.mock();
+    permissions.authorizeConditional.mockResolvedValue([
+      { result: AuthorizeResult.DENY },
+    ]);
+
+    createListScaffolderTasksAction({
+      actionsRegistry: mockActionsRegistry,
+      auth: mockAuth,
+      scaffolderService: mockScaffolderService,
+      permissions,
+    });
+
+    const result = await mockActionsRegistry.invoke({
+      id: 'test:list-scaffolder-tasks',
+      input: {},
+    });
+
+    expect(result.output).toEqual({ tasks: [], totalTasks: 0 });
     expect(mockScaffolderService.listTasks).not.toHaveBeenCalled();
   });
 });

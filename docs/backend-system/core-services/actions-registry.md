@@ -168,6 +168,12 @@ When accessed via the Actions Service or the `/.backstage/actions/v1/...` HTTP e
 
 Permissions declared on actions are automatically registered with the `PermissionsRegistryService` so they appear in the permission policy system.
 
+A `visibilityPermission` is a coarse access check consisting of a single
+`BasicPermission`. Action implementations are responsible for any additional
+input-dependent or resource-specific authorization required by the operation.
+Perform these checks using the caller credentials before starting side effects
+or making follow-up requests to other plugins.
+
 ### Adding a Permission to an Action
 
 ```typescript

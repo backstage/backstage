@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
-import { AuthService } from '@backstage/backend-plugin-api';
+import { AuthService, PermissionsService } from '@backstage/backend-plugin-api';
 import { NotAllowedError } from '@backstage/errors';
 import { ScaffolderService } from '@backstage/plugin-scaffolder-node';
+import { taskReadPermission } from '@backstage/plugin-scaffolder-common/alpha';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 export const createListScaffolderTasksAction = ({
   actionsRegistry,
   auth,
   scaffolderService,
+  permissions,
 }: {
   actionsRegistry: ActionsRegistryService;
   auth: AuthService;
   scaffolderService: ScaffolderService;
+  permissions: PermissionsService;
 }) => {
   actionsRegistry.register({
     name: 'list-scaffolder-tasks',
@@ -110,6 +114,17 @@ Filtering by one or multiple statuses is supported. Pagination is supported via 
           .describe('Object containing a tasks array and totalTasks count'),
     },
     action: async ({ input, credentials }) => {
+      // TODO: Revisit this explicit check once service on-behalf-of
+      // authentication preserves caller identity and access restrictions
+      // across service boundaries. Until then, authorize before delegating.
+      const [readDecision] = await permissions.authorizeConditional(
+        [{ permission: taskReadPermission }],
+        { credentials },
+      );
+      if (readDecision.result === AuthorizeResult.DENY) {
+        return { output: { tasks: [], totalTasks: 0 } };
+      }
+
       if (input.owned && !auth.isPrincipal(credentials, 'user')) {
         throw new NotAllowedError(
           'Filtering by owned tasks requires a user identity.',

@@ -16,6 +16,8 @@
 import { createQueryCatalogEntitiesAction } from './createQueryCatalogEntitiesAction';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
+import { mockServices } from '@backstage/backend-test-utils';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 const testEntities = [
   {
@@ -52,16 +54,26 @@ const testEntities = [
 
 function createCatalogQueryAction(options?: {
   entities?: typeof testEntities;
+  authorizeResult?: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
 }) {
   const mockActionsRegistry = actionsRegistryServiceMock();
   const mockCatalog = catalogServiceMock({
     entities: options?.entities ?? testEntities,
   });
+  const permissions = mockServices.permissions.mock({
+    authorizeConditional: async () => [
+      { result: options?.authorizeResult ?? AuthorizeResult.ALLOW },
+    ],
+  });
   createQueryCatalogEntitiesAction({
     catalog: mockCatalog,
     actionsRegistry: mockActionsRegistry,
+    permissions,
   });
-  return { invoke: mockActionsRegistry.invoke.bind(mockActionsRegistry) };
+  return {
+    invoke: mockActionsRegistry.invoke.bind(mockActionsRegistry),
+    mockCatalog,
+  };
 }
 
 describe('createQueryCatalogEntitiesAction', () => {
@@ -93,6 +105,26 @@ describe('createQueryCatalogEntitiesAction', () => {
       hasMoreEntities: false,
       nextPageCursor: undefined,
     });
+  });
+
+  it('does not query entities when read permission is denied', async () => {
+    const { invoke, mockCatalog } = createCatalogQueryAction({
+      authorizeResult: AuthorizeResult.DENY,
+    });
+    const querySpy = jest.spyOn(mockCatalog, 'queryEntities');
+
+    const result = await invoke({
+      id: 'test:query-catalog-entities',
+      input: {},
+    });
+
+    expect(result.output).toEqual({
+      items: [],
+      totalItems: 0,
+      hasMoreEntities: false,
+      nextPageCursor: undefined,
+    });
+    expect(querySpy).not.toHaveBeenCalled();
   });
 
   it('should filter by kind', async () => {
