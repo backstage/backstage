@@ -1034,6 +1034,74 @@ theme:
         'Unsupported Python YAML tag',
       );
     });
+
+    it.each(['pymdownx.emoji', 'materialx.emoji', 'material.extensions.emoji'])(
+      'should accept emoji tags from %s',
+      async module => {
+        const content = `markdown_extensions:
+  - pymdownx.emoji:
+      emoji_index: !!python/name:${module}.twemoji
+      emoji_generator: !!python/name:${module}.to_svg`;
+
+        await expect(
+          validateMkdocsYaml(inputDir, content),
+        ).resolves.toBeUndefined();
+      },
+    );
+
+    it.each([
+      'pymdownx.superfences.fence_code_format',
+      'pymdownx.superfences.fence_div_format',
+      'mermaid2.fence_mermaid',
+      'mermaid2.fence_mermaid_custom',
+    ])('should accept the custom fence format %s', async format => {
+      const content = `markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:${format}`;
+
+      await expect(
+        validateMkdocsYaml(inputDir, content),
+      ).resolves.toBeUndefined();
+    });
+
+    // https://github.com/backstage/backstage/issues/35388
+    it('should accept the mkdocs-material emoji and mkdocs-mermaid2 configuration', async () => {
+      const content = `markdown_extensions:
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:mermaid2.fence_mermaid_custom`;
+
+      await expect(
+        validateMkdocsYaml(inputDir, content),
+      ).resolves.toBeUndefined();
+    });
+
+    it.each([
+      'pymdownx.emoji.to_svgX',
+      'material.extensions.emoji.evil',
+      'pymdownx.superfences.os',
+    ])('should reject the unlisted name %s', async name => {
+      await expect(
+        validateMkdocsYaml(inputDir, `site_name: !!python/name:${name}`),
+      ).rejects.toThrow('Unsupported Python YAML tag');
+    });
+
+    it('should reject an allowed name used under a different tag', async () => {
+      await expect(
+        validateMkdocsYaml(
+          inputDir,
+          'site_name: !!python/name:pymdownx.slugs.slugify',
+        ),
+      ).rejects.toThrow('Unsupported Python YAML tag');
+    });
   });
 
   describe('sanitizeMkdocsYml', () => {
