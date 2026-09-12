@@ -24,9 +24,9 @@ And below is an example of how a user page looks with the user profile and owner
 - [Routes](#routes)
 - [Extensions](#extensions)
   - [Entity Group Profile Card](#entity-group-profile-card)
-  - [Entity Group Profile Card](#entity-members-list-card)
-  - [Entity Group Profile Card](#entity-members-list-card)
-  - [Entity Group Profile Card](#entity-user-profile-card)
+  - [Entity Members List Card](#entity-members-list-card)
+  - [Entity Ownership Card](#entity-ownership-card)
+  - [Entity User Profile Card](#entity-user-profile-card)
   - [My Groups Sidebar Item](#my-groups-sidebar-item)
 
 ## Installation
@@ -143,7 +143,9 @@ For more information about where to place extension overrides, see the official 
 
 ### Entity Members List Card
 
-An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that displays the names and emails of group members. By clicking the member's name, you'll be directed to the user's catalog page, and the email opens your default email program.
+An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that displays group members with avatars, names, and emails. Clicking a member's name opens the user's catalog page; clicking an email opens your default mail client.
+
+By default, each member avatar uses `member.spec.profile.picture` from the catalog. When that field is empty, the card shows initials. If your organization loads profile photos lazily from an external source instead of storing them in the catalog during ingestion, override the shared [`UserAvatar`](#custom-user-avatars) swappable component.
 
 | Kind          | Namespace | Name           | Id                             |
 | ------------- | --------- | -------------- | ------------------------------ |
@@ -151,46 +153,110 @@ An [entity card](https://github.com/backstage/backstage/blob/master/plugins/cata
 
 #### Config
 
-Currently, this entity card extension has only one configuration:
+The following keys can be set under `app.extensions` for `entity-card:org/members-list`:
 
-| Config key | Default value       | Description                                                                                                                                 |
-| ---------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `filter`   | `{ kind: 'group' }` | An [entity filter](https://github.com/backstage/backstage/pull/21480) that determines when the card should be displayed on the entity page. |
+| Config key                   | Default value | Description                                                                                                      |
+| ---------------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `showAggregateMembersToggle` | `false`       | When `true`, shows a toggle to switch between direct members and aggregated (descendant) group members.          |
+| `initialRelationAggregation` | `direct`      | Initial member list mode: `direct` (immediate members only) or `aggregated` (includes descendant group members). |
 
-This is how to configure the `members-list` extension in the `app-config.yaml` file:
+Example:
 
 ```yaml
 app:
   extensions:
     - entity-card:org/members-list:
         config:
-          <Config-Key>: '<Config-Value>'
+          showAggregateMembersToggle: true
+          initialRelationAggregation: aggregated
+```
+
+> [!NOTE]
+> User avatar rendering is **not** configurable through `app-config.yaml`. See [Custom user avatars](#custom-user-avatars) below.
+
+#### Custom user avatars
+
+`MembersListCard` and `UserProfileCard` render user avatars through the shared `UserAvatar` swappable component. Apps can override it once via `SwappableComponentBlueprint` to customize avatar rendering consistently across org plugin surfaces.
+
+```tsx
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
+import { UserAvatar, type DefaultUserAvatarProps } from '@backstage/plugin-org';
+import { Avatar } from '@backstage/ui';
+import { useLazyProfilePhoto } from './useLazyProfilePhoto';
+
+function LazyUserAvatar(props: DefaultUserAvatarProps) {
+  const picture = useLazyProfilePhoto(props.entity);
+  return (
+    <Avatar
+      className={props.className}
+      name={props.displayName}
+      src={picture ?? ''}
+      purpose={props.purpose ?? 'decoration'}
+      size={props.size ?? 'x-large'}
+    />
+  );
+}
+
+export default createFrontendModule({
+  pluginId: 'app',
+  extensions: [
+    SwappableComponentBlueprint.make({
+      name: 'org-user-avatar',
+      params: defineParams =>
+        defineParams({
+          component: UserAvatar,
+          loader: () => Promise.resolve(LazyUserAvatar),
+        }),
+    }),
+  ],
+});
+```
+
+Components used as the swappable implementation receive `DefaultUserAvatarProps`:
+
+| Prop          | Type         | Description                                                               |
+| ------------- | ------------ | ------------------------------------------------------------------------- |
+| `entity`      | `UserEntity` | Catalog user entity.                                                      |
+| `displayName` | `string`     | `entity.spec.profile.displayName`, or `entity.metadata.name` as fallback. |
+| `className`   | `string`     | Optional layout class from the caller.                                    |
+| `size`        | `string`     | Avatar size passed by the caller (`small`, `x-large`, etc.).              |
+| `purpose`     | `string`     | Avatar purpose passed by the caller.                                      |
+
+When no override is registered, behavior is unchanged:
+
+```tsx
+<Avatar src={profile?.picture ?? ''} />
 ```
 
 #### Override
 
-Use extension overrides for completely re-implementing the members-list entity card extension:
+Use extension overrides to customize the members-list card — for example to change pagination defaults or replace the card entirely:
 
 ```tsx
-import { createFrontendModule } from '@backstage/backstage-plugin-api';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
+import { MembersListCard } from '@backstage/plugin-org';
 
 export default createFrontendModule({
   pluginId: 'org',
   extensions: [
     EntityCardBlueprint.make({
-      // Name is necessary so the system knows that this extension will override the default 'members-list' entity card extension provided by the 'org' plugin
       name: 'members-list',
       params: {
-        // By default, this card will show up only for groups
         filter: { kind: 'group' },
-        // Returning a custom card component
-        loader: () =>
-          import('./components').then(m => <m.MyCustomMembersListEntityCard />),
+        loader: async () => <MembersListCard showAggregateMembersToggle />,
       },
     }),
   ],
 });
+```
+
+To fully replace the card UI, return your own component from `loader` instead:
+
+```tsx
+loader: () =>
+  import('./components').then(m => <m.MyCustomMembersListEntityCard />),
 ```
 
 For more information about where to place extension overrides, see the official [documentation](https://backstage.io/docs/frontend-system/architecture/extension-overrides).

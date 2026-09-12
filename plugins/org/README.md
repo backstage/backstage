@@ -83,3 +83,31 @@ Once added MyGroupsSidebarItem will work in three ways:
 3. The user is logged in and a member of more than one group: the MyGroupsSidebarItem will display a single items with a sub-menu with all the related groups like this:
 
    ![MyGroupsSidebarItem multiple example](./docs/mygroupssidebaritem-multiple.png)
+
+### UserAvatar and custom member avatars
+
+Org plugin surfaces such as `MembersListCard` and `UserProfileCard` render user avatars through the shared `UserAvatar` swappable component. By default, avatars use `entity.spec.profile.picture` from the catalog; when that field is empty, initials are shown.
+
+If your organization loads profile photos lazily from an external source instead of storing them in the catalog during ingestion, override `UserAvatar` once in your app module:
+
+```tsx
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
+import { UserAvatar } from '@backstage/plugin-org';
+
+export const appModuleOrg = createFrontendModule({
+  pluginId: 'app',
+  extensions: [
+    SwappableComponentBlueprint.make({
+      name: 'org-user-avatar',
+      params: defineParams =>
+        defineParams({
+          component: UserAvatar,
+          loader: () => import('./LazyUserAvatar').then(m => m.LazyUserAvatar),
+        }),
+    }),
+  ],
+});
+```
+
+When no override is registered, behavior is unchanged. See [README-alpha.md](./README-alpha.md#custom-user-avatars) for more detail.
