@@ -7,6 +7,10 @@ rows, ~6.1M `relations`, ~739K `refresh_state_references`, ~1.28M
 `refresh_state`
 **Statistics**: `search.entity_id n_distinct = -0.0429023`, followed by
 `ANALYZE search` and `VACUUM search`
+**Table sizes**: `search` 43GB total (34GB heap, 9.1GB indexes), `relations`
+2.3GB total (1.7GB heap), and `refresh_state` 11GB total
+**Selected kind counts**: 46,036 components, 14 templates, 202,704 APIs, and
+257,064 subcomponents
 
 ## Scenario 1: Paginated entity list (kind=component, ordered by name)
 
@@ -26,7 +30,7 @@ rows, ~6.1M `relations`, ~739K `refresh_state_references`, ~1.28M
   `search_entity_key_value_idx` for `metadata.name`
 - **Anti-patterns detected**: Sequential Scan on `final_entities`, but no
   Sequential Scan on `search`; the parallel hash-join plan is efficient for
-  this large result set
+  the 46,036 matching components
 - **Buffers**: shared hit=425677
 
 ## Scenario 3: Paginated entity list (no filter, LIMIT 21)
@@ -55,7 +59,7 @@ rows, ~6.1M `relations`, ~739K `refresh_state_references`, ~1.28M
   `search_key_value_entity_idx` for kind
 - **Anti-patterns detected**: No Sequential Scan on `search` and no temporary
   file spill; the Sequential Scan on `final_entities` feeds an efficient hash
-  join
+  join for the 46,036 matching components
 - **Buffers**: shared hit=811182
 
 ## Scenario 6: Entity by ref lookup
@@ -136,7 +140,7 @@ rows, ~6.1M `relations`, ~739K `refresh_state_references`, ~1.28M
   IDs, and LIMIT short-circuits after 2,001 rows
 - **Anti-patterns detected**: The plan uses indexes throughout, but the
   disjunction prevents either selective relation predicate from driving the
-  query. The workflow and dataset branches take 115.7ms and 120.4ms in
+  query. The workflow and dataset branches take 70.8ms and 59.7ms median in
   isolation, respectively.
 - **Buffers**: shared hit=1298170
 - **Statistics note**: The canonical run used
@@ -251,5 +255,5 @@ changes.
 - Scenarios 3, 6, 8, and 9 retain their expected index-driven plans and remain
   sub-millisecond.
 - Scenario 12 is new in this baseline. Its isolated workflow and dataset
-  branches remain approximately two orders of magnitude faster than their
-  ordered disjunction.
+  branches remain approximately 40 times faster than their ordered
+  disjunction.

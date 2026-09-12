@@ -391,7 +391,7 @@ time proportional to total catalog size.
 **Anti-patterns**:
 
 - Seq Scan on either table
-- Execution time >30s on a 500K entity catalog
+- Execution time >30s on a production-scale catalog
 
 ---
 
@@ -526,10 +526,11 @@ query with each branch in isolation when investigating a regression.
 
 These should NEVER appear in any of the above queries:
 
-1. **Seq Scan on `search`** — The search table is 11+ GB. Any seq scan
-   is catastrophic.
-2. **Seq Scan on `relations`** — 714 MB heap, 3.5M rows. Must use
-   indexes.
+1. **Seq Scan on `search`** — The measured production-scale table is 34GB of
+   heap data and 43GB including indexes, with approximately 21.9M rows in
+   planner statistics. Any sequential scan is catastrophic.
+2. **Seq Scan on `relations`** — The measured table is 1.7GB of heap data and
+   2.3GB including indexes, with approximately 6.1M rows. Use indexes.
 3. **Materialized CTE** — Prevents LIMIT short-circuiting. Was the
    original cause of slow paginated queries.
 4. **Temp file spills** (look for `Buffers: temp` in EXPLAIN output) —
