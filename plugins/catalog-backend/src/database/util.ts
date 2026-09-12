@@ -55,6 +55,13 @@ export async function retryOnDeadlock<T>(
   retries = 3,
   baseMs = 25,
 ): Promise<T> {
+  // A deadlock aborts the transaction. Retrying individual statements inside
+  // it only produces a secondary "transaction is aborted" error and hides the
+  // original deadlock from code that can retry the complete transaction.
+  if (knex.isTransaction) {
+    return fn();
+  }
+
   let attempt = 0;
   for (;;) {
     try {
