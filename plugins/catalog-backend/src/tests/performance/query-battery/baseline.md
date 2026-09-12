@@ -1,139 +1,274 @@
 # Query Performance Baseline
 
-**Date**: 2026-05-18
-**Database**: Production-scale replica
-**Catalog size**: ~474K `final_entities`, ~13.2M `search` rows, ~3.5M `relations`, ~478K `refresh_state_references`, ~476K `refresh_state`
+Readable representative `EXPLAIN (ANALYZE, BUFFERS)` output is recorded in
+[`plans.md`](./plans.md), with the exact canonical final-run JSON output in
+[`plans.json`](./plans.json).
+
+**Date**: 2026-09-12
+**Database**: Production-scale staging replica
+**Catalog size**: ~739K `final_entities`, ~21.9M planner-estimated `search`
+rows, ~6.1M `relations`, ~739K `refresh_state_references`, and ~739K
+`refresh_state` rows
+**Statistics**: `search.entity_id n_distinct = -0.0429023`, followed by
+`ANALYZE search` and `VACUUM search`; `refresh_state` analyzed after its row
+estimate had drifted to 1.28M
+**Table sizes**: `search` 43GB total (34GB heap, 9.1GB indexes), `relations`
+2.3GB total (1.7GB heap), and `refresh_state` 11GB total
+**Selected kind counts**: 46,036 components, 14 templates, 202,704 APIs, and
+257,064 subcomponents
 
 ## Scenario 1: Paginated entity list (kind=component, ordered by name)
 
-- **Execution time**: 12.531 ms
-- **Planning time**: 1.469 ms
-- **Plan shape**: Gather Merge (2 workers) -> Parallel Index Only Scan on `search_key_value_entity_idx` (key='metadata.name') -> Memoize -> Index Scan on `final_entities_pkey` -> Nested Loop Semi Join -> Index Only Scan on `search_key_value_entity_idx` (EXISTS kind=component); LIMIT short-circuits after 21 rows
+- **Execution time**: 22.6ms median (22.1-22.7ms)
+- **Planning time**: 3.287 ms
+- **Plan shape**: Gather Merge (2 workers) -> Nested Loop -> Nested Loop:
+  Parallel Index Only Scan on `search_key_value_entity_idx`
+  (key='metadata.name') -> Index Scan on `final_entities_pkey` -> Index Only
+  Scan on `search_key_value_entity_idx` (EXISTS kind=component); LIMIT
+  short-circuits after 21 rows
 - **Anti-patterns detected**: None
-- **Buffers**: shared hit=6145
+- **Buffers**: shared hit=4815
 
 ## Scenario 2: Count query (kind=component)
 
-- **Execution time**: 1068.112 ms
-- **Planning time**: 1.533 ms
-- **Plan shape**: Index Only Scan on `search_key_value_entity_idx` (kind=component, ~55K rows) -> HashAggregate -> Index Scan on `final_entities_pkey` -> Index Only Scan on `search_entity_key_value_idx` (metadata.name) -> Aggregate
-- **Anti-patterns detected**: None (inherent cost of counting ~55K components)
-- **Buffers**: shared hit=619709
+- **Execution time**: 452.5ms median (451.5-463.0ms)
+- **Planning time**: 3.167 ms
+- **Plan shape**: Finalize Aggregate -> Gather -> Partial Aggregate -> Nested
+  Loop: Hash Join (`final_entities` with kind lookup from
+  `search_key_value_entity_idx`) -> Index Only Scan on
+  `search_entity_key_value_idx` for `metadata.name`
+- **Anti-patterns detected**: Sequential Scan on `final_entities`, but no
+  Sequential Scan on `search`; the parallel hash-join plan is efficient for
+  the 46,036 matching components
+- **Buffers**: shared hit=425677
 
 ## Scenario 3: Paginated entity list (no filter, LIMIT 21)
 
-- **Execution time**: 0.096 ms
-- **Planning time**: 0.432 ms
+- **Execution time**: 0.146ms median (0.137-0.155ms)
+- **Planning time**: 0.670 ms
 - **Plan shape**: Index Scan on `final_entities_entity_ref_uniq` with LIMIT short-circuit
 - **Anti-patterns detected**: None
-- **Buffers**: shared hit=30
+- **Buffers**: shared hit=25
 
 ## Scenario 4: Facets query (kind=template, facet=spec.type)
 
-- **Execution time**: 3.653 ms
-- **Planning time**: 1.508 ms
-- **Plan shape**: Index Only Scan on `search_key_value_entity_idx` (kind=template, 196 rows) -> HashAggregate -> Index Scan on `final_entities_pkey` -> Index Scan on `search_entity_key_value_idx` (spec.type) -> Sort -> GroupAggregate
+- **Execution time**: 0.838ms median (0.837-1.033ms)
+- **Planning time**: 3.731 ms
+- **Plan shape**: Index Only Scan on `search_key_value_entity_idx` (kind=template, 14 rows) -> Index Scan on `final_entities_pkey` -> Index Scan on `search_entity_key_value_idx` (spec.type) -> Sort -> GroupAggregate
 - **Anti-patterns detected**: None
-- **Buffers**: shared hit=2177
+- **Buffers**: shared hit=160
 
 ## Scenario 5: Facets query (kind=component, facet=spec.type) -- large result set
 
-- **Execution time**: 972.453 ms
-- **Planning time**: 1.533 ms
-- **Plan shape**: Index Only Scan on `search_key_value_entity_idx` (kind=component, ~55K rows) -> HashAggregate -> Index Scan on `final_entities_pkey` -> Index Scan on `search_entity_key_value_idx` (spec.type) -> Sort -> GroupAggregate
-- **Anti-patterns detected**: None (plan uses index scans throughout; no seq scans or temp spills)
-- **Buffers**: shared hit=612386
+- **Execution time**: 631.7ms median (607.0-632.4ms)
+- **Planning time**: 3.684 ms
+- **Plan shape**: Finalize GroupAggregate -> Gather Merge -> Partial
+  GroupAggregate -> Sort -> Hash Joins using
+  `search_facets_covering_idx`, a Sequential Scan on `final_entities`, and
+  `search_key_value_entity_idx` for kind
+- **Anti-patterns detected**: No Sequential Scan on `search` and no temporary
+  file spill; the Sequential Scan on `final_entities` feeds an efficient hash
+  join for the 46,036 matching components
+- **Buffers**: shared hit=811182
 
 ## Scenario 6: Entity by ref lookup
 
-- **Execution time**: 0.072 ms
-- **Planning time**: 0.374 ms
+- **Execution time**: 0.124ms median (0.122-0.204ms)
+- **Planning time**: 0.593 ms
 - **Plan shape**: Index Scan on `final_entities_entity_ref_uniq`
 - **Anti-patterns detected**: None (0 rows returned -- entity ref not present in test data; plan shape is correct)
 - **Buffers**: shared hit=4
 
 ## Scenario 7: Full-text filter (metadata.name LIKE '%player%', kind=component)
 
-- **Execution time**: 903.491 ms
-- **Planning time**: 1.499 ms
-- **Plan shape**: Index Only Scan on `search_key_value_entity_idx` (kind=component, ~55K rows) -> HashAggregate -> Index Scan on `final_entities_pkey` -> Index Only Scan on `search_entity_key_value_idx` (metadata.name, filtered by LIKE '%player%') -> Sort -> LIMIT 21
-- **Anti-patterns detected**: Full scan of all ~55K components required because LIKE filter with leading wildcard cannot short-circuit via index ordering. The LIKE is applied as a filter on the index scan (not a seq scan), which is correct, but the query must evaluate all component entities before sorting and limiting.
-- **Buffers**: shared hit=619712
+- **Execution time**: 14.9ms median (14.8-15.3ms)
+- **Planning time**: 3.935 ms
+- **Plan shape**: Limit -> Gather Merge -> ordered Index Only Scan on
+  `search_key_value_entity_idx` for `metadata.name` -> Index Scan on
+  `final_entities_pkey` -> Index Only Scan for kind
+- **Anti-patterns detected**: None; the ordered scan finds 21 matching rows
+  quickly despite the leading-wildcard filter
+- **Buffers**: shared hit=18389
 
 ## Scenario 8: Relations traversal (entity ancestry)
 
-- **Execution time**: 0.088 ms
-- **Planning time**: 0.957 ms
+- **Execution time**: 0.134ms median (0.133-0.155ms)
+- **Planning time**: 1.456 ms
 - **Plan shape**: Index Scan on `refresh_state_references_target_entity_ref_idx` -> Nested Loop -> Index Scan on `final_entities_entity_ref_uniq`; LIMIT short-circuits
 - **Anti-patterns detected**: None (0 rows returned -- entity ref not present in test data; plan shape is correct)
 - **Buffers**: shared hit=4
 
 ## Scenario 9: Stitching: incoming reference count
 
-- **Execution time**: 0.095 ms
-- **Planning time**: 0.380 ms
+- **Execution time**: 0.215ms median (0.164-0.233ms)
+- **Planning time**: 0.670 ms
 - **Plan shape**: Index Only Scan on `refresh_state_references_target_entity_ref_idx` -> Aggregate
 - **Anti-patterns detected**: None (0 rows matched -- entity ref not present in test data; plan shape is correct)
 - **Buffers**: shared hit=4
 
 ## Scenario 10: Adversarial: unfiltered count
 
-- **Execution time**: 1317.422 ms
-- **Planning time**: 1.020 ms
-- **Plan shape**: Gather (2 workers) -> Parallel Index Only Scan on `search_key_value_entity_idx` (key='metadata.name') -> Memoize -> Index Scan on `final_entities_pkey` -> Partial Aggregate -> Finalize Aggregate
-- **Anti-patterns detected**: Memoize cache evictions observed (~100-121K evictions per worker, 8MB cache cap). This is inherent to counting the full ~471K entity catalog. No seq scans detected.
-- **Buffers**: shared hit=2334531
+- **Execution time**: 514.0ms median (500.9-519.9ms)
+- **Planning time**: 2.154 ms
+- **Plan shape**: Finalize Aggregate -> Gather -> Partial Aggregate -> Hash
+  Join: Index Only Scan on `search_key_value_entity_idx` for `metadata.name`
+  with a Sequential Scan on `final_entities`
+- **Anti-patterns detected**: No Sequential Scan on `search` and no temporary
+  file spill; the Sequential Scan on `final_entities` feeds an efficient hash
+  join
+- **Buffers**: shared hit=526888
 
 ## Scenario 11: Relations: orphan detection anti-join
 
-- **Execution time**: 255.679 ms
-- **Planning time**: 1.013 ms
-- **Plan shape**: Gather (2 workers) -> Parallel Hash Anti Join: Parallel Seq Scan on `refresh_state` -> Parallel Hash (Parallel Seq Scan on `refresh_state_references`); LIMIT 100
-- **Anti-patterns detected**: Seq Scans on both `refresh_state` and `refresh_state_references`, but this is expected for a Hash Anti Join strategy. Temp file spills observed (temp read=7144, written=11160) due to the hash table exceeding `work_mem`. Despite the seq scans, the Parallel Hash Anti Join completes in ~256ms, which is a dramatic improvement over the previous Nested Loop Anti Join that timed out at >30s.
-- **Buffers**: shared hit=279619, temp read=7144 written=11160
+- **Execution time**: 1.60s median (1.53-1.93s)
+- **Planning time**: 1.591 ms
+- **Plan shape**: Limit -> Gather (2 workers) -> Parallel Hash Anti Join:
+  Parallel Sequential Scan on `refresh_state` -> Parallel Hash of a Parallel
+  Sequential Scan on `refresh_state_references`
+- **Anti-patterns detected**: Both tables are scanned in full, including the
+  10GB `refresh_state` heap. The plan avoids the catastrophic nested-loop
+  amplification seen with stale `refresh_state` row statistics, but remains
+  above the 500ms target.
+- **Buffers**: shared hit=299896 read=1008342
+
+## Scenario 12: Ordered disjunction with selective branches
+
+- **Measurement date**: 2026-09-12
+- **Database**: Production-scale staging replica, with approximately 739K
+  `final_entities` rows. The exact statistics calculation observed 17.1M
+  `search` rows for 735,764 distinct entities; planner statistics after vacuum
+  estimated 21.9M rows.
+- **Data shape**: 1,084 matching workflow relations and 934 matching dataset
+  relations, the same branch result counts observed in production
+- **Execution time**: 2.76s median (2.75-2.79s)
+- **Planning time**: 4.790 ms
+- **Plan shape**: Index Only Scan on `search_key_value_entity_idx` for
+  `metadata.name` -> Memoize -> Index Scan on `final_entities_pkey` ->
+  repeated correlated `search_entity_key_value_idx` probes for the `kind` and
+  `spec.type` predicates. The two relation predicates are each collected once
+  into hashed subplans using `search_key_value_entity_idx`. All 77,199 Memoize
+  lookups miss because the ordered candidates have distinct entity IDs, and
+  LIMIT short-circuits after 2,001 rows
+- **Anti-patterns detected**: The plan uses indexes throughout, but the
+  disjunction prevents either selective relation predicate from driving the
+  query. The workflow and dataset branches take 70.8ms and 59.7ms median in
+  isolation, respectively.
+- **Buffers**: shared hit=1298170
+- **Statistics note**: The canonical run used
+  `search.entity_id n_distinct = -0.0429023`, the exact fraction calculated
+  from the staging data (23.31 search rows per entity).
+
+---
+
+## Controlled `search.entity_id n_distinct` comparison
+
+The full battery was run on the same production-scale staging replica on
+2026-09-12 with two statistics settings. Each setting was applied on the
+primary followed by `ANALYZE search`, and was verified on the replica before
+measurement. Each result below is the median of three measured warm runs after
+one warm-up run. The corrected-statistics run also followed a manual vacuum of
+`search`. The representative SQL is recorded in `queries.md`.
+
+The corrected value, `-0.0429023`, was calculated from the staging data. The
+legacy value, `-1`, tells PostgreSQL to treat every search row as having a
+different entity ID.
+
+| Scenario                          | Legacy `-1` | Corrected `-0.0429023` | Effective plan comparison                                       |
+| --------------------------------- | ----------: | ---------------------: | --------------------------------------------------------------- |
+| 1. Paginated component list       |     22.1 ms |                22.6 ms | Same ordered parallel index plan                                |
+| 2. Component count                |    465.2 ms |               452.5 ms | Same parallel hash-join and nested-loop plan                    |
+| 3. Unfiltered page                |    0.147 ms |               0.146 ms | Same `final_entities` index scan                                |
+| 4. Template facets                |    0.883 ms |               0.838 ms | Same nested-loop index plan                                     |
+| 5. Component facets               |    641.6 ms |               631.7 ms | Corrected plan uses partial aggregation; same scans and joins   |
+| 6. Entity lookup                  |    0.126 ms |               0.124 ms | Same unique-index lookup                                        |
+| 7. Full-text component filter     |     15.2 ms |                14.9 ms | Same ordered parallel index plan                                |
+| 8. Ancestry step                  |    0.156 ms |               0.134 ms | Same nested-loop index plan                                     |
+| 9. Incoming reference count       |    0.162 ms |               0.215 ms | Same index-only scan; sub-millisecond variance                  |
+| 10. Unfiltered count              |    556.0 ms |               514.0 ms | Same parallel hash-join plan                                    |
+| 11. Orphan anti-join              |    Excluded |               Excluded | Runs invalidated by stale, unrelated `refresh_state` statistics |
+| 12. Ordered selective disjunction |       2.90s |                  2.76s | Corrected plan adds a Memoize node with no cache hits           |
+
+The corrected statistic changes row estimates substantially but does not
+materially change the runtime of the battery. Scenario 5 switches to partial
+aggregation, while retaining the same scans and joins. Scenario 12 adds a
+Memoize node, but all 77,199 lookups are misses because the ordered
+`metadata.name` scan produces distinct entity IDs. It therefore inspects the
+same 77,199 candidates under both settings. Its expensive combination of
+ordering and disjunction is unaffected by this statistic.
+
+The large differences from the May baseline, particularly scenario 7, are
+therefore changes in the wider database, data, and planner state rather than
+effects of this setting.
+
+Scenario 11 is excluded from this controlled comparison because both runs used
+an unrelated stale `refresh_state` row estimate of 1.28M for 739K actual rows.
+That state produced a Nested Loop Anti Join taking approximately 10-13s. After
+`ANALYZE refresh_state`, the canonical plan is a Parallel Hash Anti Join with a
+1.60s median runtime.
 
 ---
 
 ## Summary
 
-| Scenario                           | Execution Time | Verdict                                                     |
-| ---------------------------------- | -------------- | ----------------------------------------------------------- |
-| 1. Paginated list (kind=component) | 12.5 ms        | OK -- improved                                              |
-| 2. Count (kind=component)          | 1068.1 ms      | OK -- improved (counting ~55K components)                   |
-| 3. Paginated list (no filter)      | 0.1 ms         | Excellent                                                   |
-| 4. Facets (kind=template)          | 3.7 ms         | OK -- slight regression (196 templates vs previous 9)       |
-| 5. Facets (kind=component)         | 972.5 ms       | OK (large result set, index scans throughout)               |
-| 6. Entity by ref                   | 0.1 ms         | Excellent                                                   |
-| 7. Full-text filter (LIKE)         | 903.5 ms       | Acceptable -- regression (see comparison notes)             |
-| 8. Relations traversal             | 0.1 ms         | Excellent                                                   |
-| 9. Stitching ref count             | 0.1 ms         | Excellent                                                   |
-| 10. Unfiltered count               | 1317.4 ms      | OK -- improved (smaller catalog)                            |
-| 11. Orphan detection               | 255.7 ms       | **FIXED** -- Hash Anti Join replaces Nested Loop (was >30s) |
+| Scenario                           | Execution Time | Verdict                                           |
+| ---------------------------------- | -------------- | ------------------------------------------------- |
+| 1. Paginated list (kind=component) | 22.6 ms        | OK; ordered LIMIT short-circuit                   |
+| 2. Count (kind=component)          | 452.5 ms       | OK; efficient parallel aggregate                  |
+| 3. Paginated list (no filter)      | 0.146 ms       | Excellent                                         |
+| 4. Facets (kind=template)          | 0.838 ms       | Excellent                                         |
+| 5. Facets (kind=component)         | 631.7 ms       | OK; no Sequential Scan on `search`                |
+| 6. Entity by ref                   | 0.124 ms       | Excellent                                         |
+| 7. Full-text filter (LIKE)         | 14.9 ms        | OK; ordered LIMIT short-circuit                   |
+| 8. Relations traversal             | 0.134 ms       | Excellent                                         |
+| 9. Stitching ref count             | 0.215 ms       | Excellent                                         |
+| 10. Unfiltered count               | 514.0 ms       | OK; efficient parallel aggregate                  |
+| 11. Orphan detection               | 1.60s          | Needs work; scans the 10GB `refresh_state` heap   |
+| 12. Ordered selective disjunction  | 2.76s          | Known slow case; branches are individually faster |
 
 ---
 
-## Comparison with previous baseline (2026-05-16)
+## Comparison with previous baseline (2026-05-18)
 
 ### Catalog size changes
 
-The catalog has shrunk since the last run: ~474K entities (was ~545K), ~476K `refresh_state` (was ~984K), ~478K `refresh_state_references` (was ~547K). The `refresh_state` table halved in size, which significantly affects scenarios that touch it.
+The staging catalog is larger than the previous production-scale baseline:
+approximately 739K entities versus 474K, 21.9M planner-estimated search rows
+versus 13.2M, 6.1M relations versus 3.5M, and 739K refresh-state rows versus
+476K. Absolute timing changes must therefore be interpreted alongside the plan
+changes.
 
 ### Improvements
 
-- **Scenario 1** (Paginated list): 12.5ms vs 20.4ms (39% faster). Plan switched from serial to Gather Merge with 2 parallel workers while maintaining the same index-driven approach.
-- **Scenario 2** (Count): 1068ms vs 1943ms (45% faster). Plan changed from Parallel Bitmap Heap Scan to a serial HashAggregate-driven approach. The improvement is partly from the smaller catalog and partly from a better plan choice.
-- **Scenario 3** (Paginated no filter): 0.1ms vs 0.2ms. Consistently excellent.
-- **Scenario 10** (Unfiltered count): 1317ms vs 2236ms (41% faster). Same plan shape. The improvement is proportional to the catalog size reduction (~471K vs ~544K). Memoize evictions reduced (~100-121K vs 134K per worker).
-- **Scenario 11** (Orphan detection): **255ms vs >30s TIMEOUT**. This is the most significant change. The planner now chooses a Parallel Hash Anti Join instead of the previous Nested Loop Anti Join. The Hash Anti Join scans both tables in parallel and builds a hash table for the join, which is far more efficient when most rows have matches. This fix was likely enabled by the smaller `refresh_state` table (476K vs 984K rows), which may have crossed a threshold in the planner's cost model. Note: temp file spills are observed but acceptable at this scale.
+- **Scenario 2** (component count): 452.5ms versus 1068.1ms. The current
+  parallel hash-join and aggregate plan remains faster despite the larger
+  catalog.
+- **Scenario 4** (template facets): 0.838ms versus 3.653ms. Both plans are
+  index-driven.
+- **Scenario 5** (component facets): 631.7ms versus 972.5ms. The current plan
+  uses parallel partial aggregation and does not scan `search` sequentially.
+- **Scenario 7** (full-text filter): 14.9ms versus 903.5ms. The current plan
+  walks `metadata.name` in order and stops after 21 matches instead of
+  evaluating and sorting the full component set.
+- **Scenario 10** (unfiltered count): 514.0ms versus 1317.4ms. The current
+  parallel hash-join plan is faster while processing a larger catalog.
 
 ### Regressions
 
-- **Scenario 4** (Facets kind=template): 3.7ms vs 1.1ms (3.3x slower). This is due to a data change: there are now 196 templates vs 9 previously. The plan shape is healthy (all index scans), and 3.7ms is still fast. Not a query regression.
-- **Scenario 7** (Full-text LIKE filter): 903ms vs 566ms (60% slower). The plan strategy changed: the previous run drove from the kind=component index and applied the LIKE filter early via Memoize, while the current run uses a HashAggregate approach that evaluates all ~55K components before filtering. Both plans scan all components (unavoidable with a leading-wildcard LIKE), but the previous plan was more efficient at short-circuiting. The component count also grew from ~46K to ~55K. Worth monitoring.
-- **Scenario 5** (Facets kind=component): 972ms vs 931ms (4% slower). Within noise. Plan changed from Parallel Gather Merge with `search_facets_covering_idx` to a serial HashAggregate approach. Both are healthy.
+- **Scenario 1** (paginated component list): 22.6ms versus 12.5ms. It remains
+  well below the 50ms anti-pattern threshold and retains its healthy ordered
+  LIMIT plan.
+- **Scenario 11** (orphan detection): 1.60s versus 255.7ms. The current
+  Parallel Hash Anti Join avoids nested-loop amplification but scans the full
+  10GB `refresh_state` heap. This remains the main regression in the current
+  battery.
 
 ### Plan shape changes (no performance impact)
 
-- **Scenario 6** (Entity by ref): Identical plan shape and timing.
-- **Scenario 8** (Relations traversal): Identical plan shape. Timing consistent.
-- **Scenario 9** (Stitching ref count): Identical plan shape. Timing consistent.
+- Scenarios 3, 6, 8, and 9 retain their expected index-driven plans and remain
+  sub-millisecond.
+
+### New known-slow scenario
+
+- Scenario 12 is new in this baseline. Its isolated workflow and dataset
+  branches remain approximately 40 times faster than their ordered
+  disjunction.
