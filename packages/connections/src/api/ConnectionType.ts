@@ -15,10 +15,9 @@
  */
 import type { z } from 'zod/v4';
 import type { Expand, JsonObject } from '@backstage/types';
-import type { ConnectionTypeKey, LookupConnectionType } from '../definitions';
 
 /** @public */
-export type LookupStrategy = 'host' | 'aws';
+export type ConnectionLookupStrategy = 'host' | 'aws';
 
 export type LookupStrategyQuery = {
   host: { url: string };
@@ -75,17 +74,6 @@ export type WithoutReservedAuthMethods<
 };
 
 /**
- * Restricts an auth entry to only be handed out to the given plugins.
- *
- * @public
- */
-export type ConnectionAuthMatch = {
-  plugins: string[];
-};
-
-// Expand flattens intersections and Omit into plain object literals so that
-// editor tooltips stay readable.
-/**
  * The shape of an auth entry as written in configuration: the fields declared
  * by the auth method's own schema plus the framework-managed `title` and
  * `match` fields.
@@ -100,7 +88,7 @@ export type ConfiguredConnectionAuth<M> = M extends {
       {
         method: TMethod;
         title?: string;
-        match?: ConnectionAuthMatch;
+        match?: { plugins: string[] };
       } & TConfig
     >
   : never;
@@ -112,16 +100,8 @@ export type ConfiguredConnectionAuth<M> = M extends {
  *
  * @public
  */
-export type ConnectionAuthValue<TAuthConfig extends { method: string }> =
+export type ConnectionAuth<TAuthConfig extends { method: string }> =
   TAuthConfig extends any ? Expand<TAuthConfig & { title: string }> : never;
-
-export type MatchAuth<
-  TAuthConfig extends { method: string },
-  TQuery = { url: string },
-> = (
-  authMethods: ConnectionAuthValue<TAuthConfig>[],
-  query: TQuery,
-) => ConnectionAuthValue<TAuthConfig> | undefined;
 
 /**
  * A schema that can validate values and expose a JSON-serializable schema.
@@ -140,11 +120,11 @@ export type PortableSchema<TOutput = unknown, TInput = TOutput> = {
  *
  * @public
  */
-export type ConnectionType<
+export type ConnectionTypeDefinition<
   T extends {
     type: string;
     cardinality: 'singleton' | 'multiton';
-    lookupStrategy: LookupStrategy;
+    lookupStrategy: ConnectionLookupStrategy;
     query: unknown;
     configSchema: unknown;
     auth: readonly {
@@ -153,7 +133,7 @@ export type ConnectionType<
   } = {
     type: string;
     cardinality: 'singleton' | 'multiton';
-    lookupStrategy: LookupStrategy;
+    lookupStrategy: ConnectionLookupStrategy;
     query: unknown;
     configSchema: unknown;
     auth: readonly {
@@ -182,29 +162,4 @@ export type ConnectionType<
         }
       : never
     : never)[];
-  matchAuth?(
-    authMethods: ConnectionAuthValue<T['auth'][number]>[],
-    query: T['query'],
-  ): ConnectionAuthValue<T['auth'][number]> | undefined;
-  /**
-   * Validates the connection as a whole, after each schema has accepted
-   * its own part.
-   *
-   * Use this for rules that no single auth entry can check by itself, for
-   * example "account IDs must be unique across entries". Receives the
-   * parsed connection config and all parsed auth entries, each including
-   * its plugin `match` so that rules can take scoping into account; throw
-   * an error to reject the connection.
-   */
-  validate?(connection: {
-    config: T['configSchema'];
-    auth: readonly Expand<
-      T['auth'][number] & { match?: ConnectionAuthMatch }
-    >[];
-  }): void;
 };
-
-/** @public */
-export type ConnectionAuthMethodKey<
-  T extends ConnectionType | ConnectionTypeKey,
-> = LookupConnectionType<T>['authMethods'][number]['method'];

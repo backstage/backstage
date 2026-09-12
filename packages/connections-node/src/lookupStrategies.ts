@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import { InputError } from '@backstage/errors';
-import type { LookupStrategy } from '@backstage/connections';
+import type { ConnectionLookupStrategy } from '@backstage/connections';
 
 // The concrete strategy is only known at runtime, so definitions receive the
 // query with its type erased and narrow it to their own query shape.
-type LookupStrategyDefinition = {
+type ConnectionLookupStrategyDefinition = {
   identityField?: string;
   identityFromQuery(query: unknown): string | undefined;
 };
@@ -35,8 +35,8 @@ type LookupStrategyDefinition = {
  * @internal
  */
 export const lookupStrategies: Record<
-  LookupStrategy,
-  LookupStrategyDefinition
+  ConnectionLookupStrategy,
+  ConnectionLookupStrategyDefinition
 > = {
   host: {
     identityField: 'host',

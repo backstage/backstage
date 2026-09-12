@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ConnectionAuthValue, ConnectionType } from './ConnectionType';
-import type { ConnectionTypeKey, LookupConnectionType } from '../definitions';
+import type {
+  ConnectionAuth,
+  ConnectionTypeDefinition,
+} from './ConnectionType';
+import type { ConnectionType, LookupConnectionType } from '../definitions';
 
 // A connection of a specific type.
 //
@@ -24,16 +27,18 @@ import type { ConnectionTypeKey, LookupConnectionType } from '../definitions';
 // - With no parameters: an open shape suitable for internal storage.
 /** @public */
 export type Connection<
-  T extends ConnectionType | ConnectionTypeKey = ConnectionType,
+  T extends
+    | ConnectionTypeDefinition
+    | ConnectionType = ConnectionTypeDefinition,
   TAuthMethod extends string = string,
-> = LookupConnectionType<T> extends ConnectionType<infer IDefinition>
+> = LookupConnectionType<T> extends ConnectionTypeDefinition<infer IDefinition>
   ? {
       type: LookupConnectionType<T>['type'];
       title: string;
       auth: string extends TAuthMethod
-        ? ConnectionAuthValue<IDefinition['auth'][number]>[]
+        ? ConnectionAuth<IDefinition['auth'][number]>[]
         : Extract<
-            ConnectionAuthValue<IDefinition['auth'][number]>,
+            ConnectionAuth<IDefinition['auth'][number]>,
             { method: TAuthMethod }
           >;
     } & ReturnType<LookupConnectionType<T>['configSchema']['parse']>

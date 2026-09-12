@@ -13,24 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  LookupConnectionType,
+export { buildConnectionsFromConfig } from './buildConnectionsFromConfig';
+export type { ConfiguredConnection } from './types';
+export type { ConfiguredConnectionAuth } from '../api/ConnectionType';
+export type {
+  ConnectionTypeDefinition,
+  ConnectionLookupStrategy,
+  PortableSchema,
+} from '../api/ConnectionType';
+export { connectionTypes } from '../definitions/types';
+export type {
   ConnectionType,
-  connectionTypes,
-} from '@backstage/connections';
-
-const connectionTypesMap = new Map(Object.entries(connectionTypes));
-
-export function getConnectionType<T extends ConnectionType>(
-  key: T,
-): LookupConnectionType<T> {
-  return connectionTypesMap.get(key) as LookupConnectionType<T>;
-}
-
-export function isConnectionType(
-  value: string | undefined,
-): value is ConnectionType {
-  if (!value) return false;
-
-  return connectionTypesMap.has(value);
-}
+  LookupConnectionType,
+} from '../definitions/types';

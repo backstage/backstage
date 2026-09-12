@@ -17,11 +17,10 @@ import { z } from 'zod/v4';
 import { InputError } from '@backstage/errors';
 import type { Expand, JsonObject } from '@backstage/types';
 import type {
-  ConnectionAuthMatch,
-  ConnectionType,
-  LookupStrategy,
+  ConnectionAuth,
+  ConnectionTypeDefinition,
+  ConnectionLookupStrategy,
   LookupStrategyQuery,
-  MatchAuth,
   PortableSchema,
   WithoutReservedAuthMethods,
   WithoutReservedFields,
@@ -85,7 +84,7 @@ export function createConnectionType<
   TType extends string,
   TConfigSchema extends z.ZodObject,
   const TAuthMethods extends readonly ConnectionAuthMethodSchema[],
-  TLookupStrategy extends LookupStrategy = 'host',
+  TLookupStrategy extends ConnectionLookupStrategy = 'host',
   TCardinality extends 'singleton' | 'multiton' = 'multiton',
 >({
   configSchema,
@@ -103,10 +102,14 @@ export function createConnectionType<
   lookupStrategy?: TLookupStrategy;
   configSchema: WithoutReservedFields<TConfigSchema>;
   authMethods: WithoutReservedAuthMethods<TAuthMethods>;
-  matchAuth?: MatchAuth<
-    ConfiguredConnectionAuthFromSchema<TAuthMethods[number]>,
-    LookupStrategyQuery[TLookupStrategy]
-  >;
+  matchAuth?: (
+    authMethods: ConnectionAuth<
+      ConfiguredConnectionAuthFromSchema<TAuthMethods[number]>
+    >[],
+    query: LookupStrategyQuery[TLookupStrategy],
+  ) =>
+    | ConnectionAuth<ConfiguredConnectionAuthFromSchema<TAuthMethods[number]>>
+    | undefined;
   // Checks the connection as a whole once every schema has accepted its own
   // part — for rules like "only one entry may be the fallback" that no
   // single entry can verify. Entries include their plugin `match` so that
@@ -115,11 +118,11 @@ export function createConnectionType<
     config: ConfigFromSchema<TConfigSchema>;
     auth: readonly Expand<
       ConfiguredConnectionAuthFromSchema<TAuthMethods[number]> & {
-        match?: ConnectionAuthMatch;
+        match?: { plugins: string[] };
       }
     >[];
   }) => void;
-}): ConnectionType<{
+}): ConnectionTypeDefinition<{
   type: TType;
   cardinality: TCardinality;
   lookupStrategy: TLookupStrategy;
@@ -156,7 +159,7 @@ export function createConnectionType<
     configSchema: portableConfigSchema,
     matchAuth,
     validate,
-  } as unknown as ConnectionType<{
+  } as unknown as ConnectionTypeDefinition<{
     type: TType;
     cardinality: TCardinality;
     lookupStrategy: TLookupStrategy;
