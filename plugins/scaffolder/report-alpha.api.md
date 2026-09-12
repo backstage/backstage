@@ -552,6 +552,7 @@ const _default: OverridableFrontendPlugin<
               filter: FilterPredicate;
             }[]
           | undefined;
+        templateFilter: FilterPredicate | undefined;
         path: string | undefined;
         title: string | undefined;
       };
@@ -563,6 +564,7 @@ const _default: OverridableFrontendPlugin<
               filter: FilterPredicate;
             }[]
           | undefined;
+        templateFilter?: FilterPredicate | undefined;
         path?: string | undefined;
         title?: string | undefined;
       };
