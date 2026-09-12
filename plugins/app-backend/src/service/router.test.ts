@@ -23,6 +23,7 @@ import { createRouter } from './router';
 import { loadConfigSchema } from '@backstage/config-loader';
 import {
   mockCredentials,
+  mockErrorHandler,
   mockServices,
   TestDatabases,
 } from '@backstage/backend-test-utils';
@@ -158,7 +159,7 @@ describe('createRouter with public entry point', () => {
       }),
       appPackageName: 'example-app',
     });
-    app = express().use(router);
+    app = express().use(router).use(mockErrorHandler());
   });
 
   beforeEach(() => {
@@ -211,7 +212,7 @@ describe('createRouter with public entry point', () => {
       .set('Content-Type', 'application/x-www-form-urlencoded')
       .send(`type=sign-in&token=${mockCredentials.user.token()}`);
 
-    expect(response.status).toBe(500);
+    expect(response.status).toBe(401);
     expect(response.header['set-cookie']).toBeUndefined();
   });
 
@@ -221,7 +222,7 @@ describe('createRouter with public entry point', () => {
       .set('Content-Type', 'application/x-www-form-urlencoded')
       .send('type=something-else');
 
-    expect(response.status).toBe(500);
+    expect(response.status).toBe(400);
   });
 });
 
