@@ -248,6 +248,17 @@ export const EntityPicker = (props: EntityPickerProps) => {
 
   const handleBlur = useCallback(() => {
     if (allowArbitraryValues && inputValue) {
+      // When the input is showing the display label of the currently
+      // committed selection, blurring must not re-commit that label as the
+      // value, which would corrupt a valid selection.
+      const isShowingCommittedLabel = buiOptions.some(
+        option =>
+          option.value === lastCommittedRef.current &&
+          option.label === inputValue,
+      );
+      if (isShowingCommittedLabel) {
+        return;
+      }
       let entityRef = inputValue;
       try {
         entityRef = stringifyEntityRef(
@@ -264,6 +275,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
   }, [
     allowArbitraryValues,
     inputValue,
+    buiOptions,
     defaultKind,
     defaultNamespace,
     onChange,
