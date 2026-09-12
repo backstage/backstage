@@ -8,7 +8,6 @@ import { rootRouteRef } from './routes';
 export const page = PageBlueprint.make({
   params: {
     path: '/{{pluginId}}',
-    routeRef: rootRouteRef,
     loader: () =>
       import('./components/TodoPage').then(m => (
         <m.TodoPage />

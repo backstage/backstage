@@ -42,8 +42,11 @@ const rest = {
   plugins: new Set<BackstagePlugin>(),
 };
 
+// @ts-expect-error Historical refs intentionally omit extensionId
 const ref1 = createRouteRef();
+// @ts-expect-error Historical refs intentionally omit extensionId
 const ref2 = createRouteRef({ params: ['x'] });
+// @ts-expect-error Historical refs intentionally omit extensionId
 const ref3 = createRouteRef({ params: ['y'] });
 const subRef1 = createSubRouteRef({ parent: ref1, path: '/foo' });
 const subRef2 = createSubRouteRef({ parent: ref1, path: '/foo/:a' });
@@ -108,6 +111,7 @@ describe('RouteResolver', () => {
   });
 
   it('should resolve nested sub routes directly and as external targets', () => {
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const packagesRouteRef = createRouteRef();
     const revisionRouteRef = createSubRouteRef({
       parent: packagesRouteRef,
@@ -241,6 +245,7 @@ describe('RouteResolver', () => {
 
     expect(r.resolve(ref1, src('/'))?.()).toBe('/my-route');
     expect(
+      // @ts-expect-error Historical refs intentionally omit extensionId
       r.resolve(createRouteRef({ aliasFor: 'test.ref1' }), src('/'))?.(),
     ).toBe('/my-route');
   });
@@ -300,8 +305,10 @@ describe('RouteResolver', () => {
     );
     expect(
       r.resolve(
+        // @ts-expect-error Historical refs intentionally omit extensionId
         createRouteRef({ aliasFor: 'test.param', params: ['x'] }),
         src('/'),
+        // @ts-expect-error Historical refs intentionally omit extensionId
       )?.({ x: '1x' }),
     ).toBe('/my-parent/1x');
   });

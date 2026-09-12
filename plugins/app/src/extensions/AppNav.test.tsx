@@ -28,6 +28,7 @@ const DEFAULT_CONFIG = {
   backend: { baseUrl: 'http://localhost:7007' },
 };
 
+// @ts-expect-error Historical refs intentionally omit extensionId
 const mockRouteRef = createRouteRef();
 
 const mockPage = PageBlueprint.make({
