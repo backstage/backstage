@@ -20,12 +20,14 @@
  * Keeps planner statistics current on the high-churn `refresh_state` table.
  *
  * The table is updated continuously as entities are processed. On large
- * catalogs, PostgreSQL's default 20% threshold can therefore leave its row
- * count estimate far enough behind reality to produce poor orphan-cleanup
- * plans. A 1% threshold matches the other high-churn catalog tables.
+ * catalogs, PostgreSQL's default vacuum scale factor of 20% and analyze scale
+ * factor of 10% can therefore leave maintenance and row-count estimates far
+ * enough behind reality to produce poor orphan-cleanup plans. A 1% threshold
+ * matches the other high-churn catalog tables.
  *
- * `ANALYZE` applies the setting immediately. MySQL and SQLite do not support
- * these settings, so this migration is a no-op on those engines.
+ * `ANALYZE` refreshes the current planner statistics immediately. MySQL and
+ * SQLite do not support these settings, so this migration is a no-op on those
+ * engines.
  */
 
 /**
