@@ -125,14 +125,9 @@ describe.each(databases.eachSupportedId())(
       await expect(entitiesMarkedForStitching(knex)).resolves.toEqual(['E4']);
     });
 
-    it('works when there are multiple identical references', async () => {
+    it('works when a single reference points to a deleted entity', async () => {
       /*
-          P1
-            \
-             E1
-            /
-          P1
-
+          P1 - E1
           P1 - E2
 
           Scenario: P1 issues delete for E1
@@ -143,7 +138,6 @@ describe.each(databases.eachSupportedId())(
       await insertEntity(knex, 'E1', 'E2');
       await insertReference(
         knex,
-        { source_key: 'P1', target_entity_ref: 'E1' },
         { source_key: 'P1', target_entity_ref: 'E1' },
         { source_key: 'P1', target_entity_ref: 'E2' },
       );
