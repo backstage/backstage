@@ -42,6 +42,9 @@ export function evaluateFilterPredicate(
         'Operator $all must be the only key in the predicate, wrap in $all to combine with other conditions',
       );
     }
+    if (!Array.isArray(predicate.$all)) {
+      return false;
+    }
     return predicate.$all.every(f => evaluateFilterPredicate(f, value));
   }
   if ('$any' in predicate) {
@@ -49,6 +52,9 @@ export function evaluateFilterPredicate(
       throw new InputError(
         'Operator $any must be the only key in the predicate, wrap in $all to combine with other conditions',
       );
+    }
+    if (!Array.isArray(predicate.$any)) {
+      return false;
     }
     return predicate.$any.some(f => evaluateFilterPredicate(f, value));
   }
@@ -112,6 +118,9 @@ function evaluateFilterPredicateValue(
     return value.some(v => evaluateFilterPredicate(filter.$contains, v));
   }
   if ('$in' in filter) {
+    if (!Array.isArray(filter.$in)) {
+      return false;
+    }
     return filter.$in.some(search => valuesAreEqual(value, search));
   }
   if ('$exists' in filter) {
@@ -121,7 +130,7 @@ function evaluateFilterPredicateValue(
     return value === undefined;
   }
   if ('$hasPrefix' in filter) {
-    if (typeof value !== 'string') {
+    if (typeof value !== 'string' || typeof filter.$hasPrefix !== 'string') {
       return false;
     }
     return value.toUpperCase().startsWith(filter.$hasPrefix.toUpperCase());
