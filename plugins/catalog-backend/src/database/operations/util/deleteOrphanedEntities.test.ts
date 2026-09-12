@@ -129,6 +129,75 @@ describe.each(databases.eachSupportedId())(
         });
     }
 
+    it('discovers orphan candidates with a narrow CTE', async () => {
+      const knex = await createDatabase();
+      await insertEntity(knex, 'E1');
+      await insertReference(knex, {
+        source_key: 'P1',
+        target_entity_ref: 'E1',
+      });
+
+      const queries: string[] = [];
+      const onQuery = (query: { sql: string }) => queries.push(query.sql);
+      knex.on('query', onQuery);
+      try {
+        await expect(run(knex)).resolves.toEqual(0);
+      } finally {
+        knex.off('query', onQuery);
+      }
+
+      const candidateQueries = queries.filter(query =>
+        query.includes('orphan_refs'),
+      );
+      expect(candidateQueries).toHaveLength(1);
+
+      const expectedCte = knex.client.config.client.includes('pg')
+        ? 'with "orphan_refs"("entity_ref") as materialized ' +
+          '(select "refresh_state"."entity_ref" from "refresh_state"'
+        : 'with `orphan_refs`(`entity_ref`) as ' +
+          '(select `refresh_state`.`entity_ref` from `refresh_state`';
+      expect(candidateQueries[0]).toContain(expectedCte);
+    });
+
+    it('rechecks orphan status in the deletion statement', async () => {
+      const knex = await createDatabase();
+      await insertEntity(knex, 'E1');
+
+      const queries: string[] = [];
+      const onQuery = (query: { sql: string }) => queries.push(query.sql);
+      knex.on('query', onQuery);
+      try {
+        await expect(run(knex)).resolves.toEqual(1);
+      } finally {
+        knex.off('query', onQuery);
+      }
+
+      const deletionQuery = queries.find(
+        query => query.startsWith('delete from') && query.includes('entity_id'),
+      );
+      expect(deletionQuery).toMatch(/not exists/);
+      expect(deletionQuery).toMatch(
+        /target_entity_ref.*refresh_state.*entity_ref/,
+      );
+    });
+
+    it('rolls back deletion when affected entities cannot be marked', async () => {
+      const knex = await createDatabase();
+      await insertEntity(knex, 'E1', 'E2');
+      await insertReference(knex, {
+        source_key: 'P1',
+        target_entity_ref: 'E2',
+      });
+      await insertRelation(knex, 'E2', 'E1');
+      await knex.schema.dropTable('stitch_queue');
+
+      await expect(deleteOrphanedEntities({ knex })).rejects.toThrow();
+      await expect(refreshState(knex)).resolves.toEqual([
+        { entity_ref: 'E1', result_hash: 'original' },
+        { entity_ref: 'E2', result_hash: 'original' },
+      ]);
+    });
+
     it('works for some mixed paths', async () => {
       /*
           In this graph, edges represent refresh state references, not entity relations:
