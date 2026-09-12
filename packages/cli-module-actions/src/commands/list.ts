@@ -15,6 +15,7 @@
  */
 
 import { cli } from 'cleye';
+import chalk from 'chalk';
 import type { CliCommandContext } from '@backstage/cli-node';
 import { ActionsClient } from '../lib/ActionsClient';
 import { resolveAuth } from '../lib/resolveAuth';
@@ -49,13 +50,34 @@ export default async ({ args, info }: CliCommandContext) => {
   }
 
   const client = new ActionsClient(baseUrl, accessToken);
-  const grouped = await client.list(pluginSources);
+  const { grouped, failed } = await client.list(pluginSources);
 
   const hasActions = grouped.some(g => g.actions.length > 0);
-  if (!hasActions) {
+
+  if (grouped.length === 0 && failed.length > 0) {
+    for (const { pluginId, message } of failed) {
+      process.stderr.write(
+        chalk.yellow(`Warning: source '${pluginId}' failed — ${message}\n`),
+      );
+    }
+    process.exitCode = 1;
+    return;
+  }
+
+  if (!hasActions && failed.length === 0) {
     process.stderr.write('No actions found.\n');
     return;
   }
 
-  process.stdout.write(`${formatActionList(grouped)}\n`);
+  if (hasActions) {
+    process.stdout.write(`${formatActionList(grouped)}\n`);
+  }
+
+  for (const { pluginId, message } of failed) {
+    process.stderr.write(
+      chalk.yellow(
+        `Warning: source '${pluginId}' returned an error — skipped (${message})\n`,
+      ),
+    );
+  }
 };

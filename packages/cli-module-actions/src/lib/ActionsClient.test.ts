@@ -34,9 +34,9 @@ describe('ActionsClient', () => {
   });
 
   describe('list', () => {
-    it('returns empty array when no plugin sources provided', async () => {
+    it('returns empty results when no plugin sources provided', async () => {
       const result = await client.list([]);
-      expect(result).toEqual([]);
+      expect(result).toEqual({ grouped: [], failed: [] });
       expect(mockHttpJson).not.toHaveBeenCalled();
     });
 
@@ -75,16 +75,50 @@ describe('ActionsClient', () => {
           headers: { Authorization: 'Bearer test-token' },
         }),
       );
-      expect(result).toEqual([
-        { pluginId: 'catalog', actions: catalogActions },
-        { pluginId: 'scaffolder', actions: scaffolderActions },
-      ]);
+      expect(result).toEqual({
+        grouped: [
+          { pluginId: 'catalog', actions: catalogActions },
+          { pluginId: 'scaffolder', actions: scaffolderActions },
+        ],
+        failed: [],
+      });
     });
 
-    it('propagates errors from httpJson', async () => {
+    it('returns partial results and failed sources when some sources fail', async () => {
+      const catalogActions = [
+        {
+          id: 'catalog:refresh',
+          name: 'refresh',
+          schema: { input: {}, output: {} },
+        },
+      ];
+
+      mockHttpJson
+        .mockResolvedValueOnce({ actions: catalogActions })
+        .mockRejectedValueOnce(new Error('Request failed with 404 Not Found'));
+
+      const result = await client.list(['catalog', 'scaffolder']);
+
+      expect(result).toEqual({
+        grouped: [{ pluginId: 'catalog', actions: catalogActions }],
+        failed: [
+          {
+            pluginId: 'scaffolder',
+            message: 'Request failed with 404 Not Found',
+          },
+        ],
+      });
+    });
+
+    it('reports all sources as failed when all fail', async () => {
       mockHttpJson.mockRejectedValue(new Error('Network error'));
 
-      await expect(client.list(['catalog'])).rejects.toThrow('Network error');
+      const result = await client.list(['catalog']);
+
+      expect(result).toEqual({
+        grouped: [],
+        failed: [{ pluginId: 'catalog', message: 'Network error' }],
+      });
     });
   });
 
