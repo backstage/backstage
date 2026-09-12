@@ -71,6 +71,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
     "@types/lodash": "^4.14.151",
     "@types/react": "^18.0.0",
