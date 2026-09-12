@@ -170,6 +170,48 @@ describe('gitlab core', () => {
         ).resolves.toBe(fetchUrl);
       });
     });
+
+    describe('when the branch name contains special characters', () => {
+      it('encodes a branch containing an ampersand so it is not split into another query parameter', async () => {
+        const target =
+          'https://gitlab.com/group/project/-/blob/foo&bar/folder/file.yaml';
+        const fetchUrl =
+          'https://gitlab.com/api/v4/projects/group%2Fproject/repository/files/folder%2Ffile.yaml/raw?ref=foo%26bar';
+        await expect(
+          getGitLabFileFetchUrl(target, configWithNoToken),
+        ).resolves.toBe(fetchUrl);
+      });
+
+      it('encodes a branch containing a plus sign so it is not decoded as a space', async () => {
+        const target =
+          'https://gitlab.com/group/project/-/blob/foo+bar/folder/file.yaml';
+        const fetchUrl =
+          'https://gitlab.com/api/v4/projects/group%2Fproject/repository/files/folder%2Ffile.yaml/raw?ref=foo%2Bbar';
+        await expect(
+          getGitLabFileFetchUrl(target, configWithNoToken),
+        ).resolves.toBe(fetchUrl);
+      });
+
+      it('encodes a branch containing a space', async () => {
+        const target =
+          'https://gitlab.com/group/project/-/blob/my branch/folder/file.yaml';
+        const fetchUrl =
+          'https://gitlab.com/api/v4/projects/group%2Fproject/repository/files/folder%2Ffile.yaml/raw?ref=my%20branch';
+        await expect(
+          getGitLabFileFetchUrl(target, configWithNoToken),
+        ).resolves.toBe(fetchUrl);
+      });
+
+      it('leaves an already-encoded branch name intact', async () => {
+        const target =
+          'https://gitlab.com/group/project/-/blob/release%2Fv1/folder/file.yaml';
+        const fetchUrl =
+          'https://gitlab.com/api/v4/projects/group%2Fproject/repository/files/folder%2Ffile.yaml/raw?ref=release%2Fv1';
+        await expect(
+          getGitLabFileFetchUrl(target, configWithNoToken),
+        ).resolves.toBe(fetchUrl);
+      });
+    });
   });
 
   describe('extractProjectPath', () => {
