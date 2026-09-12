@@ -18,6 +18,7 @@ import { JsonValue } from '@backstage/types';
 import type { RJSFValidationError } from '@rjsf/utils';
 import { act, fireEvent, waitFor } from '@testing-library/react';
 import { useEffect } from 'react';
+import { BrowserRouter } from 'react-router-dom';
 
 import { FieldExtensionComponentProps } from '../../../extensions';
 import { LayoutTemplate } from '../../../layouts';
@@ -787,6 +788,183 @@ describe('Stepper', () => {
     windowScrollSpy.mockRestore();
     document.body.removeChild(main);
     unmount();
+  });
+
+  describe('browser back/forward navigation', () => {
+    // These tests need window.location/history to actually drive the
+    // router (unlike the MemoryRouter the other tests get from
+    // renderInTestApp), since the behaviour under test is specifically
+    // about the wizard's interaction with real browser navigation.
+    const withBrowserRouter = { components: { Router: BrowserRouter } };
+
+    it('should step back and forward through the wizard on history navigation, matching the Back/Next buttons, and leave the wizard on a Back past its first step', async () => {
+      const manifest: TemplateParameterSchema = {
+        steps: [
+          {
+            title: 'Step 1',
+            schema: { properties: { name: { type: 'string' } } },
+          },
+          {
+            title: 'Step 2',
+            schema: { properties: { description: { type: 'string' } } },
+          },
+        ],
+        title: 'History navigation test',
+      };
+
+      // Simulate arriving at the wizard the way the real app does: the
+      // template list is the previous entry, the wizard route is pushed on
+      // top of it when a template is selected.
+      window.history.replaceState({}, '', '/create');
+      window.history.pushState(
+        {},
+        '',
+        '/create/actions/history-navigation-test',
+      );
+
+      const { getByRole, queryByRole, unmount } = await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+        </SecretsContextProvider>,
+        withBrowserRouter,
+      );
+
+      expect(getByRole('textbox', { name: 'name' })).toBeInTheDocument();
+
+      await act(async () => {
+        fireEvent.click(getByRole('button', { name: 'Next' }));
+      });
+
+      expect(getByRole('textbox', { name: 'description' })).toBeInTheDocument();
+
+      // Simulate the browser back button.
+      await act(async () => {
+        window.history.back();
+      });
+
+      await waitFor(() => {
+        expect(getByRole('textbox', { name: 'name' })).toBeInTheDocument();
+      });
+      expect(
+        queryByRole('textbox', { name: 'description' }),
+      ).not.toBeInTheDocument();
+      // Still inside the wizard - only the step changed, not the route.
+      expect(window.location.pathname).toBe(
+        '/create/actions/history-navigation-test',
+      );
+
+      // And forward.
+      await act(async () => {
+        window.history.forward();
+      });
+
+      await waitFor(() => {
+        expect(
+          getByRole('textbox', { name: 'description' }),
+        ).toBeInTheDocument();
+      });
+
+      // Back to step 1, then back again should leave the wizard entirely -
+      // a duplicate history entry from mounting would require this second
+      // press to only unmask the first one, leaving the route unchanged.
+      await act(async () => {
+        window.history.back();
+      });
+      await waitFor(() => {
+        expect(getByRole('textbox', { name: 'name' })).toBeInTheDocument();
+      });
+
+      await act(async () => {
+        window.history.back();
+      });
+      await waitFor(() => {
+        expect(window.location.pathname).toBe('/create');
+      });
+
+      unmount();
+    });
+
+    it('should block a forward history navigation that would restore now-invalid step data, matching the Next button', async () => {
+      const manifest: TemplateParameterSchema = {
+        steps: [
+          {
+            title: 'Step 1',
+            schema: {
+              properties: { name: { type: 'string', pattern: '^[a-z]+$' } },
+            },
+          },
+          {
+            title: 'Step 2',
+            schema: { properties: { description: { type: 'string' } } },
+          },
+        ],
+        title: 'History navigation validation test',
+      };
+
+      window.history.replaceState({}, '', '/create');
+      window.history.pushState(
+        {},
+        '',
+        '/create/actions/history-navigation-validation-test',
+      );
+
+      const { getByRole, queryByRole, unmount } = await renderInTestApp(
+        <SecretsContextProvider>
+          <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+        </SecretsContextProvider>,
+        withBrowserRouter,
+      );
+
+      await act(async () => {
+        fireEvent.change(getByRole('textbox', { name: 'name' }), {
+          target: { value: 'validname' },
+        });
+      });
+
+      await act(async () => {
+        fireEvent.click(getByRole('button', { name: 'Next' }));
+      });
+
+      expect(getByRole('textbox', { name: 'description' })).toBeInTheDocument();
+
+      await act(async () => {
+        window.history.back();
+      });
+
+      await waitFor(() => {
+        expect(getByRole('textbox', { name: 'name' })).toBeInTheDocument();
+      });
+
+      // Make step 1's data invalid, then try to go Forward like the
+      // browser would - clicking Next would be blocked, so this must be too.
+      await act(async () => {
+        fireEvent.change(getByRole('textbox', { name: 'name' }), {
+          target: { value: '123' },
+        });
+      });
+
+      await act(async () => {
+        window.history.forward();
+      });
+
+      await waitFor(() => {
+        expect(
+          queryByRole('textbox', { name: 'description' }),
+        ).not.toBeInTheDocument();
+      });
+      expect(getByRole('textbox', { name: 'name' })).toBeInTheDocument();
+
+      // Confirm the browser's forward move was actually undone (not just
+      // that the step didn't change), so no history mismatch is left
+      // behind for whatever mounts next.
+      await waitFor(() => {
+        expect(window.location.pathname).toBe(
+          '/create/actions/history-navigation-validation-test',
+        );
+      });
+
+      unmount();
+    });
   });
 
   describe('Scaffolder Layouts', () => {
