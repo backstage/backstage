@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,8 @@
  * transient failure apart from an authentication failure, so they don't wipe
  * the session or escalate to an interactive login prompt for something that
  * will succeed on the next attempt.
+ *
+ * @internal
  */
 export class AuthConnectionError extends Error {
   constructor(message: string, cause?: unknown) {
@@ -39,6 +41,8 @@ export class AuthConnectionError extends Error {
 /**
  * Type guard for {@link AuthConnectionError}. Also matches by name so it keeps
  * working across module/realm boundaries where `instanceof` can be unreliable.
+ *
+ * @internal
  */
 export function isAuthConnectionError(
   error: unknown,
