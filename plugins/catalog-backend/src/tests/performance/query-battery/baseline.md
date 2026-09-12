@@ -99,7 +99,7 @@
   `final_entities` rows. The `search` table contained 17.1M rows for 735,764
   distinct entities; planner statistics estimated 22.3M rows.
 - **Data shape**: 1,084 matching workflow relations and 934 matching dataset
-  relations, the same branch cardinalities observed in production
+  relations, the same branch result counts observed in production
 - **Execution time**: 2.91-3.07s on repeated warm runs; approximately 12.0s on
   the first cold run
 - **Plan shape**: Index Only Scan on `search_key_value_entity_idx` for
