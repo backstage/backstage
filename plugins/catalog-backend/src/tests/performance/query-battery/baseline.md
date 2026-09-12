@@ -7,10 +7,11 @@ Readable representative `EXPLAIN (ANALYZE, BUFFERS)` output is recorded in
 **Date**: 2026-09-12
 **Database**: Production-scale staging replica
 **Catalog size**: ~739K `final_entities`, ~21.9M planner-estimated `search`
-rows, ~6.1M `relations`, ~739K `refresh_state_references`, ~1.28M
-`refresh_state`
+rows, ~6.1M `relations`, ~739K `refresh_state_references`, and ~739K
+`refresh_state` rows
 **Statistics**: `search.entity_id n_distinct = -0.0429023`, followed by
-`ANALYZE search` and `VACUUM search`
+`ANALYZE search` and `VACUUM search`; `refresh_state` analyzed after its row
+estimate had drifted to 1.28M
 **Table sizes**: `search` 43GB total (34GB heap, 9.1GB indexes), `relations`
 2.3GB total (1.7GB heap), and `refresh_state` 11GB total
 **Selected kind counts**: 46,036 components, 14 templates, 202,704 APIs, and
@@ -115,16 +116,16 @@ rows, ~6.1M `relations`, ~739K `refresh_state_references`, ~1.28M
 
 ## Scenario 11: Relations: orphan detection anti-join
 
-- **Execution time**: 11.06s median (10.10-12.04s)
-- **Planning time**: 1.583 ms
-- **Plan shape**: Limit -> Nested Loop Anti Join: Sequential Scan on
-  `refresh_state` -> Index Only Scan on
-  `refresh_state_references_target_entity_ref_idx`; approximately 373K outer
-  rows are inspected to find 100 orphans
-- **Anti-patterns detected**: Nested-loop amplification caused by LIMIT and a
-  poor estimate of where unmatched rows occur; a diagnostic Merge Anti Join
-  completed in approximately 996ms
-- **Buffers**: shared hit=1773957 read=1016802
+- **Execution time**: 1.60s median (1.53-1.93s)
+- **Planning time**: 1.591 ms
+- **Plan shape**: Limit -> Gather (2 workers) -> Parallel Hash Anti Join:
+  Parallel Sequential Scan on `refresh_state` -> Parallel Hash of a Parallel
+  Sequential Scan on `refresh_state_references`
+- **Anti-patterns detected**: Both tables are scanned in full, including the
+  10GB `refresh_state` heap. The plan avoids the catastrophic nested-loop
+  amplification seen with stale `refresh_state` row statistics, but remains
+  above the 500ms target.
+- **Buffers**: shared hit=299896 read=1008342
 
 ## Scenario 12: Ordered disjunction with selective branches
 
@@ -166,20 +167,20 @@ The corrected value, `-0.0429023`, was calculated from the staging data. The
 legacy value, `-1`, tells PostgreSQL to treat every search row as having a
 different entity ID.
 
-| Scenario                          | Legacy `-1` | Corrected `-0.0429023` | Effective plan comparison                                      |
-| --------------------------------- | ----------: | ---------------------: | -------------------------------------------------------------- |
-| 1. Paginated component list       |     22.1 ms |                22.6 ms | Same ordered parallel index plan                               |
-| 2. Component count                |    465.2 ms |               452.5 ms | Same parallel hash-join and nested-loop plan                   |
-| 3. Unfiltered page                |    0.147 ms |               0.146 ms | Same `final_entities` index scan                               |
-| 4. Template facets                |    0.883 ms |               0.838 ms | Same nested-loop index plan                                    |
-| 5. Component facets               |    641.6 ms |               631.7 ms | Corrected plan uses partial aggregation; same scans and joins  |
-| 6. Entity lookup                  |    0.126 ms |               0.124 ms | Same unique-index lookup                                       |
-| 7. Full-text component filter     |     15.2 ms |                14.9 ms | Same ordered parallel index plan                               |
-| 8. Ancestry step                  |    0.156 ms |               0.134 ms | Same nested-loop index plan                                    |
-| 9. Incoming reference count       |    0.162 ms |               0.215 ms | Same index-only scan; sub-millisecond variance                 |
-| 10. Unfiltered count              |    556.0 ms |               514.0 ms | Same parallel hash-join plan                                   |
-| 11. Orphan anti-join              |      11.67s |                 11.06s | Same nested-loop anti-join; independent of `search` statistics |
-| 12. Ordered selective disjunction |       2.90s |                  2.76s | Corrected plan adds a Memoize node with no cache hits          |
+| Scenario                          | Legacy `-1` | Corrected `-0.0429023` | Effective plan comparison                                       |
+| --------------------------------- | ----------: | ---------------------: | --------------------------------------------------------------- |
+| 1. Paginated component list       |     22.1 ms |                22.6 ms | Same ordered parallel index plan                                |
+| 2. Component count                |    465.2 ms |               452.5 ms | Same parallel hash-join and nested-loop plan                    |
+| 3. Unfiltered page                |    0.147 ms |               0.146 ms | Same `final_entities` index scan                                |
+| 4. Template facets                |    0.883 ms |               0.838 ms | Same nested-loop index plan                                     |
+| 5. Component facets               |    641.6 ms |               631.7 ms | Corrected plan uses partial aggregation; same scans and joins   |
+| 6. Entity lookup                  |    0.126 ms |               0.124 ms | Same unique-index lookup                                        |
+| 7. Full-text component filter     |     15.2 ms |                14.9 ms | Same ordered parallel index plan                                |
+| 8. Ancestry step                  |    0.156 ms |               0.134 ms | Same nested-loop index plan                                     |
+| 9. Incoming reference count       |    0.162 ms |               0.215 ms | Same index-only scan; sub-millisecond variance                  |
+| 10. Unfiltered count              |    556.0 ms |               514.0 ms | Same parallel hash-join plan                                    |
+| 11. Orphan anti-join              |    Excluded |               Excluded | Runs invalidated by stale, unrelated `refresh_state` statistics |
+| 12. Ordered selective disjunction |       2.90s |                  2.76s | Corrected plan adds a Memoize node with no cache hits           |
 
 The corrected statistic changes row estimates substantially but does not
 materially change the runtime of the battery. Scenario 5 switches to partial
@@ -193,10 +194,11 @@ The large differences from the May baseline, particularly scenario 7, are
 therefore changes in the wider database, data, and planner state rather than
 effects of this setting.
 
-Scenario 11 is a separate regression. Both settings chose a Nested Loop Anti
-Join that scanned approximately 373K-387K `refresh_state` rows to find 100 orphans.
-Forcing an alternative plan for diagnosis produced a Merge Anti Join in about
-996ms, compared with approximately 10-13s for the default warm plan.
+Scenario 11 is excluded from this controlled comparison because both runs used
+an unrelated stale `refresh_state` row estimate of 1.28M for 739K actual rows.
+That state produced a Nested Loop Anti Join taking approximately 10-13s. After
+`ANALYZE refresh_state`, the canonical plan is a Parallel Hash Anti Join with a
+1.60s median runtime.
 
 ---
 
@@ -214,7 +216,7 @@ Forcing an alternative plan for diagnosis produced a Merge Anti Join in about
 | 8. Relations traversal             | 0.134 ms       | Excellent                                         |
 | 9. Stitching ref count             | 0.215 ms       | Excellent                                         |
 | 10. Unfiltered count               | 514.0 ms       | OK; efficient parallel aggregate                  |
-| 11. Orphan detection               | 11.06s         | **Regression**; nested-loop amplification         |
+| 11. Orphan detection               | 1.60s          | Needs work; scans the 10GB `refresh_state` heap   |
 | 12. Ordered selective disjunction  | 2.76s          | Known slow case; branches are individually faster |
 
 ---
@@ -225,7 +227,7 @@ Forcing an alternative plan for diagnosis produced a Merge Anti Join in about
 
 The staging catalog is larger than the previous production-scale baseline:
 approximately 739K entities versus 474K, 21.9M planner-estimated search rows
-versus 13.2M, 6.1M relations versus 3.5M, and 1.28M refresh-state rows versus
+versus 13.2M, 6.1M relations versus 3.5M, and 739K refresh-state rows versus
 476K. Absolute timing changes must therefore be interpreted alongside the plan
 changes.
 
@@ -249,9 +251,9 @@ changes.
 - **Scenario 1** (paginated component list): 22.6ms versus 12.5ms. It remains
   well below the 50ms anti-pattern threshold and retains its healthy ordered
   LIMIT plan.
-- **Scenario 11** (orphan detection): 11.06s versus 255.7ms. The planner now
-  chooses a Nested Loop Anti Join and inspects approximately 373K refresh-state
-  rows to find 100 orphans. This is the only serious regression in the current
+- **Scenario 11** (orphan detection): 1.60s versus 255.7ms. The current
+  Parallel Hash Anti Join avoids nested-loop amplification but scans the full
+  10GB `refresh_state` heap. This remains the main regression in the current
   battery.
 
 ### Plan shape changes (no performance impact)

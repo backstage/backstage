@@ -304,21 +304,27 @@ Execution Time: 516.534 ms
 ## 11 orphan anti-join
 
 ```text
-Limit  (cost=0.55..394.33 rows=100 width=110) (actual time=9.171..10660.542 rows=100.00 loops=1)
-  Buffers: shared hit=1895418 read=319
-  ->  Nested Loop Anti Join  (cost=0.55..2112077.83 rows=536358 width=110) (actual time=9.170..10660.426 rows=100.00 loops=1)
-        Buffers: shared hit=1895418 read=319
-        ->  Seq Scan on refresh_state  (cost=0.00..1308879.59 rows=1282559 width=110) (actual time=0.027..302.168 rows=413181.00 loops=1)
-              Buffers: shared hit=115280 read=319
-        ->  Index Only Scan using refresh_state_references_target_entity_ref_idx on refresh_state_references  (cost=0.55..0.62 rows=1 width=73) (actual time=0.025..0.025 rows=1.00 loops=413181)
-              Index Cond: (target_entity_ref = (refresh_state.entity_ref)::text)
-              Heap Fetches: 127460
-              Index Searches: 413181
-              Buffers: shared hit=1780138
+Limit  (cost=20183.08..1320484.95 rows=1 width=110) (actual time=182.464..1610.855 rows=100.00 loops=1)
+  Buffers: shared hit=299896 read=1008342
+  ->  Gather  (cost=20183.08..1320484.95 rows=1 width=110) (actual time=182.463..1610.793 rows=100.00 loops=1)
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=299896 read=1008342
+        ->  Parallel Hash Anti Join  (cost=19183.08..1319484.85 rows=1 width=110) (actual time=180.152..1580.009 rows=61.67 loops=3)
+              Hash Cond: ((refresh_state.entity_ref)::text = refresh_state_references.target_entity_ref)
+              Buffers: shared hit=299896 read=1008342
+              ->  Parallel Seq Scan on refresh_state  (cost=0.00..1299143.29 rows=308929 width=110) (actual time=0.013..1177.208 rows=246275.00 loops=3)
+                    Buffers: shared hit=287712 read=1008342
+              ->  Parallel Hash  (cost=15294.70..15294.70 rows=311070 width=73) (actual time=173.630..173.631 rows=246213.33 loops=3)
+                    Buckets: 1048576  Batches: 1  Memory Usage: 86976kB
+                    Buffers: shared hit=12184
+                    ->  Parallel Seq Scan on refresh_state_references  (cost=0.00..15294.70 rows=311070 width=73) (actual time=0.016..41.535 rows=246213.33 loops=3)
+                          Buffers: shared hit=12184
+Settings: work_mem = '32MB', effective_cache_size = '24687808kB'
 Planning:
   Buffers: shared hit=326
-Planning Time: 1.649 ms
-Execution Time: 10660.810 ms
+Planning Time: 1.591 ms
+Execution Time: 1611.097 ms
 ```
 
 ## 12 ordered selective OR
