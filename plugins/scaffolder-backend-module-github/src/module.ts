@@ -58,6 +58,9 @@ export const githubModule = createBackendModule({
       },
       async init({ scaffolder, config, autocomplete, catalog }) {
         const integrations = ScmIntegrations.fromConfig(config);
+        const requireScmUserCredentials =
+          config.getOptionalBoolean('scaffolder.requireScmUserCredentials') ??
+          false;
         const githubCredentialsProvider =
           DefaultGithubCredentialsProvider.fromIntegrations(integrations);
 
@@ -65,51 +68,67 @@ export const githubModule = createBackendModule({
           createGithubActionsDispatchAction({
             integrations,
             githubCredentialsProvider,
+            requireScmUserCredentials,
           }),
           createGithubAutolinksAction({
             integrations,
             githubCredentialsProvider,
+            requireScmUserCredentials,
           }),
           createGithubDeployKeyAction({
             integrations,
+            requireScmUserCredentials,
           }),
           createGithubEnvironmentAction({
             integrations,
             catalog,
+            requireScmUserCredentials,
           }),
           createGithubIssuesLabelAction({
             integrations,
             githubCredentialsProvider,
+            requireScmUserCredentials,
           }),
           createGithubIssuesCreateAction({
             integrations,
             githubCredentialsProvider,
+            requireScmUserCredentials,
           }),
           createGithubRepoCreateAction({
             integrations,
             githubCredentialsProvider,
+            requireScmUserCredentials,
           }),
-          createGithubRepoPushAction({ integrations, config }),
+          createGithubRepoPushAction({
+            integrations,
+            config,
+            requireScmUserCredentials,
+          }),
           createGithubWebhookAction({
             integrations,
             githubCredentialsProvider,
+            requireScmUserCredentials,
           }),
           createPublishGithubAction({
             integrations,
             config,
             githubCredentialsProvider,
+            requireScmUserCredentials,
           }),
           createPublishGithubPullRequestAction({
             integrations,
             githubCredentialsProvider,
             config,
+            requireScmUserCredentials,
           }),
           createGithubPagesEnableAction({
             integrations,
             githubCredentialsProvider,
+            requireScmUserCredentials,
           }),
           createGithubBranchProtectionAction({
             integrations,
+            requireScmUserCredentials,
           }),
         );
 

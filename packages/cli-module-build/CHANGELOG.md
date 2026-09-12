@@ -1,5 +1,39 @@
 # @backstage/cli-module-build
 
+## 0.1.8-next.2
+
+### Patch Changes
+
+- 064c2de: Updated the Module Federation dependencies to versions that avoid known security vulnerabilities.
+- 96badbc: Fixed a bug where plugin packages installed through feature discovery were loaded before the app's own code ran. This could cause bootstrap-order-sensitive setup code in the app, such as configuring MUI 5's class name prefix, to be skipped if a discovered plugin's dependencies loaded MUI 5 components first. Discovered plugin packages are now loaded after the app's own code instead.
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/module-federation-common@0.1.5-next.0
+  - @backstage/config-loader@1.11.3-next.0
+
+## 0.1.8-next.1
+
+### Patch Changes
+
+- 277a125: Fixed declaration bundling of imports that use the `node:` built-in module prefix.
+
+## 0.1.8-next.0
+
+### Patch Changes
+
+- b2b7568: Significantly improve the performance of `build-workspace` when packaging many Backstage packages.
+
+## 0.1.7
+
+### Patch Changes
+
+- 943687f: Stopped disabling the Node.js snapshot by default when starting backends or running tests.
+- 4d7b153: chore(deps): bump `shell-quote` from 1.8.4 to 1.9.0
+- 78bf918: chore(deps): bump `tar` from 7.5.15 to 7.5.21
+- bb98419: Package preparation for publishing validates TypeScript configuration schemas strictly, preventing invalid schemas from being published. Other build and bundle paths report schema errors as warnings.
+- Updated dependencies
+  - @backstage/config-loader@1.11.2
+
 ## 0.1.7-next.0
 
 ### Patch Changes

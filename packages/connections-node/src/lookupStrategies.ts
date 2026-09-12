@@ -28,6 +28,10 @@ type LookupStrategyDefinition = {
  * each connection type. Each definition knows how to derive the identity to
  * match connections against from the query passed to `ConnectionsService.find`.
  *
+ * The `identityField` of each strategy is mirrored by the `identityFields` map
+ * in the config pipeline of the `@backstage/connections` package; keep the two
+ * in sync when adding or changing strategies.
+ *
  * @internal
  */
 export const lookupStrategies: Record<

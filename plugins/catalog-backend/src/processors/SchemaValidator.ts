@@ -66,6 +66,8 @@ export class SchemaValidator {
       allowUnionTypes: true,
       allErrors: true,
       validateSchema: true,
+      // Schemas share $id across apiVersions; validators are cached by object, not $id.
+      addUsedSchema: false,
     });
     ajvErrors(this.#ajv);
   }

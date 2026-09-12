@@ -219,21 +219,39 @@ export function resolveExtensionDefinitions(
     });
   }
 
-  if (extensions.length !== extensionDefinitionsById.size) {
-    const extensionIds = extensions.map(e => e.id);
-    const duplicates = Array.from(
-      new Set(
-        extensionIds.filter((id, index) => extensionIds.indexOf(id) !== index),
-      ),
-    );
+  throwOnDuplicateExtensionIds(
+    extensions.map(e => e.id),
+    context,
+  );
+
+  return { extensions, extensionDefinitionsById };
+}
+
+/**
+ * Throws if the provided list of resolved extension IDs contains duplicates.
+ *
+ * @internal
+ */
+export function throwOnDuplicateExtensionIds(
+  extensionIds: string[],
+  context: { namespace: string; featureType: string },
+): void {
+  const seen = new Set<string>();
+  const duplicates = new Set<string>();
+  for (const id of extensionIds) {
+    if (seen.has(id)) {
+      duplicates.add(id);
+    } else {
+      seen.add(id);
+    }
+  }
+  if (duplicates.size > 0) {
     throw new Error(
       `${context.featureType} '${
         context.namespace
-      }' provided duplicate extensions: ${duplicates.join(', ')}`,
+      }' provided duplicate extensions: ${Array.from(duplicates).join(', ')}`,
     );
   }
-
-  return { extensions, extensionDefinitionsById };
 }
 
 /** @internal */

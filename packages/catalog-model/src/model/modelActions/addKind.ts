@@ -108,6 +108,11 @@ export interface CatalogModelKindVersionDefinition {
    */
   relationFields?: CatalogModelKindRelationFieldDefinition[];
 
+  /**
+   * The entity schema, excluding the generated kind, apiVersion, and metadata
+   * fields. Its root type must be `object` or omitted; an omitted root type is
+   * supplied during compilation.
+   */
   schema: {
     jsonSchema: JsonObject;
   };

@@ -28,6 +28,7 @@ export const LinkDefinition = defineComponent<LinkOwnProps>()({
     root: 'bui-Link',
   },
   analytics: true,
+  navigation: { type: 'anchor' },
   propDefs: {
     noTrack: {},
     variant: { dataAttribute: true, default: 'body-medium' },

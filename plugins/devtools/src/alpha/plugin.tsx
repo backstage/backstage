@@ -26,14 +26,12 @@ import {
 
 import { devToolsApiRef, DevToolsClient } from '../api';
 import BuildIcon from '@material-ui/icons/Build';
-import { Content } from '@backstage/core-components';
 import { rootRouteRef } from '../routes';
 import {
   devToolsConfigReadPermission,
   devToolsInfoReadPermission,
 } from '@backstage/plugin-devtools-common';
 import { devToolsTaskSchedulerReadPermission } from '@backstage/plugin-devtools-common/alpha';
-import { RequirePermission } from '@backstage/plugin-permission-react';
 
 /** @alpha */
 export const devToolsApi = ApiBlueprint.make({
@@ -88,14 +86,20 @@ export const devToolsInfoPage = SubPageBlueprint.make({
   params: {
     path: 'info',
     title: 'Info',
-    loader: () =>
-      import('../components/Content').then(m => (
+    loader: async () => {
+      const [m, { Content }, { RequirePermission }] = await Promise.all([
+        import('../components/Content'),
+        import('@backstage/core-components'),
+        import('@backstage/plugin-permission-react'),
+      ]);
+      return (
         <Content>
           <RequirePermission permission={devToolsInfoReadPermission}>
             <m.InfoContent />
           </RequirePermission>
         </Content>
-      )),
+      );
+    },
   },
 });
 
@@ -105,14 +109,20 @@ export const devToolsConfigPage = SubPageBlueprint.make({
   params: {
     path: 'config',
     title: 'Config',
-    loader: () =>
-      import('../components/Content').then(m => (
+    loader: async () => {
+      const [m, { Content }, { RequirePermission }] = await Promise.all([
+        import('../components/Content'),
+        import('@backstage/core-components'),
+        import('@backstage/plugin-permission-react'),
+      ]);
+      return (
         <Content>
           <RequirePermission permission={devToolsConfigReadPermission}>
             <m.ConfigContent />
           </RequirePermission>
         </Content>
-      )),
+      );
+    },
   },
 });
 
@@ -122,14 +132,20 @@ export const devToolsScheduledTasksPage = SubPageBlueprint.make({
   params: {
     path: 'scheduled-tasks',
     title: 'Scheduled Tasks',
-    loader: () =>
-      import('../components/Content').then(m => (
+    loader: async () => {
+      const [m, { Content }, { RequirePermission }] = await Promise.all([
+        import('../components/Content'),
+        import('@backstage/core-components'),
+        import('@backstage/plugin-permission-react'),
+      ]);
+      return (
         <Content>
           <RequirePermission permission={devToolsTaskSchedulerReadPermission}>
             <m.ScheduledTasksContent />
           </RequirePermission>
         </Content>
-      )),
+      );
+    },
   },
 });
 

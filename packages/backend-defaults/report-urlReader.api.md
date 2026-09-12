@@ -354,6 +354,7 @@ export class HarnessUrlReader implements UrlReaderService {
     integration: HarnessIntegration,
     deps: {
       treeResponseFactory: ReadTreeResponseFactory;
+      allowedRedirectPredicate?: (url: URL) => boolean;
     },
   );
   // (undocumented)

@@ -36,6 +36,10 @@ For example:
      mkdocs.yml
 ```
 
+Symbolic links anywhere in the source tree must resolve within that tree, or
+TechDocs rejects the build. This applies outside `docs_dir` too, because MkDocs
+extensions can include files from anywhere in the repository.
+
 If you have an existing repository that you'd like to add documentation to, skip
 to the
 [Enable documentation for an already existing entity setup](#enable-documentation-for-an-already-existing-entity)

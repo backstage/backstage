@@ -1,11 +1,10 @@
-.pswp {
-  --pswp-bg: #f8f8f8;
-}
-.pswp__counter {
-  color: rgba(0, 0, 0, 0.87);
-  text-shadow: none;
+/* Beats MuiSvgIcon's own styles; the backdrop is always dark, in either theme */
+.pswp__button svg {
+  fill: var(--bui-white, #ffffff);
+  color: var(--bui-white, #ffffff);
 }
 
+/* Reset: default is dynamic and unclear (zoom vs drag) */
 .pswp__img {
   cursor: pointer !important;
 }

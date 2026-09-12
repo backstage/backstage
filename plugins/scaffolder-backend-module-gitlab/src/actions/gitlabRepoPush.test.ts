@@ -542,5 +542,52 @@ describe('createGitLabCommit', () => {
         { allowEmpty: false },
       );
     });
+
+    it('skips commit and omits commitHash output when there are no file changes', async () => {
+      // The default Branches.show mock from beforeEach resolves successfully
+      // (branch exists), so the no-op path is reached without needing extra setup.
+      mockGitlabClient.Branches.show.mockResolvedValueOnce(undefined);
+
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        commitMessage: 'No-op',
+        branchName: 'some-branch',
+        commitAction: 'auto',
+      };
+      // Empty workspace -> no file actions to send to GitLab
+      mockDir.setContent({ [workspacePath]: {} });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Commits.create).not.toHaveBeenCalled();
+      expect(ctx.output).toHaveBeenCalledWith('projectid', 'owner/repo');
+      expect(ctx.output).toHaveBeenCalledWith('projectPath', 'owner/repo');
+      expect(ctx.output).not.toHaveBeenCalledWith(
+        'commitHash',
+        expect.anything(),
+      );
+    });
+
+    it('still commits empty changes when allowEmpty is true', async () => {
+      const input = {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        commitMessage: 'Empty commit',
+        branchName: 'some-branch',
+        allowEmpty: true,
+      };
+      mockDir.setContent({ [workspacePath]: {} });
+
+      const ctx = createMockActionContext({ input, workspacePath });
+      await instance.handler(ctx);
+
+      expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
+        'owner/repo',
+        'some-branch',
+        'Empty commit',
+        [],
+        { allowEmpty: true },
+      );
+    });
   });
 });

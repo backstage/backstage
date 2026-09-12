@@ -34,6 +34,8 @@ export type {
 } from './ElasticSearchClientOptions';
 export type {
   ElasticSearchAliasAction,
+  ElasticSearchClientResponse,
+  ElasticSearchClientResponsePromise,
   ElasticSearchClientWrapper,
   ElasticSearchIndexAction,
 } from './ElasticSearchClientWrapper';

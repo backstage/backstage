@@ -115,6 +115,40 @@ describe('bitbucket:pipelines:run', () => {
     await action.handler(testContext);
   });
 
+  it('requires an explicit token when configured', async () => {
+    const requiredAction = createBitbucketPipelinesRunAction({
+      integrations,
+      requireScmUserCredentials: true,
+    });
+
+    await expect(
+      requiredAction.handler(
+        Object.assign({}, mockContext, {
+          input: { workspace, repo_slug },
+        }),
+      ),
+    ).rejects.toThrow(
+      'No user credentials provided for host bitbucket.org, but scaffolder.requireScmUserCredentials is enabled',
+    );
+
+    expect.assertions(2);
+    worker.use(
+      http.post(
+        `https://api.bitbucket.org/2.0/repositories/:workspace/:repo_slug/pipelines`,
+        ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe('Bearer abc');
+          return HttpResponse.json(responseJson, { status: 201 });
+        },
+      ),
+    );
+
+    await requiredAction.handler(
+      Object.assign({}, mockContext, {
+        input: { workspace, repo_slug, token: 'abc' },
+      }),
+    );
+  });
+
   it('should call outputs with the correct data', async () => {
     worker.use(
       http.post(

@@ -110,7 +110,7 @@ function HierarchyLinks(props: { refs: CompoundEntityRef[] }) {
 function hierarchyLabel(
   ref: CompoundEntityRef,
 ): 'systemLabel' | 'domainLabel' | 'partOfLabel' {
-  switch (ref.kind.toLocaleLowerCase('en-US')) {
+  switch (ref.kind.toLowerCase()) {
     case 'system':
       return 'systemLabel';
     case 'domain':

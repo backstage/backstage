@@ -44,7 +44,7 @@ type ConfigFromSchema<TConfigSchema extends z.ZodObject> =
 // Expand flattens the intersection into a single object literal so that
 // editor tooltips show each auth method variant as a readable flat shape
 // rather than a chain of truncated intersections.
-type RootConnectionAuthFromSchema<
+type ConfiguredConnectionAuthFromSchema<
   TAuthMethod extends ConnectionAuthMethodSchema,
 > = TAuthMethod extends ConnectionAuthMethodSchema<
   infer TMethod,
@@ -104,7 +104,7 @@ export function createConnectionType<
   configSchema: WithoutReservedFields<TConfigSchema>;
   authMethods: WithoutReservedAuthMethods<TAuthMethods>;
   matchAuth?: MatchAuth<
-    RootConnectionAuthFromSchema<TAuthMethods[number]>,
+    ConfiguredConnectionAuthFromSchema<TAuthMethods[number]>,
     LookupStrategyQuery[TLookupStrategy]
   >;
   // Checks the connection as a whole once every schema has accepted its own
@@ -114,7 +114,7 @@ export function createConnectionType<
   validate?: (connection: {
     config: ConfigFromSchema<TConfigSchema>;
     auth: readonly Expand<
-      RootConnectionAuthFromSchema<TAuthMethods[number]> & {
+      ConfiguredConnectionAuthFromSchema<TAuthMethods[number]> & {
         match?: ConnectionAuthMatch;
       }
     >[];
@@ -125,7 +125,7 @@ export function createConnectionType<
   lookupStrategy: TLookupStrategy;
   query: LookupStrategyQuery[TLookupStrategy];
   configSchema: ConfigFromSchema<TConfigSchema>;
-  auth: readonly RootConnectionAuthFromSchema<TAuthMethods[number]>[];
+  auth: readonly ConfiguredConnectionAuthFromSchema<TAuthMethods[number]>[];
 }> {
   const validatedAuthMethods = authMethods as TAuthMethods;
   if (validatedAuthMethods.length < 1) {
@@ -162,6 +162,6 @@ export function createConnectionType<
     lookupStrategy: TLookupStrategy;
     query: LookupStrategyQuery[TLookupStrategy];
     configSchema: ConfigFromSchema<TConfigSchema>;
-    auth: readonly RootConnectionAuthFromSchema<TAuthMethods[number]>[];
+    auth: readonly ConfiguredConnectionAuthFromSchema<TAuthMethods[number]>[];
   }>;
 }

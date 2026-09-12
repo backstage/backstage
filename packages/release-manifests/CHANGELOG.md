@@ -1,5 +1,11 @@
 # @backstage/release-manifests
 
+## 0.0.14
+
+### Patch Changes
+
+- 0ebb1f9: Migrated tests from MSW v1 to MSW v2.
+
 ## 0.0.13
 
 ### Patch Changes

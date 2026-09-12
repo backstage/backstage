@@ -1,5 +1,43 @@
 # @backstage/plugin-app
 
+## 0.5.3-next.1
+
+### Patch Changes
+
+- d421187: Reduced the initial app bundle size by loading page and optional UI implementations only when their extensions render.
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/filter-predicates@0.1.5-next.0
+  - @backstage/ui@0.18.0-next.1
+  - @backstage/integration-react@1.2.22-next.0
+  - @backstage/core-plugin-api@1.12.10-next.0
+  - @backstage/plugin-app-react@0.2.7-next.0
+  - @backstage/plugin-permission-react@0.5.5-next.0
+
+## 0.5.3-next.0
+
+### Patch Changes
+
+- f914343: Fixed toast text layout when the application does not define a global line height.
+- Updated dependencies
+  - @backstage/ui@0.17.2-next.0
+  - @backstage/core-components@0.18.14-next.0
+
+## 0.5.2
+
+### Patch Changes
+
+- 2dd51e6: Fixed config-driven route redirects to preserve the query string and fragment from the original URL. Previously, redirects declared under `app.extensions[].app/routes.config.redirects` silently dropped everything after `?` or `#` in the incoming URL.
+- Updated dependencies
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/ui@0.17.1
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/plugin-app-react@0.2.6
+  - @backstage/integration-react@1.2.21
+  - @backstage/plugin-permission-react@0.5.4
+
 ## 0.5.2-next.2
 
 ### Patch Changes

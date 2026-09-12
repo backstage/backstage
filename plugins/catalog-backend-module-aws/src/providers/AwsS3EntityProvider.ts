@@ -41,6 +41,12 @@ import {
   SchedulerServiceTaskRunner,
 } from '@backstage/backend-plugin-api';
 
+function hasDotPathSegment(path: string): boolean {
+  return path
+    .split(/[\\/]/)
+    .some(segment => segment === '.' || segment === '..');
+}
+
 // TODO: event-based updates using S3 events (+ queue like SQS)?
 /**
  * Provider which discovers catalog files (any name) within an S3 bucket.
@@ -199,7 +205,15 @@ export class AwsS3EntityProvider implements EntityProvider {
     const keys = await this.listAllObjectKeys();
     logger.info(`Discovered ${keys.length} AWS S3 objects`);
 
-    const locations = keys.map(key => this.createLocationSpec(key));
+    const validKeys = keys.filter(key => !hasDotPathSegment(key));
+    const skippedKeys = keys.length - validKeys.length;
+    if (skippedKeys > 0) {
+      logger.warn(
+        `Skipped ${skippedKeys} AWS S3 objects with unsupported dot path segments`,
+      );
+    }
+
+    const locations = validKeys.map(key => this.createLocationSpec(key));
 
     await this.connection.applyMutation({
       type: 'full',
@@ -252,6 +266,15 @@ export class AwsS3EntityProvider implements EntityProvider {
   }
 
   private createObjectUrl(key: string): string {
-    return new URL(key, this.endpoint).href;
+    if (!this.endpoint) {
+      throw new Error('Not initialized');
+    }
+
+    const encodedKey = key.split('/').map(encodeURIComponent).join('/');
+    const objectUrl = new URL(this.endpoint);
+    objectUrl.pathname = `${objectUrl.pathname}${encodedKey}`;
+    objectUrl.search = '';
+    objectUrl.hash = '';
+    return objectUrl.href;
   }
 }

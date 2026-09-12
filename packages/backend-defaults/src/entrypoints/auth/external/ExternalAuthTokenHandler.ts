@@ -163,6 +163,7 @@ export class ExternalAuthTokenHandler {
     | {
         subject: string;
         accessRestrictions?: BackstagePrincipalAccessRestrictions;
+        allAccessRestrictions?: AccessRestrictionsMap;
       }
     | undefined
   > {
@@ -185,6 +186,7 @@ export class ExternalAuthTokenHandler {
           return {
             ...result,
             accessRestrictions,
+            allAccessRestrictions,
           };
         }
 

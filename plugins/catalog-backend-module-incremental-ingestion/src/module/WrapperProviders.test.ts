@@ -18,6 +18,7 @@ import { SchedulerService } from '@backstage/backend-plugin-api';
 import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
 import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 import { ConfigReader } from '@backstage/config';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { IncrementalEntityProvider } from '../types';
 import { WrapperProviders } from './WrapperProviders';
 
@@ -72,6 +73,10 @@ describe.each(databases.eachSupportedId())(
         applyDatabaseMigrations,
         events: mockServices.events.mock(),
         metrics: metricsServiceMock.mock(),
+        permissions: mockServices.permissions.mock({
+          authorize: async () => [{ result: AuthorizeResult.ALLOW }],
+        }),
+        httpAuth: mockServices.httpAuth(),
       });
       const wrapped1 = providers.wrap(provider1, {
         burstInterval: { seconds: 1 },

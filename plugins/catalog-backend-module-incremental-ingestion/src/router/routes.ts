@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
+import {
+  HttpAuthService,
+  LoggerService,
+  PermissionsService,
+} from '@backstage/backend-plugin-api';
+import { NotAllowedError } from '@backstage/errors';
+import {
+  catalogIngestionManagePermission,
+  catalogIngestionReadPermission,
+} from '@backstage/plugin-catalog-common/alpha';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
-import { LoggerService } from '@backstage/backend-plugin-api';
 
 export class IncrementalProviderRouter {
   private manager: IncrementalIngestionDatabaseManager;
@@ -26,6 +36,8 @@ export class IncrementalProviderRouter {
   constructor(
     manager: IncrementalIngestionDatabaseManager,
     logger: LoggerService,
+    private readonly permissions: PermissionsService,
+    private readonly httpAuth: HttpAuthService,
   ) {
     this.manager = manager;
     this.logger = logger;
@@ -34,6 +46,19 @@ export class IncrementalProviderRouter {
   createRouter(): express.Router {
     const router = Router();
     router.use(express.json());
+    router.use('/incremental', async (req, _res, next) => {
+      const permission =
+        req.method === 'GET' || req.method === 'HEAD'
+          ? catalogIngestionReadPermission
+          : catalogIngestionManagePermission;
+      const [decision] = await this.permissions.authorize([{ permission }], {
+        credentials: await this.httpAuth.credentials(req),
+      });
+      if (decision.result === AuthorizeResult.DENY) {
+        throw new NotAllowedError('Unauthorized');
+      }
+      next();
+    });
 
     // Get the overall health of all incremental providers
     router.get('/incremental/health', async (_, res) => {

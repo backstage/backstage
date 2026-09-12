@@ -161,6 +161,40 @@ describe('publish:azure', () => {
     );
   });
 
+  it('requires an explicit token when configured', async () => {
+    const requiredConfig = new ConfigReader({
+      integrations: {
+        azure: [
+          {
+            host: 'dev.azure.com',
+            credentials: [{ personalAccessToken: 'tokenlols' }],
+          },
+        ],
+      },
+      scaffolder: { requireScmUserCredentials: true },
+    });
+    const requiredAction = createPublishAzureAction({
+      integrations: ScmIntegrations.fromConfig(requiredConfig),
+      config: requiredConfig,
+    });
+
+    await expect(requiredAction.handler(mockContext)).rejects.toThrow(
+      'No user credentials provided for host dev.azure.com, but scaffolder.requireScmUserCredentials is enabled',
+    );
+
+    mockGitClient.createRepository.mockResolvedValue({
+      remoteUrl: 'https://dev.azure.com/org/project/_git/repo',
+      webUrl: 'https://dev.azure.com/org/project/_git/repo',
+      id: '709e891c-dee7-4f91-b963-534713c0737f',
+    });
+    await expect(
+      requiredAction.handler({
+        ...mockContext,
+        input: { ...mockContext.input, token: 'user-token' },
+      }),
+    ).resolves.toBeUndefined();
+  });
+
   it('should throw if there is no remoteUrl returned', async () => {
     mockGitClient.createRepository.mockImplementation(() => ({
       remoteUrl: null,

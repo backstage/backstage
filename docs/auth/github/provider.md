@@ -54,7 +54,7 @@ auth:
         signIn:
           resolvers:
             # See https://backstage.io/docs/auth/github/provider#resolvers for more resolvers
-            - resolver: usernameMatchingUserEntityName
+            - resolver: userIdMatchingUserEntityAnnotation
 ```
 
 The GitHub provider is a structure with these configuration keys:
@@ -79,8 +79,15 @@ This provider includes several resolvers out of the box that you can use:
 
 - `emailMatchingUserEntityProfileEmail`: Matches the email address from the auth provider with the User entity that has a matching `spec.profile.email`. If no match is found, it will throw a `NotFoundError`.
 - `emailLocalPartMatchingUserEntityName`: Matches the [local part](https://en.wikipedia.org/wiki/Email_address#Local-part) of the email address from the auth provider with the User entity that has a matching `name`. If no match is found, it will throw a `NotFoundError`.
-- `usernameMatchingUserEntityName`: Matches the username from the auth provider with the User entity that has a matching `name`. If no match is found, it will throw a `NotFoundError`.
-- `userIdMatchingUserEntityAnnotation`: Matches the GitHub user ID with the User entity that has a matching `github.com/user-id`. If no match is found, it will throw a `NotFoundError`.
+- `userIdMatchingUserEntityAnnotation`: Matches the GitHub user ID with the User entity that has a matching `github.com/user-id` annotation. If no match is found, it will throw a `NotFoundError`.
+- `usernameMatchingUserEntityName` (deprecated): Matches the username from the auth provider with the User entity that has a matching `name`. If no match is found, it will throw a `NotFoundError`.
+
+:::caution
+
+GitHub usernames can change and become available to other users. Prefer
+`userIdMatchingUserEntityAnnotation`, which uses the immutable GitHub user ID.
+
+:::
 
 :::note
 

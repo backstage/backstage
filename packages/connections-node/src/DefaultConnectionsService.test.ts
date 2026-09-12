@@ -41,8 +41,9 @@ describe('DefaultConnectionsService', () => {
         authMethods: ['token'],
       });
 
-      expect(connection?.host).toBe('github.com');
-      expect(connection?.auth.method).toBe('token');
+      expect(connection.host).toBe('github.com');
+      expect(connection.auth.method).toBe('token');
+      expect(connection.auth.token).toBe('public-token');
     });
 
     it('hides connections that match a different plugin', async () => {
@@ -409,6 +410,101 @@ describe('DefaultConnectionsService', () => {
       expect(logger.warn).toHaveBeenCalledTimes(1);
       expect(logger.warn).toHaveBeenCalledWith(
         expect.stringContaining('github'),
+      );
+    });
+
+    it('keeps the first legacy entry when multiple resolve to the same connection', async () => {
+      const logger = mockServices.logger.mock();
+      const service = DefaultConnectionsService.create({
+        logger,
+        config: mockServices.rootConfig({
+          data: {
+            integrations: {
+              // Both entries hardcode the bitbucket.org host; legacy lookups
+              // always returned the first matching entry.
+              bitbucketCloud: [
+                { username: 'ci-bot', appPassword: 'old-secret' },
+                { clientId: 'oauth-id', clientSecret: 'oauth-secret' },
+              ],
+            },
+          },
+        }),
+      });
+
+      const connection = await service.forPlugin('catalog').find({
+        type: 'bitbucket-cloud',
+        query: { url: 'https://bitbucket.org/my-workspace/my-repo' },
+        authMethods: ['appPassword', 'oauth'],
+      });
+      expect(connection?.host).toBe('bitbucket.org');
+      expect(connection?.auth).toMatchObject({
+        method: 'appPassword',
+        username: 'ci-bot',
+      });
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining('bitbucket-cloud'),
+      );
+    });
+
+    it('ignores auth methods and settings from dropped duplicate legacy entries', async () => {
+      const service = DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockServices.rootConfig({
+          data: {
+            integrations: {
+              github: [
+                {
+                  host: 'ghe.example.com',
+                  apiBaseUrl: 'https://ghe.example.com/api/v3',
+                  token: 'first-token',
+                },
+                {
+                  host: 'ghe.example.com',
+                  apiBaseUrl: 'https://other.example.com/api/v3',
+                  apps: [
+                    {
+                      appId: 1,
+                      privateKey: 'pk',
+                      clientId: 'client',
+                      clientSecret: 'secret',
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        }),
+      });
+
+      // The github matchAuth priority chain prefers apps over tokens, so the
+      // second entry's app would have won the auth selection if it were not
+      // dropped along with the rest of that entry.
+      const connection = await service.forPlugin('catalog').find({
+        type: 'github',
+        query: { url: 'https://ghe.example.com/my-org/my-repo' },
+        authMethods: ['token', 'app'],
+      });
+      expect(connection?.apiBaseUrl).toBe('https://ghe.example.com/api/v3');
+      expect(connection?.auth).toMatchObject({
+        method: 'token',
+        token: 'first-token',
+      });
+    });
+
+    it('wraps errors thrown during conversion with legacy integrations context', () => {
+      expect(() =>
+        DefaultConnectionsService.create({
+          logger: mockServices.logger.mock(),
+          config: mockServices.rootConfig({
+            data: {
+              integrations: {
+                awsS3: [{ endpoint: 'not a url' }],
+              },
+            },
+          }),
+        }),
+      ).toThrow(
+        /Failed to convert legacy integrations config:[\s\S]*Invalid endpoint URL "not a url"/,
       );
     });
   });
@@ -1059,6 +1155,121 @@ describe('DefaultConnectionsService', () => {
       ).toThrow(
         /Invalid connection of type "github".*Unrecognized key: "host2"/s,
       );
+    });
+  });
+
+  describe('find without authMethods', () => {
+    it('returns connection info without auth when authMethods is omitted', async () => {
+      const service = DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockConnectionsConfig([
+          {
+            type: 'github',
+            host: 'github.com',
+            auth: [{ method: 'token', token: 'secret-token' }],
+          },
+        ]),
+      });
+
+      const info = await service.forPlugin('catalog').find({
+        type: 'github',
+        query: { url: 'https://github.com/my-org/my-repo' },
+      });
+
+      expect(info.type).toBe('github');
+      expect(info.host).toBe('github.com');
+      expect(info.title).toBe('GitHub');
+      expect('auth' in info).toBe(false);
+    });
+
+    it('succeeds even when the plugin has no visible auth methods', async () => {
+      const service = DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockConnectionsConfig([
+          {
+            type: 'github',
+            host: 'github.com',
+            auth: [
+              {
+                method: 'token',
+                token: 'scaffolder-only',
+                match: { plugins: ['scaffolder'] },
+              },
+            ],
+          },
+        ]),
+      });
+
+      const info = await service.forPlugin('catalog').find({
+        type: 'github',
+        query: { url: 'https://github.com/foo' },
+      });
+
+      expect(info.host).toBe('github.com');
+      expect('auth' in info).toBe(false);
+    });
+
+    it('throws NotFoundError when no connection matches', async () => {
+      const service = DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockConnectionsConfig([
+          {
+            type: 'github',
+            host: 'github.com',
+            auth: [{ method: 'token', token: 'abc' }],
+          },
+        ]),
+      });
+
+      await expect(
+        service.forPlugin('catalog').find({
+          type: 'github',
+          query: { url: 'https://missing.example.com/foo' },
+        }),
+      ).rejects.toThrow(/Connection not found/);
+    });
+
+    it('still respects connection-level plugin matching', async () => {
+      const service = DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockConnectionsConfig([
+          {
+            type: 'github',
+            host: 'enterprise.example.com',
+            match: { plugins: ['scaffolder'] },
+            auth: [{ method: 'token', token: 'enterprise-token' }],
+          },
+        ]),
+      });
+
+      await expect(
+        service.forPlugin('catalog').find({
+          type: 'github',
+          query: { url: 'https://enterprise.example.com/foo' },
+        }),
+      ).rejects.toThrow(/Connection not found/);
+    });
+
+    it('returns config fields for aws connections without auth', async () => {
+      const service = DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockConnectionsConfig([
+          {
+            type: 'aws',
+            roleName: 'wildcard-role',
+            auth: [{ method: 'account', mainAccount: true }],
+          },
+        ]),
+      });
+
+      const info = await service.forPlugin('catalog').find({
+        type: 'aws',
+        query: {},
+      });
+
+      expect(info.type).toBe('aws');
+      expect(info.roleName).toBe('wildcard-role');
+      expect('auth' in info).toBe(false);
     });
   });
 

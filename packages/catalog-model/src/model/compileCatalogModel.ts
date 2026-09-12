@@ -18,6 +18,8 @@ import { InputError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import lodash from 'lodash';
 import { mergeJsonSchemas } from './jsonSchema/mergeJsonSchemas';
+import { validateMetaSchema } from './jsonSchema/validateMetaSchema';
+import { validateKindRootSchemaSemantics } from './jsonSchema/validateKindRootSchemaSemantics';
 import { CatalogModelOp } from './operations';
 import { ops } from './operations/util';
 import { OpDeclareAnnotationV1 } from './operations/declareAnnotation';
@@ -71,7 +73,7 @@ interface SpecTypeState {
 }
 
 interface RelationState {
-  fromKinds: Set<string>;
+  kindPairs: Map<string, Set<string>>;
   toKinds: Set<string>;
   description: string;
   forward: { type: string; title: string };
@@ -164,18 +166,31 @@ function applyDeclareKindVersion(
   });
 }
 
+function addRelationKindPair(
+  relation: RelationState,
+  fromKind: string,
+  toKind: string,
+): void {
+  let toKinds = relation.kindPairs.get(fromKind);
+  if (!toKinds) {
+    toKinds = new Set();
+    relation.kindPairs.set(fromKind, toKinds);
+  }
+  toKinds.add(toKind);
+  relation.toKinds.add(toKind);
+}
+
 function applyDeclareRelation(
   relations: Map<string, RelationState>,
   op: OpDeclareRelationV1,
 ): void {
   const existing = relations.get(op.type);
   if (existing) {
-    existing.fromKinds.add(op.fromKind);
-    existing.toKinds.add(op.toKind);
+    addRelationKindPair(existing, op.fromKind, op.toKind);
   } else {
-    relations.set(op.type, {
-      fromKinds: new Set([op.fromKind]),
-      toKinds: new Set([op.toKind]),
+    const relation: RelationState = {
+      kindPairs: new Map(),
+      toKinds: new Set(),
       description: op.properties.description,
       forward: {
         type: op.type,
@@ -185,7 +200,9 @@ function applyDeclareRelation(
         type: op.properties.reverseType,
         title: op.properties.title,
       },
-    });
+    };
+    addRelationKindPair(relation, op.fromKind, op.toKind);
+    relations.set(op.type, relation);
   }
 }
 
@@ -258,14 +275,20 @@ function applyUpdateRelation(
   if (!relation) {
     throw new InputError(`Cannot update undeclared relation "${op.type}"`);
   }
-  relation.fromKinds.add(op.fromKind);
-  relation.toKinds.add(op.toKind);
+  addRelationKindPair(relation, op.fromKind, op.toKind);
   if (op.properties.reverseType !== undefined) {
     relation.reverse.type = op.properties.reverseType;
   }
   if (op.properties.title !== undefined) {
     relation.forward.title = op.properties.title;
     relation.reverse.title = op.properties.title;
+  }
+  if (op.properties.reverseTitle !== undefined) {
+    relation.reverse.title = op.properties.reverseTitle;
+    const reverse = relations.get(relation.reverse.type);
+    if (reverse) {
+      reverse.forward.title = op.properties.reverseTitle;
+    }
   }
   if (op.properties.description !== undefined) {
     relation.description = op.properties.description;
@@ -409,6 +432,10 @@ function buildFullSchema(options: {
   labels: Map<string, LabelState>;
   tags: Map<string, TagState>;
 }): JsonObject {
+  // Patches may contain deletion markers and are not standalone schemas.
+  // Validate the final kind definition before adding the generated envelope.
+  validateMetaSchema(options.kindSchema);
+  validateKindRootSchemaSemantics(options.kindSchema);
   const annotationProperties: JsonObject = {};
   for (const [name, state] of options.annotations) {
     annotationProperties[name] = state.schema?.jsonSchema ?? { type: 'string' };
@@ -513,7 +540,9 @@ function buildFullSchema(options: {
   // The kind schema is the base, and the generated schema (apiVersion, kind,
   // metadata) takes priority in case of overlap — though they should not
   // overlap in practice.
-  return mergeJsonSchemas(options.kindSchema, generatedSchema);
+  const schema = mergeJsonSchemas(options.kindSchema, generatedSchema);
+  validateMetaSchema(schema);
+  return schema;
 }
 
 // #region Main compilation
@@ -525,15 +554,28 @@ function buildFullSchema(options: {
  * @alpha
  * @param inputs - The layers to compile.
  * @returns The compiled catalog model.
+ * @throws An `InputError` if layers with the same ID have conflicting
+ * definitions, or if the combined model is invalid.
  */
 export function compileCatalogModel(
   inputs: Iterable<CatalogModelLayer>,
 ): CatalogModel {
-  // Collect all ops from all inputs
-  let allOps: CatalogModelOp[] = [];
+  // Collect all ops from all unique inputs
+  const allOps: CatalogModelOp[] = [];
+  const layerOpsById = new Map<string, CatalogModelOp[]>();
   for (const input of inputs) {
     const internal = OpaqueCatalogModelLayer.toInternal(input);
-    allOps = allOps.concat(internal.ops);
+    const existingOps = layerOpsById.get(internal.layerId);
+    if (existingOps) {
+      if (!lodash.isEqual(existingOps, internal.ops)) {
+        throw new InputError(
+          `Catalog model layer ID "${internal.layerId}" has conflicting definitions`,
+        );
+      }
+      continue;
+    }
+    layerOpsById.set(internal.layerId, internal.ops);
+    allOps.push(...internal.ops);
   }
 
   const sortedOps = sortOps(allOps);
@@ -641,22 +683,26 @@ export function compileCatalogModel(
   for (const kindName of kinds.keys()) {
     compiledRelations.set(
       kindName,
-      [...relations.values()]
-        .filter(r => r.fromKinds.has(kindName))
-        .map(r => {
-          // Look up the reverse relation entry to get its actual title
-          const reverseEntry = relations.get(r.reverse.type);
-          return {
-            fromKind: [...r.fromKinds],
-            toKind: [...r.toKinds],
+      [...relations.values()].flatMap(r => {
+        const toKinds = r.kindPairs.get(kindName);
+        if (!toKinds) {
+          return [];
+        }
+        // Look up the reverse relation entry to get its actual title
+        const reverseEntry = relations.get(r.reverse.type);
+        return [
+          {
+            fromKind: [kindName],
+            toKind: [...toKinds],
             description: r.description,
             forward: r.forward,
             reverse: {
               type: r.reverse.type,
               title: reverseEntry?.forward.title ?? r.reverse.title,
             },
-          };
-        }),
+          },
+        ];
+      }),
     );
   }
 
@@ -711,7 +757,7 @@ export function compileCatalogModel(
   ].map(r => {
     const reverseEntry = relations.get(r.reverse.type);
     return {
-      fromKind: [...r.fromKinds],
+      fromKind: [...r.kindPairs.keys()],
       toKind: [...r.toKinds],
       description: r.description,
       forward: r.forward,

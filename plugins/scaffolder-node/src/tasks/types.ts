@@ -17,7 +17,7 @@
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { JsonObject, Observable } from '@backstage/types';
+import { JsonObject, JsonValue, Observable } from '@backstage/types';
 import { UpdateTaskCheckpointOptions } from '@backstage/plugin-scaffolder-node/alpha';
 
 /**
@@ -187,6 +187,12 @@ export interface TaskContext {
     targetPath: string;
   }): Promise<void>;
 
+  updateStepState?(options: {
+    stepId: string;
+    status: 'completed';
+    output: { [name: string]: JsonValue };
+  }): Promise<void>;
+
   getWorkspaceName(): Promise<string>;
 
   getInitiatorCredentials(): Promise<BackstageCredentials>;
@@ -204,7 +210,10 @@ export interface TaskBroker {
 
   retry(options: { secrets?: TaskSecrets; taskId: string }): Promise<void>;
 
-  claim(): Promise<TaskContext>;
+  claim(options?: {
+    /** Stops waiting before a task has been claimed. */
+    signal?: AbortSignal;
+  }): Promise<TaskContext>;
 
   recoverTasks(): Promise<void>;
 

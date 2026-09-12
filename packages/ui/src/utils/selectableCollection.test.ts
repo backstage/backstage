@@ -63,9 +63,8 @@ describe('selectable collection utilities', () => {
     it('filters with full normalized rows and removes empty sections', () => {
       const filter = jest.fn((option: IdentifiedOption, query: string) => {
         return (
-          option.label.toLocaleLowerCase('en-US').includes(query) ||
-          option.description?.toLocaleLowerCase('en-US').includes(query) ===
-            true
+          option.label.toLowerCase().includes(query) ||
+          option.description?.toLowerCase().includes(query) === true
         );
       });
       const options = normalizeOptions([

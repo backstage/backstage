@@ -171,11 +171,22 @@ export interface Config {
           includedTopics?: string[];
         };
         /**
-         * White list of addresses to send email to
+         * Optional list of allowed email domains (exact match, case-insensitive).
+         * When set, addresses whose domain is not listed are skipped, unless the
+         * full address is present in allowlistEmailAddresses (allowlist wins).
+         */
+        allowedEmailDomains?: string[];
+        /**
+         * White list of addresses to send email to (case-insensitive). When set
+         * without allowedEmailDomains, only these addresses receive email. When
+         * allowedEmailDomains is also set, addresses on this list are still
+         * delivered even if their domain is outside the domain list.
          */
         allowlistEmailAddresses?: string[];
         /**
-         * Black list of addresses to not send email to
+         * Black list of addresses to not send email to (case-insensitive).
+         * Applied last and overrides both allowlistEmailAddresses and
+         * allowedEmailDomains.
          */
         denylistEmailAddresses?: string[];
       };

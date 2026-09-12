@@ -42,5 +42,5 @@ export type LinkOwnProps = {
 
 /** @public */
 export interface LinkProps
-  extends Omit<AriaLinkProps, 'children' | 'className'>,
+  extends Omit<AriaLinkProps, 'children' | 'className' | 'render'>,
     LinkOwnProps {}

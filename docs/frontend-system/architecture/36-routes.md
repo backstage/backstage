@@ -292,7 +292,7 @@ export const createComponentExternalRouteRef = createExternalRouteRef({
 
 ## Sub Route References
 
-The last kind of route ref that can be created is a `SubRouteRef`, which can be used to create a route ref with a fixed path relative to an absolute `RouteRef`. They are useful if you have a page that internally is mounted at a sub route of a page extension component, and you want other plugins to be able to route to that page. And they can be a useful utility to handle routing within a plugin itself as well.
+The last kind of route ref that can be created is a `SubRouteRef`, which can be used to create a route ref with a fixed path relative to an absolute `RouteRef` or another `SubRouteRef`. They are useful if you have a page that internally is mounted at a sub route of a page extension component, and you want other plugins to be able to route to that page. And they can be a useful utility to handle routing within a plugin itself as well.
 
 For example:
 
@@ -321,6 +321,26 @@ export const detailsSubRouteRef = createSubRouteRef({
   path: '/:name/:namespace/:kind',
 });
 ```
+
+A `SubRouteRef` can also be the parent of another `SubRouteRef`. This lets route
+references follow the same hierarchy as nested application routes:
+
+```tsx title="plugins/catalog/src/routes.ts"
+export const revisionSubRouteRef = createSubRouteRef({
+  parent: indexRouteRef,
+  path: '/:name/:revision',
+});
+
+export const revisionAttachmentsSubRouteRef = createSubRouteRef({
+  parent: revisionSubRouteRef,
+  path: '/attachments',
+});
+```
+
+Each `path` passed to `createSubRouteRef` is relative to its immediate parent.
+The nested route inherits all parameters from its ancestors, so
+`useRouteRef(revisionAttachmentsSubRouteRef)` requires both `name` and
+`revision`. Parameter names must be unique across the entire parent chain.
 
 Using subroutes in a page extension is as simple as this:
 

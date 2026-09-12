@@ -1,5 +1,21 @@
 # @backstage/plugin-gateway-backend
 
+## 1.1.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
+## 1.1.8
+
+### Patch Changes
+
+- fa72461: Updated dependency `@opentelemetry/core` to `^2.0.0`.
+- 9da01b6: chore(deps): bump `http-proxy-middleware` from 3.0.5 to 3.0.7
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0
+
 ## 1.1.8-next.1
 
 ### Patch Changes

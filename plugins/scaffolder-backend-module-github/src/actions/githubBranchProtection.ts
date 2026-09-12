@@ -33,8 +33,9 @@ import { enableBranchProtectionOnDefaultRepoBranch } from './gitHelpers';
  */
 export function createGithubBranchProtectionAction(options: {
   integrations: ScmIntegrationRegistry;
+  requireScmUserCredentials?: boolean;
 }) {
-  const { integrations } = options;
+  const { integrations, requireScmUserCredentials } = options;
 
   return createTemplateAction({
     id: 'github:branch-protection:create',
@@ -89,6 +90,7 @@ export function createGithubBranchProtectionAction(options: {
 
       const octokitOptions = await getOctokitOptions({
         integrations,
+        requireScmUserCredentials,
         token: providedToken,
         host,
         owner,

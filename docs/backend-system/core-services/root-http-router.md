@@ -9,6 +9,8 @@ The root HTTP router is a service that allows you to register routes on the root
 
 The `/api/:pluginId/` path prefix is reserved for use by plugins to register their own routes via the [HttpRouter](./http-router.md) service.
 
+Each registered root path must be distinct. Registration fails if a path overlaps an existing path; comparisons are case-insensitive and treat trailing slashes as equivalent.
+
 ## Using the service
 
 The following example shows how to get the root HTTP router service in your `example` backend plugin to register a health check route.

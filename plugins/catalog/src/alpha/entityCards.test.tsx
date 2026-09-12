@@ -14,13 +14,85 @@
  * limitations under the License.
  */
 
-import { screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 import { Entity } from '@backstage/catalog-model';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
+import { useEffect } from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import { createTestEntityPage } from '@backstage/plugin-catalog-react/testUtils';
-import { catalogLinksEntityCard, catalogLabelsEntityCard } from './entityCards';
+import {
+  catalogLinksEntityCard,
+  catalogLabelsEntityCard,
+  EntityIconLinkRow,
+} from './entityCards';
 
 describe('catalog entity cards', () => {
+  describe('EntityIconLinkRow', () => {
+    it('mounts link hooks only while their entity filter matches', () => {
+      const mountEffect = jest.fn();
+      const unmountEffect = jest.fn();
+      const useProps = () => {
+        useEffect(() => {
+          mountEffect();
+          return unmountEffect;
+        }, []);
+        return { label: 'Filtered link', href: '/filtered' };
+      };
+      const links = [
+        {
+          id: 'entity-icon-link:test',
+          filter: (entity: Entity) => entity.metadata.name === 'visible',
+          useProps,
+        },
+      ];
+      const hiddenEntity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: { name: 'hidden' },
+      };
+      const visibleEntity: Entity = {
+        ...hiddenEntity,
+        metadata: { name: 'visible' },
+      };
+
+      const rendered = render(
+        <MemoryRouter>
+          <EntityProvider entity={hiddenEntity}>
+            <EntityIconLinkRow links={links} />
+          </EntityProvider>
+        </MemoryRouter>,
+      );
+
+      expect(screen.queryByText('Filtered link')).not.toBeInTheDocument();
+      expect(mountEffect).not.toHaveBeenCalled();
+
+      rendered.rerender(
+        <MemoryRouter>
+          <EntityProvider entity={visibleEntity}>
+            <EntityIconLinkRow links={links} />
+          </EntityProvider>
+        </MemoryRouter>,
+      );
+
+      expect(screen.getByText('Filtered link')).toBeInTheDocument();
+      expect(mountEffect).toHaveBeenCalledTimes(1);
+      expect(unmountEffect).not.toHaveBeenCalled();
+
+      rendered.rerender(
+        <MemoryRouter>
+          <EntityProvider entity={hiddenEntity}>
+            <EntityIconLinkRow links={links} />
+          </EntityProvider>
+        </MemoryRouter>,
+      );
+
+      expect(screen.queryByText('Filtered link')).not.toBeInTheDocument();
+      expect(mountEffect).toHaveBeenCalledTimes(1);
+      expect(unmountEffect).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('catalogLinksEntityCard', () => {
     it('should render for entities with links', async () => {
       const entity: Entity = {

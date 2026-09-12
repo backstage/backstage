@@ -98,7 +98,7 @@ export const LLDAPVendor: LdapVendor = {
   dnAttributeName: 'dn',
   uuidAttributeName: 'entryuuid',
   decodeStringAttribute: (entry, name) => {
-    return decode(entry, name.toLocaleLowerCase('en-US'), value => {
+    return decode(entry, name.toLowerCase(), value => {
       return value.toString();
     });
   },

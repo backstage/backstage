@@ -118,7 +118,7 @@ function HasApisCardLegacy(props: HasApisCardLegacyProps) {
         <div style={{ textAlign: 'center' }}>
           <Typography variant="body1">
             {t('hasApisCard.emptyContent.title', {
-              entity: entity.kind.toLocaleLowerCase('en-US'),
+              entity: entity.kind.toLowerCase(),
             })}
           </Typography>
           <Typography variant="body2">
@@ -161,7 +161,7 @@ export const HasApisCard = (
       columnConfig={columnConfig}
       emptyState={{
         message: t('hasApisCard.emptyContent.title', {
-          entity: entity.kind.toLocaleLowerCase('en-US'),
+          entity: entity.kind.toLowerCase(),
         }),
         helpLink:
           'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-api',

@@ -163,6 +163,10 @@ export type KubernetesProxyOptions = {
   discovery: DiscoveryService;
   httpAuth: HttpAuthService;
   auditor?: AuditorService;
+  middlewareCache?: {
+    ttlMs?: number;
+    maxSize?: number;
+  };
 };
 
 // @public (undocumented)

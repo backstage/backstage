@@ -306,7 +306,7 @@ describe('CatalogTable component', () => {
               entities: kindEntities,
               filters: {
                 kind: kind
-                  ? new EntityKindFilter(kind.toLocaleLowerCase('en-US'), kind)
+                  ? new EntityKindFilter(kind.toLowerCase(), kind)
                   : undefined,
               },
             }}

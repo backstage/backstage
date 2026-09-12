@@ -681,6 +681,11 @@ export interface Config {
       /** Database name prefix override */
       prefix?: string;
       /**
+       * Prefix for schema names when using pluginDivisionMode: schema.
+       * @default ''
+       */
+      schemaPrefix?: string;
+      /**
        * Whether to ensure the given database exists by creating it if it does not.
        * Defaults to true if unspecified.
        */
@@ -1413,10 +1418,11 @@ export interface Config {
         host: string;
 
         /**
-         * An optional list of paths. In case they are present only targets matching
-         * any of them will are allowed. You can use trailing slashes to make sure only
-         * subdirectories are allowed, for example `/mydir/` will allow targets with
-         * paths like `/mydir/a` but will block paths like `/mydir2`.
+         * An optional list of paths. When present, only targets matching an exact path
+         * or a path below it at a segment boundary are allowed. For example, `/mydir`
+         * allows `/mydir` and `/mydir/a`, but blocks `/mydir2`. A trailing slash excludes
+         * the exact path without the slash, so `/mydir/` allows `/mydir/a` but not
+         * `/mydir`.
          */
         paths?: string[];
       }>;

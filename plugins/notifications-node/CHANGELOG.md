@@ -1,5 +1,28 @@
 # @backstage/plugin-notifications-node
 
+## 0.2.30-next.1
+
+### Patch Changes
+
+- 80a548a: Added `resolveNotificationLink` utility function that resolves relative notification links to absolute URLs using a provided base URL. This can be used by notification processor modules to ensure links are absolute before forwarding them to external systems.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/plugin-notifications-common@0.2.4-next.0
+
+## 0.2.30-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
+## 0.2.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0
+
 ## 0.2.29-next.0
 
 ### Patch Changes

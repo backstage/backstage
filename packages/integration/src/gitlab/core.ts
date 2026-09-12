@@ -131,9 +131,14 @@ export function extractProjectPath(
   // Get gitlab relative path
   const relativePath = getGitLabIntegrationRelativePath(config);
 
-  // Check relative path exist and replace it if it's the case.
+  // Check relative path exists and remove it if it's the case.
   if (relativePath) {
-    repo = repo.replace(relativePath, '');
+    if (!repo.startsWith(`${relativePath}/`)) {
+      throw new Error(
+        `Failed extracting project path from ${url.pathname}. Url path must start with ${relativePath}/.`,
+      );
+    }
+    repo = repo.slice(relativePath.length);
   }
 
   // Remove leading slash

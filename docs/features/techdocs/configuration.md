@@ -63,6 +63,29 @@ techdocs:
     pullImage: false
 ```
 
+### Pull Options
+
+`techdocs.generator.pullOptions`
+
+(Optional) This can be used to pass auth options when pulling the docker image. This is useful when `techdocs.generator.dockerImage` is set and `techdocs.generator.pullImage` is `true` (or unset, which uses the default pull behavior) and the image is hosted in a private registry.
+
+You can set `authconfig` to provide registry credentials. For supported fields and more examples, see the [Dockerode docs for pulling from private repos](https://github.com/apocas/dockerode?tab=readme-ov-file#pull-from-private-repos).
+
+**Example:**
+
+```yaml
+techdocs:
+  generator:
+    runIn: 'docker'
+    dockerImage: 'custom-registry/techdocs'
+    pullImage: true
+    pullOptions:
+      authconfig:
+        username: ${REGISTRY_USERNAME}
+        password: ${REGISTRY_PASSWORD}
+        serveraddress: 'https://index.docker.io/v1'
+```
+
 ### MkDocs Configuration
 
 #### Omit TechDocs Core Plugin
@@ -140,6 +163,23 @@ techdocs:
     mkdocs:
       defaultPlugins: ['techdocs-core']
 ```
+
+#### Dangerously Allow Additional Keys
+
+`techdocs.generator.mkdocs.dangerouslyAllowAdditionalKeys`
+
+(Optional) By default, TechDocs validates `mkdocs.yml` against a built-in allow list of supported top-level keys. This option explicitly allows the listed additional keys, such as the `hooks` key which some MkDocs plugins require, without failing or stripping them. Use with caution: allowed keys are passed through without validation.
+
+**Example:**
+
+```yaml
+techdocs:
+  generator:
+    mkdocs:
+      dangerouslyAllowAdditionalKeys: ['hooks']
+```
+
+When running `techdocs-cli generate` directly, the same behavior is available via the `--dangerouslyAllowAdditionalKeys` CLI flag, since the CLI does not currently read this option from a config file.
 
 ## Builder Configuration
 

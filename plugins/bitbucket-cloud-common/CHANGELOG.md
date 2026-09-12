@@ -1,5 +1,27 @@
 # @backstage/plugin-bitbucket-cloud-common
 
+## 0.3.13-next.1
+
+### Patch Changes
+
+- 0c1b8ee: Updated the OpenAPI generator tooling to avoid known security vulnerabilities.
+- Updated dependencies
+  - @backstage/integration@2.1.2-next.1
+
+## 0.3.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.2-next.0
+
+## 0.3.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.0
+
 ## 0.3.12-next.0
 
 ### Patch Changes

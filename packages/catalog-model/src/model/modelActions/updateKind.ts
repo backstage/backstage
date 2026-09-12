@@ -16,7 +16,6 @@
 
 import { JsonObject } from '@backstage/types';
 import { reduceKindSchema } from '../jsonSchema/reduceKindSchema';
-import { validateMetaSchema } from '../jsonSchema/validateMetaSchema';
 import { CatalogModelOp } from '../operations';
 import { createUpdateKindOp } from '../operations/updateKind';
 import { createUpdateKindVersionOp } from '../operations/updateKindVersion';
@@ -93,6 +92,11 @@ export interface CatalogModelUpdateKindVersionDefinition {
 
   /**
    * The JSON schema to deep merge with the existing schema for this version.
+   * Object fields set to `null` delete the corresponding inherited field.
+   * Values of `const` and `default` are literal JSON data, so `null` is
+   * retained for those keywords rather than interpreted as a deletion.
+   * Arrays replace the inherited array in full. The resulting schema is
+   * validated when the model is compiled.
    */
   schema?: {
     jsonSchema: JsonObject;
@@ -104,7 +108,11 @@ export function opsFromCatalogModelUpdateKind(
 ): CatalogModelOp[] {
   const ops: CatalogModelOp[] = [];
 
-  if (kind.names.singular || kind.names.plural || kind.description) {
+  if (
+    kind.names.singular !== undefined ||
+    kind.names.plural !== undefined ||
+    kind.description !== undefined
+  ) {
     ops.push(
       createUpdateKindOp({
         kind: kind.names.kind,
@@ -121,9 +129,6 @@ export function opsFromCatalogModelUpdateKind(
     const jsonSchema = version.schema
       ? reduceKindSchema(version.schema.jsonSchema)
       : undefined;
-    if (jsonSchema) {
-      validateMetaSchema(jsonSchema);
-    }
     const names = Array.isArray(version.name) ? version.name : [version.name];
     for (const name of names) {
       const specTypes = version.specType?.length

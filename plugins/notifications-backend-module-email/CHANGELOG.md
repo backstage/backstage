@@ -1,5 +1,42 @@
 # @backstage/plugin-notifications-backend-module-email
 
+## 0.3.25-next.1
+
+### Patch Changes
+
+- 80a548a: Added `resolveNotificationLink` utility function that resolves relative notification links to absolute URLs using a provided base URL. This can be used by notification processor modules to ensure links are absolute before forwarding them to external systems.
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/plugin-notifications-node@0.2.30-next.1
+  - @backstage/catalog-client@1.16.2-next.1
+  - @backstage/plugin-catalog-node@2.2.5-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/integration-aws-node@0.2.2-next.0
+  - @backstage/plugin-notifications-common@0.2.4-next.0
+
+## 0.3.25-next.0
+
+### Patch Changes
+
+- 2a19159: Hardened notification email delivery with format validation and optional `allowedEmailDomains`. Invalid or disallowed addresses are skipped; `allowlistEmailAddresses` and `denylistEmailAddresses` match case-insensitively, allowlist still overrides the domain list, and denied addresses win last.
+- Updated dependencies
+  - @backstage/catalog-client@1.16.2-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-catalog-node@2.2.5-next.0
+  - @backstage/plugin-notifications-node@0.2.30-next.0
+
+## 0.3.24
+
+### Patch Changes
+
+- a4e7831: Updated `nodemailer` from v8 to v9. The new major version validates TLS certificates by default when fetching remote content such as attachments or OAuth2 tokens. If your SMTP relay or OAuth2 endpoint uses a self-signed or otherwise untrusted certificate, email delivery may start failing. You can opt out per transport by setting `tls: { rejectUnauthorized: false }` in your nodemailer transport options.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/integration-aws-node@0.2.1
+  - @backstage/plugin-catalog-node@2.2.4
+  - @backstage/plugin-notifications-node@0.2.29
+
 ## 0.3.24-next.1
 
 ### Patch Changes

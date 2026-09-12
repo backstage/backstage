@@ -26,6 +26,7 @@ Commands:
 Usage: techdocs-cli generate|build [options]
 
 Options:
+  --dangerouslyAllowAdditionalKeys [additionalKeys...]
   --defaultPlugin [defaultPlugins...]
   --disableExternalFonts
   --docker-image <DOCKER_IMAGE>

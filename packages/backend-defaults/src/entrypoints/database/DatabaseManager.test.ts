@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { DatabaseManagerImpl } from './DatabaseManager';
+import { DatabaseManager, DatabaseManagerImpl } from './DatabaseManager';
 import { Connector } from './types';
 import { mockServices } from '@backstage/backend-test-utils';
 
@@ -171,11 +171,13 @@ describe('DatabaseManagerImpl', () => {
     // Given a database manager that is provided a rootLifecycle service
     const rootLifecycle = { addShutdownHook: jest.fn() } as unknown as any;
     const destroy = jest.fn();
+    const shutdownConnector = jest.fn().mockResolvedValue(undefined);
     const connector1 = {
       getClient: jest
         .fn()
         .mockResolvedValue({ destroy, client: { config: 'pg' } }),
-    } satisfies Connector;
+      shutdown: shutdownConnector,
+    } satisfies Connector & { shutdown(): Promise<void> };
     const impl = new DatabaseManagerImpl(
       new ConfigReader({
         client: 'pg',
@@ -198,6 +200,7 @@ describe('DatabaseManagerImpl', () => {
 
     // Then the destroy method should have been called on the resolved client
     expect(destroy).toHaveBeenCalled();
+    expect(shutdownConnector).toHaveBeenCalled();
   });
 
   it('does not attempt to destroy connection when using SQLite', async () => {
@@ -238,5 +241,57 @@ describe('DatabaseManagerImpl', () => {
     // Destroy should not have been called, but we should have read the config
     expect(destroy).not.toHaveBeenCalled();
     expect(getConfig).toHaveBeenCalled();
+  });
+});
+
+describe('DatabaseManager.fromConfig', () => {
+  describe('schemaPrefix validation', () => {
+    it('throws error when schemaPrefix contains invalid characters', () => {
+      const invalidPrefixes = ['test"--', 'test-prefix', '123test', 'test@'];
+
+      invalidPrefixes.forEach(schemaPrefix => {
+        const config = new ConfigReader({
+          backend: {
+            database: {
+              client: 'pg',
+              schemaPrefix,
+            },
+          },
+        });
+
+        expect(() => DatabaseManager.fromConfig(config)).toThrow(
+          /Invalid schemaPrefix/,
+        );
+      });
+    });
+
+    it('accepts valid schemaPrefix values', () => {
+      const validPrefixes = ['test_prefix_', '_test_prefix', 'backstage_'];
+
+      validPrefixes.forEach(schemaPrefix => {
+        const config = new ConfigReader({
+          backend: {
+            database: {
+              client: 'pg',
+              schemaPrefix,
+            },
+          },
+        });
+
+        expect(() => DatabaseManager.fromConfig(config)).not.toThrow();
+      });
+    });
+
+    it('accepts when schemaPrefix is not configured', () => {
+      const config = new ConfigReader({
+        backend: {
+          database: {
+            client: 'pg',
+          },
+        },
+      });
+
+      expect(() => DatabaseManager.fromConfig(config)).not.toThrow();
+    });
   });
 });

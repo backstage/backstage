@@ -32,6 +32,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { ScaffolderFormDecorator } from '@backstage/plugin-scaffolder-react/alpha';
 import { ScaffolderFormFieldsApi } from '@backstage/plugin-scaffolder-react/alpha';
+import { ScaffolderTemplateOutputsComponent } from '@backstage/plugin-scaffolder-react/alpha';
 import { SubRouteRef } from '@backstage/core-plugin-api';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
@@ -487,8 +488,6 @@ const _default: OverridableFrontendPlugin<
       };
     }>;
     'sub-page:scaffolder/tasks': OverridableExtensionDefinition<{
-      kind: 'sub-page';
-      name: 'tasks';
       config: {
         path: string | undefined;
         title: string | undefined;
@@ -515,7 +514,27 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {};
+      inputs: {
+        templateOutputsComponents: ExtensionInput<
+          | ConfigurableExtensionDataRef<
+              ScaffolderTemplateOutputsComponent,
+              'scaffolder.template-outputs-component',
+              {}
+            >
+          | ConfigurableExtensionDataRef<
+              string[],
+              'scaffolder.template-output-template-refs',
+              {}
+            >,
+          {
+            singleton: false;
+            optional: true;
+            internal: false;
+          }
+        >;
+      };
+      kind: 'sub-page';
+      name: 'tasks';
       params: {
         path: string;
         title: string;

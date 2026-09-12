@@ -22,7 +22,7 @@ import {
 import { ButtonIcon, Switch, Tooltip, TooltipTrigger } from '@backstage/ui';
 import { RiArrowDownSLine, RiArrowUpSLine } from '@remixicon/react';
 import { NoBorderTableCell } from './NoBorderTableCell';
-import { useNotificationFormat } from './UserNotificationSettingsCard';
+import { useNotificationFormat } from './NotificationFormatContext';
 
 export const OriginRow = (props: {
   origin: OriginSetting;
@@ -77,9 +77,9 @@ export const OriginRow = (props: {
                 handleChange(ch.id, origin.id, null, isSelected);
               }}
             />
-            <Tooltip>{`Enable or disable ${ch.id.toLocaleLowerCase(
-              'en-US',
-            )} notifications from ${formatOriginName(origin.id)}`}</Tooltip>
+            <Tooltip>{`Enable or disable ${ch.id.toLowerCase()} notifications from ${formatOriginName(
+              origin.id,
+            )}`}</Tooltip>
           </TooltipTrigger>
         </NoBorderTableCell>
       ))}

@@ -708,6 +708,15 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       return;
     }
 
+    if (
+      event.event_name === 'user_create' &&
+      this.config.restrictUsersToGroup &&
+      !(await this.gitLabClient.getGroupMemberById(this.config.group, user.id))
+    ) {
+      this.logger.debug(`Skipped user ${user.username}.`);
+      return;
+    }
+
     const userEntity = await this.userTransformer({
       user: user,
       integrationConfig: this.integration.config,

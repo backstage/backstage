@@ -22,17 +22,20 @@ import {
   PermissionsRegistryService,
   PermissionsService,
   PluginMetadataService,
+  RootConfigService,
 } from '@backstage/backend-plugin-api';
 import PromiseRouter from 'express-promise-router';
 import { Router, json } from 'express';
 import { z, AnyZodObject } from 'zod/v3';
 import zodToJsonSchema from 'zod-to-json-schema';
-import {
+import type {
   ActionsRegistryActionOptions,
   ActionsRegistryService,
+  ActionsServiceAction,
 } from '@backstage/backend-plugin-api/alpha';
 import { InputError, NotAllowedError, NotFoundError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { filterActions } from './actionFilters';
 
 type ActionEntry = [string, ActionsRegistryActionOptions<any, any, any>];
 
@@ -43,6 +46,7 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
   private readonly logger: LoggerService;
   private readonly httpAuth: HttpAuthService;
   private readonly auth: AuthService;
+  private readonly config: RootConfigService;
   private readonly metadata: PluginMetadataService;
   private readonly permissions: PermissionsService;
   private readonly permissionsRegistry: PermissionsRegistryService;
@@ -51,6 +55,7 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
     logger: LoggerService,
     httpAuth: HttpAuthService,
     auth: AuthService,
+    config: RootConfigService,
     metadata: PluginMetadataService,
     permissions: PermissionsService,
     permissionsRegistry: PermissionsRegistryService,
@@ -58,6 +63,7 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
     this.logger = logger;
     this.httpAuth = httpAuth;
     this.auth = auth;
+    this.config = config;
     this.metadata = metadata;
     this.permissions = permissions;
     this.permissionsRegistry = permissionsRegistry;
@@ -67,6 +73,7 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
     httpAuth,
     logger,
     auth,
+    config,
     metadata,
     permissions,
     permissionsRegistry,
@@ -74,6 +81,7 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
     httpAuth: HttpAuthService;
     logger: LoggerService;
     auth: AuthService;
+    config: RootConfigService;
     metadata: PluginMetadataService;
     permissions: PermissionsService;
     permissionsRegistry: PermissionsRegistryService;
@@ -82,6 +90,7 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
       logger,
       httpAuth,
       auth,
+      config,
       metadata,
       permissions,
       permissionsRegistry,
@@ -94,7 +103,9 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
 
     router.get('/.backstage/actions/v1/actions', async (req, res) => {
       const credentials = await this.httpAuth.credentials(req);
-      const entries = Array.from(this.actions.entries());
+      const entries = Array.from(this.actions.entries()).filter(entry =>
+        this.isActionAllowed(entry),
+      );
 
       const allowedActions = await this.filterByPermissions(
         entries,
@@ -108,14 +119,7 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
           title: action.title,
           description: action.description,
           pluginId: this.metadata.getId(),
-          attributes: {
-            // Inspired by the @modelcontextprotocol/sdk defaults for the hints.
-            // https://github.com/modelcontextprotocol/typescript-sdk/blob/dd69efa1de8646bb6b195ff8d5f52e13739f4550/src/types.ts#L777-L812
-            destructive:
-              action.attributes?.destructive ?? !action.attributes?.readOnly,
-            idempotent: action.attributes?.idempotent ?? false,
-            readOnly: action.attributes?.readOnly ?? false,
-          },
+          attributes: this.toActionAttributes(action),
           examples: action.examples,
           schema: {
             input: action.schema?.input
@@ -148,6 +152,10 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
         const action = this.actions.get(req.params.actionId);
 
         if (!action) {
+          throw new NotFoundError(`Action "${req.params.actionId}" not found`);
+        }
+
+        if (!this.isActionAllowed([req.params.actionId, action])) {
           throw new NotFoundError(`Action "${req.params.actionId}" not found`);
         }
 
@@ -257,6 +265,37 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
     }
 
     this.actions.set(id, options);
+  }
+
+  private isActionAllowed([id, action]: ActionEntry): boolean {
+    const pluginSources = this.config.getOptionalStringArray(
+      'backend.actions.pluginSources',
+    );
+
+    if (pluginSources && !pluginSources.includes(this.metadata.getId())) {
+      return false;
+    }
+
+    return (
+      filterActions(this.config, [
+        {
+          id,
+          attributes: this.toActionAttributes(action),
+        },
+      ]).length === 1
+    );
+  }
+
+  private toActionAttributes(
+    action: ActionEntry[1],
+  ): ActionsServiceAction['attributes'] {
+    // Resolve optional attributes to the values exposed by ActionsService.
+    return {
+      destructive:
+        action.attributes?.destructive ?? !action.attributes?.readOnly,
+      idempotent: action.attributes?.idempotent ?? false,
+      readOnly: action.attributes?.readOnly ?? false,
+    };
   }
 
   private async filterByPermissions(

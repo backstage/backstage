@@ -198,6 +198,7 @@
     cursor: pointer;
     user-select: none;
     font-size: var(--bui-font-size-3);
+    line-height: 1.15;
     outline: none;
     border-radius: var(--bui-radius-2);
 
@@ -300,6 +301,7 @@
     padding-left: var(--bui-space-3);
     color: var(--bui-fg-primary);
     font-size: var(--bui-font-size-1);
+    line-height: 1.15;
     font-weight: bold;
     letter-spacing: 0.05rem;
     text-transform: uppercase;
@@ -312,6 +314,7 @@
     font-size: var(--bui-font-size-3);
     font-family: var(--bui-font-regular);
     font-weight: var(--bui-font-weight-regular);
+    line-height: 1.15;
   }
 
   .bui-ComboboxLoading {

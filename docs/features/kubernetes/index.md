@@ -22,7 +22,9 @@ and
 
 The frontend plugin exposes information to the end user in a digestible way,
 while the backend wraps the mechanics to connect to Kubernetes clusters to
-collect the relevant information.
+collect the relevant information. The backend also supports
+[watching resources](watch.md) for real-time change notifications using async
+iterators.
 
 ## Let's use it!
 

@@ -131,8 +131,7 @@ export function TemplateEditorForm(props: TemplateEditorFormProps) {
 
         let rootObj = parsed;
         if (!contentIsSpec) {
-          const isTemplate =
-            String(parsed.kind).toLocaleLowerCase('en-US') === 'template';
+          const isTemplate = String(parsed.kind).toLowerCase() === 'template';
           if (!isTemplate) {
             setSteps(undefined);
             return;

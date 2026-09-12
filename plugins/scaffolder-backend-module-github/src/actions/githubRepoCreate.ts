@@ -38,8 +38,10 @@ import { examples } from './githubRepoCreate.examples';
 export function createGithubRepoCreateAction(options: {
   integrations: ScmIntegrationRegistry;
   githubCredentialsProvider?: GithubCredentialsProvider;
+  requireScmUserCredentials?: boolean;
 }) {
-  const { integrations, githubCredentialsProvider } = options;
+  const { integrations, githubCredentialsProvider, requireScmUserCredentials } =
+    options;
 
   return createTemplateAction({
     id: 'github:repo:create',
@@ -92,6 +94,7 @@ export function createGithubRepoCreateAction(options: {
 
       const octokitOptions = await getOctokitOptions({
         integrations,
+        requireScmUserCredentials,
         credentialsProvider: githubCredentialsProvider,
         token: providedToken,
         host,

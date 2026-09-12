@@ -28,6 +28,7 @@ import {
   ObjectToFetch,
 } from '@backstage/plugin-kubernetes-node';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
+import { KubernetesConnection } from './KubernetesConnection';
 import {
   AuthService,
   LoggerService,
@@ -68,9 +69,14 @@ export class KubernetesInitializer {
     return new KubernetesInitializer(opts);
   }
 
-  private async defaultFetcher() {
+  private defaultConnection() {
+    return new KubernetesConnection({ logger: this.opts.logger });
+  }
+
+  private async defaultFetcher(connection: KubernetesConnection) {
     return new KubernetesClientBasedFetcher({
       logger: this.opts.logger,
+      connection,
     });
   }
 
@@ -176,10 +182,12 @@ export class KubernetesInitializer {
   }
 
   async init() {
+    const connection = this.defaultConnection();
+
     const fetcher =
       (await this.opts.fetcher?.({
-        getDefault: () => this.defaultFetcher(),
-      })) ?? (await this.defaultFetcher());
+        getDefault: () => this.defaultFetcher(connection),
+      })) ?? (await this.defaultFetcher(connection));
 
     const authStrategyMap =
       this.opts.authStrategyMap ?? (await this.defaultAuthStrategy());

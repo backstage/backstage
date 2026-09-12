@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { BUIProvider } from '../../provider';
 import { PluginHeader } from './PluginHeader';
 import type { PluginHeaderProps } from './types';
@@ -25,6 +25,34 @@ function renderPluginHeader(props: PluginHeaderProps = {}, initialEntry = '/') {
     <MemoryRouter initialEntries={[initialEntry]}>
       <BUIProvider>
         <PluginHeader {...props} />
+      </BUIProvider>
+    </MemoryRouter>,
+  );
+}
+
+function LocationStatus() {
+  return <span role="status">{useLocation().pathname}</span>;
+}
+
+function renderNestedPluginHeader(props: PluginHeaderProps) {
+  return render(
+    <MemoryRouter
+      basename="/app"
+      initialEntries={['/app/catalog/entity']}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <BUIProvider>
+        <Routes>
+          <Route
+            path="catalog/entity/*"
+            element={
+              <>
+                <PluginHeader {...props} />
+                <LocationStatus />
+              </>
+            }
+          />
+        </Routes>
       </BUIProvider>
     </MemoryRouter>,
   );
@@ -52,6 +80,17 @@ describe('PluginHeader', () => {
 
     const link = screen.getByRole('link', { name: 'Catalog' });
     expect(link).toHaveAttribute('href', '/catalog');
+  });
+
+  it('routes a relative title link through the host router', () => {
+    renderNestedPluginHeader({ title: 'Catalog', titleLink: 'overview' });
+
+    const link = screen.getByRole('link', { name: 'Catalog' });
+    expect(link).toHaveAttribute('href', '/app/catalog/entity/overview');
+    fireEvent.click(link);
+    expect(screen.getByRole('status')).toHaveTextContent(
+      '/catalog/entity/overview',
+    );
   });
 
   it('renders a custom icon', () => {
@@ -88,6 +127,20 @@ describe('PluginHeader', () => {
 
     expect(screen.getByRole('tab', { name: 'Overview' })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Settings' })).toBeInTheDocument();
+  });
+
+  it('routes a relative tab through the host router', () => {
+    renderNestedPluginHeader({
+      title: 'Catalog',
+      tabs: [{ id: 'overview', label: 'Overview', href: 'overview' }],
+    });
+
+    const tab = screen.getByRole('tab', { name: 'Overview' });
+    expect(tab).toHaveAttribute('href', '/app/catalog/entity/overview');
+    fireEvent.click(tab);
+    expect(screen.getByRole('status')).toHaveTextContent(
+      '/catalog/entity/overview',
+    );
   });
 
   it('renders a single breadcrumb (plugin root page) as a clickable link', () => {

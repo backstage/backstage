@@ -115,7 +115,7 @@ This enables decisions based on characteristics of the resource, but it's import
 Install the missing module:
 
 ```bash
-$ yarn workspace @internal/plugin-todo-list-backend add zod
+$ yarn workspace @internal/plugin-todo-list-backend add zod@4
 ```
 
 Create a new `plugins/todo-list-backend/src/service/rules.ts` file and append the following code:
@@ -126,7 +126,7 @@ import {
   createPermissionRule,
 } from '@backstage/plugin-permission-node';
 import { TODO_LIST_RESOURCE_TYPE } from '@internal/plugin-todo-list-common';
-import { z } from 'zod/v3';
+import * as z from 'zod';
 import { Todo, TodoFilter } from './todos';
 
 export const todoListPermissionResourceRef = createPermissionResourceRef<

@@ -107,7 +107,7 @@ function ProvidedApisCardLegacy(props: ProvidedApisCardLegacyProps) {
         <div style={{ textAlign: 'center' }}>
           <Typography variant="body1">
             {t('providedApisCard.emptyContent.title', {
-              entity: entity.kind.toLocaleLowerCase('en-US'),
+              entity: entity.kind.toLowerCase(),
             })}
           </Typography>
           <Typography variant="body2">
@@ -152,7 +152,7 @@ export const ProvidedApisCard = (
       columnConfig={columnConfig}
       emptyState={{
         message: t('providedApisCard.emptyContent.title', {
-          entity: entity.kind.toLocaleLowerCase('en-US'),
+          entity: entity.kind.toLowerCase(),
         }),
         helpLink:
           'https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional',

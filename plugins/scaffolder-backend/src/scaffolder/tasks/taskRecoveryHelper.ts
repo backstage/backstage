@@ -15,6 +15,7 @@
  */
 
 import { SerializedTaskEvent } from '@backstage/plugin-scaffolder-node';
+import { Config } from '@backstage/config';
 import { TaskRecoverStrategy } from '@backstage/plugin-scaffolder-common';
 
 export const trimEventsTillLastRecovery = (
@@ -38,4 +39,16 @@ export const trimEventsTillLastRecovery = (
   }
 
   return { events };
+};
+
+/**
+ * Resolves whether automatic task recovery is enabled, falling back to the
+ * legacy `EXPERIMENTAL_recoverTasks` flag for backwards compatibility.
+ */
+export const isTaskRecoveryEnabled = (config?: Config): boolean => {
+  return (
+    config?.getOptionalBoolean('scaffolder.taskRecovery.enabled') ??
+    config?.getOptionalBoolean('scaffolder.EXPERIMENTAL_recoverTasks') ??
+    false
+  );
 };
