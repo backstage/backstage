@@ -1,0 +1,20 @@
+{
+  "name": "@backstage-test/compat-common",
+  "version": "0.0.0",
+  "backstage": {
+    "role": "common-library"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "compat-cjs-dependency": "0.0.0",
+    "compat-esm-dependency": "0.0.0"
+  }
+}
