@@ -30,6 +30,7 @@ export interface ParsedTemplateSchema {
   schema: JsonObject;
   title: string;
   description?: string;
+  when?: string | boolean;
 }
 
 /**
@@ -45,11 +46,12 @@ export const useTemplateSchema = (
   presentation?: TemplatePresentationV1beta3;
 } => {
   const featureFlags = useApi(featureFlagsApiRef);
-  const steps = manifest.steps.map(({ title, description, schema }) => ({
-    title,
-    description,
-    mergedSchema: schema,
-    ...extractSchemaFromStep(schema),
+  const steps = manifest.steps.map(step => ({
+    title: step.title,
+    description: step.description,
+    ...(step.when !== undefined ? { when: step.when } : {}),
+    mergedSchema: step.schema,
+    ...extractSchemaFromStep(step.schema),
   }));
 
   const returningSteps = steps
