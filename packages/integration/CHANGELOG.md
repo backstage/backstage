@@ -1,5 +1,17 @@
 # @backstage/integration
 
+## 2.1.2
+
+### Patch Changes
+
+- 23705f3: Fixed an issue where reading or downloading files from Bitbucket Server could fail when the branch name contained special characters such as an ampersand or a plus sign. The branch name is now correctly encoded in the request URL.
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- 7150117: Updated internal Azure DevOps imports to avoid a circular module dependency.
+- e895def: Fixed handling of GitLab URLs for instances configured with a relative base path.
+- Updated dependencies
+  - @backstage/connections@0.4.0
+  - @backstage/config@1.3.9
+
 ## 2.1.2-next.1
 
 ### Patch Changes

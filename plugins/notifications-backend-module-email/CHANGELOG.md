@@ -1,5 +1,22 @@
 # @backstage/plugin-notifications-backend-module-email
 
+## 0.3.25
+
+### Patch Changes
+
+- 041656a: chore(deps): bump `nodemailer` from 9.0.4 to 9.1.1
+- 2a19159: Hardened notification email delivery with format validation and optional `allowedEmailDomains`. Invalid or disallowed addresses are skipped; `allowlistEmailAddresses` and `denylistEmailAddresses` match case-insensitively, allowlist still overrides the domain list, and denied addresses win last.
+- 80a548a: Added `resolveNotificationLink` utility function that resolves relative notification links to absolute URLs using a provided base URL. This can be used by notification processor modules to ensure links are absolute before forwarding them to external systems.
+- Updated dependencies
+  - @backstage/catalog-client@1.16.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/config@1.3.9
+  - @backstage/plugin-notifications-node@0.2.30
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/integration-aws-node@0.2.2
+  - @backstage/plugin-catalog-node@2.2.5
+  - @backstage/plugin-notifications-common@0.2.4
+
 ## 0.3.25-next.1
 
 ### Patch Changes

@@ -1,5 +1,30 @@
 # @backstage/plugin-techdocs-node
 
+## 1.16.0
+
+### Minor Changes
+
+- ee97130: Added support for `techdocs.generator.pullOptions` when pulling the TechDocs generator Docker image from private registries that require authentication.
+
+### Patch Changes
+
+- 1711594: Fixed local TechDocs generation when temporary source paths resolve through filesystem aliases.
+- c0ebaa7: chore(deps): bump `js-yaml` from 4.3.1 to 4.3.2
+- e58d265: Updated TechDocs generation to reject source trees containing symlinks that resolve outside the source directory.
+- d13ad29: Improved MkDocs configuration handling for additional templates.
+- e582b56: Fixed AWS S3 publishing to paginate existing objects in order to properly remove all stale TechDocs files.
+- 2233af2: Improved MkDocs configuration sanitization to cover additional nested configuration keys and theme options.
+- 4441911: Improved MkDocs configuration file handling.
+- 45cbd0a: Improved validation of MkDocs configuration values during TechDocs generation.
+- 030331b: Improved file validation in the local TechDocs publisher during the publish step.
+- Updated dependencies
+  - @backstage/integration@2.1.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/integration-aws-node@0.2.2
+  - @backstage/plugin-search-common@1.2.25
+
 ## 1.16.0-next.1
 
 ### Patch Changes

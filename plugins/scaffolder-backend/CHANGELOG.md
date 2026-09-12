@@ -1,5 +1,49 @@
 # @backstage/plugin-scaffolder-backend
 
+## 4.2.0
+
+### Minor Changes
+
+- 09f42dd: export workspace:template\* actions by default
+- 1a705ca: Applied `templateDryRunPermission` to inline Software Template dry runs and the corresponding backend action. Permission policies that deny unknown permissions must explicitly allow `scaffolder.template.dry-run` to retain existing dry-run access.
+- e95b649: Added task recovery feature with new `scaffolder.taskRecovery` config section. When enabled, tasks that crash or timeout are automatically recovered and resume from the last completed step, task secrets are retained until the task reaches a terminal state so recovery can continue, and completed step outputs are persisted. Enabling recovery applies to all scaffolder tasks, so actions used by those tasks should be idempotent or use checkpoints. When recovery is disabled (the default), the previous behavior is unchanged: secrets are cleared as soon as a task is claimed and retries re-run every step. The new config consolidates previous experimental flags (`EXPERIMENTAL_recoverTasks`, `EXPERIMENTAL_workspaceSerialization`, `EXPERIMENTAL_recoverTasksTimeout`) which remain supported as fallbacks. The legacy workspace provider setting continues to select a provider only when `EXPERIMENTAL_workspaceSerialization` is `true`.
+
+  Workspace serialization for task recovery now requires installing a separate workspace provider module, including when you use the legacy configuration. For development, use `@backstage/plugin-scaffolder-backend-module-workspace-database` (50 MB limit, not recommended for production). On first startup, that module migrates existing database workspace snapshots from the legacy task storage. For production, use `@backstage/plugin-scaffolder-backend-module-gcp` or a similar external storage provider. The scaffolder rejects a configured provider that has not been installed and registered.
+
+  Enabling crash recovery does not keep completed task event streams open; normal task completion remains terminal for event-stream clients.
+
+- bbba6b5: Added the `scaffolder.requireScmUserCredentials` configuration option to require user-provided credentials for supported SCM mutation and fetch actions.
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- 7fba55a: Removed user entity references from scaffolder task count metrics to avoid exposing user identities and creating high-cardinality metric labels.
+- b1256aa: Respect task read permission decisions when listing scaffolder tasks.
+- 15fa029: Restrict task list ordering to supported fields.
+- be0a75a: Exclude internal task data from task responses.
+- 2bf1392: Software template inline conditionals without an `else` branch now render an empty string when their condition is false, matching Nunjucks behavior.
+- 3bb3710: Improved task worker resilience by backing off repeated database claim failures, containing unexpected task execution errors, and preventing new work from being claimed during graceful shutdown.
+- beaa3db: Reject Scaffolder steps where `each` resolves to a primitive value instead of an array or object.
+- f389dd2: Improve denied scaffolder action error handling.
+- 2eebeb7: Ensure task failure details use the configured log redactions.
+- 84ebbb9: Fixed log redaction for transformed secret values used to iterate Scaffolder steps.
+- b4172dd: Restrict task retries to terminal states.
+- c1a30ef: Restored support for intrinsic string, number, array, `Map`, and `Set` methods in software templates.
+- ee9c48d: Fixed matching of action input values in scaffolder permission policies.
+- 79f0b91: Fixed the scaffolder task worker silently giving up after a transient failure. A single error while picking up a task, such as a dropped database connection, would stop the backend from running any further software templates for the rest of its lifetime. New tasks stayed queued indefinitely with no error shown to the user and no failing health check, and the only way to recover was to restart the backend. Picking up tasks is now retried instead.
+- Updated dependencies
+  - @backstage/integration@2.1.2
+  - @backstage/plugin-scaffolder-common@2.3.0
+  - @backstage/backend-openapi-utils@0.7.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/config@1.3.9
+  - @backstage/plugin-scaffolder-node@0.13.7
+  - @backstage/plugin-permission-node@0.11.4
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-catalog-node@2.2.5
+  - @backstage/plugin-events-node@0.4.26
+  - @backstage/plugin-permission-common@0.9.11
+
 ## 4.2.0-next.2
 
 ### Patch Changes

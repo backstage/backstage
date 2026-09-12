@@ -1,5 +1,50 @@
 # example-backend
 
+## 0.0.54
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.18.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.14
+  - @backstage/plugin-techdocs-backend@2.3.0
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-auth-backend@0.30.1
+  - @backstage/plugin-catalog-backend@4.0.0
+  - @backstage/plugin-kubernetes-backend@0.21.11
+  - @backstage/plugin-notifications-backend@0.6.9
+  - @backstage/plugin-proxy-backend@0.6.18
+  - @backstage/plugin-scaffolder-backend@4.2.0
+  - @backstage/plugin-search-backend-module-techdocs@0.4.18
+  - @backstage/plugin-search-backend-node@1.4.8
+  - @backstage/plugin-auth-node@0.7.6
+  - @backstage/plugin-search-backend-module-elasticsearch@2.0.0
+  - @backstage/plugin-auth-backend-module-github-provider@0.5.7
+  - @backstage/plugin-mcp-actions-backend@0.2.2
+  - @backstage/plugin-search-backend-module-catalog@0.3.19
+  - @backstage/plugin-search-backend@2.1.7
+  - @backstage/plugin-app-backend@0.5.18
+  - @backstage/plugin-auth-backend-module-openshift-provider@0.1.11
+  - @backstage/plugin-devtools-backend@0.5.21
+  - @backstage/plugin-events-backend@0.6.6
+  - @backstage/plugin-events-backend-module-google-pubsub@0.2.7
+  - @backstage/plugin-permission-backend@0.7.16
+  - @backstage/plugin-permission-node@0.11.4
+  - @backstage/plugin-signals-backend@0.3.19
+  - @backstage/plugin-user-settings-backend@0.4.7
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-auth-backend-module-guest-provider@0.2.23
+  - @backstage/plugin-catalog-backend-module-ai-model@0.1.4
+  - @backstage/plugin-catalog-backend-module-backstage-openapi@0.5.18
+  - @backstage/plugin-catalog-backend-module-logs@0.1.26
+  - @backstage/plugin-catalog-backend-module-openapi@0.2.26
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.24
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.6.16
+  - @backstage/plugin-permission-backend-module-allow-all-policy@0.2.23
+  - @backstage/plugin-permission-common@0.9.11
+  - @backstage/plugin-scaffolder-backend-module-notifications@0.1.26
+  - @backstage/plugin-search-backend-module-explore@0.3.18
+
 ## 0.0.54-next.2
 
 ### Patch Changes

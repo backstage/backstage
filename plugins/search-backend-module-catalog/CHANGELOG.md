@@ -1,5 +1,21 @@
 # @backstage/plugin-search-backend-module-catalog
 
+## 0.3.19
+
+### Patch Changes
+
+- 979c255: Improved catalog indexing performance by using cursor pagination for TechDocs and avoiding unused total item counts in search collators.
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.2.0
+  - @backstage/catalog-client@1.16.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-search-backend-node@1.4.8
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-catalog-node@2.2.5
+  - @backstage/plugin-permission-common@0.9.11
+  - @backstage/plugin-search-common@1.2.25
+
 ## 0.3.19-next.2
 
 ### Patch Changes

@@ -1,5 +1,33 @@
 # @backstage/plugin-scaffolder
 
+## 1.39.0
+
+### Minor Changes
+
+- e060bd4: Added new `ui:options` to `RepoUrlPicker` for per-template customization: `ownerLabel`, `ownerDescription`, `repoLabel`, `repoDescription` to override field labels, and `disableRepoAutocomplete` to render a plain text input instead of the autocomplete dropdown.
+- 5ff93bf: Added functionality to register a Template Outputs Component in the new frontend system.
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- cfba1bc: Updated internal type definitions. No changes to runtime behavior or public API.
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/integration@2.1.2
+  - @backstage/plugin-catalog-common@1.2.0
+  - @backstage/plugin-scaffolder-common@2.3.0
+  - @backstage/ui@0.18.0
+  - @backstage/catalog-client@1.16.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/filter-predicates@0.1.5
+  - @backstage/plugin-catalog-react@3.2.3
+  - @backstage/plugin-scaffolder-react@2.1.0
+  - @backstage/plugin-techdocs-react@1.3.15
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/integration-react@1.2.22
+  - @backstage/plugin-permission-react@0.5.5
+
 ## 1.39.0-next.2
 
 ### Patch Changes

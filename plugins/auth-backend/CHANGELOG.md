@@ -1,5 +1,18 @@
 # @backstage/plugin-auth-backend
 
+## 0.30.1
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- 08c5d9b: Fixed inconsistent URL pattern matching in token revocation.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-auth-node@0.7.6
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-catalog-node@2.2.5
+
 ## 0.30.1-next.2
 
 ### Patch Changes

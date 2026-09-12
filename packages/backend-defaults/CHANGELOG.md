@@ -1,5 +1,40 @@
 # @backstage/backend-defaults
 
+## 0.18.0
+
+### Minor Changes
+
+- 2e07985: Add schemaPrefix configuration for pluginDivisionMode: schema. Allows prefixing PostgreSQL schema names to avoid conflicts with existing schemas.
+
+### Patch Changes
+
+- fe6ace6: Fixed `AwsS3UrlReader` and `AwsCodeCommitUrlReader` to resolve account-specific AWS credentials when an assume role ARN is configured, enabling support for `webIdentityTokenFile` and `accountDefaults` in environments without default AWS credentials.
+- 45d760b: Improve action handling consistency.
+- 8d71644: Reduced PostgreSQL connection churn during backend startup when many plugins initialize databases or schemas.
+- 416be1b: Updated Harness URL reading to validate cross-origin redirect destinations
+  against `backend.reading.allow`.
+- c59472e: Plugin route registration now rejects paths that differ only by letter casing,
+  and HTTP credentials are resolved independently for each plugin service instance.
+- 5aac521: Improved service credential handling during plugin-to-plugin delegation.
+- 61449ae: Reduced PostgreSQL startup connections when multiple plugins share a database by reusing the database existence check.
+- 55f30b8: Reduced scheduler database polling overhead by batching readiness checks for global tasks registered by each plugin into one query per poll cycle on each backend instance.
+- 8b3c83e: Improved input validation and path handling for cloud storage URL readers.
+- 61d97c0: Improved input validation for cloud storage URL readers.
+- e895def: Fixed handling of GitLab URLs for instances configured with a relative base path.
+- e13e278: Updated URL reader allow list matching so configured paths match either the exact path or paths below it at a segment boundary.
+- e3b587c: Improve authentication reliability during signing key rotation by performing budgeted JWKS reloads when a newly published key is requested during the remote key set cooldown.
+- Updated dependencies
+  - @backstage/integration@2.1.2
+  - @backstage/plugin-auth-node@0.7.6
+  - @backstage/config@1.3.9
+  - @backstage/backend-app-api@1.7.4
+  - @backstage/plugin-permission-node@0.11.4
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/config-loader@1.11.3
+  - @backstage/integration-aws-node@0.2.2
+  - @backstage/plugin-events-node@0.4.26
+  - @backstage/plugin-permission-common@0.9.11
+
 ## 0.17.9-next.1
 
 ### Patch Changes

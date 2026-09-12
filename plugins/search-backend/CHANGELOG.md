@@ -1,5 +1,19 @@
 # @backstage/plugin-search-backend
 
+## 2.1.7
+
+### Patch Changes
+
+- b11c9b4: Fixed a bug where the search engine could receive an unfiltered query when no document types were permitted.
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.7.2
+  - @backstage/plugin-search-backend-node@1.4.8
+  - @backstage/config@1.3.9
+  - @backstage/plugin-permission-node@0.11.4
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-permission-common@0.9.11
+  - @backstage/plugin-search-common@1.2.25
+
 ## 2.1.7-next.2
 
 ### Patch Changes

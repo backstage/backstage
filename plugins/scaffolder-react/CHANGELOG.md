@@ -1,5 +1,27 @@
 # @backstage/plugin-scaffolder-react
 
+## 2.1.0
+
+### Minor Changes
+
+- 5ff93bf: Added functionality to register a Template Outputs Component in the new frontend system.
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- ffaca06: Fixed several issues with scaffolder task event stream reconnection: retry timers are now properly cancelled on cleanup, concurrent reconnect attempts are guarded against, and tab visibility changes reconnect the stream using the last seen event cursor without re-fetching the task.
+- 7c1019c: Fixed the scaffolder wizard not scrolling to the top on step change when the app uses the new frontend system (no `<main>` element).
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/plugin-scaffolder-common@2.3.0
+  - @backstage/ui@0.18.0
+  - @backstage/catalog-client@1.16.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-catalog-react@3.2.3
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/plugin-permission-react@0.5.5
+
 ## 2.1.0-next.1
 
 ### Patch Changes

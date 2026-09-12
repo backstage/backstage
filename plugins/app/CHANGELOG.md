@@ -1,5 +1,21 @@
 # @backstage/plugin-app
 
+## 0.5.3
+
+### Patch Changes
+
+- d421187: Reduced the initial app bundle size by loading page and optional UI implementations only when their extensions render.
+- f914343: Fixed toast text layout when the application does not define a global line height.
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/ui@0.18.0
+  - @backstage/filter-predicates@0.1.5
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/plugin-app-react@0.2.7
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/integration-react@1.2.22
+  - @backstage/plugin-permission-react@0.5.5
+
 ## 0.5.3-next.1
 
 ### Patch Changes

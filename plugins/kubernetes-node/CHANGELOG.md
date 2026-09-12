@@ -1,5 +1,16 @@
 # @backstage/plugin-kubernetes-node
 
+## 0.4.8
+
+### Patch Changes
+
+- 5268d63: Migrated tests from MSW v1 to MSW v2.
+- d9a57de: Add `KubernetesWatcher` interface for streaming Kubernetes resource changes via an async iterator. The watcher is separated from `KubernetesFetcher` because watching is a long-lived streaming connection that only works with server-side auth providers. Watch supports all event types (ADDED, MODIFIED, DELETED, BOOKMARK, ERROR) with errors yielded as data rather than thrown.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-kubernetes-common@0.9.13
+  - @backstage/backend-plugin-api@1.10.1
+
 ## 0.4.8-next.2
 
 ### Patch Changes

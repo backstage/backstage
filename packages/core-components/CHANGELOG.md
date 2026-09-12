@@ -1,5 +1,21 @@
 # @backstage/core-components
 
+## 0.18.14
+
+### Patch Changes
+
+- b80a9f3: Added an `onCopyLog` prop to the `LogViewer` component that renders a copy button in the toolbar, allowing users to copy all log content to the clipboard.
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- c0ebaa7: chore(deps): bump `js-yaml` from 4.3.1 to 4.3.2
+- bfb6497: Fixed `CopyTextButton` showing its tooltip on hover/focus instead of only after the user clicks to copy the text.
+- 279fdf6: Declared the DOM Testing Library dependency required by React Testing Library.
+- f2b5407: Updated dependency `react-idle-timer` to `5.7.3`.
+- d9a949e: Added support for rendering custom link elements inside `HeaderIconLinkRow`.
+- Updated dependencies
+  - @backstage/ui@0.18.0
+  - @backstage/config@1.3.9
+  - @backstage/core-plugin-api@1.12.10
+
 ## 0.18.14-next.2
 
 ### Patch Changes

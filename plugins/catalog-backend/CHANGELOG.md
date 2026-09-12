@@ -1,5 +1,38 @@
 # @backstage/plugin-catalog-backend
 
+## 4.0.0
+
+### Major Changes
+
+- d2cf99f: **BREAKING**: Removed the deprecated `catalog.enableRelationsCompatibility` config option and its associated compatibility layer. Entity relations are now always returned in the standard format with only `targetRef`. If you were relying on the `target` field in relations, update your code to use `targetRef` instead.
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- f5119cc: Improved PostgreSQL catalog query planning by correcting entity cardinality statistics for the search table.
+- 72c16f5: Use stable PostgreSQL array parameters for `$in` filter predicates.
+- 78656f8: Fixed catalog model relations to inherit the source entity namespace when no default namespace is configured, as documented. Explicit namespaces in entity references and explicitly configured default namespaces continue to take precedence.
+- 7761a50: Improved path validation for catalog entity placeholders.
+- 49b41f6: Fixed a bug where catalog entities could fail to process when catalog model sources are enabled and the catalog mixes `backstage.io/v1alpha1` and `backstage.io/v1beta1` for the same kind.
+- 4b922b3: The `catalog:query-catalog-entities` action now accepts `limit` and `offset` when they are passed as strings, coercing them to numbers before validation. Previously the action failed with a validation error when a client sent these pagination arguments as strings, which is common for MCP/LLM clients.
+- fda0ef1: Correct catalog property permission matching.
+- ff327e0: Apply catalog location analysis permissions consistently when using a custom location analyzer.
+- 7629e5e: Use stable PostgreSQL array parameters for batched refresh state lookups and updates.
+- e363ae2: Allowed location type restrictions are now applied consistently during catalog processing.
+- Updated dependencies
+  - @backstage/integration@2.1.2
+  - @backstage/plugin-catalog-common@1.2.0
+  - @backstage/backend-openapi-utils@0.7.2
+  - @backstage/catalog-client@1.16.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/filter-predicates@0.1.5
+  - @backstage/config@1.3.9
+  - @backstage/plugin-permission-node@0.11.4
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-catalog-node@2.2.5
+  - @backstage/plugin-events-node@0.4.26
+  - @backstage/plugin-permission-common@0.9.11
+
 ## 4.0.0-next.1
 
 ### Major Changes

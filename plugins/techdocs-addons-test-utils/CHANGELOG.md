@@ -1,5 +1,21 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 2.0.9
+
+### Patch Changes
+
+- 279fdf6: Declared the DOM Testing Library dependency required by React Testing Library.
+- Updated dependencies
+  - @backstage/plugin-catalog@2.0.9
+  - @backstage/core-app-api@1.20.5
+  - @backstage/plugin-catalog-react@3.2.3
+  - @backstage/plugin-techdocs@1.18.1
+  - @backstage/plugin-techdocs-react@1.3.15
+  - @backstage/test-utils@1.7.22
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/integration-react@1.2.22
+  - @backstage/plugin-search-react@1.11.8
+
 ## 2.0.9-next.1
 
 ### Patch Changes

@@ -1,5 +1,22 @@
 # @techdocs/cli
 
+## 1.12.0
+
+### Minor Changes
+
+- 57205a0: Added a `--dangerouslyAllowAdditionalKeys` option to `techdocs-cli generate`
+
+### Patch Changes
+
+- de92fae: Fixed an issue where `techdocs-cli serve` would silently stop detecting documentation changes and no longer refresh the browser when the Python environment (TechDocs container image or local) contains `click` 8.3.x. The CLI now explicitly enables MkDocs live reload when serving.
+- 4441911: Improved MkDocs configuration file handling.
+- Updated dependencies
+  - @backstage/backend-defaults@0.18.0
+  - @backstage/catalog-model@1.10.1
+  - @backstage/cli-common@0.3.1
+  - @backstage/plugin-techdocs-node@1.16.0
+  - @backstage/config@1.3.9
+
 ## 1.11.5-next.2
 
 ### Patch Changes

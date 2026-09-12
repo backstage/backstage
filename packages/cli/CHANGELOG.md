@@ -1,5 +1,16 @@
 # @backstage/cli
 
+## 0.36.6
+
+### Patch Changes
+
+- 89743dc: Replaced the deprecated dependency used by `repo list-deprecations` with the equivalent TypeScript ESLint rule.
+- Updated dependencies
+  - @backstage/cli-defaults@0.1.6
+  - @backstage/cli-common@0.3.1
+  - @backstage/cli-module-build@0.1.8
+  - @backstage/cli-module-test-jest@0.1.6
+
 ## 0.36.6-next.1
 
 ### Patch Changes
