@@ -33,7 +33,6 @@ import { defaultDefinitionWidgets } from './components/ApiDefinitionCard';
 import { rootRoute, registerComponentRouteRef } from './routes';
 import { apiDocsConfigRef } from './config';
 import { AppIcon } from '@backstage/core-components';
-import { z } from 'zod';
 
 import {
   EntityCardBlueprint,
