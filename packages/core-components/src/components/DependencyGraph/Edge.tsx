@@ -46,11 +46,8 @@ const useStyles = makeStyles(
       strokeWidth: 1.3,
       stroke: theme.palette.textSubtle,
       fill: 'none',
-      transition: `${theme.transitions.duration.shortest}ms`,
     },
-    label: {
-      transition: `${theme.transitions.duration.shortest}ms`,
-    },
+    label: {},
   }),
   { name: 'BackstageDependencyGraphEdge' },
 );
