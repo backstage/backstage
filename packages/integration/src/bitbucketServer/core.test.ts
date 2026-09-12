@@ -120,7 +120,7 @@ describe('bitbucketServer core', () => {
       ).toEqual(`${apiBase}/c.yaml?at=foo%2Bbar`);
       expect(
         getBitbucketServerFileFetchUrl(`${base}/c.yaml?at=my%20branch`, config),
-      ).toEqual(`${apiBase}/c.yaml?at=my%20branch`);
+      ).toEqual(`${apiBase}/c.yaml?at=my+branch`);
       // A slash-bearing ref is normalized rather than double-encoded.
       expect(
         getBitbucketServerFileFetchUrl(
@@ -227,6 +227,11 @@ describe('bitbucketServer core', () => {
         getBitbucketServerDownloadUrl(`${base}?at=foo%2Bbar`, config),
       ).resolves.toEqual(
         `${apiBase}?format=tgz&at=foo%2Bbar&prefix=backstage-mock&path=docs`,
+      );
+      await expect(
+        getBitbucketServerDownloadUrl(`${base}?at=my%20branch`, config),
+      ).resolves.toEqual(
+        `${apiBase}?format=tgz&at=my+branch&prefix=backstage-mock&path=docs`,
       );
       await expect(
         getBitbucketServerDownloadUrl(`${base}?at=release%2Fv1`, config),

@@ -89,11 +89,17 @@ export async function getBitbucketServerDownloadUrl(
   // path will limit the downloaded content
   // /docs will only download the docs folder and everything below it
   // /docs/index.md will download the docs folder and everything below it
-  const path = filepath
-    ? `&path=${encodeURIComponent(decodeURIComponent(filepath))}`
-    : '';
-  const at = encodeURIComponent(branch);
-  return `${config.apiBaseUrl}/projects/${project}/repos/${repoName}/archive?format=tgz&at=${at}&prefix=${project}-${repoName}${path}`;
+  const query = new URLSearchParams({
+    format: 'tgz',
+    at: branch,
+    prefix: `${project}-${repoName}`,
+  });
+  if (filepath) {
+    query.append('path', decodeURIComponent(filepath));
+  }
+  return `${
+    config.apiBaseUrl
+  }/projects/${project}/repos/${repoName}/archive?${query.toString()}`;
 }
 
 /**
@@ -127,8 +133,10 @@ export function getBitbucketServerFileFetchUrl(
     }
 
     const pathWithoutSlash = filepath.replace(/^\//, '');
-    const at = encodeURIComponent(decodeURIComponent(ref));
-    return `${config.apiBaseUrl}/projects/${owner}/repos/${name}/raw/${pathWithoutSlash}?at=${at}`;
+    const query = new URLSearchParams({ at: ref });
+    return `${
+      config.apiBaseUrl
+    }/projects/${owner}/repos/${name}/raw/${pathWithoutSlash}?${query.toString()}`;
   } catch (e) {
     throw new Error(`Incorrect URL: ${url}, ${e}`);
   }
