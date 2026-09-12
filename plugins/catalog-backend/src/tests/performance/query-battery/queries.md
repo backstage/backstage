@@ -392,7 +392,8 @@ time proportional to total catalog size.
 
 **Anti-patterns**:
 
-- Seq Scan on either table
+- Seq Scan on `search`; a Sequential Scan on `final_entities` can be healthy
+  when it feeds the parallel hash join used by the canonical plan
 - Execution time >30s on a production-scale catalog
 
 ---
@@ -520,7 +521,9 @@ query with each branch in isolation when investigating a regression.
 - Execution time substantially higher than the two branches in isolation.
 - Tens of thousands of ordered candidates inspected to return approximately
   2,000 rows.
-- Repeated correlated index probes for both branches on most candidates.
+- Repeated correlated `kind` and `spec.type` index probes for both branches on
+  most candidates. The relation lookups may instead appear as one-time hashed
+  subplans.
 
 ---
 

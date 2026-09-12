@@ -21,7 +21,11 @@ estimate had drifted to 1.28M
 
 - **Execution time**: 22.6ms median (22.1-22.7ms)
 - **Planning time**: 3.287 ms
-- **Plan shape**: Gather Merge (2 workers) -> Parallel Index Only Scan on `search_key_value_entity_idx` (key='metadata.name') -> Index Scan on `final_entities_pkey` -> Nested Loop Semi Join -> Index Only Scan on `search_key_value_entity_idx` (EXISTS kind=component); LIMIT short-circuits after 21 rows
+- **Plan shape**: Gather Merge (2 workers) -> Nested Loop -> Nested Loop:
+  Parallel Index Only Scan on `search_key_value_entity_idx`
+  (key='metadata.name') -> Index Scan on `final_entities_pkey` -> Index Only
+  Scan on `search_key_value_entity_idx` (EXISTS kind=component); LIMIT
+  short-circuits after 21 rows
 - **Anti-patterns detected**: None
 - **Buffers**: shared hit=4815
 
@@ -140,9 +144,11 @@ estimate had drifted to 1.28M
 - **Planning time**: 4.790 ms
 - **Plan shape**: Index Only Scan on `search_key_value_entity_idx` for
   `metadata.name` -> Memoize -> Index Scan on `final_entities_pkey` ->
-  correlated index probes for both sides of the disjunction; all 77,199
-  Memoize lookups miss because the ordered candidates have distinct entity
-  IDs, and LIMIT short-circuits after 2,001 rows
+  repeated correlated `search_entity_key_value_idx` probes for the `kind` and
+  `spec.type` predicates. The two relation predicates are each collected once
+  into hashed subplans using `search_key_value_entity_idx`. All 77,199 Memoize
+  lookups miss because the ordered candidates have distinct entity IDs, and
+  LIMIT short-circuits after 2,001 rows
 - **Anti-patterns detected**: The plan uses indexes throughout, but the
   disjunction prevents either selective relation predicate from driving the
   query. The workflow and dataset branches take 70.8ms and 59.7ms median in
@@ -260,6 +266,9 @@ changes.
 
 - Scenarios 3, 6, 8, and 9 retain their expected index-driven plans and remain
   sub-millisecond.
+
+### New known-slow scenario
+
 - Scenario 12 is new in this baseline. Its isolated workflow and dataset
   branches remain approximately 40 times faster than their ordered
   disjunction.
