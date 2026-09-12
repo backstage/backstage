@@ -30,10 +30,6 @@
     z-index: 1000;
   }
 
-  [data-theme-mode='dark'] .bui-Dialog {
-    background: rgba(0, 0, 0, 0.5);
-  }
-
   .bui-DialogOverlay[data-entering] {
     animation: fade-in 200ms ease-out forwards;
   }
