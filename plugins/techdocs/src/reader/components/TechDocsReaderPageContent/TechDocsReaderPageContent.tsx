@@ -93,6 +93,7 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
     } = useTechDocsReaderContentData({
       defaultPath: props.defaultPath,
       onReady: props.onReady,
+      layout: 'legacy',
     });
 
     if (isNotFound) return <NotFoundErrorPage />;
