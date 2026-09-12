@@ -112,7 +112,7 @@ describe('Azure DevOps webhook HTTP integration', () => {
     expect(eventsService.published).toHaveLength(0);
   });
 
-  it('should not register the ingress when no secret is configured', async () => {
+  it('should reject with 403 when no secret is configured by default', async () => {
     const eventsService = new TestEventsService();
     const eventsServiceFactory = createServiceFactory({
       service: eventsServiceRef,
@@ -139,7 +139,50 @@ describe('Azure DevOps webhook HTTP integration', () => {
       .timeout(1000)
       .send(JSON.stringify({ eventType: 'git.push' }));
 
-    expect(response.status).toBe(404);
+    expect(response.status).toBe(403);
     expect(eventsService.published).toHaveLength(0);
+  });
+
+  it('should accept when no secret is configured but dangerouslyAllowUnauthenticatedEvents is true', async () => {
+    const eventsService = new TestEventsService();
+    const eventsServiceFactory = createServiceFactory({
+      service: eventsServiceRef,
+      deps: {},
+      async factory({}) {
+        return eventsService;
+      },
+    });
+
+    const { server } = await startTestBackend({
+      features: [
+        eventsServiceFactory,
+        eventsPlugin,
+        eventsModuleAzureDevOpsWebhook,
+        mockServices.rootConfig.factory({
+          data: {
+            events: {
+              modules: {
+                azureDevOps: {
+                  dangerouslyAllowUnauthenticatedEvents: true,
+                },
+              },
+            },
+          },
+        }),
+      ],
+    });
+
+    const payload = { eventType: 'git.push' };
+
+    const response = await request(server)
+      .post('/api/events/http/azureDevOps')
+      .type('application/json')
+      .timeout(1000)
+      .send(JSON.stringify(payload));
+
+    expect(response.status).toBe(202);
+    expect(eventsService.published).toHaveLength(1);
+    expect(eventsService.published[0].topic).toEqual('azureDevOps');
+    expect(eventsService.published[0].eventPayload).toEqual(payload);
   });
 });

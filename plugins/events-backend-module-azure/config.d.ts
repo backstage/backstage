@@ -31,6 +31,11 @@ export interface Config {
          * @visibility secret
          */
         webhookSecret?: string;
+        /**
+         * Dangerously allow unauthenticated events.
+         * Only set to true for development or testing.
+         */
+        dangerouslyAllowUnauthenticatedEvents?: boolean;
       };
     };
   };

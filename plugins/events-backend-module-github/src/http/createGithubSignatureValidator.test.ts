@@ -93,10 +93,50 @@ describe('createGithubSignatureValidator', () => {
     } as RequestDetails;
   };
 
-  it('should return undefined if no secret is configured', async () => {
-    expect(
-      createGithubSignatureValidator(configWithoutSecret, octokitProvider),
-    ).toEqual(undefined);
+  it('missing secret without dangerouslyAllowUnauthenticatedEvents rejects with HTTP 403 and logs warning', async () => {
+    const request = await requestWithSignature(undefined);
+    const context = new TestContext();
+    const mockLogger = {
+      warn: jest.fn(),
+    };
+
+    const validator = createGithubSignatureValidator(
+      configWithoutSecret,
+      octokitProvider,
+      mockLogger as any,
+    );
+    await validator(request, context);
+
+    expect(context.details).not.toBeUndefined();
+    expect(context.details?.status).toBe(403);
+    expect(context.details?.payload).toEqual({ message: 'invalid signature' });
+    expect(mockLogger.warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "Webhook secrets are required by default unless 'events.modules.github.dangerouslyAllowUnauthenticatedEvents' is explicitly set to true",
+      ),
+    );
+  });
+
+  it('missing secret with dangerouslyAllowUnauthenticatedEvents: true accepts events', async () => {
+    const request = await requestWithSignature(undefined);
+    const context = new TestContext();
+    const configWithDanger = new ConfigReader({
+      events: {
+        modules: {
+          github: {
+            dangerouslyAllowUnauthenticatedEvents: true,
+          },
+        },
+      },
+    });
+
+    const validator = createGithubSignatureValidator(
+      configWithDanger,
+      octokitProvider,
+    );
+    await validator(request, context);
+
+    expect(context.details).toBeUndefined();
   });
 
   it('secret configured, reject request without signature', async () => {

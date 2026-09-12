@@ -42,7 +42,7 @@ describe('eventsModuleGithubWebhook', () => {
     } as RequestDetails;
   };
 
-  it('should not add ingress if validator is undefined', async () => {
+  it('should add ingress and reject with 403 when no secret is configured', async () => {
     let addedIngress: HttpPostIngressOptions | undefined;
     const extensionPoint = {
       addHttpPostIngress: (ingress: any) => {
@@ -60,7 +60,24 @@ describe('eventsModuleGithubWebhook', () => {
       ],
     });
 
-    expect(addedIngress).toBeUndefined();
+    expect(addedIngress).not.toBeUndefined();
+    expect(addedIngress?.topic).toEqual('github');
+    expect(addedIngress?.validator).not.toBeUndefined();
+    const rejections: any[] = [];
+    const context = {
+      reject: (details: { status?: any; payload?: any }) => {
+        rejections.push(details);
+      },
+    };
+    await addedIngress!.validator!(await requestWithSignature(), context);
+    expect(rejections).toEqual([
+      {
+        status: 403,
+        payload: {
+          message: 'invalid signature',
+        },
+      },
+    ]);
   });
 
   it('should be correctly wired and set up', async () => {
