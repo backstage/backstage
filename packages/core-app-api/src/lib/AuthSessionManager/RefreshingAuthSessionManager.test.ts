@@ -16,7 +16,10 @@
 
 import { RefreshingAuthSessionManager } from './RefreshingAuthSessionManager';
 import { SessionState } from '@backstage/core-plugin-api';
-import { AuthConnectorRefreshSessionOptions } from '../AuthConnector';
+import {
+  AuthConnectionError,
+  AuthConnectorRefreshSessionOptions,
+} from '../AuthConnector';
 
 const defaultOptions = {
   sessionScopes: (session: { scopes: Set<string> }) => session.scopes,
@@ -296,5 +299,77 @@ describe('RefreshingAuthSessionManager', () => {
     // call refresh session only once
     expect(refreshSession).toHaveBeenCalledTimes(2);
     expect(createSession).toHaveBeenCalledTimes(2);
+  });
+
+  it('should not open a login popup when a refresh fails with a network error', async () => {
+    const createSession = jest.fn();
+    const refreshSession = jest
+      .fn()
+      .mockRejectedValue(new AuthConnectionError('offline'));
+    const manager = new RefreshingAuthSessionManager({
+      connector: { createSession, refreshSession },
+      ...defaultOptions,
+    } as any);
+
+    await expect(
+      manager.getSession({ scopes: new Set(['a']) }),
+    ).rejects.toThrow('offline');
+    expect(createSession).toHaveBeenCalledTimes(0);
+  });
+
+  it('should return undefined for an optional session when a refresh fails with a network error', async () => {
+    const createSession = jest.fn();
+    const refreshSession = jest
+      .fn()
+      .mockRejectedValue(new AuthConnectionError('offline'));
+    const manager = new RefreshingAuthSessionManager({
+      connector: { createSession, refreshSession },
+      ...defaultOptions,
+    } as any);
+
+    expect(await manager.getSession({ optional: true })).toBe(undefined);
+    expect(createSession).toHaveBeenCalledTimes(0);
+  });
+
+  it('should keep the existing session on a transient network error and recover on the next call', async () => {
+    const createSession = jest
+      .fn()
+      .mockResolvedValue({ scopes: new Set(['a']), expired: true });
+    const refreshSession = jest
+      .fn()
+      .mockRejectedValueOnce(new Error('NOPE')) // seed a session via createSession
+      .mockRejectedValueOnce(new AuthConnectionError('offline')) // transient failure
+      .mockResolvedValue({ scopes: new Set(['a']), expired: false }); // recovery
+    const manager = new RefreshingAuthSessionManager({
+      connector: { createSession, refreshSession },
+      ...defaultOptions,
+    } as any);
+
+    const stateSubscriber = jest.fn();
+    manager.sessionState$().subscribe(stateSubscriber);
+    await Promise.resolve();
+
+    // Seed a signed-in (but expired) session.
+    await manager.getSession({ scopes: new Set(['a']) });
+    expect(createSession).toHaveBeenCalledTimes(1);
+    expect(stateSubscriber.mock.calls).toEqual([
+      [SessionState.SignedOut],
+      [SessionState.SignedIn],
+    ]);
+
+    // Transient network error: no popup, error surfaced, session not wiped.
+    await expect(
+      manager.getSession({ scopes: new Set(['a']) }),
+    ).rejects.toThrow('offline');
+    expect(createSession).toHaveBeenCalledTimes(1);
+    expect(stateSubscriber.mock.calls).toEqual([
+      [SessionState.SignedOut],
+      [SessionState.SignedIn],
+    ]);
+
+    // Connectivity is back: the next call refreshes silently, no popup.
+    const session = await manager.getSession({ scopes: new Set(['a']) });
+    expect(session).toEqual({ scopes: new Set(['a']), expired: false });
+    expect(createSession).toHaveBeenCalledTimes(1);
   });
 });
