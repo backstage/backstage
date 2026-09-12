@@ -51,6 +51,7 @@ import { BackendStartupError } from './BackendStartupError';
 import { createAllowBootFailurePredicate } from './createAllowBootFailurePredicate';
 import type { ConnectionsService } from '@backstage/connections';
 import { connectionsServiceRef } from '@backstage/connections-node';
+import { randomUUID } from 'node:crypto';
 import { withDeclaredConnections } from './withDeclaredConnections';
 import {
   assertObject,
@@ -165,6 +166,7 @@ function collectCallerConnectionRegistrations(
 
 function createRootInstanceMetadataServiceFactory(
   registrations: ReturnType<InternalBackendRegistrations['getRegistrations']>,
+  instanceId: string,
 ) {
   const installedPlugins: Map<string, RootInstanceMetadataServicePluginInfo> =
     new Map();
@@ -203,6 +205,7 @@ function createRootInstanceMetadataServiceFactory(
         ...installedPlugins.values(),
       ]);
       const instanceMetadata = {
+        getId: () => instanceId,
         getInstalledPlugins: () => Promise.resolve(readonlyInstalledPlugins),
       };
 
@@ -260,14 +263,17 @@ export class BackendInitializer {
 
   #unhandledRejectionHandler?: (reason: Error) => void;
   #uncaughtExceptionHandler?: (error: Error) => void;
+  readonly #instanceId: string;
 
   constructor(
     defaultApiFactories: ServiceFactory[],
     extensionPointFactoryMiddleware?: ExtensionPointFactoryMiddleware[],
+    instanceId?: string,
   ) {
     this.#serviceRegistry = ServiceRegistry.create([...defaultApiFactories]);
     this.#extensionPointFactoryMiddleware =
       extensionPointFactoryMiddleware ?? [];
+    this.#instanceId = instanceId || randomUUID();
   }
 
   async #getInitDeps(
@@ -401,7 +407,10 @@ export class BackendInitializer {
     );
 
     this.#serviceRegistry.add(
-      createRootInstanceMetadataServiceFactory(this.#allRegistrations),
+      createRootInstanceMetadataServiceFactory(
+        this.#allRegistrations,
+        this.#instanceId,
+      ),
     );
 
     // This makes sure that any uncaught errors or unhandled rejections are
