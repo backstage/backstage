@@ -23,15 +23,6 @@ integrations:
       token: my-token
 ```
 
-Legacy (avoid):
-
-```yaml
-integrations:
-  bitbucketCloud:
-    - username: username
-      appPassword: my-password
-```
-
 Using Bearer authentication:
 
 ```yaml
