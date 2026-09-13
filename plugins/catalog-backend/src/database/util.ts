@@ -55,9 +55,10 @@ export async function retryOnDeadlock<T>(
   retries = 3,
   baseMs = 25,
 ): Promise<T> {
-  // A deadlock aborts the transaction. Retrying individual statements inside
-  // it only produces a secondary "transaction is aborted" error and hides the
-  // original deadlock from code that can retry the complete transaction.
+  // PostgreSQL and InnoDB both abort the complete transaction on a deadlock.
+  // Retrying individual statements inside it is therefore unsafe; on
+  // PostgreSQL it also hides the original deadlock behind a secondary
+  // "transaction is aborted" error.
   if (knex.isTransaction) {
     return fn();
   }
