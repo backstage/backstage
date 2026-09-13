@@ -28,6 +28,7 @@ import { TechDocsReaderSearch } from './TechDocsReaderSearch';
 
 export type TechDocsReaderEntityCardProps = {
   withSearch?: boolean;
+  searchResultUrlMapper?: (url: string) => string;
 };
 
 export const TechDocsReaderEntityCard = (
@@ -92,7 +93,10 @@ export const TechDocsReaderEntityCard = (
         </dl>
         {withSearch && (
           <div className={styles.searchWrapper}>
-            <TechDocsReaderSearch entityId={entityRef} />
+            <TechDocsReaderSearch
+              entityId={entityRef}
+              searchResultUrlMapper={props.searchResultUrlMapper}
+            />
           </div>
         )}
       </CardBody>
