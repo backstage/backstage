@@ -15,6 +15,7 @@
  */
 
 import { renderInTestApp } from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
 import { AsyncApiDefinition } from './AsyncApiDefinition';
 
 jest.mock('use-resize-observer', () => ({
@@ -47,13 +48,54 @@ components:
           displayName:
             type: string
     `;
-    const { getByText, getAllByText } = await renderInTestApp(
-      <AsyncApiDefinition definition={definition} />,
-    );
+    await renderInTestApp(<AsyncApiDefinition definition={definition} />);
 
-    expect(getByText(/Account Service/i)).toBeInTheDocument();
-    expect(getByText(/user\/signedup/i)).toBeInTheDocument();
-    expect(getAllByText(/UserSignedUp/i)).toHaveLength(2);
-    expect(getAllByText(/displayName/i)).toHaveLength(3);
+    expect(await screen.findByText(/Account Service/i)).toBeInTheDocument();
+    expect(await screen.findByText(/user\/signedup/i)).toBeInTheDocument();
+    expect(await screen.findAllByText(/UserSignedUp/i)).toHaveLength(2);
+    expect(await screen.findAllByText(/displayName/i)).toHaveLength(1);
+  });
+
+  it('renders an AsyncAPI 3.1 spec', async () => {
+    const definition = `
+asyncapi: 3.1.0
+info:
+  title: Account Service
+  version: 1.0.0
+  description: This service is in charge of processing user signups
+channels:
+  userSignedup:
+    address: user/signedup
+    messages:
+      UserSignedUp:
+        $ref: '#/components/messages/UserSignedUp'
+operations:
+  sendUserSignedup:
+    action: send
+    channel:
+      $ref: '#/channels/userSignedup'
+    messages:
+      - $ref: '#/channels/userSignedup/messages/UserSignedUp'
+components:
+  messages:
+    UserSignedUp:
+      payload:
+        type: object
+        properties:
+          displayName:
+            type: string
+            description: Name of the user
+          email:
+            type: string
+            format: email
+            description: Email of the user
+    `;
+
+    await renderInTestApp(<AsyncApiDefinition definition={definition} />);
+
+    expect(await screen.findByText(/Account Service/i)).toBeInTheDocument();
+    expect(await screen.findAllByText('user/signedup')).not.toHaveLength(0);
+    expect(await screen.findByText(/sendUserSignedup/i)).toBeInTheDocument();
+    expect(await screen.findAllByText(/displayName/i)).not.toHaveLength(0);
   });
 });
