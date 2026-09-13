@@ -75,9 +75,6 @@ export async function deleteOrphanedEntities(options: {
     }
 
     const orphanIds: string[] = uniq(candidates.map(r => r.entityId));
-    const orphanRelationIds: string[] = uniq(
-      candidates.map(r => r.relationSourceId).filter(Boolean),
-    );
 
     // Recheck the orphan status in the deletion statement. An entity may have
     // gained a reference since the candidate query completed.
@@ -94,6 +91,28 @@ export async function deleteOrphanedEntities(options: {
             'refresh_state.entity_ref',
           ]),
       );
+
+    if (deleted === 0) {
+      return { deleted, done: true };
+    }
+
+    let deletedIds: Set<string>;
+    if (deleted === orphanIds.length) {
+      deletedIds = new Set(orphanIds);
+    } else {
+      const remaining = await tx<DbRefreshStateRow>('refresh_state')
+        .select('entity_id')
+        .whereIn('entity_id', orphanIds);
+      const remainingIds = new Set(remaining.map(row => row.entity_id));
+      deletedIds = new Set(orphanIds.filter(id => !remainingIds.has(id)));
+    }
+
+    const orphanRelationIds: string[] = uniq(
+      candidates
+        .filter(candidate => deletedIds.has(candidate.entityId))
+        .map(candidate => candidate.relationSourceId)
+        .filter(Boolean),
+    );
 
     // Mark all of the things that the orphans had relations to for stitching
     await markForStitching({
