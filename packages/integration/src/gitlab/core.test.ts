@@ -196,7 +196,7 @@ describe('gitlab core', () => {
         const target =
           'https://gitlab.com/group/project/-/blob/my branch/folder/file.yaml';
         const fetchUrl =
-          'https://gitlab.com/api/v4/projects/group%2Fproject/repository/files/folder%2Ffile.yaml/raw?ref=my%20branch';
+          'https://gitlab.com/api/v4/projects/group%2Fproject/repository/files/folder%2Ffile.yaml/raw?ref=my+branch';
         await expect(
           getGitLabFileFetchUrl(target, configWithNoToken),
         ).resolves.toBe(fetchUrl);
