@@ -145,15 +145,20 @@ describe('retryOnDeadlock', () => {
     expect(fn).toHaveBeenCalledTimes(4);
   });
 
-  it('preserves deadlocks raised inside an existing transaction', async () => {
-    const deadlock = pgDeadlockError();
-    const fn = jest.fn().mockRejectedValue(deadlock);
+  it.each([
+    ['PostgreSQL', 'pg', pgDeadlockError()],
+    ['MySQL', 'mysql2', mysqlDeadlockError()],
+  ])(
+    'preserves %s deadlocks raised inside an existing transaction',
+    async (_name, client, deadlock) => {
+      const fn = jest.fn().mockRejectedValue(deadlock);
 
-    await expect(retryOnDeadlock(fn, mockKnex('pg', true), 3, 1)).rejects.toBe(
-      deadlock,
-    );
-    expect(fn).toHaveBeenCalledTimes(1);
-  });
+      await expect(
+        retryOnDeadlock(fn, mockKnex(client, true), 3, 1),
+      ).rejects.toBe(deadlock);
+      expect(fn).toHaveBeenCalledTimes(1);
+    },
+  );
 
   it('does not retry non-deadlock errors on PostgreSQL', async () => {
     const err = new Error('something else');
