@@ -49,7 +49,7 @@ const processedEntitySchema = z.object({
   kind: z.string(),
   metadata: z.object({
     name: z.string(),
-    annotations: z.record(z.string()).optional(),
+    annotations: z.record(z.unknown()).optional(),
   }),
 });
 
@@ -159,7 +159,9 @@ export async function performStitching(options: {
     const result = processedEntitySchema.safeParse(parsedEntity);
     if (!result.success) {
       throw new Error(
-        `Unexpected entity shape found in processed_entity column for ${entityRef} (${entityId})`,
+        `Unexpected entity shape found in processed_entity column for ${entityRef} (${entityId}): ${JSON.stringify(
+          result.error.flatten().fieldErrors,
+        )}`,
       );
     }
     const entity = parsedEntity as AlphaEntity;
