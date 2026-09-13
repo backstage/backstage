@@ -352,7 +352,8 @@ function cryptoRandom(): string {
   return crypto.randomBytes(32).toString('hex');
 }
 
-// The react-dev-utils/openBrowser breaks the login URL by encoding the URL parameters again
+// Kept local for now; the vendored openBrowser in @backstage/cli-common no
+// longer re-encodes the URL, so this can be migrated to it separately.
 export function openInBrowser(url: string): void {
   const handleError = (error: unknown) => {
     const message = error instanceof Error ? error.message : 'Unknown error';

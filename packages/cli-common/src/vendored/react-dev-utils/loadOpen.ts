@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,20 @@
  */
 
 /**
- * Common functionality used by cli, backend, and create-app
- *
- * @packageDocumentation
+ * Access to the optional, ESM-only `open` peer dependency. Isolated in its own
+ * module so tests can jest.mock it, and so the CJS-only `require.resolve` sits
+ * next to the dynamic import it guards.
  */
 
-export { findPaths, findOwnPaths, targetPaths, BACKSTAGE_JSON } from './paths';
-export { isChildPath } from './isChildPath';
-export type { Paths, TargetPaths, OwnPaths, ResolveFunc } from './paths';
-export {
-  run,
-  runOutput,
-  runCheck,
-  type RunChildProcess,
-  type RunOptions,
-  type RunOnOutput,
-} from './run';
-export { ExitCodeError } from './errors';
-export { openBrowser } from './vendored/react-dev-utils/openBrowser';
+export function isOpenInstalled(): boolean {
+  try {
+    require.resolve('open');
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function loadOpen() {
+  return import('open');
+}
