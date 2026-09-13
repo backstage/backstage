@@ -1,4 +1,5 @@
 ---
+'@backstage/integration': patch
 '@backstage/plugin-bitbucket-cloud-common': patch
 ---
 
