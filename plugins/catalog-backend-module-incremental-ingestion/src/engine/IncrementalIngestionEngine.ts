@@ -264,17 +264,23 @@ export class IncrementalIngestionEngine implements IterationEngine {
     return done;
   }
 
-  async mark(options: {
+  async mark({
+    id,
+    sequence,
+    entities = [],
+    done,
+    cursor,
+  }: {
     id: string;
     sequence: number;
     entities?: DeferredEntity[];
     done: boolean;
     cursor?: unknown;
   }) {
-    const { id, sequence, entities, done, cursor } = options;
+    const providerName = this.options.provider.getProviderName();
     this.options.logger.debug(
       `incremental-engine: Ingestion '${id}': MARK ${
-        entities ? entities.length : 0
+        entities.length
       } entities, cursor: ${
         cursor ? JSON.stringify(cursor) : 'none'
       }, done: ${done}`,
@@ -290,23 +296,20 @@ export class IncrementalIngestionEngine implements IterationEngine {
       },
     });
 
-    if (entities && entities.length > 0) {
-      await this.manager.createMarkEntities(markId, entities);
-    }
+    await this.manager.createMarkEntities(providerName, entities, markId);
 
-    const added =
-      entities?.map(deferred => ({
-        ...deferred,
-        entity: {
-          ...deferred.entity,
-          metadata: {
-            ...deferred.entity.metadata,
-            annotations: {
-              ...deferred.entity.metadata.annotations,
-            },
+    const added = entities.map(deferred => ({
+      ...deferred,
+      entity: {
+        ...deferred.entity,
+        metadata: {
+          ...deferred.entity.metadata,
+          annotations: {
+            ...deferred.entity.metadata.annotations,
           },
         },
-      })) ?? [];
+      },
+    }));
 
     const removed: { entityRef: string }[] = [];
 
@@ -314,12 +317,8 @@ export class IncrementalIngestionEngine implements IterationEngine {
       this.options.logger.info(
         `incremental-engine: Ingestion '${id}': Final page reached, calculating removed entities`,
       );
-      const result = await this.manager.computeRemoved(
-        this.options.provider.getProviderName(),
-        id,
-      );
-
-      const { total } = result;
+      const total = await this.manager.countMarkedEntities(id);
+      const stale = await this.manager.findStaleEntities(providerName, id);
 
       let doRemoval = true;
       if (this.options.rejectEmptySourceCollections) {
@@ -334,11 +333,10 @@ export class IncrementalIngestionEngine implements IterationEngine {
       if (this.options.rejectRemovalsAbovePercentage) {
         // If the total entities upserted in this ingestion is 0, then
         // 100% of entities are stale and marked for removal.
-        const percentRemoved =
-          total > 0 ? (result.removed.length / total) * 100 : 100;
+        const percentRemoved = total > 0 ? (stale.length / total) * 100 : 100;
         if (percentRemoved <= this.options.rejectRemovalsAbovePercentage) {
           this.options.logger.info(
-            `incremental-engine: Ingestion '${id}': Removing ${result.removed.length} entities that have no matching assets`,
+            `incremental-engine: Ingestion '${id}': Removing ${stale.length} entities that have no matching assets`,
           );
         } else {
           const notice = `Attempted to remove ${percentRemoved}% of matching entities!`;
@@ -355,9 +353,10 @@ export class IncrementalIngestionEngine implements IterationEngine {
         }
       }
       if (doRemoval) {
-        for (const entityRef of result.removed) {
+        for (const entityRef of stale) {
           removed.push(entityRef);
         }
+        await this.manager.deleteEntityRecordsByRef(providerName, stale);
       }
     }
 
@@ -384,44 +383,47 @@ export class IncrementalIngestionEngine implements IterationEngine {
 
     const result = await provider.eventHandler.onEvent(params);
 
-    if (result.type === 'delta') {
-      if (result.added.length > 0) {
-        const ingestionRecord = await this.manager.getCurrentIngestionRecord(
-          providerName,
-        );
-
-        if (!ingestionRecord) {
-          logger.debug(
-            `incremental-engine: ${providerName} skipping delta addition because incremental ingestion is restarting.`,
-          );
-        } else {
-          const mark =
-            ingestionRecord.status === 'resting'
-              ? await this.manager.getLastMark(ingestionRecord.id)
-              : await this.manager.getFirstMark(ingestionRecord.id);
-
-          if (!mark) {
-            throw new Error(
-              `Cannot apply delta, page records are missing! Please re-run incremental ingestion for ${providerName}.`,
-            );
-          }
-          await this.manager.createMarkEntities(mark.id, result.added);
-        }
-      }
-
-      if (result.removed.length > 0) {
-        await this.manager.deleteEntityRecordsByRef(result.removed);
-      }
-
-      await connection.applyMutation(result);
-      logger.debug(
-        `incremental-engine: ${providerName} processed delta from '${topic}' event`,
-      );
-    } else {
+    if (result.type === 'ignored') {
       logger.debug(
         `incremental-engine: ${providerName} ignored event from topic '${topic}'`,
       );
+      return;
     }
+
+    if (result.added.length > 0) {
+      const ingestionRecord = await this.manager.getCurrentIngestionRecord(
+        providerName,
+      );
+
+      if (!ingestionRecord) {
+        logger.debug(
+          `incremental-engine: ${providerName} skipping delta addition because incremental ingestion is restarting.`,
+        );
+      } else {
+        const mark =
+          ingestionRecord.status === 'resting'
+            ? await this.manager.getLastMark(ingestionRecord.id)
+            : await this.manager.getFirstMark(ingestionRecord.id);
+
+        if (!mark) {
+          throw new Error(
+            `Cannot apply delta, page records are missing! Please re-run incremental ingestion for ${providerName}.`,
+          );
+        }
+        await this.manager.createMarkEntities(
+          providerName,
+          result.added,
+          mark.id,
+        );
+      }
+    }
+
+    await this.manager.deleteEntityRecordsByRef(providerName, result.removed);
+
+    await connection.applyMutation(result);
+    logger.debug(
+      `incremental-engine: ${providerName} processed delta from '${topic}' event`,
+    );
   }
 
   supportsEventTopics(): string[] {
