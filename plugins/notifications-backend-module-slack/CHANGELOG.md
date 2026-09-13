@@ -1,5 +1,17 @@
 # @backstage/plugin-notifications-backend-module-slack
 
+## 0.4.6-next.1
+
+### Patch Changes
+
+- 80a548a: Added `resolveNotificationLink` utility function that resolves relative notification links to absolute URLs using a provided base URL. This can be used by notification processor modules to ensure links are absolute before forwarding them to external systems.
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/plugin-notifications-node@0.2.30-next.1
+  - @backstage/plugin-catalog-node@2.2.5-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/plugin-notifications-common@0.2.4-next.0
+
 ## 0.4.6-next.0
 
 ### Patch Changes

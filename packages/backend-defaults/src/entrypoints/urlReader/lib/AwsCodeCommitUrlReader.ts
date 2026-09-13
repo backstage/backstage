@@ -186,21 +186,40 @@ export class AwsCodeCommitUrlReader implements UrlReaderService {
 
     const accessKeyId = integration.config.accessKeyId;
     const secretAccessKey = integration.config.secretAccessKey;
-    let explicitCredentials: AwsCredentialIdentityProvider;
+    const roleArn = integration.config.roleArn;
+
     if (accessKeyId && secretAccessKey) {
-      explicitCredentials = AwsCodeCommitUrlReader.buildStaticCredentials(
+      const explicitCredentials = AwsCodeCommitUrlReader.buildStaticCredentials(
         accessKeyId,
         secretAccessKey,
       );
-    } else {
-      explicitCredentials = (await credsManager.getCredentialProvider())
-        .sdkCredentialProvider;
+      if (roleArn) {
+        return fromTemporaryCredentials({
+          masterCredentials: explicitCredentials,
+          params: {
+            RoleSessionName: 'backstage-aws-code-commit-url-reader',
+            RoleArn: roleArn,
+            ExternalId: integration.config.externalId,
+          },
+          clientConfig: { region },
+        });
+      }
+      return explicitCredentials;
     }
 
-    const roleArn = integration.config.roleArn;
     if (roleArn) {
+      let masterCredentials: AwsCredentialIdentityProvider;
+      try {
+        masterCredentials = (
+          await credsManager.getCredentialProvider({ arn: roleArn })
+        ).sdkCredentialProvider;
+      } catch {
+        // No account-specific config for this ARN; fall back to default credentials
+        masterCredentials = (await credsManager.getCredentialProvider())
+          .sdkCredentialProvider;
+      }
       return fromTemporaryCredentials({
-        masterCredentials: explicitCredentials,
+        masterCredentials,
         params: {
           RoleSessionName: 'backstage-aws-code-commit-url-reader',
           RoleArn: roleArn,
@@ -210,7 +229,7 @@ export class AwsCodeCommitUrlReader implements UrlReaderService {
       });
     }
 
-    return explicitCredentials;
+    return (await credsManager.getCredentialProvider()).sdkCredentialProvider;
   }
 
   private async buildCodeCommitClient(

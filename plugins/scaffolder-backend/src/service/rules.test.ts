@@ -393,7 +393,7 @@ describe('hasStringProperty', () => {
       expect(
         hasStringProperty.apply(
           { action, input: { [key]: value } },
-          { key, value: value.toLocaleLowerCase('en-US') },
+          { key, value: value.toLowerCase() },
         ),
       ).toEqual(true);
     });
@@ -408,7 +408,7 @@ describe('hasStringProperty', () => {
       expect(
         hasStringProperty.apply(
           { action, input: { [key]: value } },
-          { key, value: value.toLocaleLowerCase('en-US') },
+          { key, value: value.toLowerCase() },
         ),
       ).toEqual(false);
     });

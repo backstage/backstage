@@ -1,5 +1,18 @@
 # @backstage/plugin-devtools
 
+## 0.1.43-next.2
+
+### Patch Changes
+
+- 38441ff: Migrate to toastApi from deprecated alertApi
+- Updated dependencies
+  - @backstage/ui@0.18.0-next.2
+  - @backstage/core-components@0.18.14-next.2
+  - @backstage/core-plugin-api@1.12.10-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.1
+  - @backstage/plugin-permission-react@0.5.5-next.1
+  - @backstage/plugin-devtools-common@0.1.26-next.0
+
 ## 0.1.43-next.1
 
 ### Patch Changes

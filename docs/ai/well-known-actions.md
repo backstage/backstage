@@ -27,6 +27,11 @@ This is a (non-exhaustive) list of actions that are known to be part of the Acti
 
 - `notifications.get-notifications` (Get Notifications): Fetches notifications for the currently authenticated user. Defaults to returning only unread notifications. Supports filtering by read status (`unread`, `read`, `saved`, `all`), severity, topic, free-text search, and creation date. Supports pagination via `offset` and `limit`.
 
+### Kubernetes
+
+- `kubernetes.get-kubernetes-clusters` (Get Kubernetes Clusters): Lists all Kubernetes clusters registered with this Backstage instance, including their names, optional display titles, and optional dashboard URLs.
+- `kubernetes.get-kubernetes-resources-for-entity` (Get Kubernetes Resources for Entity): Fetches live Kubernetes resources (pods, deployments, services, etc.) associated with a catalog entity across all registered clusters. Takes `name`, optional `kind` (defaults to `Component`), and optional `namespace` (defaults to `default`). The entity must have a `backstage.io/kubernetes-id` or `backstage.io/kubernetes-label-selector` annotation.
+
 ### Scaffolder
 
 - `scaffolder.dry-run-template` (Dry Run Scaffolder Template): Dry-runs a scaffolder template to validate it without making changes. Returns success with execution logs, or errors for validation failures.

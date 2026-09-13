@@ -44,6 +44,36 @@ afterEach(() => {
 });
 
 describe('useTable', () => {
+  it('uses the supplied or default page size when options are empty', () => {
+    const suppliedPageSize = renderHook(() =>
+      useTable<Item>({
+        mode: 'complete',
+        data: items,
+        paginationOptions: { pageSize: 10, pageSizeOptions: [] },
+      }),
+    );
+
+    expect(getPagination(suppliedPageSize.result.current)).toMatchObject({
+      pageSize: 10,
+      pageSizeOptions: [],
+    });
+    expect(suppliedPageSize.result.current.tableProps.data).toHaveLength(10);
+
+    const defaultPageSize = renderHook(() =>
+      useTable<Item>({
+        mode: 'complete',
+        data: items,
+        paginationOptions: { pageSizeOptions: [] },
+      }),
+    );
+
+    expect(getPagination(defaultPageSize.result.current)).toMatchObject({
+      pageSize: 20,
+      pageSizeOptions: [],
+    });
+    expect(defaultPageSize.result.current.tableProps.data).toHaveLength(20);
+  });
+
   it('honors the initial offset in complete mode', () => {
     const { result } = renderHook(() =>
       useTable<Item>({

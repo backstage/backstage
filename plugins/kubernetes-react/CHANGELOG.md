@@ -1,5 +1,18 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.6.0-next.2
+
+### Minor Changes
+
+- cfba1bc: **BREAKING PRODUCERS:** The `FixDialog`, `ContainerCard`, and `PodLogs` components no longer accept an implicit `children` prop. This aligns them with ADR006. If you were passing children to these components, remove them as they were never rendered.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.2
+  - @backstage/core-plugin-api@1.12.10-next.1
+  - @backstage/plugin-kubernetes-common@0.9.13-next.1
+
 ## 0.5.24-next.1
 
 ### Patch Changes

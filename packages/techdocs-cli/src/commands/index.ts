@@ -81,6 +81,11 @@ export function registerCommands(program: Command) {
       [],
     )
     .option(
+      '--dangerouslyAllowAdditionalKeys [additionalKeys...]',
+      'Top-level mkdocs.yml keys to allow beyond the built-in supported set, without failing or stripping them. Same as the techdocs.generator.mkdocs.dangerouslyAllowAdditionalKeys backend config option, which techdocs-cli generate does not currently read from a config file.',
+      [],
+    )
+    .option(
       '--runAsDefaultUser',
       'Bypass setting the container user as the same user and group id as host for Linux and MacOS',
       false,

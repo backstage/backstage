@@ -1,5 +1,27 @@
 # @backstage/plugin-catalog-backend
 
+## 4.0.0-next.1
+
+### Major Changes
+
+- d2cf99f: **BREAKING**: Removed the deprecated `catalog.enableRelationsCompatibility` config option and its associated compatibility layer. Entity relations are now always returned in the standard format with only `targetRef`. If you were relying on the `target` field in relations, update your code to use `targetRef` instead.
+
+### Patch Changes
+
+- f5119cc: Improved PostgreSQL catalog query planning by correcting entity cardinality statistics for the search table.
+- 72c16f5: Use stable PostgreSQL array parameters for `$in` filter predicates.
+- 7629e5e: Use stable PostgreSQL array parameters for batched refresh state lookups and updates.
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.2.0-next.0
+  - @backstage/config@1.3.9-next.0
+  - @backstage/catalog-client@1.16.2-next.1
+  - @backstage/plugin-catalog-node@2.2.5-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/filter-predicates@0.1.5-next.1
+  - @backstage/integration@2.1.2-next.1
+  - @backstage/plugin-permission-common@0.9.11-next.0
+  - @backstage/plugin-permission-node@0.11.4-next.1
+
 ## 3.9.2-next.0
 
 ### Patch Changes

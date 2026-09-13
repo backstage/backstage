@@ -1,5 +1,14 @@
 # @backstage/plugin-app-react
 
+## 0.2.7-next.1
+
+### Patch Changes
+
+- 40838dc: Added an extension boundary around custom navigation content.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.10-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.1
+
 ## 0.2.7-next.0
 
 ### Patch Changes

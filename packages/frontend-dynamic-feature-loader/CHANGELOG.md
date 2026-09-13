@@ -1,5 +1,15 @@
 # @backstage/frontend-dynamic-feature-loader
 
+## 0.1.16-next.1
+
+### Patch Changes
+
+- 064c2de: Updated the Module Federation dependencies to versions that avoid known security vulnerabilities.
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/module-federation-common@0.1.5-next.0
+  - @backstage/frontend-plugin-api@0.18.1-next.1
+
 ## 0.1.16-next.0
 
 ### Patch Changes

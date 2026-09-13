@@ -1,5 +1,20 @@
 # @backstage/plugin-scaffolder-backend
 
+## 4.2.0-next.2
+
+### Patch Changes
+
+- 3bb3710: Improved task worker resilience by backing off repeated database claim failures, containing unexpected task execution errors, and preventing new work from being claimed during graceful shutdown.
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/plugin-scaffolder-node@0.13.7-next.2
+  - @backstage/plugin-catalog-node@2.2.5-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/integration@2.1.2-next.1
+  - @backstage/plugin-permission-common@0.9.11-next.0
+  - @backstage/plugin-permission-node@0.11.4-next.1
+  - @backstage/plugin-scaffolder-common@2.3.0-next.2
+
 ## 4.2.0-next.1
 
 ### Minor Changes

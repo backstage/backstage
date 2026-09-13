@@ -1,1 +1,0 @@
-Fixed the catalog import owner autocomplete to write canonical group entity references instead of display names to generated `catalog-info.yaml` files.

@@ -201,9 +201,13 @@ export class ElasticSearchSearchEngine implements SearchEngine {
       authProvider,
     } = options;
     const credentialProvider = DefaultAwsCredentialsManager.fromConfig(config);
+    const esConfig = config.getConfig('search.elasticsearch');
+    const awsAccountId = esConfig.getOptionalString('accountId');
     const clientOptions = await this.createElasticSearchClientOptions(
-      await credentialProvider?.getCredentialProvider(),
-      config.getConfig('search.elasticsearch'),
+      await credentialProvider?.getCredentialProvider(
+        awsAccountId ? { accountId: awsAccountId } : undefined,
+      ),
+      esConfig,
       authProvider,
     );
     if (clientOptions.provider === 'elastic') {

@@ -181,6 +181,18 @@ this remote source, users cannot also register new entities with e.g. the
 [catalog-import](https://github.com/backstage/backstage/tree/master/plugins/catalog-import)
 plugin.
 
+## Location analysis permissions
+
+The catalog location analysis endpoint invokes configured location analyzers,
+which may use configured source control integrations and run parts of the
+catalog processing pipeline in dry-run mode. When the permission system is
+enabled, callers must be granted `catalog.location.analyze`.
+
+Analysis may read through configured integrations and the `UrlReaderService`,
+which operate in a service context. Grant the permission to users who should be
+able to inspect those sources, and keep `backend.reading.allow` scoped according
+to the [Backstage threat model](../../overview/threat-model.md#common-backend-configuration).
+
 ## Automatic removal of orphaned entities
 
 Entities can become orphaned through multiple means, such as when a catalog-info YAML file is moved from one place to another in the version control system without updating the registration in the catalog. The default behavior is to automatically remove orphaned entities. You can read more about orphaned entities [here](life-of-an-entity.md#orphaning).

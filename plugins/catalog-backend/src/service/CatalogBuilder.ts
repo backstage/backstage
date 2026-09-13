@@ -515,12 +515,11 @@ export class CatalogBuilder {
       metrics,
     });
 
-    const locationAnalyzer =
+    const locationAnalyzer = new AuthorizedLocationAnalyzer(
       this.locationAnalyzer ??
-      new AuthorizedLocationAnalyzer(
         new RepoLocationAnalyzer(logger, integrations, this.locationAnalyzers),
-        permissions,
-      );
+      permissions,
+    );
     const locationService = new AuthorizedLocationService(
       new DefaultLocationService(locationStore, orchestrator, {
         allowedLocationTypes: this.allowedLocationType,

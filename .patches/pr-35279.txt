@@ -1,1 +1,0 @@
-Fixed software template inline conditionals without an `else` branch to render an empty string when their condition is false.

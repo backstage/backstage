@@ -1,5 +1,15 @@
 # @backstage/cli-defaults
 
+## 0.1.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-module-maintenance@0.1.5-next.0
+  - @backstage/cli-module-build@0.1.8-next.2
+  - @backstage/cli-module-package-manager-yarn@0.1.1-next.1
+  - @backstage/cli-module-config@0.1.7-next.0
+
 ## 0.1.6-next.1
 
 ### Patch Changes

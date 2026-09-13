@@ -27,13 +27,14 @@ export type GithubProfile = PassportProfile & {
 
 // @public
 export namespace githubSignInResolvers {
-  const usernameMatchingUserEntityName: SignInResolverFactory<
-    OAuthAuthenticatorResult<GithubProfile>,
-    | {
-        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
-      }
-    | undefined
-  >;
+  const // @deprecated
+    usernameMatchingUserEntityName: SignInResolverFactory<
+      OAuthAuthenticatorResult<GithubProfile>,
+      | {
+          dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+        }
+      | undefined
+    >;
   const userIdMatchingUserEntityAnnotation: SignInResolverFactory<
     OAuthAuthenticatorResult<GithubProfile>,
     | {

@@ -44,6 +44,7 @@ export default async function generate(opts: OptionValues) {
   const legacyCopyReadmeMdToIndexMd = opts.legacyCopyReadmeMdToIndexMd;
   const disableExternalFonts = opts.disableExternalFonts;
   const defaultPlugins = opts.defaultPlugin;
+  const dangerouslyAllowAdditionalKeys = opts.dangerouslyAllowAdditionalKeys;
 
   logger.info(`Using source dir ${sourceDir}`);
   logger.info(`Will output generated files in ${outputDir}`);
@@ -67,6 +68,7 @@ export default async function generate(opts: OptionValues) {
           omitTechdocsCorePlugin,
           disableExternalFonts,
           defaultPlugins,
+          dangerouslyAllowAdditionalKeys,
         },
       },
     },

@@ -5,8 +5,6 @@
 # https://help.github.com/articles/about-codeowners/
 
 *                                                 @backstage/maintainers
-yarn.lock                                         @backstage/maintainers @backstage-service
-*/yarn.lock                                       @backstage/maintainers @backstage-service
 /.changeset                                       @backstage/operations-maintainers
 /.changeset/*.md
 /.github                                          @backstage/operations-maintainers
@@ -92,3 +90,6 @@ yarn.lock                                         @backstage/maintainers @backst
 /packages/backend-defaults/src/entrypoints/auditor                        @backstage/maintainers @backstage/auditor-maintainers
 /packages/backend-defaults/report-auditor.api.md                          @backstage/maintainers @backstage/auditor-maintainers
 /docs/backend-system/core-services/auditor.md                             @backstage/maintainers @backstage/auditor-maintainers @backstage/documentation-maintainers
+
+# Keep this rule last so that directory-specific ownership does not override it.
+**/yarn.lock                                      @backstage/maintainers @backstage-service

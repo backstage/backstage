@@ -601,10 +601,10 @@ describe('Combobox', () => {
     function AsyncOwnerCombobox() {
       const list = useAsyncList<Owner>({
         async load({ filterText }) {
-          const query = filterText?.toLocaleLowerCase() ?? '';
+          const query = filterText?.toLowerCase() ?? '';
           return {
             items: owners.filter(owner =>
-              owner.name.toLocaleLowerCase().includes(query),
+              owner.name.toLowerCase().includes(query),
             ),
           };
         },

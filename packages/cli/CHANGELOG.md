@@ -1,5 +1,14 @@
 # @backstage/cli
 
+## 0.36.6-next.1
+
+### Patch Changes
+
+- 89743dc: Replaced the deprecated dependency used by `repo list-deprecations` with the equivalent TypeScript ESLint rule.
+- Updated dependencies
+  - @backstage/cli-module-build@0.1.8-next.2
+  - @backstage/cli-defaults@0.1.6-next.2
+
 ## 0.36.6-next.0
 
 ### Patch Changes

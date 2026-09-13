@@ -82,6 +82,47 @@ describe('<CopyTextButton />', () => {
     jest.useRealTimers();
   });
 
+  it('does not show the tooltip on hover, only after a click', async () => {
+    jest.useFakeTimers();
+
+    const rendered = await renderInTestApp(
+      <TestApiProvider apis={apis}>
+        <CopyTextButton {...props} />
+      </TestApiProvider>,
+    );
+
+    const button = rendered.getByLabelText('Copy text');
+
+    // React Aria only treats a hover as pointer-driven (as opposed to a
+    // synthetic one, e.g. from touch or keyboard) once it has observed an
+    // actual pointermove somewhere in the document, so trigger one before
+    // entering the button - otherwise the trigger's hover handling never
+    // engages at all, and the assertion below would pass regardless of
+    // whether the fix is present.
+    fireEvent.pointerMove(document.body, {
+      pointerType: 'mouse',
+      pointerId: 1,
+    });
+    fireEvent.pointerEnter(button, { pointerType: 'mouse', pointerId: 1 });
+
+    // React Aria's TooltipTrigger shows a tooltip on hover/focus after its
+    // own delay, independently of the isOpen/onOpenChange control layered on
+    // top of it. Advance well past that delay to make sure a hover-triggered
+    // open isn't slipping through.
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+    expect(rendered.queryByText('mockTooltip')).not.toBeInTheDocument();
+
+    fireEvent.pointerLeave(button, { pointerType: 'mouse', pointerId: 1 });
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+    expect(rendered.queryByText('mockTooltip')).not.toBeInTheDocument();
+
+    jest.useRealTimers();
+  });
+
   it('reports copy errors', async () => {
     const spy = useCopyToClipboard;
 

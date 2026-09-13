@@ -1,5 +1,21 @@
 # @backstage/backend-defaults
 
+## 0.17.9-next.1
+
+### Patch Changes
+
+- 55f30b8: Reduced scheduler database polling overhead by batching readiness checks for global tasks registered by each plugin into one query per poll cycle on each backend instance.
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/backend-app-api@1.7.4-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/config-loader@1.11.3-next.0
+  - @backstage/integration@2.1.2-next.1
+  - @backstage/integration-aws-node@0.2.2-next.0
+  - @backstage/plugin-auth-node@0.7.5-next.1
+  - @backstage/plugin-permission-common@0.9.11-next.0
+  - @backstage/plugin-permission-node@0.11.4-next.1
+
 ## 0.17.9-next.0
 
 ### Patch Changes

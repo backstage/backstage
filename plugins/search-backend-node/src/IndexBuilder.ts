@@ -114,7 +114,7 @@ export class IndexBuilder {
     Object.keys(this.collators).forEach(type => {
       const taskLogger = this.logger.child({ documentType: type });
       scheduler.addToSchedule({
-        id: `search_index_${type.replace('-', '_').toLocaleLowerCase('en-US')}`,
+        id: `search_index_${type.replace('-', '_').toLowerCase()}`,
         scheduledRunner: this.collators[type].schedule,
         task: async () => {
           // Instantiate the collator.
