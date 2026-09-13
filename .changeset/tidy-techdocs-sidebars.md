@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-techdocs': patch
+'@backstage/plugin-techdocs': minor
 ---
 
-Added a native BUI layout for TechDocs readers running in the new frontend system, using CSS grid and sticky sidebars instead of scroll-driven viewport measurements. Readers in legacy apps retain their existing compatibility layout. Sidebar addons now also remain within the scrollable navigation and table of contents regions.
+Improved TechDocs reader scrolling in new frontend system apps. The navigation and table of contents now remain visible without overlapping the app header, and sidebar addons stay within their scrollable regions. Readers in legacy apps retain their existing layout.
