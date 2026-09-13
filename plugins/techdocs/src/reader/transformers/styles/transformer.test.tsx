@@ -38,6 +38,19 @@ describe('Transformers > Styles', () => {
     expect(style).toHaveTextContent(
       '/*================== Layout ==================*/',
     );
+    expect(style).toHaveTextContent('display: grid');
+    expect(style).toHaveTextContent(
+      '.md-sidebar--primary { grid-column: 1; grid-row: 1;',
+    );
+    expect(style).toHaveTextContent(
+      '.md-content { grid-column: 2; grid-row: 1;',
+    );
+    expect(style).toHaveTextContent(
+      '.md-sidebar--secondary { grid-column: 3; grid-row: 1;',
+    );
+    expect(style).toHaveTextContent('position: sticky');
+    expect(style).toHaveTextContent('var(--bui-header-height, 0px)');
+    expect(style).not.toHaveTextContent('bottom: 75px');
     expect(style).toHaveTextContent(
       '/*================== Typeset ==================*/',
     );
