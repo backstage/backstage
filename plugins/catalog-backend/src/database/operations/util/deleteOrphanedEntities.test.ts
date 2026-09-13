@@ -190,6 +190,62 @@ describe.each(databases.eachSupportedId())(
       );
     });
 
+    if (databaseId === 'SQLITE_3') {
+      const ignoreEntityDeletion = async (knex: Knex, entityRef: string) => {
+        await knex.raw(`
+          CREATE TRIGGER ignore_entity_deletion
+          BEFORE DELETE ON refresh_state
+          WHEN OLD.entity_ref = '${entityRef}'
+          BEGIN
+            SELECT RAISE(IGNORE);
+          END
+        `);
+      };
+
+      it('marks relation sources only for deleted candidates', async () => {
+        const knex = await createDatabase();
+        await insertEntity(knex, 'E1', 'E2', 'E3', 'E4');
+        await insertReference(
+          knex,
+          { source_key: 'P1', target_entity_ref: 'E3' },
+          { source_key: 'P2', target_entity_ref: 'E4' },
+        );
+        await insertRelation(knex, 'E3', 'E1');
+        await insertRelation(knex, 'E4', 'E2');
+
+        // Simulate E2 being spared by the deletion-time orphan recheck.
+        await ignoreEntityDeletion(knex, 'E2');
+
+        await expect(run(knex)).resolves.toEqual(1);
+        await expect(stitchQueue(knex)).resolves.toEqual([
+          { entity_ref: 'E3' },
+        ]);
+      });
+
+      it('stops when deletion makes no progress', async () => {
+        const knex = await createDatabase();
+        await insertEntity(knex, 'E1');
+
+        // Simulate a candidate being spared by the deletion-time orphan
+        // recheck. SQLite's RAISE(IGNORE) makes the DELETE affect zero rows
+        // while leaving the candidate visible to a subsequent iteration.
+        await ignoreEntityDeletion(knex, 'E1');
+
+        const queries: string[] = [];
+        const onQuery = (query: { sql: string }) => queries.push(query.sql);
+        knex.on('query', onQuery);
+        try {
+          await expect(run(knex)).resolves.toEqual(0);
+        } finally {
+          knex.off('query', onQuery);
+        }
+
+        expect(
+          queries.filter(query => query.includes('orphan_refs')),
+        ).toHaveLength(1);
+      });
+    }
+
     it('rolls back deletion when affected entities cannot be marked', async () => {
       const knex = await createDatabase();
       await insertEntity(knex, 'E1', 'E2');
