@@ -144,7 +144,7 @@ describe('useTechDocsReaderContentData', () => {
     );
   });
 
-  it('uses the BUI DOM layout in a new frontend system app', async () => {
+  it('does not infer the reader layout from the frontend system', async () => {
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
     useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
@@ -160,7 +160,7 @@ describe('useTechDocsReaderContentData', () => {
       expect(useTechDocsReaderDom).toHaveBeenCalledWith(
         expect.objectContaining({ name: 'test-name' }),
         undefined,
-        'bui',
+        'legacy',
       );
     });
   });

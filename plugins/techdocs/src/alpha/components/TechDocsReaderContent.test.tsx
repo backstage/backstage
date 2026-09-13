@@ -160,7 +160,7 @@ describe('<TechDocsReaderContent />', () => {
     expect(useTechDocsReaderDom).toHaveBeenCalledWith(
       entityRef,
       defaultPath,
-      'legacy',
+      'bui',
     );
   });
 
