@@ -53,7 +53,7 @@ describe('Transformers > Styles', () => {
     );
     expect(style).toHaveTextContent('bottom: 0');
     expect(style).toHaveTextContent('align-self: end');
-    expect(style).toHaveTextContent('min-height: 100dvh');
+    expect(style).not.toHaveTextContent('min-height: 100dvh');
     expect(style).toHaveTextContent('html { overflow: visible; }');
     expect(style).toHaveTextContent('position: sticky');
     expect(style).toHaveTextContent('var(--bui-header-height, 0px)');
