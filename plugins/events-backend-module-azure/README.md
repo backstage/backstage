@@ -41,3 +41,32 @@ const eventRouter = new AzureDevOpsEventRouter({
 });
 await eventRouter.subscribe();
 ```
+
+## Configuration
+
+Webhook authentication is secure by default. Requests to `/api/events/http/*` (such as `/api/events/http/azureDevOps`) without a configured `webhookSecret` return an HTTP 403 Forbidden status.
+
+Add the following to your `app-config.yaml`:
+
+```yaml
+events:
+  modules:
+    azureDevOps:
+      webhookSecret: your-secret-token
+```
+
+Configure the same secret value as the `x-ado-webhook-secret` HTTP header in your Azure DevOps service hook subscription.
+
+### Development and testing
+
+For development or testing environments where a webhook secret cannot be configured, you can set `dangerouslyAllowUnauthenticatedEvents: true` as an explicit escape hatch under the module configuration:
+
+```yaml
+events:
+  modules:
+    azureDevOps:
+      dangerouslyAllowUnauthenticatedEvents: true
+```
+
+> [!WARNING]
+> Only use `dangerouslyAllowUnauthenticatedEvents: true` for development or testing. Never enable this option in production environments.
