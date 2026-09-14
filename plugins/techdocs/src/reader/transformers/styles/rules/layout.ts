@@ -83,8 +83,6 @@ html {
   grid-template-columns: minmax(0, ${TECHDOCS_SIDEBAR_WIDTH}) minmax(0, 1fr) minmax(0, ${TECHDOCS_SIDEBAR_WIDTH});
   align-items: start;
   column-gap: var(--bui-space-6, 24px);
-  /* Let short documents keep the final-row footer pinned until page end. */
-  min-height: 100dvh;
   margin-top: 0;
 }
 
