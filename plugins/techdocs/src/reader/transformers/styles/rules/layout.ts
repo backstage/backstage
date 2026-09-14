@@ -258,6 +258,15 @@ html {
 }
 
 @media print {
+  .md-main__inner {
+    display: block;
+  }
+
+  .md-footer {
+    position: static;
+    height: auto;
+  }
+
   .md-sidebar,
   #toggle-sidebar {
     display: none;

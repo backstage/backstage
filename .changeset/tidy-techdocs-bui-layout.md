@@ -8,7 +8,7 @@
 
 The injected MkDocs layout now uses the host page as its scrolling container, with CSS Grid and sticky navigation instead of fixed positioning and JavaScript scroll and resize measurement. `TechDocsReaderLayout` also accepts `defaultPath` and `searchResultUrlMapper` for embedded reader routes.
 
-Reader navigation no longer scrolls the global window or searches the host document for a header. Active MkDocs navigation items are kept visible by scrolling only their own sidebar.
+Reader navigation no longer scrolls the global window or searches the host document for a header. Initial rendering preserves the host scroll position, while subsequent document navigation returns to the start of the reader. Active MkDocs navigation items are kept visible by scrolling only their own sidebar.
 
 The following legacy sidebar customization properties have been removed along with the measured layout:
 
