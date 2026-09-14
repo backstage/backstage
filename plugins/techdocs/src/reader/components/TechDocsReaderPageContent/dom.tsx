@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  // useRef,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 
 import { useTheme } from '@material-ui/core/styles';
 

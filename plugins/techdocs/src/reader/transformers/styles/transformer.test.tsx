@@ -63,6 +63,9 @@ describe('Transformers > Styles', () => {
     expect(style).toHaveTextContent(
       '@media screen and (min-width: 76.1875em) { .md-sidebar { position: sticky;',
     );
+    expect(style).toHaveTextContent(
+      '@media print { .md-main__inner { display: block; } .md-footer { position: static; height: auto;',
+    );
     const mobileSidebar = style!.textContent?.match(
       /\.md-sidebar--primary \{\s*position: fixed;.*?\}/s,
     );
