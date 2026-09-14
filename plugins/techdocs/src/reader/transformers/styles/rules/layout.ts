@@ -87,16 +87,33 @@ html {
 }
 
 .md-sidebar {
+  --techdocs-sidebar-fade-height: var(--bui-space-6, 24px);
   position: sticky;
   top: var(--bui-space-3, 12px);
   align-self: start;
   width: 100%;
   height: auto;
-  max-height: calc(100dvh - var(--bui-space-6, 24px));
+  max-height: calc(
+    100dvh - var(--techdocs-footer-height, 75px) - var(--bui-space-6, 24px)
+  );
   overflow-x: hidden;
   overflow-y: auto;
-  /* Keep short MkDocs navigation within the sidebar's intrinsic scroll box. */
-  padding-bottom: var(--bui-space-3, 12px) !important;
+  /*
+   * Keep sidebar content physically above the sticky footer and soften the
+   * scroll boundary. Matching padding means the final item clears the fade
+   * completely when the navigation reaches its true end.
+   */
+  padding-bottom: var(--techdocs-sidebar-fade-height) !important;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    black calc(100% - var(--techdocs-sidebar-fade-height)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    black calc(100% - var(--techdocs-sidebar-fade-height)),
+    transparent 100%
+  );
 }
 .md-sidebar--primary {
   grid-column: 1;
@@ -220,6 +237,9 @@ html {
     bottom: 0;
     width: ${TECHDOCS_SIDEBAR_WIDTH} !important;
     height: auto;
+    max-height: none;
+    -webkit-mask-image: none;
+    mask-image: none;
     z-index: 200;
     left: -${TECHDOCS_SIDEBAR_WIDTH} !important;
   }
