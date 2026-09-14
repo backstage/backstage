@@ -94,7 +94,11 @@ html {
   align-self: start;
   width: 100%;
   height: auto;
-  padding-bottom: 0 !important;
+  max-height: calc(100dvh - var(--bui-header-height, 0px) - var(--bui-space-6, 24px));
+  overflow-x: hidden;
+  overflow-y: auto;
+  /* Keep short MkDocs navigation within the sidebar's intrinsic scroll box. */
+  padding-bottom: var(--bui-space-3, 12px) !important;
 }
 .md-sidebar--primary {
   grid-column: 1;
@@ -102,8 +106,7 @@ html {
 }
 .md-sidebar .md-sidebar__scrollwrap {
   width: 100%;
-  max-height: calc(100dvh - var(--bui-header-height, 0px) - var(--bui-space-6, 24px));
-  overflow-y: auto;
+  overflow-y: visible;
 }
 .md-sidebar--secondary {
   grid-column: 3;
