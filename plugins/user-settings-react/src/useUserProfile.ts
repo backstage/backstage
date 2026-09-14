@@ -21,7 +21,6 @@ import {
   ProfileInfo,
   useApi,
 } from '@backstage/core-plugin-api';
-import { BackstageUserIdentity } from '@backstage/frontend-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { useEffect } from 'react';
 import useAsync from 'react-use/esm/useAsync';
@@ -38,10 +37,9 @@ export const useUserProfile = () => {
 
   const { value, loading, error } = useAsync(async () => {
     let identityProfile = await identityApi.getProfileInfo();
-    const backStageIdentity: BackstageUserIdentity =
-      await identityApi.getBackstageIdentity();
+    const backstageIdentity = await identityApi.getBackstageIdentity();
     const catalogProfile = (await catalogApi.getEntityByRef(
-      backStageIdentity.userEntityRef,
+      backstageIdentity.userEntityRef,
     )) as unknown as UserEntity;
     if (
       identityProfile.picture === undefined &&
@@ -54,7 +52,7 @@ export const useUserProfile = () => {
     }
     return {
       profile: identityProfile,
-      identity: backStageIdentity,
+      identity: backstageIdentity,
     };
   }, []);
 
