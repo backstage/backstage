@@ -59,18 +59,14 @@ describe('Transformers > Styles', () => {
     expect(style).toHaveTextContent('var(--bui-header-height, 0px)');
     const sidebar = style!.textContent?.match(/\.md-sidebar \{.*?\}/s);
     expect(sidebar).toHaveLength(1);
-    const normalizedSidebar = sidebar![0].replace(/\s+/g, ' ');
-    expect(normalizedSidebar).toContain('overflow-y: auto');
-    expect(normalizedSidebar).toContain('top: var(--bui-space-3, 12px)');
-    expect(normalizedSidebar).toContain(
-      'max-height: calc( 100dvh - var(--techdocs-footer-height, 75px) - var(--bui-space-6, 24px) )',
+    expect(sidebar![0]).toContain('overflow-y: auto');
+    expect(sidebar![0]).toContain('top: var(--bui-space-3, 12px)');
+    expect(sidebar![0]).toContain(
+      'max-height: calc(100dvh - var(--bui-space-6, 24px))',
     );
-    expect(normalizedSidebar).not.toContain('--bui-header-height');
-    expect(normalizedSidebar).toContain(
-      'padding-bottom: var(--techdocs-sidebar-fade-height) !important',
-    );
-    expect(normalizedSidebar).toContain(
-      'mask-image: linear-gradient( to bottom, black calc(100% - var(--techdocs-sidebar-fade-height)), transparent 100% )',
+    expect(sidebar![0]).not.toContain('--bui-header-height');
+    expect(sidebar![0]).toContain(
+      'padding-bottom: var(--bui-space-3, 12px) !important',
     );
     const sidebarScrollWrap = style!.textContent?.match(
       /\.md-sidebar \.md-sidebar__scrollwrap \{.*?\}/s,
