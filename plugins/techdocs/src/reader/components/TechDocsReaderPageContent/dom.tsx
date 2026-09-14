@@ -217,9 +217,6 @@ export const useTechDocsReaderDom = (
         return;
       }
 
-      // Scroll to top after render
-      window.scroll({ top: 0 });
-
       // Post-render
       const postTransformedDomElement = await postRender(
         preTransformedDomElement,

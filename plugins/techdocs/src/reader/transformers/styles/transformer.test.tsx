@@ -59,14 +59,16 @@ describe('Transformers > Styles', () => {
     expect(style).toHaveTextContent('var(--bui-header-height, 0px)');
     const sidebar = style!.textContent?.match(/\.md-sidebar \{.*?\}/s);
     expect(sidebar).toHaveLength(1);
-    expect(sidebar![0]).toContain('overflow-y: auto');
-    expect(sidebar![0]).toContain('top: var(--bui-space-3, 12px)');
-    expect(sidebar![0]).toContain(
-      'max-height: calc(100dvh - var(--bui-space-6, 24px))',
+    expect(sidebar![0]).not.toContain('position: sticky');
+    expect(style).toHaveTextContent(
+      '@media screen and (min-width: 76.1875em) { .md-sidebar { position: sticky;',
     );
-    expect(sidebar![0]).not.toContain('--bui-header-height');
-    expect(sidebar![0]).toContain(
-      'padding-bottom: var(--bui-space-3, 12px) !important',
+    const mobileSidebar = style!.textContent?.match(
+      /\.md-sidebar--primary \{\s*position: fixed;.*?\}/s,
+    );
+    expect(mobileSidebar).toHaveLength(1);
+    expect(mobileSidebar![0]).toContain(
+      'max-height: calc(100dvh - var(--bui-header-height, 0px))',
     );
     const sidebarScrollWrap = style!.textContent?.match(
       /\.md-sidebar \.md-sidebar__scrollwrap \{.*?\}/s,

@@ -87,16 +87,10 @@ html {
 }
 
 .md-sidebar {
-  position: sticky;
-  top: var(--bui-space-3, 12px);
   align-self: start;
   width: 100%;
   height: auto;
-  max-height: calc(100dvh - var(--bui-space-6, 24px));
   overflow-x: hidden;
-  overflow-y: auto;
-  /* Keep short MkDocs navigation within the sidebar's intrinsic scroll box. */
-  padding-bottom: var(--bui-space-3, 12px) !important;
 }
 .md-sidebar--primary {
   grid-column: 1;
@@ -107,6 +101,14 @@ html {
   overflow-y: visible;
 }
 @media screen and (min-width: 76.1875em) {
+  .md-sidebar {
+    position: sticky;
+    top: var(--bui-space-3, 12px);
+    max-height: calc(100dvh - var(--bui-space-6, 24px));
+    overflow-y: auto;
+    /* Keep short MkDocs navigation within the sidebar's intrinsic scroll box. */
+    padding-bottom: var(--bui-space-3, 12px) !important;
+  }
   .md-sidebar--primary .md-nav--primary > .md-nav__title {
     position: static;
   }
@@ -124,10 +126,6 @@ html {
   max-width: none;
   margin-left: 0;
   margin-bottom: calc(var(--techdocs-footer-height, 75px) + var(--bui-space-4, 16px));
-}
-
-.md-content > .md-sidebar {
-  left: auto;
 }
 
 /*
@@ -150,13 +148,11 @@ html {
 
 .md-footer-nav__link, .md-footer__link {
   pointer-events: all;
+  width: ${TECHDOCS_SIDEBAR_WIDTH};
 }
 
 .md-footer__title {
   background-color: unset;
-}
-.md-footer-nav__link, .md-footer__link {
-  width: ${TECHDOCS_SIDEBAR_WIDTH};
 }
 
 .md-dialog {
@@ -220,6 +216,9 @@ html {
     bottom: 0;
     width: ${TECHDOCS_SIDEBAR_WIDTH} !important;
     height: auto;
+    max-height: calc(100dvh - var(--bui-header-height, 0px));
+    overflow-y: auto;
+    padding-bottom: 0 !important;
     z-index: 200;
     left: -${TECHDOCS_SIDEBAR_WIDTH} !important;
   }

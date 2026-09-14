@@ -62,8 +62,6 @@ export function useTechDocsReaderContentData(options: {
           link.focus();
         }
       }
-    } else {
-      document?.querySelector('header')?.scrollIntoView();
     }
   }, [path, hash, hashElement, isStyleLoading]);
 

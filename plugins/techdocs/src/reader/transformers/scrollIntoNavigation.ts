@@ -29,10 +29,20 @@ export const scrollIntoNavigation = (): Transformer => {
           }
         });
 
-        const lastItem = activeNavItems[activeNavItems.length - 1];
-        // Avoid aligning every ancestor scroll container, which can move the
-        // host page when the TechDocs sidebar shares its scrollport.
-        lastItem.scrollIntoView({ block: 'nearest' });
+        const lastItem = activeNavItems[
+          activeNavItems.length - 1
+        ] as HTMLElement;
+        const sidebar = lastItem.closest<HTMLElement>('.md-sidebar');
+        if (sidebar) {
+          const itemRect = lastItem.getBoundingClientRect();
+          const sidebarRect = sidebar.getBoundingClientRect();
+
+          if (itemRect.top < sidebarRect.top) {
+            sidebar.scrollTop += itemRect.top - sidebarRect.top;
+          } else if (itemRect.bottom > sidebarRect.bottom) {
+            sidebar.scrollTop += itemRect.bottom - sidebarRect.bottom;
+          }
+        }
       }
     }, 200);
     return dom;
