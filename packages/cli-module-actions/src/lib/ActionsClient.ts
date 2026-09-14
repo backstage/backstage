@@ -99,7 +99,10 @@ export class ActionsClient {
 
   async listForPlugin(actionId: string): Promise<ActionDef[]> {
     const pluginId = extractPluginId(actionId);
-    const { grouped } = await this.list([pluginId]);
+    const { grouped, failed } = await this.list([pluginId]);
+    if (failed[0]) {
+      throw new Error(failed[0].message);
+    }
     return grouped.flatMap(g => g.actions);
   }
 

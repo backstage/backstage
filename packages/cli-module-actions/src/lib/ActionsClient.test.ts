@@ -122,6 +122,16 @@ describe('ActionsClient', () => {
     });
   });
 
+  describe('listForPlugin', () => {
+    it('propagates errors from the plugin source', async () => {
+      mockHttpJson.mockRejectedValue(new Error('Network error'));
+
+      await expect(client.listForPlugin('catalog:refresh')).rejects.toThrow(
+        'Network error',
+      );
+    });
+  });
+
   describe('execute', () => {
     it('posts to the correct invoke endpoint', async () => {
       mockHttpJson.mockResolvedValue({ output: { result: 'ok' } });

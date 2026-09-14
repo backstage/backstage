@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,6 +125,28 @@ describe('list command', () => {
     expect(stderr).toContain('catalog');
     expect(stderr).toContain('notifications');
     expect(process.exitCode).toBe(1);
+  });
+
+  it('reports no actions when successful sources are empty', async () => {
+    mockResolveAuth.mockResolvedValue(authResponse());
+    const result: ListResult = {
+      grouped: [{ pluginId: 'catalog', actions: [] }],
+      failed: [
+        {
+          pluginId: 'notifications',
+          message: 'Request failed with 404 Not Found',
+        },
+      ],
+    };
+    mockList.mockResolvedValue(result);
+
+    await listCommand(baseContext);
+
+    const stderr = stderrSpy.mock.calls.map(c => c[0]).join('');
+    expect(stderr).toContain('No actions found.');
+    expect(stderr).toContain('notifications');
+    expect(stderr).toContain('404');
+    expect(process.exitCode).toBeUndefined();
   });
 
   it('preserves existing behavior when all sources succeed', async () => {

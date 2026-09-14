@@ -64,9 +64,8 @@ export default async ({ args, info }: CliCommandContext) => {
     return;
   }
 
-  if (!hasActions && failed.length === 0) {
+  if (!hasActions) {
     process.stderr.write('No actions found.\n');
-    return;
   }
 
   if (hasActions) {
