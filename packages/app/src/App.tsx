@@ -55,7 +55,7 @@ const convertedTechdocsPlugin = convertLegacyPlugin(techdocsPlugin, {
       path: '/docs',
     }),
     convertLegacyPageExtension(TechDocsReaderPage, {
-      path: '/docs/:namespace/:kind/:name/*',
+      path: '/docs/:namespace/:kind/:name',
     }),
     convertLegacyEntityContentExtension(EntityTechdocsContent),
   ],
