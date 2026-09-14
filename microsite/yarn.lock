@@ -7623,14 +7623,14 @@ __metadata:
   linkType: hard
 
 "docusaurus-plugin-sass@npm:^0.2.6":
-  version: 0.2.6
-  resolution: "docusaurus-plugin-sass@npm:0.2.6"
+  version: 0.2.7
+  resolution: "docusaurus-plugin-sass@npm:0.2.7"
   dependencies:
     sass-loader: "npm:^16.0.2"
   peerDependencies:
     "@docusaurus/core": ^2.0.0-beta || ^3.0.0-alpha
     sass: ^1.30.0
-  checksum: 10/2baff278140a77f3d848e90014c1a975391f87f723bcdc860df3d70c34f92fb4f1da1777384af17cf6c515a4371a818a0d0fd321937890d8c86c183fdfc60f18
+  checksum: 10/8702ea5aa8c0e951ea5fb2301d58903030048fa95fa278e2077168d0a29c13d4e704f9bf3ae475261e4610396a3d86f6512674fe1b3de3210e09211a6e610337
   languageName: node
   linkType: hard
 
