@@ -88,11 +88,11 @@ html {
 
 .md-sidebar {
   position: sticky;
-  top: calc(var(--bui-header-height, 0px) + var(--bui-space-3, 12px));
+  top: var(--bui-space-3, 12px);
   align-self: start;
   width: 100%;
   height: auto;
-  max-height: calc(100dvh - var(--bui-header-height, 0px) - var(--bui-space-6, 24px));
+  max-height: calc(100dvh - var(--bui-space-6, 24px));
   overflow-x: hidden;
   overflow-y: auto;
   /* Keep short MkDocs navigation within the sidebar's intrinsic scroll box. */
