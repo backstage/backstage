@@ -23,6 +23,7 @@ approvers
 asciidoc
 async
 Atlassian
+autocomplete
 autofix
 autologout
 automations
@@ -147,6 +148,7 @@ ecco
 elasticsearch
 Entra
 enums
+entrypoints
 env
 Env
 esbuild
@@ -206,6 +208,7 @@ http
 https
 Iain
 idempotency
+idempotent
 Iglesias
 iLert
 img
