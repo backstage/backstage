@@ -203,6 +203,11 @@ export const EntityPicker = (props: EntityPickerProps) => {
   // BUI: controlled input value
   const [inputValue, setInputValue] = useState(formData || '');
 
+  // Tracks whether the current inputValue originates from user typing, as
+  // opposed to being programmatically derived from the selected option's
+  // display label. Only user-typed text should be reconciled on blur.
+  const isUserInputRef = useRef(false);
+
   useEffect(() => {
     if (formData) {
       const opt = buiOptions.find(o => o.value === formData);
@@ -210,7 +215,13 @@ export const EntityPicker = (props: EntityPickerProps) => {
     } else {
       setInputValue('');
     }
+    isUserInputRef.current = false;
   }, [formData, buiOptions]);
+
+  const handleInputChange = useCallback((value: string) => {
+    isUserInputRef.current = true;
+    setInputValue(value);
+  }, []);
 
   const selectedKey =
     formData && buiOptions.some(o => o.value === formData) ? formData : null;
@@ -227,7 +238,9 @@ export const EntityPicker = (props: EntityPickerProps) => {
         const value = String(key);
         lastCommittedRef.current = value;
         onChange(value);
-      } else if (allowArbitraryValues && inputValue) {
+      } else if (allowArbitraryValues && inputValue && isUserInputRef.current) {
+        // Only commit typed free text; a programmatically derived display
+        // label must never be re-committed as an entity ref.
         let entityRef = inputValue;
         try {
           entityRef = stringifyEntityRef(
@@ -247,7 +260,12 @@ export const EntityPicker = (props: EntityPickerProps) => {
   );
 
   const handleBlur = useCallback(() => {
-    if (allowArbitraryValues && inputValue) {
+    // Only reconcile free-text input on blur if the current text was actually
+    // typed by the user. When the text is the display label programmatically
+    // derived from an existing (valid) selection, re-parsing it as an entity
+    // ref would corrupt the committed formData with a kind-less or mangled
+    // value (see issue #35281).
+    if (allowArbitraryValues && inputValue && isUserInputRef.current) {
       let entityRef = inputValue;
       try {
         entityRef = stringifyEntityRef(
@@ -260,6 +278,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
         lastCommittedRef.current = entityRef;
         onChange(entityRef);
       }
+      isUserInputRef.current = false;
     }
   }, [
     allowArbitraryValues,
@@ -321,7 +340,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
           isDisabled={isDisabled || isAutoSelected}
           selectedKey={selectedKey}
           inputValue={inputValue}
-          onInputChange={setInputValue}
+          onInputChange={handleInputChange}
           onSelectionChange={handleSelectionChange}
           onBlur={handleBlur}
           isLoading={loading}
