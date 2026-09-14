@@ -47,3 +47,26 @@ export const WithAriaLabel = () => (
     aria-label="This is an aria label"
   />
 );
+
+export const Variants = () => (
+  <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+    <CopyTextButton
+      text="Primary variant text"
+      variant="primary"
+      aria-label="Copy primary"
+      tooltipText="Primary variant"
+    />
+    <CopyTextButton
+      text="Secondary variant text"
+      variant="secondary"
+      aria-label="Copy secondary"
+      tooltipText="Secondary variant"
+    />
+    <CopyTextButton
+      text="Tertiary variant text"
+      variant="tertiary"
+      aria-label="Copy tertiary"
+      tooltipText="Tertiary variant"
+    />
+  </div>
+);

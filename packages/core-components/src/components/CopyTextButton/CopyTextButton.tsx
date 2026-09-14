@@ -15,7 +15,12 @@
  */
 
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
-import { ButtonIcon, Tooltip, TooltipTrigger } from '@backstage/ui';
+import {
+  ButtonIcon,
+  ButtonIconProps,
+  Tooltip,
+  TooltipTrigger,
+} from '@backstage/ui';
 import CopyIcon from '@material-ui/icons/FileCopy';
 import { useEffect, useRef, useState } from 'react';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
@@ -57,6 +62,15 @@ export interface CopyTextButtonProps {
    * Default: "Copy text"
    */
   'aria-label'?: string;
+
+  /**
+   * The visual variant of the button
+   *
+   * @remarks
+   *
+   * Default: "primary"
+   */
+  variant?: ButtonIconProps['variant'];
 }
 
 /**
@@ -85,6 +99,7 @@ export function CopyTextButton(props: CopyTextButtonProps) {
     tooltipDelay = 1000,
     tooltipText = t('copyTextButton.tooltipText'),
     'aria-label': ariaLabel = 'Copy text',
+    variant,
   } = props;
   const errorApi = useApi(errorApiRef);
   const [open, setOpen] = useState(false);
@@ -132,6 +147,7 @@ export function CopyTextButton(props: CopyTextButtonProps) {
         icon={<CopyIcon />}
         onPress={handleCopyClick}
         aria-label={ariaLabel}
+        variant={variant}
       />
       <Tooltip>{tooltipText}</Tooltip>
     </TooltipTrigger>
