@@ -22,6 +22,13 @@ export const simplifyMkdocsFooter = (): Transformer => {
     dom.querySelector('.md-footer .md-copyright')?.remove();
     // Remove old mkdocs copyright
     dom.querySelector('.md-footer-copyright')?.remove();
+
+    const footer = dom.querySelector('.md-footer');
+    const readerGrid = dom.querySelector('.md-main__inner');
+    if (footer && readerGrid) {
+      readerGrid.append(footer);
+    }
+
     return dom;
   };
 };
