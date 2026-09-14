@@ -39,6 +39,7 @@ import {
 } from './types';
 import { checkLocationKeyConflict } from './operations/refreshState/checkLocationKeyConflict';
 import { insertUnprocessedEntity } from './operations/refreshState/insertUnprocessedEntity';
+import { syncRefreshStateReferences } from './operations/refreshState/syncRefreshStateReferences';
 import { updateUnprocessedEntity } from './operations/refreshState/updateUnprocessedEntity';
 import { generateStableHash, generateTargetKey, whereInArray } from './util';
 import {
@@ -322,6 +323,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
 
     // Keeps track of the entities that we end up inserting to update refresh_state_references afterwards
     const stateReferences = new Array<string>();
+    const claimedReferences = new Array<string>();
 
     // Upsert all of the unprocessed entities into the refresh_state table, by
     // their entity ref.
@@ -329,14 +331,17 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       const entityRef = stringifyEntityRef(entity);
       const hash = generateStableHash(entity);
 
-      const updated = await updateUnprocessedEntity({
+      const updateResult = await updateUnprocessedEntity({
         tx,
         entity,
         hash,
         locationKey,
       });
-      if (updated) {
+      if (updateResult.updated) {
         stateReferences.push(entityRef);
+        if (updateResult.claimed) {
+          claimedReferences.push(entityRef);
+        }
         continue;
       }
 
@@ -380,20 +385,16 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       }
     }
 
-    // Lastly, replace refresh state references for the originating entity and any successfully added entities
-    await tx<DbRefreshStateReferencesRow>('refresh_state_references')
-      // Remove all existing references from the originating entity
-      .where({ source_entity_ref: options.sourceEntityRef })
-      // And remove any existing references to entities that we're inserting new references for
-      .orWhereIn('target_entity_ref', stateReferences)
-      .delete();
-    await tx.batchInsert(
-      'refresh_state_references',
-      stateReferences.map(entityRef => ({
-        source_entity_ref: options.sourceEntityRef,
-        target_entity_ref: entityRef,
-      })),
-      BATCH_SIZE,
+    if (claimedReferences.length > 0) {
+      await tx('refresh_state_references')
+        .whereIn('target_entity_ref', claimedReferences)
+        .delete();
+    }
+
+    await syncRefreshStateReferences(
+      tx,
+      { sourceEntityRef: options.sourceEntityRef },
+      stateReferences,
     );
   }
 }

@@ -465,6 +465,102 @@ describe.each(databases.eachSupportedId())(
         });
       });
 
+      it('only removes other references on a weak-to-strong claim', async () => {
+        const { knex, db } = await createDatabase();
+        await insertRefreshStateRow(knex, {
+          entity_id: id,
+          entity_ref: 'location:default/fakelocation',
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '[]',
+          next_update_at: '2021-04-01 13:37:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+        });
+        await insertRefreshStateRow(knex, {
+          entity_id: 'child-id',
+          entity_ref: 'component:default/child',
+          unprocessed_entity: '{}',
+          errors: '[]',
+          next_update_at: '2021-04-01 13:37:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+        });
+        await insertRefreshStateRow(knex, {
+          entity_id: 'other-parent-id',
+          entity_ref: 'component:default/other-parent',
+          unprocessed_entity: '{}',
+          errors: '[]',
+          next_update_at: '2021-04-01 13:37:00',
+          last_discovery_at: '2021-04-01 13:37:00',
+        });
+        await insertRefRow(knex, {
+          source_entity_ref: 'component:default/other-parent',
+          target_entity_ref: 'component:default/child',
+        });
+        await insertRefRow(knex, {
+          source_key: 'other-provider',
+          target_entity_ref: 'component:default/child',
+        });
+
+        const child = {
+          apiVersion: '1',
+          kind: 'Component',
+          metadata: { name: 'child' },
+        };
+        const update = () =>
+          db.transaction(tx =>
+            db.updateProcessedEntity(tx, {
+              id,
+              processedEntity,
+              resultHash: '',
+              relations: [],
+              deferredEntities: [{ entity: child, locationKey: 'owned' }],
+              refreshKeys: [],
+            }),
+          );
+
+        await update();
+        await expect(
+          knex<DbRefreshStateReferencesRow>('refresh_state_references')
+            .where({ target_entity_ref: 'component:default/child' })
+            .select(['source_entity_ref', 'source_key']),
+        ).resolves.toEqual([
+          {
+            source_entity_ref: 'location:default/fakelocation',
+            source_key: null,
+          },
+        ]);
+
+        await insertRefRow(knex, {
+          source_entity_ref: 'component:default/other-parent',
+          target_entity_ref: 'component:default/child',
+        });
+        await insertRefRow(knex, {
+          source_key: 'other-provider',
+          target_entity_ref: 'component:default/child',
+        });
+
+        await update();
+        await expect(
+          knex<DbRefreshStateReferencesRow>('refresh_state_references')
+            .where({ target_entity_ref: 'component:default/child' })
+            .orderBy(['source_entity_ref', 'source_key'])
+            .select(['source_entity_ref', 'source_key']),
+        ).resolves.toEqual([
+          {
+            source_entity_ref: null,
+            source_key: 'other-provider',
+          },
+          {
+            source_entity_ref: 'component:default/other-parent',
+            source_key: null,
+          },
+          {
+            source_entity_ref: 'location:default/fakelocation',
+            source_key: null,
+          },
+        ]);
+      });
+
       it('stores the refresh keys for the entity where key length is 255 chars or less', async () => {
         const mockLogger = {
           debug: jest.fn(),

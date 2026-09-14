@@ -19,8 +19,8 @@ import { Knex } from 'knex';
 import { DbRefreshStateRow } from '../../tables';
 
 /**
- * Attempts to update an existing refresh state row, returning true if it was
- * updated and false if there was no entity with a matching ref and location key.
+ * Attempts to update an existing refresh state row, also reporting whether a
+ * weak entity without a location key was claimed by a strong source.
  *
  * Updating the entity will also cause it to be scheduled for immediate processing.
  */
@@ -29,32 +29,42 @@ export async function updateUnprocessedEntity(options: {
   entity: Entity;
   hash: string;
   locationKey?: string;
-}): Promise<boolean> {
+}): Promise<{ updated: boolean; claimed: boolean }> {
   const { tx, entity, hash, locationKey } = options;
 
   const entityRef = stringifyEntityRef(entity);
   const serializedEntity = JSON.stringify(entity);
 
-  const refreshResult = await tx<DbRefreshStateRow>('refresh_state')
-    .update({
-      unprocessed_entity: serializedEntity,
-      unprocessed_hash: hash,
-      location_key: locationKey,
-      last_discovery_at: tx.fn.now(),
-      // We only get to this point if a processed entity actually had any changes, or
-      // if an entity provider requested this mutation, meaning that we can safely
-      // bump the deferred entities to the front of the queue for immediate processing.
-      next_update_at: tx.fn.now(),
-    })
-    .where('entity_ref', entityRef)
-    .andWhere(inner => {
-      if (!locationKey) {
-        return inner.whereNull('location_key');
-      }
-      return inner
-        .where('location_key', locationKey)
-        .orWhereNull('location_key');
-    });
+  const update = {
+    unprocessed_entity: serializedEntity,
+    unprocessed_hash: hash,
+    location_key: locationKey,
+    last_discovery_at: tx.fn.now(),
+    // We only get to this point if a processed entity actually had any changes, or
+    // if an entity provider requested this mutation, meaning that we can safely
+    // bump the deferred entities to the front of the queue for immediate processing.
+    next_update_at: tx.fn.now(),
+  };
 
-  return refreshResult === 1;
+  if (locationKey) {
+    const claimed = await tx<DbRefreshStateRow>('refresh_state')
+      .update(update)
+      .where('entity_ref', entityRef)
+      .whereNull('location_key');
+    if (claimed === 1) {
+      return { updated: true, claimed: true };
+    }
+
+    const updated = await tx<DbRefreshStateRow>('refresh_state')
+      .update(update)
+      .where('entity_ref', entityRef)
+      .where('location_key', locationKey);
+    return { updated: updated === 1, claimed: false };
+  }
+
+  const updated = await tx<DbRefreshStateRow>('refresh_state')
+    .update(update)
+    .where('entity_ref', entityRef)
+    .whereNull('location_key');
+  return { updated: updated === 1, claimed: false };
 }
