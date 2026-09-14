@@ -3726,7 +3726,7 @@ describe('NunjucksWorkflowRunner', () => {
   });
 
   it('creates scaffolding histograms with explicit second-scale bucket boundaries', () => {
-    const metrics = metricsServiceMock.mock();
+    const histogramMetrics = metricsServiceMock.mock();
     void new NunjucksWorkflowRunner({
       actionRegistry: new DefaultTemplateActionRegistry(
         actionsRegistryServiceMock(),
@@ -3737,10 +3737,10 @@ describe('NunjucksWorkflowRunner', () => {
       logger,
       permissions: mockedPermissionApi,
       config: new ConfigReader({}),
-      metrics,
+      metrics: histogramMetrics,
     });
 
-    expect(metrics.createHistogram).toHaveBeenCalledWith(
+    expect(histogramMetrics.createHistogram).toHaveBeenCalledWith(
       'scaffolder.task.duration',
       expect.objectContaining({
         advice: expect.objectContaining({
@@ -3750,7 +3750,7 @@ describe('NunjucksWorkflowRunner', () => {
         }),
       }),
     );
-    expect(metrics.createHistogram).toHaveBeenCalledWith(
+    expect(histogramMetrics.createHistogram).toHaveBeenCalledWith(
       'scaffolder.step.duration',
       expect.objectContaining({
         advice: expect.objectContaining({
