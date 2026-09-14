@@ -956,6 +956,64 @@ describe.each(databases.eachSupportedId())(
       });
     });
 
+    describe('transaction', () => {
+      it('retries the entire transaction on a PostgreSQL deadlock', async () => {
+        const deadlockError = Object.assign(new Error('deadlock detected'), {
+          code: '40P01',
+        });
+        const mockKnexInstance = {
+          client: { config: { client: 'pg' } },
+          transaction: jest.fn(async (fn: (tx: any) => Promise<void>) => {
+            await fn({});
+          }),
+        } as unknown as Knex;
+        const db = new DefaultProviderDatabase({
+          database: mockKnexInstance,
+          logger: mockServices.logger.mock(),
+        });
+
+        let attempt = 0;
+        const inner = jest.fn(async () => {
+          attempt++;
+          if (attempt === 1) {
+            throw deadlockError;
+          }
+          return 'ok';
+        });
+
+        const result = await db.transaction(inner);
+        expect(result).toBe('ok');
+        expect(inner).toHaveBeenCalledTimes(2);
+        expect(
+          (mockKnexInstance.transaction as jest.Mock).mock.calls,
+        ).toHaveLength(2);
+      });
+
+      it('propagates the deadlock error after exhausting retries', async () => {
+        const deadlockError = Object.assign(new Error('deadlock detected'), {
+          code: '40P01',
+        });
+        const mockKnexInstance = {
+          client: { config: { client: 'pg' } },
+          transaction: jest.fn(async (fn: (tx: any) => Promise<void>) => {
+            await fn({});
+          }),
+        } as unknown as Knex;
+        const db = new DefaultProviderDatabase({
+          database: mockKnexInstance,
+          logger: mockServices.logger.mock(),
+        });
+
+        await expect(
+          db.transaction(jest.fn().mockRejectedValue(deadlockError)),
+        ).rejects.toThrow('deadlock detected');
+        // 1 initial attempt + 3 retries (default)
+        expect(
+          (mockKnexInstance.transaction as jest.Mock).mock.calls,
+        ).toHaveLength(4);
+      });
+    });
+
     describe('listReferenceSourceKeys', () => {
       it('returns the source_keys from "refresh_state_references"', async () => {
         const { knex, db } = await createDatabase();

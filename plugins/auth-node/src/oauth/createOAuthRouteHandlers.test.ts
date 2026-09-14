@@ -271,6 +271,60 @@ describe('createOAuthRouteHandlers', () => {
         { ctx: 'authenticator' },
       );
     });
+
+    it('should reject malformed origin', async () => {
+      const app = wrapInApp(createOAuthRouteHandlers(baseConfig));
+      const res = await request(app)
+        .get('/my-provider/start')
+        .query({ env: 'development', origin: 'not-a-valid-url' });
+
+      expect(res.status).toBe(400);
+      expect(res.body).toMatchObject({
+        error: {
+          name: 'InputError',
+          message: expect.stringContaining(
+            'App origin is invalid, failed to parse',
+          ),
+        },
+      });
+    });
+
+    it('should reject empty origin', async () => {
+      const app = wrapInApp(createOAuthRouteHandlers(baseConfig));
+      const res = await request(app)
+        .get('/my-provider/start')
+        .query({ env: 'development', origin: '' });
+
+      expect(res.status).toBe(400);
+      expect(res.body).toMatchObject({
+        error: {
+          name: 'InputError',
+          message: expect.stringContaining(
+            'App origin is invalid, failed to parse',
+          ),
+        },
+      });
+    });
+
+    it('should reject disallowed origin', async () => {
+      const app = wrapInApp(
+        createOAuthRouteHandlers({
+          ...baseConfig,
+          isOriginAllowed: () => false,
+        }),
+      );
+      const res = await request(app)
+        .get('/my-provider/start')
+        .query({ env: 'development', origin: 'https://disallowed.com' });
+
+      expect(res.status).toBe(403);
+      expect(res.body).toMatchObject({
+        error: {
+          name: 'NotAllowedError',
+          message: "Origin 'https://disallowed.com' is not allowed",
+        },
+      });
+    });
   });
 
   describe('frameHandler', () => {

@@ -20,7 +20,11 @@ import {
   RELATION_OWNED_BY,
 } from '@backstage/catalog-model';
 import { ApiProvider } from '@backstage/core-app-api';
-import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
+import {
+  AlertApi,
+  alertApiRef,
+  useAnalytics,
+} from '@backstage/core-plugin-api';
 import {
   AsyncEntityProvider,
   catalogApiRef,
@@ -28,6 +32,7 @@ import {
   entityRouteRef,
   starredEntitiesApiRef,
   MockStarredEntitiesApi,
+  useEntity,
 } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
@@ -40,7 +45,8 @@ import { mockApis } from '@backstage/frontend-test-utils';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { EntityLayout } from './EntityLayout';
 import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
+import { ReactNode, useEffect } from 'react';
 
 describe('EntityLayout', () => {
   const mockEntity = {
@@ -450,5 +456,95 @@ describe('EntityLayout - CleanUpAfterRemoval', () => {
     await waitFor(() => {
       expect(screen.getByText('catalog-page')).toBeInTheDocument();
     });
+  });
+});
+
+describe('EntityLayout - inspect dialog', () => {
+  const mockEntity = {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Component',
+    metadata: {
+      name: 'my-entity',
+      namespace: 'default',
+    },
+  } as Entity;
+
+  const apis = TestApiRegistry.from(
+    [catalogApiRef, catalogApiMock()],
+    [alertApiRef, mockApis.alert()],
+    [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+    [permissionApiRef, mockApis.permission()],
+  );
+
+  // Mimics CatalogEntityPage: subscribes to location updates the same way
+  // that useEntityFromUrl does (useNavigate calls useLocation internally),
+  // and renders the AsyncEntityProvider with stable prop values.
+  const FakeCatalogEntityPage = (props: { children: ReactNode }) => {
+    useNavigate();
+    return (
+      <AsyncEntityProvider entity={mockEntity} loading={false}>
+        {props.children}
+      </AsyncEntityProvider>
+    );
+  };
+
+  it('does not rerender or remount tab content when switching inspector tabs', async () => {
+    let mountCount = 0;
+    let renderCount = 0;
+    let analyticsRenderCount = 0;
+
+    const Probe = () => {
+      useEntity();
+      renderCount++;
+      useEffect(() => {
+        mountCount++;
+      }, []);
+      return <div>probe-content</div>;
+    };
+
+    const AnalyticsProbe = () => {
+      useAnalytics();
+      analyticsRenderCount++;
+      return <div>analytics-probe-content</div>;
+    };
+
+    const children = (
+      <EntityLayout>
+        <EntityLayout.Route path="/" title="tabbed-test-title">
+          <>
+            <Probe />
+            <AnalyticsProbe />
+          </>
+        </EntityLayout.Route>
+      </EntityLayout>
+    );
+
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <FakeCatalogEntityPage children={children} />
+      </ApiProvider>,
+      {
+        routeEntries: ['/?inspect=overview'],
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
+        },
+      },
+    );
+
+    expect(await screen.findByText('probe-content')).toBeInTheDocument();
+    expect(await screen.findByText('Entity Inspector')).toBeInTheDocument();
+
+    const mountsBefore = mountCount;
+    const rendersBefore = renderCount;
+    const analyticsRendersBefore = analyticsRenderCount;
+    expect(mountsBefore).toBe(1);
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Ancestry' }));
+
+    expect(await screen.findByText('probe-content')).toBeInTheDocument();
+    expect(mountCount).toBe(mountsBefore);
+    expect(renderCount).toBe(rendersBefore);
+    expect(analyticsRenderCount).toBe(analyticsRendersBefore);
   });
 });

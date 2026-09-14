@@ -18,6 +18,37 @@ import { packageVersions, createPackageVersionProvider } from './version';
 import { Lockfile } from '@backstage/cli-node';
 import corePluginApiPkg from '@backstage/core-plugin-api/package.json';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import fs from 'node:fs';
+import { resolve as resolvePath, join as joinPath } from 'node:path';
+
+describe('packageVersions', () => {
+  it('should include all @backstage packages used by templates without a version hint', () => {
+    const templatesDir = resolvePath(__dirname, '../../templates');
+    const missing: string[] = [];
+
+    function walk(dir: string) {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const fullPath = joinPath(dir, entry.name);
+        if (entry.isDirectory()) {
+          walk(fullPath);
+        } else if (entry.name.endsWith('.hbs')) {
+          const content = fs.readFileSync(fullPath, 'utf8');
+          const re = /\{\{\s*versionQuery\s+'([^']+)'\s*\}\}/g;
+          for (const m of content.matchAll(re)) {
+            const pkg = m[1];
+            if (pkg.startsWith('@backstage/') && !packageVersions[pkg]) {
+              missing.push(pkg);
+            }
+          }
+        }
+      }
+    }
+
+    walk(templatesDir);
+
+    expect(missing).toEqual([]);
+  });
+});
 
 describe('createPackageVersionProvider', () => {
   const mockDir = createMockDirectory();
@@ -81,6 +112,7 @@ describe('createPackageVersionProvider', () => {
     expect(provider('@backstage/frontend-dev-utils')).toBe(
       `^${packageVersions['@backstage/frontend-dev-utils']}`,
     );
+    expect(provider('unknown-package')).toBeUndefined();
   });
 
   describe('with backstage protocol options', () => {

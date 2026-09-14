@@ -18,6 +18,7 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
+import { InputError } from '@backstage/errors';
 import { createSpecializedBackend } from './createSpecializedBackend';
 
 describe('createSpecializedBackend', () => {
@@ -25,6 +26,19 @@ describe('createSpecializedBackend', () => {
     expect(() =>
       createSpecializedBackend({ defaultServiceFactories: [] }),
     ).not.toThrow();
+  });
+
+  it('should report malformed dynamic imports during startup', async () => {
+    const backend = createSpecializedBackend({
+      defaultServiceFactories: [],
+    });
+    backend.add(Promise.resolve(null as any));
+
+    await expect(backend.start()).rejects.toThrow(
+      new InputError(
+        'Invalid backend feature at features[0], expected an object or function, received null',
+      ),
+    );
   });
 
   it('should throw on duplicate service implementations', () => {

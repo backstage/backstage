@@ -15,7 +15,7 @@
  */
 
 import { BitbucketCloudIntegrationConfig } from '@backstage/integration';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { BitbucketCloudClient } from './BitbucketCloudClient';
 import { Models } from './models';
@@ -37,19 +37,19 @@ describe('BitbucketCloudClient', () => {
 
   it('searchCode', async () => {
     server.use(
-      rest.get(
+      http.get(
         `https://api.bitbucket.org/2.0/workspaces/ws/search/code`,
-        (req, res, ctx) => {
+        ({ request }) => {
           if (
-            req.headers.get('authorization') !==
+            request.headers.get('authorization') !==
             'Basic dGVzdC11c2VyOnRlc3QtcHc='
           ) {
-            return res(ctx.status(400));
+            return new HttpResponse(null, { status: 400 });
           }
 
-          const query = req.url.searchParams.get('search_query');
+          const query = new URL(request.url).searchParams.get('search_query');
           if (query !== 'query') {
-            return res(ctx.json({ values: [] } as Models.SearchResultPage));
+            return HttpResponse.json({ values: [] } as Models.SearchResultPage);
           }
 
           const response: Models.SearchResultPage = {
@@ -63,7 +63,7 @@ describe('BitbucketCloudClient', () => {
               },
             ],
           };
-          return res(ctx.json(response));
+          return HttpResponse.json(response);
         },
       ),
     );
@@ -81,10 +81,10 @@ describe('BitbucketCloudClient', () => {
 
   it('searchCode with custom pagelen', async () => {
     server.use(
-      rest.get(
+      http.get(
         `https://api.bitbucket.org/2.0/workspaces/ws/search/code`,
-        (req, res, ctx) => {
-          const pagelen = req.url.searchParams.get('pagelen');
+        ({ request }) => {
+          const pagelen = new URL(request.url).searchParams.get('pagelen');
           expect(pagelen).toBe('50');
 
           const response: Models.SearchResultPage = {
@@ -98,7 +98,7 @@ describe('BitbucketCloudClient', () => {
               },
             ],
           };
-          return res(ctx.json(response));
+          return HttpResponse.json(response);
         },
       ),
     );
@@ -116,20 +116,17 @@ describe('BitbucketCloudClient', () => {
 
   it('listRepositoriesByWorkspace', async () => {
     server.use(
-      rest.get(
-        'https://api.bitbucket.org/2.0/repositories/ws',
-        (_, res, ctx) => {
-          const response = {
-            values: [
-              {
-                type: 'repository',
-                slug: 'repo1',
-              } as Models.Repository,
-            ],
-          };
-          return res(ctx.json(response));
-        },
-      ),
+      http.get('https://api.bitbucket.org/2.0/repositories/ws', () => {
+        const response = {
+          values: [
+            {
+              type: 'repository',
+              slug: 'repo1',
+            } as Models.Repository,
+          ],
+        };
+        return HttpResponse.json(response);
+      }),
     );
 
     const pagination = client.listRepositoriesByWorkspace('ws');
@@ -145,20 +142,17 @@ describe('BitbucketCloudClient', () => {
 
   it('listProjectsByWorkspace', async () => {
     server.use(
-      rest.get(
-        'https://api.bitbucket.org/2.0/workspaces/ws/projects',
-        (_, res, ctx) => {
-          const response = {
-            values: [
-              {
-                type: 'project',
-                slug: 'project1',
-              } as Models.Project,
-            ],
-          };
-          return res(ctx.json(response));
-        },
-      ),
+      http.get('https://api.bitbucket.org/2.0/workspaces/ws/projects', () => {
+        const response = {
+          values: [
+            {
+              type: 'project',
+              slug: 'project1',
+            } as Models.Project,
+          ],
+        };
+        return HttpResponse.json(response);
+      }),
     );
 
     const pagination = client.listProjectsByWorkspace('ws');
@@ -174,7 +168,7 @@ describe('BitbucketCloudClient', () => {
 
   it('listWorkspaces', async () => {
     server.use(
-      rest.get('https://api.bitbucket.org/2.0/workspaces', (_, res, ctx) => {
+      http.get('https://api.bitbucket.org/2.0/workspaces', () => {
         const response = {
           values: [
             {
@@ -183,7 +177,7 @@ describe('BitbucketCloudClient', () => {
             } as Models.Workspace,
           ],
         };
-        return res(ctx.json(response));
+        return HttpResponse.json(response);
       }),
     );
 
@@ -200,9 +194,9 @@ describe('BitbucketCloudClient', () => {
 
   it('listBranchesByRepository', async () => {
     server.use(
-      rest.get(
+      http.get(
         'https://api.bitbucket.org/2.0/repositories/workspace1/repo1/refs/branches',
-        (_, res, ctx) => {
+        () => {
           const response = {
             values: [
               {
@@ -211,7 +205,7 @@ describe('BitbucketCloudClient', () => {
               } as Models.Branch,
             ],
           };
-          return res(ctx.json(response));
+          return HttpResponse.json(response);
         },
       ),
     );

@@ -1,19 +1,12 @@
 {
   "name": "@backstage/connections",
-  "version": "0.1.1-next.0",
+  "version": "0.4.0-next.0",
   "description": "Connections framework used by Backstage to better manage external connections used by integrations and plugins",
   "backstage": {
-    "role": "node-library",
-    "pluginId": "connections",
-    "pluginPackages": [
-      "@backstage/connections"
-    ]
+    "role": "common-library"
   },
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "module": "dist/index.esm.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "keywords": [
     "backstage"
@@ -25,8 +18,24 @@
     "directory": "packages/connections"
   },
   "license": "Apache-2.0",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./config": "./src/config/index.ts",
+    "./package.json": "./package.json"
+  },
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "config": [
+        "src/config/index.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
   "files": [
     "dist"
   ],
@@ -40,14 +49,12 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/types": "workspace:^",
-    "zod": "^3.25.76 || ^4.0.0"
+    "zod": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^"
   }
 }

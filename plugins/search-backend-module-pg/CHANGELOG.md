@@ -1,5 +1,47 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.5.59-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/plugin-search-backend-node@1.4.8-next.1
+  - @backstage/plugin-search-common@1.2.25-next.0
+
+## 0.5.59-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.4.8-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
+## 0.5.58
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-search-backend-node@1.4.7
+
+## 0.5.58-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-search-backend-node@1.4.7-next.0
+
+## 0.5.57
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/plugin-search-backend-node@1.4.6
+
 ## 0.5.57-next.0
 
 ### Patch Changes

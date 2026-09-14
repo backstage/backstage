@@ -16,6 +16,8 @@
 
 export const YAML_SCHEMA_PATH = 'src/schema/openapi.yaml';
 
+export const DEFAULT_BASE_REF = 'origin/master';
+
 export const OUTPUT_PATH = 'src/schema/openapi/generated';
 
 export const OLD_SCHEMA_PATH = `src/schema/openapi.generated.ts`;

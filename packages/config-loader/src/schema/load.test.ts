@@ -16,6 +16,7 @@
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { loadConfigSchema } from './load';
+import { ConfigSchemaError } from './ConfigSchemaError';
 
 // cwd must be restored
 const origDir = process.cwd();
@@ -124,6 +125,52 @@ describe('loadConfigSchema', () => {
     ).rejects.toThrow(
       'Serialized configuration schema is invalid or has an invalid version number',
     );
+  });
+
+  it('should use onSchemaError to opt into recovery', async () => {
+    mockDir.setContent({
+      'package.json': JSON.stringify({
+        name: 'a',
+        configSchema: 'config.d.ts',
+      }),
+      'config.d.ts': `
+        export interface Config {
+          value?: Missing;
+        }
+      `,
+    });
+    process.chdir(mockDir.path);
+
+    const onSchemaError = jest.fn();
+    const schema = await loadConfigSchema({
+      dependencies: [],
+      packagePaths: ['package.json'],
+      onSchemaError,
+    });
+
+    expect(onSchemaError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        source: 'a',
+        cause: expect.objectContaining({
+          message: expect.stringContaining("Cannot find name 'Missing'"),
+        }),
+      }),
+    );
+    expect(onSchemaError.mock.calls[0][0]).toBeInstanceOf(ConfigSchemaError);
+    expect(schema.serialize().schemas).toEqual([
+      expect.objectContaining({
+        value: expect.objectContaining({
+          properties: { value: {} },
+        }),
+      }),
+    ]);
+
+    await expect(
+      loadConfigSchema({
+        dependencies: [],
+        packagePaths: ['package.json'],
+      }),
+    ).rejects.toThrow("Cannot find name 'Missing'");
   });
 
   describe('should consider schema', () => {

@@ -57,6 +57,6 @@ export const defaultEksClusterEntityTransformer: EksClusterEntityTransformer =
 function normalizeName(name: string): string {
   return name
     .trim()
-    .toLocaleLowerCase('en-US')
+    .toLowerCase()
     .replace(/[^a-zA-Z0-9\-]/g, '-');
 }

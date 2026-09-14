@@ -29,6 +29,7 @@
     color: var(--bui-fg-primary);
     font-family: var(--bui-font-regular);
     font-weight: var(--bui-font-weight-bold);
+    line-height: 1.15;
     padding: 0 var(--bui-space-2);
     cursor: pointer;
     transition: background-color 150ms ease, box-shadow 150ms ease,

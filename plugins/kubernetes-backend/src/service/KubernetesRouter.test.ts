@@ -41,7 +41,7 @@ import {
   registerMswTestHooks,
   startTestBackend,
 } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
+import { http, HttpResponse, passthrough } from 'msw';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import {
@@ -55,9 +55,27 @@ import {
 } from '@backstage/plugin-kubernetes-node';
 import { ExtendedHttpServer } from '@backstage/backend-defaults/rootHttpRouter';
 
+jest.mock('@backstage/catalog-client', () => ({
+  CatalogClient: jest.fn().mockReturnValue({
+    getEntityByRef: jest.fn(),
+  }),
+}));
+
 describe('API integration tests', () => {
   let app: ExtendedHttpServer;
   let objectsProviderMock: jest.Mocked<KubernetesObjectsProvider>;
+  let auditor: ReturnType<typeof mockServices.auditor.mock>;
+  let auditEvent: { success: jest.Mock; fail: jest.Mock };
+
+  const setupAuditorMock = () => {
+    auditor = mockServices.auditor.mock();
+    auditEvent = {
+      success: jest.fn().mockResolvedValue(undefined),
+      fail: jest.fn().mockResolvedValue(undefined),
+    };
+    auditor.createEvent.mockResolvedValue(auditEvent);
+  };
+
   const happyK8SResult = {
     items: [{ clusterOne: { pods: [{ metadata: { name: 'pod1' } }] } }],
   };
@@ -85,9 +103,11 @@ describe('API integration tests', () => {
       },
     });
   const startPermissionDeniedTestServer = async () => {
+    setupAuditorMock();
     const { server } = await startTestBackend({
       features: [
         minimalValidConfigService,
+        auditor.factory,
         mockServices.permissions.factory({ result: AuthorizeResult.DENY }),
         import('@backstage/plugin-kubernetes-backend'),
       ],
@@ -97,32 +117,33 @@ describe('API integration tests', () => {
 
   beforeEach(async () => {
     jest.resetAllMocks();
+    setupAuditorMock();
 
     objectsProviderMock = {
       getKubernetesObjectsByEntity: jest.fn().mockResolvedValue(happyK8SResult),
       getCustomResourcesByEntity: jest.fn().mockResolvedValue(happyK8SResult),
     };
 
-    jest.mock('@backstage/catalog-client', () => ({
-      CatalogClient: jest.fn().mockReturnValue({
-        getEntityByRef: jest.fn().mockImplementation(async entityRef => {
-          if (entityRef.name === 'noentity') {
-            return undefined;
-          }
-          return {
-            kind: entityRef.kind,
-            metadata: {
-              name: entityRef.name,
-              namespace: entityRef.namespace,
-            },
-          };
-        }),
+    const { CatalogClient } = jest.requireMock('@backstage/catalog-client');
+    (CatalogClient as jest.Mock).mockReturnValue({
+      getEntityByRef: jest.fn().mockImplementation(async (entityRef: any) => {
+        if (entityRef.name === 'noentity') {
+          return undefined;
+        }
+        return {
+          kind: entityRef.kind,
+          metadata: {
+            name: entityRef.name,
+            namespace: entityRef.namespace,
+          },
+        };
       }),
-    }));
+    });
 
     const { server } = await startTestBackend({
       features: [
         minimalValidConfigService,
+        auditor.factory,
         import('@backstage/plugin-kubernetes-backend'),
         import('@backstage/plugin-permission-backend'),
         import('@backstage/plugin-permission-backend-module-allow-all-policy'),
@@ -183,6 +204,13 @@ describe('API integration tests', () => {
           },
         ],
       });
+      expect(auditor.createEvent).toHaveBeenCalledWith({
+        eventId: 'cluster-fetch',
+        request: expect.anything(),
+        meta: { queryType: 'list' },
+      });
+      expect(auditEvent.success).toHaveBeenCalled();
+      expect(auditEvent.fail).not.toHaveBeenCalled();
     });
 
     it('happy path: lists clusters with custom AuthStrategy and custom auth metadata', async () => {
@@ -312,6 +340,25 @@ describe('API integration tests', () => {
       app = await startPermissionDeniedTestServer();
       const response = await request(app).get('/api/kubernetes/clusters');
       expect(response.status).toEqual(403);
+      expect(auditor.createEvent).toHaveBeenCalledWith({
+        eventId: 'cluster-fetch',
+        request: expect.anything(),
+        meta: { queryType: 'list' },
+      });
+      expect(auditEvent.fail).toHaveBeenCalled();
+      expect(auditEvent.success).not.toHaveBeenCalled();
+    });
+
+    it('returns 200 when audit success emission rejects', async () => {
+      auditEvent.success.mockRejectedValueOnce(
+        new Error('cluster audit failed'),
+      );
+
+      const response = await request(app).get('/api/kubernetes/clusters');
+
+      expect(response.status).toEqual(200);
+      expect(auditEvent.success).toHaveBeenCalled();
+      expect(auditEvent.fail).not.toHaveBeenCalled();
     });
   });
 
@@ -322,6 +369,17 @@ describe('API integration tests', () => {
       );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(happyK8SResult);
+      expect(auditor.createEvent).toHaveBeenCalledWith({
+        eventId: 'resource-fetch',
+        request: expect.anything(),
+        meta: {
+          queryType: 'services',
+          entityRef: undefined,
+          serviceId: 'test-service',
+        },
+      });
+      expect(auditEvent.success).toHaveBeenCalled();
+      expect(auditEvent.fail).not.toHaveBeenCalled();
     });
 
     it('happy path: lists kubernetes objects with auth in request body', async () => {
@@ -331,6 +389,29 @@ describe('API integration tests', () => {
         .set('Content-Type', 'application/json');
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(happyK8SResult);
+    });
+
+    it('includes entityRef in audit metadata when entity is present', async () => {
+      const response = await request(app)
+        .post('/api/kubernetes/services/test-service')
+        .send({
+          entity: {
+            kind: 'Component',
+            metadata: { name: 'my-service', namespace: 'default' },
+          },
+        })
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toEqual(200);
+      expect(auditor.createEvent).toHaveBeenCalledWith({
+        eventId: 'resource-fetch',
+        request: expect.anything(),
+        meta: {
+          queryType: 'services',
+          entityRef: 'component:default/my-service',
+          serviceId: 'test-service',
+        },
+      });
     });
 
     it('internal error: lists kubernetes objects', async () => {
@@ -344,6 +425,10 @@ describe('API integration tests', () => {
 
       expect(response.status).toEqual(500);
       expect(response.body).toEqual({ error: 'some internal error' });
+      expect(auditEvent.fail).toHaveBeenCalledWith({
+        error: expect.objectContaining({ message: 'some internal error' }),
+      });
+      expect(auditEvent.success).not.toHaveBeenCalled();
     });
 
     it('custom service locator', async () => {
@@ -417,7 +502,12 @@ describe('API integration tests', () => {
 
       const response = await request(app)
         .post('/api/kubernetes/services/test-service')
-        .send({ entity: { metadata: { name: 'thing' } } });
+        .send({
+          entity: {
+            kind: 'Component',
+            metadata: { name: 'thing', namespace: 'default' },
+          },
+        });
 
       expect(response.body).toEqual({
         items: [
@@ -443,6 +533,7 @@ describe('API integration tests', () => {
             { type: 'pods', resources: [{ metadata: { name: 'pod1' } }] },
           ],
         }),
+        watchResource: jest.fn(),
       };
 
       const { server } = await startTestBackend({
@@ -502,7 +593,10 @@ describe('API integration tests', () => {
       await request(app)
         .post('/api/kubernetes/services/test-service')
         .send({
-          entity: { metadata: { name: 'thing' } },
+          entity: {
+            kind: 'Component',
+            metadata: { name: 'thing', namespace: 'default' },
+          },
           auth: { custom: 'custom-token' },
         });
 
@@ -519,6 +613,48 @@ describe('API integration tests', () => {
         '/api/kubernetes/services/test-service',
       );
       expect(response.status).toEqual(403);
+      expect(auditor.createEvent).toHaveBeenCalledWith({
+        eventId: 'resource-fetch',
+        request: expect.anything(),
+        meta: {
+          queryType: 'services',
+          entityRef: undefined,
+          serviceId: 'test-service',
+        },
+      });
+      expect(auditEvent.fail).toHaveBeenCalled();
+      expect(auditEvent.success).not.toHaveBeenCalled();
+    });
+
+    it('returns 200 when audit success emission rejects', async () => {
+      auditEvent.success.mockRejectedValueOnce(
+        new Error('services audit failed'),
+      );
+
+      const response = await request(app).post(
+        '/api/kubernetes/services/test-service',
+      );
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(happyK8SResult);
+      expect(auditEvent.success).toHaveBeenCalled();
+      expect(auditEvent.fail).not.toHaveBeenCalled();
+    });
+
+    it('rejects entities not found in catalog', async () => {
+      const response = await request(app)
+        .post('/api/kubernetes/services/test-service')
+        .send({
+          entity: {
+            kind: 'Component',
+            metadata: { name: 'noentity', namespace: 'default' },
+          },
+        })
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toEqual(403);
+      expect(auditEvent.fail).toHaveBeenCalled();
+      expect(auditEvent.success).not.toHaveBeenCalled();
     });
   });
 
@@ -528,20 +664,18 @@ describe('API integration tests', () => {
 
     beforeEach(() => {
       worker.use(
-        rest.post(
+        http.post(
           'https://localhost:1234/api/v1/namespaces',
-          (req, res, ctx) => {
-            if (!req.headers.get('Authorization')) {
-              return res(ctx.status(401));
+          async ({ request: mswRequest }) => {
+            if (!mswRequest.headers.get('Authorization')) {
+              return new HttpResponse(null, { status: 401 });
             }
-            return req
-              .arrayBuffer()
-              .then(body =>
-                res(
-                  ctx.set('content-type', `${req.headers.get('content-type')}`),
-                  ctx.body(body),
-                ),
-              );
+            const body = await mswRequest.arrayBuffer();
+            return new HttpResponse(body, {
+              headers: {
+                'content-type': mswRequest.headers.get('content-type') ?? '',
+              },
+            });
           },
         ),
       );
@@ -559,10 +693,23 @@ describe('API integration tests', () => {
         .set(HEADER_KUBERNETES_CLUSTER, 'some-cluster')
         .set(HEADER_KUBERNETES_AUTH, 'randomtoken')
         .send(namespaceManifest);
-      worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
+      worker.use(http.all(proxyEndpointRequest.url, () => passthrough()));
       const response = await proxyEndpointRequest;
 
       expect(response.body).toStrictEqual(namespaceManifest);
+      expect(auditor.createEvent).toHaveBeenCalledWith({
+        eventId: 'cluster-fetch',
+        severityLevel: 'medium',
+        request: expect.anything(),
+        meta: {
+          queryType: 'proxy',
+          clusterName: 'some-cluster',
+          method: 'POST',
+          path: '/api/v1/namespaces',
+        },
+      });
+      expect(auditEvent.success).toHaveBeenCalled();
+      expect(auditEvent.fail).not.toHaveBeenCalled();
     });
 
     it('supports yaml content type', async () => {
@@ -580,7 +727,7 @@ metadata:
         .set('content-type', 'application/yaml')
         .send(yamlManifest);
 
-      worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
+      worker.use(http.all(proxyEndpointRequest.url, () => passthrough()));
 
       const response = await proxyEndpointRequest;
       expect(response.text).toEqual(yamlManifest);
@@ -599,21 +746,37 @@ metadata:
           metadata: { name: 'new-ns' },
         });
 
-      worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
+      worker.use(http.all(proxyEndpointRequest.url, () => passthrough()));
 
       const response = await proxyEndpointRequest;
 
       expect(response.status).toEqual(403);
+      expect(auditor.createEvent).toHaveBeenCalledWith({
+        eventId: 'cluster-fetch',
+        severityLevel: 'medium',
+        request: expect.anything(),
+        meta: {
+          queryType: 'proxy',
+          clusterName: 'some-cluster',
+          method: 'POST',
+          path: '/api/v1/namespaces',
+        },
+      });
+      expect(auditEvent.fail).toHaveBeenCalled();
+      expect(auditEvent.success).not.toHaveBeenCalled();
     });
 
     it('permits custom client-side auth strategy', async () => {
       worker.use(
-        rest.get('http://my.cluster.url/api/v1/namespaces', (req, res, ctx) => {
-          if (req.headers.get('Authorization') !== 'custom-token') {
-            return res(ctx.status(401));
-          }
-          return res(ctx.json({ items: [] }));
-        }),
+        http.get(
+          'http://my.cluster.url/api/v1/namespaces',
+          ({ request: mswRequest }) => {
+            if (mswRequest.headers.get('Authorization') !== 'custom-token') {
+              return new HttpResponse(null, { status: 401 });
+            }
+            return HttpResponse.json({ items: [] });
+          },
+        ),
       );
 
       const { server } = await startTestBackend({
@@ -655,7 +818,7 @@ metadata:
         .get('/api/kubernetes/proxy/api/v1/namespaces')
         .set(HEADER_KUBERNETES_CLUSTER, 'custom-cluster')
         .set(HEADER_KUBERNETES_AUTH, 'custom-token');
-      worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
+      worker.use(http.all(proxyEndpointRequest.url, () => passthrough()));
       const response = await proxyEndpointRequest;
 
       expect(response.body).toStrictEqual({ items: [] });
@@ -668,9 +831,7 @@ metadata:
         presentAuthMetadata: jest.fn().mockReturnValue({}),
       };
       worker.use(
-        rest.get('http://my.cluster/api', (_req, res, ctx) =>
-          res(ctx.json({})),
-        ),
+        http.get('http://my.cluster/api', () => HttpResponse.json({})),
       );
       const { server } = await startTestBackend({
         features: [
@@ -714,7 +875,7 @@ metadata:
       const proxyEndpointRequest = request(app).get(
         '/api/kubernetes/proxy/api',
       );
-      worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
+      worker.use(http.all(proxyEndpointRequest.url, () => passthrough()));
       const response = await proxyEndpointRequest;
 
       expect(response.body).toStrictEqual({});
@@ -782,11 +943,19 @@ metadata:
 
     expect(response.status).toEqual(200);
     expect(response.body).toMatchObject({
-      permissions: [
+      permissions: expect.arrayContaining([
         { type: 'basic', name: 'kubernetes.proxy', attributes: {} },
-        { type: 'basic', name: 'kubernetes.resources.read', attributes: {} },
-        { type: 'basic', name: 'kubernetes.clusters.read', attributes: {} },
-      ],
+        {
+          type: 'basic',
+          name: 'kubernetes.resources.read',
+          attributes: { action: 'read' },
+        },
+        {
+          type: 'basic',
+          name: 'kubernetes.clusters.read',
+          attributes: { action: 'read' },
+        },
+      ]),
       rules: [],
     });
   });

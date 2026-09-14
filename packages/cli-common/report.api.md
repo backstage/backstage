@@ -10,9 +10,6 @@ import { SpawnOptions } from 'node:child_process';
 // @public
 export const BACKSTAGE_JSON = 'backstage.json';
 
-// @public @deprecated
-export function bootstrapEnvProxyAgents(): void;
-
 // @public
 export class ExitCodeError extends CustomErrorBase {
   constructor(code: number, command?: string);

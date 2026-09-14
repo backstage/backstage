@@ -22,11 +22,21 @@ import { resolve as resolvePath } from 'node:path';
 import { Project, SourceFile, SyntaxKind, ts, Type } from 'ts-morph';
 import { targetPaths } from '@backstage/cli-common';
 
-export const createTypeDistProject = async () => {
-  return new Project({
+export const createTypeDistProject = async (
+  packages: Array<{ dir: string; role?: PackageRole }> = [],
+) => {
+  const project = new Project({
     tsConfigFilePath: targetPaths.resolveRoot('tsconfig.json'),
     skipAddingFilesFromTsConfig: true,
   });
+  // Adding source files invalidates the TypeScript program, so load all entry
+  // point declarations before any package starts querying their types.
+  project.addSourceFilesAtPaths(
+    packages.flatMap(({ dir, role }) =>
+      isTargetPackageRole(role) ? resolvePath(dir, 'dist', '*.d.ts') : [],
+    ),
+  );
+  return project;
 };
 
 // A list of the package roles we want to extract features for
@@ -130,7 +140,7 @@ function getBackstagePackageFeature$$TypeFromType(
 }
 
 // Condition for a package role matches a target package role
-function isTargetPackageRole(role: PackageRole): boolean {
+function isTargetPackageRole(role?: PackageRole): boolean {
   return !!role && targetPackageRoles.includes(role);
 }
 

@@ -86,7 +86,7 @@ contains more information about the required fields.
 Once we have a `template.yaml` ready, we can then add it to the software catalog
 for use by the scaffolder.
 
-:::note Note
+:::note
 
 When you add or modify a template, you will need to refresh the location entity.
 Otherwise, Backstage won't display the template in the available templates,

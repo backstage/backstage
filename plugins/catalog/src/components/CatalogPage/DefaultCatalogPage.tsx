@@ -36,10 +36,13 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { ReactNode } from 'react';
 import { createComponentRouteRef } from '../../routes';
-import { CatalogTable, CatalogTableRow } from '../CatalogTable';
+import { CatalogTable } from '../CatalogTable/CatalogTable';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { CatalogTableColumnsFunc } from '../CatalogTable/types';
+import {
+  CatalogTableColumnsFunc,
+  CatalogTableRow,
+} from '../CatalogTable/types';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { CatalogExportButton } from '../CatalogExportButton/CatalogExportButton';

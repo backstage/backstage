@@ -39,14 +39,13 @@ export const getMembersFromGroups = async (
       : await catalogApi.getEntities({
           filter: {
             kind: 'User',
-            [`relations.${relationship.toLocaleLowerCase('en-US')}`]:
-              groups.map(group =>
-                stringifyEntityRef({
-                  kind: 'group',
-                  namespace: group.namespace.toLocaleLowerCase('en-US'),
-                  name: group.name.toLocaleLowerCase('en-US'),
-                }),
-              ),
+            [`relations.${relationship.toLowerCase()}`]: groups.map(group =>
+              stringifyEntityRef({
+                kind: 'group',
+                namespace: group.namespace.toLowerCase(),
+                name: group.name.toLowerCase(),
+              }),
+            ),
           },
         });
 

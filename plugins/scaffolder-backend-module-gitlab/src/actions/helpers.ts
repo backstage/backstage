@@ -23,8 +23,14 @@ export function createGitlabApi(options: {
   integrations: ScmIntegrationRegistry;
   token?: string;
   repoUrl: string;
+  requireScmUserCredentials?: boolean;
 }): InstanceType<typeof Gitlab> {
-  const { integrations, token: providedToken, repoUrl } = options;
+  const {
+    integrations,
+    token: providedToken,
+    repoUrl,
+    requireScmUserCredentials,
+  } = options;
 
   const { host } = parseRepoUrl(repoUrl, integrations);
 
@@ -33,6 +39,12 @@ export function createGitlabApi(options: {
   if (!integrationConfig) {
     throw new InputError(
       `No matching integration configuration for host ${host}, please check your integrations config`,
+    );
+  }
+
+  if (requireScmUserCredentials && !providedToken) {
+    throw new InputError(
+      `No user credentials provided for host ${host}, but scaffolder.requireScmUserCredentials is enabled`,
     );
   }
 

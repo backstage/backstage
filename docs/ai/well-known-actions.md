@@ -21,10 +21,16 @@ This is a (non-exhaustive) list of actions that are known to be part of the Acti
 - `catalog.register-entity` (Register entity in the Catalog): Registers one or more entities in the Backstage catalog by creating a Location entity that points to a remote `catalog-info.yaml` file.
 - `catalog.unregister-entity` (Unregister entity from the Catalog): Unregisters a Location entity and all entities it owns from the Backstage catalog.
 - `catalog.validate-entity` (Validate Catalog Entity): This action can be used to validate `catalog-info.yaml` file contents meant to be used with the software catalog.
+- `catalog.get-catalog-model-description` (Get a Catalog Model Description): Returns a markdown formatted description of the current catalog model, including all registered entity kinds, annotations, labels, tags, and relations.
 
 ### Notifications
 
 - `notifications.get-notifications` (Get Notifications): Fetches notifications for the currently authenticated user. Defaults to returning only unread notifications. Supports filtering by read status (`unread`, `read`, `saved`, `all`), severity, topic, free-text search, and creation date. Supports pagination via `offset` and `limit`.
+
+### Kubernetes
+
+- `kubernetes.get-kubernetes-clusters` (Get Kubernetes Clusters): Lists all Kubernetes clusters registered with this Backstage instance, including their names, optional display titles, and optional dashboard URLs.
+- `kubernetes.get-kubernetes-resources-for-entity` (Get Kubernetes Resources for Entity): Fetches live Kubernetes resources (pods, deployments, services, etc.) associated with a catalog entity across all registered clusters. Takes `name`, optional `kind` (defaults to `Component`), and optional `namespace` (defaults to `default`). The entity must have a `backstage.io/kubernetes-id` or `backstage.io/kubernetes-label-selector` annotation.
 
 ### Scaffolder
 

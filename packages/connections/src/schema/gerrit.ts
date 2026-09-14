@@ -29,10 +29,12 @@ export const GerritConnectionType = createConnectionType({
   authMethods: [
     {
       method: 'none',
+      title: 'None',
       configSchema: z.object({}),
     },
     {
       method: 'basic',
+      title: 'Basic',
       configSchema: z.object({
         username: z.string(),
         password: z.string(),

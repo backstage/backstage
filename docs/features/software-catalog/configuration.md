@@ -88,7 +88,7 @@ is offered by each integration.
 To ingest entities from an existing system already tracking software, you can
 also write a _custom processor_ to convert between the existing system and
 Backstage's descriptor format. This is documented in
-[External Integrations](external-integrations.md).
+[External Integrations](external-integrations/index.md).
 
 ### Processor configuration
 
@@ -180,6 +180,18 @@ source that should be mirrored into Backstage. To make Backstage a mirror of
 this remote source, users cannot also register new entities with e.g. the
 [catalog-import](https://github.com/backstage/backstage/tree/master/plugins/catalog-import)
 plugin.
+
+## Location analysis permissions
+
+The catalog location analysis endpoint invokes configured location analyzers,
+which may use configured source control integrations and run parts of the
+catalog processing pipeline in dry-run mode. When the permission system is
+enabled, callers must be granted `catalog.location.analyze`.
+
+Analysis may read through configured integrations and the `UrlReaderService`,
+which operate in a service context. Grant the permission to users who should be
+able to inspect those sources, and keep `backend.reading.allow` scoped according
+to the [Backstage threat model](../../overview/threat-model.md#common-backend-configuration).
 
 ## Automatic removal of orphaned entities
 
@@ -286,7 +298,7 @@ This will log errors with a level of `warn`.
 
 You should now see logs as the catalog emits events. Example:
 
-```
+```log
 [1] 2024-06-07T00:00:28.787Z events warn Policy check failed for user:default/guest; caused by Error: Malformed envelope, /metadata/tags must be array entity=user:default/guest location=file:/Users/foobar/code/backstage-demo-instance/examples/org.yaml
 ```
 

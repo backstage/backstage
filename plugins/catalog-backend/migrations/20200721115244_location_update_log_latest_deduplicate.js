@@ -19,8 +19,9 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = function up(knex) {
-  return knex.schema.raw(`DROP VIEW location_update_log_latest;`).raw(`
+exports.up = async function up(knex) {
+  await knex.schema.raw(`DROP VIEW location_update_log_latest;`);
+  await knex.schema.raw(`
   CREATE VIEW location_update_log_latest AS
   SELECT t1.* FROM location_update_log t1
   JOIN
@@ -39,6 +40,6 @@ exports.up = function up(knex) {
 /**
  * @param {import('knex').Knex} knex
  */
-exports.down = function down(knex) {
-  knex.schema.raw(`DROP VIEW location_update_log_latest;`);
+exports.down = async function down(knex) {
+  await knex.schema.raw(`DROP VIEW IF EXISTS location_update_log_latest;`);
 };

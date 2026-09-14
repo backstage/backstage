@@ -15,12 +15,13 @@
  */
 
 import { useMemo, type ReactNode } from 'react';
-import { RouterProvider } from 'react-aria-components';
-import { useInRouterContext, useNavigate } from 'react-router-dom';
 import { createVersionedValueMap } from '@backstage/version-bridge';
-import { BUIContext } from '../analytics/useAnalytics';
-import { useResolvedHref } from '../hooks/useResolvedHref';
+import { BUIContext } from './BUIContext';
 import type { UseAnalyticsFn } from '../analytics/types';
+import {
+  BUIRoutingProvider,
+  buiRoutingIntegration,
+} from '../navigation/BUIRoutingProvider';
 
 /** @public */
 export type BUIProviderProps = {
@@ -30,6 +31,15 @@ export type BUIProviderProps = {
 
 /**
  * Provides integration capabilities to all descendant BUI components.
+ *
+ * When rendered inside the Backstage app router, BUI components use
+ * client-side navigation for internal links. Relative destinations resolve
+ * from the route of the component that renders the link, and the router
+ * basename applies once.
+ *
+ * External and scheme links, downloads, and links with non-self targets use the
+ * browser's native navigation. BUI components rendered outside React Router use
+ * native links without throwing.
  *
  * @example
  * ```tsx
@@ -53,6 +63,7 @@ export function BUIProvider(props: BUIProviderProps) {
     () =>
       createVersionedValueMap({
         1: { useAnalytics },
+        2: { useAnalytics, routing: buiRoutingIntegration },
       }),
     [useAnalytics],
   );
@@ -60,19 +71,5 @@ export function BUIProvider(props: BUIProviderProps) {
   const content = (
     <BUIContext.Provider value={value}>{children}</BUIContext.Provider>
   );
-
-  if (useInRouterContext()) {
-    return <RoutedContent>{content}</RoutedContent>;
-  }
-
-  return content;
-}
-
-function RoutedContent({ children }: { children: ReactNode }) {
-  const navigate = useNavigate();
-  return (
-    <RouterProvider navigate={navigate} useHref={useResolvedHref}>
-      {children}
-    </RouterProvider>
-  );
+  return <BUIRoutingProvider>{content}</BUIRoutingProvider>;
 }

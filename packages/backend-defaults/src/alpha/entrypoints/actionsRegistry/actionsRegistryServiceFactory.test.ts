@@ -28,6 +28,7 @@ import {
   AuthorizeResult,
   createPermission,
 } from '@backstage/plugin-permission-common';
+import type { JsonObject } from '@backstage/types';
 
 describe('actionsRegistryServiceFactory', () => {
   const defaultServices = [
@@ -314,6 +315,19 @@ describe('actionsRegistryServiceFactory', () => {
                 },
                 action: async () => ({ output: { ok: true } }),
               });
+              actionsRegistry.register({
+                name: 'read-only',
+                title: 'Read Only',
+                description: 'Read Only',
+                attributes: {
+                  readOnly: true,
+                },
+                schema: {
+                  input: z => z.object({}),
+                  output: z => z.object({}),
+                },
+                action: async () => ({ output: { ok: true } }),
+              });
             },
           });
         },
@@ -339,6 +353,14 @@ describe('actionsRegistryServiceFactory', () => {
               readOnly: false,
             },
           },
+          {
+            name: 'read-only',
+            attributes: {
+              destructive: false,
+              idempotent: false,
+              readOnly: true,
+            },
+          },
         ],
       });
     });
@@ -359,6 +381,20 @@ describe('actionsRegistryServiceFactory', () => {
                 attributes: {
                   destructive: false,
                   idempotent: true,
+                  readOnly: false,
+                },
+                schema: {
+                  input: z => z.object({}),
+                  output: z => z.object({}),
+                },
+                action: async () => ({ output: { ok: true } }),
+              });
+              actionsRegistry.register({
+                name: 'read-only',
+                title: 'Read Only',
+                description: 'Read Only',
+                attributes: {
+                  destructive: true,
                   readOnly: true,
                 },
                 schema: {
@@ -391,6 +427,14 @@ describe('actionsRegistryServiceFactory', () => {
             attributes: {
               destructive: false,
               idempotent: true,
+              readOnly: false,
+            },
+          },
+          {
+            name: 'read-only',
+            attributes: {
+              destructive: true,
+              idempotent: false,
               readOnly: true,
             },
           },
@@ -939,6 +983,131 @@ describe('actionsRegistryServiceFactory', () => {
           input: { name: 'test' },
         }),
       );
+    });
+  });
+
+  describe('configured action invocation', () => {
+    const mockAction = jest.fn();
+    const pluginSubject = createBackendPlugin({
+      pluginId: 'my-plugin',
+      register(reg) {
+        reg.registerInit({
+          deps: {
+            actionsRegistry: actionsRegistryServiceRef,
+          },
+          async init({ actionsRegistry }) {
+            actionsRegistry.register({
+              name: 'test',
+              title: 'Test',
+              description: 'Test',
+              schema: {
+                input: z => z.object({ name: z.string() }),
+                output: z => z.object({ ok: z.boolean() }),
+              },
+              action: mockAction,
+            });
+          },
+        });
+      },
+    });
+
+    function createRegistryServices(actions: JsonObject) {
+      return [
+        actionsRegistryServiceFactory,
+        httpRouterServiceFactory,
+        mockServices.httpAuth.factory({
+          defaultCredentials: mockCredentials.service('user:default/mock'),
+        }),
+        mockServices.rootConfig.factory({
+          data: { backend: { actions } },
+        }),
+      ];
+    }
+
+    beforeEach(() => {
+      mockAction.mockReset();
+      mockAction.mockResolvedValue({ output: { ok: true } });
+    });
+
+    describe.each([
+      { version: 'v1', body: { name: 'test' } },
+      { version: 'v2', body: { input: { name: 'test' } } },
+    ])('$version', ({ version, body }) => {
+      const path = `/.backstage/actions/${version}/actions/my-plugin:test/invoke`;
+      const excludedFilters: Array<[string, JsonObject]> = [
+        ['id', { exclude: [{ id: 'my-plugin:test' }] }],
+        ['attribute', { exclude: [{ attributes: { destructive: true } }] }],
+      ];
+
+      it('should reject actions from sources that are not configured', async () => {
+        const { server } = await startTestBackend({
+          features: [
+            pluginSubject,
+            ...createRegistryServices({
+              pluginSources: ['other-plugin'],
+            }),
+          ],
+        });
+
+        const response = await request(server)
+          .post(`/api/my-plugin${path}`)
+          .send(body);
+
+        expect(response.status).toBe(404);
+        expect(response.body.error.message).toBe(
+          'Action "my-plugin:test" not found',
+        );
+        expect(mockAction).not.toHaveBeenCalled();
+      });
+
+      it.each(excludedFilters)(
+        'should reject actions excluded by an %s filter',
+        async (_, filter) => {
+          const { server } = await startTestBackend({
+            features: [
+              pluginSubject,
+              ...createRegistryServices({
+                pluginSources: ['my-plugin'],
+                filter,
+              }),
+            ],
+          });
+
+          const response = await request(server)
+            .post(`/api/my-plugin${path}`)
+            .send(body);
+
+          expect(response.status).toBe(404);
+          expect(response.body.error.message).toBe(
+            'Action "my-plugin:test" not found',
+          );
+          expect(mockAction).not.toHaveBeenCalled();
+        },
+      );
+
+      it('should invoke actions allowed by source and action filters', async () => {
+        const { server } = await startTestBackend({
+          features: [
+            pluginSubject,
+            ...createRegistryServices({
+              pluginSources: ['my-plugin'],
+              filter: {
+                include: [
+                  { id: 'my-plugin:*', attributes: { destructive: true } },
+                ],
+              },
+            }),
+          ],
+        });
+
+        const response = await request(server)
+          .post(`/api/my-plugin${path}`)
+          .send(body);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual({ output: { ok: true } });
+        expect(mockAction).toHaveBeenCalledTimes(1);
+      });
     });
   });
 

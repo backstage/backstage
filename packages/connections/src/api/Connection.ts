@@ -13,17 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { z } from 'zod/v4';
-import type { ConnectionAuthValue, ConnectionType } from './ConnectionType';
-import {
-  ConnectionMatch,
-  ConnectionTypeKey,
-  LookupConnectionType,
-} from '../definitions';
-
-/** @public */
-export type AuthValue<T extends ConnectionType | ConnectionTypeKey> =
-  ConnectionAuthValue<LookupConnectionType<T>['authMethods'][number]>;
+import type { Expand } from '@backstage/types';
+import type { ConnectionTypeDefinition } from './ConnectionType';
+import type { ConnectionType, LookupConnectionType } from '../definitions';
 
 // A connection of a specific type.
 //
@@ -31,35 +23,41 @@ export type AuthValue<T extends ConnectionType | ConnectionTypeKey> =
 // - With `TAuthMethod`: narrows `auth` to a single method variant — the
 //   shape returned by `ConnectionsService.find`.
 // - With no parameters: an open shape suitable for internal storage.
-//   Use `AnyConnection` when you want a discriminated union for narrowing.
 /** @public */
 export type Connection<
-  T extends ConnectionType | ConnectionTypeKey = ConnectionType,
+  T extends
+    | ConnectionTypeDefinition
+    | ConnectionType = ConnectionTypeDefinition,
   TAuthMethod extends string = string,
-> = {
-  type: LookupConnectionType<T>['type'];
-  title: string;
-  auth: string extends TAuthMethod
-    ? AuthValue<T>[]
-    : Extract<AuthValue<T>, { method: TAuthMethod }>;
-} & z.infer<LookupConnectionType<T>['configSchema']>;
+> = LookupConnectionType<T> extends ConnectionTypeDefinition<infer IDefinition>
+  ? {
+      type: LookupConnectionType<T>['type'];
+      title: string;
+      auth: string extends TAuthMethod
+        ? (IDefinition['auth'][number] extends infer A
+            ? A extends { method: string }
+              ? Expand<A & { title: string }>
+              : never
+            : never)[]
+        : Extract<
+            IDefinition['auth'][number] extends infer A
+              ? A extends { method: string }
+                ? Expand<A & { title: string }>
+                : never
+              : never,
+            { method: TAuthMethod }
+          >;
+    } & ReturnType<LookupConnectionType<T>['configSchema']['parse']>
+  : never;
 
-// Discriminated union of every known connection type, suitable for
-// `switch (c.type)` narrowing.
-export type AnyConnection = {
-  [K in ConnectionTypeKey]: Connection<K>;
-}[ConnectionTypeKey];
-
-// The on-disk shape of a connection: the same as `Connection`, plus the
-// top-level `match` and per-auth `match` rules used for plugin scoping.
-export type RootConnection<
-  T extends ConnectionType | ConnectionTypeKey = ConnectionType,
-> = Omit<Connection<T>, 'auth' | 'title'> & {
-  title?: string;
-  match?: ConnectionMatch;
-  auth: (AuthValue<T> & { match?: ConnectionMatch })[];
-};
-
-export type AnyRootConnection = {
-  [K in ConnectionTypeKey]: RootConnection<K>;
-}[ConnectionTypeKey];
+/**
+ * A resolved auth entry for a connection of a specific type.
+ *
+ * @public
+ */
+export type ConnectionAuth<
+  T extends ConnectionType,
+  TAuthMethod extends string = string,
+> = Connection<T, TAuthMethod>['auth'] extends (infer E)[]
+  ? E
+  : Connection<T, TAuthMethod>['auth'];

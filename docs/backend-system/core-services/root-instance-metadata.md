@@ -7,7 +7,7 @@ description: Documentation for the Root Instance Metadata service
 
 The root instance metadata service provides information about the running Backstage backend instance. Currently, it provides a list of all installed backend plugins.
 
-:::note Note
+:::note
 
 The root instance metadata service only provides information about the specific Backstage instance you're running on. In more complex deployments with multiple Backstage instances, this service will not provide a complete list of all plugins across all instances.
 

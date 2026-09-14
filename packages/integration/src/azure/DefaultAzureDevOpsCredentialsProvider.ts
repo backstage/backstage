@@ -20,7 +20,7 @@ import {
 import { CachedAzureDevOpsCredentialsProvider } from './CachedAzureDevOpsCredentialsProvider';
 import { ScmIntegrationRegistry } from '../registry';
 import { DefaultAzureCredential } from '@azure/identity';
-import { isVisualStudioDomain } from './core';
+import { isVisualStudioDomain } from './isVisualStudioDomain';
 
 /**
  * Default implementation of AzureDevOpsCredentialsProvider.

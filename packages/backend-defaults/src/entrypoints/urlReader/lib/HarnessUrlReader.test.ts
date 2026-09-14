@@ -21,7 +21,7 @@ import {
 import { ConfigReader } from '@backstage/config';
 import { HarnessIntegration, readHarnessConfig } from '@backstage/integration';
 import { JsonObject } from '@backstage/types';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { UrlReaderPredicateTuple } from './types';
 import { DefaultReadTreeResponseFactory } from './tree';
@@ -47,6 +47,18 @@ const harnessProcessor = new HarnessUrlReader(
   { treeResponseFactory },
 );
 
+const apiKeyHarnessProcessor = new HarnessUrlReader(
+  new HarnessIntegration(
+    readHarnessConfig(
+      new ConfigReader({
+        host: 'app.harness.io',
+        apiKey: 'harness-api-key',
+      }),
+    ),
+  ),
+  { treeResponseFactory },
+);
+
 const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
   return HarnessUrlReader.factory({
     config: new ConfigReader(config),
@@ -61,52 +73,42 @@ const harnessApiResponse = (content: any) => {
 const commitHash = '3bdd5457286abdf920db4b77bf2fef79a06190c2';
 
 const handlers = [
-  rest.get(
+  http.get(
     'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/raw/all-apis.yaml',
-    (_req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({ message: 'Error!!!' }));
-    },
+    () => HttpResponse.json({ message: 'Error!!!' }, { status: 500 }),
   ),
-  rest.get(
+  http.get(
     'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/raw/404error.yaml',
-    (_req, res, ctx) => {
-      return res(ctx.status(404), ctx.json({ message: 'File not found.' }));
-    },
+    () => HttpResponse.json({ message: 'File not found.' }, { status: 404 }),
   ),
-  rest.get(
+  http.get(
     'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/raw/stream.TXT',
-    (_req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.body(harnessApiResponse(responseBuffer.toString())),
-      );
-    },
+    () =>
+      new HttpResponse(harnessApiResponse(responseBuffer.toString()), {
+        status: 200,
+      }),
   ),
 
-  rest.get(
+  http.get(
     'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/raw/buffer.TXT',
-    (_req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.body(harnessApiResponse(responseBuffer.toString())),
-      );
-    },
+    () =>
+      new HttpResponse(harnessApiResponse(responseBuffer.toString()), {
+        status: 200,
+      }),
   ),
-  rest.get(
+  http.get(
     'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName2/projectName/repoName/:path+/content?routingId=accountId&include_commit=true&git_ref=refs/heads/branchName',
-    (_req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.set('Content-Type', 'application/json'),
-        ctx.json({ latest_commit: { sha: commitHash } }),
-      );
-    },
+    () =>
+      HttpResponse.json(
+        { latest_commit: { sha: commitHash } },
+        {
+          headers: { 'Content-Type': 'application/json' },
+        },
+      ),
   ),
-  rest.get(
+  http.get(
     'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName3/projectName/repoName/:path+/content?routingId=accountId&include_commit=true&git_ref=refs/heads/branchName',
-    (_, res, ctx) => {
-      return res(ctx.status(404));
-    },
+    () => new HttpResponse(null, { status: 404 }),
   ),
 ];
 
@@ -161,6 +163,299 @@ describe('HarnessUrlReader', () => {
   });
 
   describe('readUrl part 1', () => {
+    it('rejects non-allowlisted cross-origin redirects at any hop', async () => {
+      let receivedApiKey: string | null = null;
+      worker.use(
+        http.get(
+          'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/raw/redirect.yaml',
+          () =>
+            new HttpResponse(null, {
+              status: 302,
+              headers: { location: '/redirect-hop' },
+            }),
+        ),
+        http.get(
+          'https://app.harness.io/redirect-hop',
+          () =>
+            new HttpResponse(null, {
+              status: 302,
+              headers: { location: 'https://redirect.example/target' },
+            }),
+        ),
+        http.get('https://redirect.example/target', ({ request }) => {
+          receivedApiKey = request.headers.get('x-api-key');
+          return new HttpResponse('redirected content', { status: 200 });
+        }),
+      );
+
+      await expect(
+        apiKeyHarnessProcessor.readUrl(
+          'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/redirect.yaml',
+        ),
+      ).rejects.toThrow('Refusing to follow cross-origin Harness redirect');
+      expect(receivedApiKey).toBeNull();
+    });
+
+    it('follows same-origin redirects with the API key', async () => {
+      let receivedApiKey: string | null = null;
+      worker.use(
+        http.get(
+          'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/raw/same-origin-redirect.yaml',
+          () =>
+            new HttpResponse(null, {
+              status: 302,
+              headers: { location: '/redirect-target' },
+            }),
+        ),
+        http.get('https://app.harness.io/redirect-target', ({ request }) => {
+          receivedApiKey = request.headers.get('x-api-key');
+          return new HttpResponse('redirected content', { status: 200 });
+        }),
+      );
+
+      const response = await apiKeyHarnessProcessor.readUrl(
+        'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/same-origin-redirect.yaml',
+      );
+
+      expect((await response.buffer()).toString()).toBe('redirected content');
+      expect(receivedApiKey).toBe('harness-api-key');
+    });
+
+    it.each([
+      {
+        authType: 'API key',
+        integrationAuth: { apiKey: 'harness-api-key' },
+        sourceHeader: 'x-api-key',
+        sourceValue: 'harness-api-key',
+      },
+      {
+        authType: 'token',
+        integrationAuth: { token: 'harness-token' },
+        sourceHeader: 'authorization',
+        sourceValue: 'Bearer harness-token',
+      },
+    ])(
+      'follows allowlisted cross-origin redirects with origin-scoped $authType request options',
+      async ({ integrationAuth, sourceHeader, sourceValue }) => {
+        let receivedSourceHeader: string | null = null;
+        let receivedTargetApiKey: string | null = null;
+        let receivedTargetAuthorization: string | null = null;
+        worker.use(
+          http.get(
+            'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/raw/allowlisted-redirect.yaml',
+            ({ request }) => {
+              receivedSourceHeader = request.headers.get(sourceHeader);
+              return new HttpResponse(null, {
+                status: 302,
+                headers: {
+                  location:
+                    'https://downloads.example.com/allowlisted-target.yaml',
+                },
+              });
+            },
+          ),
+          http.get(
+            'https://downloads.example.com/allowlisted-target.yaml',
+            ({ request }) => {
+              receivedTargetApiKey = request.headers.get('x-api-key');
+              receivedTargetAuthorization =
+                request.headers.get('authorization');
+              return new HttpResponse('redirected content', { status: 200 });
+            },
+          ),
+        );
+
+        const [{ reader }] = createReader({
+          integrations: {
+            harness: [{ host: 'app.harness.io', ...integrationAuth }],
+          },
+          backend: {
+            reading: {
+              allow: [{ host: 'downloads.example.com' }],
+            },
+          },
+        });
+
+        const response = await reader.readUrl(
+          'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/allowlisted-redirect.yaml',
+        );
+
+        expect((await response.buffer()).toString()).toBe('redirected content');
+        expect(receivedSourceHeader).toBe(sourceValue);
+        expect(receivedTargetApiKey).toBeNull();
+        expect(receivedTargetAuthorization).toBeNull();
+      },
+    );
+
+    it('allows direct consumers to provide a cross-origin redirect predicate', async () => {
+      let receivedApiKey: string | null = null;
+      worker.use(
+        http.get(
+          'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/raw/direct-redirect.yaml',
+          () =>
+            new HttpResponse(null, {
+              status: 302,
+              headers: {
+                location: 'https://downloads.example.com/direct-target.yaml',
+              },
+            }),
+        ),
+        http.get(
+          'https://downloads.example.com/direct-target.yaml',
+          ({ request }) => {
+            receivedApiKey = request.headers.get('x-api-key');
+            return new HttpResponse('redirected content', { status: 200 });
+          },
+        ),
+      );
+
+      const reader = new HarnessUrlReader(
+        new HarnessIntegration(
+          readHarnessConfig(
+            new ConfigReader({
+              host: 'app.harness.io',
+              apiKey: 'harness-api-key',
+            }),
+          ),
+        ),
+        {
+          treeResponseFactory,
+          allowedRedirectPredicate: url =>
+            url.hostname === 'downloads.example.com',
+        },
+      );
+
+      const response = await reader.readUrl(
+        'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/direct-redirect.yaml',
+      );
+
+      expect((await response.buffer()).toString()).toBe('redirected content');
+      expect(receivedApiKey).toBeNull();
+    });
+
+    it.each([
+      {
+        authType: 'API key',
+        integrationAuth: { apiKey: 'harness-api-key' },
+        sourceHeader: 'x-api-key',
+        sourceValue: 'harness-api-key',
+      },
+      {
+        authType: 'token',
+        integrationAuth: { token: 'harness-token' },
+        sourceHeader: 'authorization',
+        sourceValue: 'Bearer harness-token',
+      },
+    ])(
+      'does not restore $authType after a redirect chain leaves the Harness origin',
+      async ({ integrationAuth, sourceHeader, sourceValue }) => {
+        let receivedSourceHeader: string | null = null;
+        let receivedExternalHeader: string | null = null;
+        let receivedReturnedHeader: string | null = null;
+        worker.use(
+          http.get(
+            'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/raw/out-and-back.yaml',
+            ({ request }) => {
+              receivedSourceHeader = request.headers.get(sourceHeader);
+              return new HttpResponse(null, {
+                status: 302,
+                headers: {
+                  location: 'https://downloads.example.com/redirect-hop',
+                },
+              });
+            },
+          ),
+          http.get(
+            'https://downloads.example.com/redirect-hop',
+            ({ request }) => {
+              receivedExternalHeader = request.headers.get(sourceHeader);
+              return new HttpResponse(null, {
+                status: 302,
+                headers: {
+                  location: 'https://app.harness.io/redirect-target',
+                },
+              });
+            },
+          ),
+          http.get('https://app.harness.io/redirect-target', ({ request }) => {
+            receivedReturnedHeader = request.headers.get(sourceHeader);
+            return new HttpResponse('redirected content', { status: 200 });
+          }),
+        );
+
+        const [{ reader }] = createReader({
+          integrations: {
+            harness: [{ host: 'app.harness.io', ...integrationAuth }],
+          },
+          backend: {
+            reading: {
+              allow: [{ host: 'downloads.example.com' }],
+            },
+          },
+        });
+
+        const response = await reader.readUrl(
+          'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/out-and-back.yaml',
+        );
+
+        expect((await response.buffer()).toString()).toBe('redirected content');
+        expect(receivedSourceHeader).toBe(sourceValue);
+        expect(receivedExternalHeader).toBeNull();
+        expect(receivedReturnedHeader).toBeNull();
+      },
+    );
+
+    it('follows at most five same-origin redirects', async () => {
+      worker.use(
+        http.get(
+          'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/raw/five-redirects.yaml',
+          () =>
+            new HttpResponse(null, {
+              status: 302,
+              headers: { location: '/five-redirects/1' },
+            }),
+        ),
+        http.get('https://app.harness.io/five-redirects/:hop', ({ params }) => {
+          const hop = Number(params.hop);
+          return hop === 5
+            ? new HttpResponse('redirected content', { status: 200 })
+            : new HttpResponse(null, {
+                status: 302,
+                headers: { location: `/five-redirects/${hop + 1}` },
+              });
+        }),
+        http.get(
+          'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/raw/too-many-redirects.yaml',
+          () =>
+            new HttpResponse(null, {
+              status: 302,
+              headers: { location: '/too-many-redirects/1' },
+            }),
+        ),
+        http.get(
+          'https://app.harness.io/too-many-redirects/:hop',
+          ({ params }) => {
+            const hop = Number(params.hop);
+            return new HttpResponse(null, {
+              status: 302,
+              headers: { location: `/too-many-redirects/${hop + 1}` },
+            });
+          },
+        ),
+      );
+
+      const response = await apiKeyHarnessProcessor.readUrl(
+        'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/five-redirects.yaml',
+      );
+      expect((await response.buffer()).toString()).toBe('redirected content');
+
+      await expect(
+        apiKeyHarnessProcessor.readUrl(
+          'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/too-many-redirects.yaml',
+        ),
+      ).rejects.toThrow('Too many redirects (max 5)');
+    });
+
     it('should be able to read file contents as buffer', async () => {
       const result = await harnessProcessor.readUrl(
         'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/buffer.TXT',
@@ -203,21 +498,84 @@ describe('HarnessUrlReader', () => {
       path.resolve(__dirname, '__fixtures__/mock-main.zip'),
     );
 
+    it('rejects cross-origin redirects while reading the latest commit', async () => {
+      let receivedApiKey: string | null = null;
+      worker.use(
+        http.get(
+          'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName4/projectName/repoName/:path+/content',
+          () =>
+            new HttpResponse(null, {
+              status: 302,
+              headers: { location: 'https://redirect.example/commit' },
+            }),
+        ),
+        http.get('https://redirect.example/commit', ({ request }) => {
+          receivedApiKey = request.headers.get('x-api-key');
+          return HttpResponse.json({ latest_commit: { sha: commitHash } });
+        }),
+        http.get(
+          'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName4/projectName/repoName/:path+/archive/branchName.zip',
+          () =>
+            new HttpResponse(new Uint8Array(repoBuffer), {
+              status: 200,
+              headers: { 'Content-Type': 'application/gzip' },
+            }),
+        ),
+      );
+
+      await expect(
+        apiKeyHarnessProcessor.readTree(
+          'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName4/projects/projectName/repos/repoName/files/branchName',
+        ),
+      ).rejects.toThrow('Refusing to follow cross-origin Harness redirect');
+      expect(receivedApiKey).toBeNull();
+    });
+
+    it('rejects cross-origin redirects while reading the archive', async () => {
+      let receivedApiKey: string | null = null;
+      worker.use(
+        http.get(
+          'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName5/projectName/repoName/:path+/content',
+          () => HttpResponse.json({ latest_commit: { sha: commitHash } }),
+        ),
+        http.get(
+          'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName5/projectName/repoName/:path+/archive/branchName.zip',
+          () =>
+            new HttpResponse(null, {
+              status: 302,
+              headers: { location: 'https://redirect.example/archive' },
+            }),
+        ),
+        http.get('https://redirect.example/archive', ({ request }) => {
+          receivedApiKey = request.headers.get('x-api-key');
+          return new HttpResponse(new Uint8Array(repoBuffer), {
+            status: 200,
+            headers: { 'Content-Type': 'application/gzip' },
+          });
+        }),
+      );
+
+      await expect(
+        apiKeyHarnessProcessor.readTree(
+          'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName5/projects/projectName/repos/repoName/files/branchName',
+        ),
+      ).rejects.toThrow('Refusing to follow cross-origin Harness redirect');
+      expect(receivedApiKey).toBeNull();
+    });
+
     it('should be able to get archive', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName2/projectName/repoName/:path+/archive/branchName.zip',
-          (_, res, ctx) => {
-            return res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/gzip'),
-              ctx.set(
-                'content-disposition',
-                'attachment; filename=backstage-mock.zip',
-              ),
-              ctx.body(new Uint8Array(repoBuffer)),
-            );
-          },
+          () =>
+            new HttpResponse(new Uint8Array(repoBuffer), {
+              status: 200,
+              headers: {
+                'Content-Type': 'application/gzip',
+                'content-disposition':
+                  'attachment; filename=backstage-mock.zip',
+              },
+            }),
         ),
       );
 

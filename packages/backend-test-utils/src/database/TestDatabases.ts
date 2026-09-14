@@ -49,7 +49,8 @@ export class TestDatabases {
 
   /**
    * Creates an empty `TestDatabases` instance, and sets up Jest to clean up
-   * all of its acquired resources after all tests finish.
+   * all of its acquired resources after all tests finish, with a timeout of
+   * 60 seconds for cleanup.
    *
    * You typically want to create just a single instance like this at the top
    * of your test file or `describe` block, and then call `init` many times on
@@ -104,7 +105,7 @@ export class TestDatabases {
     if (supportedIds.length > 0) {
       afterAll(async () => {
         await databases.shutdown();
-      });
+      }, 60_000);
     }
 
     return databases;

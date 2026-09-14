@@ -21,9 +21,8 @@ import { startTestBackend } from '@backstage/backend-test-utils';
 import { mockServices } from '@backstage/backend-test-utils';
 import {
   connectionsServiceRef,
-  connectionsServiceFactory,
   declareConnection,
-} from '@backstage/connections';
+} from '@backstage/connections-node';
 
 describe('connections-example-backend-module-gitlab', () => {
   const testConfig = mockServices.rootConfig.factory({
@@ -58,7 +57,7 @@ describe('connections-example-backend-module-gitlab', () => {
           async init({ connections }) {
             const conn = await connections.find({
               type: 'gitlab',
-              url: 'https://gitlab.com/my-org/my-repo',
+              query: { url: 'https://gitlab.com/my-org/my-repo' },
               authMethods: ['token'],
             });
             expect(conn.host).toBe('gitlab.com');
@@ -71,7 +70,6 @@ describe('connections-example-backend-module-gitlab', () => {
     await startTestBackend({
       features: [
         testConfig,
-        connectionsServiceFactory,
         createBackendPlugin({
           pluginId: 'test',
           register(env) {
@@ -99,7 +97,7 @@ describe('connections-example-backend-module-gitlab', () => {
             await expect(
               connections.find({
                 type: 'github',
-                url: 'https://github.com/my-org/my-repo',
+                query: { url: 'https://github.com/my-org/my-repo' },
                 authMethods: ['token'],
               }),
             ).rejects.toThrow(/undeclared connection of type "github"/);
@@ -111,7 +109,6 @@ describe('connections-example-backend-module-gitlab', () => {
     await startTestBackend({
       features: [
         testConfig,
-        connectionsServiceFactory,
         createBackendPlugin({
           pluginId: 'test',
           register(reg) {
@@ -137,7 +134,7 @@ describe('connections-example-backend-module-gitlab', () => {
           async init({ connections }) {
             const gh = await connections.find({
               type: 'github',
-              url: 'https://github.com/my-org/my-repo',
+              query: { url: 'https://github.com/my-org/my-repo' },
               authMethods: ['token'],
             });
             expect(gh.host).toBe('github.com');
@@ -145,7 +142,7 @@ describe('connections-example-backend-module-gitlab', () => {
             await expect(
               connections.find({
                 type: 'gitlab',
-                url: 'https://gitlab.com/my-org/my-repo',
+                query: { url: 'https://gitlab.com/my-org/my-repo' },
                 authMethods: ['token'],
               }),
             ).rejects.toThrow(/undeclared connection of type "gitlab"/);
@@ -166,7 +163,7 @@ describe('connections-example-backend-module-gitlab', () => {
           async init({ connections }) {
             const conn = await connections.find({
               type: 'gitlab',
-              url: 'https://gitlab.com/my-org/my-repo',
+              query: { url: 'https://gitlab.com/my-org/my-repo' },
               authMethods: ['token'],
             });
             expect(conn.host).toBe('gitlab.com');
@@ -174,7 +171,7 @@ describe('connections-example-backend-module-gitlab', () => {
             await expect(
               connections.find({
                 type: 'github',
-                url: 'https://github.com/my-org/my-repo',
+                query: { url: 'https://github.com/my-org/my-repo' },
                 authMethods: ['token'],
               }),
             ).rejects.toThrow(/undeclared connection of type "github"/);
@@ -184,7 +181,7 @@ describe('connections-example-backend-module-gitlab', () => {
     });
 
     await startTestBackend({
-      features: [testConfig, connectionsServiceFactory, testPlugin, testModule],
+      features: [testConfig, testPlugin, testModule],
     });
   });
 });

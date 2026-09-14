@@ -6,6 +6,7 @@
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogApi } from '@backstage/plugin-catalog-react';
+import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { DomainEntity } from '@backstage/catalog-model';
@@ -507,41 +508,45 @@ export type EntityContextMenuClassKey = 'button';
 
 // @public (undocumented)
 export const EntityDependencyOfComponentsCard: (
-  props: DependencyOfComponentsCardProps,
+  props:
+    | DependencyOfComponentsCardProps
+    | DependencyOfComponentsCardLegacyProps,
 ) => JSX.Element;
 
 // @public (undocumented)
 export const EntityDependsOnComponentsCard: (
-  props: DependsOnComponentsCardProps,
+  props: DependsOnComponentsCardProps | DependsOnComponentsCardLegacyProps,
 ) => JSX.Element;
 
 // @public (undocumented)
 export const EntityDependsOnResourcesCard: (
-  props: DependsOnResourcesCardProps,
+  props: DependsOnResourcesCardProps | DependsOnResourcesCardLegacyProps,
 ) => JSX.Element;
 
 // @public (undocumented)
 export const EntityHasComponentsCard: (
-  props: HasComponentsCardProps,
+  props: HasComponentsCardProps | HasComponentsCardLegacyProps,
 ) => JSX.Element;
 
 // @public (undocumented)
 export const EntityHasResourcesCard: (
-  props: HasResourcesCardProps,
+  props: HasResourcesCardProps | HasResourcesCardLegacyProps,
 ) => JSX.Element;
 
 // @public (undocumented)
 export const EntityHasSubcomponentsCard: (
-  props: HasSubcomponentsCardProps,
+  props: HasSubcomponentsCardProps | HasSubcomponentsCardLegacyProps,
 ) => JSX.Element;
 
 // @public (undocumented)
 export const EntityHasSubdomainsCard: (
-  props: HasSubdomainsCardProps,
+  props: HasSubdomainsCardProps | HasSubdomainsCardLegacyProps,
 ) => JSX.Element;
 
 // @public (undocumented)
-export const EntityHasSystemsCard: (props: HasSystemsCardProps) => JSX.Element;
+export const EntityHasSystemsCard: (
+  props: HasSystemsCardProps | HasSystemsCardLegacyProps,
+) => JSX.Element;
 
 // @public (undocumented)
 export const EntityLabelsCard: (props: EntityLabelsCardProps) => JSX_2.Element;
@@ -605,9 +610,7 @@ export interface EntityLinksCardProps {
 export type EntityLinksEmptyStateClassKey = 'code';
 
 // @public @deprecated (undocumented)
-export const EntityListContainer: (props: {
-  children: ReactNode;
-}) => JSX_2.Element;
+export const EntityListContainer: typeof CatalogFilterLayout.Content;
 
 // @public
 export function EntityOrphanWarning(): JSX_2.Element;
@@ -654,13 +657,7 @@ export interface EntitySwitchProps {
 }
 
 // @public @deprecated (undocumented)
-export const FilterContainer: (props: {
-  children: ReactNode;
-  options?: {
-    drawerBreakpoint?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | number;
-    drawerAnchor?: 'left' | 'right' | 'top' | 'bottom';
-  };
-}) => JSX_2.Element;
+export const FilterContainer: typeof CatalogFilterLayout.Filters;
 
 // @public @deprecated (undocumented)
 export const FilteredEntityLayout: (props: {

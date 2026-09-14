@@ -1,0 +1,29 @@
+import { {{processorClass}} } from './{{processorClass}}';
+
+describe('{{processorClass}}', () => {
+  it('should return the processor name', () => {
+    const processor = {{processorClass}}.fromConfig({} as any);
+
+    expect(processor.getProcessorName()).toBe('{{processorClass}}');
+  });
+
+  it('should pre-process an entity', async () => {
+    const processor = {{processorClass}}.fromConfig({} as any);
+
+    const entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: { name: 'my-component' },
+      spec: { type: 'service', lifecycle: 'production', owner: 'my-team' },
+    };
+
+    const result = await processor.preProcessEntity(
+      entity as any,
+      { type: 'url', target: 'https://example.com' },
+      jest.fn(),
+      { type: 'url', target: 'https://example.com' },
+    );
+
+    expect(result).toEqual(entity);
+  });
+});

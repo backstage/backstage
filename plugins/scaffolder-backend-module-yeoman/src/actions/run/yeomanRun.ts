@@ -15,11 +15,7 @@
  */
 
 import { JsonObject } from '@backstage/types';
-
-/*
- * This module should use '@types/yeoman-environment' eventually as soon as '@types/yeoman-environment' supports
- * the latest version of Yeoman -> 3.x. Then it will be possible to test this module with jest.
- */
+import { fileURLToPath } from 'node:url';
 
 export async function yeomanRun(
   workspace: string,
@@ -27,10 +23,25 @@ export async function yeomanRun(
   args?: string[],
   opts?: JsonObject,
 ) {
-  const yeoman = require('yeoman-environment');
-  const generator = yeoman.lookupGenerator(namespace);
-  const env = yeoman.createEnv(undefined, { cwd: workspace });
-  env.register(generator, namespace);
+  // Use dynamic import for yeoman-environment v4+ ESM compatibility
+  const { createEnv, lookupGenerator } = await import('yeoman-environment');
+  const env = createEnv({ cwd: workspace });
+  const generatorResult = lookupGenerator(namespace);
+  const generatorFile = Array.isArray(generatorResult)
+    ? generatorResult[0]
+    : generatorResult;
+
+  if (!generatorFile) {
+    throw new Error(`No Yeoman generator found for namespace "${namespace}"`);
+  }
+
+  // Convert file:// URL to absolute path if needed (v6 returns file:// URLs for absolute paths)
+  const absoluteFile = generatorFile.startsWith('file://')
+    ? fileURLToPath(generatorFile)
+    : generatorFile;
+
+  env.register(absoluteFile, { namespace });
+
   const yeomanArgs = [namespace, ...(args ?? [])];
   await env.run(yeomanArgs, opts);
 }

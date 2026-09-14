@@ -32,9 +32,9 @@ export function withDeclaredConnections(
     }
   };
   return {
-    async find(options) {
+    async find(options: Parameters<ConnectionsService['find']>[0]) {
       assertDeclared(options.type);
       return service.find(options);
     },
-  };
+  } as ConnectionsService;
 }

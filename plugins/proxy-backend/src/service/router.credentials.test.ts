@@ -25,6 +25,7 @@ import { ResponseError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import { HttpResponse, http, passthrough } from 'msw';
 import { setupServer } from 'msw/node';
+import * as nodeHttp from 'node:http';
 
 // this test is stored in its own file to work around the mocked
 // http-proxy-middleware module used in the main test file
@@ -295,4 +296,44 @@ describe('credentials', () => {
       await backend.stop();
     }
   }, 20_000);
+});
+
+describe('request path handling', () => {
+  it.each(['/api/proxy/test/../../other', '/api/proxy/test/%2e%2e/other'])(
+    'returns 400 for %s',
+    async requestPath => {
+      const backend = await startTestBackend({
+        features: [
+          import('..'),
+          mockServices.rootConfig.factory({
+            data: {
+              proxy: {
+                endpoints: {
+                  '/test': {
+                    target: 'http://target.com',
+                    credentials: 'dangerously-allow-unauthenticated',
+                  },
+                },
+              },
+            },
+          }),
+        ],
+      });
+
+      try {
+        const port = backend.server.port();
+        const status = await new Promise<number>((resolve, reject) => {
+          nodeHttp
+            .get({ hostname: 'localhost', port, path: requestPath }, res => {
+              res.resume();
+              resolve(res.statusCode!);
+            })
+            .on('error', reject);
+        });
+        expect(status).toBe(400);
+      } finally {
+        await backend.stop();
+      }
+    },
+  );
 });

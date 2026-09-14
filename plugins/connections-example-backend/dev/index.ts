@@ -16,7 +16,7 @@
 import { createBackend } from '@backstage/backend-defaults';
 import { mockServices } from '@backstage/backend-test-utils';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
-import { connectionsServiceFactory } from '@backstage/connections';
+import { connectionsServiceFactory } from '@backstage/connections-node';
 
 // Development setup for this plugin that wires up a minimal backend.
 //

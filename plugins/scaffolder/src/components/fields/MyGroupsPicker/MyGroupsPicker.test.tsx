@@ -50,7 +50,9 @@ describe('<MyGroupsPicker />', () => {
   const required = false;
 
   const catalogApi = catalogApiMock.mock({
-    getEntities: jest.fn(async () => ({ items: entities })),
+    streamEntities: jest.fn(async function* () {
+      yield entities;
+    }),
   });
 
   const mockErrorApi: jest.Mocked<ErrorApi> = {
@@ -81,7 +83,7 @@ describe('<MyGroupsPicker />', () => {
     ];
 
     onChange.mockClear();
-    catalogApi.getEntities.mockClear();
+    catalogApi.streamEntities.mockClear();
   });
 
   afterEach(() => {
@@ -96,7 +98,9 @@ describe('<MyGroupsPicker />', () => {
         entity.spec.members.includes('Bob'),
     );
 
-    catalogApi.getEntities.mockResolvedValue({ items: userGroups });
+    catalogApi.streamEntities.mockImplementation(async function* () {
+      yield userGroups;
+    });
 
     const props = {
       onChange,
@@ -122,47 +126,16 @@ describe('<MyGroupsPicker />', () => {
     );
 
     await waitFor(() =>
-      expect(catalogApi.getEntities).toHaveBeenCalledTimes(1),
+      expect(catalogApi.streamEntities).toHaveBeenCalledTimes(1),
     );
 
-    expect(catalogApi.getEntities).toHaveBeenCalledWith({
+    expect(catalogApi.streamEntities).toHaveBeenCalledWith({
+      query: {},
       filter: {
         kind: 'Group',
         'relations.hasMember': ['user:default/bob'],
       },
     });
-
-    // Check that getEntities was set up to return the correct data
-    await expect(catalogApi.getEntities.mock.results[0].value).resolves.toEqual(
-      {
-        items: [
-          {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'Group',
-            metadata: { name: 'group1' },
-            spec: { members: ['Bob'] },
-          },
-          {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'Group',
-            metadata: { name: 'group2' },
-            spec: { members: ['Bob'] },
-          },
-        ],
-      },
-    );
-
-    await expect(
-      catalogApi.getEntities.mock.results[0].value,
-    ).resolves.not.toEqual(
-      expect.objectContaining({
-        items: expect.arrayContaining([
-          expect.objectContaining({
-            metadata: { name: 'group3' },
-          }),
-        ]),
-      }),
-    );
   });
 
   it('should display the groups a user is part of and not display the groups a user is not part of', async () => {
@@ -173,7 +146,9 @@ describe('<MyGroupsPicker />', () => {
         entity.spec.members.includes('Bob'),
     );
 
-    catalogApi.getEntities.mockResolvedValue({ items: userGroups });
+    catalogApi.streamEntities.mockImplementation(async function* () {
+      yield userGroups;
+    });
 
     const props = {
       onChange,
@@ -199,7 +174,7 @@ describe('<MyGroupsPicker />', () => {
     );
 
     await waitFor(() =>
-      expect(catalogApi.getEntities).toHaveBeenCalledTimes(1),
+      expect(catalogApi.streamEntities).toHaveBeenCalledTimes(1),
     );
 
     // Simulate user input
@@ -235,7 +210,9 @@ describe('<MyGroupsPicker />', () => {
       },
     ];
 
-    catalogApi.getEntities.mockResolvedValue({ items: userGroups });
+    catalogApi.streamEntities.mockImplementation(async function* () {
+      yield userGroups;
+    });
 
     const props = {
       onChange,
@@ -261,7 +238,7 @@ describe('<MyGroupsPicker />', () => {
     );
 
     await waitFor(() =>
-      expect(catalogApi.getEntities).toHaveBeenCalledTimes(1),
+      expect(catalogApi.streamEntities).toHaveBeenCalledTimes(1),
     );
 
     const inputField = getByRole('combobox');
@@ -299,7 +276,9 @@ describe('<MyGroupsPicker />', () => {
       },
     ];
 
-    catalogApi.getEntities.mockResolvedValue({ items: userGroups });
+    catalogApi.streamEntities.mockImplementation(async function* () {
+      yield userGroups;
+    });
 
     const props = {
       onChange,
@@ -326,7 +305,7 @@ describe('<MyGroupsPicker />', () => {
     );
 
     await waitFor(() =>
-      expect(catalogApi.getEntities).toHaveBeenCalledTimes(1),
+      expect(catalogApi.streamEntities).toHaveBeenCalledTimes(1),
     );
 
     const inputField = getByRole('combobox');

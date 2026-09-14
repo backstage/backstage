@@ -21,7 +21,6 @@ import { AwsCodeCommitUrlReader, parseUrl } from './AwsCodeCommitUrlReader';
 import { UrlReaderPredicateTuple } from './types';
 import path from 'node:path';
 import { NotModifiedError } from '@backstage/errors';
-import { mockClient } from 'aws-sdk-client-mock';
 import {
   CodeCommitClient,
   GetFileCommand,
@@ -34,6 +33,8 @@ import {
   readAwsCodeCommitIntegrationConfig,
 } from '@backstage/integration';
 import { mockServices } from '@backstage/backend-test-utils';
+
+const codeCommitSendMock = jest.fn();
 
 const AMAZON_AWS_CODECOMMIT_HOST = 'console.aws.amazon.com';
 
@@ -197,7 +198,10 @@ describe('parseUrl', () => {
 });
 
 describe('AwsCodeCommitUrlReader', () => {
-  const codeCommitClient = mockClient(CodeCommitClient);
+  afterEach(() => {
+    jest.restoreAllMocks();
+    codeCommitSendMock.mockReset();
+  });
 
   const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
     return AwsCodeCommitUrlReader.factory({
@@ -377,15 +381,21 @@ describe('AwsCodeCommitUrlReader', () => {
     });
 
     beforeEach(() => {
-      codeCommitClient.reset();
-
-      codeCommitClient.on(GetFileCommand).resolves({
-        fileContent: fs.readFileSync(
-          path.resolve(
-            __dirname,
-            '__fixtures__/awsCodeCommit/awsCodeCommit-mock-object.yaml',
-          ),
-        ),
+      jest
+        .spyOn(CodeCommitClient.prototype, 'send')
+        .mockImplementation(codeCommitSendMock);
+      codeCommitSendMock.mockImplementation(async command => {
+        if (command instanceof GetFileCommand) {
+          return {
+            fileContent: fs.readFileSync(
+              path.resolve(
+                __dirname,
+                '__fixtures__/awsCodeCommit/awsCodeCommit-mock-object.yaml',
+              ),
+            ),
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
       });
     });
 
@@ -422,16 +432,22 @@ describe('AwsCodeCommitUrlReader', () => {
     });
 
     beforeEach(() => {
-      codeCommitClient.reset();
-
-      codeCommitClient.on(GetFileCommand).resolves({
-        fileContent: fs.readFileSync(
-          path.resolve(
-            __dirname,
-            '__fixtures__/awsCodeCommit/awsCodeCommit-mock-object.yaml',
-          ),
-        ),
-        commitId: `123abc`,
+      jest
+        .spyOn(CodeCommitClient.prototype, 'send')
+        .mockImplementation(codeCommitSendMock);
+      codeCommitSendMock.mockImplementation(async command => {
+        if (command instanceof GetFileCommand) {
+          return {
+            fileContent: fs.readFileSync(
+              path.resolve(
+                __dirname,
+                '__fixtures__/awsCodeCommit/awsCodeCommit-mock-object.yaml',
+              ),
+            ),
+            commitId: `123abc`,
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
       });
     });
 
@@ -478,20 +494,26 @@ describe('AwsCodeCommitUrlReader', () => {
     });
 
     beforeEach(() => {
-      codeCommitClient.reset();
-
-      codeCommitClient.on(GetFileCommand).resolves({
-        fileContent: fs.readFileSync(
-          path.resolve(
-            __dirname,
-            '__fixtures__/awsCodeCommit/awsCodeCommit-mock-object.yaml',
-          ),
-        ),
-        commitId: `123abc`,
-        blobId: '999',
-        filePath: 'catalog.yaml',
-        fileMode: 'EXECUTABLE',
-        fileSize: 123,
+      jest
+        .spyOn(CodeCommitClient.prototype, 'send')
+        .mockImplementation(codeCommitSendMock);
+      codeCommitSendMock.mockImplementation(async command => {
+        if (command instanceof GetFileCommand) {
+          return {
+            fileContent: fs.readFileSync(
+              path.resolve(
+                __dirname,
+                '__fixtures__/awsCodeCommit/awsCodeCommit-mock-object.yaml',
+              ),
+            ),
+            commitId: `123abc`,
+            blobId: '999',
+            filePath: 'catalog.yaml',
+            fileMode: 'EXECUTABLE',
+            fileSize: 123,
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
       });
     });
 
@@ -511,71 +533,76 @@ describe('AwsCodeCommitUrlReader', () => {
     let awsCodeCommitUrlReader: AwsCodeCommitUrlReader;
 
     beforeEach(() => {
-      codeCommitClient.reset();
-
-      codeCommitClient
-        .on(GetFolderCommand, {
-          folderPath: `/`,
-          repositoryName: `my-test-techdocs`,
-          commitSpecifier: undefined,
-        })
-        .resolves({
-          files: [
-            {
-              absolutePath: `awsCodeCommit-mock-object.yaml`,
-              relativePath: `awsCodeCommit-mock-object.yaml`,
-            },
-          ],
-          subFolders: [
-            {
-              absolutePath: `subFolder`,
-              relativePath: `subFolder`,
-            },
-          ],
-        });
-      codeCommitClient
-        .on(GetFolderCommand, {
-          folderPath: `subFolder`,
-          repositoryName: `my-test-techdocs`,
-          commitSpecifier: undefined,
-        })
-        .resolves({
-          files: [
-            {
-              absolutePath: `subFolder/awsCodeCommit-mock-object2.yaml`,
-              relativePath: `subFolder/awsCodeCommit-mock-object2.yaml`,
-            },
-          ],
-        });
-
-      codeCommitClient
-        .on(GetFileCommand, {
-          filePath: `awsCodeCommit-mock-object.yaml`,
-          commitSpecifier: undefined,
-          repositoryName: `my-test-techdocs`,
-        })
-        .resolves({
-          fileContent: fs.readFileSync(
-            path.resolve(
-              __dirname,
-              '__fixtures__/awsCodeCommit/awsCodeCommit-mock-object.yaml',
-            ),
-          ),
-        });
-      codeCommitClient
-        .on(GetFileCommand, {
-          filePath: `subFolder/awsCodeCommit-mock-object2.yaml`,
-          commitSpecifier: undefined,
-          repositoryName: `my-test-techdocs`,
-        })
-        .resolves({
-          fileContent: fs.readFileSync(
-            path.resolve(
-              __dirname,
-              '__fixtures__/awsCodeCommit/subFolder/awsCodeCommit-mock-object2.yaml',
-            ),
-          ),
-        });
+      jest
+        .spyOn(CodeCommitClient.prototype, 'send')
+        .mockImplementation(codeCommitSendMock);
+      codeCommitSendMock.mockImplementation(async command => {
+        if (command instanceof GetFolderCommand) {
+          const input = command.input;
+          if (
+            input.repositoryName === 'my-test-techdocs' &&
+            input.folderPath === '/'
+          ) {
+            return {
+              files: [
+                {
+                  absolutePath: `awsCodeCommit-mock-object.yaml`,
+                  relativePath: `awsCodeCommit-mock-object.yaml`,
+                },
+              ],
+              subFolders: [
+                {
+                  absolutePath: `subFolder`,
+                  relativePath: `subFolder`,
+                },
+              ],
+            };
+          }
+          if (
+            input.repositoryName === 'my-test-techdocs' &&
+            input.folderPath === 'subFolder'
+          ) {
+            return {
+              files: [
+                {
+                  absolutePath: `subFolder/awsCodeCommit-mock-object2.yaml`,
+                  relativePath: `subFolder/awsCodeCommit-mock-object2.yaml`,
+                },
+              ],
+            };
+          }
+        }
+        if (command instanceof GetFileCommand) {
+          const input = command.input;
+          if (
+            input.repositoryName === 'my-test-techdocs' &&
+            input.filePath === 'awsCodeCommit-mock-object.yaml'
+          ) {
+            return {
+              fileContent: fs.readFileSync(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsCodeCommit/awsCodeCommit-mock-object.yaml',
+                ),
+              ),
+            };
+          }
+          if (
+            input.repositoryName === 'my-test-techdocs' &&
+            input.filePath === 'subFolder/awsCodeCommit-mock-object2.yaml'
+          ) {
+            return {
+              fileContent: fs.readFileSync(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsCodeCommit/subFolder/awsCodeCommit-mock-object2.yaml',
+                ),
+              ),
+            };
+          }
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
+      });
 
       const config = new ConfigReader({
         accessKeyId: 'fake-access-key',
@@ -607,6 +634,60 @@ describe('AwsCodeCommitUrlReader', () => {
       expect(bodyRootFile.toString().trim()).toBe('site_name: Test');
       expect(bodySubfolderFile.toString().trim()).toBe('site_name: Test2');
     });
+
+    it.each([
+      ['literal dot-dot', 'uploads/../awsCodeCommit-mock-object.yaml'],
+      ['backslash', 'uploads\\../awsCodeCommit-mock-object.yaml'],
+      ['encoded dot-dot', 'uploads/%2e%2e/awsCodeCommit-mock-object.yaml'],
+      ['mixed encoded', 'uploads/.%2e/awsCodeCommit-mock-object.yaml'],
+      ['uppercase encoded', 'uploads/%2E%2E/awsCodeCommit-mock-object.yaml'],
+    ])(
+      'filters out files with %s path traversal segments',
+      async (_label, maliciousPath) => {
+        codeCommitSendMock.mockImplementation(async command => {
+          if (command instanceof GetFolderCommand) {
+            const input = command.input;
+            if (
+              input.repositoryName === 'my-test-techdocs' &&
+              input.folderPath === '/'
+            ) {
+              return {
+                files: [
+                  {
+                    absolutePath: 'awsCodeCommit-mock-object.yaml',
+                    relativePath: 'awsCodeCommit-mock-object.yaml',
+                  },
+                  {
+                    absolutePath: maliciousPath,
+                    relativePath: maliciousPath,
+                  },
+                ],
+                subFolders: [],
+              };
+            }
+          }
+          if (command instanceof GetFileCommand) {
+            return {
+              fileContent: fs.readFileSync(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsCodeCommit/awsCodeCommit-mock-object.yaml',
+                ),
+              ),
+            };
+          }
+          throw new Error(`No mock for ${command.constructor.name}`);
+        });
+
+        const response = await awsCodeCommitUrlReader.readTree(
+          'https://fakeregion.console.aws.amazon.com/codesuite/codecommit/repositories/my-test-techdocs',
+        );
+        const files = await response.files();
+
+        expect(files).toHaveLength(1);
+        expect(files[0].path).toBe('awsCodeCommit-mock-object.yaml');
+      },
+    );
   });
 
   describe('search', () => {
@@ -624,16 +705,22 @@ describe('AwsCodeCommitUrlReader', () => {
     });
 
     beforeEach(() => {
-      codeCommitClient.reset();
-
-      codeCommitClient.on(GetFileCommand).resolves({
-        fileContent: fs.readFileSync(
-          path.resolve(
-            __dirname,
-            '__fixtures__/awsCodeCommit/awsCodeCommit-mock-object.yaml',
-          ),
-        ),
-        commitId: `123abc`,
+      jest
+        .spyOn(CodeCommitClient.prototype, 'send')
+        .mockImplementation(codeCommitSendMock);
+      codeCommitSendMock.mockImplementation(async command => {
+        if (command instanceof GetFileCommand) {
+          return {
+            fileContent: fs.readFileSync(
+              path.resolve(
+                __dirname,
+                '__fixtures__/awsCodeCommit/awsCodeCommit-mock-object.yaml',
+              ),
+            ),
+            commitId: `123abc`,
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
       });
     });
 
@@ -658,6 +745,117 @@ describe('AwsCodeCommitUrlReader', () => {
           'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-repo/browse/--/catalog-*.yaml',
         ),
       ).rejects.toThrow('Unsupported search pattern URL');
+    });
+  });
+
+  describe('buildCredentials with roleArn', () => {
+    let getCredProviderMock: jest.SpyInstance;
+
+    beforeEach(() => {
+      getCredProviderMock = jest.spyOn(
+        DefaultAwsCredentialsManager.prototype,
+        'getCredentialProvider',
+      );
+      jest
+        .spyOn(CodeCommitClient.prototype, 'send')
+        .mockImplementation(codeCommitSendMock);
+      codeCommitSendMock.mockReset();
+      codeCommitSendMock.mockImplementation(async command => {
+        if (command instanceof GetFileCommand) {
+          return {
+            fileContent: Buffer.from('site_name: Test\n'),
+            commitId: 'abc123',
+            filePath: 'catalog-info.yaml',
+            fileMode: 'NORMAL',
+            fileSize: 16,
+            blobId: 'blob1',
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
+      });
+    });
+
+    it('uses account-specific credentials as master credentials when account config exists for the role ARN', async () => {
+      const accountCreds = {
+        accessKeyId: 'account-key',
+        secretAccessKey: 'account-secret',
+      };
+      getCredProviderMock.mockImplementation(async (opts?: any) => {
+        if (opts?.arn) {
+          return {
+            accountId: '123456789012',
+            sdkCredentialProvider: async () => accountCreds,
+          };
+        }
+        return {
+          sdkCredentialProvider: async () => ({
+            accessKeyId: 'default-key',
+            secretAccessKey: 'default-secret',
+          }),
+        };
+      });
+
+      const config = new ConfigReader({
+        host: AMAZON_AWS_CODECOMMIT_HOST,
+        region: 'us-east-1',
+        roleArn: 'arn:aws:iam::123456789012:role/MyRole',
+      });
+
+      const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
+      const reader = new AwsCodeCommitUrlReader(
+        credsManager,
+        new AwsCodeCommitIntegration(
+          readAwsCodeCommitIntegrationConfig(config),
+        ),
+        { treeResponseFactory },
+      );
+
+      await reader.readUrl(
+        'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-repo/browse/--/catalog-info.yaml',
+      );
+
+      expect(getCredProviderMock).toHaveBeenCalledWith({
+        arn: 'arn:aws:iam::123456789012:role/MyRole',
+      });
+    });
+
+    it('falls back to default credentials when no account config exists for the role ARN', async () => {
+      const defaultCreds = {
+        accessKeyId: 'default-key',
+        secretAccessKey: 'default-secret',
+      };
+      getCredProviderMock.mockImplementation(async (opts?: any) => {
+        if (opts?.arn) {
+          throw new Error('No matching account');
+        }
+        return {
+          sdkCredentialProvider: async () => defaultCreds,
+        };
+      });
+
+      const config = new ConfigReader({
+        host: AMAZON_AWS_CODECOMMIT_HOST,
+        region: 'us-east-1',
+        roleArn: 'arn:aws:iam::123456789012:role/MyRole',
+      });
+
+      const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
+      const reader = new AwsCodeCommitUrlReader(
+        credsManager,
+        new AwsCodeCommitIntegration(
+          readAwsCodeCommitIntegrationConfig(config),
+        ),
+        { treeResponseFactory },
+      );
+
+      await reader.readUrl(
+        'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-repo/browse/--/catalog-info.yaml',
+      );
+
+      expect(getCredProviderMock).toHaveBeenCalledWith({
+        arn: 'arn:aws:iam::123456789012:role/MyRole',
+      });
+      expect(getCredProviderMock).toHaveBeenCalledWith();
     });
   });
 });

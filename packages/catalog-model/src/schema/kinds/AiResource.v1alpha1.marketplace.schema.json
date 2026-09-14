@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "AiResourceV1alpha1Marketplace",
+  "description": "An AI resource of type 'marketplace', representing a curated registry of plugins for discovery and distribution.",
+  "examples": [
+    {
+      "apiVersion": "backstage.io/v1alpha1",
+      "kind": "AiResource",
+      "metadata": {
+        "name": "company-ai-tools",
+        "description": "Company marketplace for AI coding tools"
+      },
+      "spec": {
+        "type": "marketplace",
+        "lifecycle": "production",
+        "owner": "ai-platform-team",
+        "system": "ai-tooling",
+        "plugins": ["airesource:default/code-review-plugin"],
+        "version": "1.0.0"
+      }
+    }
+  ],
+  "allOf": [
+    {
+      "$ref": "Entity"
+    },
+    {
+      "type": "object",
+      "required": ["spec"],
+      "properties": {
+        "apiVersion": {
+          "enum": ["backstage.io/v1alpha1"]
+        },
+        "kind": {
+          "enum": ["AiResource"]
+        },
+        "spec": {
+          "type": "object",
+          "required": ["type", "lifecycle", "owner", "plugins"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["marketplace"],
+              "description": "The type of AI resource."
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "The lifecycle state of the AI resource.",
+              "examples": ["experimental", "production", "deprecated"],
+              "minLength": 1
+            },
+            "owner": {
+              "type": "string",
+              "description": "An entity reference to the owner of the AI resource.",
+              "examples": ["ai-platform-team", "user:john.johnson"],
+              "minLength": 1
+            },
+            "system": {
+              "type": "string",
+              "description": "An entity reference to the system that the AI resource belongs to.",
+              "minLength": 1
+            },
+            "plugins": {
+              "type": "array",
+              "description": "Entity references to plugins available in this marketplace.",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "version": {
+              "type": "string",
+              "description": "The version of the marketplace.",
+              "examples": ["1.0.0", "2.1.0-beta.1"],
+              "minLength": 1
+            }
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,5 +1,18 @@
 # @backstage/plugin-permission-common
 
+## 0.9.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+
+## 0.9.10
+
+### Patch Changes
+
+- b754e32: Migrated tests from MSW v1 to MSW v2.
+
 ## 0.9.9
 
 ### Patch Changes

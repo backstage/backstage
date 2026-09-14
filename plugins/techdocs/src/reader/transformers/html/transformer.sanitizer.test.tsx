@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import DOMPurify from 'dompurify';
 import { FC, PropsWithChildren } from 'react';
 import { renderHook } from '@testing-library/react';
 
@@ -173,5 +174,55 @@ describe('Transformers > Html > Sanitizer Custom Elements', () => {
     expect(clearDom.textContent).toContain('JS 3 (whitespace)');
     expect(clearDom.textContent).toContain('JS 4 (mixed case)');
     expect(clearDom.textContent).toContain('JS 5 (entity-encoded colon)');
+  });
+
+  it('does not inherit hooks registered on the global DOMPurify singleton', async () => {
+    // Regression test for https://github.com/backstage/backstage/issues/34037
+    //
+    // Swagger UI (and similar plugins) register a global `afterSanitizeAttributes` hook on
+    // the DOMPurify singleton that mutates elements — e.g. setting `opacity: 0` — which
+    // previously bled into TechDocs sanitization because we were using the shared singleton.
+    // The fix creates a fresh, isolated DOMPurify instance per `useSanitizerTransformer` hook instance so that
+    // hooks from other plugins cannot pollute it.
+
+    // Simulate a global hook that mutates both the root HTML element and links/anchors.
+    const hook = (node: Element) => {
+      if (node.tagName === 'HTML') {
+        (node as HTMLElement).style.opacity = '0';
+      }
+      if (node.tagName === 'LINK' || node.tagName === 'A') {
+        node.setAttribute('rel', 'noopener noreferrer');
+      }
+    };
+    DOMPurify.addHook('afterSanitizeAttributes', hook);
+
+    try {
+      const { result } = renderHook(() => useSanitizerTransformer(), {
+        wrapper,
+      });
+      const dirtyDom = document.createElement('html');
+      dirtyDom.innerHTML = `
+        <head>
+          <link rel="stylesheet" href="main.484c7ddc.min.css">
+        </head>
+        <body>
+          <a href="https://example.com">Example</a>
+        </body>
+      `;
+
+      const cleanDom = await result.current(dirtyDom);
+      const link = cleanDom.querySelector<HTMLLinkElement>('link');
+      const anchor = cleanDom.querySelector<HTMLAnchorElement>('a');
+
+      // The globally-registered hook must NOT have touched the TechDocs output.
+      expect((cleanDom as HTMLElement).style.opacity).not.toBe('0');
+      expect(link).not.toBeNull();
+      expect(link!.getAttribute('rel')).toBe('stylesheet');
+      expect(anchor).not.toBeNull();
+      expect(anchor!.getAttribute('rel')).not.toBe('noopener noreferrer');
+    } finally {
+      // Cleanup: remove the hook we added so other tests are unaffected.
+      DOMPurify.removeHook('afterSanitizeAttributes');
+    }
   });
 });

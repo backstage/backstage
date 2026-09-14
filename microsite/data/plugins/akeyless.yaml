@@ -1,0 +1,11 @@
+---
+title: Akeyless
+author: Akeyless
+authorUrl: https://www.akeyless.io
+category: Security
+description: Browse Akeyless secrets linked to catalog entities, with optional static-secret CRUD via the companion backend plugin.
+documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/akeyless/plugins/akeyless
+iconUrl: /img/akeyless-logo.png
+npmPackageName: '@backstage-community/plugin-akeyless'
+addedDate: '2026-07-28'
+status: active

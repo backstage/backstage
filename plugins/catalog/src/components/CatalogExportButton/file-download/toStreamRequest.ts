@@ -28,11 +28,11 @@ function isBackendFilter(f: any): f is { getCatalogFilters: () => any } {
 }
 
 function isEntityTextFilter(f: any): f is EntityTextFilter {
-  return !!(f as EntityTextFilter).getFullTextFilters;
+  return typeof f?.getFullTextFilters === 'function';
 }
 
 function isEntityOrderFilter(f: any): f is EntityOrderFilter {
-  return !!(f as EntityOrderFilter).getOrderFilters;
+  return typeof f?.getOrderFilters === 'function';
 }
 
 function getBackendFilterObject(
@@ -71,7 +71,11 @@ function getBackendFilterObject(
 export const toStreamRequest = (
   filters: DefaultEntityFilters,
 ): StreamEntitiesRequest | undefined => {
-  const backendFilters = Object.values(filters)
+  const filterValues = Object.values(filters).filter(
+    (f): f is NonNullable<typeof f> => f !== null && f !== undefined,
+  );
+
+  const backendFilters = filterValues
     .flatMap(f => {
       if (isBackendFilter(f)) {
         const backendFilter = f.getCatalogFilters();
@@ -83,11 +87,11 @@ export const toStreamRequest = (
       return { ...acc, ...getBackendFilterObject(f) };
     }, {} as Record<string, string | string[]>);
 
-  const fullTextFilter = Object.values(filters)
+  const fullTextFilter = filterValues
     .find(isEntityTextFilter)
     ?.getFullTextFilters();
 
-  const orderFieldsFilter = Object.values(filters).find(isEntityOrderFilter);
+  const orderFieldsFilter = filterValues.find(isEntityOrderFilter);
   const orderFields = orderFieldsFilter
     ? (orderFieldsFilter.getOrderFilters() as EntityOrderQuery)
     : undefined;

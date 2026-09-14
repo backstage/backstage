@@ -256,7 +256,7 @@ notificationService.send({
   recipients: { type: 'entity', entityRef: 'group/default:team-a' },
   payload: {
     title: 'Notification',
-    description: 'Description'
+    description: 'Description',
     metadata: {
       'backstage.io/body.markdown': `
         ### Notification

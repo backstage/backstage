@@ -44,7 +44,7 @@ informed on the decisions we've made and why we've made them.
 ## 🛠 Our Practice
 
 The chart below details how we work. We have a
-[Figma workspace for Backstage Open Source](figma.md), and we plan on
+[Figma UI kit](./figma.md), and we are
 referencing Figma documents to share specs and prototypes with the community.
 
 ### Creating a New Design Component
@@ -120,8 +120,8 @@ picked up by our team as something to be added to our design system.
 components. If you’d like to help build up our design system, you can also add
 components we’ve designed to the Storybook as well.
 
-**[Figma](https://www.figma.com/@backstage)** - we're stoked to be using Figma
-Community to share our design assets. You can duplicate our UI Kit and design
+**[Figma](./figma.md)** - we're excited to be using Figma
+Community to share our design assets. You can duplicate our UI kit and design
 your own plugin for Backstage.
 
 **[Discord](https://discord.gg/backstage-687207715902193673)** - all design questions should be

@@ -18,6 +18,7 @@ export const auth0Authenticator: OAuthAuthenticator<
     audience: string | undefined;
     connection: string | undefined;
     connectionScope: string | undefined;
+    prompt: string;
     domain: string;
     clientID: string;
     federated: boolean;
@@ -39,6 +40,7 @@ export function createAuth0Authenticator(options?: {
     audience: string | undefined;
     connection: string | undefined;
     connectionScope: string | undefined;
+    prompt: string;
     domain: string;
     clientID: string;
     federated: boolean;

@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-connections-node
+  title: '@backstage/connections-node'
+  description: Node.js service implementation for the Backstage connections framework
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: framework-maintainers

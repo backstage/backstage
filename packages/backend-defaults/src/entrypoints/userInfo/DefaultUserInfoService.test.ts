@@ -21,7 +21,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { JsonObject } from '@backstage/types';
 import { SignJWT, base64url, importJWK } from 'jose';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { InternalBackstageCredentials } from '../auth/types';
 import { DefaultUserInfoService } from './DefaultUserInfoService';
@@ -90,9 +90,11 @@ describe('DefaultUserInfoService', () => {
     } as InternalBackstageCredentials<BackstageUserPrincipal>;
 
     server.use(
-      rest.get('https://example.com/api/auth/v1/userinfo', (req, res, ctx) => {
-        expect(req.headers.get('authorization')).toBe(`Bearer ${token}`);
-        return res(ctx.json({ claims: { ent: ['group:default/my-team'] } }));
+      http.get('https://example.com/api/auth/v1/userinfo', ({ request }) => {
+        expect(request.headers.get('authorization')).toBe(`Bearer ${token}`);
+        return HttpResponse.json({
+          claims: { ent: ['group:default/my-team'] },
+        });
       }),
     );
 
@@ -154,8 +156,8 @@ describe('DefaultUserInfoService', () => {
     } as InternalBackstageCredentials<BackstageUserPrincipal>;
 
     server.use(
-      rest.get('https://example.com/api/auth/v1/userinfo', (_req, res, ctx) => {
-        return res(ctx.status(404));
+      http.get('https://example.com/api/auth/v1/userinfo', () => {
+        return new HttpResponse(null, { status: 404 });
       }),
     );
 

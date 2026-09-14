@@ -28,8 +28,20 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 describe('resourcesRoutes', () => {
   let app: ExtendedHttpServer;
+  let auditor: ReturnType<typeof mockServices.auditor.mock>;
+  let auditEvent: { success: jest.Mock; fail: jest.Mock };
+
+  const setupAuditorMock = () => {
+    auditor = mockServices.auditor.mock();
+    auditEvent = {
+      success: jest.fn().mockResolvedValue(undefined),
+      fail: jest.fn().mockResolvedValue(undefined),
+    };
+    auditor.createEvent.mockResolvedValue(auditEvent);
+  };
 
   const startPermissionDeniedTestServer = async () => {
+    setupAuditorMock();
     const { server } = await startTestBackend({
       features: [
         mockServices.rootConfig.factory({
@@ -40,6 +52,7 @@ describe('resourcesRoutes', () => {
             },
           },
         }),
+        auditor.factory,
         mockServices.permissions.factory({ result: AuthorizeResult.DENY }),
         import('@backstage/plugin-kubernetes-backend'),
       ],
@@ -48,6 +61,7 @@ describe('resourcesRoutes', () => {
   };
 
   beforeEach(async () => {
+    setupAuditorMock();
     const objectsProviderMock = {
       getKubernetesObjectsByEntity: jest.fn().mockImplementation(args => {
         if (args.entity.metadata.name === 'inject500') {
@@ -127,6 +141,7 @@ describe('resourcesRoutes', () => {
             },
           },
         }),
+        auditor.factory,
         import('@backstage/plugin-kubernetes-backend'),
         import('@backstage/plugin-permission-backend'),
         import('@backstage/plugin-permission-backend-module-allow-all-policy'),
@@ -158,7 +173,7 @@ describe('resourcesRoutes', () => {
       await request(app)
         .post('/api/kubernetes/resources/workloads/query')
         .send({
-          entityRef: 'kind:namespacec/someComponent',
+          entityRef: 'kind:namespace/someComponent',
           auth: {
             google: 'something',
           },
@@ -179,6 +194,16 @@ describe('resourcesRoutes', () => {
             },
           ],
         });
+      expect(auditor.createEvent).toHaveBeenCalledWith({
+        eventId: 'resource-fetch',
+        request: expect.anything(),
+        meta: {
+          queryType: 'workloads',
+          entityRef: 'kind:namespace/someComponent',
+        },
+      });
+      expect(auditEvent.success).toHaveBeenCalled();
+      expect(auditEvent.fail).not.toHaveBeenCalled();
     });
     // eslint-disable-next-line jest/expect-expect
     it('400 when missing entity ref', async () => {
@@ -300,8 +325,17 @@ describe('resourcesRoutes', () => {
         '/api/kubernetes/resources/workloads/query',
       );
       expect(response.status).toEqual(403);
+      expect(auditor.createEvent).toHaveBeenCalledWith({
+        eventId: 'resource-fetch',
+        request: expect.anything(),
+        meta: {
+          queryType: 'workloads',
+          entityRef: undefined,
+        },
+      });
+      expect(auditEvent.fail).toHaveBeenCalled();
+      expect(auditEvent.success).not.toHaveBeenCalled();
     });
-    // eslint-disable-next-line jest/expect-expect
     it('500 handle gracefully', async () => {
       await request(app)
         .post('/api/kubernetes/resources/workloads/query')
@@ -323,6 +357,45 @@ describe('resourcesRoutes', () => {
           },
           response: { statusCode: 500 },
         });
+      expect(auditEvent.fail).toHaveBeenCalled();
+      expect(auditEvent.success).not.toHaveBeenCalled();
+    });
+    it('creates audit event before failing when request body is absent', async () => {
+      const response = await request(app).post(
+        '/api/kubernetes/resources/workloads/query',
+      );
+
+      expect(response.status).toEqual(400);
+      expect(auditor.createEvent).toHaveBeenCalledWith({
+        eventId: 'resource-fetch',
+        request: expect.anything(),
+        meta: {
+          queryType: 'workloads',
+          entityRef: undefined,
+        },
+      });
+      expect(auditEvent.fail).toHaveBeenCalled();
+      expect(auditEvent.success).not.toHaveBeenCalled();
+    });
+
+    it('returns 200 when audit success emission rejects', async () => {
+      auditEvent.success.mockRejectedValueOnce(
+        new Error('workloads audit failed'),
+      );
+
+      const response = await request(app)
+        .post('/api/kubernetes/resources/workloads/query')
+        .send({
+          entityRef: 'kind:namespace/someComponent',
+          auth: {
+            google: 'something',
+          },
+        })
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toEqual(200);
+      expect(auditEvent.success).toHaveBeenCalled();
+      expect(auditEvent.fail).not.toHaveBeenCalled();
     });
   });
   describe('POST /resources/custom/query', () => {
@@ -359,6 +432,16 @@ describe('resourcesRoutes', () => {
             },
           ],
         });
+      expect(auditor.createEvent).toHaveBeenCalledWith({
+        eventId: 'resource-fetch',
+        request: expect.anything(),
+        meta: {
+          queryType: 'custom',
+          entityRef: 'component:someComponent',
+        },
+      });
+      expect(auditEvent.success).toHaveBeenCalled();
+      expect(auditEvent.fail).not.toHaveBeenCalled();
     });
     // eslint-disable-next-line jest/expect-expect
     it('400 when missing custom resources', async () => {
@@ -586,8 +669,17 @@ describe('resourcesRoutes', () => {
         '/api/kubernetes/resources/custom/query',
       );
       expect(response.status).toEqual(403);
+      expect(auditor.createEvent).toHaveBeenCalledWith({
+        eventId: 'resource-fetch',
+        request: expect.anything(),
+        meta: {
+          queryType: 'custom',
+          entityRef: undefined,
+        },
+      });
+      expect(auditEvent.fail).toHaveBeenCalled();
+      expect(auditEvent.success).not.toHaveBeenCalled();
     });
-    // eslint-disable-next-line jest/expect-expect
     it('500 handle gracefully', async () => {
       await request(app)
         .post('/api/kubernetes/resources/custom/query')
@@ -616,6 +708,35 @@ describe('resourcesRoutes', () => {
           },
           response: { statusCode: 500 },
         });
+      expect(auditEvent.fail).toHaveBeenCalled();
+      expect(auditEvent.success).not.toHaveBeenCalled();
+    });
+
+    it('returns 200 when audit success emission rejects', async () => {
+      auditEvent.success.mockRejectedValueOnce(
+        new Error('custom audit failed'),
+      );
+
+      const response = await request(app)
+        .post('/api/kubernetes/resources/custom/query')
+        .send({
+          entityRef: 'component:someComponent',
+          auth: {
+            google: 'something',
+          },
+          customResources: [
+            {
+              group: 'someGroup',
+              apiVersion: 'someApiVersion',
+              plural: 'somePlural',
+            },
+          ],
+        })
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toEqual(200);
+      expect(auditEvent.success).toHaveBeenCalled();
+      expect(auditEvent.fail).not.toHaveBeenCalled();
     });
   });
 });

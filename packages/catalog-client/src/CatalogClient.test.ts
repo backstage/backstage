@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { CatalogClient } from './CatalogClient';
 import {
@@ -71,8 +71,8 @@ describe('CatalogClient', () => {
 
     beforeEach(() => {
       server.use(
-        rest.get(`${mockBaseUrl}/entities`, (_, res, ctx) => {
-          return res(ctx.json(defaultServiceResponse));
+        http.get(`${mockBaseUrl}/entities`, () => {
+          return HttpResponse.json(defaultServiceResponse);
         }),
       );
     });
@@ -86,14 +86,14 @@ describe('CatalogClient', () => {
       expect.assertions(2);
 
       server.use(
-        rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          const queryParams = new URLSearchParams(req.url.search);
+        http.get(`${mockBaseUrl}/entities`, ({ request }) => {
+          const queryParams = new URLSearchParams(new URL(request.url).search);
           expect(queryParams.getAll('filter')).toEqual([
             'a=1,b=2,b=3,ö==',
             'a=2',
             'c',
           ]);
-          return res(ctx.json([]));
+          return HttpResponse.json([]);
         }),
       );
 
@@ -123,10 +123,10 @@ describe('CatalogClient', () => {
       expect.assertions(2);
 
       server.use(
-        rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          const queryParams = new URLSearchParams(req.url.search);
+        http.get(`${mockBaseUrl}/entities`, ({ request }) => {
+          const queryParams = new URLSearchParams(new URL(request.url).search);
           expect(queryParams.getAll('filter')).toEqual(['a=1,b=2,b=3,ö==,c']);
-          return res(ctx.json([]));
+          return HttpResponse.json([]);
         }),
       );
 
@@ -148,11 +148,11 @@ describe('CatalogClient', () => {
     it('builds search filters property even those with URL unsafe values', async () => {
       const mockedEndpoint = jest
         .fn()
-        .mockImplementation((_req, res, ctx) =>
-          res(ctx.json({ items: [], totalItems: 0 })),
+        .mockImplementation(() =>
+          HttpResponse.json({ items: [], totalItems: 0 }),
         );
 
-      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       const response = await client.queryEntities(
         {
@@ -170,7 +170,7 @@ describe('CatalogClient', () => {
       expect(mockedEndpoint).toHaveBeenCalledTimes(1);
 
       const queryParams = new URLSearchParams(
-        mockedEndpoint.mock.calls[0][0].url.search,
+        new URL(mockedEndpoint.mock.calls[0][0].request.url).search,
       );
       expect(queryParams.getAll('filter')).toEqual([
         '!@#$%=t?i=1&a:2,^&*(){}[]=t%^url*encoded2,^&*(){}[]=url',
@@ -181,10 +181,10 @@ describe('CatalogClient', () => {
       expect.assertions(2);
 
       server.use(
-        rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          const queryParams = new URLSearchParams(req.url.search);
+        http.get(`${mockBaseUrl}/entities`, ({ request }) => {
+          const queryParams = new URLSearchParams(new URL(request.url).search);
           expect(queryParams.getAll('fields')).toEqual(['a.b,ö']);
-          return res(ctx.json([]));
+          return HttpResponse.json([]);
         }),
       );
 
@@ -200,8 +200,8 @@ describe('CatalogClient', () => {
 
     it('handles field filtered entities', async () => {
       server.use(
-        rest.get(`${mockBaseUrl}/entities`, (_req, res, ctx) => {
-          return res(ctx.json([{ apiVersion: '1' }, { apiVersion: '2' }]));
+        http.get(`${mockBaseUrl}/entities`, () => {
+          return HttpResponse.json([{ apiVersion: '1' }, { apiVersion: '2' }]);
         }),
       );
 
@@ -222,9 +222,11 @@ describe('CatalogClient', () => {
       expect.assertions(2);
 
       server.use(
-        rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          expect(req.url.search).toBe('?limit=2&offset=1&after=%3D');
-          return res(ctx.json([]));
+        http.get(`${mockBaseUrl}/entities`, ({ request }) => {
+          expect(new URL(request.url).search).toBe(
+            '?limit=2&offset=1&after=%3D',
+          );
+          return HttpResponse.json([]);
         }),
       );
 
@@ -244,13 +246,13 @@ describe('CatalogClient', () => {
       ];
 
       server.use(
-        rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
-          const queryParams = new URLSearchParams(req.url.search);
+        http.get(`${mockBaseUrl}/entities`, ({ request }) => {
+          const queryParams = new URLSearchParams(new URL(request.url).search);
           expect(queryParams.getAll('order')).toEqual([
             'asc:kind',
             'desc:metadata.name',
           ]);
-          return res(ctx.json(sortedEntities));
+          return HttpResponse.json(sortedEntities);
         }),
       );
 
@@ -279,13 +281,15 @@ describe('CatalogClient', () => {
         },
       };
       server.use(
-        rest.post(`${mockBaseUrl}/entities/by-refs`, async (req, res, ctx) => {
-          expect(req.url.search).toBe('?filter=kind%3DAPI%2Ckind%3DComponent');
-          await expect(req.json()).resolves.toEqual({
+        http.post(`${mockBaseUrl}/entities/by-refs`, async ({ request }) => {
+          expect(new URL(request.url).search).toBe(
+            '?filter=kind%3DAPI%2Ckind%3DComponent',
+          );
+          await expect(request.json()).resolves.toEqual({
             entityRefs: ['k:n/a', 'k:n/b'],
             fields: ['a', 'b'],
           });
-          return res(ctx.json({ items: [entity, null] }));
+          return HttpResponse.json({ items: [entity, null] });
         }),
       );
 
@@ -314,13 +318,13 @@ describe('CatalogClient', () => {
         },
       };
       server.use(
-        rest.post(`${mockBaseUrl}/entities/by-refs`, async (req, res, ctx) => {
-          expect(req.url.search).toBe('');
-          await expect(req.json()).resolves.toEqual({
+        http.post(`${mockBaseUrl}/entities/by-refs`, async ({ request }) => {
+          expect(new URL(request.url).search).toBe('');
+          await expect(request.json()).resolves.toEqual({
             entityRefs: ['k:n/a'],
             query: { kind: 'Component' },
           });
-          return res(ctx.json({ items: [entity] }));
+          return HttpResponse.json({ items: [entity] });
         }),
       );
 
@@ -336,7 +340,7 @@ describe('CatalogClient', () => {
     });
 
     it('merges filter and query into $all predicate when both are provided', async () => {
-      expect.assertions(4);
+      expect.assertions(3);
       const entity = {
         apiVersion: '1',
         kind: 'Component',
@@ -346,14 +350,15 @@ describe('CatalogClient', () => {
         },
       };
       server.use(
-        rest.post(`${mockBaseUrl}/entities/by-refs`, async (req, res, ctx) => {
-          expect(req.url.search).toBe('');
-          const body = await req.json();
-          expect(body.entityRefs).toEqual(['k:n/a']);
-          expect(body.query).toEqual({
-            $all: [{ kind: 'Component' }, { kind: 'API' }],
+        http.post(`${mockBaseUrl}/entities/by-refs`, async ({ request }) => {
+          expect(new URL(request.url).search).toBe('');
+          await expect(request.json()).resolves.toEqual({
+            entityRefs: ['k:n/a'],
+            query: {
+              $all: [{ kind: 'Component' }, { kind: 'API' }],
+            },
           });
-          return res(ctx.json({ items: [entity] }));
+          return HttpResponse.json({ items: [entity] });
         }),
       );
 
@@ -370,7 +375,7 @@ describe('CatalogClient', () => {
     });
 
     it('sends filter as query parameter when only filter is provided (backward compat)', async () => {
-      expect.assertions(4);
+      expect.assertions(3);
       const entity = {
         apiVersion: '1',
         kind: 'Component',
@@ -380,12 +385,11 @@ describe('CatalogClient', () => {
         },
       };
       server.use(
-        rest.post(`${mockBaseUrl}/entities/by-refs`, async (req, res, ctx) => {
-          expect(req.url.search).toBe('?filter=kind%3DAPI');
-          const body = await req.json();
+        http.post(`${mockBaseUrl}/entities/by-refs`, async ({ request }) => {
+          expect(new URL(request.url).search).toBe('?filter=kind%3DAPI');
+          const body = await request.json();
           expect(body).toEqual({ entityRefs: ['k:n/a'] });
-          expect(body.query).toBeUndefined();
-          return res(ctx.json({ items: [entity] }));
+          return HttpResponse.json({ items: [entity] });
         }),
       );
 
@@ -430,8 +434,8 @@ describe('CatalogClient', () => {
 
     beforeEach(() => {
       server.use(
-        rest.get(`${mockBaseUrl}/entities/by-query`, (_, res, ctx) => {
-          return res(ctx.json(defaultResponse));
+        http.get(`${mockBaseUrl}/entities/by-query`, () => {
+          return HttpResponse.json(defaultResponse);
         }),
       );
     });
@@ -447,11 +451,11 @@ describe('CatalogClient', () => {
     it('builds multiple entity search filters properly', async () => {
       const mockedEndpoint = jest
         .fn()
-        .mockImplementation((_req, res, ctx) =>
-          res(ctx.json({ items: [], totalItems: 0 })),
+        .mockImplementation(() =>
+          HttpResponse.json({ items: [], totalItems: 0 }),
         );
 
-      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       const response = await client.queryEntities(
         {
@@ -476,7 +480,7 @@ describe('CatalogClient', () => {
       expect(mockedEndpoint).toHaveBeenCalledTimes(1);
 
       const queryParams = new URLSearchParams(
-        mockedEndpoint.mock.calls[0][0].url.search,
+        new URL(mockedEndpoint.mock.calls[0][0].request.url).search,
       );
       expect(queryParams.getAll('filter')).toEqual([
         'a=1,b=2,b=3,ö==',
@@ -488,11 +492,11 @@ describe('CatalogClient', () => {
     it('builds search filters property even those with URL unsafe values', async () => {
       const mockedEndpoint = jest
         .fn()
-        .mockImplementation((_req, res, ctx) =>
-          res(ctx.json({ items: [], totalItems: 0 })),
+        .mockImplementation(() =>
+          HttpResponse.json({ items: [], totalItems: 0 }),
         );
 
-      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       const response = await client.queryEntities(
         {
@@ -509,7 +513,7 @@ describe('CatalogClient', () => {
       expect(response).toEqual({ items: [], totalItems: 0 });
       expect(mockedEndpoint).toHaveBeenCalledTimes(1);
       const queryParams = new URLSearchParams(
-        mockedEndpoint.mock.calls[0][0].url.search,
+        new URL(mockedEndpoint.mock.calls[0][0].request.url).search,
       );
       expect(queryParams.getAll('filter')).toEqual([
         '!@#$%=t?i=1&a:2,^&*(){}[]=t%^url*encoded2,^&*(){}[]=url',
@@ -519,11 +523,11 @@ describe('CatalogClient', () => {
     it('should send query params correctly on initial request', async () => {
       const mockedEndpoint = jest
         .fn()
-        .mockImplementation((_req, res, ctx) =>
-          res(ctx.json({ items: [], totalItems: 0 })),
+        .mockImplementation(() =>
+          HttpResponse.json({ items: [], totalItems: 0 }),
         );
 
-      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       await client.queryEntities({
         fields: ['a', 'b'],
@@ -538,7 +542,7 @@ describe('CatalogClient', () => {
       });
 
       const queryParams = new URLSearchParams(
-        mockedEndpoint.mock.calls[0][0].url.search,
+        new URL(mockedEndpoint.mock.calls[0][0].request.url).search,
       );
       expect(queryParams.getAll('fields')).toEqual(['a,b']);
       expect(queryParams.getAll('limit')).toEqual(['100']);
@@ -552,11 +556,11 @@ describe('CatalogClient', () => {
     it('should ignore initial query params if cursor is passed', async () => {
       const mockedEndpoint = jest
         .fn()
-        .mockImplementation((_req, res, ctx) =>
-          res(ctx.json({ items: [], totalItems: 0 })),
+        .mockImplementation(() =>
+          HttpResponse.json({ items: [], totalItems: 0 }),
         );
 
-      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       await client.queryEntities({
         fields: ['a', 'b'],
@@ -567,59 +571,59 @@ describe('CatalogClient', () => {
         orderFields: [{ field: 'metadata.name', order: 'asc' }],
         cursor: 'cursor',
       });
-      expect(mockedEndpoint.mock.calls[0][0].url.search).toBe(
+      expect(new URL(mockedEndpoint.mock.calls[0][0].request.url).search).toBe(
         '?fields=a,b&limit=100&cursor=cursor',
       );
     });
 
     it('should return paginated functions if next and prev cursors are present', async () => {
-      const mockedEndpoint = jest.fn().mockImplementation((_req, res, ctx) =>
-        res(
-          ctx.json({
-            items: [
-              {
-                apiVersion: 'v1',
-                kind: 'CustomKind',
-                metadata: {
-                  namespace: 'default',
-                  name: 'e1',
-                },
+      const mockedEndpoint = jest.fn().mockImplementation(() =>
+        HttpResponse.json({
+          items: [
+            {
+              apiVersion: 'v1',
+              kind: 'CustomKind',
+              metadata: {
+                namespace: 'default',
+                name: 'e1',
               },
-              {
-                apiVersion: 'v1',
-                kind: 'CustomKind',
-                metadata: {
-                  namespace: 'default',
-                  name: 'e2',
-                },
-              },
-            ],
-            pageInfo: {
-              nextCursor: 'nextcursor',
-              prevCursor: 'prevcursor',
             },
-            totalItems: 100,
-          } as QueryEntitiesResponse),
-        ),
+            {
+              apiVersion: 'v1',
+              kind: 'CustomKind',
+              metadata: {
+                namespace: 'default',
+                name: 'e2',
+              },
+            },
+          ],
+          pageInfo: {
+            nextCursor: 'nextcursor',
+            prevCursor: 'prevcursor',
+          },
+          totalItems: 100,
+        } as QueryEntitiesResponse),
       );
 
-      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       const response = await client.queryEntities({
         limit: 2,
       });
-      expect(mockedEndpoint.mock.calls[0][0].url.search).toBe('?limit=2');
+      expect(new URL(mockedEndpoint.mock.calls[0][0].request.url).search).toBe(
+        '?limit=2',
+      );
 
       expect(response?.pageInfo.nextCursor).toBeDefined();
       expect(response?.pageInfo.prevCursor).toBeDefined();
 
       await client.queryEntities({ cursor: response!.pageInfo.nextCursor! });
-      expect(mockedEndpoint.mock.calls[1][0].url.search).toBe(
+      expect(new URL(mockedEndpoint.mock.calls[1][0].request.url).search).toBe(
         '?cursor=nextcursor',
       );
 
       await client.queryEntities({ cursor: response!.pageInfo.prevCursor! });
-      expect(mockedEndpoint.mock.calls[2][0].url.search).toBe(
+      expect(new URL(mockedEndpoint.mock.calls[2][0].request.url).search).toBe(
         '?cursor=prevcursor',
       );
     });
@@ -627,9 +631,9 @@ describe('CatalogClient', () => {
     it('should handle errors', async () => {
       const mockedEndpoint = jest
         .fn()
-        .mockImplementation((_req, res, ctx) => res(ctx.status(401)));
+        .mockImplementation(() => new HttpResponse(null, { status: 401 }));
 
-      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       await expect(() => client.queryEntities()).rejects.toThrow(
         /Request failed with 401 Unauthorized/,
@@ -670,16 +674,19 @@ describe('CatalogClient', () => {
     };
 
     it('should use POST endpoint when query is provided', async () => {
-      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
-        expect(req.method).toBe('POST');
-        expect(req.body).toMatchObject({
-          query: { kind: 'component' },
-          limit: 20,
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation(async ({ request }) => {
+          expect(request.method).toBe('POST');
+          const body = await request.json();
+          expect(body).toMatchObject({
+            query: { kind: 'component' },
+            limit: 20,
+          });
+          return HttpResponse.json(defaultResponse);
         });
-        return res(ctx.json(defaultResponse));
-      });
 
-      server.use(rest.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       const response = await client.queryEntities({
         query: { kind: 'component' },
@@ -692,16 +699,19 @@ describe('CatalogClient', () => {
     });
 
     it('should support $all operator', async () => {
-      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
-        expect(req.body).toMatchObject({
-          query: {
-            $all: [{ kind: 'component' }, { 'spec.type': 'service' }],
-          },
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation(async ({ request }) => {
+          const body = await request.json();
+          expect(body).toMatchObject({
+            query: {
+              $all: [{ kind: 'component' }, { 'spec.type': 'service' }],
+            },
+          });
+          return HttpResponse.json(defaultResponse);
         });
-        return res(ctx.json(defaultResponse));
-      });
 
-      server.use(rest.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       await client.queryEntities({
         query: {
@@ -713,16 +723,19 @@ describe('CatalogClient', () => {
     });
 
     it('should support $any operator', async () => {
-      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
-        expect(req.body).toMatchObject({
-          query: {
-            $any: [{ 'spec.type': 'service' }, { 'spec.type': 'website' }],
-          },
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation(async ({ request }) => {
+          const body = await request.json();
+          expect(body).toMatchObject({
+            query: {
+              $any: [{ 'spec.type': 'service' }, { 'spec.type': 'website' }],
+            },
+          });
+          return HttpResponse.json(defaultResponse);
         });
-        return res(ctx.json(defaultResponse));
-      });
 
-      server.use(rest.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       await client.queryEntities({
         query: {
@@ -734,16 +747,19 @@ describe('CatalogClient', () => {
     });
 
     it('should support $not operator', async () => {
-      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
-        expect(req.body).toMatchObject({
-          query: {
-            $not: { 'spec.lifecycle': 'experimental' },
-          },
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation(async ({ request }) => {
+          const body = await request.json();
+          expect(body).toMatchObject({
+            query: {
+              $not: { 'spec.lifecycle': 'experimental' },
+            },
+          });
+          return HttpResponse.json(defaultResponse);
         });
-        return res(ctx.json(defaultResponse));
-      });
 
-      server.use(rest.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       await client.queryEntities({
         query: {
@@ -755,16 +771,19 @@ describe('CatalogClient', () => {
     });
 
     it('should support $exists operator', async () => {
-      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
-        expect(req.body).toMatchObject({
-          query: {
-            'spec.owner': { $exists: true },
-          },
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation(async ({ request }) => {
+          const body = await request.json();
+          expect(body).toMatchObject({
+            query: {
+              'spec.owner': { $exists: true },
+            },
+          });
+          return HttpResponse.json(defaultResponse);
         });
-        return res(ctx.json(defaultResponse));
-      });
 
-      server.use(rest.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       await client.queryEntities({
         query: {
@@ -776,16 +795,19 @@ describe('CatalogClient', () => {
     });
 
     it('should support $in operator', async () => {
-      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
-        expect(req.body).toMatchObject({
-          query: {
-            'spec.owner': { $in: ['team-a', 'team-b', 'team-c'] },
-          },
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation(async ({ request }) => {
+          const body = await request.json();
+          expect(body).toMatchObject({
+            query: {
+              'spec.owner': { $in: ['team-a', 'team-b', 'team-c'] },
+            },
+          });
+          return HttpResponse.json(defaultResponse);
         });
-        return res(ctx.json(defaultResponse));
-      });
 
-      server.use(rest.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       await client.queryEntities({
         query: {
@@ -797,26 +819,32 @@ describe('CatalogClient', () => {
     });
 
     it('should support complex nested predicates', async () => {
-      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
-        expect(req.body).toMatchObject({
-          query: {
-            $all: [
-              { kind: 'component' },
-              {
-                $any: [{ 'spec.type': 'service' }, { 'spec.type': 'website' }],
-              },
-              {
-                $not: {
-                  'spec.lifecycle': 'experimental',
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation(async ({ request }) => {
+          const body = await request.json();
+          expect(body).toMatchObject({
+            query: {
+              $all: [
+                { kind: 'component' },
+                {
+                  $any: [
+                    { 'spec.type': 'service' },
+                    { 'spec.type': 'website' },
+                  ],
                 },
-              },
-            ],
-          },
+                {
+                  $not: {
+                    'spec.lifecycle': 'experimental',
+                  },
+                },
+              ],
+            },
+          });
+          return HttpResponse.json(defaultResponse);
         });
-        return res(ctx.json(defaultResponse));
-      });
 
-      server.use(rest.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       await client.queryEntities({
         query: {
@@ -838,14 +866,17 @@ describe('CatalogClient', () => {
     });
 
     it('should send orderFields with correct format', async () => {
-      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
-        expect(req.body.orderBy).toEqual([
-          { field: 'metadata.name', order: 'asc' },
-        ]);
-        return res(ctx.json(defaultResponse));
-      });
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation(async ({ request }) => {
+          const body = await request.json();
+          expect(body.orderBy).toEqual([
+            { field: 'metadata.name', order: 'asc' },
+          ]);
+          return HttpResponse.json(defaultResponse);
+        });
 
-      server.use(rest.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       await client.queryEntities({
         query: { kind: 'component' },
@@ -856,15 +887,18 @@ describe('CatalogClient', () => {
     });
 
     it('should send multiple orderFields with correct format', async () => {
-      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
-        expect(req.body.orderBy).toEqual([
-          { field: 'metadata.name', order: 'asc' },
-          { field: 'spec.type', order: 'desc' },
-        ]);
-        return res(ctx.json(defaultResponse));
-      });
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation(async ({ request }) => {
+          const body = await request.json();
+          expect(body.orderBy).toEqual([
+            { field: 'metadata.name', order: 'asc' },
+            { field: 'spec.type', order: 'desc' },
+          ]);
+          return HttpResponse.json(defaultResponse);
+        });
 
-      server.use(rest.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       await client.queryEntities({
         query: { kind: 'component' },
@@ -878,12 +912,15 @@ describe('CatalogClient', () => {
     });
 
     it('should send limit and offset parameters in the body', async () => {
-      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
-        expect(req.body.limit).toBe(50);
-        return res(ctx.json(defaultResponse));
-      });
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation(async ({ request }) => {
+          const body = await request.json();
+          expect(body.limit).toBe(50);
+          return HttpResponse.json(defaultResponse);
+        });
 
-      server.use(rest.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       await client.queryEntities({
         query: { kind: 'component' },
@@ -917,13 +954,16 @@ describe('CatalogClient', () => {
         pageInfo: {},
       };
 
-      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
-        expect(req.method).toBe('POST');
-        expect(req.body).toMatchObject({ cursor: cursorPayload });
-        return res(ctx.json(page2Response));
-      });
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation(async ({ request }) => {
+          expect(request.method).toBe('POST');
+          const body = await request.json();
+          expect(body).toMatchObject({ cursor: cursorPayload });
+          return HttpResponse.json(page2Response);
+        });
 
-      server.use(rest.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       const response = await client.queryEntities({
         cursor: cursorPayload,
@@ -945,21 +985,19 @@ describe('CatalogClient', () => {
         }),
       ).toString('base64');
 
-      const mockedGetEndpoint = jest.fn().mockImplementation((_req, res, ctx) =>
-        res(
-          ctx.json({
-            items: [],
-            totalItems: 50,
-            pageInfo: {},
-          }),
-        ),
+      const mockedGetEndpoint = jest.fn().mockImplementation(() =>
+        HttpResponse.json({
+          items: [],
+          totalItems: 50,
+          pageInfo: {},
+        }),
       );
 
       const mockedPostEndpoint = jest.fn();
 
       server.use(
-        rest.get(`${mockBaseUrl}/entities/by-query`, mockedGetEndpoint),
-        rest.post(`${mockBaseUrl}/entities/by-query`, mockedPostEndpoint),
+        http.get(`${mockBaseUrl}/entities/by-query`, mockedGetEndpoint),
+        http.post(`${mockBaseUrl}/entities/by-query`, mockedPostEndpoint),
       );
 
       await client.queryEntities({ cursor: cursorPayload });
@@ -971,9 +1009,9 @@ describe('CatalogClient', () => {
     it('should handle errors from POST endpoint', async () => {
       const mockedEndpoint = jest
         .fn()
-        .mockImplementation((_req, res, ctx) => res(ctx.status(400)));
+        .mockImplementation(() => new HttpResponse(null, { status: 400 }));
 
-      server.use(rest.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       await expect(() =>
         client.queryEntities({ query: { kind: 'component' } }),
@@ -1010,12 +1048,16 @@ describe('CatalogClient', () => {
 
     beforeEach(() => {
       server.use(
-        rest.get(`${mockBaseUrl}/entities/by-query`, (req, res, ctx) => {
-          const cursor = req.url.searchParams.get('cursor');
+        http.get(`${mockBaseUrl}/entities/by-query`, ({ request }) => {
+          const cursor = new URL(request.url).searchParams.get('cursor');
           if (cursor === 'next') {
-            return res(ctx.json({ items: [], pageInfo: {}, totalItems: 0 }));
+            return HttpResponse.json({
+              items: [],
+              pageInfo: {},
+              totalItems: 0,
+            });
           }
-          return res(ctx.json(defaultResponse));
+          return HttpResponse.json(defaultResponse);
         }),
       );
     });
@@ -1032,9 +1074,9 @@ describe('CatalogClient', () => {
     it('should handle errors', async () => {
       const mockedEndpoint = jest
         .fn()
-        .mockImplementation((_req, res, ctx) => res(ctx.status(401)));
+        .mockImplementation(() => new HttpResponse(null, { status: 401 }));
 
-      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+      server.use(http.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
       const stream = client.streamEntities({}, { token });
       await expect(async () => {
@@ -1058,16 +1100,16 @@ describe('CatalogClient', () => {
 
     beforeEach(() => {
       server.use(
-        rest.get(
+        http.get(
           `${mockBaseUrl}/entities/by-name/customkind/default/exists`,
-          (_, res, ctx) => {
-            return res(ctx.json(existingEntity));
+          () => {
+            return HttpResponse.json(existingEntity);
           },
         ),
-        rest.get(
+        http.get(
           `${mockBaseUrl}/entities/by-name/customkind/default/missing`,
-          (_, res, ctx) => {
-            return res(ctx.status(404));
+          () => {
+            return new HttpResponse(null, { status: 404 });
           },
         ),
       );
@@ -1122,8 +1164,8 @@ describe('CatalogClient', () => {
 
     beforeEach(() => {
       server.use(
-        rest.get(`${mockBaseUrl}/locations`, (_, res, ctx) => {
-          return res(ctx.json(defaultResponse));
+        http.get(`${mockBaseUrl}/locations`, () => {
+          return HttpResponse.json(defaultResponse);
         }),
       );
     });
@@ -1150,8 +1192,8 @@ describe('CatalogClient', () => {
 
     it('should return empty list with empty result', async () => {
       server.use(
-        rest.get(`${mockBaseUrl}/locations`, (_, res, ctx) => {
-          return res(ctx.json([]));
+        http.get(`${mockBaseUrl}/locations`, () => {
+          return HttpResponse.json([]);
         }),
       );
 
@@ -1163,9 +1205,9 @@ describe('CatalogClient', () => {
       expect.assertions(1);
 
       server.use(
-        rest.get(`${mockBaseUrl}/locations`, (req, res, ctx) => {
-          expect(req.headers.get('authorization')).toBe(`Bearer ${token}`);
-          return res(ctx.json(defaultResponse));
+        http.get(`${mockBaseUrl}/locations`, ({ request }) => {
+          expect(request.headers.get('authorization')).toBe(`Bearer ${token}`);
+          return HttpResponse.json(defaultResponse);
         }),
       );
 
@@ -1176,9 +1218,9 @@ describe('CatalogClient', () => {
       expect.assertions(1);
 
       server.use(
-        rest.get(`${mockBaseUrl}/locations`, (req, res, ctx) => {
-          expect(req.headers.get('authorization')).toBeNull();
-          return res(ctx.json(defaultResponse));
+        http.get(`${mockBaseUrl}/locations`, ({ request }) => {
+          expect(request.headers.get('authorization')).toBeNull();
+          return HttpResponse.json(defaultResponse);
         }),
       );
 
@@ -1200,8 +1242,8 @@ describe('CatalogClient', () => {
       };
 
       server.use(
-        rest.post(`${mockBaseUrl}/locations/by-query`, (_, res, ctx) => {
-          return res(ctx.json(defaultResponse));
+        http.post(`${mockBaseUrl}/locations/by-query`, () => {
+          return HttpResponse.json(defaultResponse);
         }),
       );
 
@@ -1213,17 +1255,18 @@ describe('CatalogClient', () => {
       expect.assertions(2);
 
       server.use(
-        rest.post(
-          `${mockBaseUrl}/locations/by-query`,
-          async (req, res, ctx) => {
-            const body = await req.json();
-            expect(body).toEqual({
-              limit: 50,
-              query: { type: 'url' },
-            });
-            return res(ctx.json({ items: [], totalItems: 0, pageInfo: {} }));
-          },
-        ),
+        http.post(`${mockBaseUrl}/locations/by-query`, async ({ request }) => {
+          const body = await request.json();
+          expect(body).toEqual({
+            limit: 50,
+            query: { type: 'url' },
+          });
+          return HttpResponse.json({
+            items: [],
+            totalItems: 0,
+            pageInfo: {},
+          });
+        }),
       );
 
       const response = await client.queryLocations(
@@ -1241,24 +1284,17 @@ describe('CatalogClient', () => {
       expect.assertions(3);
 
       server.use(
-        rest.post(
-          `${mockBaseUrl}/locations/by-query`,
-          async (req, res, ctx) => {
-            const body = await req.json();
-            expect(body).toEqual({ cursor: 'mycursor' });
-            return res(
-              ctx.json({
-                items: [
-                  { id: '3', type: 'url', target: 'https://example.com/3' },
-                ],
-                totalItems: 10,
-                pageInfo: {
-                  nextCursor: 'nextcursor',
-                },
-              }),
-            );
-          },
-        ),
+        http.post(`${mockBaseUrl}/locations/by-query`, async ({ request }) => {
+          const body = await request.json();
+          expect(body).toEqual({ cursor: 'mycursor' });
+          return HttpResponse.json({
+            items: [{ id: '3', type: 'url', target: 'https://example.com/3' }],
+            totalItems: 10,
+            pageInfo: {
+              nextCursor: 'nextcursor',
+            },
+          });
+        }),
       );
 
       const response = await client.queryLocations({ cursor: 'mycursor' });
@@ -1269,8 +1305,9 @@ describe('CatalogClient', () => {
 
     it('should handle errors', async () => {
       server.use(
-        rest.post(`${mockBaseUrl}/locations/by-query`, (_req, res, ctx) =>
-          res(ctx.status(401)),
+        http.post(
+          `${mockBaseUrl}/locations/by-query`,
+          () => new HttpResponse(null, { status: 401 }),
         ),
       );
 
@@ -1283,9 +1320,13 @@ describe('CatalogClient', () => {
       expect.assertions(1);
 
       server.use(
-        rest.post(`${mockBaseUrl}/locations/by-query`, (req, res, ctx) => {
-          expect(req.headers.get('authorization')).toBe(`Bearer ${token}`);
-          return res(ctx.json({ items: [], totalItems: 0, pageInfo: {} }));
+        http.post(`${mockBaseUrl}/locations/by-query`, ({ request }) => {
+          expect(request.headers.get('authorization')).toBe(`Bearer ${token}`);
+          return HttpResponse.json({
+            items: [],
+            totalItems: 0,
+            pageInfo: {},
+          });
         }),
       );
 
@@ -1310,16 +1351,13 @@ describe('CatalogClient', () => {
       };
 
       server.use(
-        rest.post(
-          `${mockBaseUrl}/locations/by-query`,
-          async (req, res, ctx) => {
-            const body = await req.json();
-            if (body.cursor === 'cursor2') {
-              return res(ctx.json(secondPage));
-            }
-            return res(ctx.json(firstPage));
-          },
-        ),
+        http.post(`${mockBaseUrl}/locations/by-query`, async ({ request }) => {
+          const body = (await request.json()) as { cursor?: string };
+          if (body.cursor === 'cursor2') {
+            return HttpResponse.json(secondPage);
+          }
+          return HttpResponse.json(firstPage);
+        }),
       );
 
       const stream = client.streamLocations({}, { token });
@@ -1333,8 +1371,12 @@ describe('CatalogClient', () => {
 
     it('should handle empty results', async () => {
       server.use(
-        rest.post(`${mockBaseUrl}/locations/by-query`, (_req, res, ctx) => {
-          return res(ctx.json({ items: [], totalItems: 0, pageInfo: {} }));
+        http.post(`${mockBaseUrl}/locations/by-query`, () => {
+          return HttpResponse.json({
+            items: [],
+            totalItems: 0,
+            pageInfo: {},
+          });
         }),
       );
 
@@ -1349,8 +1391,9 @@ describe('CatalogClient', () => {
 
     it('should handle errors', async () => {
       server.use(
-        rest.post(`${mockBaseUrl}/locations/by-query`, (_req, res, ctx) =>
-          res(ctx.status(401)),
+        http.post(
+          `${mockBaseUrl}/locations/by-query`,
+          () => new HttpResponse(null, { status: 401 }),
         ),
       );
 
@@ -1373,8 +1416,8 @@ describe('CatalogClient', () => {
 
     beforeEach(() => {
       server.use(
-        rest.get(`${mockBaseUrl}/locations/42`, (_, res, ctx) => {
-          return res(ctx.json(defaultResponse));
+        http.get(`${mockBaseUrl}/locations/42`, () => {
+          return HttpResponse.json(defaultResponse);
         }),
       );
     });
@@ -1388,9 +1431,9 @@ describe('CatalogClient', () => {
       expect.assertions(1);
 
       server.use(
-        rest.get(`${mockBaseUrl}/locations/42`, (req, res, ctx) => {
-          expect(req.headers.get('authorization')).toBe(`Bearer ${token}`);
-          return res(ctx.json(defaultResponse));
+        http.get(`${mockBaseUrl}/locations/42`, ({ request }) => {
+          expect(request.headers.get('authorization')).toBe(`Bearer ${token}`);
+          return HttpResponse.json(defaultResponse);
         }),
       );
 
@@ -1401,9 +1444,9 @@ describe('CatalogClient', () => {
       expect.assertions(1);
 
       server.use(
-        rest.get(`${mockBaseUrl}/locations/42`, (req, res, ctx) => {
-          expect(req.headers.get('authorization')).toBeNull();
-          return res(ctx.json(defaultResponse));
+        http.get(`${mockBaseUrl}/locations/42`, ({ request }) => {
+          expect(request.headers.get('authorization')).toBeNull();
+          return HttpResponse.json(defaultResponse);
         }),
       );
 
@@ -1422,8 +1465,8 @@ describe('CatalogClient', () => {
 
     beforeEach(() => {
       server.use(
-        rest.get(`${mockBaseUrl}/locations/by-entity/c/ns/n`, (_, res, ctx) => {
-          return res(ctx.json(defaultResponse));
+        http.get(`${mockBaseUrl}/locations/by-entity/c/ns/n`, () => {
+          return HttpResponse.json(defaultResponse);
         }),
       );
     });
@@ -1440,13 +1483,10 @@ describe('CatalogClient', () => {
       expect.assertions(1);
 
       server.use(
-        rest.get(
-          `${mockBaseUrl}/locations/by-entity/c/ns/n`,
-          (req, res, ctx) => {
-            expect(req.headers.get('authorization')).toBe(`Bearer ${token}`);
-            return res(ctx.json(defaultResponse));
-          },
-        ),
+        http.get(`${mockBaseUrl}/locations/by-entity/c/ns/n`, ({ request }) => {
+          expect(request.headers.get('authorization')).toBe(`Bearer ${token}`);
+          return HttpResponse.json(defaultResponse);
+        }),
       );
 
       await client.getLocationByEntity(
@@ -1459,13 +1499,10 @@ describe('CatalogClient', () => {
       expect.assertions(1);
 
       server.use(
-        rest.get(
-          `${mockBaseUrl}/locations/by-entity/c/ns/n`,
-          (req, res, ctx) => {
-            expect(req.headers.get('authorization')).toBeNull();
-            return res(ctx.json(defaultResponse));
-          },
-        ),
+        http.get(`${mockBaseUrl}/locations/by-entity/c/ns/n`, ({ request }) => {
+          expect(request.headers.get('authorization')).toBeNull();
+          return HttpResponse.json(defaultResponse);
+        }),
       );
 
       await client.getLocationByEntity({
@@ -1479,16 +1516,16 @@ describe('CatalogClient', () => {
   describe('validateEntity', () => {
     it('returns valid false when validation fails', async () => {
       server.use(
-        rest.post(`${mockBaseUrl}/validate-entity`, (_req, res, ctx) => {
-          return res(
-            ctx.status(400),
-            ctx.json({
+        http.post(`${mockBaseUrl}/validate-entity`, () => {
+          return HttpResponse.json(
+            {
               errors: [
                 {
                   message: 'Missing name',
                 },
               ],
-            }),
+            },
+            { status: 400 },
           );
         }),
       );
@@ -1516,8 +1553,8 @@ describe('CatalogClient', () => {
 
     it('returns valid true when validation fails', async () => {
       server.use(
-        rest.post(`${mockBaseUrl}/validate-entity`, (_req, res, ctx) => {
-          return res(ctx.status(200), ctx.text(''));
+        http.post(`${mockBaseUrl}/validate-entity`, () => {
+          return new HttpResponse('', { status: 200 });
         }),
       );
 
@@ -1539,8 +1576,8 @@ describe('CatalogClient', () => {
 
     it('throws unexpected error', async () => {
       server.use(
-        rest.post(`${mockBaseUrl}/validate-entity`, (_req, res, ctx) => {
-          return res(ctx.status(500), ctx.json({}));
+        http.post(`${mockBaseUrl}/validate-entity`, () => {
+          return HttpResponse.json({}, { status: 500 });
         }),
       );
 

@@ -16,6 +16,7 @@
 
 export { entitiesBatchRequest } from './entitiesBatchRequest';
 export { basicEntityFilter } from './basicEntityFilter';
+export { entityFilterToFilterPredicate } from './entityFilterToFilterPredicate';
 export { parseEntityFilterParams } from './parseEntityFilterParams';
 export { parseEntityTransformParams } from './parseEntityTransformParams';
 export { parseQueryEntitiesParams } from './parseQueryEntitiesParams';

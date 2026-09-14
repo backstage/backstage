@@ -35,7 +35,7 @@ export const myTheme = createUnifiedTheme({
 });
 ```
 
-:::note Note
+:::note
 
 We recommend creating a `theme` folder in `packages/app/src` to place your theme file to keep things nicely organized.
 
@@ -521,7 +521,7 @@ const alertIcon = app.getSystemIcon('alert');
 
 You might want to use this method if you have an icon you want to use in several locations.
 
-:::note Note
+:::note
 
 If the icon is not available as one of the default icons or one you've added then it will fall back to Material UI's `LanguageIcon`
 

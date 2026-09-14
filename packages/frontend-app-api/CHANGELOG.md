@@ -1,5 +1,82 @@
 # @backstage/frontend-app-api
 
+## 0.16.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/core-app-api@1.20.5-next.2
+  - @backstage/core-plugin-api@1.12.10-next.1
+  - @backstage/filter-predicates@0.1.5-next.1
+  - @backstage/frontend-defaults@0.5.6-next.2
+  - @backstage/frontend-plugin-api@0.18.1-next.1
+
+## 0.16.8-next.1
+
+### Patch Changes
+
+- 52022b9: Fixed `app.extensions` shorthand and `disabled` field to accept boolean-ish strings (`'true'`/`'false'`), so environment variable substitution can be used to toggle extensions, e.g. `${CATALOG_OVERVIEW_ENABLED}`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/filter-predicates@0.1.5-next.0
+  - @backstage/core-plugin-api@1.12.10-next.0
+  - @backstage/frontend-defaults@0.5.6-next.1
+  - @backstage/core-app-api@1.20.5-next.1
+
+## 0.16.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.20.5-next.0
+  - @backstage/frontend-defaults@0.5.6-next.0
+
+## 0.16.7
+
+### Patch Changes
+
+- 6497d0f: Respect explicit API reference plugin ownership when resolving conflicting API factories.
+- a8b5ba6: Updated dependencies.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/core-app-api@1.20.4
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/frontend-defaults@0.5.5
+
+## 0.16.7-next.1
+
+### Patch Changes
+
+- 6497d0f: Respect explicit API reference plugin ownership when resolving conflicting API factories.
+- a8b5ba6: Updated dependencies.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.0-next.0
+  - @backstage/core-plugin-api@1.12.9-next.0
+  - @backstage/frontend-defaults@0.5.5-next.1
+  - @backstage/core-app-api@1.20.4-next.1
+
+## 0.16.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-defaults@0.5.5-next.0
+  - @backstage/core-app-api@1.20.4-next.0
+
+## 0.16.6
+
+### Patch Changes
+
+- 74fbcd7: Extension `if` predicates now support specifying an `action` attribute in the permission reference. When a permission name contains a `#` separator (e.g. `catalog.entity.read#read`), the part after `#` is used as `attributes.action` when evaluating the permission. This removes the need to configure action attributes separately for basic permissions.
+- 6ea6d31: Internal refactor of the specialized app sign-in runtime to initialize it once instead of reassigning it.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.3
+  - @backstage/core-app-api@1.20.3
+  - @backstage/filter-predicates@0.1.4
+  - @backstage/core-plugin-api@1.12.8
+  - @backstage/frontend-defaults@0.5.4
+
 ## 0.16.6-next.1
 
 ### Patch Changes

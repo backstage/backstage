@@ -29,6 +29,12 @@ export interface Config {
     description?: string;
 
     /**
+     * Instructions describing how clients should use the MCP server.
+     * Used when running a single bundled server without mcpActions.servers.
+     */
+    instructions?: string;
+
+    /**
      * When true, MCP tool names include the plugin ID prefix to avoid
      * collisions across plugins. For example an action registered as
      * "get-entity" by the catalog plugin becomes "catalog.get-entity".
@@ -53,7 +59,8 @@ export interface Config {
 
     /**
      * Named MCP servers, each exposed at /api/mcp-actions/v1/{key}.
-     * When not configured, the plugin serves a single server at /api/mcp-actions/v1.
+     * These are subsets of the default server at /api/mcp-actions/v1, which is
+     * always exposed and always serves every registered action.
      */
     servers?: {
       [serverKey: string]: {
@@ -61,6 +68,8 @@ export interface Config {
         name: string;
         /** Description of the MCP server. */
         description?: string;
+        /** Instructions describing how clients should use the MCP server. */
+        instructions?: string;
         /** Filter rules to include or exclude specific actions. */
         filter?: {
           include?: Array<{

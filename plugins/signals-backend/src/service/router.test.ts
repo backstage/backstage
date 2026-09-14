@@ -15,9 +15,13 @@
  */
 
 import express from 'express';
+import http from 'node:http';
+import { PassThrough } from 'node:stream';
 import request from 'supertest';
 import { createRouter } from './router';
 import { mockErrorHandler, mockServices } from '@backstage/backend-test-utils';
+import { AuthService } from '@backstage/backend-plugin-api';
+import { WebSocketServer } from 'ws';
 
 const eventsServiceMock = mockServices.events.mock();
 const discovery = mockServices.discovery.mock({
@@ -52,5 +56,123 @@ describe('createRouter', () => {
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ status: 'ok' });
     });
+  });
+});
+
+describe('handleUpgrade', () => {
+  async function setupServer(
+    authOverride?: Partial<AuthService>,
+  ): Promise<http.Server> {
+    const auth = Object.assign(
+      mockServices.auth(),
+      authOverride,
+    ) as AuthService;
+
+    const router = await createRouter({
+      logger: mockServices.logger.mock(),
+      events: mockServices.events.mock(),
+      discovery: mockServices.discovery.mock({
+        getBaseUrl: async () => '/api/signals',
+      }),
+      userInfo: mockServices.userInfo.mock(),
+      config: mockServices.rootConfig(),
+      lifecycle: mockServices.lifecycle.mock(),
+      auth,
+    });
+
+    const app = express().use(router);
+    const server = http.createServer(app);
+    await new Promise<void>(resolve => server.listen(0, resolve));
+    const port = (server.address() as { port: number }).port;
+
+    // Register the upgrade handler by sending one request with the
+    // Upgrade header through express. Guard against the listener
+    // already being registered, and clean up the trigger request.
+    if (server.listenerCount('upgrade') === 0) {
+      const trigger = http.get(
+        { port, path: '/', headers: { Upgrade: 'websocket' } },
+        res => res.resume(),
+      );
+      trigger.on('error', () => {});
+      await new Promise<void>(resolve => {
+        server.on('newListener', event => {
+          if (event === 'upgrade') {
+            trigger.destroy();
+            resolve();
+          }
+        });
+      });
+    }
+
+    return server;
+  }
+
+  function emitUpgrade(server: http.Server, token: string): Promise<string> {
+    const socket = new PassThrough();
+    server.emit(
+      'upgrade',
+      { url: '/api/signals', headers: { 'sec-websocket-protocol': token } },
+      socket,
+      Buffer.alloc(0),
+    );
+    return new Promise(resolve => {
+      const chunks: Buffer[] = [];
+      let resolved = false;
+      const done = () => {
+        if (resolved) return;
+        resolved = true;
+        resolve(Buffer.concat(chunks).toString());
+      };
+      socket.on('data', chunk => chunks.push(chunk));
+      socket.on('end', done);
+      socket.on('close', done);
+    });
+  }
+
+  it('writes 401 response without upgrade headers when auth fails', async () => {
+    const server = await setupServer({
+      authenticate: async () => {
+        throw new Error('Invalid token');
+      },
+    });
+
+    try {
+      const response = await emitUpgrade(server, 'invalid-token');
+
+      expect(response).toBe(
+        'HTTP/1.1 401 Unauthorized\r\n' +
+          'Content-Length: 0\r\n' +
+          'Connection: close\r\n' +
+          '\r\n',
+      );
+    } finally {
+      server.closeAllConnections();
+      await new Promise<void>(resolve => server.close(() => resolve()));
+    }
+  });
+
+  it('writes 500 response without upgrade headers when handleUpgrade throws', async () => {
+    const spy = jest
+      .spyOn(WebSocketServer.prototype, 'handleUpgrade')
+      .mockImplementation(() => {
+        throw new Error('WebSocket upgrade failed');
+      });
+
+    const server = await setupServer();
+
+    try {
+      const response = await emitUpgrade(server, 'mock-user-token');
+
+      expect(response).toBe(
+        'HTTP/1.1 500 Internal Server Error\r\n' +
+          'Content-Length: 0\r\n' +
+          'Connection: close\r\n' +
+          '\r\n',
+      );
+    } finally {
+      spy.mockRestore();
+      server.closeAllConnections();
+      await new Promise<void>(resolve => server.close(() => resolve()));
+    }
   });
 });

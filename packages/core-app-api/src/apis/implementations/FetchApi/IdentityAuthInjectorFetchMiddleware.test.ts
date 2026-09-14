@@ -57,6 +57,53 @@ describe('IdentityAuthInjectorFetchMiddleware', () => {
     expect(middleware.allowUrl('http://b.com:8080')).toEqual(true);
   });
 
+  it('creates using wildcard discovery endpoints', async () => {
+    const middleware = IdentityAuthInjectorFetchMiddleware.create({
+      identityApi: undefined as any,
+      config: new ConfigReader({
+        backend: { baseUrl: 'https://example.com' },
+        discovery: {
+          endpoints: [
+            {
+              target: 'https://gateway.example.com/api/{{pluginId}}',
+              plugins: ['*'],
+            },
+            {
+              target:
+                'https://{{pluginId}}.plugins.example.com/api/{{pluginId}}',
+              plugins: ['*'],
+            },
+          ],
+        },
+      }),
+    });
+
+    expect(
+      middleware.allowUrl('https://gateway.example.com/api/catalog'),
+    ).toEqual(true);
+    expect(
+      middleware.allowUrl('https://gateway.example.com/api/catalog?x=1'),
+    ).toEqual(true);
+    expect(
+      middleware.allowUrl(
+        'https://gateway.example.com/api/catalog/entities/by-query',
+      ),
+    ).toEqual(true);
+    expect(
+      middleware.allowUrl(
+        'https://catalog.plugins.example.com/api/catalog/entities',
+      ),
+    ).toEqual(true);
+    expect(
+      middleware.allowUrl(
+        'https://catalog.plugins.example.com/api/search/query',
+      ),
+    ).toEqual(false);
+    expect(middleware.allowUrl('https://evil.example.com/api/catalog')).toEqual(
+      false,
+    );
+  });
+
   it('injects the header only when a token is available', async () => {
     const identityApi = mockApis.identity.mock();
 
@@ -143,6 +190,14 @@ describe('IdentityAuthInjectorFetchMiddleware', () => {
                 external: 'https://{{ pluginId   }}.e.com/{{pluginId}}',
               },
               plugins: ['q4'],
+            },
+            {
+              target: { internal: 'https://internal.example.com' },
+              plugins: ['internal'],
+            },
+            {
+              target: 'https://wildcard.example.com/{{pluginId}}',
+              plugins: ['*'],
             },
           ],
         },

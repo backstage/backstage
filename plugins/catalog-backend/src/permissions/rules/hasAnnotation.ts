@@ -50,14 +50,14 @@ export const hasAnnotation = createPermissionRule({
     if (isExactKeyMatch) return true;
 
     // case-insensitive matching if exact match is not found
-    const normalizedAnnotation = annotation.toLocaleLowerCase('en-US');
-    const normalizedValue = value?.toLocaleLowerCase('en-US');
+    const normalizedAnnotation = annotation.toLowerCase();
+    const normalizedValue = value?.toLowerCase();
 
     for (const [key, val] of Object.entries(resource.metadata.annotations)) {
-      if (key.toLocaleLowerCase('en-US') === normalizedAnnotation) {
+      if (key.toLowerCase() === normalizedAnnotation) {
         if (
           normalizedValue === undefined ||
-          val.toLocaleLowerCase('en-US') === normalizedValue
+          val.toLowerCase() === normalizedValue
         ) {
           return true;
         }

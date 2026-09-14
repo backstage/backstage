@@ -17,10 +17,17 @@
 
 import express from 'express';
 import Router from 'express-promise-router';
-import { connectionsServiceRef } from '@backstage/connections';
-import { HttpAuthService, LoggerService } from '@backstage/backend-plugin-api';
-import { ConnectionTypeKey } from '@backstage/connections';
+import { connectionsServiceRef } from '@backstage/connections-node';
+import { connectionTypes, type ConnectionType } from '@backstage/connections';
+import {
+  type HttpAuthService,
+  type LoggerService,
+} from '@backstage/backend-plugin-api';
 import { NotFoundError } from '@backstage/errors';
+
+function isConnectionType(type: string): type is ConnectionType {
+  return Object.prototype.hasOwnProperty.call(connectionTypes, type);
+}
 
 export async function createRouter({
   connections,
@@ -31,6 +38,16 @@ export async function createRouter({
 }): Promise<express.Router> {
   const router = Router();
   router.use(express.json());
+
+  router.get('/schema/:type', async (req, res) => {
+    const type = req.params.type;
+    if (!isConnectionType(type)) {
+      res.status(404).json('Cannot find connection type');
+      return;
+    }
+
+    res.status(200).json(connectionTypes[type].configSchema.schema().schema);
+  });
 
   router.get('/find', async (req, res) => {
     const p: any = req.query;
@@ -58,8 +75,8 @@ export async function createRouter({
     let connection;
     try {
       connection = await connections.find({
-        type: p.type as ConnectionTypeKey,
-        url: p.url,
+        type: p.type as ConnectionType,
+        query: { url: p.url },
         authMethods: authMethods as any,
       });
     } catch (e) {

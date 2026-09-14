@@ -1,5 +1,123 @@
 # @backstage/backend-defaults
 
+## 0.17.9-next.1
+
+### Patch Changes
+
+- 55f30b8: Reduced scheduler database polling overhead by batching readiness checks for global tasks registered by each plugin into one query per poll cycle on each backend instance.
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/backend-app-api@1.7.4-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/config-loader@1.11.3-next.0
+  - @backstage/integration@2.1.2-next.1
+  - @backstage/integration-aws-node@0.2.2-next.0
+  - @backstage/plugin-auth-node@0.7.5-next.1
+  - @backstage/plugin-permission-common@0.9.11-next.0
+  - @backstage/plugin-permission-node@0.11.4-next.1
+
+## 0.17.9-next.0
+
+### Patch Changes
+
+- 45d760b: Improve action handling consistency.
+- 8d71644: Reduced PostgreSQL connection churn during backend startup when many plugins initialize databases or schemas.
+- 416be1b: Updated Harness URL reading to validate cross-origin redirect destinations
+  against `backend.reading.allow`.
+- 5aac521: Improved service credential handling during plugin-to-plugin delegation.
+- 61449ae: Reduced PostgreSQL startup connections when multiple plugins share a database by reusing the database existence check.
+- 8b3c83e: Improved input validation and path handling for cloud storage URL readers.
+- 61d97c0: Improved input validation for cloud storage URL readers.
+- e895def: Fixed handling of GitLab URLs for instances configured with a relative base path.
+- e13e278: Updated URL reader allow list matching so configured paths match either the exact path or paths below it at a segment boundary.
+- e3b587c: Improve authentication reliability during signing key rotation by performing budgeted JWKS reloads when a newly published key is requested during the remote key set cooldown.
+- Updated dependencies
+  - @backstage/integration@2.1.2-next.0
+  - @backstage/backend-app-api@1.7.4-next.0
+  - @backstage/plugin-auth-node@0.7.5-next.0
+  - @backstage/plugin-permission-node@0.11.4-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-events-node@0.4.26-next.0
+
+## 0.17.7
+
+### Patch Changes
+
+- 79c1d58: Fixed a bug in the Azure DevOps URL reader where the abort signal was not forwarded to the commits API fetch, causing the fetch to hang indefinitely when a build timeout or cancellation was triggered.
+- b1b6c80: Read-only actions now default to non-destructive when the destructive attribute is omitted.
+- 78bf918: chore(deps): bump `tar` from 7.5.15 to 7.5.21
+- bb98419: TypeScript configuration schema warnings discovered while setting up secret redaction are now reported through the Backstage logger.
+- 74d8cbf: Added a new public `@backstage/backend-defaults/rootSystemMetadata` entrypoint, exporting `rootSystemMetadataServiceFactory` and `DefaultRootSystemMetadataService`. The system metadata service is now registered automatically as a default service, so backends no longer need to add it manually.
+- e56d23c: Throw an error when `payload.uip` is missing in `createLimitedUserToken` instead of constructing an invalid limited token with an undefined signature.
+- Updated dependencies
+  - @backstage/backend-app-api@1.7.3
+  - @backstage/config-loader@1.11.2
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-auth-node@0.7.4
+  - @backstage/integration@2.1.0
+  - @backstage/integration-aws-node@0.2.1
+  - @backstage/plugin-permission-common@0.9.10
+  - @backstage/plugin-permission-node@0.11.3
+  - @backstage/plugin-events-node@0.4.25
+
+## 0.17.7-next.2
+
+### Patch Changes
+
+- b1b6c80: Read-only actions now default to non-destructive when the destructive attribute is omitted.
+- 78bf918: chore(deps): bump `tar` from 7.5.15 to 7.5.21
+- bb98419: TypeScript configuration schema warnings discovered while setting up secret redaction are now reported through the Backstage logger.
+- Updated dependencies
+  - @backstage/config-loader@1.11.2-next.0
+  - @backstage/backend-plugin-api@1.10.0-next.1
+
+## 0.17.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.0-next.0
+
+## 0.17.6-next.0
+
+### Patch Changes
+
+- 79c1d58: Fixed a bug in the Azure DevOps URL reader where the abort signal was not forwarded to the commits API fetch, causing the fetch to hang indefinitely when a build timeout or cancellation was triggered.
+- 74d8cbf: Added a new public `@backstage/backend-defaults/rootSystemMetadata` entrypoint, exporting `rootSystemMetadataServiceFactory` and `DefaultRootSystemMetadataService`. The system metadata service is now registered automatically as a default service, so backends no longer need to add it manually.
+- Updated dependencies
+  - @backstage/backend-app-api@1.7.3-next.0
+  - @backstage/plugin-auth-node@0.7.4-next.0
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-permission-node@0.11.3-next.0
+  - @backstage/plugin-events-node@0.4.25-next.0
+
+## 0.17.5
+
+### Patch Changes
+
+- aaa7d65: Improved readability of the AWS S3 URL parser by splitting the single monolithic regex into two separate patterns (standard S3 and VPC PrivateLink) with named capture groups. Also made the VPC endpoint region mandatory in the regex, fixing a potential mis-parse when the region segment was absent.
+- d62c384: Fixed a bug where scheduled tasks that were initially registered with a manual trigger and later re-registered with a duration or cron cadence would never be scheduled to run.
+- 8419f51: Added support for AWS PrivateLink for Amazon S3.
+- a624fa3: The `connection` config option for the Redis cache store now accepts either a string URL or an object with additional connection options that are passed directly to the underlying client. The object form is only supported when `backend.cache.store` is `redis`; other stores require a plain string. This allows configuring options like `pingInterval` without needing dedicated config fields. For clustered Redis, the connection object properties are merged into cluster defaults. Fixes https://github.com/backstage/backstage/issues/31813, https://github.com/backstage/backstage/issues/31742.
+- Updated dependencies
+  - @backstage/config-loader@1.11.0
+  - @backstage/plugin-auth-node@0.7.3
+  - @backstage/backend-app-api@1.7.2
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/cli-node@0.3.4
+  - @backstage/plugin-events-node@0.4.24
+  - @backstage/plugin-permission-node@0.11.2
+
+## 0.17.5-next.2
+
+### Patch Changes
+
+- a624fa3: The `connection` config option for the Redis cache store now accepts either a string URL or an object with additional connection options that are passed directly to the underlying client. The object form is only supported when `backend.cache.store` is `redis`; other stores require a plain string. This allows configuring options like `pingInterval` without needing dedicated config fields. For clustered Redis, the connection object properties are merged into cluster defaults. Fixes https://github.com/backstage/backstage/issues/31813, https://github.com/backstage/backstage/issues/31742.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.1
+  - @backstage/cli-node@0.3.4-next.0
+  - @backstage/config-loader@1.11.0-next.2
+
 ## 0.17.5-next.1
 
 ### Patch Changes

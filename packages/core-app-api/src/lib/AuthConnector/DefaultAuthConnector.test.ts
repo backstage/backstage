@@ -20,7 +20,7 @@ import * as loginPopup from '../loginPopup';
 import { UrlPatternDiscovery } from '../../apis';
 import { registerMswTestHooks } from '@backstage/test-utils';
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { ConfigReader } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
 
@@ -61,16 +61,15 @@ describe('DefaultAuthConnector', () => {
 
   it('should refresh a session with scope', async () => {
     server.use(
-      rest.get('*', (req, res, ctx) =>
-        res(
-          ctx.json({
-            idToken: 'mock-id-token',
-            accessToken: 'mock-access-token',
-            scopes: req.url.searchParams.get('scope') || 'default-scope',
-            expiresInSeconds: '60',
-          }),
-        ),
-      ),
+      http.get('*', ({ request }) => {
+        const url = new URL(request.url);
+        return HttpResponse.json({
+          idToken: 'mock-id-token',
+          accessToken: 'mock-access-token',
+          scopes: url.searchParams.get('scope') || 'default-scope',
+          expiresInSeconds: '60',
+        });
+      }),
     );
 
     const connector = new DefaultAuthConnector<any>(defaultOptions);
@@ -86,8 +85,13 @@ describe('DefaultAuthConnector', () => {
 
   it('should handle failure to refresh session', async () => {
     server.use(
-      rest.get('*', (_req, res, ctx) =>
-        res(ctx.status(500, 'Error: Network NOPE')),
+      http.get(
+        '*',
+        () =>
+          new HttpResponse('', {
+            status: 500,
+            statusText: 'Error: Network NOPE',
+          }),
       ),
     );
 
@@ -98,7 +102,11 @@ describe('DefaultAuthConnector', () => {
   });
 
   it('should handle failure response when refreshing session', async () => {
-    server.use(rest.get('*', (_req, res, ctx) => res(ctx.status(401, 'NOPE'))));
+    server.use(
+      http.get('*', () =>
+        HttpResponse.text('', { status: 401, statusText: 'NOPE' }),
+      ),
+    );
 
     const connector = new DefaultAuthConnector(defaultOptions);
     await expect(connector.refreshSession()).rejects.toThrow(
@@ -267,9 +275,7 @@ describe('DefaultAuthConnector', () => {
     const logoutUrl =
       'https://test.auth0.com/v2/logout?federated&client_id=abc&returnTo=http%3A%2F%2Flocalhost';
 
-    server.use(
-      rest.post('*', (_req, res, ctx) => res(ctx.json({ logoutUrl }))),
-    );
+    server.use(http.post('*', () => HttpResponse.json({ logoutUrl })));
 
     const connector = new DefaultAuthConnector(defaultOptions);
 
@@ -285,7 +291,7 @@ describe('DefaultAuthConnector', () => {
   });
 
   it('should complete normally when provider returns empty logout response', async () => {
-    server.use(rest.post('*', (_req, res, ctx) => res(ctx.status(200))));
+    server.use(http.post('*', () => new HttpResponse(null, { status: 200 })));
 
     const connector = new DefaultAuthConnector(defaultOptions);
     await connector.removeSession();
@@ -293,9 +299,7 @@ describe('DefaultAuthConnector', () => {
   });
 
   it('should complete normally when response is not JSON', async () => {
-    server.use(
-      rest.post('*', (_req, res, ctx) => res(ctx.status(200), ctx.text('OK'))),
-    );
+    server.use(http.post('*', () => HttpResponse.text('OK', { status: 200 })));
 
     const connector = new DefaultAuthConnector(defaultOptions);
     await connector.removeSession();
@@ -304,8 +308,8 @@ describe('DefaultAuthConnector', () => {
 
   it('should ignore logoutUrl with non-HTTPS protocol', async () => {
     server.use(
-      rest.post('*', (_req, res, ctx) =>
-        res(ctx.json({ logoutUrl: 'http://evil.com/steal' })),
+      http.post('*', () =>
+        HttpResponse.json({ logoutUrl: 'http://evil.com/steal' }),
       ),
     );
 

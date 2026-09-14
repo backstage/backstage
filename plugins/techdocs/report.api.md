@@ -13,6 +13,7 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityFilterQuery } from '@backstage/catalog-client';
 import { EntityListPagination } from '@backstage/plugin-catalog-react';
 import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
+import type { EntityPresentationApi } from '@backstage/plugin-catalog-react';
 import { FC } from 'react';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
@@ -133,11 +134,16 @@ export interface DocsTableColumnFactories {
   // (undocumented)
   createKindColumn(): TableColumn<DocsTableRow>;
   // (undocumented)
-  createNameColumn(): TableColumn<DocsTableRow>;
+  createNameColumn(options?: {
+    entityPresentationApi?: EntityPresentationApi;
+  }): TableColumn<DocsTableRow>;
   // (undocumented)
   createOwnerColumn(): TableColumn<DocsTableRow>;
   // (undocumented)
-  createTitleColumn(options?: { hidden?: boolean }): TableColumn<DocsTableRow>;
+  createTitleColumn(options?: {
+    hidden?: boolean;
+    entityPresentationApi?: EntityPresentationApi;
+  }): TableColumn<DocsTableRow>;
   // (undocumented)
   createTypeColumn(): TableColumn<DocsTableRow>;
 }

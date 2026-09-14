@@ -17,24 +17,56 @@
 import { forwardRef, useRef } from 'react';
 import { mergeProps, useFocusRing, useLink } from 'react-aria';
 import type { LinkProps } from './types';
-import { useDefinition } from '../../hooks/useDefinition';
+import {
+  useDefinition,
+  type UseDefinitionResult,
+} from '../../hooks/useDefinition';
 import { useResolvedHref } from '../../hooks/useResolvedHref';
 import { LinkDefinition } from './definition';
 import { getNodeText } from '../../analytics/getNodeText';
+import {
+  handleRouterLinkClick,
+  type AnchorNavigation,
+} from '../../navigation/useNavigation';
 
-const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
-  const { ownProps, restProps, dataAttributes, analytics } = useDefinition(
-    LinkDefinition,
-    props,
-  );
+type LinkViewProps = {
+  definitionResult: UseDefinitionResult<typeof LinkDefinition, LinkProps>;
+  navigation: AnchorNavigation;
+  forwardedRef: React.ForwardedRef<HTMLAnchorElement>;
+};
+
+function LinkView({
+  definitionResult,
+  navigation,
+  forwardedRef,
+}: LinkViewProps) {
+  const { ownProps, restProps, dataAttributes, analytics } = definitionResult;
   const { classes, title, children } = ownProps;
 
   const internalRef = useRef<HTMLAnchorElement>(null);
-  const linkRef = (ref || internalRef) as React.RefObject<HTMLAnchorElement>;
+  const linkRef = (forwardedRef ||
+    internalRef) as React.RefObject<HTMLAnchorElement>;
 
-  const { linkProps } = useLink(restProps, linkRef);
+  let resolvedLinkProps = restProps;
+  if (navigation.type === 'router') {
+    resolvedLinkProps = {
+      ...restProps,
+      href: navigation.ariaHref,
+      routerOptions: navigation.routerOptions,
+    };
+  } else if (navigation.type === 'native') {
+    resolvedLinkProps = {
+      ...restProps,
+      href: navigation.ariaHref,
+    };
+  }
+  // React Aria Components' Link filters out the native title attribute.
+  // Render the anchor explicitly so truncated links retain their browser tooltip.
+  const { linkProps } = useLink(resolvedLinkProps, linkRef);
   const { isFocusVisible, focusProps } = useFocusRing();
-  const resolvedHref = useResolvedHref(restProps.href);
+  const fallbackHref = useResolvedHref(restProps.href);
+  const resolvedHref =
+    navigation.type === 'native' ? navigation.browserHref : fallbackHref;
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     linkProps.onClick?.(e);
@@ -45,26 +77,42 @@ const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
     analytics.captureEvent('click', text, {
       attributes: { to: String(restProps.href ?? '') },
     });
+    handleRouterLinkClick(e, navigation);
   };
 
-  return (
-    <a
-      {...mergeProps(linkProps, focusProps)}
-      {...dataAttributes}
-      {...(restProps as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
-      href={resolvedHref}
-      ref={linkRef}
-      title={title}
-      className={classes.root}
-      data-focus-visible={isFocusVisible || undefined}
-      onClick={handleClick}
-    >
-      {children}
-    </a>
-  );
-});
+  const { href: _href, ...interactionProps } = mergeProps(
+    linkProps,
+    focusProps,
+  ) as React.AnchorHTMLAttributes<HTMLAnchorElement>;
+  const {
+    href: _restHref,
+    routerOptions: _routerOptions,
+    ...anchorProps
+  } = restProps;
+  const commonProps = {
+    ...interactionProps,
+    ...dataAttributes,
+    ...(anchorProps as React.AnchorHTMLAttributes<HTMLAnchorElement>),
+    ref: linkRef,
+    title,
+    className: classes.root,
+    'data-focus-visible': isFocusVisible || undefined,
+    onClick: handleClick,
+    children,
+  };
 
-LinkInternal.displayName = 'LinkInternal';
+  if (navigation.type === 'router') {
+    return (
+      <navigation.Link
+        {...commonProps}
+        {...navigation.routerLinkOptions}
+        to={navigation.to}
+      />
+    );
+  }
+
+  return <a {...commonProps} href={resolvedHref} />;
+}
 
 /**
  * A styled anchor element that supports analytics event tracking on click.
@@ -72,7 +120,16 @@ LinkInternal.displayName = 'LinkInternal';
  * @public
  */
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
-  return <LinkInternal {...props} ref={ref} />;
+  const definitionResult = useDefinition(LinkDefinition, props);
+  const Navigation = definitionResult.navigation;
+
+  return (
+    <Navigation
+      props={definitionResult.restProps}
+      view={LinkView}
+      viewProps={{ definitionResult, forwardedRef: ref }}
+    />
+  );
 });
 
 Link.displayName = 'Link';

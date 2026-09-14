@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { CustomHomepageGrid } from './CustomHomepageGrid';
 import {
   renderInTestApp,
@@ -77,6 +77,11 @@ const defaultConfig: ComponentProps<typeof CustomHomepageGrid>['config'] = [
     width: 20,
     height: 10,
   },
+];
+
+const twoWidgetConfig: ComponentProps<typeof CustomHomepageGrid>['config'] = [
+  { component: 'A', x: 0, y: 0, width: 10, height: 10 },
+  { component: 'B', x: 10, y: 0, width: 10, height: 10 },
 ];
 
 describe('CustomHomepageGrid', () => {
@@ -165,5 +170,100 @@ describe('CustomHomepageGrid', () => {
     ).toEqual(
       expect.objectContaining({ presence: 'absent', value: undefined }),
     );
+  });
+
+  it('should list all widgets and allows adding duplicates when preventDuplicateWidgets is false', async () => {
+    const mockStorage = mockApis.storage();
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[storageApiRef, mockStorage]]}>
+        <CustomHomepageGrid
+          config={defaultConfig}
+          preventDuplicateWidgets={false}
+        >
+          <ComponentA />
+          <ComponentB />
+          <ComponentC />
+        </CustomHomepageGrid>
+      </TestApiProvider>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Add widget' }));
+
+    const dialog = screen.getByRole('dialog');
+    expect(
+      within(dialog).getByRole('heading', {
+        name: 'Add new widget to dashboard',
+      }),
+    ).toBeInTheDocument();
+    expect(within(dialog).getByText('A')).toBeInTheDocument();
+    expect(within(dialog).getByText('B')).toBeInTheDocument();
+    expect(within(dialog).getByText('C')).toBeInTheDocument();
+
+    await userEvent.click(within(dialog).getByText('A'));
+    expect(screen.getAllByText('A')).toHaveLength(2);
+  });
+
+  it('should only list available widgets not already on the grid when preventDuplicateWidgets is true', async () => {
+    const mockStorage = mockApis.storage();
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[storageApiRef, mockStorage]]}>
+        <CustomHomepageGrid config={twoWidgetConfig} preventDuplicateWidgets>
+          <ComponentA />
+          <ComponentB />
+          <ComponentC />
+        </CustomHomepageGrid>
+      </TestApiProvider>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Add widget' }));
+
+    const dialog = screen.getByRole('dialog');
+    expect(
+      within(dialog).getByRole('heading', {
+        name: 'Add new widget to dashboard',
+      }),
+    ).toBeInTheDocument();
+    expect(within(dialog).getByText('C')).toBeInTheDocument();
+    expect(within(dialog).queryByText('A')).not.toBeInTheDocument();
+    expect(within(dialog).queryByText('B')).not.toBeInTheDocument();
+
+    await userEvent.click(within(dialog).getByText('C'));
+
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Add widget' }),
+    );
+
+    expect(
+      await screen.findByText(
+        'All available widgets have been added to the dashboard.',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('should show empty state when preventDuplicateWidgets is true and all widgets are on grid', async () => {
+    const mockStorage = mockApis.storage();
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[storageApiRef, mockStorage]]}>
+        <CustomHomepageGrid config={defaultConfig} preventDuplicateWidgets>
+          <ComponentA />
+          <ComponentB />
+          <ComponentC />
+        </CustomHomepageGrid>
+      </TestApiProvider>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Add widget' }));
+
+    expect(
+      screen.getByText(
+        'All available widgets have been added to the dashboard.',
+      ),
+    ).toBeInTheDocument();
   });
 });

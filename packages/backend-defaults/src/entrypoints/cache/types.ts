@@ -14,11 +14,61 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
-import { HumanDuration, durationToMilliseconds } from '@backstage/types';
-import { RedisClusterOptions, KeyvRedisOptions } from '@keyv/redis';
-import { KeyvValkeyOptions } from '@keyv/valkey';
-import { ClusterNode, ClusterOptions } from 'iovalkey';
+import type {
+  LoggerService,
+  RootConfigService,
+} from '@backstage/backend-plugin-api';
+import { durationToMilliseconds, type HumanDuration } from '@backstage/types';
+import type { RedisClusterOptions, KeyvRedisOptions } from '@keyv/redis';
+import type { KeyvValkeyOptions } from '@keyv/valkey';
+import type { ClusterNode, ClusterOptions } from 'iovalkey';
+
+/**
+ * An object form of a cache store connection, with a URL and additional
+ * connection options passed through to the underlying client.
+ *
+ * @public
+ */
+export type CacheStoreConnectionObject = { url: string } & Record<
+  string,
+  unknown
+>;
+
+/**
+ * A cache store connection, either a URL string or an object with
+ * connection options passed through to the underlying client.
+ *
+ * @public
+ */
+export type CacheStoreConnection = string | CacheStoreConnectionObject;
+
+/**
+ * Common config options passed to store-specific config parsers.
+ *
+ * @public
+ */
+export type CacheStoreConfiguration = {
+  storeConfigPath: string;
+};
+
+/**
+ * Service dependencies required by cache store config parsers.
+ *
+ * @public
+ */
+export type CacheStoreDeps = {
+  config: RootConfigService;
+  logger?: LoggerService;
+};
+
+/**
+ * Parse options for the Redis cache store
+ *
+ * @public
+ */
+export type RedisCacheStoreConfiguration = CacheStoreConfiguration & {
+  connection: CacheStoreConnection;
+};
 
 /**
  * Options for Redis cache store.

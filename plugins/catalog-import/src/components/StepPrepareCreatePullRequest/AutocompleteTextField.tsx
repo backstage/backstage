@@ -22,13 +22,52 @@ import { ComponentProps, ReactNode, ChangeEvent, Fragment } from 'react';
 import { Controller, FieldErrors } from 'react-hook-form';
 
 /**
+ * An option of {@link AutocompleteTextField}.
+ *
+ * Plain strings are used both as the visible label and as the selected value,
+ * while the object form allows the option to be presented with a different
+ * label than the value it selects.
+ *
+ * @public
+ */
+export type AutocompleteTextFieldOption =
+  | string
+  | { label: string; id: string };
+
+function optionLabel(option: AutocompleteTextFieldOption): string {
+  return typeof option === 'string' ? option : option.label;
+}
+
+/**
+ * Resolves the value that is stored in the form for a selection.
+ *
+ * `autoSelect` combined with `freeSolo` makes the autocompletion emit the raw
+ * input string rather than the option object, both when an option is picked
+ * from the list and when the field is blurred. Labelled options are therefore
+ * matched back to their id, so that the form never stores a display label.
+ */
+function optionValue(
+  value: AutocompleteTextFieldOption | null,
+  options: AutocompleteTextFieldOption[],
+): string | null {
+  if (value === null) {
+    return null;
+  }
+  if (typeof value !== 'string') {
+    return value.id;
+  }
+  const option = options.find(o => typeof o !== 'string' && o.label === value);
+  return option && typeof option !== 'string' ? option.id : value;
+}
+
+/**
  * Props for {@link AutocompleteTextField}.
  *
  * @public
  */
 export interface AutocompleteTextFieldProps<TFieldValue extends string> {
   name: TFieldValue;
-  options: string[];
+  options: AutocompleteTextFieldOption[];
   required?: boolean;
 
   errors?: FieldErrors;
@@ -75,9 +114,11 @@ export const AutocompleteTextField = <TFieldValue extends string>(
           options={options || []}
           autoSelect
           freeSolo
-          onChange={(_event: ChangeEvent<{}>, value: string | null) =>
-            onChange(value)
-          }
+          getOptionLabel={optionLabel}
+          onChange={(
+            _event: ChangeEvent<{}>,
+            value: AutocompleteTextFieldOption | null,
+          ) => onChange(optionValue(value, options))}
           renderInput={params => (
             <TextField
               {...params}

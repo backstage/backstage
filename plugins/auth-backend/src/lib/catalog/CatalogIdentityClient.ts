@@ -83,7 +83,7 @@ export class CatalogIdentityClient {
     const resolvedEntityRefs = entityRefs
       .map((ref: string) => {
         try {
-          const parsedRef = parseEntityRef(ref.toLocaleLowerCase('en-US'), {
+          const parsedRef = parseEntityRef(ref.toLowerCase(), {
             defaultKind: 'user',
             defaultNamespace: 'default',
           });

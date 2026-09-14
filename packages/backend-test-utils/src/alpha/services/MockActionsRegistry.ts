@@ -87,7 +87,8 @@ export class MockActionsRegistry
         title: action.title,
         description: action.description,
         attributes: {
-          destructive: action.attributes?.destructive ?? true,
+          destructive:
+            action.attributes?.destructive ?? !action.attributes?.readOnly,
           idempotent: action.attributes?.idempotent ?? false,
           readOnly: action.attributes?.readOnly ?? false,
         },

@@ -25,6 +25,14 @@ import { ConflictError, stringifyError } from '@backstage/errors';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { InternalServiceFactory } from '../../../backend-plugin-api/src/services/system/types';
 import { DependencyGraph } from '../lib/DependencyGraph';
+import {
+  assertObject,
+  assertObjectLike,
+  describeBackendFeature,
+  throwInvalidBackendFeature,
+  validateServiceRef,
+} from './validateBackendFeature';
+
 /**
  * Keep in sync with `@backstage/backend-plugin-api/src/services/system/types.ts`
  * @internal
@@ -37,14 +45,27 @@ export type InternalServiceRef = ServiceRef<unknown> & {
 
 function toInternalServiceFactory<TService, TScope extends 'plugin' | 'root'>(
   factory: ServiceFactory<TService, TScope>,
+  path: string,
 ): InternalServiceFactory<TService, TScope> {
-  const f = factory as InternalServiceFactory<TService, TScope>;
+  assertObjectLike(factory, path);
+  const f = factory as unknown as InternalServiceFactory<TService, TScope>;
   if (f.$$type !== '@backstage/BackendFeature') {
-    throw new Error(`Invalid service factory, bad type '${f.$$type}'`);
+    throwInvalidBackendFeature(
+      `${path}.$$type`,
+      '"@backstage/BackendFeature"',
+      f.$$type,
+    );
   }
   if (f.version !== 'v1') {
-    throw new Error(`Invalid service factory, bad version '${f.version}'`);
+    throwInvalidBackendFeature(`${path}.version`, '"v1"', f.version);
   }
+
+  validateServiceRef(f.service, `${path}.service`);
+  assertObject(f.deps, `${path}.deps`, 'a dependency object');
+  for (const [name, ref] of Object.entries(f.deps)) {
+    validateServiceRef(ref, `${path}.deps.${name}`);
+  }
+
   return f;
 }
 
@@ -61,15 +82,16 @@ function createPluginMetadataServiceFactory(pluginId: string) {
 export class ServiceRegistry {
   static create(factories: Array<ServiceFactory>): ServiceRegistry {
     const factoryMap = new Map<string, InternalServiceFactory[]>();
-    for (const factory of factories) {
+    for (let index = 0; index < factories.length; index++) {
+      const source =
+        describeBackendFeature(factories[index]) ??
+        `default service factories[${index}]`;
+      const factory = toInternalServiceFactory(factories[index], source);
       if (factory.service.multiton) {
         const existing = factoryMap.get(factory.service.id) ?? [];
-        factoryMap.set(
-          factory.service.id,
-          existing.concat(toInternalServiceFactory(factory)),
-        );
+        factoryMap.set(factory.service.id, existing.concat(factory));
       } else {
-        factoryMap.set(factory.service.id, [toInternalServiceFactory(factory)]);
+        factoryMap.set(factory.service.id, [factory]);
       }
     }
     const registry = new ServiceRegistry(factoryMap);
@@ -109,7 +131,10 @@ export class ServiceRegistry {
     // Special case handling of the plugin metadata service, generating a custom factory for it each time
     if (ref.id === coreServices.pluginMetadata.id) {
       return Promise.resolve([
-        toInternalServiceFactory(createPluginMetadataServiceFactory(pluginId)),
+        toInternalServiceFactory(
+          createPluginMetadataServiceFactory(pluginId),
+          'plugin metadata service factory',
+        ),
       ]);
     }
 
@@ -128,7 +153,10 @@ export class ServiceRegistry {
         loadedFactory = Promise.resolve()
           .then(() => defaultFactory!(ref))
           .then(f =>
-            toInternalServiceFactory(typeof f === 'function' ? f() : f),
+            toInternalServiceFactory(
+              typeof f === 'function' ? f() : f,
+              `default factory for service ${JSON.stringify(ref.id)}`,
+            ),
           );
         this.#loadedDefaultFactories.set(defaultFactory!, loadedFactory);
       }
@@ -200,8 +228,11 @@ export class ServiceRegistry {
     return this.#addedFactoryIds.has(ref.id);
   }
 
-  add(factory: ServiceFactory) {
-    const factoryId = factory.service.id;
+  add(factory: ServiceFactory, source?: string) {
+    const factorySource =
+      source ?? describeBackendFeature(factory) ?? 'service factory';
+    const internalFactory = toInternalServiceFactory(factory, factorySource);
+    const factoryId = internalFactory.service.id;
     if (factoryId === coreServices.pluginMetadata.id) {
       throw new Error(
         `The ${coreServices.pluginMetadata.id} service cannot be overridden`,
@@ -214,10 +245,10 @@ export class ServiceRegistry {
       );
     }
 
-    if (factory.service.multiton) {
+    if (internalFactory.service.multiton) {
       const newFactories = (
         this.#providedFactories.get(factoryId) ?? []
-      ).concat(toInternalServiceFactory(factory));
+      ).concat(internalFactory);
       this.#providedFactories.set(factoryId, newFactories);
     } else {
       if (this.#addedFactoryIds.has(factoryId)) {
@@ -227,9 +258,7 @@ export class ServiceRegistry {
       }
 
       this.#addedFactoryIds.add(factoryId);
-      this.#providedFactories.set(factoryId, [
-        toInternalServiceFactory(factory),
-      ]);
+      this.#providedFactories.set(factoryId, [internalFactory]);
     }
   }
 

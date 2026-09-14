@@ -63,6 +63,7 @@ const dynamicPluginsRootLoggerServiceFactoryWithOptions = (
         dependencies: (
           await getPackages(process.cwd())
         ).packages.map(p => p.packageJson.name),
+        onSchemaError: error => logger.warn(error.message),
       });
 
       const secretEnumerator = await createConfigSecretEnumerator({

@@ -44,21 +44,32 @@ const useSanitizerConfig = () => {
 export const useSanitizerTransformer = (): Transformer => {
   const config = useSanitizerConfig();
 
+  const purify = useMemo(() => {
+    // eslint-disable-next-line new-cap
+    const instance = DOMPurify();
+
+    instance.addHook('beforeSanitizeElements', removeUnsafeLinks);
+
+    const hosts = config?.getOptionalStringArray('allowedIframeHosts');
+    if (hosts) {
+      instance.addHook('beforeSanitizeElements', removeUnsafeIframes(hosts));
+    }
+
+    instance.addHook('uponSanitizeElement', removeUnsafeMetaTags);
+
+    instance.addHook('uponSanitizeAttribute', removeRestrictedAttributes);
+
+    return instance;
+  }, [config]);
+
   return useCallback(
     async (dom: Element) => {
       const hosts = config?.getOptionalStringArray('allowedIframeHosts');
-
-      DOMPurify.addHook('beforeSanitizeElements', removeUnsafeLinks);
       const tags = ['link', 'meta'];
 
       if (hosts) {
         tags.push('iframe');
-        DOMPurify.addHook('beforeSanitizeElements', removeUnsafeIframes(hosts));
       }
-
-      DOMPurify.addHook('uponSanitizeElement', removeUnsafeMetaTags);
-
-      DOMPurify.addHook('uponSanitizeAttribute', removeRestrictedAttributes);
 
       const tagNameCheck = config?.getOptionalString(
         'allowedCustomElementTagNameRegExp',
@@ -97,7 +108,7 @@ export const useSanitizerTransformer = (): Transformer => {
       );
 
       // using outerHTML as we want to preserve the html tag attributes (lang)
-      return DOMPurify.sanitize(dom.outerHTML, {
+      return purify.sanitize(dom.outerHTML, {
         ADD_TAGS: tags,
         FORBID_TAGS: ['style'],
         ADD_ATTR: ['http-equiv', 'content', 'dominant-baseline'],
@@ -112,6 +123,6 @@ export const useSanitizerTransformer = (): Transformer => {
         },
       }) as Element;
     },
-    [config],
+    [config, purify],
   );
 };

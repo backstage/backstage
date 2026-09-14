@@ -16,6 +16,8 @@
 
 import { HumanDuration } from '@backstage/types';
 
+import { ContainerRunnerPullOptions } from '@backstage/plugin-techdocs-node';
+
 export interface Config {
   /**
    * Configuration options for the techdocs-backend plugin
@@ -46,6 +48,12 @@ export interface Config {
        * Pull the latest docker image
        */
       pullImage?: boolean;
+
+      /**
+       * Credentials for private registries
+       * @visibility secret
+       */
+      pullOptions?: ContainerRunnerPullOptions;
 
       /**
        * Override behavior specific to mkdocs.

@@ -76,6 +76,42 @@ describe('parseUrl', () => {
     });
   });
 
+  it('decodes blob path segments exactly once', () => {
+    expect(
+      parseUrl(
+        'https://test-account.blob.core.windows.net/mycontainer/%252e%252e/protected/catalog-info.yaml',
+      ),
+    ).toEqual({
+      path: '%2e%2e/protected/catalog-info.yaml',
+      container: 'mycontainer',
+    });
+  });
+
+  it.each([
+    '..',
+    '.',
+    '%2e%2e',
+    '%2E%2E',
+    '.%2e',
+    '%2e.',
+    '%2e%2e%2fprotected',
+    '%2e%2e%5cprotected',
+  ])('rejects encoded dot path segment %s', encodedDotSegment => {
+    expect(() =>
+      parseUrl(
+        `https://test-account.blob.core.windows.net/mycontainer/${encodedDotSegment}/protected/catalog-info.yaml`,
+      ),
+    ).toThrow('Invalid Azure Blob Storage URL format');
+  });
+
+  it('rejects encoded dot segments with backslash URL delimiters', () => {
+    expect(() =>
+      parseUrl(
+        String.raw`https://test-account.blob.core.windows.net\mycontainer\%2e%2e\protected\catalog-info.yaml`,
+      ),
+    ).toThrow('Invalid Azure Blob Storage URL format');
+  });
+
   it('throws error for invalid URLs', () => {
     expect(() =>
       parseUrl('https://test-account.blob.core.windows.net/'),
@@ -258,6 +294,43 @@ describe('AzureBlobStorageUrlReader', () => {
       const files = await response.files();
       expect(files).toHaveLength(2);
     });
+
+    it.each([
+      ['literal dot-dot', 'prefix/uploads/../legitimate.yaml'],
+      ['deep traversal', 'prefix/uploads/../../etc/passwd'],
+      ['backslash', 'prefix/uploads\\../legitimate.yaml'],
+      ['encoded dot-dot', 'prefix/uploads/%2e%2e/legitimate.yaml'],
+      ['mixed encoded', 'prefix/uploads/.%2e/legitimate.yaml'],
+      ['uppercase encoded', 'prefix/uploads/%2E%2E/legitimate.yaml'],
+    ])(
+      'filters out blobs with %s path traversal segments',
+      async (_label, maliciousName) => {
+        mockListBlobsFlat.mockReturnValue(
+          (async function* mockIterator() {
+            yield {
+              name: 'prefix/legitimate.yaml',
+              properties: { lastModified: new Date('2025-01-01T00:00:00Z') },
+            };
+            yield {
+              name: maliciousName,
+              properties: { lastModified: new Date('2025-01-02T00:00:00Z') },
+            };
+          })(),
+        );
+
+        mockBlobDownload.mockResolvedValue({
+          readableStreamBody: Readable.from(Buffer.from('test content')),
+        });
+
+        const response = await reader.readTree(
+          'https://test-account.blob.core.windows.net/test-container/prefix/',
+        );
+        const files = await response.files();
+
+        expect(files).toHaveLength(1);
+        expect(files[0].path).toBe('legitimate.yaml');
+      },
+    );
   });
 
   describe('search', () => {

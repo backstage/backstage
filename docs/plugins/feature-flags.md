@@ -4,7 +4,7 @@ title: Feature Flags
 description: Details the process of defining setting and reading a feature flag.
 ---
 
-:::caution Legacy Documentation
+:::caution[Legacy Documentation]
 
 This page describes feature flags using the **old frontend system** APIs (`createPlugin` from `@backstage/core-plugin-api` and `createApp` from `@backstage/app-defaults`). For the new frontend system version, see [Feature Flags](../frontend-system/building-plugins/09-feature-flags.md). The `FeatureFlagged` component and `featureFlagsApiRef` work the same way in both systems.
 

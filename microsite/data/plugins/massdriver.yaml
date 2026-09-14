@@ -1,0 +1,11 @@
+---
+title: Massdriver
+author: Massdriver
+authorUrl: https://www.massdriver.cloud/
+category: Infrastructure
+description: Live, read-only view of your Massdriver projects, environment graphs, and instance details inside Backstage, with deep links into the Massdriver app for actions.
+documentation: https://github.com/massdriver-cloud/massdriver-backstage/tree/main/plugins/massdriver
+iconUrl: /img/massdriver-logo.svg
+npmPackageName: '@massdriver/backstage-plugin'
+addedDate: '2026-07-16'
+status: active
