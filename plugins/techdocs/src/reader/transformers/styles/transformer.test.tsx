@@ -60,7 +60,11 @@ describe('Transformers > Styles', () => {
     const sidebar = style!.textContent?.match(/\.md-sidebar \{.*?\}/s);
     expect(sidebar).toHaveLength(1);
     expect(sidebar![0]).toContain('overflow-y: auto');
-    expect(sidebar![0]).toContain('max-height: calc(100dvh');
+    expect(sidebar![0]).toContain('top: var(--bui-space-3, 12px)');
+    expect(sidebar![0]).toContain(
+      'max-height: calc(100dvh - var(--bui-space-6, 24px))',
+    );
+    expect(sidebar![0]).not.toContain('--bui-header-height');
     expect(sidebar![0]).toContain(
       'padding-bottom: var(--bui-space-3, 12px) !important',
     );
