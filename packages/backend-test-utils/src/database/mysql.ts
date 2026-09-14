@@ -20,6 +20,7 @@ import { randomUUID as uuid } from 'node:crypto';
 import yn from 'yn';
 import { waitForReady } from '../util/waitForReady';
 import { Engine, TEST_POOL_CONFIG, TestDatabaseProperties } from './types';
+import { dropDatabases } from './dropDatabases';
 
 async function waitForMysqlReady(
   connection: Knex.MySqlConnectionConfig,
@@ -216,13 +217,7 @@ export class MysqlEngine implements Engine {
     let adminConnection: Knex | undefined;
     try {
       adminConnection = this.#connectAdmin();
-      for (const databaseName of this.#databaseNames) {
-        try {
-          await adminConnection.raw('DROP DATABASE ??', [databaseName]);
-        } catch {
-          // Best-effort — the database may already be gone
-        }
-      }
+      await dropDatabases(adminConnection, this.#databaseNames);
     } catch {
       // Best-effort — the container may already be stopped
     } finally {
