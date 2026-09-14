@@ -18,6 +18,20 @@ import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
 
 describe('createRegisterCatalogEntitiesAction', () => {
+  it('requires location creation permission for action visibility', () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+
+    createRegisterCatalogEntitiesAction({
+      catalog: catalogServiceMock(),
+      actionsRegistry: mockActionsRegistry,
+    });
+
+    expect(
+      mockActionsRegistry.actions.get('test:register-entity')
+        ?.visibilityPermission?.name,
+    ).toBe('catalog.location.create');
+  });
+
   it('should successfully register a catalog location with a valid URL', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const mockCatalog = catalogServiceMock();
