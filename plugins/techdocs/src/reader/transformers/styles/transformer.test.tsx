@@ -69,6 +69,9 @@ describe('Transformers > Styles', () => {
     );
     expect(sidebarScrollWrap).toHaveLength(1);
     expect(sidebarScrollWrap![0]).toContain('overflow-y: visible');
+    expect(style).toHaveTextContent(
+      '.md-sidebar--primary .md-nav--primary > .md-nav__title { position: static;',
+    );
     expect(style).not.toHaveTextContent('bottom: 75px');
     expect(style).toHaveTextContent(
       '/*================== Typeset ==================*/',
