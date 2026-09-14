@@ -5,8 +5,8 @@ description: Configure and consume Bitbucket Cloud connections
 ---
 
 The `bitbucket-cloud` connection type represents a Bitbucket Cloud host. It has
-[multiton cardinality](../concepts.md#cardinality) and uses the `host`
-[lookup strategy](../concepts.md#lookup-strategies).
+[multiton cardinality](../01-concepts.md#cardinality) and uses the `host`
+[lookup strategy](../01-concepts.md#lookup-strategies).
 
 ## Configure Bitbucket Cloud
 
@@ -45,13 +45,13 @@ Use `none` explicitly when the consumer only needs public Bitbucket content.
 
 ## Lookup and selection
 
-The consumer supplies a [lookup query](../concepts.md#lookup-queries) containing
+The consumer supplies a [lookup query](../01-concepts.md#lookup-queries) containing
 a Bitbucket URL. The service selects the connection whose `host` matches the
 parsed URL host exactly.
 
 When more than one authentication entry is visible to the calling plugin, the
 first visible entry is selected. Use
-[plugin scoping](../concepts.md#plugin-scoping) to supply different credentials
+[plugin scoping](../01-concepts.md#plugin-scoping) to supply different credentials
 to a specific plugin; otherwise, configuration order determines which entry is
 selected. The selected method must appear in the consumer's `authMethods` list.
 
@@ -70,4 +70,4 @@ if (connection.auth.method === 'appPassword') {
 }
 ```
 
-Return to the [built-in connection type index](../built-in-connection-types.md).
+Return to the [built-in connection type index](../04-built-in-connection-types.md).

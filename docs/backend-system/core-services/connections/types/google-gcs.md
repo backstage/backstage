@@ -5,8 +5,8 @@ description: Configure and consume Google Cloud Storage connections
 ---
 
 The `google-gcs` connection type represents a Google Cloud Storage host. It has
-[multiton cardinality](../concepts.md#cardinality) and uses the `host`
-[lookup strategy](../concepts.md#lookup-strategies).
+[multiton cardinality](../01-concepts.md#cardinality) and uses the `host`
+[lookup strategy](../01-concepts.md#lookup-strategies).
 
 ## Configure Google Cloud Storage
 
@@ -42,13 +42,13 @@ Use `none` explicitly for publicly readable objects.
 
 ## Lookup and selection
 
-The consumer supplies a [lookup query](../concepts.md#lookup-queries) containing
+The consumer supplies a [lookup query](../01-concepts.md#lookup-queries) containing
 a Google Cloud Storage URL. The service selects the connection whose `host`
 matches the parsed URL host exactly.
 
 When more than one authentication entry is visible to the calling plugin, the
 first visible entry is selected. Use
-[plugin scoping](../concepts.md#plugin-scoping) to supply different credentials
+[plugin scoping](../01-concepts.md#plugin-scoping) to supply different credentials
 to a specific plugin; otherwise, configuration order determines which entry is
 selected.
 
@@ -67,4 +67,4 @@ if (connection.auth.method === 'serviceAccount') {
 }
 ```
 
-Return to the [built-in connection type index](../built-in-connection-types.md).
+Return to the [built-in connection type index](../04-built-in-connection-types.md).

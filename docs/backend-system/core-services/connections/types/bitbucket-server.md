@@ -6,8 +6,8 @@ description: Configure and consume Bitbucket Server connections
 
 The `bitbucket-server` connection type represents a Bitbucket Server or
 Bitbucket Data Center host. It has
-[multiton cardinality](../concepts.md#cardinality) and uses the `host`
-[lookup strategy](../concepts.md#lookup-strategies).
+[multiton cardinality](../01-concepts.md#cardinality) and uses the `host`
+[lookup strategy](../01-concepts.md#lookup-strategies).
 
 ## Configure Bitbucket Server
 
@@ -41,13 +41,13 @@ Use `none` explicitly for unauthenticated access to public content.
 
 ## Lookup and selection
 
-The consumer supplies a [lookup query](../concepts.md#lookup-queries) containing
+The consumer supplies a [lookup query](../01-concepts.md#lookup-queries) containing
 a repository or content URL. The service selects the connection whose `host`
 matches the parsed URL host exactly.
 
 When more than one authentication entry is visible to the calling plugin, the
 first visible entry is selected. Use
-[plugin scoping](../concepts.md#plugin-scoping) to supply different credentials
+[plugin scoping](../01-concepts.md#plugin-scoping) to supply different credentials
 to a specific plugin; otherwise, configuration order determines which entry is
 selected.
 
@@ -67,4 +67,4 @@ if (connection.auth.method === 'token') {
 }
 ```
 
-Return to the [built-in connection type index](../built-in-connection-types.md).
+Return to the [built-in connection type index](../04-built-in-connection-types.md).

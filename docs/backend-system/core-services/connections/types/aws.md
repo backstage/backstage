@@ -6,13 +6,13 @@ description: Configure and consume AWS account connections
 
 The `aws` connection type represents credentials for one or more Amazon Web
 Services (AWS) accounts. It has
-[singleton cardinality](../concepts.md#cardinality), so configuration contains
+[singleton cardinality](../01-concepts.md#cardinality), so configuration contains
 at most one `aws` connection. Individual accounts are represented by
-`account` [authentication entries](../concepts.md#authentication-entry) inside
+`account` [authentication entries](../01-concepts.md#authentication-entry) inside
 that connection.
 
 Unlike most built-in types, AWS uses the `aws`
-[lookup strategy](../concepts.md#lookup-strategies). Consumers look up an
+[lookup strategy](../01-concepts.md#lookup-strategies). Consumers look up an
 account number or Amazon Resource Name (ARN), not a URL host.
 
 ## Configure AWS
@@ -93,7 +93,7 @@ Selection follows this order:
 A malformed ARN causes an `InputError` instead of falling back to the main
 account.
 
-[Plugin scoping](../concepts.md#plugin-scoping) can restrict which account
+[Plugin scoping](../01-concepts.md#plugin-scoping) can restrict which account
 entries a plugin can see. The selection order applies only to the entries that
 remain visible to that plugin.
 
@@ -146,4 +146,4 @@ The returned fields are static inputs to an AWS credential provider. The
 connection service does not load profiles, read web identity token files, or
 perform role assumption.
 
-Return to the [built-in connection type index](../built-in-connection-types.md).
+Return to the [built-in connection type index](../04-built-in-connection-types.md).

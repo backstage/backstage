@@ -5,9 +5,9 @@ description: Directory of the built-in Backstage connection types
 ---
 
 The `@backstage/connections` package provides the canonical
-[connection types](./concepts.md#connection-type) in this directory. Each type
+[connection types](./01-concepts.md#connection-type) in this directory. Each type
 has its own guide with valid configuration, connection fields,
-[authentication methods](./concepts.md#authentication-method), lookup behavior,
+[authentication methods](./01-concepts.md#authentication-method), lookup behavior,
 selection rules, and a typed consumption example.
 
 ## Cloud accounts and storage
@@ -47,23 +47,23 @@ selection rules, and a typed consumption example.
 
 ## Common behavior
 
-Every [configured connection](./concepts.md#configured-connection) supports the
+Every [configured connection](./01-concepts.md#configured-connection) supports the
 framework-owned `type`, `title`, `match`, and `auth` fields. Every
-[authentication entry](./concepts.md#authentication-entry) supports `method`,
+[authentication entry](./01-concepts.md#authentication-entry) supports `method`,
 `title`, and `match` in addition to the fields defined by its method.
 
-Most built-in types have [multiton cardinality](./concepts.md#cardinality) and
-use the `host` [lookup strategy](./concepts.md#lookup-strategies). Their
+Most built-in types have [multiton cardinality](./01-concepts.md#cardinality) and
+use the `host` [lookup strategy](./01-concepts.md#lookup-strategies). Their
 consumers pass `query: { url }`, and the service selects the connection whose
 configured `host` matches the parsed URL host.
 
 AWS is the exception. It is a singleton that accepts `accountId` or `arn` in
-its [lookup query](./concepts.md#lookup-queries) and selects an account
+its [lookup query](./01-concepts.md#lookup-queries) and selects an account
 authentication entry from within the connection.
 
 Unless a type documents its own authentication selection rules, the service
 returns the first authentication entry visible to the calling plugin. See
-[What happens during `find`](./concepts.md#what-happens-during-find) for the
+[What happens during `find`](./01-concepts.md#what-happens-during-find) for the
 complete selection order.
 
 ## Inspect schemas programmatically

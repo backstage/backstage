@@ -4,7 +4,7 @@ title: Configure and manage connections
 description: Create, change, scope, and migrate Backstage connection configuration
 ---
 
-[Connections](./concepts.md#configured-connection) are configured as an array
+[Connections](./01-concepts.md#configured-connection) are configured as an array
 at the root of `app-config.yaml`. The default service loads the array at
 backend startup, validates every entry, and assigns display titles where they
 are omitted.
@@ -30,10 +30,10 @@ connections:
 ```
 
 Set `type` to one of the
-[built-in connection types](./built-in-connection-types.md). The
-[connection type](./concepts.md#connection-type) determines the allowed
-connection fields, [authentication methods](./concepts.md#authentication-method),
-[lookup query](./concepts.md#lookup-queries), and validation rules.
+[built-in connection types](./04-built-in-connection-types.md). The
+[connection type](./01-concepts.md#connection-type) determines the allowed
+connection fields, [authentication methods](./01-concepts.md#authentication-method),
+[lookup query](./01-concepts.md#lookup-queries), and validation rules.
 
 Store secret values outside source control and reference them through
 [environment variable substitution](../../../conf/writing.md#environment-variable-substitution).
@@ -43,7 +43,7 @@ secret causes startup to fail with configuration context.
 ## Configure unauthenticated access
 
 Every connection requires at least one
-[authentication entry](./concepts.md#authentication-entry). When a type
+[authentication entry](./01-concepts.md#authentication-entry). When a type
 supports unauthenticated access, use the `none` method:
 
 ```yaml title="app-config.yaml"
@@ -61,7 +61,7 @@ authentication.
 ## Configure multiple endpoints of one type
 
 Connection types that use the host
-[lookup strategy](./concepts.md#lookup-strategies) allow multiple entries when
+[lookup strategy](./01-concepts.md#lookup-strategies) allow multiple entries when
 each entry has a different host:
 
 ```yaml title="app-config.yaml"
@@ -102,7 +102,7 @@ GitHub App for one organization.
 
 ### Select a credential for a plugin
 
-Use [plugin scoping](./concepts.md#plugin-scoping) through `match.plugins` on an
+Use [plugin scoping](./01-concepts.md#plugin-scoping) through `match.plugins` on an
 authentication entry to make it visible only to the listed plugin IDs:
 
 ```yaml title="app-config.yaml"
@@ -223,7 +223,7 @@ plugin match, or authentication method:
    connection list.
 1. Exercise a plugin lookup for the affected type and target.
 
-Changing an [authentication method](./concepts.md#authentication-method) can
+Changing an [authentication method](./01-concepts.md#authentication-method) can
 affect consumers. Each consumer lists the methods it understands, and a lookup
 fails if the configured selection resolves to an unsupported method. Check the
 consuming plugins before removing an authentication entry or changing its
@@ -332,5 +332,5 @@ At lookup time, distinguish these outcomes:
 - `InputError` can indicate an invalid query, such as a malformed URL, or a
   lookup for a connection type the plugin did not declare.
 
-See [Consume connections](./consuming-connections.md) for error handling in
+See [Consume connections](./03-consuming-connections.md) for error handling in
 plugin code.

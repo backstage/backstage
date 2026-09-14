@@ -4,11 +4,11 @@ title: Create or modify a connection type
 description: Add and evolve canonical connection types in the Backstage framework
 ---
 
-A [connection type](./concepts.md#connection-type) is the canonical contract
+A [connection type](./01-concepts.md#connection-type) is the canonical contract
 between Backstage configuration and every plugin that consumes one kind of
 external system. A type defines the connection fields,
-[authentication methods](./concepts.md#authentication-method),
-[lookup query](./concepts.md#lookup-queries), validation, and authentication
+[authentication methods](./01-concepts.md#authentication-method),
+[lookup query](./01-concepts.md#lookup-queries), validation, and authentication
 selection behavior.
 
 :::caution[Framework contribution path]
@@ -43,19 +43,19 @@ or consumer contract is fundamentally different.
 
 Before writing code, decide:
 
-| Decision                                           | Questions                                                                                                  |
-| -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| Type key                                           | Is the lowercase key unique and recognizable in configuration?                                             |
-| Title                                              | What human-readable name should tooling display?                                                           |
-| [Cardinality](./concepts.md#cardinality)           | Can an adopter configure one instance or multiple independently addressable instances?                     |
-| [Lookup strategy](./concepts.md#lookup-strategies) | Can a resource URL identify the connection by host, or does the system need an existing non-host strategy? |
-| Connection fields                                  | Which endpoint and static settings are shared by every authentication method?                              |
-| Authentication methods                             | Which static credential shapes can consumers explicitly support?                                           |
-| Selection                                          | If several entries are eligible, which one should be returned for a query?                                 |
-| Validation                                         | Which rules span multiple fields or authentication entries?                                                |
+| Decision                                              | Questions                                                                                                  |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Type key                                              | Is the lowercase key unique and recognizable in configuration?                                             |
+| Title                                                 | What human-readable name should tooling display?                                                           |
+| [Cardinality](./01-concepts.md#cardinality)           | Can an adopter configure one instance or multiple independently addressable instances?                     |
+| [Lookup strategy](./01-concepts.md#lookup-strategies) | Can a resource URL identify the connection by host, or does the system need an existing non-host strategy? |
+| Connection fields                                     | Which endpoint and static settings are shared by every authentication method?                              |
+| Authentication methods                                | Which static credential shapes can consumers explicitly support?                                           |
+| Selection                                             | If several entries are eligible, which one should be returned for a query?                                 |
+| Validation                                            | Which rules span multiple fields or authentication entries?                                                |
 
 The built-in implementation supports `host` and `aws`
-[lookup strategies](./concepts.md#lookup-strategies). A new strategy is a wider
+[lookup strategies](./01-concepts.md#lookup-strategies). A new strategy is a wider
 framework change because both the common configuration pipeline and Node.js
 lookup implementation must understand its query and identity.
 
@@ -155,9 +155,9 @@ configuration pipeline adds the connection type and source context.
 ## Define authentication selection
 
 Without `matchAuth`, the service returns the first
-[authentication entry](./concepts.md#authentication-entry) visible to the
+[authentication entry](./01-concepts.md#authentication-entry) visible to the
 calling plugin. Entries explicitly matched to that plugin are placed before
-unrestricted entries through [plugin scoping](./concepts.md#plugin-scoping).
+unrestricted entries through [plugin scoping](./01-concepts.md#plugin-scoping).
 
 Implement `matchAuth` when selection depends on the query or method priority.
 It receives only entries visible to the calling plugin and the query inferred

@@ -6,8 +6,8 @@ description: Configure and consume AWS S3 connections
 
 The `aws-s3` connection type represents an Amazon Simple Storage Service (S3)
 or S3-compatible endpoint. It has
-[multiton cardinality](../concepts.md#cardinality) and uses the `host`
-[lookup strategy](../concepts.md#lookup-strategies).
+[multiton cardinality](../01-concepts.md#cardinality) and uses the `host`
+[lookup strategy](../01-concepts.md#lookup-strategies).
 
 ## Configure AWS S3
 
@@ -50,13 +50,13 @@ credential provider performs role assumption and credential refresh.
 
 ## Lookup and selection
 
-The consumer supplies a [lookup query](../concepts.md#lookup-queries) containing
+The consumer supplies a [lookup query](../01-concepts.md#lookup-queries) containing
 a URL. The service selects the connection whose `host` matches the parsed URL
 host exactly, including a port when one is present.
 
 When more than one authentication entry is visible to the calling plugin, the
 first visible entry is selected. Use
-[plugin scoping](../concepts.md#plugin-scoping) to supply different credentials
+[plugin scoping](../01-concepts.md#plugin-scoping) to supply different credentials
 to a specific plugin; otherwise, configuration order determines which entry is
 selected.
 
@@ -76,4 +76,4 @@ connection.s3ForcePathStyle; // boolean | undefined
 Narrow `connection.auth.method` before reading method-specific credential
 fields.
 
-Return to the [built-in connection type index](../built-in-connection-types.md).
+Return to the [built-in connection type index](../04-built-in-connection-types.md).

@@ -5,11 +5,11 @@ description: Declare and look up connections from a Backstage backend plugin or 
 ---
 
 A backend plugin or module consumes a connection by adding a
-[connection declaration](./concepts.md#connection-declaration), requesting the
-plugin-scoped [connection service](./concepts.md#connection-service), and
+[connection declaration](./01-concepts.md#connection-declaration), requesting the
+plugin-scoped [connection service](./01-concepts.md#connection-service), and
 calling `ConnectionsService.find` with a
-[lookup query](./concepts.md#lookup-queries) and the
-[authentication methods](./concepts.md#authentication-method) it understands.
+[lookup query](./01-concepts.md#lookup-queries) and the
+[authentication methods](./01-concepts.md#authentication-method) it understands.
 
 :::caution[Runtime API boundary]
 The public `@backstage/connections` package contains the shared service
@@ -24,7 +24,7 @@ External plugin packages should not depend on `@backstage/connections-node`.
 
 Framework plugins and modules declare each type during `register`, before
 calling `registerInit`. See the
-[connection declaration concept](./concepts.md#connection-declaration) for why
+[connection declaration concept](./01-concepts.md#connection-declaration) for why
 the declaration is separate from lookup:
 
 ```ts
@@ -90,13 +90,13 @@ the token authentication shape.
 It does not check whether a returned token remains valid, track expiration, or
 refresh it. Use a separate credential provider when the authentication method
 has a dynamic lifecycle. See the connection service
-[limitations](./concepts.md#limitations).
+[limitations](./01-concepts.md#limitations).
 :::
 
 `authMethods` is a non-empty list of
-[authentication methods](./concepts.md#authentication-method) the consumer is
+[authentication methods](./01-concepts.md#authentication-method) the consumer is
 implemented to handle. It is not a fallback preference list. The connection
-type selects an [authentication entry](./concepts.md#authentication-entry)
+type selects an [authentication entry](./01-concepts.md#authentication-entry)
 first, and the service then verifies that the selected method is supported by
 the consumer.
 
@@ -253,4 +253,4 @@ Authentication methods not listed here, such as `token`, `basic`, `pat`,
 without an intermediate exchange step.
 
 For configuration and scoping examples, see
-[Configure and manage connections](./configuring-connections.md).
+[Configure and manage connections](./02-configuring-connections.md).

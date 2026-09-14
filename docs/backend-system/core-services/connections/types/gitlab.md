@@ -5,8 +5,8 @@ description: Configure and consume GitLab connections
 ---
 
 The `gitlab` connection type represents a GitLab or self-managed GitLab host.
-It has [multiton cardinality](../concepts.md#cardinality) and uses the `host`
-[lookup strategy](../concepts.md#lookup-strategies).
+It has [multiton cardinality](../01-concepts.md#cardinality) and uses the `host`
+[lookup strategy](../01-concepts.md#lookup-strategies).
 
 ## Configure GitLab
 
@@ -40,13 +40,13 @@ Use `none` explicitly when the consumer only needs public GitLab content.
 
 ## Lookup and selection
 
-The consumer supplies a [lookup query](../concepts.md#lookup-queries) containing
+The consumer supplies a [lookup query](../01-concepts.md#lookup-queries) containing
 a GitLab URL. The service selects the connection whose `host` matches the
 parsed URL host exactly.
 
 When more than one authentication entry is visible to the calling plugin, the
 first visible entry is selected. Use
-[plugin scoping](../concepts.md#plugin-scoping) to supply a different token to a
+[plugin scoping](../01-concepts.md#plugin-scoping) to supply a different token to a
 specific plugin; otherwise, configuration order determines which entry is
 selected.
 
@@ -66,4 +66,4 @@ if (connection.auth.method === 'token') {
 }
 ```
 
-Return to the [built-in connection type index](../built-in-connection-types.md).
+Return to the [built-in connection type index](../04-built-in-connection-types.md).

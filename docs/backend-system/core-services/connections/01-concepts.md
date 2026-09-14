@@ -268,7 +268,7 @@ A configured token may be directly usable, but the consumer is responsible for
 handling rejection or expiration. Other methods, such as an application, role,
 profile, or managed identity, return the fields needed by a separate credential
 provider. See
-[Known credential providers](./consuming-connections.md#known-credential-providers)
+[Known credential providers](./03-consuming-connections.md#known-credential-providers)
 for a list of the built-in authentication methods that require one.
 
 For example, a GitHub `app` entry returns the application ID and private key. It
@@ -287,5 +287,5 @@ Keep this limitation in mind when designing consumers:
 - Never send connection authentication values to the frontend or include them
   in logs.
 
-Next, see [Configure and manage connections](./configuring-connections.md) or
-[Consume connections](./consuming-connections.md).
+Next, see [Configure and manage connections](./02-configuring-connections.md) or
+[Consume connections](./03-consuming-connections.md).

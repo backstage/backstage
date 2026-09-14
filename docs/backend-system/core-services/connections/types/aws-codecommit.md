@@ -5,8 +5,8 @@ description: Configure and consume AWS CodeCommit connections
 ---
 
 The `aws-codecommit` connection type represents an AWS CodeCommit endpoint and
-region. It has [multiton cardinality](../concepts.md#cardinality) and uses the
-`host` [lookup strategy](../concepts.md#lookup-strategies), so each configured
+region. It has [multiton cardinality](../01-concepts.md#cardinality) and uses the
+`host` [lookup strategy](../01-concepts.md#lookup-strategies), so each configured
 entry must have a unique host.
 
 ## Configure AWS CodeCommit
@@ -46,13 +46,13 @@ temporary credentials.
 
 ## Lookup and selection
 
-The consumer supplies a [lookup query](../concepts.md#lookup-queries) containing
+The consumer supplies a [lookup query](../01-concepts.md#lookup-queries) containing
 a URL. The service parses `query.url` and selects the connection whose `host`
 matches exactly.
 
 When more than one authentication entry is visible to the calling plugin, the
 first visible entry is selected. Use
-[plugin scoping](../concepts.md#plugin-scoping) to supply different credentials
+[plugin scoping](../01-concepts.md#plugin-scoping) to supply different credentials
 to a specific plugin; otherwise, configuration order determines which entry is
 selected. The selected method must appear in the consumer's `authMethods` list.
 
@@ -73,4 +73,4 @@ if (connection.auth.method === 'assumeRole') {
 }
 ```
 
-Return to the [built-in connection type index](../built-in-connection-types.md).
+Return to the [built-in connection type index](../04-built-in-connection-types.md).

@@ -5,8 +5,8 @@ description: Configure and consume Gerrit connections
 ---
 
 The `gerrit` connection type represents a Gerrit code review host and its
-Gitiles endpoint. It has [multiton cardinality](../concepts.md#cardinality) and
-uses the `host` [lookup strategy](../concepts.md#lookup-strategies).
+Gitiles endpoint. It has [multiton cardinality](../01-concepts.md#cardinality) and
+uses the `host` [lookup strategy](../01-concepts.md#lookup-strategies).
 
 ## Configure Gerrit
 
@@ -43,13 +43,13 @@ Use `none` explicitly when Gerrit and Gitiles permit unauthenticated access.
 
 ## Lookup and selection
 
-The consumer supplies a [lookup query](../concepts.md#lookup-queries) containing
+The consumer supplies a [lookup query](../01-concepts.md#lookup-queries) containing
 a Gerrit URL. The service selects the connection whose `host` matches the
 parsed URL host exactly.
 
 When more than one authentication entry is visible to the calling plugin, the
 first visible entry is selected. Use
-[plugin scoping](../concepts.md#plugin-scoping) to supply different credentials
+[plugin scoping](../01-concepts.md#plugin-scoping) to supply different credentials
 to a specific plugin; otherwise, configuration order determines which entry is
 selected.
 
@@ -66,4 +66,4 @@ connection.gitilesBaseUrl; // string
 connection.cloneUrl; // string | undefined
 ```
 
-Return to the [built-in connection type index](../built-in-connection-types.md).
+Return to the [built-in connection type index](../04-built-in-connection-types.md).

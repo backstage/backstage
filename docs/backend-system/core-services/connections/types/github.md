@@ -5,11 +5,11 @@ description: Configure and consume GitHub connections
 ---
 
 The `github` connection type represents a GitHub or GitHub Enterprise host. It
-has [multiton cardinality](../concepts.md#cardinality) and uses the `host`
-[lookup strategy](../concepts.md#lookup-strategies).
+has [multiton cardinality](../01-concepts.md#cardinality) and uses the `host`
+[lookup strategy](../01-concepts.md#lookup-strategies).
 
 GitHub provides type-specific
-[authentication selection](../concepts.md#what-happens-during-find) so a single
+[authentication selection](../01-concepts.md#what-happens-during-find) so a single
 host can use different GitHub Apps for different organizations.
 
 ## Configure GitHub
@@ -69,11 +69,11 @@ authentication.
 
 ## Lookup and selection
 
-The consumer supplies a [lookup query](../concepts.md#lookup-queries) containing
+The consumer supplies a [lookup query](../01-concepts.md#lookup-queries) containing
 a GitHub URL. The service selects the connection whose `host` matches the
 parsed URL host exactly.
 
-After [plugin scoping](../concepts.md#plugin-scoping), GitHub selects an
+After [plugin scoping](../01-concepts.md#plugin-scoping), GitHub selects an
 authentication entry in this order:
 
 1. An app whose `orgs` contains the organization parsed from the URL.
@@ -106,7 +106,7 @@ if (connection.auth.method === 'app') {
 ## Selection examples
 
 The service selects the host connection, applies
-[plugin scoping](../concepts.md#plugin-scoping), and then applies GitHub's
+[plugin scoping](../01-concepts.md#plugin-scoping), and then applies GitHub's
 authentication precedence to the remaining entries. The following examples
 are independent configurations. Authentication entry titles are included to
 make the selected entry easy to identify.
@@ -336,7 +336,7 @@ lookup returns `Shared app`. When several visible entries satisfy the same
 selection step, the first visible entry wins. Plugin-matched entries come
 first; otherwise, configuration order breaks the tie.
 
-See [Select a GitHub App by organization](../configuring-connections.md#select-a-github-app-by-organization)
+See [Select a GitHub App by organization](../02-configuring-connections.md#select-a-github-app-by-organization)
 for a plugin-scoped configuration example.
 
-Return to the [built-in connection type index](../built-in-connection-types.md).
+Return to the [built-in connection type index](../04-built-in-connection-types.md).
