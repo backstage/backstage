@@ -2,9 +2,10 @@
   "skills": [
     {
       "name": "mui-to-bui-migration",
-      "description": "Recipe-first MUI 4 → Backstage UI migration via @backstage/mui4-to-bui-migration-recipe, then leftover cleanup. Use when migrating MUI to BUI, dry-running the mui4-to-bui recipe, or resolving TODO(backstage-codemod) after a BUI migration.",
+      "description": "Migrate Material-UI (MUI) to Backstage UI (BUI) with a codemod or standalone guidance. Use when migrating MUI components and styles, running @backstage/mui4-to-bui-migration-recipe, or resolving TODO(backstage-codemod) after a BUI migration.",
       "files": [
         "SKILL.md",
+        "references/standalone-migration.md",
         "references/out-of-scope.md",
         "references/leftover-cleanup.md"
       ]

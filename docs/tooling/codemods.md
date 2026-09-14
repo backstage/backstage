@@ -55,10 +55,14 @@ them on a routine bump unless you intend that migration.
 
 ### Material-UI 4 to Backstage UI
 
-Read the
-[mui4-to-bui-migration-recipe README](https://github.com/backstage/codemods/tree/main/codemods/misc/mui4-to-bui-migration-recipe)
-first, then use the [`mui-to-bui-migration` skill](../ai/skills.md) for leftovers
-the recipe cannot finish safely.
+The [`mui-to-bui-migration` skill](../ai/skills.md) supports running this
+recipe and finishing its leftovers, or migrating directly with standalone
+guidance. It recommends the recipe for mechanical changes and honors your choice
+of path. The standalone path requires no codemod run.
+
+To use the recipe, read the
+[mui4-to-bui-migration-recipe README](https://github.com/backstage/codemods/tree/main/codemods/misc/mui4-to-bui-migration-recipe),
+then dry-run and apply:
 
 ```shell
 yarn dlx codemod run @backstage/mui4-to-bui-migration-recipe \
