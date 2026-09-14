@@ -19,25 +19,26 @@ import {
 } from '@backstage/backend-plugin-api';
 import type {
   Connection,
-  ConnectionAuthMethodKey,
+  ConnectionLookupStrategy,
   ConnectionsService,
+  ConnectionTypeDefinition,
   ConnectionType,
-  ConnectionTypeKey,
   LookupConnectionType,
-  LookupStrategy,
-  ConfiguredConnection,
 } from '@backstage/connections';
-import { buildConnectionsFromConfig } from '@backstage/connections';
+import type { ConfiguredConnection } from '@backstage/connections/config';
+import { buildConnectionsFromConfig } from '@backstage/connections/config';
 import { getConnectionType } from './lookup';
 import { lookupStrategies } from './lookupStrategies';
 import { NotAllowedError, NotFoundError } from '@backstage/errors';
 
-type ConnectionQuery<TType extends ConnectionTypeKey> =
-  LookupConnectionType<TType> extends ConnectionType<infer TDefinition>
+type ConnectionQuery<TType extends ConnectionType> =
+  LookupConnectionType<TType> extends ConnectionTypeDefinition<
+    infer TDefinition
+  >
     ? TDefinition['query']
     : never;
 
-function getLookupStrategy<K extends LookupStrategy>(
+function getLookupStrategy<K extends ConnectionLookupStrategy>(
   name: K,
 ): (typeof lookupStrategies)[K] {
   return lookupStrategies[name];
@@ -66,8 +67,8 @@ class PluginConnectionsService implements ConnectionsService {
   }
 
   async find<
-    TType extends ConnectionTypeKey,
-    TAuthMethod extends ConnectionAuthMethodKey<TType>,
+    TType extends ConnectionType,
+    TAuthMethod extends LookupConnectionType<TType>['authMethods'][number]['method'],
   >(options: {
     type: TType;
     query: ConnectionQuery<TType>;
@@ -85,8 +86,8 @@ class PluginConnectionsService implements ConnectionsService {
   }
 
   private async findOptional<
-    TType extends ConnectionTypeKey,
-    TAuthMethod extends ConnectionAuthMethodKey<TType>,
+    TType extends ConnectionType,
+    TAuthMethod extends LookupConnectionType<TType>['authMethods'][number]['method'],
   >({
     type,
     query,
@@ -136,7 +137,7 @@ class PluginConnectionsService implements ConnectionsService {
       );
     }
 
-    const matchAuth = connectionType.matchAuth as
+    const matchAuth = (connectionType as any).matchAuth as
       | ((authMethods: any[], query: any) => any | undefined)
       | undefined;
 

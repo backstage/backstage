@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { ConnectionAuthValue, ConnectionType } from './ConnectionType';
-import type { ConnectionTypeKey, LookupConnectionType } from '../definitions';
+import type { Expand } from '@backstage/types';
+import type { ConnectionTypeDefinition } from './ConnectionType';
+import type { ConnectionType, LookupConnectionType } from '../definitions';
 
 // A connection of a specific type.
 //
@@ -24,17 +25,39 @@ import type { ConnectionTypeKey, LookupConnectionType } from '../definitions';
 // - With no parameters: an open shape suitable for internal storage.
 /** @public */
 export type Connection<
-  T extends ConnectionType | ConnectionTypeKey = ConnectionType,
+  T extends
+    | ConnectionTypeDefinition
+    | ConnectionType = ConnectionTypeDefinition,
   TAuthMethod extends string = string,
-> = LookupConnectionType<T> extends ConnectionType<infer IDefinition>
+> = LookupConnectionType<T> extends ConnectionTypeDefinition<infer IDefinition>
   ? {
       type: LookupConnectionType<T>['type'];
       title: string;
       auth: string extends TAuthMethod
-        ? ConnectionAuthValue<IDefinition['auth'][number]>[]
+        ? (IDefinition['auth'][number] extends infer A
+            ? A extends { method: string }
+              ? Expand<A & { title: string }>
+              : never
+            : never)[]
         : Extract<
-            ConnectionAuthValue<IDefinition['auth'][number]>,
+            IDefinition['auth'][number] extends infer A
+              ? A extends { method: string }
+                ? Expand<A & { title: string }>
+                : never
+              : never,
             { method: TAuthMethod }
           >;
     } & ReturnType<LookupConnectionType<T>['configSchema']['parse']>
   : never;
+
+/**
+ * A resolved auth entry for a connection of a specific type.
+ *
+ * @public
+ */
+export type ConnectionAuth<
+  T extends ConnectionType,
+  TAuthMethod extends string = string,
+> = Connection<T, TAuthMethod>['auth'] extends (infer E)[]
+  ? E
+  : Connection<T, TAuthMethod>['auth'];
