@@ -30,7 +30,9 @@ export const scrollIntoNavigation = (): Transformer => {
         });
 
         const lastItem = activeNavItems[activeNavItems.length - 1];
-        lastItem.scrollIntoView();
+        // Avoid aligning every ancestor scroll container, which can move the
+        // host page when the TechDocs sidebar shares its scrollport.
+        lastItem.scrollIntoView({ block: 'nearest' });
       }
     }, 200);
     return dom;

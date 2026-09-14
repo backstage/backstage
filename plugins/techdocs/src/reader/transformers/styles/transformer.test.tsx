@@ -48,6 +48,13 @@ describe('Transformers > Styles', () => {
     expect(style).toHaveTextContent(
       '.md-sidebar--secondary { grid-column: 3; grid-row: 1;',
     );
+    expect(style).toHaveTextContent(
+      '.md-footer { grid-column: 1 / -1; grid-row: 2;',
+    );
+    expect(style).toHaveTextContent('bottom: 0');
+    expect(style).toHaveTextContent('align-self: end');
+    expect(style).toHaveTextContent('min-height: 100dvh');
+    expect(style).toHaveTextContent('html { overflow: visible; }');
     expect(style).toHaveTextContent('position: sticky');
     expect(style).toHaveTextContent('var(--bui-header-height, 0px)');
     expect(style).not.toHaveTextContent('bottom: 75px');

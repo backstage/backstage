@@ -24,7 +24,7 @@ describe('scrollIntoNavigation', () => {
     jest.clearAllMocks();
   });
 
-  it('scroll to active navigation item', async () => {
+  it('keeps the active navigation item visible without aligning scroll containers', async () => {
     await createTestShadowDom(FIXTURES.FIXTURE_STANDARD_PAGE, {
       preTransformers: [],
       postTransformers: [scrollIntoNavigation()],
@@ -37,7 +37,7 @@ describe('scrollIntoNavigation', () => {
 
     jest.advanceTimersByTime(200);
 
-    expect(scrollNavIntoView).toHaveBeenCalledWith();
+    expect(scrollNavIntoView).toHaveBeenCalledWith({ block: 'nearest' });
   });
 
   it('expand active navigation items', async () => {

@@ -22,6 +22,11 @@ export default ({ theme }: RuleOptions) => `
 
 /*==================  Layout  ==================*/
 
+/* Let sticky reader elements use the host page viewport as their scrollport. */
+html {
+  overflow: visible;
+}
+
 /* mkdocs material v9 compat */
 .md-nav__title {
   color: var(--md-default-fg-color);
@@ -78,6 +83,8 @@ export default ({ theme }: RuleOptions) => `
   grid-template-columns: minmax(0, ${TECHDOCS_SIDEBAR_WIDTH}) minmax(0, 1fr) minmax(0, ${TECHDOCS_SIDEBAR_WIDTH});
   align-items: start;
   column-gap: var(--bui-space-6, 24px);
+  /* Let short documents keep the final-row footer pinned until page end. */
+  min-height: 100dvh;
   margin-top: 0;
 }
 
@@ -110,18 +117,28 @@ export default ({ theme }: RuleOptions) => `
   min-width: 0;
   max-width: none;
   margin-left: 0;
-  margin-bottom: 50px;
+  margin-bottom: calc(var(--techdocs-footer-height, 75px) + var(--bui-space-4, 16px));
 }
 
 .md-content > .md-sidebar {
   left: auto;
 }
 
+/*
+ * The footer is moved to the final full-width grid row. Its natural position
+ * is below the document content, allowing the sticky bottom constraint to
+ * keep it at the viewport bottom while the grid bounds it at the document end.
+ */
 .md-footer {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  align-self: end;
   position: sticky;
   bottom: 0;
+  height: var(--techdocs-footer-height, 75px);
   width: 100%;
   padding-left: 0;
+  z-index: 1;
   pointer-events: none;
 }
 
@@ -143,6 +160,7 @@ export default ({ theme }: RuleOptions) => `
 @media screen and (max-width: 76.1875em) {
   .md-main__inner {
     display: block;
+    min-height: 0;
   }
 
   .md-nav {
@@ -210,6 +228,7 @@ export default ({ theme }: RuleOptions) => `
   .md-content {
     max-width: 100%;
     margin-left: 0;
+    margin-bottom: 50px;
   }
 
   .md-header__button {
@@ -224,6 +243,7 @@ export default ({ theme }: RuleOptions) => `
 
   .md-footer {
     position: static;
+    height: auto;
     padding-left: 0;
   }
   .md-footer-nav__link {
