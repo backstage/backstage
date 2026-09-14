@@ -57,6 +57,18 @@ describe('Transformers > Styles', () => {
     expect(style).toHaveTextContent('html { overflow: visible; }');
     expect(style).toHaveTextContent('position: sticky');
     expect(style).toHaveTextContent('var(--bui-header-height, 0px)');
+    const sidebar = style!.textContent?.match(/\.md-sidebar \{.*?\}/s);
+    expect(sidebar).toHaveLength(1);
+    expect(sidebar![0]).toContain('overflow-y: auto');
+    expect(sidebar![0]).toContain('max-height: calc(100dvh');
+    expect(sidebar![0]).toContain(
+      'padding-bottom: var(--bui-space-3, 12px) !important',
+    );
+    const sidebarScrollWrap = style!.textContent?.match(
+      /\.md-sidebar \.md-sidebar__scrollwrap \{.*?\}/s,
+    );
+    expect(sidebarScrollWrap).toHaveLength(1);
+    expect(sidebarScrollWrap![0]).toContain('overflow-y: visible');
     expect(style).not.toHaveTextContent('bottom: 75px');
     expect(style).toHaveTextContent(
       '/*================== Typeset ==================*/',
