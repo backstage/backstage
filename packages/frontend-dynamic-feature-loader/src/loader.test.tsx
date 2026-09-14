@@ -21,7 +21,10 @@ import { setupServer } from 'msw/node';
 import { ModuleFederationRuntimePlugin } from '@module-federation/enhanced/runtime';
 import { RemoteEntryExports } from '@module-federation/runtime/types';
 import { Module } from '@module-federation/sdk';
-import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
+import {
+  createFrontendFeatureLoader,
+  createFrontendPlugin,
+} from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { InternalFrontendFeatureLoader } from '../../frontend-plugin-api/src/wiring/createFrontendFeatureLoader';
 import { resetFederationGlobalInfo } from '@module-federation/runtime-core';
@@ -298,6 +301,67 @@ describe('dynamicFrontendFeaturesLoader', () => {
       {
         id: '.',
         name: 'test_plugin',
+      },
+    ]);
+  });
+
+  it('should resolve a FrontendFeatureLoader from a dynamic frontend plugin', async () => {
+    server.use(
+      http.get(`${baseUrl}/.backstage/dynamic-features/remotes`, () =>
+        HttpResponse.json([
+          {
+            packageName: 'plugin-test-dynamic',
+            exposedModules: ['.'],
+            remoteInfo: {
+              name: 'test_plugin',
+              entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json`,
+            },
+          },
+        ]),
+      ),
+      http.get(
+        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json`,
+        () =>
+          HttpResponse.json({
+            name: 'test_plugin',
+            ...manifestDummyData,
+            exposes: [
+              {
+                id: 'test_plugin:.',
+                name: '.',
+                path: '.',
+                ...manifestExposedRemoteDummyData,
+              },
+            ],
+          }),
+      ),
+    );
+
+    const loader = jest.fn(async () => [
+      createFrontendPlugin({
+        pluginId: 'test-plugin',
+        extensions: [],
+      }),
+    ]);
+    mocks.federation.get.mockReturnValue({
+      default: createFrontendFeatureLoader({ loader }),
+    });
+
+    const config = mockDefaultConfig();
+    const features = await (
+      dynamicFrontendFeaturesLoader({
+        moduleFederation: {
+          plugins: testModuleFederationPlugins,
+        },
+      }) as InternalFrontendFeatureLoader
+    ).loader({ config });
+
+    expect(loader).toHaveBeenCalledWith({ config });
+    expect(features).toMatchObject([
+      {
+        $$type: '@backstage/FrontendPlugin',
+        id: 'test-plugin',
+        version: 'v1',
       },
     ]);
   });
@@ -862,7 +926,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
     expect(debugCalls).toEqual([
       "Loading dynamic plugin 'plugin-1' from 'http://localhost:7007/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json'",
       "Loading dynamic plugin 'plugin-2' from 'http://localhost:7007/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json'",
-      "Skipping dynamic plugin remote module '[object Object]' since it doesn't export a new 'FrontendFeature' as default export.",
+      "Skipping dynamic plugin remote module 'plugin_1' since it doesn't export a new 'FrontendFeature' or 'FrontendFeatureLoader' as default export.",
     ]);
     expect(mocks.federation.get.mock.calls.flatMap(e => e[0])).toEqual([
       {

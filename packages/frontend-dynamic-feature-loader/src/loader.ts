@@ -22,6 +22,7 @@ import {
 import { Module } from '@module-federation/sdk';
 import { DefaultApiClient, Remote } from './schema/openapi';
 import {
+  ConfigApi,
   FrontendFeature,
   FrontendFeatureLoader,
   createFrontendFeatureLoader,
@@ -187,18 +188,27 @@ export function dynamicFrontendFeaturesLoader(
                 if (!isLoadable(defaultEntry)) {
                   // eslint-disable-next-line no-console
                   console.debug(
-                    `Skipping dynamic plugin remote module '${remote}' since it doesn't export a new 'FrontendFeature' as default export.`,
+                    `Skipping dynamic plugin remote module '${remoteModuleName}' since it doesn't export a new 'FrontendFeature' or 'FrontendFeatureLoader' as default export.`,
                   );
                   return undefined;
                 }
-                return defaultEntry;
+
+                try {
+                  return await resolveFeature(defaultEntry, config);
+                } catch (err) {
+                  error(
+                    `Failed resolving frontend features from dynamic plugin remote module '${remoteModuleName}' of dynamic plugin '${remote.packageName}'`,
+                    err,
+                  );
+                  return undefined;
+                }
               }),
             );
             return moduleFeatures;
           }),
         )
       )
-        .flat()
+        .flat(2)
         .filter((feature): feature is FrontendFeature => feature !== undefined);
 
       return [...features];
@@ -206,11 +216,46 @@ export function dynamicFrontendFeaturesLoader(
   });
 }
 
-function isLoadable(obj: unknown): obj is FrontendFeature {
+type InternalFrontendFeatureLoader = FrontendFeatureLoader & {
+  version: 'v1';
+  loader(deps: {
+    config: ConfigApi;
+  }): Promise<(FrontendFeature | FrontendFeatureLoader)[]>;
+};
+
+async function resolveFeature(
+  feature: FrontendFeature | FrontendFeatureLoader,
+  config: ConfigApi,
+): Promise<FrontendFeature[]> {
+  if (feature.$$type !== '@backstage/FrontendFeatureLoader') {
+    return [feature];
+  }
+
+  const loader = feature as InternalFrontendFeatureLoader;
+  if (loader.version !== 'v1' || typeof loader.loader !== 'function') {
+    throw new Error(
+      `Invalid FrontendFeatureLoader: expected version 'v1' and a loader function, ` +
+        `got version '${String(
+          loader.version,
+        )}' and loader type '${typeof loader.loader}'`,
+    );
+  }
+
+  const features = await loader.loader({ config });
+  const resolvedFeatures = await Promise.all(
+    features.map(nestedFeature => resolveFeature(nestedFeature, config)),
+  );
+  return resolvedFeatures.flat();
+}
+
+function isLoadable(
+  obj: unknown,
+): obj is FrontendFeature | FrontendFeatureLoader {
   if (obj !== null && typeof obj === 'object' && '$$type' in obj) {
     return (
       obj.$$type === '@backstage/FrontendPlugin' ||
-      obj.$$type === '@backstage/FrontendModule'
+      obj.$$type === '@backstage/FrontendModule' ||
+      obj.$$type === '@backstage/FrontendFeatureLoader'
     );
   }
   return false;
