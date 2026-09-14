@@ -116,7 +116,7 @@ describe('DefaultAuthConnector', () => {
   });
 
   it('should throw an AuthConnectionError when the refresh request cannot reach the backend', async () => {
-    server.use(rest.get('*', (_req, res) => res.networkError('offline')));
+    server.use(http.get('*', () => HttpResponse.error()));
 
     const connector = new DefaultAuthConnector(defaultOptions);
     await expect(connector.refreshSession()).rejects.toThrow(
