@@ -27608,11 +27608,11 @@ __metadata:
   linkType: hard
 
 "eventsource@npm:^4.0.0":
-  version: 4.1.0
-  resolution: "eventsource@npm:4.1.0"
+  version: 4.1.1
+  resolution: "eventsource@npm:4.1.1"
   dependencies:
     eventsource-parser: "npm:^3.0.1"
-  checksum: 10/d23b1c2a56a1dd7344a151ca57d70ebc624972150395c1c82110bda1d2918487260e8ec76c1c79677406184ecb1847509a675d4ee5367925ef77f03c9cae594d
+  checksum: 10/fa1e55bd05c3ecf7768ae75ece4be9961e2b3104877b974eee10dd0eaafd0813b7d25a3ba1a7d72d16ab72abb3155a2c9156e9f0a20b1673dac95426fe12b768
   languageName: node
   linkType: hard
 
