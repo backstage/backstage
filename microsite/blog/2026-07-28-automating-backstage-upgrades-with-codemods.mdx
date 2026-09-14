@@ -13,11 +13,9 @@ authorImageURL: https://avatars.githubusercontent.com/u/52387464?v=4
 
 If you have upgraded a Backstage app more than once, you already know the rhythm: run `yarn backstage-cli versions:bump`, open the [Backstage Upgrade Helper](https://backstage.github.io/upgrade-helper/), and apply the `create-app` template changes that do not land automatically in your `app` and `backend` packages.
 
-That first layer still matters. Package bumps and template diffs answer "what should my scaffolding look like for this release?" They leave your own plugins alone: deprecated props, config keys, imports. That cleanup has always been a second job.
+Those initial steps still matter. Package bumps and template diffs answer "what should my scaffolding look like for this release?" They leave your own plugins alone: deprecated props, config keys, imports. That cleanup has always been a second job.
 
-The [backstage/codemods](https://github.com/backstage/codemods) repository publishes recipes (ordered bundles of source transforms) as `@backstage/*` packages on the [Codemod Registry](https://go.codemod.com/backstage). You run them with the [Codemod CLI](https://docs.codemod.com/cli), typically via `yarn dlx codemod run …`, and they rewrite that plugin code for you.
-
-These recipes are not the old `@backstage/codemods` npm package.
+What's new is the [backstage/codemods](https://github.com/backstage/codemods) repository, which publishes recipes (ordered bundles of source transforms) as `@backstage/*` packages on the [Codemod Registry](https://go.codemod.com/backstage). You run them with the [Codemod CLI](https://docs.codemod.com/cli), typically via `yarn dlx codemod run …`, and they rewrite that plugin code for you.
 
 ## Versioned recipes: part of the upgrade path
 
@@ -49,7 +47,7 @@ yarn dlx codemod run @backstage/mui4-to-bui-migration-recipe \
   --target .
 ```
 
-That recipe runs an ordered set of deterministic transforms (bootstrap, icons, components, layout, then dependency cleanup). It is optional during a routine bump. Run it when you are intentionally leaving MUI behind.
+That recipe runs an ordered set of deterministic transforms (bootstrap, icons, styles, components, layout, then dependency cleanup). It is optional during a routine bump. Run it when you are intentionally leaving MUI behind.
 
 Browse the [codemods README](https://github.com/backstage/codemods) for the full list of published packages.
 
