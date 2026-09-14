@@ -17,9 +17,29 @@ export type Connection<
       type: LookupConnectionType<T>['type'];
       title: string;
       auth: string extends TAuthMethod
-        ? ConnectionAuth<IDefinition['auth'][number]>[]
+        ? (IDefinition['auth'][number] extends infer A
+            ? A extends {
+                method: string;
+              }
+              ? Expand<
+                  A & {
+                    title: string;
+                  }
+                >
+              : never
+            : never)[]
         : Extract<
-            ConnectionAuth<IDefinition['auth'][number]>,
+            IDefinition['auth'][number] extends infer A
+              ? A extends {
+                  method: string;
+                }
+                ? Expand<
+                    A & {
+                      title: string;
+                    }
+                  >
+                : never
+              : never,
             {
               method: TAuthMethod;
             }
@@ -29,16 +49,11 @@ export type Connection<
 
 // @public
 export type ConnectionAuth<
-  TAuthConfig extends {
-    method: string;
-  },
-> = TAuthConfig extends any
-  ? Expand<
-      TAuthConfig & {
-        title: string;
-      }
-    >
-  : never;
+  T extends ConnectionType,
+  TAuthMethod extends string = string,
+> = Connection<T, TAuthMethod>['auth'] extends (infer E)[]
+  ? E
+  : Connection<T, TAuthMethod>['auth'];
 
 // @public (undocumented)
 export type ConnectionLookupStrategy = 'host' | 'aws';

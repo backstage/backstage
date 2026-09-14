@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {
-  ConnectionAuth,
-  ConnectionTypeDefinition,
-} from './ConnectionType';
+import type { Expand } from '@backstage/types';
+import type { ConnectionTypeDefinition } from './ConnectionType';
 import type { ConnectionType, LookupConnectionType } from '../definitions';
 
 // A connection of a specific type.
@@ -36,10 +34,30 @@ export type Connection<
       type: LookupConnectionType<T>['type'];
       title: string;
       auth: string extends TAuthMethod
-        ? ConnectionAuth<IDefinition['auth'][number]>[]
+        ? (IDefinition['auth'][number] extends infer A
+            ? A extends { method: string }
+              ? Expand<A & { title: string }>
+              : never
+            : never)[]
         : Extract<
-            ConnectionAuth<IDefinition['auth'][number]>,
+            IDefinition['auth'][number] extends infer A
+              ? A extends { method: string }
+                ? Expand<A & { title: string }>
+                : never
+              : never,
             { method: TAuthMethod }
           >;
     } & ReturnType<LookupConnectionType<T>['configSchema']['parse']>
   : never;
+
+/**
+ * A resolved auth entry for a connection of a specific type.
+ *
+ * @public
+ */
+export type ConnectionAuth<
+  T extends ConnectionType,
+  TAuthMethod extends string = string,
+> = Connection<T, TAuthMethod>['auth'] extends (infer E)[]
+  ? E
+  : Connection<T, TAuthMethod>['auth'];

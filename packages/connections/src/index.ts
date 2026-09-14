@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 export type { ConnectionsService } from './api/ConnectionsService';
-export type { Connection } from './api/Connection';
+export type { Connection, ConnectionAuth } from './api/Connection';
 export type {
   ConnectionTypeDefinition,
-  ConnectionAuth,
   ConnectionLookupStrategy,
   PortableSchema,
 } from './api/ConnectionType';

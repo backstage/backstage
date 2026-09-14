@@ -94,16 +94,6 @@ export type ConfiguredConnectionAuth<M> = M extends {
   : never;
 
 /**
- * A resolved auth entry as handed to plugins and `matchAuth` implementations:
- * the fields declared by the auth method's own schema plus a guaranteed
- * display title.
- *
- * @public
- */
-export type ConnectionAuth<TAuthConfig extends { method: string }> =
-  TAuthConfig extends any ? Expand<TAuthConfig & { title: string }> : never;
-
-/**
  * A schema that can validate values and expose a JSON-serializable schema.
  *
  * @public

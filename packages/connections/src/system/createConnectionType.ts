@@ -17,7 +17,6 @@ import { z } from 'zod/v4';
 import { InputError } from '@backstage/errors';
 import type { Expand, JsonObject } from '@backstage/types';
 import type {
-  ConnectionAuth,
   ConnectionTypeDefinition,
   ConnectionLookupStrategy,
   LookupStrategyQuery,
@@ -103,12 +102,18 @@ export function createConnectionType<
   configSchema: WithoutReservedFields<TConfigSchema>;
   authMethods: WithoutReservedAuthMethods<TAuthMethods>;
   matchAuth?: (
-    authMethods: ConnectionAuth<
-      ConfiguredConnectionAuthFromSchema<TAuthMethods[number]>
+    authMethods: Expand<
+      ConfiguredConnectionAuthFromSchema<TAuthMethods[number]> & {
+        title: string;
+      }
     >[],
     query: LookupStrategyQuery[TLookupStrategy],
   ) =>
-    | ConnectionAuth<ConfiguredConnectionAuthFromSchema<TAuthMethods[number]>>
+    | Expand<
+        ConfiguredConnectionAuthFromSchema<TAuthMethods[number]> & {
+          title: string;
+        }
+      >
     | undefined;
   // Checks the connection as a whole once every schema has accepted its own
   // part — for rules like "only one entry may be the fallback" that no

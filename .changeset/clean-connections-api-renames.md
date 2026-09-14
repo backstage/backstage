@@ -14,3 +14,4 @@
 - Renamed `ConnectionType` to `ConnectionTypeDefinition` (the definition object describing a connection type's schemas and behavior)
 - Renamed `ConnectionTypeKey` to `ConnectionType` (the string union of registered connection type names)
 - Renamed `isConnectionTypeKey` to `isConnectionType`
+- Repurposed `ConnectionAuth` as a consumer-facing lookup type: `ConnectionAuth<'aws'>` resolves to the union of auth entry shapes, `ConnectionAuth<'github', 'token'>` narrows to a single method
