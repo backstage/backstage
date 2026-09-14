@@ -61,12 +61,17 @@ export function serializeError(
   if (!options?.includeStack) {
     delete result.stack;
 
-    if (
-      result.cause &&
-      typeof result.cause === 'object' &&
-      'stack' in result.cause
-    ) {
-      delete result.cause.stack;
+    // serialize-error recursively serializes the entire error cause chain, and
+    // every nested cause carries its own stack. Deleting only the first-level
+    // cause stack would still leak the stacks of deeper causes, so we walk the
+    // whole chain and strip the stack at every level. A visited set guards
+    // against self-referential cause chains that would otherwise loop forever.
+    const visited = new Set<object>();
+    let node: any = result.cause;
+    while (node && typeof node === 'object' && !visited.has(node)) {
+      visited.add(node);
+      delete node.stack;
+      node = node.cause;
     }
   }
 
