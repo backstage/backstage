@@ -108,6 +108,11 @@ html {
   width: 100%;
   overflow-y: visible;
 }
+@media screen and (min-width: 76.1875em) {
+  .md-sidebar--primary .md-nav--primary > .md-nav__title {
+    position: static;
+  }
+}
 .md-sidebar--secondary {
   grid-column: 3;
   grid-row: 1;
