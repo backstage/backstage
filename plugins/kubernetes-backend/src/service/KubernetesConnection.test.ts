@@ -115,6 +115,7 @@ describe('KubernetesConnection', () => {
       expect(
         (requestInit.headers as Record<string, string>).Authorization,
       ).toBe('Bearer my-token');
+      expect(requestInit.redirect).toBe('manual');
     });
 
     it('returns ok with x509 client certificate', async () => {
@@ -471,7 +472,9 @@ describe('KubernetesConnection', () => {
         { type: 'bearer token', token: 'sa-token' },
       );
 
-      expect(result.ok).toBe(true);
+      expect(result).toEqual(expect.objectContaining({ ok: true }));
+      const { requestInit } = result as Extract<typeof result, { ok: true }>;
+      expect(requestInit.redirect).toBe('manual');
     });
 
     it('does not use in-cluster path when serviceAccountToken is present', async () => {

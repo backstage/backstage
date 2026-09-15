@@ -1,5 +1,28 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.21.11-next.1
+
+### Patch Changes
+
+- 1d7b704: Reject unsupported service account authentication in catalog-provided cluster definitions.
+- 28bdf75: Improved handling of Kubernetes resource response data.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-node@0.4.8-next.1
+  - @backstage/plugin-permission-node@0.11.4-next.0
+  - @backstage/catalog-client@1.16.2-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-catalog-node@2.2.5-next.0
+
+## 0.21.10-next.0
+
+### Patch Changes
+
+- b11c9b4: Improved entity resolution on the deprecated services endpoint.
+- d9a57de: Add `KubernetesWatcher` interface for streaming Kubernetes resource changes via an async iterator. The watcher is separated from `KubernetesFetcher` because watching is a long-lived streaming connection that only works with server-side auth providers. Watch supports all event types (ADDED, MODIFIED, DELETED, BOOKMARK, ERROR) with errors yielded as data rather than thrown.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.9.13-next.0
+  - @backstage/plugin-kubernetes-node@0.4.8-next.0
+
 ## 0.21.7
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @backstage/plugin-proxy-backend
 
+## 0.6.18-next.0
+
+### Patch Changes
+
+- 42580a2: Improved request path handling in the proxy-backend.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-proxy-node@0.1.19-next.0
+
 ## 0.6.16
 
 ### Patch Changes

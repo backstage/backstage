@@ -22,7 +22,7 @@ import {
 } from '@backstage/plugin-notifications-common';
 import { Switch, Tooltip, TooltipTrigger } from '@backstage/ui';
 import { NoBorderTableCell } from './NoBorderTableCell';
-import { useNotificationFormat } from './UserNotificationSettingsCard';
+import { useNotificationFormat } from './NotificationFormatContext';
 
 export const TopicRow = (props: {
   topic: TopicSetting;

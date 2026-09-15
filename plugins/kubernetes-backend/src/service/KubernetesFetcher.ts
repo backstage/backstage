@@ -85,7 +85,11 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
               ? r.json().then(
                   ({ kind, items }): FetchResponse => ({
                     type: objectType,
-                    resources: this.transformResources(objectType, kind, items),
+                    resources: this.transformResources(
+                      { objectType, group, apiVersion, plural },
+                      kind,
+                      items,
+                    ),
                   }),
                 )
               : this.connection.handleUnsuccessfulResponse(
@@ -187,32 +191,57 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     );
   }
 
+  private redactSecretData(items: JsonObject[]): JsonObject[] {
+    return items.map((item: JsonObject) => {
+      const redacted: JsonObject = { ...item };
+      if (item.data && typeof item.data === 'object') {
+        redacted.data = Object.fromEntries(
+          Object.keys(item.data).map(key => [key, '***']),
+        );
+      }
+      if (item.stringData && typeof item.stringData === 'object') {
+        redacted.stringData = Object.fromEntries(
+          Object.keys(item.stringData).map(key => [key, '***']),
+        );
+      }
+      return redacted;
+    });
+  }
+
   private transformResources(
-    objectType: string,
-    kind: string,
+    resource: ObjectToFetch,
+    kind: string | undefined,
     items: JsonObject[],
   ): JsonObject[] {
-    if (objectType === 'customresources') {
-      return items.map((item: JsonObject) => ({
+    const itemKind = kind?.replace(/(List)$/, '');
+
+    // Whether a response holds Secrets is decided from the resource that was
+    // requested and from the kind reported by the API server, rather than from
+    // the object type, which callers can influence. The request is checked on
+    // its own so that masking does not depend on the response at all, and the
+    // kind is checked as well to cover requests that reach Secrets by some
+    // other shape.
+    const containsSecrets =
+      resource.objectType === 'secrets' ||
+      itemKind === 'Secret' ||
+      (resource.group === '' &&
+        resource.apiVersion === 'v1' &&
+        resource.plural === 'secrets');
+
+    const resources = containsSecrets ? this.redactSecretData(items) : items;
+
+    if (resource.objectType === 'customresources') {
+      if (itemKind === undefined) {
+        throw new Error(
+          `Missing kind in response when fetching '${resource.plural}'`,
+        );
+      }
+      return resources.map((item: JsonObject) => ({
         ...item,
-        kind: kind.replace(/(List)$/, ''),
+        kind: itemKind,
       }));
     }
 
-    if (objectType === 'secrets') {
-      return items.map((item: JsonObject) => {
-        if (item.data && typeof item.data === 'object') {
-          return {
-            ...item,
-            data: Object.fromEntries(
-              Object.keys(item.data).map(key => [key, '***']),
-            ),
-          };
-        }
-        return item;
-      });
-    }
-
-    return items;
+    return resources;
   }
 }

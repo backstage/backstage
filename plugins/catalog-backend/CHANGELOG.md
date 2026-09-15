@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-backend
 
+## 3.9.2-next.0
+
+### Patch Changes
+
+- 7761a50: Improved path validation for catalog entity placeholders.
+- fda0ef1: Correct catalog property permission matching.
+- e363ae2: Allowed location type restrictions are now applied consistently during catalog processing.
+- Updated dependencies
+  - @backstage/integration@2.1.2-next.0
+  - @backstage/backend-openapi-utils@0.7.2-next.0
+  - @backstage/filter-predicates@0.1.5-next.0
+  - @backstage/plugin-permission-node@0.11.4-next.0
+  - @backstage/catalog-client@1.16.2-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-catalog-node@2.2.5-next.0
+  - @backstage/plugin-events-node@0.4.26-next.0
+
 ## 3.9.0
 
 ### Minor Changes

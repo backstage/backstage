@@ -33,7 +33,10 @@ import {
   getConfluenceConfig,
 } from './helpers';
 import { examples } from './confluenceToMarkdown.examples';
-import { UrlReaderService } from '@backstage/backend-plugin-api';
+import {
+  resolveSafeChildPath,
+  UrlReaderService,
+} from '@backstage/backend-plugin-api';
 
 /**
  * @public
@@ -90,7 +93,7 @@ export const createConfluenceToMarkdownAction = (options: {
         parsedRepoUrl.filepath.lastIndexOf('/') + 1,
       );
       const dirPath = ctx.workspacePath;
-      const repoFileDir = `${dirPath}/${parsedRepoUrl.filepath}`;
+      resolveSafeChildPath(dirPath, parsedRepoUrl.filepath);
       let productArray: string[][] = [];
 
       ctx.logger.info(`Fetching the mkdocs.yml catalog from ${repoUrl}`);
@@ -103,6 +106,9 @@ export const createConfluenceToMarkdownAction = (options: {
         fetchUrl: `https://${parsedRepoUrl.resource}/${parsedRepoUrl.owner}/${parsedRepoUrl.name}`,
         outputPath: ctx.workspacePath,
       });
+
+      const repoFileDir = resolveSafeChildPath(dirPath, parsedRepoUrl.filepath);
+      const docsDir = resolveSafeChildPath(dirPath, `${filePathToMkdocs}docs`);
 
       for (const url of confluenceUrls) {
         const { spacekey, title, titleWithSpaces } =
@@ -125,14 +131,13 @@ export const createConfluenceToMarkdownAction = (options: {
         );
 
         if (getDocAttachments.results.length) {
-          fs.mkdirSync(`${dirPath}/${filePathToMkdocs}docs/img`, {
+          fs.mkdirSync(resolveSafeChildPath(docsDir, 'img'), {
             recursive: true,
           });
           productArray = await getAndWriteAttachments(
             getDocAttachments,
-            dirPath,
+            docsDir,
             confluenceConfig,
-            filePathToMkdocs,
           );
         }
 
@@ -178,10 +183,10 @@ export const createConfluenceToMarkdownAction = (options: {
 
         ctx.logger.info(`Adding new file to repo.`);
         await fs.outputFile(
-          `${dirPath}/${filePathToMkdocs}docs/${titleWithSpaces.replace(
-            /\s+/g,
-            '-',
-          )}.md`,
+          resolveSafeChildPath(
+            docsDir,
+            `${titleWithSpaces.replace(/\s+/g, '-')}.md`,
+          ),
           newString,
         );
       }

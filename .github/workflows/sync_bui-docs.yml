@@ -3,6 +3,10 @@ on:
   push:
     branches: [master]
 
+concurrency:
+  group: sync-bui-docs
+  cancel-in-progress: false
+
 jobs:
   sync-docs-ui:
     runs-on: ubuntu-latest
@@ -57,5 +61,5 @@ jobs:
         working-directory: bui-external-docs
         run: |
           git add .
-          git commit -am "BUI Docs build for backstage/backstage@${{ github.sha }}"
+          git commit -am "BUI Docs build for backstage/backstage@$GITHUB_SHA"
           git push

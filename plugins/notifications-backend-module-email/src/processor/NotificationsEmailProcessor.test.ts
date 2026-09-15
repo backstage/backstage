@@ -506,4 +506,318 @@ describe('NotificationsEmailProcessor', () => {
       'sourceArn is not supported in SESv2 and will be ignored',
     );
   });
+
+  it('should skip invalid recipient email addresses and still send to valid ones', async () => {
+    (createTransport as jest.Mock).mockReturnValue(mockTransport);
+
+    const invalidEmails = [
+      '"attacker@evil.com x"@internal.domain',
+      'alice@mycompany.com,evil@x.com',
+      'not-an-email',
+      'has spaces@example.com',
+    ];
+
+    const processor = new NotificationsEmailProcessor(
+      logger,
+      mockServices.rootConfig({
+        data: {
+          ...DEFAULT_SENDMAIL_CONFIG,
+          notifications: {
+            processors: {
+              email: {
+                ...DEFAULT_SENDMAIL_CONFIG.notifications.processors.email,
+                broadcastConfig: {
+                  receiver: 'config',
+                  receiverEmails: [
+                    ...invalidEmails,
+                    'valid@backstage.io',
+                  ] as JsonArray,
+                },
+              },
+            },
+          },
+        },
+      }),
+      catalogServiceMock(),
+      auth,
+    );
+
+    await processor.postProcess(
+      {
+        origin: 'plugin',
+        id: '1234',
+        user: null,
+        created: new Date(),
+        payload: { title: 'notification' },
+      },
+      {
+        recipients: { type: 'broadcast' },
+        payload: { title: 'notification' },
+      },
+    );
+
+    expect(sendmailMock).toHaveBeenCalledTimes(1);
+    expect(sendmailMock).toHaveBeenCalledWith(
+      expect.objectContaining({ to: 'valid@backstage.io' }),
+    );
+    for (const email of invalidEmails) {
+      expect(sendmailMock).not.toHaveBeenCalledWith(
+        expect.objectContaining({ to: email }),
+      );
+      expect(logger.warn).toHaveBeenCalledWith(
+        `Skipping invalid notification email address for delivery: ${email}`,
+      );
+    }
+  });
+
+  it('should skip invalid catalog user emails when broadcasting to users', async () => {
+    (createTransport as jest.Mock).mockReturnValue(mockTransport);
+
+    const validEmail = 'valid@backstage.io';
+    const quotedLocalPart = '"attacker@evil.com x"@internal.domain';
+    const multiAddress = 'alice@mycompany.com,evil@x.com';
+
+    const processor = new NotificationsEmailProcessor(
+      logger,
+      mockServices.rootConfig({
+        data: {
+          ...DEFAULT_SENDMAIL_CONFIG,
+          notifications: {
+            processors: {
+              email: {
+                ...DEFAULT_SENDMAIL_CONFIG.notifications.processors.email,
+                broadcastConfig: {
+                  receiver: 'users',
+                },
+              },
+            },
+          },
+        },
+      }),
+      catalogServiceMock({
+        entities: [
+          {
+            kind: 'User',
+            metadata: { name: 'valid', namespace: 'default' },
+            spec: { profile: { email: validEmail } },
+          } as unknown as Entity,
+          {
+            kind: 'User',
+            metadata: { name: 'quoted', namespace: 'default' },
+            spec: { profile: { email: quotedLocalPart } },
+          } as unknown as Entity,
+          {
+            kind: 'User',
+            metadata: { name: 'multi', namespace: 'default' },
+            spec: { profile: { email: multiAddress } },
+          } as unknown as Entity,
+        ],
+      }),
+      auth,
+    );
+
+    await processor.postProcess(
+      {
+        origin: 'plugin',
+        id: '1234',
+        user: null,
+        created: new Date(),
+        payload: { title: 'notification' },
+      },
+      {
+        recipients: { type: 'broadcast' },
+        payload: { title: 'notification' },
+      },
+    );
+
+    expect(sendmailMock).toHaveBeenCalledTimes(1);
+    expect(sendmailMock).toHaveBeenCalledWith(
+      expect.objectContaining({ to: validEmail }),
+    );
+    expect(logger.warn).toHaveBeenCalledWith(
+      `Skipping invalid notification email address for delivery: ${quotedLocalPart}`,
+    );
+    expect(logger.warn).toHaveBeenCalledWith(
+      `Skipping invalid notification email address for delivery: ${multiAddress}`,
+    );
+  });
+
+  it('should apply allowedEmailDomains with allowlist-over-domain precedence', async () => {
+    (createTransport as jest.Mock).mockReturnValue(mockTransport);
+
+    const processor = new NotificationsEmailProcessor(
+      logger,
+      mockServices.rootConfig({
+        data: {
+          ...DEFAULT_SENDMAIL_CONFIG,
+          notifications: {
+            processors: {
+              email: {
+                ...DEFAULT_SENDMAIL_CONFIG.notifications.processors.email,
+                allowedEmailDomains: ['MyCompany.com'] as JsonArray,
+                allowlistEmailAddresses: [
+                  'contractor@gmail.com',
+                  'blocked-contractor@gmail.com',
+                ] as JsonArray,
+                denylistEmailAddresses: [
+                  'Blocked-Contractor@Gmail.com',
+                ] as JsonArray,
+                broadcastConfig: {
+                  receiver: 'config',
+                  receiverEmails: [
+                    'alice@mycompany.com',
+                    'user@mail.mycompany.com',
+                    'bob@evil.com',
+                    'Contractor@Gmail.com',
+                    'other@gmail.com',
+                    'blocked-contractor@gmail.com',
+                  ] as JsonArray,
+                },
+              },
+            },
+          },
+        },
+      }),
+      catalogServiceMock(),
+      auth,
+    );
+
+    await processor.postProcess(
+      {
+        origin: 'plugin',
+        id: '1234',
+        user: null,
+        created: new Date(),
+        payload: { title: 'notification' },
+      },
+      {
+        recipients: { type: 'broadcast' },
+        payload: { title: 'notification' },
+      },
+    );
+
+    const sentTo = sendmailMock.mock.calls.map(call => call[0].to);
+    expect(sentTo).toEqual(
+      expect.arrayContaining(['alice@mycompany.com', 'Contractor@Gmail.com']),
+    );
+    expect(sentTo).toHaveLength(2);
+    expect(sentTo).not.toEqual(
+      expect.arrayContaining([
+        'user@mail.mycompany.com',
+        'bob@evil.com',
+        'other@gmail.com',
+        'blocked-contractor@gmail.com',
+      ]),
+    );
+    expect(logger.debug).toHaveBeenCalledWith(
+      'Skipping notification email address outside allowedEmailDomains: bob@evil.com',
+    );
+    expect(logger.info).toHaveBeenCalledWith(
+      'Skipped 3 notification email address(es) outside allowedEmailDomains',
+    );
+    expect(logger.warn).not.toHaveBeenCalledWith(
+      'Skipping notification email address outside allowedEmailDomains: bob@evil.com',
+    );
+    expect(logger.warn).toHaveBeenCalledWith(
+      'Skipping denylisted notification email address: blocked-contractor@gmail.com',
+    );
+  });
+
+  it('should keep allowlist-only closed mode when allowedEmailDomains is unset', async () => {
+    (createTransport as jest.Mock).mockReturnValue(mockTransport);
+
+    const processor = new NotificationsEmailProcessor(
+      logger,
+      mockServices.rootConfig({
+        data: {
+          ...DEFAULT_SENDMAIL_CONFIG,
+          notifications: {
+            processors: {
+              email: {
+                ...DEFAULT_SENDMAIL_CONFIG.notifications.processors.email,
+                allowlistEmailAddresses: ['allowed@backstage.io'] as JsonArray,
+                broadcastConfig: {
+                  receiver: 'config',
+                  receiverEmails: [
+                    'allowed@backstage.io',
+                    'other@backstage.io',
+                  ] as JsonArray,
+                },
+              },
+            },
+          },
+        },
+      }),
+      catalogServiceMock(),
+      auth,
+    );
+
+    await processor.postProcess(
+      {
+        origin: 'plugin',
+        id: '1234',
+        user: null,
+        created: new Date(),
+        payload: { title: 'notification' },
+      },
+      {
+        recipients: { type: 'broadcast' },
+        payload: { title: 'notification' },
+      },
+    );
+
+    expect(sendmailMock).toHaveBeenCalledTimes(1);
+    expect(sendmailMock).toHaveBeenCalledWith(
+      expect.objectContaining({ to: 'allowed@backstage.io' }),
+    );
+  });
+
+  it('should not filter by domain when allowedEmailDomains is unset', async () => {
+    (createTransport as jest.Mock).mockReturnValue(mockTransport);
+
+    const processor = new NotificationsEmailProcessor(
+      logger,
+      mockServices.rootConfig({
+        data: {
+          ...DEFAULT_SENDMAIL_CONFIG,
+          notifications: {
+            processors: {
+              email: {
+                ...DEFAULT_SENDMAIL_CONFIG.notifications.processors.email,
+                broadcastConfig: {
+                  receiver: 'config',
+                  receiverEmails: [
+                    'user@evil.com',
+                    'user@mycompany.com',
+                  ] as JsonArray,
+                },
+              },
+            },
+          },
+        },
+      }),
+      catalogServiceMock(),
+      auth,
+    );
+
+    await processor.postProcess(
+      {
+        origin: 'plugin',
+        id: '1234',
+        user: null,
+        created: new Date(),
+        payload: { title: 'notification' },
+      },
+      {
+        recipients: { type: 'broadcast' },
+        payload: { title: 'notification' },
+      },
+    );
+
+    const sentTo = sendmailMock.mock.calls.map(call => call[0].to);
+    expect(sentTo).toEqual(
+      expect.arrayContaining(['user@evil.com', 'user@mycompany.com']),
+    );
+    expect(sentTo).toHaveLength(2);
+  });
 });

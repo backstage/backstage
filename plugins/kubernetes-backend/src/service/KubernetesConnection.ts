@@ -185,6 +185,7 @@ export class KubernetesConnection {
     const requestInit: RequestInit = {
       method: 'GET',
       headers: this.buildRequestHeaders(credential),
+      redirect: 'manual',
     };
 
     const url: URL = new URL(clusterDetails.url);
@@ -220,6 +221,7 @@ export class KubernetesConnection {
     const requestInit: RequestInit = {
       method: 'GET',
       headers: this.buildRequestHeaders(credential),
+      redirect: 'manual',
       ...(agent && { agent }),
     };
     return [new URL(url.toString()), requestInit];

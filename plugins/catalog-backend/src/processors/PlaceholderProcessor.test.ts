@@ -338,6 +338,40 @@ describe('PlaceholderProcessor', () => {
     );
   });
 
+  it('rejects placeholders that reference a different repository', async () => {
+    const processor = new PlaceholderProcessor({
+      resolvers: { text: textPlaceholderResolver },
+      reader,
+      integrations,
+    });
+
+    await expect(
+      processor.preProcessEntity(
+        {
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: { name: 'n' },
+          spec: {
+            data: {
+              $text:
+                'https://github.com/other-org/other-repo/blob/main/secret.txt',
+            },
+          },
+        },
+        {
+          type: 'url',
+          target:
+            'https://github.com/backstage/backstage/blob/main/catalog-info.yaml',
+        },
+        () => {},
+      ),
+    ).rejects.toThrow(
+      /Placeholder may only reference files from the same repository/,
+    );
+
+    expect(reader.readUrl).not.toHaveBeenCalled();
+  });
+
   it('not resolves relative file path for relative file location', async () => {
     // We explicitly don't support this case, as it would allow for file system
     // traversal attacks. If we want to implement this, we need to have additional

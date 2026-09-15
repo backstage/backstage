@@ -1,5 +1,11 @@
 # @backstage/cli-module-new
 
+## 0.1.7-next.0
+
+### Patch Changes
+
+- 4cba335: Fixes published entry point configurations so it can be imported reliably in Jest/Node resolution.
+
 ## 0.1.6
 
 ### Patch Changes

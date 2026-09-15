@@ -83,7 +83,9 @@ jobs:
       # Only the tree of the previous commit is needed to diff package versions,
       # so keep this shallow rather than fetching its entire ancestry.
       - name: Fetch previous commit for release check
-        run: git fetch --depth 1 origin '${{ github.event.before }}'
+        env:
+          GH_EVENT_BEFORE: ${{ github.event.before }}
+        run: git fetch --depth 1 origin "$GH_EVENT_BEFORE"
 
       - name: Check if release
         if: inputs.force_release != true
@@ -158,7 +160,7 @@ jobs:
             }
 
   # A separate release build that is only run for commits that are the result of merging the "Version Packages" PR
-  # We can't re-use the output from the above step, but we'll have a guaranteed node_modules cache and
+  # We can't reuse the output from the above step, but we'll have a guaranteed node_modules cache and
   # only run the build steps that are necessary for publishing
   release:
     needs: build

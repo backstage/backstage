@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.14.0-next.0
+
+### Minor Changes
+
+- 6ecff59: The GitHub multi-org entity provider now logs a clear warning and aborts ingestion when no GitHub App installation is found for an org, instead of failing with a confusing rate-limit or authentication error. This prevents silent deletion of existing catalog entities.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.2-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-catalog-node@2.2.5-next.0
+  - @backstage/plugin-events-node@0.4.26-next.0
+
 ## 0.13.5
 
 ### Patch Changes

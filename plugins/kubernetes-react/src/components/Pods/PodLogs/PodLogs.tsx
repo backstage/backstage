@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FC } from 'react';
 
 import {
   DismissableBanner,
@@ -43,10 +42,7 @@ export interface PodLogsProps {
  *
  * @public
  */
-export const PodLogs: FC<PodLogsProps> = ({
-  containerScope,
-  previous,
-}: PodLogsProps) => {
+export function PodLogs({ containerScope, previous }: PodLogsProps) {
   const { t } = useTranslationRef(kubernetesReactTranslationRef);
   const { value, error, loading } = usePodLogs({
     containerScope,
@@ -84,4 +80,4 @@ export const PodLogs: FC<PodLogsProps> = ({
       </Paper>
     </>
   );
-};
+}

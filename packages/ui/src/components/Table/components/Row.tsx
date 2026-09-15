@@ -38,11 +38,12 @@ export function Row<T extends object>(props: RowProps<T>) {
     RowDefinition,
     props,
   );
-  const { classes, columns, children, href } = ownProps;
-  const isExternal = isExternalLink(href);
-  const hasInternalHref = !!href && !isExternal;
-  const hasExternalHref = !!href && isExternal;
-  const hasInteraction = !!restProps.onAction || !!href;
+  const { classes, columns, children } = ownProps;
+  const rawHref = restProps.href;
+  const isExternal = isExternalLink(rawHref);
+  const hasInternalHref = !!rawHref && !isExternal;
+  const hasExternalHref = !!rawHref && isExternal;
+  const hasInteraction = !!restProps.onAction || !!rawHref;
 
   // Derive the effective target, defaulting to _blank for external links.
   const effectiveTarget = hasExternalHref ? '_blank' : restProps.target;
@@ -62,9 +63,9 @@ export function Row<T extends object>(props: RowProps<T>) {
   const handlePress = hasInteraction
     ? () => {
         restProps.onAction?.();
-        if (href) {
-          analytics.captureEvent('click', href, {
-            attributes: { to: String(href) },
+        if (rawHref) {
+          analytics.captureEvent('click', rawHref, {
+            attributes: { to: String(rawHref) },
           });
         }
       }
@@ -87,7 +88,6 @@ export function Row<T extends object>(props: RowProps<T>) {
 
   return (
     <ReactAriaRow
-      href={href}
       {...restProps}
       {...dataAttributes}
       target={effectiveTarget}

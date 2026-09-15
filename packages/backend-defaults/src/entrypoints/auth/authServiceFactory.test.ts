@@ -57,6 +57,34 @@ const mockDeps = [
             {
               type: 'static',
               options: {
+                token: 'action-restricted-static-token',
+                subject: 'action-restricted-static-subject',
+              },
+              accessRestrictions: [
+                {
+                  plugin: 'catalog',
+                  permissionAttribute: { action: 'read' },
+                },
+                {
+                  plugin: 'scaffolder',
+                  permissionAttribute: { action: 'read' },
+                },
+              ],
+            },
+            {
+              type: 'static',
+              options: {
+                token: 'plugin-only-static-token',
+                subject: 'plugin-only-static-subject',
+              },
+              accessRestrictions: [
+                { plugin: 'catalog' },
+                { plugin: 'scaffolder' },
+              ],
+            },
+            {
+              type: 'static',
+              options: {
                 token: 'unlimited-static-token',
                 subject: 'unlimited-static-subject',
               },
@@ -410,6 +438,66 @@ describe('authServiceFactory', () => {
     ).resolves.toMatchObject({
       principal: { subject: 'unlimited-static-subject' },
     });
+  });
+
+  it('should enforce access restrictions when issuing plugin tokens on behalf of service principals', async () => {
+    const tester = ServiceFactoryTester.from(authServiceFactory, {
+      dependencies: mockDeps,
+    });
+
+    const catalogAuth = await tester.getSubject('catalog');
+
+    // Permission-level restrictions (e.g. permission name) cannot be forwarded
+    const restrictedCredentials = await catalogAuth.authenticate(
+      'limited-static-token',
+    );
+    await expect(
+      catalogAuth.getPluginRequestToken({
+        onBehalfOf: restrictedCredentials,
+        targetPluginId: 'catalog',
+      }),
+    ).rejects.toThrow('is restricted and cannot be delegated');
+
+    // Permission attribute restrictions (e.g. action: read) cannot be forwarded
+    const actionRestrictedCredentials = await catalogAuth.authenticate(
+      'action-restricted-static-token',
+    );
+    await expect(
+      catalogAuth.getPluginRequestToken({
+        onBehalfOf: actionRestrictedCredentials,
+        targetPluginId: 'catalog',
+      }),
+    ).rejects.toThrow('is restricted and cannot be delegated');
+
+    // Plugin-only restrictions allow delegation to listed plugins
+    const pluginOnlyCredentials = await catalogAuth.authenticate(
+      'plugin-only-static-token',
+    );
+    await expect(
+      catalogAuth.getPluginRequestToken({
+        onBehalfOf: pluginOnlyCredentials,
+        targetPluginId: 'scaffolder',
+      }),
+    ).resolves.toEqual(expect.objectContaining({ token: expect.any(String) }));
+
+    // Plugin-only restrictions reject delegation to unlisted plugins
+    await expect(
+      catalogAuth.getPluginRequestToken({
+        onBehalfOf: pluginOnlyCredentials,
+        targetPluginId: 'permission',
+      }),
+    ).rejects.toThrow("is not included in token's access restrictions");
+
+    // Unrestricted credentials always allow delegation
+    const unrestrictedCredentials = await catalogAuth.authenticate(
+      'unlimited-static-token',
+    );
+    await expect(
+      catalogAuth.getPluginRequestToken({
+        onBehalfOf: unrestrictedCredentials,
+        targetPluginId: 'scaffolder',
+      }),
+    ).resolves.toEqual(expect.objectContaining({ token: expect.any(String) }));
   });
 
   describe('decorate PluginTokenHandler', () => {

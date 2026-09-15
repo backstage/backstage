@@ -24,6 +24,7 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import path from 'node:path';
 import { examples } from './templateFile.examples';
+import { assertScmUserCredentials } from './assertScmUserCredentials';
 import { createTemplateFileActionHandler } from './templateFileActionHandler';
 import { collectActionTemplateCapabilities } from './templateActionHandler';
 
@@ -36,6 +37,7 @@ import { collectActionTemplateCapabilities } from './templateActionHandler';
 export function createFetchTemplateFileAction(options: {
   reader: UrlReaderService;
   integrations: ScmIntegrations;
+  requireScmUserCredentials?: boolean;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 }) {
@@ -106,6 +108,14 @@ export function createFetchTemplateFileAction(options: {
         ctx,
         resolveTemplateFile: async () => {
           ctx.logger.info('Fetching template file content from remote URL');
+
+          assertScmUserCredentials({
+            integrations: options.integrations,
+            requireScmUserCredentials: options.requireScmUserCredentials,
+            url: ctx.input.url,
+            baseUrl: ctx.templateInfo?.baseUrl,
+            token: ctx.input.token,
+          });
 
           const workDir = await ctx.createTemporaryDirectory();
           // Write to a tmp file, render the template, then copy to workspace.

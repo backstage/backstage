@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-node
 
+## 2.2.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.11.7-next.0
+  - @backstage/plugin-permission-node@0.11.4-next.0
+  - @backstage/catalog-client@1.16.2-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
 ## 2.2.4
 
 ### Patch Changes

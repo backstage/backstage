@@ -178,6 +178,9 @@ export const scaffolderPlugin = createBackendPlugin({
       }) {
         const log = loggerToWinstonLogger(logger);
         const integrations = ScmIntegrations.fromConfig(config);
+        const requireScmUserCredentials = config.getOptionalBoolean(
+          'scaffolder.requireScmUserCredentials',
+        );
 
         const templateExtensions = {
           additionalTemplateFilters: convertFiltersToRecord(
@@ -195,19 +198,23 @@ export const scaffolderPlugin = createBackendPlugin({
           createFetchPlainAction({
             reader,
             integrations,
+            requireScmUserCredentials,
           }),
           createFetchPlainFileAction({
             reader,
             integrations,
+            requireScmUserCredentials,
           }),
           createFetchTemplateAction({
             integrations,
             reader,
+            requireScmUserCredentials,
             ...templateExtensions,
           }),
           createFetchTemplateFileAction({
             integrations,
             reader,
+            requireScmUserCredentials,
             ...templateExtensions,
           }),
           createDebugLogAction(),

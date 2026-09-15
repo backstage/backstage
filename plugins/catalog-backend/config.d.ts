@@ -142,16 +142,6 @@ export interface Config {
     }>;
 
     /**
-     * Enables the compatibility layer for relations in returned entities that
-     * ensures that all relations objects have both `target` and `targetRef`.
-     *
-     * Enabling this option significantly increases the memory usage of the
-     * catalog, and slightly reduces performance, but may avoid breaking consumers that
-     * rely on the existence of `target` in the relations objects.
-     */
-    enableRelationsCompatibility?: boolean;
-
-    /**
      * Disables the default backstage processors.
      *
      * Enabling this option allows more complete control of which processors are included

@@ -46,6 +46,7 @@ import { NotificationTemplateRenderer } from '../extensions';
 import Mail from 'nodemailer/lib/mailer';
 import pThrottle from 'p-throttle';
 import { SendEmailCommandInput } from '@aws-sdk/client-sesv2';
+import { isValidNotificationEmail } from './isValidNotificationEmail';
 
 export class NotificationsEmailProcessor implements NotificationProcessor {
   private transporter: any;
@@ -60,6 +61,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
   private readonly throttleInterval: number;
   private readonly frontendBaseUrl: string;
   private readonly filter: NotificationProcessorFilters;
+  private readonly allowedEmailDomains?: string[];
   private readonly allowlistEmailAddresses?: string[];
   private readonly denylistEmailAddresses?: string[];
 
@@ -109,12 +111,15 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
         )
       : 3_600_000;
     this.frontendBaseUrl = config.getString('app.baseUrl');
-    this.allowlistEmailAddresses = emailProcessorConfig.getOptionalStringArray(
-      'allowlistEmailAddresses',
-    );
-    this.denylistEmailAddresses = emailProcessorConfig.getOptionalStringArray(
-      'denylistEmailAddresses',
-    );
+    this.allowedEmailDomains = emailProcessorConfig
+      .getOptionalStringArray('allowedEmailDomains')
+      ?.map(domain => domain.toLowerCase());
+    this.allowlistEmailAddresses = emailProcessorConfig
+      .getOptionalStringArray('allowlistEmailAddresses')
+      ?.map(address => address.trim().toLowerCase());
+    this.denylistEmailAddresses = emailProcessorConfig
+      .getOptionalStringArray('denylistEmailAddresses')
+      ?.map(address => address.trim().toLowerCase());
     this.filter = getProcessorFiltersFromConfig(emailProcessorConfig);
   }
 
@@ -237,16 +242,63 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       return [];
     }
 
-    if (this.allowlistEmailAddresses) {
-      emails = emails.filter(email =>
-        this.allowlistEmailAddresses?.includes(email),
+    emails = emails.filter(email => {
+      if (isValidNotificationEmail(email)) {
+        return true;
+      }
+      this.logger.warn(
+        `Skipping invalid notification email address for delivery: ${email}`,
+      );
+      return false;
+    });
+
+    let skippedOutsideDomains = 0;
+    emails = emails.filter(email => {
+      const normalizedEmail = email.trim().toLowerCase();
+      const onAllowlist =
+        this.allowlistEmailAddresses?.includes(normalizedEmail);
+
+      // Allowlisted addresses are accepted even outside allowedEmailDomains.
+      if (onAllowlist) {
+        return true;
+      }
+
+      if (this.allowedEmailDomains) {
+        const domain = email.slice(email.lastIndexOf('@') + 1).toLowerCase();
+        if (this.allowedEmailDomains.includes(domain)) {
+          return true;
+        }
+        this.logger.debug(
+          `Skipping notification email address outside allowedEmailDomains: ${email}`,
+        );
+        skippedOutsideDomains += 1;
+        return false;
+      }
+
+      // Allowlist-only closed mode when no domain list is configured.
+      if (this.allowlistEmailAddresses) {
+        return false;
+      }
+
+      return true;
+    });
+
+    if (skippedOutsideDomains > 0) {
+      this.logger.info(
+        `Skipped ${skippedOutsideDomains} notification email address(es) outside allowedEmailDomains`,
       );
     }
 
     if (this.denylistEmailAddresses) {
-      emails = emails.filter(
-        email => !this.denylistEmailAddresses?.includes(email),
-      );
+      emails = emails.filter(email => {
+        if (this.denylistEmailAddresses?.includes(email.trim().toLowerCase())) {
+          this.logger.warn(
+            `Skipping denylisted notification email address: ${email}`,
+          );
+          return false;
+        }
+        return true;
+      });
     }
     return emails;
   }

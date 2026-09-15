@@ -228,6 +228,36 @@ describe('publish:gitlab', () => {
     expect(mockGitlabClient.ProtectedBranches.protect).not.toHaveBeenCalled();
   });
 
+  it('requires an explicit token and does not allow privileged integration credentials when configured', async () => {
+    const requiredConfig = new ConfigReader({
+      integrations: {
+        gitlab: [{ host: 'gitlab.com', token: 'integration-token' }],
+      },
+      scaffolder: { requireScmUserCredentials: true },
+    });
+    const requiredAction = createPublishGitlabAction({
+      integrations: ScmIntegrations.fromConfig(requiredConfig),
+      config: requiredConfig,
+    });
+
+    await expect(requiredAction.handler(mockContext)).rejects.toThrow(
+      'No user credentials provided for host gitlab.com, but scaffolder.requireScmUserCredentials is enabled',
+    );
+    await expect(
+      requiredAction.handler({
+        ...mockContext,
+        input: {
+          ...mockContext.input,
+          token: 'user-token',
+          setUserAsOwner: true,
+        },
+      }),
+    ).rejects.toThrow(
+      'The setUserAsOwner and ownerUsername inputs cannot be used when scaffolder.requireScmUserCredentials is enabled because they require credentials from the GitLab integration',
+    );
+    expect(mockGitlabClient.Namespaces.show).not.toHaveBeenCalled();
+  });
+
   it('should call the correct Gitlab APIs when the owner is a group', async () => {
     mockGitlabClient.Users.showCurrentUser.mockResolvedValue({ id: 12345 });
     mockGitlabClient.Namespaces.show.mockResolvedValue({ id: 1234 });

@@ -1,5 +1,12 @@
 # @backstage/integration
 
+## 2.1.2-next.0
+
+### Patch Changes
+
+- 7150117: Updated internal Azure DevOps imports to avoid a circular module dependency.
+- e895def: Fixed handling of GitLab URLs for instances configured with a relative base path.
+
 ## 2.1.0
 
 ### Minor Changes

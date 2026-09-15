@@ -1,5 +1,23 @@
 # @backstage/plugin-techdocs-node
 
+## 1.16.0-next.0
+
+### Minor Changes
+
+- ee97130: Added support for `techdocs.generator.pullOptions` when pulling the TechDocs generator Docker image from private registries that require authentication.
+
+### Patch Changes
+
+- e58d265: Updated TechDocs generation to reject source trees containing symlinks that resolve outside the source directory.
+- d13ad29: Improved MkDocs configuration handling for additional templates.
+- 2233af2: Improved MkDocs configuration sanitization to cover additional nested configuration keys and theme options.
+- 4441911: Improved MkDocs configuration file handling.
+- 45cbd0a: Improved validation of MkDocs configuration values during TechDocs generation.
+- 030331b: Improved file validation in the local TechDocs publisher during the publish step.
+- Updated dependencies
+  - @backstage/integration@2.1.2-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
 ## 1.15.3
 
 ### Patch Changes

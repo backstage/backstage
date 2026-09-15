@@ -41,8 +41,14 @@ export function createGithubRepoPushAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
   githubCredentialsProvider?: GithubCredentialsProvider;
+  requireScmUserCredentials?: boolean;
 }) {
-  const { integrations, config, githubCredentialsProvider } = options;
+  const {
+    integrations,
+    config,
+    githubCredentialsProvider,
+    requireScmUserCredentials,
+  } = options;
 
   return createTemplateAction({
     id: 'github:repo:push',
@@ -110,6 +116,7 @@ export function createGithubRepoPushAction(options: {
 
       const octokitOptions = await getOctokitOptions({
         integrations,
+        requireScmUserCredentials,
         credentialsProvider: githubCredentialsProvider,
         token: providedToken,
         host,

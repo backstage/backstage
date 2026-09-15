@@ -1,5 +1,13 @@
 # @backstage/frontend-plugin-api
 
+## 0.18.1-next.0
+
+### Patch Changes
+
+- 024c0ef: Updated internal type imports to avoid circular declaration chunks in package builds.
+- Updated dependencies
+  - @backstage/filter-predicates@0.1.5-next.0
+
 ## 0.18.0
 
 ### Minor Changes

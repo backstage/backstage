@@ -14,15 +14,28 @@
  * limitations under the License.
  */
 
-import { Link, SubvalueCell, TableColumn } from '@backstage/core-components';
-import { EntityRefLinks } from '@backstage/plugin-catalog-react';
+import {
+  Link,
+  SubvalueCell,
+  type TableColumn,
+} from '@backstage/core-components';
+import {
+  EntityDisplayName,
+  type EntityPresentationApi,
+  entityPresentationSnapshot,
+  EntityRefLinks,
+} from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { techdocsTranslationRef } from '../../../translation';
 import { DocsTableRow } from './types';
 
-function customTitle(entity: Entity): string {
-  return entity.metadata.title || entity.metadata.name;
+function customTitle(
+  entity: Entity,
+  presentationApi?: EntityPresentationApi,
+): string {
+  return entityPresentationSnapshot(entity, undefined, presentationApi)
+    .primaryTitle;
 }
 
 /**
@@ -44,15 +57,24 @@ const TableColumnTitle = ({
  * @public
  */
 export const columnFactories = {
-  createTitleColumn(options?: { hidden?: boolean }): TableColumn<DocsTableRow> {
-    const nameCol = columnFactories.createNameColumn();
+  createTitleColumn(options?: {
+    hidden?: boolean;
+    entityPresentationApi?: EntityPresentationApi;
+  }): TableColumn<DocsTableRow> {
+    const nameCol = columnFactories.createNameColumn({
+      entityPresentationApi: options?.entityPresentationApi,
+    });
     return {
       ...nameCol,
       field: 'entity.metadata.title',
       hidden: options?.hidden,
     };
   },
-  createNameColumn(): TableColumn<DocsTableRow> {
+
+  createNameColumn(options?: {
+    entityPresentationApi?: EntityPresentationApi;
+  }): TableColumn<DocsTableRow> {
+    const presentationApi = options?.entityPresentationApi;
     return {
       title: <TableColumnTitle translationKey="document" />,
       field: 'entity.metadata.name',
@@ -60,14 +82,30 @@ export const columnFactories = {
       searchable: true,
       defaultSort: 'asc',
       customSort: (row1, row2) => {
-        const title1 = customTitle(row1.entity).toLocaleLowerCase();
-        const title2 = customTitle(row2.entity).toLocaleLowerCase();
+        const title1 = customTitle(
+          row1.entity,
+          presentationApi,
+        ).toLocaleLowerCase();
+        const title2 = customTitle(
+          row2.entity,
+          presentationApi,
+        ).toLocaleLowerCase();
         return title1.localeCompare(title2);
       },
+      customFilterAndSearch: (filter, row) =>
+        customTitle(row.entity, presentationApi)
+          .toLocaleLowerCase()
+          .includes(filter.toLocaleLowerCase()),
       render: (row: DocsTableRow) => (
         <SubvalueCell
           value={
-            <Link to={row.resolved.docsUrl}>{customTitle(row.entity)}</Link>
+            <Link to={row.resolved.docsUrl}>
+              {presentationApi ? (
+                <EntityDisplayName entityRef={row.entity} />
+              ) : (
+                customTitle(row.entity)
+              )}
+            </Link>
           }
           subvalue={row.entity.metadata.description}
         />

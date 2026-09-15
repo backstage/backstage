@@ -37,8 +37,9 @@ import { RepositoryTreeSchema } from '@gitbeaker/rest';
  */
 export const createGitlabRepoPushAction = (options: {
   integrations: ScmIntegrationRegistry;
+  requireScmUserCredentials?: boolean;
 }) => {
-  const { integrations } = options;
+  const { integrations, requireScmUserCredentials } = options;
 
   return createTemplateAction({
     id: 'gitlab:repo:push',
@@ -126,6 +127,7 @@ export const createGitlabRepoPushAction = (options: {
         integrations,
         token,
         repoUrl,
+        requireScmUserCredentials,
       });
 
       let fileRoot: string;
@@ -146,6 +148,8 @@ export const createGitlabRepoPushAction = (options: {
             ref: branchName,
             recursive: true,
             path: targetPath ?? undefined,
+            // Pages are walked serially via the Link header, and GitLab's default is 20.
+            perPage: 100,
           });
         } catch (e) {
           ctx.logger.warn(

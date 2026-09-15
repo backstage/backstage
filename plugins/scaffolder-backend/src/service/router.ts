@@ -67,6 +67,7 @@ import {
 import {
   TaskBroker,
   TaskFilters,
+  SerializedTask,
   TaskStatus,
   TemplateAction,
   TemplateFilter,
@@ -97,6 +98,7 @@ import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import { isTaskRecoveryEnabled } from '../scaffolder/tasks/taskRecoveryHelper';
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
 import { createOpenApiRouter } from '../schema/openapi';
+import type { SerializedTask as SerializedTaskResponse } from '../schema/openapi/generated/models/SerializedTask.model';
 import {
   checkPermission,
   checkTaskPermission,
@@ -189,6 +191,8 @@ const readDuration = (
   return defaultValue;
 };
 
+const taskOrderFields = new Set(['created_at', 'status', 'created_by']);
+
 function formatSecretsValidationErrors(result: ValidatorResult) {
   return result.errors.map(err => {
     const property = err.property.replace(/^instance/, 'secrets');
@@ -230,6 +234,17 @@ async function validateSecrets(options: {
     errors: formatSecretsValidationErrors(result),
   });
   return false;
+}
+
+function serializeTask(task: SerializedTask): SerializedTaskResponse {
+  return {
+    id: task.id,
+    spec: task.spec,
+    status: task.status,
+    createdAt: task.createdAt,
+    lastHeartbeatAt: task.lastHeartbeatAt,
+    createdBy: task.createdBy,
+  };
 }
 
 /**
@@ -673,6 +688,10 @@ export async function createRouter(
             );
           }
 
+          if (!taskOrderFields.has(match[2])) {
+            throw new InputError(`Invalid order field "${match[2]}"`);
+          }
+
           return {
             order: match[1] as 'asc' | 'desc',
             field: match[2],
@@ -688,7 +707,7 @@ export async function createRouter(
           transformConditions: taskTransformConditions,
         });
 
-        const tasks = await taskBroker.list({
+        const taskList = await taskBroker.list({
           filters: {
             createdBy,
             status: status ? (status as TaskStatus[]) : undefined,
@@ -703,7 +722,10 @@ export async function createRouter(
 
         await auditorEvent?.success();
 
-        res.status(200).json(tasks);
+        res.status(200).json({
+          tasks: taskList.tasks.map(serializeTask),
+          totalTasks: taskList.totalTasks,
+        });
       } catch (err) {
         await auditorEvent?.fail({ error: err });
         throw err;
@@ -740,9 +762,7 @@ export async function createRouter(
 
         await auditorEvent?.success();
 
-        // Do not disclose secrets
-        delete task.secrets;
-        res.status(200).json(task);
+        res.status(200).json(serializeTask(task));
       } catch (err) {
         await auditorEvent?.fail({ error: err });
         throw err;

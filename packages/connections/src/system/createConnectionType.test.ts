@@ -33,6 +33,12 @@ describe('createConnectionType', () => {
     });
 
     expect(SingleAuthType.type).toBe('single');
+    expect(SingleAuthType).not.toHaveProperty('query');
+    expect(SingleAuthType).not.toHaveProperty('auth');
+    // @ts-expect-error - query is an input to find, not a descriptor property
+    expect(SingleAuthType.query).toBeUndefined();
+    // @ts-expect-error - auth values are derived from the auth method schemas
+    expect(SingleAuthType.auth).toBeUndefined();
     expect(SingleAuthType.authMethods).toEqual([
       expect.objectContaining({ method: 'token', title: 'Token' }),
     ]);

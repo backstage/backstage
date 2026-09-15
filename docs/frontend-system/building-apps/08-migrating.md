@@ -41,6 +41,7 @@ Before you begin, review this checklist to track your progress:
 - [ ] Complete minimal changes for hybrid configuration (Phase 1)
 - [ ] App starts and works in hybrid mode
 - [ ] Gradually migrate and remove legacy code and helpers (Phase 2)
+- [ ] Remove legacy plugin routes and imports after migrating their replacements
 - [ ] App runs fully on the new frontend system
 
 :::info
@@ -396,9 +397,18 @@ app:
   packages: all # ✨
 ```
 
+### Removing legacy routes
+
+After migrating a plugin page to the new frontend system, verify that the
+new extension is installed and working correctly. You can then remove the
+plugin's legacy route, page import, and related route wiring from the app.
+
+Before removing route references or external route bindings, make sure they
+are not still used by another plugin or app component.
+
 #### `featureFlags`
 
-Declaring features flags in the app is no longer supported, move these declarations to the appropriate plugins instead.
+Declaring features flags in the app is no longer supported; move these declarations to the appropriate plugins instead.
 
 For example, the following app feature flags configuration:
 
@@ -919,6 +929,15 @@ At this point you should be able to run the app and see that you're not using th
 Once the cleanup is complete you should be left with clean entity pages that are built using a mix of the old and new frontend system. From this point you can continue to gradually migrate plugins that provide content for the entity pages, until all plugins have been fully moved to the new system and the `entityPage` option can be removed.
 
 Migrating across the tabs for the Entity Pages should be as simple as removing the `EntityLayout.Route` for each of the plugins that provide tab content, and then this tab should be sourced from the `EntityContent` extensions created by the plugins themselves which will be automatically detected and added to the App.
+
+### Retire `convertLegacyAppRoot`
+
+Treat the removal of `convertLegacyAppRoot` as a Phase 2 milestone. You can
+remove it when the call no longer receives legacy root elements, routes, or the
+`entityPage` option. Remove the call, its import, and the
+`convertedRootFeatures` entry from the `features` array. Then start your app to
+verify that the new frontend system provides the expected routes, navigation,
+and page content without the compatibility helper.
 
 ## Enable the new templates for `yarn new`
 

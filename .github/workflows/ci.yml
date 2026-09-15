@@ -95,6 +95,9 @@ jobs:
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
+      - name: verify Yarn patches
+        run: yarn backstage-cli pm verify-patches
+
       - name: verify yarn dependency duplicates
         run: node scripts/verify-lockfile-duplicates.js
 
@@ -137,6 +140,10 @@ jobs:
 
       - name: verify plugin directory
         run: node scripts/verify-plugin-directory.js
+
+      - name: test release scripts
+        run: yarn node --test scripts/*.test.js
+
       - name: build all packages
         run: yarn backstage-cli repo build --all
 

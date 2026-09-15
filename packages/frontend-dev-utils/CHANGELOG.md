@@ -1,5 +1,24 @@
 # @backstage/frontend-dev-utils
 
+## 0.1.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/plugin-app@0.5.3-next.1
+  - @backstage/ui@0.18.0-next.1
+  - @backstage/frontend-defaults@0.5.6-next.1
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.17.2-next.0
+  - @backstage/plugin-app@0.5.3-next.0
+  - @backstage/frontend-defaults@0.5.6-next.0
+
 ## 0.1.5
 
 ### Patch Changes
