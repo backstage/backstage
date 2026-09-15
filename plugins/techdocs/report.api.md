@@ -406,8 +406,6 @@ export const TechDocsReaderLayout: (
 export type TechDocsReaderLayoutProps = {
   withHeader?: boolean;
   withSearch?: boolean;
-  defaultPath?: string;
-  searchResultUrlMapper?: (url: string) => string;
 };
 
 // @public

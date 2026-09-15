@@ -42,10 +42,6 @@ export type TechDocsReaderLayoutProps = {
   withHeader?: boolean;
   /** Show or hide the documentation search, defaults to true. */
   withSearch?: boolean;
-  /** The documentation path to navigate to on the initial render. */
-  defaultPath?: string;
-  /** Maps documentation search result URLs before navigating to them. */
-  searchResultUrlMapper?: (url: string) => string;
 };
 
 /**
