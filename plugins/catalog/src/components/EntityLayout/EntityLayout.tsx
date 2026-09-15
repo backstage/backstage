@@ -15,6 +15,12 @@
  */
 
 import {
+  useAppLocation,
+  useAppSearchParams,
+  useAppNavigate,
+} from '@backstage/frontend-plugin-api';
+
+import {
   DEFAULT_NAMESPACE,
   Entity,
   EntityRelation,
@@ -63,9 +69,9 @@ import {
   ElementType,
   ReactNode,
 } from 'react';
-import { useLocation, useSearchParams } from 'react-router-dom';
+
 import useAsync from 'react-use/esm/useAsync';
-import { useAppNavigate } from '@backstage/frontend-plugin-api';
+
 import { catalogTranslationRef } from '../../alpha/translation';
 import { rootRouteRef, unregisterRedirectRouteRef } from '../../routes';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
@@ -253,7 +259,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
   const classes = useStyles();
   const { kind, namespace, name } = useRouteRefParams(entityRouteRef);
   const { entity, loading, error } = useAsyncEntity();
-  const location = useLocation();
+  const location = useAppLocation();
   const routes = useElementFilter(
     children,
     elements =>
@@ -292,7 +298,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
 
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
   const navigate = useAppNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useAppSearchParams();
 
   const catalogRoute = useRouteRef(rootRouteRef);
   const unregisterRedirectRoute = useRouteRef(unregisterRedirectRouteRef);

@@ -55,8 +55,7 @@
     "@material-ui/core": "^4.12.2",
     "@types/react": "^17.0.0 || ^18.0.0",
     "react": "^17.0.0 || ^18.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0",
-    "react-router-dom": "^6.30.2"
+    "react-dom": "^17.0.0 || ^18.0.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {

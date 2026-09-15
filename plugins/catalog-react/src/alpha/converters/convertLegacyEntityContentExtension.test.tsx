@@ -55,11 +55,6 @@ describe('convertLegacyEntityContentExtension', () => {
     expect(tester.query(converted).node.spec.id).toBe('entity-content:example');
 
     await renderInTestApp(tester.reactElement(), {
-      // Legacy entity content and cards are React Router v6 by origin:
-      // `createRoutableExtension` calls `useRouteRef` from
-      // `@backstage/core-plugin-api`, which reads `useLocation`. In an app they
-      // get that context from the catalog entity page, which declares the
-      // adapter in its own loader; rendered standalone here, the test names it.
       router: ReactRouterV6PageRouter,
       mountedRoutes: {
         '/': convertLegacyRouteRef(routeRef),
@@ -99,11 +94,6 @@ describe('convertLegacyEntityContentExtension', () => {
     expect(tester.query(converted).node.spec.id).toBe('entity-content:other');
 
     await renderInTestApp(tester.reactElement(), {
-      // Legacy entity content and cards are React Router v6 by origin:
-      // `createRoutableExtension` calls `useRouteRef` from
-      // `@backstage/core-plugin-api`, which reads `useLocation`. In an app they
-      // get that context from the catalog entity page, which declares the
-      // adapter in its own loader; rendered standalone here, the test names it.
       router: ReactRouterV6PageRouter,
       mountedRoutes: {
         '/': convertLegacyRouteRef(routeRef),

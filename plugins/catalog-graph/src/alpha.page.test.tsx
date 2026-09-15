@@ -22,8 +22,9 @@ jest.mock('./components/CatalogGraphPage', () => {
   const { useCatalogGraphPage } = jest.requireActual<
     typeof import('./components/CatalogGraphPage/useCatalogGraphPage')
   >('./components/CatalogGraphPage/useCatalogGraphPage');
-  const { useLocation } =
-    jest.requireActual<typeof import('react-router-dom')>('react-router-dom');
+  const { useAppLocation } = jest.requireActual<
+    typeof import('@backstage/frontend-plugin-api')
+  >('@backstage/frontend-plugin-api');
 
   return {
     CatalogGraphPage: (
@@ -31,7 +32,7 @@ jest.mock('./components/CatalogGraphPage', () => {
         Record<string, unknown>,
     ) => {
       const state = useCatalogGraphPage(props);
-      const location = useLocation();
+      const location = useAppLocation();
 
       return (
         <output>
@@ -46,6 +47,7 @@ const CatalogGraphPage = catalogGraphPlugin.getExtension('page:catalog-graph');
 
 describe('catalog-graph alpha page', () => {
   it('should apply page configuration to the initial state and URL', async () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     const config = {
       selectedKinds: ['Component'],
       selectedRelations: ['dependsOn'],
@@ -117,5 +119,9 @@ describe('catalog-graph alpha page', () => {
     expect(search.get('direction')).toBe('RL');
     expect(search.get('showFilters')).toBe('false');
     expect(search.get('curve')).toBe('curveStepBefore');
+    expect(warn.mock.calls.flat().join(' ')).not.toContain(
+      'implicit React Router',
+    );
+    warn.mockRestore();
   });
 });

@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ReactNode, useEffect } from 'react';
 
-import { useLocation } from 'react-router-dom';
+import { useAppLocation } from '@backstage/frontend-plugin-api';
+
+import { ReactNode, useEffect } from 'react';
 
 import { visitsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
@@ -89,7 +90,7 @@ export const VisitListener = ({
   visitName?: ({ pathname }: { pathname: string }) => string;
 }): JSX.Element => {
   const visitsApi = useApi(visitsApiRef);
-  const { pathname } = useLocation();
+  const { pathname } = useAppLocation();
   const toEntityRefImpl = toEntityRef ?? getToEntityRef();
   const visitNameImpl = visitName ?? getVisitName();
   useEffect(() => {

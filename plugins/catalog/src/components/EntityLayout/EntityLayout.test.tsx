@@ -85,8 +85,6 @@ describe('EntityLayout', () => {
     [alertApiRef, mockApis.alert()],
     [starredEntitiesApiRef, new MockStarredEntitiesApi()],
     [permissionApiRef, mockApis.permission()],
-    [appHistoryApiRef, createMockAppHistory()],
-    [routeResolutionApiRef, createEntityLayoutRouteResolutionApi()],
   );
 
   it('renders simplest case', async () => {

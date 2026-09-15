@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { ReactElement, Suspense } from 'react';
 import {
   TechDocsAddons,
@@ -51,14 +52,16 @@ export function TechDocsReaderPage(props: {
   withFeedbackLink: boolean;
 }) {
   return (
-    <TechDocsReaderRouter>
-      <TechDocsReaderLayout
-        withSearch={props.withSearch}
-        withHeader={props.withHeader}
-        withFeedbackLink={props.withFeedbackLink}
-      />
-      {renderAddons(props.addonOptions)}
-    </TechDocsReaderRouter>
+    <ReactRouterV6PageRouter>
+      <TechDocsReaderRouter>
+        <TechDocsReaderLayout
+          withSearch={props.withSearch}
+          withHeader={props.withHeader}
+          withFeedbackLink={props.withFeedbackLink}
+        />
+        {renderAddons(props.addonOptions)}
+      </TechDocsReaderRouter>
+    </ReactRouterV6PageRouter>
   );
 }
 

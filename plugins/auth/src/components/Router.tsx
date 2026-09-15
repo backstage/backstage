@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { Routes, Route } from 'react-router-dom';
 import { ConsentPage } from './ConsentPage';
 
@@ -22,8 +23,10 @@ import { ConsentPage } from './ConsentPage';
  */
 export const Router = () => {
   return (
-    <Routes>
-      <Route path="/authorize/:sessionId" element={<ConsentPage />} />
-    </Routes>
+    <ReactRouterV6PageRouter>
+      <Routes>
+        <Route path="/authorize/:sessionId" element={<ConsentPage />} />
+      </Routes>
+    </ReactRouterV6PageRouter>
   );
 };

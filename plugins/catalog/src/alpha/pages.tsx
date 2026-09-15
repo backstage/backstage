@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import {
   coreExtensionData,
@@ -133,22 +132,14 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
           }
         }
 
-        // The catalog index routes with React Router v6: `EntityListProvider`
-        // reads `useLocation().search` to pick up filters set from outside the
-        // page, and the page resolves the "Create Component" target with
-        // `useRouteRef` from `@backstage/core-plugin-api`, which is still
-        // React Router's `useLocation`. The framework provides no routing
-        // library context at page depth, so the page declares the one it uses.
         return (
-          <ReactRouterV6PageRouter>
-            <NfsDefaultCatalogPage
-              filters={<>{filters}</>}
-              pagination={config.pagination}
-              exportSettings={
-                mergedExportSettings.enabled ? mergedExportSettings : undefined
-              }
-            />
-          </ReactRouterV6PageRouter>
+          <NfsDefaultCatalogPage
+            filters={<>{filters}</>}
+            pagination={config.pagination}
+            exportSettings={
+              mergedExportSettings.enabled ? mergedExportSettings : undefined
+            }
+          />
         );
       },
     });
@@ -274,17 +265,15 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
         }));
 
         return (
-          <ReactRouterV6PageRouter>
-            <CatalogEntityPage
-              menuItems={menuItems}
-              headerLayouts={headerLayouts}
-              headers={headers}
-              routes={routes}
-              groupDefinitions={groupDefinitions}
-              defaultContentOrder={config.defaultContentOrder}
-              showNavItemIcons={config.showNavItemIcons}
-            />
-          </ReactRouterV6PageRouter>
+          <CatalogEntityPage
+            menuItems={menuItems}
+            headerLayouts={headerLayouts}
+            headers={headers}
+            routes={routes}
+            groupDefinitions={groupDefinitions}
+            defaultContentOrder={config.defaultContentOrder}
+            showNavItemIcons={config.showNavItemIcons}
+          />
         );
       },
     });

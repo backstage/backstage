@@ -160,12 +160,6 @@ export function createTestEntityPage(
             return <div data-testid="empty-entity-page" />;
           }
 
-          // Stands in for the real catalog entity page, which declares this
-          // adapter in its own loader. Without it third-party entity content
-          // that uses React Router would fail here while working in the app —
-          // a worse false signal than the one the strictness is here to
-          // remove — and this page's own `<Routes>` below would have nothing
-          // to match against.
           return (
             <ReactRouterV6PageRouter>
               <MockEntityApiProvider entity={entity}>
@@ -215,15 +209,15 @@ function MockEntityApiProvider({
 }) {
   const parentHolder = useApiHolder();
 
-  // If catalog API is already provided, don't override it
+  // Preserve a catalog API supplied by the caller.
   if (parentHolder.get(catalogApiRef)) {
     return <>{children}</>;
   }
 
-  // Provide a mock catalog API with the single entity
-  const mockApi = catalogApiMock({ entities: [entity] });
   return (
-    <TestApiProvider apis={[[catalogApiRef, mockApi]]}>
+    <TestApiProvider
+      apis={[[catalogApiRef, catalogApiMock({ entities: [entity] })]]}
+    >
       {children}
     </TestApiProvider>
   );

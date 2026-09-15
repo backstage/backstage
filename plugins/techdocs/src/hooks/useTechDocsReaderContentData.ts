@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import { useAppLocation } from '@backstage/frontend-plugin-api';
+
 import { useCallback, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+
 import {
   useShadowDomStylesLoading,
   useShadowRootElements,
@@ -47,7 +49,7 @@ export function useTechDocsReaderContentData(options: {
     defaultPath,
     withFeedbackLink,
   });
-  const location = useLocation();
+  const location = useAppLocation();
   const path = location.pathname;
   const hash = location.hash;
   const isStyleLoading = useShadowDomStylesLoading(dom);

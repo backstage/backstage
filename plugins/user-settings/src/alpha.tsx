@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import {
   coreExtensionData,
   createExtensionInput,
@@ -52,11 +51,9 @@ const generalSettingsPage = SubPageBlueprint.make({
         import('@backstage/core-components'),
       ]);
       return (
-        <ReactRouterV6PageRouter>
-          <Content>
-            <m.UserSettingsGeneral />
-          </Content>
-        </ReactRouterV6PageRouter>
+        <Content>
+          <m.UserSettingsGeneral />
+        </Content>
       );
     },
   },

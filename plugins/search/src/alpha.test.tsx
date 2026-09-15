@@ -42,11 +42,6 @@ describe('searchPage', () => {
 
     const tester = createExtensionTester(searchPage);
     await renderInTestApp(tester.reactElement(), {
-      // Says where the search page is mounted. The page declares a React
-      // Router v6 adapter in its own loader — `UrlUpdater` reads `useLocation`
-      // — and an adapter scopes itself to the page's mount, so without this
-      // the page under test is nowhere and the adapter has nothing to scope
-      // to.
       mountPath: '/search',
       initialRouteEntries: ['/search'],
       apis: [catalogApi, [searchApiRef, searchApi]],
