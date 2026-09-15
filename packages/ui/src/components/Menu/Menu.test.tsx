@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { TestRouter, useTestRouter } from '../../testUtils/TestRouter';
 import {
   createVersionedValueMap,
   type VersionedValue,
@@ -21,19 +22,7 @@ import {
 import { fireEvent, render, screen } from '@testing-library/react';
 import { useMemo, type PropsWithChildren } from 'react';
 import { RouterProvider } from 'react-aria-components';
-import {
-  Link as RouterLink,
-  MemoryRouter,
-  Route,
-  Routes,
-  useHref,
-  useInRouterContext,
-  useLocation,
-  useNavigate,
-  useResolvedPath,
-} from 'react-router-dom';
-import type { BUIRoutingIntegration } from '../../navigation/types';
-import { useResolvedHref } from '../../hooks/useResolvedHref';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { BUIContext, type BUIContextVersions } from '../../provider/BUIContext';
 import { BUIProvider } from '../../provider/BUIProvider';
 import { Button } from '../Button';
@@ -52,7 +41,7 @@ function LocationStatus() {
 describe('Menu links', () => {
   it('renders MenuItem with the host basename and navigates client-side', async () => {
     render(
-      <MemoryRouter
+      <TestRouter
         basename="/app"
         initialEntries={['/app/catalog']}
         future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
@@ -66,7 +55,7 @@ describe('Menu links', () => {
           </MenuTrigger>
           <LocationStatus />
         </BUIProvider>
-      </MemoryRouter>,
+      </TestRouter>,
     );
 
     const item = await screen.findByRole('menuitem', { name: 'TechDocs' });
@@ -78,28 +67,28 @@ describe('Menu links', () => {
   it('reports a relative raw href through V1 analytics', async () => {
     const captureEvent = jest.fn();
     render(
-      <MemoryRouter
+      <TestRouter
         basename="/app"
         initialEntries={['/app/catalog/entity/docs']}
         future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
       >
-        <V1AnalyticsProvider captureEvent={captureEvent}>
-          <Routes>
-            <Route
-              path="catalog/entity/docs/*"
-              element={
+        <Routes>
+          <Route
+            path="catalog/entity/docs/*"
+            element={
+              <V1AnalyticsProvider captureEvent={captureEvent}>
                 <MenuTrigger defaultOpen>
                   <Button>Open</Button>
                   <Menu>
                     <MenuItem href="child">Child</MenuItem>
                   </Menu>
                 </MenuTrigger>
-              }
-            />
-          </Routes>
-          <LocationStatus />
-        </V1AnalyticsProvider>
-      </MemoryRouter>,
+              </V1AnalyticsProvider>
+            }
+          />
+        </Routes>
+        <LocationStatus />
+      </TestRouter>,
     );
 
     const item = await screen.findByRole('menuitem', { name: 'Child' });
@@ -113,16 +102,15 @@ describe('Menu links', () => {
     });
   });
 
-  it('passes MenuItem the exact options registered by the component', async () => {
+  it('passes MenuItem router options to the host', async () => {
     const navigate = jest.fn();
-    const register = jest.fn();
     render(
-      <MemoryRouter
+      <TestRouter
         basename="/app"
         initialEntries={['/app/catalog']}
         future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
       >
-        <TrackingProvider navigate={navigate} register={register}>
+        <TrackingProvider navigate={navigate}>
           <MenuTrigger defaultOpen>
             <Button>Open</Button>
             <Menu>
@@ -132,25 +120,22 @@ describe('Menu links', () => {
             </Menu>
           </MenuTrigger>
         </TrackingProvider>
-      </MemoryRouter>,
+      </TestRouter>,
     );
 
     fireEvent.click(await screen.findByRole('menuitem', { name: 'TechDocs' }));
-    const registeredOptions = register.mock.calls[0]?.[0];
-    expect(registeredOptions).toBeDefined();
-    expect(navigate).toHaveBeenCalledWith('/catalog/docs', registeredOptions);
+    expect(navigate).toHaveBeenCalledWith('/catalog/docs', { replace: true });
   });
 
   it('wires MenuListBoxItem href into host navigation', async () => {
     const navigate = jest.fn();
-    const register = jest.fn();
     render(
-      <MemoryRouter
+      <TestRouter
         basename="/app"
         initialEntries={['/app/catalog']}
         future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
       >
-        <TrackingProvider navigate={navigate} register={register}>
+        <TrackingProvider navigate={navigate}>
           <MenuTrigger defaultOpen>
             <Button>Open</Button>
             <MenuListBox aria-label="Destinations">
@@ -164,15 +149,13 @@ describe('Menu links', () => {
             </MenuListBox>
           </MenuTrigger>
         </TrackingProvider>
-      </MemoryRouter>,
+      </TestRouter>,
     );
 
     const item = await screen.findByRole('option', { name: 'TechDocs' });
     expect(item).toHaveAttribute('href', '/app/catalog/docs');
     fireEvent.click(item);
-    const registeredOptions = register.mock.calls[0]?.[0];
-    expect(registeredOptions).toBeDefined();
-    expect(navigate).toHaveBeenCalledWith('/catalog/docs', registeredOptions);
+    expect(navigate).toHaveBeenCalledWith('/catalog/docs', { replace: true });
   });
 
   it('retains the external target and rel defaults', async () => {
@@ -198,7 +181,7 @@ function V1AnalyticsProvider({
   children,
   captureEvent,
 }: PropsWithChildren<{ captureEvent: jest.Mock }>) {
-  const navigate = useNavigate();
+  const router = useTestRouter();
   const value = useMemo(
     () =>
       createVersionedValueMap({
@@ -208,7 +191,7 @@ function V1AnalyticsProvider({
   );
 
   return (
-    <RouterProvider navigate={navigate} useHref={useResolvedHref}>
+    <RouterProvider navigate={router.navigate} useHref={router.resolveHref}>
       <BUIContext.Provider value={value}>{children}</BUIContext.Provider>
     </RouterProvider>
   );
@@ -217,35 +200,9 @@ function V1AnalyticsProvider({
 function TrackingProvider({
   children,
   navigate,
-  register,
-}: PropsWithChildren<{
-  navigate: jest.Mock;
-  register: jest.Mock;
-}>) {
-  const routing = useMemo<BUIRoutingIntegration>(
-    () => ({
-      Link: RouterLink,
-      useHref,
-      useInRouterContext,
-      useLocation,
-      useNavigate,
-      useResolvedPath,
-      createRouterOptions(_action, options) {
-        const registered = { ...options };
-        register(registered);
-        return registered;
-      },
-    }),
-    [register],
-  );
-  const value = useMemo(
-    () => createVersionedValueMap({ 1: {}, 2: { routing } }),
-    [routing],
-  );
-
-  return (
-    <RouterProvider navigate={navigate} useHref={useResolvedHref}>
-      <BUIContext.Provider value={value}>{children}</BUIContext.Provider>
-    </RouterProvider>
-  );
+}: PropsWithChildren<{ navigate: jest.Mock }>) {
+  function useRouter() {
+    return { ...useTestRouter(), navigate };
+  }
+  return <BUIProvider useRouter={useRouter}>{children}</BUIProvider>;
 }

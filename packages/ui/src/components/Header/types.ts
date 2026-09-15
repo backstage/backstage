@@ -103,6 +103,10 @@ export interface HeaderOwnProps {
   title?: string;
   customActions?: React.ReactNode;
   tabs?: HeaderNavTabItem[];
+  /**
+   * Active tab ID. When omitted, the host router configured through BUIProvider
+   * selects the most specific matching href. Set to null to disable selection.
+   */
   activeTabId?: string | null;
   /**
    * @deprecated The breadcrumbs prop will be removed in a future release.

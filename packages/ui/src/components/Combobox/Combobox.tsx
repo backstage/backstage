@@ -15,6 +15,7 @@
  */
 
 import { forwardRef, useEffect, useState } from 'react';
+import { BUIRoutingProvider } from '../../navigation/BUIRoutingProvider';
 import { ComboBox as AriaComboBox } from 'react-aria-components';
 import { useFilter } from 'react-aria';
 import type {
@@ -331,43 +332,45 @@ function ComboboxImpl<T extends CollectionItem = NormalizedOption>(
       : undefined;
 
   return (
-    <AriaComboBox<T>
-      className={classes.root}
-      defaultFilter={contains}
-      items={rootItems}
-      {...dataAttributes}
-      ref={ref}
-      {...ariaProps}
-      {...comboboxStateProps}
-      disabledKeys={disabledKeys}
-      onChange={handleChange}
-      onInputChange={handleInputChange}
-      onOpenChange={handleOpenChange}
-      menuTrigger={menuTrigger}
-      allowsEmptyCollection
-    >
-      <FieldLabel
-        label={label}
-        secondaryLabel={secondaryLabelText}
-        description={description}
-        descriptionSlot="description"
-      />
-      <ComboboxInput icon={icon} placeholder={placeholder} />
-      <FieldError />
-      <Popover className={classes.popover} hideArrow {...dataAttributes}>
-        <ComboboxListBox
-          options={filteredOptions}
-          items={filteredItems}
-          hiddenKey={hiddenKey}
-          dependencies={dependencies}
-          loading={collection.loading}
-          isStale={collection.isStale}
-          getItemTextValue={getItemTextValue}
-        >
-          {children as ComboboxListBoxOwnProps<T>['children']}
-        </ComboboxListBox>
-      </Popover>
-    </AriaComboBox>
+    <BUIRoutingProvider>
+      <AriaComboBox<T>
+        className={classes.root}
+        defaultFilter={contains}
+        items={rootItems}
+        {...dataAttributes}
+        ref={ref}
+        {...ariaProps}
+        {...comboboxStateProps}
+        disabledKeys={disabledKeys}
+        onChange={handleChange}
+        onInputChange={handleInputChange}
+        onOpenChange={handleOpenChange}
+        menuTrigger={menuTrigger}
+        allowsEmptyCollection
+      >
+        <FieldLabel
+          label={label}
+          secondaryLabel={secondaryLabelText}
+          description={description}
+          descriptionSlot="description"
+        />
+        <ComboboxInput icon={icon} placeholder={placeholder} />
+        <FieldError />
+        <Popover className={classes.popover} hideArrow {...dataAttributes}>
+          <ComboboxListBox
+            options={filteredOptions}
+            items={filteredItems}
+            hiddenKey={hiddenKey}
+            dependencies={dependencies}
+            loading={collection.loading}
+            isStale={collection.isStale}
+            getItemTextValue={getItemTextValue}
+          >
+            {children as ComboboxListBoxOwnProps<T>['children']}
+          </ComboboxListBox>
+        </Popover>
+      </AriaComboBox>
+    </BUIRoutingProvider>
   );
 }
 

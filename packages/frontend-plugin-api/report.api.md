@@ -172,12 +172,7 @@ export type ApiRefConfig = {
 
 // @public
 export interface AppHistoryApi {
-  createHref(
-    to: string,
-    options?: {
-      basePath?: string;
-    },
-  ): string;
+  createHref(to: string): string;
   readonly location$: Observable<AppLocation>;
   readonly location: AppLocation;
   navigate(path: string, options?: AppNavigateOptions): void;
@@ -2487,6 +2482,13 @@ export function useAppNavigate(): AppHistoryApi['navigate'];
 
 // @public
 export function useAppNode(): AppNode | undefined;
+
+// @public
+export function useAppRouting(): {
+  createHref: (to: string) => string;
+  navigate: (to: string, options?: AppNavigateOptions) => void;
+  location: AppLocation;
+};
 
 // @public
 export function useAppSearchParams(

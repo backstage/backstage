@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { BUIRouterOptions } from '../../provider/BUIRouter';
 import type {
   TagGroupProps as ReactAriaTagGroupProps,
   TagListProps as ReactAriaTagListProps,
@@ -68,4 +69,7 @@ export type TagOwnProps = {
  */
 export interface TagProps
   extends TagOwnProps,
-    Omit<ReactAriaTagProps, keyof TagOwnProps> {}
+    Omit<ReactAriaTagProps, keyof TagOwnProps | 'routerOptions'> {
+  /** Options passed to the router configured on BUIProvider. */
+  routerOptions?: BUIRouterOptions;
+}
