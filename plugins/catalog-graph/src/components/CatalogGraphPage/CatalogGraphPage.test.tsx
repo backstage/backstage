@@ -32,12 +32,10 @@ import userEvent from '@testing-library/user-event';
 import { CatalogGraphPage } from './CatalogGraphPage';
 import { GetEntitiesByRefsRequest } from '@backstage/catalog-client';
 
-const navigate = jest.fn();
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
+import { createMockAppHistory } from '@backstage/frontend-test-utils';
 
-jest.mock('@backstage/frontend-plugin-api', () => ({
-  ...jest.requireActual('@backstage/frontend-plugin-api'),
-  useAppNavigate: () => navigate,
-}));
+const navigate = jest.fn();
 
 /*
   The tests in this file have been disabled for the following error:
@@ -124,7 +122,12 @@ describe.skip('<CatalogGraphPage/>', () => {
 
   beforeEach(() => {
     wrapper = (
-      <TestApiProvider apis={[[catalogApiRef, catalog]]}>
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, catalog],
+          [appHistoryApiRef, createMockAppHistory({ navigate })],
+        ]}
+      >
         <CatalogGraphPage
           initialState={{
             showFilters: false,
@@ -216,7 +219,7 @@ describe.skip('<CatalogGraphPage/>', () => {
     const user = userEvent.setup();
     await user.keyboard('{Shift>}');
     await user.click(screen.getByText('b:d/e'));
-    expect(navigate).toHaveBeenCalledWith('/entity/b/d/e');
+    expect(navigate).toHaveBeenCalledWith('/entity/b/d/e', undefined);
   });
 
   test('should capture analytics event when selecting other entity', async () => {

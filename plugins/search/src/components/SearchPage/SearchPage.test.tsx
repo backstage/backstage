@@ -14,107 +14,101 @@
  * limitations under the License.
  */
 
-import { renderInTestApp } from '@backstage/test-utils';
-import { useAppLocation } from '@backstage/frontend-plugin-api';
-import { useSearch } from '@backstage/plugin-search-react';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import { fireEvent, screen } from '@testing-library/react';
+import { Route, Routes } from 'react-router-dom';
+import { useSearch, searchApiRef } from '@backstage/plugin-search-react';
 import { SearchPage } from './SearchPage';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useOutlet: jest.fn().mockReturnValue('Route Children'),
-}));
+const searchApi = { query: jest.fn(async () => ({ results: [] })) };
 
-jest.mock('@backstage/frontend-plugin-api', () => ({
-  ...jest.requireActual('@backstage/frontend-plugin-api'),
-  useAppLocation: jest.fn().mockReturnValue({
-    pathname: '/search',
-    search: '',
-    hash: '',
-    state: undefined,
-  }),
-}));
+function SearchControls() {
+  const {
+    term,
+    types,
+    filters,
+    pageCursor,
+    setTerm,
+    setTypes,
+    setFilters,
+    setPageCursor,
+  } = useSearch();
+  return (
+    <>
+      <span>Route Children</span>
+      <output aria-label="Search state">
+        {JSON.stringify({ term, types, filters, pageCursor })}
+      </output>
+      <button
+        onClick={() => {
+          setTerm('bieber');
+          setTypes(['software-catalog']);
+          setFilters({ anyKey: 'anyValue' });
+        }}
+      >
+        Update search
+      </button>
+      <button onClick={() => setPageCursor('SOMEPAGE')}>Next page</button>
+    </>
+  );
+}
 
-const setTermMock = jest.fn();
-const setTypesMock = jest.fn();
-const setFiltersMock = jest.fn();
-const setPageCursorMock = jest.fn();
-
-jest.mock('@backstage/plugin-search-react', () => ({
-  ...jest.requireActual('@backstage/plugin-search-react'),
-  SearchContextProvider: jest
-    .fn()
-    .mockImplementation(({ children }) => children),
-  useSearch: jest.fn().mockReturnValue({
-    term: '',
-    setTerm: (term: any) => setTermMock(term),
-    types: [],
-    setTypes: (types: any) => setTypesMock(types),
-    filters: {},
-    setFilters: (filters: any) => setFiltersMock(filters),
-    pageCursor: '',
-    setPageCursor: (pageCursor: any) => setPageCursorMock(pageCursor),
-  }),
-}));
+function renderSearchPage(route = '/search') {
+  return renderInTestApp(
+    <TestApiProvider apis={[[searchApiRef, searchApi]]}>
+      <Routes>
+        <Route path="/search" element={<SearchPage />}>
+          <Route index element={<SearchControls />} />
+        </Route>
+      </Routes>
+    </TestApiProvider>,
+    { routeEntries: [route] },
+  );
+}
 
 describe('SearchPage', () => {
-  const origReplaceState = window.history.replaceState;
+  beforeEach(() => jest.clearAllMocks());
+  afterEach(() => window.history.replaceState({}, '', '/'));
 
-  beforeEach(() => {
-    window.history.replaceState = jest.fn();
-  });
-
-  afterEach(() => {
-    window.history.replaceState = origReplaceState;
-  });
-
-  it('sets term state from location', async () => {
-    // Given this initial location.search value...
-    const expectedFilterField = 'anyKey';
-    const expectedFilterValue = 'anyValue';
-    const expectedTerm = 'justin bieber';
-    const expectedTypes = ['software-catalog'];
-    const expectedFilters = { [expectedFilterField]: expectedFilterValue };
-    const expectedPageCursor = 'SOMEPAGE';
-
-    // e.g. ?query=petstore&pageCursor=SOMEPAGE&filters[lifecycle][]=experimental&filters[kind]=Component
-    (useAppLocation as jest.Mock).mockReturnValue({
-      search: `?query=${expectedTerm}&types[]=${expectedTypes[0]}&filters[${expectedFilterField}]=${expectedFilterValue}&pageCursor=${expectedPageCursor}`,
-    });
-
-    // When we render the page...
-    await renderInTestApp(<SearchPage />);
-
-    // Then search context should be set with these values...
-    expect(setTermMock).toHaveBeenCalledWith(expectedTerm);
-    expect(setTypesMock).toHaveBeenCalledWith(expectedTypes);
-    expect(setPageCursorMock).toHaveBeenCalledWith(expectedPageCursor);
-    expect(setFiltersMock).toHaveBeenCalledWith(expectedFilters);
-  });
-
-  it('renders provided router element', async () => {
-    const { getByText } = await renderInTestApp(<SearchPage />);
-
-    expect(getByText('Route Children')).toBeInTheDocument();
-  });
-
-  it('replaces window history with expected query parameters', async () => {
-    (useSearch as jest.Mock).mockReturnValueOnce({
-      term: 'bieber',
-      types: ['software-catalog'],
-      pageCursor: 'SOMEPAGE',
-      filters: { anyKey: 'anyValue' },
-      setTerm: setTermMock,
-      setTypes: setTypesMock,
-      setFilters: setFiltersMock,
-      setPageCursor: setPageCursorMock,
-    });
-    const expectedLocation = encodeURI(
-      '?query=bieber&types[]=software-catalog&pageCursor=SOMEPAGE&filters[anyKey]=anyValue',
+  it('sets search state from location', async () => {
+    await renderSearchPage(
+      '/search?query=justin%20bieber&types[]=software-catalog&filters[anyKey]=anyValue&pageCursor=SOMEPAGE',
     );
+    expect(
+      JSON.parse(screen.getByLabelText('Search state').textContent!),
+    ).toMatchObject({
+      term: 'justin bieber',
+      types: ['software-catalog'],
+      filters: { anyKey: 'anyValue' },
+    });
+    expect(searchApi.query).toHaveBeenCalledWith(
+      expect.objectContaining({
+        term: 'justin bieber',
+        pageCursor: 'SOMEPAGE',
+      }),
+      expect.anything(),
+    );
+  });
 
-    await renderInTestApp(<SearchPage />);
+  it('renders the router outlet', async () => {
+    await renderSearchPage();
+    expect(screen.getByText('Route Children')).toBeInTheDocument();
+  });
 
-    const calls = (window.history.replaceState as jest.Mock).mock.calls[0];
-    expect(calls[2]).toContain(expectedLocation);
+  it('replaces browser history when search state changes in the old frontend', async () => {
+    const historyLength = window.history.length;
+    await renderSearchPage();
+    fireEvent.click(screen.getByRole('button', { name: 'Update search' }));
+    // Changing the search resets pagination; selecting a page then publishes its cursor.
+    expect(new URLSearchParams(window.location.search).has('pageCursor')).toBe(
+      false,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Next page' }));
+    expect(window.location.search).toBe(
+      encodeURI(
+        '?query=bieber&types[]=software-catalog&pageCursor=SOMEPAGE&filters[anyKey]=anyValue',
+      ),
+    );
+    expect(window.history.length).toBe(historyLength);
   });
 });

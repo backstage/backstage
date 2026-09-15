@@ -17,35 +17,44 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { useExternalRedirect } from './useExternalRedirect';
 import { TestApiProvider } from '@backstage/test-utils';
+import {
+  appHistoryApiRef,
+  routeResolutionApiRef,
+} from '@backstage/frontend-plugin-api';
+import {
+  createMockAppHistory,
+  createMockRouteResolutionApi,
+} from '@backstage/frontend-test-utils';
+import { rootDocsRouteRef } from '../../../routes';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { TECHDOCS_EXTERNAL_ANNOTATION } from '@backstage/plugin-techdocs-common';
 
 const mockNavigate = jest.fn();
-const mockViewTechdocLink = jest.fn(() => '/docs');
-
-jest.mock('@backstage/frontend-plugin-api', () => ({
-  ...jest.requireActual('@backstage/frontend-plugin-api'),
-  useAppNavigate: () => mockNavigate,
-}));
-
-jest.mock('@backstage/core-plugin-api', () => ({
-  ...jest.requireActual('@backstage/core-plugin-api'),
-  useRouteRef: () => mockViewTechdocLink,
-}));
-
 describe('useExternalRedirect', () => {
   const mockCatalogApi = {
     getEntityByRef: jest.fn(),
   };
 
+  let appHistory: ReturnType<typeof createMockAppHistory>;
+  const routes = createMockRouteResolutionApi({
+    routes: [[rootDocsRouteRef, '/docs/:namespace/:kind/:name']],
+  });
+
   const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+    <TestApiProvider
+      apis={[
+        [catalogApiRef, mockCatalogApi],
+        [appHistoryApiRef, appHistory],
+        [routeResolutionApiRef, routes],
+      ]}
+    >
       {children}
     </TestApiProvider>
   );
 
   beforeEach(() => {
     jest.clearAllMocks();
+    appHistory = createMockAppHistory({ navigate: mockNavigate });
   });
 
   it('should not show progress when entity has no external annotation', async () => {
@@ -104,7 +113,7 @@ describe('useExternalRedirect', () => {
     });
 
     expect(result.current.shouldShowProgress).toBe(true);
-    expect(mockNavigate).toHaveBeenCalledWith(expect.any(String), {
+    expect(mockNavigate).toHaveBeenCalledWith('/docs/external/component/docs', {
       replace: true,
     });
   });
@@ -190,10 +199,13 @@ describe('useExternalRedirect', () => {
       expect(result.current.loading).toBe(false);
     });
 
-    // Should navigate with the path appended (handled by buildTechDocsURL)
-    expect(mockNavigate).toHaveBeenCalledWith(expect.any(String), {
-      replace: true,
-    });
+    // Preserve the document path from the target entity annotation.
+    expect(mockNavigate).toHaveBeenCalledWith(
+      '/docs/external/component/docs/inner-component-docs',
+      {
+        replace: true,
+      },
+    );
     expect(result.current.shouldShowProgress).toBe(true);
   });
 

@@ -7285,6 +7285,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/filter-predicates": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/frontend-test-utils": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/integration-react": "workspace:^"
     "@backstage/plugin-app-react-router-v6": "workspace:^"
