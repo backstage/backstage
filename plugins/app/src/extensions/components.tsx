@@ -88,9 +88,7 @@ export const PageLayout = SwappableComponentBlueprint.make({
           tabs,
           children,
         } = props;
-        // Page chrome resolves entirely from the framework-owned mount. The
-        // fixed root React Router projection is a temporary compatibility
-        // layer for third-party chrome, not an input to first-party chrome.
+        // Breadcrumbs fall back to the framework-owned page mount.
         const pageMount = usePageMount();
         const parentPath = normalizeBasePath(pageMount?.basePath ?? '');
         // Empty string titleLink is treated as unset (same as undefined) so the
@@ -99,16 +97,13 @@ export const PageLayout = SwappableComponentBlueprint.make({
           titleLink !== undefined && titleLink !== ''
             ? titleLink
             : parentPath || '/';
-        const resolvedTabs = useMemo(
+        const headerTabs = useMemo(
           () =>
             tabs?.map(tab => ({
               ...tab,
-              href: tab.href.startsWith('/')
-                ? tab.href
-                : `${parentPath}/${tab.href}`.replace(/\/{2,}/g, '/'),
               matchStrategy: 'prefix' as const,
             })),
-          [tabs, parentPath],
+          [tabs],
         );
 
         const { items: breadcrumbs } = useBreadcrumbEntries();
@@ -124,7 +119,7 @@ export const PageLayout = SwappableComponentBlueprint.make({
               icon={icon}
               titleLink={titleLink}
               breadcrumbs={breadcrumbs}
-              tabs={resolvedTabs}
+              tabs={headerTabs}
               customActions={headerActions}
             />
             {children}
