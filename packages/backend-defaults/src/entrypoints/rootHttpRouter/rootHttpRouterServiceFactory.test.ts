@@ -384,4 +384,39 @@ describe('rootHttpRouterServiceFactory', () => {
       .get('/.backstage/health/v1/liveness')
       .expect(200, { status: 'ok' });
   });
+
+  it('should return configured plugin sources from actions sources endpoint', async () => {
+    const { app } = await createExpressApp(
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            listen: { port: 0 },
+            actions: {
+              pluginSources: ['catalog', 'scaffolder'],
+            },
+          },
+        },
+      }),
+    );
+
+    await request(app)
+      .get('/.backstage/actions/v1/sources')
+      .expect(200, { sources: ['catalog', 'scaffolder'] });
+  });
+
+  it('should return empty sources when no plugin sources configured', async () => {
+    const { app } = await createExpressApp(
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            listen: { port: 0 },
+          },
+        },
+      }),
+    );
+
+    await request(app)
+      .get('/.backstage/actions/v1/sources')
+      .expect(200, { sources: [] });
+  });
 });

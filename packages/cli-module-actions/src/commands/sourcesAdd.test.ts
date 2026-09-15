@@ -40,6 +40,10 @@ const baseContext: CliCommandContext = {
   info: { name: 'sources add', description: 'Add plugin sources' },
 } as unknown as CliCommandContext;
 
+function mockMetadata(data: Record<string, unknown>) {
+  mockGetMetadata.mockImplementation((key: string) => data[key]);
+}
+
 describe('sourcesAdd command', () => {
   let stdoutSpy: jest.SpiedFunction<typeof process.stdout.write>;
   let stderrSpy: jest.SpiedFunction<typeof process.stderr.write>;
@@ -60,7 +64,7 @@ describe('sourcesAdd command', () => {
   });
 
   it('adds a single new plugin source', async () => {
-    mockGetMetadata.mockResolvedValue([]);
+    mockMetadata({});
 
     await sourcesAddCommand({ ...baseContext, args: ['catalog'] });
 
@@ -70,7 +74,7 @@ describe('sourcesAdd command', () => {
   });
 
   it('adds multiple plugin sources at once', async () => {
-    mockGetMetadata.mockResolvedValue([]);
+    mockMetadata({});
 
     await sourcesAddCommand({
       ...baseContext,
@@ -86,7 +90,7 @@ describe('sourcesAdd command', () => {
   });
 
   it('skips already-configured sources and adds new ones', async () => {
-    mockGetMetadata.mockResolvedValue(['catalog']);
+    mockMetadata({ pluginSources: ['catalog'] });
 
     await sourcesAddCommand({
       ...baseContext,
@@ -104,7 +108,7 @@ describe('sourcesAdd command', () => {
   });
 
   it('does not call setMetadata when all sources already exist', async () => {
-    mockGetMetadata.mockResolvedValue(['catalog', 'scaffolder']);
+    mockMetadata({ pluginSources: ['catalog', 'scaffolder'] });
 
     await sourcesAddCommand({
       ...baseContext,
@@ -117,5 +121,14 @@ describe('sourcesAdd command', () => {
     expect(stderr).toContain(
       'Plugin source "scaffolder" is already configured.',
     );
+  });
+
+  it('clears exclusion when re-adding a previously excluded source', async () => {
+    mockMetadata({ excludedPluginSources: ['catalog'] });
+
+    await sourcesAddCommand({ ...baseContext, args: ['catalog'] });
+
+    expect(mockSetMetadata).toHaveBeenCalledWith('pluginSources', ['catalog']);
+    expect(mockSetMetadata).toHaveBeenCalledWith('excludedPluginSources', []);
   });
 });
