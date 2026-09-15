@@ -220,12 +220,8 @@ describe('mockApis', () => {
       const history = mockApis.appHistory.mock();
 
       expect(history.createHref('/catalog')).toBe('/catalog');
-      expect(history.createHref('edit', { basePath: '/catalog/foo' })).toBe(
-        '/catalog/foo/edit',
-      );
-      expect(history.createHref).toHaveBeenLastCalledWith('edit', {
-        basePath: '/catalog/foo',
-      });
+      expect(history.createHref('/catalog/foo/edit')).toBe('/catalog/foo/edit');
+      expect(history.createHref).toHaveBeenLastCalledWith('/catalog/foo/edit');
       expect(history.location).toEqual({
         pathname: '/',
         search: '',

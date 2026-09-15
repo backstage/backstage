@@ -662,6 +662,12 @@ The app root still projects React Router v6 context, because third-party chrome 
 
 Backstage UI receives a `useRouter` hook through `BUIProvider`. The hook runs at each consuming component and returns navigation, a plain href resolver, and the current browser pathname. Hrefs and the pathname include the deployment basename. The app plugin binds both href resolution and clicks to the same matched extension ancestry and `AppHistoryApi`, so relative links navigate to the destination they display.
 
+BUI controls bind that integration to a local React Aria provider. React Aria
+owns link activation and native browser behavior; BUI does not detect a routing
+library or handle modified clicks itself. Plugins using React Aria directly can
+use the same captured pair through `useAppRouting` and a provider from their own
+React Aria installation. See [React Aria integration](../building-plugins/10-page-routers.md#use-react-aria-components-directly).
+
 An app releases its browser history listener when its React root is torn down. Re-running `createApp` during a hot reload builds a new app without tearing down the old one, so the previous listener stays attached until the page reloads.
 
 A router library can block navigation that starts inside its own page, but not navigation that starts anywhere else, because `AppHistoryApi` has no shared blocker contract.

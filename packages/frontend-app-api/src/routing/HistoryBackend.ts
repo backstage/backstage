@@ -67,8 +67,6 @@ export interface HistoryBackend {
    * after those calls itself.
    */
   listen(listener: (action: HistoryAction) => void): () => void;
-  /** Release any external listeners (e.g. popstate). */
-  dispose(): void;
 }
 
 /**
@@ -91,9 +89,8 @@ export function createWindowHistoryBackend(): HistoryBackend {
   const navigation = (window as unknown as { navigation?: NavigationLike })
     .navigation;
   const hasNavigationApi = Boolean(navigation?.currentEntry);
-  let removeListener: (() => void) | undefined;
   let writing = false;
-  let updateChangeBaseline: (() => void) | undefined;
+  const changeBaselines = new Set<() => void>();
 
   const createKey = () => {
     const randomUuid = window.crypto?.randomUUID?.bind(window.crypto);
@@ -245,7 +242,9 @@ export function createWindowHistoryBackend(): HistoryBackend {
       } finally {
         // Owned writes emit through AppHistory, but still advance the baseline
         // used to distinguish a later traversal from duplicate browser events.
-        updateChangeBaseline?.();
+        for (const update of changeBaselines) {
+          update();
+        }
         writing = false;
       }
     },
@@ -262,7 +261,9 @@ export function createWindowHistoryBackend(): HistoryBackend {
       } finally {
         // Owned writes emit through AppHistory, but still advance the baseline
         // used to distinguish a later traversal from duplicate browser events.
-        updateChangeBaseline?.();
+        for (const update of changeBaselines) {
+          update();
+        }
         writing = false;
       }
     },
@@ -273,11 +274,12 @@ export function createWindowHistoryBackend(): HistoryBackend {
       let lastHref = window.location.href;
       let lastState = window.history.state;
       let lastKey = readEntry().key;
-      updateChangeBaseline = () => {
+      const updateChangeBaseline = () => {
         lastHref = window.location.href;
         lastState = window.history.state;
         lastKey = readEntry().key;
       };
+      changeBaselines.add(updateChangeBaseline);
       const onChange = (event: Event) => {
         if (writing) {
           return;
@@ -307,6 +309,7 @@ export function createWindowHistoryBackend(): HistoryBackend {
         listener(action);
       };
 
+      let removeListener: () => void;
       if (hasNavigationApi) {
         navigation!.addEventListener('currententrychange', onChange);
         removeListener = () =>
@@ -320,15 +323,9 @@ export function createWindowHistoryBackend(): HistoryBackend {
         };
       }
       return () => {
-        removeListener?.();
-        removeListener = undefined;
-        updateChangeBaseline = undefined;
+        removeListener();
+        changeBaselines.delete(updateChangeBaseline);
       };
-    },
-    dispose(): void {
-      removeListener?.();
-      removeListener = undefined;
-      updateChangeBaseline = undefined;
     },
   };
 }
@@ -444,9 +441,6 @@ export function createMemoryHistoryBackend(
       return () => {
         listeners.delete(listener);
       };
-    },
-    dispose(): void {
-      listeners.clear();
     },
   };
 }

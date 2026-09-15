@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import { TestRouter } from '../../testUtils/TestRouter';
 import preview from '../../../../../.storybook/preview';
 import { useState } from 'react';
 import { TagGroup, Tag } from '.';
 import type { Selection } from 'react-aria-components';
 import { Flex } from '../../';
 import { useListData } from 'react-stately';
-import { MemoryRouter } from 'react-router-dom';
+
 import { BUIProvider } from '../../provider';
 import {
   RiAccountCircleLine,
@@ -50,11 +51,11 @@ const meta = preview.meta({
   },
   decorators: [
     Story => (
-      <MemoryRouter>
+      <TestRouter>
         <BUIProvider>
           <Story />
         </BUIProvider>
-      </MemoryRouter>
+      </TestRouter>
     ),
   ],
 });

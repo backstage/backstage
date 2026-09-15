@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { BUIRoutingProvider } from '../../navigation/BUIRoutingProvider';
 import { forwardRef, useEffect } from 'react';
 import { Select as AriaSelect } from 'react-aria-components';
 import type {
@@ -172,39 +173,41 @@ function SelectImpl<
   };
 
   return (
-    <AriaSelect
-      className={classes.root}
-      {...dataAttributes}
-      ref={ref}
-      {...restProps}
-      onChange={handleChange}
-      allowsEmptyCollection
-    >
-      <FieldLabel
-        label={label}
-        secondaryLabel={secondaryLabelText}
-        description={description}
-        descriptionSlot="description"
-      />
-      <SelectTrigger icon={icon} />
-      <FieldError />
-      <Popover className={classes.popover} hideArrow {...dataAttributes}>
-        <SelectContent
-          search={contentSearch}
-          options={collectionSource.options}
-          items={renderedItems}
-          dependencies={dependencies}
-          loading={collection.loading}
-          isStale={collection.isStale}
-          visibleIds={collection.visibleIds}
-          retainedOptions={
-            retainedOptions as unknown as ReadonlyArray<NormalizedOption>
-          }
-        >
-          {children}
-        </SelectContent>
-      </Popover>
-    </AriaSelect>
+    <BUIRoutingProvider>
+      <AriaSelect
+        className={classes.root}
+        {...dataAttributes}
+        ref={ref}
+        {...restProps}
+        onChange={handleChange}
+        allowsEmptyCollection
+      >
+        <FieldLabel
+          label={label}
+          secondaryLabel={secondaryLabelText}
+          description={description}
+          descriptionSlot="description"
+        />
+        <SelectTrigger icon={icon} />
+        <FieldError />
+        <Popover className={classes.popover} hideArrow {...dataAttributes}>
+          <SelectContent
+            search={contentSearch}
+            options={collectionSource.options}
+            items={renderedItems}
+            dependencies={dependencies}
+            loading={collection.loading}
+            isStale={collection.isStale}
+            visibleIds={collection.visibleIds}
+            retainedOptions={
+              retainedOptions as unknown as ReadonlyArray<NormalizedOption>
+            }
+          >
+            {children}
+          </SelectContent>
+        </Popover>
+      </AriaSelect>
+    </BUIRoutingProvider>
   );
 }
 
