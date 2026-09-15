@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { generatePath } from './generatePath';
+import { generatePath } from '@internal/frontend';
 
 describe('generatePath', () => {
   it('should interpolate params', () => {

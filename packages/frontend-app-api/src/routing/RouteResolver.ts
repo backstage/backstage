@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { generatePath } from './generatePath';
 import { matchRouteRefs } from './matchRouteRefs';
 import {
   RouteRef,
@@ -26,6 +25,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { AnyRouteRef, BackstageRouteObject } from './types';
 import {
+  generatePath,
   OpaqueRouteRef,
   OpaqueExternalRouteRef,
   OpaqueSubRouteRef,
