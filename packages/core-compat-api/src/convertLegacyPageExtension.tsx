@@ -22,6 +22,7 @@ import {
   ExtensionDefinition,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import kebabCase from 'lodash/kebabCase';
 import { convertLegacyRouteRef } from './convertLegacyRouteRef';
 import { ComponentType } from 'react';
@@ -62,7 +63,26 @@ export function convertLegacyPageExtension(
       path: overrides?.path ?? `/${kebabName}`,
       noHeader: true,
       routeRef: mountPoint && convertLegacyRouteRef(mountPoint),
-      loader: async () => compatWrapper(element),
+      // A legacy page is a React Router v6 page by definition: the old
+      // frontend system mounts every page in a real v6 route tree, and
+      // `createRoutableExtension` calls `useRouteRef` from
+      // `@backstage/core-plugin-api` — which reads `useLocation` — before the
+      // page's own component renders at all. The new frontend system provides
+      // no routing library context at page depth, so the converter declares
+      // the one the page it is converting has always had. That is what lets a
+      // legacy plugin keep working once converted without its author changing
+      // anything, which is the whole promise of this package.
+      //
+      // Declared here, at the page, and not in `compatWrapper` or in the
+      // entity card and content converters: those produce page *content*, and
+      // an adapter there would re-scope to the page's own mount and drop the
+      // route match of the entity tab the content is rendered under, changing
+      // how that content's own nested routes resolve.
+      loader: async () => (
+        <ReactRouterV6PageRouter>
+          {compatWrapper(element)}
+        </ReactRouterV6PageRouter>
+      ),
     },
   });
 }

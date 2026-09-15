@@ -37,6 +37,7 @@ import {
   useRouteRef as useOldRouteRef,
   createRouteRef as createOldRouteRef,
 } from '@backstage/core-plugin-api';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { convertLegacyRouteRef } from '../convertLegacyRouteRef';
 import { renderInTestApp as renderInOldTestApp } from '@backstage/test-utils';
 
@@ -116,6 +117,12 @@ describe('BackwardsCompatProvider', () => {
     }
 
     renderInNewTestApp(compatWrapper(<Component />), {
+      // `compatWrapper` bridges the route resolver, not the routing library:
+      // `useRouteRef` from `@backstage/core-plugin-api` reads `useLocation` on
+      // every call. Content converted by `convertLegacyPageExtension` gets the
+      // adapter from the converter; content wrapped by hand, as here, names it
+      // where it is rendered.
+      router: ReactRouterV6PageRouter,
       mountedRoutes: { '/test': convertLegacyRouteRef(routeRef) },
     });
 

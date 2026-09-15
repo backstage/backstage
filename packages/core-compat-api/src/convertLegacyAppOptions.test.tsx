@@ -71,4 +71,12 @@ describe('convertLegacyAppOptions', () => {
       ]
     `);
   });
+
+  it('should reject legacy root router components', () => {
+    expect(() =>
+      convertLegacyAppOptions({
+        components: { Router: () => null } as any,
+      }),
+    ).toThrow('components.Router is not supported by convertLegacyAppOptions');
+  });
 });
