@@ -65,11 +65,6 @@ export type EntitiesResponseItems =
   | {
       type: 'raw';
       entities: (string | null)[];
-    }
-  | {
-      type: 'raw-batches';
-      /** Each entry is a serialized, non-empty JSON array of entities and/or nulls. */
-      batches: string[];
     };
 
 export type EntitiesResponse = {

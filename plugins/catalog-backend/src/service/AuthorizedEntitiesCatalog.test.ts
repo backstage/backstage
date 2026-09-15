@@ -474,76 +474,56 @@ describe('AuthorizedEntitiesCatalog', () => {
       ).rejects.toThrow(NotAllowedError);
     });
 
-    it.each(['object', 'raw-batches'] as const)(
-      'throws error on CONDITIONAL authorization that evaluates to 0 entities in %s form',
-      async type => {
-        fakePermissionApi.authorizeConditional.mockResolvedValue([
-          {
-            result: AuthorizeResult.CONDITIONAL,
-            conditions: { rule: 'IS_ENTITY_KIND', params: { kinds: ['b'] } },
-          },
-        ]);
-        fakeCatalog.entities.mockResolvedValue({
-          entities:
-            type === 'raw-batches'
-              ? { type, batches: [] }
-              : { type, entities: [] },
-        });
-        const catalog = new AuthorizedEntitiesCatalog(
-          fakeCatalog,
-          fakePermissionApi,
-          createConditionTransformer([isEntityKind]),
-        );
+    it('throws error on CONDITIONAL authorization that evaluates to 0 entities', async () => {
+      fakePermissionApi.authorizeConditional.mockResolvedValue([
+        {
+          result: AuthorizeResult.CONDITIONAL,
+          conditions: { rule: 'IS_ENTITY_KIND', params: { kinds: ['b'] } },
+        },
+      ]);
+      fakeCatalog.entities.mockResolvedValue({
+        entities: { type: 'object', entities: [] },
+      });
+      const catalog = new AuthorizedEntitiesCatalog(
+        fakeCatalog,
+        fakePermissionApi,
+        createConditionTransformer([isEntityKind]),
+      );
 
-        await expect(() =>
-          catalog.removeEntityByUid('uid', {
-            credentials: mockCredentials.none(),
-          }),
-        ).rejects.toThrow(NotAllowedError);
-        expect(fakeCatalog.removeEntityByUid).not.toHaveBeenCalled();
-      },
-    );
-
-    it.each(['object', 'raw-batches'] as const)(
-      'calls underlying catalog method on CONDITIONAL authorization that evaluates to nonzero entities in %s form',
-      async type => {
-        fakePermissionApi.authorizeConditional.mockResolvedValue([
-          {
-            result: AuthorizeResult.CONDITIONAL,
-            conditions: { rule: 'IS_ENTITY_KIND', params: { kinds: ['b'] } },
-          },
-        ]);
-        fakeCatalog.entities.mockResolvedValue({
-          entities:
-            type === 'raw-batches'
-              ? {
-                  type,
-                  batches: [
-                    '[{"kind":"b","metadata":{"namespace":"default","name":"my-component"}}]',
-                  ],
-                }
-              : {
-                  type: 'object',
-                  entities: [
-                    { kind: 'b', namespace: 'default', name: 'my-component' },
-                  ],
-                },
-        });
-        const catalog = new AuthorizedEntitiesCatalog(
-          fakeCatalog,
-          fakePermissionApi,
-          createConditionTransformer([isEntityKind]),
-        );
-
-        await catalog.removeEntityByUid('uid', {
+      await expect(() =>
+        catalog.removeEntityByUid('uid', {
           credentials: mockCredentials.none(),
-        });
+        }),
+      ).rejects.toThrow(NotAllowedError);
+    });
 
-        expect(fakeCatalog.removeEntityByUid).toHaveBeenCalledWith('uid', {
-          credentials: mockCredentials.none(),
-        });
-      },
-    );
+    it('calls underlying catalog method on CONDITIONAL authorization that evaluates to nonzero entities', async () => {
+      fakePermissionApi.authorizeConditional.mockResolvedValue([
+        {
+          result: AuthorizeResult.CONDITIONAL,
+          conditions: { rule: 'IS_ENTITY_KIND', params: { kinds: ['b'] } },
+        },
+      ]);
+      fakeCatalog.entities.mockResolvedValue({
+        entities: {
+          type: 'object',
+          entities: [{ kind: 'b', namespace: 'default', name: 'my-component' }],
+        },
+      });
+      const catalog = new AuthorizedEntitiesCatalog(
+        fakeCatalog,
+        fakePermissionApi,
+        createConditionTransformer([isEntityKind]),
+      );
+
+      await catalog.removeEntityByUid('uid', {
+        credentials: mockCredentials.none(),
+      });
+
+      expect(fakeCatalog.removeEntityByUid).toHaveBeenCalledWith('uid', {
+        credentials: mockCredentials.none(),
+      });
+    });
 
     it('calls underlying catalog method on ALLOW', async () => {
       fakeCatalog.entities.mockResolvedValue({

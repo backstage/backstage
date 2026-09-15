@@ -31,73 +31,28 @@ describe('processRawEntitiesResult', () => {
       type: 'raw',
       entities: ['{ "kind": "test" }', null],
     });
-    expect(result.type === 'raw' && result.entities).toBe(entities);
+    expect(result.entities).toBe(entities);
   });
 
-  it('should serialize projected batches, preserving order and nulls', async () => {
+  it('should serialize projected entities individually, preserving order and nulls', async () => {
     expect(
       await processRawEntitiesResult(
         ['{"kind":"first"}', null, '{"kind":"last"}', null],
         mockTransform,
       ),
     ).toEqual({
-      type: 'raw-batches',
-      batches: [
-        '[{"kind":"transformed-first"},null,{"kind":"transformed-last"},null]',
+      type: 'raw',
+      entities: [
+        '{"kind":"transformed-first"}',
+        null,
+        '{"kind":"transformed-last"}',
+        null,
       ],
     });
     expect(await processRawEntitiesResult([], mockTransform)).toEqual({
       type: 'raw',
       entities: [],
     });
-  });
-
-  it('should bound batches and preserve nulls at batch boundaries', async () => {
-    const input = Array.from({ length: 202 }, (_, i) =>
-      i === 99 || i === 100 ? null : JSON.stringify({ kind: `${i}` }),
-    );
-    const result = await processRawEntitiesResult(input, mockTransform);
-    expect(result.type).toBe('raw-batches');
-    if (result.type !== 'raw-batches') throw new Error('Expected batches');
-    const batches = result.batches.map(batch => JSON.parse(batch));
-    expect(batches.map(batch => batch.length)).toEqual([100, 100, 2]);
-    expect(batches[0][99]).toBeNull();
-    expect(batches[1][0]).toBeNull();
-    expect(batches[2]).toEqual([
-      { kind: 'transformed-200' },
-      { kind: 'transformed-201' },
-    ]);
-    expect(entitiesResponseToObjects(result)).toHaveLength(202);
-  });
-
-  it('should keep a single projected entity in raw form', async () => {
-    expect(
-      await processRawEntitiesResult(['{"kind":"test"}'], mockTransform),
-    ).toEqual({
-      type: 'raw',
-      entities: ['{"kind":"transformed-test"}'],
-    });
-    expect(await processRawEntitiesResult([null], mockTransform)).toEqual({
-      type: 'raw',
-      entities: [null],
-    });
-  });
-
-  it('should shorten batches for large entities without losing oversized entities', async () => {
-    const input = [600_000, 600_000, 1_100_000, 10].map(size =>
-      JSON.stringify({ kind: 'test', spec: { description: 'x'.repeat(size) } }),
-    );
-    const result = await processRawEntitiesResult(input, mockTransform);
-    expect(result.type).toBe('raw-batches');
-    if (result.type !== 'raw-batches') throw new Error('Expected batches');
-    expect(result.batches.map(batch => JSON.parse(batch).length)).toEqual([
-      1, 1, 1, 1,
-    ]);
-    const decoded = entitiesResponseToObjects(result);
-    expect(decoded).toHaveLength(4);
-    expect(
-      decoded.map(entity => (entity!.spec!.description as string).length),
-    ).toEqual([600_000, 600_000, 1_100_000, 10]);
   });
 
   it('should let other event-loop work run while projecting an expensive page', async () => {
@@ -118,18 +73,20 @@ describe('processRawEntitiesResult', () => {
 
     try {
       const result = await processRawEntitiesResult(
-        Array(250).fill('{"kind":"test"}'),
+        Array(3).fill('{"kind":"test"}'),
         entity => {
           ++processed;
-          elapsed += 0.1;
+          elapsed += 100;
           return mockTransform(entity);
         },
       );
-      expect(processed).toBe(250);
-      expect(progress).toEqual([100, 200]);
-      expect(entitiesResponseToObjects(result)).toEqual(
-        Array(250).fill({ kind: 'transformed-test' }),
-      );
+      expect(processed).toBe(3);
+      expect(progress).toEqual(expect.arrayContaining([1, 2]));
+      expect(entitiesResponseToObjects(result)).toEqual([
+        { kind: 'transformed-test' },
+        { kind: 'transformed-test' },
+        { kind: 'transformed-test' },
+      ]);
     } finally {
       clearImmediate(observer);
       clock.mockRestore();
@@ -144,7 +101,7 @@ describe('processRawEntitiesResult', () => {
     });
     try {
       await processRawEntitiesResult(
-        Array(250).fill('{"kind":"test"}'),
+        Array(3).fill('{"kind":"test"}'),
         mockTransform,
       );
       expect(yielded).toBe(false);
@@ -156,10 +113,7 @@ describe('processRawEntitiesResult', () => {
 
   it('should reject malformed JSON and failed transforms before returning a page', async () => {
     await expect(async () =>
-      processRawEntitiesResult(
-        [...Array(100).fill('{"kind":"test"}'), 'invalid'],
-        mockTransform,
-      ),
+      processRawEntitiesResult(['{"kind":"test"}', 'invalid'], mockTransform),
     ).rejects.toThrow(SyntaxError);
     await expect(async () =>
       processRawEntitiesResult(['{"kind":"test"}'], () => {

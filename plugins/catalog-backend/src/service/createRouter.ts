@@ -52,7 +52,6 @@ import { parseEntityOrderParams } from './request/parseEntityOrderParams';
 import { parseEntityPaginationParams } from './request/parseEntityPaginationParams';
 import {
   createEntityArrayJsonStream,
-  entitiesResponseToObjects,
   writeEntitiesResponse,
   writeSingleEntityResponse,
 } from './response';
@@ -223,11 +222,7 @@ export async function createRouter(
               return; // Client closed connection
             }
 
-            const hasItems =
-              result.items.type === 'raw-batches'
-                ? result.items.batches.length > 0
-                : result.items.entities.length > 0;
-            if (hasItems) {
+            if (result.items.entities.length) {
               currentWrite = responseStream.send(result.items);
             }
 
@@ -372,14 +367,10 @@ export async function createRouter(
 
         writeSingleEntityResponse(res, entities, `No entity with uid ${uid}`);
 
-        const auditEntities =
-          entities.type === 'raw-batches'
-            ? entitiesResponseToObjects(entities)
-            : entities.entities;
         await auditorEvent?.success({
           meta: {
             // stringify to entity refs
-            entities: auditEntities.reduce((arr, element) => {
+            entities: entities.entities.reduce((arr, element) => {
               if (!element) {
                 return arr;
               }

@@ -233,11 +233,7 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
           basicEntityFilter({ 'metadata.uid': uid }),
         ),
       });
-      const hasItems =
-        entities.type === 'raw-batches'
-          ? entities.batches.length > 0
-          : entities.entities.length > 0;
-      if (!hasItems) {
+      if (entities.entities.length === 0) {
         throw new NotAllowedError();
       }
     }

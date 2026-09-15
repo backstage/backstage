@@ -26,19 +26,6 @@ export function writeSingleEntityResponse(
   response: EntitiesResponseItems,
   notFoundMessage: string,
 ) {
-  if (response.type === 'raw-batches') {
-    writeSingleEntityResponse(
-      res,
-      {
-        type: 'object',
-        entities: response.batches.length
-          ? JSON.parse(response.batches[0])
-          : [],
-      },
-      notFoundMessage,
-    );
-    return;
-  }
   if (response.type === 'object') {
     if (!response.entities[0]) {
       throw new NotFoundError(notFoundMessage);
@@ -88,11 +75,7 @@ export async function writeEntitiesResponse(options: {
   }
 
   let first = true;
-  const fragments =
-    items.type === 'raw-batches'
-      ? items.batches.map(batch => batch.slice(1, -1))
-      : items.entities;
-  for (const entity of fragments) {
+  for (const entity of items.entities) {
     const prefix = first ? '[' : ',';
     first = false;
 
