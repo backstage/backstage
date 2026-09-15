@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, type PropsWithChildren } from 'react';
-import { renderHook, render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { TestRouter } from '../../testUtils/TestRouter';
+import { type PropsWithChildren } from 'react';
+import { renderHook, render } from '@testing-library/react';
+
 import { useDefinition } from './useDefinition';
 import type { ComponentConfig } from './types';
 import { BgProvider, useBgConsumer } from '../useBg';
 import { noopTracker } from '../../analytics/useAnalytics';
 import { BUIProvider } from '../../provider';
-import type { AnchorNavigation } from '../../navigation/useNavigation';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -109,47 +109,6 @@ const hrefDef = {
     className: {},
   },
 } as const satisfies ComponentConfig<any, any>;
-
-const anchorDefinition = {
-  styles: { root: 'css-root' },
-  classNames: { root: 'root' },
-  propDefs: {
-    variant: { default: 'primary' } as const,
-    className: {},
-  },
-  navigation: { type: 'anchor' },
-} as const satisfies ComponentConfig<any, any>;
-
-function AnchorNavigationView({
-  navigation,
-  label,
-}: {
-  navigation: AnchorNavigation;
-  label: string;
-}) {
-  const [renderedLabel] = useState(label);
-  return (
-    <span data-testid="navigation" data-type={navigation.type}>
-      {renderedLabel}
-      {navigation.type === 'router' || navigation.type === 'native'
-        ? navigation.ariaHref
-        : ''}
-    </span>
-  );
-}
-
-function AnchorProbe(props: { href?: string; variant?: string }) {
-  const result = useDefinition(anchorDefinition, props);
-  const Navigation = result.navigation;
-
-  return (
-    <Navigation
-      props={result.restProps}
-      view={AnchorNavigationView}
-      viewProps={{ label: 'anchor:' }}
-    />
-  );
-}
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -628,12 +587,12 @@ describe('useDefinition', () => {
 
       const insideRouter = renderHook(() => useDefinition(hrefDef, { href }), {
         wrapper: ({ children }: PropsWithChildren) => (
-          <MemoryRouter
+          <TestRouter
             initialEntries={['/catalog/entity']}
             future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
           >
             <BUIProvider>{children}</BUIProvider>
-          </MemoryRouter>
+          </TestRouter>
         ),
       });
       expect(
@@ -643,70 +602,59 @@ describe('useDefinition', () => {
     });
   });
 
-  describe('navigation', () => {
-    it('selects native anchor navigation outside React Router', () => {
-      render(<AnchorProbe href="../sibling?tab=docs#api" />);
+  describe('href safety', () => {
+    // Every BUI component that takes an href reaches its element through this
+    // hook, so making the href safe here is what covers all of them at once —
+    // Link takes its href from restProps, MenuItem, Row, Tab, Card, HeaderNav
+    // and TagGroup declare it in propDefs and read it from ownProps. Both
+    // routes out of the hook have to be checked, and both with and without a
+    // router, since the resolution branch only runs inside one.
+    describe('executable schemes', () => {
+      it.each`
+        description                  | href
+        ${'javascript:'}             | ${'javascript:alert(1)'}
+        ${'a disguised leading tab'} | ${'\tjavascript:alert(1)'}
+        ${'mixed case'}              | ${'JavaScript:alert(1)'}
+        ${'data:'}                   | ${'data:text/html,<script>alert(1)</script>'}
+        ${'vbscript:'}               | ${'vbscript:msgbox(1)'}
+      `('makes $description inert on both prop routes', ({ href }) => {
+        const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      expect(screen.getByTestId('navigation')).toHaveAttribute(
-        'data-type',
-        'native',
-      );
-      expect(screen.getByTestId('navigation')).toHaveTextContent(
-        'anchor:../sibling?tab=docs#api',
-      );
-    });
+        // Declared in propDefs, so it lands in ownProps — MenuItem, Row, Tab.
+        const asOwnProp = renderHook(() => useDefinition(hrefDef, { href }), {
+          wrapper: ({ children }: PropsWithChildren) => (
+            <TestRouter
+              initialEntries={['/catalog']}
+              future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+            >
+              <BUIProvider>{children}</BUIProvider>
+            </TestRouter>
+          ),
+        });
+        // Not declared, so it falls through to restProps — Link.
+        const asRestProp = renderHook(() => useDefinition(basicDef, { href }), {
+          wrapper: ({ children }: PropsWithChildren) => (
+            <TestRouter
+              initialEntries={['/catalog']}
+              future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+            >
+              <BUIProvider>{children}</BUIProvider>
+            </TestRouter>
+          ),
+        });
+        // No router at all: the resolution branch is skipped entirely, and the
+        // guard still has to hold.
+        const withoutRouter = renderHook(
+          () => useDefinition(hrefDef, { href }),
+          { wrapper: Wrapper },
+        );
 
-    it('selects routed anchor navigation inside React Router', () => {
-      render(
-        <MemoryRouter
-          initialEntries={['/catalog/entity']}
-          future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-        >
-          <BUIProvider>
-            <AnchorProbe href="child" />
-          </BUIProvider>
-        </MemoryRouter>,
-      );
-
-      expect(screen.getByTestId('navigation')).toHaveAttribute(
-        'data-type',
-        'router',
-      );
-      expect(screen.getByTestId('navigation')).toHaveTextContent(
-        'anchor:child',
-      );
-    });
-
-    it('returns none for an absent href with anchor navigation', () => {
-      render(<AnchorProbe />);
-
-      expect(screen.getByTestId('navigation')).toHaveAttribute(
-        'data-type',
-        'none',
-      );
-    });
-
-    it('does not add navigation to definitions without the opt-in', () => {
-      const { result } = renderHook(
-        () => useDefinition(basicDef, { variant: 'primary' }),
-        { wrapper: Wrapper },
-      );
-
-      expect(result.current).not.toHaveProperty('navigation');
-    });
-
-    it('keeps raw rest hrefs while resolving definition defaults', () => {
-      const { result } = renderHook(
-        () =>
-          useDefinition<
-            typeof anchorDefinition,
-            { href?: string; variant?: string }
-          >(anchorDefinition, { href: '../sibling?tab=docs#api' }),
-        { wrapper: Wrapper },
-      );
-
-      expect(result.current.ownProps.variant).toBe('primary');
-      expect(result.current.restProps.href).toBe('../sibling?tab=docs#api');
+        expect(asOwnProp.result.current.ownProps.href).toBe('about:blank');
+        expect(asRestProp.result.current.restProps.href).toBe('about:blank');
+        expect(withoutRouter.result.current.ownProps.href).toBe('about:blank');
+        expect(warn).toHaveBeenCalled();
+        warn.mockRestore();
+      });
     });
   });
 

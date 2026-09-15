@@ -76,7 +76,7 @@ export const ListRow = (props: ListRowProps) => {
       textValue={textValue}
       className={classes.root}
       {...dataAttributes}
-      {...restProps}
+      {...(restProps as React.ComponentProps<typeof RAGridListItem>)}
     >
       {({ isSelected }) => (
         <>

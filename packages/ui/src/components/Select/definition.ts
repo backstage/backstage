@@ -135,7 +135,6 @@ export const SelectItemDefinition = defineComponent<SelectItemOwnProps>()({
     indicator: 'bui-SelectItemIndicator',
     content: 'bui-SelectItemContent',
   },
-  navigation: { type: 'anchor' },
   propDefs: {
     children: {},
     showSelectionIndicator: {},

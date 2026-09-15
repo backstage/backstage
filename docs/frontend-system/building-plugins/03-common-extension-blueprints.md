@@ -21,9 +21,13 @@ Page extensions provide content for a particular route in the app. By default pa
 
 To enable sub-pages on a page, you can either omit the `loader` param to use the built-in default implementation that renders sub-pages as tabs, or provide a custom `loader` that explicitly handles the sub-page inputs.
 
+Existing pages retain implicit React Router v6 matches. To migrate a page or select another routing library, render its adapter inside the page's lazily loaded component — see [Choose a router for a page](10-page-routers.md).
+
 ### SubPage - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.SubPageBlueprint.html)
 
 Sub-page extensions create tabbed content within a parent page. They are attached to a page extension's `pages` input and rendered as tabs in the page header. Each sub-page has a `path` (relative to the parent page), a `title` for the tab, and an optional `icon`. Content is lazy-loaded via a `loader` function.
+
+A sub-page declares its own router adapter in its lazily loaded component, which scopes the adapter to that sub-page. Sibling tabs may pick different libraries, or none.
 
 ### PluginHeaderAction - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.PluginHeaderActionBlueprint.html)
 
@@ -63,9 +67,9 @@ Nav content extensions allow you to replace the entire navbar with your own comp
 
 Your custom component receives a `navItems` prop—a collection with `take(id)` and `rest()` methods for placing specific items in custom positions. Nav items are auto-discovered from page extensions, and metadata (title, icon) comes from page config, nav item extensions, or plugin defaults. Use `navItems.take('page:home')` to take a specific item by extension ID, and `navItems.rest()` to get all remaining items. The deprecated `items` prop (a flat list) remains supported for backward compatibility.
 
-### Router - [Reference](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.RouterBlueprint.html)
+### AppRootWrapper - [Reference](https://backstage.io/api/stable/variables/_backstage_plugin-app-react.AppRootWrapperBlueprint.html)
 
-Router extensions allow you to replace the router component used by the app. They are always attached to the app root extension.
+App root wrapper extensions install React components that wrap the entire app root. Use them for global providers, such as a query client, that every plugin in the app needs. They are the replacement for providers that used to be bundled into a custom root router component.
 
 ## Extension blueprints in `@backstage/plugin-catalog-react/alpha`
 
@@ -80,6 +84,8 @@ Avoid using `convertLegacyEntityCardExtension` from `@backstage/core-compat-api`
 ### EntityContent - [Example](https://github.com/backstage/backstage/blob/cd71065a02bed740011daee96a865108a785dff6/plugins/kubernetes/src/alpha/entityContents.tsx#L22-L34)
 
 Creates entity content to be displayed on the entity pages of the catalog plugin. Exported as `EntityContentBlueprint`.
+
+Entity content is page content, not a page, so it never declares a [page router](10-page-routers.md) adapter of its own. It already renders inside the adapter the entity page declared, one route match deeper. A second adapter here re-scopes to the entity page's mount and drops the tab's match. The same holds for `EntityCardBlueprint`.
 
 Supports optional params such as `group` and `icon` to:
 

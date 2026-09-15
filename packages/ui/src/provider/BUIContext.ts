@@ -16,7 +16,7 @@
 
 import { createVersionedContext } from '@backstage/version-bridge';
 import type { UseAnalyticsFn } from '../analytics/types';
-import type { BUIRoutingIntegration } from '../navigation/types';
+import type { BUIRouter } from './BUIRouter';
 
 /** @internal */
 export type BUIContextValueV1 = {
@@ -24,16 +24,20 @@ export type BUIContextValueV1 = {
 };
 
 /** @internal */
-export type BUIContextValueV2 = {
-  useAnalytics?: UseAnalyticsFn;
-  routing: BUIRoutingIntegration;
+export type BUIContextValueV3 = BUIContextValueV1 & {
+  useRouter?: () => BUIRouter;
 };
 
 /** @internal */
 export type BUIContextVersions = {
   1: BUIContextValueV1;
-  2: BUIContextValueV2;
+  // Only analytics is read from legacy V2 providers. Their router-specific
+  // integration is deliberately neither consumed nor published anymore.
+  2?: BUIContextValueV1;
+  3?: BUIContextValueV3;
 };
 
+// Requiring only V1 permits legacy providers to supply analytics while new
+// providers add the optional host capability through the same shared context.
 /** @internal */
 export const BUIContext = createVersionedContext<BUIContextVersions>('bui');

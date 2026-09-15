@@ -39,16 +39,18 @@ The code snippet in the previous section does not indicate which plugin the rout
 ```tsx title="plugins/catalog/src/plugin.tsx"
 import {
   createFrontendPlugin,
-  createPageExtension,
+  PageBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { indexRouteRef } from './routes';
 
-const catalogIndexPage = createPageExtension({
+const catalogIndexPage = PageBlueprint.make({
   // The `name` option is omitted because this is an index page
-  path: '/entities',
-  // highlight-next-line
-  routeRef: indexRouteRef,
-  loader: () => import('./components').then(m => <m.IndexPage />),
+  params: {
+    path: '/entities',
+    // highlight-next-line
+    routeRef: indexRouteRef,
+    loader: () => import('./components').then(m => <m.IndexPage />),
+  },
 });
 
 export default createFrontendPlugin({
@@ -87,6 +89,7 @@ Route references can be used to link to page in the same plugin, or to pages in 
 Suppose we are creating a plugin that renders a Catalog index page with a link to a "Foo" component details page. Here is the code for the index page:
 
 ```tsx title="plugins/catalog/src/components/IndexPage.tsx"
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { useRouteRef } from '@backstage/frontend-plugin-api';
 import { detailsRouteRef } from '../routes';
 
@@ -94,6 +97,7 @@ export const IndexPage = () => {
   // highlight-next-line
   const getDetailsPath = useRouteRef(detailsRouteRef);
   return (
+    <ReactRouterV6PageRouter>
     <div>
       <h1>Index Page</h1>
       {/* highlight-next-line */}
@@ -111,6 +115,7 @@ export const IndexPage = () => {
         </a>
       )}
     </div>
+    </ReactRouterV6PageRouter>
   );
 };
 ```
@@ -189,15 +194,17 @@ Now the only thing left is to provide the page and external route via a plugin:
 ```tsx title="plugins/catalog/src/plugin.tsx"
 import {
   createFrontendPlugin,
-  createPageExtension,
+  PageBlueprint,
   useRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { indexRouteRef, createComponentExternalRouteRef } from './routes';
 
-const catalogIndexPage = createPageExtension({
-  path: '/entities',
-  routeRef: indexRouteRef,
-  loader: () => import('./components').then(m => <m.IndexPage />),
+const catalogIndexPage = PageBlueprint.make({
+  params: {
+    path: '/entities',
+    routeRef: indexRouteRef,
+    loader: () => import('./components').then(m => <m.IndexPage />),
+  },
 });
 
 export default createFrontendPlugin({
@@ -342,7 +349,11 @@ The nested route inherits all parameters from its ancestors, so
 `useRouteRef(revisionAttachmentsSubRouteRef)` requires both `name` and
 `revision`. Parameter names must be unique across the entire parent chain.
 
-Using subroutes in a page extension is as simple as this:
+Sub-route refs are framework routing, so `useRouteRef` and `useRouteRefParams`
+resolve them in any page. Registering the sub-route as an actual React Router
+`<Route>`, as the example below does, is a separate decision: it needs React
+Router context, which a page only has if it renders an adapter. The page
+extension at the end of this section is what supplies it.
 
 ```tsx title="plugins/catalog/src/components/IndexPage.tsx"
 import { Routes, Route, useLocation } from 'react-router-dom';
@@ -389,14 +400,18 @@ export const IndexPage = () => {
 };
 ```
 
-This is how you can get the parameters of a sub route URL:
+This is how you can get the parameters of a sub route URL. Read them from the
+route ref rather than from React Router: `useRouteRefParams` answers from the
+framework, so it works whether or not the page declared an adapter, and it is
+typed by the sub-route's own path.
 
 ```tsx title="plugins/catalog/src/components/DetailsPage.tsx"
-import { useParams } from 'react-router-dom';
+import { useRouteRefParams } from '@backstage/frontend-plugin-api';
+import { detailsSubRouteRef } from '../routes';
 
 export const DetailsPage = () => {
   // highlight-next-line
-  const params = useParams();
+  const params = useRouteRefParams(detailsSubRouteRef);
   return (
     <div>
       <h1>Details Sub Page</h1>
@@ -412,19 +427,25 @@ export const DetailsPage = () => {
 };
 ```
 
-Finally, see how a plugin can provide subroutes:
+Finally, see how a plugin can provide subroutes. Because `IndexPage` builds a
+React Router `<Routes>` tree, the page declares a React Router adapter by
+rendering one inside its lazily loaded component:
 
 ```tsx title="plugins/catalog/src/plugin.tsx"
 import {
   createFrontendPlugin,
-  createPageExtension,
+  PageBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { indexRouteRef, detailsSubRouteRef } from './routes';
 
-const catalogIndexPage = createPageExtension({
-  path: '/entities',
-  routeRef: indexRouteRef,
-  loader: () => import('./components').then(m => <m.IndexPage />),
+const catalogIndexPage = PageBlueprint.make({
+  params: {
+    path: '/entities',
+    routeRef: indexRouteRef,
+    // highlight-start
+    loader: () => import('./components').then(m => <m.IndexPage />),
+    // highlight-end
+  },
 });
 
 export default createFrontendPlugin({
@@ -437,6 +458,8 @@ export default createFrontendPlugin({
   extensions: [catalogIndexPage],
 });
 ```
+
+The adapter is imported by `IndexPage`, so it loads with the page component. The blueprint only loads that component.
 
 ## Route Aliases - Overriding Routed Extensions in Modules
 
@@ -452,7 +475,7 @@ export default createFrontendModule({
   extensions: [
     PageBlueprint.make({
       params: {
-        defaultPath: '/catalog',
+        path: '/catalog',
         routeRef: indexRouteRef,
         loader: () =>
           import('./CustomCatalogIndexPage').then(m => (
@@ -476,3 +499,211 @@ function MyInvalidComponent() {
   // ...
 }
 ```
+
+## Scoped plugin routing
+
+The app uses one `AppHistoryApi` for navigation. By default it owns browser
+history; apps can register a custom history implementation. Existing pages
+retain implicit React Router v6 matches while they migrate to explicit adapters.
+The root React Router v6 context remains available for shared UI.
+
+The default history is created when first requested. Preparing an app without
+using its history does not attach a browser history listener. Histories supplied
+by the app or reused from another session remain owned by their supplier.
+
+For the design background, see [RFC #33603](https://github.com/backstage/backstage/issues/33603).
+
+### What framework routing gives you
+
+Route refs work in every page, with or without a routing library. `useRouteRef`
+resolves a route ref to a path, `useRouteRefParams` reads the parameters the
+route pattern names, `useHref` turns a page-relative path into a browser-ready
+href, and `RouteLink` renders a link straight from a route ref. None of them
+require a page router, so a plugin using only these hooks needs no adapter.
+
+`useRouteRefParams` returns exactly the parameter names declared by the supplied
+route ref. Parameters that the current location does not bind have the value
+`undefined`. The undeclared splat `*` is not included; use the page router's own
+parameter API if your content needs the matched tail. In the old frontend
+system, the hook reads parameters from React Router.
+
+`useAppLocation` reads the app-absolute location, and `useAppSearchParams` reads
+and updates query parameters. Both use app history in the new frontend system
+and fall back to React Router in the old frontend system.
+
+`AppHistoryApi.navigate` accepts app-relative destinations or a numeric history
+delta for Back and Forward navigation. It rejects external destinations.
+`AppHistoryApi.createHref` adds the deployment basename and preserves external
+URLs. For scoped destinations, use `useHref` or the matching href and navigation
+callbacks returned by `useAppRouting`.
+
+`useHref` resolves relative paths against the matched extension ancestry. Each
+leading `..` climbs one route, even when that route spans multiple URL segments.
+Query-only and fragment-only targets keep the current pathname. External URLs
+are preserved, except that `javascript:`, `data:`, and `vbscript:` targets become
+inert `about:blank` links with a console warning.
+
+React Router's own APIs — `useParams`, `useNavigate`, `useLocation`, `<Routes>`
+and relative `Link` targets — read React Router context. A page needs an
+adapter for that context to include its own route match. See
+[Page routers](#page-routers) below.
+
+### Absolute and cross-plugin navigation
+
+A page adapter owns navigation within its own page and nothing beyond it. Resolving a route ref to a concrete path and handing it to React Router's `navigate`, or pointing a React Router `Link` at an absolute `to` string, reaches past that boundary and can break.
+
+For navigation that does cross the boundary, `@backstage/frontend-plugin-api` exports `useAppNavigate` and `useHref`. The pair mirrors the `navigate` and `useHref` props of [React Aria's `RouterProvider`](https://react-spectrum.adobe.com/react-aria/routing.html). `useAppNavigate` reads the app's `AppHistoryApi` when one is registered and falls back to React Router when it is not, so the same plugin code runs under both the new and the old frontend system. That fallback is also why the example below imports `useRouteRef` from `@backstage/core-plugin-api`, which resolves route refs in either system.
+
+```tsx
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
+import { rootRouteRef } from '../routes';
+
+export function useNavigateToSearchQuery() {
+  const searchRoute = useRouteRef(rootRouteRef);
+  const navigate = useAppNavigate();
+
+  return (query: string) => {
+    navigate(`${searchRoute()}?query=${encodeURIComponent(query)}`);
+  };
+}
+```
+
+`useHref` is the counterpart that resolves a path to a browser-ready href, for a plain `<a>` for example, with the same React Router fallback.
+
+For declarative cross-plugin links, `RouteLink` takes the route ref directly so that no absolute `to` string has to be built:
+
+```tsx
+import { RouteLink } from '@backstage/frontend-plugin-api';
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
+
+export function EntityNameLink(props: {
+  kind: string;
+  namespace: string;
+  name: string;
+}) {
+  return (
+    <RouteLink
+      routeRef={entityRouteRef}
+      params={{
+        kind: props.kind,
+        namespace: props.namespace,
+        name: props.name,
+      }}
+    >
+      {props.name}
+    </RouteLink>
+  );
+}
+```
+
+`useNavigateRouteRef` is the programmatic equivalent. If your plugin already depends on `EntityRefLink` from `@backstage/plugin-catalog-react`, its links use app history in the new frontend system and retain React Router navigation in the old frontend system.
+
+### Page routers
+
+Existing new frontend system pages retain implicit React Router v6 routing.
+Route parameters, relative links and nested routes continue to work without
+an immediate migration. In development, consuming this fallback logs a warning
+once per extension per app instance. Render an explicit page adapter to migrate
+that content; pages using only framework routing do not need an adapter.
+
+A page that wants its library's own APIs declares an adapter by rendering one
+inside its lazily loaded page component — plain React, no extension wiring:
+
+```tsx
+PageBlueprint.make({
+  params: {
+    path: '/catalog',
+    loader: () => import('./Page').then(m => <m.Page />),
+  },
+});
+```
+
+The adapter belongs in the lazily loaded component module. Wrap the page's existing JSX directly; only hooks that consume this router need to be in a child beneath it.
+
+```tsx title="./Page.tsx"
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+
+export function Page() {
+  return (
+    <ReactRouterV6PageRouter>
+      {/* Existing page JSX and local routes go here. */}
+    </ReactRouterV6PageRouter>
+  );
+}
+```
+
+Adapters are added rather than selected, so they nest. Two routing libraries
+publish two different React context objects, and an adapter inside another
+adapter's content adds a second context instead of displacing the first.
+
+Declare an adapter in the content owned by a route-bearing extension.
+`PageBlueprint` and `SubPageBlueprint` are conveniences for common layouts;
+ordinary extensions with `coreExtensionData.routePath` participate in the same
+matched route tree. Their `ExtensionBoundary` scopes framework navigation and
+adapter context to the extension's actual position in that tree.
+
+Each parent extension still chooses how to render its children. Route matching
+does not render every matching extension automatically or replace the parent
+layout. Content inside a page, such as an entity card, normally uses the adapter
+already supplied above it. Adding an adapter without a new route mount can
+reset relative resolution to the enclosing mount, discarding route matches
+created by the page's routing library.
+
+An adapter with nothing to scope to is inert. Scoping needs a page mount and a
+registered `AppHistoryApi`. With either missing the adapter renders its children
+untouched and asks nothing of the surrounding app. That is part of the contract
+rather than a defensive check: the old frontend system supplies neither half, so
+it is what lets a plugin shipping for both systems wrap a shared component once.
+It is also why a plugin's own `render()` unit tests, which stand up no app, keep
+working through the wrap.
+
+Sub-pages are ordinary routes one level below their page, and are no more
+special than the page is. The framework matches them through the same route tree, and the parent
+page chooses which child to render. An adapter does not need to know that
+sub-pages exist. A
+sub-page declares its adapter in its lazily loaded component, which scopes it to the
+sub-page, because the sub-page's mount is what is in context there. Sibling tabs
+may use different libraries, or none.
+
+A page that has sub-pages owns no content region of its own, so there is nothing
+above them for a page-level adapter to wrap. Router-owned state therefore
+belongs to the sub-page that declared the adapter and is rebuilt when the active
+tab changes; the framework-owned page shell around it stays mounted.
+
+Page content also stays mounted across app shell re-renders and navigation
+between URLs served by the same page. This preserves local state such as open
+dialogs and unfinished form input. Page headers remain visible while content
+loads or displays an error.
+
+If a page path collides with a sub-page route, the explicitly registered page
+path wins regardless of installation order, and the app logs a warning. A page
+root redirects to its first routed tab, so the parent page can still reach its
+own tabs.
+
+Whatever the active page or sub-page produces is opaque to any adapter around
+it, and an adapter component receives only `children`. First-party adapters read
+the page mount from a framework-private context, which keeps concrete mount
+paths and route patterns out of the adapter contract.
+
+For the steps to attach one, see [Choose a router for a page](../building-plugins/10-page-routers.md).
+
+### Testing
+
+`renderInTestApp` and `renderTestApp` from `@backstage/frontend-test-utils` drive an in-memory `AppHistoryApi` and hand it back as `appHistory`, which is what you navigate and assert against. See [Testing](../building-plugins/02-testing.md#navigation-and-app-history) for the details.
+
+### Limits of the model
+
+The app root still projects React Router v6 context, because third-party chrome written for the new frontend system may read it. First-party chrome does not.
+
+Backstage UI receives a `useRouter` hook through `BUIProvider`. The hook runs at each consuming component and returns navigation, a plain href resolver, and the current browser pathname. Hrefs and the pathname include the deployment basename. The app plugin binds both href resolution and clicks to the same matched extension ancestry and `AppHistoryApi`, so relative links navigate to the destination they display.
+
+BUI controls bind that integration to a local React Aria provider. React Aria
+owns link activation and native browser behavior; BUI does not detect a routing
+library or handle modified clicks itself. Plugins using React Aria directly can
+use the same captured pair through `useAppRouting` and a provider from their own
+React Aria installation. See [React Aria integration](../building-plugins/10-page-routers.md#use-react-aria-components-directly).
+
+An app releases its browser history listener when its React root is torn down. Re-running `createApp` during a hot reload builds a new app without tearing down the old one, so the previous listener stays attached until the page reloads.
+
+A router library can block navigation that starts inside its own page, but not navigation that starts anywhere else, because `AppHistoryApi` has no shared blocker contract.

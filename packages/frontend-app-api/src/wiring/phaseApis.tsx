@@ -20,6 +20,7 @@ import {
   AppTree,
   AppTreeApi,
   appTreeApiRef,
+  appHistoryApiRef,
   ConfigApi,
   configApiRef,
   createApiFactory,
@@ -35,10 +36,11 @@ import {
   type ExtensionFactoryMiddleware,
   type IdentityApi,
 } from '@backstage/frontend-plugin-api';
-import { matchRoutes } from 'react-router-dom';
+import { matchRouteRefs } from '../routing/matchRouteRefs';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { createRouteAliasResolver } from '../routing/RouteAliasResolver';
+import { createAppHistory, type AppHistory } from '../routing/AppHistory';
 import { RouteResolver } from '../routing/RouteResolver';
 import { collectRouteIds } from '../routing/collectRouteIds';
 import {
@@ -93,11 +95,11 @@ export class AppTreeApiProxy implements AppTreeApi {
       path = path.slice(this.appBasePath.length);
     }
 
-    const matchedRoutes = matchRoutes(routeInfo.routeObjects, path);
+    const matchedRoutes = matchRouteRefs(routeInfo.routeObjects, path);
 
     const matchedAppNodes =
       matchedRoutes?.flatMap(routeObj => {
-        const appNode = routeObj.route.appNode;
+        const appNode = routeObj.routeObject.appNode;
         return appNode ? [appNode] : [];
       }) || [];
 
@@ -214,6 +216,90 @@ export function createPhaseApis(options: {
   );
   const identityProxy = new PreparedAppIdentityProxy();
   const phaseApiRegistry = new FrontendApiRegistry();
+
+  // Avoid constructing a window-history AppHistory (and attaching popstate)
+  // when the API is already supplied elsewhere: by a static factory (tests), or
+  // by an `ApiBlueprint` extension in the app itself — which is how an app owner
+  // supplies a hash, memory or host-owned history.
+  //
+  // Not registering the default is what lets an app-supplied factory through.
+  // The phase registry below is the *primary* one, so anything registered here
+  // shadows the app's own registry; that is what protects the framework-owned
+  // proxies from being replaced by a plugin, but app history is a default rather
+  // than a proxy. Registering it unconditionally would silently outrank the
+  // app's factory and still attach a `popstate` listener fighting it.
+  //
+  // The one supplier this question cannot see is a predicate-gated one. An API
+  // extension with an `if` anywhere in its subtree is deferred to finalization
+  // (`classifyBootstrapTree`), so its root is not in `appApiRegistry` yet and
+  // the answer here is `undefined` however the predicate would have evaluated.
+  // Resolving it now is not possible — predicate context does not exist during
+  // preparation — so the gap is not closed here but refused below: the default
+  // registers as usual and then declines to answer if a competitor turns up.
+  const hasNavigationOverride =
+    options.staticFactories.some(
+      factory => factory.api.id === appHistoryApiRef.id,
+    ) || Boolean(options.appApiRegistry.get(appHistoryApiRef));
+
+  // The app registry can only gain an `appHistoryApiRef` factory after this
+  // point, and only from a predicate-gated API root that `hasNavigationOverride`
+  // was unable to see. The default sits in the primary registry and would win
+  // that race without making a sound, leaving the app running on a window
+  // history nobody asked for, so it stops instead of winning.
+  function assertNoDeferredNavigationOverride() {
+    if (!options.appApiRegistry.get(appHistoryApiRef)) {
+      return;
+    }
+    throw new Error(
+      [
+        `The '${appHistoryApiRef.id}' API is supplied by an extension that is gated behind an 'if' predicate, which is not supported.`,
+        `Predicate-gated extensions are only resolved once predicate context exists, which is after the app has been prepared, and the app history has to be decided during preparation.`,
+        `The built-in window history was therefore registered as the app default, and it outranks the extension's factory.`,
+        `Remove the 'if' from the extension that provides '${appHistoryApiRef.id}' and from every extension attached below it, or supply the history another way, such as an app-level API factory override.`,
+      ].join(' '),
+    );
+  }
+
+  // Creating an AppHistory attaches a popstate listener that lives until it is
+  // disposed, so the instance is kept here and released through the returned
+  // dispose(). An overridden API is owned by whoever supplied the factory.
+  let appHistory: AppHistory | undefined;
+  let disposed = false;
+  function getOrCreateAppHistory(): AppHistory {
+    if (!appHistory) {
+      appHistory = createAppHistory({
+        basename: options.appBasePath || undefined,
+      });
+      // Only reachable through the deferred factory below. Handing back a live
+      // history after teardown would attach a listener with no handle left to
+      // release it, so it is created dead instead.
+      if (disposed) {
+        appHistory.dispose();
+      }
+    }
+    return appHistory;
+  }
+
+  // Register the default up front, but acquire history only when requested.
+  // The primary registry outranks fallbackApis, so consult a reused session's
+  // holder before constructing a history owned by this app.
+  function createAppHistoryFactory(): AnyApiFactory | undefined {
+    if (hasNavigationOverride) {
+      return undefined;
+    }
+    return createApiFactory({
+      api: appHistoryApiRef,
+      deps: {},
+      factory: () => {
+        assertNoDeferredNavigationOverride();
+        return (
+          options.fallbackApis?.get(appHistoryApiRef) ?? getOrCreateAppHistory()
+        );
+      },
+    });
+  }
+  const appHistoryFactory = createAppHistoryFactory();
+
   phaseApiRegistry.registerAll([
     createApiFactory(appTreeApiRef, appTreeApi),
     ...(options.includeConfigApi
@@ -222,6 +308,7 @@ export function createPhaseApis(options: {
     createApiFactory(routeResolutionApiRef, routeResolutionApi),
     createApiFactory(identityApiRef, identityProxy),
     ...options.staticFactories,
+    ...(appHistoryFactory ? [appHistoryFactory] : []),
   ]);
 
   const apis = new FrontendApiResolver({
@@ -235,6 +322,15 @@ export function createPhaseApis(options: {
     routeResolutionApi,
     appTreeApi,
     identityApiProxy: identityProxy,
+    /**
+     * Releases the resources owned by these phase APIs. Safe to call more than
+     * once, and a no-op when the app history API was overridden or supplied by
+     * a reused session.
+     */
+    dispose() {
+      disposed = true;
+      appHistory?.dispose();
+    },
   };
 }
 

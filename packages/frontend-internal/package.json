@@ -26,7 +26,8 @@
     "@backstage/filter-predicates": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@backstage/version-bridge": "workspace:^"
+    "@backstage/version-bridge": "workspace:^",
+    "use-sync-external-store": "^1.7.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
@@ -35,6 +36,20 @@
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^16.0.0"
+    "@testing-library/react": "^16.0.0",
+    "@types/react": "^18.0.0",
+    "@types/use-sync-external-store": "^1.7.0",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2"
+  },
+  "peerDependencies": {
+    "@types/react": "^17.0.0 || ^18.0.0",
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   }
 }

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { BUIRouterOptions } from '../../provider/BUIRouter';
 import type {
   Breakpoint,
   TextColors,
@@ -42,5 +43,11 @@ export type LinkOwnProps = {
 
 /** @public */
 export interface LinkProps
-  extends Omit<AriaLinkProps, 'children' | 'className' | 'render'>,
-    LinkOwnProps {}
+  extends Omit<
+      AriaLinkProps,
+      'children' | 'className' | 'render' | 'routerOptions'
+    >,
+    LinkOwnProps {
+  /** Options passed to the router configured on BUIProvider. */
+  routerOptions?: BUIRouterOptions;
+}

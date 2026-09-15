@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { TestRouter } from '../../testUtils/TestRouter';
 import preview from '../../../../../.storybook/preview';
 import { useState } from 'react';
 import { List, ListRow } from './List';
@@ -30,7 +31,6 @@ import {
   RiEdit2Line,
   RiShareBoxLine,
 } from '@remixicon/react';
-import { MemoryRouter } from 'react-router-dom';
 
 const meta = preview.meta({
   title: 'Backstage UI/List',
@@ -41,9 +41,9 @@ const meta = preview.meta({
   },
   decorators: [
     Story => (
-      <MemoryRouter>
+      <TestRouter>
         <Story />
-      </MemoryRouter>
+      </TestRouter>
     ),
   ],
 });

@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
+import { TestRouter } from '../../../testUtils/TestRouter';
 import type { Meta } from '@storybook/react-vite';
-import { MemoryRouter } from 'react-router-dom';
+
 import { BUIProvider } from '../../../provider';
 import { CellText, type ColumnConfig } from '..';
 
@@ -47,11 +48,11 @@ export const selectionColumns: ColumnConfig<(typeof selectionData)[0]>[] = [
 export const tableStoriesMeta = {
   decorators: [
     (Story: () => JSX.Element) => (
-      <MemoryRouter>
+      <TestRouter>
         <BUIProvider>
           <Story />
         </BUIProvider>
-      </MemoryRouter>
+      </TestRouter>
     ),
   ],
 } satisfies Partial<Meta>;

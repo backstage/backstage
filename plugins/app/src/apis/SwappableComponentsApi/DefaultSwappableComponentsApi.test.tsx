@@ -25,7 +25,12 @@ import {
 import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
 import { DefaultSwappableComponentsApi } from './DefaultSwappableComponentsApi';
 import { render, screen } from '@testing-library/react';
-import { renderInTestApp, renderTestApp } from '@backstage/frontend-test-utils';
+import {
+  TestApiProvider,
+  renderInTestApp,
+  renderTestApp,
+} from '@backstage/frontend-test-utils';
+import { Suspense, useEffect, type ReactNode } from 'react';
 
 const { ref: testRefA } = createSwappableComponent({ id: 'test.a' });
 const { ref: testRefB1 } = createSwappableComponent({ id: 'test.b' });
@@ -61,6 +66,58 @@ describe('DefaultSwappableComponentsApi', () => {
     render(<ComponentB2 />);
 
     await expect(screen.findByText('test.b')).resolves.toBeInTheDocument();
+  });
+
+  it('should keep the component identity stable so a re-render does not remount what it wraps', async () => {
+    const Swappable = createSwappableComponent<{
+      label: string;
+      children?: ReactNode;
+    }>({
+      id: 'test.stable',
+      loader: () => props =>
+        (
+          <div>
+            {props.label}
+            {props.children}
+          </div>
+        ),
+    });
+    const api = DefaultSwappableComponentsApi.fromComponents([]);
+
+    expect(api.getComponent(Swappable.ref)).toBe(
+      api.getComponent(Swappable.ref),
+    );
+
+    // Identity is the whole point: React tears a subtree down and rebuilds it
+    // whenever an element type changes, so a component built fresh per lookup
+    // would reset the state of everything the swapped component wraps every
+    // time its parent re-renders — page content included.
+    let mounts = 0;
+    const Wrapped = () => {
+      useEffect(() => {
+        mounts += 1;
+      }, []);
+      return <span>wrapped</span>;
+    };
+    const treeWith = (label: string) => (
+      <TestApiProvider apis={[[swappableComponentsApiRef, api]]}>
+        <Suspense fallback={null}>
+          <Swappable label={label}>
+            <Wrapped />
+          </Swappable>
+        </Suspense>
+      </TestApiProvider>
+    );
+
+    const { rerender } = render(treeWith('first'));
+
+    await expect(screen.findByText('wrapped')).resolves.toBeInTheDocument();
+    expect(mounts).toBe(1);
+
+    rerender(treeWith('second'));
+
+    await expect(screen.findByText('second')).resolves.toBeInTheDocument();
+    expect(mounts).toBe(1);
   });
 
   describe('integration tests', () => {

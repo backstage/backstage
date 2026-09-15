@@ -18,7 +18,6 @@ import type { PluginHeaderProps } from './types';
 import { Tabs, TabList, Tab } from '../Tabs';
 import { useDefinition } from '../../hooks/useDefinition';
 import { PluginHeaderDefinition } from './definition';
-import { type NavigateOptions } from 'react-router-dom';
 import { Children, useMemo, useRef } from 'react';
 import { useIsomorphicLayoutEffect } from '../../hooks/useIsomorphicLayoutEffect';
 import { Box } from '../Box';
@@ -27,12 +26,6 @@ import { RiShapesLine } from '@remixicon/react';
 import { Text } from '../Text';
 import { VisuallyHidden } from '../VisuallyHidden';
 import { PluginHeaderBreadcrumbs } from './PluginHeaderBreadcrumbs';
-
-declare module 'react-aria-components' {
-  interface RouterConfig {
-    routerOptions: NavigateOptions;
-  }
-}
 
 /**
  * Renders a plugin header with icon, title, custom actions, and optional tabs.

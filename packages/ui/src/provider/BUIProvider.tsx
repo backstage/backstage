@@ -16,30 +16,35 @@
 
 import { useMemo, type ReactNode } from 'react';
 import { createVersionedValueMap } from '@backstage/version-bridge';
-import { BUIContext } from './BUIContext';
+import { BUIContext, type BUIContextVersions } from './BUIContext';
 import type { UseAnalyticsFn } from '../analytics/types';
-import {
-  BUIRoutingProvider,
-  buiRoutingIntegration,
-} from '../navigation/BUIRoutingProvider';
+import { useBUIRouter, type BUIRouter } from './BUIRouter';
 
 /** @public */
 export type BUIProviderProps = {
   useAnalytics?: UseAnalyticsFn;
+  /**
+   * Hook called at each consuming component to bind navigation, href
+   * resolution and the active pathname to that component's route scope.
+   * When omitted, inherits an enclosing host hook. Without a host hook,
+   * components use an explicitly supplied React Aria router or browser navigation.
+   */
+  useRouter?: () => BUIRouter;
   children: ReactNode;
 };
 
 /**
  * Provides integration capabilities to all descendant BUI components.
  *
- * When rendered inside the Backstage app router, BUI components use
- * client-side navigation for internal links. Relative destinations resolve
- * from the route of the component that renders the link, and the router
- * basename applies once.
+ * An explicit host hook supplies navigation, href resolution, and active-state
+ * detection, including for independently loaded BUI components. BUI components
+ * bind this hook to React Aria at their own route scope. Without a host hook,
+ * components use an explicitly supplied React Aria router or browser navigation.
  *
- * External and scheme links, downloads, and links with non-self targets use the
- * browser's native navigation. BUI components rendered outside React Router use
- * native links without throwing.
+ * React Aria components used directly need their own scoped `RouterProvider`.
+ *
+ * External links, downloads, and links with non-self targets use native browser
+ * navigation. Components outside a routing context also use native links.
  *
  * @example
  * ```tsx
@@ -58,18 +63,17 @@ export type BUIProviderProps = {
  * @public
  */
 export function BUIProvider(props: BUIProviderProps) {
-  const { useAnalytics, children } = props;
+  const { useAnalytics, useRouter: providedUseRouter, children } = props;
+  const parentUseRouter = useBUIRouter();
+  const useRouter = providedUseRouter ?? parentUseRouter;
   const value = useMemo(
     () =>
-      createVersionedValueMap({
+      createVersionedValueMap<BUIContextVersions>({
         1: { useAnalytics },
-        2: { useAnalytics, routing: buiRoutingIntegration },
+        3: { useAnalytics, useRouter },
       }),
-    [useAnalytics],
+    [useAnalytics, useRouter],
   );
 
-  const content = (
-    <BUIContext.Provider value={value}>{children}</BUIContext.Provider>
-  );
-  return <BUIRoutingProvider>{content}</BUIRoutingProvider>;
+  return <BUIContext.Provider value={value}>{children}</BUIContext.Provider>;
 }

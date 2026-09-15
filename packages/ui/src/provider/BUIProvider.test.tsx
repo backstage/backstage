@@ -20,36 +20,30 @@ import {
   createVersionedValueMap,
   useVersionedContext,
 } from '@backstage/version-bridge';
-import { Link as ReactAriaLink } from 'react-aria-components';
-import { MemoryRouter } from 'react-router-dom';
-import { useMemo, type ComponentProps, type PropsWithChildren } from 'react';
+import { Link } from 'react-aria-components';
+import type { PropsWithChildren } from 'react';
 import { useAnalytics } from '../analytics/useAnalytics';
-import { fallbackRoutingIntegration } from '../navigation/useRouting';
-import {
-  BUIContext,
-  type BUIContextVersions,
-  type BUIContextValueV1,
-} from './BUIContext';
+import { BUIRoutingProvider } from '../navigation/BUIRoutingProvider';
+import { type BUIContextVersions, type BUIContextValueV1 } from './BUIContext';
 import { BUIProvider } from './BUIProvider';
-
-const mockFallbackNavigate = jest.fn();
-const BUIContextV1 = createVersionedContext<{ 1: BUIContextValueV1 }>('bui');
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockFallbackNavigate,
-}));
+import type { BUIRouter } from './BUIRouter';
 
 describe('BUIProvider', () => {
-  beforeEach(() => {
-    mockFallbackNavigate.mockReset();
-  });
-
-  it('provides stable, self-contained context versions', () => {
+  it('publishes stable analytics and explicit host capabilities', () => {
     const captureEvent = jest.fn();
     const useProvidedAnalytics = () => ({ captureEvent });
+    const useProvidedRouter = (): BUIRouter => ({
+      navigate: jest.fn(),
+      resolveHref: href => href,
+      pathname: '/',
+    });
     const wrapper = ({ children }: PropsWithChildren) => (
-      <BUIProvider useAnalytics={useProvidedAnalytics}>{children}</BUIProvider>
+      <BUIProvider
+        useAnalytics={useProvidedAnalytics}
+        useRouter={useProvidedRouter}
+      >
+        {children}
+      </BUIProvider>
     );
     const { result, rerender } = renderHook(
       () => ({
@@ -59,129 +53,77 @@ describe('BUIProvider', () => {
       { wrapper },
     );
 
-    const firstRouting = result.current.context?.atVersion(2)?.routing;
-    const firstCreateRouterOptions = firstRouting?.createRouterOptions;
-
     expect(result.current.context?.atVersion(1)).toEqual({
       useAnalytics: useProvidedAnalytics,
     });
-    expect(result.current.context?.atVersion(2)).toEqual({
+    expect(result.current.context?.atVersion(2)).toBeUndefined();
+    expect(result.current.context?.atVersion(3)).toEqual({
       useAnalytics: useProvidedAnalytics,
-      routing: firstRouting,
+      useRouter: useProvidedRouter,
     });
     result.current.analytics.captureEvent('click', 'Destination');
     expect(captureEvent).toHaveBeenCalledWith('click', 'Destination');
-
-    const routerOptions = firstRouting?.createRouterOptions(jest.fn(), {
-      replace: true,
-    });
-    const anotherRouterOptions = firstRouting?.createRouterOptions(jest.fn(), {
-      replace: true,
-    });
-
-    expect(Object.keys(routerOptions ?? {})).toEqual(['replace']);
-    expect(routerOptions).toEqual({ replace: true });
-    expect(anotherRouterOptions).not.toBe(routerOptions);
-
+    const firstContext = result.current.context;
     rerender();
-
-    expect(result.current.context?.atVersion(2)?.routing).toBe(firstRouting);
-    expect(
-      result.current.context?.atVersion(2)?.routing.createRouterOptions,
-    ).toBe(firstCreateRouterOptions);
+    expect(result.current.context).toBe(firstContext);
   });
 
-  it('prefers V2 analytics when both context versions are available', () => {
+  it('inherits the host through nested providers', () => {
+    const navigate = jest.fn();
+    render(
+      <BUIProvider
+        useRouter={() => ({
+          navigate,
+          resolveHref: href => `/base${href}`,
+          pathname: '/base',
+        })}
+      >
+        <BUIProvider>
+          <BUIRoutingProvider>
+            <Link href="/catalog">Catalog</Link>
+          </BUIRoutingProvider>
+        </BUIProvider>
+      </BUIProvider>,
+    );
+    const link = screen.getByRole('link', { name: 'Catalog' });
+    expect(link).toHaveAttribute('href', '/base/catalog');
+    fireEvent.click(link);
+    expect(navigate).toHaveBeenCalledWith('/catalog', undefined);
+  });
+
+  it('reads analytics from older providers without requiring their routing capabilities', () => {
+    const LegacyContext = createVersionedContext<{
+      1: BUIContextValueV1;
+      2: BUIContextValueV1;
+    }>('bui');
     const captureV1Event = jest.fn();
     const captureV2Event = jest.fn();
     const value = createVersionedValueMap({
       1: { useAnalytics: () => ({ captureEvent: captureV1Event }) },
-      2: {
-        useAnalytics: () => ({ captureEvent: captureV2Event }),
-        routing: fallbackRoutingIntegration,
-      },
+      2: { useAnalytics: () => ({ captureEvent: captureV2Event }) },
     });
     const wrapper = ({ children }: PropsWithChildren) => (
-      <BUIContext.Provider value={value}>{children}</BUIContext.Provider>
+      <LegacyContext.Provider value={value}>{children}</LegacyContext.Provider>
     );
     const { result } = renderHook(() => useAnalytics(), { wrapper });
-
     result.current.captureEvent('click', 'Destination');
-
     expect(captureV2Event).toHaveBeenCalledWith('click', 'Destination');
     expect(captureV1Event).not.toHaveBeenCalled();
   });
 
-  it('accepts analytics from a V1-only provider', () => {
-    const captureV1Event = jest.fn();
+  it('reads analytics from a V1-only provider', () => {
+    const LegacyContext = createVersionedContext<{ 1: BUIContextValueV1 }>(
+      'bui',
+    );
+    const captureEvent = jest.fn();
     const value = createVersionedValueMap({
-      1: { useAnalytics: () => ({ captureEvent: captureV1Event }) },
+      1: { useAnalytics: () => ({ captureEvent }) },
     });
     const wrapper = ({ children }: PropsWithChildren) => (
-      <BUIContextV1.Provider value={value}>{children}</BUIContextV1.Provider>
+      <LegacyContext.Provider value={value}>{children}</LegacyContext.Provider>
     );
     const { result } = renderHook(() => useAnalytics(), { wrapper });
-
-    result.current.captureEvent('click', 'Legacy destination');
-    expect(captureV1Event).toHaveBeenCalledWith('click', 'Legacy destination');
-  });
-
-  it('delegates React Aria navigation created by the component', () => {
-    const componentNavigate = jest.fn();
-
-    render(
-      <MemoryRouter
-        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-      >
-        <BUIProvider>
-          <DelegatedLink onNavigate={componentNavigate} />
-        </BUIProvider>
-      </MemoryRouter>,
-    );
-
-    fireEvent.click(screen.getByRole('link', { name: 'Destination' }));
-
-    expect(componentNavigate).toHaveBeenCalledTimes(1);
-    expect(mockFallbackNavigate).not.toHaveBeenCalled();
-  });
-
-  it('uses fallback navigation for unrecognized React Aria router options', () => {
-    const linkProps: ComponentProps<typeof ReactAriaLink> = {
-      href: '/destination',
-      routerOptions: { replace: true },
-    };
-
-    render(
-      <MemoryRouter
-        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-      >
-        <BUIProvider>
-          <ReactAriaLink {...linkProps}>Destination</ReactAriaLink>
-        </BUIProvider>
-      </MemoryRouter>,
-    );
-
-    fireEvent.click(screen.getByRole('link', { name: 'Destination' }));
-
-    expect(mockFallbackNavigate).toHaveBeenCalledWith('/destination', {
-      replace: true,
-    });
+    result.current.captureEvent('click', 'Destination');
+    expect(captureEvent).toHaveBeenCalledWith('click', 'Destination');
   });
 });
-
-function DelegatedLink(props: { onNavigate: () => void }) {
-  const routing =
-    useVersionedContext<BUIContextVersions>('bui')?.atVersion(2)?.routing;
-  const routerOptions = useMemo(() => {
-    if (!routing) {
-      throw new Error('Expected BUI routing integration');
-    }
-    return routing.createRouterOptions(props.onNavigate, { replace: true });
-  }, [props.onNavigate, routing]);
-
-  return (
-    <ReactAriaLink href="/destination" routerOptions={routerOptions}>
-      Destination
-    </ReactAriaLink>
-  );
-}

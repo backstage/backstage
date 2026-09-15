@@ -15,30 +15,19 @@
  */
 
 import { fireEvent, render, screen } from '@testing-library/react';
-import { createVersionedValueMap } from '@backstage/version-bridge';
-import {
-  Link as RouterLink,
-  MemoryRouter,
-  Route,
-  Routes,
-  useHref,
-  useInRouterContext,
-  useLocation,
-  useNavigate,
-  useResolvedPath,
-} from 'react-router-dom';
-import { BUIProvider } from '../../provider';
-import { BUIContext } from '../../provider/BUIContext';
-import type { BUIRoutingIntegration } from '../../navigation/types';
+import { TestRouter } from '../../testUtils/TestRouter';
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { BUIProvider, type BUIRouter } from '../../provider';
+import { renderToString } from 'react-dom/server';
 import { HeaderNav } from './HeaderNav';
-import { useMemo, type ComponentProps, type PropsWithChildren } from 'react';
+import type { ComponentProps } from 'react';
 
 function renderHeaderNav(
   props: ComponentProps<typeof HeaderNav>,
   initialEntry = '/app/catalog',
 ) {
   return render(
-    <MemoryRouter
+    <TestRouter
       basename="/app"
       initialEntries={[initialEntry]}
       future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
@@ -54,7 +43,7 @@ function renderHeaderNav(
           }
         />
       </Routes>
-    </MemoryRouter>,
+    </TestRouter>,
   );
 }
 
@@ -63,6 +52,149 @@ function LocationStatus() {
 }
 
 describe('HeaderNav', () => {
+  it('requires an explicit host for routing and automatic active selection', () => {
+    render(
+      <MemoryRouter
+        basename="/app"
+        initialEntries={['/app/catalog/settings']}
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
+        <HeaderNav
+          tabs={[{ id: 'settings', label: 'Settings', href: 'settings' }]}
+        />
+      </MemoryRouter>,
+    );
+
+    const link = screen.getByRole('link', { name: 'Settings' });
+    expect(link).toHaveAttribute('href', 'settings');
+    expect(link).not.toHaveAttribute('aria-current');
+  });
+
+  it('selects the most specific host tab during server rendering', () => {
+    const html = renderToString(
+      <BUIProvider
+        useRouter={() => ({
+          navigate: () => {},
+          resolveHref: href => '/base/catalog/' + href,
+          pathname: '/base/catalog/settings/details',
+        })}
+      >
+        <HeaderNav
+          tabs={[
+            { id: 'catalog', label: 'Catalog', href: '.' },
+            { id: 'settings', label: 'Settings', href: 'settings' },
+          ]}
+        />
+      </BUIProvider>,
+    );
+    const markup = new DOMParser().parseFromString(html, 'text/html');
+    expect(markup.querySelector('a[aria-current="page"]')?.textContent).toBe(
+      'Settings',
+    );
+  });
+
+  it('detects the active tab through an injected router without React Router context', () => {
+    const router: BUIRouter = {
+      navigate: jest.fn(),
+      resolveHref: href => `/app${href}`,
+      pathname: '/app/catalog/settings/details',
+    };
+
+    render(
+      <BUIProvider useRouter={() => router}>
+        <HeaderNav
+          tabs={[
+            { id: 'overview', label: 'Overview', href: '/catalog/overview' },
+            { id: 'settings', label: 'Settings', href: '/catalog/settings' },
+            {
+              id: 'external-settings',
+              label: 'External settings',
+              href: 'https://example.com/catalog/settings',
+            },
+          ]}
+        />
+      </BUIProvider>,
+    );
+
+    expect(screen.getByRole('link', { name: 'Settings' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(screen.getByRole('link', { name: 'Overview' })).not.toHaveAttribute(
+      'aria-current',
+    );
+    expect(
+      screen.getByRole('link', { name: 'External settings' }),
+    ).not.toHaveAttribute('aria-current');
+  });
+
+  it('resolves relative flat tabs through the injected router when detecting the active tab', () => {
+    const router: BUIRouter = {
+      navigate: jest.fn(),
+      resolveHref: href =>
+        href.startsWith('/') ? `/app${href}` : `/app/catalog/${href}`,
+      pathname: '/app/catalog/settings/details',
+    };
+
+    render(
+      <BUIProvider useRouter={() => router}>
+        <HeaderNav
+          tabs={[
+            { id: 'overview', label: 'Overview', href: 'overview' },
+            { id: 'settings', label: 'Settings', href: 'settings' },
+          ]}
+        />
+      </BUIProvider>,
+    );
+
+    expect(screen.getByRole('link', { name: 'Settings' })).toHaveAttribute(
+      'href',
+      '/app/catalog/settings',
+    );
+    expect(screen.getByRole('link', { name: 'Settings' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(screen.getByRole('link', { name: 'Overview' })).not.toHaveAttribute(
+      'aria-current',
+    );
+  });
+
+  it('resolves relative grouped tabs through the injected router when detecting the active tab', async () => {
+    const router: BUIRouter = {
+      navigate: jest.fn(),
+      resolveHref: href =>
+        href.startsWith('/') ? `/app${href}` : `/app/catalog/${href}`,
+      pathname: '/app/catalog/docs/details',
+    };
+
+    render(
+      <BUIProvider useRouter={() => router}>
+        <HeaderNav
+          tabs={[
+            {
+              id: 'resources',
+              label: 'Resources',
+              items: [
+                { id: 'overview', label: 'Overview', href: 'overview' },
+                { id: 'docs', label: 'Docs', href: 'docs' },
+              ],
+            },
+          ]}
+        />
+      </BUIProvider>,
+    );
+
+    expect(screen.getByRole('button', { name: 'Resources' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Resources' }));
+    expect(
+      await screen.findByRole('menuitemradio', { name: 'Docs' }),
+    ).toHaveAttribute('href', '/app/catalog/docs');
+  });
+
   it('includes the router basename in flat tab hrefs', () => {
     renderHeaderNav({
       tabs: [
@@ -272,59 +404,4 @@ describe('HeaderNav', () => {
     expect(link).toHaveAttribute('aria-current', 'page');
     expect(navigation.style.getPropertyValue('--active-tab-opacity')).toBe('1');
   });
-
-  it('registers flat navigation with the selected routing integration', () => {
-    const createRouterOptions = jest.fn(() => ({ replace: true }));
-    render(
-      <MemoryRouter
-        basename="/app"
-        initialEntries={['/app/catalog']}
-        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-      >
-        <TrackingRoutingProvider createRouterOptions={createRouterOptions}>
-          <HeaderNav
-            tabs={[
-              {
-                id: 'overview',
-                label: 'Overview',
-                href: '/catalog/overview',
-              },
-            ]}
-            activeTabId={null}
-          />
-        </TrackingRoutingProvider>
-      </MemoryRouter>,
-    );
-
-    expect(screen.getByRole('link', { name: 'Overview' })).toHaveAttribute(
-      'href',
-      '/app/catalog/overview',
-    );
-    expect(createRouterOptions).toHaveBeenCalledTimes(1);
-  });
 });
-
-function TrackingRoutingProvider({
-  children,
-  createRouterOptions,
-}: PropsWithChildren<{
-  createRouterOptions: BUIRoutingIntegration['createRouterOptions'];
-}>) {
-  const routing = useMemo<BUIRoutingIntegration>(
-    () => ({
-      Link: RouterLink,
-      useHref,
-      useInRouterContext,
-      useLocation,
-      useNavigate,
-      useResolvedPath,
-      createRouterOptions,
-    }),
-    [createRouterOptions],
-  );
-  const value = useMemo(
-    () => createVersionedValueMap({ 1: {}, 2: { routing } }),
-    [routing],
-  );
-  return <BUIContext.Provider value={value}>{children}</BUIContext.Provider>;
-}

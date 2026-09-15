@@ -8,7 +8,10 @@
       "@backstage/plugin-app",
       "@backstage/plugin-app-backend",
       "@backstage/plugin-app-node",
-      "@backstage/plugin-app-react"
+      "@backstage/plugin-app-react",
+      "@backstage/plugin-app-react-router-v6",
+      "@backstage/plugin-app-react-router-v7",
+      "@backstage/plugin-app-tanstack-router"
     ]
   },
   "publishConfig": {
@@ -71,6 +74,7 @@
     "react-aria": "~3.48.0",
     "react-stately": "~3.46.0",
     "react-use": "^17.2.4",
+    "use-sync-external-store": "^1.7.0",
     "zen-observable": "^0.10.0",
     "zod": "^4.0.0"
   },
@@ -79,12 +83,14 @@
     "@backstage/dev-utils": "workspace:^",
     "@backstage/frontend-defaults": "workspace:^",
     "@backstage/frontend-test-utils": "workspace:^",
+    "@backstage/plugin-app-react-router-v6": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.0.0",
     "@types/react": "^18.0.0",
+    "@types/use-sync-external-store": "^1.7.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
     "react-router-dom": "^6.30.2"

@@ -42,10 +42,7 @@ import {
   TabPanel as AriaTabPanel,
   TabProps as AriaTabProps,
 } from 'react-aria-components';
-import {
-  useDefinition,
-  type UseDefinitionResult,
-} from '../../hooks/useDefinition';
+import { useDefinition } from '../../hooks/useDefinition';
 import {
   TabsDefinition,
   TabListDefinition,
@@ -53,11 +50,12 @@ import {
   TabPanelDefinition,
 } from './definition';
 import { getNodeText } from '../../analytics/getNodeText';
-import { useRoutingIntegration } from '../../navigation/useRouting';
+import { getBUIRouterPathname } from '../../provider/BUIRouter';
 import {
-  getReactAriaAnchorProps,
-  type AnchorNavigation,
-} from '../../navigation/useNavigation';
+  BUIRoutingProvider,
+  useBUIRouting,
+} from '../../navigation/BUIRoutingProvider';
+import { isBrowserOwnedHref } from '../../utils/linkUtils';
 
 const TabsContext = createContext<TabsContextValue | undefined>(undefined);
 
@@ -81,22 +79,14 @@ const TabSelectionContext = createContext<TabSelectionContextValue | null>(
 );
 
 /**
- * Strips query params and hash from a href, leaving only the pathname.
- * Tab matching always compares against location.pathname which never includes them.
- */
-const hrefPathname = (href: string) => href.split('?')[0].split('#')[0];
-
-/**
  * Utility function to determine if a tab should be active based on the matching strategy.
  * This follows the pattern used in WorkaroundNavLink from the sidebar.
  */
 const isTabActive = (
-  tabHref: string,
+  pathname: string,
   currentPathname: string,
   matchStrategy: 'exact' | 'prefix',
 ): boolean => {
-  const pathname = hrefPathname(tabHref);
-
   if (matchStrategy === 'exact') {
     return pathname === currentPathname;
   }
@@ -261,21 +251,23 @@ export const TabList = (props: TabListProps) => {
   });
 
   return (
-    <div className={classes.root}>
-      <AriaTabList
-        className={classes.tabList}
-        aria-label="Toolbar tabs"
-        {...restProps}
-      >
-        {enhancedChildren}
-      </AriaTabList>
-      <TabsIndicators
-        tabRefs={tabRefs}
-        tabsRef={tabsRef}
-        hoveredKey={hoveredKey}
-        prevHoveredKey={prevHoveredKey}
-      />
-    </div>
+    <BUIRoutingProvider>
+      <div className={classes.root}>
+        <AriaTabList
+          className={classes.tabList}
+          aria-label="Toolbar tabs"
+          {...restProps}
+        >
+          {enhancedChildren}
+        </AriaTabList>
+        <TabsIndicators
+          tabRefs={tabRefs}
+          tabsRef={tabsRef}
+          hoveredKey={hoveredKey}
+          prevHoveredKey={prevHoveredKey}
+        />
+      </div>
+    </BUIRoutingProvider>
   );
 };
 
@@ -285,21 +277,18 @@ export const TabList = (props: TabListProps) => {
  * Separated to avoid conditional hook usage in Tab component.
  * @internal
  */
-function RoutedTabEffects({
+function TabSelectionEffects({
   id,
-  href,
+  pathname,
+  targetPathname,
   matchStrategy = 'exact',
 }: {
   id: string;
-  href: string;
+  pathname: string;
+  targetPathname: string | undefined;
   matchStrategy?: 'exact' | 'prefix';
 }) {
   const selectionCtx = useContext(TabSelectionContext);
-  const routing = useRoutingIntegration({ fallback: true });
-  const location = routing.useLocation();
-  const resolvedPath = routing.useResolvedPath(href);
-
-  // Register as a routed tab (for controlled vs uncontrolled mode)
   useEffect(() => {
     if (selectionCtx) {
       selectionCtx.registerRoutedTab(id);
@@ -308,14 +297,10 @@ function RoutedTabEffects({
     return undefined;
   }, [id, selectionCtx]);
 
-  // Register as active tab when URL matches (for tab selection)
-  const isActive = isTabActive(
-    resolvedPath.pathname,
-    location.pathname,
-    matchStrategy,
-  );
-  const segmentCount = resolvedPath.pathname.split('/').filter(Boolean).length;
-
+  const isActive =
+    targetPathname !== undefined &&
+    isTabActive(targetPathname, pathname, matchStrategy);
+  const segmentCount = targetPathname?.split('/').filter(Boolean).length ?? 0;
   useEffect(() => {
     if (isActive && selectionCtx) {
       selectionCtx.registerActiveTab(id, segmentCount);
@@ -323,24 +308,23 @@ function RoutedTabEffects({
     }
     return undefined;
   }, [isActive, id, segmentCount, selectionCtx]);
-
   return null;
 }
 
-type TabViewProps = {
-  definitionResult: UseDefinitionResult<typeof TabDefinition, TabProps>;
-  navigation: AnchorNavigation;
-};
-
-const TabView = ({ definitionResult, navigation }: TabViewProps) => {
-  const { ownProps, restProps, analytics } = definitionResult;
+/**
+ * A component that renders a tab.
+ *
+ * @public
+ */
+export const Tab = (props: TabProps) => {
+  const { ownProps, restProps, analytics } = useDefinition(
+    TabDefinition,
+    props,
+  );
   const { classes, matchStrategy, id } = ownProps;
   const { href } = ownProps;
+  const router = useBUIRouting();
   const { setTabRef } = useTabsContext();
-  const navigationProps = getReactAriaAnchorProps(navigation, {
-    href,
-    routerOptions: restProps.routerOptions,
-  });
 
   const handlePress = () => {
     if (href) {
@@ -356,10 +340,11 @@ const TabView = ({ definitionResult, navigation }: TabViewProps) => {
 
   return (
     <>
-      {navigation.canMatchRoute && href && (
-        <RoutedTabEffects
+      {router && href && !isBrowserOwnedHref(href) && (
+        <TabSelectionEffects
           id={id as string}
-          href={href}
+          pathname={router.pathname}
+          targetPathname={getBUIRouterPathname(router.resolveHref(href))}
           matchStrategy={matchStrategy}
         />
       )}
@@ -367,35 +352,14 @@ const TabView = ({ definitionResult, navigation }: TabViewProps) => {
         id={id}
         className={classes.root}
         ref={el => setTabRef(id as string, el as HTMLDivElement)}
-        {...restProps}
-        {...navigationProps}
+        {...(restProps as AriaTabProps)}
+        href={href}
         onPress={e => {
           restProps.onPress?.(e);
           handlePress();
         }}
       />
     </>
-  );
-};
-
-/**
- * A component that renders a tab.
- *
- * @public
- */
-export const Tab = (props: TabProps) => {
-  const definitionResult = useDefinition(TabDefinition, props);
-  const Navigation = definitionResult.navigation;
-
-  return (
-    <Navigation
-      props={{
-        ...definitionResult.restProps,
-        href: definitionResult.ownProps.href,
-      }}
-      view={TabView}
-      viewProps={{ definitionResult }}
-    />
   );
 };
 

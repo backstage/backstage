@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { TestRouter } from '../../testUtils/TestRouter';
 import {
   act,
   fireEvent,
@@ -22,27 +23,14 @@ import {
   waitFor,
   within,
 } from '@testing-library/react';
-import { useMemo, useState, type PropsWithChildren } from 'react';
-import { createVersionedValueMap } from '@backstage/version-bridge';
-import {
-  Link as RouterLink,
-  MemoryRouter,
-  Route,
-  Routes,
-  useHref,
-  useInRouterContext,
-  useLocation,
-  useNavigate,
-  useResolvedPath,
-} from 'react-router-dom';
+import { useState } from 'react';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import type {
   AsyncListSource,
   IdentifiedOption,
 } from '../../types/selectableCollection';
 import { useAsyncList } from '../../hooks/useAsyncList';
 import { BUIProvider } from '../../provider';
-import { BUIContext } from '../../provider/BUIContext';
-import type { BUIRoutingIntegration } from '../../navigation/types';
 import { Select, SelectItem, SelectItemProfile, SelectItemText } from '.';
 
 function openSelect() {
@@ -222,7 +210,7 @@ describe('Select', () => {
 
   it('renders a linked item with the host basename and navigates client-side', () => {
     render(
-      <MemoryRouter
+      <TestRouter
         basename="/app"
         initialEntries={['/app/catalog']}
         future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
@@ -235,7 +223,7 @@ describe('Select', () => {
           </Select>
           <LocationStatus />
         </BUIProvider>
-      </MemoryRouter>,
+      </TestRouter>,
     );
 
     openSelect();
@@ -247,7 +235,7 @@ describe('Select', () => {
 
   it('routes a relative text preset from the component route with one basename', () => {
     render(
-      <MemoryRouter
+      <TestRouter
         basename="/app"
         initialEntries={['/app/catalog/entity']}
         future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
@@ -267,7 +255,7 @@ describe('Select', () => {
             />
           </Routes>
         </BUIProvider>
-      </MemoryRouter>,
+      </TestRouter>,
     );
 
     openSelect();
@@ -277,32 +265,6 @@ describe('Select', () => {
     expect(screen.getByRole('status')).toHaveTextContent(
       '/catalog/entity/docs',
     );
-  });
-
-  it('registers linked item navigation with the selected routing integration', () => {
-    const createRouterOptions = jest.fn(() => ({ replace: true }));
-    render(
-      <MemoryRouter
-        basename="/app"
-        initialEntries={['/app/catalog']}
-        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-      >
-        <TrackingRoutingProvider createRouterOptions={createRouterOptions}>
-          <Select aria-label="Destination">
-            <SelectItem id="docs" textValue="TechDocs" href="/catalog/docs">
-              TechDocs
-            </SelectItem>
-          </Select>
-        </TrackingRoutingProvider>
-      </MemoryRouter>,
-    );
-
-    openSelect();
-    expect(screen.getByRole('option', { name: 'TechDocs' })).toHaveAttribute(
-      'href',
-      '/app/catalog/docs',
-    );
-    expect(createRouterOptions).toHaveBeenCalledTimes(1);
   });
 
   it('renders normalized convenience options through the text preset', () => {
@@ -925,29 +887,4 @@ describe('Select', () => {
 
 function LocationStatus() {
   return <span role="status">{useLocation().pathname}</span>;
-}
-
-function TrackingRoutingProvider({
-  children,
-  createRouterOptions,
-}: PropsWithChildren<{
-  createRouterOptions: BUIRoutingIntegration['createRouterOptions'];
-}>) {
-  const routing = useMemo<BUIRoutingIntegration>(
-    () => ({
-      Link: RouterLink,
-      useHref,
-      useInRouterContext,
-      useLocation,
-      useNavigate,
-      useResolvedPath,
-      createRouterOptions,
-    }),
-    [createRouterOptions],
-  );
-  const value = useMemo(
-    () => createVersionedValueMap({ 1: {}, 2: { routing } }),
-    [routing],
-  );
-  return <BUIContext.Provider value={value}>{children}</BUIContext.Provider>;
 }

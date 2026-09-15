@@ -14,22 +14,11 @@
  * limitations under the License.
  */
 
-import { createVersionedValueMap } from '@backstage/version-bridge';
+import { TestRouter, useTestRouter } from '../../testUtils/TestRouter';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { useMemo, type PropsWithChildren } from 'react';
-import { RouterProvider } from 'react-aria-components';
-import {
-  Link as RouterLink,
-  MemoryRouter,
-  useHref,
-  useInRouterContext,
-  useLocation,
-  useNavigate,
-  useResolvedPath,
-} from 'react-router-dom';
-import type { BUIRoutingIntegration } from '../../navigation/types';
-import { useResolvedHref } from '../../hooks/useResolvedHref';
-import { BUIContext } from '../../provider/BUIContext';
+import type { PropsWithChildren } from 'react';
+
+import { BUIProvider } from '../../provider/BUIProvider';
 import {
   SearchAutocomplete,
   SearchAutocompleteItem,
@@ -38,14 +27,13 @@ import {
 describe('SearchAutocompleteItem links', () => {
   it('renders the host basename and delegates client-side navigation', async () => {
     const navigate = jest.fn();
-    const register = jest.fn();
     render(
-      <MemoryRouter
+      <TestRouter
         basename="/app"
         initialEntries={['/app/catalog']}
         future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
       >
-        <TrackingProvider navigate={navigate} register={register}>
+        <TrackingProvider navigate={navigate}>
           <SearchAutocomplete aria-label="Search" defaultOpen inputValue="doc">
             <SearchAutocompleteItem
               id="docs"
@@ -57,15 +45,13 @@ describe('SearchAutocompleteItem links', () => {
             </SearchAutocompleteItem>
           </SearchAutocomplete>
         </TrackingProvider>
-      </MemoryRouter>,
+      </TestRouter>,
     );
 
     const item = await screen.findByRole('option', { name: 'TechDocs' });
     expect(item).toHaveAttribute('href', '/app/catalog/docs');
     fireEvent.click(item);
-    const registeredOptions = register.mock.calls[0]?.[0];
-    expect(registeredOptions).toBeDefined();
-    expect(navigate).toHaveBeenCalledWith('/catalog/docs', registeredOptions);
+    expect(navigate).toHaveBeenCalledWith('/catalog/docs', { replace: true });
   });
 
   it('renders native links with their browser-owned href', async () => {
@@ -90,35 +76,9 @@ describe('SearchAutocompleteItem links', () => {
 function TrackingProvider({
   children,
   navigate,
-  register,
-}: PropsWithChildren<{
-  navigate: jest.Mock;
-  register: jest.Mock;
-}>) {
-  const routing = useMemo<BUIRoutingIntegration>(
-    () => ({
-      Link: RouterLink,
-      useHref,
-      useInRouterContext,
-      useLocation,
-      useNavigate,
-      useResolvedPath,
-      createRouterOptions(_action, options) {
-        const registered = { ...options };
-        register(registered);
-        return registered;
-      },
-    }),
-    [register],
-  );
-  const value = useMemo(
-    () => createVersionedValueMap({ 1: {}, 2: { routing } }),
-    [routing],
-  );
-
-  return (
-    <RouterProvider navigate={navigate} useHref={useResolvedHref}>
-      <BUIContext.Provider value={value}>{children}</BUIContext.Provider>
-    </RouterProvider>
-  );
+}: PropsWithChildren<{ navigate: jest.Mock }>) {
+  function useRouter() {
+    return { ...useTestRouter(), navigate };
+  }
+  return <BUIProvider useRouter={useRouter}>{children}</BUIProvider>;
 }

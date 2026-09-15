@@ -30,10 +30,10 @@ import {
   BreadcrumbEntry,
   useBreadcrumbEntries,
 } from '@backstage/frontend-plugin-api';
+import { normalizeBasePath, usePageMount } from '@internal/frontend';
 import { PluginHeader } from '@backstage/ui';
 import Button from '@material-ui/core/Button';
 import { useMemo } from 'react';
-import { useResolvedPath } from 'react-router-dom';
 
 export const Progress = SwappableComponentBlueprint.make({
   name: 'core-progress',
@@ -88,18 +88,22 @@ export const PageLayout = SwappableComponentBlueprint.make({
           tabs,
           children,
         } = props;
-        // TODO(Rugvip): Different solution to this path handling would be good
-        const parentPath = useResolvedPath('.').pathname.replace(/\/$/, '');
-        const resolvedTabs = useMemo(
+        // Breadcrumbs fall back to the framework-owned page mount.
+        const pageMount = usePageMount();
+        const parentPath = normalizeBasePath(pageMount?.basePath ?? '');
+        // Empty string titleLink is treated as unset (same as undefined) so the
+        // breadcrumb still points at the page mount path rather than "".
+        const breadcrumbHref =
+          titleLink !== undefined && titleLink !== ''
+            ? titleLink
+            : parentPath || '/';
+        const headerTabs = useMemo(
           () =>
             tabs?.map(tab => ({
               ...tab,
-              href: tab.href.startsWith('/')
-                ? tab.href
-                : `${parentPath}/${tab.href}`.replace(/\/{2,}/g, '/'),
               matchStrategy: 'prefix' as const,
             })),
-          [tabs, parentPath],
+          [tabs],
         );
 
         const { items: breadcrumbs } = useBreadcrumbEntries();
@@ -115,7 +119,7 @@ export const PageLayout = SwappableComponentBlueprint.make({
               icon={icon}
               titleLink={titleLink}
               breadcrumbs={breadcrumbs}
-              tabs={resolvedTabs}
+              tabs={headerTabs}
               customActions={headerActions}
             />
             {children}
@@ -128,9 +132,7 @@ export const PageLayout = SwappableComponentBlueprint.make({
         }
 
         return (
-          <BreadcrumbEntry
-            entry={{ label: title, href: titleLink ?? (parentPath || '/') }}
-          >
+          <BreadcrumbEntry entry={{ label: title, href: breadcrumbHref }}>
             {content}
           </BreadcrumbEntry>
         );

@@ -273,7 +273,141 @@ describe('MyComponent', () => {
 });
 ```
 
+## Navigation and app history
+
+`renderInTestApp` and `renderTestApp` set up an in-memory app history and return
+it as `appHistory` on the render result. Use it to move the test app between
+locations and to assert on where it ended up:
+
+```tsx
+import { act, screen } from '@testing-library/react';
+import { renderTestApp } from '@backstage/frontend-test-utils';
+import { toolsPage } from './alpha';
+
+describe('Tools page', () => {
+  it('should show the details view when navigating to it', async () => {
+    const { appHistory } = renderTestApp({
+      extensions: [toolsPage],
+      initialRouteEntries: ['/tools'],
+    });
+
+    expect(await screen.findByText('All tools')).toBeInTheDocument();
+
+    await act(async () => {
+      appHistory.navigate('/tools/details');
+    });
+
+    expect(await screen.findByText('Tool details')).toBeInTheDocument();
+  });
+});
+```
+
+`appHistory.navigate` also takes a number, so `appHistory.navigate(-1)` walks
+back through history the way a browser back button does. The current location is
+readable as `appHistory.location`, observable through `appHistory.location$`, and
+`appHistory.createHref` resolves a path the way a rendered link would.
+
+Reach for this harness whenever the behavior under test depends on routing. If
+you mock `AppHistoryApi` yourself, keep to its four members: `navigate`,
+`location`, `location$`, and `createHref`.
+
+## Routing library context in tests
+
+`renderInTestApp` renders the element as a **page**. Registered page mounts
+receive the same implicit React Router v6 compatibility as production. Test
+parameters, relative links and nested content before and after adding an explicit
+adapter. Development warnings identify consumers of the implicit fallback.
+
+There are three answers, and which one is right depends on what the component
+actually needs.
+
+**Prefer framework routing.** A component that only reads route parameters and
+builds links is asking for less than a router. `useRouteRef`,
+`useRouteRefParams` and `useHref` from `@backstage/frontend-plugin-api` answer
+from the framework and need no adapter on any page:
+
+```tsx
+import { useRouteRefParams } from '@backstage/frontend-plugin-api';
+import { detailsRouteRef } from './routes';
+
+const { name } = useRouteRefParams(detailsRouteRef);
+```
+
+**Mirror the page's adapter** when the content genuinely routes with its
+library. Pass the same component the page renders in its `loader`, together
+with the `mountPath` the page is registered at:
+
+```tsx
+import { renderInTestApp } from '@backstage/frontend-test-utils';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+
+await renderInTestApp(<EntityHeader />, {
+  router: ReactRouterV6PageRouter,
+  mountPath: '/catalog/:namespace/:kind/:name',
+  initialRouteEntries: ['/catalog/default/component/my-entity'],
+});
+```
+
+Without `mountPath` the element is treated as a page mounted at the app root.
+With it, page-relative targets — a tab href, a `..` climb — resolve against the
+pattern the way they would in a real app, and `useRouteRefParams` binds the
+params the pattern names.
+
+A component that wraps _itself_ in an adapter, which is what a plugin shipping
+for both frontend systems does, needs no `router` option here. It also needs no
+app around it in a plain `render()` test: an adapter with no page mount or no
+app history renders its children untouched.
+
+**Render app chrome as chrome.** A sidebar item, an error page, anything
+attached to `app/root` is not a page: it renders above every page and inside
+the app's own root React Router context, so it keeps one here too.
+
+```tsx
+await renderInTestApp(<MySidebarItem />, {
+  renderAs: 'chrome',
+  initialRouteEntries: ['/catalog/default/component/my-entity'],
+});
+```
+
+`renderAs: 'chrome'` is a different question, not a milder `router`. Do not
+reach for `router` to give chrome a context: that is a page adapter, and it
+would hand chrome a page-scoped route context that no chrome has in a real app.
+`mountPath` does not apply to chrome either, since chrome is not mounted at a
+route.
+
+### Verify the page's routing behavior
+
+`renderTestApp` renders the real app wiring and the adapters declared by each
+page. Test a plugin through its production exports at a route below the app
+root. Assert the expected route parameters, relative link destinations and
+content after navigation. These observations can detect a missing adapter;
+a test that only asserts that the page rendered cannot establish that routing
+works.
+
+For isolated content tests, `renderInTestApp` can supply the adapter through
+its `router` option. Keep at least one test of the production page declaration
+when that declaration is responsible for installing the adapter.
+
+Check shared dependencies as well as direct routing-library imports. A
+provider may read location, and a shared link may use React Router's context.
+The root v6 projection supports shared UI, but does not substitute for a
+page's own match.
+
+For guidance on navigation that crosses page or plugin boundaries, see
+[Scoped plugin routing](../architecture/36-routes.md#scoped-plugin-routing), and
+for the page side of the same decision see
+[Choose a router for a page](./10-page-routers.md).
+
 ## Extension tree snapshots
+
+For an isolated page and its attached sub-pages, pass
+`createExtensionTester(page).add(subPage).reactElement()` to `renderInTestApp`.
+The tester uses the same route matching as the app, retaining the extension
+tree's node identities. The URL selects the active sub-page, and navigating to
+the parent index redirects to the first sub-page while preserving the query
+and fragment. Set `mountPath` to test a different mounting pattern; when it is
+omitted, the subject is mounted at the app root. Use `renderTestApp` to test the
+plugin's complete production route registration.
 
 The `snapshot()` method on `ExtensionTester` returns a tree-shaped representation of the resolved extension hierarchy, which is convenient to use with Jest's `toMatchInlineSnapshot()` for verifying extension structure in tests.
 

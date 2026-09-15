@@ -98,10 +98,20 @@ export type CreateSpecializedAppOptions = {
 export function createSpecializedApp(
   options?: CreateSpecializedAppOptions,
 ): FinalizedSpecializedApp {
+  const internalOptions = options as
+    | CreateSpecializedAppInternalOptions
+    | undefined;
   const sessionState = options?.advanced?.apis
     ? createSessionStateFromApis(options.advanced.apis)
     : undefined;
 
+  // The prepared app is discarded once it has been finalized, so the internal
+  // options are forwarded rather than dropped: `onDispose` is the only handle
+  // left on the app history's window `popstate` listener, which otherwise stays
+  // attached for the life of the process. This stays off the public options
+  // type — a caller reaching for teardown from this deprecated entry point
+  // opts in the same way the test renderers do, and the supported way to own an
+  // app's lifetime is `prepareSpecializedApp`.
   return prepareSpecializedApp({
     features: options?.features,
     config: options?.config,
@@ -110,5 +120,6 @@ export function createSpecializedApp(
       ...options?.advanced,
       sessionState,
     },
-  }).finalize();
+    __internal: internalOptions?.__internal,
+  } as CreateSpecializedAppInternalOptions).finalize();
 }

@@ -15,12 +15,37 @@
  */
 
 import { useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { APP_ROOT_PATH, useAppHistoryLocation } from '@internal/frontend';
 import { AnyRouteRefParams } from './types';
 import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';
 import { ExternalRouteRef } from './ExternalRouteRef';
 import { RouteFunc, routeResolutionApiRef, useApi } from '../apis';
+import { useApiHolder } from '../apis/system';
+import { appHistoryApiRef } from './AppHistoryApi';
+import { LocationContext, useRouterContext } from './reactRouterContext';
+
+/**
+ * The pathname a route ref is resolved relative to.
+ *
+ * The app history is the framework's sole location authority, and a framework
+ * page is routerless — React Router's own `useLocation` throws there, so it
+ * cannot be what this hook reads. Its `LocationContext` is read directly
+ * instead of through its hooks, which is what keeps the old frontend system
+ * answering while a routerless page degrades to the app root rather than
+ * crashing.
+ */
+function useSourcePath(): string {
+  const appHistory = useApiHolder().get(appHistoryApiRef);
+  // Subscribes to the app history, so a route resolved against the current
+  // page is recomputed when the app navigates.
+  const appLocation = useAppHistoryLocation(appHistory);
+  const routerLocation = useRouterContext(LocationContext)?.location;
+
+  return (
+    appLocation?.pathname ?? routerLocation?.pathname ?? APP_ROOT_PATH.pathname
+  );
+}
 
 /**
  * React hook for constructing URLs to routes.
@@ -39,12 +64,12 @@ export function useRouteRef<TParams extends AnyRouteRefParams>(
     | SubRouteRef<TParams>
     | ExternalRouteRef<TParams>,
 ): RouteFunc<TParams> | undefined {
-  const { pathname } = useLocation();
+  const sourcePath = useSourcePath();
   const routeResolutionApi = useApi(routeResolutionApiRef);
 
   const routeFunc = useMemo(
-    () => routeResolutionApi.resolve(routeRef, { sourcePath: pathname }),
-    [routeResolutionApi, routeRef, pathname],
+    () => routeResolutionApi.resolve(routeRef, { sourcePath }),
+    [routeResolutionApi, routeRef, sourcePath],
   );
 
   return routeFunc;

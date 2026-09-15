@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { BUIRouterOptions } from '../../provider/BUIRouter';
 import type {
   ListBoxItemProps as AriaListBoxItemProps,
   PopoverProps as AriaPopoverProps,
@@ -100,5 +101,8 @@ export interface SearchAutocompleteItemProps
   extends SearchAutocompleteItemOwnProps,
     Omit<
       AriaListBoxItemProps,
-      keyof SearchAutocompleteItemOwnProps | 'render'
-    > {}
+      keyof SearchAutocompleteItemOwnProps | 'render' | 'routerOptions'
+    > {
+  /** Options passed to the router configured on BUIProvider. */
+  routerOptions?: BUIRouterOptions;
+}

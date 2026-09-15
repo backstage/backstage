@@ -15,12 +15,15 @@
  */
 
 import { useEffect } from 'react';
-import { matchRoutes, useLocation } from 'react-router-dom';
+import { matchRouteRefs } from './matchRouteRefs';
 import {
   useAnalytics,
   AnalyticsContext,
   AnalyticsEventAttributes,
+  appHistoryApiRef,
+  useApi,
 } from '@backstage/frontend-plugin-api';
+import { useAppHistoryLocation } from '@internal/frontend';
 import { BackstageRouteObject } from './types';
 
 /**
@@ -33,15 +36,15 @@ const getExtensionContext = (
 ) => {
   try {
     // Find matching routes for the given path name.
-    const matches = matchRoutes(routes, { pathname });
+    const matches = matchRouteRefs(routes, pathname);
 
     // Of the matching routes, get the last (e.g. most specific) instance of
     // the BackstageRouteObject that contains a routeRef. Filtering by routeRef
     // ensures subRouteRefs are aligned to their parent routes' context.
     const routeMatch = matches
-      ?.filter(match => match?.route.routeRefs?.size > 0)
+      ?.filter(match => match?.routeObject.routeRefs?.size > 0)
       .pop();
-    const routeObject = routeMatch?.route;
+    const routeObject = routeMatch?.routeObject;
 
     // If there is no route object, then allow inheritance of default context.
     if (!routeObject) {
@@ -109,7 +112,11 @@ export const RouteTracker = ({
 }: {
   routeObjects: BackstageRouteObject[];
 }) => {
-  const { pathname, search, hash } = useLocation();
+  // The app history is always registered where the tracker renders, so the
+  // subscription always has a location to report.
+  const { pathname, search, hash } = useAppHistoryLocation(
+    useApi(appHistoryApiRef),
+  )!;
 
   const { params, ...attributes } = getExtensionContext(
     pathname,
