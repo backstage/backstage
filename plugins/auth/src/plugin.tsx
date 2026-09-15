@@ -17,13 +17,22 @@ import {
   createFrontendPlugin,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { rootRouteRef } from './routes';
 
 export const AuthPage = PageBlueprint.make({
   params: {
     path: '/oauth2',
     routeRef: rootRouteRef,
-    loader: () => import('./components/Router').then(m => <m.Router />),
+    // The page's own content is a React Router v6 `<Routes>` tree, and the
+    // consent page reads its params with React Router's `useParams`, so the
+    // page declares the routing library it uses.
+    loader: () =>
+      import('./components/Router').then(m => (
+        <ReactRouterV6PageRouter>
+          <m.Router />
+        </ReactRouterV6PageRouter>
+      )),
   },
 });
 

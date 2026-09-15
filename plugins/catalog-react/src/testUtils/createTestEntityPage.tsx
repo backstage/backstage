@@ -24,6 +24,7 @@ import {
   useApiHolder,
 } from '@backstage/frontend-plugin-api';
 import { Routes, Route } from 'react-router-dom';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { EntityProvider } from '../hooks/useEntity';
 import {
   EntityCardBlueprint,
@@ -159,31 +160,39 @@ export function createTestEntityPage(
             return <div data-testid="empty-entity-page" />;
           }
 
+          // Stands in for the real catalog entity page, which declares this
+          // adapter in its own loader. Without it third-party entity content
+          // that uses React Router would fail here while working in the app —
+          // a worse false signal than the one the strictness is here to
+          // remove — and this page's own `<Routes>` below would have nothing
+          // to match against.
           return (
-            <MockEntityApiProvider entity={entity}>
-              <EntityProvider entity={entity}>
-                {cards.map((card, index) => (
-                  <Fragment key={index}>{card.element}</Fragment>
-                ))}
-                {contents.length === 1 && contents[0].element}
-                {contents.length > 1 && (
-                  <Routes>
-                    {contents.map(content => (
-                      <Route
-                        key={content.path}
-                        path={
-                          content.path === '/'
-                            ? '/'
-                            : `${content.path.replace(/^\//, '')}/*`
-                        }
-                        element={content.element}
-                      />
-                    ))}
-                    <Route path="*" element={contents[0].element} />
-                  </Routes>
-                )}
-              </EntityProvider>
-            </MockEntityApiProvider>
+            <ReactRouterV6PageRouter>
+              <MockEntityApiProvider entity={entity}>
+                <EntityProvider entity={entity}>
+                  {cards.map((card, index) => (
+                    <Fragment key={index}>{card.element}</Fragment>
+                  ))}
+                  {contents.length === 1 && contents[0].element}
+                  {contents.length > 1 && (
+                    <Routes>
+                      {contents.map(content => (
+                        <Route
+                          key={content.path}
+                          path={
+                            content.path === '/'
+                              ? '/'
+                              : `${content.path.replace(/^\//, '')}/*`
+                          }
+                          element={content.element}
+                        />
+                      ))}
+                      <Route path="*" element={contents[0].element} />
+                    </Routes>
+                  )}
+                </EntityProvider>
+              </MockEntityApiProvider>
+            </ReactRouterV6PageRouter>
           );
         },
       });

@@ -16,9 +16,11 @@
 
 import { screen, waitFor } from '@testing-library/react';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
+import { createMockAppHistory } from '@backstage/frontend-test-utils';
 import userEvent from '@testing-library/user-event';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
 import { rootRouteRef } from '../../plugin';
 import {
   searchApiRef,
@@ -29,11 +31,6 @@ import { SearchModal } from './SearchModal';
 
 const navigate = jest.fn();
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => navigate,
-}));
-
 describe('SearchModal', () => {
   const configApiMock = new ConfigReader({ app: { title: 'Mock app' } });
   const searchApiMock = { query: jest.fn().mockResolvedValue({ results: [] }) };
@@ -41,6 +38,7 @@ describe('SearchModal', () => {
   const apiRegistry = TestApiRegistry.from(
     [configApiRef, configApiMock],
     [searchApiRef, searchApiMock],
+    [appHistoryApiRef, createMockAppHistory({ navigate })],
   );
 
   beforeEach(() => {
@@ -200,7 +198,33 @@ describe('SearchModal', () => {
     await userEvent.clear(input);
     await userEvent.type(input, 'new term{enter}');
 
-    expect(navigate).toHaveBeenCalledWith('/search?query=new term');
+    expect(navigate).toHaveBeenCalledWith(
+      '/search?query=new%20term',
+      undefined,
+    );
+  });
+
+  it('encodes the search term so protocol-like queries stay navigable', async () => {
+    await renderInTestApp(
+      <ApiProvider apis={apiRegistry}>
+        <SearchModal open hidden={false} toggleModal={toggleModal} />
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/search': rootRouteRef,
+        },
+      },
+    );
+
+    const input = screen.getByLabelText<HTMLInputElement>('Search');
+    await userEvent.type(input, 'https://github.com/backstage{enter}');
+
+    // The app history rejects any target containing '://', so the term has to
+    // be percent-encoded rather than interpolated raw.
+    expect(navigate).toHaveBeenCalledWith(
+      '/search?query=https%3A%2F%2Fgithub.com%2Fbackstage',
+      undefined,
+    );
   });
 
   it('should navigate with correct search terms to full results', async () => {
@@ -234,7 +258,7 @@ describe('SearchModal', () => {
     });
     await userEvent.click(fullResultsBtn);
 
-    expect(navigate).toHaveBeenCalledWith('/search?query=term');
+    expect(navigate).toHaveBeenCalledWith('/search?query=term', undefined);
   });
 
   it('should completely unmount the Dialog from DOM when open prop is false', async () => {

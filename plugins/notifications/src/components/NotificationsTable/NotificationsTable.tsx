@@ -50,6 +50,30 @@ import styles from './NotificationsTable.module.css';
 
 const ThrottleDelayMs = 1000;
 
+/**
+ * Anchors a backend-supplied notification link to the app root.
+ *
+ * `payload.link` is typed as a bare `string` and the API accepts `/catalog/x`
+ * and `catalog/x` as two spellings of the same target: the backend validator
+ * in `notifications-backend`'s router and the email processor both strip a
+ * leading slash and resolve the rest against `app.baseUrl`, and the sidebar
+ * item hands the raw value to `window.open`, which resolves it against the
+ * document root. React Router is the one consumer that would disagree — it
+ * resolves a bare relative target against the mount of the page rendering it,
+ * so on `/notifications` `catalog/x` would become `/notifications/catalog/x`.
+ * Anchoring here keeps every consumer on the one meaning the API defines.
+ *
+ * Absolute paths and fully-qualified URLs are returned untouched; the latter
+ * are detected the same way `@backstage/core-components`' `Link` detects them,
+ * so they keep taking its external `<a>` branch.
+ */
+function toAppRootLink(link: string): string {
+  if (link.startsWith('/') || /^([a-z+.-]+):/i.test(link)) {
+    return link;
+  }
+  return `/${link}`;
+}
+
 /** @public */
 export type NotificationsTableProps = Pick<
   TableProps,
@@ -247,7 +271,7 @@ export const NotificationsTable = ({
                   <Text variant="body-medium">
                     {notification.payload.link ? (
                       <Link
-                        to={notification.payload.link}
+                        to={toAppRootLink(notification.payload.link)}
                         onClick={() => {
                           if (markAsReadOnLinkOpen && !notification.read) {
                             onSwitchReadStatus([notification.id], true);

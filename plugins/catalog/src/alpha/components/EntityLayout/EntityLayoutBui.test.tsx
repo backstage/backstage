@@ -17,6 +17,7 @@
 import { ComponentType } from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/frontend-test-utils';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { Entity } from '@backstage/catalog-model';
 import {
   AsyncEntityProvider,
@@ -87,6 +88,10 @@ async function renderLayout(options: {
         app: { title: 'Custom app' },
         backend: { baseUrl: 'http://localhost:7000' },
       },
+      // Mirrors the adapter the catalog entity page declares in its loader:
+      // `EntityLayoutBui` reads `useSearchParams` and `EntityTabs` picks the
+      // showing tab with `<Routes>`.
+      router: ReactRouterV6PageRouter,
       mountPath: '/catalog/:namespace/:kind/:name/*',
       initialRouteEntries: [
         `/catalog/default/component/artist-lookup${options.path ?? ''}`,

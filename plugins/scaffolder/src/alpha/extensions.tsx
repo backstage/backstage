@@ -41,6 +41,7 @@ import {
   scaffolderApiRef,
   TemplateGroupFilter,
 } from '@backstage/plugin-scaffolder-react';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { ScaffolderClient } from '../api';
 
 export const scaffolderPage = PageBlueprint.makeWithOverrides({
@@ -93,15 +94,24 @@ export const scaffolderTemplatesSubPage = SubPageBlueprint.makeWithOverrides({
       loader: async () => {
         const formFields = (await formFieldsApi?.loadFormFields()) ?? [];
 
+        // The sub-page routes with React Router v6: it picks between the
+        // template list and the wizard with its own `<Routes>`, and the wizard
+        // reads the selected template with `useRouteRefParams` from
+        // `@backstage/core-plugin-api`, which is still React Router's
+        // `useParams`. Declared on the sub-page rather than on the page above,
+        // because the sub-page's own mount is what those routes are relative
+        // to.
         return import('./components/TemplatesSubPage').then(m => (
-          <m.TemplatesSubPage
-            formFields={formFields}
-            groups={groups}
-            templateFilter={templateFilter}
-            formProps={{
-              EXPERIMENTAL_theme: config.enableBackstageUi ? 'bui' : 'mui',
-            }}
-          />
+          <ReactRouterV6PageRouter>
+            <m.TemplatesSubPage
+              formFields={formFields}
+              groups={groups}
+              templateFilter={templateFilter}
+              formProps={{
+                EXPERIMENTAL_theme: config.enableBackstageUi ? 'bui' : 'mui',
+              }}
+            />
+          </ReactRouterV6PageRouter>
         ));
       },
     });
@@ -131,9 +141,11 @@ export const scaffolderTasksSubPage = SubPageBlueprint.makeWithOverrides({
           }),
         );
         return import('./components/TasksSubPage').then(m => (
-          <m.TasksSubPage
-            templateOutputsComponents={templateOutputsComponents}
-          />
+          <ReactRouterV6PageRouter>
+            <m.TasksSubPage
+              templateOutputsComponents={templateOutputsComponents}
+            />
+          </ReactRouterV6PageRouter>
         ));
       },
     });
@@ -145,14 +157,26 @@ export const scaffolderActionsSubPage = SubPageBlueprint.make({
   params: {
     path: 'actions',
     title: 'Actions',
+    // `ActionPageContent` renders each selected action's description through
+    // `MarkdownContent`, which renders `Link` from
+    // `@backstage/core-components` for every anchor in the markdown, and that
+    // `Link` renders react-router's `Link` for any href without a URL scheme.
+    // The `useRouteRef` calls elsewhere in that module belong to the legacy
+    // full-page `ActionsPage`, which this loader never renders. The framework
+    // provides no routing library context at page depth, so the sub-page
+    // declares the one it uses. Action descriptions carry app-absolute or
+    // in-page targets, so this needs a router to exist rather than needing
+    // this particular scope.
     loader: () =>
       Promise.all([
         import('../components/ActionsPage'),
         import('@backstage/core-components'),
       ]).then(([m, { Content }]) => (
-        <Content>
-          <m.ActionPageContent />
-        </Content>
+        <ReactRouterV6PageRouter>
+          <Content>
+            <m.ActionPageContent />
+          </Content>
+        </ReactRouterV6PageRouter>
       )),
   },
 });
@@ -162,8 +186,14 @@ export const scaffolderEditorSubPage = SubPageBlueprint.make({
   params: {
     path: 'edit',
     title: 'Template Editor',
+    // Routes between the editor's own screens with `<Routes>` and moves
+    // between them with React Router's `useNavigate`.
     loader: () =>
-      import('./components/EditorSubPage').then(m => <m.EditorSubPage />),
+      import('./components/EditorSubPage').then(m => (
+        <ReactRouterV6PageRouter>
+          <m.EditorSubPage />
+        </ReactRouterV6PageRouter>
+      )),
   },
 });
 
@@ -172,14 +202,22 @@ export const scaffolderTemplatingExtensionsSubPage = SubPageBlueprint.make({
   params: {
     path: 'templating-extensions',
     title: 'Templating Extensions',
+    // Resolves its own deep-link anchors with `useRouteRef` from
+    // `@backstage/core-plugin-api`, which is still React Router's
+    // `useLocation`, and renders them through `Link` from
+    // `@backstage/core-components`, which is React Router's own `Link`. With
+    // `linkLocal` those links stay in-app, so they take the router branch
+    // rather than the plain `<a>` one.
     loader: () =>
       Promise.all([
         import('../components/TemplatingExtensionsPage'),
         import('@backstage/core-components'),
       ]).then(([m, { Content }]) => (
-        <Content>
-          <m.TemplatingExtensionsPageContent linkLocal />
-        </Content>
+        <ReactRouterV6PageRouter>
+          <Content>
+            <m.TemplatingExtensionsPageContent linkLocal />
+          </Content>
+        </ReactRouterV6PageRouter>
       )),
   },
 });

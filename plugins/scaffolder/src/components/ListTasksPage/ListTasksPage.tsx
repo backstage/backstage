@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
+
 import {
   Content,
   EmptyState,
@@ -45,7 +48,6 @@ import {
   templatingExtensionsRouteRef,
 } from '../../routes';
 import { ScaffolderPageContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
-import { useNavigate } from 'react-router-dom';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
 
@@ -173,7 +175,7 @@ export const ListTaskPageContent = (props: MyTaskPageProps) => {
 };
 
 export const ListTasksPage = (props: MyTaskPageProps) => {
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const editorLink = useRouteRef(editRouteRef);
   const actionsLink = useRouteRef(actionsRouteRef);
   const createLink = useRouteRef(rootRouteRef);

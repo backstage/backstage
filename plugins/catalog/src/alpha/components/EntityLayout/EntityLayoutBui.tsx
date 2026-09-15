@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { ComponentProps, ComponentType, ReactNode, useCallback } from 'react';
+import {
+  ComponentProps,
+  ComponentType,
+  ReactNode,
+  Suspense,
+  useCallback,
+} from 'react';
 import { Helmet } from 'react-helmet';
 import { useSearchParams } from 'react-router-dom';
 import { Alert, Container } from '@backstage/ui';
@@ -115,7 +121,15 @@ function EntityLayoutContent(props: {
       </Container>
     );
   } else if (entity) {
-    content = <Container>{props.content ?? <NotFoundErrorPage />}</Container>;
+    content = (
+      <Container>
+        {props.content ?? (
+          <Suspense fallback={<Progress />}>
+            <NotFoundErrorPage />
+          </Suspense>
+        )}
+      </Container>
+    );
   } else if (!loading) {
     content = (
       <Container>

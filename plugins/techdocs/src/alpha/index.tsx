@@ -51,6 +51,7 @@ import {
   techdocsStorageApiRef,
 } from '@backstage/plugin-techdocs-react';
 
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { useTechdocsReaderIconLinkProps } from './hooks/useTechdocsReaderIconLinkProps';
 import { DocsIcon } from '@backstage/core-components';
 
@@ -150,9 +151,20 @@ const techDocsPage = PageBlueprint.makeWithOverrides({
       routeRef: rootRouteRef,
       title: 'Docs',
       icon: <RiArticleLine />,
+      // The index routes with React Router v6 in three places, all reading
+      // app-absolute targets rather than page-relative ones: `EntityListProvider`
+      // reads the catalog filters out of the query string with `useLocation`,
+      // `EntityListDocsTable` resolves the reader link through `useRouteRef`
+      // from `@backstage/core-plugin-api`, which reads `useLocation` before it
+      // resolves anything, and the default name column renders a `Link` from
+      // `@backstage/core-components`, which is React Router's own `Link`. The
+      // framework provides no routing library context at page depth, so the
+      // page declares the one it uses.
       loader: () =>
         import('./components/TechDocsIndexPageContent').then(m => (
-          <m.TechDocsIndexPageContent initialFilter={config.initialFilter} />
+          <ReactRouterV6PageRouter>
+            <m.TechDocsIndexPageContent initialFilter={config.initialFilter} />
+          </ReactRouterV6PageRouter>
         )),
     });
   },
@@ -189,11 +201,13 @@ const techDocsReaderPage = PageBlueprint.makeWithOverrides({
           './components/TechDocsReaderPage'
         );
         return (
-          <TechDocsReaderPage
-            addonOptions={addonOptions}
-            withSearch={!config.withoutSearch}
-            withHeader={!config.withoutHeader}
-          />
+          <ReactRouterV6PageRouter>
+            <TechDocsReaderPage
+              addonOptions={addonOptions}
+              withSearch={!config.withoutSearch}
+              withHeader={!config.withoutHeader}
+            />
+          </ReactRouterV6PageRouter>
         );
       },
     });

@@ -26,6 +26,7 @@ import {
 import { screen } from '@testing-library/react';
 import { convertLegacyEntityCardExtension } from './convertLegacyEntityCardExtension';
 import { convertLegacyRouteRef } from '@backstage/core-compat-api';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { EntityCardBlueprint } from '../blueprints';
 
 const routeRef = createLegacyRouteRef({ id: 'test' });
@@ -53,6 +54,12 @@ describe('convertLegacyEntityCardExtension', () => {
     expect(tester.query(converted).node.spec.id).toBe('entity-card:example');
 
     await renderInTestApp(tester.reactElement(), {
+      // Legacy entity content and cards are React Router v6 by origin:
+      // `createRoutableExtension` calls `useRouteRef` from
+      // `@backstage/core-plugin-api`, which reads `useLocation`. In an app they
+      // get that context from the catalog entity page, which declares the
+      // adapter in its own loader; rendered standalone here, the test names it.
+      router: ReactRouterV6PageRouter,
       mountedRoutes: {
         '/': convertLegacyRouteRef(routeRef),
       },
@@ -89,6 +96,12 @@ describe('convertLegacyEntityCardExtension', () => {
     expect(tester.query(converted).node.spec.id).toBe('entity-card:other');
 
     await renderInTestApp(tester.reactElement(), {
+      // Legacy entity content and cards are React Router v6 by origin:
+      // `createRoutableExtension` calls `useRouteRef` from
+      // `@backstage/core-plugin-api`, which reads `useLocation`. In an app they
+      // get that context from the catalog entity page, which declares the
+      // adapter in its own loader; rendered standalone here, the test names it.
+      router: ReactRouterV6PageRouter,
       mountedRoutes: {
         '/': convertLegacyRouteRef(routeRef),
       },
@@ -144,6 +157,12 @@ describe('convertLegacyEntityCardExtension', () => {
     expect(tester.query(converted).node.spec.id).toBe('entity-card:example');
 
     await renderInTestApp(tester.reactElement(), {
+      // Legacy entity content and cards are React Router v6 by origin:
+      // `createRoutableExtension` calls `useRouteRef` from
+      // `@backstage/core-plugin-api`, which reads `useLocation`. In an app they
+      // get that context from the catalog entity page, which declares the
+      // adapter in its own loader; rendered standalone here, the test names it.
+      router: ReactRouterV6PageRouter,
       mountedRoutes: {
         '/': convertLegacyRouteRef(routeRef),
       },

@@ -28,6 +28,7 @@ import {
   DefaultCatalogGraphApi,
   Direction,
 } from '@backstage/plugin-catalog-graph';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 
 const CatalogGraphEntityCard = EntityCardBlueprint.makeWithOverrides({
   name: 'relations',
@@ -78,9 +79,17 @@ const CatalogGraphPage = PageBlueprint.makeWithOverrides({
     return originalFactory({
       path: '/catalog-graph',
       routeRef: catalogGraphRouteRef,
+      // The graph keeps its whole filter state in the query string:
+      // `useCatalogGraphPage` reads it with `useLocation` and writes it back
+      // with `useNavigate`, on every filter change. The framework provides no
+      // routing library context at page depth, so the page declares the one it
+      // uses rather than reading whichever context the app chrome happens to
+      // leave above it.
       loader: () =>
         import('./components/CatalogGraphPage').then(m => (
-          <m.CatalogGraphPage {...config} initialState={config} />
+          <ReactRouterV6PageRouter>
+            <m.CatalogGraphPage {...config} initialState={config} />
+          </ReactRouterV6PageRouter>
         )),
     });
   },
