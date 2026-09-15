@@ -123,8 +123,6 @@ describe('HistoryBackend', () => {
         hash: '',
         state: { from: 'test' },
       });
-
-      history.dispose();
     });
 
     it('should read pre-existing window.history state', () => {
@@ -132,19 +130,18 @@ describe('HistoryBackend', () => {
       const history = createWindowHistoryBackend();
 
       expect(history.getLocation().state).toEqual({ legacy: true });
-      history.dispose();
     });
 
     it('should notify on popstate', () => {
       const history = createWindowHistoryBackend();
       const listener = jest.fn();
-      history.listen(listener);
+      const unsubscribe = history.listen(listener);
 
       window.history.pushState(null, '', '/popped');
       window.dispatchEvent(new PopStateEvent('popstate'));
 
       expect(listener).toHaveBeenCalledTimes(1);
-      history.dispose();
+      unsubscribe();
     });
 
     it('should use replaceState for replace()', () => {
@@ -156,19 +153,40 @@ describe('HistoryBackend', () => {
       expect(replaceSpy).toHaveBeenCalled();
       expect(window.location.pathname).toBe('/replaced-path');
       replaceSpy.mockRestore();
-      history.dispose();
     });
 
-    it('should stop notifying after dispose', () => {
+    it('should unsubscribe each listener independently', () => {
       const history = createWindowHistoryBackend();
-      const listener = jest.fn();
-      history.listen(listener);
-      history.dispose();
+      const first = jest.fn();
+      const second = jest.fn();
+      const unsubscribeFirst = history.listen(first);
+      const unsubscribeSecond = history.listen(second);
 
-      window.history.pushState(null, '', '/after-dispose');
+      // Owned writes advance every listener's baseline. The corresponding
+      // browser event must not report the write as an external navigation.
+      history.push('/owned');
+      window.dispatchEvent(new PopStateEvent('popstate'));
+      expect(first).not.toHaveBeenCalled();
+      expect(second).not.toHaveBeenCalled();
+
+      unsubscribeFirst();
+      unsubscribeFirst();
+
+      window.history.pushState(null, '', '/after-unsubscribe');
       window.dispatchEvent(new PopStateEvent('popstate'));
 
-      expect(listener).not.toHaveBeenCalled();
+      expect(first).not.toHaveBeenCalled();
+      expect(second).toHaveBeenCalledTimes(1);
+
+      history.replace('/owned-replacement');
+      window.dispatchEvent(new PopStateEvent('popstate'));
+      expect(second).toHaveBeenCalledTimes(1);
+
+      unsubscribeSecond();
+      window.history.pushState(null, '', '/after-both');
+      window.dispatchEvent(new PopStateEvent('popstate'));
+      expect(first).not.toHaveBeenCalled();
+      expect(second).toHaveBeenCalledTimes(1);
     });
 
     it('should expose stable entry metadata without leaking it as user state', () => {
@@ -186,7 +204,6 @@ describe('HistoryBackend', () => {
       history.replace('/replaced', { state: { user: true } });
       expect(history.getEntry()).toEqual(pushed);
       expect(history.getLocation().state).toEqual({ user: true });
-      history.dispose();
     });
 
     it('should seed a valid local index when an older browser stack is ambiguous', () => {
@@ -205,14 +222,13 @@ describe('HistoryBackend', () => {
       const pushed = history.getEntry();
       expect(pushed).toMatchObject({ index: 1, length: 2, canGoBack: true });
       expect(pushed.index).toBeLessThan(pushed.length);
-      history.dispose();
     });
 
     it('should assign stable metadata to an unknown entry reached by traversal', () => {
       const history = createWindowHistoryBackend();
       const initial = history.getEntry();
       const listener = jest.fn();
-      history.listen(listener);
+      const unsubscribe = history.listen(listener);
 
       window.history.pushState({ outside: true }, '', '/outside');
       window.dispatchEvent(new PopStateEvent('popstate'));
@@ -228,7 +244,7 @@ describe('HistoryBackend', () => {
       window.dispatchEvent(new HashChangeEvent('hashchange'));
       expect(listener).toHaveBeenCalledTimes(1);
       expect(history.getEntry()).toEqual(unknown);
-      history.dispose();
+      unsubscribe();
     });
 
     it('should use Navigation API entry metadata and change events when available', () => {
@@ -244,7 +260,7 @@ describe('HistoryBackend', () => {
       });
       const history = createWindowHistoryBackend();
       const listener = jest.fn();
-      history.listen(listener);
+      const unsubscribe = history.listen(listener);
 
       expect(history.getEntry()).toEqual({
         key: 'native-key',
@@ -258,19 +274,19 @@ describe('HistoryBackend', () => {
       window.dispatchEvent(new PopStateEvent('popstate'));
 
       expect(listener).toHaveBeenCalledTimes(1);
-      history.dispose();
+      unsubscribe();
     });
 
     it('should observe hash navigation when Navigation API is unavailable', () => {
       const history = createWindowHistoryBackend();
       const listener = jest.fn();
-      history.listen(listener);
+      const unsubscribe = history.listen(listener);
 
       window.history.pushState(null, '', '/page#section');
       window.dispatchEvent(new HashChangeEvent('hashchange'));
 
       expect(listener).toHaveBeenCalledTimes(1);
-      history.dispose();
+      unsubscribe();
     });
   });
 });

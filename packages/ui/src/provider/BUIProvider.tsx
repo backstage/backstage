@@ -16,11 +16,7 @@
 
 import { useMemo, type ReactNode } from 'react';
 import { createVersionedValueMap } from '@backstage/version-bridge';
-import { BUIContext } from './BUIContext';
-import {
-  BUIRoutingProvider,
-  buiRoutingIntegration,
-} from '../navigation/BUIRoutingProvider';
+import { BUIContext, type BUIContextVersions } from './BUIContext';
 import type { UseAnalyticsFn } from '../analytics/types';
 import { useBUIRouter, type BUIRouter } from './BUIRouter';
 
@@ -30,8 +26,8 @@ export type BUIProviderProps = {
   /**
    * Hook called at each consuming component to bind navigation, href
    * resolution and the active pathname to that component's route scope.
-   * When omitted, inherits an enclosing host hook, uses ambient React Router
-   * v6, or leaves links to browser navigation.
+   * When omitted, inherits an enclosing host hook. Without a host hook,
+   * components use an explicitly supplied React Aria router or browser navigation.
    */
   useRouter?: () => BUIRouter;
   children: ReactNode;
@@ -41,9 +37,11 @@ export type BUIProviderProps = {
  * Provides integration capabilities to all descendant BUI components.
  *
  * An explicit host hook supplies navigation, href resolution, and active-state
- * detection, including for independently loaded BUI components. Otherwise,
- * internal links use the ambient React Router, resolving relative destinations
- * at the component's route and applying the basename once.
+ * detection, including for independently loaded BUI components. BUI components
+ * bind this hook to React Aria at their own route scope. Without a host hook,
+ * components use an explicitly supplied React Aria router or browser navigation.
+ *
+ * React Aria components used directly need their own scoped `RouterProvider`.
  *
  * External links, downloads, and links with non-self targets use native browser
  * navigation. Components outside a routing context also use native links.
@@ -70,17 +68,12 @@ export function BUIProvider(props: BUIProviderProps) {
   const useRouter = providedUseRouter ?? parentUseRouter;
   const value = useMemo(
     () =>
-      createVersionedValueMap({
+      createVersionedValueMap<BUIContextVersions>({
         1: { useAnalytics },
-        2: { useAnalytics, routing: buiRoutingIntegration },
-        3: { useAnalytics, routing: buiRoutingIntegration, useRouter },
+        3: { useAnalytics, useRouter },
       }),
     [useAnalytics, useRouter],
   );
 
-  return (
-    <BUIContext.Provider value={value}>
-      <BUIRoutingProvider>{children}</BUIRoutingProvider>
-    </BUIContext.Provider>
-  );
+  return <BUIContext.Provider value={value}>{children}</BUIContext.Provider>;
 }

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { TestRouter } from '../../testUtils/TestRouter';
 import {
   createVersionedValueMap,
   type VersionedValue,
@@ -23,18 +24,16 @@ import { createRef, useMemo, type PropsWithChildren } from 'react';
 import * as ProviderReactAria from 'react-aria';
 import { RouterProvider } from 'react-aria-components';
 import {
-  MemoryRouter,
   Outlet,
   Route,
   Routes,
   useLocation,
   useNavigate,
   useNavigationType,
-  type NavigateOptions,
 } from 'react-router-dom';
 import { BUIContext, type BUIContextVersions } from '../../provider/BUIContext';
 import { BUIProvider } from '../../provider/BUIProvider';
-import { useResolvedHref } from '../../hooks/useResolvedHref';
+import { useTestHref } from '../../testUtils/TestRouter';
 import { Link } from './Link';
 
 const routerFuture = {
@@ -70,7 +69,7 @@ function OldBUIProvider({ children }: PropsWithChildren) {
   );
 
   return (
-    <RouterProvider navigate={navigate} useHref={useResolvedHref}>
+    <RouterProvider navigate={navigate} useHref={useTestHref}>
       <BUIContext.Provider value={value}>{children}</BUIContext.Provider>
     </RouterProvider>
   );
@@ -99,7 +98,7 @@ function createRouterWrapper({
     );
 
     return (
-      <MemoryRouter
+      <TestRouter
         basename="/app"
         initialEntries={[entry]}
         future={routerFuture}
@@ -109,7 +108,7 @@ function createRouterWrapper({
         ) : (
           <OldBUIProvider>{content}</OldBUIProvider>
         )}
-      </MemoryRouter>
+      </TestRouter>
     );
   };
 }
@@ -184,7 +183,7 @@ describe('Link', () => {
   it('reports the caller raw href to analytics', () => {
     const captureEvent = jest.fn();
     const wrapper = ({ children }: PropsWithChildren) => (
-      <MemoryRouter
+      <TestRouter
         basename="/app"
         initialEntries={['/app/catalog/entity/docs']}
         future={routerFuture}
@@ -194,7 +193,7 @@ describe('Link', () => {
             <Route path="catalog/entity/docs/*" element={children} />
           </Routes>
         </BUIProvider>
-      </MemoryRouter>
+      </TestRouter>
     );
     render(<Link href="child">Child</Link>, { wrapper });
 
@@ -289,7 +288,7 @@ describe('Link', () => {
     }
   });
 
-  it.each(['new', 'old'] as const)(
+  it.each(['new'] as const)(
     'navigates with the actual Link from an isolated BUI graph under the %s provider',
     provider => {
       const sharedReact = jest.requireActual<typeof import('react')>('react');
@@ -339,9 +338,9 @@ describe('Link', () => {
     },
   );
 
-  it('navigates once when React Aria delegates flushSync navigation', () => {
+  it('navigates once when React Aria delegates navigation', () => {
     render(
-      <MemoryRouter initialEntries={['/source']} future={routerFuture}>
+      <TestRouter initialEntries={['/source']} future={routerFuture}>
         <BUIProvider>
           <Routes>
             <Route
@@ -350,7 +349,6 @@ describe('Link', () => {
                 <Link
                   href="/destination"
                   routerOptions={{
-                    flushSync: true,
                     state: { source: 'shared-react-aria' },
                   }}
                 >
@@ -362,7 +360,7 @@ describe('Link', () => {
           </Routes>
           <HistoryBackButton />
         </BUIProvider>
-      </MemoryRouter>,
+      </TestRouter>,
     );
 
     fireEvent.click(screen.getByRole('link', { name: 'Destination' }));
@@ -373,90 +371,6 @@ describe('Link', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Back' }));
     expect(
       screen.getByRole('link', { name: 'Destination' }),
-    ).toBeInTheDocument();
-  });
-
-  it('passes complete router options once from an isolated BUI graph under a V1 provider', () => {
-    const sharedReact = jest.requireActual<typeof import('react')>('react');
-    const sharedReactDom =
-      jest.requireActual<typeof import('react-dom')>('react-dom');
-    const sharedReactDomClient =
-      jest.requireActual<typeof import('react-dom/client')>('react-dom/client');
-    const sharedReactRouter =
-      jest.requireActual<typeof import('react-router')>('react-router');
-    const sharedReactRouterDom =
-      jest.requireActual<typeof import('react-router-dom')>('react-router-dom');
-    const navigationCalls: Array<[string, NavigateOptions | undefined]> = [];
-    let hostNavigate: ReturnType<typeof useNavigate> | undefined;
-    const trackedNavigate = ((to: string, options?: NavigateOptions) => {
-      navigationCalls.push([to, options]);
-      hostNavigate?.(to, options);
-    }) as ReturnType<typeof useNavigate>;
-    let IsolatedLink!: typeof Link;
-
-    jest.isolateModules(() => {
-      jest.doMock('react', () => sharedReact);
-      jest.doMock('react-dom', () => sharedReactDom);
-      jest.doMock('react-dom/client', () => sharedReactDomClient);
-      jest.doMock('react-router', () => sharedReactRouter);
-      jest.doMock('react-router-dom', () => ({
-        ...sharedReactRouterDom,
-        useNavigate: () => trackedNavigate,
-      }));
-      ({ Link: IsolatedLink } = jest.requireActual('./Link'));
-    });
-
-    const routerOptions = {
-      flushSync: true,
-      preventScrollReset: true,
-      relative: 'route' as const,
-      replace: false,
-      state: { source: 'isolated-v1' },
-      viewTransition: true,
-    };
-    const CaptureHostNavigate = ({ children }: PropsWithChildren) => {
-      hostNavigate = useNavigate();
-      return children;
-    };
-
-    render(
-      <MemoryRouter initialEntries={['/source']} future={routerFuture}>
-        <CaptureHostNavigate>
-          <OldBUIProvider>
-            <Routes>
-              <Route
-                path="source"
-                element={
-                  <IsolatedLink
-                    href="/destination"
-                    routerOptions={routerOptions}
-                  >
-                    Isolated destination
-                  </IsolatedLink>
-                }
-              />
-              <Route path="destination" element={<LocationStatus />} />
-            </Routes>
-            <HistoryBackButton />
-          </OldBUIProvider>
-        </CaptureHostNavigate>
-      </MemoryRouter>,
-    );
-
-    const link = screen.getByRole('link', { name: 'Isolated destination' });
-    fireEvent.click(link, { metaKey: true });
-    expect(navigationCalls).toHaveLength(0);
-    expect(link).toBeInTheDocument();
-
-    fireEvent.click(link);
-    expect(navigationCalls).toEqual([['/destination', routerOptions]]);
-    expect(screen.getByRole('status')).toHaveTextContent(
-      '/destination:PUSH:isolated-v1',
-    );
-
-    fireEvent.click(screen.getByRole('button', { name: 'Back' }));
-    expect(
-      screen.getByRole('link', { name: 'Isolated destination' }),
     ).toBeInTheDocument();
   });
 });
@@ -471,10 +385,10 @@ describe('Link', () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
     render(
-      <MemoryRouter initialEntries={['/catalog']}>
+      <TestRouter initialEntries={['/catalog']}>
         <Link href={SCRIPT_HREF}>Routed</Link>
         <Link href={DISGUISED_SCRIPT_HREF}>Disguised</Link>
-      </MemoryRouter>,
+      </TestRouter>,
     );
     // BUI is a standalone design system, so it has to hold up with no router
     // at all — that path skips react-router's resolution entirely.
