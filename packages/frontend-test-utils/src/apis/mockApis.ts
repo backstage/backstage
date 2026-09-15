@@ -17,7 +17,13 @@
 import {
   coreApis,
   alertApiRef,
+  appHistoryApiRef,
+  routeResolutionApiRef,
   type AnalyticsApi,
+  type AppHistoryApi,
+  type AppNavigateOptions,
+  type AppLocation,
+  type RouteResolutionApi,
   type ConfigApi,
   type DiscoveryApi,
   type ErrorApi,
@@ -62,7 +68,17 @@ import {
   attachMockApiFactory,
   type MockWithApiFactory,
 } from './MockWithApiFactory';
-import { createApiMock } from './createApiMock';
+import { createApiMock, type ApiMock } from './createApiMock';
+import {
+  createMockAppHistory,
+  type MockAppHistory,
+  type MockAppHistoryOptions,
+} from './createMockAppHistory';
+import {
+  createMockRouteResolutionApi,
+  type MockRouteResolutionApi,
+  type MockRouteResolutionApiOptions,
+} from './createMockRouteResolutionApi';
 
 function createObservableState<T>(initialValue: T) {
   let value = initialValue;
@@ -794,6 +810,77 @@ export namespace mockApis {
   }
 
   /**
+   * Fake implementation of {@link @backstage/frontend-plugin-api#AppHistoryApi}.
+   *
+   * @public
+   */
+  export function appHistory(
+    options?: MockAppHistoryOptions,
+  ): MockAppHistory & MockWithApiFactory<AppHistoryApi> {
+    const instance = createMockAppHistory(options);
+    return attachMockApiFactory(appHistoryApiRef, instance) as MockAppHistory &
+      MockWithApiFactory<AppHistoryApi>;
+  }
+
+  /**
+   * Mock helpers for {@link @backstage/frontend-plugin-api#AppHistoryApi}.
+   * Backed by in-memory history: navigation still validates paths and emits
+   * locations even when the call is observed by a Jest mock.
+   *
+   * @public
+   */
+  export namespace appHistory {
+    export const mock: (
+      partialImpl?: Partial<AppHistoryApi> | undefined,
+    ) => ApiMock<AppHistoryApi> = partialImpl => {
+      const { navigate, ...rest } = partialImpl ?? {};
+      const instance = createMockAppHistory({ navigate });
+      const navigateMock = jest.fn(
+        (...args: [path: string, options?: AppNavigateOptions] | [delta: number]) => {
+          if (typeof args[0] === 'number') {
+            instance.navigate(args[0]);
+          } else if (args.length === 1) {
+            instance.navigate(args[0]);
+          } else {
+            instance.navigate(args[0], args[1]);
+          }
+        },
+      ) as unknown as jest.MockedFunction<AppHistoryApi['navigate']>;
+      let pinnedLocation: AppLocation | undefined;
+
+      return createApiMock(appHistoryApiRef, () => ({
+        get location() {
+          return pinnedLocation ?? instance.location;
+        },
+        set location(value: AppLocation) {
+          pinnedLocation = value;
+        },
+        location$: instance.location$,
+        navigate: navigateMock,
+        createHref: jest.fn(
+          (...args: Parameters<AppHistoryApi['createHref']>) =>
+            instance.createHref(...args),
+        ),
+      }))(rest);
+    };
+  }
+
+  /**
+   * Fake implementation of {@link @backstage/frontend-plugin-api#RouteResolutionApi}.
+   *
+   * @public
+   */
+  export function routeResolution(
+    options?: MockRouteResolutionApiOptions,
+  ): MockRouteResolutionApi & MockWithApiFactory<RouteResolutionApi> {
+    const instance = createMockRouteResolutionApi(options);
+    return attachMockApiFactory(
+      routeResolutionApiRef,
+      instance,
+    ) as MockRouteResolutionApi & MockWithApiFactory<RouteResolutionApi>;
+  }
+
+  /**
    * Mock helpers for {@link @backstage/frontend-plugin-api#RouteResolutionApi}.
    *
    * @public
@@ -805,7 +892,7 @@ export namespace mockApis {
      *
      * @public
      */
-    export const mock = createApiMock(coreApis.routeResolution, () => ({
+    export const mock = createApiMock(routeResolutionApiRef, () => ({
       resolve: jest.fn(),
     }));
   }
