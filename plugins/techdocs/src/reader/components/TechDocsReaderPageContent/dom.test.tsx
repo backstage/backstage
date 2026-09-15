@@ -16,16 +16,22 @@
 import { render } from '@testing-library/react';
 
 // We need to mock react-router-dom hooks used by useInitialRedirect
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { useAppLocation, useAppNavigate } from '@backstage/frontend-plugin-api';
 
 // Import the module from which the hook is defined
 import { useInitialRedirect } from './dom';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useLocation: jest.fn(),
-  useNavigate: jest.fn(),
+
   useParams: jest.fn(),
+}));
+
+jest.mock('@backstage/frontend-plugin-api', () => ({
+  ...jest.requireActual('@backstage/frontend-plugin-api'),
+  useAppLocation: jest.fn(),
+  useAppNavigate: jest.fn(),
 }));
 
 describe('useInitialRedirect', () => {
@@ -34,8 +40,8 @@ describe('useInitialRedirect', () => {
   beforeEach(() => {
     // Reset mocks before each test
     mockNavigate.mockReset();
-    (useNavigate as jest.Mock).mockReturnValue(mockNavigate);
-    (useLocation as jest.Mock).mockReturnValue({
+    (useAppNavigate as jest.Mock).mockReturnValue(mockNavigate);
+    (useAppLocation as jest.Mock).mockReturnValue({
       pathname: '/docs/default/Component/backstage-demo',
     });
     // Simulate that no current path is provided

@@ -3426,7 +3426,6 @@ __metadata:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3446,7 +3445,6 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/frontend-test-utils": "workspace:^"
-    "@backstage/plugin-app-react-router-v6": "workspace:^"
     "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
@@ -3567,7 +3565,6 @@ __metadata:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router: ^6.30.6
     react-router-dom: ^6.30.6
   peerDependenciesMeta:
     "@types/react":
@@ -4817,7 +4814,6 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/frontend-test-utils": "workspace:^"
-    "@backstage/plugin-app-react-router-v6": "workspace:^"
     "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
@@ -4867,7 +4863,6 @@ __metadata:
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/integration-react": "workspace:^"
-    "@backstage/plugin-app-react-router-v6": "workspace:^"
     "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
@@ -5020,7 +5015,6 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/frontend-test-utils": "workspace:^"
-    "@backstage/plugin-app-react-router-v6": "workspace:^"
     "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-catalog-unprocessed-entities-common": "workspace:^"
     "@backstage/plugin-org": "workspace:^"
@@ -5544,7 +5538,6 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/frontend-defaults": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
-    "@backstage/plugin-app-react-router-v6": "workspace:^"
     "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-home-react": "workspace:^"
@@ -5955,7 +5948,6 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
-    "@backstage/plugin-app-react-router-v6": "workspace:^"
     "@backstage/plugin-home-react": "workspace:^"
     "@backstage/plugin-notifications-common": "workspace:^"
     "@backstage/plugin-signals": "workspace:^"
@@ -6581,7 +6573,6 @@ __metadata:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -7005,7 +6996,6 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/frontend-test-utils": "workspace:^"
-    "@backstage/plugin-app-react-router-v6": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-home-react": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
@@ -7432,7 +7422,6 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
-    "@backstage/plugin-app-react-router-v6": "workspace:^"
     "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-signals-react": "workspace:^"
@@ -7609,7 +7598,6 @@ __metadata:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -7686,7 +7674,6 @@ __metadata:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-    react-router-dom: ^6.30.2
   peerDependenciesMeta:
     "@types/react":
       optional: true

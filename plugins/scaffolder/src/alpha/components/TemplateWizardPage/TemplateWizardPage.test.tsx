@@ -35,10 +35,10 @@ import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { ScaffolderFormDecoratorsApi } from '../../api/types';
 import { formDecoratorsApiRef } from '../../api/ref';
 
-jest.mock('react-router-dom', () => {
+jest.mock('@backstage/core-plugin-api', () => {
   return {
-    ...(jest.requireActual('react-router-dom') as any),
-    useParams: () => ({
+    ...(jest.requireActual('@backstage/core-plugin-api') as any),
+    useRouteRefParams: () => ({
       templateName: 'test',
     }),
   };

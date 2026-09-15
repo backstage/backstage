@@ -54,7 +54,6 @@
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
-    "@backstage/plugin-app-react-router-v6": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/ui": "workspace:^",

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { useCallback, useMemo } from 'react';
 import { Routes, Route, useParams } from 'react-router-dom';
 import {
@@ -36,6 +37,7 @@ import {
 import {
   TemplateCategoryPicker,
   TemplateGroups,
+  FormField,
 } from '@backstage/plugin-scaffolder-react/alpha';
 import { createGroupsWithOther } from '../lib/createGroupsWithOther';
 import {
@@ -49,7 +51,7 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
-import { FormField } from '@backstage/plugin-scaffolder-react/alpha';
+
 import { OpaqueFormField } from '@internal/scaffolder';
 import { RegisterExistingButton } from './TemplateListPage/RegisterExistingButton';
 import { TemplateWizardPageContent } from './TemplateWizardPage';
@@ -224,26 +226,28 @@ export function TemplatesSubPage(props: {
   ] as FieldExtensionOptions[];
 
   return (
-    <Routes>
-      <Route
-        index
-        element={
-          <TemplateListContent
-            groups={props.groups}
-            templateFilter={props.templateFilter}
-          />
-        }
-      />
-      <Route
-        path=":namespace/:templateName"
-        element={
-          <TemplateWizardWithBreadcrumb
-            customFieldExtensions={fieldExtensions}
-            layouts={customLayouts}
-            formProps={props.formProps}
-          />
-        }
-      />
-    </Routes>
+    <ReactRouterV6PageRouter>
+      <Routes>
+        <Route
+          index
+          element={
+            <TemplateListContent
+              groups={props.groups}
+              templateFilter={props.templateFilter}
+            />
+          }
+        />
+        <Route
+          path=":namespace/:templateName"
+          element={
+            <TemplateWizardWithBreadcrumb
+              customFieldExtensions={fieldExtensions}
+              layouts={customLayouts}
+              formProps={props.formProps}
+            />
+          }
+        />
+      </Routes>
+    </ReactRouterV6PageRouter>
   );
 }

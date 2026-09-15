@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+import {
+  appHistoryApiRef,
+  useApiHolder,
+  useAppLocation,
+} from '@backstage/frontend-plugin-api';
+
 import { QueryEntitiesResponse } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
@@ -34,7 +40,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useLocation } from 'react-router-dom';
+
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import useDebounce from 'react-use/esm/useDebounce';
 import useMountedState from 'react-use/esm/useMountedState';
@@ -174,11 +180,16 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     {} as EntityFilters,
   );
 
-  // We use react-router's useLocation hook so updates from external sources trigger an update to
-  // the queryParameters in outputState. Updates from this hook use replaceState below and won't
-  // trigger a useLocation change; this would instead come from an external source, such as a manual
-  // update of the URL or two catalog sidebar links with different catalog filters.
-  const location = useLocation();
+  // Ignore query changes we write ourselves when deriving the initial filters.
+  // External navigation still replaces the filter input, including browser Back.
+  const location = useAppLocation();
+  const appHistory = useApiHolder().get(appHistoryApiRef);
+  const lastWrittenSearch = useRef<string>();
+  const externalSearch = useRef(location.search);
+  if (location.search !== lastWrittenSearch.current) {
+    externalSearch.current = location.search;
+  }
+  const querySearch = externalSearch.current;
 
   let paginationMode: PaginationMode = 'none';
   if (props.pagination === true) {
@@ -195,7 +206,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     offset: initialOffset,
     limit: initialLimit,
   } = useMemo(() => {
-    const parsed = qs.parse(location.search, {
+    const parsed = qs.parse(querySearch, {
       ignoreQueryPrefix: true,
       arrayLimit: 10000,
     });
@@ -228,7 +239,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
           : undefined,
       limit,
     };
-  }, [paginationMode, location.search, paginationLimit]);
+  }, [paginationMode, querySearch, paginationLimit]);
 
   const [cursor, setCursor] = useState(initialCursor);
   const [offset, setOffset] = useState<number | undefined>(initialOffset);
@@ -394,11 +405,9 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
     return backendState.backendEntities.filter(entityFilter);
   }, [adjustedFilters, backendState.backendEntities]);
 
-  // Sync filter state to URL query parameters. We use direct history
-  // manipulation since useSearchParams and useNavigate in
-  // react-router-dom cause unnecessary extra rerenders. Also make sure
-  // to replace the state rather than pushing, since we don't want
-  // there to be back/forward slots for every single filter change.
+  // Replace query state through the app history so other subscribers and
+  // browser entry metadata stay in sync. Keep the legacy URL-only update when
+  // there is no app history, without adding an entry for each filter change.
   useEffect(() => {
     if (!isMounted() || Object.keys(requestedFilters).length === 0) {
       return;
@@ -425,13 +434,29 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       },
       { addQueryPrefix: true, arrayFormat: 'repeat' },
     );
-    const newUrl = `${window.location.pathname}${newParams}`;
-    window.history?.replaceState(null, document.title, newUrl);
+    if (appHistory) {
+      if (appHistory.location.search !== newParams) {
+        lastWrittenSearch.current = newParams;
+        appHistory.navigate(appHistory.location.pathname + newParams, {
+          replace: true,
+          state: appHistory.location.state,
+        });
+      }
+    } else {
+      const newUrl = window.location.pathname + newParams;
+      window.history?.replaceState(
+        window.history.state,
+        document.title,
+        newUrl,
+      );
+    }
   }, [
     cursor,
     isMounted,
     limit,
+    querySearch,
     location.search,
+    appHistory,
     offset,
     requestedFilters,
     paginationMode,

@@ -15,19 +15,23 @@
  */
 
 import {
+  useAppLocation,
+  useAppSearchParams,
+  useAppNavigate,
+  dialogApiRef,
+  useTranslationRef,
+} from '@backstage/frontend-plugin-api';
+
+import {
   EntityContextMenuItemBlueprint,
   useEntityPermission,
 } from '@backstage/plugin-catalog-react/alpha';
 import { RiBugLine, RiDeleteBinLine, RiFileCopyLine } from '@remixicon/react';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
-import {
-  useAppNavigate,
-  dialogApiRef,
-  useTranslationRef,
-} from '@backstage/frontend-plugin-api';
+
 import { catalogTranslationRef } from './translation';
-import { useLocation, useSearchParams } from 'react-router-dom';
+
 import {
   UnregisterEntityDialog,
   useEntity,
@@ -39,7 +43,7 @@ import { type ComponentProps, useEffect, useRef } from 'react';
 function UnregisterEntityDialogWithCloseOnRouteChange(
   props: ComponentProps<typeof UnregisterEntityDialog>,
 ) {
-  const { pathname } = useLocation();
+  const { pathname } = useAppLocation();
   const initialPathname = useRef(pathname);
   const { onClose } = props;
 
@@ -89,7 +93,7 @@ export const inspectEntityContextMenuItem = EntityContextMenuItemBlueprint.make(
     params: {
       icon: <RiBugLine size={16} />,
       useProps: () => {
-        const [_, setSearchParams] = useSearchParams();
+        const [_, setSearchParams] = useAppSearchParams();
         const { t } = useTranslationRef(catalogTranslationRef);
 
         return {

@@ -15,6 +15,11 @@
  */
 
 import {
+  useAppSearchParams,
+  NotFoundErrorPage,
+} from '@backstage/frontend-plugin-api';
+
+import {
   ComponentProps,
   ComponentType,
   ReactNode,
@@ -22,7 +27,7 @@ import {
   useCallback,
 } from 'react';
 import { Helmet } from 'react-helmet';
-import { useSearchParams } from 'react-router-dom';
+
 import { Alert, Container } from '@backstage/ui';
 import {
   configApiRef,
@@ -31,7 +36,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { Link, Progress } from '@backstage/core-components';
-import { NotFoundErrorPage } from '@backstage/frontend-plugin-api';
+
 import {
   entityRouteRef,
   InspectEntityDialog,
@@ -69,7 +74,7 @@ function EntityDocumentTitle(props: { activeContentTitle?: string }) {
 
 function InspectEntityDialogHost() {
   const { entity } = useAsyncEntity();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useAppSearchParams();
   const selectedTab = searchParams.get('inspect');
   const setSelectedTab = useCallback(
     (tab: string) =>

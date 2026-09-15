@@ -61,7 +61,6 @@
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
-    "@backstage/plugin-app-react-router-v6": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/plugin-signals-react": "workspace:^",
     "@backstage/plugin-user-settings-common": "workspace:^",

@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-import { useEffect } from 'react';
+import {
+  appHistoryApiRef,
+  useApiHolder,
+  useAppLocation,
+} from '@backstage/frontend-plugin-api';
+
+import { useEffect, useRef } from 'react';
 import usePrevious from 'react-use/esm/usePrevious';
 import qs from 'qs';
-import { useLocation, useOutlet } from 'react-router-dom';
+import { useOutlet } from 'react-router-dom';
 import {
   SearchContextProvider,
   useSearch,
@@ -25,7 +31,9 @@ import {
 import { JsonObject } from '@backstage/types';
 
 export const UrlUpdater = () => {
-  const location = useLocation();
+  const location = useAppLocation();
+  const appHistory = useApiHolder().get(appHistoryApiRef);
+  const observedSearch = useRef<string>();
   const {
     term,
     setTerm,
@@ -40,7 +48,7 @@ export const UrlUpdater = () => {
   const prevQueryParams = usePrevious(location.search);
   useEffect(() => {
     // Only respond to changes to url query params
-    if (location.search === prevQueryParams) {
+    if (appHistory || location.search === prevQueryParams) {
       return;
     }
 
@@ -60,26 +68,67 @@ export const UrlUpdater = () => {
     }
 
     setTypes(query.types ? (query.types as string[]) : []);
-  }, [prevQueryParams, location, setTerm, setTypes, setPageCursor, setFilters]);
+  }, [
+    appHistory,
+    prevQueryParams,
+    location,
+    setTerm,
+    setTypes,
+    setPageCursor,
+    setFilters,
+  ]);
 
   useEffect(() => {
+    // An external navigation restores every search field, including removed
+    // parameters. Apply it before writing local state back to app history.
+    if (appHistory && observedSearch.current !== location.search) {
+      observedSearch.current = location.search;
+      const query = qs.parse(location.search.substring(1), {
+        arrayLimit: 10000,
+      });
+      setTerm(typeof query.query === 'string' ? query.query : '');
+      setTypes(Array.isArray(query.types) ? (query.types as string[]) : []);
+      setFilters(query.filters ? (query.filters as JsonObject) : {});
+      setPageCursor(
+        typeof query.pageCursor === 'string' ? query.pageCursor : undefined,
+      );
+      return;
+    }
+
     const newParams = qs.stringify(
-      {
-        query: term,
-        types,
-        pageCursor,
-        filters,
-      },
+      { query: term, types, pageCursor, filters },
       { arrayFormat: 'brackets' },
     );
-    const newUrl = `${window.location.pathname}?${newParams}`;
-
-    // We directly manipulate window history here in order to not re-render
-    // infinitely (state => location => state => etc). The intention of this
-    // code is just to ensure the right query/filters are loaded when a user
-    // clicks the "back" button after clicking a result.
-    window.history.replaceState(null, document.title, newUrl);
-  }, [term, types, pageCursor, filters]);
+    const search = newParams ? `?${newParams}` : '';
+    if (appHistory) {
+      if (appHistory.location.search !== search) {
+        // Mark this write before notifying subscribers, so it is not treated
+        // as an external navigation on the next render.
+        observedSearch.current = search;
+        appHistory.navigate(appHistory.location.pathname + search, {
+          replace: true,
+          state: appHistory.location.state,
+        });
+      }
+    } else {
+      window.history.replaceState(
+        window.history.state,
+        document.title,
+        window.location.pathname + search,
+      );
+    }
+  }, [
+    term,
+    types,
+    pageCursor,
+    filters,
+    appHistory,
+    location.search,
+    setTerm,
+    setTypes,
+    setPageCursor,
+    setFilters,
+  ]);
 
   return null;
 };

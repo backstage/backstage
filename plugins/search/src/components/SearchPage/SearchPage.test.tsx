@@ -15,16 +15,23 @@
  */
 
 import { renderInTestApp } from '@backstage/test-utils';
-import { useLocation } from 'react-router-dom';
+import { useAppLocation } from '@backstage/frontend-plugin-api';
 import { useSearch } from '@backstage/plugin-search-react';
 import { SearchPage } from './SearchPage';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useLocation: jest.fn().mockReturnValue({
-    search: '',
-  }),
   useOutlet: jest.fn().mockReturnValue('Route Children'),
+}));
+
+jest.mock('@backstage/frontend-plugin-api', () => ({
+  ...jest.requireActual('@backstage/frontend-plugin-api'),
+  useAppLocation: jest.fn().mockReturnValue({
+    pathname: '/search',
+    search: '',
+    hash: '',
+    state: undefined,
+  }),
 }));
 
 const setTermMock = jest.fn();
@@ -70,7 +77,7 @@ describe('SearchPage', () => {
     const expectedPageCursor = 'SOMEPAGE';
 
     // e.g. ?query=petstore&pageCursor=SOMEPAGE&filters[lifecycle][]=experimental&filters[kind]=Component
-    (useLocation as jest.Mock).mockReturnValue({
+    (useAppLocation as jest.Mock).mockReturnValue({
       search: `?query=${expectedTerm}&types[]=${expectedTypes[0]}&filters[${expectedFilterField}]=${expectedFilterValue}&pageCursor=${expectedPageCursor}`,
     });
 

@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { useAppLocation } from '@backstage/frontend-plugin-api';
+
 import { useEffect } from 'react';
 import { useApi, configApiRef, useAnalytics } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { ErrorPage } from '@backstage/core-components';
 import { useTechDocsReaderPage } from '@backstage/plugin-techdocs-react';
-import { useLocation } from 'react-router-dom';
+
 import { techdocsTranslationRef } from '../../translation';
 
 type Props = {
@@ -31,7 +33,7 @@ export const TechDocsNotFound = ({ errorMessage }: Props) => {
     useApi(configApiRef).getOptionalString('techdocs.builder');
   const analyticsApi = useAnalytics();
   const { entityRef } = useTechDocsReaderPage();
-  const location = useLocation();
+  const location = useAppLocation();
   const { t } = useTranslationRef(techdocsTranslationRef);
 
   useEffect(() => {

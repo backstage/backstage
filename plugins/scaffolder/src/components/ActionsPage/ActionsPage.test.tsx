@@ -18,7 +18,16 @@ import {
   ScaffolderApi,
   scaffolderApiRef,
 } from '@backstage/plugin-scaffolder-react';
-import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
+import {
+  renderInTestApp,
+  TestApiRegistry,
+  TestApiProvider,
+} from '@backstage/test-utils';
+import {
+  appHistoryApiRef,
+  useAppLocation,
+} from '@backstage/frontend-plugin-api';
+import { createMockAppHistory } from '@backstage/frontend-test-utils';
 import { ApiProvider } from '@backstage/core-app-api';
 import { rootRouteRef } from '../../routes';
 import { userEvent } from '@testing-library/user-event';
@@ -721,37 +730,74 @@ describe('ActionsPage', () => {
     ).toBeInTheDocument();
   });
 
-  it('should update the URL hash when selecting and deselecting actions', async () => {
-    scaffolderApiMock.listActions.mockResolvedValue([
-      {
-        id: 'publish:github',
-        description: 'Publish to GitHub',
-        schema: {},
-      },
-      {
-        id: 'fetch:plain',
-        description: 'Fetch plain content',
-        schema: {},
-      },
-    ]);
-
-    await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <ActionsPage />
-      </ApiProvider>,
-      {
-        mountedRoutes: {
-          '/create/actions': rootRouteRef,
+  it.each([false, true])(
+    'updates action fragments through the active history (app history: %s)',
+    async withAppHistory => {
+      const history = createMockAppHistory({
+        initialLocation: '/create/actions',
+      });
+      function Location() {
+        const location = useAppLocation();
+        return (
+          <output aria-label="Current fragment">
+            {location.hash || 'none'}
+          </output>
+        );
+      }
+      scaffolderApiMock.listActions.mockResolvedValue([
+        {
+          id: 'publish:github',
+          description: 'Publish to GitHub',
+          schema: {},
         },
-      },
-    );
+        {
+          id: 'fetch:plain',
+          description: 'Fetch plain content',
+          schema: {},
+        },
+      ]);
 
-    await selectAction('publish:github');
-    expect(window.location.hash).toBe('#publish:github');
+      await renderInTestApp(
+        <ApiProvider apis={apis}>
+          {withAppHistory ? (
+            <TestApiProvider apis={[[appHistoryApiRef, history]]}>
+              <ActionsPage />
+              <Location />
+            </TestApiProvider>
+          ) : (
+            <>
+              <ActionsPage />
+              <Location />
+            </>
+          )}
+        </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/create/actions': rootRouteRef,
+          },
+        },
+      );
 
-    await selectAction('publish:github');
-    expect(window.location.hash).toBe('');
-  });
+      await selectAction('publish:github');
+      expect(screen.getByLabelText('Current fragment')).toHaveTextContent(
+        '#publish:github',
+      );
+      expect(history.location.hash).toBe(
+        withAppHistory ? '#publish:github' : '',
+      );
+
+      await selectAction('publish:github');
+      expect(screen.getByLabelText('Current fragment')).toHaveTextContent(
+        'none',
+      );
+      const expectedNavigation = expect.objectContaining({
+        options: expect.objectContaining({ replace: true }),
+      });
+      expect(history.navigateCalls.at(-1)).toEqual(
+        withAppHistory ? expectedNavigation : undefined,
+      );
+    },
+  );
 
   it('should keep search field focused when filtering causes empty then non-empty results', async () => {
     scaffolderApiMock.listActions.mockResolvedValue([
