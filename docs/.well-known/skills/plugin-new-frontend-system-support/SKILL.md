@@ -367,6 +367,54 @@ This significantly improves the out-of-the-box experience — plugins with sensi
 
 In the new system, `useRouteRef` from `@backstage/frontend-plugin-api` may return `undefined` for unbound external routes. Legacy `useRouteRef` from `@backstage/core-plugin-api` throws an error instead. When writing NFS components, handle the `undefined` case.
 
+### Routing Library Context
+
+A plugin supporting both frontend systems must preserve its old-frontend behavior. Existing new frontend system pages retain implicit React Router v6 routing.
+Route parameters, relative links and nested routes continue to work without
+an immediate migration. In development, consuming this fallback logs a warning
+once per extension per app instance. Render an explicit page adapter to migrate
+that content; pages using only framework routing do not need an adapter.
+
+Check every component reachable from a `PageBlueprint` or `SubPageBlueprint` loader for React Router usage, and pick one of two fixes:
+
+**Preferred — drop the router.** If the component only needs route parameters and hrefs, use framework routing, which works identically in both systems and needs no adapter:
+
+| Old                               | New                              |
+| --------------------------------- | -------------------------------- |
+| `useParams()`                     | `useRouteRefParams(subRouteRef)` |
+| hand-built path strings           | `useRouteRef(routeRef)`          |
+| `useHref` from `react-router-dom` | `useHref` from the framework     |
+
+**Otherwise — declare the adapter.** A page whose content genuinely drives a route tree renders the matching adapter inside its own `loader`. This is plain React, not extension wiring:
+
+```tsx
+import { PageBlueprint } from '@backstage/frontend-plugin-api';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+
+const myPage = PageBlueprint.make({
+  params: {
+    path: '/my-plugin',
+    routeRef: rootRouteRef,
+    loader: () =>
+      import('./components/MyPage').then(m => (
+        <ReactRouterV6PageRouter>
+          <m.NfsMyPage />
+        </ReactRouterV6PageRouter>
+      )),
+  },
+});
+```
+
+Use `@backstage/plugin-app-react-router-v7` or `@backstage/plugin-app-tanstack-router` if the plugin routes with one of those libraries. A sub-page declares its own adapter in its own `loader`, which scopes it to that sub-page; adapters nest rather than replace, so sibling tabs may pick different libraries or none. Only the NFS side needs this — the old entry point is unaffected.
+
+**Declare adapters at route mounts.** `PageBlueprint` and `SubPageBlueprint`
+are common examples. Ordinary extensions with `coreExtensionData.routePath`
+and `ExtensionBoundary` also receive a matched mount. Content without its own
+route mount normally uses the adapter above it. Adding an adapter for the
+enclosing page can discard matches created by that page's routing library.
+
+In tests, `renderInTestApp` uses the same root routing context as production. Assert expected page parameters and relative hrefs to detect a missing adapter. Pass `{ router: ReactRouterV6PageRouter }` for page content, and `{ renderAs: 'chrome' }` for something that is app chrome rather than a page.
+
 ## Step 6: Translations
 
 If the plugin uses translations, the translation ref should be exported from the main entry point (`src/index.ts`). There is no need to re-export it from `./alpha` — consumers import translation refs from the main entry point regardless of which frontend system they use.
@@ -412,13 +460,14 @@ The same applies to other refs like API refs and route refs: keep them exported 
 6. [ ] Implement NFS page variants without page shell (`Page`/`Header`/`PageWithHeader`)
 7. [ ] Use `Header` from `@backstage/ui` for subtitle/custom actions in NFS pages
 8. [ ] Wire route refs (existing `@backstage/core-plugin-api` refs work directly, no conversion needed)
-9. [ ] Ensure translation refs and API refs are exported from the main entry point (not duplicated in `./alpha`)
-10. [ ] Add `@backstage/frontend-plugin-api` to `package.json` dependencies
-11. [ ] Add `@backstage/ui` to dependencies (if using `Header`)
-12. [ ] Run `yarn tsc` to check for type errors
-13. [ ] Run `yarn lint` to check for missing dependencies
-14. [ ] Test in both old app (`packages/app-legacy`) and new app (`packages/app`)
-15. [ ] Run `yarn build:api-reports` to update API reports (if the project uses API reports)
+9. [ ] Audit NFS page content for React Router usage — switch to `useRouteRef` / `useRouteRefParams` / `useHref`, or render a page router adapter in the `loader` of the `PageBlueprint` or `SubPageBlueprint` (never in an entity content or card extension)
+10. [ ] Ensure translation refs and API refs are exported from the main entry point (not duplicated in `./alpha`)
+11. [ ] Add `@backstage/frontend-plugin-api` to `package.json` dependencies
+12. [ ] Add `@backstage/ui` to dependencies (if using `Header`)
+13. [ ] Run `yarn tsc` to check for type errors
+14. [ ] Run `yarn lint` to check for missing dependencies
+15. [ ] Test in both old app (`packages/app-legacy`) and new app (`packages/app`)
+16. [ ] Run `yarn build:api-reports` to update API reports (if the project uses API reports)
 
 ## Reference
 

@@ -93,7 +93,7 @@ import { createApp } from '@backstage/frontend-defaults';
 
 ### Step 2: Convert `createApp` options
 
-Use `convertLegacyAppOptions` to wrap legacy options (`apis`, `icons`, `featureFlags`, `components`, `themes`) as a feature:
+Use `convertLegacyAppOptions` to wrap legacy options (`apis`, `icons`, `featureFlags`, `components`, `themes`) as a feature.
 
 ```tsx
 import { createApp } from '@backstage/frontend-defaults';
@@ -125,6 +125,100 @@ const app = createApp({
   features: [convertedOptionsModule],
 });
 ```
+
+#### Migrating `components.Router`
+
+`components.Router` is the one option it rejects, and it throws rather than
+converting. The app owns browser history now and exposes it as `AppHistoryApi`,
+so a root component that installs its own router would create a second history
+the app cannot observe. What to do with the old `Router` depends on what it did:
+
+- If it only rendered `BrowserRouter`, delete it. The app provides history.
+- If it wrapped the router in global providers, move those providers to
+  `AppRootWrapperBlueprint` from `@backstage/plugin-app-react`.
+- If it installed a different routing library, that is now a per-page decision.
+  See the next section.
+
+#### Migrate page routing gradually
+
+Existing new frontend system pages retain implicit React Router v6 routing.
+Route parameters, relative links and nested routes continue to work without
+an immediate migration. In development, consuming this fallback logs a warning
+once per extension per app instance. Render an explicit page adapter to migrate
+that content; pages using only framework routing do not need an adapter.
+Preserve the old frontend system's behavior.
+
+Prefer framework routing, which needs no router at all. If the page only needs
+parameters and hrefs, use `useRouteRef`, `useRouteRefParams` and `useHref` from
+`@backstage/frontend-plugin-api`. This is usually the better answer, and it is
+the only one that keeps working when the page has no adapter.
+
+A page that genuinely routes with its library renders that library's adapter
+**inside its own `loader`** — render-time, plain React, no extension wiring:
+
+```tsx
+import { PageBlueprint } from '@backstage/frontend-plugin-api';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+
+PageBlueprint.make({
+  params: {
+    path: '/catalog',
+    loader: () =>
+      import('./Page').then(m => (
+        <ReactRouterV6PageRouter>
+          <m.Page />
+        </ReactRouterV6PageRouter>
+      )),
+  },
+});
+```
+
+Three adapter packages ship with Backstage, each exporting one component:
+
+| Package                                 | Component                 |
+| --------------------------------------- | ------------------------- |
+| `@backstage/plugin-app-react-router-v6` | `ReactRouterV6PageRouter` |
+| `@backstage/plugin-app-react-router-v7` | `ReactRouterV7PageRouter` |
+| `@backstage/plugin-app-tanstack-router` | `TanStackPageRouter`      |
+
+Adapters are **added, not selected**. Each library publishes a different React
+context object, so an adapter nests inside another instead of replacing it. A
+sub-page declares its own adapter in its own `loader`, which scopes it to the
+sub-page, and mixed page/sub-page combinations work in both directions.
+
+The app root still has a React Router v6 context for app chrome. That is
+unchanged. Existing pages receive their own implicit v6 matches as well.
+
+**Legacy pages converted by `@backstage/core-compat-api` already have an
+adapter.** `convertLegacyAppRoot` wraps every route it collects in
+`ReactRouterV6PageRouter`, and so does `convertLegacyPageExtension`. A legacy
+page was written under the app's own router and has to keep working without its
+author changing anything. When migrating pages by hand, declare an adapter explicitly to stop relying on
+the compatibility fallback.
+
+**Declare adapters at route mounts.** Pages and sub-pages are common examples;
+ordinary extensions that publish `coreExtensionData.routePath` and render
+through `ExtensionBoundary` also receive their own matched mount. Content
+without its own route mount normally uses the adapter above it. Do not wrap
+entity cards or tabs merely to repeat an enclosing page's mount: that can
+discard matches created by the page's routing library.
+
+In tests, `renderInTestApp` supplies the same root context as production.
+Assert page parameters and relative hrefs to catch missing adapters. Pass the
+same adapter the page renders, and render app chrome as chrome:
+
+```tsx
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+
+// Page content that routes with React Router.
+renderInTestApp(<EntityPage />, { router: ReactRouterV6PageRouter });
+
+// App chrome — a sidebar, an error page. Chrome is not a page, so it must
+// not get a page adapter.
+renderInTestApp(<MySidebarItem />, { renderAs: 'chrome' });
+```
+
+See [Choose a router for a page](https://backstage.io/docs/frontend-system/building-plugins/page-routers).
 
 ### Step 3: Convert the app root
 
