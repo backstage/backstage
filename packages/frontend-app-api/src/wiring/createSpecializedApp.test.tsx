@@ -29,16 +29,22 @@ import {
   useRouteRef,
   useApi,
   analyticsApiRef,
+  appHistoryApiRef,
+  createApiFactory,
   createExtensionDataRef,
 } from '@backstage/frontend-plugin-api';
 import { act, render, screen } from '@testing-library/react';
-import { createSpecializedApp } from './createSpecializedApp';
+import {
+  createSpecializedApp,
+  type CreateSpecializedAppInternalOptions,
+} from './createSpecializedApp';
 import {
   FinalizedSpecializedApp,
   prepareSpecializedApp,
   PreparedSpecializedApp,
 } from './prepareSpecializedApp';
 import { mockApis, TestApiRegistry } from '@backstage/test-utils';
+import { createMockAppHistory } from '@backstage/frontend-test-utils';
 import {
   configApiRef,
   featureFlagsApiRef,
@@ -1017,6 +1023,103 @@ describe('createSpecializedApp', () => {
       expect(info).toEqual({
         packageName: 'decorated:@backstage/frontend-app-api',
       });
+    });
+  });
+
+  describe('dispose', () => {
+    let addEventListenerSpy: jest.SpyInstance;
+    let removeEventListenerSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      window.history.replaceState(null, '', '/');
+      addEventListenerSpy = jest.spyOn(window, 'addEventListener');
+      removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    function popstateListeners(spy: jest.SpyInstance) {
+      return spy.mock.calls
+        .filter(([type]) => type === 'popstate')
+        .map(([, listener]) => listener);
+    }
+
+    it('should hand over teardown of the app history it creates', () => {
+      let dispose: (() => void) | undefined;
+      const app = createSpecializedApp({
+        features: [makeAppPlugin('Disposable')],
+        __internal: {
+          onDispose: teardown => {
+            dispose = teardown;
+          },
+        },
+      } as CreateSpecializedAppInternalOptions);
+
+      render(app.element);
+      expect(screen.getByText('Disposable')).toBeInTheDocument();
+
+      // The prepared app is discarded inside createSpecializedApp, so this
+      // hand-off is the only remaining handle on the app history it built.
+      expect(dispose).toBeDefined();
+
+      const attached = popstateListeners(addEventListenerSpy);
+      expect(attached).toHaveLength(1);
+
+      const appHistory = app.apis.get(appHistoryApiRef)!;
+      const pathnames = new Array<string>();
+      const subscription = appHistory.location$.subscribe(location =>
+        pathnames.push(location.pathname),
+      );
+
+      window.history.pushState(null, '', '/before-dispose');
+      window.dispatchEvent(new PopStateEvent('popstate'));
+      expect(pathnames).toEqual(['/', '/before-dispose']);
+
+      dispose!();
+
+      // Listener count back to its baseline, at the window level — clearing
+      // subscribers alone would stop the emissions below without releasing it.
+      expect(removeEventListenerSpy).toHaveBeenCalledWith(
+        'popstate',
+        attached[0],
+      );
+      expect(popstateListeners(removeEventListenerSpy)).toHaveLength(1);
+      expect(popstateListeners(addEventListenerSpy)).toHaveLength(1);
+
+      window.history.pushState(null, '', '/after-dispose');
+      window.dispatchEvent(new PopStateEvent('popstate'));
+      expect(pathnames).toEqual(['/', '/before-dispose']);
+
+      subscription.unsubscribe();
+    });
+
+    it('should leave an overridden app history API untouched', () => {
+      const appHistory = createMockAppHistory();
+      let dispose: (() => void) | undefined;
+
+      const app = createSpecializedApp({
+        features: [makeAppPlugin('Overridden')],
+        __internal: {
+          apiFactoryOverrides: [createApiFactory(appHistoryApiRef, appHistory)],
+          onDispose: teardown => {
+            dispose = teardown;
+          },
+        },
+      } as CreateSpecializedAppInternalOptions);
+
+      render(app.element);
+      expect(screen.getByText('Overridden')).toBeInTheDocument();
+
+      // Nothing window-backed was constructed, so there is nothing to release
+      // and the supplied instance stays owned by whoever supplied it.
+      expect(app.apis.get(appHistoryApiRef)).toBe(appHistory);
+      expect(popstateListeners(addEventListenerSpy)).toHaveLength(0);
+
+      dispose!();
+
+      expect(popstateListeners(removeEventListenerSpy)).toHaveLength(0);
     });
   });
 

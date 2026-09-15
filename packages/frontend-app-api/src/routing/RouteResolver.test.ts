@@ -36,7 +36,6 @@ import {
 } from './RouteAliasResolver';
 
 const rest = {
-  element: null,
   caseSensitive: false,
   children: [MATCH_ALL_ROUTE],
   plugins: new Set<BackstagePlugin>(),

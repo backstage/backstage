@@ -140,20 +140,17 @@ function routeObj(
   path: string,
   refs: RouteRef[],
   children: any[] = [],
-  type: 'mounted' | 'gathered' = 'mounted',
   appNode?: AppNode,
 ) {
   return {
     appNode,
     path: path,
     caseSensitive: false,
-    element: type,
     routeRefs: new Set(refs),
     children: [
       {
         path: '*',
         caseSensitive: false,
-        element: 'match-all',
         routeRefs: new Set(),
       },
       ...children,
@@ -213,7 +210,7 @@ describe('discovery', () => {
       [ref5, ref1],
     ]);
     expect(info.routeObjects).toEqual([
-      routeObj('nothing', [], undefined, undefined, expect.any(Object)),
+      routeObj('nothing', [], undefined, expect.any(Object)),
       routeObj(
         'foo',
         [ref1],
@@ -221,16 +218,14 @@ describe('discovery', () => {
           routeObj(
             'bar/:id',
             [ref2],
-            [routeObj('baz', [ref3], undefined, undefined, expect.any(Object))],
-            undefined,
+            [routeObj('baz', [ref3], undefined, expect.any(Object))],
             expect.any(Object),
           ),
-          routeObj('blop', [ref5], undefined, undefined, expect.any(Object)),
+          routeObj('blop', [ref5], undefined, expect.any(Object)),
         ],
-        undefined,
         expect.any(Object),
       ),
-      routeObj('divsoup', [ref4], undefined, undefined, expect.any(Object)),
+      routeObj('divsoup', [ref4], undefined, expect.any(Object)),
     ]);
   });
 
@@ -391,12 +386,11 @@ describe('discovery', () => {
       [ref5, ref3],
     ]);
     expect(info.routeObjects).toEqual([
-      routeObj('foo', [ref1, ref2], [], 'mounted', expect.any(Object)),
+      routeObj('foo', [ref1, ref2], [], expect.any(Object)),
       routeObj(
         'bar',
         [ref3],
-        [routeObj('', [ref4, ref5], [], 'mounted', expect.any(Object))],
-        'mounted',
+        [routeObj('', [ref4, ref5], [], expect.any(Object))],
         expect.any(Object),
       ),
     ]);
@@ -464,24 +458,13 @@ describe('discovery', () => {
               routeObj(
                 'baz',
                 [ref3],
-                [
-                  routeObj(
-                    'blop',
-                    [ref4],
-                    undefined,
-                    undefined,
-                    expect.any(Object),
-                  ),
-                ],
-                undefined,
+                [routeObj('blop', [ref4], undefined, expect.any(Object))],
                 expect.any(Object),
               ),
             ],
-            'mounted',
             expect.any(Object),
           ),
         ],
-        undefined,
         expect.any(Object),
       ),
     ]);
@@ -541,7 +524,7 @@ describe('discovery', () => {
         'r',
         [],
         [
-          routeObj('x', [ref1], [], 'mounted', expect.any(Object)),
+          routeObj('x', [ref1], [], expect.any(Object)),
           routeObj(
             'y',
             [],
@@ -550,30 +533,15 @@ describe('discovery', () => {
                 '1',
                 [ref2],
                 [
-                  routeObj(
-                    'a',
-                    [ref3],
-                    undefined,
-                    'mounted',
-                    expect.any(Object),
-                  ),
-                  routeObj(
-                    'b',
-                    [ref4],
-                    undefined,
-                    'mounted',
-                    expect.any(Object),
-                  ),
+                  routeObj('a', [ref3], undefined, expect.any(Object)),
+                  routeObj('b', [ref4], undefined, expect.any(Object)),
                 ],
-                'mounted',
                 expect.any(Object),
               ),
             ],
-            'mounted',
             expect.any(Object),
           ),
         ],
-        undefined,
         expect.any(Object),
       ),
     ]);
@@ -614,8 +582,8 @@ describe('discovery', () => {
         [r3, undefined],
       ]);
       expect(info.routeObjects).toEqual([
-        routeObj('foo', [r1], undefined, undefined, expect.any(Object)),
-        routeObj('bar', [r3], undefined, undefined, expect.any(Object)),
+        routeObj('foo', [r1], undefined, expect.any(Object)),
+        routeObj('bar', [r3], undefined, expect.any(Object)),
       ]);
     });
 
