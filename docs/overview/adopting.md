@@ -152,6 +152,32 @@ Backstage as _the_ platform:
   percentage of engineers is below 50%. Most engineers actually use Backstage on
   a daily basis.
 
+## Governance and cloud modernization tracking
+
+As Backstage matures inside an organization, platform teams often extend the
+strategies above to support software governance and cloud modernization
+initiatives. Catalog metadata (for example `spec.owner`, `spec.lifecycle`,
+`metadata.annotations`, and `metadata.tags` in `catalog-info.yaml`) can help
+establish ownership, maturity expectations, and modernization status (for
+example, by tagging components that are still on legacy infrastructure versus
+migrated to modern cloud-native environments), giving leadership a single view
+of progress. Pairing the
+[Software Catalog](../features/software-catalog/index.md) with
+[TechDocs](../features/techdocs/README.md) and
+[Software Templates](../features/software-templates/index.md) lets platform
+teams enforce golden path standards, such as security baselines, deployment
+patterns, and compliance checklists, automatically for every new service.
+Treating catalog completeness and metadata freshness as a governance KPI
+alongside the adoption metrics above is valuable, since stale ownership or
+lifecycle data undermines both audits and modernization reporting. Many
+organizations also schedule periodic governance reviews where platform leads use
+catalog-wide reports to flag components that are missing required metadata,
+owners, or documentation.
+
+These practices turn Backstage into a lightweight governance layer that keeps
+large-scale cloud modernization programs measurable, without adding heavyweight
+process overhead for individual teams.
+
 Again, any feedback is appreciated. Please use the Edit button at the bottom of the
 page to make a suggestion.
 
