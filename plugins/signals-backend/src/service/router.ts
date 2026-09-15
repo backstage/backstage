@@ -117,7 +117,7 @@ export async function createRouter(
     const token = readWebSocketToken(request.headers['sec-websocket-protocol']);
     if (!token) {
       rejectUpgrade(socket, 'HTTP/1.1 401 Unauthorized', logger, {
-        remoteAddress: request.socket.remoteAddress,
+        remoteAddress: request.socket?.remoteAddress,
         reason: 'missing_token',
       });
       return;
@@ -128,7 +128,7 @@ export async function createRouter(
       const credentials = await auth.authenticate(token);
       if (!auth.isPrincipal(credentials, 'user')) {
         rejectUpgrade(socket, 'HTTP/1.1 401 Unauthorized', logger, {
-          remoteAddress: request.socket.remoteAddress,
+          remoteAddress: request.socket?.remoteAddress,
           reason: 'non_user_principal',
         });
         return;
@@ -136,13 +136,13 @@ export async function createRouter(
       userIdentity = await userInfo.getUserInfo(credentials);
     } catch (e) {
       logger.debug('WebSocket authentication failed', {
-        remoteAddress: request.socket.remoteAddress,
+        remoteAddress: request.socket?.remoteAddress,
         reason: 'invalid_token',
         errorName: e instanceof Error ? e.name : undefined,
         errorMessage: e instanceof Error ? e.message : String(e),
       });
       rejectUpgrade(socket, 'HTTP/1.1 401 Unauthorized', logger, {
-        remoteAddress: request.socket.remoteAddress,
+        remoteAddress: request.socket?.remoteAddress,
         reason: 'invalid_token',
       });
       return;
@@ -160,7 +160,7 @@ export async function createRouter(
     } catch (e) {
       logger.error(`Failed to handle WebSocket upgrade: ${e}`);
       rejectUpgrade(socket, 'HTTP/1.1 500 Internal Server Error', logger, {
-        remoteAddress: request.socket.remoteAddress,
+        remoteAddress: request.socket?.remoteAddress,
         reason: 'upgrade_failed',
       });
     }

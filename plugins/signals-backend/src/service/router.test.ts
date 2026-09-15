@@ -220,7 +220,11 @@ describe('handleUpgrade', () => {
     const socket = new PassThrough();
     server.emit(
       'upgrade',
-      { url: '/api/signals', headers: { 'sec-websocket-protocol': token } },
+      {
+        url: '/api/signals',
+        headers: { 'sec-websocket-protocol': token },
+        socket: { remoteAddress: '127.0.0.1' },
+      },
       socket,
       Buffer.alloc(0),
     );
