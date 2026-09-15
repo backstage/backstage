@@ -69,17 +69,21 @@ export const createCacheMiddleware = ({
       return realWrite(data, encoding, callback);
     };
 
-    // When a socket is closed, if there were no errors and the data written
-    // over the socket should be cached, cache it!
-    socket.on('close', async hadError => {
+    // Restore the original socket.write once the response is done. Sockets are
+    // reused across requests on keep-alive connections, so the monkey-patch and
+    // the listeners below are attached to the per-request response object rather
+    // than the socket itself to avoid leaking them (which previously triggered a
+    // MaxListenersExceededWarning).
+    res.once('close', () => {
+      socket.write = realWrite;
+    });
+
+    // When the response has been fully written, if the data written over the
+    // socket should be cached, cache it!
+    res.once('finish', async () => {
       const content = Buffer.concat(chunks);
       const head = content.toString('utf8', 0, 12);
-      if (
-        isGetRequest &&
-        writeToCache &&
-        !hadError &&
-        head.match(/HTTP\/\d\.\d 200/)
-      ) {
+      if (isGetRequest && writeToCache && head.match(/HTTP\/\d\.\d 200/)) {
         await cache.set(reqPath, content);
       }
     });

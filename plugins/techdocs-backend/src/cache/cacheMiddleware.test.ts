@@ -16,6 +16,8 @@
 
 import express from 'express';
 import request from 'supertest';
+import http from 'node:http';
+import net, { AddressInfo } from 'node:net';
 import { createCacheMiddleware } from './cacheMiddleware';
 import { TechDocsCache } from './TechDocsCache';
 import { mockServices } from '@backstage/backend-test-utils';
@@ -125,6 +127,49 @@ describe('createCacheMiddleware', () => {
 
       await waitForSocketClose();
       expect(cache.set).not.toHaveBeenCalled();
+    });
+
+    it('does not leak socket listeners across keep-alive requests', async () => {
+      // Reuse a single underlying socket for multiple requests, like a real
+      // keep-alive connection would. The middleware must not accumulate
+      // listeners (or socket.write monkey-patches) on the shared socket.
+      const server = app.listen(0);
+      const serverSockets = new Set<net.Socket>();
+      server.on('connection', socket => serverSockets.add(socket));
+      try {
+        const { port } = server.address() as AddressInfo;
+        const agent = new http.Agent({ keepAlive: true, maxSockets: 1 });
+
+        for (let i = 0; i < 15; i += 1) {
+          // eslint-disable-next-line no-await-in-loop
+          await new Promise<void>((resolve, reject) => {
+            const req = http.get(
+              {
+                host: '127.0.0.1',
+                port,
+                path: `/static/docs/default/api/xyz/index-${i}.html`,
+                agent,
+              },
+              response => {
+                response.on('data', () => {});
+                response.on('end', () => resolve());
+                response.on('error', reject);
+              },
+            );
+            req.on('error', reject);
+          });
+        }
+
+        // All requests should have been served over the same socket, which
+        // should not have accumulated 'close' listeners.
+        expect(serverSockets.size).toBe(1);
+        const [socket] = serverSockets;
+        expect(socket.listenerCount('close')).toBeLessThanOrEqual(1);
+
+        agent.destroy();
+      } finally {
+        await new Promise<void>(resolve => server.close(() => resolve()));
+      }
     });
   });
 });
