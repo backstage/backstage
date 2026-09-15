@@ -455,7 +455,7 @@ depends on what it actually did:
 - If it wrapped the router in global providers, move those providers to
   `AppRootWrapperBlueprint` from `@backstage/plugin-app-react`.
 - If it installed a different router library, render that library's page router
-  inside the `loader` of each page that needs it. A page or sub-page that
+  inside the lazily loaded component of each page that needs it. A page or sub-page that
   declares no adapter does not get its own route match. See
   [Choose a router for a page](../building-plugins/10-page-routers.md).
 

@@ -27,28 +27,36 @@ still owns browser history, and navigation between plugins still goes through
 `AppHistoryApi`.
 :::
 
-## Declare a router in the page loader
+## Declare a router in the lazy page component
 
-A page router is declared by rendering it, inside the `loader` of the page whose
-content wants it. There is no extension to attach and no input to fill: this is
+A page router is declared by rendering it, inside the lazily loaded page component. This keeps the adapter import and its
+routing library out of the blueprint module. There is no extension to attach and no input to fill: this is
 ordinary React, and the adapter picks up the page's mount from the context it is
 already rendered in.
 
 ```tsx title="plugins/tools/src/alpha.tsx"
 import { PageBlueprint } from '@backstage/frontend-plugin-api';
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 
 const toolsPage = PageBlueprint.make({
   params: {
     path: '/tools',
-    loader: () =>
-      import('./components/ToolsPage').then(m => (
-        <ReactRouterV6PageRouter>
-          <m.ToolsPage />
-        </ReactRouterV6PageRouter>
-      )),
+    loader: () => import('./components/ToolsPage').then(m => <m.ToolsPage />),
   },
 });
+```
+
+The adapter belongs in the lazily loaded component module. Wrap the page's existing JSX directly; only hooks that consume this router need to be in a child beneath it.
+
+```tsx title="./components/ToolsPage.tsx"
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+
+export function ToolsPage() {
+  return (
+    <ReactRouterV6PageRouter>
+      {/* Existing page JSX and local routes go here. */}
+    </ReactRouterV6PageRouter>
+  );
+}
 ```
 
 Because a router is something the content adds rather than something the
@@ -60,7 +68,7 @@ neither has to know about the other.
 
 ### Declare an adapter at a route mount
 
-`PageBlueprint` and `SubPageBlueprint` are common places to declare adapters.
+Components loaded by `PageBlueprint` and `SubPageBlueprint` can declare adapters.
 Ordinary route-bearing extensions can do the same: publish
 `coreExtensionData.routePath` and render content through `ExtensionBoundary`.
 The framework uses the extension's matched ancestry to provide its mount.
@@ -98,7 +106,7 @@ yarn --cwd plugins/<plugin-name> add @backstage/plugin-app-react-router-v6
 
 The package expects `react-router` and `react-router-dom` version 6 as peer
 dependencies, which a plugin using those APIs already has. Render
-`ReactRouterV6PageRouter` in the page loader, as shown above.
+`ReactRouterV6PageRouter` in the lazy page component, as shown above.
 
 ## Use React Router v7
 
@@ -111,19 +119,27 @@ dependencies, so install those too if your plugin does not already have them.
 
 ```tsx title="plugins/tools/src/alpha.tsx"
 import { PageBlueprint } from '@backstage/frontend-plugin-api';
-import { ReactRouterV7PageRouter } from '@backstage/plugin-app-react-router-v7';
 
 const toolsPage = PageBlueprint.make({
   params: {
     path: '/tools',
-    loader: () =>
-      import('./components/ToolsPage').then(m => (
-        <ReactRouterV7PageRouter>
-          <m.ToolsPage />
-        </ReactRouterV7PageRouter>
-      )),
+    loader: () => import('./components/ToolsPage').then(m => <m.ToolsPage />),
   },
 });
+```
+
+The adapter belongs in the lazily loaded component module. Wrap the page's existing JSX directly; only hooks that consume this router need to be in a child beneath it.
+
+```tsx title="./components/ToolsPage.tsx"
+import { ReactRouterV7PageRouter } from '@backstage/plugin-app-react-router-v7';
+
+export function ToolsPage() {
+  return (
+    <ReactRouterV7PageRouter>
+      {/* Existing page JSX and local routes go here. */}
+    </ReactRouterV7PageRouter>
+  );
+}
 ```
 
 The page's content renders inside a v7 context bound to the page's own mount
@@ -148,19 +164,26 @@ it when you want TanStack to own the page's routing context but the page content
 itself does not declare TanStack routes:
 
 ```tsx title="plugins/tools/src/alpha.tsx"
-import { TanStackPageRouter } from '@backstage/plugin-app-tanstack-router';
-
 const toolsPage = PageBlueprint.make({
   params: {
     path: '/tools',
-    loader: () =>
-      import('./components/ToolsPage').then(m => (
-        <TanStackPageRouter>
-          <m.ToolsPage />
-        </TanStackPageRouter>
-      )),
+    loader: () => import('./components/ToolsPage').then(m => <m.ToolsPage />),
   },
 });
+```
+
+The adapter belongs in the lazily loaded component module. Wrap the page's existing JSX directly; only hooks that consume this router need to be in a child beneath it.
+
+```tsx title="./components/ToolsPage.tsx"
+import { TanStackPageRouter } from '@backstage/plugin-app-tanstack-router';
+
+export function ToolsPage() {
+  return (
+    <TanStackPageRouter>
+      {/* Existing page JSX and local routes go here. */}
+    </TanStackPageRouter>
+  );
+}
 ```
 
 ### Bind a nested route tree
@@ -205,7 +228,7 @@ export const ToolsPageRouter = createTanStackPageRouter({
 
 The `history` passed to `createRouter` is scoped to the page and backed by the
 app's history, so TanStack navigation and app navigation stay on the same
-timeline. Render `ToolsPageRouter` in the page loader the same way as above.
+timeline. Render `ToolsPageRouter` in the lazy page component the same way as above.
 TanStack types stay inside the adapter package and your plugin, so nothing leaks
 into the framework's public contract.
 
@@ -213,7 +236,7 @@ into the framework's public contract.
 
 A sub-page is an ordinary route one level below its page, and it is no more
 special than the page is: it declares a router by rendering one in its own
-`loader`.
+lazily loaded component.
 
 ```tsx
 const overviewSubPage = SubPageBlueprint.make({
@@ -221,14 +244,23 @@ const overviewSubPage = SubPageBlueprint.make({
   params: {
     path: 'overview',
     title: 'Overview',
-    loader: () =>
-      import('./components/Overview').then(m => (
-        <ReactRouterV7PageRouter>
-          <m.Overview />
-        </ReactRouterV7PageRouter>
-      )),
+    loader: () => import('./components/Overview').then(m => <m.Overview />),
   },
 });
+```
+
+The adapter belongs in the lazily loaded component module. Wrap the page's existing JSX directly; only hooks that consume this router need to be in a child beneath it.
+
+```tsx title="./components/Overview.tsx"
+import { ReactRouterV7PageRouter } from '@backstage/plugin-app-react-router-v7';
+
+export function Overview() {
+  return (
+    <ReactRouterV7PageRouter>
+      {/* Existing page JSX and local routes go here. */}
+    </ReactRouterV7PageRouter>
+  );
+}
 ```
 
 An adapter declared here scopes itself to the **sub-page**, because the
