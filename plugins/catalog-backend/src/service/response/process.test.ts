@@ -55,7 +55,7 @@ describe('processRawEntitiesResult', () => {
     });
   });
 
-  it('should let other event-loop work run while projecting an expensive page', async () => {
+  it('should let other event-loop work run after each 3 ms projection slice', async () => {
     // Advance only the CPU clock: real immediates must get a turn, without
     // requiring slow or timing-sensitive CPU work in the test itself.
     let elapsed = 0;
@@ -76,7 +76,7 @@ describe('processRawEntitiesResult', () => {
         Array(3).fill('{"kind":"test"}'),
         entity => {
           ++processed;
-          elapsed += 100;
+          elapsed += 3;
           return mockTransform(entity);
         },
       );
@@ -94,7 +94,10 @@ describe('processRawEntitiesResult', () => {
   });
 
   it('should not schedule a yield for a cheap projection', async () => {
-    const clock = jest.spyOn(performance, 'now').mockReturnValue(0);
+    let elapsed = 0;
+    const clock = jest
+      .spyOn(performance, 'now')
+      .mockImplementation(() => elapsed);
     let yielded = false;
     const observer = setImmediate(() => {
       yielded = true;
@@ -102,7 +105,10 @@ describe('processRawEntitiesResult', () => {
     try {
       await processRawEntitiesResult(
         Array(3).fill('{"kind":"test"}'),
-        mockTransform,
+        entity => {
+          elapsed += 1;
+          return mockTransform(entity);
+        },
       );
       expect(yielded).toBe(false);
     } finally {

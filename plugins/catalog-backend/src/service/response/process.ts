@@ -21,7 +21,7 @@ import { EntitiesResponseItems } from '../../catalog/types';
 
 // Bound consecutive projection work, not the page size. A single entity can
 // still take longer than this, since its JSON parsing and serialization are synchronous.
-const PROJECTION_TIME_SLICE_MS = 5;
+const PROJECTION_TIME_SLICE_MS = 3;
 
 /**
  * Keeps full entities serialized, and projects requested fields in bounded work
