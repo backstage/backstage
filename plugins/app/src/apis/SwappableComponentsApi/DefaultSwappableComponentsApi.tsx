@@ -50,6 +50,19 @@ export class DefaultSwappableComponentsApi implements SwappableComponentsApi {
     );
   }
 
+  /**
+   * One resolved component per ref, so repeated lookups return the same
+   * element type. Callers render the result directly, and React tears a
+   * subtree down and rebuilds it whenever an element type changes identity —
+   * handing back a fresh function would remount everything the swapped
+   * component wraps, page content and its state included, on every render of
+   * the caller.
+   */
+  #resolved = new WeakMap<
+    SwappableComponentRef<any>,
+    (props: object) => JSX.Element | null
+  >();
+
   constructor(components: Map<string, any>) {
     this.#components = components;
   }
@@ -57,11 +70,16 @@ export class DefaultSwappableComponentsApi implements SwappableComponentsApi {
   getComponent(
     ref: SwappableComponentRef<any>,
   ): (props: object) => JSX.Element | null {
+    const existing = this.#resolved.get(ref);
+    if (existing) {
+      return existing;
+    }
+
     const OverrideComponent = this.#components.get(ref.id);
     const { defaultComponent: DefaultComponent, transformProps } =
       OpaqueSwappableComponentRef.toInternal(ref);
 
-    return (props: object) => {
+    const SwappableComponent = (props: object) => {
       const innerProps = transformProps?.(props) ?? props;
 
       if (OverrideComponent) {
@@ -70,5 +88,8 @@ export class DefaultSwappableComponentsApi implements SwappableComponentsApi {
 
       return <DefaultComponent {...innerProps} />;
     };
+
+    this.#resolved.set(ref, SwappableComponent);
+    return SwappableComponent;
   }
 }
