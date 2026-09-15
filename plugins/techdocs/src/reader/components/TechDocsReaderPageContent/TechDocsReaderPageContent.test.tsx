@@ -148,7 +148,11 @@ describe('<TechDocsReaderPageContent />', () => {
     });
 
     const entityRef = getCompoundEntityRef(mockEntityMetadata);
-    expect(useTechDocsReaderDom).toHaveBeenCalledWith(entityRef, defaultPath);
+    expect(useTechDocsReaderDom).toHaveBeenCalledWith(
+      entityRef,
+      defaultPath,
+      'legacy',
+    );
   });
 
   it('should not render techdocs content if entity metadata is missing', async () => {

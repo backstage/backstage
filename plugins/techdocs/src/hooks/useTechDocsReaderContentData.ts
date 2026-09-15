@@ -24,6 +24,7 @@ import {
 import { useApp } from '@backstage/core-plugin-api';
 import { useTechDocsReaderDom } from '../reader/components/TechDocsReaderPageContent/dom';
 import { useTechDocsReader } from '../reader/components/TechDocsReaderProvider';
+import { useTechDocsReaderLayout } from '../reader/TechDocsReaderLayoutContext';
 
 /**
  * Shared hook for TechDocs reader content data.
@@ -35,6 +36,7 @@ export function useTechDocsReaderContentData(options: {
   onReady?: () => void;
 }) {
   const { defaultPath, onReady } = options;
+  const layout = useTechDocsReaderLayout();
 
   const {
     entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
@@ -42,7 +44,7 @@ export function useTechDocsReaderContentData(options: {
     setShadowRoot,
   } = useTechDocsReaderPage();
   const { state } = useTechDocsReader();
-  const dom = useTechDocsReaderDom(entityRef, defaultPath);
+  const dom = useTechDocsReaderDom(entityRef, defaultPath, layout);
   const location = useLocation();
   const path = location.pathname;
   const hash = location.hash;

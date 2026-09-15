@@ -19,6 +19,8 @@ import { useTheme } from '@material-ui/core/styles';
 import { useSidebarPinState } from '@backstage/core-components';
 import { Transformer } from '../transformer';
 import { rules } from './rules';
+import { buiLayout } from './rules/buiLayout';
+import type { TechDocsReaderLayout } from '../../TechDocsReaderLayout';
 
 /**
  * Sidebar pinned state to be used in computing style injections.
@@ -42,8 +44,11 @@ const useRuleStyles = () => {
 /**
  * Returns a transformer that inserts all style rules into the given element's head tag.
  */
-export const useStylesTransformer = (): Transformer => {
-  const styles = useRuleStyles();
+export const useStylesTransformer = (
+  layout: TechDocsReaderLayout = 'legacy',
+): Transformer => {
+  const sharedStyles = useRuleStyles();
+  const styles = `${sharedStyles}${layout === 'bui' ? buiLayout : ''}`;
 
   return useCallback(
     (dom: Element) => {

@@ -22,6 +22,7 @@ import {
 import { attachTechDocsAddonComponentData } from '@backstage/plugin-techdocs-react/alpha';
 import { EmbeddedDocsRouter, TechDocsReaderRouter } from '../../Router';
 import { TechDocsReaderLayout } from './TechDocsReaderLayout';
+import { TechDocsReaderLayoutProvider } from '../../reader/TechDocsReaderLayoutContext';
 
 function Addons(props: { options: TechDocsAddonOptions[] }) {
   return (
@@ -60,8 +61,10 @@ export function TechDocsEntityContent(props: {
   emptyState?: ReactElement;
 }) {
   return (
-    <EmbeddedDocsRouter emptyState={props.emptyState}>
-      <Addons options={props.addonOptions} />
-    </EmbeddedDocsRouter>
+    <TechDocsReaderLayoutProvider layout="bui">
+      <EmbeddedDocsRouter emptyState={props.emptyState}>
+        <Addons options={props.addonOptions} />
+      </EmbeddedDocsRouter>
+    </TechDocsReaderLayoutProvider>
   );
 }
