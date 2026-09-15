@@ -40,6 +40,7 @@ import {
   convertLegacyRouteRefs,
 } from './convertLegacyRouteRef';
 import { compatWrapper } from './compatWrapper';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { collectEntityPageContents } from './collectEntityPageContents';
 import { normalizeRoutePath } from './normalizeRoutePath';
 
@@ -238,18 +239,34 @@ export function collectLegacyRoutes(
             path: normalizeRoutePath(path),
             noHeader: true,
             routeRef: routeRef ? convertLegacyRouteRef(routeRef) : undefined,
-            loader: async () =>
-              compatWrapper(
-                route.props.children ? (
-                  <Routes>
-                    <Route path="*" element={routeElement}>
-                      <Route path="*" element={route.props.children} />
-                    </Route>
-                  </Routes>
-                ) : (
-                  routeElement
-                ),
-              ),
+            // A legacy page is a React Router v6 page by definition, and this
+            // one is built out of v6 `<Routes>` right here. A descendant
+            // `<Routes>` matches against the pathname left over by the route
+            // context above it, so with none it would match against the whole
+            // pathname and the page's own mount would leak into every splat
+            // below it. `createRoutableExtension` also calls `useRouteRef`
+            // from `@backstage/core-plugin-api`, which reads `useLocation`,
+            // before the page's own component renders at all.
+            //
+            // Declared here, at the page, and not in `compatWrapper` or in
+            // `collectEntityPageContents`: those produce page *content*, and
+            // an adapter there would re-scope to the page's own mount and drop
+            // the route match of the entity tab the content renders under.
+            loader: async () => (
+              <ReactRouterV6PageRouter>
+                {compatWrapper(
+                  route.props.children ? (
+                    <Routes>
+                      <Route path="*" element={routeElement}>
+                        <Route path="*" element={route.props.children} />
+                      </Route>
+                    </Routes>
+                  ) : (
+                    routeElement
+                  ),
+                )}
+              </ReactRouterV6PageRouter>
+            ),
           });
         },
       }),
