@@ -190,6 +190,72 @@ describe.each(databases.eachSupportedId())(
       );
     });
 
+    if (databaseId.startsWith('POSTGRES_')) {
+      it('preserves an entity when a reference is committed during cleanup', async () => {
+        const knex = await createDatabase();
+        await insertEntity(knex, 'E1');
+
+        const referenceTx = await knex.transaction();
+        const cleanupTx = await knex.transaction();
+
+        try {
+          await insertReference(referenceTx, {
+            source_key: 'P1',
+            target_entity_ref: 'E1',
+          });
+
+          const {
+            rows: [{ pid: referencePid }],
+          } = await referenceTx.raw<{ rows: [{ pid: number }] }>(
+            'SELECT pg_backend_pid() AS pid',
+          );
+          const {
+            rows: [{ pid: cleanupPid }],
+          } = await cleanupTx.raw<{ rows: [{ pid: number }] }>(
+            'SELECT pg_backend_pid() AS pid',
+          );
+
+          const cleanup = deleteOrphanedEntities({ knex: cleanupTx });
+
+          let isBlockedByReference = false;
+          for (let attempt = 0; attempt < 500; ++attempt) {
+            const { rows } = await knex.raw<{
+              rows: Array<{ is_blocked: boolean }>;
+            }>('SELECT ?::integer = ANY(pg_blocking_pids(?)) AS is_blocked', [
+              referencePid,
+              cleanupPid,
+            ]);
+            if (rows[0]?.is_blocked) {
+              isBlockedByReference = true;
+              break;
+            }
+            await new Promise(resolve => setTimeout(resolve, 10));
+          }
+          expect(isBlockedByReference).toBe(true);
+
+          await referenceTx.commit();
+          await expect(cleanup).resolves.toBe(0);
+          await cleanupTx.commit();
+
+          await expect(refreshState(knex)).resolves.toEqual([
+            { entity_ref: 'E1', result_hash: 'original' },
+          ]);
+          await expect(
+            knex<DbRefreshStateReferencesRow>(
+              'refresh_state_references',
+            ).select('source_key', 'target_entity_ref'),
+          ).resolves.toEqual([{ source_key: 'P1', target_entity_ref: 'E1' }]);
+        } finally {
+          if (!referenceTx.isCompleted()) {
+            await referenceTx.rollback();
+          }
+          if (!cleanupTx.isCompleted()) {
+            await cleanupTx.rollback();
+          }
+        }
+      });
+    }
+
     if (databaseId === 'SQLITE_3') {
       const ignoreEntityDeletion = async (knex: Knex, entityRef: string) => {
         await knex.raw(`

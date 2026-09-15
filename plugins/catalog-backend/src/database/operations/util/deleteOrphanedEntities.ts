@@ -76,6 +76,15 @@ export async function deleteOrphanedEntities(options: {
 
     const orphanIds: string[] = uniq(candidates.map(r => r.entityId));
 
+    // Serialize with concurrent reference inserts, which take a key-share lock
+    // on the target row while checking their foreign key. Rechecking in the
+    // following statement then observes references that committed while this
+    // lock was being acquired.
+    await tx<DbRefreshStateRow>('refresh_state')
+      .select('entity_id')
+      .whereIn('entity_id', orphanIds)
+      .forUpdate();
+
     // Recheck the orphan status in the deletion statement. An entity may have
     // gained a reference since the candidate query completed.
     const deleted = await tx
