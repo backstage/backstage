@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { generatePath, matchRoutes, RouteMatch } from 'react-router-dom';
+import { generatePath } from './generatePath';
+import { matchRouteRefs } from './matchRouteRefs';
 import {
   RouteRef,
   ExternalRouteRef,
@@ -23,7 +24,6 @@ import {
   RouteFunc,
   RouteResolutionApi,
 } from '@backstage/frontend-plugin-api';
-import mapValues from 'lodash/mapValues';
 import { AnyRouteRef, BackstageRouteObject } from './types';
 import {
   OpaqueRouteRef,
@@ -93,10 +93,16 @@ function resolveTargetRef(
  */
 function resolveBasePath(
   targetRef: RouteRef,
-  match: RouteMatch<string, BackstageRouteObject>[],
+  sourceLocation: string,
   routePaths: Map<RouteRef, string>,
   routeParents: Map<RouteRef, RouteRef | undefined>,
 ) {
+  // While traversing the app element tree we build up the routeObjects structure
+  // used here. It is the same kind of structure that react-router creates, with the
+  // addition that associated route refs are stored throughout the tree. This lets
+  // us look up all route refs that can be reached from our source location.
+  const match = matchRouteRefs(routeObjects, sourceLocation) ?? [];
+
   // While we search for a common routing root between our current location and
   // the target route, we build a list of all route refs we find that we need
   // to traverse to reach the target.
@@ -112,7 +118,9 @@ function resolveBasePath(
     // Starting at the desired target ref and traversing back through its parents, we search
     // for a target ref that is present in the match for our current location. When a match
     // is found it means we have found a common base to resolve the route from.
-    matchIndex = match.findIndex(m => m.route.routeRefs.has(targetSearchRef!));
+    matchIndex = match.findIndex(m =>
+      m.routeObject.routeRefs.has(targetSearchRef!),
+    );
     if (matchIndex !== -1) {
       break;
     }
@@ -220,23 +228,9 @@ export class RouteResolver implements RouteResolutionApi {
     );
 
     const routeFunc: RouteFunc<TParams> = (...[params]) => {
-      // We selectively encode some some known-dangerous characters in the
-      // params. The reason that we don't perform a blanket `encodeURIComponent`
-      // here is that this encoding was added defensively long after the initial
-      // release of this code. There's likely to be many users of this code that
-      // already encode their parameters knowing that this code didn't do this
-      // for them in the past. Therefore, we are extra careful NOT to include
-      // the percent character in this set, even though that might seem like a
-      // bad idea.
-      const encodedParams =
-        params &&
-        mapValues(params, value => {
-          if (typeof value === 'string') {
-            return value.replaceAll(/[&?#;\/]/g, c => encodeURIComponent(c));
-          }
-          return value;
-        });
-      return joinPaths(basePath, generatePath(targetPath, encodedParams));
+      // Encoding of dangerous path characters lives in generatePath so direct
+      // callers get the same protection as route-ref resolution.
+      return joinPaths(basePath, generatePath(targetPath, params ?? {}));
     };
     return routeFunc;
   }
