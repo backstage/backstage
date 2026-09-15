@@ -8,7 +8,12 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
-export function createBackend(): Backend;
+export function createBackend(options?: CreateBackendOptions): Backend;
+
+// @public (undocumented)
+export interface CreateBackendOptions {
+  instanceId?: string;
+}
 
 // @public (undocumented)
 export const defaultServiceFactories: ServiceFactory[];

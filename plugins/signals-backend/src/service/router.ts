@@ -22,6 +22,7 @@ import {
   DiscoveryService,
   LifecycleService,
   LoggerService,
+  RootInstanceMetadataService,
   UserInfoService,
 } from '@backstage/backend-plugin-api';
 import * as https from 'node:https';
@@ -38,6 +39,7 @@ export interface RouterOptions {
   discovery: DiscoveryService;
   config: Config;
   lifecycle: LifecycleService;
+  instanceMetadata: RootInstanceMetadataService;
   userInfo: UserInfoService;
   auth: AuthService;
 }
