@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { screen, waitFor, within } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { Route, Routes, useParams } from 'react-router-dom';
 import { renderInTestApp, renderTestApp } from '@backstage/frontend-test-utils';
@@ -88,22 +94,42 @@ describe('PageLayout', () => {
     });
   });
 
-  it('resolves relative tabs and the breadcrumb against the page mount', async () => {
+  it('uses the host scope for tab hrefs, navigation, and prefix selection', async () => {
     const myPlugin = createFrontendPlugin({
       pluginId: 'my-plugin',
       extensions: [
         PageBlueprint.make({
-          name: 'index-page',
           params: {
             title: 'Outer',
-            path: '/my-plugin',
+            path: '/my-plugin/:name',
             noHeader: true,
+          },
+        }),
+        SubPageBlueprint.make({
+          name: 'tasks',
+          params: {
+            title: 'Tasks',
+            path: 'tasks',
             loader: async () => (
               <PageLayout
                 title="My Plugin"
                 tabs={[
-                  { id: 'overview', label: 'Overview', href: 'overview' },
+                  {
+                    id: 'overview',
+                    label: 'Overview',
+                    href: 'overview?view=all#details',
+                  },
                   { id: 'settings', label: 'Settings', href: '/settings' },
+                  {
+                    id: 'external',
+                    label: 'External',
+                    href: 'https://example.com/docs',
+                  },
+                  {
+                    id: 'protocol-relative',
+                    label: 'Protocol relative',
+                    href: '//example.com/docs',
+                  },
                 ]}
               >
                 <div>Plugin content</div>
@@ -114,24 +140,101 @@ describe('PageLayout', () => {
       ],
     });
 
-    renderTestApp({
+    const { appHistory } = renderTestApp({
       features: [myPlugin],
-      initialRouteEntries: ['/my-plugin'],
+      initialRouteEntries: ['/my-plugin/example/tasks'],
+      config: {
+        app: { baseUrl: 'http://localhost/backstage' },
+        backend: { baseUrl: 'http://localhost:7007' },
+      },
     });
 
-    expect(
-      await screen.findByRole('tab', { name: 'Overview' }),
-    ).toHaveAttribute('href', '/my-plugin/overview');
+    const overview = await screen.findByRole('tab', { name: 'Overview' });
+    expect(overview).toHaveAttribute(
+      'href',
+      '/backstage/my-plugin/example/tasks/overview?view=all#details',
+    );
     expect(screen.getByRole('tab', { name: 'Settings' })).toHaveAttribute(
       'href',
-      '/settings',
+      '/backstage/settings',
     );
-    const breadcrumbList = screen.getByRole('navigation', {
-      name: 'Breadcrumbs',
-    });
+    expect(screen.getByRole('tab', { name: 'External' })).toHaveAttribute(
+      'href',
+      'https://example.com/docs',
+    );
     expect(
-      within(breadcrumbList).getByRole('link', { name: 'My Plugin' }),
-    ).toHaveAttribute('href', '/my-plugin');
+      screen.getByRole('tab', { name: 'Protocol relative' }),
+    ).toHaveAttribute('href', '//example.com/docs');
+    expect(screen.getByRole('link', { name: 'Tasks' })).toHaveAttribute(
+      'href',
+      '/backstage/my-plugin/example/tasks',
+    );
+    fireEvent.click(overview);
+    expect(appHistory.location).toMatchObject({
+      pathname: '/my-plugin/example/tasks/overview',
+      search: '?view=all',
+      hash: '#details',
+    });
+    expect(overview).toHaveAttribute('aria-selected', 'true');
+    act(() => appHistory.navigate('/my-plugin/example/tasks/overview/deep'));
+    expect(overview).toHaveAttribute('aria-selected', 'true');
+    act(() => appHistory.navigate('/my-plugin/example/tasks/overview-other'));
+    expect(overview).toHaveAttribute('aria-selected', 'false');
+    expect(screen.getByRole('tab', { name: 'External' })).toHaveAttribute(
+      'aria-selected',
+      'false',
+    );
+  });
+
+  it('keeps query-only and hash-only tabs at the current location', async () => {
+    const targets = [
+      ['Query', '?redirect=https://example.com/docs'],
+      ['Fragment', '#details'],
+    ];
+    const { appHistory } = renderTestApp({
+      extensions: [
+        PageBlueprint.make({
+          params: {
+            path: '/my-plugin/:name',
+            noHeader: true,
+            loader: async () => (
+              <PageLayout
+                title="My Plugin"
+                tabs={targets.map(([label, href]) => ({
+                  id: label,
+                  label,
+                  href,
+                }))}
+              >
+                Plugin content
+              </PageLayout>
+            ),
+          },
+        }),
+      ],
+      initialRouteEntries: ['/my-plugin/example/deep'],
+      config: {
+        app: { baseUrl: 'http://localhost/backstage' },
+        backend: { baseUrl: 'http://localhost:7007' },
+      },
+    });
+
+    await screen.findByRole('tab', { name: 'Query' });
+    const breadcrumbs = screen.getByRole('navigation', { name: 'Breadcrumbs' });
+    expect(
+      within(breadcrumbs).getByRole('link', { name: 'My Plugin' }),
+    ).toHaveAttribute('href', '/backstage/my-plugin/example');
+    for (const [label, href] of targets) {
+      act(() => appHistory.navigate('/my-plugin/example/deep'));
+      const tab = screen.getByRole('tab', { name: label });
+      expect(tab).toHaveAttribute(
+        'href',
+        `/backstage/my-plugin/example/deep${href}`,
+      );
+      fireEvent.click(tab);
+      const { pathname, search, hash } = appHistory.location;
+      expect(pathname + search + hash).toBe(`/my-plugin/example/deep${href}`);
+    }
   });
 
   it('falls back to the ambient route match when there is no page mount', async () => {

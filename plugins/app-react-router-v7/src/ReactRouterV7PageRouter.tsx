@@ -16,8 +16,29 @@
 
 import { useMemo, type ReactNode } from 'react';
 import { useApiHolder, appHistoryApiRef } from '@backstage/frontend-plugin-api';
-import { usePageMount } from '@internal/frontend';
-import { createScopedRouter } from './createScopedRouter';
+import {
+  createAppHistoryRouter,
+  usePageMount,
+  type ReactRouterAdapterBindings,
+} from '@internal/frontend';
+import {
+  UNSAFE_LocationContext,
+  UNSAFE_NavigationContext,
+  UNSAFE_RouteContext,
+  NavigationType,
+  matchPath,
+} from 'react-router';
+
+const v7Bindings: ReactRouterAdapterBindings = {
+  NavigationType,
+  matchPath: matchPath as ReactRouterAdapterBindings['matchPath'],
+  UNSAFE_NavigationContext:
+    UNSAFE_NavigationContext as ReactRouterAdapterBindings['UNSAFE_NavigationContext'],
+  UNSAFE_LocationContext:
+    UNSAFE_LocationContext as ReactRouterAdapterBindings['UNSAFE_LocationContext'],
+  UNSAFE_RouteContext:
+    UNSAFE_RouteContext as ReactRouterAdapterBindings['UNSAFE_RouteContext'],
+};
 
 /**
  * React Router v7 page adapter. Injects library context projected from the
@@ -78,7 +99,15 @@ export function ReactRouterV7PageRouter(props: { children?: ReactNode }) {
   const scopedRouter = useMemo(
     () =>
       routePattern && appHistory
-        ? createScopedRouter(appHistory, { routePattern })
+        ? createAppHistoryRouter(v7Bindings, appHistory, {
+            routePattern,
+            // v7 always resolves relative targets against the leaf match's
+            // full pathname, including its splat tail.
+            navigationContextExtras: {
+              future: {},
+              useTransitions: undefined,
+            },
+          })
         : undefined,
     [appHistory, routePattern],
   );

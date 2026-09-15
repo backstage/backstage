@@ -38,7 +38,7 @@ import { ReactRouterV6PageRouter } from './ReactRouterV6PageRouter';
  * stacked — which is what every page that wraps in `ReactRouterV6PageRouter`
  * actually produces, and so the most common shape in the product.
  *
- * The app root keeps a projection of its own for chrome (`RootReactRouterV6`),
+ * The app root keeps a projection of its own for chrome (`RootHistoryRouter`),
  * at app scope and with no route matched. A page adapter is a second
  * projection of the same contexts, at page scope, rendered inside the first.
  * Nothing about that is exotic — it is the default — and yet it is the one

@@ -19,7 +19,12 @@ import { testPageRouter } from '../../../packages/frontend-test-utils/src/__test
 import { useContext, useState } from 'react';
 import { act, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { createMockAppHistory } from '@backstage/frontend-test-utils';
+import {
+  createMockAppHistory,
+  TestApiProvider,
+} from '@backstage/frontend-test-utils';
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
+import { PageMountProvider } from '@internal/frontend';
 import {
   Link,
   MemoryRouter,
@@ -32,7 +37,6 @@ import {
   useSearchParams,
 } from 'react-router';
 import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';
-import { createScopedRouter } from './createScopedRouter';
 
 /**
  * Page router adapter conformance.
@@ -157,13 +161,16 @@ describe(`React Router v7 route context matches a real router tree`, () => {
     real.unmount();
 
     const appHistory = createMockAppHistory({ initialLocation: url });
-    const { Router } = createScopedRouter(appHistory, {
-      routePattern: ROUTE_PATTERN,
-    });
     render(
-      <Router>
-        <ContextProbe />
-      </Router>,
+      <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
+        <PageMountProvider
+          mount={{ basePath: BASE_PATH, routePattern: ROUTE_PATTERN }}
+        >
+          <ReactRouterV7PageRouter>
+            <ContextProbe />
+          </ReactRouterV7PageRouter>
+        </PageMountProvider>
+      </TestApiProvider>,
     );
 
     expect(readContextProbe()).toEqual(expected);
@@ -173,14 +180,16 @@ describe(`React Router v7 route context matches a real router tree`, () => {
     const appHistory = createMockAppHistory({
       initialLocation: `${BASE_PATH}/overview`,
     });
-    const { Router } = createScopedRouter(appHistory, {
-      routePattern: ROUTE_PATTERN,
-    });
-
     render(
-      <Router>
-        <ContextProbe />
-      </Router>,
+      <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
+        <PageMountProvider
+          mount={{ basePath: BASE_PATH, routePattern: ROUTE_PATTERN }}
+        >
+          <ReactRouterV7PageRouter>
+            <ContextProbe />
+          </ReactRouterV7PageRouter>
+        </PageMountProvider>
+      </TestApiProvider>,
     );
 
     expect(screen.getByTestId('params')).toHaveTextContent('"name":"foo"');
