@@ -14,16 +14,24 @@
  * limitations under the License.
  */
 
-import { useParams } from 'react-router-dom';
+import {
+  useRouteRefParams as useFrontendRouteRefParams,
+  type RouteRef as FrontendRouteRef,
+  type SubRouteRef as FrontendSubRouteRef,
+} from '@backstage/frontend-plugin-api';
 import { RouteRef, AnyParams, SubRouteRef } from './types';
 
 /**
  * React hook for retrieving dynamic params from the current URL.
- * @param _routeRef - Ref of the current route.
+ * @param routeRef - Ref of the current route.
  * @public
  */
 export function useRouteRefParams<Params extends AnyParams>(
-  _routeRef: RouteRef<Params> | SubRouteRef<Params>,
+  routeRef: RouteRef<Params> | SubRouteRef<Params>,
 ): Params {
-  return useParams() as Params;
+  return useFrontendRouteRefParams(
+    routeRef as unknown as
+      | FrontendRouteRef<Params>
+      | FrontendSubRouteRef<Params>,
+  );
 }

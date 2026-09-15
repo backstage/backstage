@@ -136,7 +136,7 @@ const techDocsSearchFilterResultTypeExtension =
   });
 
 /**
- * Responsible for rendering the provided router element
+ * Renders the documentation index using framework navigation.
  *
  * @alpha
  */

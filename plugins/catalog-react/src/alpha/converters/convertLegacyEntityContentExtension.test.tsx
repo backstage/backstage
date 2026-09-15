@@ -27,6 +27,7 @@ import {
 import { screen } from '@testing-library/react';
 import { convertLegacyEntityContentExtension } from './convertLegacyEntityContentExtension';
 import { convertLegacyRouteRef } from '@backstage/core-compat-api';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { EntityContentBlueprint } from '../blueprints';
 
 const routeRef = createLegacyRouteRef({ id: 'test' });
@@ -54,6 +55,7 @@ describe('convertLegacyEntityContentExtension', () => {
     expect(tester.query(converted).node.spec.id).toBe('entity-content:example');
 
     await renderInTestApp(tester.reactElement(), {
+      router: ReactRouterV6PageRouter,
       mountedRoutes: {
         '/': convertLegacyRouteRef(routeRef),
       },
@@ -92,6 +94,7 @@ describe('convertLegacyEntityContentExtension', () => {
     expect(tester.query(converted).node.spec.id).toBe('entity-content:other');
 
     await renderInTestApp(tester.reactElement(), {
+      router: ReactRouterV6PageRouter,
       mountedRoutes: {
         '/': convertLegacyRouteRef(routeRef),
       },

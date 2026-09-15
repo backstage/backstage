@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
+import {
+  useAppSearchParams,
+  IconComponent,
+} from '@backstage/frontend-plugin-api';
+
 import { useCallback, ComponentProps, ReactNode } from 'react';
-import { useSearchParams } from 'react-router-dom';
+
 import useAsync from 'react-use/esm/useAsync';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -23,7 +28,6 @@ import Box from '@material-ui/core/Box';
 
 import { Header, Breadcrumbs } from '@backstage/core-components';
 import { useApi, useRouteRefParams } from '@backstage/core-plugin-api';
-import { IconComponent } from '@backstage/frontend-plugin-api';
 
 import {
   Entity,
@@ -195,7 +199,7 @@ export function EntityHeader(props: {
     entity,
   );
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useAppSearchParams();
   const selectedInspectEntityDialogTab = searchParams.get('inspect');
 
   const setInspectEntityDialogTab = useCallback(

@@ -17,39 +17,31 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/frontend-test-utils';
 import { searchApiRef } from '@backstage/plugin-search-react';
 
 import { rootRouteRef } from '../../plugin';
 
 import { HomePageSearchBar } from './HomePageSearchBar';
 
-const navigate = jest.fn();
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => navigate,
-}));
-
 describe('<HomePageSearchBar/>', () => {
   const searchApiMock = { query: jest.fn().mockResolvedValue({ results: [] }) };
 
   it("Don't wait query debounce time when enter is pressed", async () => {
-    await renderInTestApp(
-      <TestApiProvider apis={[[searchApiRef, searchApiMock]]}>
-        <HomePageSearchBar />
-      </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/search': rootRouteRef,
-        },
+    const { appHistory } = renderInTestApp(<HomePageSearchBar />, {
+      apis: [[searchApiRef, searchApiMock]],
+      mountedRoutes: {
+        '/search': rootRouteRef,
       },
-    );
+    });
 
     expect(searchApiMock.query).not.toHaveBeenCalled();
 
-    await userEvent.type(screen.getByLabelText('Search'), 'term{enter}');
+    await userEvent.type(await screen.findByLabelText('Search'), 'term{enter}');
 
-    expect(navigate).toHaveBeenCalledWith('/search?query=term');
+    expect(appHistory.location).toMatchObject({
+      pathname: '/search',
+      search: '?query=term',
+    });
   });
 });

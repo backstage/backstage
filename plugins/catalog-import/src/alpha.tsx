@@ -51,12 +51,12 @@ const catalogImportPage = PageBlueprint.make({
     routeRef: rootRouteRef,
     loader: async () => {
       const [m, { RequirePermission }] = await Promise.all([
-        import('./components/ImportPage'),
+        import('./components/DefaultImportPage'),
         import('@backstage/plugin-permission-react'),
       ]);
       return (
         <RequirePermission permission={catalogEntityCreatePermission}>
-          <m.ImportPage />
+          <m.DefaultImportPage />
         </RequirePermission>
       );
     },

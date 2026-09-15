@@ -17,7 +17,9 @@
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { Link as RouterLink, LinkProps } from 'react-router-dom';
+import type { LinkProps } from 'react-router-dom';
+import { createPath } from '@internal/frontend';
+import { UnstyledLink } from '../Link/Link';
 import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
 import { Theme } from '@material-ui/core/styles';
 
@@ -47,16 +49,29 @@ export function CreateButton(props: CreateButtonProps) {
 
   return isXSScreen ? (
     <IconButton
-      component={RouterLink}
+      component={UnstyledLink}
       color="primary"
       title={title}
       size="small"
-      to={to}
+      to={
+        typeof to === 'string'
+          ? to
+          : createPath({ ...to, pathname: to.pathname ?? '' })
+      }
     >
       <AddCircleOutline />
     </IconButton>
   ) : (
-    <Button component={RouterLink} variant="contained" color="primary" to={to}>
+    <Button
+      component={UnstyledLink}
+      variant="contained"
+      color="primary"
+      to={
+        typeof to === 'string'
+          ? to
+          : createPath({ ...to, pathname: to.pathname ?? '' })
+      }
+    >
       {title}
     </Button>
   );

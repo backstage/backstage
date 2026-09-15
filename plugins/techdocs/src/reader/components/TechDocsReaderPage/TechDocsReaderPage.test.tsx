@@ -35,7 +35,7 @@ import { rootRouteRef, rootDocsRouteRef } from '../../../routes';
 import { TECHDOCS_EXTERNAL_ANNOTATION } from '@backstage/plugin-techdocs-common';
 
 import { TechDocsReaderPage } from './TechDocsReaderPage';
-import { Route, useNavigate, useParams } from 'react-router-dom';
+import { Route, useParams } from 'react-router-dom';
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { FlatRoutes } from '@backstage/core-app-api';
@@ -46,6 +46,11 @@ import {
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
+import { createMockAppHistory } from '@backstage/frontend-test-utils';
+
+const mockNavigate = jest.fn();
+let appHistory: ReturnType<typeof createMockAppHistory> | undefined;
 
 const mockEntityMetadata = {
   locationMetadata: {
@@ -119,11 +124,6 @@ jest.mock('@backstage/core-components', () => ({
   Page: jest.fn(),
 }));
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: jest.fn(),
-}));
-
 const configApi = mockApis.config({
   data: { app: { baseUrl: 'http://localhost:3000' } },
 });
@@ -132,6 +132,7 @@ const Wrapper = ({ children }: { children: ReactNode }) => {
   return (
     <TestApiProvider
       apis={[
+        ...(appHistory ? [[appHistoryApiRef, appHistory] as const] : []),
         [fetchApiRef, fetchApiMock],
         [discoveryApiRef, mockApis.discovery()],
         [scmIntegrationsApiRef, {}],
@@ -154,8 +155,6 @@ const mountedRoutes = {
 };
 
 describe('<TechDocsReaderPage />', () => {
-  const mockNavigate = jest.fn();
-
   beforeEach(() => {
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
@@ -164,7 +163,7 @@ describe('<TechDocsReaderPage />', () => {
       expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
     });
 
-    (useNavigate as jest.Mock).mockReturnValue(mockNavigate);
+    appHistory = undefined;
   });
 
   afterEach(() => {
@@ -304,6 +303,7 @@ describe('<TechDocsReaderPage />', () => {
   describe('external TechDocs redirect', () => {
     beforeEach(() => {
       mockNavigate.mockClear();
+      appHistory = createMockAppHistory({ navigate: mockNavigate });
       catalogApiMock.getEntityByRef.mockReset();
       catalogApiMock.getEntityByRef.mockResolvedValue(mockEntityMetadata);
     });

@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { useAppNavigate, useAppLocation } from '@backstage/frontend-plugin-api';
+
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { Action, scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
@@ -28,7 +31,6 @@ import {
 } from '@backstage/core-components';
 import { Flex, List, ListRow, SearchField, Text } from '@backstage/ui';
 import { ScaffolderPageContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
-import { useNavigate } from 'react-router-dom';
 import {
   editRouteRef,
   rootRouteRef,
@@ -101,6 +103,8 @@ function ActionDetail({ action }: { action: Action }) {
 }
 
 export const ActionPageContent = () => {
+  const navigate = useAppNavigate();
+  const location = useAppLocation();
   const api = useApi(scaffolderApiRef);
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
@@ -122,7 +126,7 @@ export const ActionPageContent = () => {
     if (initialHashHandled.current || !actions) {
       return;
     }
-    const hash = window.location.hash.slice(1);
+    const hash = location.hash.slice(1);
     if (hash && actions.some(a => a.id === hash)) {
       initialHashHandled.current = true;
       setSelectedActionId(hash);
@@ -133,7 +137,7 @@ export const ActionPageContent = () => {
         }
       });
     }
-  }, [actions]);
+  }, [actions, location.hash]);
 
   const filteredActions = useMemo(() => {
     const nonLegacy =
@@ -200,15 +204,12 @@ export const ActionPageContent = () => {
               return;
             }
             const selected = [...selection][0] as string | undefined;
-            setSelectedActionId(prev => {
-              const next = prev === selected ? undefined : selected;
-              const hash = next ? `#${next}` : '';
-              window.history.replaceState(
-                null,
-                '',
-                `${window.location.pathname}${window.location.search}${hash}`,
-              );
-              return next;
+            const next = selectedActionId === selected ? undefined : selected;
+            setSelectedActionId(next);
+            const hash = next ? `#${next}` : '';
+            navigate(location.pathname + location.search + hash, {
+              replace: true,
+              state: location.state,
             });
           }}
         >
@@ -255,7 +256,7 @@ export type ActionsPageProps = {
 };
 
 export const ActionsPage = (props: ActionsPageProps) => {
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const editorLink = useRouteRef(editRouteRef);
   const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
   const createLink = useRouteRef(rootRouteRef);

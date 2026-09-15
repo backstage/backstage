@@ -24,6 +24,7 @@ import {
   useApiHolder,
 } from '@backstage/frontend-plugin-api';
 import { Routes, Route } from 'react-router-dom';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { EntityProvider } from '../hooks/useEntity';
 import {
   EntityCardBlueprint,
@@ -160,30 +161,32 @@ export function createTestEntityPage(
           }
 
           return (
-            <MockEntityApiProvider entity={entity}>
-              <EntityProvider entity={entity}>
-                {cards.map((card, index) => (
-                  <Fragment key={index}>{card.element}</Fragment>
-                ))}
-                {contents.length === 1 && contents[0].element}
-                {contents.length > 1 && (
-                  <Routes>
-                    {contents.map(content => (
-                      <Route
-                        key={content.path}
-                        path={
-                          content.path === '/'
-                            ? '/'
-                            : `${content.path.replace(/^\//, '')}/*`
-                        }
-                        element={content.element}
-                      />
-                    ))}
-                    <Route path="*" element={contents[0].element} />
-                  </Routes>
-                )}
-              </EntityProvider>
-            </MockEntityApiProvider>
+            <ReactRouterV6PageRouter>
+              <MockEntityApiProvider entity={entity}>
+                <EntityProvider entity={entity}>
+                  {cards.map((card, index) => (
+                    <Fragment key={index}>{card.element}</Fragment>
+                  ))}
+                  {contents.length === 1 && contents[0].element}
+                  {contents.length > 1 && (
+                    <Routes>
+                      {contents.map(content => (
+                        <Route
+                          key={content.path}
+                          path={
+                            content.path === '/'
+                              ? '/'
+                              : `${content.path.replace(/^\//, '')}/*`
+                          }
+                          element={content.element}
+                        />
+                      ))}
+                      <Route path="*" element={contents[0].element} />
+                    </Routes>
+                  )}
+                </EntityProvider>
+              </MockEntityApiProvider>
+            </ReactRouterV6PageRouter>
           );
         },
       });
@@ -206,15 +209,15 @@ function MockEntityApiProvider({
 }) {
   const parentHolder = useApiHolder();
 
-  // If catalog API is already provided, don't override it
+  // Preserve a catalog API supplied by the caller.
   if (parentHolder.get(catalogApiRef)) {
     return <>{children}</>;
   }
 
-  // Provide a mock catalog API with the single entity
-  const mockApi = catalogApiMock({ entities: [entity] });
   return (
-    <TestApiProvider apis={[[catalogApiRef, mockApi]]}>
+    <TestApiProvider
+      apis={[[catalogApiRef, catalogApiMock({ entities: [entity] })]]}
+    >
       {children}
     </TestApiProvider>
   );

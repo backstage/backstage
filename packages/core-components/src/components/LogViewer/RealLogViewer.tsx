@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { useAppNavigate, useAppLocation } from '@backstage/frontend-plugin-api';
+
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import CopyIcon from '@material-ui/icons/FileCopy';
 import classnames from 'classnames';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList, VariableSizeList } from 'react-window';
 
@@ -55,7 +57,8 @@ export function RealLogViewer(props: RealLogViewerProps) {
 
   const search = useLogViewerSearch(lines);
   const selection = useLogViewerSelection(lines);
-  const location = useLocation();
+  const location = useAppLocation();
+  const navigate = useAppNavigate();
 
   useEffect(() => {
     if (listInstance) {
@@ -76,10 +79,13 @@ export function RealLogViewer(props: RealLogViewerProps) {
 
   useEffect(() => {
     const hash = selection.getHash();
-    if (hash.length > 0) {
-      history.replaceState(null, '', hash);
+    if (hash.length > 0 && hash !== location.hash) {
+      navigate(location.pathname + location.search + hash, {
+        replace: true,
+        state: location.state,
+      });
     }
-  }, [selection]);
+  }, [selection, navigate, location]);
 
   useEffect(() => {
     if (location.hash) {

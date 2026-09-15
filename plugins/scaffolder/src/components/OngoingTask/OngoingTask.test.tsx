@@ -20,6 +20,9 @@ import {
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
+import { createMockAppHistory } from '@backstage/frontend-test-utils';
+import { Route, Routes } from 'react-router-dom';
+import { scaffolderApiMock } from '@backstage/plugin-scaffolder-react/testUtils';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent, waitFor, within } from '@testing-library/react';
 import {
@@ -30,37 +33,43 @@ import { rootRouteRef } from '../../routes';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { SWRConfig } from 'swr';
 import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: () => ({ taskId: 'my-task' }),
-}));
-
-jest.mock('@backstage/plugin-scaffolder-react', () => ({
-  ...jest.requireActual('@backstage/plugin-scaffolder-react'),
-  useTaskEventStream: () => ({
-    cancelled: false,
-    loading: true,
-    stepLogs: {},
-    completed: false,
-    steps: {},
-    task: {
+describe('OngoingTask', () => {
+  const mockScaffolderApi = scaffolderApiMock.mock({
+    getTask: async () => ({
+      id: 'my-task',
+      status: 'processing',
+      createdAt: '2026-01-01T00:00:00Z',
       spec: {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        parameters: {},
+        output: {},
         steps: [],
         templateInfo: {
           entityRef: 'template:default/my-template',
           entity: { metadata: { name: 'my-template' } },
         },
       },
-    },
-  }),
-}));
-
-describe('OngoingTask', () => {
-  const mockScaffolderApi = {
-    cancelTask: jest.fn(),
-    getTask: jest.fn().mockImplementation(async () => {}),
-  };
+    }),
+    // Keep the task running with an idle event stream.
+    streamLogs: () => ({
+      subscribe: () => {
+        let closed = false;
+        return {
+          get closed() {
+            return closed;
+          },
+          unsubscribe() {
+            closed = true;
+          },
+        };
+      },
+      [Symbol.observable]() {
+        return this;
+      },
+    }),
+  });
 
   const mockEntityPresentationApi = {
     forEntity: jest.fn().mockReturnValue({
@@ -81,12 +90,21 @@ describe('OngoingTask', () => {
             [scaffolderApiRef, mockScaffolderApi],
             [permissionApiRef, permissionApi || mockApis.permission()],
             [entityPresentationApiRef, mockEntityPresentationApi],
+            [
+              appHistoryApiRef,
+              createMockAppHistory({ initialLocation: '/tasks/my-task' }),
+            ],
           ]}
         >
-          <OngoingTask />
+          <Routes>
+            <Route path="/tasks/:taskId" element={<OngoingTask />} />
+          </Routes>
         </TestApiProvider>
       </SWRConfig>,
-      { mountedRoutes: { '/': rootRouteRef } },
+      {
+        routeEntries: ['/tasks/my-task'],
+        mountedRoutes: { '/': rootRouteRef },
+      },
     );
   };
 
@@ -110,7 +128,7 @@ describe('OngoingTask', () => {
       fireEvent.click(within(element).getByText(cancelOptionLabel));
     });
 
-    expect(mockScaffolderApi.cancelTask).toHaveBeenCalled();
+    expect(mockScaffolderApi.cancelTask).toHaveBeenCalledWith('my-task');
     await act(async () => {
       fireEvent.click(getByTestId('menu-button'));
     });
@@ -136,7 +154,7 @@ describe('OngoingTask', () => {
       fireEvent.click(within(element).getByText(cancelOptionLabel));
     });
 
-    expect(mockScaffolderApi.cancelTask).toHaveBeenCalled();
+    expect(mockScaffolderApi.cancelTask).toHaveBeenCalledWith('my-task');
     await act(async () => {
       fireEvent.click(getByTestId('menu-button'));
     });

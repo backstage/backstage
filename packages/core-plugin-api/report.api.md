@@ -576,7 +576,7 @@ export function useRouteRef<Params extends AnyParams>(
 
 // @public
 export function useRouteRefParams<Params extends AnyParams>(
-  _routeRef: RouteRef<Params> | SubRouteRef<Params>,
+  routeRef: RouteRef<Params> | SubRouteRef<Params>,
 ): Params;
 
 export { vmwareCloudAuthApiRef };

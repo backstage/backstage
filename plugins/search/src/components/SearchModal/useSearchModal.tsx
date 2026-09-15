@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import { useAppLocation } from '@backstage/frontend-plugin-api';
+
 import { ReactNode, useCallback, useContext, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+
 import {
   createVersionedContext,
   createVersionedValueMap,
@@ -137,7 +139,7 @@ export function useSearchModal(initialState = false) {
   const isParentContextPresent = !!parentContextValue?.state;
 
   // Monitor route changes to automatically hide the modal.
-  const location = useLocation();
+  const location = useAppLocation();
   const locationKey = `${location.pathname}${location.search}${location.hash}`;
   useUpdateEffect(() => {
     setState(prevState => ({

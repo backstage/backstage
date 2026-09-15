@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { useAsync, useMountEffect } from '@react-hookz/web';
 import { useCallback, useMemo } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
@@ -162,42 +163,44 @@ export function EditorSubPage() {
   );
 
   return (
-    <RequirePermission permission={templateManagementPermission}>
-      <SecretsContextProvider>
-        <Routes>
-          <Route index element={<EditorIntroContent />} />
-          <Route
-            path="template"
-            element={
-              <BreadcrumbEntry
-                entry={{ label: 'Edit Template', href: 'template' }}
-              >
-                <EditorContent fieldExtensions={fieldExtensions} />
-              </BreadcrumbEntry>
-            }
-          />
-          <Route
-            path="template-form"
-            element={
-              <BreadcrumbEntry
-                entry={{ label: 'Template Form', href: 'template-form' }}
-              >
-                <FormPreviewContent fieldExtensions={fieldExtensions} />
-              </BreadcrumbEntry>
-            }
-          />
-          <Route
-            path="custom-fields"
-            element={
-              <BreadcrumbEntry
-                entry={{ label: 'Custom Fields', href: 'custom-fields' }}
-              >
-                <CustomFieldsContent fieldExtensions={fieldExtensions} />
-              </BreadcrumbEntry>
-            }
-          />
-        </Routes>
-      </SecretsContextProvider>
-    </RequirePermission>
+    <ReactRouterV6PageRouter>
+      <RequirePermission permission={templateManagementPermission}>
+        <SecretsContextProvider>
+          <Routes>
+            <Route index element={<EditorIntroContent />} />
+            <Route
+              path="template"
+              element={
+                <BreadcrumbEntry
+                  entry={{ label: 'Edit Template', href: 'template' }}
+                >
+                  <EditorContent fieldExtensions={fieldExtensions} />
+                </BreadcrumbEntry>
+              }
+            />
+            <Route
+              path="template-form"
+              element={
+                <BreadcrumbEntry
+                  entry={{ label: 'Template Form', href: 'template-form' }}
+                >
+                  <FormPreviewContent fieldExtensions={fieldExtensions} />
+                </BreadcrumbEntry>
+              }
+            />
+            <Route
+              path="custom-fields"
+              element={
+                <BreadcrumbEntry
+                  entry={{ label: 'Custom Fields', href: 'custom-fields' }}
+                >
+                  <CustomFieldsContent fieldExtensions={fieldExtensions} />
+                </BreadcrumbEntry>
+              }
+            />
+          </Routes>
+        </SecretsContextProvider>
+      </RequirePermission>
+    </ReactRouterV6PageRouter>
   );
 }

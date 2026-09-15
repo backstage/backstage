@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { useAppNavigate, useAppLocation } from '@backstage/frontend-plugin-api';
+
 import {
   useCallback,
   useEffect,
@@ -54,7 +56,7 @@ import {
   addNavLinkKeyboardToggle,
 } from '../../transformers';
 import { useNavigateUrl } from './useNavigateUrl';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
 
@@ -62,8 +64,8 @@ const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
 // current location in the history. This should only happen on the initial load so
 // navigating to the root of the docs doesn't also redirect.
 export const useInitialRedirect = (defaultPath?: string) => {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const location = useAppLocation();
+  const navigate = useAppNavigate();
   const { '*': currPath = '' } = useParams();
 
   useLayoutEffect(() => {
@@ -238,18 +240,8 @@ export const useTechDocsReaderDom = (
               if (modifierActive) {
                 window.open(url, '_blank');
               } else {
-                // If it's in a different page, we navigate to it
-                if (window.location.pathname !== parsedUrl.pathname) {
-                  navigate(url);
-                } else {
-                  // If it's in the same page we avoid using navigate that causes
-                  // the page to rerender.
-                  window.history.pushState(
-                    null,
-                    document.title,
-                    parsedUrl.hash,
-                  );
-                }
+                // Publish fragment navigation through the shared app history.
+                navigate(url);
                 // Scroll to hash if it's on the current page
                 transformedElement
                   ?.querySelector(`[id="${parsedUrl.hash.slice(1)}"]`)

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { useAppSearchParams } from '@backstage/frontend-plugin-api';
+
 import { useEffect, useMemo, useState } from 'react';
 import throttle from 'lodash/throttle';
 import {
@@ -24,7 +26,7 @@ import {
 import { Grid } from '@backstage/ui';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { useSearchParams } from 'react-router-dom';
+
 import {
   Notification,
   NotificationSeverity,
@@ -86,7 +88,7 @@ function NotificationsPageContent(
   // TODO: Reuse useNotificationsRefresh instead of duplicating signals +
   // polling refresh logic here.
   const { lastSignal } = useSignal('notifications');
-  const [searchParams] = useSearchParams();
+  const [searchParams] = useAppSearchParams();
   const highlightedNotificationId = searchParams.get('id') || undefined;
   const [highlightedNotification, setHighlightedNotification] = useState<
     Notification | undefined

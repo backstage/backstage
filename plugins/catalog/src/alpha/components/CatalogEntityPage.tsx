@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { ComponentType, ReactElement } from 'react';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useRouteRefParams } from '@backstage/core-plugin-api';
@@ -96,6 +97,10 @@ export function CatalogEntityPage(props: CatalogEntityPageProps) {
     );
 
   return (
-    <AsyncEntityProvider {...entityProviderProps}>{layout}</AsyncEntityProvider>
+    <ReactRouterV6PageRouter>
+      <AsyncEntityProvider {...entityProviderProps}>
+        {layout}
+      </AsyncEntityProvider>
+    </ReactRouterV6PageRouter>
   );
 }

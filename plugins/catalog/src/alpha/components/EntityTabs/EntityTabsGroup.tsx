@@ -15,13 +15,20 @@
  */
 import {
   ReactNode,
+  ComponentType,
   forwardRef,
   useState,
   MouseEvent,
   MouseEventHandler,
   ReactElement,
 } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, type LinkProps } from '@backstage/core-components';
+
+const TabLink: ComponentType<
+  Omit<LinkProps, 'variant' | 'onClick'> & {
+    onClick?: MouseEventHandler<HTMLAnchorElement>;
+  }
+> = Link;
 import classnames from 'classnames';
 
 import Typography from '@material-ui/core/Typography';
@@ -237,7 +244,7 @@ const Tab = forwardRef(function Tab(props: EntityTabsGroupProps, ref: any) {
         role="tab"
         aria-selected={selected}
         disabled={disabled}
-        component={Link}
+        component={TabLink}
         onClick={onSelectTab}
         to={items[0]?.path}
         startIcon={resolveIcon(items[0].icon, iconsApi, showIcons)}
@@ -299,7 +306,7 @@ const Tab = forwardRef(function Tab(props: EntityTabsGroupProps, ref: any) {
                 aria-selected={selected}
                 disabled={disabled}
                 selected={highlightedButton === i.id}
-                component={Link}
+                component={TabLink}
                 onClick={e => {
                   handleMenuClose();
                   onSelectTab?.(e);

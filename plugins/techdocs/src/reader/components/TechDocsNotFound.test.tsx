@@ -15,76 +15,72 @@
  */
 
 import { TechDocsNotFound } from './TechDocsNotFound';
-import { screen, waitFor } from '@testing-library/react';
-import {
-  mockApis,
-  TestApiProvider,
-  renderInTestApp,
-} from '@backstage/test-utils';
+import { screen } from '@testing-library/react';
+import { mockApis } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/frontend-test-utils';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
+import {
+  TechDocsReaderPageProvider,
+  techdocsApiRef,
+} from '@backstage/plugin-techdocs-react';
 
-jest.mock('@backstage/plugin-techdocs-react', () => {
-  const actualModule = jest.requireActual('@backstage/plugin-techdocs-react');
-  return {
-    ...actualModule,
-    useTechDocsReaderPage: () => ({
-      entityRef: { name: 'name', namespace: 'namespace', kind: 'kind' },
-    }),
-  };
-});
+const entityRef = { name: 'name', namespace: 'namespace', kind: 'kind' };
 
-jest.mock('react-router-dom', () => {
-  const actualModule = jest.requireActual('react-router-dom');
-  return {
-    ...actualModule,
-    useLocation: () =>
-      ({
-        pathname: '/the/pathname',
-        search: '?the=search',
-        hash: '#the-anchor',
-      } as Location),
-  };
-});
+function renderNotFound(
+  errorMessage?: string,
+  analyticsApi = mockApis.analytics(),
+) {
+  return renderInTestApp(
+    <TechDocsReaderPageProvider entityRef={entityRef}>
+      <TechDocsNotFound errorMessage={errorMessage} />
+    </TechDocsReaderPageProvider>,
+    {
+      initialRouteEntries: ['/the/pathname?the=search#the-anchor'],
+      apis: [
+        [analyticsApiRef, analyticsApi],
+        [
+          techdocsApiRef,
+          {
+            getEntityMetadata: async () => ({
+              apiVersion: 'v1',
+              kind: 'kind',
+              metadata: { name: 'name' },
+            }),
+            getTechDocsMetadata: async () => ({
+              site_name: 'Test documentation',
+              site_description: 'Documentation for the test entity',
+            }),
+          },
+        ],
+      ],
+    },
+  );
+}
 
 describe('<TechDocsNotFound />', () => {
   it('should render with status code, status message and go back link', async () => {
-    await renderInTestApp(<TechDocsNotFound />);
-    screen.getByText(/Documentation not found/i);
+    renderNotFound();
+    await screen.findByText(/Documentation not found/i);
     screen.getByText(/404/i);
     screen.getByText(/Looks like someone dropped the mic!/i);
     expect(screen.getByTestId('go-back-link')).toBeDefined();
   });
 
   it('should trigger analytics event not-found', async () => {
-    const mockAnalyticsApi = mockApis.analytics();
-
-    await renderInTestApp(
-      <TestApiProvider apis={[[analyticsApiRef, mockAnalyticsApi]]}>
-        <TechDocsNotFound />
-      </TestApiProvider>,
-    );
-
-    await waitFor(() => {
-      expect(mockAnalyticsApi.captureEvent).toHaveBeenCalledWith({
-        action: 'not-found',
-        subject: '/the/pathname?the=search#the-anchor',
-        attributes: {
-          name: 'name',
-          namespace: 'namespace',
-          kind: 'kind',
-        },
-        context: expect.anything(),
-      });
+    const analyticsApi = mockApis.analytics();
+    renderNotFound(undefined, analyticsApi);
+    await screen.findByText(/Documentation not found/i);
+    expect(analyticsApi.captureEvent).toHaveBeenCalledWith({
+      action: 'not-found',
+      subject: '/the/pathname?the=search#the-anchor',
+      attributes: entityRef,
+      context: expect.anything(),
     });
   });
-});
 
-describe('<TechDocsNotFound errorMessage="This is a custom error message" />', () => {
   it('should render with a 404 code, custom error message and go back link', async () => {
-    await renderInTestApp(
-      <TechDocsNotFound errorMessage="This is a custom error message" />,
-    );
-    screen.getByText(/This is a custom error message/i);
+    renderNotFound('This is a custom error message');
+    await screen.findByText(/This is a custom error message/i);
     screen.getByText(/404/i);
     screen.getByText(/Looks like someone dropped the mic!/i);
     expect(screen.getByTestId('go-back-link')).toBeDefined();

@@ -26,7 +26,8 @@ import {
 import { translationApiRef } from '@backstage/core-plugin-api/alpha';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { TestApiProvider } from '@backstage/test-utils';
-import { mockApis } from '@backstage/frontend-test-utils';
+import { mockApis, createMockAppHistory } from '@backstage/frontend-test-utils';
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
 import { useMountEffect } from '@react-hookz/web';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import qs from 'qs';
@@ -138,6 +139,49 @@ describe('<EntityListProvider />', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  it('publishes filter edits through app history and reads externally restored queries', async () => {
+    const history = createMockAppHistory({
+      initialLocation: '/catalog?unrelated=keep',
+    });
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: ({ children }) => (
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, mockCatalogApi],
+            [appHistoryApiRef, history],
+          ]}
+        >
+          <EntityListProvider>{children}</EntityListProvider>
+        </TestApiProvider>
+      ),
+    });
+    act(() =>
+      result.current.updateFilters({
+        kind: new EntityKindFilter('component', 'Component'),
+      }),
+    );
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(
+      qs.parse(history.location.search, { ignoreQueryPrefix: true }),
+    ).toEqual({ unrelated: 'keep', filters: { kind: 'component' } });
+    expect(history.navigateCalls.at(-1)).toMatchObject({
+      options: { replace: true },
+    });
+    act(() => history.navigate('/catalog?filters[kind]=api&unrelated=other'));
+    expect(result.current.queryParameters).toEqual({ kind: 'api' });
+    act(() =>
+      result.current.updateFilters({
+        kind: new EntityKindFilter('api', 'API'),
+      }),
+    );
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(history.location.search).toContain('unrelated=other');
+    expect(
+      qs.parse(history.location.search, { ignoreQueryPrefix: true }),
+    ).toMatchObject({ filters: { kind: 'api' } });
+    expect(history.navigateCalls.length).toBeLessThan(10);
   });
 
   it('should send backend filters', async () => {

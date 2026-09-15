@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
 import { ComponentType, useCallback, useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 import {
   stringifyEntityRef,
@@ -78,7 +80,7 @@ function useTemplateWizard(_props: TemplateWizardPageProps) {
   const scaffolderApi = useApi(scaffolderApiRef);
   const catalogApi = useApi(catalogApiRef);
   const [isCreating, setIsCreating] = useState(false);
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const { templateName, namespace } = useRouteRefParams(
     selectedTemplateRouteRef,
   );

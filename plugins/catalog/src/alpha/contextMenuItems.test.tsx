@@ -35,6 +35,7 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import useCopyToClipboardUnmocked from 'react-use/esm/useCopyToClipboard';
 import { SWRConfig } from 'swr';
 import { convertLegacyRouteRef } from '@backstage/core-compat-api';
@@ -97,7 +98,15 @@ function renderMenuItem(
         <RouterProbe />
       </EntityProvider>
     </SWRConfig>,
-    { initialRouteEntries: ['/entity'], ...options },
+    {
+      // The menu items themselves route with React Router v6 — `useLocation`
+      // for the entity URL, `useSearchParams` for the inspector — and so does
+      // `RouterProbe` above, which is how this test observes them. Mirrors the
+      // adapter the catalog entity page declares in its loader.
+      router: ReactRouterV6PageRouter,
+      initialRouteEntries: ['/entity'],
+      ...options,
+    },
   );
 }
 
@@ -256,7 +265,10 @@ describe('context menu items', () => {
         {renderDialog({ dialog })}
         <RouterProbe />
       </>,
-      { initialRouteEntries: ['/entity'] },
+      {
+        router: ReactRouterV6PageRouter,
+        initialRouteEntries: ['/entity'],
+      },
     );
     expect(close).not.toHaveBeenCalled();
     act(() => navigateTo('/catalog/default/component/other'));

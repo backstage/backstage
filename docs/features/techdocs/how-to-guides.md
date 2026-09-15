@@ -294,7 +294,7 @@ export class TechDocsCustomApiClient implements TechDocsApi {
 ```
 
 2. Override the default API extensions by creating custom API extensions using
-   `createApiExtension` from `@backstage/frontend-plugin-api`, and install them
+   `ApiBlueprint` from `@backstage/frontend-plugin-api`, and install them
    in your app. See the [Utility APIs](../../frontend-system/utility-apis/01-index.md) documentation for details on how to create and install custom API extensions.
 
 ## How to add the documentation setup to your software templates

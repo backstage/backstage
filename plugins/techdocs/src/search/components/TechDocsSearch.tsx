@@ -20,8 +20,9 @@ import {
   SearchContextProvider,
 } from '@backstage/plugin-search-react';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useAppNavigate } from '@backstage/frontend-plugin-api';
 import { techdocsTranslationRef } from '../../translation';
 import { TechDocsSearchResultListItem } from './TechDocsSearchResultListItem';
 import {
@@ -55,7 +56,7 @@ const TechDocsSearchBar = (props: TechDocsSearchProps) => {
     searchResultUrlMapper,
   } = props;
   const [open, setOpen] = useState(false);
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
   const { t } = useTranslationRef(techdocsTranslationRef);
   const { results, term, loading } = useTechDocsSearch(entityId);
 

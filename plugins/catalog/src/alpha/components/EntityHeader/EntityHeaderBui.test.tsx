@@ -16,6 +16,7 @@
 
 import { act, screen } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/frontend-test-utils';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import {
   Entity,
   RELATION_OWNED_BY,
@@ -78,6 +79,7 @@ async function renderHeader(options: {
           catalogApiMock({ entities: options.catalogEntities ?? [] }),
         [starredEntitiesApiRef, new MockStarredEntitiesApi()],
       ],
+      router: ReactRouterV6PageRouter,
       mountPath: '/catalog/:namespace/:kind/:name',
       initialRouteEntries: ['/catalog/default/component/artist-lookup'],
       mountedRoutes: {

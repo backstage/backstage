@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-import { ComponentProps, ComponentType, ReactNode, useCallback } from 'react';
+import {
+  useAppSearchParams,
+  NotFoundErrorPage,
+} from '@backstage/frontend-plugin-api';
+
+import {
+  ComponentProps,
+  ComponentType,
+  ReactNode,
+  Suspense,
+  useCallback,
+} from 'react';
 import { Helmet } from 'react-helmet';
-import { useSearchParams } from 'react-router-dom';
+
 import { Alert, Container } from '@backstage/ui';
 import {
   configApiRef,
@@ -25,7 +36,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { Link, Progress } from '@backstage/core-components';
-import { NotFoundErrorPage } from '@backstage/frontend-plugin-api';
+
 import {
   entityRouteRef,
   InspectEntityDialog,
@@ -63,7 +74,7 @@ function EntityDocumentTitle(props: { activeContentTitle?: string }) {
 
 function InspectEntityDialogHost() {
   const { entity } = useAsyncEntity();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useAppSearchParams();
   const selectedTab = searchParams.get('inspect');
   const setSelectedTab = useCallback(
     (tab: string) =>
@@ -115,7 +126,15 @@ function EntityLayoutContent(props: {
       </Container>
     );
   } else if (entity) {
-    content = <Container>{props.content ?? <NotFoundErrorPage />}</Container>;
+    content = (
+      <Container>
+        {props.content ?? (
+          <Suspense fallback={<Progress />}>
+            <NotFoundErrorPage />
+          </Suspense>
+        )}
+      </Container>
+    );
   } else if (!loading) {
     content = (
       <Container>

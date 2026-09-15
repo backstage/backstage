@@ -14,8 +14,25 @@
  * limitations under the License.
  */
 
-import { renderInTestApp } from '@backstage/test-utils';
-import { screen } from '@testing-library/react';
+import { createEvent, fireEvent, render, screen } from '@testing-library/react';
+import { type ComponentProps, type PropsWithChildren } from 'react';
+import { useLocation, useNavigationType } from 'react-router-dom';
+import {
+  mockApis,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
+import {
+  createMockAppHistory,
+  createMockRouteResolutionApi,
+  renderInTestApp as renderInFrontendTestApp,
+} from '@backstage/frontend-test-utils';
+import {
+  appHistoryApiRef,
+  routeResolutionApiRef,
+} from '@backstage/frontend-plugin-api';
+import { analyticsApiRef } from '@backstage/core-plugin-api';
+import { PageMountProvider } from '@internal/frontend';
 import { entityRouteRef } from '../../routes';
 import { EntityRefLink } from './EntityRefLink';
 
@@ -195,4 +212,367 @@ describe('<EntityRefLink />', () => {
       '/catalog/tes%5Bt/compone%26nt/softw%23are',
     );
   });
+
+  it('navigates via the app history without a React Router provider', () => {
+    const navigate = jest.fn();
+    const appHistory = createMockAppHistory({ navigate });
+    const pageMount = { basePath: '/create', routePattern: '/create' };
+
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        namespace: 'default',
+      },
+    };
+
+    render(
+      <TestApiProvider
+        apis={[
+          [
+            routeResolutionApiRef,
+            createMockRouteResolutionApi({
+              routes: [[entityRouteRef, '/catalog/:namespace/:kind/:name']],
+            }),
+          ],
+          [appHistoryApiRef, appHistory],
+        ]}
+      >
+        <PageMountProvider mount={pageMount}>
+          <EntityRefLink entityRef={entity} />
+        </PageMountProvider>
+      </TestApiProvider>,
+    );
+
+    const link = screen.getByText('software').closest('a');
+    expect(link).toHaveAttribute('href', '/catalog/default/component/software');
+
+    fireEvent.click(screen.getByText('software'));
+    expect(navigate).toHaveBeenCalledWith(
+      '/catalog/default/component/software',
+    );
+  });
+
+  it('renders a basename-prefixed href and reports clicks to analytics', () => {
+    const analyticsApi = mockApis.analytics();
+    const appHistory = createMockAppHistory({ basename: '/backstage' });
+
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        namespace: 'default',
+      },
+    };
+
+    render(
+      <TestApiProvider
+        apis={[
+          [
+            routeResolutionApiRef,
+            createMockRouteResolutionApi({
+              routes: [[entityRouteRef, '/catalog/:namespace/:kind/:name']],
+            }),
+          ],
+          [appHistoryApiRef, appHistory],
+          [analyticsApiRef, analyticsApi],
+        ]}
+      >
+        <EntityRefLink entityRef={entity} noTrack={false} />
+      </TestApiProvider>,
+    );
+
+    const link = screen.getByText('software').closest('a');
+    // Middle-click / "open in new tab" only ever see the href.
+    expect(link).toHaveAttribute(
+      'href',
+      '/backstage/catalog/default/component/software',
+    );
+    // `noTrack` is a Link concern and must not reach the DOM.
+    expect(link).not.toHaveAttribute('notrack');
+
+    fireEvent.click(screen.getByText('software'));
+    expect(analyticsApi.captureEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: 'click',
+        subject: '/catalog/default/component/software',
+        attributes: { to: '/catalog/default/component/software' },
+      }),
+    );
+  });
+
+  it('uses entityLink with framework navigate when route resolution returns undefined', () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        namespace: 'default',
+      },
+    };
+
+    const { appHistory } = renderInFrontendTestApp(
+      <EntityRefLink entityRef={entity} />,
+      {
+        // Missing framework resolution falls back to the legacy route binding.
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+        apis: [[routeResolutionApiRef, { resolve: () => undefined }]],
+      },
+    );
+
+    const navigateSpy = jest.spyOn(appHistory, 'navigate');
+
+    const link = screen.getByText('software').closest('a');
+    expect(link).toHaveAttribute('href', '/catalog/default/component/software');
+
+    fireEvent.click(screen.getByText('software'));
+    expect(navigateSpy).toHaveBeenCalledWith(
+      '/catalog/default/component/software',
+    );
+  });
+
+  it('does not framework-navigate for modified clicks or target=_blank', () => {
+    const navigate = jest.fn();
+    const appHistory = createMockAppHistory({ navigate });
+
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        namespace: 'default',
+      },
+    };
+
+    const { rerender } = render(
+      <TestApiProvider
+        apis={[
+          [
+            routeResolutionApiRef,
+            createMockRouteResolutionApi({
+              routes: [[entityRouteRef, '/catalog/:namespace/:kind/:name']],
+            }),
+          ],
+          [appHistoryApiRef, appHistory],
+        ]}
+      >
+        <EntityRefLink entityRef={entity} target="_blank" />
+      </TestApiProvider>,
+    );
+
+    fireEvent.click(screen.getByText('software'));
+    expect(navigate).not.toHaveBeenCalled();
+
+    rerender(
+      <TestApiProvider
+        apis={[
+          [
+            routeResolutionApiRef,
+            createMockRouteResolutionApi({
+              routes: [[entityRouteRef, '/catalog/:namespace/:kind/:name']],
+            }),
+          ],
+          [appHistoryApiRef, appHistory],
+        ]}
+      >
+        <EntityRefLink entityRef={entity} />
+      </TestApiProvider>,
+    );
+
+    fireEvent.click(screen.getByText('software'), { ctrlKey: true });
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it('falls back to react-router Link when there is no app history (OFS)', async () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        namespace: 'default',
+      },
+    };
+
+    await renderInTestApp(<EntityRefLink entityRef={entity} />, {
+      mountedRoutes: {
+        '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+      },
+    });
+
+    expect(screen.getByText('software').closest('a')).toHaveAttribute(
+      'href',
+      '/catalog/default/component/software',
+    );
+  });
+
+  it('preserves native activation and forwards replace and state to the app history', () => {
+    const navigate = jest.fn();
+    const appHistory = createMockAppHistory({
+      navigate,
+      basename: '/backstage',
+    });
+    const wrapper = ({ children }: PropsWithChildren) => (
+      <TestApiProvider
+        apis={[
+          [
+            routeResolutionApiRef,
+            createMockRouteResolutionApi({
+              routes: [[entityRouteRef, '/catalog/:namespace/:kind/:name']],
+            }),
+          ],
+          [appHistoryApiRef, appHistory],
+        ]}
+      >
+        {children}
+      </TestApiProvider>
+    );
+    const entityLink = (
+      props: Partial<ComponentProps<typeof EntityRefLink>>,
+    ) => (
+      <EntityRefLink entityRef="component:default/software" {...props}>
+        Software
+      </EntityRefLink>
+    );
+    const { rerender } = render(entityLink({}), { wrapper });
+    for (const props of [
+      { target: '_blank' },
+      { target: '_parent' },
+      { target: '_top' },
+      { target: 'documentation' },
+      { download: '' },
+      { download: 'software.json' },
+      { reloadDocument: true },
+    ]) {
+      rerender(entityLink(props));
+      const link = screen.getByRole('link', { name: 'Software' });
+      const click = createEvent.click(link);
+      fireEvent(link, click);
+
+      expect(click.defaultPrevented).toBe(false);
+      expect(navigate).not.toHaveBeenCalled();
+      expect(link).toHaveAttribute(
+        'href',
+        '/backstage/catalog/default/component/software',
+      );
+      expect(link).not.toHaveAttribute('reloaddocument');
+    }
+
+    const state = { from: 'search' };
+    rerender(entityLink({ target: '_self', replace: true, state }));
+    const link = screen.getByRole('link', { name: 'Software' });
+    const click = createEvent.click(link);
+    fireEvent(link, click);
+
+    expect(click.defaultPrevented).toBe(true);
+    expect(navigate).toHaveBeenCalledTimes(1);
+    expect(navigate).toHaveBeenCalledWith(
+      '/catalog/default/component/software',
+      { replace: true, state },
+    );
+    expect(appHistory.location.state).toEqual(state);
+    expect(link).not.toHaveAttribute('replace');
+    expect(link).not.toHaveAttribute('state');
+  });
+
+  it('preserves native activation and navigation options in the old frontend', async () => {
+    function LocationStatus() {
+      const location = useLocation();
+      const action = useNavigationType();
+      return (
+        <span role="status">
+          {location.pathname}:{action}:{location.state?.from}
+        </span>
+      );
+    }
+    await renderInTestApp(
+      <>
+        <EntityRefLink entityRef="component:default/software" download="">
+          Download
+        </EntityRefLink>
+        <EntityRefLink entityRef="component:default/software" reloadDocument>
+          Reload
+        </EntityRefLink>
+        <EntityRefLink
+          entityRef="component:default/software"
+          target="documentation"
+        >
+          Documentation
+        </EntityRefLink>
+        <EntityRefLink
+          entityRef="component:default/software"
+          replace
+          state={{ from: 'search' }}
+        >
+          Software
+        </EntityRefLink>
+        <LocationStatus />
+      </>,
+      {
+        routeEntries: ['/search'],
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
+    );
+
+    for (const name of ['Download', 'Reload', 'Documentation']) {
+      const link = screen.getByRole('link', { name });
+      expect(link).toHaveAttribute(
+        'href',
+        '/catalog/default/component/software',
+      );
+      const click = createEvent.click(link);
+      fireEvent(link, click);
+      expect(click.defaultPrevented).toBe(false);
+      expect(screen.getByRole('status')).toHaveTextContent('/search:POP:');
+    }
+
+    const software = screen.getByRole('link', { name: 'Software' });
+    const click = createEvent.click(software);
+    fireEvent(software, click);
+    expect(click.defaultPrevented).toBe(true);
+    expect(screen.getByRole('status')).toHaveTextContent(
+      '/catalog/default/component/software:REPLACE:search',
+    );
+  });
+
+  it.each([
+    ['https://catalog.example/software', 'https://catalog.example/software'],
+    // Unsafe input must render as an inert href.
+    // eslint-disable-next-line no-script-url
+    ['javascript:alert(1)', 'about:blank'],
+  ])(
+    'leaves the sanitized external entity route %s to the browser',
+    (to, href) => {
+      const navigate = jest.fn();
+      render(
+        <TestApiProvider
+          apis={[
+            [
+              routeResolutionApiRef,
+              createMockRouteResolutionApi({
+                resolve: () => () => to,
+              }),
+            ],
+            [appHistoryApiRef, createMockAppHistory({ navigate })],
+          ]}
+        >
+          <EntityRefLink entityRef="component:default/software">
+            Software
+          </EntityRefLink>
+        </TestApiProvider>,
+      );
+
+      const link = screen.getByRole('link', { name: 'Software' });
+      expect(link).toHaveAttribute('href', href);
+      const click = createEvent.click(link);
+      fireEvent(link, click);
+      expect(click.defaultPrevented).toBe(false);
+      expect(navigate).not.toHaveBeenCalled();
+    },
+  );
 });

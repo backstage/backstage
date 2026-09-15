@@ -21,13 +21,7 @@ import {
   type Context,
   type ContextType,
 } from 'react';
-// React Router v6 specifically, and only for the old frontend system. This
-// package already declares the dependency for its own reasons — `Link` renders
-// through React Router's `Link`, and the `Sidebar` through its `NavLink` props
-// — and owns the version, which is why the fallback lives here rather than in
-// `@internal/frontend`. That package is inlined into every consumer, including
-// `@backstage/frontend-plugin-api`, so it now carries no React Router at all:
-// only the path algebra both authorities share.
+// React Router v6 contexts are retained for old frontend fallback.
 import {
   UNSAFE_LocationContext,
   UNSAFE_NavigationContext,
@@ -36,6 +30,7 @@ import {
 import type { AppHistoryApi } from '@backstage/frontend-plugin-api';
 import {
   APP_ROOT_PATH,
+  unwrapReactRouterContext,
   resolveAppPath,
   usePageMountBasePaths,
   useAppHistoryLocation,
@@ -44,49 +39,10 @@ import {
 } from '@internal/frontend';
 
 /**
- * The chrome-facing half of app routing: which authority answers "where am I?"
- * and "where does this target point?".
- *
- * Two authorities can answer, and every call site in this package has to pick
- * the same way:
- *
- * - **Framework**: an `AppHistoryApi` is registered (new frontend system).
- *   Location comes from the app history, and relative targets resolve against
- *   the current page's mount base.
- * - **React Router**: no app history (old frontend system). Every value is the
- *   one React Router's own hook at that call site produced before the framework
- *   seam existed, so legacy behavior is unchanged.
- *
- * These hooks answer from the app history whenever one is registered, so none
- * of them requires an ambient React Router. That is a promise about the hooks,
- * not about the chrome that calls them: every consumer listed below also
- * renders `Link`, which hands internal targets to React Router's own `Link`
- * and has always needed a router. The app root provides one today —
- * `plugins/app` mounts `RootHistoryRouter`, projecting the app history into
- * React Router's contexts — and dropping that projection is a later step.
- *
- * The tolerance still has to be real here, because a specialized app without
- * `@backstage/plugin-app` may have neither authority. React Router's
- * `useLocation` / `useResolvedPath` / `useNavigate` throw there, so this module
- * does not call them: it reads the very contexts they read, which are `null`
- * outside a router rather than throwing — that is exactly how
- * `useInRouterContext` detects a router.
- * Location, target resolution and going back therefore run the same
- * `useContext` calls on every render and branch on the resulting *value*, so
- * hook order is stable whichever authority answers, no call site needs to
- * disable `react-hooks/rules-of-hooks`, and with neither authority present the
- * answers degrade to the app root instead of blanking the app.
- *
- * The app history is passed in rather than resolved here, the same way
- * `useOptionalAppHistory` hands it to every other call site in this package.
- *
- * Consumers are the `Sidebar` (`Items`, `SidebarGroup`, `MobileSidebar`,
- * `SidebarSubmenuItem`) and `ErrorPage`. `Link` needs none of this: it hands
- * every internal target to React Router's own `Link`, which resolves and
- * navigates it against whatever router is above — so `Link` picks no authority
- * of its own and reads nothing from this module. `@backstage/ui` deliberately
- * does not use it either: BUI is a standalone design system that receives
- * `navigate` and `useHref` as props instead.
+ * Shared chrome reads app history and framework route ancestry when available.
+ * React Router contexts provide the old frontend fallback; reading them is safe
+ * without a router. Links independently use the same framework path resolver.
+ * BUI receives its routing integration from the host through BUIProvider.
  */
 
 /*
@@ -134,7 +90,7 @@ const RouteContext =
  * widened to admit that, which is what lets the router be optional.
  */
 function useRouterContext<T>(context: Context<T>): T | undefined {
-  return useContext(context) ?? undefined;
+  return unwrapReactRouterContext(useContext(context)) ?? undefined;
 }
 
 /**
@@ -147,7 +103,7 @@ function useRouterContext<T>(context: Context<T>): T | undefined {
  * both mean relative targets resolve against the app root.
  */
 function useRouteBasePaths(): string[] {
-  const matches = useContext(RouteContext).matches;
+  const matches = unwrapReactRouterContext(useContext(RouteContext)).matches;
   const relativeSplatPath =
     useRouterContext(NavigationContext)?.future?.v7_relativeSplatPath ?? false;
 
@@ -217,11 +173,6 @@ export function useAppResolvedPath(
  * Framework navigation uses AppHistory numeric traversal. With no routing
  * authority, the browser handles Back directly.
  *
- * As with its siblings, tolerating a missing router is a promise about this
- * hook, not about the chrome that calls it: `ErrorPage` renders its go-back
- * link through `Link`, which hands internal targets to React Router's own
- * `Link` and has always needed a router. Chrome that renders with no router at
- * all is a capability the framework does not have yet.
  */
 export function useAppGoBack(
   appHistory: AppHistoryApi | undefined,
