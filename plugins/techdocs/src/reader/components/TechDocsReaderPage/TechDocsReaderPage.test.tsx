@@ -46,7 +46,11 @@ import {
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
-import { useAppNavigate } from '@backstage/frontend-plugin-api';
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
+import { createMockAppHistory } from '@backstage/frontend-test-utils';
+
+const mockNavigate = jest.fn();
+let appHistory: ReturnType<typeof createMockAppHistory> | undefined;
 
 const mockEntityMetadata = {
   locationMetadata: {
@@ -120,11 +124,6 @@ jest.mock('@backstage/core-components', () => ({
   Page: jest.fn(),
 }));
 
-jest.mock('@backstage/frontend-plugin-api', () => ({
-  ...jest.requireActual('@backstage/frontend-plugin-api'),
-  useAppNavigate: jest.fn(),
-}));
-
 const configApi = mockApis.config({
   data: { app: { baseUrl: 'http://localhost:3000' } },
 });
@@ -133,6 +132,7 @@ const Wrapper = ({ children }: { children: ReactNode }) => {
   return (
     <TestApiProvider
       apis={[
+        ...(appHistory ? [[appHistoryApiRef, appHistory] as const] : []),
         [fetchApiRef, fetchApiMock],
         [discoveryApiRef, mockApis.discovery()],
         [scmIntegrationsApiRef, {}],
@@ -155,8 +155,6 @@ const mountedRoutes = {
 };
 
 describe('<TechDocsReaderPage />', () => {
-  const mockNavigate = jest.fn();
-
   beforeEach(() => {
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
@@ -165,7 +163,7 @@ describe('<TechDocsReaderPage />', () => {
       expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
     });
 
-    (useAppNavigate as jest.Mock).mockReturnValue(mockNavigate);
+    appHistory = undefined;
   });
 
   afterEach(() => {
@@ -305,6 +303,7 @@ describe('<TechDocsReaderPage />', () => {
   describe('external TechDocs redirect', () => {
     beforeEach(() => {
       mockNavigate.mockClear();
+      appHistory = createMockAppHistory({ navigate: mockNavigate });
       catalogApiMock.getEntityByRef.mockReset();
       catalogApiMock.getEntityByRef.mockResolvedValue(mockEntityMetadata);
     });

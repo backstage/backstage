@@ -20,14 +20,12 @@ import {
   TestApiProvider,
 } from '@backstage/test-utils';
 import { resolveUrlToRelative, useNavigateUrl } from './useNavigateUrl';
+import { useEffect } from 'react';
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
+import { createMockAppHistory } from '@backstage/frontend-test-utils';
 import { configApiRef } from '@backstage/core-plugin-api';
 
-const navigate = jest.fn();
-jest.mock('@backstage/frontend-plugin-api', () => ({
-  ...jest.requireActual('@backstage/frontend-plugin-api'),
-  useAppNavigate: () => navigate,
-}));
-
+let appHistory: ReturnType<typeof createMockAppHistory>;
 describe('resolveUrlToRelative', () => {
   it('does nothing when app.baseUrl has no subpath', () => {
     const url = 'http://localhost:3000/test';
@@ -44,44 +42,63 @@ describe('resolveUrlToRelative', () => {
 
 const Component = ({ to }: { to: string }) => {
   const navigateTo = useNavigateUrl();
-  return <>{navigateTo(to)}</>;
+  useEffect(() => navigateTo(to), [navigateTo, to]);
+  return null;
 };
 
 describe('useNavigateUrl', () => {
   beforeEach(() => {
-    navigate.mockReset();
+    appHistory = createMockAppHistory();
   });
   it('navigates to the desired page as expected', async () => {
     const baseUrl = 'http://localhost:3000';
     await renderInTestApp(
       <TestApiProvider
-        apis={[[configApiRef, mockApis.config({ data: { app: { baseUrl } } })]]}
+        apis={[
+          [configApiRef, mockApis.config({ data: { app: { baseUrl } } })],
+          [appHistoryApiRef, appHistory],
+        ]}
       >
         <Component to={`${baseUrl}/test`} />
       </TestApiProvider>,
     );
-    expect(navigate).toHaveBeenCalledWith('/test');
+    expect(appHistory.navigateCalls).toEqual([
+      { to: '/test', options: undefined },
+    ]);
+    expect(appHistory.location.pathname).toBe('/test');
   });
   it('handles app.baseUrl subpaths', async () => {
     const baseUrl = 'http://localhost:3000/instance';
     await renderInTestApp(
       <TestApiProvider
-        apis={[[configApiRef, mockApis.config({ data: { app: { baseUrl } } })]]}
+        apis={[
+          [configApiRef, mockApis.config({ data: { app: { baseUrl } } })],
+          [appHistoryApiRef, appHistory],
+        ]}
       >
         <Component to={`${baseUrl}/test`} />
       </TestApiProvider>,
     );
-    expect(navigate).toHaveBeenCalledWith('/test');
+    expect(appHistory.navigateCalls).toEqual([
+      { to: '/test', options: undefined },
+    ]);
+    expect(appHistory.location.pathname).toBe('/test');
   });
   it('handles relative urls', async () => {
     const baseUrl = 'http://localhost:3000';
     await renderInTestApp(
       <TestApiProvider
-        apis={[[configApiRef, mockApis.config({ data: { app: { baseUrl } } })]]}
+        apis={[
+          [configApiRef, mockApis.config({ data: { app: { baseUrl } } })],
+          [appHistoryApiRef, appHistory],
+        ]}
       >
         <Component to="/test" />
       </TestApiProvider>,
     );
-    expect(navigate).toHaveBeenCalledWith('/test');
+    expect(appHistory.navigateCalls).toEqual([
+      { to: '/test', options: undefined },
+    ]);
+    expect(appHistory.location.pathname).toBe('/test');
   });
 });

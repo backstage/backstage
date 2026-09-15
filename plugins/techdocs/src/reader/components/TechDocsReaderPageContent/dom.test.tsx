@@ -13,66 +13,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render } from '@testing-library/react';
-
-// We need to mock react-router-dom hooks used by useInitialRedirect
-import { useParams } from 'react-router-dom';
-import { useAppLocation, useAppNavigate } from '@backstage/frontend-plugin-api';
-
-// Import the module from which the hook is defined
+import { act, screen } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/frontend-test-utils';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+import { Route, Routes } from 'react-router-dom';
 import { useInitialRedirect } from './dom';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-
-  useParams: jest.fn(),
-}));
-
-jest.mock('@backstage/frontend-plugin-api', () => ({
-  ...jest.requireActual('@backstage/frontend-plugin-api'),
-  useAppLocation: jest.fn(),
-  useAppNavigate: jest.fn(),
-}));
+const TestComponent = ({ defaultPath }: { defaultPath?: string }) => {
+  useInitialRedirect(defaultPath);
+  return <div>Test</div>;
+};
 
 describe('useInitialRedirect', () => {
-  const mockNavigate = jest.fn();
-
-  beforeEach(() => {
-    // Reset mocks before each test
-    mockNavigate.mockReset();
-    (useAppNavigate as jest.Mock).mockReturnValue(mockNavigate);
-    (useAppLocation as jest.Mock).mockReturnValue({
-      pathname: '/docs/default/Component/backstage-demo',
-    });
-    // Simulate that no current path is provided
-    (useParams as jest.Mock).mockReturnValue({ '*': '' });
-  });
-
-  const TestComponent: React.FC<{ defaultPath?: string }> = ({
-    defaultPath,
-  }) => {
-    // Call hook that should trigger a redirect on mount only if defaultPath is a non-empty string.
-    useInitialRedirect(defaultPath);
-    return <div>Test</div>;
-  };
-
-  it('should not navigate when defaultPath is undefined', () => {
-    render(<TestComponent defaultPath={undefined} />);
-    expect(mockNavigate).not.toHaveBeenCalled();
-  });
-
-  it('should navigate when defaultPath is a non-empty string', () => {
-    render(<TestComponent defaultPath="/overview" />);
-    expect(mockNavigate).toHaveBeenCalledWith(
-      '/docs/default/Component/backstage-demo/overview',
-      { replace: true },
-    );
-  });
-
-  it('should not navigate if currPath is non-empty', () => {
-    // Override useParams to simulate a non-empty currPath
-    (useParams as jest.Mock).mockReturnValue({ '*': 'existing-path' });
-    render(<TestComponent defaultPath={undefined} />);
-    expect(mockNavigate).not.toHaveBeenCalled();
-  });
+  it.each([
+    [undefined, '', false],
+    ['/overview', '', true],
+    ['/overview', '/existing-path', false],
+  ])(
+    'handles default path %s at subpath %s',
+    async (defaultPath, subpath, redirects) => {
+      const initialPath = `/docs/default/Component/backstage-demo${subpath}`;
+      const { appHistory } = renderInTestApp(
+        <Routes>
+          <Route
+            path="*"
+            element={<TestComponent defaultPath={defaultPath} />}
+          />
+        </Routes>,
+        {
+          router: ReactRouterV6PageRouter,
+          mountPath: '/docs/:namespace/:kind/:name',
+          initialRouteEntries: ['/start', initialPath],
+        },
+      );
+      await screen.findByText('Test');
+      expect(appHistory.location.pathname).toBe(
+        redirects ? initialPath + defaultPath : initialPath,
+      );
+      // A default document replaces the initial URL instead of adding a history entry.
+      act(() => appHistory.navigate(-1));
+      expect(appHistory.location.pathname).toBe('/start');
+    },
+  );
 });

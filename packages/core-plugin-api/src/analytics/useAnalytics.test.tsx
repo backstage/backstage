@@ -16,22 +16,12 @@
 
 import { renderHook } from '@testing-library/react';
 import { useAnalytics } from './useAnalytics';
-import { useApi } from '@backstage/frontend-plugin-api';
-
-jest.mock('@backstage/frontend-plugin-api', () => ({
-  ...jest.requireActual('@backstage/frontend-plugin-api'),
-  useApi: jest.fn(),
-}));
-
-const mocked = (f: Function) => f as jest.Mock;
+import { TestApiProvider } from '@backstage/test-utils';
+import { analyticsApiRef } from '../apis';
 
 describe('useAnalytics', () => {
   it('returns tracker with no implementation defined', () => {
-    // Simulate useApi() throwing an error.
-    mocked(useApi).mockImplementation(() => {
-      throw new Error();
-    });
-
+    // No API provider is installed, so the real useApi hook throws.
     // Result should still have a captureEvent method.
     const { result } = renderHook(() => useAnalytics());
     expect(result.current.captureEvent).toBeDefined();
@@ -40,12 +30,15 @@ describe('useAnalytics', () => {
   it('returns tracker from defined analytics api', () => {
     const captureEvent = jest.fn();
 
-    // Simulate useApi returning a valid tracker.
-    mocked(useApi).mockReturnValue({ captureEvent });
-
     // Calling the captureEvent method of the underlying implementation should
     // pass along the given event as well as the default context.
-    const { result } = renderHook(() => useAnalytics());
+    const { result } = renderHook(() => useAnalytics(), {
+      wrapper: ({ children }) => (
+        <TestApiProvider apis={[[analyticsApiRef, { captureEvent }]]}>
+          {children}
+        </TestApiProvider>
+      ),
+    });
     result.current.captureEvent('an action', 'a subject', {
       value: 42,
       attributes: { some: 'value' },
