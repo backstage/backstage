@@ -33,7 +33,7 @@ import { TanStackPageRouter } from './TanStackPageRouter';
  * tree.
  *
  * Every case declares the adapter the only way there is to declare one: by
- * rendering it inside the `loader` whose content wants it.
+ * rendering it inside the lazily loaded component whose content wants it.
  */
 describe('TanStackPageRouter wired path', () => {
   it('should render single-page content under a TanStack root route', async () => {
