@@ -100,7 +100,7 @@ describe('prepareSpecializedApp', () => {
         .map(([, listener]) => listener);
     }
 
-    it('should release the popstate listener owned by the app history', () => {
+    it('should acquire the default history lazily and release its popstate listener', () => {
       let dispose: (() => void) | undefined;
       const preparedApp = prepareSpecializedApp({
         features: [makeAppPlugin()],
@@ -110,8 +110,13 @@ describe('prepareSpecializedApp', () => {
           },
         },
       } as CreateSpecializedAppInternalOptions);
+      expect(popstateListeners(addEventListenerSpy)).toHaveLength(0);
+
       const app = preparedApp.finalize();
+      expect(popstateListeners(addEventListenerSpy)).toHaveLength(0);
+
       const appHistory = app.apis.get(appHistoryApiRef)!;
+      expect(app.apis.get(appHistoryApiRef)).toBe(appHistory);
 
       // Teardown is handed over during preparation, before finalization
       expect(dispose).toBeDefined();
@@ -149,7 +154,9 @@ describe('prepareSpecializedApp', () => {
     });
 
     it('should leave an overridden app history API untouched', () => {
-      const appHistory = createMockAppHistory();
+      const appHistory = Object.assign(createMockAppHistory(), {
+        dispose: jest.fn(),
+      });
       let dispose: (() => void) | undefined;
       const preparedApp = prepareSpecializedApp({
         features: [makeAppPlugin()],
@@ -168,11 +175,14 @@ describe('prepareSpecializedApp', () => {
 
       dispose!();
 
+      expect(appHistory.dispose).not.toHaveBeenCalled();
       expect(popstateListeners(removeEventListenerSpy)).toHaveLength(0);
     });
 
     it('should let an ApiBlueprint-supplied app history replace the default', () => {
-      const appHistory = createMockAppHistory();
+      const appHistory = Object.assign(createMockAppHistory(), {
+        dispose: jest.fn(),
+      });
       let dispose: (() => void) | undefined;
       const preparedApp = prepareSpecializedApp({
         features: [makeAppPlugin([makeAppHistoryApi(appHistory)])],
@@ -193,6 +203,7 @@ describe('prepareSpecializedApp', () => {
 
       dispose!();
 
+      expect(appHistory.dispose).not.toHaveBeenCalled();
       expect(popstateListeners(removeEventListenerSpy)).toHaveLength(0);
     });
 
@@ -266,12 +277,15 @@ describe('prepareSpecializedApp', () => {
       expect(() => app.apis.get(appHistoryApiRef)).toThrow(
         /'core\.app-history' API is supplied by an extension that is gated behind an 'if' predicate/,
       );
+      expect(popstateListeners(addEventListenerSpy)).toHaveLength(0);
 
       dispose!();
     });
 
     it('should let an app history from a reused session replace the default', () => {
-      const appHistory = createMockAppHistory();
+      const appHistory = Object.assign(createMockAppHistory(), {
+        dispose: jest.fn(),
+      });
       let dispose: (() => void) | undefined;
       const preparedApp = prepareSpecializedApp({
         features: [makeAppPlugin()],
@@ -300,6 +314,7 @@ describe('prepareSpecializedApp', () => {
 
       dispose!();
 
+      expect(appHistory.dispose).not.toHaveBeenCalled();
       expect(popstateListeners(removeEventListenerSpy)).toHaveLength(0);
     });
 
@@ -336,29 +351,40 @@ describe('prepareSpecializedApp', () => {
       );
     });
 
-    it('should not leave a listener attached when the default is built after teardown', () => {
-      let dispose: (() => void) | undefined;
-      const preparedApp = prepareSpecializedApp({
-        features: [makeAppPlugin()],
-        advanced: {
-          sessionState: createSessionStateFromApis(makeSessionApis({})),
-        },
-        __internal: {
-          onDispose: teardown => {
-            dispose = teardown;
+    it.each(['fresh', 'reused'])(
+      'should release history acquired after teardown in a %s session',
+      session => {
+        let dispose: (() => void) | undefined;
+        const preparedApp = prepareSpecializedApp({
+          features: [makeAppPlugin()],
+          ...(session === 'reused'
+            ? {
+                advanced: {
+                  sessionState: createSessionStateFromApis(makeSessionApis({})),
+                },
+              }
+            : {}),
+          __internal: {
+            onDispose: teardown => {
+              dispose = teardown;
+            },
           },
-        },
-      } as CreateSpecializedAppInternalOptions);
-      const app = preparedApp.finalize();
+        } as CreateSpecializedAppInternalOptions);
+        const app = preparedApp.finalize();
 
-      dispose!();
+        dispose!();
 
-      // Deferring construction means the app can still reach for a history
-      // after teardown. It gets one, but a dead one: the listener that backs it
-      // is released immediately, because nothing holds a handle to it anymore.
-      expect(app.apis.get(appHistoryApiRef)).toBeDefined();
-      expect(popstateListeners(addEventListenerSpy)).toHaveLength(1);
-      expect(popstateListeners(removeEventListenerSpy)).toHaveLength(1);
-    });
+        expect(popstateListeners(addEventListenerSpy)).toHaveLength(0);
+        expect(popstateListeners(removeEventListenerSpy)).toHaveLength(0);
+
+        // A first request after teardown must release its listener immediately.
+        const appHistory = app.apis.get(appHistoryApiRef);
+        expect(appHistory).toBeDefined();
+        expect(app.apis.get(appHistoryApiRef)).toBe(appHistory);
+        const attached = popstateListeners(addEventListenerSpy);
+        expect(attached).toHaveLength(1);
+        expect(popstateListeners(removeEventListenerSpy)).toEqual(attached);
+      },
+    );
   });
 });

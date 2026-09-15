@@ -1061,13 +1061,14 @@ describe('createSpecializedApp', () => {
       expect(screen.getByText('Disposable')).toBeInTheDocument();
 
       // The prepared app is discarded inside createSpecializedApp, so this
-      // hand-off is the only remaining handle on the app history it built.
+      // hand-off is the only remaining teardown handle when history is used.
       expect(dispose).toBeDefined();
+      expect(popstateListeners(addEventListenerSpy)).toHaveLength(0);
 
+      const appHistory = app.apis.get(appHistoryApiRef)!;
       const attached = popstateListeners(addEventListenerSpy);
       expect(attached).toHaveLength(1);
 
-      const appHistory = app.apis.get(appHistoryApiRef)!;
       const pathnames = new Array<string>();
       const subscription = appHistory.location$.subscribe(location =>
         pathnames.push(location.pathname),

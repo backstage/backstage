@@ -507,6 +507,10 @@ history; apps can register a custom history implementation. Existing pages
 retain implicit React Router v6 matches while they migrate to explicit adapters.
 The root React Router v6 context remains available for shared UI.
 
+The default history is created when first requested. Preparing an app without
+using its history does not attach a browser history listener. Histories supplied
+by the app or reused from another session remain owned by their supplier.
+
 For the design background, see [RFC #33603](https://github.com/backstage/backstage/issues/33603).
 
 ### What framework routing gives you

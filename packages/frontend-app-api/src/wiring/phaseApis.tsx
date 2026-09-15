@@ -280,44 +280,21 @@ export function createPhaseApis(options: {
     return appHistory;
   }
 
-  // A reused session supplies `fallbackApis`, an already prepared holder that
-  // may carry its own app history — and on that path the app registry checked
-  // above is always empty, so the holder is the only place such a history can
-  // be found. It can only be found by asking, and asking here would construct
-  // an API inside a holder this app does not own, before anything has asked for
-  // one. So the question is deferred to the first request instead: the default
-  // is only built if the holder cannot answer it, at the same moment the
-  // resolver would have reached for the fallback anyway.
-  //
-  // The registration itself still has to happen up front, because `fallbackApis`
-  // sits *below* both registries in FrontendApiResolver — a default registered
-  // here outranks it rather than merely shadowing it, which is how a second
-  // window history used to end up in front of the one the caller supplied.
+  // Register the default up front, but acquire history only when requested.
+  // The primary registry outranks fallbackApis, so consult a reused session's
+  // holder before constructing a history owned by this app.
   function createAppHistoryFactory(): AnyApiFactory | undefined {
     if (hasNavigationOverride) {
       return undefined;
-    }
-    const fallbackApis = options.fallbackApis;
-    if (!fallbackApis) {
-      // Nothing to consult, so the default is created up front as before. Only
-      // the answer is deferred, so that a predicate-gated supplier that appears
-      // during finalization is seen before this one is handed out.
-      const defaultAppHistory = getOrCreateAppHistory();
-      return createApiFactory({
-        api: appHistoryApiRef,
-        deps: {},
-        factory: () => {
-          assertNoDeferredNavigationOverride();
-          return defaultAppHistory;
-        },
-      });
     }
     return createApiFactory({
       api: appHistoryApiRef,
       deps: {},
       factory: () => {
         assertNoDeferredNavigationOverride();
-        return fallbackApis.get(appHistoryApiRef) ?? getOrCreateAppHistory();
+        return (
+          options.fallbackApis?.get(appHistoryApiRef) ?? getOrCreateAppHistory()
+        );
       },
     });
   }
