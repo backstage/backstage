@@ -144,26 +144,33 @@ an immediate migration. In development, consuming this fallback logs a warning
 once per extension per app instance. Render an explicit page adapter to migrate
 that content; pages using only framework routing do not need an adapter.
 
-If the page only needs route parameters and links, switch it to `useRouteRef`, `useRouteRefParams` and `useHref` from `@backstage/frontend-plugin-api`. Those answer from the framework and need no router on any page. If the page genuinely drives a route tree of its own, render the matching adapter inside the `loader`:
+If the page only needs route parameters and links, switch it to `useRouteRef`, `useRouteRefParams` and `useHref` from `@backstage/frontend-plugin-api`. Those answer from the framework and need no router on any page. If the page genuinely drives a route tree of its own, render the matching adapter inside the lazily loaded component:
 
 ```tsx
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
-
 const fooPage = PageBlueprint.make({
   params: {
     path: '/foo',
     routeRef: rootRouteRef,
-    loader: () =>
-      import('./components/').then(m => (
-        <ReactRouterV6PageRouter>
-          <m.FooPage />
-        </ReactRouterV6PageRouter>
-      )),
+    loader: () => import('./components/').then(m => <m.FooPage />),
   },
 });
 ```
 
-Declare it on the page or sub-page, never on page content: an `EntityContentBlueprint` tab already renders inside the adapter its page declared, and a second one there drops the tab's route match. See [Choose a router for a page](./10-page-routers.md) for the other libraries and the full rules.
+The adapter belongs in the lazily loaded component module. Wrap the page's existing JSX directly; only hooks that consume this router need to be in a child beneath it.
+
+```tsx title="./components/FooPage"
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+
+export function FooPage() {
+  return (
+    <ReactRouterV6PageRouter>
+      {/* Existing page JSX and local routes go here. */}
+    </ReactRouterV6PageRouter>
+  );
+}
+```
+
+Declare it in the component that owns the page or sub-page route mount. an `EntityContentBlueprint` tab already renders inside the adapter its page declared, and a second one there drops the tab's route match. See [Choose a router for a page](./10-page-routers.md) for the other libraries and the full rules.
 
 ## Migrating Components
 

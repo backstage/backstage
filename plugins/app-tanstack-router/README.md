@@ -30,40 +30,48 @@ app. The patch leaves the router runtime unchanged.
 
 ## Usage
 
-Render `TanStackPageRouter` inside the `loader` of the page whose
+Render `TanStackPageRouter` inside the lazily loaded component of the page whose
 content should get the context:
 
 ```tsx
 import { PageBlueprint } from '@backstage/frontend-plugin-api';
-import { TanStackPageRouter } from '@backstage/plugin-app-tanstack-router';
 
 const toolsPage = PageBlueprint.make({
   params: {
     path: '/tools',
-    loader: () =>
-      import('./components/ToolsPage').then(m => (
-        <TanStackPageRouter>
-          <m.ToolsPage />
-        </TanStackPageRouter>
-      )),
+    loader: () => import('./components/ToolsPage').then(m => <m.ToolsPage />),
   },
 });
+```
+
+The adapter belongs in the lazily loaded component module. Wrap the page's existing JSX directly; only hooks that consume this router need to be in a child beneath it.
+
+```tsx title="./components/ToolsPage.tsx"
+import { TanStackPageRouter } from '@backstage/plugin-app-tanstack-router';
+
+export function ToolsPage() {
+  return (
+    <TanStackPageRouter>
+      {/* Existing page JSX and local routes go here. */}
+    </TanStackPageRouter>
+  );
+}
 ```
 
 `TanStackPageRouter` renders the content it is given through a catch-all route.
 That covers pages that render the content they are handed without routing inside
 it.
 
-The adapter is scoped where a `loader` renders it. TanStack Router publishes
+The adapter is scoped where the page component renders it. TanStack Router publishes
 its own React context, so it can nest with adapters from other libraries.
 The app also retains a root React Router v6 projection for shared components;
 page content that uses v6 needs its own adapter for page-relative routing.
 
-Rendering it in a sub-page's `loader` scopes it to that sub-page, because the
+Rendering it in a sub-page's component scopes it to that sub-page, because the
 sub-page's own mount is what is in context there. Sibling tabs may declare
 different libraries, or none at all.
 
-Declare it on the page or sub-page, never on page content. An
+Declare it in the component that owns the page or sub-page route mount. An
 `EntityContentBlueprint` tab, a card, or anything else filling a region of
 another page already renders inside the adapter that page declared, one
 route match deeper. A second adapter there re-scopes to the page's own mount and
@@ -90,8 +98,7 @@ To route with a nested TanStack tree of your own, build the page router from
 that tree with `createTanStackPageRouter`. Render `TanStackPageContent`
 wherever in the tree the Backstage page element belongs:
 
-```tsx
-import { PageBlueprint } from '@backstage/frontend-plugin-api';
+```tsx title="plugins/tools/src/components/ToolsPage.tsx"
 import {
   TanStackPageContent,
   createTanStackPageRouter,
@@ -123,17 +130,13 @@ const ToolsPageRouter = createTanStackPageRouter({
   createRouter: ({ history }) => createRouter({ routeTree, history }),
 });
 
-const toolsPage = PageBlueprint.make({
-  params: {
-    path: '/tools',
-    loader: () =>
-      import('./components/ToolsPage').then(m => (
-        <ToolsPageRouter>
-          <m.ToolsPage />
-        </ToolsPageRouter>
-      )),
-  },
-});
+export function ToolsPage() {
+  return (
+    <ToolsPageRouter>
+      <h1>Tools</h1>
+    </ToolsPageRouter>
+  );
+}
 ```
 
 Going through the factory keeps TanStack types out of the framework's public

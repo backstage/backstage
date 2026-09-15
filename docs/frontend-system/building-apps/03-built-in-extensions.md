@@ -106,7 +106,7 @@ This is the extension that creates the app root element, so it renders root leve
 The app root takes no router input. The app owns browser history and exposes it
 as `AppHistoryApi`. Existing pages retain implicit React Router v6 routing while
 they migrate. Development warnings identify use of this fallback. A page can render a [page router](../building-plugins/10-page-routers.md)
-adapter inside its own `loader`. See
+adapter inside its lazily loaded component. See
 [Scoped plugin routing](../architecture/36-routes.md#scoped-plugin-routing).
 :::
 

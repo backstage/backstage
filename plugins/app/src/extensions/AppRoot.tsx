@@ -218,7 +218,7 @@ export interface AppRouterProps {
  * Existing pages also receive implicit React Router v6 matches for gradual
  * migration. Development warnings identify use of that fallback. A page can
  * select its library explicitly, for example by rendering
- * `ReactRouterV6PageRouter` inside its own `PageBlueprint` loader.
+ * `ReactRouterV6PageRouter` inside its lazily loaded page component.
  */
 export function AppRouter(props: AppRouterProps) {
   const { children, SignInPageComponent, extraElements = [] } = props;

@@ -24,24 +24,32 @@ yarn add @backstage/plugin-app-react-router-v7 react-router@^7 react-router-dom@
 
 ## Usage
 
-Render `ReactRouterV7PageRouter` inside the `loader` of the page whose
+Render `ReactRouterV7PageRouter` inside the lazily loaded component of the page whose
 content should get the context:
 
 ```tsx
 import { PageBlueprint } from '@backstage/frontend-plugin-api';
-import { ReactRouterV7PageRouter } from '@backstage/plugin-app-react-router-v7';
 
 const toolsPage = PageBlueprint.make({
   params: {
     path: '/tools',
-    loader: () =>
-      import('./components/ToolsPage').then(m => (
-        <ReactRouterV7PageRouter>
-          <m.ToolsPage />
-        </ReactRouterV7PageRouter>
-      )),
+    loader: () => import('./components/ToolsPage').then(m => <m.ToolsPage />),
   },
 });
+```
+
+The adapter belongs in the lazily loaded component module. Wrap the page's existing JSX directly; only hooks that consume this router need to be in a child beneath it.
+
+```tsx title="./components/ToolsPage.tsx"
+import { ReactRouterV7PageRouter } from '@backstage/plugin-app-react-router-v7';
+
+export function ToolsPage() {
+  return (
+    <ReactRouterV7PageRouter>
+      {/* Existing page JSX and local routes go here. */}
+    </ReactRouterV7PageRouter>
+  );
+}
 ```
 
 The page keeps composing its own content. A `<Routes>` tree the page builds
@@ -49,12 +57,12 @@ itself works as usual, as do relative `Link`s, nested `<Routes>`, and
 `useParams`.
 
 Existing pages retain an implicit React Router v6 compatibility context. This
-explicit adapter takes effect where a `loader` renders it. Development warnings
+explicit adapter takes effect where the page component renders it. Development warnings
 identify content still consuming the implicit fallback. Adapters are added rather than
 selected: React Router v7 publishes its own React context, so it nests with adapters
 from other libraries instead of replacing them.
 
-Rendering it in a sub-page's `loader` scopes it to that sub-page, because the
+Rendering it in a sub-page's component scopes it to that sub-page, because the
 sub-page's own mount is what is in context there. Sibling tabs may declare
 different libraries, or none at all.
 

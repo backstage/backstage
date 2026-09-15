@@ -154,23 +154,31 @@ parameters and hrefs, use `useRouteRef`, `useRouteRefParams` and `useHref` from
 the only one that keeps working when the page has no adapter.
 
 A page that genuinely routes with its library renders that library's adapter
-**inside its own `loader`** — render-time, plain React, no extension wiring:
+**inside its lazily loaded component** — render-time, plain React, no extension wiring:
 
 ```tsx
 import { PageBlueprint } from '@backstage/frontend-plugin-api';
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 
 PageBlueprint.make({
   params: {
     path: '/catalog',
-    loader: () =>
-      import('./Page').then(m => (
-        <ReactRouterV6PageRouter>
-          <m.Page />
-        </ReactRouterV6PageRouter>
-      )),
+    loader: () => import('./Page').then(m => <m.Page />),
   },
 });
+```
+
+The adapter belongs in the lazily loaded component module. Wrap the page's existing JSX directly; only hooks that consume this router need to be in a child beneath it.
+
+```tsx title="./Page.tsx"
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+
+export function Page() {
+  return (
+    <ReactRouterV6PageRouter>
+      {/* Existing page JSX and local routes go here. */}
+    </ReactRouterV6PageRouter>
+  );
+}
 ```
 
 Three adapter packages ship with Backstage, each exporting one component:
@@ -183,7 +191,7 @@ Three adapter packages ship with Backstage, each exporting one component:
 
 Adapters are **added, not selected**. Each library publishes a different React
 context object, so an adapter nests inside another instead of replacing it. A
-sub-page declares its own adapter in its own `loader`, which scopes it to the
+sub-page declares its own adapter in its lazily loaded component, which scopes it to the
 sub-page, and mixed page/sub-page combinations work in both directions.
 
 The app root still has a React Router v6 context for app chrome. That is

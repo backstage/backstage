@@ -21,13 +21,13 @@ Page extensions provide content for a particular route in the app. By default pa
 
 To enable sub-pages on a page, you can either omit the `loader` param to use the built-in default implementation that renders sub-pages as tabs, or provide a custom `loader` that explicitly handles the sub-page inputs.
 
-Existing pages retain implicit React Router v6 matches. To migrate a page or select another routing library, render its adapter inside the page's `loader` — see [Choose a router for a page](10-page-routers.md).
+Existing pages retain implicit React Router v6 matches. To migrate a page or select another routing library, render its adapter inside the page's lazily loaded component — see [Choose a router for a page](10-page-routers.md).
 
 ### SubPage - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.SubPageBlueprint.html)
 
 Sub-page extensions create tabbed content within a parent page. They are attached to a page extension's `pages` input and rendered as tabs in the page header. Each sub-page has a `path` (relative to the parent page), a `title` for the tab, and an optional `icon`. Content is lazy-loaded via a `loader` function.
 
-A sub-page declares its own router adapter in its own `loader`, which scopes the adapter to that sub-page. Sibling tabs may pick different libraries, or none.
+A sub-page declares its own router adapter in its lazily loaded component, which scopes the adapter to that sub-page. Sibling tabs may pick different libraries, or none.
 
 ### PluginHeaderAction - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.index.PluginHeaderActionBlueprint.html)
 
