@@ -31,8 +31,9 @@ export const metricsServiceFactory = createServiceFactory({
   deps: {
     config: coreServices.rootConfig,
     pluginMetadata: coreServices.pluginMetadata,
+    logger: coreServices.rootLogger,
   },
-  factory: ({ config, pluginMetadata }) => {
+  factory: ({ config, pluginMetadata, logger }) => {
     const pluginId = pluginMetadata.getId();
 
     const meterConfig = config.getOptionalConfig(
@@ -43,6 +44,6 @@ export const metricsServiceFactory = createServiceFactory({
     const version = meterConfig?.getOptionalString('version');
     const schemaUrl = meterConfig?.getOptionalString('schemaUrl');
 
-    return DefaultMetricsService.create({ name, version, schemaUrl });
+    return DefaultMetricsService.create({ name, version, schemaUrl, logger });
   },
 });
