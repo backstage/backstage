@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
+import { fireEvent, screen } from '@testing-library/react';
+import { BrowserRouter, useLocation } from 'react-router-dom';
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
+import { createMockAppHistory } from '@backstage/frontend-test-utils';
 import { ErrorPage } from './ErrorPage';
 import { Link } from '../../components/Link';
-import { renderInTestApp } from '@backstage/test-utils';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 
 describe('<ErrorPage/>', () => {
   it('should render with status code, status message and go back link', async () => {
@@ -108,5 +112,60 @@ describe('<ErrorPage/>', () => {
       />,
     );
     expect(getByText(/Show more details/i)).toBeInTheDocument();
+  });
+
+  describe('go back link', () => {
+    /** Renders the location the ambient React Router is at. */
+    function CurrentLocation() {
+      const { pathname } = useLocation();
+      return <p>at {pathname}</p>;
+    }
+
+    it('goes back a page without an app history (OFS)', async () => {
+      // A real browser router rather than the default in-memory one: going
+      // back is only observable in the history the app actually runs on, and
+      // this is the history a deployed app has.
+      window.history.pushState({}, '', '/ofs-one');
+      window.history.pushState({}, '', '/ofs-two');
+
+      await renderInTestApp(
+        <>
+          <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />
+          <CurrentLocation />
+        </>,
+        {
+          components: {
+            Router: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
+          },
+        },
+      );
+      expect(screen.getByText('at /ofs-two')).toBeInTheDocument();
+
+      fireEvent.click(screen.getByTestId('go-back-link'));
+
+      expect(await screen.findByText('at /ofs-one')).toBeInTheDocument();
+      expect(window.location.pathname).toBe('/ofs-one');
+    });
+
+    it('goes back through the app history, leaving other histories alone (NFS)', async () => {
+      const browserPathname = window.location.pathname;
+      const appHistory = createMockAppHistory({ initialLocation: '/nfs-one' });
+      appHistory.navigate('/nfs-two');
+
+      await renderInTestApp(
+        <TestApiProvider apis={[[appHistoryApiRef, appHistory]]}>
+          <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />
+          <CurrentLocation />
+        </TestApiProvider>,
+        { routeEntries: ['/router-one', '/router-two'] },
+      );
+
+      fireEvent.click(screen.getByTestId('go-back-link'));
+
+      expect(appHistory.location.pathname).toBe('/nfs-one');
+      expect(appHistory.navigateCalls.at(-1)).toEqual({ to: -1 });
+      expect(screen.getByText('at /router-two')).toBeInTheDocument();
+      expect(window.location.pathname).toBe(browserPathname);
+    });
   });
 });
