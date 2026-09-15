@@ -19,9 +19,13 @@ import { performance } from 'node:perf_hooks';
 import { setImmediate } from 'node:timers/promises';
 import { EntitiesResponseItems } from '../../catalog/types';
 
-// Bound consecutive projection work, not the page size. A single entity can
+// Bound consecutive projection work, not the page size. A single batch can
 // still take longer than this, since its JSON parsing and serialization are synchronous.
 const PROJECTION_TIME_SLICE_MS = 5;
+const PROJECTION_BATCH_SIZE = 100;
+// String lengths are cheap to inspect without encoding or parsing the input.
+// This limits aggregation of large entities, not the size of any single entity.
+const PROJECTION_BATCH_MAX_CHARACTERS = 1_000_000;
 
 /**
  * Keeps full entities serialized, and projects requested fields in bounded work
@@ -33,18 +37,47 @@ export async function processRawEntitiesResult(
   transform?: (entity: Entity) => Entity,
 ): Promise<EntitiesResponseItems> {
   if (transform) {
-    const entities: (string | null)[] = [];
+    // Keep single-entity lookups on the existing raw response path.
+    if (serializedEntities.length <= 1) {
+      return {
+        type: 'raw',
+        entities: serializedEntities.map(entity =>
+          entity === null
+            ? null
+            : JSON.stringify(transform(JSON.parse(entity))),
+        ),
+      };
+    }
+
+    const batches: string[] = [];
     let sliceStart = performance.now();
 
-    for (const [index, entity] of serializedEntities.entries()) {
-      // Serialize individually so response writers can use the raw path rather
-      // than synchronously serializing the entire projected page again.
-      entities.push(
-        entity === null ? null : JSON.stringify(transform(JSON.parse(entity))),
-      );
+    let index = 0;
+    while (index < serializedEntities.length) {
+      const entities: (Entity | null)[] = [];
+      let characters = 0;
+      while (
+        index < serializedEntities.length &&
+        entities.length < PROJECTION_BATCH_SIZE
+      ) {
+        const entity = serializedEntities[index];
+        const length = entity?.length ?? 0;
+        if (
+          entities.length > 0 &&
+          characters + length > PROJECTION_BATCH_MAX_CHARACTERS
+        ) {
+          break;
+        }
+        entities.push(entity === null ? null : transform(JSON.parse(entity)));
+        characters += length;
+        ++index;
+      }
+      // One serialization per batch amortizes setup and allocation costs without
+      // synchronously serializing the whole page. Writers strip the outer brackets.
+      batches.push(JSON.stringify(entities));
 
       if (
-        index + 1 < serializedEntities.length &&
+        index < serializedEntities.length &&
         performance.now() - sliceStart >= PROJECTION_TIME_SLICE_MS
       ) {
         // A resolved promise only yields to microtasks, not other requests.
@@ -54,8 +87,8 @@ export async function processRawEntitiesResult(
     }
 
     return {
-      type: 'raw',
-      entities,
+      type: 'raw-batches',
+      batches,
     };
   }
 
@@ -70,6 +103,9 @@ export function entitiesResponseToObjects(
 ): (Entity | null)[] {
   if (response.type === 'object') {
     return response.entities;
+  }
+  if (response.type === 'raw-batches') {
+    return response.batches.flatMap(batch => JSON.parse(batch));
   }
   return response.entities.map(e => (e !== null ? JSON.parse(e) : e));
 }

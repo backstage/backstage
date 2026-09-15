@@ -15,6 +15,8 @@
  */
 
 import express from 'express';
+import { EventEmitter } from 'node:events';
+import { setImmediate } from 'node:timers/promises';
 import { mockErrorHandler } from '@backstage/backend-test-utils';
 import request from 'supertest';
 import { writeEntitiesResponse, writeSingleEntityResponse } from './write';
@@ -47,17 +49,24 @@ describe('projected responses', () => {
           ],
         }),
       );
-      if (items.type !== 'raw') {
-        throw new Error(
-          'Expected projection to serialize entities before writing',
-        );
-      }
       if (req.params.mode === 'stream') {
         const stream = createEntityArrayJsonStream(res);
         // /entities streams multiple database pages, including a final empty page.
-        await stream.send({ ...items, entities: items.entities.slice(0, 2) });
-        await stream.send({ ...items, entities: items.entities.slice(2) });
-        await stream.send({ type: 'raw', entities: [] });
+        const pages =
+          items.type === 'raw-batches'
+            ? [
+                { ...items, batches: items.batches.slice(0, 1) },
+                { ...items, batches: items.batches.slice(1) },
+              ]
+            : [items];
+        for (const page of pages) {
+          // Like the router, do not start a stream for an empty database page.
+          const hasItems =
+            page.type === 'raw-batches'
+              ? page.batches.length > 0
+              : page.entities.length > 0;
+          if (hasItems) await stream.send(page);
+        }
         stream.complete();
       } else {
         await writeEntitiesResponse({
@@ -75,6 +84,31 @@ describe('projected responses', () => {
     }
   });
   app.use(mockErrorHandler());
+
+  it.each(['wrapped', 'stream'])(
+    'preserves empty, single, and multi-batch %s responses',
+    async mode => {
+      for (const count of [0, 1, 100, 101, 202]) {
+        const input = Array.from({ length: count }, (_, i) =>
+          i === 99 || i === 100
+            ? null
+            : JSON.stringify({
+                kind: 'Component',
+                metadata: { name: `entity-${i}` },
+                spec: { omitted: true },
+              }),
+        );
+        const response = await request(app).post(`/${mode}`).send(input);
+        const expected = Array.from({ length: count }, (_, i) =>
+          i === 99 || i === 100 ? null : { metadata: { name: `entity-${i}` } },
+        );
+        expect(response.status).toBe(200);
+        expect(mode === 'stream' ? response.body : response.body.items).toEqual(
+          expected,
+        );
+      }
+    },
+  );
 
   it.each(['wrapped', 'stream'])(
     'preserves projected JSON in %s responses',
@@ -135,6 +169,86 @@ describe('projected responses', () => {
       expect(response.status).toBe(500);
       expect(response.body).toMatchObject({ error: { name: 'SyntaxError' } });
       expect(response.body.items).toBeUndefined();
+    },
+  );
+});
+
+describe('serialized batches', () => {
+  it.each([
+    { batches: [], status: 404, name: 'no batches' },
+    {
+      batches: ['[null,{"kind":"User"}]'],
+      status: 404,
+      name: 'first entity missing',
+    },
+    {
+      batches: ['[{"kind":"Component"},null]', '[{"kind":"User"}]'],
+      status: 200,
+      name: 'first entity present',
+    },
+  ])('writes a single entity with $name', async ({ batches, status }) => {
+    const app = express();
+    app.get('/', (_req, res) => {
+      writeSingleEntityResponse(
+        res,
+        { type: 'raw-batches', batches },
+        'not found',
+      );
+    });
+    app.use(mockErrorHandler());
+    const response = await request(app).get('/');
+    expect(response.status).toBe(status);
+    expect(response.body).toMatchObject(
+      status === 200
+        ? { kind: 'Component' }
+        : { error: { name: 'NotFoundError' } },
+    );
+  });
+
+  it.each(['wrapped', 'stream'])(
+    'honors backpressure and disconnects between %s batches',
+    async mode => {
+      const writes: string[] = [];
+      let ended = false;
+      const res = Object.assign(new EventEmitter(), {
+        closed: false,
+        setHeader() {},
+        status() {},
+        flushHeaders() {},
+        write(data: string) {
+          writes.push(data);
+          return false;
+        },
+        end() {
+          ended = true;
+        },
+      });
+      const response = res as unknown as express.Response;
+      const items = {
+        type: 'raw-batches' as const,
+        batches: [
+          '[{"kind":"Component"},null]',
+          '[{"kind":"User"}]',
+          '[{"kind":"Resource"}]',
+        ],
+      };
+      const pending =
+        mode === 'stream'
+          ? createEntityArrayJsonStream(response).send(items)
+          : writeEntitiesResponse({ res: response, items });
+      await setImmediate();
+      expect(writes).toEqual(['[{"kind":"Component"},null']);
+      res.emit('drain');
+      await setImmediate();
+      expect(writes).toEqual([
+        '[{"kind":"Component"},null',
+        ',{"kind":"User"}',
+      ]);
+      res.closed = true;
+      res.emit('close');
+      await pending;
+      expect(writes).toHaveLength(2);
+      expect(ended).toBe(false);
     },
   );
 });

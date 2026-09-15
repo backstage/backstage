@@ -1610,7 +1610,7 @@ describe.each(databases.eachSupportedId())(
           },
           pageInfo: { nextCursor: expect.anything() },
         });
-        expect(response.items.entities).toHaveLength(10);
+        expect(entitiesResponseToObjects(response.items)).toHaveLength(10);
         response = await catalog.queryEntities({
           ...request,
           cursor: response.pageInfo.nextCursor!,
@@ -1623,7 +1623,7 @@ describe.each(databases.eachSupportedId())(
           },
           pageInfo: { prevCursor: expect.anything() },
         });
-        expect(response.items.entities).toHaveLength(5);
+        expect(entitiesResponseToObjects(response.items)).toHaveLength(5);
       });
 
       it('should paginate results accordingly in case of clashing items', async () => {

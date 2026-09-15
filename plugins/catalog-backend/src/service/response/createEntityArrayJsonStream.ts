@@ -43,8 +43,12 @@ export function createEntityArrayJsonStream(
         res.flushHeaders();
       }
 
-      if (response.type === 'raw') {
-        for (const item of response.entities) {
+      if (response.type !== 'object') {
+        const fragments =
+          response.type === 'raw-batches'
+            ? response.batches.map(batch => batch.slice(1, -1))
+            : response.entities;
+        for (const item of fragments) {
           const prefix = firstSend ? '[' : ',';
           firstSend = false;
 
