@@ -57,7 +57,7 @@ jobs:
 
       - name: Run Chromatic
         id: chromatic
-        uses: chromaui/action@14cfaef73576e69f95f47f60058063f46ca38719 # latest
+        uses: chromaui/action@e10900ba92350acd7561744d2d86224c2a3fbb84 # latest
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           # projectToken intentionally shared to allow collaborators to run Chromatic on forks
