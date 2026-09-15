@@ -40,6 +40,13 @@ import {
   LinkProps as RouterLinkProps,
   Route,
 } from 'react-router-dom';
+import {
+  createPath,
+  isExternalTarget,
+  sanitizeHref,
+  useAppRouting,
+} from '@internal/frontend';
+import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 
 export function isReactRouterBeta(): boolean {
@@ -181,13 +188,14 @@ const getNodeText = (node: ReactNode): string => {
 
 /**
  * Unstyled link primitive which...
- * - Uses react-router for internal links.
+ * - Uses Backstage app history for internal links, with React Router fallback in the old frontend system.
  * - Captures link clicks as analytics events.
  */
-export const UnstyledLink = forwardRef<any, LinkProps>(
+export const UnstyledLink = forwardRef<any, Omit<LinkProps, 'variant'>>(
   ({ onClick, noTrack, externalLinkIcon, ...props }, ref) => {
     const classes = useStyles();
     const analytics = useAnalytics();
+    const appRouting = useAppRouting(useOptionalAppHistory());
 
     // Adding the base path to URLs breaks react-router v6 stable, so we only
     // do it for beta. The react router version won't change at runtime so it is
@@ -195,7 +203,7 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const to = isReactRouterBeta() ? useResolvedPath(props.to) : props.to;
     const linkText = getNodeText(props.children) || to;
-    const external = isExternalUri(to);
+    const external = appRouting ? isExternalTarget(to) : isExternalUri(to);
     const newWindow = external && !!/^https?:/.exec(to);
 
     if (scriptProtocolPattern.test(to)) {
@@ -210,6 +218,55 @@ export const UnstyledLink = forwardRef<any, LinkProps>(
         analytics.captureEvent('click', linkText, { attributes: { to } });
       }
     };
+
+    if (appRouting && !external) {
+      const {
+        to: _to,
+        replace,
+        state,
+        reloadDocument,
+        relative: _relative,
+        preventScrollReset: _preventScrollReset,
+        viewTransition: _viewTransition,
+        ...anchorProps
+      } = props;
+      const safeTo = sanitizeHref(to);
+      const href = appRouting.createHref(safeTo);
+      return (
+        <a
+          {...anchorProps}
+          ref={ref}
+          href={href}
+          onClick={event => {
+            handleClick(event);
+            if (
+              event.defaultPrevented ||
+              reloadDocument ||
+              safeTo !== to ||
+              event.button !== 0 ||
+              event.metaKey ||
+              event.altKey ||
+              event.ctrlKey ||
+              event.shiftKey ||
+              (event.currentTarget.target &&
+                event.currentTarget.target.toLowerCase() !== '_self') ||
+              event.currentTarget.hasAttribute('download')
+            ) {
+              return;
+            }
+            event.preventDefault();
+            appRouting.navigate(to, {
+              replace:
+                replace ??
+                href === appRouting.createHref(createPath(appRouting.location)),
+              state,
+            });
+          }}
+        >
+          {props.children}
+        </a>
+      );
+    }
 
     return external ? (
       // External links

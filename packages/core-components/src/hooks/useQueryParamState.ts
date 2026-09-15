@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import { useAppSearchParams } from '@backstage/frontend-plugin-api';
+
 import { isEqual } from 'lodash';
 import qs from 'qs';
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+
 import { useDebouncedEffect } from '@react-hookz/web';
 
 function stringify(queryParams: any): string {
@@ -61,7 +63,7 @@ export function useQueryParamState<T>(
   /** @deprecated Don't configure a custom debounceTime */
   debounceTime: number = 250,
 ): [T | undefined, SetQueryParams<T>] {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useAppSearchParams();
   const searchParamsString = searchParams.toString();
   const [queryParamState, setQueryParamState] = useState<T>(
     extractState(searchParamsString, stateName),

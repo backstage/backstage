@@ -244,9 +244,7 @@ export function collectLegacyRoutes(
             // `<Routes>` matches against the pathname left over by the route
             // context above it, so with none it would match against the whole
             // pathname and the page's own mount would leak into every splat
-            // below it. `createRoutableExtension` also calls `useRouteRef`
-            // from `@backstage/core-plugin-api`, which reads `useLocation`,
-            // before the page's own component renders at all.
+            // below it. Shared route-reference hooks use the app history.
             //
             // Declared here, at the page, and not in `compatWrapper` or in
             // `collectEntityPageContents`: those produce page *content*, and
