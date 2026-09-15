@@ -3,7 +3,7 @@
 The Catalog Import Plugin provides a wizard to onboard projects with existing `catalog-info.yaml` files.
 It also assists by creating pull requests in repositories where no `catalog-info.yaml` exists.
 
-![Catalog Import Plugin](./docs/catalog-import-screenshot.png)
+![Catalog Import Plugin](https://raw.githubusercontent.com/backstage/backstage/master/plugins/catalog-import/docs/catalog-import-screenshot.png)
 
 Current features:
 
