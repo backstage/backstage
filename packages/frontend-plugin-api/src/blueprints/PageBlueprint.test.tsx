@@ -26,12 +26,93 @@ import {
   createExtensionInput,
 } from '../wiring';
 import { act, screen, waitFor } from '@testing-library/react';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { SubPageBlueprint } from './SubPageBlueprint';
 import { usePageMount } from '@internal/frontend';
+import { useAppNode } from '../components/AppNodeProvider';
+import { pluginWrapperApiRef } from '../apis/definitions/PluginWrapperApi';
+import { analyticsApiRef } from '../apis/definitions/AnalyticsApi';
+import { withLogCollector } from '@backstage/test-utils';
+import { useAnalytics } from '../analytics';
 
 describe('PageBlueprint', () => {
   const mockRouteRef = createRouteRef();
+
+  it('keeps the shell visible while loading and applies the page lifecycle once', async () => {
+    let finishLoading: (element: JSX.Element) => void;
+    const loaded = new Promise<JSX.Element>(resolve => {
+      finishLoading = resolve;
+    });
+    const page = PageBlueprint.make({
+      name: 'lifecycle',
+      params: { path: '/lifecycle', title: 'Lifecycle', loader: () => loaded },
+    });
+    const captureEvent = jest.fn();
+    const RootWrapper = ({ children }: { children: ReactNode }) => (
+      <>{children}</>
+    );
+    const Wrapper = ({ children }: { children: ReactNode }) => {
+      const nodeId = useAppNode()?.spec.id;
+      const analytics = useAnalytics();
+      useEffect(() => {
+        analytics.captureEvent('wrapper-mounted', nodeId ?? 'unknown');
+      }, [analytics, nodeId]);
+      return <section aria-label={`Wrapper for ${nodeId}`}>{children}</section>;
+    };
+    renderTestApp({
+      extensions: [page],
+      initialRouteEntries: ['/lifecycle'],
+      apis: [
+        [analyticsApiRef, { captureEvent }],
+        [
+          pluginWrapperApiRef,
+          {
+            getRootWrapper: () => RootWrapper,
+            getPluginWrapper: () => Wrapper,
+          },
+        ],
+      ],
+    });
+
+    await waitFor(() =>
+      expect(screen.getByRole('heading', { name: 'Lifecycle' })).toBeVisible(),
+    );
+    expect(screen.queryByText('Loaded content')).not.toBeInTheDocument();
+    await act(async () => finishLoading!(<p>Loaded content</p>));
+    expect(await screen.findByText('Loaded content')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Lifecycle' })).toBeVisible();
+    expect(
+      screen.getAllByRole('region', {
+        name: 'Wrapper for page:test/lifecycle',
+      }),
+    ).toHaveLength(1);
+    expect(
+      captureEvent.mock.calls.filter(
+        ([event]) =>
+          event.action === 'wrapper-mounted' &&
+          event.subject === 'page:test/lifecycle',
+      ),
+    ).toHaveLength(1);
+  });
+
+  it('keeps the shell visible when the page loader fails', async () => {
+    const page = PageBlueprint.make({
+      params: {
+        path: '/failed',
+        title: 'Failed page',
+        loader: async () => {
+          throw new Error('Page load failed');
+        },
+      },
+    });
+    await withLogCollector(['error'], async () => {
+      renderTestApp({ extensions: [page], initialRouteEntries: ['/failed'] });
+      expect(await screen.findByText('Page load failed')).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { name: 'Failed page' }),
+      ).toBeVisible();
+    });
+  });
 
   it('should return an extension when calling make with sensible defaults', () => {
     const myPage = PageBlueprint.make({
@@ -370,9 +451,8 @@ describe('PageBlueprint', () => {
       initialRouteEntries: ['/isolated'],
     });
 
-    // Outside route matching the first sub-page stands in for the list, and it
-    // is still mounted where the page root would have led — so a router
-    // declared by its loader scopes itself to the sub-page here too.
+    // The isolated extension tree uses the app's matcher and index redirect,
+    // so the child adapter receives the same mount as it does in production.
     expect(await screen.findByTestId('first-page')).toHaveAttribute(
       'data-mount',
       '/isolated/first',
@@ -382,6 +462,70 @@ describe('PageBlueprint', () => {
       '/isolated/first',
     );
   });
+
+  it.each([
+    { mountPath: undefined, basePath: '' },
+    { mountPath: '/teams/:team/tools', basePath: '/teams/acme/tools' },
+  ])(
+    'matches isolated sub-pages at $mountPath and redirects their index',
+    async ({ mountPath, basePath }) => {
+      const Child = ({ name }: { name: string }) => (
+        <p>
+          {name} at {usePageMount()?.basePath}
+        </p>
+      );
+      const parent = PageBlueprint.make({
+        name: 'isolated-routing',
+        params: { path: '/production-path', title: 'Isolated routing' },
+      });
+      const tester = createExtensionTester(parent);
+      for (const name of ['first', 'second']) {
+        tester.add(
+          SubPageBlueprint.make({
+            name,
+            attachTo: { id: 'page:isolated-routing', input: 'pages' },
+            params: {
+              path: name,
+              title: name,
+              loader: async () => <Child name={name} />,
+            },
+          }),
+        );
+      }
+      const { appHistory } = renderInTestApp(tester.reactElement(), {
+        mountPath,
+        initialRouteEntries: [`${basePath}/second`],
+      });
+      expect(
+        await screen.findByText(`second at ${basePath}/second`),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText(`first at ${basePath}/first`),
+      ).not.toBeInTheDocument();
+      await act(async () =>
+        appHistory.navigate(`${basePath}/?mode=test#section`),
+      );
+      expect(
+        await screen.findByText(`first at ${basePath}/first`),
+      ).toBeInTheDocument();
+      expect(appHistory.location).toMatchObject({
+        pathname: `${basePath}/first`,
+        search: '?mode=test',
+        hash: '#section',
+      });
+      await act(async () => appHistory.navigate(-1));
+      expect(
+        await screen.findByText(`second at ${basePath}/second`),
+      ).toBeInTheDocument();
+      await act(async () => appHistory.navigate(`${basePath}/missing`));
+      expect(
+        screen.queryByText(`first at ${basePath}/first`),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(`second at ${basePath}/second`),
+      ).not.toBeInTheDocument();
+    },
+  );
 
   it('should render only the selected sub-page, with framework breadcrumbs outside whatever it declares', async () => {
     // A deliberately non-routing stand-in for an adapter, declared the way a

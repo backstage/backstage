@@ -28,23 +28,12 @@ function collectSourceFiles(directory: string): string[] {
 }
 
 describe('new frontend system router dependency boundary', () => {
-  // The page adapter used to live here too. It now ships as
-  // `@backstage/plugin-app-react-router-v6`, which a plugin picks up by
-  // rendering it in its own page loader, so the only React Router this package
-  // is still allowed to name is the temporary root shim.
-  it('keeps React Router v6 inside the temporary root shim', () => {
+  // Library bindings belong to the page adapters and the framework's
+  // temporary root projection, which AppRoot composes through app history.
+  it('keeps direct React Router imports out of the app plugin', () => {
     const sourceRoot = path.resolve(__dirname);
-    const allowedRoots = [
-      path.join(sourceRoot, 'components', 'RootReactRouterV6.tsx'),
-    ];
     const violations = collectSourceFiles(sourceRoot)
       .filter(file => !/\.(?:test|stories)\.tsx?$/.test(file))
-      .filter(
-        file =>
-          !allowedRoots.some(allowed =>
-            file === allowed ? true : file.startsWith(`${allowed}${path.sep}`),
-          ),
-      )
       .filter(file =>
         /from\s+['"]react-router(?:-dom)?['"]/.test(
           fs.readFileSync(file, 'utf8'),

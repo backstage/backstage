@@ -16,8 +16,29 @@
 
 import { useMemo, type ReactNode } from 'react';
 import { appHistoryApiRef, useApiHolder } from '@backstage/frontend-plugin-api';
-import { usePageMount } from '@internal/frontend';
-import { createScopedRouter } from './createScopedRouter';
+import {
+  createAppHistoryRouter,
+  usePageMount,
+  type ReactRouterAdapterBindings,
+} from '@internal/frontend';
+import {
+  UNSAFE_LocationContext,
+  UNSAFE_NavigationContext,
+  UNSAFE_RouteContext,
+  NavigationType,
+  matchPath,
+} from 'react-router-dom';
+
+const v6Bindings: ReactRouterAdapterBindings = {
+  NavigationType,
+  matchPath: matchPath as ReactRouterAdapterBindings['matchPath'],
+  UNSAFE_NavigationContext:
+    UNSAFE_NavigationContext as ReactRouterAdapterBindings['UNSAFE_NavigationContext'],
+  UNSAFE_LocationContext:
+    UNSAFE_LocationContext as ReactRouterAdapterBindings['UNSAFE_LocationContext'],
+  UNSAFE_RouteContext:
+    UNSAFE_RouteContext as ReactRouterAdapterBindings['UNSAFE_RouteContext'],
+};
 
 /**
  * React Router v6 page adapter. Injects library context projected from the
@@ -77,7 +98,14 @@ export function ReactRouterV6PageRouter(props: { children?: ReactNode }) {
   const scopedRouter = useMemo(
     () =>
       routePattern && appHistory
-        ? createScopedRouter(appHistory, { routePattern })
+        ? createAppHistoryRouter(v6Bindings, appHistory, {
+            routePattern,
+            // Keep the v6 default: relative targets use the leaf match's
+            // pathnameBase rather than its splat tail.
+            navigationContextExtras: {
+              future: { v7_relativeSplatPath: false },
+            },
+          })
         : undefined,
     [appHistory, routePattern],
   );

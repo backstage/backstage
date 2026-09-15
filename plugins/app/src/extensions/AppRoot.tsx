@@ -54,7 +54,8 @@ import { RouteTracker } from '../../../../packages/frontend-app-api/src/routing/
 import { AppRouteProvider } from '../../../../packages/frontend-app-api/src/routing/AppRouteProvider';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { getBasePath } from '../../../../packages/frontend-app-api/src/routing/getBasePath';
-import { RootReactRouterV6 } from '../components/RootReactRouterV6';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { RootHistoryRouter } from '../../../../packages/frontend-app-api/src/routing/RootHistoryRouter';
 
 export const AppRoot = createExtension({
   name: 'root',
@@ -212,9 +213,17 @@ export interface AppRouterProps {
  * resolve against the page the anchor is written in and produces a
  * browser-ready href with the deployment basename.
  *
- * `RootReactRouterV6` is a residual projection for third-party new frontend
+ * `RootHistoryRouter` is a residual projection for third-party new frontend
  * system chrome that still reads React Router v6 context. It owns no browser
- * history. Its behavioral exit criteria are documented on that component.
+ * history. New chrome should read the app history directly, or use the
+ * `useApp*` helpers in `@internal/frontend` when supporting both frontend
+ * systems.
+ *
+ * Remove this compatibility projection once all first-party new frontend
+ * system chrome runs without an ambient
+ * React Router context, routerless conformance tests cover that behavior, and
+ * dependency enforcement prevents new React Router v6 imports in that chrome.
+ *
  * Existing pages also receive implicit React Router v6 matches for gradual
  * migration. Development warnings identify use of that fallback. A page can
  * select its library explicitly, for example by rendering
@@ -265,7 +274,7 @@ export function AppRouter(props: AppRouterProps) {
 
   return (
     <AppRouteProvider history={appHistory} routeObjects={routeObjects}>
-      <RootReactRouterV6>
+      <RootHistoryRouter history={appHistory}>
         <BUIProvider useAnalytics={useAnalytics} useRouter={useBUIRouter}>
           <BreadcrumbsRegistryProvider>
             {...extraElements}
@@ -282,7 +291,7 @@ export function AppRouter(props: AppRouterProps) {
             )}
           </BreadcrumbsRegistryProvider>
         </BUIProvider>
-      </RootReactRouterV6>
+      </RootHistoryRouter>
     </AppRouteProvider>
   );
 }
