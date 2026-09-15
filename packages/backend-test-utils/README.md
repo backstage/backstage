@@ -12,6 +12,32 @@ cd plugins/my-plugin-backend
 yarn add --dev @backstage/backend-test-utils
 ```
 
+## Database tests
+
+`TestDatabases` supports PostgreSQL, MySQL, and SQLite. To use SQLite, install
+`better-sqlite3` as a development dependency in the package that runs your tests:
+
+```sh
+yarn add --dev better-sqlite3@^12.0.0
+```
+
+The SQLite driver is an optional peer dependency and is not installed automatically.
+Initializing `SQLITE_3` without the driver fails with an error explaining how to
+install it.
+
+For PostgreSQL-only tests, select the database IDs explicitly. You do not need to
+install `better-sqlite3`:
+
+```ts
+import { TestDatabases } from '@backstage/backend-test-utils';
+
+const databases = TestDatabases.create({ ids: ['POSTGRES_17'] });
+```
+
+Omitting `ids` uses the configured defaults, or all database IDs if no defaults are
+set, including SQLite. Docker and connection string settings still determine which
+databases are available.
+
 ## Environment variables
 
 - `BACKSTAGE_TEST_DISABLE_DOCKER`

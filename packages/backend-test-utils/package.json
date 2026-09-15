@@ -65,7 +65,6 @@
     "@types/express-serve-static-core": "^4.17.5",
     "@types/keyv": "^4.2.0",
     "@types/qs": "^6.9.6",
-    "better-sqlite3": "^12.0.0",
     "cookie": "^0.7.0",
     "express": "^4.22.0",
     "fs-extra": "^11.0.0",
@@ -87,13 +86,18 @@
     "@types/jest": "*",
     "@types/lodash": "^4.14.151",
     "@types/supertest": "^2.0.8",
+    "better-sqlite3": "^12.0.0",
     "supertest": "^7.0.0"
   },
   "peerDependencies": {
-    "@types/jest": "*"
+    "@types/jest": "*",
+    "better-sqlite3": "^12.0.0"
   },
   "peerDependenciesMeta": {
     "@types/jest": {
+      "optional": true
+    },
+    "better-sqlite3": {
       "optional": true
     }
   }

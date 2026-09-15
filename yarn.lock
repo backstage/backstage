@@ -2163,8 +2163,11 @@ __metadata:
     zod-to-json-schema: "npm:^3.25.1"
   peerDependencies:
     "@types/jest": "*"
+    better-sqlite3: ^12.0.0
   peerDependenciesMeta:
     "@types/jest":
+      optional: true
+    better-sqlite3:
       optional: true
   languageName: unknown
   linkType: soft
