@@ -25,8 +25,7 @@ import {
 import { useNavigateRouteRef } from './useNavigateRouteRef';
 import { createRouteRef } from './RouteRef';
 import { appHistoryApiRef } from './AppHistoryApi';
-import { routeResolutionApiRef } from '../apis';
-import type { RouteResolutionApi } from '../apis';
+import { routeResolutionApiRef, type RouteResolutionApi } from '../apis';
 
 describe('useNavigateRouteRef', () => {
   const catalogRouteRef = createRouteRef({

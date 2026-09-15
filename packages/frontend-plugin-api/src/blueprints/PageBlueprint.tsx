@@ -32,14 +32,16 @@ import {
 } from '../wiring';
 import { ExtensionBoundary, PageLayout, PageLayoutTab } from '../components';
 import { BreadcrumbEntry } from '../breadcrumbs';
-import { useApi } from '../apis/system';
+import { useApi, useApiHolder } from '../apis/system';
 import type { AppNode } from '../apis';
-import { routeResolutionApiRef } from '../apis/definitions/RouteResolutionApi';
+import {
+  routeResolutionApiRef,
+  RouteResolutionApi,
+} from '../apis/definitions/RouteResolutionApi';
 import { pluginHeaderActionsApiRef } from '../apis/definitions/PluginHeaderActionsApi';
-import { RouteResolutionApi } from '../apis/definitions/RouteResolutionApi';
+
 import { optionalStringSchema } from '../schema/optionalStringSchema';
 import { appHistoryApiRef } from '../routing/AppHistoryApi';
-import { useApiHolder } from '../apis/system';
 
 /**
  * One sub-page of a page, as the page itself sees it: a tab to show in the

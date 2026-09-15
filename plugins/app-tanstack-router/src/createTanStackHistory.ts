@@ -24,12 +24,12 @@ import {
   type AppHistoryMetadata,
   type PageMount,
 } from '@internal/frontend';
-import { parseHref } from '@tanstack/history';
-import type {
-  HistoryLocation,
-  NavigationBlocker,
-  ParsedHistoryState,
-  RouterHistory,
+import {
+  parseHref,
+  type HistoryLocation,
+  type NavigationBlocker,
+  type ParsedHistoryState,
+  type RouterHistory,
 } from '@tanstack/history';
 
 type HistoryNotify = RouterHistory['notify'];
