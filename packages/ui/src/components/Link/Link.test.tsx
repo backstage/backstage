@@ -145,7 +145,13 @@ describe('Link', () => {
   });
 
   it('renders a native relative anchor outside React Router', () => {
-    render(<Link href="../entity?tab=docs#api">Destination</Link>);
+    render(
+      <>
+        <Link href="../entity?tab=docs#api">Destination</Link>
+        <Link href="">Current document</Link>
+      </>,
+    );
+    expect(screen.getByText('Current document')).toHaveAttribute('href', '');
 
     expect(screen.getByRole('link', { name: 'Destination' })).toHaveAttribute(
       'href',
@@ -452,5 +458,37 @@ describe('Link', () => {
     expect(
       screen.getByRole('link', { name: 'Isolated destination' }),
     ).toBeInTheDocument();
+  });
+});
+
+// eslint-disable-next-line no-script-url
+const SCRIPT_HREF = 'javascript:alert(document.cookie)';
+// Browsers strip the leading tab and run this exactly like the one above.
+const DISGUISED_SCRIPT_HREF = '\tjavascript:alert(document.cookie)';
+
+describe('Link', () => {
+  it('renders an inert href for executable schemes, inside and outside a router', async () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    render(
+      <MemoryRouter initialEntries={['/catalog']}>
+        <Link href={SCRIPT_HREF}>Routed</Link>
+        <Link href={DISGUISED_SCRIPT_HREF}>Disguised</Link>
+      </MemoryRouter>,
+    );
+    // BUI is a standalone design system, so it has to hold up with no router
+    // at all — that path skips react-router's resolution entirely.
+    render(<Link href={SCRIPT_HREF}>Bare</Link>);
+
+    for (const name of ['Routed', 'Disguised', 'Bare']) {
+      const link = await screen.findByRole('link', { name });
+      expect(link).toHaveAttribute('href', 'about:blank');
+    }
+
+    // Nothing executable may survive anywhere in the rendered markup, not just
+    // in the attribute we happened to assert on.
+    expect(document.body.innerHTML).not.toContain('javascript:');
+    expect(warn).toHaveBeenCalled();
+    warn.mockRestore();
   });
 });
