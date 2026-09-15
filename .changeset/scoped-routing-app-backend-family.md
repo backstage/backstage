@@ -1,5 +1,6 @@
 ---
 '@backstage/plugin-app-backend': patch
+'@backstage/plugin-app-node': patch
 ---
 
-Include the React Router v6, React Router v7 and TanStack Router adapters in the app plugin family metadata.
+Added the React Router v6, React Router v7, and TanStack Router adapter packages to the app plugin family metadata.
