@@ -47,6 +47,7 @@
     "i18next": "^22.4.15",
     "lodash": "^4.17.21",
     "prop-types": "^15.7.2",
+    "use-sync-external-store": "^1.7.0",
     "zen-observable": "^0.10.0",
     "zod": "^3.25.76 || ^4.0.0"
   },
@@ -55,6 +56,7 @@
     "@testing-library/jest-dom": "^6.0.0",
     "@types/jest": "*",
     "@types/react": "^18.0.0",
+    "@types/use-sync-external-store": "^1.7.0",
     "@types/zen-observable": "^0.8.0",
     "msw": "^2.0.0",
     "react": "^18.0.2",
