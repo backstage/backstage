@@ -33,24 +33,21 @@ import { createScopedRouter } from './createScopedRouter';
  * Programmatic back and forward (`navigate(-1)`) traverse the app-owned
  * browser history.
  *
- * Declare it by rendering it inside the `loader` of the page or sub-page that
+ * Declare it by rendering it inside the lazily loaded page or sub-page component that
  * should get the context:
  *
  * ```tsx
- * PageBlueprint.make({
- *   params: {
- *     path: '/catalog',
- *     loader: () =>
- *       import('./CatalogPage').then(m => (
- *         <ReactRouterV6PageRouter>
- *           <m.CatalogPage />
- *         </ReactRouterV6PageRouter>
- *       )),
- *   },
- * });
+ * // In the lazily loaded page component module:
+ * export function CatalogPage() {
+ *   return (
+ *     <ReactRouterV6PageRouter>
+ *       {routes}
+ *     </ReactRouterV6PageRouter>
+ *   );
+ * }
  * ```
  *
- * On a sub-page's `loader` it scopes itself to that sub-page rather than to
+ * In a sub-page's component it scopes itself to that sub-page rather than to
  * the page above it, because the sub-page's own mount is what is in context
  * there. Adapters nest rather than replace one another, so a v6 sub-page works
  * under a page rendered by another routing library, and the reverse.
