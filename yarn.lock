@@ -3575,7 +3575,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-app-react-router-v7@workspace:plugins/app-react-router-v7":
+"@backstage/plugin-app-react-router-v7@workspace:^, @backstage/plugin-app-react-router-v7@workspace:plugins/app-react-router-v7":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-app-react-router-v7@workspace:plugins/app-react-router-v7"
   dependencies:
@@ -27942,11 +27942,15 @@ __metadata:
     "@backstage/frontend-app-api": "workspace:^"
     "@backstage/frontend-defaults": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/frontend-test-utils": "workspace:^"
     "@backstage/integration-react": "workspace:^"
     "@backstage/plugin-api-docs": "workspace:^"
     "@backstage/plugin-app": "workspace:^"
     "@backstage/plugin-app-module-user-settings": "workspace:^"
     "@backstage/plugin-app-react": "workspace:^"
+    "@backstage/plugin-app-react-router-v6": "workspace:^"
+    "@backstage/plugin-app-react-router-v7": "workspace:^"
+    "@backstage/plugin-app-tanstack-router": "workspace:^"
     "@backstage/plugin-app-visualizer": "workspace:^"
     "@backstage/plugin-auth": "workspace:^"
     "@backstage/plugin-auth-react": "workspace:^"
@@ -27982,6 +27986,8 @@ __metadata:
     "@material-ui/lab": "npm:4.0.0-alpha.61"
     "@octokit/rest": "npm:^19.0.3"
     "@playwright/test": "npm:^1.58.2"
+    "@tanstack/history": "npm:1.131.2"
+    "@tanstack/react-router": "npm:1.131.2"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
