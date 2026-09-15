@@ -171,6 +171,17 @@ The `@backstage/backend-test-utils` package includes facilities for testing your
 plugins' interactions with databases, including spinning up `testcontainers`
 powered Docker images with real database engines to connect to.
 
+To test against SQLite, add `better-sqlite3` as a development dependency in the
+package that runs your tests:
+
+```sh
+yarn add --dev better-sqlite3@^12.0.0
+```
+
+The SQLite driver is an optional peer dependency of `@backstage/backend-test-utils`
+and is not installed automatically. Initializing `SQLITE_3` without the driver
+fails with an error explaining how to install it.
+
 The base setup for such a test could look as follows:
 
 ```ts
@@ -223,8 +234,14 @@ const { server } = await startTestBackend({
 });
 ```
 
-When running locally, the tests only run against SQLite for the sake of speed.
-When the `CI` environment variable is set, all given database engines are used.
+For PostgreSQL-only tests, select only PostgreSQL database IDs, for example
+`TestDatabases.create({ ids: ['POSTGRES_18'] })`. You do not need to install
+`better-sqlite3`. Omitting `ids` uses the configured defaults, or all database IDs
+if no defaults are set, including SQLite.
+
+Docker-based databases are disabled by default when running locally. Set `CI=1`
+to enable them, or provide a connection string as described below. SQLite runs
+without Docker when selected and its driver is installed.
 
 If you do not want or are unable to use docker based database engines, e.g. if
 your CI environment is able to supply databases natively, the `TestDatabases`
