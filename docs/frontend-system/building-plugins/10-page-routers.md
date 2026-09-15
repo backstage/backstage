@@ -152,8 +152,9 @@ against the page rather than against the app root.
 yarn --cwd plugins/<plugin-name> add @backstage/plugin-app-tanstack-router
 ```
 
-This package expects `@tanstack/react-router` and `@tanstack/history` as peer
-dependencies.
+Install `@tanstack/react-router@1.131.2` and `@tanstack/history@1.131.2` alongside
+the adapter. The router peer dependency is pinned to a release that supports
+React 18 type checking without a package patch.
 
 How you use it depends on whether your page has a route tree of its own.
 
@@ -238,6 +239,10 @@ the shared browser timeline. If your app provides a custom `AppHistoryApi`, a
 successful push or replace must update its `location` snapshot synchronously.
 Numeric history traversal may finish asynchronously and notify through
 `location$`. The built-in app history supports both requirements.
+
+Custom histories do not need private entry metadata. Without it, back
+availability and entry-based restoration are limited: the adapter cannot infer
+a browser stack from the URLs it has visited.
 
 TanStack push and replace blockers apply to navigation through that adapter.
 They do not block navigation initiated by another adapter, browser traversal,
@@ -340,6 +345,45 @@ BUI controls already receive this integration from the app. `BUIProvider` does
 not configure unrelated React Aria controls. The separate `useAppNavigate` hook
 continues to accept app-absolute destinations; use the captured pair above for
 React Aria links that include relative destinations.
+
+## Migrate Backstage UI routing
+
+Backstage apps configure Backstage UI (BUI) navigation automatically. Standalone
+apps that relied on an ambient React Router must provide the `useRouter` prop
+on `BUIProvider`. React Router is no longer a BUI peer dependency.
+
+The hook returns a `BUIRouter` with three members:
+
+- `resolveHref` resolves a target to a browser href.
+- `navigate` navigates to that target and accepts `replace` and `state` options.
+- `pathname` contains the current browser pathname.
+
+The hook runs at each consuming control. Both callbacks must interpret relative
+targets from that control's route scope. Resolved hrefs and `pathname` must
+include the deployment basename. Nested BUI providers inherit the enclosing
+hook. Without a hook, controls use an explicitly supplied React Aria
+`RouterProvider` from the same installation, or native browser navigation.
+
+When upgrading an existing integration:
+
+1. Upgrade the app's BUI provider and separately bundled BUI components together.
+1. Replace router-specific `routerOptions` with the supported `replace` and
+   `state` options.
+1. Use `href="."` to navigate to the current route. Empty hrefs follow React
+   Aria's native behavior and are not resolved by the host router.
+1. Give directly used React Aria components their own scoped provider, as
+   described in [React Aria integration](#use-react-aria-components-directly).
+
+BUI links treat URL schemes, including custom and mixed-case schemes, as
+external destinations. A scheme appearing only in a query string or fragment
+does not make the link external. Targets using `javascript:`, `data:`, or
+`vbscript:` instead become inert `about:blank` links and produce a console
+warning. This applies to all BUI components that accept hrefs, including links
+read from catalog annotations or other data.
+
+Replace `javascript:` links with `onClick` handlers. For `data:` links, display
+the content directly or create a blob URL for the download. Other schemes use
+native browser navigation.
 
 ## Verify it works
 

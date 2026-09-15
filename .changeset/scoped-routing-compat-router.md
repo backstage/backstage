@@ -2,6 +2,8 @@
 '@backstage/core-compat-api': minor
 ---
 
-**BREAKING**: `convertLegacyAppOptions` now rejects `components.Router`. In the new frontend system the app owns browser history, and it cannot safely keep an opaque router component that may own a second history.
+**BREAKING**: `convertLegacyAppOptions` now rejects `components.Router`. Remove plain `BrowserRouter` wrappers, move global providers to `AppRootWrapperBlueprint`, and use page router adapters for page-specific routing. Apps that remain on the old frontend system are unaffected.
 
-Remove a plain `BrowserRouter`, move any global providers it wrapped to `AppRootWrapperBlueprint`, and give a page its own routing context by rendering a page router such as `ReactRouterV6PageRouter` from `@backstage/plugin-app-react-router-v6` inside its `PageBlueprint` loader. Apps that stay on the old frontend system are unaffected.
+Converted legacy pages receive a scoped React Router v6 adapter automatically, preserving their nested routes without changes to the plugin.
+
+See the [app migration guide](https://backstage.io/docs/frontend-system/building-apps/migrating#components) for examples and custom history configuration.
