@@ -102,14 +102,14 @@ For example:
 
 ```tsx
 import {
-  createPageExtension,
+  PageBlueprint,
   createExtensionOverrides,
 } from '@backstage/frontend-plugin-api';
 
 const customSearchPage = PageBlueprint.make({
   namespace: 'search',
   params: {
-    defaultPath: '/search',
+    path: '/search',
     loader: () =>
       import('./CustomSearchPage').then(m => <m.CustomSearchPage />),
   },
@@ -124,13 +124,13 @@ Should now look like this:
 
 ```tsx
 import {
-  createPageExtension,
+  PageBlueprint,
   createFrontendModule,
 } from '@backstage/frontend-plugin-api';
 
 const customSearchPage = PageBlueprint.make({
   params: {
-    defaultPath: '/search',
+    path: '/search',
     loader: () =>
       import('./CustomSearchPage').then(m => <m.CustomSearchPage />),
   },

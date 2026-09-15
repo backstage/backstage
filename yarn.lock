@@ -2821,6 +2821,7 @@ __metadata:
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/frontend-test-utils": "workspace:^"
     "@backstage/plugin-app-react": "workspace:^"
+    "@backstage/plugin-app-react-router-v6": "workspace:^"
     "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
@@ -2830,10 +2831,12 @@ __metadata:
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
+    "@types/use-sync-external-store": "npm:^1.7.0"
     lodash: "npm:^4.17.21"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
+    use-sync-external-store: "npm:^1.7.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
@@ -2855,8 +2858,12 @@ __metadata:
     "@backstage/core-app-api": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/filter-predicates": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/frontend-test-utils": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@backstage/ui": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
     "@dagrejs/dagre": "npm:^1.1.4"
@@ -2883,6 +2890,7 @@ __metadata:
     "@types/react-syntax-highlighter": "npm:^15.0.0"
     "@types/react-virtualized-auto-sizer": "npm:^1.0.1"
     "@types/react-window": "npm:^1.8.5"
+    "@types/use-sync-external-store": "npm:^1.7.0"
     "@types/zen-observable": "npm:^0.8.0"
     ansi-regex: "npm:^6.0.1"
     classnames: "npm:^2.2.6"
@@ -2917,6 +2925,7 @@ __metadata:
     rehype-raw: "npm:^6.0.0"
     rehype-sanitize: "npm:^5.0.0"
     remark-gfm: "npm:^3.0.1"
+    use-sync-external-store: "npm:^1.7.0"
     zen-observable: "npm:^0.10.0"
     zod: "npm:^3.25.76 || ^4.0.0"
   peerDependencies:
@@ -3101,10 +3110,12 @@ __metadata:
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
+    "@types/use-sync-external-store": "npm:^1.7.0"
     lodash: "npm:^4.17.21"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
+    use-sync-external-store: "npm:^1.7.0"
     zod: "npm:^4.0.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
@@ -3232,10 +3243,12 @@ __metadata:
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
+    "@types/use-sync-external-store": "npm:^1.7.0"
     history: "npm:^5.3.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
+    use-sync-external-store: "npm:^1.7.0"
     zod: "npm:^4.0.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
@@ -3269,12 +3282,14 @@ __metadata:
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@types/jest": "npm:*"
     "@types/react": "npm:^18.0.0"
+    "@types/use-sync-external-store": "npm:^1.7.0"
     "@types/zen-observable": "npm:^0.8.0"
     i18next: "npm:^22.4.15"
     msw: "npm:^2.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
+    use-sync-external-store: "npm:^1.7.0"
     zen-observable: "npm:^0.10.0"
     zod: "npm:^3.25.76 || ^4.0.0"
   peerDependencies:
@@ -3521,6 +3536,76 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-app-react-router-v6@workspace:^, @backstage/plugin-app-react-router-v6@workspace:plugins/app-react-router-v6":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-app-react-router-v6@workspace:plugins/app-react-router-v6"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/filter-predicates": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/frontend-test-utils": "workspace:^"
+    "@backstage/plugin-app-tanstack-router": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@backstage/version-bridge": "workspace:^"
+    "@tanstack/history": "npm:^1.162.4"
+    "@tanstack/react-router": "npm:^1.170.36"
+    "@testing-library/dom": "npm:^10.0.0"
+    "@testing-library/jest-dom": "npm:^6.0.0"
+    "@testing-library/react": "npm:^16.0.0"
+    "@testing-library/user-event": "npm:^14.0.0"
+    "@types/react": "npm:^18.0.0"
+    "@types/use-sync-external-store": "npm:^1.7.0"
+    react: "npm:^18.0.2"
+    react-dom: "npm:^18.0.2"
+    react-router: "npm:^6.30.6"
+    react-router-dom: "npm:^6.30.6"
+    use-sync-external-store: "npm:^1.7.0"
+  peerDependencies:
+    "@types/react": ^17.0.0 || ^18.0.0
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+    react-router: ^6.30.6
+    react-router-dom: ^6.30.6
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-app-react-router-v7@workspace:plugins/app-react-router-v7":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-app-react-router-v7@workspace:plugins/app-react-router-v7"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/filter-predicates": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/frontend-test-utils": "workspace:^"
+    "@backstage/plugin-app-react-router-v6": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@backstage/version-bridge": "workspace:^"
+    "@testing-library/dom": "npm:^10.0.0"
+    "@testing-library/jest-dom": "npm:^6.0.0"
+    "@testing-library/react": "npm:^16.0.0"
+    "@testing-library/user-event": "npm:^14.0.0"
+    "@types/react": "npm:^18.0.0"
+    "@types/use-sync-external-store": "npm:^1.7.0"
+    react: "npm:^18.0.2"
+    react-dom: "npm:^18.0.2"
+    react-router: "npm:^7.18.3"
+    react-router-dom: "npm:^7.18.3"
+    use-sync-external-store: "npm:^1.7.0"
+  peerDependencies:
+    "@types/react": ^18.0.0
+    react: ^18.0.0
+    react-dom: ^18.0.0
+    react-router: ^7.18.3
+    react-router-dom: ^7.18.3
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-app-react@workspace:^, @backstage/plugin-app-react@workspace:plugins/app-react":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-app-react@workspace:plugins/app-react"
@@ -3544,6 +3629,39 @@ __metadata:
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
     react-router-dom: ^6.30.2
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-app-tanstack-router@workspace:^, @backstage/plugin-app-tanstack-router@workspace:plugins/app-tanstack-router":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-app-tanstack-router@workspace:plugins/app-tanstack-router"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/filter-predicates": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/frontend-test-utils": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@backstage/version-bridge": "workspace:^"
+    "@tanstack/history": "npm:^1.162.4"
+    "@tanstack/react-router": "npm:^1.170.36"
+    "@testing-library/dom": "npm:^10.0.0"
+    "@testing-library/jest-dom": "npm:^6.0.0"
+    "@testing-library/react": "npm:^16.0.0"
+    "@testing-library/user-event": "npm:^14.0.0"
+    "@types/react": "npm:^18.0.0"
+    "@types/use-sync-external-store": "npm:^1.7.0"
+    react: "npm:^18.0.2"
+    react-dom: "npm:^18.0.2"
+    use-sync-external-store: "npm:^1.7.0"
+  peerDependencies:
+    "@tanstack/history": ^1.162.4
+    "@tanstack/react-router": ^1.170.36
+    "@types/react": ^18.0.0
+    react: ^18.0.0
+    react-dom: ^18.0.0
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -3591,6 +3709,7 @@ __metadata:
     "@backstage/frontend-test-utils": "workspace:^"
     "@backstage/integration-react": "workspace:^"
     "@backstage/plugin-app-react": "workspace:^"
+    "@backstage/plugin-app-react-router-v6": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
@@ -3607,6 +3726,7 @@ __metadata:
     "@testing-library/react": "npm:^16.0.0"
     "@testing-library/user-event": "npm:^14.0.0"
     "@types/react": "npm:^18.0.0"
+    "@types/use-sync-external-store": "npm:^1.7.0"
     motion: "npm:^12.0.0"
     react: "npm:^18.0.2"
     react-aria: "npm:~3.48.0"
@@ -3614,6 +3734,7 @@ __metadata:
     react-router-dom: "npm:^6.30.2"
     react-stately: "npm:~3.46.0"
     react-use: "npm:^17.2.4"
+    use-sync-external-store: "npm:^1.7.0"
     zen-observable: "npm:^0.10.0"
     zod: "npm:^4.0.0"
   peerDependencies:
@@ -9993,6 +10114,18 @@ __metadata:
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
+    "@types/react": "npm:^18.0.0"
+    "@types/use-sync-external-store": "npm:^1.7.0"
+    react: "npm:^18.0.2"
+    react-dom: "npm:^18.0.2"
+    use-sync-external-store: "npm:^1.7.0"
+  peerDependencies:
+    "@types/react": ^17.0.0 || ^18.0.0
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -18096,6 +18229,56 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/history@npm:1.162.4, @tanstack/history@npm:^1.162.4":
+  version: 1.162.4
+  resolution: "@tanstack/history@npm:1.162.4"
+  checksum: 10/b828d0d2d5eb47cd7ce0014dd262c98b55c349e1e25c2b365e4db03a28743c45d88dace45e2831f646a2ee63a5171147ebc32e42dbf6bd151f0c607c66a567a7
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-router@npm:1.170.36":
+  version: 1.170.36
+  resolution: "@tanstack/react-router@npm:1.170.36"
+  dependencies:
+    "@tanstack/history": "npm:1.162.4"
+    "@tanstack/react-store": "npm:^0.11.0"
+    "@tanstack/router-core": "npm:1.171.30"
+    isbot: "npm:^5.1.22"
+  peerDependencies:
+    react: ">=18.0.0 || >=19.0.0"
+    react-dom: ">=18.0.0 || >=19.0.0"
+  checksum: 10/a8427721503d71102568badff849035df1dfc2b5b2b830bc11d7589c8cb938b7a99509cef60a17f29115cfc2e17ff2b0707abccc80c41571babd38cf9b030527
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-router@patch:@tanstack/react-router@npm%3A1.170.36#~/.yarn/patches/@tanstack-react-router-npm-1.170.36-698f6d23a2.patch":
+  version: 1.170.36
+  resolution: "@tanstack/react-router@patch:@tanstack/react-router@npm%3A1.170.36#~/.yarn/patches/@tanstack-react-router-npm-1.170.36-698f6d23a2.patch::version=1.170.36&hash=09cb5c"
+  dependencies:
+    "@tanstack/history": "npm:1.162.4"
+    "@tanstack/react-store": "npm:^0.11.0"
+    "@tanstack/router-core": "npm:1.171.30"
+    isbot: "npm:^5.1.22"
+  peerDependencies:
+    react: ">=18.0.0 || >=19.0.0"
+    react-dom: ">=18.0.0 || >=19.0.0"
+  checksum: 10/727163ad0ec0ac4c817dc8e8ddcf168b6add2f71fc403ba80eea78ff83d462ceded8894c256639e02d385cccab971c1f405ee473444f67617ba4ea060516cb3b
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-store@npm:^0.11.0":
+  version: 0.11.1
+  resolution: "@tanstack/react-store@npm:0.11.1"
+  dependencies:
+    "@tanstack/store": "npm:0.11.1"
+    use-sync-external-store: "npm:^1.6.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10/55e8b99926a296b630f5f287f95be6411851d5d026096d1b17a5564ad1d763c2b859734496baff91433eb6cb19cc3ce02f4946ac900984379ffb5c73821b6724
+  languageName: node
+  linkType: hard
+
 "@tanstack/react-table@npm:^8.21.3":
   version: 8.21.3
   resolution: "@tanstack/react-table@npm:8.21.3"
@@ -18105,6 +18288,25 @@ __metadata:
     react: ">=16.8"
     react-dom: ">=16.8"
   checksum: 10/a32217ebe64d24e71dea6a6742bc288dcabf389657b16805a1ab3f347d3dca8262759c45c604a1f65bd97925d5cbdfb66d1be7637100a12eb5b279bdd420962d
+  languageName: node
+  linkType: hard
+
+"@tanstack/router-core@npm:1.171.30":
+  version: 1.171.30
+  resolution: "@tanstack/router-core@npm:1.171.30"
+  dependencies:
+    "@tanstack/history": "npm:1.162.4"
+    cookie-es: "npm:^3.0.0"
+    seroval: "npm:^1.6.2"
+    seroval-plugins: "npm:^1.6.2"
+  checksum: 10/e8e15ff2f9dd18b68b6a150863f71583de5a2efc49311a27f3a429231b5be3c15b2a864b5d51dd5671d6635772c3804fb1fc0a031570dcacbc5cb55bf1bb4c56
+  languageName: node
+  linkType: hard
+
+"@tanstack/store@npm:0.11.1":
+  version: 0.11.1
+  resolution: "@tanstack/store@npm:0.11.1"
+  checksum: 10/412d1c9fd6f41657c5f9995672fdb205c048948bf5873dae3028155e2d708bb2319c79f27b59b0f51d0673edb36e2437efc72af83a0c424b0bad05c03ed74393
   languageName: node
   linkType: hard
 
@@ -20113,10 +20315,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/use-sync-external-store@npm:^1.0.0":
-  version: 1.5.0
-  resolution: "@types/use-sync-external-store@npm:1.5.0"
-  checksum: 10/39e5be8dc2cca080b490f2f79fed4381ae7eebee3f981208e359856733eafb2479d229db07a552f6c99fe0b5c09b3e46a3e6a870e00a88b50f3e690e73d2649b
+"@types/use-sync-external-store@npm:^1.0.0, @types/use-sync-external-store@npm:^1.7.0":
+  version: 1.7.0
+  resolution: "@types/use-sync-external-store@npm:1.7.0"
+  checksum: 10/0085883064c1526c5e06a5ec4d259d88a9e15a615888eb22fb496285e6bbdc4077fdc47acd6f17c3f2f7803d3911faefbd317f34ed38de5a5867a2488e7c80e5
   languageName: node
   linkType: hard
 
@@ -24680,6 +24882,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cookie-es@npm:^3.0.0":
+  version: 3.1.1
+  resolution: "cookie-es@npm:3.1.1"
+  checksum: 10/e40083c42d0e3a4b3caa271775858f8e6cdd31f24b9c445ff08d7a8f4dc01069fc82012bdf1602d5a03fa1d75aba51a3dd33cd8a5db639db2ed17bcfd650f4bc
+  languageName: node
+  linkType: hard
+
 "cookie-parser@npm:^1.4.5, cookie-parser@npm:^1.4.6":
   version: 1.4.7
   resolution: "cookie-parser@npm:1.4.7"
@@ -24715,6 +24924,13 @@ __metadata:
   version: 0.7.2
   resolution: "cookie@npm:0.7.2"
   checksum: 10/24b286c556420d4ba4e9bc09120c9d3db7d28ace2bd0f8ccee82422ce42322f73c8312441271e5eefafbead725980e5996cc02766dbb89a90ac7f5636ede608f
+  languageName: node
+  linkType: hard
+
+"cookie@npm:^1.0.1":
+  version: 1.1.1
+  resolution: "cookie@npm:1.1.1"
+  checksum: 10/85538153054791155cf4d38d2e807e3b9382d71bf71d92fc46fca348515ea574049d0d9ef8eb84d2d54a681ad1d7a7316b1989b901dace50a6c0f4c3858dbdb2
   languageName: node
   linkType: hard
 
@@ -31850,6 +32066,13 @@ __metadata:
   version: 5.0.7
   resolution: "isbinaryfile@npm:5.0.7"
   checksum: 10/af240b2a80db5cffbb3ddcb4d89403802d6b67d21b63fbcc0be5cefcefc013f499477c5837a5b2f029ba3d163543eab36eaee7cd701f2c44ee5ac890f0fadac5
+  languageName: node
+  linkType: hard
+
+"isbot@npm:^5.1.22":
+  version: 5.2.0
+  resolution: "isbot@npm:5.2.0"
+  checksum: 10/8baf01625f4980dfede5783ee3971338fe9c09b215ae27bbc9284c0a195c97e6507c5a0f24318cc7a21f6772cbb3c2d61d336bff215c60230ac8ac3b6474dbc8
   languageName: node
   linkType: hard
 
@@ -40067,7 +40290,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router-dom@npm:^6.30.2":
+"react-router-dom@npm:^6.30.2, react-router-dom@npm:^6.30.6":
   version: 6.30.6
   resolution: "react-router-dom@npm:6.30.6"
   dependencies:
@@ -40077,6 +40300,18 @@ __metadata:
     react: ">=16.8"
     react-dom: ">=16.8"
   checksum: 10/6e501c45fd85894b197a84437c12cd0ab6d9c14277af41a7546f965ee0a0861aff1da5d72d56020a1ac2d4d4b1c4ec848a16554372004fdef5cdb1bce75a155e
+  languageName: node
+  linkType: hard
+
+"react-router-dom@npm:^7.18.3":
+  version: 7.18.3
+  resolution: "react-router-dom@npm:7.18.3"
+  dependencies:
+    react-router: "npm:7.18.3"
+  peerDependencies:
+    react: ">=18"
+    react-dom: ">=18"
+  checksum: 10/910592ba98ab777e3fd0f05d80c5e4ad41cc372655f14d8fee84fa25f473d5f92a3f50fdd039db16aa4dce63571faa27fff0401683da0a620e42146dacc99dfe
   languageName: node
   linkType: hard
 
@@ -40091,7 +40326,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router@npm:6.30.6, react-router@npm:^6.30.2":
+"react-router@npm:6.30.6, react-router@npm:^6.30.2, react-router@npm:^6.30.6":
   version: 6.30.6
   resolution: "react-router@npm:6.30.6"
   dependencies:
@@ -40099,6 +40334,22 @@ __metadata:
   peerDependencies:
     react: ">=16.8"
   checksum: 10/df751de74dc460abc9023aecfd09284170939e8ad8892373ec0015aa04187e0b9c66fffcb546bfb0f1ca5c9edb14b67c93a46306a61efcf15a7dc20eca1e16b7
+  languageName: node
+  linkType: hard
+
+"react-router@npm:7.18.3, react-router@npm:^7.18.3":
+  version: 7.18.3
+  resolution: "react-router@npm:7.18.3"
+  dependencies:
+    cookie: "npm:^1.0.1"
+    set-cookie-parser: "npm:^2.6.0"
+  peerDependencies:
+    react: ">=18"
+    react-dom: ">=18"
+  peerDependenciesMeta:
+    react-dom:
+      optional: true
+  checksum: 10/b7393d5f5b044cda9c922b3f96629abc442d6b1b85224c28d4aa292cda45ef4cf26792b613f2bc0742701da3ddc77dd0d4a181e7e5b85d1abd6982c9eba278f2
   languageName: node
   linkType: hard
 
@@ -41778,6 +42029,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"seroval-plugins@npm:^1.6.2":
+  version: 1.6.7
+  resolution: "seroval-plugins@npm:1.6.7"
+  peerDependencies:
+    seroval: ^1.0
+  checksum: 10/482178574a8d63adb63bc5d25b90c74381331c1c75ea6dc33fade9094d1e07f7595ffb1228291b15ab4ccceb99563e07d3b7f407873c89efee585d7b69a41fc3
+  languageName: node
+  linkType: hard
+
+"seroval@npm:^1.6.2":
+  version: 1.6.7
+  resolution: "seroval@npm:1.6.7"
+  checksum: 10/393aef5b09a0a9557268cc95552cbf4153418bcde04a5c2bfae988983e5b41f639e35a9bad04834268ac0879c18b04904374095e639ea6999e050a02b7fe4bbb
+  languageName: node
+  linkType: hard
+
 "serve-handler@npm:^6.1.3":
   version: 6.1.7
   resolution: "serve-handler@npm:6.1.7"
@@ -41829,6 +42096,13 @@ __metadata:
     parseurl: "npm:~1.3.3"
     send: "npm:0.19.0"
   checksum: 10/7fa9d9c68090f6289976b34fc13c50ac8cd7f16ae6bce08d16459300f7fc61fbc2d7ebfa02884c073ec9d6ab9e7e704c89561882bbe338e99fcacb2912fde737
+  languageName: node
+  linkType: hard
+
+"set-cookie-parser@npm:^2.6.0":
+  version: 2.7.2
+  resolution: "set-cookie-parser@npm:2.7.2"
+  checksum: 10/4b6f5ec4e3fa1aef471d9207117704d217ba6bb6443400b41f5ea945c4a7f6fc08e405a122c1a32b4ebde41f06dea75e02c2af87cee9abb27f3e3fe911e5839b
   languageName: node
   linkType: hard
 
@@ -45363,12 +45637,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:^1.4.0, use-sync-external-store@npm:^1.5.0, use-sync-external-store@npm:^1.6.0":
-  version: 1.6.0
-  resolution: "use-sync-external-store@npm:1.6.0"
+"use-sync-external-store@npm:^1.4.0, use-sync-external-store@npm:^1.5.0, use-sync-external-store@npm:^1.6.0, use-sync-external-store@npm:^1.7.0":
+  version: 1.7.0
+  resolution: "use-sync-external-store@npm:1.7.0"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10/b40ad2847ba220695bff2d4ba4f4d60391c0fb4fb012faa7a4c18eb38b69181936f5edc55a522c4d20a788d1a879b73c3810952c9d0fd128d01cb3f22042c09e
+  checksum: 10/cc102e193d079dda118846627f97ac8d34059ae7e1112188ed6330bd42a6b31c209cbb39923d4d663ddc42e5969913015778397131fcd3249909756c88ba9906
   languageName: node
   linkType: hard
 

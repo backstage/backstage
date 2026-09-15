@@ -445,7 +445,65 @@ This would get added to the `features` array as part of your `createApp` options
 
 Many app components are now installed as extensions instead using `createComponentExtension`. See the section on [configuring app components](./01-index.md#configure-your-app) for more information.
 
-The `Router` component is now a built-in extension that you can [override](../architecture/25-extension-overrides.md) using `createRouterExtension`.
+The `Router` component has no replacement, and `convertLegacyAppOptions` throws
+if you pass one. The app owns browser history itself and exposes it as
+`AppHistoryApi`, so a root component that installs its own router would create a
+second history that the app cannot observe. What to do with your old `Router`
+depends on what it actually did:
+
+- If it only rendered `BrowserRouter`, delete it. The app provides history now.
+- If it wrapped the router in global providers, move those providers to
+  `AppRootWrapperBlueprint` from `@backstage/plugin-app-react`.
+- If it installed a different router library, render that library's page router
+  inside the `loader` of each page that needs it. A page or sub-page that
+  declares no adapter does not get its own route match. See
+  [Choose a router for a page](../building-plugins/10-page-routers.md).
+
+Pages that `convertLegacyAppRoot` converts for you already have a React Router
+v6 adapter: the converter declares one at each route it collects, so a legacy
+page keeps working without its author changing anything. Only pages you migrate
+by hand need an adapter you declare yourself. It belongs on the page. An entity
+content or card extension never declares one, because that content already
+renders inside the adapter its page declared.
+
+Moving a provider to an app root wrapper looks like this:
+
+```tsx
+import { AppRootWrapperBlueprint } from '@backstage/plugin-app-react';
+
+const queryClientWrapper = AppRootWrapperBlueprint.make({
+  name: 'query-client',
+  params: {
+    component: ({ children }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    ),
+  },
+});
+```
+
+In tests, replace a root `MemoryRouter` with `renderInTestApp` or
+`renderTestApp` from `@backstage/frontend-test-utils` and navigate through the
+`appHistory` they return. The old frontend system still accepts
+`components.Router`, so a plugin that has to run under both systems does not
+need to change its own React Router usage.
+
+For hash-based deployments, embedded views or a host application that owns
+navigation, register your own implementation of `AppHistoryApi` for
+`appHistoryApiRef` through an `ApiBlueprint` factory. The app uses that
+implementation instead of creating its default browser history. All adapters
+must observe the same history; do not also mount a router that owns a separate
+browser history.
+
+The history factory must be available during app initialization. Do not put an
+`if` predicate on its extension or on the attachment path leading to it:
+predicate context is evaluated after the app history is selected. Such a
+factory is rejected with an error.
+
+A custom history supplies location, navigation and href resolution. The public
+interface does not include entry keys or stack positions. Router features
+that depend on those details can have reduced behavior with a custom history;
+see the adapter's documentation. Tests can use the memory history provided by
+`renderInTestApp` and `renderTestApp`.
 
 The Sign-in page is now installed as an extension, created using the `SignInPageBlueprint` instead.
 

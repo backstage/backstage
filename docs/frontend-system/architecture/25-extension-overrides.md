@@ -310,7 +310,7 @@ The following example shows how to create a frontend module that overrides the s
 
 ```tsx
 import {
-  createPageExtension,
+  PageBlueprint,
   createFrontendModule,
 } from '@backstage/frontend-plugin-api';
 
