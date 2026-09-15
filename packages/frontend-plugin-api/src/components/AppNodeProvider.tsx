@@ -21,6 +21,8 @@ import {
 } from '@backstage/version-bridge';
 import type { AppNode } from '../apis/definitions/AppTreeApi';
 import { ReactNode } from 'react';
+import { AppNodeRouteProvider } from '@internal/frontend';
+import { LegacyPageRouter } from './LegacyPageRouter';
 
 const CONTEXT_KEY = 'app-node-context';
 
@@ -44,7 +46,13 @@ export function AppNodeProvider({
 }) {
   const versionedValue = createVersionedValueMap({ 1: { node } });
 
-  return <AppNodeContext.Provider value={versionedValue} children={children} />;
+  return (
+    <AppNodeContext.Provider value={versionedValue}>
+      <AppNodeRouteProvider node={node}>
+        <LegacyPageRouter node={node}>{children}</LegacyPageRouter>
+      </AppNodeRouteProvider>
+    </AppNodeContext.Provider>
+  );
 }
 
 /**
