@@ -27,6 +27,7 @@ import {
   pluginWrapperApiRef,
   appHistoryApiRef,
   useAnalytics,
+  useAppRouting,
 } from '@backstage/frontend-plugin-api';
 import { BreadcrumbsRegistryProvider } from './BreadcrumbsRegistryProvider';
 import {
@@ -34,7 +35,6 @@ import {
   SignInPageBlueprint,
 } from '@backstage/plugin-app-react';
 import { BUIProvider, type BUIRouter } from '@backstage/ui';
-import { useAppRouting } from '@internal/frontend';
 import {
   DiscoveryApi,
   ErrorApi,
@@ -288,8 +288,7 @@ export function AppRouter(props: AppRouterProps) {
 }
 
 function useBUIRouter(): BUIRouter {
-  const appHistory = useApi(appHistoryApiRef);
-  const routing = useAppRouting(appHistory)!;
+  const routing = useAppRouting();
   return {
     navigate: routing.navigate,
     resolveHref: routing.createHref,

@@ -24,7 +24,6 @@ import {
   createPath,
   isExternalTarget,
   appHistoryMetadataSymbol,
-  normalizeBasePath,
   parsePath,
   resolvePath,
   type AppHistoryAction,
@@ -212,24 +211,10 @@ export class AppHistory implements AppHistoryApi {
    * Resolve a path to a browser-ready href, prefixed with the app's deploy
    * basename.
    *
-   * This is where the framework answers "what does this link target mean?".
-   * `options.basePath` is the mount of the page the target was written in, so
-   * a relative target resolves against the page rather than against the app
-   * root, and a target with no pathname of its own — `?tab=readme`, `#section`
-   * — resolves against the current location, so it stays on the page it was
-   * written on. Both rules are React Router's, which is what lets a plugin
-   * render the same href under either frontend system. Callers that already
-   * hold an app-absolute path pass no `basePath` and get the app root as the
-   * base, which leaves such a path untouched.
-   *
-   * A `basePath` arrives here as a plain path with nothing to say about how it
-   * was matched, so each leading `..` climbs one of its segments. Deciding
-   * which base a `..` lands on where that is not the same thing — a page
-   * mounted at `/catalog/:namespace/:kind/:name` is one match spanning four
-   * segments, so a single `..` climbs off it — needs the page's route pattern,
-   * which only the tree the target was written in has. Framework hrefs and
-   * BUI navigation share that route-aware resolution and pass an app-absolute
-   * destination to the history, so rendered hrefs and clicks agree.
+   * Framework hrefs and BUI navigation resolve the matched route ancestry
+   * before calling this method. Paths here resolve against the app root;
+   * a target with no pathname, such as `?tab=readme` or `#section`, stays at
+   * the current location.
    *
    * A target with no pathname of its own is resolved against the location this
    * history is standing at *now*, so a caller that renders such an href has to
@@ -243,29 +228,19 @@ export class AppHistory implements AppHistoryApi {
    * throwing is not an option either: hrefs are resolved during render, where
    * an error takes out the whole tree. Callers rendering
    * `<a href={useHref(props.url)}>` for a possibly-external URL get the URL
-   * they passed in, matching `useResolvedHref` in `@backstage/ui`. Use
+   * they passed in. Use
    * {@link AppHistory.navigate} when a target must be app-relative — it
    * throws for these instead.
    */
-  createHref(to: string, options?: { basePath?: string }): string {
+  createHref(to: string): string {
     if (isExternalTarget(to)) {
       return to;
     }
     const target = parsePath(to);
-    const base = normalizeBasePath(options?.basePath) || '/';
     const resolved = resolvePath(
       to,
-      target.pathname === undefined && to !== ''
-        ? this.location.pathname
-        : base,
+      target.pathname === undefined && to !== '' ? this.location.pathname : '/',
     );
-    if (
-      (to === '' || to === '.') &&
-      this.location.pathname.endsWith('/') &&
-      !resolved.pathname.endsWith('/')
-    ) {
-      resolved.pathname += '/';
-    }
     // Still normalized through `URL`, which is what turns a resolved path that
     // is not already app-absolute into one, and collapses any `.`/`..` a
     // caller wrote into an absolute target.
@@ -280,7 +255,6 @@ export class AppHistory implements AppHistoryApi {
     }
     this.disposed = true;
     this.unlisten();
-    this.history.dispose();
     this.subscribers.clear();
   }
 
