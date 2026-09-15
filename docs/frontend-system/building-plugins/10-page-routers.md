@@ -232,6 +232,17 @@ timeline. Render `ToolsPageRouter` in the lazy page component the same way as ab
 TanStack types stay inside the adapter package and your plugin, so nothing leaks
 into the framework's public contract.
 
+The adapter uses TanStack's native history implementation for subscriptions,
+push and replace blockers, and navigation state. Backstage's app history owns
+the shared browser timeline. If your app provides a custom `AppHistoryApi`, a
+successful push or replace must update its `location` snapshot synchronously.
+Numeric history traversal may finish asynchronously and notify through
+`location$`. The built-in app history supports both requirements.
+
+TanStack push and replace blockers apply to navigation through that adapter.
+They do not block navigation initiated by another adapter, browser traversal,
+or page unload.
+
 ## Choose a router for a sub-page
 
 A sub-page is an ordinary route one level below its page, and it is no more

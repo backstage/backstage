@@ -149,22 +149,29 @@ contract, so they stay inside this package and your own plugin.
 see navigation coming from elsewhere in the app, because the app's history API
 has no shared blocker contract.
 
-Custom `AppHistoryApi` implementations are supported. The public interface
-reports locations and accepts navigation requests; it does not report entry
-identity, stack position, traversal completion, or operation correlation.
+Custom `AppHistoryApi` implementations must expose their updated location
+snapshot synchronously when handling push or replace navigation. TanStack
+notifies its subscribers immediately after the host handles the request;
+later host notifications for that write are ignored. Back, forward, and `go`
+notify subscribers when the host emits the resulting location, which can be
+asynchronous.
+
+The public interface reports locations and accepts navigation requests; it does
+not report entry identity, stack position, traversal completion, or operation
+correlation.
 Without the optional internal entry metadata used by the built-in history, the
 adapter exposes one synthetic slot: `history.length` is `1`, `__TSR_index` is
 `0`, and both `history.canGoBack()` and TanStack's `useCanGoBack()` return `false`.
 Back, forward, and `go` still delegate to the host even with this conservative
 back-availability result.
 
-An adapter-initiated navigation retains its action when the host notifies
-synchronously. Delayed or unrelated host updates are reported as `GO` with a
-zero delta, since the adapter cannot correlate them with an earlier request.
-Synthetic keys identify observed locations and cannot restore a previous
-entry's identity on traversal. Entry-based scroll restoration therefore lacks
-full fidelity with these custom histories. The adapter does not infer a second
-history stack from URLs, which can be identical for different entries.
+TanStack supplies its native push and replace actions, blockers, and state
+fields. Host updates without entry metadata are reported as `GO` with a zero
+delta. Keys supplied by TanStack can remain in the host's state, but hosts
+without entry metadata cannot reliably identify entries created elsewhere in
+the app. Entry-based scroll restoration therefore lacks full fidelity with
+these custom histories. The adapter does not infer a second history stack from
+URLs, which can be identical for different entries.
 
 ## Documentation
 
