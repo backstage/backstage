@@ -21,11 +21,11 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=8192
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
       # Beginning of yarn setup
       - name: use node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: 24.x
           registry-url: https://registry.npmjs.org/
@@ -35,7 +35,7 @@ jobs:
           corepack enable
       - name: cache all node_modules
         id: cache-modules
-        uses: actions/cache@v5
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
@@ -44,7 +44,7 @@ jobs:
         if: steps.cache-modules.outputs.cache-hit != 'true'
         run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
       - name: cache global yarn cache
-        uses: actions/cache@v5
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
         if: steps.cache-modules.outputs.cache-hit != 'true'
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}

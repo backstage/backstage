@@ -17,7 +17,7 @@ jobs:
 
     services:
       postgres18:
-        image: postgres:18
+        image: postgres:18@sha256:4ef4dbc939d61acea57712655ddb4b4ab27419c913f94cca0cd57cb3ea3c2280
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -28,7 +28,7 @@ jobs:
         ports:
           - 5432/tcp
       postgres14:
-        image: postgres:14
+        image: postgres:14@sha256:156f0b253fd61366d5fc2107ad45955027d5612f695a8436ce20167f3fa79bff
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -39,7 +39,7 @@ jobs:
         ports:
           - 5432/tcp
       mysql8:
-        image: mysql:8.4
+        image: mysql:8.4@sha256:85b9bf2e29cf836ecb8c2a15a935d4ba0c606631dff1dd79531a11983c638f2a
         env:
           MYSQL_ROOT_PASSWORD: root
         options: >-
@@ -50,7 +50,7 @@ jobs:
         ports:
           - 3306/tcp
       redis:
-        image: redis:7
+        image: redis:7@sha256:71da9275c5f3fcb97d0fa0c8c5b36cc995327265420f17a04bfd544f458059f7
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
