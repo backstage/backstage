@@ -15,18 +15,47 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
+import { performance } from 'node:perf_hooks';
+import { setImmediate } from 'node:timers/promises';
 import { EntitiesResponseItems } from '../../catalog/types';
 
-export function processRawEntitiesResult(
+// Bound consecutive projection work, not the page size. A single entity can
+// still take longer than this, since its JSON parsing and serialization are synchronous.
+const PROJECTION_TIME_SLICE_MS = 5;
+
+/**
+ * Keeps full entities serialized, and projects requested fields in bounded work
+ * slices. Serialization finishes before returning the page, so response writers
+ * can stream it without repeating the JSON work or encountering projection errors.
+ */
+export async function processRawEntitiesResult(
   serializedEntities: (string | null)[],
   transform?: (entity: Entity) => Entity,
-): EntitiesResponseItems {
+): Promise<EntitiesResponseItems> {
   if (transform) {
+    const entities: (string | null)[] = [];
+    let sliceStart = performance.now();
+
+    for (const [index, entity] of serializedEntities.entries()) {
+      // Serialize individually so response writers can use the raw path rather
+      // than synchronously serializing the entire projected page again.
+      entities.push(
+        entity === null ? null : JSON.stringify(transform(JSON.parse(entity))),
+      );
+
+      if (
+        index + 1 < serializedEntities.length &&
+        performance.now() - sliceStart >= PROJECTION_TIME_SLICE_MS
+      ) {
+        // A resolved promise only yields to microtasks, not other requests.
+        await setImmediate();
+        sliceStart = performance.now();
+      }
+    }
+
     return {
-      type: 'object',
-      entities: serializedEntities.map(e =>
-        e !== null ? transform(JSON.parse(e)) : e,
-      ),
+      type: 'raw',
+      entities,
     };
   }
 
