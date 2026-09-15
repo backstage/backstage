@@ -30,10 +30,10 @@ import {
   BreadcrumbEntry,
   useBreadcrumbEntries,
 } from '@backstage/frontend-plugin-api';
+import { normalizeBasePath, usePageMount } from '@internal/frontend';
 import { PluginHeader } from '@backstage/ui';
 import Button from '@material-ui/core/Button';
 import { useMemo } from 'react';
-import { useResolvedPath } from 'react-router-dom';
 
 export const Progress = SwappableComponentBlueprint.make({
   name: 'core-progress',
@@ -88,8 +88,17 @@ export const PageLayout = SwappableComponentBlueprint.make({
           tabs,
           children,
         } = props;
-        // TODO(Rugvip): Different solution to this path handling would be good
-        const parentPath = useResolvedPath('.').pathname.replace(/\/$/, '');
+        // Page chrome resolves entirely from the framework-owned mount. The
+        // fixed root React Router projection is a temporary compatibility
+        // layer for third-party chrome, not an input to first-party chrome.
+        const pageMount = usePageMount();
+        const parentPath = normalizeBasePath(pageMount?.basePath ?? '');
+        // Empty string titleLink is treated as unset (same as undefined) so the
+        // breadcrumb still points at the page mount path rather than "".
+        const breadcrumbHref =
+          titleLink !== undefined && titleLink !== ''
+            ? titleLink
+            : parentPath || '/';
         const resolvedTabs = useMemo(
           () =>
             tabs?.map(tab => ({
@@ -128,9 +137,7 @@ export const PageLayout = SwappableComponentBlueprint.make({
         }
 
         return (
-          <BreadcrumbEntry
-            entry={{ label: title, href: titleLink ?? (parentPath || '/') }}
-          >
+          <BreadcrumbEntry entry={{ label: title, href: breadcrumbHref }}>
             {content}
           </BreadcrumbEntry>
         );
