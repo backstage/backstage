@@ -16,7 +16,7 @@
 
 import { createEvent, fireEvent, render, screen } from '@testing-library/react';
 import { type ComponentProps, type PropsWithChildren } from 'react';
-import { MemoryRouter, useLocation, useNavigationType } from 'react-router-dom';
+import { useLocation, useNavigationType } from 'react-router-dom';
 import {
   mockApis,
   renderInTestApp,
@@ -32,7 +32,6 @@ import {
   routeResolutionApiRef,
 } from '@backstage/frontend-plugin-api';
 import { analyticsApiRef } from '@backstage/core-plugin-api';
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { PageMountProvider } from '@internal/frontend';
 import { entityRouteRef } from '../../routes';
 import { EntityRefLink } from './EntityRefLink';
@@ -214,7 +213,7 @@ describe('<EntityRefLink />', () => {
     );
   });
 
-  it('navigates via the app history under scoped routing', () => {
+  it('navigates via the app history without a React Router provider', () => {
     const navigate = jest.fn();
     const appHistory = createMockAppHistory({ navigate });
     const pageMount = { basePath: '/create', routePattern: '/create' };
@@ -241,9 +240,7 @@ describe('<EntityRefLink />', () => {
         ]}
       >
         <PageMountProvider mount={pageMount}>
-          <MemoryRouter>
-            <EntityRefLink entityRef={entity} />
-          </MemoryRouter>
+          <EntityRefLink entityRef={entity} />
         </PageMountProvider>
       </TestApiProvider>,
     );
@@ -283,9 +280,7 @@ describe('<EntityRefLink />', () => {
           [analyticsApiRef, analyticsApi],
         ]}
       >
-        <MemoryRouter>
-          <EntityRefLink entityRef={entity} noTrack={false} />
-        </MemoryRouter>
+        <EntityRefLink entityRef={entity} noTrack={false} />
       </TestApiProvider>,
     );
 
@@ -321,12 +316,7 @@ describe('<EntityRefLink />', () => {
     const { appHistory } = renderInFrontendTestApp(
       <EntityRefLink entityRef={entity} />,
       {
-        // This test deliberately drives the legacy fallback by making
-        // framework route resolution return nothing, and that fallback is
-        // `useRouteRef` from `@backstage/core-plugin-api`, which reads
-        // `useLocation`. Naming the adapter is what makes the fallback path
-        // reachable at all.
-        router: ReactRouterV6PageRouter,
+        // Missing framework resolution falls back to the legacy route binding.
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name/*': entityRouteRef,
         },
@@ -370,9 +360,7 @@ describe('<EntityRefLink />', () => {
           [appHistoryApiRef, appHistory],
         ]}
       >
-        <MemoryRouter>
-          <EntityRefLink entityRef={entity} target="_blank" />
-        </MemoryRouter>
+        <EntityRefLink entityRef={entity} target="_blank" />
       </TestApiProvider>,
     );
 
@@ -391,9 +379,7 @@ describe('<EntityRefLink />', () => {
           [appHistoryApiRef, appHistory],
         ]}
       >
-        <MemoryRouter>
-          <EntityRefLink entityRef={entity} />
-        </MemoryRouter>
+        <EntityRefLink entityRef={entity} />
       </TestApiProvider>,
     );
 
@@ -441,7 +427,7 @@ describe('<EntityRefLink />', () => {
           [appHistoryApiRef, appHistory],
         ]}
       >
-        <MemoryRouter>{children}</MemoryRouter>
+        {children}
       </TestApiProvider>
     );
     const entityLink = (
@@ -575,11 +561,9 @@ describe('<EntityRefLink />', () => {
             [appHistoryApiRef, createMockAppHistory({ navigate })],
           ]}
         >
-          <MemoryRouter>
-            <EntityRefLink entityRef="component:default/software">
-              Software
-            </EntityRefLink>
-          </MemoryRouter>
+          <EntityRefLink entityRef="component:default/software">
+            Software
+          </EntityRefLink>
         </TestApiProvider>,
       );
 
