@@ -2,4 +2,4 @@
 '@backstage/frontend-defaults': patch
 ---
 
-An app now releases the browser resources it holds, most notably its listener on browser history, when its React root is unmounted. This matters where apps are created and thrown away repeatedly in one process, such as tests and development tooling. An app that runs for the life of the page is unaffected.
+Apps now release their browser history listener when the React root unmounts, avoiding retained listeners when apps are repeatedly created and discarded in tests or development tooling.
