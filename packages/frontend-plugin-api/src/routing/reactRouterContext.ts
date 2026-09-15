@@ -24,7 +24,7 @@ import {
 } from 'react-router-dom';
 
 interface LocationContextValue {
-  location: { pathname: string };
+  location: import('./AppLocation').AppLocation;
 }
 
 interface NavigationContextValue {
@@ -47,6 +47,7 @@ interface RouteContextValue {
   matches: Array<{
     pathname: string;
     pathnameBase: string;
+    params: Record<string, string | undefined>;
     route: { path?: string };
   }>;
   isDataRoute: boolean;
