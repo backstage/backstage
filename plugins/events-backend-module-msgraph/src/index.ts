@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-/**
- * Details for how to respond to the rejection
- * of the received HTTP request transmitting an event payload.
- *
- * @public
- */
-export interface RequestRejectionDetails {
-  status: number;
-  payload: unknown;
-  contentType: 'application/json' | 'text/plain';
-}
+import { createBackendFeatureLoader } from '@backstage/backend-plugin-api';
+
+export default createBackendFeatureLoader({
+  loader: () => [
+    import('./eventsModuleMicrosoftGraphWebhook'),
+    import('./eventsModuleMicrosoftGraphRouter'),
+  ],
+});

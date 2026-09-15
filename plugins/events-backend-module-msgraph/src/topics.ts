@@ -14,14 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * Details for how to respond to the rejection
- * of the received HTTP request transmitting an event payload.
- *
- * @public
- */
-export interface RequestRejectionDetails {
-  status: number;
-  payload: unknown;
-  contentType: 'application/json' | 'text/plain';
-}
+export const MICROSOFT_GRAPH_TOPIC = 'msgraph' as const;
+export const TOPIC_MICROSOFT_GRAPH_UPSERT = 'msgraph/upsert' as const;
+export const TOPIC_MICROSOFT_GRAPH_DELETE = 'msgraph/delete' as const;
