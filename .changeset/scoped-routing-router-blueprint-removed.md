@@ -2,8 +2,6 @@
 '@backstage/plugin-app-react': minor
 ---
 
-**BREAKING**: Removed `RouterBlueprint` and the `router` input on `app/root`. The new frontend system uses one app history, and pages declare adapters for their routing libraries.
+**BREAKING**: Removed `RouterBlueprint`. Remove overrides that only install `BrowserRouter`, move global providers to `AppRootWrapperBlueprint`, and render routing adapters inside lazily loaded page components.
 
-Remove overrides that only installed `BrowserRouter`. Move global providers to `AppRootWrapperBlueprint`, and render an adapter such as `ReactRouterV6PageRouter` inside the lazily loaded component of each page that needs it.
-
-Apps with custom navigation can provide `AppHistoryApi` through an `ApiBlueprint` factory for `appHistoryApiRef`. This replaces the default browser history; the factory must be available during initialization and cannot depend on an `if` predicate. The old frontend system's `components.Router` option is unchanged.
+For custom navigation, provide `AppHistoryApi` through an `ApiBlueprint` factory for `appHistoryApiRef` that is available during initialization without an `if` predicate. See the [app migration guide](https://backstage.io/docs/frontend-system/building-apps/migrating#components).
