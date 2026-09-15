@@ -15,6 +15,7 @@
  */
 
 import SearchIcon from '@material-ui/icons/Search';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { z } from 'zod/v4';
 
 import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
@@ -81,12 +82,14 @@ export const searchPage = PageBlueprint.makeWithOverrides({
             item.get(SearchFilterBlueprint.dataRefs.searchFilters).component,
         );
         return (
-          <SearchPage
-            noTrack={config.noTrack}
-            items={items}
-            resultTypes={resultTypes}
-            searchFilters={searchFilters}
-          />
+          <ReactRouterV6PageRouter>
+            <SearchPage
+              noTrack={config.noTrack}
+              items={items}
+              resultTypes={resultTypes}
+              searchFilters={searchFilters}
+            />
+          </ReactRouterV6PageRouter>
         );
       },
     });

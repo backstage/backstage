@@ -49,6 +49,7 @@
   "dependencies": {
     "@backstage/errors": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
+    "@backstage/plugin-app-react-router-v6": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@backstage/ui": "workspace:^",
     "@remixicon/react": ">=4.6.0 <4.9.0",

@@ -22,6 +22,7 @@ import {
   fetchApiRef,
 } from '@backstage/frontend-plugin-api';
 import { RiNotification3Line } from '@remixicon/react';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { rootRouteRef } from './routes';
 import { NotificationsClient, notificationsApiRef } from './api';
 import { unreadNotificationsHomeWidget } from './alpha/extensions/unreadNotificationsHomeWidget';
@@ -30,9 +31,18 @@ const page = PageBlueprint.make({
   params: {
     path: '/notifications',
     routeRef: rootRouteRef,
+    // `NotificationsTable` renders each notification's `payload.link` through
+    // `Link` from `@backstage/core-components`, which is React Router's own
+    // `Link` for anything that is not a fully-qualified URL. The framework
+    // provides no routing library context at page depth, so the page declares
+    // the one it uses. The targets themselves are app-absolute — the table
+    // anchors them to the app root before handing them over — so the page
+    // needs a router to exist rather than needing this particular scope.
     loader: () =>
       import('./components/NotificationsPage').then(m => (
-        <m.NfsNotificationsPage />
+        <ReactRouterV6PageRouter>
+          <m.NfsNotificationsPage />
+        </ReactRouterV6PageRouter>
       )),
   },
 });

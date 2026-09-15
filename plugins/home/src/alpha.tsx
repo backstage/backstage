@@ -50,6 +50,7 @@ import {
   HomePageWidgetBlueprint,
   type HomePageLayoutProps,
 } from '@backstage/plugin-home-react/alpha';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 
 const rootRouteRef = createRouteRef();
 
@@ -111,8 +112,23 @@ const homePage = PageBlueprint.makeWithOverrides({
           node: widget.node,
         }));
 
+        // The widgets in the grid route with React Router v6, and not only
+        // the ones this plugin ships: `HomePageWidgetBlueprint` attaches to
+        // this page by default, so a widget contributed by another plugin
+        // lands inside this loader too — the search plugin's search bar
+        // resolves its target with `useRouteRef` from
+        // `@backstage/core-plugin-api`, which reads `useLocation` before it
+        // resolves anything. The home plugin's own widgets do the same:
+        // `StarredEntityListItem` renders react-router's `Link` and calls the
+        // same `useRouteRef`, and the toolkit renders `Link` from
+        // `@backstage/core-components`. The framework provides no routing
+        // library context at page depth, so the page declares the one it uses.
+        // Every target is app-absolute, so the page needs a router to exist
+        // rather than needing this particular scope.
         return (
-          <Layout widgets={widgets} defaultConfig={config.defaultConfig} />
+          <ReactRouterV6PageRouter>
+            <Layout widgets={widgets} defaultConfig={config.defaultConfig} />
+          </ReactRouterV6PageRouter>
         );
       },
     });

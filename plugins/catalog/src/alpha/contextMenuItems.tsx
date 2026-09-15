@@ -22,11 +22,12 @@ import { RiBugLine, RiDeleteBinLine, RiFileCopyLine } from '@remixicon/react';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
+  useAppNavigate,
   dialogApiRef,
   useTranslationRef,
 } from '@backstage/frontend-plugin-api';
 import { catalogTranslationRef } from './translation';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import {
   UnregisterEntityDialog,
   useEntity,
@@ -110,7 +111,7 @@ export const unregisterEntityContextMenuItem =
       useProps: () => {
         const { entity } = useEntity();
         const dialogApi = useApi(dialogApiRef);
-        const navigate = useNavigate();
+        const navigate = useAppNavigate();
         const catalogRoute = useRouteRef(rootRouteRef);
 
         const { t } = useTranslationRef(catalogTranslationRef);

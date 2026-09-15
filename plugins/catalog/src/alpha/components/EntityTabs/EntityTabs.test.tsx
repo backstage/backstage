@@ -20,6 +20,7 @@ import { EntityTabsList } from './EntityTabsList';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { render } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/frontend-test-utils';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 
 function TestSubRouteHook(props: {
   subRoutes: Array<{
@@ -69,6 +70,9 @@ describe('EntityTabsList', () => {
         groupDefinitions={groupDefinitions}
         selectedIndex={0}
       />,
+      // The tabs are React Router `<Link>`s with page-relative targets, so
+      // this mirrors the adapter the entity page declares in its loader.
+      { router: ReactRouterV6PageRouter },
     );
 
     const tabElements = screen.getAllByRole('tab');
@@ -106,6 +110,9 @@ describe('EntityTabsList', () => {
         groupDefinitions={groupDefinitions}
         selectedIndex={0}
       />,
+      // The tabs are React Router `<Link>`s with page-relative targets, so
+      // this mirrors the adapter the entity page declares in its loader.
+      { router: ReactRouterV6PageRouter },
     );
 
     const tabElements = screen.getAllByRole('tab');
@@ -420,7 +427,10 @@ describe('EntityTabs', () => {
             }
           />
         </Routes>,
-        { initialRouteEntries: ['/details'] },
+        {
+          router: ReactRouterV6PageRouter,
+          initialRouteEntries: ['/details'],
+        },
       );
 
       expect(await screen.findByText('Details Content')).toBeInTheDocument();
@@ -440,7 +450,10 @@ describe('EntityTabs', () => {
             }
           />
         </Routes>,
-        { initialRouteEntries: ['/blob'] },
+        {
+          router: ReactRouterV6PageRouter,
+          initialRouteEntries: ['/blob'],
+        },
       );
 
       expect(await screen.findByTestId('error')).toBeInTheDocument();
@@ -476,7 +489,10 @@ describe('EntityTabs', () => {
             }
           />
         </Routes>,
-        { initialRouteEntries: ['/docs/api/v1'] },
+        {
+          router: ReactRouterV6PageRouter,
+          initialRouteEntries: ['/docs/api/v1'],
+        },
       );
 
       expect(await screen.findByText('Docs Content')).toBeInTheDocument();

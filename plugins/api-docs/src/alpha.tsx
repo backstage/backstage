@@ -38,6 +38,7 @@ import {
   EntityCardBlueprint,
   EntityContentBlueprint,
 } from '@backstage/plugin-catalog-react/alpha';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 
 const apiDocsConfigApi = ApiBlueprint.make({
   name: 'config',
@@ -67,12 +68,20 @@ const apiDocsExplorerPage = PageBlueprint.makeWithOverrides({
       routeRef: rootRoute,
       title: 'APIs',
       icon: <AppIcon fontSize="inherit" id="kind:api" />,
+      // The explorer routes with React Router v6 in two places: the page's own
+      // `useRouteRef` from `@backstage/core-plugin-api`, which reads
+      // `useLocation` before it resolves anything, and `EntityListProvider`,
+      // which reads the catalog filters out of the query string the same way.
+      // The framework provides no routing library context at page depth, so
+      // the page declares the one it uses.
       loader: () =>
         import('./components/ApiExplorerPage/DefaultApiExplorerPage').then(
           m => (
-            <m.NfsApiExplorerPage
-              initiallySelectedFilter={config.initiallySelectedFilter}
-            />
+            <ReactRouterV6PageRouter>
+              <m.NfsApiExplorerPage
+                initiallySelectedFilter={config.initiallySelectedFilter}
+              />
+            </ReactRouterV6PageRouter>
           ),
         ),
     });

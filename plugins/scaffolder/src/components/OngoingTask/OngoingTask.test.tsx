@@ -20,6 +20,7 @@ import {
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
+import { createMockAppHistory } from '@backstage/frontend-test-utils';
 import {
   useTaskEventStream,
   scaffolderApiRef,
@@ -33,6 +34,7 @@ import { rootRouteRef } from '../../routes';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { SWRConfig } from 'swr';
 import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
+import { appHistoryApiRef } from '@backstage/frontend-plugin-api';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -86,6 +88,7 @@ describe('OngoingTask', () => {
             [scaffolderApiRef, mockScaffolderApi],
             [permissionApiRef, permissionApi || mockApis.permission()],
             [entityPresentationApiRef, mockEntityPresentationApi],
+            [appHistoryApiRef, createMockAppHistory()],
           ]}
         >
           <OngoingTask />

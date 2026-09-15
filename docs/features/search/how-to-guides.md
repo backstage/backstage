@@ -34,7 +34,7 @@ to do that in two steps.
    ```
 
 2. Override the default API extension by creating a custom API extension using
-   `createApiExtension` from `@backstage/frontend-plugin-api`, and install it
+   `ApiBlueprint` from `@backstage/frontend-plugin-api`, and install it
    in your app. See the [Utility APIs](../../frontend-system/utility-apis/01-index.md) documentation for details on how to create and install custom API extensions.
 
 ## How to customize fields in the Software Catalog or TechDocs index
