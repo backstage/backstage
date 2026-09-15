@@ -21,7 +21,7 @@ import {
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
-import { screen, waitForElementToBeRemoved } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { rootRouteRef } from '../routes';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import {
@@ -87,7 +87,6 @@ describe('scaffolder extensions', () => {
           },
         );
 
-        await waitForElementToBeRemoved(() => screen.getByTestId('progress'));
         expect(await screen.findByText('template-foo')).toBeInTheDocument();
         expect(await screen.findByText('template-bar')).toBeInTheDocument();
         expect(await screen.findByText('template-baz')).toBeInTheDocument();
@@ -148,7 +147,6 @@ describe('scaffolder extensions', () => {
           },
         );
 
-        await waitForElementToBeRemoved(() => screen.getByTestId('progress'));
         expect(await screen.findByText('template-foo')).toBeInTheDocument();
         expect(screen.queryByText('template-wip')).not.toBeInTheDocument();
       });
@@ -204,7 +202,9 @@ describe('scaffolder extensions', () => {
             },
           );
 
-          await waitForElementToBeRemoved(() => screen.getByTestId('progress'));
+          await waitFor(() =>
+            expect(screen.queryByTestId('progress')).not.toBeInTheDocument(),
+          );
           expect(screen.queryByText('template-foo')).not.toBeInTheDocument();
         },
       );
