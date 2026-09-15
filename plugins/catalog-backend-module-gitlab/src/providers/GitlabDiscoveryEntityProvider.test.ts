@@ -751,8 +751,10 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
   });
 
-  it('should ignore push events from non-configured branches', async () => {
-    const config = new ConfigReader(mock.config_single_integration);
+  it('should ignore push events from non-configured branches without scanning the repository', async () => {
+    const config = new ConfigReader(
+      mock.config_single_integration_wildcard_entity_filename,
+    );
     const schedule = new PersistingTaskRunner();
     const events = DefaultEventsService.create({ logger });
     const entityProviderConnection: EntityProviderConnection = {
@@ -764,6 +766,9 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
       schedule,
       events,
     })[0];
+    const gitLabClient = (provider as any).gitLabClient;
+    const getProjectById = jest.spyOn(gitLabClient, 'getProjectById');
+    const listProjectTree = jest.spyOn(gitLabClient, 'listProjectTree');
 
     await provider.connect(entityProviderConnection);
 
@@ -783,6 +788,8 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
 
     await events.publish(featureBranchEvent);
 
+    expect(getProjectById).not.toHaveBeenCalled();
+    expect(listProjectTree).not.toHaveBeenCalled();
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
     expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(0);
   });

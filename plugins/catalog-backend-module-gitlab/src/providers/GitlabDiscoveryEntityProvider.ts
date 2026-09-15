@@ -480,6 +480,18 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       `Received push event for ${event.project.path_with_namespace}`,
     );
 
+    const targetBranch =
+      this.config.branch ??
+      event.project.default_branch ??
+      this.config.fallbackBranch;
+
+    if (targetBranch && event.ref !== `refs/heads/${targetBranch}`) {
+      this.logger.debug(
+        `Skipping push event for ${event.project.path_with_namespace} targeting ${event.ref}`,
+      );
+      return;
+    }
+
     const project = await this.gitLabClient.getProjectById(event.project_id);
 
     if (!project) {
@@ -497,18 +509,6 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
 
     if (projectCatalogFiles.length === 0) {
       this.logger.debug(`Skipping event ${event.project.path_with_namespace}`);
-      return;
-    }
-
-    const targetBranch =
-      this.config.branch ??
-      event.project.default_branch ??
-      this.config.fallbackBranch;
-
-    if (targetBranch && event.ref !== `refs/heads/${targetBranch}`) {
-      this.logger.debug(
-        `Skipping push event for ${event.project.path_with_namespace} targeting ${event.ref}`,
-      );
       return;
     }
 
