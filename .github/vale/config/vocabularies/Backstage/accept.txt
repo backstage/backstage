@@ -5,6 +5,7 @@ ACLs
 addon
 addons
 ADRs
+affordance
 airbrake
 Airbrake
 Airbrakes
@@ -62,6 +63,7 @@ changeset
 changesets
 chanwit
 Chanwit
+checkpointed
 CI/CD
 classname
 cleye
@@ -92,6 +94,7 @@ conformant
 const
 cookiecutter
 corepack
+coroutine
 Corti
 cron
 cronjobs
@@ -168,7 +171,9 @@ Firekube
 Firestore
 Fiverr
 flightcontrol
+footgun
 Francesco
+freben
 Frontside
 Gaurav
 gerrit
@@ -411,6 +416,7 @@ replicasets
 repo
 Repo
 repos
+requester
 requestors
 rerender
 rerenders
@@ -433,6 +439,7 @@ Routable
 Rspack
 rst
 rsync
+Rugvip
 ruleset
 runbook
 sam
@@ -512,6 +519,7 @@ Talkdesk
 Tanzu
 targetRef
 tasklist
+teardown
 techdocs
 Telenor
 telus
@@ -565,11 +573,13 @@ unregistering
 unregisters
 unregistration
 unreviewed
+unschedulable
 unstarred
 untemplated
 untracked
 untrusted
 upsert
+upstreamed
 upstreams
 upvote
 UIs
