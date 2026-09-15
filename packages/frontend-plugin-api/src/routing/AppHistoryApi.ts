@@ -41,6 +41,10 @@ export interface AppHistoryApi {
    * action with a single correct answer, so a wrong target is a bug worth
    * surfacing. {@link AppHistoryApi.createHref} passes the same targets
    * through instead.
+   *
+   * Implementations used with the TanStack page adapter must expose the new
+   * `location` synchronously when a push or replace completes. Numeric history
+   * traversal may complete asynchronously and is observed through `location$`.
    */
   navigate(path: string, options?: AppNavigateOptions): void;
   /** Traverse a relative number of history entries. */
