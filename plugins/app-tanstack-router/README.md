@@ -17,16 +17,17 @@ TanStack Router is a peer dependency, so install it alongside the adapter:
 
 ```sh
 cd <package-dir> # if within a monorepo
-yarn add @backstage/plugin-app-tanstack-router @tanstack/react-router @tanstack/history
+yarn add @backstage/plugin-app-tanstack-router @tanstack/react-router@1.131.2 @tanstack/history@1.131.2
 ```
 
-With React 18 types, `@tanstack/react-router@1.170.36` has a published
-`CatchBoundary` declaration that fails dependency type checking with `TS2416`.
-Patch its `render` declaration to `render(): React.ReactNode;` in both
-`dist/esm/CatchBoundary.d.ts` and `dist/cjs/CatchBoundary.d.cts` using your
-package manager's patch support. Backstage applies this declaration-only patch
-in its repository; installing this adapter does not apply that patch to your
-app. The patch leaves the router runtime unchanged.
+The adapter pins `@tanstack/react-router` to `1.131.2`, the latest release
+verified to pass strict dependency type checking with React 18 without a
+package patch. Newer releases through `1.170.36` have declaration errors
+in TanStack Router or its router-core dependency.
+
+This issue may already be fixed in a newer TanStack Router release when you read
+this. Check the [latest releases](https://github.com/TanStack/router/releases)
+and the adapter's current peer dependency range before choosing a version.
 
 ## Usage
 

@@ -101,7 +101,6 @@
   "resolutions": {
     "@material-ui/pickers@^3.2.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
     "@remixicon/react": ">=4.6.0 <4.9.0",
-    "@tanstack/react-router@npm:^1.170.36": "patch:@tanstack/react-router@npm%3A1.170.36#~/.yarn/patches/@tanstack-react-router-npm-1.170.36-698f6d23a2.patch",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "@yarnpkg/plugin-npm@npm:^3.1.0": "patch:@yarnpkg/plugin-npm@npm%3A3.7.1#~/.yarn/patches/@yarnpkg-plugin-npm-npm-3.7.1-ab2f1a850e.patch",
