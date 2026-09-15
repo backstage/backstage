@@ -2,7 +2,7 @@
 title: TechDocs Zensical Support
 status: implementable
 authors:
-  - '@bondy'
+  - '@byan1197'
 owners:
   - '@backstage/techdocs-maintainers'
 project-areas:
@@ -49,7 +49,7 @@ TechDocs is coupled to **mkdocs-material** through two paths:
 
 MkDocs itself is healthy. mkdocs-material enters end-of-life in November 2026, with critical fixes only until then and nothing after. Its creator is pivoting to **Zensical**, a next-generation static site generator that has some backwards compatibility with `mkdocs.yml` natively and preserves Material's CSS classes in "classic" mode.
 
-A pure container swap won't work. Zensical doesn't support the MkDocs plugin API, so `techdocs-core` can't run inside it. Making it work means reimplementing `techdocs-core`'s functionality (theme injection, ~15 markdown extensions, search plugin, monorepo support, security hardening) as TypeScript preprocessing in the generator. Early prototyping confirms this: 364 lines of config patching, manual redirect generation (Zensical doesn't support `mkdocs-redirects`), and HTML post-processing to strip Material-specific attributes.
+A pure container swap won't work. Zensical doesn't support the MkDocs plugin API, so `techdocs-core` can't run inside it. Making it work means reimplementing `techdocs-core`'s functionality (theme injection, ~15 markdown extensions, search plugin, monorepo support, security hardening) as TypeScript preprocessing in the generator. Early prototyping confirms this: 300+ lines of config patching, and HTML post-processing to strip Material-specific attributes.
 
 This BEP covers the minimum to get Zensical builds working: a new generator class that owns this preprocessing, a CLI flag to select it, and a validated container image. The existing MkDocs path is largely untouched and should be invisible to end users who choose to stick with MkDocs.
 
@@ -70,7 +70,7 @@ The change touches three areas: the generator layer, the CLI, and the container 
 Add a `TechdocsZensicalGenerator` alongside the existing `TechdocsGenerator`. The existing class is untouched.
 
 - A new `TechdocsZensicalGenerator` class implements `GeneratorBase.run()`. In local mode it spawns `zensical build` (output directory is set via `site_dir` in the preprocessed config, since Zensical has no `-d` flag). In Docker mode it runs the Zensical container with the same approach. It does not inject `techdocs-core`; config preprocessing is handled entirely in TypeScript.
-- A new layer within the Generator class that gives space for Zensical-specific config preprocessing: theme defaults, markdown extension injection (~22 extensions), `mdx_configs`, security hardening (`pymdownx.snippets.restrict_base_path`), HTML post-processing (stripping `data-md-color-*` attributes and palette scripts), and manual redirect file generation.
+- A new layer within the Generator class that gives space for Zensical-specific config preprocessing: theme defaults, markdown extension injection (~22 extensions), `mdx_configs`, security hardening (`pymdownx.snippets.restrict_base_path`), HTML post-processing (stripping `data-md-color-*` attributes and palette scripts).
   - Having this space allows for other preprocessing steps to happen (such as the mkdocs patching that already exists across `techocs-backend`)
 - An optional `type` field is added to `GeneratorConfig` so the system knows which generator was requested.
 - The `setTechdocsGenerator` parameter type changes from `TechdocsGenerator` to `GeneratorBase` (one-line change). This unblocks custom generators that don't extend the MkDocs-specific class.
@@ -78,9 +78,9 @@ Add a `TechdocsZensicalGenerator` alongside the existing `TechdocsGenerator`. Th
 
 ### CLI layer (`techdocs-cli`)
 
-Add `--engine <type>` to the `generate`, `serve`, and `serve:mkdocs` commands.
+Add `--engine <type>` to the `generate`, `serve`, and `serve:mkdocs` commands. Introduce `serve:raw` as the engine-agnostic replacement for `serve:mkdocs`. `serve:mkdocs` is kept as a deprecated alias that logs a deprecation notice pointing to `serve:raw --engine mkdocs`. MkDocs-branded option names (`--mkdocs-port`, `--mkdocs-parameter-*`) are similarly aliased to engine-agnostic names (`--docs-port`, etc.) with deprecation warnings.
 
-Zensical's CLI is similar to MkDocs but not identical: flags don't map 1:1. The CLI uses an **engine config map** that translates techdocs-cli arguments into engine-specific binary invocations. This is the minimal abstraction for two engines, and the natural extension point if a third engine is added later. Engine selection must considered as the CLI currently invokes the implemented Generator directly, with little wiggle room for swapping out the underlying doc generator.
+Zensical's CLI is similar to MkDocs but not identical: flags don't map 1:1. The CLI uses an **engine config map** that translates techdocs-cli arguments into engine-specific binary invocations. This is the minimal abstraction for two engines, and the natural extension point if a third engine is added later. Engine selection must be considered as the CLI currently invokes the implemented Generator directly, with little wiggle room for swapping out the underlying doc generator.
 
 **Engine config map:**
 
@@ -95,14 +95,30 @@ Zensical's CLI is similar to MkDocs but not identical: flags don't map 1:1. The 
 | `--clean`           | Supported (build + serve) | Supported (build only, `-c`)                  |
 | `--strict`          | Supported (build + serve) | Supported (build only, `-s`)                  |
 | `--dirtyreload`     | Supported (serve)         | Not supported (dropped)                       |
-| Startup log pattern | `"Serving on <address>"`  | TBD, needs verification                       |
+| Startup log pattern | `"Serving on <address>"`  | `"Serving <site_dir> on http://<address>"`    |
 
 **CLI differences worth noting:**
 
 - **No `-d` flag on `zensical build`.** MkDocs accepts `build -d <outputDir>` to control output location. Zensical uses the `site_dir` config key instead (defaults to `site`). The `TechdocsZensicalGenerator` patches `site_dir` in the preprocessed config to point to the desired output directory.
 - **`--dirty`/`--dirtyreload` not available on Zensical serve.** These MkDocs-specific flags are silently dropped when `--engine zensical`.
 - **`--strict` and `--clean` are build-only in Zensical.** MkDocs accepts them on both `build` and `serve`; Zensical only on `build`. The serve path drops them for Zensical.
-- **Livereload protocol is unverified.** Zensical's docs confirm auto-reload ("the browser will automatically reload the page you're on") but don't document the protocol. It likely inherits MkDocs's long-poll mechanism since both tools share a creator, but this needs a spike during implementation. If the protocol differs, the livereload proxy in `httpServer.ts` needs an adapter.
+
+### Livereload abstraction
+
+MkDocs and Zensical use different livereload protocols. MkDocs uses HTTP long-polling with epoch comparison; Zensical uses WebSocket with file path messages. Every other major doc engine (Hugo, Sphinx, Docusaurus, VitePress) also uses WebSocket. MkDocs is the outlier.
+
+The existing `livereload.ts` is built entirely around MkDocs's long-poll protocol. To support Zensical (and any future engine), the CLI introduces a livereload adapter per engine:
+
+| Property       | MkDocs           | Zensical             |
+| -------------- | ---------------- | -------------------- |
+| Protocol       | HTTP long-poll   | WebSocket            |
+| Endpoint       | `/livereload`    | Same as page URL     |
+| Message format | Epoch comparison | File paths (strings) |
+| CSS hot swap   | No               | Yes                  |
+
+Each engine's adapter defines how to connect to the engine's reload server, how to interpret its messages, and what to inject into HTML for the Backstage preview bridge. The engine config map gains a `liveReload` field alongside the existing binary/flags/image fields.
+
+The Backstage-wrapped `serve` command currently proxies MkDocs livereload through `httpServer.ts` because the engine's injected script gets stripped by DOMPurify sanitization in the Shadow DOM. For Zensical, the proxy needs to bridge WebSocket messages instead of long-poll responses. The adapter pattern lets both protocols coexist without conditionals in the serve path.
 
 ### Container image
 
@@ -119,7 +135,7 @@ techdocs:
   generator:
     defaultEngine: mkdocs # global default, backwards compatible
     mkdocs: # existing namespace, unchanged
-      omitTechdocsCoreMkdocsPlugin: false
+      omitTechdocsCorePlugin: false
       defaultPlugins: []
       disableExternalFonts: false
     zensical: # new namespace
@@ -130,39 +146,44 @@ techdocs:
 
 `mkdocs-techdocs-core` bundles 9 dependencies. Each behaves differently under Zensical. Zensical maps MkDocs _plugins_ to Zensical-native modules, but its handling of third-party Python is unclear at first. Some spiking has been done and there is confidence that Zensical uses Python Markdown under the hood, which is a good signal but will require further verification. Below is the dependency map from within mkdocs-techdocs-core and how it links to Zensical.
 
-| Dependency                  | Type                           | Zensical status                                                          |
-| --------------------------- | ------------------------------ | ------------------------------------------------------------------------ |
-| `mkdocs-material`           | Theme                          | Replaced by Zensical itself (classic mode)                               |
-| `pymdown-extensions`        | Python Markdown extension (13) | Features listed as native; unclear if via pymdownx or own implementation |
-| `plantuml-markdown`         | Python Markdown extension      | Not mentioned by Zensical, tested lightly on local                       |
-| `markdown-graphviz-inline`  | Python Markdown extension      | Not mentioned by Zensical, tested lightly on local                       |
-| `mdx_truly_sane_lists`      | Python Markdown extension      | Not mentioned by Zensical, tested lightly on local                       |
-| `pygments`                  | Library (syntax highlighting)  | Transitive dep of pymdownx.highlight                                     |
-| `mkdocs-redirects`          | MkDocs plugin                  | **Tier 1 mapped** to native Zensical module                              |
-| `mkdocs-monorepo-plugin`    | MkDocs plugin                  | **Not mapped**                                                           |
-| `mkdocs-github-admonitions` | MkDocs plugin                  | **Not mapped** (standard admonitions work natively)                      |
+| Dependency                  | Type                           | Zensical status                                                                         |
+| --------------------------- | ------------------------------ | --------------------------------------------------------------------------------------- |
+| `mkdocs-material`           | Theme                          | Replaced by Zensical itself (classic mode)                                              |
+| `pymdown-extensions`        | Python Markdown extension (13) | Features listed as native; unclear if via pymdownx or own implementation                |
+| `plantuml-markdown`         | Python Markdown extension      | Not mentioned by Zensical, tested lightly on local                                      |
+| `markdown-graphviz-inline`  | Python Markdown extension      | Not mentioned by Zensical, tested lightly on local                                      |
+| `mdx_truly_sane_lists`      | Python Markdown extension      | Not mentioned by Zensical, tested lightly on local                                      |
+| `pygments`                  | Library (syntax highlighting)  | Transitive dep of pymdownx.highlight                                                    |
+| `mkdocs-redirects`          | MkDocs plugin                  | [Supported natively](https://zensical.org/docs/compatibility/mkdocs/plugins/#redirects) |
+| `mkdocs-monorepo-plugin`    | MkDocs plugin                  | **Not mapped**                                                                          |
+| `mkdocs-github-admonitions` | MkDocs plugin                  | Supported natively via `pymdownx.quotes: callouts: true`                                |
 
 On initial scan it does seem like there can be a sizable feature gap, but Zensical declares `markdown` and `pymdown-extensions` as direct dependencies in its manifests. Zensical docs/roadmap confirms that the integration with Python Markdown Extensions is there, so its entirely possible to use the same dialect that MkDocs uses, ensuring compatibility of existing content. This means third-party Python Markdown extensions like plantuml-markdown and markdown-graphviz-inline _should_ work today since they go through the same processing pipeline.
 
 **Risks to watch:**
 
 1. **`mkdocs-monorepo-plugin`** is the biggest gap. Teams using `!include` for multi-docs setups will break. Not mapped by Zensical, no workaround exists. This is a blocker for monorepo documentation structures.
-1. **`mkdocs-github-admonitions`** — minor gap. Only affects teams using GitHub-flavored `> [!NOTE]` syntax. Standard admonitions (`::: note`) work natively in Zensical.
+
+   - Updated as of Sep 10: [Zensical's roadmap does include monorepo support](https://zensical.org/about/roadmap/#configuration).
+
+2. **Search collator compatibility.** Zensical uses its own [built-in search module](https://zensical.org/compatibility/plugins/#search) instead of MkDocs's search plugin. The TechDocs search collator reads `search/search_index.json` from the build output to index documentation for Backstage search. Initial testing confirms Zensical produces a different file (`search.json` at root, not `search/search_index.json`), uses a different array key (`items` vs `docs`), and includes HTML markup in the `text` field where MkDocs outputs plain text. A strategy for normalizing the search index across engines is TBD and will be discussed in the PR thread.
+
+3. **`mkdocs-github-admonitions`** — minor gap. Only affects teams using GitHub-flavored `> [!NOTE]` syntax. Standard admonitions (`::: note`) work natively in Zensical.
 
 ### Zensical config preprocessing
 
 Because `techdocs-core` cannot run inside Zensical, the `TechdocsZensicalGenerator` handles equivalent preprocessing in TypeScript before invoking the build:
 
-| Concern             | MkDocs (techdocs-core in Python)              | Zensical (generator in TypeScript)                              |
-| ------------------- | --------------------------------------------- | --------------------------------------------------------------- |
-| Theme defaults      | Forces `material` theme                       | Sets Zensical theme + `classic` variant                         |
-| Markdown extensions | Injects ~15 extensions via `on_config`        | Patches `mkdocs.yml` extension list directly (~22 extensions)   |
-| Search plugin       | Injects `search` plugin                       | Determines Zensical equivalent                                  |
-| Monorepo plugin     | Injects `monorepo` plugin                     | Determines Zensical equivalent                                  |
-| Font control        | `theme.font: false` via Python                | Patches config in TypeScript                                    |
-| Security: snippets  | `pymdownx.snippets.restrict_base_path = True` | Enforced in config patching                                     |
-| Redirects           | `mkdocs-redirects` plugin                     | Manual redirect file generation (Zensical lacks plugin support) |
-| Metadata            | Jinja2 template in theme                      | Handled by `createOrUpdateMetadata` (already generic)           |
+| Concern             | MkDocs (techdocs-core in Python)              | Zensical (generator in TypeScript)                                                                                                               |
+| ------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Theme defaults      | Forces `material` theme                       | Sets Zensical theme + `classic` variant                                                                                                          |
+| Markdown extensions | Injects ~15 extensions via `on_config`        | Patches `mkdocs.yml` extension list directly (~22 extensions)                                                                                    |
+| Search plugin       | Injects `search` plugin                       | Determines Zensical equivalent                                                                                                                   |
+| Monorepo plugin     | Injects `monorepo` plugin                     | Determines Zensical equivalent                                                                                                                   |
+| Font control        | `theme.font: false` via Python                | Patches config in TypeScript                                                                                                                     |
+| Security: snippets  | `pymdownx.snippets.restrict_base_path = True` | Enforced in config patching                                                                                                                      |
+| Redirects           | `mkdocs-redirects` plugin                     | [Supported natively](https://zensical.org/compatibility/plugins/#redirects) since v0.0.58; same `mkdocs.yml` config, no manual generation needed |
+| Metadata            | Jinja2 template in theme                      | Handled by `createOrUpdateMetadata` (already generic)                                                                                            |
 
 The generator writes a temporary `mkdocs.zensical.yml` with the preprocessed config, passes it to the Zensical build, and cleans it up after.
 This is a requirement so that Zensical-based generation can maintain feature parity. There can be further discussion on whether or not this belongs on the image or should be done programmatically through code.
@@ -181,6 +202,7 @@ Introduce all the abstractions needed for multi-engine support in the backend, b
 - Introduce generator selection in `Generators.fromConfig()` (a simple conditional, currently only the MkDocs path exists)
 - Change the extension point setter to accept `GeneratorBase` instead of `TechdocsGenerator`
 - Extract shared helpers (docs directory validation, SCM URL patching, metadata creation) that both generators will eventually use
+- Add an `engine` parameter to `createOrUpdateMetadata()` so generators write an `engine` field into `techdocs_metadata.json`. The existing `TechdocsGenerator` writes `engine: 'mkdocs'`. Builds without the field (pre-existing published docs) default to `'mkdocs'` on the read side. Add optional `engine?: string` to the `TechDocsMetadata` type in `techdocs-react`
 
 **CLI layer:**
 
@@ -188,6 +210,7 @@ Introduce all the abstractions needed for multi-engine support in the backend, b
 - Create the engine config map with MkDocs as the only entry
 - Refactor `mkdocsServer.ts` to read from the engine config map instead of hardcoding binary/flags/image
 - Refactor `generate.ts` and `serve.ts` to route through the engine config map
+- Introduce a livereload adapter interface in the engine config map. Refactor the existing MkDocs long-poll proxy (`livereload.ts`, `httpServer.ts`) behind this interface
 
 **Why this phase matters:** It proves the abstractions work without any risk. If something breaks, it's a refactoring bug, not an engine compatibility issue. It also means the Phase 2 diff is purely additive: new files, new engine config map entry, with no refactoring mixed in.
 
@@ -197,14 +220,15 @@ With the abstraction layer in place, add Zensical as a second engine. MkDocs rem
 
 **Generator layer:**
 
-- New `TechdocsZensicalGenerator` class implementing `GeneratorBase.run()`
+- New `TechdocsZensicalGenerator` class implementing `GeneratorBase.run()`. Writes `engine: 'zensical'` into `techdocs_metadata.json` via the `createOrUpdateMetadata()` parameter added in Phase 1
 - New `zensicalHelpers` for config preprocessing (theme defaults, ~22 markdown extensions, security hardening, `site_dir` patching, HTML post-processing, redirect generation)
 - Register the Zensical generator alongside MkDocs in `Generators.fromConfig()`
 
 **CLI layer:**
 
 - Add Zensical entry to the engine config map (binary, image, flags, startup pattern)
-- `--engine zensical` now works on `generate`, `serve`, and `serve:mkdocs`
+- Implement the WebSocket livereload adapter for Zensical. The Backstage-wrapped `serve` command needs to proxy WebSocket reload messages through `httpServer.ts` and bridge them into the Shadow DOM
+- `--engine zensical` now works on `generate`, `serve`, and `serve:mkdocs` with full livereload
 
 **Container image:**
 
@@ -255,7 +279,7 @@ Viable short-term. Risks accumulate: unpatched security vulnerabilities in Mater
 
 Switch to ProperDocs, oprypin's maintained fork of MkDocs 1.x that preserves the full plugin ecosystem.
 
-Solves plugin continuity but doesn't address the Material theme EOL. Could be added later using the same pattern established here: a new generator class alongside the existing ones.
+Solves plugin continuity but doesn't address the Material theme EOL. Could be added later using the same pattern established here: a new generator class alongside the existing ones. Worth noting [materialx](https://github.com/jaywhj/mkdocs-materialx), a ProperDocs-based fork of mkdocs-material that preserves full MkDocs plugin compatibility (including mkdocs-monorepo-plugin). This could be a lower-cost path for teams that need plugin parity over Zensical's newer features.
 
 ## Future work
 
@@ -263,6 +287,6 @@ This BEP is designed as the foundation for larger initiative: engine agnosticism
 
 - **Per-entity engine selection.** Add a `backstage.io/techdocs-engine` annotation. The backend's `Generators.get(entity)` reads it, falling back to the global `defaultEngine`. Teams opt in per-entity at their own pace.
 - **Pluggable generator registry.** Replace the if/else in `Generators.fromConfig()` with a factory-based registry. Third-party plugins register custom engines via the extension point.
-- **`engine` field in `techdocs_metadata.json`.** Both generators write which engine produced the build. The frontend reads it to select the right behavior per page.
-- **Frontend selector map.** Centralize all `.md-*` / `--md-*` selectors into an engine-keyed map. Refactor ~14 files of DOM transformers, style rules, and addons to read from the map. This decouples the frontend from any specific generator's HTML structure.
+- **Frontend selector map.** Centralize all `.md-*` / `--md-*` selectors into an engine-keyed map. Refactor ~14 files of DOM transformers, style rules, and addons to read from the map. The `engine` field in `techdocs_metadata.json` (added in Phase 1 of this BEP) provides the per-page engine detection needed to drive this.
+- **Engine-aware addons.** Today all addons assume MkDocs-material DOM structure, and Zensical's classic mode preserves this. If a future engine produces different HTML, addons will need a way to declare engine support and detect the current engine at runtime. The `engine` field in `techdocs_metadata.json` (added in Phase 1) provides the detection mechanism. A declarative engine-support API for addons belongs alongside the frontend selector map work.
 - **Additional engines.** ProperDocs, rspress, or community-contributed generators. Each follows the same pattern: a generator class, a container image, and an entry in the engine config map.
