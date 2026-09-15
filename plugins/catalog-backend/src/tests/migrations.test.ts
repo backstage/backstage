@@ -1090,8 +1090,42 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
       { entity_id: 'e1', key: 'k3', value: 'v3', original_value: 'v3' }, // unique — kept
     ]);
 
-    // Preconditions NOT met: dedup runs
-    await migrateUpOnce(knex);
+    // Preconditions NOT met: dedup runs. On PostgreSQL, occupy the connection
+    // that creates the temporary table before allowing the migration to
+    // continue. This verifies that all temporary-table work is pinned to one
+    // connection rather than relying on the pool returning the same one.
+    const originalReleaseConnection = knex.client.releaseConnection.bind(
+      knex.client,
+    );
+    let heldConnection: unknown;
+    if (knex.client.config.client.includes('pg')) {
+      knex.client.pool.max = 2;
+      let tempTableCreated = false;
+      knex.on('query-response', (_response, queryData: { sql: string }) => {
+        if (
+          queryData.sql.includes('CREATE TEMP TABLE _search_dedup_groups AS')
+        ) {
+          tempTableCreated = true;
+        }
+      });
+      knex.client.releaseConnection = async (connection: unknown) => {
+        if (tempTableCreated) {
+          tempTableCreated = false;
+          heldConnection = connection;
+          return;
+        }
+        await originalReleaseConnection(connection);
+      };
+    }
+
+    try {
+      await migrateUpOnce(knex);
+    } finally {
+      knex.client.releaseConnection = originalReleaseConnection;
+      if (heldConnection) {
+        await originalReleaseConnection(heldConnection);
+      }
+    }
 
     // 5 rows collapsed to 3 unique (entity_id, key, value) combinations
     const rows = await knex('search').orderBy('key');
