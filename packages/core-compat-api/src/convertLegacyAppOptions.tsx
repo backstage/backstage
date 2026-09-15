@@ -28,7 +28,6 @@ import {
 } from '@backstage/frontend-plugin-api';
 import {
   IconBundleBlueprint,
-  RouterBlueprint,
   SignInPageBlueprint,
   SwappableComponentBlueprint,
   ThemeBlueprint,
@@ -141,10 +140,8 @@ export function convertLegacyAppOptions(
       );
     }
     if (Router) {
-      extensions.push(
-        RouterBlueprint.make({
-          params: { component: componentCompatWrapper(Router) },
-        }),
+      throw new Error(
+        'components.Router is not supported by convertLegacyAppOptions. Remove a plain BrowserRouter, move global providers to AppRootWrapperBlueprint, and give a page its own routing context by rendering a page router such as ReactRouterV6PageRouter inside its PageBlueprint loader.',
       );
     }
     if (SignInPage) {
