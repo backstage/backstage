@@ -96,7 +96,14 @@ export function ErrorPage(props: IErrorPageProps) {
           {t('errorPage.title')}
         </Typography>
         <Typography variant="h6" className={classes.title}>
-          <Link to="#" data-testid="go-back-link" onClick={goBack}>
+          <Link
+            to="#"
+            data-testid="go-back-link"
+            onClick={event => {
+              event.preventDefault();
+              goBack();
+            }}
+          >
             {t('errorPage.goBack')}
           </Link>
           ... or please{' '}

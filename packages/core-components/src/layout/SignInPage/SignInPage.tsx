@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { useAppSearchParams } from '@backstage/frontend-plugin-api';
+
 import {
   BackstageIdentityResponse,
   configApiRef,
@@ -38,7 +40,6 @@ import { GridItem, useStyles } from './styles';
 import { IdentityProviders, SignInProviderConfig } from './types';
 import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { useSearchParams } from 'react-router-dom';
 
 type CommonSignInPageProps = SignInPageProps & {
   /**
@@ -127,7 +128,7 @@ export const SingleSignInPage = ({
   const [showLoginPage, setShowLoginPage] = useState<boolean>(false);
 
   // User was redirected back to sign in page with error from auth redirect flow
-  const [searchParams, _setSearchParams] = useSearchParams();
+  const [searchParams, _setSearchParams] = useAppSearchParams();
   const errorParam = searchParams.get('error');
 
   type LoginOpts = { checkExisting?: boolean; showPopup?: boolean };

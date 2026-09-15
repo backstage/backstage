@@ -44,20 +44,7 @@ const useStyles = makeStyles({
 const handleSidebarItemClick = jest.fn();
 const analyticsApiMock = mockApis.analytics();
 
-/**
- * Renders an element where the sidebar actually lives in a new-frontend-system
- * app: as app chrome attached to the app root, above every page.
- *
- * That position is what supplies the React Router context `Link` needs. The
- * `app/root` `elements` input renders inside `RootReactRouterV6`, which
- * projects the `AppHistoryApi` into React Router's Navigation/Location/Route
- * contexts — so a click on a link here travels the same path it does in a real
- * app, and lands on the app history.
- *
- * The default `renderAs: 'page'` is the wrong tool for chrome: it mounts its
- * element as a *page*, and a page gets no routing library context unless it
- * declares an adapter.
- */
+/** Renders sidebar chrome with app history and the app-root navigation scope. */
 function renderAppChrome(element: JSX.Element, initialRouteEntries?: string[]) {
   return renderInFrontendTestApp(element, {
     renderAs: 'chrome',
@@ -119,11 +106,7 @@ const relativeTargets = [
 
 const relativeTargetsAnalyticsApi = mockApis.analytics();
 
-// A sidebar link is an ordinary `Link`, so React Router's `Link` is what
-// handles the click. The thing that must not happen is that click reaching
-// `window.history` behind the framework's back: the app history is the app's
-// sole history authority, and the root projection is what routes the click
-// there.
+// Shared sidebar links navigate directly through Backstage app history.
 it('navigates a sidebar link through the app history rather than the browser', async () => {
   const { appHistory } = renderAppChrome(
     <TestApiProvider apis={[[analyticsApiRef, relativeTargetsAnalyticsApi]]}>

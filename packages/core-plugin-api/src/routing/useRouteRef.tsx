@@ -15,12 +15,13 @@
  */
 
 import { useMemo } from 'react';
-import { matchRoutes, useLocation } from 'react-router-dom';
+import type { matchRoutes } from 'react-router-dom';
 import { useVersionedContext } from '@backstage/version-bridge';
 import {
   RouteResolutionApi,
   routeResolutionApiRef,
   useApi,
+  useAppLocation,
 } from '@backstage/frontend-plugin-api';
 import {
   AnyParams,
@@ -98,7 +99,7 @@ export function useRouteRef<Params extends AnyParams>(
     | SubRouteRef<Params>
     | ExternalRouteRef<Params, any>,
 ): RouteFunc<Params> | undefined {
-  const { pathname } = useLocation();
+  const { pathname } = useAppLocation();
   const routeResolutionApi = useRouteResolutionApi();
   const versionedContext = useVersionedContext<{ 1: RouteResolver }>(
     'routing-context',

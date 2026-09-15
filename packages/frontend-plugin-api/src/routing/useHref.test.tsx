@@ -554,13 +554,6 @@ function LinkSeam(props: { to: string }) {
 }
 
 describe('the seam between the two', () => {
-  // `Link` hands an internal target to React Router's own `Link`, so on a page
-  // hosted by the React Router v6 adapter the href a plugin author gets from
-  // their markup is the one rendered here, while `AppRoot` injects `useHref`
-  // into Backstage UI's provider and every `@backstage/ui` anchor on the same
-  // page renders through that instead. Comparing the two hooks is not enough:
-  // the component is a separate authority, so it is rendered beside the hook
-  // in one tree and the pair have to agree, target for target.
   it.each(trees)(
     'renders the same href through a link as through the hook ($name)',
     ({ url, basename, pageMount, parentMount, wrapper: Tree }) => {
