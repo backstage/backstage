@@ -301,6 +301,37 @@ describe('NunjucksWorkflowRunner', () => {
     });
   });
 
+  it('counts both task and step metrics as failed when a single step fails', async () => {
+    const template = 'template:default/example';
+    fakeActionHandler.mockRejectedValueOnce(new Error('boom'));
+    const task = createMockTaskWithSpec({
+      steps: [{ id: 'test', name: 'Test step', action: 'jest-mock-action' }],
+      templateInfo: { entityRef: template },
+    });
+
+    await expect(runner.execute(task)).rejects.toThrow('boom');
+
+    const taskCountIndex = metrics.createCounter.mock.calls.findIndex(
+      ([name]) => name === 'scaffolder.task.count',
+    );
+    const taskCount = metrics.createCounter.mock.results[taskCountIndex].value;
+    expect(taskCount.add).toHaveBeenCalledTimes(1);
+    expect(taskCount.add).toHaveBeenCalledWith(1, {
+      template,
+      result: 'failed',
+    });
+
+    const stepCountIndex = metrics.createCounter.mock.calls.findIndex(
+      ([name]) => name === 'scaffolder.step.count',
+    );
+    const stepCount = metrics.createCounter.mock.results[stepCountIndex].value;
+    expect(stepCount.add).toHaveBeenCalledWith(1, {
+      template,
+      step: 'Test step',
+      result: 'failed',
+    });
+  });
+
   it('should throw an error if the action does not exist', async () => {
     const task = createMockTaskWithSpec({
       steps: [{ id: 'test', name: 'name', action: 'does-not-exist' }],
@@ -3554,6 +3585,79 @@ describe('NunjucksWorkflowRunner', () => {
       await expect(runner.execute(task)).rejects.toThrow('step failed');
       expect(failingCleanup).toHaveBeenCalledTimes(1);
       expect(cleanupHandler).toHaveBeenCalledTimes(1);
+    });
+
+    it('should count scaffolder.task.count once per task run even when multiple steps fail', async () => {
+      const failingCleanup = jest
+        .fn()
+        .mockRejectedValue(new Error('cleanup failed'));
+      actionRegistry.register(
+        createTemplateAction({
+          id: 'failing-cleanup-for-task-count',
+          description: 'Failing cleanup',
+          handler: failingCleanup,
+        }),
+      );
+
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'step1',
+            name: 'Failing step',
+            action: 'failing-action',
+          },
+          {
+            id: 'step2',
+            name: 'Failing cleanup',
+            action: 'failing-cleanup-for-task-count',
+            if: '${{ always() }}',
+          },
+          {
+            id: 'step3',
+            name: 'Successful cleanup',
+            action: 'cleanup-action',
+            if: '${{ always() }}',
+          },
+        ],
+      });
+
+      await expect(runner.execute(task)).rejects.toThrow('step failed');
+
+      const taskCountIndex = metrics.createCounter.mock.calls.findIndex(
+        ([name]) => name === 'scaffolder.task.count',
+      );
+      const taskCount =
+        metrics.createCounter.mock.results[taskCountIndex].value;
+      const failedTaskCountCalls = taskCount.add.mock.calls.filter(
+        (call: [number, { result: string }]) => call[1].result === 'failed',
+      );
+      // Exactly one task-level failure, even though two steps (step1, step2) failed.
+      expect(failedTaskCountCalls).toHaveLength(1);
+      expect(taskCount.add).toHaveBeenCalledWith(1, {
+        template: '',
+        result: 'failed',
+      });
+
+      const stepCountIndex = metrics.createCounter.mock.calls.findIndex(
+        ([name]) => name === 'scaffolder.step.count',
+      );
+      const stepCount =
+        metrics.createCounter.mock.results[stepCountIndex].value;
+      const failedStepCountCalls = stepCount.add.mock.calls.filter(
+        (call: [number, { result: string }]) => call[1].result === 'failed',
+      );
+      // One step-level failure per failing step (step1 and step2).
+      expect(failedStepCountCalls).toHaveLength(2);
+      expect(stepCount.add).toHaveBeenCalledWith(1, {
+        template: '',
+        step: 'Failing step',
+        result: 'failed',
+      });
+      expect(stepCount.add).toHaveBeenCalledWith(1, {
+        template: '',
+        step: 'Failing cleanup',
+        result: 'failed',
+      });
     });
 
     it('should log all errors when multiple cleanup steps fail', async () => {
