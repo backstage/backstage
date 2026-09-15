@@ -136,6 +136,35 @@ Then add the `fooPage` extension to the plugin:
   });
 ```
 
+### Pages that route with React Router
+
+Existing new frontend system pages retain implicit React Router v6 routing.
+Route parameters, relative links and nested routes continue to work without
+an immediate migration. In development, consuming this fallback logs a warning
+once per extension per app instance. Render an explicit page adapter to migrate
+that content; pages using only framework routing do not need an adapter.
+
+If the page only needs route parameters and links, switch it to `useRouteRef`, `useRouteRefParams` and `useHref` from `@backstage/frontend-plugin-api`. Those answer from the framework and need no router on any page. If the page genuinely drives a route tree of its own, render the matching adapter inside the `loader`:
+
+```tsx
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+
+const fooPage = PageBlueprint.make({
+  params: {
+    path: '/foo',
+    routeRef: rootRouteRef,
+    loader: () =>
+      import('./components/').then(m => (
+        <ReactRouterV6PageRouter>
+          <m.FooPage />
+        </ReactRouterV6PageRouter>
+      )),
+  },
+});
+```
+
+Declare it on the page or sub-page, never on page content: an `EntityContentBlueprint` tab already renders inside the adapter its page declared, and a second one there drops the tab's route match. See [Choose a router for a page](./10-page-routers.md) for the other libraries and the full rules.
+
 ## Migrating Components
 
 The equivalent utility to replace components created with `createComponentExtension` depends on the context within which the component is used, typically indicated by the naming pattern of the export. Many of these can be migrated to one of the [existing blueprints](03-common-extension-blueprints.md), but in rare cases it may be necessary to use [`createExtension`](../architecture/20-extensions.md#creating-an-extension) directly.
