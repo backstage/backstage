@@ -35,7 +35,7 @@ export interface CreateTanStackPageRouterOptions {
 
 /**
  * Creates a page-router component backed by a plugin-owned TanStack route
- * tree. Render the result inside the `loader` of the page or sub-page that
+ * tree. Render the result inside the lazily loaded page or sub-page component that
  * should get the context, the same way {@link TanStackPageRouter} is used.
  *
  * Call this once, at module scope. Each call returns a new component type. A
@@ -80,24 +80,21 @@ const DefaultTanStackPageRouter = createTanStackPageRouter({
  * renders the page under a TanStack route tree. Never writes
  * `window.history` via push/replace.
  *
- * Declare it by rendering it inside the `loader` of the page or sub-page that
+ * Declare it by rendering it inside the lazily loaded page or sub-page component that
  * should get the context:
  *
  * ```tsx
- * PageBlueprint.make({
- *   params: {
- *     path: '/tools',
- *     loader: () =>
- *       import('./ToolsPage').then(m => (
- *         <TanStackPageRouter>
- *           <m.ToolsPage />
- *         </TanStackPageRouter>
- *       )),
- *   },
- * });
+ * // In the lazily loaded page component module:
+ * export function ToolsPage() {
+ *   return (
+ *     <TanStackPageRouter>
+ *       {routes}
+ *     </TanStackPageRouter>
+ *   );
+ * }
  * ```
  *
- * On a sub-page's `loader` it scopes itself to that sub-page rather than to
+ * In a sub-page's component it scopes itself to that sub-page rather than to
  * the page above it, because the sub-page's own mount is what is in context
  * there. Adapters nest rather than replace one another, so a TanStack sub-page
  * works under a page rendered by any other routing library, and the reverse.
