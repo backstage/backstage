@@ -22,7 +22,10 @@ import {
   ExtensionDefinition,
   ExtensionDefinitionParameters,
   coreExtensionData,
+  appHistoryApiRef,
+  useApiHolder,
 } from '@backstage/frontend-plugin-api';
+import { ReactNode, useMemo } from 'react';
 import { Config, ConfigReader } from '@backstage/config';
 import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -37,8 +40,42 @@ import { instantiateAppNodeTree } from '../../../frontend-app-api/src/tree/insta
 import { readAppExtensionsConfig } from '../../../frontend-app-api/src/tree/readAppExtensionsConfig';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { createErrorCollector } from '../../../frontend-app-api/src/wiring/createErrorCollector';
-import { OpaqueExtensionDefinition } from '@internal/frontend';
+import { OpaqueExtensionDefinition, usePageMount } from '@internal/frontend';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { AppRouteProvider } from '../../../frontend-app-api/src/routing/AppRouteProvider';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import {
+  extractRouteInfoFromAppNode,
+  MATCH_ALL_ROUTE,
+} from '../../../frontend-app-api/src/routing/extractRouteInfoFromAppNode';
 import { resolveTestApiEntries, TestApiPairs } from '../apis/TestApiProvider';
+
+function ExtensionTestRoutes(props: { node: AppNode; children: ReactNode }) {
+  const history = useApiHolder().get(appHistoryApiRef);
+  const routePattern = usePageMount()?.routePattern ?? '/';
+  const routeObjects = useMemo(() => {
+    const { routeObjects: routes } = extractRouteInfoFromAppNode(
+      props.node,
+      <T,>(ref: T) => ref,
+    );
+    // The subject sits at the caller's mount, regardless of its production
+    // path. Keep the original nodes so child boundaries see their real ancestry.
+    return routes.map(route => ({
+      ...route,
+      path: routePattern,
+      children: route.children?.includes(MATCH_ALL_ROUTE)
+        ? route.children
+        : [...(route.children ?? []), MATCH_ALL_ROUTE],
+    }));
+  }, [props.node, routePattern]);
+  return history ? (
+    <AppRouteProvider history={history} routeObjects={routeObjects}>
+      {props.children}
+    </AppRouteProvider>
+  ) : (
+    <>{props.children}</>
+  );
+}
 
 /**
  * Represents a snapshot of an extension in the app tree.
@@ -192,6 +229,11 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
     return new ExtensionQuery(node);
   }
 
+  /**
+   * Returns the subject's element. For a routable subject, uses the app's route
+   * matching to select attached sub-pages when rendered with `renderInTestApp`.
+   * The subject uses the supplied `mountPath`, or the app root when omitted.
+   */
   reactElement(): JSX.Element {
     const tree = this.#resolveTree();
 
@@ -205,7 +247,12 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
       );
     }
 
-    return element;
+    return tree.root.instance?.getData(coreExtensionData.routePath) !==
+      undefined ? (
+      <ExtensionTestRoutes node={tree.root}>{element}</ExtensionTestRoutes>
+    ) : (
+      element
+    );
   }
 
   /**
