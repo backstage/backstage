@@ -148,7 +148,6 @@ ecco
 elasticsearch
 Entra
 enums
-entrypoints
 env
 Env
 esbuild
