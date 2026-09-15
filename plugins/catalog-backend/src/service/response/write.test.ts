@@ -27,8 +27,18 @@ describe('projected responses', () => {
   app.use(express.json());
   app.post('/:mode', async (req, res, next) => {
     try {
+      // Model the database rows used by production callers, not arbitrary HTTP input.
+      const serializedEntities: unknown = req.body;
+      if (
+        !Array.isArray(serializedEntities) ||
+        !serializedEntities.every(
+          entity => entity === null || typeof entity === 'string',
+        )
+      ) {
+        throw new Error('Expected an array of serialized entities or nulls');
+      }
       const items = await processRawEntitiesResult(
-        req.body,
+        serializedEntities,
         parseEntityTransformParams({
           fields: [
             'metadata.name',
