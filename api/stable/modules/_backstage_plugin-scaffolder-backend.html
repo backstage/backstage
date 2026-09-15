@@ -61,6 +61,20 @@ catalog locations from the <a href="https://github.com/backstage/backstage/blob/
 </code><button type="button">Copy</button></pre>
 
 <p><strong>Security Note:</strong> Secrets are automatically masked in logs and are only available to backend actions, never exposed to the frontend.</p>
+<h3 id="task-recovery" class="tsd-anchor-link">Task Recovery<a href="#task-recovery" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>The scaffolder supports automatic task recovery when workers restart or crash. When enabled, tasks that were in a <code>processing</code> state will be recovered and can be resumed from where they left off.</p>
+<pre><code class="yaml"><span class="hl-10">scaffolder</span><span class="hl-2">:</span><br/><span class="hl-2">  </span><span class="hl-10">taskRecovery</span><span class="hl-2">:</span><br/><span class="hl-2">    </span><span class="hl-10">enabled</span><span class="hl-2">: </span><span class="hl-3">true</span><br/><span class="hl-2">    </span><span class="hl-10">staleTimeout</span><span class="hl-2">: { </span><span class="hl-10">seconds</span><span class="hl-2">: </span><span class="hl-7">30</span><span class="hl-2"> } </span><span class="hl-0"># Optional: how long before a task is considered stale</span><br/><span class="hl-2">    </span><span class="hl-10">workspaceProvider</span><span class="hl-2">: </span><span class="hl-11">database</span><span class="hl-2"> </span><span class="hl-0"># Optional: enables workspace serialization with specified provider</span>
+</code><button type="button">Copy</button></pre>
+
+<p>When task recovery is enabled:</p>
+<ul>
+<li>Tasks in <code>processing</code> state with stale heartbeats are automatically recovered to <code>open</code> state</li>
+<li>Secrets are preserved until the task reaches a terminal state (completed/failed)</li>
+<li>Completed steps are skipped on retry, resuming from the last incomplete step</li>
+<li>Step outputs are restored so subsequent steps can access previous results</li>
+</ul>
+<p><strong>Note:</strong> <code>workspaceProvider</code> is a separate option from <code>enabled</code>. Setting <code>enabled: true</code> activates task recovery (secrets preservation, step skipping), but workspace serialization only happens if you also set <code>workspaceProvider</code>. The <code>workspaceProvider</code> value specifies which storage backend to use (for example, <code>database</code> from <code>@backstage/plugin-scaffolder-backend-module-workspace-database</code>, or <code>gcpBucket</code> from <code>@backstage/plugin-scaffolder-backend-module-gcp</code>). Install and register the corresponding module before selecting a provider.</p>
+<p>This replaces the previous experimental flags (<code>EXPERIMENTAL_recoverTasks</code>, <code>EXPERIMENTAL_workspaceSerialization</code>, <code>EXPERIMENTAL_recoverTasksTimeout</code>) which are still supported as fallbacks. Legacy workspace serialization also requires a separately installed provider module.</p>
 </section>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Modules"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="modules">Modules<a href="#modules" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary><dl class="tsd-member-summaries"><dt class="tsd-member-summary" id="index"><span class="tsd-member-summary-name"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Module"><use href="../assets/icons.svg#icon-2"></use></svg><a href="_backstage_plugin-scaffolder-backend.index.html">index</a><a href="#index" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></span></dt><dd class="tsd-member-summary"></dd><dt class="tsd-member-summary" id="pluginsscaffolder-backendsrcalpha"><span class="tsd-member-summary-name"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Module"><use href="../assets/icons.svg#icon-2"></use></svg><a href="_backstage_plugin-scaffolder-backend.plugins_scaffolder-backend_src_alpha.html">plugins/scaffolder-backend/src/alpha</a><a href="#pluginsscaffolder-backendsrcalpha" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></span></dt><dd class="tsd-member-summary"></dd></dl></details></div>
@@ -95,7 +109,8 @@ catalog locations from the <a href="https://github.com/backstage/backstage/blob/
 <li>
 <ul>
 <li><a href="#default-parameters"><span>Default parameters</span></a></li>
-<li><a href="#secrets"><span>Secrets</span></a></li></ul></li></ul></li></ul>
+<li><a href="#secrets"><span>Secrets</span></a></li></ul></li>
+<li><a href="#task-recovery"><span>Task <wbr/>Recovery</span></a></li></ul></li></ul>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Modules"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Modules</summary>
 <div><a href="#index"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Module"><use href="../assets/icons.svg#icon-2"></use></svg><span>index</span></a><a href="#pluginsscaffolder-backendsrcalpha"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Module"><use href="../assets/icons.svg#icon-2"></use></svg><span>plugins/scaffolder-<wbr/>backend/src/alpha</span></a></div></details></div></details></div>
 <div class="site-menu">
