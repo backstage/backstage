@@ -11,7 +11,7 @@ To play with it, open a terminal and run the command: `yarn start`
 The app runs three sibling demo pages, each leading with a different routing
 library: `/nfs-routing-demo` with React Router v6, `/nfs-routing-demo-tanstack`
 with TanStack Router, and `/nfs-routing-demo-v7` with React Router v7. The
-framework keeps a root React Router v6 context for shared UI. Migrated pages and tabs declare adapters inside their `loader`. One tab
+framework keeps a root React Router v6 context for shared UI. Migrated pages and tabs declare adapters inside their lazily loaded React components. One tab
 deliberately declares nothing to demonstrate implicit React Router v6
 compatibility alongside framework navigation. Pages using only framework
 routing need no adapter.
