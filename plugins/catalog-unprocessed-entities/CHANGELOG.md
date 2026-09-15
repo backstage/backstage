@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-unprocessed-entities
 
+## 0.2.35
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- d421187: Reduced the initial app bundle size by loading page and optional UI implementations only when their extensions render.
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/ui@0.18.0
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/core-compat-api@0.5.15
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.17
+
 ## 0.2.35-next.2
 
 ### Patch Changes

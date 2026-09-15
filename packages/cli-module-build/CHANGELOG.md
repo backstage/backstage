@@ -1,5 +1,19 @@
 # @backstage/cli-module-build
 
+## 0.1.8
+
+### Patch Changes
+
+- 064c2de: Updated the Module Federation dependencies to versions that avoid known security vulnerabilities.
+- 96badbc: Fixed a bug where plugin packages installed through feature discovery were loaded before the app's own code ran. This could cause bootstrap-order-sensitive setup code in the app, such as configuring MUI 5's class name prefix, to be skipped if a discovered plugin's dependencies loaded MUI 5 components first. Discovered plugin packages are now loaded after the app's own code instead.
+- b2b7568: Significantly improve the performance of `build-workspace` when packaging many Backstage packages.
+- 277a125: Fixed declaration bundling of imports that use the `node:` built-in module prefix.
+- Updated dependencies
+  - @backstage/cli-common@0.3.1
+  - @backstage/config@1.3.9
+  - @backstage/module-federation-common@0.1.5
+  - @backstage/config-loader@1.11.3
+
 ## 0.1.8-next.2
 
 ### Patch Changes

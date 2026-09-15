@@ -1,5 +1,16 @@
 # @backstage/plugin-signals-backend
 
+## 0.3.19
+
+### Patch Changes
+
+- 0ae9229: Fixed WebSocket upgrade error responses to prevent load balancers from returning 502 when authentication fails. Error responses now use valid HTTP headers, ensuring the actual error status (401 or 500) is delivered to the client instead of being masked.
+- Updated dependencies
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-events-node@0.4.26
+  - @backstage/plugin-signals-node@0.2.5
+
 ## 0.3.19-next.1
 
 ### Patch Changes

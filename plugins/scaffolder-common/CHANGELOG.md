@@ -1,5 +1,20 @@
 # @backstage/plugin-scaffolder-common
 
+## 2.3.0
+
+### Minor Changes
+
+- 1a705ca: Added `templateDryRunPermission`, which allows permission policies to control who can submit inline Software Template dry runs.
+
+### Patch Changes
+
+- be0a75a: Exclude internal task data from task responses.
+- ffaca06: Fixed a connection leak in the scaffolder event stream where unsubscribing did not abort the underlying SSE connection. Also changed unexpected server disconnects to signal an error instead of silently completing, enabling consumers to retry.
+- Updated dependencies
+  - @backstage/integration@2.1.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-permission-common@0.9.11
+
 ## 2.3.0-next.2
 
 ### Patch Changes

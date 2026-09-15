@@ -1,5 +1,20 @@
 # @backstage/plugin-notifications-backend
 
+## 0.6.9
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.7.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/config@1.3.9
+  - @backstage/plugin-notifications-node@0.2.30
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-catalog-node@2.2.5
+  - @backstage/plugin-notifications-common@0.2.4
+  - @backstage/plugin-signals-node@0.2.5
+
 ## 0.6.9-next.1
 
 ### Patch Changes

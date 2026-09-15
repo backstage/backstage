@@ -1,5 +1,20 @@
 # @backstage/plugin-devtools
 
+## 0.1.43
+
+### Patch Changes
+
+- d421187: Reduced the initial app bundle size by loading page and optional UI implementations only when their extensions render.
+- 38441ff: Migrate to toastApi from deprecated alertApi
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/ui@0.18.0
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/core-compat-api@0.5.15
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/plugin-devtools-common@0.1.26
+  - @backstage/plugin-permission-react@0.5.5
+
 ## 0.1.43-next.2
 
 ### Patch Changes

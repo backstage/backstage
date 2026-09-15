@@ -1,5 +1,14 @@
 # @backstage/backend-openapi-utils
 
+## 0.7.2
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- bf1f82d: Added the required OpenAPI types dependency for Swagger Parser.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.1
+
 ## 0.7.2-next.0
 
 ### Patch Changes

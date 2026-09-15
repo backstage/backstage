@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-common
 
+## 1.2.0
+
+### Minor Changes
+
+- 305e2f7: Added permissions for reading and managing catalog ingestion providers.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-permission-common@0.9.11
+  - @backstage/plugin-search-common@1.2.25
+
 ## 1.2.0-next.0
 
 ### Minor Changes

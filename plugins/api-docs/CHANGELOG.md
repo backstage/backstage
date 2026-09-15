@@ -1,5 +1,22 @@
 # @backstage/plugin-api-docs
 
+## 0.14.5
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- 4b643e3: Migrate plugin-api-docs to the configSchema API to remove the deprecated config.schema usage.
+- Updated dependencies
+  - @backstage/plugin-catalog@2.0.9
+  - @backstage/core-components@0.18.14
+  - @backstage/plugin-catalog-common@1.2.0
+  - @backstage/ui@0.18.0
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-catalog-react@3.2.3
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/plugin-permission-react@0.5.5
+
 ## 0.14.5-next.2
 
 ### Patch Changes

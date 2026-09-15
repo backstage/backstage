@@ -1,5 +1,20 @@
 # @backstage/plugin-search
 
+## 1.7.8
+
+### Patch Changes
+
+- d421187: Reduced the initial app bundle size by loading page and optional UI implementations only when their extensions render.
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/ui@0.18.0
+  - @backstage/plugin-catalog-react@3.2.3
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/plugin-home-react@0.1.42
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/plugin-search-common@1.2.25
+  - @backstage/plugin-search-react@1.11.8
+
 ## 1.7.8-next.2
 
 ### Patch Changes

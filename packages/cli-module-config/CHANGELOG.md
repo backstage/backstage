@@ -1,5 +1,14 @@
 # @backstage/cli-module-config
 
+## 0.1.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.3.1
+  - @backstage/config@1.3.9
+  - @backstage/config-loader@1.11.3
+
 ## 0.1.7-next.0
 
 ### Patch Changes

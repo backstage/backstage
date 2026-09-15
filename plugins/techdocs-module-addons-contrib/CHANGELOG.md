@@ -1,5 +1,19 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.40
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- 10d2720: Keep the TechDocs LightBox addon's image viewer out of an app's initial bundle by loading it with the first documentation page.
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/integration@2.1.2
+  - @backstage/plugin-techdocs-react@1.3.15
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/integration-react@1.2.22
+
 ## 1.1.40-next.1
 
 ### Patch Changes
