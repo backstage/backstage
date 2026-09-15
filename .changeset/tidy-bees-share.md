@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend': patch
 ---
 
-Fixed the PostgreSQL search deduplication migration to keep temporary-table operations on a single database connection.
+Fixed PostgreSQL catalog migrations sometimes failing during search index deduplication when using a database connection pool.
