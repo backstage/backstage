@@ -518,4 +518,74 @@ describe('EntitySwitch', () => {
     expect(screen.queryByText('A')).not.toBeInTheDocument();
     expect(screen.queryByText('B')).not.toBeInTheDocument();
   });
+
+  it('should not evaluate async condition repeatedly on re-renders', async () => {
+    const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
+    const asyncCond = jest.fn().mockImplementation(() => Promise.resolve(true));
+
+    const content = (
+      <EntitySwitch>
+        <EntitySwitch.Case if={asyncCond} children="Async Content" />
+        <EntitySwitch.Case children="Fallback" />
+      </EntitySwitch>
+    );
+
+    const { rerender } = render(
+      <Wrapper>
+        <EntityProvider entity={entity}>{content}</EntityProvider>
+      </Wrapper>,
+    );
+
+    await expect(
+      screen.findByText('Async Content'),
+    ).resolves.toBeInTheDocument();
+    const initialCallCount = asyncCond.mock.calls.length;
+
+    rerender(
+      <Wrapper>
+        <EntityProvider entity={entity}>{content}</EntityProvider>
+      </Wrapper>,
+    );
+
+    await expect(
+      screen.findByText('Async Content'),
+    ).resolves.toBeInTheDocument();
+    expect(asyncCond.mock.calls.length).toBeLessThanOrEqual(
+      initialCallCount + 1,
+    );
+  });
+
+  it('should evict cached entry if async condition rejects to allow retry', async () => {
+    const entity = { metadata: { name: 'mock' }, kind: 'component' } as Entity;
+    const asyncCond = jest
+      .fn()
+      .mockRejectedValueOnce(new Error('transient failure'))
+      .mockResolvedValueOnce(true);
+
+    const content = (
+      <EntitySwitch>
+        <EntitySwitch.Case if={asyncCond} children="Async Content" />
+        <EntitySwitch.Case children="Fallback" />
+      </EntitySwitch>
+    );
+
+    const { rerender } = render(
+      <Wrapper>
+        <EntityProvider entity={entity}>{content}</EntityProvider>
+      </Wrapper>,
+    );
+
+    await expect(screen.findByText('Fallback')).resolves.toBeInTheDocument();
+
+    rerender(
+      <Wrapper>
+        <EntityProvider entity={entity}>{content}</EntityProvider>
+      </Wrapper>,
+    );
+
+    await expect(
+      screen.findByText('Async Content'),
+    ).resolves.toBeInTheDocument();
+    expect(asyncCond).toHaveBeenCalledTimes(2);
+  });
 });
