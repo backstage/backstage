@@ -292,7 +292,7 @@ describe('pinnipedAuthenticator', () => {
           'https://federationDomain.test/.well-known/openid-configuration',
           () => {
             signalMetadataRequest();
-            return HttpResponse.error();
+            return new HttpResponse(null, { status: 503 });
           },
         ),
       );
@@ -549,7 +549,7 @@ describe('pinnipedAuthenticator', () => {
       mswServer.use(
         http.get(
           'https://federationDomain.test/.well-known/openid-configuration',
-          () => HttpResponse.error(),
+          () => new HttpResponse(null, { status: 503 }),
         ),
       );
 
@@ -696,7 +696,7 @@ describe('pinnipedAuthenticator', () => {
       mswServer.use(
         http.get(
           'https://federationDomain.test/.well-known/openid-configuration',
-          () => HttpResponse.error(),
+          () => new HttpResponse(null, { status: 503 }),
         ),
       );
 
