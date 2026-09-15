@@ -15,25 +15,20 @@
  */
 
 import { fireEvent, render, screen } from '@testing-library/react';
+import { TestRouter, useTestRouter } from '../../testUtils/TestRouter';
 import {
   createVersionedValueMap,
   type VersionedValue,
 } from '@backstage/version-bridge';
-import { useMemo, type PropsWithChildren } from 'react';
-import { RouterProvider } from 'react-aria-components';
 import {
-  Link as RouterLink,
-  MemoryRouter,
-  Route,
-  Routes,
-  useHref,
-  useInRouterContext,
-  useLocation,
-  useNavigate,
-  useResolvedPath,
-} from 'react-router-dom';
-import { useResolvedHref } from '../../hooks/useResolvedHref';
-import type { BUIRoutingIntegration } from '../../navigation/types';
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  type PropsWithChildren,
+} from 'react';
+import { RouterProvider } from 'react-aria-components';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { BUIContext, type BUIContextVersions } from '../../provider/BUIContext';
 import { BUIProvider, type BUIRouter } from '../../provider';
 import { Tab, TabList, Tabs } from './Tabs';
@@ -62,7 +57,7 @@ describe('Tab links', () => {
 
   it('renders the host basename and navigates without a document reload', () => {
     render(
-      <MemoryRouter
+      <TestRouter
         basename="/app"
         initialEntries={['/app/catalog']}
         future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
@@ -77,7 +72,7 @@ describe('Tab links', () => {
           </Tabs>
           <LocationStatus />
         </BUIProvider>
-      </MemoryRouter>,
+      </TestRouter>,
     );
 
     const tab = screen.getByRole('tab', { name: 'Overview' });
@@ -89,16 +84,16 @@ describe('Tab links', () => {
   it('reports a relative raw href through V1 analytics', () => {
     const captureEvent = jest.fn();
     render(
-      <MemoryRouter
+      <TestRouter
         basename="/app"
         initialEntries={['/app/catalog/entity/docs']}
         future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
       >
-        <V1AnalyticsProvider captureEvent={captureEvent}>
-          <Routes>
-            <Route
-              path="catalog/entity/docs/*"
-              element={
+        <Routes>
+          <Route
+            path="catalog/entity/docs/*"
+            element={
+              <V1AnalyticsProvider captureEvent={captureEvent}>
                 <Tabs>
                   <TabList>
                     <Tab id="child" href="child">
@@ -106,12 +101,12 @@ describe('Tab links', () => {
                     </Tab>
                   </TabList>
                 </Tabs>
-              }
-            />
-          </Routes>
-          <LocationStatus />
-        </V1AnalyticsProvider>
-      </MemoryRouter>,
+              </V1AnalyticsProvider>
+            }
+          />
+        </Routes>
+        <LocationStatus />
+      </TestRouter>,
     );
 
     const tab = screen.getByRole('tab', { name: 'Child' });
@@ -127,7 +122,7 @@ describe('Tab links', () => {
 
   it('preserves active-route selection and render state', () => {
     render(
-      <MemoryRouter
+      <TestRouter
         basename="/app"
         initialEntries={['/app/catalog/overview']}
         future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
@@ -150,7 +145,7 @@ describe('Tab links', () => {
             </TabList>
           </Tabs>
         </BUIProvider>
-      </MemoryRouter>,
+      </TestRouter>,
     );
 
     const tab = screen.getByRole('tab', { name: 'Selected overview' });
@@ -161,7 +156,7 @@ describe('Tab links', () => {
 
   it('matches relative internal tabs whose activation remains browser-owned', () => {
     render(
-      <MemoryRouter
+      <TestRouter
         basename="/app"
         initialEntries={['/app/catalog/entity/docs/child']}
         future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
@@ -197,7 +192,7 @@ describe('Tab links', () => {
             />
           </Routes>
         </BUIProvider>
-      </MemoryRouter>,
+      </TestRouter>,
     );
 
     expect(screen.getByRole('tab', { name: 'Target child' })).toHaveAttribute(
@@ -212,7 +207,7 @@ describe('Tab links', () => {
 
   it('matches an exact tab by pathname when href and location have query and hash', () => {
     render(
-      <MemoryRouter
+      <TestRouter
         basename="/app"
         initialEntries={['/app/catalog/entity/docs?view=grid#details']}
         future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
@@ -230,7 +225,7 @@ describe('Tab links', () => {
             </TabList>
           </Tabs>
         </BUIProvider>
-      </MemoryRouter>,
+      </TestRouter>,
     );
 
     expect(screen.getByRole('tab', { name: 'Docs' })).toHaveAttribute(
@@ -241,7 +236,7 @@ describe('Tab links', () => {
 
   it('does not exact-match a nested splat path', () => {
     render(
-      <MemoryRouter
+      <TestRouter
         basename="/app"
         initialEntries={['/app/catalog/entity/docs/page']}
         future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
@@ -266,7 +261,7 @@ describe('Tab links', () => {
             />
           </Routes>
         </BUIProvider>
-      </MemoryRouter>,
+      </TestRouter>,
     );
 
     expect(screen.getByRole('tab', { name: 'Docs' })).toHaveAttribute(
@@ -277,7 +272,7 @@ describe('Tab links', () => {
 
   it('prefix-matches a nested splat path and selects the most-specific tab', () => {
     render(
-      <MemoryRouter
+      <TestRouter
         basename="/app"
         initialEntries={['/app/catalog/entity/docs/page']}
         future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
@@ -309,7 +304,7 @@ describe('Tab links', () => {
             />
           </Routes>
         </BUIProvider>
-      </MemoryRouter>,
+      </TestRouter>,
     );
 
     expect(screen.getByRole('tab', { name: 'Docs' })).toHaveAttribute(
@@ -321,40 +316,13 @@ describe('Tab links', () => {
       'false',
     );
   });
-
-  it('registers tab navigation with the selected routing integration', () => {
-    const createRouterOptions = jest.fn(() => ({ replace: true }));
-    render(
-      <MemoryRouter
-        basename="/app"
-        initialEntries={['/app/catalog']}
-        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-      >
-        <TrackingRoutingProvider createRouterOptions={createRouterOptions}>
-          <Tabs>
-            <TabList>
-              <Tab id="overview" href="/catalog/overview">
-                Overview
-              </Tab>
-            </TabList>
-          </Tabs>
-        </TrackingRoutingProvider>
-      </MemoryRouter>,
-    );
-
-    expect(screen.getByRole('tab', { name: 'Overview' })).toHaveAttribute(
-      'href',
-      '/app/catalog/overview',
-    );
-    expect(createRouterOptions).toHaveBeenCalledTimes(1);
-  });
 });
 
 function V1AnalyticsProvider({
   children,
   captureEvent,
 }: PropsWithChildren<{ captureEvent: jest.Mock }>) {
-  const navigate = useNavigate();
+  const router = useTestRouter();
   const value = useMemo(
     () =>
       createVersionedValueMap({
@@ -364,38 +332,90 @@ function V1AnalyticsProvider({
   );
 
   return (
-    <RouterProvider navigate={navigate} useHref={useResolvedHref}>
+    <RouterProvider navigate={router.navigate} useHref={router.resolveHref}>
       <BUIContext.Provider value={value}>{children}</BUIContext.Provider>
     </RouterProvider>
   );
 }
 
-function TrackingRoutingProvider({
-  children,
-  createRouterOptions,
-}: PropsWithChildren<{
-  createRouterOptions: BUIRoutingIntegration['createRouterOptions'];
-}>) {
-  const routing = useMemo<BUIRoutingIntegration>(
-    () => ({
-      Link: RouterLink,
-      useHref,
-      useInRouterContext,
-      useLocation,
-      useNavigate,
-      useResolvedPath,
-      createRouterOptions,
-    }),
-    [createRouterOptions],
-  );
-  const value = useMemo(
-    () => createVersionedValueMap({ 1: {}, 2: { routing } }),
-    [routing],
-  );
-  return <BUIContext.Provider value={value}>{children}</BUIContext.Provider>;
-}
-
 describe('Tabs', () => {
+  it('uses the collection route scope for hrefs, navigation, and active selection', () => {
+    const Scope = createContext('/outer');
+    const Location = createContext({
+      pathname: '/base/inner/details',
+      navigate: (_pathname: string) => {},
+    });
+    function useHostRouter(): BUIRouter {
+      const scope = useContext(Scope);
+      const location = useContext(Location);
+      const resolveHref = (href: string) => `/base${scope}/${href}`;
+      return {
+        pathname: location.pathname,
+        resolveHref,
+        navigate: href => location.navigate(resolveHref(href)),
+      };
+    }
+    function Host() {
+      const [pathname, navigate] = useState('/base/inner/details');
+      return (
+        <Location.Provider value={{ pathname, navigate }}>
+          <BUIProvider useRouter={useHostRouter}>
+            <Tabs>
+              <TabList>
+                <Scope.Provider value="/inner">
+                  <Tab id="details" href="details">
+                    Details
+                  </Tab>
+                </Scope.Provider>
+              </TabList>
+            </Tabs>
+            <span role="status">{pathname}</span>
+          </BUIProvider>
+        </Location.Provider>
+      );
+    }
+
+    render(<Host />);
+
+    const tab = screen.getByRole('tab', { name: 'Details' });
+    expect(tab).toHaveAttribute('href', '/base/outer/details');
+    expect(tab).toHaveAttribute('aria-selected', 'false');
+    expect(screen.getByRole('status')).toHaveTextContent('/base/inner/details');
+
+    fireEvent.click(tab);
+
+    expect(screen.getByRole('status')).toHaveTextContent('/base/outer/details');
+    expect(tab).toHaveAttribute('href', '/base/outer/details');
+    expect(tab).toHaveAttribute('aria-selected', 'true');
+  });
+
+  it('passes native activation and router options through the explicit host', () => {
+    const router: BUIRouter = {
+      navigate: jest.fn(),
+      resolveHref: href => `/app/catalog/${href}`,
+      pathname: '/app/catalog/overview',
+    };
+    const routerOptions = { replace: true, state: { from: 'tab' } };
+    render(
+      <BUIProvider useRouter={() => router}>
+        <Tabs>
+          <TabList>
+            <Tab id="settings" href="settings" routerOptions={routerOptions}>
+              Settings
+            </Tab>
+          </TabList>
+        </Tabs>
+      </BUIProvider>,
+    );
+
+    const tab = screen.getByRole('tab', { name: 'Settings' });
+    expect(tab).toHaveAttribute('href', '/app/catalog/settings');
+    fireEvent.click(tab, { ctrlKey: true });
+    expect(router.navigate).not.toHaveBeenCalled();
+    fireEvent.click(tab);
+    expect(router.navigate).toHaveBeenCalledWith('settings', routerOptions);
+  });
+
   it('selects routed tabs from the injected router without React Router context', async () => {
     const router: BUIRouter = {
       navigate: jest.fn(),
@@ -471,9 +491,9 @@ describe('Tabs', () => {
     );
   });
 
-  it('keeps ambient React Router basename and relative-route selection', async () => {
+  it('keeps an explicit React Router adapter basename and relative-route selection', async () => {
     render(
-      <MemoryRouter
+      <TestRouter
         basename="/app"
         initialEntries={['/app/catalog/settings/details']}
       >
@@ -496,7 +516,7 @@ describe('Tabs', () => {
             />
           </Routes>
         </BUIProvider>
-      </MemoryRouter>,
+      </TestRouter>,
     );
 
     expect(

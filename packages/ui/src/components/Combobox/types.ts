@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { BUIRouterOptions } from '../../provider/BUIRouter';
 import type { ReactElement, ReactNode } from 'react';
 import type {
   ComboBoxProps as AriaComboBoxProps,
@@ -346,7 +347,13 @@ export type ComboboxItemOwnProps = {
 /** @public */
 export type ComboboxItemProps<T extends object = object> =
   ComboboxItemOwnProps &
-    Omit<AriaListBoxItemProps<T>, keyof ComboboxItemOwnProps | 'render'>;
+    Omit<
+      AriaListBoxItemProps<T>,
+      keyof ComboboxItemOwnProps | 'render' | 'routerOptions'
+    > & {
+      /** Options passed to the router configured on BUIProvider. */
+      routerOptions?: BUIRouterOptions;
+    };
 
 /** @public */
 export type ComboboxItemTextOwnProps = {

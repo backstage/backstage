@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
+import { TestRouter } from '../../../testUtils/TestRouter';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import type { JSX, MutableRefObject, PropsWithChildren } from 'react';
 import * as ProviderReactAria from 'react-aria';
 import * as ProviderReactAriaComponents from 'react-aria-components';
 import type { Key, RowRenderProps } from 'react-aria-components';
-import {
-  MemoryRouter,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { BUIProvider } from '../../../provider/BUIProvider';
 import { Cell } from './Cell';
 import { Column } from './Column';
@@ -87,7 +82,7 @@ function RouterFixture({
   showBackButton,
 }: PropsWithChildren<{ captureEvent?: jest.Mock; showBackButton?: boolean }>) {
   return (
-    <MemoryRouter
+    <TestRouter
       basename="/app"
       initialEntries={['/app/catalog/entity/docs']}
       future={routerFuture}
@@ -101,7 +96,7 @@ function RouterFixture({
         <LocationStatus />
         {showBackButton && <HistoryBackButton />}
       </BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   );
 }
 
@@ -457,7 +452,7 @@ describe('Row navigation', () => {
     expect(IsolatedReactAriaComponents).not.toBe(ProviderReactAriaComponents);
 
     render(
-      <MemoryRouter
+      <TestRouter
         basename="/app"
         initialEntries={['/app/catalog/entity/docs']}
         future={routerFuture}
@@ -482,7 +477,7 @@ describe('Row navigation', () => {
           </Routes>
         </BUIProvider>
         <LocationStatus />
-      </MemoryRouter>,
+      </TestRouter>,
     );
 
     const row = screen.getByRole('row', { name: 'Destination' });

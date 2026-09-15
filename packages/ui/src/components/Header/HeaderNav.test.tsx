@@ -15,31 +15,19 @@
  */
 
 import { fireEvent, render, screen } from '@testing-library/react';
-import { createVersionedValueMap } from '@backstage/version-bridge';
-import {
-  Link as RouterLink,
-  MemoryRouter,
-  Route,
-  Routes,
-  useHref,
-  useInRouterContext,
-  useLocation,
-  useNavigate,
-  useResolvedPath,
-} from 'react-router-dom';
+import { TestRouter } from '../../testUtils/TestRouter';
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { BUIProvider, type BUIRouter } from '../../provider';
 import { renderToString } from 'react-dom/server';
-import { BUIContext } from '../../provider/BUIContext';
-import type { BUIRoutingIntegration } from '../../navigation/types';
 import { HeaderNav } from './HeaderNav';
-import { useMemo, type ComponentProps, type PropsWithChildren } from 'react';
+import type { ComponentProps } from 'react';
 
 function renderHeaderNav(
   props: ComponentProps<typeof HeaderNav>,
   initialEntry = '/app/catalog',
 ) {
   return render(
-    <MemoryRouter
+    <TestRouter
       basename="/app"
       initialEntries={[initialEntry]}
       future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
@@ -55,7 +43,7 @@ function renderHeaderNav(
           }
         />
       </Routes>
-    </MemoryRouter>,
+    </TestRouter>,
   );
 }
 
@@ -64,6 +52,24 @@ function LocationStatus() {
 }
 
 describe('HeaderNav', () => {
+  it('requires an explicit host for routing and automatic active selection', () => {
+    render(
+      <MemoryRouter
+        basename="/app"
+        initialEntries={['/app/catalog/settings']}
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
+        <HeaderNav
+          tabs={[{ id: 'settings', label: 'Settings', href: 'settings' }]}
+        />
+      </MemoryRouter>,
+    );
+
+    const link = screen.getByRole('link', { name: 'Settings' });
+    expect(link).toHaveAttribute('href', 'settings');
+    expect(link).not.toHaveAttribute('aria-current');
+  });
+
   it('selects the most specific host tab during server rendering', () => {
     const html = renderToString(
       <BUIProvider
@@ -398,59 +404,4 @@ describe('HeaderNav', () => {
     expect(link).toHaveAttribute('aria-current', 'page');
     expect(navigation.style.getPropertyValue('--active-tab-opacity')).toBe('1');
   });
-
-  it('registers flat navigation with the selected routing integration', () => {
-    const createRouterOptions = jest.fn(() => ({ replace: true }));
-    render(
-      <MemoryRouter
-        basename="/app"
-        initialEntries={['/app/catalog']}
-        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-      >
-        <TrackingRoutingProvider createRouterOptions={createRouterOptions}>
-          <HeaderNav
-            tabs={[
-              {
-                id: 'overview',
-                label: 'Overview',
-                href: '/catalog/overview',
-              },
-            ]}
-            activeTabId={null}
-          />
-        </TrackingRoutingProvider>
-      </MemoryRouter>,
-    );
-
-    expect(screen.getByRole('link', { name: 'Overview' })).toHaveAttribute(
-      'href',
-      '/app/catalog/overview',
-    );
-    expect(createRouterOptions).toHaveBeenCalledTimes(1);
-  });
 });
-
-function TrackingRoutingProvider({
-  children,
-  createRouterOptions,
-}: PropsWithChildren<{
-  createRouterOptions: BUIRoutingIntegration['createRouterOptions'];
-}>) {
-  const routing = useMemo<BUIRoutingIntegration>(
-    () => ({
-      Link: RouterLink,
-      useHref,
-      useInRouterContext,
-      useLocation,
-      useNavigate,
-      useResolvedPath,
-      createRouterOptions,
-    }),
-    [createRouterOptions],
-  );
-  const value = useMemo(
-    () => createVersionedValueMap({ 1: {}, 2: { routing } }),
-    [routing],
-  );
-  return <BUIContext.Provider value={value}>{children}</BUIContext.Provider>;
-}
