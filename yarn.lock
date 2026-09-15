@@ -200,13 +200,14 @@ __metadata:
   linkType: hard
 
 "@apidevtools/json-schema-ref-parser@npm:^15.3.5":
-  version: 15.3.5
-  resolution: "@apidevtools/json-schema-ref-parser@npm:15.3.5"
+  version: 15.5.2
+  resolution: "@apidevtools/json-schema-ref-parser@npm:15.5.2"
   dependencies:
-    js-yaml: "npm:^4.1.1"
+    js-yaml: "npm:^5.2.2"
+    undici: "npm:^6.28.0"
   peerDependencies:
     "@types/json-schema": ^7.0.15
-  checksum: 10/dd597e7cfd3ae57121b29f6489e39502199a96dce072788497dd30fab3296ed4f6dd95da1ddd26ae3461594a75f1d563c0b894bf70cd43e690b08ed9af78aa83
+  checksum: 10/6c4d312f479f4ccca209a28d8674729c5470500cc347cf9e8b7fa474d6af81c6ef9d6ae6c42fbdca3fb44f9e505fa5c9542b7ab9fdb7647d969e1c4256deb85e
   languageName: node
   linkType: hard
 
@@ -32703,6 +32704,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"js-yaml@npm:^5.2.2":
+  version: 5.4.2
+  resolution: "js-yaml@npm:5.4.2"
+  dependencies:
+    argparse: "npm:^2.0.1"
+  bin:
+    js-yaml: bin/js-yaml.mjs
+  checksum: 10/f2461abd1d6268fb226733f0a0e0aa48004bb824116e3dfa75f1a1279001936343b672066dfecdb852ac3ca883452706c383a760aa90430cb68ba395aa2cbc84
+  languageName: node
+  linkType: hard
+
 "js-yaml@npm:~4.1.0":
   version: 4.1.1
   resolution: "js-yaml@npm:4.1.1"
@@ -44874,7 +44886,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici@npm:^6.21.1, undici@npm:^6.25.0":
+"undici@npm:^6.21.1, undici@npm:^6.25.0, undici@npm:^6.28.0":
   version: 6.28.1
   resolution: "undici@npm:6.28.1"
   checksum: 10/a64d5972054604918448ffa1bbaa867ecd1ae9ed5aa75344a794550cc048a79949fd95ca196b961463384c49d77e924adb3643758a2aa809e43db5377a390941
