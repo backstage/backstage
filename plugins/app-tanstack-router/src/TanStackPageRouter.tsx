@@ -14,14 +14,41 @@
  * limitations under the License.
  */
 
-import type { ComponentType, ReactNode } from 'react';
-import { usePageMount } from '@internal/frontend';
-import type { RouterHistory } from '@tanstack/history';
-import type { AnyRouter } from '@tanstack/react-router';
 import {
-  TanStackRouterHost,
-  createDefaultTanStackRouter,
-} from './TanStackRouterHost';
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  type ComponentType,
+  type ReactNode,
+} from 'react';
+import { appHistoryApiRef, useApiHolder } from '@backstage/frontend-plugin-api';
+import { usePageMount, usePageMountResolver } from '@internal/frontend';
+import type { RouterHistory } from '@tanstack/history';
+import {
+  Outlet,
+  RouterProvider,
+  createRootRoute,
+  createRoute,
+  createRouter,
+  type AnyRouter,
+} from '@tanstack/react-router';
+import { createTanStackHistory } from './createTanStackHistory';
+
+// Content changes without rebuilding the route tree or losing router state.
+const PageContentContext = createContext<ReactNode>(undefined);
+
+/**
+ * Renders the opaque page content supplied by the Backstage page blueprint.
+ * Place this in a route component when using `createTanStackPageRouter` with
+ * a plugin-owned route tree.
+ *
+ * @public
+ */
+export function TanStackPageContent() {
+  return <>{useContext(PageContentContext)}</>;
+}
 
 /** Options for {@link createTanStackPageRouter}. @public */
 export interface CreateTanStackPageRouterOptions {
@@ -54,24 +81,78 @@ export function createTanStackPageRouter(
 ): ComponentType<{ children?: ReactNode }> {
   return function TanStackPageRouterAdapter(props: { children?: ReactNode }) {
     const routePattern = usePageMount()?.routePattern;
+    const resolveMount = usePageMountResolver();
+    const apiHolder = useApiHolder();
+    const appHistory = routePattern
+      ? apiHolder.get(appHistoryApiRef)
+      : undefined;
+    const scoped = useMemo(() => {
+      if (!routePattern || !appHistory) {
+        return undefined;
+      }
+      const history = createTanStackHistory(appHistory, {
+        routePattern,
+        resolveMount,
+      });
+      return { router: options.createRouter({ history }), history };
+    }, [appHistory, routePattern, resolveMount]);
+    const lifecycleRef = useRef<{
+      generation: number;
+      history?: RouterHistory;
+    }>({ generation: 0 });
 
-    if (!routePattern) {
+    useEffect(() => {
+      if (!scoped) {
+        return undefined;
+      }
+      const { history } = scoped;
+      const generation = lifecycleRef.current.generation + 1;
+      lifecycleRef.current = { generation, history };
+      return () => {
+        // StrictMode replays effects with the same history. Dispose only if
+        // the replay has not reclaimed it, or a different history replaced it.
+        queueMicrotask(() => {
+          const current = lifecycleRef.current;
+          if (
+            current.history !== history ||
+            current.generation === generation
+          ) {
+            history.destroy();
+            if (current.history === history) {
+              lifecycleRef.current = { generation: current.generation };
+            }
+          }
+        });
+      };
+    }, [scoped]);
+
+    if (!scoped) {
       return <>{props.children}</>;
     }
 
     return (
-      <TanStackRouterHost
-        routePattern={routePattern}
-        createRouter={options.createRouter}
-      >
-        {props.children}
-      </TanStackRouterHost>
+      <PageContentContext.Provider value={props.children}>
+        <RouterProvider router={scoped.router} />
+      </PageContentContext.Provider>
     );
   };
 }
 
 const DefaultTanStackPageRouter = createTanStackPageRouter({
-  createRouter: createDefaultTanStackRouter,
+  createRouter: ({ history }) => {
+    const rootRoute = createRootRoute({ component: Outlet });
+    // The root and splat keep framework-selected content opaque to TanStack.
+    const routeTree = rootRoute.addChildren(
+      ['/', '/$'].map(path =>
+        createRoute({
+          getParentRoute: () => rootRoute,
+          path,
+          component: TanStackPageContent,
+        }),
+      ),
+    );
+    return createRouter({ routeTree, history });
+  },
 });
 
 /**
@@ -107,8 +188,10 @@ const DefaultTanStackPageRouter = createTanStackPageRouter({
  *
  * Programmatic back and forward traverse the app-owned browser history.
  * Custom histories without entry metadata expose one synthetic slot and cannot
- * provide entry-based restoration or back availability. Synchronous navigation
- * keeps its action; delayed host updates have no known traversal delta.
+ * provide entry-based restoration or back availability. Push and replace use
+ * native TanStack actions; host traversals without metadata have no known delta.
+ * Custom hosts must update their location snapshot synchronously for push and
+ * replace; traversal notifications can arrive asynchronously.
  *
  * Cross-adapter navigation blockers are not supported because there is no
  * shared blocker seam; `useBlocker` still works for navigation initiated
@@ -131,5 +214,3 @@ export function TanStackPageRouter(props: { children?: ReactNode }) {
     <DefaultTanStackPageRouter>{props.children}</DefaultTanStackPageRouter>
   );
 }
-
-export { TanStackPageContent } from './TanStackRouterHost';

@@ -25,16 +25,14 @@ import {
   type PageMount,
 } from '@internal/frontend';
 import {
+  createHistory,
   parseHref,
   type HistoryLocation,
   type NavigationBlocker,
-  type ParsedHistoryState,
   type RouterHistory,
 } from '@tanstack/history';
 
-type HistoryNotify = RouterHistory['notify'];
-type HistoryNotifyAction = Parameters<HistoryNotify>[0];
-type HistorySubscriber = Parameters<RouterHistory['subscribe']>[0];
+type HistoryNotifyAction = Parameters<RouterHistory['notify']>[0];
 
 /**
  * Options for {@link createTanStackHistory}.
@@ -73,15 +71,6 @@ function toTraversalAction(delta: number): HistoryNotifyAction {
   return { type: 'GO', index: delta };
 }
 
-/** Conservative entry facts when the host supplies locations only. */
-const SYNTHESIZED_FIRST_ENTRY: AppHistoryMetadata = Object.freeze({
-  action: 'POP',
-  key: 'default',
-  index: 0,
-  length: 1,
-  canGoBack: false,
-});
-
 /**
  * Creates a `RouterHistory` bound to the framework's {@link AppHistoryApi}.
  *
@@ -94,8 +83,9 @@ const SYNTHESIZED_FIRST_ENTRY: AppHistoryMetadata = Object.freeze({
  * TanStack's entry fields project the framework's optional private metadata.
  * Without it, the adapter exposes a single synthetic slot (index 0, length 1,
  * cannot go back). Keys identify observed locations, not recoverable entries,
- * so entry-based restoration is unavailable. Known synchronous navigations
- * retain their action; uncorrelated updates are reported as GO with delta 0.
+ * so entry-based restoration is unavailable. Push and replace require the host
+ * to update its location snapshot synchronously. Traversals notify when the
+ * host emits; without metadata their delta is unknown and reported as GO 0.
  *
  * `history.block` is a **local** blocker seam: it only intercepts push /
  * replace initiated through this history (e.g. a TanStack `<Link>` or
@@ -157,267 +147,151 @@ export function createTanStackHistory(
   function toHistoryLocation(
     appLoc: AppLocation,
     scopedPathname: string,
-    metadata: AppHistoryMetadata,
+    metadata: AppHistoryMetadata | undefined,
   ): HistoryLocation {
     const href = `${scopedPathname}${appLoc.search}${appLoc.hash}`;
-    const userState = appLoc.state;
-    const tsrState = {
-      key: metadata.key,
-      __TSR_index: metadata.index,
-      __TSR_key: metadata.key,
-    } as ParsedHistoryState;
-    let state: ParsedHistoryState = tsrState;
-    if (isRecord(userState)) {
-      state = { ...userState, ...tsrState } as ParsedHistoryState;
-    } else if (userState !== undefined) {
-      state = { ...tsrState, state: userState } as ParsedHistoryState;
+    let userState: Record<string, unknown> | undefined;
+    if (isRecord(appLoc.state)) {
+      userState = appLoc.state;
+    } else if (appLoc.state !== undefined) {
+      userState = { state: appLoc.state };
     }
-    return parseHref(href, state);
+    const location = parseHref(href, undefined);
+    location.state = {
+      ...location.state,
+      ...userState,
+      ...(metadata
+        ? {
+            key: metadata.key,
+            __TSR_key: metadata.key,
+            __TSR_index: metadata.index,
+          }
+        : { __TSR_index: 0 }),
+    };
+    return location;
   }
 
-  const subscribers = new Set<HistorySubscriber>();
   let subscription: { unsubscribe(): void } | undefined;
-  let sourceLocation: AppLocation = appHistory.location;
-  let latestMetadata: AppHistoryMetadata =
-    readAppHistoryMetadata(appHistory) ?? SYNTHESIZED_FIRST_ENTRY;
-  let latestLocation: HistoryLocation = toHistoryLocation(
+  let sourceLocation = appHistory.location;
+  let latestMetadata = readAppHistoryMetadata(appHistory);
+  let latestLocation = toHistoryLocation(
     sourceLocation,
     splitScope(sourceLocation.pathname)?.scoped ?? '/',
     latestMetadata,
   );
   let blockers: NavigationBlocker[] = [];
-  let pendingAction: HistoryNotifyAction | undefined;
-  let fallbackKey = 0;
+  let writing = false;
+  let writtenLocation: AppLocation | undefined;
+  let pendingEchoes = new WeakSet<AppLocation>();
 
-  /** The host owns entry identity and stack position when it supplies them. */
-  function resolveMetadata(
-    metadata: AppHistoryMetadata | undefined,
-    action?: HistoryNotifyAction,
-  ): AppHistoryMetadata {
-    if (metadata) {
-      return metadata;
+  function commit(location: AppLocation): boolean {
+    const scope = splitScope(location.pathname);
+    if (!scope) {
+      // Retain the last page location while the app is unmounting this page.
+      return false;
     }
-    return {
-      ...SYNTHESIZED_FIRST_ENTRY,
-      action:
-        action?.type === 'PUSH' || action?.type === 'REPLACE'
-          ? action.type
-          : 'POP',
-      key:
-        action?.type === 'REPLACE'
-          ? latestMetadata.key
-          : `tanstack-${fallbackKey++}`,
-    };
-  }
-
-  function commit(
-    appLoc: AppLocation,
-    scope: PageScope,
-    metadata: AppHistoryMetadata,
-  ): void {
     basePath = scope.base;
-    sourceLocation = appLoc;
-    latestMetadata = metadata;
-    latestLocation = toHistoryLocation(appLoc, scope.scoped, metadata);
+    sourceLocation = location;
+    latestMetadata = readAppHistoryMetadata(appHistory);
+    latestLocation = toHistoryLocation(location, scope.scoped, latestMetadata);
+    return true;
   }
 
-  const notify: HistoryNotify = action => {
-    subscribers.forEach(subscriber =>
-      subscriber({ location: latestLocation, action }),
-    );
-  };
-
-  const ensureSubscription = () => {
-    if (subscription) {
-      return;
+  function write(path: string, state: unknown, replace: boolean) {
+    // Native history notifies after this callback returns. Suppress only the
+    // actual host write, so host navigation during an async blocker still flows.
+    writing = true;
+    writtenLocation = undefined;
+    try {
+      appHistory.navigate(toAppAbsolute(path), { state, replace });
+      const location = appHistory.location;
+      if (
+        subscription &&
+        writtenLocation !== location &&
+        sourceLocation !== location
+      ) {
+        pendingEchoes.add(location);
+      }
+      commit(location);
+    } finally {
+      writing = false;
     }
-    subscription = appHistory.location$.subscribe(loc => {
-      const rawMetadata = readAppHistoryMetadata(appHistory);
-      // `AppHistoryApi.location` is a stable reference, so an observable that
-      // replays its current value on subscribe is already accounted for.
-      // Without the metadata capability there is no reported key or action to
-      // compare — the synthesized record is this adapter's own bookkeeping, so
-      // comparing against it would say nothing about the history — leaving the
-      // location identity, plus the fact that no navigation of ours is in
-      // flight, as what identifies a replay.
-      const isReplay = rawMetadata
-        ? loc === sourceLocation &&
-          rawMetadata.key === latestMetadata.key &&
-          rawMetadata.action === latestMetadata.action
-        : loc === sourceLocation && pendingAction === undefined;
-      if (isReplay) {
-        return;
-      }
-      const action = pendingAction;
-      pendingAction = undefined;
-      const metadata = resolveMetadata(rawMetadata, action);
-      const scope = splitScope(loc.pathname);
-      if (!scope) {
-        // The app has navigated off this page, so this page is on its way
-        // out and its scoped history has nothing to say about a location
-        // that is not on it. Keeping the last in-scope location is what makes
-        // the split and the re-add exact inverses: an off-page pathname
-        // parked in the scoped location would be re-prefixed by the next
-        // push.
-        return;
-      }
-      const previousIndex = latestMetadata.index;
-      commit(loc, scope, metadata);
-      if (action) {
-        notify(action);
-      } else if (metadata.action === 'PUSH') {
-        notify({ type: 'PUSH' });
-      } else if (metadata.action === 'REPLACE') {
-        notify({ type: 'REPLACE' });
-      } else {
-        notify(toTraversalAction(metadata.index - previousIndex));
-      }
-    });
-  };
+  }
 
-  const tearDownSubscription = () => {
+  function unsubscribeFromHost() {
     subscription?.unsubscribe();
     subscription = undefined;
-  };
-
-  const performNavigate = (path: string, state: unknown, replace: boolean) => {
-    const action: HistoryNotifyAction = {
-      type: replace ? 'REPLACE' : 'PUSH',
-    };
-    performNavigation(action, () => {
-      appHistory.navigate(toAppAbsolute(path), { replace, state });
-    });
-  };
-
-  function performNavigation(
-    action: HistoryNotifyAction,
-    navigate: () => void,
-  ) {
-    pendingAction = action;
-    let handledBySubscription: boolean;
-    try {
-      navigate();
-      handledBySubscription = pendingAction === undefined;
-    } finally {
-      // Only a synchronous notification can be correlated with this call.
-      // A no-op, exception, or delayed host update must not leave a marker.
-      pendingAction = undefined;
-    }
-    if (handledBySubscription || subscription) {
-      // A subscribed host may publish its updated snapshot before notifying.
-      // Wait for that emission rather than turning it into a suppressed replay.
-      return;
-    }
-    const loc = appHistory.location;
-    const rawMetadata = readAppHistoryMetadata(appHistory);
-    if (
-      loc === sourceLocation &&
-      (!rawMetadata ||
-        (rawMetadata.key === latestMetadata.key &&
-          rawMetadata.action === latestMetadata.action))
-    ) {
-      return;
-    }
-    const scope = splitScope(loc.pathname);
-    if (scope) {
-      commit(loc, scope, resolveMetadata(rawMetadata, action));
-    }
+    pendingEchoes = new WeakSet();
   }
 
-  const navigateThroughAppHistory = (
-    path: string,
-    state: unknown,
-    replace: boolean,
-    ignoreBlocker?: boolean,
-  ) => {
-    if (blockers.length === 0 || ignoreBlocker) {
-      performNavigate(path, state, replace);
-      return;
-    }
-    const nextLocation = parseHref(
-      path,
-      state as ParsedHistoryState | undefined,
-    );
-    const action: 'PUSH' | 'REPLACE' = replace ? 'REPLACE' : 'PUSH';
-    void (async () => {
-      for (const blocker of blockers) {
-        // eslint-disable-next-line no-await-in-loop
-        const blocked = await blocker.blockerFn({
-          currentLocation: latestLocation,
-          nextLocation,
-          action,
-        });
-        if (blocked) {
-          return;
-        }
+  const history = createHistory({
+    getLocation: () => {
+      if (!subscription) {
+        commit(appHistory.location);
       }
-      performNavigate(path, state, replace);
-    })();
-  };
-
-  const traverse = (delta: number) => {
-    performNavigation(toTraversalAction(delta), () =>
-      appHistory.navigate(delta),
-    );
-  };
-
-  const history = {
-    get location() {
       return latestLocation;
     },
-    get length() {
-      return latestMetadata.length;
+    getLength: () => latestMetadata?.length ?? 1,
+    pushState: (path, state) => write(path, state, false),
+    replaceState: (path, state) => write(path, state, true),
+    go: delta => appHistory.navigate(delta),
+    back: () => appHistory.navigate(-1),
+    forward: () => appHistory.navigate(1),
+    createHref: href => appHistory.createHref(toAppAbsolute(href)),
+    getBlockers: () => blockers,
+    setBlockers: next => {
+      blockers = next;
     },
-    subscribers,
-    subscribe: (cb: HistorySubscriber) => {
-      subscribers.add(cb);
-      ensureSubscription();
-      return () => {
-        subscribers.delete(cb);
-        if (subscribers.size === 0) {
-          tearDownSubscription();
-        }
-      };
-    },
-    push: (
-      path: string,
-      state?: unknown,
-      navigateOpts?: { ignoreBlocker?: boolean },
-    ) => {
-      navigateThroughAppHistory(
-        path,
-        state,
-        false,
-        navigateOpts?.ignoreBlocker,
-      );
-    },
-    replace: (
-      path: string,
-      state?: unknown,
-      navigateOpts?: { ignoreBlocker?: boolean },
-    ) => {
-      navigateThroughAppHistory(path, state, true, navigateOpts?.ignoreBlocker);
-    },
-    go: (delta: number) => traverse(delta),
-    back: () => traverse(-1),
-    forward: () => traverse(1),
-    canGoBack: () => latestMetadata.canGoBack,
-    createHref: (href: string) => appHistory.createHref(toAppAbsolute(href)),
-    block: (blocker: NavigationBlocker) => {
-      blockers = [...blockers, blocker];
-      return () => {
-        blockers = blockers.filter(b => b !== blocker);
-      };
-    },
-    flush: () => {},
+    notifyOnIndexChange: false,
     destroy: () => {
-      tearDownSubscription();
-      subscribers.clear();
+      unsubscribeFromHost();
+      history.subscribers.clear();
     },
-    notify,
+  });
+
+  // Subscribe lazily: creating a router during a discarded React render must
+  // not leave an app-history listener behind. Native history owns subscribers;
+  // this wrapper only ties the host subscription to their lifetime.
+  const subscribe = history.subscribe;
+  history.subscribe = callback => {
+    const unsubscribe = subscribe(callback);
+    if (!subscription) {
+      subscription = appHistory.location$.subscribe(location => {
+        if (writing) {
+          writtenLocation = location;
+          return;
+        }
+        if (pendingEchoes.delete(location)) {
+          return;
+        }
+        const metadata = readAppHistoryMetadata(appHistory);
+        if (
+          location === sourceLocation &&
+          metadata?.key === latestMetadata?.key &&
+          metadata?.action === latestMetadata?.action
+        ) {
+          return;
+        }
+        const previousIndex = latestMetadata?.index ?? 0;
+        if (!commit(location)) {
+          return;
+        }
+        if (metadata?.action === 'PUSH' || metadata?.action === 'REPLACE') {
+          history.notify({ type: metadata.action });
+        } else {
+          history.notify(
+            toTraversalAction((metadata?.index ?? 0) - previousIndex),
+          );
+        }
+      });
+    }
+    return () => {
+      unsubscribe();
+      if (history.subscribers.size === 0) {
+        unsubscribeFromHost();
+      }
+    };
   };
 
-  // Cast: `@tanstack/history` may appear twice in the type graph (devDep vs
-  // peer), which makes structurally identical subscriber sets incompatible.
-  return history as unknown as RouterHistory;
+  return history;
 }
