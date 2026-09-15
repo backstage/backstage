@@ -171,8 +171,8 @@ describe('nfsRoutingDemo', () => {
     expectNoPathProblems();
     unmount();
 
-    // The sibling declares React Router v7 for itself and so has no React
-    // Router v6 context at all; framework-resolved links still work there.
+    // The sibling declares React Router v7 for its own routes. Framework links
+    // resolve independently of the root v6 compatibility context.
     renderDemoAt('/nfs-routing-demo-v7/v7-only');
     expect(await screen.findByText('React Router v7 only')).toBeInTheDocument();
     expect(
