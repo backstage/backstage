@@ -20,7 +20,7 @@ import {
   matchRoutes as reactRouterMatchRoutes,
   type RouteObject,
 } from 'react-router-dom';
-import { generatePath } from './generatePath';
+import { generatePath } from '@internal/frontend';
 import { matchRouteRefs } from './matchRouteRefs';
 import { BackstageRouteObject } from './types';
 
