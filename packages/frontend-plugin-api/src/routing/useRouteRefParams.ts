@@ -15,7 +15,7 @@
  */
 
 import { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { RouteContext, useRouterContext } from './reactRouterContext';
 import {
   APP_ROOT_PATH,
   OpaqueRouteRef,
@@ -139,13 +139,13 @@ export function useRouteRefParams<Params extends AnyRouteRefParams>(
   // they have to be recomputed when the app navigates.
   const location = useAppHistoryLocation(appHistory);
   const mountChain = usePageMountChain();
-  const legacyParams = useParams();
+  const legacyParams = useRouterContext(RouteContext)?.matches.at(-1)?.params;
   const pathname = location?.pathname ?? APP_ROOT_PATH.pathname;
 
   return useMemo(() => {
     const resolved = appHistory
       ? resolveParams(routeRef, mountChain, pathname)
-      : legacyParams;
+      : legacyParams ?? {};
     // Written by walking the declared names rather than by copying across
     // whatever resolved, so a name the location did not bind still lands as a
     // key — holding `undefined`, which is what React Router reports for one.
