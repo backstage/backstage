@@ -48,6 +48,17 @@ matching <a href="https://github.com/backstage/backstage/blob/ad9314d3a7e0405719
 you will not have any catalog entities loaded. See <a href="https://backstage.io/docs/features/software-catalog/configuration">Catalog Configuration</a>
 for how to add locations, or copy the catalog locations from the <a href="https://github.com/backstage/backstage/blob/master/packages/create-app/templates/default-app/app-config.yaml.hbs">create-app template</a>
 to get up and running quickly.</p>
+<h2 id="migrating-removed-processors" class="tsd-anchor-link">Migrating removed processors<a href="#migrating-removed-processors" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p><code>CodeOwnersProcessor</code> and <code>AnnotateScmSlugEntityProcessor</code> are no longer exported
+by this package. Use the corresponding community modules to retain their behavior:</p>
+<ul>
+<li><code>CodeOwnersProcessor</code>: <a href="https://github.com/backstage/community-plugins/tree/main/workspaces/catalog/plugins/catalog-backend-module-codeowners"><code>@backstage-community/plugin-catalog-backend-module-codeowners</code></a></li>
+<li><code>AnnotateScmSlugEntityProcessor</code>: <a href="https://github.com/backstage/community-plugins/tree/main/workspaces/catalog/plugins/catalog-backend-module-annotate-scm-slug"><code>@backstage-community/plugin-catalog-backend-module-annotate-scm-slug</code></a></li>
+</ul>
+<p>Install the module you need in your backend package and register it with
+<code>backend.add(import('&lt;module-package&gt;'))</code>. Remove your custom registration of the
+old processor to avoid registering it twice. If you need to configure a processor
+explicitly, follow the replacement module's documentation.</p>
 <h2 id="development" class="tsd-anchor-link">Development<a href="#development" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <p>This backend plugin can be started in a standalone mode from directly in this
 package with <code>yarn start</code>. However, it will have limited functionality and that
@@ -91,6 +102,7 @@ is the frontend interface for this plugin.</li>
 <ul>
 <li><a href="#old-backend-system"><span>Old backend system</span></a></li></ul></li>
 <li><a href="#adding-catalog-entities"><span>Adding catalog entities</span></a></li></ul></li>
+<li><a href="#migrating-removed-processors"><span>Migrating removed processors</span></a></li>
 <li><a href="#development"><span>Development</span></a></li>
 <li><a href="#links"><span>Links</span></a></li></ul>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Modules"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Modules</summary>
