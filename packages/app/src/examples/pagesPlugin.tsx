@@ -15,6 +15,7 @@
  */
 
 import { Link } from '@backstage/core-components';
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import {
   createFrontendPlugin,
   createRouteRef,
@@ -30,6 +31,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
+import { nfsRoutingDemoExtensions } from './nfsRoutingDemo';
 
 const indexRouteRef = createRouteRef();
 const page1RouteRef = createRouteRef();
@@ -113,6 +115,36 @@ const IndexPage = PageBlueprint.make({
               </li>
             </ul>
 
+            <h2>Scoped Plugin Routing</h2>
+            <p>
+              Page router adapters (RFC{' '}
+              <a href="https://github.com/backstage/backstage/issues/33603">
+                #33603
+              </a>
+              ). Three pages, each hosted by a different routing library, and
+              seven tabs that between them cover every combination worth
+              proving. Each panel prints the resolved URL and the resolved{' '}
+              <code>href</code> of its links, so a doubled base path shows up on
+              screen:
+            </p>
+            <ul>
+              <li>
+                <Link to="/nfs-routing-demo">React Router v6 host</Link> — v6
+                nested inside v6, a TanStack sub-page inside a v6 page, and
+                links resolved three segments below the page base
+              </li>
+              <li>
+                <Link to="/nfs-routing-demo-tanstack">TanStack host</Link> —
+                TanStack building the tab route tree itself, and hosting a React
+                Router v6 sub-page
+              </li>
+              <li>
+                <Link to="/nfs-routing-demo-v7">React Router v7 host</Link> — v6
+                and v7 route trees in the same app, plus a tab with no v6
+                context at all where the framework chrome still resolves
+              </li>
+            </ul>
+
             <h2>Feature Flag Enablement Examples</h2>
             <p>
               The following pages demonstrate conditional extension enablement
@@ -142,7 +174,14 @@ const IndexPage = PageBlueprint.make({
           </div>
         );
       };
-      return <Component />;
+      // Renders `Link` from `@backstage/core-components`, which is React
+      // Router's own `Link`. Its targets are app-absolute, so this needs a
+      // router to exist rather than needing this particular scope.
+      return (
+        <ReactRouterV6PageRouter>
+          <Component />
+        </ReactRouterV6PageRouter>
+      );
     },
   },
 });
@@ -193,7 +232,16 @@ const Page1 = PageBlueprint.make({
           </div>
         );
       };
-      return <Component />;
+      // This page builds its own `<Routes>` tree and links into it with a
+      // page-relative target (`./page2`), so it needs the context scoped to
+      // its own mount rather than to the app root: unscoped, `./page2`
+      // resolves to `/page2` and the nested `<Routes>` match `/page1` against
+      // patterns written relative to the page, so neither branch renders.
+      return (
+        <ReactRouterV6PageRouter>
+          <Component />
+        </ReactRouterV6PageRouter>
+      );
     },
   },
 });
@@ -214,7 +262,14 @@ const ExternalPage = PageBlueprint.make({
           </div>
         );
       };
-      return <Component />;
+      // Renders `Link` from `@backstage/core-components`, which is React
+      // Router's own `Link`. Its targets are app-absolute, so this needs a
+      // router to exist rather than needing this particular scope.
+      return (
+        <ReactRouterV6PageRouter>
+          <Component />
+        </ReactRouterV6PageRouter>
+      );
     },
   },
 });
@@ -251,7 +306,14 @@ const FeatureFlagPage = PageBlueprint.make({
           </div>
         );
       };
-      return <Component />;
+      // Renders `Link` from `@backstage/core-components`, which is React
+      // Router's own `Link`. Its targets are app-absolute, so this needs a
+      // router to exist rather than needing this particular scope.
+      return (
+        <ReactRouterV6PageRouter>
+          <Component />
+        </ReactRouterV6PageRouter>
+      );
     },
   },
   if: { featureFlags: { $contains: 'experimental-features' } },
@@ -287,7 +349,14 @@ const AllFlagsPage = PageBlueprint.make({
           </div>
         );
       };
-      return <Component />;
+      // Renders `Link` from `@backstage/core-components`, which is React
+      // Router's own `Link`. Its targets are app-absolute, so this needs a
+      // router to exist rather than needing this particular scope.
+      return (
+        <ReactRouterV6PageRouter>
+          <Component />
+        </ReactRouterV6PageRouter>
+      );
     },
   },
   if: {
@@ -328,7 +397,14 @@ const AnyFlagPage = PageBlueprint.make({
           </div>
         );
       };
-      return <Component />;
+      // Renders `Link` from `@backstage/core-components`, which is React
+      // Router's own `Link`. Its targets are app-absolute, so this needs a
+      // router to exist rather than needing this particular scope.
+      return (
+        <ReactRouterV6PageRouter>
+          <Component />
+        </ReactRouterV6PageRouter>
+      );
     },
   },
   if: {
@@ -416,7 +492,14 @@ const PermissionCardPage = PageBlueprint.makeWithOverrides({
             </div>
           );
         };
-        return <Component />;
+        // Renders `Link` from `@backstage/core-components`, which is React
+        // Router's own `Link`. Its targets are app-absolute, so this needs a
+        // router to exist rather than needing this particular scope.
+        return (
+          <ReactRouterV6PageRouter>
+            <Component />
+          </ReactRouterV6PageRouter>
+        );
       },
     });
   },
@@ -492,7 +575,14 @@ const PermissionActionPage = PageBlueprint.make({
           </div>
         );
       };
-      return <Component />;
+      // Renders `Link` from `@backstage/core-components`, which is React
+      // Router's own `Link`. Its targets are app-absolute, so this needs a
+      // router to exist rather than needing this particular scope.
+      return (
+        <ReactRouterV6PageRouter>
+          <Component />
+        </ReactRouterV6PageRouter>
+      );
     },
   },
   if: { permissions: { $contains: 'catalog.entity.read#read' } },
@@ -521,7 +611,14 @@ const PermissionGatedPage = PageBlueprint.make({
           </div>
         );
       };
-      return <Component />;
+      // Renders `Link` from `@backstage/core-components`, which is React
+      // Router's own `Link`. Its targets are app-absolute, so this needs a
+      // router to exist rather than needing this particular scope.
+      return (
+        <ReactRouterV6PageRouter>
+          <Component />
+        </ReactRouterV6PageRouter>
+      );
     },
   },
   if: { permissions: { $contains: 'catalog.entity.create' } },
@@ -550,6 +647,7 @@ export const pagesPlugin = createFrontendPlugin({
     IndexPage,
     Page1,
     ExternalPage,
+    ...nfsRoutingDemoExtensions,
     FeatureFlagPage,
     AllFlagsPage,
     AnyFlagPage,

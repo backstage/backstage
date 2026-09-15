@@ -51,6 +51,9 @@
     "@backstage/plugin-app": "workspace:^",
     "@backstage/plugin-app-module-user-settings": "workspace:^",
     "@backstage/plugin-app-react": "workspace:^",
+    "@backstage/plugin-app-react-router-v6": "workspace:^",
+    "@backstage/plugin-app-react-router-v7": "workspace:^",
+    "@backstage/plugin-app-tanstack-router": "workspace:^",
     "@backstage/plugin-app-visualizer": "workspace:^",
     "@backstage/plugin-auth": "workspace:^",
     "@backstage/plugin-auth-react": "workspace:^",
@@ -84,6 +87,8 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@octokit/rest": "^19.0.3",
+    "@tanstack/history": "1.131.2",
+    "@tanstack/react-router": "1.131.2",
     "history": "^5.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
@@ -93,6 +98,7 @@
     "zen-observable": "^0.10.0"
   },
   "devDependencies": {
+    "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@playwright/test": "^1.58.2",
     "@testing-library/dom": "^10.0.0",
