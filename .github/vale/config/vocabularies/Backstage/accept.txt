@@ -34,6 +34,7 @@ backend's
 backoff
 backported
 backporting
+Basename
 Bazel
 BEPs
 bg
@@ -206,6 +207,8 @@ Hostname
 hotspot
 hotspots
 howto
+href
+hrefs
 http
 https
 Iain
@@ -302,6 +305,7 @@ misconfiguration
 misconfigured
 mkdocs
 Mkdocs
+mock's
 modularization
 monopackage
 monopackages
@@ -426,6 +430,7 @@ requestors
 rerender
 rerenders
 resizable
+resolver's
 resourcequotas
 retryable
 reusability
@@ -527,6 +532,8 @@ Talkdesk
 Tanzu
 targetRef
 tasklist
+teardown
+Teardown
 techdocs
 Telenor
 telus
