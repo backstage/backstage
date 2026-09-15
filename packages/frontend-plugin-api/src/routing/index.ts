@@ -23,3 +23,22 @@ export {
 } from './ExternalRouteRef';
 export { useRouteRef } from './useRouteRef';
 export { useRouteRefParams } from './useRouteRefParams';
+// AppLocation / AppNavigateOptions are the adopter-facing types.
+export type { AppLocation, AppNavigateOptions } from './AppLocation';
+export type { AppHistoryApi } from './AppHistoryApi';
+export { appHistoryApiRef } from './AppHistoryApi';
+// useAppNavigate is the public react-aria-style navigate hook. Location
+// subscription for adopters goes through AppHistoryApi.location$, and
+// first-party chrome subscribes with useAppHistoryLocation from the internal
+// frontend package — neither is exported from here.
+//
+// Note: this comment must not contain the string "at-internal", because
+// TypeScript's `stripInternal` matches it anywhere in a leading comment and
+// would drop the export below from the emitted declarations.
+export { useAppNavigate } from './useAppNavigate';
+export { useHref } from './useHref';
+export {
+  useNavigateRouteRef,
+  type NavigateRouteRefFunc,
+} from './useNavigateRouteRef';
+export { RouteLink, type RouteLinkProps } from './RouteLink';
