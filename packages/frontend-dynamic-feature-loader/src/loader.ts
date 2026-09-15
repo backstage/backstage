@@ -22,7 +22,6 @@ import {
 import { Module } from '@module-federation/sdk';
 import { DefaultApiClient, Remote } from './schema/openapi';
 import {
-  ConfigApi,
   FrontendFeature,
   FrontendFeatureLoader,
   createFrontendFeatureLoader,
@@ -192,60 +191,22 @@ export function dynamicFrontendFeaturesLoader(
                   );
                   return undefined;
                 }
-
-                try {
-                  return await resolveFeature(defaultEntry, config);
-                } catch (err) {
-                  error(
-                    `Failed resolving frontend features from dynamic plugin remote module '${remoteModuleName}' of dynamic plugin '${remote.packageName}'`,
-                    err,
-                  );
-                  return undefined;
-                }
+                return defaultEntry;
               }),
             );
             return moduleFeatures;
           }),
         )
       )
-        .flat(2)
-        .filter((feature): feature is FrontendFeature => feature !== undefined);
+        .flat()
+        .filter(
+          (feature): feature is FrontendFeature | FrontendFeatureLoader =>
+            feature !== undefined,
+        );
 
       return [...features];
     },
   });
-}
-
-type InternalFrontendFeatureLoader = FrontendFeatureLoader & {
-  version: 'v1';
-  loader(deps: {
-    config: ConfigApi;
-  }): Promise<(FrontendFeature | FrontendFeatureLoader)[]>;
-};
-
-async function resolveFeature(
-  feature: FrontendFeature | FrontendFeatureLoader,
-  config: ConfigApi,
-): Promise<FrontendFeature[]> {
-  if (feature.$$type !== '@backstage/FrontendFeatureLoader') {
-    return [feature];
-  }
-
-  const loader = feature as InternalFrontendFeatureLoader;
-  if (loader.version !== 'v1' || typeof loader.loader !== 'function') {
-    throw new Error(
-      `Invalid FrontendFeatureLoader: expected version 'v1' and a loader function, ` +
-        `got version '${String(
-          loader.version,
-        )}' and loader type '${typeof loader.loader}'`,
-    );
-  }
-
-  const features = await loader.loader({ config });
-  const resolvedFeatures = await Promise.all(
-    features.map(nestedFeature => resolveFeature(nestedFeature, config)),
-  );
-  return resolvedFeatures.flat();
 }
 
 function isLoadable(

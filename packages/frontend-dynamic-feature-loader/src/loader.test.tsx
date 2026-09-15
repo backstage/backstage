@@ -16,6 +16,8 @@
 
 import { mockApis, registerMswTestHooks } from '@backstage/test-utils';
 import { dynamicFrontendFeaturesLoader } from './loader';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { resolveAsyncFeatures } from '../../frontend-defaults/src/resolution';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { ModuleFederationRuntimePlugin } from '@module-federation/enhanced/runtime';
@@ -348,13 +350,16 @@ describe('dynamicFrontendFeaturesLoader', () => {
     });
 
     const config = mockDefaultConfig();
-    const features = await (
-      dynamicFrontendFeaturesLoader({
-        moduleFederation: {
-          plugins: testModuleFederationPlugins,
-        },
-      }) as InternalFrontendFeatureLoader
-    ).loader({ config });
+    const { features } = await resolveAsyncFeatures({
+      config,
+      features: [
+        dynamicFrontendFeaturesLoader({
+          moduleFederation: {
+            plugins: testModuleFederationPlugins,
+          },
+        }),
+      ],
+    });
 
     expect(loader).toHaveBeenCalledWith({ config });
     expect(features).toMatchObject([

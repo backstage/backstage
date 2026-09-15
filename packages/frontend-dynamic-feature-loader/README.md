@@ -28,9 +28,10 @@ The frontend feature loader provided in this package works hand-in-hand with the
 
 A dynamically loaded frontend plugin can expose either a `FrontendFeature` or a
 `FrontendFeatureLoader` as the default export of an exposed entry point. When a
-`FrontendFeatureLoader` is exported, this package invokes it with the
-`ConfigApi` and resolves the returned features before adding them to the
-application. Nested feature loaders are resolved as well.
+`FrontendFeatureLoader` is exported, this package returns it to the application's
+frontend feature resolution. The application framework invokes the loader with
+the `ConfigApi` and resolves its returned features, including nested feature
+loaders.
 
 This allows a plugin to select or configure its frontend features using the
 application configuration while keeping that selection logic within the plugin.
