@@ -16,3 +16,4 @@
 
 export { BUIProvider } from './BUIProvider';
 export type { BUIProviderProps } from './BUIProvider';
+export type { BUIRouter } from './BUIRouter';

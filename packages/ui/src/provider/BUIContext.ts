@@ -17,6 +17,7 @@
 import { createVersionedContext } from '@backstage/version-bridge';
 import type { UseAnalyticsFn } from '../analytics/types';
 import type { BUIRoutingIntegration } from '../navigation/types';
+import type { BUIRouter } from './BUIRouter';
 
 /** @internal */
 export type BUIContextValueV1 = {
@@ -30,10 +31,20 @@ export type BUIContextValueV2 = {
 };
 
 /** @internal */
-export type BUIContextVersions = {
-  1: BUIContextValueV1;
-  2: BUIContextValueV2;
+export type BUIContextValueV3 = BUIContextValueV2 & {
+  useRouter?: () => BUIRouter;
 };
 
 /** @internal */
-export const BUIContext = createVersionedContext<BUIContextVersions>('bui');
+export type BUIContextVersions = {
+  1: BUIContextValueV1;
+  2: BUIContextValueV2;
+  3: BUIContextValueV3;
+};
+
+// Older providers only publish versions 1 and 2. Readers request newer
+// capabilities through the same shared context without requiring every provider
+// to implement them.
+/** @internal */
+export const BUIContext =
+  createVersionedContext<Pick<BUIContextVersions, 1 | 2>>('bui');

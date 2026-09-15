@@ -35,7 +35,7 @@ import {
 import { useResolvedHref } from '../../hooks/useResolvedHref';
 import type { BUIRoutingIntegration } from '../../navigation/types';
 import { BUIContext, type BUIContextVersions } from '../../provider/BUIContext';
-import { BUIProvider } from '../../provider/BUIProvider';
+import { BUIProvider, type BUIRouter } from '../../provider';
 import { Tab, TabList, Tabs } from './Tabs';
 
 function LocationStatus() {
@@ -394,3 +394,117 @@ function TrackingRoutingProvider({
   );
   return <BUIContext.Provider value={value}>{children}</BUIContext.Provider>;
 }
+
+describe('Tabs', () => {
+  it('selects routed tabs from the injected router without React Router context', async () => {
+    const router: BUIRouter = {
+      navigate: jest.fn(),
+      resolveHref: href => href,
+      pathname: '/catalog/entity/overview/details',
+    };
+
+    render(
+      <BUIProvider useRouter={() => router}>
+        <Tabs>
+          <TabList>
+            <Tab
+              id="overview"
+              href="/catalog/entity/overview"
+              matchStrategy="prefix"
+            >
+              Overview
+            </Tab>
+            <Tab
+              id="settings"
+              href="/catalog/entity/settings"
+              matchStrategy="prefix"
+            >
+              Settings
+            </Tab>
+          </TabList>
+        </Tabs>
+      </BUIProvider>,
+    );
+
+    expect(
+      await screen.findByRole('tab', { name: 'Overview' }),
+    ).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('tab', { name: 'Settings' })).toHaveAttribute(
+      'aria-selected',
+      'false',
+    );
+  });
+
+  it('resolves relative routed tabs through the injected router for active selection', async () => {
+    const router: BUIRouter = {
+      navigate: jest.fn(),
+      resolveHref: href =>
+        href.startsWith('/') ? `/app${href}` : `/app/catalog/${href}`,
+      pathname: '/app/catalog/settings/details',
+    };
+
+    render(
+      <BUIProvider useRouter={() => router}>
+        <Tabs>
+          <TabList>
+            <Tab id="overview" href="overview" matchStrategy="prefix">
+              Overview
+            </Tab>
+            <Tab id="settings" href="settings" matchStrategy="prefix">
+              Settings
+            </Tab>
+          </TabList>
+        </Tabs>
+      </BUIProvider>,
+    );
+
+    expect(
+      await screen.findByRole('tab', { name: 'Settings' }),
+    ).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('tab', { name: 'Settings' })).toHaveAttribute(
+      'href',
+      '/app/catalog/settings',
+    );
+    expect(screen.getByRole('tab', { name: 'Overview' })).toHaveAttribute(
+      'aria-selected',
+      'false',
+    );
+  });
+
+  it('keeps ambient React Router basename and relative-route selection', async () => {
+    render(
+      <MemoryRouter
+        basename="/app"
+        initialEntries={['/app/catalog/settings/details']}
+      >
+        <BUIProvider>
+          <Routes>
+            <Route
+              path="/catalog/*"
+              element={
+                <Tabs>
+                  <TabList>
+                    <Tab id="overview" href="overview" matchStrategy="prefix">
+                      Overview
+                    </Tab>
+                    <Tab id="settings" href="settings" matchStrategy="prefix">
+                      Settings
+                    </Tab>
+                  </TabList>
+                </Tabs>
+              }
+            />
+          </Routes>
+        </BUIProvider>
+      </MemoryRouter>,
+    );
+
+    expect(
+      await screen.findByRole('tab', { name: 'Settings' }),
+    ).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('tab', { name: 'Settings' })).toHaveAttribute(
+      'href',
+      '/app/catalog/settings',
+    );
+  });
+});

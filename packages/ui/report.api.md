@@ -505,7 +505,20 @@ export function BUIProvider(props: BUIProviderProps): JSX_2.Element;
 // @public (undocumented)
 export type BUIProviderProps = {
   useAnalytics?: UseAnalyticsFn;
+  useRouter?: () => BUIRouter;
   children: ReactNode;
+};
+
+// @public
+export type BUIRouter = {
+  navigate: (
+    href: string,
+    options?: {
+      replace?: boolean;
+    },
+  ) => void;
+  resolveHref: (href: string) => string;
+  pathname: string;
 };
 
 // @public

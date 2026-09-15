@@ -22,6 +22,7 @@ import { resolveDefinitionProps, processUtilityProps } from './helpers';
 import { useAnalytics } from '../../analytics/useAnalytics';
 import { noopTracker } from '../../analytics/useAnalytics';
 import { useDefinitionNavigation } from './useDefinitionNavigation';
+import { sanitizeHref } from '../../utils/linkUtils';
 import type {
   ComponentConfig,
   UseDefinitionOptions,
@@ -39,10 +40,14 @@ export function useDefinition<
 ): UseDefinitionResult<D, P> {
   const { breakpoint } = useBreakpoint();
 
+  const rawHref = props.href;
+  const href = sanitizeHref(rawHref);
+  const safeProps = href === rawHref ? props : ({ ...props, href } as P);
+
   // Resolve all props centrally — applies responsive values and defaults
   const { ownPropsResolved, restProps } = resolveDefinitionProps(
     definition,
-    props,
+    safeProps,
     breakpoint,
   );
 

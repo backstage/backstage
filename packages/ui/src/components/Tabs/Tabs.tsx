@@ -53,6 +53,11 @@ import {
   TabPanelDefinition,
 } from './definition';
 import { getNodeText } from '../../analytics/getNodeText';
+import {
+  getBUIRouterPathname,
+  useBUIRouter,
+  type BUIRouter,
+} from '../../provider/BUIRouter';
 import { useRoutingIntegration } from '../../navigation/useRouting';
 import {
   getReactAriaAnchorProps,
@@ -285,21 +290,51 @@ export const TabList = (props: TabListProps) => {
  * Separated to avoid conditional hook usage in Tab component.
  * @internal
  */
-function RoutedTabEffects({
-  id,
-  href,
-  matchStrategy = 'exact',
-}: {
+type RoutedTabEffectsProps = {
   id: string;
   href: string;
   matchStrategy?: 'exact' | 'prefix';
-}) {
-  const selectionCtx = useContext(TabSelectionContext);
+};
+
+function RoutedTabEffects(props: RoutedTabEffectsProps) {
   const routing = useRoutingIntegration({ fallback: true });
   const location = routing.useLocation();
-  const resolvedPath = routing.useResolvedPath(href);
+  const resolvedPath = routing.useResolvedPath(props.href);
+  return (
+    <TabSelectionEffects
+      {...props}
+      pathname={location.pathname}
+      targetPathname={resolvedPath.pathname}
+    />
+  );
+}
 
-  // Register as a routed tab (for controlled vs uncontrolled mode)
+function HostRoutedTabEffects({
+  useRouter,
+  ...props
+}: RoutedTabEffectsProps & { useRouter: () => BUIRouter }) {
+  const router = useRouter();
+  return (
+    <TabSelectionEffects
+      {...props}
+      pathname={router.pathname}
+      targetPathname={getBUIRouterPathname(router.resolveHref(props.href))}
+    />
+  );
+}
+
+function TabSelectionEffects({
+  id,
+  pathname,
+  targetPathname,
+  matchStrategy = 'exact',
+}: {
+  id: string;
+  pathname: string;
+  targetPathname: string | undefined;
+  matchStrategy?: 'exact' | 'prefix';
+}) {
+  const selectionCtx = useContext(TabSelectionContext);
   useEffect(() => {
     if (selectionCtx) {
       selectionCtx.registerRoutedTab(id);
@@ -308,14 +343,10 @@ function RoutedTabEffects({
     return undefined;
   }, [id, selectionCtx]);
 
-  // Register as active tab when URL matches (for tab selection)
-  const isActive = isTabActive(
-    resolvedPath.pathname,
-    location.pathname,
-    matchStrategy,
-  );
-  const segmentCount = resolvedPath.pathname.split('/').filter(Boolean).length;
-
+  const isActive =
+    targetPathname !== undefined &&
+    isTabActive(targetPathname, pathname, matchStrategy);
+  const segmentCount = targetPathname?.split('/').filter(Boolean).length ?? 0;
   useEffect(() => {
     if (isActive && selectionCtx) {
       selectionCtx.registerActiveTab(id, segmentCount);
@@ -323,7 +354,6 @@ function RoutedTabEffects({
     }
     return undefined;
   }, [isActive, id, segmentCount, selectionCtx]);
-
   return null;
 }
 
@@ -336,6 +366,7 @@ const TabView = ({ definitionResult, navigation }: TabViewProps) => {
   const { ownProps, restProps, analytics } = definitionResult;
   const { classes, matchStrategy, id } = ownProps;
   const { href } = ownProps;
+  const useRouter = useBUIRouter();
   const { setTabRef } = useTabsContext();
   const navigationProps = getReactAriaAnchorProps(navigation, {
     href,
@@ -356,13 +387,22 @@ const TabView = ({ definitionResult, navigation }: TabViewProps) => {
 
   return (
     <>
-      {navigation.canMatchRoute && href && (
-        <RoutedTabEffects
-          id={id as string}
-          href={href}
-          matchStrategy={matchStrategy}
-        />
-      )}
+      {navigation.canMatchRoute &&
+        href &&
+        (useRouter ? (
+          <HostRoutedTabEffects
+            id={id as string}
+            href={href}
+            matchStrategy={matchStrategy}
+            useRouter={useRouter}
+          />
+        ) : (
+          <RoutedTabEffects
+            id={id as string}
+            href={href}
+            matchStrategy={matchStrategy}
+          />
+        ))}
       <AriaTab
         id={id}
         className={classes.root}

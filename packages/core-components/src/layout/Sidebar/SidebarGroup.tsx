@@ -20,11 +20,12 @@ import BottomNavigationAction, {
 } from '@material-ui/core/BottomNavigationAction';
 import { Theme, makeStyles } from '@material-ui/core/styles';
 import { ReactNode, ChangeEvent, useContext } from 'react';
-import { useLocation } from 'react-router-dom';
 import { Link } from '../../components/Link/Link';
 import { SidebarConfig, SidebarConfigContext } from './config';
 import { MobileSidebarContext } from './MobileSidebarContext';
 import { useSidebarPinState } from './SidebarPinStateContext';
+import { useAppLocation } from '../appRouting';
+import { useOptionalAppHistory } from '../../hooks/useOptionalAppHistory';
 
 /**
  * Props for the `SidebarGroup`
@@ -78,7 +79,9 @@ const MobileSidebarGroup = (props: SidebarGroupProps) => {
   const { to, label, icon, value } = props;
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const classes = useStyles({ sidebarConfig });
-  const location = useLocation();
+  const { pathname: locationPathname } = useAppLocation(
+    useOptionalAppHistory(),
+  );
   const { selectedMenuItemIndex, setSelectedMenuItemIndex } =
     useContext(MobileSidebarContext);
 
@@ -94,7 +97,7 @@ const MobileSidebarGroup = (props: SidebarGroupProps) => {
     (value === selectedMenuItemIndex && selectedMenuItemIndex >= 0) ||
     (!(value === selectedMenuItemIndex) &&
       !(selectedMenuItemIndex >= 0) &&
-      to === location.pathname);
+      to === locationPathname);
 
   return (
     // Material UI issue: https://github.com/mui-org/material-ui/issues/27820
@@ -103,7 +106,7 @@ const MobileSidebarGroup = (props: SidebarGroupProps) => {
       label={label}
       icon={icon}
       component={Link as any}
-      to={(to ? to : location.pathname) as any}
+      to={(to ? to : locationPathname) as any}
       onChange={onChange}
       value={value}
       selected={selected}

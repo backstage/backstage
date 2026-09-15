@@ -16,15 +16,22 @@
 
 import {
   useCallback,
+  forwardRef,
   useMemo,
   type HTMLAttributeAnchorTarget,
   type JSX,
   type MouseEvent,
   type ReactElement,
 } from 'react';
-import { createPath, type NavigateOptions } from 'react-router-dom';
+import {
+  createPath,
+  type NavigateOptions,
+  type LinkProps,
+} from 'react-router-dom';
 import { isBrowserOwnedHref } from '../utils/linkUtils';
 import type { BUIRoutingIntegration } from './types';
+import { useBUIRouter, type BUIRouter } from '../provider/BUIRouter';
+import { buiRoutingIntegration } from './BUIRoutingProvider';
 import {
   fallbackRoutingIntegration,
   useRoutingIntegration,
@@ -72,6 +79,9 @@ export function isNativeNavigation(props: NavigationProps): boolean {
  * independently from the application. We therefore cannot assume that the
  * component and the application's BUIProvider use the same BUI version or the
  * same installed copy of React Aria.
+ * An explicit BUIRouter takes precedence over ambient React Router contexts;
+ * its anchor adapter preserves native browser activation and also handles
+ * clicks when the component cannot see the host's React Aria provider.
  *
  * These are two separate compatibility concerns:
  *
@@ -121,6 +131,108 @@ export function isNativeNavigation(props: NavigationProps): boolean {
  * @internal
  */
 export function useAnchorNavigation(props: NavigationProps): AnchorNavigation {
+  const useRouter = useBUIRouter();
+  if (useRouter) {
+    return useHostAnchorNavigation(props, useRouter());
+  }
+  return useReactRouterAnchorNavigation(props);
+}
+
+function useHostAnchorNavigation(
+  props: NavigationProps,
+  router: BUIRouter,
+): AnchorNavigation {
+  const { href, routerOptions } = props;
+  const replace = routerOptions?.replace;
+  const hostOptions = useMemo(
+    () => (replace === undefined ? undefined : { replace }),
+    [replace],
+  );
+  const resolvedHref = router.resolveHref(href ?? '');
+  const navigate = useCallback(() => {
+    if (href !== undefined) {
+      router.navigate(href, hostOptions);
+    }
+  }, [router, href, hostOptions]);
+  const delegatedOptions = useMemo(
+    () => buiRoutingIntegration.createRouterOptions(navigate, hostOptions),
+    [navigate, hostOptions],
+  );
+  if (href === undefined) {
+    return { type: 'none', canMatchRoute: false };
+  }
+  const canMatchRoute = !isBrowserOwnedHref(href);
+  if (isNativeNavigation(props)) {
+    return {
+      type: 'native',
+      canMatchRoute,
+      ariaHref: href,
+      browserHref: canMatchRoute ? resolvedHref : href,
+    };
+  }
+  return {
+    type: 'router',
+    canMatchRoute,
+    ariaHref: href,
+    to: href,
+    Link: HostRouterLink,
+    routerOptions: delegatedOptions,
+    routerLinkOptions: hostOptions,
+  };
+}
+
+const HostRouterLink = forwardRef<HTMLAnchorElement, LinkProps>(
+  (
+    {
+      to,
+      onClick,
+      replace,
+      state: _state,
+      relative: _relative,
+      preventScrollReset: _preventScrollReset,
+      reloadDocument,
+      viewTransition: _viewTransition,
+      ...props
+    },
+    ref,
+  ) => {
+    const useRouter = useBUIRouter()!;
+    const router = useRouter();
+    const href = typeof to === 'string' ? to : createPath(to);
+    const resolvedHref = router.resolveHref(href);
+    return (
+      <a
+        {...props}
+        ref={ref}
+        href={resolvedHref}
+        onClick={event => {
+          onClick?.(event);
+          if (
+            event.defaultPrevented ||
+            reloadDocument ||
+            event.button !== 0 ||
+            event.metaKey ||
+            event.altKey ||
+            event.ctrlKey ||
+            event.shiftKey ||
+            isNativeNavigation({ ...props, href })
+          ) {
+            return;
+          }
+          event.preventDefault();
+          router.navigate(
+            href,
+            replace === undefined ? undefined : { replace },
+          );
+        }}
+      />
+    );
+  },
+);
+
+function useReactRouterAnchorNavigation(
+  props: NavigationProps,
+): AnchorNavigation {
   const { href, routerOptions: navigateOptions } = props;
   const routingIntegration = useRoutingIntegration();
   const routing = routingIntegration ?? fallbackRoutingIntegration;

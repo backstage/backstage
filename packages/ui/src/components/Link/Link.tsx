@@ -21,7 +21,6 @@ import {
   useDefinition,
   type UseDefinitionResult,
 } from '../../hooks/useDefinition';
-import { useResolvedHref } from '../../hooks/useResolvedHref';
 import { LinkDefinition } from './definition';
 import { getNodeText } from '../../analytics/getNodeText';
 import {
@@ -64,9 +63,6 @@ function LinkView({
   // Render the anchor explicitly so truncated links retain their browser tooltip.
   const { linkProps } = useLink(resolvedLinkProps, linkRef);
   const { isFocusVisible, focusProps } = useFocusRing();
-  const fallbackHref = useResolvedHref(restProps.href);
-  const resolvedHref =
-    navigation.type === 'native' ? navigation.browserHref : fallbackHref;
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     linkProps.onClick?.(e);
@@ -111,7 +107,12 @@ function LinkView({
     );
   }
 
-  return <a {...commonProps} href={resolvedHref} />;
+  return (
+    <a
+      {...commonProps}
+      href={navigation.type === 'native' ? navigation.browserHref : undefined}
+    />
+  );
 }
 
 /**
