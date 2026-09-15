@@ -1,5 +1,13 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.1.8
+
+### Patch Changes
+
+- 9f76ea4: Added `techdocs.generator.mkdocs.dangerouslyAllowAdditionalPlugins` configuration option, allowing operators to extend the set of permitted MkDocs plugins during TechDocs generation.
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.14.7
+
 ## 2.1.7
 
 ### Patch Changes
