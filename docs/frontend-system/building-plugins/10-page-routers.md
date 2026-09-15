@@ -295,3 +295,15 @@ for what a new one does:
   content an adapter is handed is opaque.
 - Render `children` untouched when either the mount or the history is missing,
   so the adapter stays inert wherever there is nothing to scope to.
+
+## Prefer framework routing for shared components
+
+Pages that only render content, follow links, or read query parameters do not
+need a page adapter. Use `useAppLocation` for the app-absolute location and
+`useAppSearchParams` for query state. These hooks subscribe to the shared app
+history and fall back to React Router in the old frontend system.
+
+Use `useRouteRefParams` with a route reference for framework route parameters,
+and `useAppNavigate` for app-absolute navigation. Keep a library adapter when
+content renders that library's nested routes, outlets, or other library-specific
+features. Declaring an adapter for a shared link or query hook alone is unnecessary.
