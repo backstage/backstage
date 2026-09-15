@@ -48,11 +48,16 @@ import { BUIProvider } from './BUIProvider';
 import type { BUIRouter } from './BUIRouter';
 import { Link } from '../components/Link';
 import type { ButtonLink } from '../components/ButtonLink';
-import type * as TabComponents from '../components/Tabs';
 import { Tabs, TabList, Tab } from '../components/Tabs';
 import { HeaderNav } from '../components/Header/HeaderNav';
 // eslint-disable-next-line no-restricted-imports
 import { useRouter } from 'react-aria/private/utils/openLink';
+
+type TabComponents = {
+  Tabs: typeof Tabs;
+  TabList: typeof TabList;
+  Tab: typeof Tab;
+};
 
 const mockFallbackNavigate = jest.fn();
 const BUIContextV1 = createVersionedContext<{ 1: BUIContextValueV1 }>('bui');
@@ -193,7 +198,7 @@ describe('BUIProvider', () => {
       );
       let IsolatedLink!: typeof Link;
       let IsolatedButtonLink!: typeof ButtonLink;
-      let IsolatedTabs!: typeof TabComponents;
+      let IsolatedTabs!: TabComponents;
       let isolatedReactAria: unknown;
 
       jest.isolateModules(() => {
