@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-import { JSX, ReactNode, useEffect } from 'react';
+import { JSX, ReactNode, lazy, useEffect } from 'react';
 import { IconElement } from '../icons/types';
 import { RouteRef } from '../routing';
 import {
-  PageMountProvider,
   joinRoutePath,
   usePageMount,
   useAppRouteMatches,
   useAppHistoryLocation,
-  type PageMount,
 } from '@internal/frontend';
 import {
   coreExtensionData,
@@ -31,6 +29,7 @@ import {
   createExtensionInput,
 } from '../wiring';
 import { ExtensionBoundary, PageLayout, PageLayoutTab } from '../components';
+import { AppNodeProvider } from '../components/AppNodeProvider';
 import { BreadcrumbEntry } from '../breadcrumbs';
 import { useApi, useApiHolder } from '../apis/system';
 import type { AppNode } from '../apis';
@@ -59,7 +58,7 @@ interface PageSubPage {
   label: string;
   /** The sub-page's tab icon, if the author supplied one. */
   icon?: IconElement;
-  /** The fully rendered sub-page content, framework concerns already applied. */
+  /** The sub-page content, including its extension boundary. */
   element: ReactNode;
 }
 
@@ -88,9 +87,10 @@ function PageContent(props: {
   const pageMount = usePageMount();
   const history = useApiHolder().get(appHistoryApiRef);
   const location = useAppHistoryLocation(history);
-  const selected = matches
-    ? subPages?.find(page => matches.some(match => match.node === page.node))
-    : subPages?.[0];
+  const selectedMatch = matches?.find(match =>
+    subPages?.some(page => page.node === match.node),
+  );
+  const selected = subPages?.find(page => page.node === selectedMatch?.node);
   const firstPath = subPages?.[0]?.path;
   useEffect(() => {
     if (
@@ -109,17 +109,15 @@ function PageContent(props: {
       }
     }
   }, [matches, firstPath, pageMount, location, history]);
-  const content = selected?.element ?? children;
-  // Isolated extension tests have no selected branch; retain their supplied
-  // mount while rendering the first child. Production mounts come from nodes.
-  if (!matches && selected && pageMount) {
-    const mount: PageMount = {
-      basePath: joinRoutePath(pageMount.basePath, selected.path),
-      routePattern: joinRoutePath(pageMount.routePattern, selected.path),
-    };
-    return <PageMountProvider mount={mount}>{content}</PageMountProvider>;
-  }
-  return <>{content}</>;
+  return selected && selectedMatch ? (
+    <BreadcrumbEntry
+      entry={{ label: selected.label, href: selectedMatch.basePath }}
+    >
+      {selected.element}
+    </BreadcrumbEntry>
+  ) : (
+    <>{children}</>
+  );
 }
 
 function PluginPageShell(props: {
@@ -150,7 +148,7 @@ function PluginPageShell(props: {
   const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
 
   return (
-    <ExtensionBoundary node={node}>
+    <AppNodeProvider node={node}>
       <PageLayout
         title={title}
         icon={icon}
@@ -159,9 +157,11 @@ function PluginPageShell(props: {
         titleLink={titleLink}
         headerActions={headerActions}
       >
-        <PageContent subPages={subPages}>{children}</PageContent>
+        <ExtensionBoundary node={node}>
+          <PageContent subPages={subPages}>{children}</PageContent>
+        </ExtensionBoundary>
       </PageLayout>
-    </ExtensionBoundary>
+    </AppNodeProvider>
   );
 }
 
@@ -195,6 +195,9 @@ function PluginPageShell(props: {
  * the app's matched extension branch and redirects its index to the first
  * sub-page. Extension boundaries provide the actual route ancestry to links
  * and adapters; the page retains ownership of its shell and child rendering.
+ * The content has one extension boundary for plugin providers, analytics,
+ * loading, and errors. The page header stays visible while content loads or
+ * displays an error.
  *
  * @public
  */
@@ -277,9 +280,7 @@ export const PageBlueprint = createExtensionBlueprint({
 /**
  * Reads the `pages` input into the shape the page itself works in.
  *
- * One pass serves both consumers: the page chrome (tabs) and content
- * selection. Breadcrumb registration is applied here so that whatever renders
- * a sub-page only ever sees a finished element.
+ * One pass serves both consumers: the page chrome (tabs) and content selection.
  */
 function collectSubPages(
   pages: readonly {
@@ -295,11 +296,7 @@ function collectSubPages(
       path,
       label,
       icon: page.get(coreExtensionData.icon),
-      element: (
-        <BreadcrumbEntry entry={{ label, href: path }}>
-          {page.get(coreExtensionData.reactElement)}
-        </BreadcrumbEntry>
-      ),
+      element: page.get(coreExtensionData.reactElement),
     };
   });
 }
@@ -325,48 +322,30 @@ function createPageElement(options: {
     subPages,
   } = options;
 
-  if (loader) {
-    return (
-      <PluginPageShell
-        node={node}
-        title={resolvedTitle}
-        icon={resolvedIcon}
-        noHeader={noHeader}
-        titleRouteRef={titleRouteRef}
-        pluginId={pluginId}
-      >
-        {ExtensionBoundary.lazy(node, loader)}
-      </PluginPageShell>
-    );
-  }
-
-  if (subPages.length > 0) {
-    const tabs: PageLayoutTab[] = subPages.map(({ path, label, icon }) => ({
-      id: path,
-      label,
-      icon,
-      href: path,
-    }));
-    return (
-      <PluginPageShell
-        node={node}
-        title={resolvedTitle}
-        icon={resolvedIcon}
-        tabs={tabs}
-        subPages={subPages}
-        titleRouteRef={titleRouteRef}
-        pluginId={pluginId}
-      />
-    );
-  }
+  const Content = loader
+    ? lazy(() => loader().then(element => ({ default: () => element })))
+    : undefined;
+  const tabs = subPages.length
+    ? subPages.map(({ path, label, icon }) => ({
+        id: path,
+        label,
+        icon,
+        href: path,
+      }))
+    : undefined;
 
   return (
     <PluginPageShell
       node={node}
       title={resolvedTitle}
       icon={resolvedIcon}
+      noHeader={noHeader}
+      tabs={tabs}
+      subPages={subPages}
       titleRouteRef={titleRouteRef}
       pluginId={pluginId}
-    />
+    >
+      {Content && <Content />}
+    </PluginPageShell>
   );
 }

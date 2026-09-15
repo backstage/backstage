@@ -155,7 +155,6 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
   query<T extends ExtensionDefinitionParameters>(
     extension: ExtensionDefinition<T>,
   ): ExtensionQuery<NonNullable<T['output']>>;
-  // (undocumented)
   reactElement(): JSX.Element;
   snapshot(): ExtensionSnapshotNode;
 }

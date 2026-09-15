@@ -43,8 +43,8 @@ import { ReactRouterV7PageRouter } from './ReactRouterV7PageRouter';
  * "the other one" from here.
  *
  * Resolving from the v6 adapter package's own directory is that spelling.
- * Module resolution starts where the adapter's own `createScopedRouter` starts
- * it, so this is the very module instance the adapter binds its contexts from,
+ * Module resolution starts in `ReactRouterV6PageRouter`'s directory, so this
+ * is the very module instance the adapter binds its contexts from,
  * not a lookalike — the same file, and therefore the same entry in the module
  * registry. Deriving the directory from the package rather than writing a path
  * through `node_modules` keeps it true whichever copy hoisting puts where.
