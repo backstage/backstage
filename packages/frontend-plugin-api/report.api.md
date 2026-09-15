@@ -330,6 +330,13 @@ export const AppRootElementBlueprint: ExtensionBlueprint_2<{
 }>;
 
 // @public
+export type AppSearchParamsInit =
+  | string
+  | URLSearchParams
+  | [string, string][]
+  | Record<string, string | string[]>;
+
+// @public
 export type AppTheme = {
   id: string;
   title: string;
@@ -2190,6 +2197,14 @@ export namespace SessionState {
   export type SignedOut = typeof SessionState.SignedOut;
 }
 
+// @public
+export type SetAppSearchParams = (
+  next?:
+    | AppSearchParamsInit
+    | ((previous: URLSearchParams) => AppSearchParamsInit),
+  options?: AppNavigateOptions,
+) => void;
+
 export { StandardSchemaV1 };
 
 // @public
@@ -2519,10 +2534,18 @@ export function useApi<T>(apiRef: ApiRef<T>): T;
 export function useApiHolder(): ApiHolder;
 
 // @public
+export function useAppLocation(): AppLocation;
+
+// @public
 export function useAppNavigate(): AppHistoryApi['navigate'];
 
 // @public
 export function useAppNode(): AppNode | undefined;
+
+// @public
+export function useAppSearchParams(
+  defaultInit?: AppSearchParamsInit,
+): [URLSearchParams, SetAppSearchParams];
 
 // @public
 export function useBreadcrumbEntries(): {
