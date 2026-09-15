@@ -32,6 +32,10 @@ const migrationsDir = resolvePackagePath(
   'migrations',
 );
 
+function quoteHeadlineOption(value: string | undefined): string {
+  return `"${String(value).replace(/"/g, '""')}"`;
+}
+
 /** @public */
 export class DatabaseDocumentStore implements DatabaseStore {
   static async create(
@@ -218,18 +222,27 @@ export class DatabaseDocumentStore implements DatabaseStore {
     query.select(tx.raw('COUNT(*) OVER() AS total_count'));
 
     if (pgTerm && options.useHighlight) {
-      const headlineOptions = `MaxWords=${options.maxWords}, MinWords=${options.minWords}, ShortWord=${options.shortWord}, HighlightAll=${options.highlightAll}, MaxFragments=${options.maxFragments}, FragmentDelimiter=${options.fragmentDelimiter}, StartSel=${options.preTag}, StopSel=${options.postTag}`;
+      const headlineOptions = [
+        `MaxWords=${options.maxWords}`,
+        `MinWords=${options.minWords}`,
+        `ShortWord=${options.shortWord}`,
+        `HighlightAll=${options.highlightAll}`,
+        `MaxFragments=${options.maxFragments}`,
+        `FragmentDelimiter=${quoteHeadlineOption(options.fragmentDelimiter)}`,
+        `StartSel=${quoteHeadlineOption(options.preTag)}`,
+        `StopSel=${quoteHeadlineOption(options.postTag)}`,
+      ].join(', ');
       query
-        .select(tx.raw(`ts_rank_cd(body, query, ${normalization}) AS "rank"`))
+        .select(tx.raw('ts_rank_cd(body, query, ?) AS "rank"', [normalization]))
         .select(
-          tx.raw(
-            `ts_headline(\'english\', document, query, '${headlineOptions}') as "highlight"`,
-          ),
+          tx.raw(`ts_headline('english', document, query, ?) as "highlight"`, [
+            headlineOptions,
+          ]),
         )
         .orderBy('rank', 'desc');
     } else if (pgTerm && !options.useHighlight) {
       query
-        .select(tx.raw(`ts_rank_cd(body, query, ${normalization}) AS "rank"`))
+        .select(tx.raw('ts_rank_cd(body, query, ?) AS "rank"', [normalization]))
         .orderBy('rank', 'desc');
     } else {
       query.select(tx.raw('1 as rank'));

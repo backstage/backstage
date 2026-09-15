@@ -311,6 +311,41 @@ describe.each(supportedDatabases.eachSupportedId())(
       ]);
     });
 
+    it('supports punctuation in highlight options', async () => {
+      const { store } = await createStore();
+
+      await store.transaction(async tx => {
+        await store.prepareInsert(tx);
+        await store.insertDocuments(tx, 'test', [
+          {
+            title: 'Hello World',
+            text: 'Around the world',
+            location: 'LOCATION-1',
+          },
+        ]);
+        await store.completeInsert(tx, 'test');
+      });
+
+      const rows = await store.transaction(tx =>
+        store.query(tx, {
+          pgTerm: 'Hello',
+          offset: 0,
+          limit: 25,
+          normalization: 0,
+          options: {
+            ...highlightOptions,
+            useHighlight: true,
+            fragmentDelimiter: `that's "all", folks`,
+          },
+        }),
+      );
+
+      expect(rows).toHaveLength(1);
+      expect(rows[0].highlight).toEqual(
+        expect.objectContaining({ title: '<tag>Hello</tag> World' }),
+      );
+    });
+
     it('query by term for specific type', async () => {
       const { store } = await createStore();
 
