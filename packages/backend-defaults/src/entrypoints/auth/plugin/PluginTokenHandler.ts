@@ -238,6 +238,13 @@ export class DefaultPluginTokenHandler implements PluginTokenHandler {
       );
     }
 
+    // Concurrent callers may have populated the map while we checked support.
+    // Reuse their client so that key fetches and refreshes stay deduplicated.
+    const existingClient = this.jwksMap.get(pluginId);
+    if (existingClient) {
+      return existingClient;
+    }
+
     const newClient = new JwksClient(async () => {
       return new URL(
         `${await this.discovery.getBaseUrl(
