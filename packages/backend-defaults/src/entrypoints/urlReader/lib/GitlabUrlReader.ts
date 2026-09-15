@@ -32,7 +32,7 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import parseGitUrl from 'git-url-parse';
-import { trimEnd } from 'lodash';
+import lodash from 'lodash';
 import { Minimatch } from 'minimatch';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { ReaderFactory, ReadTreeResponseFactory } from './types';
@@ -263,7 +263,7 @@ export class GitlabUrlReader implements UrlReaderService {
 
     const staticPart = this.getStaticPart(filepath);
     const matcher = new Minimatch(filepath);
-    const treeUrl = trimEnd(url.replace(filepath, staticPart), `/`);
+    const treeUrl = lodash.trimEnd(url.replace(filepath, staticPart), `/`);
     const pathPrefix = staticPart ? `${staticPart}/` : '';
     const tree = await this.readTree(treeUrl, {
       etag: options?.etag,

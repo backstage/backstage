@@ -15,7 +15,7 @@
  */
 
 import parseGitUrl from 'git-url-parse';
-import { trimEnd } from 'lodash';
+import lodash from 'lodash';
 import { ScmIntegration, ScmIntegrationsGroup } from './types';
 
 /**
@@ -120,7 +120,7 @@ export function defaultScmResolveUrl(options: {
 
     updated = new URL(href);
 
-    const repoRootPath = trimEnd(
+    const repoRootPath = lodash.trimEnd(
       updated.pathname.substring(0, updated.pathname.length - filepath.length),
       '/',
     );

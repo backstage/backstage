@@ -22,7 +22,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { readHttpServerOptions } from '../rootHttpRouter/http/config';
 import { SrvResolvers } from './SrvResolvers';
-import { trimEnd } from 'lodash';
+import lodash from 'lodash';
 import { getEndpoints } from './parsing';
 
 type Resolver = (pluginId: string) => Promise<string>;
@@ -221,7 +221,10 @@ export class HostDiscovery implements DiscoveryService {
   }
 
   #updateFallbackResolvers(config: Config) {
-    const backendBaseUrl = trimEnd(config.getString('backend.baseUrl'), '/');
+    const backendBaseUrl = lodash.trimEnd(
+      config.getString('backend.baseUrl'),
+      '/',
+    );
 
     const {
       listen: { host: listenHost = '::', port: listenPort },
