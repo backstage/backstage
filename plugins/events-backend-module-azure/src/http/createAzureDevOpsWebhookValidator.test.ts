@@ -60,10 +60,48 @@ describe('createAzureDevOpsWebhookValidator', () => {
     } as RequestDetails;
   };
 
-  it('should return undefined if no secret is configured', () => {
-    expect(createAzureDevOpsWebhookValidator(configWithoutSecret)).toEqual(
-      undefined,
+  it('missing secret without dangerouslyAllowUnauthenticatedEvents rejects with HTTP 403 and logs warning', async () => {
+    const request = requestWithHeader(undefined);
+    const context = new TestContext();
+    const mockLogger = {
+      warn: jest.fn(),
+    };
+
+    const validator = createAzureDevOpsWebhookValidator(
+      configWithoutSecret,
+      mockLogger as any,
     );
+    await validator(request, context);
+
+    expect(context.details).not.toBeUndefined();
+    expect(context.details?.status).toBe(403);
+    expect(context.details?.payload).toEqual({
+      message: 'invalid webhook secret',
+    });
+    expect(mockLogger.warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "Webhook secrets are required by default unless 'events.modules.azureDevOps.dangerouslyAllowUnauthenticatedEvents' is explicitly set to true",
+      ),
+    );
+  });
+
+  it('missing secret with dangerouslyAllowUnauthenticatedEvents: true accepts events', async () => {
+    const request = requestWithHeader(undefined);
+    const context = new TestContext();
+    const configWithDanger = new ConfigReader({
+      events: {
+        modules: {
+          azureDevOps: {
+            dangerouslyAllowUnauthenticatedEvents: true,
+          },
+        },
+      },
+    });
+
+    const validator = createAzureDevOpsWebhookValidator(configWithDanger);
+    await validator(request, context);
+
+    expect(context.details).toBeUndefined();
   });
 
   it('secret configured, accept request with matching header', async () => {
