@@ -16,7 +16,7 @@
 
 import { Knex } from 'knex';
 
-const DROP_CONCURRENCY = 5;
+export const DROP_DATABASE_CONCURRENCY = 5;
 
 export async function dropDatabases(
   adminConnection: Knex,
@@ -24,12 +24,14 @@ export async function dropDatabases(
 ): Promise<void> {
   await Promise.all(
     Array.from(
-      { length: Math.min(DROP_CONCURRENCY, databaseNames.length) },
+      {
+        length: Math.min(DROP_DATABASE_CONCURRENCY, databaseNames.length),
+      },
       async (_, workerIndex) => {
         for (
           let index = workerIndex;
           index < databaseNames.length;
-          index += DROP_CONCURRENCY
+          index += DROP_DATABASE_CONCURRENCY
         ) {
           try {
             await adminConnection.raw('DROP DATABASE ??', [

@@ -32,6 +32,7 @@ describe.each([
   {
     name: 'PostgresEngine',
     adminDatabase: 'postgres',
+    adminPoolSizes: { create: undefined, shutdown: undefined },
     create: () =>
       new PostgresEngine(allDatabases.POSTGRES_18, {
         database: undefined,
@@ -40,12 +41,13 @@ describe.each([
   {
     name: 'MysqlEngine',
     adminDatabase: null,
+    adminPoolSizes: { create: 1, shutdown: 5 },
     create: () =>
       new MysqlEngine(allDatabases.MYSQL_8, {
         database: undefined,
       }),
   },
-])('$name shutdown', ({ adminDatabase, create }) => {
+])('$name shutdown', ({ adminDatabase, adminPoolSizes, create }) => {
   beforeEach(() => {
     mockKnexFactory.mockReset();
   });
@@ -98,10 +100,18 @@ describe.each([
       await engine.createDatabaseInstance();
     }
 
+    const createAdminConfig = mockKnexFactory.mock.calls[0][0] as Knex.Config;
+    expect(createAdminConfig.pool?.max).toBe(adminPoolSizes.create);
+
     const shutdown = engine.shutdown();
     await flushPromises();
 
     try {
+      const shutdownAdminConfig = mockKnexFactory.mock.calls.at(-1)?.[0] as
+        | Knex.Config
+        | undefined;
+      expect(shutdownAdminConfig?.pool?.max).toBe(adminPoolSizes.shutdown);
+
       expect(dropCount).toBe(5);
       expect(maxActiveDropCount).toBe(5);
 
