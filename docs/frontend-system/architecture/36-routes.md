@@ -89,6 +89,7 @@ Route references can be used to link to page in the same plugin, or to pages in 
 Suppose we are creating a plugin that renders a Catalog index page with a link to a "Foo" component details page. Here is the code for the index page:
 
 ```tsx title="plugins/catalog/src/components/IndexPage.tsx"
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { useRouteRef } from '@backstage/frontend-plugin-api';
 import { detailsRouteRef } from '../routes';
 
@@ -96,6 +97,7 @@ export const IndexPage = () => {
   // highlight-next-line
   const getDetailsPath = useRouteRef(detailsRouteRef);
   return (
+    <ReactRouterV6PageRouter>
     <div>
       <h1>Index Page</h1>
       {/* highlight-next-line */}
@@ -113,6 +115,7 @@ export const IndexPage = () => {
         </a>
       )}
     </div>
+    </ReactRouterV6PageRouter>
   );
 };
 ```
@@ -426,14 +429,13 @@ export const DetailsPage = () => {
 
 Finally, see how a plugin can provide subroutes. Because `IndexPage` builds a
 React Router `<Routes>` tree, the page declares a React Router adapter by
-rendering one inside its own `loader`:
+rendering one inside its lazily loaded component:
 
 ```tsx title="plugins/catalog/src/plugin.tsx"
 import {
   createFrontendPlugin,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
-import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
 import { indexRouteRef, detailsSubRouteRef } from './routes';
 
 const catalogIndexPage = PageBlueprint.make({
@@ -441,12 +443,7 @@ const catalogIndexPage = PageBlueprint.make({
     path: '/entities',
     routeRef: indexRouteRef,
     // highlight-start
-    loader: () =>
-      import('./components').then(m => (
-        <ReactRouterV6PageRouter>
-          <m.IndexPage />
-        </ReactRouterV6PageRouter>
-      )),
+    loader: () => import('./components').then(m => <m.IndexPage />),
     // highlight-end
   },
 });
@@ -461,6 +458,8 @@ export default createFrontendPlugin({
   extensions: [catalogIndexPage],
 });
 ```
+
+The adapter is imported by `IndexPage`, so it loads with the page component. The blueprint only loads that component.
 
 ## Route Aliases - Overriding Routed Extensions in Modules
 
@@ -583,20 +582,29 @@ once per extension per app instance. Render an explicit page adapter to migrate
 that content; pages using only framework routing do not need an adapter.
 
 A page that wants its library's own APIs declares an adapter by rendering one
-inside its `PageBlueprint` loader — plain React, no extension wiring:
+inside its lazily loaded page component — plain React, no extension wiring:
 
 ```tsx
 PageBlueprint.make({
   params: {
     path: '/catalog',
-    loader: () =>
-      import('./Page').then(m => (
-        <ReactRouterV6PageRouter>
-          <m.Page />
-        </ReactRouterV6PageRouter>
-      )),
+    loader: () => import('./Page').then(m => <m.Page />),
   },
 });
+```
+
+The adapter belongs in the lazily loaded component module. Wrap the page's existing JSX directly; only hooks that consume this router need to be in a child beneath it.
+
+```tsx title="./Page.tsx"
+import { ReactRouterV6PageRouter } from '@backstage/plugin-app-react-router-v6';
+
+export function Page() {
+  return (
+    <ReactRouterV6PageRouter>
+      {/* Existing page JSX and local routes go here. */}
+    </ReactRouterV6PageRouter>
+  );
+}
 ```
 
 Adapters are added rather than selected, so they nest. Two routing libraries
@@ -628,7 +636,7 @@ Sub-pages are ordinary routes one level below their page, and are no more
 special than the page is. The framework matches them through the same route tree, and the parent
 page chooses which child to render. An adapter does not need to know that
 sub-pages exist. A
-sub-page declares its adapter in its own loader, which scopes it to the
+sub-page declares its adapter in its lazily loaded component, which scopes it to the
 sub-page, because the sub-page's mount is what is in context there. Sibling tabs
 may use different libraries, or none.
 
