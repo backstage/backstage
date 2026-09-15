@@ -262,11 +262,6 @@ catalog:
     stitchTimeout: { minutes: 1 }
 ```
 
-The deprecated `catalog.stitchingStrategy.mode` setting has been removed. Remove
-this key from your configuration, whether it is set to `immediate` or `deferred`.
-Stitching always runs asynchronously. Keep any `pollingInterval` and
-`stitchTimeout` settings you use.
-
 ## Subscribing to Catalog Errors
 
 Catalog errors are published to the [events plugin](https://github.com/backstage/backstage/tree/master/plugins/events-node): `@backstage/plugin-events-node`. You can subscribe to events and respond to errors, for example you may wish to log them.
