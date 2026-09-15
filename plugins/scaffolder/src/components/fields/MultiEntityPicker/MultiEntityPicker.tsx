@@ -22,20 +22,12 @@ import {
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { useApi } from '@backstage/core-plugin-api';
-import {
-  catalogApiRef,
-  entityPresentationApiRef,
-  EntityDisplayName,
-  EntityRefPresentationSnapshot,
-} from '@backstage/plugin-catalog-react';
+import { EntityDisplayName } from '@backstage/plugin-catalog-react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, {
   AutocompleteChangeReason,
-  createFilterOptions,
 } from '@material-ui/lab/Autocomplete';
 import { type Key, useCallback, useEffect, useMemo, useState } from 'react';
-import useAsync from 'react-use/esm/useAsync';
 import { FieldValidation } from '@rjsf/utils';
 import {
   MultiEntityPickerFilterQueryValue,
@@ -52,6 +44,8 @@ import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { scaffolderTranslationRef } from '../../../translation';
 import { Autocomplete as BuiAutocomplete } from '../Autocomplete';
 import { chipStyle, chipRemoveStyle } from '../buiChipStyles';
+import { useEntityPickerOptions } from '../useEntityPickerOptions';
+import { useEntityPickerPagination } from '../useEntityPickerPagination';
 
 export { MultiEntityPickerSchema } from './schema';
 
@@ -82,7 +76,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
     errors,
   } = props;
 
-  const catalogFilter = buildCatalogFilter(uiSchema);
+  const catalogFilter = useMemo(() => buildCatalogFilter(uiSchema), [uiSchema]);
   const defaultKind = uiSchema['ui:options']?.defaultKind;
   const defaultNamespace =
     uiSchema['ui:options']?.defaultNamespace || undefined;
@@ -93,97 +87,129 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
 
   const [noOfItemsSelected, setNoOfItemsSelected] = useState(0);
 
-  const catalogApi = useApi(catalogApiRef);
-  const entityPresentationApi = useApi(entityPresentationApiRef);
-  const { value: entities, loading } = useAsync(async () => {
-    const streamRequest = catalogFilter
-      ? { query: {}, filter: catalogFilter }
-      : {};
-    const items: Entity[] = [];
-    for await (const batch of catalogApi.streamEntities(streamRequest)) {
-      items.push(...batch);
-    }
-    const entityRefToPresentation = new Map<
-      string,
-      EntityRefPresentationSnapshot
-    >(
-      await Promise.all(
-        items.map(async item => {
-          const presentation = await entityPresentationApi.forEntity(item)
-            .promise;
-          return [stringifyEntityRef(item), presentation] as [
-            string,
-            EntityRefPresentationSnapshot,
-          ];
+  const selectedValues = useMemo(() => formData || [], [formData]);
+  const selectedValueToEntityRef = useMemo(
+    () =>
+      new Map(
+        selectedValues.flatMap(value => {
+          try {
+            return [
+              [
+                value,
+                stringifyEntityRef(
+                  parseEntityRef(value, { defaultKind, defaultNamespace }),
+                ),
+              ] as const,
+            ];
+          } catch {
+            return [];
+          }
         }),
       ),
-    );
-    return { entities: items, entityRefToPresentation };
+    [selectedValues, defaultKind, defaultNamespace],
+  );
+  const selectedEntityRefs = useMemo(
+    () => Array.from(new Set(selectedValueToEntityRef.values())),
+    [selectedValueToEntityRef],
+  );
+  const {
+    entities,
+    selectedEntities,
+    entityRefToPresentation,
+    loading,
+    loadingState,
+    setSearchText,
+    loadMore,
+    initialResultIsOnlyOption,
+  } = useEntityPickerOptions({
+    catalogFilter,
+    selectedEntityRefs,
   });
 
   const onSelect = useCallback(
     (_: any, refs: (string | Entity)[], reason: AutocompleteChangeReason) => {
-      const values = refs
-        .map(ref => {
-          // If the ref is not a string, then it was a selected option in the picker
-          if (typeof ref !== 'string') {
-            // if ref does not exist: pass 'undefined' to trigger validation for required value
-            return ref ? stringifyEntityRef(ref as Entity) : undefined;
-          }
+      const values = Array.from(
+        new Set(
+          refs
+            .map(ref => {
+              // If the ref is not a string, then it was a selected option in the picker
+              if (typeof ref !== 'string') {
+                // if ref does not exist: pass 'undefined' to trigger validation for required value
+                return ref ? stringifyEntityRef(ref as Entity) : undefined;
+              }
 
-          // Add in default namespace, etc.
-          let entityRef = ref;
-          try {
-            // Attempt to parse the entity ref into it's full form.
-            entityRef = stringifyEntityRef(
-              parseEntityRef(ref as string, {
-                defaultKind,
-                defaultNamespace,
-              }),
-            );
-          } catch (err) {
-            // If the passed in value isn't an entity ref, do nothing.
-          }
+              // Add in default namespace, etc.
+              let entityRef = ref;
+              try {
+                // Attempt to parse the entity ref into it's full form.
+                entityRef = stringifyEntityRef(
+                  parseEntityRef(ref as string, {
+                    defaultKind,
+                    defaultNamespace,
+                  }),
+                );
+              } catch (err) {
+                // If the passed in value isn't an entity ref, do nothing.
+              }
 
-          // We need to check against formData here as that's the previous value for this field.
-          if (
-            // If value already matches what exists in form data, allow it
-            formData?.includes(ref) ||
-            // If arbitrary values are allowed and the reason is a free solo event, allow it
-            (allowArbitraryValues && FREE_SOLO_EVENTS.includes(reason))
-          ) {
-            return entityRef;
-          }
+              // We need to check against formData here as that's the previous value for this field.
+              if (
+                // If value already matches what exists in form data, allow it
+                formData?.includes(ref) ||
+                // If arbitrary values are allowed and the reason is a free solo event, allow it
+                (allowArbitraryValues && FREE_SOLO_EVENTS.includes(reason))
+              ) {
+                return entityRef;
+              }
 
-          return undefined;
-        })
-        .filter(ref => ref !== undefined) as string[];
+              return undefined;
+            })
+            .filter(ref => ref !== undefined) as string[],
+        ),
+      );
 
       setNoOfItemsSelected(values.length);
+      setSearchText('');
       onChange(values);
     },
-    [onChange, formData, defaultKind, defaultNamespace, allowArbitraryValues],
+    [
+      onChange,
+      formData,
+      defaultKind,
+      defaultNamespace,
+      allowArbitraryValues,
+      setSearchText,
+    ],
   );
 
   // BUI: options and selection state
   const allOptions = useMemo(
     () =>
-      (entities?.entities || []).map(entity => {
+      entities.map(entity => {
         const entityRef = stringifyEntityRef(entity);
-        const presentation = entities?.entityRefToPresentation.get(entityRef);
+        const presentation = entityRefToPresentation.get(entityRef);
         return {
           value: entityRef,
           label: presentation?.primaryTitle || entityRef,
         };
       }),
-    [entities],
+    [entities, entityRefToPresentation],
   );
 
-  const selectedValues = useMemo(() => formData || [], [formData]);
   const availableOptions = useMemo(
-    () => allOptions.filter(o => !selectedValues.includes(o.value)),
-    [allOptions, selectedValues],
+    () => allOptions.filter(o => !selectedEntityRefs.includes(o.value)),
+    [allOptions, selectedEntityRefs],
   );
+
+  const muiOptions = useMemo(() => {
+    const entityRefs = new Set(entities.map(stringifyEntityRef));
+    return [
+      ...selectedEntities.filter(
+        entity => !entityRefs.has(stringifyEntityRef(entity)),
+      ),
+      ...entities,
+    ];
+  }, [entities, selectedEntities]);
 
   const [inputValue, setInputValue] = useState('');
 
@@ -196,7 +222,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
 
       if (key !== null) {
         const newValue = String(key);
-        if (!selectedValues.includes(newValue)) {
+        if (!selectedEntityRefs.includes(newValue)) {
           onChange([...selectedValues, newValue]);
         }
       } else if (allowArbitraryValues && inputValue) {
@@ -208,20 +234,26 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
         } catch {
           // If the input isn't a valid entity ref, use it as-is
         }
-        if (!selectedValues.includes(entityRef)) {
+        if (
+          !selectedValues.includes(entityRef) &&
+          !selectedEntityRefs.includes(entityRef)
+        ) {
           onChange([...selectedValues, entityRef]);
         }
       }
       setInputValue('');
+      setSearchText('');
     },
     [
       atMaxItems,
+      selectedEntityRefs,
       selectedValues,
       onChange,
       allowArbitraryValues,
       inputValue,
       defaultKind,
       defaultNamespace,
+      setSearchText,
     ],
   );
 
@@ -233,14 +265,27 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
   );
 
   useEffect(() => {
-    if (required && !allowArbitraryValues && entities?.entities?.length === 1) {
-      onChange([stringifyEntityRef(entities.entities[0])]);
+    if (required && !allowArbitraryValues && initialResultIsOnlyOption) {
+      onChange([stringifyEntityRef(entities[0])]);
     }
-  }, [entities, onChange, required, allowArbitraryValues]);
+  }, [
+    allowArbitraryValues,
+    entities,
+    initialResultIsOnlyOption,
+    onChange,
+    required,
+  ]);
+
+  const pagination = useEntityPickerPagination({
+    entities,
+    selectedEntityRefs,
+    loading,
+    loadMore,
+  });
 
   if (theme === 'bui') {
     const isAutoSelected =
-      required && !allowArbitraryValues && entities?.entities?.length === 1;
+      required && !allowArbitraryValues && initialResultIsOnlyOption;
 
     return (
       <ScaffolderField
@@ -261,16 +306,20 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
               }}
             >
               {selectedValues.map(value => {
-                const opt = allOptions.find(o => o.value === value);
+                const entityRef = selectedValueToEntityRef.get(value) ?? value;
+                const label =
+                  allOptions.find(o => o.value === entityRef)?.label ||
+                  entityRefToPresentation.get(entityRef)?.primaryTitle ||
+                  value;
                 return (
                   <span key={value} style={chipStyle}>
-                    {opt?.label || value}
+                    {label}
                     {!isDisabled && !isAutoSelected && (
                       <button
                         type="button"
                         onClick={() => handleRemove(value)}
                         style={chipRemoveStyle}
-                        aria-label={`Remove ${opt?.label || value}`}
+                        aria-label={`Remove ${label}`}
                       >
                         &times;
                       </button>
@@ -286,11 +335,17 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
             isRequired={required}
             isDisabled={isDisabled || isAutoSelected || atMaxItems}
             selectedKey={null}
-            inputValue={inputValue}
-            onInputChange={setInputValue}
             onSelectionChange={handleSelectionChange}
-            isLoading={loading}
             options={availableOptions}
+            search={{
+              mode: 'server',
+              inputValue,
+              onInputChange: value => {
+                setInputValue(value);
+                setSearchText(value);
+              },
+            }}
+            loading={{ state: loadingState, onLoadMore: loadMore }}
             allowsCustomValue={allowArbitraryValues}
             isInvalid={rawErrors && rawErrors.length > 0}
           />
@@ -312,23 +367,42 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
         filterSelectedOptions
         disabled={
           isDisabled ||
-          (required &&
-            !allowArbitraryValues &&
-            entities?.entities?.length === 1)
+          (required && !allowArbitraryValues && initialResultIsOnlyOption)
         }
         id={idSchema?.$id}
         defaultValue={formData}
         loading={loading}
         onChange={onSelect}
-        options={entities?.entities || []}
+        options={muiOptions}
+        onInputChange={(_event, value, reason) => {
+          if (reason === 'input' || reason === 'clear') {
+            setSearchText(value);
+          }
+        }}
         renderOption={option => <EntityDisplayName entityRef={option} />}
         getOptionLabel={option =>
           // option can be a string due to freeSolo.
           typeof option === 'string'
             ? option
-            : entities?.entityRefToPresentation.get(stringifyEntityRef(option))
+            : entityRefToPresentation.get(stringifyEntityRef(option))
                 ?.entityRef!
         }
+        getOptionSelected={(option, value) => {
+          const normalizeRef = (item: string | Entity) => {
+            if (typeof item !== 'string') {
+              return stringifyEntityRef(item);
+            }
+            try {
+              return stringifyEntityRef(
+                parseEntityRef(item, { defaultKind, defaultNamespace }),
+              );
+            } catch {
+              return undefined;
+            }
+          };
+          const optionRef = normalizeRef(option);
+          return optionRef !== undefined && optionRef === normalizeRef(value);
+        }}
         getOptionDisabled={_options =>
           maxItems ? noOfItemsSelected >= maxItems : false
         }
@@ -352,12 +426,9 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
             }}
           />
         )}
-        filterOptions={createFilterOptions<Entity>({
-          stringify: option =>
-            entities?.entityRefToPresentation.get(stringifyEntityRef(option))
-              ?.primaryTitle!,
-        })}
+        filterOptions={options => options}
         ListboxComponent={VirtualizedListbox}
+        {...pagination}
       />
     </ScaffolderField>
   );

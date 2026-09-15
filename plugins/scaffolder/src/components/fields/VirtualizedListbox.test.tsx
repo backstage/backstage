@@ -15,6 +15,7 @@
  */
 import { VirtualizedListbox } from './VirtualizedListbox';
 import { renderInTestApp } from '@backstage/test-utils';
+import { fireEvent, screen } from '@testing-library/react';
 
 describe('<VirtualizedListbox />', () => {
   it('Should forward additional props to the outer div', async () => {
@@ -272,5 +273,28 @@ describe('<VirtualizedListbox />', () => {
         </div>
       </div>
     `);
+  });
+
+  it('keeps virtualizing while forwarding scroll events', async () => {
+    const onScroll = jest.fn();
+    const { baseElement } = await renderInTestApp(
+      <VirtualizedListbox onScroll={onScroll}>
+        {[...new Array(100)].map((_, i) => (
+          <span key={i}>Item {i}</span>
+        ))}
+      </VirtualizedListbox>,
+    );
+    const scrollContainer = baseElement.querySelector(
+      '[style*="overflow: auto"]',
+    )!;
+    Object.defineProperties(scrollContainer, {
+      clientHeight: { configurable: true, value: 378 },
+      scrollHeight: { configurable: true, value: 3600 },
+    });
+
+    fireEvent.scroll(scrollContainer, { target: { scrollTop: 3200 } });
+
+    expect(onScroll).toHaveBeenCalledTimes(1);
+    expect(await screen.findByText('Item 99')).toBeInTheDocument();
   });
 });
