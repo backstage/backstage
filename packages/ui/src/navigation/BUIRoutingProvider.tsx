@@ -26,6 +26,7 @@ import {
 } from 'react-router-dom';
 import { useResolvedHref } from '../hooks/useResolvedHref';
 import type { BUIRoutingIntegration } from './types';
+import { useBUIRouter, type BUIRouter } from '../provider/BUIRouter';
 
 // BUIProvider mounts this provider centrally so older BUI components from the
 // same React Aria module instance keep delegated client-side navigation.
@@ -58,14 +59,62 @@ export const buiRoutingIntegration: BUIRoutingIntegration = {
 
 /** @internal */
 export function BUIRoutingProvider({ children }: { children: ReactNode }) {
-  if (!useInRouterContext()) {
+  const useRouter = useBUIRouter();
+  const inRouter = useInRouterContext();
+  if (useRouter) {
+    return (
+      <HostRoutingProvider useRouter={useRouter}>
+        {children}
+      </HostRoutingProvider>
+    );
+  }
+  if (!inRouter) {
     return children;
   }
   return <ReactAriaRoutingProvider>{children}</ReactAriaRoutingProvider>;
 }
 
+function useHostHref(href: string): string {
+  const useRouter = useBUIRouter()!;
+  return useRouter().resolveHref(href);
+}
+
+function HostRoutingProvider({
+  children,
+  useRouter,
+}: {
+  children: ReactNode;
+  useRouter: () => BUIRouter;
+}) {
+  const router = useRouter();
+  return (
+    <DelegatingRouterProvider navigate={router.navigate} useHref={useHostHref}>
+      {children}
+    </DelegatingRouterProvider>
+  );
+}
+
 function ReactAriaRoutingProvider({ children }: { children: ReactNode }) {
   const providerNavigate = useNavigate();
+  return (
+    <DelegatingRouterProvider
+      navigate={providerNavigate}
+      useHref={useResolvedHref}
+    >
+      {children}
+    </DelegatingRouterProvider>
+  );
+}
+
+function DelegatingRouterProvider({
+  children,
+  navigate: providerNavigate,
+  useHref: resolveHref,
+}: {
+  children: ReactNode;
+  navigate: (href: string, options?: { replace?: boolean }) => void;
+  useHref: (href: string) => string;
+}) {
   const navigate = useCallback(
     (href: string, options: object | undefined) => {
       const delegatedNavigation = options
@@ -81,7 +130,7 @@ function ReactAriaRoutingProvider({ children }: { children: ReactNode }) {
   );
 
   return (
-    <RouterProvider navigate={navigate} useHref={useResolvedHref}>
+    <RouterProvider navigate={navigate} useHref={resolveHref}>
       {children}
     </RouterProvider>
   );
