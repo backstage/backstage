@@ -42,10 +42,7 @@ import {
   TabPanel as AriaTabPanel,
   TabProps as AriaTabProps,
 } from 'react-aria-components';
-import {
-  useDefinition,
-  type UseDefinitionResult,
-} from '../../hooks/useDefinition';
+import { useDefinition } from '../../hooks/useDefinition';
 import {
   TabsDefinition,
   TabListDefinition,
@@ -53,16 +50,12 @@ import {
   TabPanelDefinition,
 } from './definition';
 import { getNodeText } from '../../analytics/getNodeText';
+import { getBUIRouterPathname } from '../../provider/BUIRouter';
 import {
-  getBUIRouterPathname,
-  useBUIRouter,
-  type BUIRouter,
-} from '../../provider/BUIRouter';
-import { useRoutingIntegration } from '../../navigation/useRouting';
-import {
-  getReactAriaAnchorProps,
-  type AnchorNavigation,
-} from '../../navigation/useNavigation';
+  BUIRoutingProvider,
+  useBUIRouting,
+} from '../../navigation/BUIRoutingProvider';
+import { isBrowserOwnedHref } from '../../utils/linkUtils';
 
 const TabsContext = createContext<TabsContextValue | undefined>(undefined);
 
@@ -86,22 +79,14 @@ const TabSelectionContext = createContext<TabSelectionContextValue | null>(
 );
 
 /**
- * Strips query params and hash from a href, leaving only the pathname.
- * Tab matching always compares against location.pathname which never includes them.
- */
-const hrefPathname = (href: string) => href.split('?')[0].split('#')[0];
-
-/**
  * Utility function to determine if a tab should be active based on the matching strategy.
  * This follows the pattern used in WorkaroundNavLink from the sidebar.
  */
 const isTabActive = (
-  tabHref: string,
+  pathname: string,
   currentPathname: string,
   matchStrategy: 'exact' | 'prefix',
 ): boolean => {
-  const pathname = hrefPathname(tabHref);
-
   if (matchStrategy === 'exact') {
     return pathname === currentPathname;
   }
@@ -266,21 +251,23 @@ export const TabList = (props: TabListProps) => {
   });
 
   return (
-    <div className={classes.root}>
-      <AriaTabList
-        className={classes.tabList}
-        aria-label="Toolbar tabs"
-        {...restProps}
-      >
-        {enhancedChildren}
-      </AriaTabList>
-      <TabsIndicators
-        tabRefs={tabRefs}
-        tabsRef={tabsRef}
-        hoveredKey={hoveredKey}
-        prevHoveredKey={prevHoveredKey}
-      />
-    </div>
+    <BUIRoutingProvider>
+      <div className={classes.root}>
+        <AriaTabList
+          className={classes.tabList}
+          aria-label="Toolbar tabs"
+          {...restProps}
+        >
+          {enhancedChildren}
+        </AriaTabList>
+        <TabsIndicators
+          tabRefs={tabRefs}
+          tabsRef={tabsRef}
+          hoveredKey={hoveredKey}
+          prevHoveredKey={prevHoveredKey}
+        />
+      </div>
+    </BUIRoutingProvider>
   );
 };
 
@@ -290,39 +277,6 @@ export const TabList = (props: TabListProps) => {
  * Separated to avoid conditional hook usage in Tab component.
  * @internal
  */
-type RoutedTabEffectsProps = {
-  id: string;
-  href: string;
-  matchStrategy?: 'exact' | 'prefix';
-};
-
-function RoutedTabEffects(props: RoutedTabEffectsProps) {
-  const routing = useRoutingIntegration({ fallback: true });
-  const location = routing.useLocation();
-  const resolvedPath = routing.useResolvedPath(props.href);
-  return (
-    <TabSelectionEffects
-      {...props}
-      pathname={location.pathname}
-      targetPathname={resolvedPath.pathname}
-    />
-  );
-}
-
-function HostRoutedTabEffects({
-  useRouter,
-  ...props
-}: RoutedTabEffectsProps & { useRouter: () => BUIRouter }) {
-  const router = useRouter();
-  return (
-    <TabSelectionEffects
-      {...props}
-      pathname={router.pathname}
-      targetPathname={getBUIRouterPathname(router.resolveHref(props.href))}
-    />
-  );
-}
-
 function TabSelectionEffects({
   id,
   pathname,
@@ -357,21 +311,20 @@ function TabSelectionEffects({
   return null;
 }
 
-type TabViewProps = {
-  definitionResult: UseDefinitionResult<typeof TabDefinition, TabProps>;
-  navigation: AnchorNavigation;
-};
-
-const TabView = ({ definitionResult, navigation }: TabViewProps) => {
-  const { ownProps, restProps, analytics } = definitionResult;
+/**
+ * A component that renders a tab.
+ *
+ * @public
+ */
+export const Tab = (props: TabProps) => {
+  const { ownProps, restProps, analytics } = useDefinition(
+    TabDefinition,
+    props,
+  );
   const { classes, matchStrategy, id } = ownProps;
   const { href } = ownProps;
-  const useRouter = useBUIRouter();
+  const router = useBUIRouting();
   const { setTabRef } = useTabsContext();
-  const navigationProps = getReactAriaAnchorProps(navigation, {
-    href,
-    routerOptions: restProps.routerOptions,
-  });
 
   const handlePress = () => {
     if (href) {
@@ -387,55 +340,26 @@ const TabView = ({ definitionResult, navigation }: TabViewProps) => {
 
   return (
     <>
-      {navigation.canMatchRoute &&
-        href &&
-        (useRouter ? (
-          <HostRoutedTabEffects
-            id={id as string}
-            href={href}
-            matchStrategy={matchStrategy}
-            useRouter={useRouter}
-          />
-        ) : (
-          <RoutedTabEffects
-            id={id as string}
-            href={href}
-            matchStrategy={matchStrategy}
-          />
-        ))}
+      {router && href && !isBrowserOwnedHref(href) && (
+        <TabSelectionEffects
+          id={id as string}
+          pathname={router.pathname}
+          targetPathname={getBUIRouterPathname(router.resolveHref(href))}
+          matchStrategy={matchStrategy}
+        />
+      )}
       <AriaTab
         id={id}
         className={classes.root}
         ref={el => setTabRef(id as string, el as HTMLDivElement)}
-        {...restProps}
-        {...navigationProps}
+        {...(restProps as AriaTabProps)}
+        href={href}
         onPress={e => {
           restProps.onPress?.(e);
           handlePress();
         }}
       />
     </>
-  );
-};
-
-/**
- * A component that renders a tab.
- *
- * @public
- */
-export const Tab = (props: TabProps) => {
-  const definitionResult = useDefinition(TabDefinition, props);
-  const Navigation = definitionResult.navigation;
-
-  return (
-    <Navigation
-      props={{
-        ...definitionResult.restProps,
-        href: definitionResult.ownProps.href,
-      }}
-      view={TabView}
-      viewProps={{ definitionResult }}
-    />
   );
 };
 

@@ -14,69 +14,39 @@
  * limitations under the License.
  */
 
-import { useCallback, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, type ReactNode } from 'react';
 import { RouterProvider } from 'react-aria-components';
 import {
-  Link,
-  useHref,
-  useInRouterContext,
-  useLocation,
-  useNavigate,
-  useResolvedPath,
-} from 'react-router-dom';
-import { useResolvedHref } from '../hooks/useResolvedHref';
-import type { BUIRoutingIntegration } from './types';
-import { useBUIRouter, type BUIRouter } from '../provider/BUIRouter';
+  useBUIRouter,
+  type BUIRouter,
+  type BUIRouterOptions,
+} from '../provider/BUIRouter';
+import { isBrowserOwnedHref } from '../utils/linkUtils';
 
-// BUIProvider mounts this provider centrally so older BUI components from the
-// same React Aria module instance keep delegated client-side navigation.
-// Collection roots also mount it locally so their synthetic link items and the
-// provider always use the same React Aria module instance. Preserving each
-// item's href and original activation event lets React Aria choose between
-// client navigation and temporary-anchor activation for native link behavior.
-//
-// The exact options object identifies a component-scoped action. Unregistered
-// objects, including those from older BUI components or direct React Aria
-// usage, use the provider's router context instead. A separate React Aria
-// module instance cannot reach this provider and is handled by the rendered
-// host Link in useNavigation.
-const delegatedNavigations = new WeakMap<object, () => void>();
+const BUIRoutingContext = createContext<BUIRouter | undefined>(undefined);
 
-/** @internal */
-export const buiRoutingIntegration: BUIRoutingIntegration = {
-  Link,
-  useHref,
-  useInRouterContext,
-  useLocation,
-  useNavigate,
-  useResolvedPath,
-  createRouterOptions(action, options) {
-    const routerOptions = { ...options };
-    delegatedNavigations.set(routerOptions, action);
-    return routerOptions;
-  },
-};
-
-/** @internal */
-export function BUIRoutingProvider({ children }: { children: ReactNode }) {
-  const useRouter = useBUIRouter();
-  const inRouter = useInRouterContext();
-  if (useRouter) {
-    return (
-      <HostRoutingProvider useRouter={useRouter}>
-        {children}
-      </HostRoutingProvider>
-    );
-  }
-  if (!inRouter) {
-    return children;
-  }
-  return <ReactAriaRoutingProvider>{children}</ReactAriaRoutingProvider>;
+/**
+ * Returns the router captured by the control's React Aria routing provider.
+ *
+ * @internal
+ */
+export function useBUIRouting() {
+  return useContext(BUIRoutingContext);
 }
 
-function useHostHref(href: string): string {
-  const useRouter = useBUIRouter()!;
-  return useRouter().resolveHref(href);
+/**
+ * Binds the control's React Aria module copy to the host at this route scope.
+ * Mount above the control's React Aria hooks, including collection roots.
+ *
+ * @internal
+ */
+export function BUIRoutingProvider({ children }: { children: ReactNode }) {
+  const useRouter = useBUIRouter();
+  return useRouter ? (
+    <HostRoutingProvider useRouter={useRouter}>{children}</HostRoutingProvider>
+  ) : (
+    children
+  );
 }
 
 function HostRoutingProvider({
@@ -87,51 +57,24 @@ function HostRoutingProvider({
   useRouter: () => BUIRouter;
 }) {
   const router = useRouter();
-  return (
-    <DelegatingRouterProvider navigate={router.navigate} useHref={useHostHref}>
-      {children}
-    </DelegatingRouterProvider>
-  );
-}
-
-function ReactAriaRoutingProvider({ children }: { children: ReactNode }) {
-  const providerNavigate = useNavigate();
-  return (
-    <DelegatingRouterProvider
-      navigate={providerNavigate}
-      useHref={useResolvedHref}
-    >
-      {children}
-    </DelegatingRouterProvider>
-  );
-}
-
-function DelegatingRouterProvider({
-  children,
-  navigate: providerNavigate,
-  useHref: resolveHref,
-}: {
-  children: ReactNode;
-  navigate: (href: string, options?: { replace?: boolean }) => void;
-  useHref: (href: string) => string;
-}) {
   const navigate = useCallback(
-    (href: string, options: object | undefined) => {
-      const delegatedNavigation = options
-        ? delegatedNavigations.get(options)
-        : undefined;
-      if (delegatedNavigation) {
-        delegatedNavigation();
-        return;
+    (href: string, options?: BUIRouterOptions) => {
+      // React Aria delegates same-origin absolute URLs too. Keep authored
+      // absolute URLs browser-owned instead of passing them to an app router.
+      if (isBrowserOwnedHref(href)) {
+        window.location.assign(href);
+      } else {
+        router.navigate(href, options);
       }
-      providerNavigate(href, options);
     },
-    [providerNavigate],
+    [router],
   );
 
   return (
-    <RouterProvider navigate={navigate} useHref={resolveHref}>
-      {children}
-    </RouterProvider>
+    <BUIRoutingContext.Provider value={router}>
+      <RouterProvider navigate={navigate} useHref={router.resolveHref}>
+        {children}
+      </RouterProvider>
+    </BUIRoutingContext.Provider>
   );
 }

@@ -19,6 +19,18 @@ import type { BUIContextVersions } from './BUIContext';
 import { isBrowserOwnedHref } from '../utils/linkUtils';
 
 /**
+ * Options supported by BUI host routers.
+ *
+ * @public
+ */
+export type BUIRouterOptions = {
+  /** Replace the current history entry instead of adding one. */
+  replace?: boolean;
+  /** State associated with the destination history entry. */
+  state?: unknown;
+};
+
+/**
  * Routing at the consuming BUI component's position in the app.
  *
  * @remarks
@@ -30,7 +42,7 @@ import { isBrowserOwnedHref } from '../utils/linkUtils';
  */
 export type BUIRouter = {
   /** Navigates to an authored target using the same scope as resolveHref. */
-  navigate: (href: string, options?: { replace?: boolean }) => void;
+  navigate: (href: string, options?: BUIRouterOptions) => void;
   /** Returns a browser-ready href, leaving external targets unchanged. */
   resolveHref: (href: string) => string;
   /** Current browser pathname, including any deployment basename. */

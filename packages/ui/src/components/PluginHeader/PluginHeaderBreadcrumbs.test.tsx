@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
+import { TestRouter } from '../../testUtils/TestRouter';
 import { render, screen, act, fireEvent } from '@testing-library/react';
-import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { BUIProvider } from '../../provider';
 import { PluginHeaderBreadcrumbs } from './PluginHeaderBreadcrumbs';
 import type { PluginHeaderBreadcrumbEntry } from './types';
 
 function renderBreadcrumbs(entries: PluginHeaderBreadcrumbEntry[]) {
   return render(
-    <MemoryRouter>
+    <TestRouter>
       <BUIProvider>
         <PluginHeaderBreadcrumbs entries={entries} />
       </BUIProvider>
-    </MemoryRouter>,
+    </TestRouter>,
   );
 }
 
@@ -36,7 +37,7 @@ function LocationStatus() {
 
 function renderNestedBreadcrumbs(entries: PluginHeaderBreadcrumbEntry[]) {
   return render(
-    <MemoryRouter
+    <TestRouter
       basename="/app"
       initialEntries={['/app/catalog/entity']}
       future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
@@ -54,7 +55,7 @@ function renderNestedBreadcrumbs(entries: PluginHeaderBreadcrumbEntry[]) {
           />
         </Routes>
       </BUIProvider>
-    </MemoryRouter>,
+    </TestRouter>,
   );
 }
 

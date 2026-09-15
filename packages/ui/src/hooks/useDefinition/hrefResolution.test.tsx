@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
+import { TestRouter } from '../../testUtils/TestRouter';
 import { type ComponentType, type ReactNode } from 'react';
 import { render, screen } from '@testing-library/react';
-import {
-  MemoryRouter,
-  Route,
-  Routes,
-  createPath,
-  resolvePath,
-} from 'react-router-dom';
+import { Route, Routes, createPath, resolvePath } from 'react-router-dom';
 import { BUIProvider, type BUIRouter } from '../../provider';
 import { isExternalLink } from '../../utils/linkUtils';
 import { Link } from '../../components/Link';
@@ -75,19 +70,19 @@ const scopedRouter: BUIRouter = {
  */
 function ScopedHarness({ children }: { children: ReactNode }) {
   return (
-    <MemoryRouter initialEntries={[PAGE_PATH]}>
+    <TestRouter initialEntries={[PAGE_PATH]}>
       <BUIProvider useRouter={() => scopedRouter}>{children}</BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   );
 }
 
 /**
- * The old frontend system: no resolver is injected, so react-router is the only
- * authority and the page is a matched route.
+ * The old frontend system supplies an explicit React Router adapter and the
+ * page is a matched route.
  */
 function LegacyHarness({ children }: { children: ReactNode }) {
   return (
-    <MemoryRouter
+    <TestRouter
       basename={DEPLOY_BASENAME}
       initialEntries={[`${DEPLOY_BASENAME}${PAGE_PATH}`]}
     >
@@ -96,7 +91,7 @@ function LegacyHarness({ children }: { children: ReactNode }) {
           <Route path={PAGE_PATH} element={children} />
         </Routes>
       </BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   );
 }
 
@@ -244,7 +239,7 @@ describe('href resolution across components', () => {
       };
 
       render(
-        <MemoryRouter initialEntries={[PAGE_PATH]}>
+        <TestRouter initialEntries={[PAGE_PATH]}>
           <BUIProvider
             useRouter={() => ({
               ...scopedRouter,
@@ -254,7 +249,7 @@ describe('href resolution across components', () => {
             {/* eslint-disable-next-line no-script-url */}
             <Surfaces href="javascript:alert(document.cookie)" />
           </BUIProvider>
-        </MemoryRouter>,
+        </TestRouter>,
       );
 
       expect(
@@ -269,7 +264,7 @@ describe('href resolution across components', () => {
     });
   });
 
-  describe('without an injected href resolver', () => {
+  describe('with an explicit React Router adapter', () => {
     it.each`
       description        | href                          | expected
       ${'fragment only'} | ${'#tab'}                     | ${'/portal/pages/entity#tab'}

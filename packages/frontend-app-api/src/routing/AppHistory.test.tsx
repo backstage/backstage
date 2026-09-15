@@ -384,6 +384,39 @@ describe('AppHistory', () => {
     removeSpy.mockRestore();
   });
 
+  it('should release only its own backend subscription when disposed', () => {
+    const backend = createMemoryHistoryBackend({
+      initialEntries: ['/first', '/second'],
+    });
+    const first = createAppHistory({ history: backend });
+    const second = createAppHistory({ history: backend });
+    const firstListener = jest.fn();
+    const secondListener = jest.fn();
+    const independentListener = jest.fn();
+    first.location$.subscribe(firstListener);
+    second.location$.subscribe(secondListener);
+    const unsubscribe = backend.listen(independentListener);
+    firstListener.mockClear();
+    secondListener.mockClear();
+
+    first.dispose();
+    first.dispose();
+    backend.go(-1);
+
+    expect(firstListener).not.toHaveBeenCalled();
+    expect(secondListener).toHaveBeenCalledTimes(1);
+    expect(secondListener).toHaveBeenLastCalledWith(
+      expect.objectContaining({ pathname: '/first' }),
+    );
+    expect(independentListener).toHaveBeenCalledTimes(1);
+
+    second.dispose();
+    unsubscribe();
+    backend.go(1);
+    expect(secondListener).toHaveBeenCalledTimes(1);
+    expect(independentListener).toHaveBeenCalledTimes(1);
+  });
+
   it('should support observer object with next method', () => {
     const locations: string[] = [];
     const sub = history.location$.subscribe({
@@ -412,57 +445,29 @@ describe('AppHistory', () => {
       );
     });
 
-    it('should resolve a target against the page it was written in', () => {
-      // The seam the whole new frontend system resolves links through: the
-      // caller passes the mount of the page the target is written in, and this
-      // is the single place that turns the two into a browser URL. Chrome and
-      // page content therefore cannot disagree about what a target means.
-      const basePath = '/catalog/foo';
+    it('should resolve paths against the app root and preserve trailing slashes', () => {
+      history.navigate('/catalog/foo');
 
-      expect(history.createHref('widgets', { basePath })).toBe(
-        '/catalog/foo/widgets',
-      );
-      expect(history.createHref('./widgets', { basePath })).toBe(
-        '/catalog/foo/widgets',
-      );
-      // Absolute targets need no base and are unaffected by one.
-      expect(history.createHref('/other', { basePath })).toBe('/other');
-      // Each `..` climbs one segment of the mount, which is what makes a
-      // sub-page's `../sibling` reach the sibling rather than the app root.
-      expect(history.createHref('..', { basePath })).toBe('/catalog');
-      expect(history.createHref('../bar', { basePath })).toBe('/catalog/bar');
-      expect(history.createHref('../../..', { basePath })).toBe('/');
-      // A trailing slash the target asked for survives.
-      expect(history.createHref('widgets/', { basePath })).toBe(
-        '/catalog/foo/widgets/',
-      );
-      // Not app-relative, so the base is irrelevant.
-      expect(history.createHref('https://example.com/x', { basePath })).toBe(
-        'https://example.com/x',
-      );
-      // No base at all means the app root, which is the pre-existing contract
-      // for a caller that already holds an app-absolute path.
       expect(history.createHref('widgets')).toBe('/widgets');
-      expect(history.createHref('widgets', {})).toBe('/widgets');
+      expect(history.createHref('./widgets')).toBe('/widgets');
+      expect(history.createHref('../bar')).toBe('/bar');
+      expect(history.createHref('../../..')).toBe('/');
+      expect(history.createHref('/catalog/foo/../bar')).toBe('/catalog/bar');
+      expect(history.createHref('widgets/')).toBe('/widgets/');
+      expect(history.createHref('')).toBe('/');
+      expect(history.createHref('.')).toBe('/');
     });
 
     it('should keep a target with no pathname of its own at the current location', () => {
       window.history.replaceState(null, '', '/catalog/foo/docs?a=1');
 
-      // Resolved against where the app is standing rather than against the
-      // page base, so a fragment link written inside a page stays on the page
-      // the reader is actually on.
-      expect(history.createHref('#section', { basePath: '/catalog/foo' })).toBe(
-        '/catalog/foo/docs#section',
+      expect(history.createHref('#section')).toBe('/catalog/foo/docs#section');
+      expect(history.createHref('?tab=readme')).toBe(
+        '/catalog/foo/docs?tab=readme',
       );
-      expect(
-        history.createHref('?tab=readme', { basePath: '/catalog/foo' }),
-      ).toBe('/catalog/foo/docs?tab=readme');
 
       history.navigate('/catalog/bar/docs');
-      expect(history.createHref('#section', { basePath: '/catalog/bar' })).toBe(
-        '/catalog/bar/docs#section',
-      );
+      expect(history.createHref('#section')).toBe('/catalog/bar/docs#section');
     });
   });
 

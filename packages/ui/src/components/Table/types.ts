@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { BUIRouterOptions } from '../../provider/BUIRouter';
 import {
   CellProps as ReactAriaCellProps,
   ColumnProps as ReactAriaColumnProps,
@@ -82,7 +83,10 @@ export type RowOwnProps<T = object> = {
 /** @public */
 export interface RowProps<T>
   extends RowOwnProps<T>,
-    Omit<ReactAriaRowProps<T>, keyof RowOwnProps> {}
+    Omit<ReactAriaRowProps<T>, keyof RowOwnProps | 'routerOptions'> {
+  /** Options passed to the router configured on BUIProvider. */
+  routerOptions?: BUIRouterOptions;
+}
 
 /** @public */
 export type ColumnOwnProps = {

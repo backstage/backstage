@@ -15,6 +15,7 @@
  */
 /* eslint-disable no-restricted-syntax */
 
+import { TestRouter } from '../../testUtils/TestRouter';
 import preview from '../../../../../.storybook/preview';
 import { useState, useEffect } from 'react';
 import {
@@ -26,7 +27,6 @@ import { Flex } from '../Flex';
 import { Text } from '../Text';
 import { ButtonIcon } from '../ButtonIcon';
 import { RiCactusLine } from '@remixicon/react';
-import { MemoryRouter } from 'react-router-dom';
 
 const meta = preview.meta({
   title: 'Backstage UI/SearchAutocomplete',
@@ -288,9 +288,9 @@ export const InHeader = meta.story({
   },
   decorators: [
     Story => (
-      <MemoryRouter>
+      <TestRouter>
         <Story />
-      </MemoryRouter>
+      </TestRouter>
     ),
   ],
   render: function Render(args) {

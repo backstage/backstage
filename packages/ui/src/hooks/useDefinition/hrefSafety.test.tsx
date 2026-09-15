@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import { TestRouter } from '../../testUtils/TestRouter';
 import { type ReactNode } from 'react';
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+
 import { BUIProvider } from '../../provider';
 import { Link } from '../../components/Link';
 import { Card } from '../../components/Card';
@@ -51,9 +52,9 @@ const columns: ColumnConfig<Item>[] = [
 
 function Harness({ children }: { children: ReactNode }) {
   return (
-    <MemoryRouter initialEntries={['/catalog']}>
+    <TestRouter initialEntries={['/catalog']}>
       <BUIProvider>{children}</BUIProvider>
-    </MemoryRouter>
+    </TestRouter>
   );
 }
 
@@ -152,14 +153,14 @@ describe('href safety across components', () => {
 
   it('leaves ordinary hrefs untouched, including the router basename', async () => {
     render(
-      <MemoryRouter basename="/portal" initialEntries={['/portal/catalog']}>
+      <TestRouter basename="/portal" initialEntries={['/portal/catalog']}>
         <BUIProvider>
           <Link href="https://example.com/docs">External</Link>
           <Link href="mailto:someone@example.com">Mail</Link>
           <Link href="//example.com/x">Protocol relative</Link>
           <Link href="/component/foo">Internal</Link>
         </BUIProvider>
-      </MemoryRouter>,
+      </TestRouter>,
     );
 
     expect(

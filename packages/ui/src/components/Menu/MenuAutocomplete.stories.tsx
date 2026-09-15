@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { TestRouter } from '../../testUtils/TestRouter';
 import preview from '../../../../../.storybook/preview';
 import {
   MenuTrigger,
@@ -24,7 +25,7 @@ import {
 } from './index';
 import { Button } from '../..';
 import { useState, useEffect } from 'react';
-import { MemoryRouter } from 'react-router-dom';
+
 import { BUIProvider } from '../../provider';
 
 const meta = preview.meta({
@@ -32,11 +33,11 @@ const meta = preview.meta({
   component: MenuTrigger,
   decorators: [
     Story => (
-      <MemoryRouter>
+      <TestRouter>
         <BUIProvider>
           <Story />
         </BUIProvider>
-      </MemoryRouter>
+      </TestRouter>
     ),
   ],
 });

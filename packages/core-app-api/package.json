@@ -51,6 +51,7 @@
     "@backstage/types": "workspace:^",
     "@backstage/ui": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
+    "@remix-run/router": "^1.23.4",
     "@types/prop-types": "^15.7.3",
     "history": "^5.0.0",
     "i18next": "^22.4.15",

@@ -104,7 +104,6 @@ export const MenuItemDefinition = defineComponent<MenuItemOwnProps>()({
     itemArrow: 'bui-MenuItemArrow',
   },
   analytics: true,
-  navigation: { type: 'anchor' },
   propDefs: {
     iconStart: {},
     children: {},
@@ -124,7 +123,6 @@ export const MenuListBoxItemDefinition =
       itemContent: 'bui-MenuItemContent',
       check: 'bui-MenuItemListBoxCheck',
     },
-    navigation: { type: 'anchor' },
     propDefs: {
       children: {},
       className: {},

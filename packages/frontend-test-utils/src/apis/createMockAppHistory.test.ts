@@ -181,7 +181,7 @@ describe('createMockAppHistory', () => {
     const appHistory = createMockAppHistory({ basename: '/backstage' });
 
     expect(appHistory.createHref('/catalog')).toBe('/backstage/catalog');
-    expect(appHistory.createHref('edit', { basePath: '/catalog/foo' })).toBe(
+    expect(appHistory.createHref('/catalog/foo/edit')).toBe(
       '/backstage/catalog/foo/edit',
     );
     // Pass-through rather than basename-prefixed.

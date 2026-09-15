@@ -14,28 +14,11 @@
  * limitations under the License.
  */
 
-import { createVersionedValueMap } from '@backstage/version-bridge';
+import { TestRouter, useTestRouter } from '../../testUtils/TestRouter';
 import { fireEvent, render, screen } from '@testing-library/react';
-import {
-  forwardRef,
-  useMemo,
-  type ComponentProps,
-  type PropsWithChildren,
-} from 'react';
-import { RouterProvider } from 'react-aria-components';
-import {
-  Link as RouterLink,
-  MemoryRouter,
-  useHref,
-  useInRouterContext,
-  useLocation,
-  useNavigate,
-  useResolvedPath,
-} from 'react-router-dom';
-import { useResolvedHref } from '../../hooks/useResolvedHref';
-import { BUIContext } from '../../provider/BUIContext';
+import type { PropsWithChildren } from 'react';
+import { useLocation } from 'react-router-dom';
 import { BUIProvider } from '../../provider/BUIProvider';
-import type { BUIRoutingIntegration } from '../../navigation/types';
 import { ButtonLink } from './ButtonLink';
 
 function LocationStatus() {
@@ -45,7 +28,7 @@ function LocationStatus() {
 describe('ButtonLink', () => {
   it('renders a disabled destination as a non-link element', () => {
     render(
-      <MemoryRouter
+      <TestRouter
         initialEntries={['/catalog']}
         future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
       >
@@ -54,7 +37,7 @@ describe('ButtonLink', () => {
             Overview
           </ButtonLink>
         </BUIProvider>
-      </MemoryRouter>,
+      </TestRouter>,
     );
 
     expect(screen.getByText('Overview').closest('a')).toBeNull();
@@ -62,7 +45,7 @@ describe('ButtonLink', () => {
 
   it('renders the host href and navigates without a document reload', () => {
     render(
-      <MemoryRouter
+      <TestRouter
         basename="/app"
         initialEntries={['/app/catalog']}
         future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
@@ -71,7 +54,7 @@ describe('ButtonLink', () => {
           <ButtonLink href="/catalog/overview">Overview</ButtonLink>
           <LocationStatus />
         </BUIProvider>
-      </MemoryRouter>,
+      </TestRouter>,
     );
 
     const link = screen.getByRole('link', { name: 'Overview' });
@@ -80,16 +63,15 @@ describe('ButtonLink', () => {
     expect(screen.getByRole('status')).toHaveTextContent('/catalog/overview');
   });
 
-  it('passes the exact options registered by the component to React Aria', () => {
+  it('passes router-neutral options to the host through React Aria', () => {
     const navigate = jest.fn();
-    const register = jest.fn();
     render(
-      <MemoryRouter
+      <TestRouter
         basename="/app"
         initialEntries={['/app/catalog']}
         future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
       >
-        <TrackingProvider navigate={navigate} register={register}>
+        <TrackingProvider navigate={navigate}>
           <ButtonLink
             href="/catalog/overview"
             routerOptions={{ replace: true }}
@@ -97,86 +79,22 @@ describe('ButtonLink', () => {
             Overview
           </ButtonLink>
         </TrackingProvider>
-      </MemoryRouter>,
+      </TestRouter>,
     );
 
     fireEvent.click(screen.getByRole('link', { name: 'Overview' }));
-    const registeredOptions = register.mock.calls[0]?.[0];
-    expect(registeredOptions).toBeDefined();
-    expect(navigate).toHaveBeenCalledWith(
-      '/catalog/overview',
-      registeredOptions,
-    );
-  });
-
-  it('renders the configured host Link with the raw destination', () => {
-    const hostLink = jest.fn();
-    const HostLink = forwardRef<
-      HTMLAnchorElement,
-      ComponentProps<typeof RouterLink>
-    >((props, ref) => {
-      hostLink(props);
-      return <RouterLink {...props} ref={ref} />;
+    expect(navigate).toHaveBeenCalledWith('/catalog/overview', {
+      replace: true,
     });
-
-    render(
-      <MemoryRouter
-        basename="/app"
-        initialEntries={['/app/catalog']}
-        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-      >
-        <TrackingProvider
-          navigate={jest.fn()}
-          register={jest.fn()}
-          link={HostLink}
-        >
-          <ButtonLink href="child">Overview</ButtonLink>
-        </TrackingProvider>
-      </MemoryRouter>,
-    );
-
-    const hostLinkProps = hostLink.mock.calls.find(
-      ([props]) => props.to === 'child',
-    )?.[0];
-    expect(hostLinkProps).toBeDefined();
-    expect(hostLinkProps).not.toHaveProperty('href');
   });
 });
 
 function TrackingProvider({
   children,
   navigate,
-  register,
-  link: Link = RouterLink,
-}: PropsWithChildren<{
-  navigate: jest.Mock;
-  register: jest.Mock;
-  link?: BUIRoutingIntegration['Link'];
-}>) {
-  const routing = useMemo<BUIRoutingIntegration>(
-    () => ({
-      Link,
-      useHref,
-      useInRouterContext,
-      useLocation,
-      useNavigate,
-      useResolvedPath,
-      createRouterOptions(_action, options) {
-        const registered = { ...options };
-        register(registered);
-        return registered;
-      },
-    }),
-    [Link, register],
-  );
-  const value = useMemo(
-    () => createVersionedValueMap({ 1: {}, 2: { routing } }),
-    [routing],
-  );
-
-  return (
-    <RouterProvider navigate={navigate} useHref={useResolvedHref}>
-      <BUIContext.Provider value={value}>{children}</BUIContext.Provider>
-    </RouterProvider>
-  );
+}: PropsWithChildren<{ navigate: jest.Mock }>) {
+  function useRouter() {
+    return { ...useTestRouter(), navigate };
+  }
+  return <BUIProvider useRouter={useRouter}>{children}</BUIProvider>;
 }
