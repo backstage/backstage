@@ -2,8 +2,8 @@
 '@backstage/plugin-app-react-router-v6': minor
 ---
 
-Added a new package that provides `ReactRouterV6PageRouter`, a page router that renders new frontend system pages with React Router v6. Render it inside the lazily loaded component of each page or sub-page whose content should get a v6 context.
+Added `ReactRouterV6PageRouter` for page-scoped React Router v6 routing with app-owned history. Render it inside a lazily loaded page or sub-page component to support relative links, nested routes, and route parameters. React Router v6 is a peer dependency.
 
-React Router v6 is a peer dependency rather than a bundled one, so the adapter binds to the same copy of `react-router-dom` the page's own content imports. A page whose adapter came from one copy and whose `useParams` came from another would read an empty context, because React Router contexts are not shared between copies.
+The adapter renders children unchanged when no page mount or app history is available, supporting shared components in the old frontend system and standalone tests.
 
-Pages keep composing their content with React Router as usual, so relative links, nested `<Routes>` and `useParams` all work, while browser history stays owned by the app. The adapter renders whatever content it is given inside a v6 context scoped to the page or sub-page that declared it, and builds no routes of its own. Declaring it in a sub-page's React component scopes it to that sub-page rather than to the page above. Adapters from different routing libraries nest rather than replace one another, so this one composes with them in either order.
+See the [page router guide](https://backstage.io/docs/frontend-system/building-plugins/page-routers#use-react-router-v6) for setup and nesting examples.

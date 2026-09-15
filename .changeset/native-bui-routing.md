@@ -2,14 +2,12 @@
 '@backstage/ui': minor
 ---
 
-BUI routing now uses an explicit app integration and React Aria's native link behavior. React Router is no longer a peer dependency.
+**BREAKING**: Backstage UI now uses explicit routing integration and React Aria's native link behavior. Standalone apps that relied on automatic React Router integration must supply `BUIProvider` with a `useRouter` hook. React Router is no longer a peer dependency, and `routerOptions` supports the router-neutral `replace` and `state` options.
 
-**Migration:**
+Upgrade the provider and separately bundled BUI components together. Use `href="."` for the current route; empty hrefs follow React Aria's native behavior. Backstage apps configure scoped BUI navigation automatically.
 
-Standalone apps must supply `BUIProvider` with a `useRouter` hook for client-side navigation; an ambient React Router no longer enables routing automatically.
+**BREAKING**: Link targets using `javascript:`, `data:`, or `vbscript:` become inert `about:blank` links with a console warning. Replace `data:` links with blob URLs or display their content directly, and replace `javascript:` links with `onClick` handlers. Other URL schemes, including custom schemes, use native browser navigation.
 
-The hook supplies matching href resolution, navigation, and the current pathname. `routerOptions` supports the router-neutral `replace` and `state` options. Upgrade the provider and separately bundled BUI components together. Direct React Aria controls need their own scoped `RouterProvider` from the same React Aria installation.
+See the [BUI routing migration guide](https://backstage.io/docs/frontend-system/building-plugins/page-routers#migrate-backstage-ui-routing) for integration requirements.
 
-Use `href="."` to navigate to the current route. Empty hrefs follow React Aria's native behavior and are no longer resolved by the host router.
-
-**Affected components:** BUIProvider, ButtonLink, Combobox, Header, Link, List, Menu, PluginHeader, SearchAutocomplete, Select, Table, Tabs, TagGroup
+Affected components: BUIProvider, ButtonLink, Card, Combobox, Header, Link, List, Menu, PluginHeader, SearchAutocomplete, Select, Table, Tabs, TagGroup

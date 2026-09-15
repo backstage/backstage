@@ -521,6 +521,28 @@ route pattern names, `useHref` turns a page-relative path into a browser-ready
 href, and `RouteLink` renders a link straight from a route ref. None of them
 require a page router, so a plugin using only these hooks needs no adapter.
 
+`useRouteRefParams` returns exactly the parameter names declared by the supplied
+route ref. Parameters that the current location does not bind have the value
+`undefined`. The undeclared splat `*` is not included; use the page router's own
+parameter API if your content needs the matched tail. In the old frontend
+system, the hook reads parameters from React Router.
+
+`useAppLocation` reads the app-absolute location, and `useAppSearchParams` reads
+and updates query parameters. Both use app history in the new frontend system
+and fall back to React Router in the old frontend system.
+
+`AppHistoryApi.navigate` accepts app-relative destinations or a numeric history
+delta for Back and Forward navigation. It rejects external destinations.
+`AppHistoryApi.createHref` adds the deployment basename and preserves external
+URLs. For scoped destinations, use `useHref` or the matching href and navigation
+callbacks returned by `useAppRouting`.
+
+`useHref` resolves relative paths against the matched extension ancestry. Each
+leading `..` climbs one route, even when that route spans multiple URL segments.
+Query-only and fragment-only targets keep the current pathname. External URLs
+are preserved, except that `javascript:`, `data:`, and `vbscript:` targets become
+inert `about:blank` links with a console warning.
+
 React Router's own APIs — `useParams`, `useNavigate`, `useLocation`, `<Routes>`
 and relative `Link` targets — read React Router context. A page needs an
 adapter for that context to include its own route match. See
@@ -648,6 +670,16 @@ A page that has sub-pages owns no content region of its own, so there is nothing
 above them for a page-level adapter to wrap. Router-owned state therefore
 belongs to the sub-page that declared the adapter and is rebuilt when the active
 tab changes; the framework-owned page shell around it stays mounted.
+
+Page content also stays mounted across app shell re-renders and navigation
+between URLs served by the same page. This preserves local state such as open
+dialogs and unfinished form input. Page headers remain visible while content
+loads or displays an error.
+
+If a page path collides with a sub-page route, the explicitly registered page
+path wins regardless of installation order, and the app logs a warning. A page
+root redirects to its first routed tab, so the parent page can still reach its
+own tabs.
 
 Whatever the active page or sub-page produces is opaque to any adapter around
 it, and an adapter component receives only `children`. First-party adapters read

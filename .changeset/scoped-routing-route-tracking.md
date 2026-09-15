@@ -2,4 +2,6 @@
 '@backstage/core-app-api': patch
 ---
 
-An app whose `Router` app component does not set up React Router, such as a passthrough that renders its children unchanged, now renders instead of failing at startup. While no router is present the app has no location to report, so it records no `navigate` analytics events. Once a router is in place, tracking behaves exactly as before. Apps that keep the default router are unaffected.
+Backstage UI links and collections now use client-side navigation at their consuming route scope.
+
+Apps with a custom `Router` that provides no React Router context now render without failing at startup. Navigation analytics are skipped while no router is present; apps using the default router are unaffected.
