@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend-module-sentry
 
+## 0.3.8
+
+### Patch Changes
+
+- b0170fa: **BREAKING**: Restrict Sentry API requests to the configured API base URL. Move custom action-level `apiBaseUrl` values to `scaffolder.sentry.apiBaseUrl` before upgrading.
+
 ## 0.3.7
 
 ### Patch Changes
