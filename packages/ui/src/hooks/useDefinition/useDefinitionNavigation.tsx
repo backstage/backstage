@@ -21,6 +21,7 @@ import {
   type NavigationProps,
 } from '../../navigation/useNavigation';
 import { useRoutingIntegration } from '../../navigation/useRouting';
+import { useBUIRouter } from '../../provider/BUIRouter';
 import type {
   DefinitionNavigationComponent,
   DefinitionNavigationConfig,
@@ -68,7 +69,7 @@ function NativeAnchorNavigation<P extends object>({
     type: 'none',
     canMatchRoute: false,
   };
-  if (props.href) {
+  if (props.href !== undefined) {
     navigation = {
       type: 'native',
       canMatchRoute: false,
@@ -92,8 +93,9 @@ export function useDefinitionNavigation(
 ): DefinitionNavigationComponent {
   const routing = useRoutingIntegration({ fallback: true });
   const inRouterContext = routing.useInRouterContext();
+  const useRouter = useBUIRouter();
 
-  if (inRouterContext) {
+  if (inRouterContext || useRouter) {
     return RoutedAnchorNavigation;
   }
   return NativeAnchorNavigation;
