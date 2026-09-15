@@ -15,9 +15,7 @@
  */
 
 export { AnnotateLocationEntityProcessor } from './AnnotateLocationEntityProcessor';
-export { AnnotateScmSlugEntityProcessor } from './AnnotateScmSlugEntityProcessor';
 export { BuiltinKindsEntityProcessor } from './BuiltinKindsEntityProcessor';
-export { CodeOwnersProcessor } from './CodeOwnersProcessor';
 export { FileReaderProcessor } from './FileReaderProcessor';
 export { PlaceholderProcessor } from './PlaceholderProcessor';
 export type { PlaceholderProcessorOptions } from './PlaceholderProcessor';

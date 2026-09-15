@@ -168,8 +168,6 @@ export interface Config {
      * The strategy to use when stitching together the final entities.
      */
     stitchingStrategy?: {
-      /** @deprecated Immediate mode has been removed. This field is ignored. */
-      mode?: string;
       /** Polling interval for tasks in seconds */
       pollingInterval?: HumanDuration | string;
       /** How long to wait for a stitch to complete before giving up in seconds */
