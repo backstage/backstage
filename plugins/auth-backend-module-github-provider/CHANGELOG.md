@@ -1,5 +1,16 @@
 # @backstage/plugin-auth-backend-module-github-provider
 
+## 0.5.7
+
+### Patch Changes
+
+- 211a61a: Deprecated the GitHub username sign-in resolver in favor of the stable user ID resolver. GitHub user ID catalog lookups now require an exact match and handle candidates that differ only by letter casing.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-auth-node@0.7.6
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-catalog-node@2.2.5
+
 ## 0.5.7-next.0
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend-module-pinniped-provider
 
+## 0.3.18
+
+### Patch Changes
+
+- 623e9d4: Prevented an unavailable Pinniped supervisor during provider startup from causing an unhandled promise rejection before the first authentication request.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.6
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+
 ## 0.3.18-next.1
 
 ### Patch Changes

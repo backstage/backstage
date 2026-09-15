@@ -1,5 +1,26 @@
 # @backstage/plugin-auth-backend-module-cloudflare-access-provider
 
+## 0.5.0
+
+### Minor Changes
+
+- ed9034c: **BREAKING**: The Cloudflare Access provider now requires the application audience in its configuration. Before upgrading, set `auth.providers.cfaccess.audience` to the Audience (AUD) tag shown for your Backstage application in Cloudflare Zero Trust.
+
+  ```yaml
+  auth:
+    providers:
+      cfaccess:
+        teamName: example
+        audience: ${AUTH_CFACCESS_AUDIENCE}
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.6
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+
 ## 0.4.19-next.1
 
 ### Patch Changes

@@ -1,5 +1,20 @@
 # @backstage/plugin-kubernetes
 
+## 0.12.23
+
+### Patch Changes
+
+- 83f34f2: The Kubernetes entity content no longer loads its UI until the tab is opened, keeping it out of the initial bundle. Tab visibility is now an entity filter predicate that can be overridden through app config, and entities with an empty Kubernetes annotation now show the tab where previously it was hidden.
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-catalog-react@3.2.3
+  - @backstage/plugin-kubernetes-react@0.6.0
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/plugin-kubernetes-common@0.9.13
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/plugin-permission-react@0.5.5
+
 ## 0.12.23-next.2
 
 ### Patch Changes

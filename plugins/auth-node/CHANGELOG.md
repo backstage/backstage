@@ -1,5 +1,16 @@
 # @backstage/plugin-auth-node
 
+## 0.7.6
+
+### Patch Changes
+
+- 507e65a: OAuth profile normalization now respects matching negative email verification information supplied by the provider.
+- Updated dependencies
+  - @backstage/catalog-client@1.16.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+
 ## 0.7.5-next.1
 
 ### Patch Changes

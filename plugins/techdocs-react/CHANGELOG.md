@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-react
 
+## 1.3.15
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/catalog-model@1.10.1
+  - @backstage/config@1.3.9
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/core-plugin-api@1.12.10
+
 ## 1.3.15-next.2
 
 ### Patch Changes

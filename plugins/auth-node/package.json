@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-node",
-  "version": "0.7.5-next.1",
+  "version": "0.7.6",
   "backstage": {
     "role": "node-library",
     "pluginId": "auth",
