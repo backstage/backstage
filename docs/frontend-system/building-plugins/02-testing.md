@@ -400,6 +400,15 @@ for the page side of the same decision see
 
 ## Extension tree snapshots
 
+For an isolated page and its attached sub-pages, pass
+`createExtensionTester(page).add(subPage).reactElement()` to `renderInTestApp`.
+The tester uses the same route matching as the app, retaining the extension
+tree's node identities. The URL selects the active sub-page, and navigating to
+the parent index redirects to the first sub-page while preserving the query
+and fragment. Set `mountPath` to test a different mounting pattern; when it is
+omitted, the subject is mounted at the app root. Use `renderTestApp` to test the
+plugin's complete production route registration.
+
 The `snapshot()` method on `ExtensionTester` returns a tree-shaped representation of the resolved extension hierarchy, which is convenient to use with Jest's `toMatchInlineSnapshot()` for verifying extension structure in tests.
 
 ## Missing something?
