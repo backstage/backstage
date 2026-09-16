@@ -46,12 +46,14 @@ jest.mock('react-router-dom', () => {
   };
 });
 
+const mockAppComponents = {
+  NotFoundErrorPage: () => <span>Custom not found page</span>,
+};
+
 describe('<TechDocsNotFound />', () => {
   it("should render the app's overridable NotFoundErrorPage component", async () => {
     await renderInTestApp(<TechDocsNotFound />, {
-      components: {
-        NotFoundErrorPage: () => <span>Custom not found page</span>,
-      },
+      components: mockAppComponents,
     });
 
     expect(
@@ -67,9 +69,7 @@ describe('<TechDocsNotFound />', () => {
         <TechDocsNotFound />
       </TestApiProvider>,
       {
-        components: {
-          NotFoundErrorPage: () => <span>Custom not found page</span>,
-        },
+        components: mockAppComponents,
       },
     );
 

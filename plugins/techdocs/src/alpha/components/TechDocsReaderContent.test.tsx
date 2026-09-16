@@ -75,6 +75,10 @@ const mockTechDocsMetadata = {
   site_description: 'test-site-desc',
 };
 
+const mockAppComponents = {
+  NotFoundErrorPage: () => <span>Custom not found page</span>,
+};
+
 const getEntityMetadata = jest.fn();
 const getTechDocsMetadata = jest.fn();
 
@@ -190,9 +194,7 @@ describe('<TechDocsReaderContent />', () => {
         <TechDocsReaderContent />
       </Wrapper>,
       {
-        components: {
-          NotFoundErrorPage: () => <span>Custom not found page</span>,
-        },
+        components: mockAppComponents,
       },
     );
 
