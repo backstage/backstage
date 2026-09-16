@@ -21,23 +21,43 @@ jest.useFakeTimers();
 
 describe('scrollIntoNavigation', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
-  it('scroll to active navigation item', async () => {
-    await createTestShadowDom(FIXTURES.FIXTURE_STANDARD_PAGE, {
-      preTransformers: [],
-      postTransformers: [scrollIntoNavigation()],
-    });
+  it('keeps the active navigation item visible by scrolling only its sidebar', async () => {
+    const shadowDom = await createTestShadowDom(
+      FIXTURES.FIXTURE_STANDARD_PAGE,
+      {
+        preTransformers: [],
+        postTransformers: [scrollIntoNavigation()],
+      },
+    );
 
-    // jsdom does not implement scrollIntoView so we attach a function to the
-    // prototype to be able to test the expected behaviour.
-    const scrollNavIntoView = jest.fn();
-    window.HTMLElement.prototype.scrollIntoView = scrollNavIntoView;
+    const sidebar = shadowDom.querySelector<HTMLElement>(
+      '.md-sidebar--primary',
+    )!;
+    const activeNavItems = shadowDom.querySelectorAll<HTMLElement>(
+      '.md-nav__item--active',
+    );
+    const activeNavItem = activeNavItems[activeNavItems.length - 1];
+    sidebar.scrollTop = 100;
+    jest.spyOn(sidebar, 'getBoundingClientRect').mockReturnValue({
+      top: 20,
+      bottom: 220,
+    } as DOMRect);
+    jest.spyOn(activeNavItem, 'getBoundingClientRect').mockReturnValue({
+      top: 250,
+      bottom: 270,
+    } as DOMRect);
+    const scrollNavIntoView = jest.spyOn(
+      window.HTMLElement.prototype,
+      'scrollIntoView',
+    );
 
     jest.advanceTimersByTime(200);
 
-    expect(scrollNavIntoView).toHaveBeenCalledWith();
+    expect(sidebar.scrollTop).toBe(150);
+    expect(scrollNavIntoView).not.toHaveBeenCalled();
   });
 
   it('expand active navigation items', async () => {
@@ -48,10 +68,6 @@ describe('scrollIntoNavigation', () => {
         postTransformers: [scrollIntoNavigation()],
       },
     );
-
-    // jsdom does not implement scrollIntoView so we attach an empty function to
-    // support the behaviour.
-    window.HTMLElement.prototype.scrollIntoView = () => {};
 
     const click = jest.fn();
     shadowDom.addEventListener('click', click);
@@ -69,10 +85,6 @@ describe('scrollIntoNavigation', () => {
         postTransformers: [scrollIntoNavigation()],
       },
     );
-
-    // jsdom does not implement scrollIntoView so we attach an empty function to
-    // support the behaviour.
-    window.HTMLElement.prototype.scrollIntoView = () => {};
 
     const click = jest.fn();
     shadowDom.addEventListener('click', click);

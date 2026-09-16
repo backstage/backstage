@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   useShadowDomStylesLoading,
@@ -46,6 +46,7 @@ export function useTechDocsReaderContentData(options: {
   const location = useLocation();
   const path = location.pathname;
   const hash = location.hash;
+  const previousPath = useRef(path);
   const isStyleLoading = useShadowDomStylesLoading(dom);
   const [hashElement] = useShadowRootElements([`[id="${hash.slice(1)}"]`]);
   const app = useApp();
@@ -53,6 +54,9 @@ export function useTechDocsReaderContentData(options: {
 
   useEffect(() => {
     if (isStyleLoading) return;
+
+    const didPathChange = previousPath.current !== path;
+    previousPath.current = path;
 
     if (hash) {
       if (hashElement) {
@@ -62,10 +66,12 @@ export function useTechDocsReaderContentData(options: {
           link.focus();
         }
       }
-    } else {
-      document?.querySelector('header')?.scrollIntoView();
+    } else if (didPathChange) {
+      dom?.querySelector<HTMLElement>('.md-main')?.scrollIntoView({
+        block: 'start',
+      });
     }
-  }, [path, hash, hashElement, isStyleLoading]);
+  }, [path, hash, hashElement, isStyleLoading, dom]);
 
   const handleAppend = useCallback(
     (newShadowRoot: ShadowRoot) => {

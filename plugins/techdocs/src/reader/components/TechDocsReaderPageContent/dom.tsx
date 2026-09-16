@@ -14,25 +14,15 @@
  * limitations under the License.
  */
 
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  // useRef,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
-import {
-  techdocsStorageApiRef,
-  useShadowDomStylesLoading,
-} from '@backstage/plugin-techdocs-react';
+import { techdocsStorageApiRef } from '@backstage/plugin-techdocs-react';
 
 import { useTechDocsReader } from '../TechDocsReaderProvider';
 
@@ -55,8 +45,6 @@ import {
 } from '../../transformers';
 import { useNavigateUrl } from './useNavigateUrl';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-
-const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
 
 // If a defaultPath is specified then we should navigate to that path replacing the
 // current location in the history. This should only happen on the initial load so
@@ -84,7 +72,6 @@ export const useTechDocsReaderDom = (
 ): Element | null => {
   const navigate = useNavigateUrl();
   const theme = useTheme();
-  const isMobileMedia = useMediaQuery(MOBILE_MEDIA_QUERY);
   const sanitizerTransformer = useSanitizerTransformer();
   const stylesTransformer = useStylesTransformer();
   const analytics = useAnalytics();
@@ -93,96 +80,12 @@ export const useTechDocsReaderDom = (
   const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
   const configApi = useApi(configApiRef);
 
-  const { state, path, content: rawPage } = useTechDocsReader();
+  const { path, content: rawPage } = useTechDocsReader();
   const { '*': currPath = '' } = useParams();
 
   const [dom, setDom] = useState<HTMLElement | null>(null);
-  const isStyleLoading = useShadowDomStylesLoading(dom);
 
   useInitialRedirect(defaultPath);
-
-  const updateSidebarPositionAndHeight = useCallback(() => {
-    if (!dom) return;
-
-    const sidebars = dom.querySelectorAll<HTMLElement>('.md-sidebar');
-
-    sidebars.forEach(element => {
-      // set sidebar position to render in correct position
-      if (isMobileMedia) {
-        element.style.top = '0px';
-      } else {
-        const page = document?.querySelector('.techdocs-reader-page');
-        const pageTop = page?.getBoundingClientRect().top ?? 0;
-        let domTop = dom.getBoundingClientRect().top ?? 0;
-
-        const tabs = dom.querySelector('.md-container > .md-tabs');
-        const tabsHeight = tabs?.getBoundingClientRect().height ?? 0;
-
-        // the sidebars should not scroll beyond the total height of the header and tabs
-        if (domTop < pageTop) {
-          domTop = pageTop;
-        }
-
-        const scrollbarTopPx = Math.max(domTop, 0) + tabsHeight;
-
-        element.style.top = `${scrollbarTopPx}px`;
-
-        // set scrollbar height to ensure all links can be seen when content is small
-        const footer = dom.querySelector('.md-container > .md-footer');
-        // if no footer, fallback to using the bottom of the window
-        const scrollbarEndPx =
-          footer?.getBoundingClientRect().top ?? window.innerHeight;
-
-        element.style.height = `${scrollbarEndPx - scrollbarTopPx}px`;
-      }
-
-      // show the sidebar only after updating its position
-      element.style.setProperty('opacity', '1');
-    });
-  }, [dom, isMobileMedia]);
-
-  useEffect(() => {
-    window.addEventListener('resize', updateSidebarPositionAndHeight);
-    window.addEventListener('scroll', updateSidebarPositionAndHeight, true);
-    return () => {
-      window.removeEventListener('resize', updateSidebarPositionAndHeight);
-      window.removeEventListener(
-        'scroll',
-        updateSidebarPositionAndHeight,
-        true,
-      );
-    };
-  }, [dom, updateSidebarPositionAndHeight]);
-
-  // dynamically set width of footer to accommodate for pinning of the sidebar
-  const updateFooterWidth = useCallback(() => {
-    if (!dom) return;
-    const footer = dom.querySelector<HTMLElement>('.md-footer');
-    if (footer) {
-      footer.style.width = `${dom.getBoundingClientRect().width}px`;
-    }
-  }, [dom]);
-
-  useEffect(() => {
-    window.addEventListener('resize', updateFooterWidth);
-    return () => {
-      window.removeEventListener('resize', updateFooterWidth);
-    };
-  }, [dom, updateFooterWidth]);
-
-  // an update to "state" might lead to an updated UI so we include it as a trigger
-  useEffect(() => {
-    if (!isStyleLoading) {
-      updateFooterWidth();
-      updateSidebarPositionAndHeight();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    state,
-    isStyleLoading,
-    updateFooterWidth,
-    updateSidebarPositionAndHeight,
-  ]);
 
   // a function that performs transformations that are executed prior to adding it to the DOM
   const preRender = useCallback(
@@ -280,18 +183,6 @@ export const useTechDocsReaderDom = (
               ?.removeAttribute('for');
           },
         }),
-        // hide sidebars until their positions are updated
-        onCssReady({
-          onLoading: () => {
-            const sidebars = Array.from(
-              transformedElement.querySelectorAll<HTMLElement>('.md-sidebar'),
-            );
-            sidebars.forEach(element => {
-              element.style.setProperty('opacity', '0');
-            });
-          },
-          onLoaded: () => {},
-        }),
         addNavLinkKeyboardToggle(),
       ]),
     [theme, navigate, analytics, entityRef.name, configApi],
@@ -319,9 +210,6 @@ export const useTechDocsReaderDom = (
       if (currPath !== path) {
         return;
       }
-
-      // Scroll to top after render
-      window.scroll({ top: 0 });
 
       // Post-render
       const postTransformedDomElement = await postRender(

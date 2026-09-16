@@ -38,6 +38,50 @@ describe('Transformers > Styles', () => {
     expect(style).toHaveTextContent(
       '/*================== Layout ==================*/',
     );
+    expect(style).toHaveTextContent('display: grid');
+    expect(style).toHaveTextContent(
+      '.md-sidebar--primary { grid-column: 1; grid-row: 1;',
+    );
+    expect(style).toHaveTextContent(
+      '.md-content { grid-column: 2; grid-row: 1;',
+    );
+    expect(style).toHaveTextContent(
+      '.md-sidebar--secondary { grid-column: 3; grid-row: 1;',
+    );
+    expect(style).toHaveTextContent(
+      '.md-footer { grid-column: 1 / -1; grid-row: 2;',
+    );
+    expect(style).toHaveTextContent('bottom: 0');
+    expect(style).toHaveTextContent('align-self: end');
+    expect(style).not.toHaveTextContent('min-height: 100dvh');
+    expect(style).toHaveTextContent('html { overflow: visible; }');
+    expect(style).toHaveTextContent('position: sticky');
+    expect(style).toHaveTextContent('var(--bui-header-height, 0px)');
+    const sidebar = style!.textContent?.match(/\.md-sidebar \{.*?\}/s);
+    expect(sidebar).toHaveLength(1);
+    expect(sidebar![0]).not.toContain('position: sticky');
+    expect(style).toHaveTextContent(
+      '@media screen and (min-width: 76.1875em) { .md-sidebar { position: sticky;',
+    );
+    expect(style).toHaveTextContent(
+      '@media print { .md-main__inner { display: block; } .md-footer { position: static; height: auto;',
+    );
+    const mobileSidebar = style!.textContent?.match(
+      /\.md-sidebar--primary \{\s*position: fixed;.*?\}/s,
+    );
+    expect(mobileSidebar).toHaveLength(1);
+    expect(mobileSidebar![0]).toContain(
+      'max-height: calc(100dvh - var(--bui-header-height, 0px))',
+    );
+    const sidebarScrollWrap = style!.textContent?.match(
+      /\.md-sidebar \.md-sidebar__scrollwrap \{.*?\}/s,
+    );
+    expect(sidebarScrollWrap).toHaveLength(1);
+    expect(sidebarScrollWrap![0]).toContain('overflow-y: visible');
+    expect(style).toHaveTextContent(
+      '.md-sidebar--primary .md-nav--primary > .md-nav__title { position: static;',
+    );
+    expect(style).not.toHaveTextContent('bottom: 75px');
     expect(style).toHaveTextContent(
       '/*================== Typeset ==================*/',
     );
