@@ -19947,9 +19947,9 @@ __metadata:
   linkType: hard
 
 "@types/use-sync-external-store@npm:^1.0.0":
-  version: 1.5.0
-  resolution: "@types/use-sync-external-store@npm:1.5.0"
-  checksum: 10/39e5be8dc2cca080b490f2f79fed4381ae7eebee3f981208e359856733eafb2479d229db07a552f6c99fe0b5c09b3e46a3e6a870e00a88b50f3e690e73d2649b
+  version: 1.7.0
+  resolution: "@types/use-sync-external-store@npm:1.7.0"
+  checksum: 10/0085883064c1526c5e06a5ec4d259d88a9e15a615888eb22fb496285e6bbdc4077fdc47acd6f17c3f2f7803d3911faefbd317f34ed38de5a5867a2488e7c80e5
   languageName: node
   linkType: hard
 
