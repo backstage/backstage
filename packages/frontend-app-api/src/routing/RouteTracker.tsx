@@ -35,11 +35,11 @@ const getExtensionContext = (
     // Find matching routes for the given path name.
     const matches = matchRoutes(routes, { pathname });
 
-    // Of the matching routes, get the last (e.g. most specific) instance of
-    // the BackstageRouteObject that contains a routeRef. Filtering by routeRef
-    // ensures subRouteRefs are aligned to their parent routes' context.
+    // Use the most specific mounted extension, including pages without route refs.
     const routeMatch = matches
-      ?.filter(match => match?.route.routeRefs?.size > 0)
+      ?.filter(
+        match => match?.route.appNode || match?.route.routeRefs?.size > 0,
+      )
       .pop();
     const routeObject = routeMatch?.route;
 

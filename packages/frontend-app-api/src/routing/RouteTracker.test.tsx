@@ -30,8 +30,11 @@ import {
 import { MATCH_ALL_ROUTE } from './extractRouteInfoFromAppNode';
 
 describe('RouteTracker', () => {
+  // @ts-expect-error Historical refs intentionally omit extensionId
   const routeRef0 = createRouteRef();
+  // @ts-expect-error Historical refs intentionally omit extensionId
   const routeRef1 = createRouteRef();
+  // @ts-expect-error Historical refs intentionally omit extensionId
   const routeRef2 = createRouteRef();
 
   const routeObjects: BackstageRouteObject[] = [

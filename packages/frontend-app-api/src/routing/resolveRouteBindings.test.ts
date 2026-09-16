@@ -38,6 +38,7 @@ const emptyIds = { routes: new Map(), externalRoutes: new Map() };
 describe('resolveRouteBindings', () => {
   it('runs happy path', () => {
     const external = { myRoute: createExternalRouteRef() };
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const ref = createRouteRef();
     const result = resolveRouteBindings(
       ({ bind }) => {
@@ -53,6 +54,7 @@ describe('resolveRouteBindings', () => {
 
   it('reports error on unknown keys', () => {
     const external = { myRoute: createExternalRouteRef() };
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const ref = createRouteRef();
     resolveRouteBindings(
       ({ bind }) => {
@@ -73,6 +75,7 @@ describe('resolveRouteBindings', () => {
 
   it('reads bindings from config', () => {
     const mySource = createExternalRouteRef();
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const myTarget = createRouteRef();
     const result = resolveRouteBindings(
       () => {},
@@ -91,6 +94,7 @@ describe('resolveRouteBindings', () => {
 
   it('prioritizes callback routes over config', () => {
     const mySource = createExternalRouteRef();
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const myTarget = createRouteRef();
 
     expect(
@@ -193,7 +197,9 @@ describe('resolveRouteBindings', () => {
 
   it('can have default targets, but at the lowest priority', () => {
     const source = createExternalRouteRef({ defaultTarget: 'target1' });
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const target1 = createRouteRef();
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const target2 = createRouteRef();
     const routesById = {
       routes: new Map([
@@ -240,6 +246,7 @@ describe('resolveRouteBindings', () => {
 
   it('can disable external routes that have defaults', () => {
     const source = createExternalRouteRef({ defaultTarget: 'target1' });
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const target1 = createRouteRef();
     const routesById = {
       routes: new Map([['target1', target1]]),

@@ -21,6 +21,7 @@ import { createRouteRef } from './RouteRef';
 
 describe('useRouteRefParams', () => {
   it('should provide types params', () => {
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const routeRef = createRouteRef({
       params: ['a', 'b'],
     });
