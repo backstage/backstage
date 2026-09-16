@@ -16158,9 +16158,9 @@ __metadata:
   linkType: hard
 
 "@slack/types@npm:^2.11.0, @slack/types@npm:^2.13.0, @slack/types@npm:^2.14.0, @slack/types@npm:^2.21.0":
-  version: 2.21.1
-  resolution: "@slack/types@npm:2.21.1"
-  checksum: 10/b7395b27b4c3c1bfc63094acf3b6dd47e14dac55180e4034da2340da84bd528789dfc5f65629e35e20fe24f38d027a86419e410a610855a3c0a59b3693e51b23
+  version: 2.22.0
+  resolution: "@slack/types@npm:2.22.0"
+  checksum: 10/22bea34f271e77236309c8cb0f9691898a2b99615d0c8018ea23baf06a20382ec9ee5e0131fbed4d6e38d49c5033bd5a55c8bafd61e26f5de8dfb15b6343f872
   languageName: node
   linkType: hard
 
