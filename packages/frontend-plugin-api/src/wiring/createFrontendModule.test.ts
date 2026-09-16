@@ -53,6 +53,7 @@ describe('createFrontendModule', () => {
             "version": "v2",
           },
         ],
+        "externalRoutes": {},
         "featureFlags": [],
         "if": undefined,
         "pluginId": "test",
