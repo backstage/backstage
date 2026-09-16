@@ -22,7 +22,6 @@ import {
   DefaultEventsService,
   EventsService,
 } from '@backstage/plugin-events-node';
-import { graphql } from '@octokit/graphql';
 import {
   GithubMultiOrgEntityProvider,
   withLocations,
@@ -36,7 +35,6 @@ import {
   isSuspended,
 } from '../lib/github';
 
-jest.mock('@octokit/graphql');
 jest.mock('../lib/github', () => ({
   ...jest.requireActual('../lib/github'),
   createGraphqlClient: jest.fn(),
@@ -1434,7 +1432,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
 
         await events.publish({
           topic: 'github.installation',
@@ -1567,7 +1565,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
 
         await events.publish({
           topic: 'github.organization',
@@ -1639,7 +1637,7 @@ describe('GithubMultiOrgEntityProvider', () => {
           },
         });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
 
         await events.publish({
           topic: 'github.organization',
@@ -1736,7 +1734,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
 
         await events.publish({
           topic: 'github.organization',
@@ -2065,7 +2063,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
 
         await events.publish({
           topic: 'github.team',
@@ -2260,7 +2258,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
 
         await events.publish({
           topic: 'github.team',
@@ -2439,7 +2437,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
 
         await events.publish({
           topic: 'github.membership',
@@ -2597,7 +2595,7 @@ describe('GithubMultiOrgEntityProvider', () => {
             },
           });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
 
         await events.publish({
           topic: 'github.membership',
@@ -2772,7 +2770,7 @@ describe('GithubMultiOrgEntityProvider', () => {
           },
         });
 
-        (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+        (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
 
         await suspendedEvents.publish({
           topic: 'github.membership',
