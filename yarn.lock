@@ -30515,9 +30515,9 @@ __metadata:
   linkType: hard
 
 "humanize-duration@npm:^3.25.1":
-  version: 3.33.2
-  resolution: "humanize-duration@npm:3.33.2"
-  checksum: 10/ac6bc74b095d53e6ff320126d64c0998de213d0e38d0996f23389603c034c8f825915d4318fc19cfdb0612c4963d72d200da43cd7c28ac865bbf9a61f53418f4
+  version: 3.35.0
+  resolution: "humanize-duration@npm:3.35.0"
+  checksum: 10/e670c665c825818a14aa3ba2d839e43b6765622898aa7976e51c186dd95a844c4b8ebc3d9c79df9cd6badbb1fcb66d9e660ab330623c0e262b3a9db0702c1c07
   languageName: node
   linkType: hard
 
