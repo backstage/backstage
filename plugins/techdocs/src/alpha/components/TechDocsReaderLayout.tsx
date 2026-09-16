@@ -19,14 +19,16 @@ import { TechDocsReaderHeader } from './TechDocsReaderHeader';
 import { TechDocsReaderEntityCard } from './TechDocsReaderEntityCard';
 import { TechDocsReaderPageSubheader } from '../../reader/components/TechDocsReaderPageSubheader';
 import { TechDocsReaderContent } from './TechDocsReaderContent';
+import type { ReactNode } from 'react';
 
 export type TechDocsReaderLayoutProps = {
   withHeader?: boolean;
   withSearch?: boolean;
+  children?: ReactNode;
 };
 
 export const TechDocsReaderLayout = (props: TechDocsReaderLayoutProps) => {
-  const { withSearch, withHeader = true } = props;
+  const { withSearch, withHeader = true, children } = props;
   return (
     <>
       {withHeader && <TechDocsReaderHeader withSearch={withSearch} />}
@@ -34,6 +36,7 @@ export const TechDocsReaderLayout = (props: TechDocsReaderLayoutProps) => {
         <TechDocsReaderEntityCard withSearch={!withHeader && withSearch} />
         <TechDocsReaderPageSubheader />
         <TechDocsReaderContent />
+        {children}
       </Container>
     </>
   );

@@ -44,13 +44,20 @@ export function TechDocsReaderPage(props: {
   withSearch: boolean;
   withHeader: boolean;
 }) {
+  // The reader layout renders `TechDocsReaderPageContentAddons`, whose
+  // `useTechDocsAddons()` reads the addon registry from the outlet (see
+  // TechDocsReaderRouter: children become the `*` route element). The
+  // registry MUST therefore be an outlet child: a sibling renders into a
+  // different outlet context, its addons are invisible to the content, and
+  // the reader shows docs with zero addon UI. See issue #35727.
   return (
     <TechDocsReaderRouter>
       <TechDocsReaderLayout
         withSearch={props.withSearch}
         withHeader={props.withHeader}
-      />
-      <Addons options={props.addonOptions} />
+      >
+        <Addons options={props.addonOptions} />
+      </TechDocsReaderLayout>
     </TechDocsReaderRouter>
   );
 }
