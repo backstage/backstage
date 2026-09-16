@@ -169,6 +169,7 @@ export type TemplateParameterSchema = {
   steps: Array<{
     title: string;
     description?: string;
+    when?: string | boolean;
     schema: JsonObject;
   }>;
   formDecorators?: { id: string; input?: JsonObject }[];
