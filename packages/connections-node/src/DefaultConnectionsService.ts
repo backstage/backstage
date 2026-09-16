@@ -25,6 +25,12 @@ import type {
   ConnectionType,
   LookupConnectionType,
 } from '@backstage/connections';
+
+// Internally, a connection carries all applicable auth entries as an array
+// until the service selects one for the requesting plugin.
+type StoredConnection = Omit<Connection, 'auth'> & {
+  auth: Connection['auth'][];
+};
 import type { ConfiguredConnection } from '@backstage/connections/config';
 import { buildConnectionsFromConfig } from '@backstage/connections/config';
 import { getConnectionType } from './lookup';
@@ -59,9 +65,9 @@ function connectionIdentityOf(
 
 class PluginConnectionsService implements ConnectionsService {
   private readonly logger: LoggerService;
-  private readonly connections: Connection[];
+  private readonly connections: StoredConnection[];
 
-  constructor(logger: LoggerService, connections: Connection[]) {
+  constructor(logger: LoggerService, connections: StoredConnection[]) {
     this.logger = logger;
     this.connections = connections;
   }
@@ -109,15 +115,13 @@ class PluginConnectionsService implements ConnectionsService {
       }`,
     );
 
-    let connection: Connection<TType> | undefined;
+    let connection: StoredConnection | undefined;
     if (identity !== undefined) {
       connection = this.connections.find(
         c => c.type === type && connectionIdentityOf(strategy, c) === identity,
-      ) as Connection<TType> | undefined;
+      );
     } else {
-      connection = this.connections.find(c => c.type === type) as
-        | Connection<TType>
-        | undefined;
+      connection = this.connections.find(c => c.type === type);
     }
 
     if (!connection) {
@@ -207,7 +211,7 @@ export class DefaultConnectionsService {
     );
   }
 
-  #getConnectionsForPlugin(pluginId: string): Connection[] {
+  #getConnectionsForPlugin(pluginId: string): StoredConnection[] {
     // Filter connections and hide auth methods based on these conditions:
     // 1. Include Connections with no plugin matcher condition
     // 2. Include Connections with a plugin matcher condition for this plugin
@@ -218,19 +222,19 @@ export class DefaultConnectionsService {
         return [];
       }
 
-      const pluginMatched: Connection['auth'] = [];
-      const unmatched: Connection['auth'] = [];
+      const pluginMatched: StoredConnection['auth'] = [];
+      const unmatched: StoredConnection['auth'] = [];
       for (const { match: authMatch, ...authRest } of auth) {
         if (authMatch) {
           if (!authMatch.plugins.includes(pluginId)) continue;
-          pluginMatched.push(authRest as Connection['auth'][number]);
+          pluginMatched.push(authRest as StoredConnection['auth'][number]);
         } else {
-          unmatched.push(authRest as Connection['auth'][number]);
+          unmatched.push(authRest as StoredConnection['auth'][number]);
         }
       }
 
       return [
-        { ...rest, auth: [...pluginMatched, ...unmatched] } as Connection,
+        { ...rest, auth: [...pluginMatched, ...unmatched] } as StoredConnection,
       ];
     });
   }

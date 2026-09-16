@@ -22,7 +22,7 @@ import type { ConnectionType, LookupConnectionType } from '../definitions';
 // - With `T`: a single type, e.g. `Connection<'github'>`.
 // - With `TAuthMethod`: narrows `auth` to a single method variant — the
 //   shape returned by `ConnectionsService.find`.
-// - With no parameters: an open shape suitable for internal storage.
+// - With no parameters: a union of all method variants.
 /** @public */
 export type Connection<
   T extends
@@ -34,11 +34,11 @@ export type Connection<
       type: LookupConnectionType<T>['type'];
       title: string;
       auth: string extends TAuthMethod
-        ? (IDefinition['auth'][number] extends infer A
-            ? A extends { method: string }
-              ? Expand<A & { title: string }>
-              : never
-            : never)[]
+        ? IDefinition['auth'][number] extends infer A
+          ? A extends { method: string }
+            ? Expand<A & { title: string }>
+            : never
+          : never
         : Extract<
             IDefinition['auth'][number] extends infer A
               ? A extends { method: string }
@@ -58,6 +58,4 @@ export type Connection<
 export type ConnectionAuth<
   T extends ConnectionType,
   TAuthMethod extends string = string,
-> = Connection<T, TAuthMethod>['auth'] extends (infer E)[]
-  ? E
-  : Connection<T, TAuthMethod>['auth'];
+> = Connection<T, TAuthMethod>['auth'];
