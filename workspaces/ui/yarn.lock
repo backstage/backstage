@@ -4224,6 +4224,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"abbrev@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "abbrev@npm:5.0.0"
+  checksum: 10/a32641fb7a8ba0ad6f65efda80a632c965a2567f52c988897bffc47f473c4e9c3f0166de19d939866b1ed58ec50ce36f697d54a476589ca2706f8b5605ed41f0
+  languageName: node
+  linkType: hard
+
 "accepts@npm:~1.3.8":
   version: 1.3.8
   resolution: "accepts@npm:1.3.8"
@@ -5180,14 +5187,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.0":
-  version: 1.0.30001791
-  resolution: "caniuse-lite@npm:1.0.30001791"
-  checksum: 10/0ec6ef60ca9f5da3da37a57c8b7b645878b6aca406eb5b569dda0bdfa518fe83320e3e2e9e25450a40a8f34854c1537c287f8bd107830aa6f39c3018f98fe408
-  languageName: node
-  linkType: hard
-
-"caniuse-lite@npm:^1.0.30001810":
+"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001810":
   version: 1.0.30001810
   resolution: "caniuse-lite@npm:1.0.30001810"
   checksum: 10/47d7db627c3f3d1a10e06eef9efbb84295c6ef9d959b585b64032cc293637ca7b9b6af7e5d5752972b3e690d9561f14b9561db03890fbc6e38dc1aaa54e51d97
@@ -10460,9 +10460,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-gyp@npm:^12.0.0, node-gyp@npm:latest":
-  version: 12.3.0
-  resolution: "node-gyp@npm:12.3.0"
+"node-gyp@npm:^12.0.0":
+  version: 12.4.0
+  resolution: "node-gyp@npm:12.4.0"
   dependencies:
     env-paths: "npm:^2.2.0"
     exponential-backoff: "npm:^3.1.1"
@@ -10476,7 +10476,27 @@ __metadata:
     which: "npm:^6.0.0"
   bin:
     node-gyp: bin/node-gyp.js
-  checksum: 10/cd97bf17f0f3e6288c42cc23a6db8528a98e7530abdb72ab558272906d603362e4558069f99f8a5250bc78f65ff305b1438caca4f1b31c81904a8798c242603e
+  checksum: 10/b1f52282398b08ed485f7d93859d45a7bd54f9a3ba8f1e2626ebc2e7e150834c20d90d7f204e07f67c0a88e85c7400d90e01618d7e6d7dd8056bc493821ef181
+  languageName: node
+  linkType: hard
+
+"node-gyp@npm:latest":
+  version: 13.0.2
+  resolution: "node-gyp@npm:13.0.2"
+  dependencies:
+    env-paths: "npm:^2.2.0"
+    exponential-backoff: "npm:^3.1.1"
+    graceful-fs: "npm:^4.2.6"
+    nopt: "npm:^10.0.0"
+    proc-log: "npm:^7.0.0"
+    semver: "npm:^7.3.5"
+    tar: "npm:^7.5.4"
+    tinyglobby: "npm:^0.2.12"
+    undici: "npm:^8.4.1"
+    which: "npm:^7.0.0"
+  bin:
+    node-gyp: bin/node-gyp.js
+  checksum: 10/018ca69386d40576c0ab4bb556dc3ecf40a06a260174a8f5d50da9a592d0a90bd5cf936ca481f19de7ccb7f79dc801d17032d8e2b70963194965a1cc79f8063e
   languageName: node
   linkType: hard
 
@@ -10526,6 +10546,17 @@ __metadata:
     util: "npm:^0.12.4"
     vm-browserify: "npm:^1.0.1"
   checksum: 10/5d5ace50868ef1a8ce9718a5fc64e4b6712f8be75bf6ab71f2eb7b5815f55f20507e427eac2fdb384e372f58891eb34089af3b55d3f9b5b60b547c8581a1c30e
+  languageName: node
+  linkType: hard
+
+"nopt@npm:^10.0.0":
+  version: 10.0.1
+  resolution: "nopt@npm:10.0.1"
+  dependencies:
+    abbrev: "npm:^5.0.0"
+  bin:
+    nopt: bin/nopt.js
+  checksum: 10/8021371365e78a2cbab015cac50d8449aa2cc411f0b8f2edb466c1336c3dfee4e61c5bf5bde22ee7dcea80d5f4510a7a8705ed3646c8d782f28b550c62bc4fdf
   languageName: node
   linkType: hard
 
@@ -11715,6 +11746,13 @@ __metadata:
   version: 6.1.0
   resolution: "proc-log@npm:6.1.0"
   checksum: 10/9033f30f168ed5a0991b773d0c50ff88384c4738e9a0a67d341de36bf7293771eed648ab6a0562f62276da12fde91f3bbfc75ffff6e71ad49aafd74fc646be66
+  languageName: node
+  linkType: hard
+
+"proc-log@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "proc-log@npm:7.0.0"
+  checksum: 10/97cd9f4a8a0d84e42ee91e106e5ba5edcb954521e8dbe26ee6ad31396e5c12cc2be5e5b6be7b53fa5a69959afbacd32719106e2d6f45802e34b31d9a3a01ec20
   languageName: node
   linkType: hard
 
@@ -14002,6 +14040,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"undici@npm:^8.4.1":
+  version: 8.10.2
+  resolution: "undici@npm:8.10.2"
+  checksum: 10/90f7ba3d3e9543f25d47552282239faa395eaa66d0db7272ebf57055c8ced34e4c948923c734be5571bfce0cc56080e93c0e2f960e9c5fba163759fce112bab4
+  languageName: node
+  linkType: hard
+
 "unicode-emoji-modifier-base@npm:^1.0.0":
   version: 1.0.0
   resolution: "unicode-emoji-modifier-base@npm:1.0.0"
@@ -14567,6 +14612,17 @@ __metadata:
   bin:
     node-which: bin/which.js
   checksum: 10/dbea77c7d3058bf6c78bf9659d2dce4d2b57d39a15b826b2af6ac2e5a219b99dc8a831b79fdbc453c0598adb4f3f84cf9c2491fd52beb9f5d2dececcad117f68
+  languageName: node
+  linkType: hard
+
+"which@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "which@npm:7.0.0"
+  dependencies:
+    isexe: "npm:^4.0.0"
+  bin:
+    node-which: bin/which.js
+  checksum: 10/913a43ac10df37602ba9795a004dd7ab12ba7dd592aca1f08ec333be1fdd6a49bbf119a88c3f8d0ea70eeb6251726e77069251424d73000299a0a840ed000732
   languageName: node
   linkType: hard
 
