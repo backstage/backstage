@@ -62,7 +62,7 @@ export const EntitySwitch = (props: EntitySwitchProps) => {
   const { entity, loading } = useAsyncEntity();
   const apis = useApiHolder();
   const promiseCache = useRef(
-    new Map<
+    new WeakMap<
       (
         entity: Entity,
         context: { apis: ApiHolder },
@@ -87,7 +87,7 @@ export const EntitySwitch = (props: EntitySwitchProps) => {
   );
 
   if (loading && !entity) {
-    return null;
+    return null as unknown as JSX.Element;
   }
 
   if (!entity) {
@@ -104,11 +104,16 @@ export const EntitySwitch = (props: EntitySwitchProps) => {
       return { if: cached.result, children: switchCase.children };
     }
 
-    const res = switchCase.if(entity, { apis });
+    const condition = switchCase.if;
+    const res = condition(entity, { apis });
     if (typeof res === 'object' && res !== null && 'then' in res) {
-      (res as Promise<unknown>).catch(() => {});
+      (res as Promise<unknown>).catch(() => {
+        if (promiseCache.current.get(condition)?.result === res) {
+          promiseCache.current.delete(condition);
+        }
+      });
     }
-    promiseCache.current.set(switchCase.if, { entity, apis, result: res });
+    promiseCache.current.set(condition, { entity, apis, result: res });
     return { if: res, children: switchCase.children };
   });
 
