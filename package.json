@@ -99,6 +99,8 @@
     "rejectFrontendNetworkRequests": true
   },
   "resolutions": {
+    "@inquirer/type@npm:^4.0.5": "4.0.7",
+    "@inquirer/type@npm:^4.0.7": "4.0.7",
     "@material-ui/pickers@^3.2.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
     "@remixicon/react": ">=4.6.0 <4.9.0",
     "@types/react": "^18.0.0",
@@ -106,7 +108,8 @@
     "@yarnpkg/plugin-npm@npm:^3.1.0": "patch:@yarnpkg/plugin-npm@npm%3A3.7.1#~/.yarn/patches/@yarnpkg-plugin-npm-npm-3.7.1-ab2f1a850e.patch",
     "GendocuPublicApis": "npm:gendocu-public-apis@^1.0.0",
     "ast-types@npm:^0.13.4": "0.16.3",
-    "csstype@npm:^3.0.2": "3.0.9"
+    "csstype@npm:^3.0.2": "3.0.9",
+    "type-fest@npm:^5.5.0": "5.5.0"
   },
   "dependencies": {
     "@backstage/errors": "workspace:^",
@@ -121,7 +124,7 @@
     "@backstage/eslint-plugin": "workspace:*",
     "@backstage/repo-tools": "workspace:*",
     "@changesets/cli": "^2.14.0",
-    "@jest/environment-jsdom-abstract": "~30.2.0",
+    "@jest/environment-jsdom-abstract": "^30",
     "@octokit/rest": "^19.0.3",
     "@playwright/test": "^1.32.3",
     "@spotify/eslint-plugin": "^15.0.0",
@@ -150,7 +153,7 @@
     "eslint-plugin-testing-library": "^7.0.0",
     "fs-extra": "^11.2.0",
     "husky": "^9.0.0",
-    "jest": "~30.2.0",
+    "jest": "^30",
     "js-yaml": "^4.3.2",
     "jsdom": "^27",
     "lint-staged": "^16.0.0",
@@ -191,7 +194,10 @@
     "tsConfig": "./tsconfig.json"
   },
   "resolutionsComments": {
+    "@inquirer/type@npm:^4.0.5": "Inquirer 13.4 types are incompatible with @inquirer/type 4.1.1, which is also requested by MSW through a separate exact dependency.",
+    "@inquirer/type@npm:^4.0.7": "Inquirer 13.4 types are incompatible with @inquirer/type 4.1.1, which is also requested by MSW through a separate exact dependency.",
     "ast-types@npm:^0.13.4": "Some transitive dependencies request ast-types 0.13.x, which predates the TypeScript 5.4 isolatedModules compatibility fix released in ast-types 0.16.2.",
-    "csstype@npm:^3.0.2": "Material UI v4 types typography font weights through React CSS types while its styling API uses csstype 2.x. csstype 3.0.10 widened numeric CSS properties to include arbitrary strings, making those types incompatible."
+    "csstype@npm:^3.0.2": "Material UI v4 types typography font weights through React CSS types while its styling API uses csstype 2.x. csstype 3.0.10 widened numeric CSS properties to include arbitrary strings, making those types incompatible.",
+    "type-fest@npm:^5.5.0": "type-fest 5.9 references Float16Array, which is not included in the TypeScript 5.7 standard library used by Backstage."
   }
 }
