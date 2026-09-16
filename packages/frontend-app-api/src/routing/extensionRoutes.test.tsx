@@ -128,7 +128,7 @@ it('resolves structural copies and sub routes alongside historical page refs', (
   ).toThrow('parameters');
 });
 
-it('shares module precedence with extensions while keeping structural targets stable', () => {
+it('shares module precedence with extensions and redirects structural targets', () => {
   const root = createRouteRef({ extensionId: 'page:test/root' });
   const replacement = createRouteRef({ extensionId: 'page:test/replacement' });
   const external = createExternalRouteRef({ defaultTarget: 'test.root' });
@@ -162,10 +162,66 @@ it('shares module precedence with extensions while keeping structural targets st
     features: [app, plugin, low, high],
   }).apis.get(routeResolutionApiRef)!;
   expect(winning.resolve(external)?.()).toBe('/high');
-  expect(winning.resolve(root)?.()).toBe('/base');
+  expect(winning.resolve(root)?.()).toBe('/high');
   expect(OpaqueRouteRef.toInternal(root).getExtensionId?.()).toBe(
     'page:test/root',
   );
+});
+
+it('adds and overrides module external routes with named bindings', () => {
+  const root = createRouteRef({ extensionId: 'page:test/root' });
+  const other = createRouteRef({ extensionId: 'page:test/other' });
+  const original = createExternalRouteRef({ defaultTarget: 'test.root' });
+  const replacement = createExternalRouteRef({ defaultTarget: 'test.other' });
+  const added = createExternalRouteRef({ defaultTarget: 'test.root' });
+  const plugin = createFrontendPlugin({
+    pluginId: 'test',
+    routes: { root, other },
+    externalRoutes: { home: original },
+    extensions: [page('root', '/root'), page('other', '/other')],
+  });
+  const low = createFrontendModule({
+    pluginId: 'test',
+    externalRoutes: { home: original },
+  });
+  const high = createFrontendModule({
+    pluginId: 'test',
+    externalRoutes: { home: replacement, added },
+  });
+  const oldModule = { ...createFrontendModule({ pluginId: 'test' }) };
+  delete (oldModule as { externalRoutes?: unknown }).externalRoutes;
+  const ignored = createFrontendModule({
+    pluginId: 'missing',
+    externalRoutes: {
+      home: createExternalRouteRef({ defaultTarget: 'missing.root' }),
+    },
+  });
+  const features = [app, high, plugin, low, oldModule, ignored];
+  const lower = createSpecializedApp({ features }).apis.get(
+    routeResolutionApiRef,
+  )!;
+  expect(lower.resolve(replacement)?.()).toBe('/root');
+  expect(lower.resolve(added)?.()).toBe('/root');
+
+  const overriddenFeatures = [app, plugin, low, high];
+  const higher = createSpecializedApp({
+    features: overriddenFeatures,
+  }).apis.get(routeResolutionApiRef)!;
+  expect(higher.resolve(original)?.()).toBe('/other');
+  expect(higher.resolve(replacement)?.()).toBe('/other');
+
+  const configured = createSpecializedApp({
+    features: overriddenFeatures,
+    config: new ConfigReader({
+      app: { routes: { bindings: { 'test.added': 'test.other' } } },
+    }),
+    bindRoutes({ bind }) {
+      bind({ home: original }, { home: false });
+    },
+  }).apis.get(routeResolutionApiRef)!;
+  expect(configured.resolve(added)?.()).toBe('/other');
+  expect(configured.resolve(original)).toBeUndefined();
+  expect(configured.resolve(replacement)).toBeUndefined();
 });
 
 it('binds duplicated external refs through named IDs, including disabled defaults and sub routes', () => {
@@ -339,4 +395,141 @@ it('uses deprecated mounts only when the structural target is absent', () => {
       ],
     }),
   ).not.toThrow();
+});
+
+it('redirects renamed routes, copies, sub routes, and chained targets', () => {
+  const original = createRouteRef({ extensionId: 'page:test/original' });
+  const copy = createRouteRef({ extensionId: 'page:test/original' });
+  const middle = createRouteRef({ extensionId: 'page:test/middle' });
+  const final = createRouteRef({ extensionId: 'page:test/final' });
+  const detail = createSubRouteRef({ parent: copy, path: '/:id' });
+  const oldExternal = createExternalRouteRef({ defaultTarget: 'test.oldName' });
+  const newExternal = createExternalRouteRef({ defaultTarget: 'test.newName' });
+  const plugin = createFrontendPlugin({
+    pluginId: 'test',
+    routes: { oldName: original, newName: copy, middle },
+    externalRoutes: { oldExternal, newExternal },
+    extensions: [page('final', '/final')],
+  });
+  const module = createFrontendModule({
+    pluginId: 'test',
+    routes: { newName: middle, middle: final },
+  });
+  const routes = createSpecializedApp({
+    features: [app, plugin, module],
+  }).apis.get(routeResolutionApiRef)!;
+  for (const ref of [original, copy, middle, final, oldExternal, newExternal]) {
+    expect(routes.resolve(ref)?.()).toBe('/final');
+  }
+  expect(routes.resolve(detail)?.({ id: 'one' })).toBe('/final/one');
+  expect(OpaqueRouteRef.toInternal(original).getExtensionId?.()).toBe(
+    'page:test/original',
+  );
+  const disabled = createSpecializedApp({
+    features: [
+      app,
+      plugin,
+      module,
+      createFrontendModule({
+        pluginId: 'test',
+        extensions: [page('final', '/final', { disabled: true })],
+      }),
+    ],
+  }).apis.get(routeResolutionApiRef)!;
+  expect(disabled.resolve(original)).toBeUndefined();
+  expect(disabled.resolve(detail)).toBeUndefined();
+});
+
+it('validates the winning overrides without falling back to earlier modules', () => {
+  const a = createRouteRef({ extensionId: 'page:test/a' });
+  const b = createRouteRef({ extensionId: 'page:test/b' });
+  const plugin = createFrontendPlugin({
+    pluginId: 'test',
+    routes: {
+      oldName: a,
+      newName: createRouteRef({ extensionId: 'page:test/a' }),
+      other: b,
+    },
+    extensions: [page('a', '/a'), page('b', '/b'), page('c', '/c')],
+  });
+  const low = createFrontendModule({
+    pluginId: 'test',
+    routes: {
+      oldName: b,
+      newName: createRouteRef({
+        extensionId: 'page:test/c',
+        params: ['unused'],
+      }),
+    },
+  });
+  const high = createFrontendModule({
+    pluginId: 'test',
+    routes: { newName: createRouteRef({ extensionId: 'page:test/b' }) },
+  });
+  const routes = createSpecializedApp({
+    features: [app, plugin, low, high],
+  }).apis.get(routeResolutionApiRef)!;
+  expect(routes.resolve(a)?.()).toBe('/b');
+  expect(() =>
+    createSpecializedApp({ features: [app, plugin, high, low] }),
+  ).toThrow(/Conflicting route overrides 'test.oldName' and 'test.newName'/);
+  expect(() =>
+    createSpecializedApp({
+      features: [
+        app,
+        plugin,
+        createFrontendModule({
+          pluginId: 'test',
+          routes: { oldName: b, other: a },
+        }),
+      ],
+    }),
+  ).toThrow(/Route redirect cycle/);
+  expect(() =>
+    createSpecializedApp({
+      features: [
+        app,
+        plugin,
+        createFrontendModule({
+          pluginId: 'test',
+          routes: {
+            oldName: createRouteRef({
+              extensionId: 'page:test/c',
+              params: ['id'],
+            }),
+          },
+        }),
+      ],
+    }),
+  ).toThrow(/incompatible parameters/);
+});
+
+it('redirects individual sub routes without redirecting their parent or siblings', () => {
+  const root = createRouteRef({ extensionId: 'page:test/root' });
+  const detail = createSubRouteRef({ parent: root, path: '/:id' });
+  const sibling = createSubRouteRef({ parent: root, path: '/sibling' });
+  const target = createRouteRef({
+    extensionId: 'page:test/detail',
+    params: ['id'],
+  });
+  const plugin = createFrontendPlugin({
+    pluginId: 'test',
+    routes: { root, detail, sibling },
+    extensions: [page('root', '/root'), page('detail', '/detail/:id')],
+  });
+  const module = createFrontendModule({
+    pluginId: 'test',
+    routes: { detail: target },
+  });
+  const routes = createSpecializedApp({
+    features: [app, plugin, module],
+  }).apis.get(routeResolutionApiRef)!;
+  expect(routes.resolve(root)?.()).toBe('/root');
+  expect(routes.resolve(sibling)?.()).toBe('/root/sibling');
+  expect(routes.resolve(detail)?.({ id: 'one' })).toBe('/detail/one');
+  const copy = createSubRouteRef({
+    parent: createRouteRef({ extensionId: 'page:test/root' }),
+    path: '/:id',
+  });
+  expect(routes.resolve(copy)?.({ id: 'two' })).toBe('/detail/two');
 });

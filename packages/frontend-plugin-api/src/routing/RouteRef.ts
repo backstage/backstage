@@ -54,12 +54,16 @@ export function createRouteRef<
   [TParamKey] extends [never] ? undefined : { [param in TParamKey]: string }
 > {
   const params = (config?.params ?? []) as string[];
-  const extensionId = config?.extensionId;
+  const extensionId: string | undefined = config?.extensionId;
   if (
     extensionId !== undefined &&
-    (typeof extensionId !== 'string' || !extensionId)
+    (typeof extensionId !== 'string' ||
+      /\s/.test(extensionId) ||
+      !/^(?:[^:/]+:)?[^:/]+(?:\/[^:/]+)?$/.test(extensionId))
   ) {
-    throw new Error('RouteRef extensionId must be a non-empty string');
+    throw new Error(
+      `Invalid RouteRef extensionId '${extensionId}', expected '[<kind>:]<namespace>[/<name>]'`,
+    );
   }
   const creationSite = describeParentCallSite();
 

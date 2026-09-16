@@ -798,6 +798,7 @@ export interface CreateFrontendModuleOptions<
 > {
   // (undocumented)
   extensions?: TExtensions;
+  externalRoutes?: Record<string, ExternalRouteRef>;
   // (undocumented)
   featureFlags?: FeatureFlagConfig[];
   // (undocumented)

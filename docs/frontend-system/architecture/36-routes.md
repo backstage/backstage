@@ -481,37 +481,40 @@ export default createFrontendModule({
 });
 ```
 
-This changes the named target `example.root` used in external defaults and
-configuration. A reference already targeting `page:example` continues to target
-that extension. Module routes use the same resolved feature order as module
-extensions: modules override the base plugin, and the last module wins.
-Modules for plugins that are not installed are ignored. Modules do not provide
-`externalRoutes`.
+This redirects the original target of `example.root` to
+`page:example/custom-index`. Existing references to the original extension,
+including independently created copies and subroutes, follow the redirect.
 
-## Migrating existing references
+Multiple route names can point to the same target, for example when retaining a
+deprecated name during a rename. Overriding either name redirects both. If the
+final overrides send those names to different targets, app assembly fails with
+a conflict. Redirect cycles and incompatible route parameters also cause errors.
 
-For native extensions, add `extensionId` to each `createRouteRef` call and remove the corresponding
-`PageBlueprint` or `SubPageBlueprint` `routeRef` parameter. Keep `params` unchanged
-and ensure they match the target extension's route path.
+Module routes use the same resolved feature order as module extensions: modules
+override the base plugin, and the last module wins for each named route. The app
+validates redirects after selecting those final overrides.
 
-The runtime continues to support plugins built with earlier versions, including
-page-emitted refs and historical aliases. The `aliasFor` creation option is no
-longer available in TypeScript. When overriding a page that still uses a
-historical ref, keep emitting that ref, obtained from the plugin's `routes`.
+Overriding a named subroute redirects that subroute's path. Other paths under its
+parent retain their own targets.
+Modules for plugins that are not installed are ignored.
 
-Legacy refs converted with `convertLegacyRouteRef` keep their historical page or
-routing-shim association. A structural ref can also be converted for use in the
-old frontend system, provided the plugin explicitly uses that same ref as its
-legacy mount point. The old system cannot infer a mount point from an extension
-ID.
+Modules can also add or override `externalRoutes` in the owning plugin's
+namespace. These follow the same precedence as `routes`. For example, a module
+can change the default target of an external route:
 
-For compatibility with hybrid conversion utilities, a structural ref can still
-be registered through an extension's deprecated `routeRef` output. If the target
-extension ID is absent from the app, the runtime uses that explicit mount as a
-fallback, including for equivalent ref copies. Multiple fallback mounts for the same target are
-ambiguous and are rejected when the fallback is needed.
+```ts
+export default createFrontendModule({
+  pluginId: 'example',
+  externalRoutes: {
+    viewItem: createExternalRouteRef({
+      params: ['id'],
+      defaultTarget: 'items.details',
+    }),
+  },
+});
+```
 
-An installed target always takes precedence over deprecated registrations. If
-that target is disabled or conditionally unavailable, the route remains
-unavailable. Keep the deprecated registration when migrating a shared ref used
-by hybrid wrappers.
+App bindings for `example.viewItem` take precedence over its default target.
+
+For existing plugins, see the [route reference migration guide](../../tutorials/extension-route-reference-migration.md)
+or the [old frontend system plugin migration guide](../building-plugins/05-migrating.md).
