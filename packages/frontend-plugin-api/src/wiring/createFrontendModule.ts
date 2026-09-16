@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { RouteRef, SubRouteRef } from '../routing';
+import { OpaqueExternalRouteRef } from '@internal/frontend';
+import { ExternalRouteRef, RouteRef, SubRouteRef } from '../routing';
 import { validateRouteNamespace } from '../routing/validateRouteNamespace';
 import { ExtensionDefinition } from './createExtension';
 import {
@@ -33,6 +34,8 @@ export interface CreateFrontendModuleOptions<
   extensions?: TExtensions;
   /** Named routes to add or override in the owning plugin. Later modules take precedence. */
   routes?: Record<string, RouteRef | SubRouteRef>;
+  /** External routes to add or override in the owning plugin. Later modules take precedence. */
+  externalRoutes?: Record<string, ExternalRouteRef>;
   featureFlags?: FeatureFlagConfig[];
   if?: FilterPredicate;
 }
@@ -47,6 +50,7 @@ export interface FrontendModule {
 export interface InternalFrontendModule extends FrontendModule {
   readonly version: 'v1';
   readonly routes?: Record<string, RouteRef | SubRouteRef>;
+  readonly externalRoutes?: Record<string, ExternalRouteRef>;
   readonly extensions: Extension<unknown>[];
   readonly featureFlags: FeatureFlagConfig[];
   readonly if?: FilterPredicate;
@@ -97,6 +101,9 @@ export function createFrontendModule<
 >(options: CreateFrontendModuleOptions<TId, TExtensions>): FrontendModule {
   const { pluginId } = options;
   validateRouteNamespace(pluginId, options.routes ?? {});
+  for (const [name, ref] of Object.entries(options.externalRoutes ?? {})) {
+    OpaqueExternalRouteRef.toInternal(ref).setId(`${pluginId}.${name}`);
+  }
 
   const { extensions } = resolveExtensionDefinitions(options.extensions ?? [], {
     namespace: pluginId,
@@ -111,6 +118,7 @@ export function createFrontendModule<
     if: options.if,
     extensions,
     routes: options.routes ?? {},
+    externalRoutes: options.externalRoutes ?? {},
     toString() {
       return `Module{pluginId=${pluginId}}`;
     },

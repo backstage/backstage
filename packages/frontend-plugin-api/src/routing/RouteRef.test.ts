@@ -47,6 +47,39 @@ describe('RouteRef', () => {
     );
   });
 
+  it('validates extension ID syntax', () => {
+    for (const extensionId of [
+      'page:test',
+      'page:test/detail',
+      'test',
+      'test/detail',
+    ]) {
+      expect(
+        OpaqueRouteRef.toInternal(
+          createRouteRef({ extensionId }),
+        ).getExtensionId?.(),
+      ).toBe(extensionId);
+    }
+    for (const extensionId of [
+      '',
+      ' ',
+      'page:test\n',
+      'page:',
+      ':test',
+      '/test',
+      'test/',
+      'page:test/a/b',
+      'page:test:detail',
+      'page:test/with space',
+      null,
+      123,
+    ]) {
+      expect(() =>
+        createRouteRef({ extensionId: extensionId as string }),
+      ).toThrow('Invalid RouteRef extensionId');
+    }
+  });
+
   it('should be created with params', () => {
     const routeRef: RouteRef<{
       x: string;

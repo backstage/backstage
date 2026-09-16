@@ -756,6 +756,7 @@ export default {
               'Guides for migrating between different versions and systems.',
           },
           [
+            'tutorials/extension-route-reference-migration',
             'tutorials/jest30-migration',
             'tutorials/react-router-stable-migration',
             'tutorials/react18-migration',
