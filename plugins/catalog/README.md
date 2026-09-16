@@ -22,6 +22,10 @@ yarn --cwd packages/app add @backstage/plugin-catalog
 
 Once installed, the plugin is automatically available in your app through the default feature discovery. For more details and alternative installation methods, see [installing plugins](https://backstage.io/docs/frontend-system/building-apps/installing-plugins).
 
+In the new frontend system, catalog entity pages render their entity-specific
+header and navigation without an additional plugin-level header. The old
+frontend system is unaffected by this behavior.
+
 ## Old Frontend System
 
 If your Backstage app uses the old frontend system, you need to manually wire the plugin into your app as outlined in this section. If you are on the new frontend system, you can skip this.

@@ -203,6 +203,36 @@ describe('Entity page', () => {
     },
   });
 
+  it('does not render the plugin header above the entity header', async () => {
+    const tester = createExtensionTester(
+      Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+    ).add(overviewEntityContent);
+
+    await renderInTestApp(tester.reactElement(), {
+      apis: [mockCatalogApi, [starredEntitiesApiRef, mockStarredEntitiesApi]],
+      mountPath: '/catalog/:namespace/:kind/:name',
+      initialRouteEntries: [`${entityPath}/overview`],
+      config: {
+        app: {
+          title: 'Custom app',
+        },
+        backend: { baseUrl: 'http://localhost:7000' },
+      },
+      mountedRoutes: {
+        '/catalog': convertLegacyRouteRef(rootRouteRef),
+        '/catalog/:namespace/:kind/:name':
+          convertLegacyRouteRef(entityRouteRef),
+      },
+    });
+
+    await expect(
+      screen.findByRole('heading', { name: 'artist-lookup' }),
+    ).resolves.toBeInTheDocument();
+    expect(
+      screen.queryByRole('navigation', { name: 'Breadcrumbs' }),
+    ).not.toBeInTheDocument();
+  });
+
   describe('Entity Page Groups', () => {
     it('Should render a group as dropdown', async () => {
       const tester = createExtensionTester(
