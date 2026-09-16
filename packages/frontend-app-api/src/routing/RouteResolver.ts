@@ -36,6 +36,7 @@ import {
 import { RouteAliasResolver } from './RouteAliasResolver';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
+import { RouteRedirects } from './RouteRedirects';
 import { joinPaths } from './joinPaths';
 
 /**
@@ -51,6 +52,7 @@ function resolveTargetRef(
   routeRefsById: Map<string, RouteRef | SubRouteRef>,
   extensionRoutes: Map<string, RouteRef | undefined>,
   fallbackRoutes: Map<string, RouteRef | undefined>,
+  redirects: RouteRedirects,
 ): readonly [RouteRef | undefined, string] {
   // First we figure out which absolute route ref we're dealing with, an if there was an sub route path to append.
   // For sub routes it will be the parent path, while for external routes it will be the bound route.
@@ -80,17 +82,18 @@ function resolveTargetRef(
     ref = resolvedRoute;
   }
 
-  if (OpaqueSubRouteRef.isType(ref)) {
-    const internal = OpaqueSubRouteRef.toInternal(ref);
-    path = ref.path;
-    ref = internal.getParent();
-  }
-
-  if (!OpaqueRouteRef.isType(ref)) {
+  if (!OpaqueRouteRef.isType(ref) && !OpaqueSubRouteRef.isType(ref)) {
     throw new Error(
       `Unexpectedly resolved ${targetRouteRef} to a non-route ref ${ref}`,
     );
   }
+
+  const params = OpaqueSubRouteRef.isType(ref)
+    ? OpaqueSubRouteRef.toInternal(ref).getParams()
+    : OpaqueRouteRef.toInternal(ref).getParams();
+  const redirected = redirects.resolve(ref);
+  ref = redirected.ref;
+  path = redirected.path;
 
   const internal = OpaqueRouteRef.toInternal(ref);
   const extensionId = internal.getExtensionId?.();
@@ -110,11 +113,13 @@ function resolveTargetRef(
       return [undefined, ''];
     }
     const expected = [
-      ...(routePaths.get(mountedRef) ?? '').matchAll(/:([\w-]+)/g),
+      ...joinPaths(routePaths.get(mountedRef) ?? '', path).matchAll(
+        /:([\w-]+)/g,
+      ),
     ]
       .map(match => match[1])
       .sort();
-    const actual = [...internal.getParams()].sort();
+    const actual = [...params].sort();
     if (JSON.stringify(actual) !== JSON.stringify(expected)) {
       throw new Error(
         `Route reference for '${extensionId}' has parameters [${actual}], but its mounted path requires [${expected}]`,
@@ -232,6 +237,7 @@ export class RouteResolver implements RouteResolutionApi {
     routeAliasResolver: RouteAliasResolver,
     routeRefsById: Map<string, RouteRef | SubRouteRef>,
     installedExtensionIds: Iterable<string> = [],
+    private readonly redirects = new RouteRedirects(),
   ) {
     // An installed but unmounted target must not resolve through a fallback.
     for (const id of installedExtensionIds) {
@@ -263,8 +269,8 @@ export class RouteResolver implements RouteResolutionApi {
         }
         if (object.appNode) {
           const extensionId = object.appNode.spec.id;
+          // @ts-expect-error Internal mount refs are identities, not extension targets
           ref = createRouteRef({
-            extensionId,
             params: [...object.path.matchAll(/:([\w-]+)/g)].map(
               match => match[1],
             ),
@@ -302,24 +308,29 @@ export class RouteResolver implements RouteResolutionApi {
       if (!ref) {
         continue;
       }
-      const root = OpaqueSubRouteRef.isType(ref)
+      const originalRoot = OpaqueSubRouteRef.isType(ref)
         ? OpaqueSubRouteRef.toInternal(ref).getParent()
         : ref;
+      const original = OpaqueRouteRef.toInternal(originalRoot);
+      const originalId = original.getExtensionId?.();
+      if (originalId !== undefined) {
+        const contract = JSON.stringify([...original.getParams()].sort());
+        if (
+          contracts.has(originalId) &&
+          contracts.get(originalId) !== contract
+        ) {
+          throw new Error(
+            `Conflicting route parameter contracts for extension '${originalId}'`,
+          );
+        }
+        contracts.set(originalId, contract);
+      }
+      const root = this.redirects.resolve(ref).ref;
       const internal = OpaqueRouteRef.toInternal(root);
       const extensionId = internal.getExtensionId?.();
       if (extensionId === undefined) {
         continue;
       }
-      const contract = JSON.stringify([...internal.getParams()].sort());
-      if (
-        contracts.has(extensionId) &&
-        contracts.get(extensionId) !== contract
-      ) {
-        throw new Error(
-          `Conflicting route parameter contracts for extension '${extensionId}'`,
-        );
-      }
-      contracts.set(extensionId, contract);
       const node = tree.nodes.get(extensionId);
       if (!node && !this.fallbackRoutes.has(extensionId)) {
         throw new Error(
@@ -345,6 +356,7 @@ export class RouteResolver implements RouteResolutionApi {
         this.routeRefsById,
         this.extensionRoutes,
         this.fallbackRoutes,
+        this.redirects,
       );
     }
     for (const [externalRef, target] of this.routeBindings) {
@@ -380,6 +392,7 @@ export class RouteResolver implements RouteResolutionApi {
       this.routeRefsById,
       this.extensionRoutes,
       this.fallbackRoutes,
+      this.redirects,
     );
     if (!targetRef) {
       return undefined;
