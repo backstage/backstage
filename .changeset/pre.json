@@ -233,5 +233,10 @@
     "@backstage/plugin-user-settings-backend": "0.4.7",
     "@backstage/plugin-user-settings-common": "0.1.0"
   },
-  "changesets": []
+  "changesets": [
+    "bright-owls-bind",
+    "create-app-1789522822",
+    "fair-catalog-projections",
+    "incremental-ingestion-mark-entities-upsert"
+  ]
 }
