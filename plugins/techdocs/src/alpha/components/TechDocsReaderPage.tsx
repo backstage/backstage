@@ -43,12 +43,14 @@ export function TechDocsReaderPage(props: {
   addonOptions: TechDocsAddonOptions[];
   withSearch: boolean;
   withHeader: boolean;
+  withFeedbackLink: boolean;
 }) {
   return (
     <TechDocsReaderRouter>
       <TechDocsReaderLayout
         withSearch={props.withSearch}
         withHeader={props.withHeader}
+        withFeedbackLink={props.withFeedbackLink}
       />
       <Addons options={props.addonOptions} />
     </TechDocsReaderRouter>
@@ -58,9 +60,13 @@ export function TechDocsReaderPage(props: {
 export function TechDocsEntityContent(props: {
   addonOptions: TechDocsAddonOptions[];
   emptyState?: ReactElement;
+  withFeedbackLink: boolean;
 }) {
   return (
-    <EmbeddedDocsRouter emptyState={props.emptyState}>
+    <EmbeddedDocsRouter
+      emptyState={props.emptyState}
+      withFeedbackLink={props.withFeedbackLink}
+    >
       <Addons options={props.addonOptions} />
     </EmbeddedDocsRouter>
   );

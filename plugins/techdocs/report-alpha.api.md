@@ -126,6 +126,7 @@ const _default: OverridableFrontendPlugin<
     }>;
     'entity-content:techdocs': OverridableExtensionDefinition<{
       config: {
+        withoutFeedbackLink: boolean;
         path: string | undefined;
         title: string | undefined;
         filter: FilterPredicate | undefined;
@@ -133,6 +134,7 @@ const _default: OverridableFrontendPlugin<
         icon: string | undefined;
       };
       configInput: {
+        withoutFeedbackLink?: boolean | undefined;
         path?: string | undefined;
         title?: string | undefined;
         filter?: FilterPredicate | undefined;
@@ -342,12 +344,14 @@ const _default: OverridableFrontendPlugin<
       config: {
         withoutSearch: boolean;
         withoutHeader: boolean;
+        withoutFeedbackLink: boolean;
         path: string | undefined;
         title: string | undefined;
       };
       configInput: {
         withoutSearch?: boolean | undefined;
         withoutHeader?: boolean | undefined;
+        withoutFeedbackLink?: boolean | undefined;
         path?: string | undefined;
         title?: string | undefined;
       };

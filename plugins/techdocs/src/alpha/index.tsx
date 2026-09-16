@@ -171,6 +171,7 @@ const techDocsReaderPage = PageBlueprint.makeWithOverrides({
   configSchema: {
     withoutSearch: z.boolean().default(false),
     withoutHeader: z.boolean().default(false),
+    withoutFeedbackLink: z.boolean().default(false),
   },
   factory(originalFactory, { apis, inputs, config }) {
     const addonsApi = apis.get(techdocsAddonsApiRef);
@@ -193,6 +194,7 @@ const techDocsReaderPage = PageBlueprint.makeWithOverrides({
             addonOptions={addonOptions}
             withSearch={!config.withoutSearch}
             withHeader={!config.withoutHeader}
+            withFeedbackLink={!config.withoutFeedbackLink}
           />
         );
       },
@@ -206,6 +208,9 @@ const techDocsReaderPage = PageBlueprint.makeWithOverrides({
  * @alpha
  */
 const techDocsEntityContent = EntityContentBlueprint.makeWithOverrides({
+  configSchema: {
+    withoutFeedbackLink: z.boolean().default(false),
+  },
   inputs: {
     addons: createExtensionInput([AddonBlueprint.dataRefs.addon]),
     emptyState: createExtensionInput(
@@ -238,6 +243,7 @@ const techDocsEntityContent = EntityContentBlueprint.makeWithOverrides({
               emptyState={context.inputs.emptyState?.get(
                 coreExtensionData.reactElement,
               )}
+              withFeedbackLink={!context.config.withoutFeedbackLink}
             />
           ));
         },

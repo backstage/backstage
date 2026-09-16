@@ -170,7 +170,7 @@ on extension overrides and the different override patterns available, see the
 ## How to customize the TechDocs reader page?
 
 The TechDocs reader page can be configured through `app-config.yaml`. For
-example, you can disable the in-context search or the header:
+example, you can disable the in-context search, the header, or the feedback link:
 
 ```yaml title="app-config.yaml"
 app:
@@ -186,6 +186,24 @@ app:
     - page:techdocs/reader:
         config:
           withoutHeader: true
+```
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - page:techdocs/reader:
+        config:
+          withoutFeedbackLink: true
+```
+
+The `withoutFeedbackLink` option is also available on the entity content page:
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - entity-content:techdocs:
+        config:
+          withoutFeedbackLink: true
 ```
 
 For more advanced customization of the reader page, you can override the page

@@ -148,7 +148,36 @@ describe('<TechDocsReaderPageContent />', () => {
     });
 
     const entityRef = getCompoundEntityRef(mockEntityMetadata);
-    expect(useTechDocsReaderDom).toHaveBeenCalledWith(entityRef, defaultPath);
+    expect(useTechDocsReaderDom).toHaveBeenCalledWith(entityRef, {
+      defaultPath,
+    });
+  });
+
+  it('should forward withFeedbackLink to the reader dom', async () => {
+    getEntityMetadata.mockResolvedValue(mockEntityMetadata);
+    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
+    useTechDocsReaderDom.mockReturnValue(document.createElement('html'));
+    useReaderState.mockReturnValue({ state: 'cached' });
+
+    const rendered = await renderInTestApp(
+      <Wrapper>
+        <TechDocsReaderPageContent
+          withSearch={false}
+          withFeedbackLink={false}
+        />
+      </Wrapper>,
+    );
+
+    await waitFor(() => {
+      expect(
+        rendered.getByTestId('techdocs-native-shadowroot'),
+      ).toBeInTheDocument();
+    });
+
+    const entityRef = getCompoundEntityRef(mockEntityMetadata);
+    expect(useTechDocsReaderDom).toHaveBeenCalledWith(entityRef, {
+      withFeedbackLink: false,
+    });
   });
 
   it('should not render techdocs content if entity metadata is missing', async () => {
