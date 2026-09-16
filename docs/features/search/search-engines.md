@@ -110,10 +110,10 @@ usage of either AWS or Elastic.co hosted solutions, or a custom self-hosted solu
 
 ### Supported versions
 
-| Search Engine | Minimum Version |
-| ------------- | --------------- |
-| Elasticsearch | 8.19            |
-| OpenSearch    | 1.x / 2.x       |
+| Search Engine | Supported Versions |
+| ------------- | ------------------ |
+| Elasticsearch | >= 8.19            |
+| OpenSearch    | 1.x, 2.x           |
 
 :::note
 Elasticsearch 7.x is no longer supported. See the [v1.55.0 release notes](../../releases/v1.55.0.md#breaking-elasticsearch-8-upgrade) for migration details.
