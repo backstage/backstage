@@ -1,5 +1,11 @@
 # @backstage/cli-module-package-manager-yarn
 
+## 0.1.2
+
+### Patch Changes
+
+- df015ea: Fixed `backstage-cli pm verify-patches` failing to load unless projects installed the Yarn CLI package separately.
+
 ## 0.1.1
 
 ### Patch Changes
