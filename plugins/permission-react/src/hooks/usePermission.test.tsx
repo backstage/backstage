@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { usePermission } from './usePermission';
 import {
   AuthorizeResult,
@@ -51,6 +51,68 @@ function renderComponent(mockApi: PermissionApi) {
 }
 
 describe('usePermission', () => {
+  it('checks universal access explicitly and preserves missing-resource loading behavior', async () => {
+    const resourcePermission = createPermission({
+      name: 'test.admin',
+      attributes: {},
+      resourceType: 'test-plugin',
+    });
+    const permissionApi = mockApis.permission.mock({
+      authorize: async input => ({
+        result:
+          input.resourceRef === false
+            ? AuthorizeResult.DENY
+            : AuthorizeResult.ALLOW,
+      }),
+    });
+    const cache = new Map();
+    function Content({
+      input,
+    }: {
+      input: Parameters<typeof usePermission>[0];
+    }) {
+      const { loading, allowed } = usePermission(input);
+      if (loading) return <div>loading</div>;
+      return <div>{allowed ? 'allowed' : 'denied'}</div>;
+    }
+    function Test({ input }: { input: Parameters<typeof usePermission>[0] }) {
+      return (
+        <SWRConfig value={{ provider: () => cache }}>
+          <TestApiProvider apis={[[permissionApiRef, permissionApi]]}>
+            <Content input={input} />
+          </TestApiProvider>
+        </SWRConfig>
+      );
+    }
+    const { rerender } = render(
+      <Test
+        input={{ permission: resourcePermission, resourceRef: undefined }}
+      />,
+    );
+    expect(await screen.findByText('denied')).toBeInTheDocument();
+    expect(permissionApi.authorize).not.toHaveBeenCalled();
+
+    rerender(
+      <Test
+        input={{ permission: resourcePermission, resourceRef: 'catalog' }}
+      />,
+    );
+    expect(await screen.findByText('allowed')).toBeInTheDocument();
+    expect(permissionApi.authorize).toHaveBeenLastCalledWith({
+      permission: resourcePermission,
+      resourceRef: 'catalog',
+    });
+
+    rerender(
+      <Test input={{ permission: resourcePermission, resourceRef: false }} />,
+    );
+    expect(await screen.findByText('denied')).toBeInTheDocument();
+    expect(permissionApi.authorize).toHaveBeenLastCalledWith({
+      permission: resourcePermission,
+      resourceRef: false,
+    });
+  });
+
   it('Returns loading when permissionApi has not yet responded.', () => {
     const permissionApi = mockApis.permission.mock({
       authorize: async () => new Promise(() => {}),

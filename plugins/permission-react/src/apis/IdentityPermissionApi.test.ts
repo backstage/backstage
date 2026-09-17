@@ -46,8 +46,19 @@ describe('IdentityPermissionApi', () => {
       identity: mockApis.identity(),
     });
 
-    const firstRequest = { permission };
-    const secondRequest = { permission };
+    const resourcePermission = createPermission({
+      name: 'test.admin',
+      attributes: {},
+      resourceType: 'test-plugin',
+    });
+    const firstRequest = {
+      permission: resourcePermission,
+      resourceRef: 'catalog',
+    };
+    const secondRequest = {
+      permission: resourcePermission,
+      resourceRef: false as const,
+    };
     const [firstResponse, secondResponse] = await Promise.all([
       api.authorize(firstRequest),
       api.authorize(secondRequest),

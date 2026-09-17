@@ -22,7 +22,10 @@ import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import {
   policyExtensionPoint,
   PolicyExtensionPoint,
+  adminPermissionResourceRef,
+  adminRules,
 } from '@backstage/plugin-permission-node/alpha';
+import { adminPermission } from '@backstage/plugin-permission-common/alpha';
 import { createRouter } from './service';
 
 class PolicyExtensionPointImpl implements PolicyExtensionPoint {
@@ -57,6 +60,7 @@ export const permissionPlugin = createBackendPlugin({
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
         userInfo: coreServices.userInfo,
+        permissionsRegistry: coreServices.permissionsRegistry,
       },
       async init({
         http,
@@ -66,12 +70,20 @@ export const permissionPlugin = createBackendPlugin({
         auth,
         httpAuth,
         userInfo,
+        permissionsRegistry,
       }) {
         if (!policies.policy) {
           throw new Error(
             'No policy module installed! Please install a policy module. If you want to allow all requests, use @backstage/plugin-permission-backend-module-allow-all-policy permissionModuleAllowAllPolicy',
           );
         }
+
+        permissionsRegistry.addResourceType({
+          resourceRef: adminPermissionResourceRef,
+          permissions: [adminPermission],
+          rules: Object.values(adminRules),
+          getResources: async pluginIds => pluginIds.map(id => id || undefined),
+        });
 
         http.use(
           await createRouter({

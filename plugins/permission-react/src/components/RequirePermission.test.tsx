@@ -104,4 +104,16 @@ describe('RequirePermission', () => {
 
     expect(getByText('content')).toBeTruthy();
   });
+  it('forwards universal checks without a resource reference', async () => {
+    mockUsePermission.mockReturnValue({ loading: false, allowed: true });
+    await renderInTestApp(
+      <RequirePermission permission={resourcePermission} resourceRef={false}>
+        <div>content</div>
+      </RequirePermission>,
+    );
+    expect(mockUsePermission).toHaveBeenLastCalledWith({
+      permission: resourcePermission,
+      resourceRef: false,
+    });
+  });
 });
