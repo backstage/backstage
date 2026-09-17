@@ -1,0 +1,7 @@
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import { {{ extensionName }} } from './extensions/{{ extensionName }}';
+
+export const {{ moduleVar }} = createFrontendModule({
+  pluginId: '{{ pluginId }}',
+  extensions: [{{ extensionName }}],
+});

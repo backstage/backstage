@@ -1,0 +1,102 @@
+name: '🚧 Track a maintenance task'
+description: 'Track a maintenance task'
+labels:
+  - type:maintenance
+  - needs:triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This template helps you track maintenance tasks that require special consideration, such as complex version updates or migrations.
+  # This field is managed by .common.yaml
+  - id: issue-labels
+    type: checkboxes
+    attributes:
+      label: '📜 Issue Labels'
+      options:
+        - label: 'Please familiarize yourself with the issue labels used in this project: [LABELS.md](https://github.com/backstage/backstage/blob/master/LABELS.md)'
+          required: true
+  # This field is managed by .common.yaml
+  - id: search-terms
+    type: textarea
+    attributes:
+      label: '🔎 Search Terms'
+      render: plain
+      description: |
+        What search terms did you use when trying to find similar issues?
+      placeholder: |
+        List of keywords you searched for before creating this issue. Write them down here so that others can find this issue more easily and help provide feedback.
+
+        e.g. "catalog github rate limited", "http root service configurer", "scaffolder template include", "entity card title"
+    validations:
+      required: true
+  # This field is managed by .common.yaml
+  - id: project-area
+    type: dropdown
+    attributes:
+      label: '🗃️ Project Area'
+      description: Which project area is this issue most closely related to? This will help find an owner for the issue faster.
+      options:
+        - Unknown
+        - Auditor
+        - Auth
+        - Catalog
+        - CLI Tooling
+        - Core Framework
+        - Design System
+        - Documentation
+        - Events System
+        - Home
+        - Kubernetes Plugin
+        - Management of this repository
+        - Microsite
+        - Notifications
+        - OpenAPI Tooling
+        - Permission Framework
+        - Search
+        - Software Templates
+        - TechDocs
+    validations:
+      required: true
+  - type: textarea
+    id: task
+    validations:
+      required: true
+    attributes:
+      label: '🛠️ Task'
+      description: Describe the task that requires attention
+      placeholder: |
+        Explain what needs to be accomplished, including any relevant context such as dependencies or related components.
+  - type: textarea
+    id: proposal
+    validations:
+      required: true
+    attributes:
+      label: '📊 Priority & Impact'
+      description: Explain the urgency and impact of this task
+      placeholder: |
+        Explain what level of prioritization this task should receive. Are there any particular benefits provided in newer versions in case of a version update, or any security vulnerabilities that can be addressed?
+
+        Also list any important dates or deadlines, such as current versions reaching end of life, or release dates for stable releases.
+  # This field is managed by .common.yaml
+  - id: read-code-of-conduct
+    type: checkboxes
+    attributes:
+      label: 'Have you read the Code of Conduct?'
+      options:
+        - label: 'I have read the [Code of Conduct](https://github.com/backstage/backstage/blob/master/CODE_OF_CONDUCT.md)'
+          required: true
+  # This field is managed by .common.yaml
+  - id: willing-to-submit-pr
+    type: dropdown
+    attributes:
+      label: Are you willing to submit a PR?
+      description: This is absolutely not required, but we are happy to guide you in the contribution process.
+      options:
+        - Undecided
+        - Yes, and I have enough information to get started
+        - Yes, but I would like some more guidance
+        - No, but I'm happy to collaborate on a PR with someone else
+        - No, I don't have time to work on this right now
+    validations:
+      required: true

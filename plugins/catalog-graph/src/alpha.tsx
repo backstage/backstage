@@ -1,0 +1,118 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import {
+  ApiBlueprint,
+  createFrontendPlugin,
+  PageBlueprint,
+} from '@backstage/frontend-plugin-api';
+import { z } from 'zod/v4';
+import { RiMindMap } from '@remixicon/react';
+import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
+import { catalogGraphRouteRef, catalogEntityRouteRef } from './routes';
+import {
+  catalogGraphApiRef,
+  DefaultCatalogGraphApi,
+  Direction,
+} from '@backstage/plugin-catalog-graph';
+
+const CatalogGraphEntityCard = EntityCardBlueprint.makeWithOverrides({
+  name: 'relations',
+  configSchema: {
+    kinds: z.array(z.string()).optional(),
+    relations: z.array(z.string()).optional(),
+    maxDepth: z.number().optional(),
+    unidirectional: z.boolean().optional(),
+    mergeRelations: z.boolean().optional(),
+    showArrowHeads: z.boolean().optional(),
+    direction: z.nativeEnum(Direction).optional(),
+    relationPairs: z.array(z.tuple([z.string(), z.string()])).optional(),
+    zoom: z.enum(['enabled', 'disabled', 'enable-on-click']).optional(),
+    curve: z.enum(['curveStepBefore', 'curveMonotoneX']).optional(),
+    // Skipping a "variant" config for now, defaulting to "gridItem" in the component
+    // For more details, see this comment: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
+    title: z.string().optional(),
+    height: z.number().optional(),
+  },
+  factory(originalFactory, { config }) {
+    return originalFactory({
+      loader: async () =>
+        import('./components/CatalogGraphCard').then(m => (
+          <m.CatalogGraphCard {...config} />
+        )),
+    });
+  },
+});
+
+const CatalogGraphPage = PageBlueprint.makeWithOverrides({
+  configSchema: {
+    selectedKinds: z.array(z.string()).optional(),
+    selectedRelations: z.array(z.string()).optional(),
+    rootEntityRefs: z.array(z.string()).optional(),
+    maxDepth: z.number().optional(),
+    unidirectional: z.boolean().optional(),
+    mergeRelations: z.boolean().optional(),
+    showArrowHeads: z.boolean().optional(),
+    direction: z.nativeEnum(Direction).optional(),
+    showFilters: z.boolean().optional(),
+    curve: z.enum(['curveStepBefore', 'curveMonotoneX']).optional(),
+    kinds: z.array(z.string()).optional(),
+    relations: z.array(z.string()).optional(),
+    relationPairs: z.array(z.tuple([z.string(), z.string()])).optional(),
+    zoom: z.enum(['enabled', 'disabled', 'enable-on-click']).optional(),
+  },
+  factory(originalFactory, { config }) {
+    return originalFactory({
+      path: '/catalog-graph',
+      routeRef: catalogGraphRouteRef,
+      loader: () =>
+        import('./components/CatalogGraphPage').then(m => (
+          <m.CatalogGraphPage {...config} initialState={config} />
+        )),
+    });
+  },
+});
+
+const CatalogGraphApi = ApiBlueprint.make({
+  params: defineParams =>
+    defineParams({
+      api: catalogGraphApiRef,
+      deps: {},
+      factory: () => new DefaultCatalogGraphApi(),
+    }),
+});
+
+export default createFrontendPlugin({
+  pluginId: 'catalog-graph',
+  title: 'Catalog Graph',
+  icon: <RiMindMap />,
+  info: { packageJson: () => import('../package.json') },
+  routes: {
+    catalogGraph: catalogGraphRouteRef,
+  },
+  externalRoutes: {
+    catalogEntity: catalogEntityRouteRef,
+  },
+  extensions: [CatalogGraphPage, CatalogGraphEntityCard, CatalogGraphApi],
+});
+
+import { catalogGraphTranslationRef as _catalogGraphTranslationRef } from './translation';
+
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-catalog-graph` instead.
+ */
+export const catalogGraphTranslationRef = _catalogGraphTranslationRef;

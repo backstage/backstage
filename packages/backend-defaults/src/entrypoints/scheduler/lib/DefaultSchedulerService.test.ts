@@ -1,0 +1,92 @@
+/*
+ * Copyright 2021 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
+import { Duration } from 'luxon';
+import waitForExpect from 'wait-for-expect';
+import { DefaultSchedulerService } from './DefaultSchedulerService';
+import { createTestScopedSignal } from './__testUtils__/createTestScopedSignal';
+import { PluginMetadataService } from '@backstage/backend-plugin-api';
+import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
+
+jest.setTimeout(60_000);
+
+const databases = TestDatabases.create();
+
+describe.each(databases.eachSupportedId())('TaskScheduler, %p', databaseId => {
+  const logger = mockServices.logger.mock();
+  const rootLifecycle = mockServices.rootLifecycle.mock();
+  const httpRouter = mockServices.httpRouter.mock();
+  const pluginMetadata = {
+    getId: () => 'test',
+  } satisfies PluginMetadataService;
+  const testScopedSignal = createTestScopedSignal();
+  const metrics = metricsServiceMock.mock();
+
+  it('can return a working v1 plugin impl', async () => {
+    const knex = await databases.init(databaseId);
+    const database = mockServices.database({ knex });
+
+    const manager = DefaultSchedulerService.create({
+      database,
+      logger,
+      metrics,
+      rootLifecycle,
+      httpRouter,
+      pluginMetadata,
+    });
+    const fn = jest.fn();
+
+    await manager.scheduleTask({
+      id: 'task1',
+      timeout: Duration.fromMillis(5000),
+      frequency: Duration.fromMillis(5000),
+      signal: testScopedSignal(),
+      fn,
+    });
+
+    await waitForExpect(() => {
+      expect(fn).toHaveBeenCalled();
+    });
+  });
+
+  it('can return a working v2 plugin impl', async () => {
+    const knex = await databases.init(databaseId);
+    const database = mockServices.database({ knex });
+
+    const manager = DefaultSchedulerService.create({
+      database,
+      logger,
+      metrics,
+      rootLifecycle,
+      httpRouter,
+      pluginMetadata,
+    });
+    const fn = jest.fn();
+
+    await manager.scheduleTask({
+      id: 'task2',
+      timeout: Duration.fromMillis(5000),
+      frequency: { cron: '* * * * * *' },
+      signal: testScopedSignal(),
+      fn,
+    });
+
+    await waitForExpect(() => {
+      expect(fn).toHaveBeenCalled();
+    });
+  });
+});

@@ -1,0 +1,23 @@
+name: Automate area labels
+on:
+  - pull_request_target
+
+permissions:
+  contents: read
+
+jobs:
+  triage:
+    permissions:
+      contents: read # for actions/labeler to determine modified files
+      pull-requests: write # for actions/labeler to add labels to PRs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/labeler@b8dd2d9be0f68b860e7dae5dae7d772984eacd6d # v6.2.0
+        with:
+          repo-token: '${{ secrets.GITHUB_TOKEN }}'
+          sync-labels: true

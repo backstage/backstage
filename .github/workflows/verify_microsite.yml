@@ -1,0 +1,326 @@
+name: Microsite
+on:
+  # NOTE: If you change these you must update verify_microsite-noop.yml as well
+  pull_request:
+    paths:
+      - '.github/workflows/verify_microsite.yml'
+      - 'microsite/**'
+      - 'beps/**'
+      - 'mkdocs.yml'
+      - 'mkdocs-ci.yml'
+      - 'docs/**'
+
+permissions:
+  contents: read
+
+jobs:
+  stable:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: stable-reference-${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    env:
+      CI: true
+      NODE_OPTIONS: --max-old-space-size=8192
+
+    outputs:
+      release: ${{ steps.find-release.outputs.result }}
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
+        with:
+          egress-policy: audit
+
+      - name: find latest release ref
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        id: find-release
+        with:
+          script: |
+            const versionValue = version =>
+              version
+                .split('.')
+                .reduce((val, part) => val * 1000 + Number(part), 0)
+
+            const tags = await octokit.paginate(github.rest.repos.listTags, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100,
+            })
+
+            const [latest] = tags
+              .map(tag => tag.name)
+              .filter(tag => tag.match(/^v\d+\.\d+\.\d+$/))
+              .map(tag => ({ tag, val: versionValue(tag.slice(1)) }))
+              .sort((a, b) => b.val - a.val)
+
+            if (!latest) {
+              throw new Error('Unable to find a main line release to build stable docs from')
+            }
+
+            // Each release line has a single patch branch, named after its first
+            // release, that collects any patch releases made from it. We prefer
+            // that branch over the release tag, as it allows the stable docs to be
+            // edited after the release.
+            const [major, minor] = latest.tag.slice(1).split('.')
+            const branch = `patch/v${major}.${minor}.0`
+
+            try {
+              await github.rest.repos.getBranch({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                branch,
+              })
+
+              core.info(`Building stable docs from branch ${branch}`)
+              return `refs/heads/${branch}`
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error
+              }
+            }
+
+            // The patch branch has not been created yet, which is the case in the
+            // window right after a main line release. Use the release tag until it
+            // shows up, rather than the previous release line.
+            core.info(`Found no ${branch} branch, building stable docs from tag ${latest.tag}`)
+            return `refs/tags/${latest.tag}`
+          result-encoding: string
+
+      - name: checkout latest release
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          ref: ${{ steps.find-release.outputs.result }}
+
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 22.x
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+
+      - name: yarn install
+        uses: backstage/actions/yarn-install@7da58d8d1e914892549d73ae9b291acb640b61f9 # v0.7.12
+        with:
+          cache-prefix: ${{ runner.os }}-v22.x
+
+      # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
+      - name: restore package-docs cache
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: .cache/package-docs
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-stable-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-stable-
+
+      - name: build API reference
+        run: yarn backstage-repo-tools package-docs
+
+      - name: upload API reference
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: stable-reference
+          path: type-docs/
+
+      # Always save success cache even if there were failures, that way it can be used in re-triggered builds
+      - name: save package-docs cache
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5
+        if: always()
+        with:
+          path: .cache/package-docs
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-stable-${{ github.run_id }}
+
+      - name: microsite yarn install
+        run: yarn install --immutable
+        working-directory: microsite
+
+      - name: build OpenAPI API docs
+        working-directory: microsite
+        run: yarn docusaurus gen-api-docs all
+
+      - name: upload OpenAPI API docs
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: stable-openapi-docs
+          path: docs/**/api/**/*
+          if-no-files-found: error
+          retention-days: 1
+  next:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: next-reference-${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    env:
+      CI: true
+      NODE_OPTIONS: --max-old-space-size=8192
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
+        with:
+          egress-policy: audit
+
+      - name: checkout master
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 22.x
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+
+      - name: yarn install
+        uses: backstage/actions/yarn-install@7da58d8d1e914892549d73ae9b291acb640b61f9 # v0.7.12
+        with:
+          cache-prefix: ${{ runner.os }}-v22.x
+
+      # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
+      - name: restore package-docs cache
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: .cache/package-docs
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-next-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-next-
+
+      - name: build API reference
+        run: yarn backstage-repo-tools package-docs
+
+      - name: upload API reference
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: next-reference
+          path: type-docs/
+
+      # Always save success cache even if there were failures, that way it can be used in re-triggered builds
+      - name: save package-docs cache
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5
+        if: always()
+        with:
+          path: .cache/package-docs
+          key: ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-next-${{ github.run_id }}
+
+      - name: Build Storybook
+        run: yarn build-storybook
+
+      - name: Upload Storybook
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: storybook
+          path: dist-storybook
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: microsite yarn install
+        run: yarn install --immutable
+        working-directory: microsite
+
+      - name: build OpenAPI API docs
+        working-directory: microsite
+        run: yarn docusaurus gen-api-docs all
+
+      - name: upload OpenAPI API docs
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: next-openapi-docs
+          path: docs/**/api/**/*
+          if-no-files-found: error
+          retention-days: 1
+
+  build-microsite:
+    runs-on: ubuntu-latest
+
+    env:
+      CI: true
+      NODE_OPTIONS: --max-old-space-size=16384
+      DOCUSAURUS_SSR_CONCURRENCY: 5
+
+    needs:
+      - stable
+      - next
+
+    name: Microsite
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 22.x
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.9'
+
+      - name: Install MkDocs dependencies
+        run: pip install mkdocs mkdocs-techdocs-core
+
+        # Skip caching of microsite dependencies, it keeps the global cache size
+        # smaller, which make Windows builds a lot faster for the rest of the project.
+      - name: top-level install
+        run: yarn install --immutable
+
+      - name: yarn install
+        run: yarn install --immutable
+        working-directory: microsite
+
+      - name: prettier
+        run: yarn prettier:check
+        working-directory: microsite
+
+      - name: verify yarn dependency duplicates
+        run: node scripts/verify-lockfile-duplicates.js
+
+      - name: download stable OpenAPI API docs
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: stable-openapi-docs
+          path: docs
+
+      - name: grab latest releases docs
+        run: |
+          git fetch origin master --depth 1
+          git checkout FETCH_HEAD -- docs/releases
+
+      - name: create missing generated file
+        run: |
+          mkdir -p docs/reference
+          cat > docs/reference/index.md <<EOF
+          ---
+          id: 'index'
+          title: 'Package Index'
+          description: 'Index of all Backstage Packages'
+          ---
+
+          Please use [the new API documentation](https://backstage.io/api/stable) for more information.
+
+          EOF
+
+      - name: generate stable docs
+        run: yarn docusaurus docs:version stable
+        working-directory: microsite
+
+      - name: clear generated docs
+        run: git clean -fdx docs/
+
+      - name: checkout master
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          clean: false
+
+      - name: Build MkDocs for TechDocs
+        run: mkdocs build --strict --config-file mkdocs-ci.yml
+
+      - name: download next OpenAPI API docs
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: next-openapi-docs
+          path: docs
+
+      - name: build microsite
+        run: yarn build
+        working-directory: microsite

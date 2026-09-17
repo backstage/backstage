@@ -1,0 +1,4 @@
+site_name: example-website
+docs_dir: docs
+plugins:
+  - techdocs-core

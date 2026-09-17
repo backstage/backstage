@@ -1,0 +1,19 @@
+@layer tokens, base, components, utilities;
+
+@layer components {
+  .bui-CheckboxGroup {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bui-CheckboxGroup[data-orientation='horizontal'] .bui-CheckboxGroupContent {
+    flex-direction: row;
+    gap: var(--bui-space-4);
+  }
+
+  .bui-CheckboxGroupContent {
+    display: flex;
+    flex-direction: column;
+    gap: var(--bui-space-2);
+  }
+}

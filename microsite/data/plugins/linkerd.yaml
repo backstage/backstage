@@ -1,0 +1,10 @@
+---
+title: Linkerd
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Monitoring
+description: Visualizes Linkerd service mesh topology and metrics for catalog entities.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/linkerd/plugins/linkerd/README.md
+npmPackageName: '@backstage-community/plugin-linkerd'
+addedDate: '2026-02-21'
+status: active

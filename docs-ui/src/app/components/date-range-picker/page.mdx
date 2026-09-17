@@ -1,0 +1,85 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { dateRangePickerPropDefs } from './props-definition';
+import {
+  dateRangePickerUsageSnippet,
+  withLabelSnippet,
+  sizesSnippet,
+  withDefaultValueSnippet,
+  disabledSnippet,
+} from './snippets';
+import { WithLabel, Sizes, WithDefaultValue, Disabled } from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { DateRangePickerDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { CodeBlock } from '@/components/CodeBlock';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+
+export const reactAriaUrls = {
+  dateRangePicker: 'https://react-aria.adobe.com/DateRangePicker',
+};
+
+<PageTitle
+  title="DateRangePicker"
+  description="A date range picker that combines two date fields and a calendar popover for selecting a start and end date."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<WithLabel />}
+  code={withLabelSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={dateRangePickerUsageSnippet} />
+
+## API reference
+
+<PropsTable data={dateRangePickerPropDefs} />
+
+<ReactAriaLink
+  component="DateRangePicker"
+  href={reactAriaUrls.dateRangePicker}
+/>
+
+## Examples
+
+### Sizes
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Sizes />}
+  code={sizesSnippet}
+  layout="side-by-side"
+/>
+
+### With default value
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<WithDefaultValue />}
+  code={withDefaultValueSnippet}
+  layout="side-by-side"
+/>
+
+### Disabled
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Disabled />}
+  code={disabledSnippet}
+  layout="side-by-side"
+/>
+
+<Theming definition={DateRangePickerDefinition} />
+
+<ChangelogComponent component="date-range-picker" />

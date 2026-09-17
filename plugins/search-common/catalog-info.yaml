@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-search-common
+  title: '@backstage/plugin-search-common'
+  description: >-
+    Common functionalities for Search, to be shared between various
+    search-enabled plugins
+spec:
+  lifecycle: production
+  type: backstage-common-library
+  owner: search-maintainers

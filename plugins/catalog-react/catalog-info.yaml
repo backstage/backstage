@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-catalog-react
+  title: '@backstage/plugin-catalog-react'
+  description: >-
+    A frontend library that helps other Backstage plugins interact with the
+    catalog
+spec:
+  lifecycle: production
+  type: backstage-web-library
+  owner: catalog-maintainers

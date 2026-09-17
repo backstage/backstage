@@ -1,0 +1,28 @@
+INHERIT: mkdocs.yml
+
+# The complete documentation is built and validated by Docusaurus. Keep this
+# TechDocs build focused on the overview while preserving its relative paths.
+exclude_docs: |
+  /*
+  !/overview/
+  !/assets/
+
+validation:
+  links:
+    # Missing links are informational because this reduced build cannot
+    # distinguish excluded documents from genuinely missing targets.
+    not_found: info
+
+nav:
+  - Overview:
+      - What is Backstage?: 'overview/what-is-backstage.md'
+      - Technical overview: 'overview/technical-overview.md'
+      - Architecture overview: 'overview/architecture-overview.md'
+      - Project Roadmap: 'overview/roadmap.md'
+      - Vision: 'overview/vision.md'
+      - The Spotify Story: 'overview/background.md'
+      - Strategies for adopting: 'overview/adopting.md'
+      - Release & Versioning Policy: 'overview/versioning-policy.md'
+      - Backstage Threat Model: 'overview/threat-model.md'
+      - Support and community: 'overview/support.md'
+      - Logo assets: 'overview/logos.md'

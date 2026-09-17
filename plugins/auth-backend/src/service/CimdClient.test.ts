@@ -1,0 +1,541 @@
+/*
+ * Copyright 2025 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { http, HttpResponse } from 'msw';
+import { setupServer } from 'msw/node';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
+import { validateCimdUrl, fetchCimdMetadata } from './CimdClient';
+import * as dns from 'node:dns/promises';
+
+jest.mock('dns/promises');
+const mockDnsLookup = dns.lookup as jest.MockedFunction<typeof dns.lookup>;
+
+const server = setupServer();
+registerMswTestHooks(server);
+
+describe('CimdClient', () => {
+  const originalNodeEnv = process.env.NODE_ENV;
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+    // Default to public IP for DNS lookups
+    mockDnsLookup.mockResolvedValue([
+      { address: '93.184.216.34', family: 4 },
+    ] as any);
+    // Set development mode for tests that need localhost HTTP
+    (process.env as Record<string, string | undefined>).NODE_ENV =
+      'development';
+  });
+
+  afterEach(() => {
+    (process.env as Record<string, string | undefined>).NODE_ENV =
+      originalNodeEnv;
+  });
+
+  describe('validateCimdUrl', () => {
+    it('should return URL for valid CIMD URLs', () => {
+      const url = validateCimdUrl('https://example.com/metadata.json');
+      expect(url.href).toBe('https://example.com/metadata.json');
+    });
+
+    it('should throw for non-HTTPS URLs on public hosts', () => {
+      expect(() => validateCimdUrl('http://example.com/metadata')).toThrow(
+        'must use HTTPS',
+      );
+    });
+
+    it('should allow HTTP for localhost URLs (development)', () => {
+      const url1 = validateCimdUrl(
+        'http://localhost:7007/api/auth/.well-known/oauth-client/cli',
+      );
+      expect(url1.href).toBe(
+        'http://localhost:7007/api/auth/.well-known/oauth-client/cli',
+      );
+
+      const url2 = validateCimdUrl(
+        'http://127.0.0.1:7007/api/auth/.well-known/oauth-client/cli',
+      );
+      expect(url2.href).toBe(
+        'http://127.0.0.1:7007/api/auth/.well-known/oauth-client/cli',
+      );
+    });
+
+    it('should throw for HTTP localhost URLs in production', () => {
+      (process.env as Record<string, string | undefined>).NODE_ENV =
+        'production';
+      expect(() => validateCimdUrl('http://localhost:7007/path')).toThrow(
+        'must use HTTPS',
+      );
+      expect(() => validateCimdUrl('http://127.0.0.1:7007/path')).toThrow(
+        'must use HTTPS',
+      );
+    });
+
+    it('should throw for URLs without path', () => {
+      expect(() => validateCimdUrl('https://example.com')).toThrow(
+        'must have a path component',
+      );
+      expect(() => validateCimdUrl('https://example.com/')).toThrow(
+        'must have a path component',
+      );
+    });
+
+    it('should throw for URLs with fragments', () => {
+      expect(() =>
+        validateCimdUrl('https://example.com/metadata#fragment'),
+      ).toThrow('must not contain a fragment');
+    });
+
+    it('should throw for URLs with credentials', () => {
+      expect(() =>
+        validateCimdUrl('https://user:pass@example.com/metadata'),
+      ).toThrow('must not contain credentials');
+    });
+
+    it('should throw for URLs with query strings', () => {
+      expect(() =>
+        validateCimdUrl('https://example.com/metadata?foo=bar'),
+      ).toThrow('must not contain a query string');
+    });
+
+    it('should throw for URLs with dot path segments', () => {
+      expect(() => validateCimdUrl('https://example.com/./metadata')).toThrow(
+        'must not contain dot segments',
+      );
+      expect(() => validateCimdUrl('https://example.com/../metadata')).toThrow(
+        'must not contain dot segments',
+      );
+      expect(() =>
+        validateCimdUrl('https://example.com/path/../other'),
+      ).toThrow('must not contain dot segments');
+    });
+
+    it('should throw for invalid URLs', () => {
+      expect(() => validateCimdUrl('not-a-url')).toThrow('not a valid URL');
+    });
+  });
+
+  describe('fetchCimdMetadata', () => {
+    const validMetadata = {
+      client_id: 'https://example.com/oauth-metadata.json',
+      client_name: 'Test Client',
+      redirect_uris: ['http://localhost:8080/callback'],
+    };
+
+    it('should fetch and return valid metadata', async () => {
+      server.use(
+        http.get('https://example.com/oauth-metadata.json', () =>
+          HttpResponse.json(validMetadata),
+        ),
+      );
+
+      const result = await fetchCimdMetadata({
+        clientId: 'https://example.com/oauth-metadata.json',
+      });
+
+      expect(result).toEqual({
+        clientId: 'https://example.com/oauth-metadata.json',
+        clientName: 'Test Client',
+        redirectUris: ['http://localhost:8080/callback'],
+        responseTypes: ['code'],
+        grantTypes: ['authorization_code'],
+        scope: undefined,
+      });
+    });
+
+    it('should use client_id as client_name if not provided', async () => {
+      const metadataWithoutName = {
+        client_id: 'https://example.com/oauth-metadata.json',
+        redirect_uris: ['http://localhost:8080/callback'],
+      };
+
+      server.use(
+        http.get('https://example.com/oauth-metadata.json', () =>
+          HttpResponse.json(metadataWithoutName),
+        ),
+      );
+
+      const result = await fetchCimdMetadata({
+        clientId: 'https://example.com/oauth-metadata.json',
+      });
+
+      expect(result.clientName).toBe('https://example.com/oauth-metadata.json');
+    });
+
+    describe('SSRF protection', () => {
+      it('should throw for private IP addresses (192.168.x.x)', async () => {
+        mockDnsLookup.mockResolvedValue([
+          { address: '192.168.1.1', family: 4 },
+        ] as any);
+
+        await expect(
+          fetchCimdMetadata({
+            clientId: 'https://internal.example.com/metadata',
+          }),
+        ).rejects.toThrow('Invalid client_id URL');
+      });
+
+      it('should throw for loopback addresses (127.x.x.x)', async () => {
+        mockDnsLookup.mockResolvedValue([
+          { address: '127.0.0.1', family: 4 },
+        ] as any);
+
+        await expect(
+          fetchCimdMetadata({
+            clientId: 'https://localhost.example.com/metadata',
+          }),
+        ).rejects.toThrow('Invalid client_id URL');
+      });
+
+      it('should throw for 10.x.x.x addresses', async () => {
+        mockDnsLookup.mockResolvedValue([
+          { address: '10.0.0.1', family: 4 },
+        ] as any);
+
+        await expect(
+          fetchCimdMetadata({
+            clientId: 'https://internal.example.com/metadata',
+          }),
+        ).rejects.toThrow('Invalid client_id URL');
+      });
+
+      it('should throw for 172.16-31.x.x addresses', async () => {
+        mockDnsLookup.mockResolvedValue([
+          { address: '172.16.0.1', family: 4 },
+        ] as any);
+
+        await expect(
+          fetchCimdMetadata({
+            clientId: 'https://internal.example.com/metadata',
+          }),
+        ).rejects.toThrow('Invalid client_id URL');
+      });
+
+      it('should throw for IPv6 loopback', async () => {
+        mockDnsLookup.mockResolvedValue([{ address: '::1', family: 6 }] as any);
+
+        await expect(
+          fetchCimdMetadata({
+            clientId: 'https://internal.example.com/metadata',
+          }),
+        ).rejects.toThrow('Invalid client_id URL');
+      });
+
+      it('should allow private IPs when skipSsrfCheck is set', async () => {
+        mockDnsLookup.mockResolvedValue([
+          { address: '10.0.0.1', family: 4 },
+        ] as any);
+
+        const metadata = {
+          client_id: 'https://internal.example.com/metadata',
+          client_name: 'Internal Client',
+          redirect_uris: ['http://localhost:8080/callback'],
+        };
+
+        server.use(
+          http.get('https://internal.example.com/metadata', () =>
+            HttpResponse.json(metadata),
+          ),
+        );
+
+        const result = await fetchCimdMetadata({
+          clientId: 'https://internal.example.com/metadata',
+          skipSsrfCheck: true,
+        });
+
+        expect(result.clientId).toBe('https://internal.example.com/metadata');
+        expect(result.clientName).toBe('Internal Client');
+      });
+
+      it('should still block private IPs when skipSsrfCheck is false', async () => {
+        mockDnsLookup.mockResolvedValue([
+          { address: '10.0.0.1', family: 4 },
+        ] as any);
+
+        await expect(
+          fetchCimdMetadata({
+            clientId: 'https://internal.example.com/metadata',
+            skipSsrfCheck: false,
+          }),
+        ).rejects.toThrow('Invalid client_id URL');
+      });
+    });
+
+    describe('redirect protection', () => {
+      it('should reject redirects to prevent SSRF via redirect bypass', async () => {
+        const redirectTarget = jest.fn();
+
+        server.use(
+          http.get('https://example.com/oauth-metadata.json', () =>
+            HttpResponse.redirect('http://127.0.0.1:8080/internal', 302),
+          ),
+          http.get('http://127.0.0.1:8080/internal', () => {
+            redirectTarget();
+            return HttpResponse.json({
+              client_id: 'https://example.com/oauth-metadata.json',
+              client_name: 'Sneaky Client',
+              redirect_uris: ['http://localhost:8080/callback'],
+            });
+          }),
+        );
+
+        await expect(
+          fetchCimdMetadata({
+            clientId: 'https://example.com/oauth-metadata.json',
+          }),
+        ).rejects.toThrow('Failed to fetch client metadata');
+
+        expect(redirectTarget).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('HTTP error handling', () => {
+      it('should throw for network errors', async () => {
+        server.use(
+          http.get('https://example.com/oauth-metadata.json', () =>
+            HttpResponse.error(),
+          ),
+        );
+
+        await expect(
+          fetchCimdMetadata({
+            clientId: 'https://example.com/oauth-metadata.json',
+          }),
+        ).rejects.toThrow('Failed to fetch client metadata');
+      });
+
+      it('should throw for non-OK response', async () => {
+        server.use(
+          http.get(
+            'https://example.com/oauth-metadata.json',
+            () => new HttpResponse(null, { status: 404 }),
+          ),
+        );
+
+        await expect(
+          fetchCimdMetadata({
+            clientId: 'https://example.com/oauth-metadata.json',
+          }),
+        ).rejects.toThrow('Failed to fetch client metadata');
+      });
+    });
+
+    describe('metadata validation', () => {
+      it('should throw for invalid JSON', async () => {
+        server.use(
+          http.get('https://example.com/oauth-metadata.json', () =>
+            HttpResponse.text('not json'),
+          ),
+        );
+
+        await expect(
+          fetchCimdMetadata({
+            clientId: 'https://example.com/oauth-metadata.json',
+          }),
+        ).rejects.toThrow('Invalid client metadata document');
+      });
+
+      it('should throw for oversized JSON without content-length', async () => {
+        const oversizedMetadata = {
+          client_id: 'https://example.com/oauth-metadata.json',
+          client_name: 'x'.repeat(64 * 1024),
+          redirect_uris: ['http://localhost:8080/callback'],
+        };
+        const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValue(
+          new Response(JSON.stringify(oversizedMetadata), {
+            headers: { 'content-type': 'application/json' },
+          }),
+        );
+
+        try {
+          await expect(
+            fetchCimdMetadata({
+              clientId: 'https://example.com/oauth-metadata.json',
+            }),
+          ).rejects.toThrow('Client metadata document too large');
+        } finally {
+          fetchMock.mockRestore();
+        }
+      });
+
+      it('should throw for client_id mismatch', async () => {
+        const mismatchedMetadata = {
+          client_id: 'https://different.com/metadata',
+          client_name: 'Test Client',
+          redirect_uris: ['http://localhost:8080/callback'],
+        };
+
+        server.use(
+          http.get('https://example.com/oauth-metadata.json', () =>
+            HttpResponse.json(mismatchedMetadata),
+          ),
+        );
+
+        await expect(
+          fetchCimdMetadata({
+            clientId: 'https://example.com/oauth-metadata.json',
+          }),
+        ).rejects.toThrow('Client ID mismatch in metadata document');
+      });
+
+      it('should throw for missing redirect_uris', async () => {
+        const noRedirectUris = {
+          client_id: 'https://example.com/oauth-metadata.json',
+          client_name: 'Test Client',
+        };
+
+        server.use(
+          http.get('https://example.com/oauth-metadata.json', () =>
+            HttpResponse.json(noRedirectUris),
+          ),
+        );
+
+        await expect(
+          fetchCimdMetadata({
+            clientId: 'https://example.com/oauth-metadata.json',
+          }),
+        ).rejects.toThrow('at least one redirect_uri');
+      });
+
+      it('should throw for empty redirect_uris', async () => {
+        const emptyRedirectUris = {
+          client_id: 'https://example.com/oauth-metadata.json',
+          client_name: 'Test Client',
+          redirect_uris: [],
+        };
+
+        server.use(
+          http.get('https://example.com/oauth-metadata.json', () =>
+            HttpResponse.json(emptyRedirectUris),
+          ),
+        );
+
+        await expect(
+          fetchCimdMetadata({
+            clientId: 'https://example.com/oauth-metadata.json',
+          }),
+        ).rejects.toThrow('at least one redirect_uri');
+      });
+    });
+
+    describe('security constraints', () => {
+      it('should throw for metadata containing client_secret', async () => {
+        const withSecret = {
+          client_id: 'https://example.com/oauth-metadata.json',
+          client_name: 'Test Client',
+          redirect_uris: ['http://localhost:8080/callback'],
+          client_secret: 'should-not-be-here',
+        };
+
+        server.use(
+          http.get('https://example.com/oauth-metadata.json', () =>
+            HttpResponse.json(withSecret),
+          ),
+        );
+
+        await expect(
+          fetchCimdMetadata({
+            clientId: 'https://example.com/oauth-metadata.json',
+          }),
+        ).rejects.toThrow('Client metadata must not contain client_secret');
+      });
+
+      it('should throw for metadata containing client_secret_expires_at', async () => {
+        const withSecretExpiry = {
+          client_id: 'https://example.com/oauth-metadata.json',
+          client_name: 'Test Client',
+          redirect_uris: ['http://localhost:8080/callback'],
+          client_secret_expires_at: 12345,
+        };
+
+        server.use(
+          http.get('https://example.com/oauth-metadata.json', () =>
+            HttpResponse.json(withSecretExpiry),
+          ),
+        );
+
+        await expect(
+          fetchCimdMetadata({
+            clientId: 'https://example.com/oauth-metadata.json',
+          }),
+        ).rejects.toThrow('Client metadata must not contain client_secret');
+      });
+
+      it('should throw for forbidden token_endpoint_auth_method', async () => {
+        const withForbiddenAuth = {
+          client_id: 'https://example.com/oauth-metadata.json',
+          client_name: 'Test Client',
+          redirect_uris: ['http://localhost:8080/callback'],
+          token_endpoint_auth_method: 'client_secret_basic',
+        };
+
+        server.use(
+          http.get('https://example.com/oauth-metadata.json', () =>
+            HttpResponse.json(withForbiddenAuth),
+          ),
+        );
+
+        await expect(
+          fetchCimdMetadata({
+            clientId: 'https://example.com/oauth-metadata.json',
+          }),
+        ).rejects.toThrow('forbidden auth method');
+      });
+
+      it('should allow token_endpoint_auth_method: none', async () => {
+        const withNoneAuth = {
+          client_id: 'https://example.com/oauth-metadata.json',
+          client_name: 'Test Client',
+          redirect_uris: ['http://localhost:8080/callback'],
+          token_endpoint_auth_method: 'none',
+        };
+
+        server.use(
+          http.get('https://example.com/oauth-metadata.json', () =>
+            HttpResponse.json(withNoneAuth),
+          ),
+        );
+
+        const result = await fetchCimdMetadata({
+          clientId: 'https://example.com/oauth-metadata.json',
+        });
+
+        expect(result.clientId).toBe('https://example.com/oauth-metadata.json');
+      });
+
+      it('should allow token_endpoint_auth_method: private_key_jwt', async () => {
+        const withPrivateKeyAuth = {
+          client_id: 'https://example.com/oauth-metadata.json',
+          client_name: 'Test Client',
+          redirect_uris: ['http://localhost:8080/callback'],
+          token_endpoint_auth_method: 'private_key_jwt',
+        };
+
+        server.use(
+          http.get('https://example.com/oauth-metadata.json', () =>
+            HttpResponse.json(withPrivateKeyAuth),
+          ),
+        );
+
+        const result = await fetchCimdMetadata({
+          clientId: 'https://example.com/oauth-metadata.json',
+        });
+
+        expect(result.clientId).toBe('https://example.com/oauth-metadata.json');
+      });
+    });
+  });
+});

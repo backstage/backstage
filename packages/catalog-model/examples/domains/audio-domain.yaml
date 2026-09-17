@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Domain
+metadata:
+  name: audio
+  description: Everything related to audio
+  links:
+    - url: http://example.com/domain/audio/
+      title: Domain Readme
+    - url: http://example.com/domains/audio/dashboard
+      title: Domain Metrics Dashboard
+      icon: dashboard
+spec:
+  owner: acme-corp

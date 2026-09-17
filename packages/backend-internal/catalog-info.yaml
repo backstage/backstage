@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: internal-backend
+  title: '@internal/backend'
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: framework-maintainers

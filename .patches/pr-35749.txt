@@ -1,0 +1,1 @@
+Fix the Yarn patch verifier failing to load unless consumers separately install the Yarn CLI package.

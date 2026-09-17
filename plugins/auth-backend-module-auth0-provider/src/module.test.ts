@@ -1,0 +1,323 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
+import authPlugin from '@backstage/plugin-auth-backend';
+import { authModuleAuth0Provider } from './module';
+import request from 'supertest';
+import { decodeOAuthState } from '@backstage/plugin-auth-node';
+
+describe('authModuleAuth0Provider', () => {
+  it('should start', async () => {
+    const { server } = await startTestBackend({
+      features: [
+        authPlugin,
+        authModuleAuth0Provider,
+        mockServices.rootConfig.factory({
+          data: {
+            app: {
+              baseUrl: 'http://localhost:3000',
+            },
+            auth: {
+              providers: {
+                auth0: {
+                  development: {
+                    clientId: 'clientId',
+                    clientSecret: 'clientSecret',
+                    domain: 'domain',
+                    connection: 'connection',
+                    connectionScope: 'connectionScope',
+                  },
+                },
+              },
+              session: {
+                secret: 'secret',
+              },
+            },
+          },
+        }),
+      ],
+    });
+
+    const agent = request.agent(server);
+
+    const res = await agent.get('/api/auth/auth0/start?env=development');
+
+    expect(res.status).toEqual(302);
+
+    const nonceCookie = agent.jar.getCookie('auth0-nonce', {
+      domain: '127.0.0.1',
+      path: '/api/auth/auth0/handler',
+      script: false,
+      secure: false,
+    });
+    expect(nonceCookie).toBeDefined();
+
+    const startUrl = new URL(res.get('location'));
+    expect(startUrl.origin).toBe('https://domain');
+    expect(startUrl.pathname).toBe('/authorize');
+    expect(Object.fromEntries(startUrl.searchParams)).toEqual({
+      response_type: 'code',
+      scope: '',
+      client_id: 'clientId',
+      redirect_uri: `http://localhost:${server.port()}/api/auth/auth0/handler/frame`,
+      prompt: 'consent',
+      accessType: 'offline',
+      connection: 'connection',
+      connection_scope: 'connectionScope',
+      nonce: expect.any(String),
+      state: expect.any(String),
+    });
+
+    expect(decodeOAuthState(startUrl.searchParams.get('state')!)).toEqual({
+      env: 'development',
+      nonce: decodeURIComponent(nonceCookie.value),
+    });
+  });
+
+  it('should configure the authorization prompt', async () => {
+    const { server } = await startTestBackend({
+      features: [
+        authPlugin,
+        authModuleAuth0Provider,
+        mockServices.rootConfig.factory({
+          data: {
+            app: {
+              baseUrl: 'http://localhost:3000',
+            },
+            auth: {
+              providers: {
+                auth0: {
+                  development: {
+                    clientId: 'clientId',
+                    clientSecret: 'clientSecret',
+                    domain: 'domain',
+                    prompt: 'login',
+                  },
+                  production: {
+                    clientId: 'clientId',
+                    clientSecret: 'clientSecret',
+                    domain: 'domain',
+                    prompt: 'auto',
+                  },
+                },
+              },
+              session: {
+                secret: 'secret',
+              },
+            },
+          },
+        }),
+      ],
+    });
+
+    const agent = request.agent(server);
+
+    const explicitPromptResponse = await agent.get(
+      '/api/auth/auth0/start?env=development',
+    );
+    const explicitPromptUrl = new URL(explicitPromptResponse.get('location'));
+    expect(explicitPromptUrl.searchParams.get('prompt')).toBe('login');
+
+    const automaticPromptResponse = await agent.get(
+      '/api/auth/auth0/start?env=production',
+    );
+    const automaticPromptUrl = new URL(automaticPromptResponse.get('location'));
+    expect(automaticPromptUrl.searchParams.has('prompt')).toBe(false);
+  });
+
+  it('should pass through organization and invitation parameters to the authorization URL', async () => {
+    const { server } = await startTestBackend({
+      features: [
+        authPlugin,
+        authModuleAuth0Provider,
+        mockServices.rootConfig.factory({
+          data: {
+            app: {
+              baseUrl: 'http://localhost:3000',
+            },
+            auth: {
+              providers: {
+                auth0: {
+                  development: {
+                    clientId: 'clientId',
+                    clientSecret: 'clientSecret',
+                    domain: 'domain',
+                    connection: 'connection',
+                    connectionScope: 'connectionScope',
+                    organization: 'foo-organization',
+                  },
+                },
+              },
+              session: {
+                secret: 'secret',
+              },
+            },
+          },
+        }),
+      ],
+    });
+
+    const agent = request.agent(server);
+
+    const res = await agent.get(
+      '/api/auth/auth0/start?env=development&organization=foo-organization&invitation=foo-invitation',
+    );
+
+    const startUrl = new URL(res.get('location'));
+    expect(startUrl.origin).toBe('https://domain');
+    expect(startUrl.pathname).toBe('/authorize');
+    expect(Object.fromEntries(startUrl.searchParams)).toEqual(
+      expect.objectContaining({
+        organization: 'foo-organization',
+        invitation: 'foo-invitation',
+      }),
+    );
+  });
+
+  it('should throw an error if the organization in the request does not match the organization configured in the strategy', async () => {
+    const { server } = await startTestBackend({
+      features: [
+        authPlugin,
+        authModuleAuth0Provider,
+        mockServices.rootConfig.factory({
+          data: {
+            app: {
+              baseUrl: 'http://localhost:3000',
+            },
+            auth: {
+              providers: {
+                auth0: {
+                  development: {
+                    clientId: 'clientId',
+                    clientSecret: 'clientSecret',
+                    domain: 'domain',
+                    connection: 'connection',
+                    connectionScope: 'connectionScope',
+                    organization: 'bar-organization',
+                  },
+                },
+              },
+              session: {
+                secret: 'secret',
+              },
+            },
+          },
+        }),
+      ],
+    });
+
+    const agent = request.agent(server);
+
+    const res = await agent.get(
+      '/api/auth/auth0/start?env=development&organization=foo-organization&invitation=foo-invitation',
+    );
+
+    expect(res.status).toEqual(400);
+    expect(res.text).toContain(
+      'Organization mismatch. The organization provided in the request does not match the organization configured in the strategy.',
+    );
+  });
+
+  it('should return Auth0 logout URL without federated param by default', async () => {
+    const { server } = await startTestBackend({
+      features: [
+        authPlugin,
+        authModuleAuth0Provider,
+        mockServices.rootConfig.factory({
+          data: {
+            app: {
+              baseUrl: 'http://localhost:3000',
+            },
+            auth: {
+              providers: {
+                auth0: {
+                  development: {
+                    clientId: 'test-client-id',
+                    clientSecret: 'clientSecret',
+                    domain: 'test.eu.auth0.com',
+                  },
+                },
+              },
+              session: {
+                secret: 'secret',
+              },
+            },
+          },
+        }),
+      ],
+    });
+
+    const res = await request(server)
+      .post('/api/auth/auth0/logout')
+      .query({ env: 'development' })
+      .set('X-Requested-With', 'XMLHttpRequest')
+      .set('Origin', 'http://localhost:3000');
+
+    expect(res.status).toBe(200);
+    expect(res.body.logoutUrl).toContain('test.eu.auth0.com/v2/logout');
+    expect(res.body.logoutUrl).not.toContain('federated');
+    expect(res.body.logoutUrl).toContain('client_id=test-client-id');
+    expect(res.body.logoutUrl).toContain(
+      `returnTo=${encodeURIComponent('http://localhost:3000')}`,
+    );
+  });
+
+  it('should include federated param when federatedLogout is true', async () => {
+    const { server } = await startTestBackend({
+      features: [
+        authPlugin,
+        authModuleAuth0Provider,
+        mockServices.rootConfig.factory({
+          data: {
+            app: {
+              baseUrl: 'http://localhost:3000',
+            },
+            auth: {
+              providers: {
+                auth0: {
+                  development: {
+                    clientId: 'test-client-id',
+                    clientSecret: 'clientSecret',
+                    domain: 'test.eu.auth0.com',
+                    federatedLogout: true,
+                  },
+                },
+              },
+              session: {
+                secret: 'secret',
+              },
+            },
+          },
+        }),
+      ],
+    });
+
+    const res = await request(server)
+      .post('/api/auth/auth0/logout')
+      .query({ env: 'development' })
+      .set('X-Requested-With', 'XMLHttpRequest')
+      .set('Origin', 'http://localhost:3000');
+
+    expect(res.status).toBe(200);
+    expect(res.body.logoutUrl).toContain('test.eu.auth0.com/v2/logout');
+    expect(res.body.logoutUrl).toContain('federated');
+    expect(res.body.logoutUrl).toContain('client_id=test-client-id');
+    expect(res.body.logoutUrl).toContain(
+      `returnTo=${encodeURIComponent('http://localhost:3000')}`,
+    );
+  });
+});

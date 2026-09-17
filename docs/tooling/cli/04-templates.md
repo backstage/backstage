@@ -1,0 +1,197 @@
+---
+id: templates
+title: CLI Templates
+description: Overview of the new CLI Declarative Templates
+---
+
+The `backstage-cli new` command (typically run as `yarn new` in a Backstage workspace) scaffolds new plugins, modules, and library packages. It presents a list of available templates and walks you through a short set of prompts before generating the package, wiring up dependencies, and registering it in the workspace.
+
+## Built-in templates
+
+The following templates are included out of the box:
+
+| Template                            | Description                                                                                 |
+| :---------------------------------- | :------------------------------------------------------------------------------------------ |
+| `frontend-plugin`                   | A new frontend plugin                                                                       |
+| `frontend-plugin-module`            | A new frontend module that extends an existing frontend plugin                              |
+| `legacy-frontend-plugin`            | A new frontend plugin (legacy system)                                                       |
+| `backend-plugin`                    | A new backend plugin                                                                        |
+| `backend-plugin-module`             | A new backend module that extends an existing backend plugin                                |
+| `plugin-web-library`                | A new web library plugin package                                                            |
+| `plugin-node-library`               | A new Node.js library plugin package                                                        |
+| `plugin-common-library`             | A new isomorphic common plugin package                                                      |
+| `web-library`                       | A library package, exporting shared functionality for web environments                      |
+| `node-library`                      | A library package, exporting shared functionality for Node.js environments                  |
+| `cli-module`                        | A CLI module that adds commands to the Backstage CLI                                        |
+| `catalog-processor-module`          | A Processor module for the Software Catalog                                                 |
+| `catalog-provider-module`           | An Entity Provider module for the Software Catalog                                          |
+| `scaffolder-backend-module`         | A module exporting custom actions for @backstage/plugin-scaffolder-backend                  |
+| `scaffolder-field-extension-module` | A custom field extension for the Backstage Scaffolder                                       |
+| `permission-policy-module`          | A backend module that provides a custom permission policy for the permission-backend plugin |
+| `search-collator-module`            | A Search Collator module for Backstage Search                                               |
+
+## Configuration
+
+The behavior of `yarn new` is configurable through your root `package.json`:
+
+```json
+{
+  "name": "root",
+  "backstage": {
+    "cli": {
+      "new": {
+        "globals": {
+          "license": "MIT",
+          "namePrefix": "@my-org/"
+        }
+      }
+    }
+  }
+}
+```
+
+- `globals` - Configures input for all generated packages and plugins.
+  - `version` - Sets the value of the `version` field in `package.json` of all generated packages. Defaults to `0.1.0`.
+  - `license` - Sets the value of the `license` field in `package.json` of all generated packages. Defaults to `Apache-2.0`.
+  - `private` - Sets the value of the `private` field in `package.json` of all generated packages. Defaults to `true`.
+  - `publishRegistry` - Sets the value of the `publishConfig.registry` field in `package.json` of all generated packages.
+  - `namePrefix` - The prefix used to generate the full package name. Defaults to `@internal/`.
+  - `namePluginInfix` - The infix used to generate the full package name for plugin packages. Defaults to `plugin-`.
+- `templates` - Specifies custom templates.
+  - See [Installing custom templates](#installing-custom-templates) and [Creating your own CLI templates](#creating-your-own-cli-templates) for more information.
+
+The generated package name is based on the `namePrefix` and `namePluginInfix` globals, as well as the "base name" which is derived from the package role and user input. For plugin packages the final package name will be `<namePrefix><namePluginInfix><baseName>`, and for other packages it will be `<namePrefix><baseName>`.
+
+For example, if you want your plugin frontend packages to end up with the name `@acme/backstage-plugin-<pluginId>`, you should use the following configuration:
+
+```json
+{
+  "name": "root",
+  "backstage": {
+    "cli": {
+      "new": {
+        "globals": {
+          "namePrefix": "@acme/",
+          "namePluginInfix": "backstage-plugin-"
+        }
+      }
+    }
+  }
+}
+```
+
+## Installing custom templates
+
+Custom templates can be installed from local directories. To install a template you add it to the `backstage.cli.new.templates` configuration array in your root `package.json`:
+
+```json
+{
+  "name": "root",
+  "backstage": {
+    "cli": {
+      "new": {
+        "templates": ["./templates/custom-plugin"]
+      }
+    }
+  }
+}
+```
+
+Each entry in the `templates` array should be a relative path that points to a directory containing a `portable-template.yaml` file. If the path starts with `./` it will be used as is, otherwise it will be resolved as a module within `node_modules`.
+
+When defining the `templates` array it will override the default set of templates. If you want to keep using one of the built-in templates in the Backstage CLI you can reference them directly within the `@backstage/cli-module-new` package. The following is the full list of built-in templates:
+
+```json
+{
+  "name": "root",
+  "backstage": {
+    "cli": {
+      "new": {
+        "templates": [
+          "@backstage/cli-module-new/templates/frontend-plugin",
+          "@backstage/cli-module-new/templates/frontend-plugin-module",
+          "@backstage/cli-module-new/templates/legacy-frontend-plugin",
+          "@backstage/cli-module-new/templates/backend-plugin",
+          "@backstage/cli-module-new/templates/backend-plugin-module",
+          "@backstage/cli-module-new/templates/plugin-web-library",
+          "@backstage/cli-module-new/templates/plugin-node-library",
+          "@backstage/cli-module-new/templates/plugin-common-library",
+          "@backstage/cli-module-new/templates/web-library",
+          "@backstage/cli-module-new/templates/node-library",
+          "@backstage/cli-module-new/templates/cli-module",
+          "@backstage/cli-module-new/templates/catalog-processor-module",
+          "@backstage/cli-module-new/templates/catalog-provider-module",
+          "@backstage/cli-module-new/templates/scaffolder-backend-module",
+          "@backstage/cli-module-new/templates/scaffolder-field-extension-module",
+          "@backstage/cli-module-new/templates/permission-policy-module",
+          "@backstage/cli-module-new/templates/search-collator-module"
+        ]
+      }
+    }
+  }
+}
+```
+
+:::note
+The old `@backstage/cli/templates/*` paths are still supported for backwards compatibility and will be automatically rewritten to `@backstage/cli-module-new/templates/*`.
+:::
+
+## Creating your own CLI templates
+
+Each template lives in its own directory and must have a `portable-template.yaml` file that describes the template. The template directory can also contain any files that should be templated or copied to the generated package.
+
+Start by creating `portable-template.yaml` in a new directory somewhere in your project, in this example we're using `./templates/custom-plugin/portable-template.yaml`:
+
+```yaml title="in templates/custom-plugin/portable-template.yaml"
+name: custom-plugin
+role: frontend-plugin
+description: Description of my CLI template # optional
+values: # optional
+  pluginVar: '{{ camelCase pluginId }}Plugin'
+```
+
+The following properties are supported:
+
+- `name` **(required)** - The name of your template, used by the user to select it.
+- `role` **(required)** - The role of the template, similar to package role. See [Template Roles](#template-roles) for more details.
+- `description` - A description of the type of package that this template produces.
+- `values` - A map of additional values that will be present during templating. The values are themselves templated and can reference other values. If the key matches any of the user prompts, such as `pluginId`, the value will be used directly instead of prompting the user.
+
+Next, add any other files you want to be part of the template to the same directory. All files will be copied as is, except any files with a `.hbs` extension. They will be treated as [Handlebars](https://handlebarsjs.com/) templates and will be rendered with the values from the `portable-template.yaml` file as well as additional prompts such as `pluginId`. For example, you could create a `src/index.ts` file with the following content:
+
+```typescript title="in templates/custom-plugin/src/index.ts.hbs"
+export function getPluginId() {
+  return '{{ pluginId }}';
+}
+```
+
+If you'd like to see more examples, you can find all the default templates and their yaml files [here](https://github.com/backstage/backstage/tree/master/packages/cli-module-new/templates).
+
+Once your template is ready, [add it to your config](#installing-custom-templates), and you should now be able to select it when running `yarn new`.
+
+### Template Roles
+
+The `role` property in the template yaml file is used to determine what input will be gathered for the template, as well as what actions will be taken after the new package has been created. The following roles are supported:
+
+| Role                     | Prompts                | Output Directory | Additional Actions                                                                |
+| :----------------------- | :--------------------- | :--------------- | :-------------------------------------------------------------------------------- |
+| `frontend-plugin`        | `pluginId`             | `plugins`        | Add dependency to `packages/app` and entry to `packages/backend/src/App.tsx`      |
+| `frontend-plugin-module` | `pluginId`, `moduleId` | `plugins`        | Add dependency to `packages/app`                                                  |
+| `backend-plugin`         | `pluginId`             | `plugins`        | Add dependency to `packages/backend` and entry to `packages/backend/src/index.ts` |
+| `backend-plugin-module`  | `pluginId`, `moduleId` | `plugins`        | Add dependency to `packages/backend` and entry to `packages/backend/src/index.ts` |
+| `web-library`            | `name`                 | `packages`       | none                                                                              |
+| `node-library`           | `name`                 | `packages`       | none                                                                              |
+| `common-library`         | `name`                 | `packages`       | none                                                                              |
+| `plugin-web-library`     | `pluginId`             | `plugins`        | none                                                                              |
+| `plugin-node-library`    | `pluginId`             | `plugins`        | none                                                                              |
+| `plugin-common-library`  | `pluginId`             | `plugins`        | none                                                                              |
+
+## Dependency Versioning
+
+The `yarn new` command automatically detects if the [Backstage Yarn plugin](https://github.com/backstage/backstage/tree/master/packages/yarn-plugin) is installed in your repository and adjusts dependency versioning accordingly.
+
+When the Backstage Yarn plugin is installed (detected via `.yarnrc.yml`), `yarn new` will generate `backstage:^` ranges for all `@backstage/*` dependencies. This ensures that new packages use the same Backstage version as defined in your `backstage.json` file.
+
+When the plugin is not installed, `yarn new` uses the standard npm version ranges (e.g., `^1.0.0`) for all dependencies, maintaining backward compatibility.
+
+Regardless of plugin installation, `workspace:` ranges found in your `yarn.lock` file will always take precedence over both `backstage:^` and npm ranges. This ensures that packages within monorepos continue to use workspace linking when available.

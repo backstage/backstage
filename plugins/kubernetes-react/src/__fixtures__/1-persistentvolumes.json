@@ -1,0 +1,33 @@
+{
+  "persistentVolumes": [
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolume",
+      "metadata": {
+        "name": "pv-hostpath",
+        "uid": "1ea073bc-7a4b-4b99-8321-0305bce85568",
+        "resourceVersion": "1362732552",
+        "creationTimestamp": "2021-07-16T22:39:58Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "type": "local"
+        },
+        "annotations": {}
+      },
+      "spec": {
+        "capacity": {
+          "storage": "10Gi"
+        },
+        "accessModes": ["ReadWriteOnce"],
+        "persistentVolumeReclaimPolicy": "Retain",
+        "storageClassName": "manual",
+        "hostPath": {
+          "path": "/tmp/data"
+        }
+      },
+      "status": {
+        "phase": "Available"
+      }
+    }
+  ]
+}

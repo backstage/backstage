@@ -1,0 +1,12 @@
+---
+title: Cloud Carbon Footprint
+author: Thoughtworks
+authorUrl: https://www.cloudcarbonfootprint.org/
+category: Metrics
+description: View your cloud carbon footprint by estimating energy use (kilowatt-hours) and carbon emissions (metric tons CO2e) from public cloud usage.
+documentation: https://github.com/cloud-carbon-footprint/ccf-backstage-plugin/blob/trunk/README.md
+iconUrl: https://www.cloudcarbonfootprint.org/img/logo.png
+npmPackageName: '@cloud-carbon-footprint/backstage-plugin-frontend'
+addedDate: '2022-05-03'
+status: inactive
+staleSince: '2026-02-17'

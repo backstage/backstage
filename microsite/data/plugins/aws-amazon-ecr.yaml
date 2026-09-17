@@ -1,0 +1,11 @@
+---
+title: Amazon Elastic Container Registry
+author: Amazon Web Services
+authorUrl: https://aws.amazon.com/
+category: Infrastructure
+description: View Amazon ECR repositories and container image scan findings for your components in Backstage.
+documentation: https://github.com/awslabs/backstage-plugins-for-aws/tree/main/plugins/ecr#readme
+iconUrl: https://raw.githubusercontent.com/awslabs/backstage-plugins-for-aws/main/docs/images/logos/ecr.png
+npmPackageName: '@aws/amazon-ecr-plugin-for-backstage'
+addedDate: '2026-03-26'
+status: active

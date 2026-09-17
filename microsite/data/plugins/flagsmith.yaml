@@ -1,0 +1,11 @@
+---
+title: Flagsmith
+author: Flagsmith
+authorUrl: https://www.flagsmith.com
+category: Feature Flags
+description: View Flagsmith feature flags and usage statistics inside Backstage.
+documentation: https://docs.flagsmith.com/third-party-integrations/backstage
+iconUrl: '/img/flagsmith.svg'
+npmPackageName: '@flagsmith/backstage-plugin'
+addedDate: '2026-02-26'
+status: active

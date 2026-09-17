@@ -1,0 +1,15 @@
+.note {
+  font-size: 1rem;
+  color: var(--secondary);
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.note a {
+  color: var(--link);
+  text-decoration: none;
+}
+
+.note a:hover {
+  text-decoration: underline;
+}

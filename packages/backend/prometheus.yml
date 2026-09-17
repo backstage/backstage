@@ -1,0 +1,21 @@
+# This is an example configuration file for Prometheus, that is set to scrape
+# the metrics endpoint exposed by the example backend.
+#
+# If you want to run a docker based Prometheus instance locally to try it out,
+# run the following command in the Backstage root:
+#
+# docker run --mount type=bind,source=./packages/backend/prometheus.yml,destination=/etc/prometheus/prometheus.yml --publish published=9090,target=9090,protocol=tcp prom/prometheus
+#
+# After this, you have a Prometheus instance on http://localhost:9090
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      # This target address specifically works on Docker for MacOS - you may
+      # need to change it to another host depending on your OS and Docker
+      # engine.
+      - targets: ['host.docker.internal:9464']

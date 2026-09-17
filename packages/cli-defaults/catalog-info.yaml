@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-cli-defaults
+  title: '@backstage/cli-defaults'
+  description: Default set of CLI modules for the Backstage CLI
+spec:
+  lifecycle: experimental
+  type: backstage-cli-module
+  owner: tooling-maintainers

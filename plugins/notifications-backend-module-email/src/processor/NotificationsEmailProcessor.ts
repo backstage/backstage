@@ -1,0 +1,444 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import {
+  NotificationProcessor,
+  NotificationSendOptions,
+  resolveNotificationLink,
+} from '@backstage/plugin-notifications-node';
+import {
+  AuthService,
+  CacheService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
+import { Config, readDurationFromConfig } from '@backstage/config';
+import { durationToMilliseconds } from '@backstage/types';
+import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
+import {
+  getProcessorFiltersFromConfig,
+  Notification,
+  NotificationProcessorFilters,
+} from '@backstage/plugin-notifications-common';
+import {
+  createAzureTransport,
+  createSendmailTransport,
+  createSesTransport,
+  createSmtpTransport,
+  createStreamTransport,
+} from './transports';
+import { UserEntity } from '@backstage/catalog-model';
+import { CatalogService } from '@backstage/plugin-catalog-node';
+import { compact } from 'lodash';
+import { DefaultAwsCredentialsManager } from '@backstage/integration-aws-node';
+import { NotificationTemplateRenderer } from '../extensions';
+import Mail from 'nodemailer/lib/mailer';
+import pThrottle from 'p-throttle';
+import { SendEmailCommandInput } from '@aws-sdk/client-sesv2';
+import { isValidNotificationEmail } from './isValidNotificationEmail';
+
+export class NotificationsEmailProcessor implements NotificationProcessor {
+  private transporter: any;
+  private readonly broadcastConfig?: Config;
+  private readonly transportConfig: Config;
+  private readonly sender: string;
+  private readonly replyTo?: string;
+  private readonly sesConfig?: Config;
+  private readonly sesOptions?: Partial<SendEmailCommandInput>;
+  private readonly cacheTtl: number;
+  private readonly concurrencyLimit: number;
+  private readonly throttleInterval: number;
+  private readonly frontendBaseUrl: string;
+  private readonly filter: NotificationProcessorFilters;
+  private readonly allowedEmailDomains?: string[];
+  private readonly allowlistEmailAddresses?: string[];
+  private readonly denylistEmailAddresses?: string[];
+
+  private readonly logger: LoggerService;
+  private readonly config: Config;
+  private readonly catalog: CatalogService;
+  private readonly auth: AuthService;
+  private readonly cache?: CacheService;
+  private readonly templateRenderer?: NotificationTemplateRenderer;
+
+  constructor(
+    logger: LoggerService,
+    config: Config,
+    catalog: CatalogService,
+    auth: AuthService,
+    cache?: CacheService,
+    templateRenderer?: NotificationTemplateRenderer,
+  ) {
+    this.logger = logger;
+    this.config = config;
+    this.catalog = catalog;
+    this.auth = auth;
+    this.cache = cache;
+    this.templateRenderer = templateRenderer;
+    const emailProcessorConfig = config.getConfig(
+      'notifications.processors.email',
+    );
+    this.transportConfig = emailProcessorConfig.getConfig('transportConfig');
+    this.broadcastConfig =
+      emailProcessorConfig.getOptionalConfig('broadcastConfig');
+    this.sender = emailProcessorConfig.getString('sender');
+    this.replyTo = emailProcessorConfig.getOptionalString('replyTo');
+    this.sesConfig = emailProcessorConfig.getOptionalConfig('sesConfig');
+    this.sesOptions = this.getSesOptions();
+    this.concurrencyLimit =
+      emailProcessorConfig.getOptionalNumber('concurrencyLimit') ?? 2;
+    this.throttleInterval = emailProcessorConfig.has('throttleInterval')
+      ? durationToMilliseconds(
+          readDurationFromConfig(emailProcessorConfig, {
+            key: 'throttleInterval',
+          }),
+        )
+      : 100;
+    this.cacheTtl = emailProcessorConfig.has('cache.ttl')
+      ? durationToMilliseconds(
+          readDurationFromConfig(emailProcessorConfig, { key: 'cache.ttl' }),
+        )
+      : 3_600_000;
+    this.frontendBaseUrl = config.getString('app.baseUrl');
+    this.allowedEmailDomains = emailProcessorConfig
+      .getOptionalStringArray('allowedEmailDomains')
+      ?.map(domain => domain.toLowerCase());
+    this.allowlistEmailAddresses = emailProcessorConfig
+      .getOptionalStringArray('allowlistEmailAddresses')
+      ?.map(address => address.trim().toLowerCase());
+    this.denylistEmailAddresses = emailProcessorConfig
+      .getOptionalStringArray('denylistEmailAddresses')
+      ?.map(address => address.trim().toLowerCase());
+    this.filter = getProcessorFiltersFromConfig(emailProcessorConfig);
+  }
+
+  private async getTransporter() {
+    if (this.transporter) {
+      return this.transporter;
+    }
+    const transport = this.transportConfig.getString('transport');
+    if (transport === 'smtp') {
+      this.transporter = createSmtpTransport(this.transportConfig);
+    } else if (transport === 'ses') {
+      const awsCredentialsManager = DefaultAwsCredentialsManager.fromConfig(
+        this.config,
+      );
+      this.transporter = await createSesTransport(
+        this.transportConfig,
+        awsCredentialsManager,
+      );
+    } else if (transport === 'sendmail') {
+      this.transporter = createSendmailTransport(this.transportConfig);
+    } else if (transport === 'stream') {
+      this.transporter = createStreamTransport();
+    } else if (transport === 'azure') {
+      this.transporter = createAzureTransport(this.transportConfig);
+    } else {
+      throw new Error(`Unsupported transport: ${transport}`);
+    }
+    return this.transporter;
+  }
+
+  getName(): string {
+    return 'Email';
+  }
+
+  private async getBroadcastEmails(): Promise<string[]> {
+    if (!this.broadcastConfig) {
+      return [];
+    }
+
+    const receiver = this.broadcastConfig.getString('receiver');
+    if (receiver === 'none') {
+      return [];
+    }
+
+    if (receiver === 'config') {
+      return (
+        this.broadcastConfig.getOptionalStringArray('receiverEmails') ?? []
+      );
+    }
+
+    if (receiver === 'users') {
+      const cached = await this.cache?.get<string[]>('user-emails:all');
+      if (cached) {
+        return cached;
+      }
+
+      const entities = await this.catalog.getEntities(
+        {
+          filter: [
+            { kind: 'user', 'spec.profile.email': CATALOG_FILTER_EXISTS },
+          ],
+          fields: ['spec.profile.email'],
+        },
+        { credentials: await this.auth.getOwnServiceCredentials() },
+      );
+      const ret = compact([
+        ...new Set(
+          entities.items.map(entity => {
+            return (entity as UserEntity)?.spec.profile?.email;
+          }),
+        ),
+      ]);
+
+      await this.cache?.set('user-emails:all', ret, {
+        ttl: this.cacheTtl,
+      });
+      return ret;
+    }
+
+    throw new Error(`Unsupported broadcast receiver: ${receiver}`);
+  }
+
+  private async getUserEmail(entityRef: string): Promise<string[]> {
+    const cached = await this.cache?.get<string[]>(`user-emails:${entityRef}`);
+    if (cached) {
+      return cached;
+    }
+
+    const entity = await this.catalog.getEntityByRef(entityRef, {
+      credentials: await this.auth.getOwnServiceCredentials(),
+    });
+    const ret: string[] = [];
+    if (entity) {
+      const userEntity = entity as UserEntity;
+      if (userEntity.spec.profile?.email) {
+        ret.push(userEntity.spec.profile.email);
+      }
+    }
+
+    await this.cache?.set(`user-emails:${entityRef}`, ret, {
+      ttl: this.cacheTtl,
+    });
+
+    return ret;
+  }
+
+  private async getRecipientEmails(
+    notification: Notification,
+    options: NotificationSendOptions,
+  ): Promise<string[]> {
+    let emails: string[];
+    if (options.recipients.type === 'broadcast') {
+      emails = await this.getBroadcastEmails();
+    } else if (options.recipients.type === 'entity' && !!notification.user) {
+      emails = await this.getUserEmail(notification.user);
+    } else {
+      this.logger.info(
+        `Unknown notification type ${options.recipients.type} or missing user.`,
+      );
+      return [];
+    }
+
+    emails = emails.filter(email => {
+      if (isValidNotificationEmail(email)) {
+        return true;
+      }
+      this.logger.warn(
+        `Skipping invalid notification email address for delivery: ${email}`,
+      );
+      return false;
+    });
+
+    let skippedOutsideDomains = 0;
+    emails = emails.filter(email => {
+      const normalizedEmail = email.trim().toLowerCase();
+      const onAllowlist =
+        this.allowlistEmailAddresses?.includes(normalizedEmail);
+
+      // Allowlisted addresses are accepted even outside allowedEmailDomains.
+      if (onAllowlist) {
+        return true;
+      }
+
+      if (this.allowedEmailDomains) {
+        const domain = email.slice(email.lastIndexOf('@') + 1).toLowerCase();
+        if (this.allowedEmailDomains.includes(domain)) {
+          return true;
+        }
+        this.logger.debug(
+          `Skipping notification email address outside allowedEmailDomains: ${email}`,
+        );
+        skippedOutsideDomains += 1;
+        return false;
+      }
+
+      // Allowlist-only closed mode when no domain list is configured.
+      if (this.allowlistEmailAddresses) {
+        return false;
+      }
+
+      return true;
+    });
+
+    if (skippedOutsideDomains > 0) {
+      this.logger.info(
+        `Skipped ${skippedOutsideDomains} notification email address(es) outside allowedEmailDomains`,
+      );
+    }
+
+    if (this.denylistEmailAddresses) {
+      emails = emails.filter(email => {
+        if (this.denylistEmailAddresses?.includes(email.trim().toLowerCase())) {
+          this.logger.warn(
+            `Skipping denylisted notification email address: ${email}`,
+          );
+          return false;
+        }
+        return true;
+      });
+    }
+    return emails;
+  }
+
+  private async sendMail(options: Mail.Options) {
+    try {
+      this.logger.debug(`Sending notification email to ${options.to}`);
+      await this.transporter.sendMail(options);
+    } catch (e) {
+      this.logger.error(`Failed to send email to ${options.to}: ${e}`);
+    }
+  }
+
+  private async sendMails(options: Mail.Options, emails: string[]) {
+    const throttle = pThrottle({
+      limit: this.concurrencyLimit,
+      interval: this.throttleInterval,
+    });
+
+    const throttled = throttle((opts: Mail.Options) => this.sendMail(opts));
+    await Promise.all(
+      emails.map(email => throttled({ ...options, to: email })),
+    );
+  }
+
+  private getNotificationLink(notification: Notification): string {
+    if (notification.payload.link) {
+      const resolvedLink = resolveNotificationLink(
+        notification.payload.link,
+        this.frontendBaseUrl,
+      );
+      return resolvedLink ?? notification.payload.link;
+    }
+    return `${this.frontendBaseUrl}/notifications`;
+  }
+
+  private getHtmlContent(notification: Notification) {
+    const contentParts: string[] = [];
+    if (notification.payload.description) {
+      contentParts.push(`${notification.payload.description}`);
+    }
+    const link = this.getNotificationLink(notification);
+    contentParts.push(`<a href="${link}">${link}</a>`);
+    return `<p>${contentParts.join('<br/>')}</p>`;
+  }
+
+  private getTextContent(notification: Notification) {
+    const contentParts: string[] = [];
+    if (notification.payload.description) {
+      contentParts.push(notification.payload.description);
+    }
+    contentParts.push(this.getNotificationLink(notification));
+    return contentParts.join('\n\n');
+  }
+
+  private getSesOptions(): Partial<SendEmailCommandInput> | undefined {
+    if (!this.sesConfig) {
+      return undefined;
+    }
+    const ses: Partial<SendEmailCommandInput> = {};
+    const fromArn = this.sesConfig.getOptionalString('fromArn');
+    const sourceArn = this.sesConfig.getOptionalString('sourceArn');
+    const configurationSetName = this.sesConfig.getOptionalString(
+      'configurationSetName',
+    );
+
+    if (fromArn) ses.FromEmailAddressIdentityArn = fromArn;
+    if (configurationSetName) ses.ConfigurationSetName = configurationSetName;
+    if (sourceArn)
+      this.logger.warn(
+        'sourceArn is not supported in SESv2 and will be ignored',
+      );
+
+    return Object.keys(ses).length > 0 ? ses : undefined;
+  }
+
+  private async sendPlainEmail(notification: Notification, emails: string[]) {
+    const mailOptions = {
+      from: this.sender,
+      subject: notification.payload.title,
+      html: this.getHtmlContent(notification),
+      text: this.getTextContent(notification),
+      replyTo: this.replyTo,
+      ses: this.sesOptions,
+    };
+
+    await this.sendMails(mailOptions, emails);
+  }
+
+  private async sendTemplateEmail(
+    notification: Notification,
+    emails: string[],
+  ) {
+    const mailOptions = {
+      from: this.sender,
+      subject:
+        (await this.templateRenderer?.getSubject?.(notification)) ??
+        notification.payload.title,
+      html: await this.templateRenderer?.getHtml?.(notification),
+      text: await this.templateRenderer?.getText?.(notification),
+      replyTo: this.replyTo,
+      ses: this.sesOptions,
+    };
+
+    await this.sendMails(mailOptions, emails);
+  }
+
+  async postProcess(
+    notification: Notification,
+    options: NotificationSendOptions,
+  ): Promise<void> {
+    this.transporter = await this.getTransporter();
+
+    let emails: string[] = [];
+    try {
+      emails = await this.getRecipientEmails(notification, options);
+    } catch (e) {
+      this.logger.error(`Failed to resolve recipient emails: ${e}`);
+      return;
+    }
+
+    if (emails.length === 0) {
+      this.logger.info(
+        `No email recipients found for notification: ${notification.id}, skipping`,
+      );
+      return;
+    }
+
+    this.logger.debug(`Sending notification emails to: ${emails.join(',')}`);
+
+    if (!this.templateRenderer) {
+      await this.sendPlainEmail(notification, emails);
+      return;
+    }
+
+    await this.sendTemplateEmail(notification, emails);
+  }
+
+  getNotificationFilters(): NotificationProcessorFilters {
+    return this.filter;
+  }
+}

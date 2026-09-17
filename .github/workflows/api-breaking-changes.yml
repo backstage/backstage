@@ -1,0 +1,63 @@
+name: API Breaking Changes (Trigger)
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    paths:
+      - '**/openapi.yaml'
+
+jobs:
+  get-backstage-changes:
+    env:
+      NODE_OPTIONS: --max-old-space-size=4096
+    name: Build PR image
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' || github.event.action != 'closed' }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          # Fetch the commit that's merged into the base rather than the target ref
+          # This will let us diff only the contents of the PR, without fetching more history
+          ref: 'refs/pull/${{ github.event.pull_request.number }}/merge'
+
+      - name: fetch base
+        run: git fetch --depth 1 origin "$GITHUB_BASE_REF"
+
+      - name: setup-node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 22.x
+          registry-url: https://registry.npmjs.org/
+
+      - name: yarn install
+        uses: backstage/actions/yarn-install@7da58d8d1e914892549d73ae9b291acb640b61f9 # v0.7.12
+        with:
+          cache-prefix: linux-v22
+
+      - name: install oasdiff
+        env:
+          OASDIFF_VERSION: '1.18.1'
+        run: curl -fsSL https://raw.githubusercontent.com/oasdiff/oasdiff/v${OASDIFF_VERSION}/install.sh | version=${OASDIFF_VERSION} sh
+
+      - name: breaking changes check
+        run: |
+          yarn backstage-repo-tools repo schema openapi diff --since "origin/$GITHUB_BASE_REF" > comment.md
+          echo "<!-- api-breaking-changes-comment -->" >> comment.md
+
+      - name: clone artifacts to current directory
+        run: |
+          cat "$GITHUB_EVENT_PATH" > event.json
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: preview-spec
+          path: |
+            comment.md
+            event.json
+          retention-days: 2
+          overwrite: true

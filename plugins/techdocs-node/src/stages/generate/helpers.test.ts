@@ -1,0 +1,1987 @@
+/*
+ * Copyright 2020 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { ConfigReader } from '@backstage/config';
+import { ScmIntegrations } from '@backstage/integration';
+import {
+  createMockDirectory,
+  mockServices,
+} from '@backstage/backend-test-utils';
+import fs from 'fs-extra';
+import path, { resolve as resolvePath } from 'node:path';
+import { ParsedLocationAnnotation } from '../../helpers';
+import {
+  createOrUpdateMetadata,
+  getGeneratorKey,
+  getMkdocsYml,
+  getRepoUrlFromLocationAnnotation,
+  patchIndexPreBuild,
+  storeEtagMetadata,
+  validateInputDirectory,
+  validateMkdocsYaml,
+} from './helpers';
+import {
+  patchMkdocsYmlPreBuild,
+  patchMkdocsYmlWithPlugins,
+  sanitizeMkdocsYml,
+  patchMkdocsYmlWithFontDisabled,
+} from './mkdocsPatchers';
+import yaml from 'js-yaml';
+
+const mockEntity = {
+  apiVersion: 'version',
+  kind: 'TestKind',
+  metadata: {
+    name: 'testName',
+    title: 'Test site name',
+  },
+};
+
+const mkdocsYml = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs.yml'),
+);
+const mkdocsDefaultYml = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_default.yml'),
+);
+const mkdocsYmlWithExtensions = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_with_extensions.yml'),
+);
+const mkdocsYmlWithRepoUrl = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_with_repo_url.yml'),
+);
+const mkdocsYmlWithEditUri = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_with_edit_uri.yml'),
+);
+const mkdocsYmlWithValidDocDir = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_valid_doc_dir.yml'),
+);
+const mkdocsYmlWithInvalidDocDir = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_invalid_doc_dir.yml'),
+);
+const mkdocsYmlWithInvalidDocDir2 = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_invalid_doc_dir2.yml'),
+);
+const mkdocsYmlWithComments = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_with_comments.yml'),
+);
+const mkdocsYmlWithTechdocsPlugins = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_with_techdocs_plugin.yml'),
+);
+const mkdocsYmlWithoutPlugins = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_without_plugins.yml'),
+);
+const mkdocsYmlWithAdditionalPlugins = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_with_additional_plugins.yml'),
+);
+const mkdocsYmlWithAdditionalPluginsWithConfig = fs.readFileSync(
+  resolvePath(
+    __filename,
+    '../__fixtures__/mkdocs_with_additional_plugins_with_config.yml',
+  ),
+);
+const mkdocsYmlWithEnvTag = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_with_env_tag.yml'),
+);
+const mkdocsYmlWithHooks = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_with_hooks.yml'),
+);
+const mkdocsYmlWithMergeKeyHooks = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_with_merge_key_hooks.yml'),
+);
+const mkdocsYmlWithParserDifferentialHooks = fs.readFileSync(
+  resolvePath(
+    __filename,
+    '../__fixtures__/mkdocs_with_parser_differential_hooks.yml',
+  ),
+);
+const mkdocsYmlWithDuplicateMergeHooks = fs.readFileSync(
+  resolvePath(
+    __filename,
+    '../__fixtures__/mkdocs_with_duplicate_merge_hooks.yml',
+  ),
+);
+const mkdocsYmlWithPlantumlCmd = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_with_plantuml_cmd.yml'),
+);
+const mkdocsYmlWithPlantumlCmdHyphenated = fs.readFileSync(
+  resolvePath(
+    __filename,
+    '../__fixtures__/mkdocs_with_plantuml_cmd_hyphenated.yml',
+  ),
+);
+const mkdocsYmlWithDangerousExtensions = fs.readFileSync(
+  resolvePath(
+    __filename,
+    '../__fixtures__/mkdocs_with_dangerous_extensions.yml',
+  ),
+);
+const mkdocsYmlWithOnlyDangerousExtensions = fs.readFileSync(
+  resolvePath(
+    __filename,
+    '../__fixtures__/mkdocs_with_only_dangerous_extensions.yml',
+  ),
+);
+const mkdocsYmlWithSafeExtensions = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_with_safe_extensions.yml'),
+);
+const mkdocsYmlWithMultiKeyDangerousExtension = fs.readFileSync(
+  resolvePath(
+    __filename,
+    '../__fixtures__/mkdocs_with_multi_key_dangerous_extension.yml',
+  ),
+);
+const mkdocsYmlWithThemeCustomDir = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_with_theme_custom_dir.yml'),
+);
+const mkdocsYmlWithUnsupportedPlugins = fs.readFileSync(
+  resolvePath(
+    __filename,
+    '../__fixtures__/mkdocs_with_unsupported_plugins.yml',
+  ),
+);
+const mockLogger = mockServices.logger.mock();
+const warn = jest.spyOn(mockLogger, 'warn');
+
+const scmIntegrations = ScmIntegrations.fromConfig(new ConfigReader({}));
+
+describe('helpers', () => {
+  const mockDir = createMockDirectory();
+
+  afterEach(mockDir.clear);
+
+  describe('getGeneratorKey', () => {
+    it('should return techdocs as the only generator key', () => {
+      const key = getGeneratorKey(mockEntity);
+      expect(key).toBe('techdocs');
+    });
+  });
+
+  describe('getRepoUrlFromLocationAnnotation', () => {
+    it.each`
+      url                                                                        | repo_url                                                                   | edit_uri
+      ${'https://github.com/backstage/backstage'}                                | ${'https://github.com/backstage/backstage'}                                | ${undefined}
+      ${'https://github.com/backstage/backstage/tree/main/examples/techdocs/'}   | ${'https://github.com/backstage/backstage/tree/main/examples/techdocs/'}   | ${'https://github.com/backstage/backstage/edit/main/examples/techdocs/docs'}
+      ${'https://github.com/backstage/backstage/tree/main/examples/techdocs'}    | ${'https://github.com/backstage/backstage/tree/main/examples/techdocs'}    | ${'https://github.com/backstage/backstage/edit/main/examples/techdocs/docs'}
+      ${'https://github.com/backstage/backstage/tree/main/'}                     | ${'https://github.com/backstage/backstage/tree/main/'}                     | ${'https://github.com/backstage/backstage/edit/main/docs'}
+      ${'https://gitlab.com/backstage/backstage'}                                | ${'https://gitlab.com/backstage/backstage'}                                | ${undefined}
+      ${'https://gitlab.com/backstage/backstage/-/blob/main/examples/techdocs/'} | ${'https://gitlab.com/backstage/backstage/-/blob/main/examples/techdocs/'} | ${'https://gitlab.com/backstage/backstage/-/edit/main/examples/techdocs/docs'}
+      ${'https://gitlab.com/backstage/backstage/-/blob/main/'}                   | ${'https://gitlab.com/backstage/backstage/-/blob/main/'}                   | ${'https://gitlab.com/backstage/backstage/-/edit/main/docs'}
+    `('should convert $url', ({ url: target, repo_url, edit_uri }) => {
+      const parsedLocationAnnotation: ParsedLocationAnnotation = {
+        type: 'url',
+        target,
+      };
+
+      expect(
+        getRepoUrlFromLocationAnnotation(
+          parsedLocationAnnotation,
+          scmIntegrations,
+        ),
+      ).toEqual({ repo_url, edit_uri });
+    });
+
+    it.each`
+      url                                                                        | repo_url                                                                   | edit_uri
+      ${'https://github.com/backstage/backstage/tree/main/examples/techdocs/'}   | ${'https://github.com/backstage/backstage/tree/main/examples/techdocs/'}   | ${'https://github.com/backstage/backstage/edit/main/examples/techdocs/custom/folder'}
+      ${'https://github.com/backstage/backstage/tree/main/'}                     | ${'https://github.com/backstage/backstage/tree/main/'}                     | ${'https://github.com/backstage/backstage/edit/main/custom/folder'}
+      ${'https://gitlab.com/backstage/backstage/-/blob/main/examples/techdocs/'} | ${'https://gitlab.com/backstage/backstage/-/blob/main/examples/techdocs/'} | ${'https://gitlab.com/backstage/backstage/-/edit/main/examples/techdocs/custom/folder'}
+      ${'https://gitlab.com/backstage/backstage/-/blob/main/'}                   | ${'https://gitlab.com/backstage/backstage/-/blob/main/'}                   | ${'https://gitlab.com/backstage/backstage/-/edit/main/custom/folder'}
+    `(
+      'should convert $url with custom docsFolder',
+      ({ url: target, repo_url, edit_uri }) => {
+        const parsedLocationAnnotation: ParsedLocationAnnotation = {
+          type: 'url',
+          target,
+        };
+
+        expect(
+          getRepoUrlFromLocationAnnotation(
+            parsedLocationAnnotation,
+            scmIntegrations,
+            './custom/folder',
+          ),
+        ).toEqual({ repo_url, edit_uri });
+      },
+    );
+
+    it.each`
+      url
+      ${'https://bitbucket.org/backstage/backstage/src/master/examples/techdocs/'}
+      ${'https://bitbucket.org/backstage/backstage/src/master/'}
+      ${'https://dev.azure.com/organization/project/_git/repository?path=%2Fexamples%2Ftechdocs'}
+      ${'https://dev.azure.com/organization/project/_git/repository?path=%2F'}
+    `('should ignore $url', ({ url: target }) => {
+      const parsedLocationAnnotation: ParsedLocationAnnotation = {
+        type: 'url',
+        target,
+      };
+
+      expect(
+        getRepoUrlFromLocationAnnotation(
+          parsedLocationAnnotation,
+          scmIntegrations,
+        ),
+      ).toEqual({});
+    });
+
+    it('should ignore unsupported location type', () => {
+      const parsedLocationAnnotation: ParsedLocationAnnotation = {
+        type: 'dir',
+        target: '/home/user/workspace/docs-repository',
+      };
+
+      expect(
+        getRepoUrlFromLocationAnnotation(
+          parsedLocationAnnotation,
+          scmIntegrations,
+        ),
+      ).toEqual({});
+    });
+  });
+
+  describe('patchMkdocsYmlPreBuild', () => {
+    beforeEach(() => {
+      mockDir.setContent({
+        'mkdocs.yml': mkdocsYml,
+        'mkdocs_default.yml': mkdocsDefaultYml,
+        'mkdocs_with_repo_url.yml': mkdocsYmlWithRepoUrl,
+        'mkdocs_with_edit_uri.yml': mkdocsYmlWithEditUri,
+        'mkdocs_with_extensions.yml': mkdocsYmlWithExtensions,
+        'mkdocs_with_comments.yml': mkdocsYmlWithComments,
+      });
+    });
+
+    it('should add edit_uri to mkdocs.yml', async () => {
+      const parsedLocationAnnotation: ParsedLocationAnnotation = {
+        type: 'url',
+        target: 'https://github.com/backstage/backstage',
+      };
+
+      await patchMkdocsYmlPreBuild(
+        mockDir.resolve('mkdocs.yml'),
+        mockLogger,
+        parsedLocationAnnotation,
+        scmIntegrations,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+
+      expect(updatedMkdocsYml.toString()).toContain(
+        'repo_url: https://github.com/backstage/backstage',
+      );
+    });
+
+    it('should add repo_url to mkdocs.yml that contains custom yaml tags', async () => {
+      const parsedLocationAnnotation: ParsedLocationAnnotation = {
+        type: 'url',
+        target: 'https://github.com/backstage/backstage',
+      };
+
+      await patchMkdocsYmlPreBuild(
+        mockDir.resolve('mkdocs_with_extensions.yml'),
+        mockLogger,
+        parsedLocationAnnotation,
+        scmIntegrations,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_extensions.yml'),
+      );
+
+      expect(updatedMkdocsYml.toString()).toContain(
+        'repo_url: https://github.com/backstage/backstage',
+      );
+      expect(updatedMkdocsYml.toString()).toContain(
+        "emoji_index: !!python/name:materialx.emoji.twemoji ''",
+      );
+      expect(updatedMkdocsYml.toString()).toContain(
+        'slugify: !!python/object/apply:pymdownx.slugs.slugify',
+      );
+      expect(updatedMkdocsYml.toString()).toContain('case: lower');
+    });
+
+    it('should not override existing repo_url in mkdocs.yml', async () => {
+      const parsedLocationAnnotation: ParsedLocationAnnotation = {
+        type: 'url',
+        target: 'https://github.com/neworg/newrepo',
+      };
+
+      await patchMkdocsYmlPreBuild(
+        mockDir.resolve('mkdocs_with_repo_url.yml'),
+        mockLogger,
+        parsedLocationAnnotation,
+        scmIntegrations,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_repo_url.yml'),
+      );
+
+      expect(updatedMkdocsYml.toString()).toContain(
+        'repo_url: https://github.com/backstage/backstage',
+      );
+      expect(updatedMkdocsYml.toString()).not.toContain(
+        'repo_url: https://github.com/neworg/newrepo',
+      );
+    });
+
+    it('should not override existing edit_uri in mkdocs.yml', async () => {
+      const parsedLocationAnnotation: ParsedLocationAnnotation = {
+        type: 'url',
+        target: 'https://github.com/neworg/newrepo',
+      };
+
+      await patchMkdocsYmlPreBuild(
+        mockDir.resolve('mkdocs_with_edit_uri.yml'),
+        mockLogger,
+        parsedLocationAnnotation,
+        scmIntegrations,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_edit_uri.yml'),
+      );
+
+      expect(updatedMkdocsYml.toString()).toContain(
+        'edit_uri: https://github.com/backstage/backstage/edit/main/docs',
+      );
+      expect(updatedMkdocsYml.toString()).not.toContain(
+        'edit_uri: https://github.com/neworg/newrepo',
+      );
+    });
+
+    it('should add edit_uri to mkdocs.yml with existing repo_url', async () => {
+      const parsedLocationAnnotation: ParsedLocationAnnotation = {
+        type: 'url',
+        target: 'https://github.com/neworg/newrepo/tree/main/',
+      };
+
+      await patchMkdocsYmlPreBuild(
+        mockDir.resolve('mkdocs_with_repo_url.yml'),
+        mockLogger,
+        parsedLocationAnnotation,
+        scmIntegrations,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_repo_url.yml'),
+      );
+
+      expect(updatedMkdocsYml.toString()).toContain(
+        'edit_uri: https://github.com/neworg/newrepo/edit/main/docs',
+      );
+      expect(updatedMkdocsYml.toString()).toContain(
+        'repo_url: https://github.com/backstage/backstage',
+      );
+    });
+
+    it('should not update mkdocs.yml if nothing should be changed', async () => {
+      const parsedLocationAnnotation: ParsedLocationAnnotation = {
+        type: 'dir',
+        target: '/unsupported/path',
+      };
+
+      await patchMkdocsYmlPreBuild(
+        mockDir.resolve('mkdocs_with_comments.yml'),
+        mockLogger,
+        parsedLocationAnnotation,
+        scmIntegrations,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_comments.yml'),
+      );
+
+      expect(updatedMkdocsYml.toString()).toContain(
+        '# This is a comment that is removed after editing',
+      );
+      expect(updatedMkdocsYml.toString()).not.toContain('edit_uri');
+      expect(updatedMkdocsYml.toString()).not.toContain('repo_url');
+    });
+  });
+
+  describe('patchMkdocsYmlWithPlugins', () => {
+    beforeEach(() => {
+      mockDir.setContent({
+        'mkdocs_with_techdocs_plugin.yml': mkdocsYmlWithTechdocsPlugins,
+        'mkdocs_without_plugins.yml': mkdocsYmlWithoutPlugins,
+        'mkdocs_with_additional_plugins.yml': mkdocsYmlWithAdditionalPlugins,
+        'mkdocs_with_additional_plugins_with_config.yml':
+          mkdocsYmlWithAdditionalPluginsWithConfig,
+      });
+    });
+    it('should not add additional plugins if techdocs exists already in mkdocs file', async () => {
+      await patchMkdocsYmlWithPlugins(
+        mockDir.resolve('mkdocs_with_techdocs_plugin.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_techdocs_plugin.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        plugins: string[];
+      };
+      expect(parsedYml.plugins).toHaveLength(1);
+      expect(parsedYml.plugins).toContain('techdocs-core');
+    });
+    it("should add the needed plugin if it doesn't exist in mkdocs file", async () => {
+      await patchMkdocsYmlWithPlugins(
+        mockDir.resolve('mkdocs_without_plugins.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_without_plugins.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        plugins: string[];
+      };
+      expect(parsedYml.plugins).toHaveLength(1);
+      expect(parsedYml.plugins).toContain('techdocs-core');
+    });
+    it('should not override existing plugins', async () => {
+      await patchMkdocsYmlWithPlugins(
+        mockDir.resolve('mkdocs_with_additional_plugins.yml'),
+        mockLogger,
+      );
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_additional_plugins.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        plugins: string[];
+      };
+      expect(parsedYml.plugins).toHaveLength(3);
+      expect(parsedYml.plugins).toContain('techdocs-core');
+      expect(parsedYml.plugins).toContain('not-techdocs-core');
+      expect(parsedYml.plugins).toContain('also-not-techdocs-core');
+    });
+    it('should add all provided default plugins', async () => {
+      await patchMkdocsYmlWithPlugins(
+        mockDir.resolve('mkdocs_with_additional_plugins.yml'),
+        mockLogger,
+        ['techdocs-core', 'custom-plugin'],
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_additional_plugins.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        plugins: string[];
+      };
+      expect(parsedYml.plugins).toHaveLength(4);
+      expect(parsedYml.plugins).toContain('techdocs-core');
+      expect(parsedYml.plugins).toContain('custom-plugin');
+    });
+    it('should not overwrite config when defaults are added', async () => {
+      await patchMkdocsYmlWithPlugins(
+        mockDir.resolve('mkdocs_with_additional_plugins_with_config.yml'),
+        mockLogger,
+        ['techdocs-core', 'custom-plugin'],
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_additional_plugins_with_config.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        plugins: object[];
+      };
+      expect(parsedYml.plugins).toHaveLength(4);
+      expect(parsedYml.plugins).toContain('techdocs-core');
+      expect(parsedYml.plugins).not.toContain('custom-plugin');
+      expect(parsedYml.plugins).toContainEqual({
+        'custom-plugin': { with: { configuration: 1 } },
+      });
+    });
+  });
+
+  describe('patchMkdocsYmlWithFontDisabled', () => {
+    beforeEach(() => {
+      mockDir.setContent({
+        'mkdocs_without_theme.yml': `site_name: Test Site
+docs_dir: docs
+`,
+        'mkdocs_with_theme_no_font.yml': `site_name: Test Site
+docs_dir: docs
+theme:
+  name: material
+`,
+        'mkdocs_with_theme_font_true.yml': `site_name: Test Site
+docs_dir: docs
+theme:
+  name: material
+  font: true
+`,
+        'mkdocs_with_theme_font_false.yml': `site_name: Test Site
+docs_dir: docs
+theme:
+  name: material
+  font: false
+`,
+        'mkdocs_with_theme_non_material.yml': `site_name: Test Site
+docs_dir: docs
+theme:
+  name: test-theme
+`,
+      });
+      mockLogger.debug.mockClear();
+    });
+
+    it('should create theme section with font disabled when no theme exists', async () => {
+      await patchMkdocsYmlWithFontDisabled(
+        mockDir.resolve('mkdocs_without_theme.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_without_theme.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        theme?: { name?: string; font?: boolean };
+      };
+      expect(parsedYml.theme).toBeDefined();
+      expect(parsedYml.theme?.name).toBe('material');
+      expect(parsedYml.theme?.font).toBe(false);
+    });
+
+    it('should add font: false when theme exists but font is not configured', async () => {
+      await patchMkdocsYmlWithFontDisabled(
+        mockDir.resolve('mkdocs_with_theme_no_font.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_theme_no_font.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        theme?: { name?: string; font?: boolean };
+      };
+      expect(parsedYml.theme).toBeDefined();
+      expect(parsedYml.theme?.name).toBe('material');
+      expect(parsedYml.theme?.font).toBe(false);
+    });
+
+    it('should not override font when font is already set to true', async () => {
+      await patchMkdocsYmlWithFontDisabled(
+        mockDir.resolve('mkdocs_with_theme_font_true.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_theme_font_true.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        theme?: { name?: string; font?: boolean };
+      };
+      expect(parsedYml.theme).toBeDefined();
+      expect(parsedYml.theme?.name).toBe('material');
+      expect(parsedYml.theme?.font).toBe(true);
+    });
+
+    it('should not override font when font is already set to false', async () => {
+      await patchMkdocsYmlWithFontDisabled(
+        mockDir.resolve('mkdocs_with_theme_font_false.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_theme_font_false.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        theme?: { name?: string; font?: boolean };
+      };
+      expect(parsedYml.theme).toBeDefined();
+      expect(parsedYml.theme?.name).toBe('material');
+      expect(parsedYml.theme?.font).toBe(false);
+    });
+
+    it('should not patch when theme name is not material', async () => {
+      const fixturePath = mockDir.resolve('mkdocs_with_theme_non_material.yml');
+      const before = await fs.readFile(fixturePath, 'utf8');
+
+      await patchMkdocsYmlWithFontDisabled(fixturePath, mockLogger);
+
+      await expect(fs.readFile(fixturePath, 'utf8')).resolves.toEqual(before);
+      expect(mockLogger.debug).toHaveBeenCalledWith(
+        'mkdocs.yml theme is not "material"; skipping font disabling patch',
+      );
+    });
+  });
+
+  describe('patchIndexPreBuild', () => {
+    afterEach(() => {
+      warn.mockClear();
+    });
+    it('should have no effect if docs/index.md exists', async () => {
+      mockDir.setContent({
+        'docs/index.md': 'index.md content',
+        'docs/README.md': 'docs/README.md content',
+      });
+
+      await patchIndexPreBuild({ inputDir: mockDir.path, logger: mockLogger });
+
+      await expect(
+        fs.readFile(mockDir.resolve('docs/index.md'), 'utf-8'),
+      ).resolves.toEqual('index.md content');
+      expect(warn).not.toHaveBeenCalledWith();
+    });
+
+    it("should use docs/README.md if docs/index.md doesn't exists", async () => {
+      mockDir.setContent({
+        'docs/README.md': 'docs/README.md content',
+        'README.md': 'main README.md content',
+      });
+
+      await patchIndexPreBuild({ inputDir: mockDir.path, logger: mockLogger });
+
+      await expect(
+        fs.readFile(mockDir.resolve('docs/index.md'), 'utf-8'),
+      ).resolves.toEqual('docs/README.md content');
+      expect(warn.mock.calls).toEqual([
+        [`${path.normalize('docs/index.md')} not found.`],
+      ]);
+    });
+
+    it('should use README.md if neither docs/index.md or docs/README.md exist', async () => {
+      mockDir.setContent({
+        'README.md': 'main README.md content',
+      });
+
+      await patchIndexPreBuild({ inputDir: mockDir.path, logger: mockLogger });
+
+      await expect(
+        fs.readFile(mockDir.resolve('docs/index.md'), 'utf-8'),
+      ).resolves.toEqual('main README.md content');
+      expect(warn.mock.calls).toEqual([
+        [`${path.normalize('docs/index.md')} not found.`],
+        [`${path.normalize('docs/README.md')} not found.`],
+        [`${path.normalize('docs/readme.md')} not found.`],
+      ]);
+    });
+
+    it('should not use any file as index.md if no one matches the requirements', async () => {
+      mockDir.setContent({});
+
+      await patchIndexPreBuild({ inputDir: mockDir.path, logger: mockLogger });
+
+      await expect(
+        fs.readFile(mockDir.resolve('docs/index.md'), 'utf-8'),
+      ).rejects.toThrow();
+      const paths = [
+        path.normalize('docs/index.md'),
+        path.normalize('docs/README.md'),
+        path.normalize('docs/readme.md'),
+        'README.md',
+        'readme.md',
+      ];
+      expect(warn.mock.calls).toEqual([
+        ...paths.map(p => [`${p} not found.`]),
+        [
+          `Could not find any techdocs' index file. Please make sure at least one of ${paths
+            .map(p => mockDir.resolve(p))
+            .join(' ')} exists.`,
+        ],
+      ]);
+    });
+
+    it.each(['README.md', 'readme.md', 'docs/README.md', 'docs/readme.md'])(
+      'should use a symlink to %s if docs/index.md does not exist',
+      async fileName => {
+        mockDir.setContent({
+          'information.md': 'information.md content',
+          [fileName]: ctx => ctx.symlink(mockDir.resolve('information.md')),
+        });
+
+        await patchIndexPreBuild({
+          inputDir: mockDir.path,
+          logger: mockLogger,
+        });
+
+        await expect(
+          fs.readFile(mockDir.resolve('docs/index.md'), 'utf-8'),
+        ).resolves.toEqual('information.md content');
+      },
+    );
+
+    it.each(['README.md', 'readme.md', 'docs/README.md', 'docs/readme.md'])(
+      'should reject a symlink from %s to outside of the current directory',
+      async fileName => {
+        const anotherMockDir = createMockDirectory();
+
+        mockDir.setContent({
+          'information.md': 'information.md content',
+          [fileName]: ctx => ctx.symlink(anotherMockDir.resolve('tmp/secret')),
+        });
+
+        anotherMockDir.setContent({
+          tmp: {
+            secret: 'password',
+          },
+        });
+
+        await expect(
+          patchIndexPreBuild({ inputDir: mockDir.path, logger: mockLogger }),
+        ).rejects.toThrow(
+          /Source path .* is not allowed to refer to a location outside/i,
+        );
+      },
+    );
+
+    it.each(['README.md', 'readme.md', 'docs/README.md', 'docs/readme.md'])(
+      'should write %s to a symlink docs directory if docs/index.md does not exist',
+      async fileName => {
+        mockDir.setContent({
+          'target/docs': {},
+          docs: ctx => ctx.symlink('./target/docs'),
+          [fileName]: `${fileName} content`,
+        });
+
+        await patchIndexPreBuild({
+          inputDir: mockDir.path,
+          logger: mockLogger,
+        });
+
+        await expect(
+          fs.readFile(mockDir.resolve('target/docs/index.md'), 'utf-8'),
+        ).resolves.toEqual(`${fileName} content`);
+      },
+    );
+
+    it.each(['README.md', 'readme.md'])(
+      'should reject creating docs dir if target symlink points to non-existing directory outside of the current directory',
+      async fileName => {
+        const anotherMockDir = createMockDirectory();
+
+        mockDir.setContent({
+          docs: ctx => ctx.symlink(anotherMockDir.resolve('docs')),
+          'information.md': 'information.md content',
+          [fileName]: `${fileName} content`,
+        });
+
+        await expect(
+          patchIndexPreBuild({ inputDir: mockDir.path, logger: mockLogger }),
+        ).rejects.toThrow(
+          /Target path .* is not allowed to refer to a location outside/i,
+        );
+
+        await expect(fs.exists(anotherMockDir.resolve('docs'))).resolves.toBe(
+          false,
+        );
+      },
+    );
+
+    it.each(['README.md', 'readme.md'])(
+      'should reject creating docs dir if target symlink points to existing directory outside of the current directory',
+      async fileName => {
+        const anotherMockDir = createMockDirectory();
+
+        mockDir.setContent({
+          docs: ctx => ctx.symlink(anotherMockDir.resolve('docs')),
+          'information.md': 'information.md content',
+          [fileName]: `${fileName} content`,
+        });
+
+        anotherMockDir.setContent({
+          docs: {},
+        });
+
+        await expect(
+          patchIndexPreBuild({ inputDir: mockDir.path, logger: mockLogger }),
+        ).rejects.toThrow(
+          /Target path .* is not allowed to refer to a location outside/i,
+        );
+
+        await expect(
+          fs.exists(anotherMockDir.resolve('docs/index.md')),
+        ).resolves.toBe(false);
+      },
+    );
+  });
+
+  describe('addBuildTimestampMetadata', () => {
+    const mockFiles = {
+      'invalid_techdocs_metadata.json': 'dsds',
+      'techdocs_metadata.json': '{"site_name": "Tech Docs"}',
+    };
+
+    beforeEach(() => {
+      mockDir.setContent(mockFiles);
+    });
+
+    it('should create the file if it does not exist', async () => {
+      const filePath = mockDir.resolve('wrong_techdocs_metadata.json');
+      await createOrUpdateMetadata(filePath, mockLogger);
+
+      // Check if the file exists
+      await expect(
+        fs.access(filePath, fs.constants.F_OK),
+      ).resolves.not.toThrow();
+    });
+
+    it('should throw error when the JSON is invalid', async () => {
+      const filePath = mockDir.resolve('invalid_techdocs_metadata.json');
+
+      await expect(
+        createOrUpdateMetadata(filePath, mockLogger),
+      ).rejects.toThrow('Unexpected token');
+    });
+
+    it('should add build timestamp to the metadata json', async () => {
+      const filePath = mockDir.resolve('techdocs_metadata.json');
+
+      await createOrUpdateMetadata(filePath, mockLogger);
+
+      const json = await fs.readJson(filePath);
+      expect(json.build_timestamp).toBeLessThanOrEqual(Date.now());
+    });
+
+    it('should add list of files to the metadata json', async () => {
+      const filePath = mockDir.resolve('techdocs_metadata.json');
+
+      await createOrUpdateMetadata(filePath, mockLogger);
+
+      const json = await fs.readJson(filePath);
+      expect(json.files).toEqual(
+        expect.arrayContaining(Object.keys(mockFiles)),
+      );
+    });
+  });
+
+  describe('storeEtagMetadata', () => {
+    beforeEach(() => {
+      mockDir.setContent({
+        'invalid_techdocs_metadata.json': 'dsds',
+        'techdocs_metadata.json': '{"site_name": "Tech Docs"}',
+      });
+    });
+
+    it('should throw error when the JSON is invalid', async () => {
+      const filePath = mockDir.resolve('invalid_techdocs_metadata.json');
+
+      await expect(storeEtagMetadata(filePath, 'etag123abc')).rejects.toThrow(
+        'Unexpected token',
+      );
+    });
+
+    it('should add etag to the metadata json', async () => {
+      const filePath = mockDir.resolve('techdocs_metadata.json');
+
+      await storeEtagMetadata(filePath, 'etag123abc');
+
+      const json = await fs.readJson(filePath);
+      expect(json.etag).toBe('etag123abc');
+    });
+  });
+
+  describe('getMkdocsYml', () => {
+    const defaultOptions = {
+      name: mockEntity.metadata.title,
+    };
+
+    it('returns expected contents when .yml file is present', async () => {
+      mockDir.setContent({ 'mkdocs.yml': mkdocsYml });
+      const {
+        path: mkdocsPath,
+        content,
+        configIsTemporary,
+      } = await getMkdocsYml(mockDir.path, defaultOptions);
+
+      expect(mkdocsPath).toBe(mockDir.resolve('mkdocs.yml'));
+      expect(content).toBe(mkdocsYml.toString());
+      expect(configIsTemporary).toBe(false);
+    });
+
+    it('returns expected contents when .yaml file is present', async () => {
+      mockDir.setContent({ 'mkdocs.yaml': mkdocsYml });
+      const {
+        path: mkdocsPath,
+        content,
+        configIsTemporary,
+      } = await getMkdocsYml(mockDir.path, defaultOptions);
+      expect(mkdocsPath).toBe(mockDir.resolve('mkdocs.yaml'));
+      expect(content).toBe(mkdocsYml.toString());
+      expect(configIsTemporary).toBe(false);
+    });
+
+    it('returns expected contents when default file is present', async () => {
+      const options = {
+        name: 'Default Test site name',
+      };
+      const mockPathExists = jest.spyOn(fs, 'pathExists');
+      mockPathExists.mockImplementation(() => Promise.resolve(false));
+      mockDir.setContent({ 'mkdocs.yml': mkdocsDefaultYml });
+      const {
+        path: mkdocsPath,
+        content,
+        configIsTemporary,
+      } = await getMkdocsYml(mockDir.path, options);
+
+      expect(mkdocsPath).toBe(mockDir.resolve('mkdocs.yml'));
+      expect(content.split(/[\r\n]+/g)).toEqual(
+        mkdocsDefaultYml.toString().split(/[\r\n]+/g),
+      );
+      expect(configIsTemporary).toBe(true);
+      mockPathExists.mockRestore();
+    });
+
+    it('throws when neither .yml nor .yaml nor default file is present', async () => {
+      const invalidInputDir = resolvePath(__filename);
+      await expect(
+        getMkdocsYml(invalidInputDir, defaultOptions),
+      ).rejects.toThrow(
+        /Could not read MkDocs YAML config file mkdocs.yml or mkdocs.yaml or default for validation/,
+      );
+    });
+
+    it('returns expected content when custom file is specified', async () => {
+      const options = { mkdocsConfigFileName: 'another-name.yaml' };
+      mockDir.setContent({ 'another-name.yaml': mkdocsYml });
+
+      const {
+        path: mkdocsPath,
+        content,
+        configIsTemporary,
+      } = await getMkdocsYml(mockDir.path, options);
+
+      expect(mkdocsPath).toBe(mockDir.resolve('another-name.yaml'));
+
+      expect(content).toBe(mkdocsYml.toString());
+      expect(configIsTemporary).toBe(false);
+    });
+
+    it('throws when specifying a specific mkdocs config file that does not exist', async () => {
+      const options = { mkdocsConfigFileName: 'another-name.yaml' };
+      mockDir.setContent({ 'mkdocs.yml': mkdocsDefaultYml });
+
+      await expect(getMkdocsYml(mockDir.path, options)).rejects.toThrow(
+        /The specified file .* does not exist/,
+      );
+    });
+
+    it('prefers .yaml over .yml when both files exist', async () => {
+      mockDir.setContent({
+        'mkdocs.yaml': mkdocsYml,
+        'mkdocs.yml': mkdocsYml,
+      });
+      const {
+        path: mkdocsPath,
+        content,
+        configIsTemporary,
+      } = await getMkdocsYml(mockDir.path, defaultOptions);
+
+      expect(mkdocsPath).toBe(mockDir.resolve('mkdocs.yaml'));
+      expect(content).toBe(mkdocsYml.toString());
+      expect(configIsTemporary).toBe(false);
+    });
+  });
+
+  describe('validateMkdocsYaml', () => {
+    const inputDir = resolvePath(__filename, '../__fixtures__/');
+
+    it('should return true on when no docs_dir present', async () => {
+      await expect(
+        validateMkdocsYaml(inputDir, mkdocsYml.toString()),
+      ).resolves.toBeUndefined();
+    });
+
+    it('should return true on when a valid docs_dir is present', async () => {
+      await expect(
+        validateMkdocsYaml(inputDir, mkdocsYmlWithValidDocDir.toString()),
+      ).resolves.toBe('docs/');
+    });
+
+    it('should return false on absolute doc_dir path', async () => {
+      await expect(
+        validateMkdocsYaml(inputDir, mkdocsYmlWithInvalidDocDir.toString()),
+      ).rejects.toThrow();
+    });
+
+    it('should return false on doc_dir path that traverses directory structure backwards', async () => {
+      await expect(
+        validateMkdocsYaml(inputDir, mkdocsYmlWithInvalidDocDir2.toString()),
+      ).rejects.toThrow();
+    });
+
+    it('should validate files with custom yaml tags (scalar)', async () => {
+      await expect(
+        validateMkdocsYaml(inputDir, mkdocsYmlWithExtensions.toString()),
+      ).resolves.toBeUndefined();
+    });
+
+    it('should validate files with custom yaml tags (sequence)', async () => {
+      await expect(
+        validateMkdocsYaml(inputDir, mkdocsYmlWithEnvTag.toString()),
+      ).resolves.toBeUndefined();
+    });
+
+    it.each([
+      ['scalar', 'site_name: !!python/name:builtins.str'],
+      [
+        'mapping',
+        `site_name: !!python/object/apply:builtins.str
+  args: [test]`,
+      ],
+      ['sequence', 'site_name: !!python/object/apply:builtins.str [test]'],
+    ])('should reject Python YAML tags with %s values', async (_, content) => {
+      await expect(validateMkdocsYaml(inputDir, content)).rejects.toThrow(
+        'Unsupported Python YAML tag',
+      );
+    });
+  });
+
+  describe('sanitizeMkdocsYml', () => {
+    beforeEach(() => {
+      warn.mockClear();
+      mockDir.setContent({
+        'mkdocs_with_hooks.yml': mkdocsYmlWithHooks,
+        'mkdocs.yml': mkdocsYml,
+      });
+    });
+
+    it('should remove disallowed keys from mkdocs.yml and log a warning', async () => {
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_with_hooks.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_hooks.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        hooks?: string[];
+        site_name: string;
+      };
+      expect(parsedYml.hooks).toBeUndefined();
+      expect(parsedYml.site_name).toBe('Test site name');
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Removed the following unsupported configuration keys from mkdocs.yml: hooks',
+        ),
+      );
+    });
+
+    it('should remove extra templates by default', async () => {
+      mockDir.setContent({
+        'mkdocs_with_extra_templates.yml': `site_name: Test
+extra_templates:
+  - status.html
+`,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_with_extra_templates.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_extra_templates.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      expect(parsedYml.extra_templates).toBeUndefined();
+      expect(parsedYml.site_name).toBe('Test');
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('extra_templates'),
+      );
+    });
+
+    it('should keep only supported MkDocs plugins and preserve their configuration', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': mkdocsYmlWithUnsupportedPlugins,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        plugins: unknown[];
+      };
+
+      expect(parsedYml.plugins).toEqual([
+        'search',
+        {
+          group: {
+            plugins: ['redirects'],
+          },
+        },
+        {
+          'material/group': {
+            plugins: [{ search: null }],
+          },
+        },
+        {
+          redirects: {
+            redirect_maps: {
+              'old.md': 'new.md',
+            },
+          },
+        },
+      ]);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'privacy, material/privacy, table-reader, dynamically configured plugin name, custom-plugin, malformed plugin declaration, projects',
+        ),
+      );
+    });
+
+    it('should preserve explicitly allowed MkDocs plugins', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+plugins:
+  - table-reader:
+      data_path: data.csv
+  - custom-plugin
+`,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs.yml'),
+        mockLogger,
+        undefined,
+        ['table-reader', 'custom-plugin'],
+      );
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        plugins: unknown[];
+      };
+
+      expect(parsedYml.plugins).toEqual([
+        { 'table-reader': { data_path: 'data.csv' } },
+        'custom-plugin',
+      ]);
+    });
+
+    it('should normalize mapping-style MkDocs plugin declarations before filtering', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+plugins:
+  search:
+  material/privacy:
+    enabled: true
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        plugins: unknown[];
+      };
+
+      expect(parsedYml.plugins).toEqual([{ search: null }]);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('material/privacy'),
+      );
+    });
+
+    it('should fail when the configuration cannot be sanitized', async () => {
+      await expect(
+        sanitizeMkdocsYml(mockDir.resolve('missing.yml'), mockLogger),
+      ).rejects.toThrow();
+
+      mockDir.setContent({
+        'mkdocs.yml': 'site_name: [unterminated',
+      });
+
+      await expect(
+        sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger),
+      ).rejects.toThrow();
+
+      mockDir.setContent({
+        'mkdocs.yml': 'site_name: Test\n',
+      });
+      const writeFile = jest
+        .spyOn(fs, 'writeFile')
+        .mockImplementationOnce(() => {
+          throw new Error('write failed');
+        });
+      try {
+        await expect(
+          sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger),
+        ).rejects.toThrow('write failed');
+      } finally {
+        writeFile.mockRestore();
+      }
+    });
+
+    it('should allow extra templates when explicitly configured', async () => {
+      mockDir.setContent({
+        'mkdocs_with_extra_templates.yml': `site_name: Test
+extra_templates:
+  - status.html
+`,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_with_extra_templates.yml'),
+        mockLogger,
+        ['extra_templates'],
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_extra_templates.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      expect(parsedYml.extra_templates).toEqual(['status.html']);
+      expect(parsedYml.site_name).toBe('Test');
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'DANGEROUS: Allowing additional MkDocs configuration keys beyond the default safe allowlist: extra_templates',
+        ),
+      );
+    });
+
+    it('should not modify mkdocs.yml when no disallowed keys are present', async () => {
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        hooks?: string[];
+        site_name: string;
+      };
+      expect(parsedYml.hooks).toBeUndefined();
+      expect(parsedYml.site_name).toBe('Test site name');
+      expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('should remove multiple disallowed keys and list them all in the warning', async () => {
+      const mkdocsWithMultipleDisallowed = `site_name: Test
+hooks:
+  - hook.py
+some_unknown_key: value
+another_unknown: true
+`;
+      mockDir.setContent({
+        'mkdocs_multiple.yml': mkdocsWithMultipleDisallowed,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_multiple.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_multiple.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+      expect(parsedYml.hooks).toBeUndefined();
+      expect(parsedYml.some_unknown_key).toBeUndefined();
+      expect(parsedYml.another_unknown).toBeUndefined();
+      expect(parsedYml.site_name).toBe('Test');
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringMatching(
+          /Removed the following unsupported configuration keys.*hooks.*some_unknown_key.*another_unknown|Removed the following unsupported configuration keys.*hooks.*another_unknown.*some_unknown_key/,
+        ),
+      );
+    });
+
+    it('should remove hooks introduced via YAML merge keys', async () => {
+      mockDir.setContent({
+        'mkdocs_merge_keys.yml': mkdocsYmlWithMergeKeyHooks,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_merge_keys.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_merge_keys.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      expect(parsedYml.hooks).toBeUndefined();
+      expect(parsedYml.site_name).toBe('Test');
+      expect(parsedYml.plugins).toEqual(['techdocs-core']);
+      expect(updatedMkdocsYml.toString()).not.toContain('<<:');
+
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Removed the following unsupported configuration keys from mkdocs.yml: hooks',
+        ),
+      );
+    });
+
+    it('should remove hooks when parsers interpret duplicate merge keys differently', async () => {
+      mockDir.setContent({
+        'mkdocs_parser_diff.yml': mkdocsYmlWithParserDifferentialHooks,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_parser_diff.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_parser_diff.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      expect(parsedYml.hooks).toBeUndefined();
+      expect(parsedYml.site_name).toBe('Test');
+      expect(parsedYml.plugins).toEqual(['techdocs-core']);
+      expect(parsedYml.extra).toBeDefined();
+      expect(updatedMkdocsYml.toString()).not.toContain('<<:');
+
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Removed the following unsupported configuration keys from mkdocs.yml: hooks',
+        ),
+      );
+    });
+
+    it('should remove the INHERIT key to prevent loading unsanitized parent configs', async () => {
+      const mkdocsWithInherit = `INHERIT: ../parent.yml
+site_name: Test
+`;
+      mockDir.setContent({
+        'mkdocs_inherit.yml': mkdocsWithInherit,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_inherit.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_inherit.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      expect(parsedYml.INHERIT).toBeUndefined();
+      expect(parsedYml.site_name).toBe('Test');
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('INHERIT'));
+    });
+
+    it('should remove hooks with duplicate merge keys and top-level anchors', async () => {
+      mockDir.setContent({
+        'mkdocs_duplicate_merge.yml': mkdocsYmlWithDuplicateMergeHooks,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_duplicate_merge.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_duplicate_merge.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      expect(parsedYml.hooks).toBeUndefined();
+      expect(parsedYml.site_name).toBe('Test');
+      expect(parsedYml.plugins).toEqual(['techdocs-core']);
+      expect(updatedMkdocsYml.toString()).not.toContain('<<:');
+
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('hooks'));
+    });
+
+    it('should allow additional keys when configured via dangerouslyAllowAdditionalKeys', async () => {
+      const mkdocsWithHooksAndCustom = `site_name: Test
+hooks:
+  - hook.py
+custom_dir: custom
+some_unknown_key: value
+`;
+      mockDir.setContent({
+        'mkdocs_allowed.yml': mkdocsWithHooksAndCustom,
+      });
+
+      // Allow 'hooks' and 'custom_dir' but not 'some_unknown_key'
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_allowed.yml'),
+        mockLogger,
+        ['hooks', 'custom_dir'],
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_allowed.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      // 'hooks' and 'custom_dir' should be preserved
+      expect(parsedYml.hooks).toEqual(['hook.py']);
+      expect(parsedYml.custom_dir).toBe('custom');
+      // 'some_unknown_key' should still be removed
+      expect(parsedYml.some_unknown_key).toBeUndefined();
+      expect(parsedYml.site_name).toBe('Test');
+
+      // Should warn about the dangerous configuration AND the removed key
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'DANGEROUS: Allowing additional MkDocs configuration keys beyond the default safe allowlist: hooks, custom_dir',
+        ),
+      );
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Removed the following unsupported configuration keys from mkdocs.yml: some_unknown_key',
+        ),
+      );
+    });
+
+    it('should warn about dangerous keys even when no keys are removed', async () => {
+      mockDir.setContent({
+        'mkdocs_with_hooks.yml': mkdocsYmlWithHooks,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_with_hooks.yml'),
+        mockLogger,
+        ['hooks'],
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_hooks.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        hooks?: string[];
+        site_name: string;
+      };
+
+      // Hooks should be preserved
+      expect(parsedYml.hooks).toBeDefined();
+      expect(parsedYml.site_name).toBe('Test site name');
+
+      // Should warn about dangerous configuration
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'DANGEROUS: Allowing additional MkDocs configuration keys beyond the default safe allowlist: hooks',
+        ),
+      );
+    });
+
+    it('should remove dangerous markdown_extensions', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': mkdocsYmlWithDangerousExtensions,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      expect(parsedYml.markdown_extensions).toEqual([
+        { toc: { permalink: true } },
+        'admonition',
+      ]);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('subprocess:Popen'),
+      );
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('os:system'));
+    });
+
+    it('should remove configuration from snippets extensions', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+markdown_extensions:
+  - pymdownx.snippets:
+      base_path: /
+  - pymdownx.snippets:SnippetExtension:
+      base_path: /
+  - pymdownx.tabbed:
+      alternate_style: true
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        markdown_extensions: Array<unknown>;
+      };
+
+      expect(parsedYml.markdown_extensions).toEqual([
+        { 'pymdownx.snippets': {} },
+        { 'pymdownx.snippets:SnippetExtension': {} },
+        { 'pymdownx.tabbed': { alternate_style: true } },
+      ]);
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('pymdownx.snippets configuration'),
+      );
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'pymdownx.snippets:SnippetExtension configuration',
+        ),
+      );
+    });
+
+    it('should remove configuration from every snippets extension in a mapping', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+markdown_extensions:
+  - pymdownx.snippets: {}
+    pymdownx.snippets:SnippetExtension:
+      base_path: /
+      restrict_base_path: false
+      url_download: true
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        markdown_extensions: Array<unknown>;
+      };
+
+      expect(parsedYml.markdown_extensions).toEqual([
+        {
+          'pymdownx.snippets': {},
+          'pymdownx.snippets:SnippetExtension': {},
+        },
+      ]);
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'pymdownx.snippets:SnippetExtension configuration',
+        ),
+      );
+    });
+
+    it('should preserve unconfigured snippets extensions', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+markdown_extensions:
+  - pymdownx.snippets
+  - pymdownx.snippets:SnippetExtension
+  - pymdownx.snippets: {}
+  - pymdownx.snippets:SnippetExtension: {}
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        markdown_extensions: Array<unknown>;
+      };
+
+      expect(parsedYml.markdown_extensions).toEqual([
+        'pymdownx.snippets',
+        'pymdownx.snippets:SnippetExtension',
+        { 'pymdownx.snippets': {} },
+        { 'pymdownx.snippets:SnippetExtension': {} },
+      ]);
+      expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('should remove unsupported snippets extension classes', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+markdown_extensions:
+  - pymdownx.snippets:SnippetMissingError
+  - pymdownx.snippets:SnippetMissingError: {}
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        markdown_extensions: Array<unknown>;
+      };
+
+      expect(parsedYml.markdown_extensions).toEqual([]);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('pymdownx.snippets:SnippetMissingError'),
+      );
+    });
+
+    it('should handle markdown_extensions with only dangerous entries', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': mkdocsYmlWithOnlyDangerousExtensions,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      expect(parsedYml.markdown_extensions).toEqual([]);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('subprocess:Popen'),
+      );
+    });
+
+    it('should remove a mapping that mixes a dangerous name with a safe one', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': mkdocsYmlWithMultiKeyDangerousExtension,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      expect(parsedYml.markdown_extensions).toEqual(['admonition']);
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('os:system'));
+    });
+
+    it('should strip plantuml_cmd from markdown extension config', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': mkdocsYmlWithPlantumlCmd,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      const extensions = parsedYml.markdown_extensions as Array<
+        Record<string, Record<string, unknown>>
+      >;
+      const plantumlConfig = extensions.find(
+        e => typeof e === 'object' && 'plantuml_markdown' in e,
+      );
+      expect(plantumlConfig).toBeDefined();
+      expect(plantumlConfig!.plantuml_markdown.plantuml_cmd).toBeUndefined();
+      expect(plantumlConfig!.plantuml_markdown.output_format).toBe('svg');
+
+      const tocConfig = extensions.find(
+        e => typeof e === 'object' && 'toc' in e,
+      );
+      expect(tocConfig).toBeDefined();
+      expect((tocConfig as any).toc.permalink).toBe(true);
+
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Removed the following dangerous entries from markdown_extensions in mkdocs.yml: plantuml_cmd',
+        ),
+      );
+    });
+
+    it('should strip plantuml_cmd regardless of extension name variant', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': mkdocsYmlWithPlantumlCmdHyphenated,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      const extensions = parsedYml.markdown_extensions as Array<
+        Record<string, Record<string, unknown>>
+      >;
+      const plantumlConfig = extensions.find(
+        e => typeof e === 'object' && 'plantuml-markdown' in e,
+      );
+      expect(plantumlConfig).toBeDefined();
+      expect(plantumlConfig!['plantuml-markdown'].plantuml_cmd).toBeUndefined();
+
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('plantuml_cmd'),
+      );
+    });
+
+    it('should preserve safe markdown_extensions unchanged', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': mkdocsYmlWithSafeExtensions,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      expect(parsedYml.markdown_extensions).toEqual([
+        { toc: { permalink: true } },
+        'admonition',
+        'pymdownx.superfences',
+        { 'pymdownx.tabbed': { alternate_style: true } },
+      ]);
+      expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('should strip custom_dir from theme while preserving safe keys', async () => {
+      mockDir.setContent({
+        'mkdocs_theme_custom_dir.yml': mkdocsYmlWithThemeCustomDir,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_theme_custom_dir.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_theme_custom_dir.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        theme?: Record<string, unknown>;
+      };
+
+      expect(parsedYml.theme?.custom_dir).toBeUndefined();
+      expect(parsedYml.theme?.name).toBe('material');
+      expect(parsedYml.theme?.palette).toEqual({ primary: 'indigo' });
+      expect(parsedYml.theme?.font).toBe(false);
+      expect(parsedYml.theme?.features).toEqual(['navigation.instant']);
+      expect(parsedYml.theme?.language).toBe('en');
+      expect(parsedYml.theme?.direction).toBe('ltr');
+      expect(parsedYml.theme?.icon).toEqual({
+        repo: 'fontawesome/brands/github',
+      });
+      expect(parsedYml.theme?.logo).toBe('assets/logo.png');
+      expect(parsedYml.theme?.favicon).toBe('assets/favicon.png');
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Removed the following unsupported keys from theme configuration in mkdocs.yml: custom_dir',
+        ),
+      );
+    });
+
+    it('should not modify theme when it is a string', async () => {
+      const mkdocsWithStringTheme = `site_name: Test
+theme: material
+`;
+      mockDir.setContent({
+        'mkdocs_string_theme.yml': mkdocsWithStringTheme,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_string_theme.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_string_theme.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        theme?: unknown;
+      };
+
+      expect(parsedYml.theme).toBe('material');
+      expect(warn).not.toHaveBeenCalledWith(
+        expect.stringContaining('theme configuration'),
+      );
+    });
+  });
+
+  describe('validateInputDirectory', () => {
+    it('should pass for a valid input directory with no symlinks', async () => {
+      mockDir.setContent({
+        docs: {
+          'index.md': 'Hello',
+          'guide.md': 'Guide content',
+        },
+      });
+
+      await expect(
+        validateInputDirectory(mockDir.path),
+      ).resolves.toBeUndefined();
+    });
+
+    it('should pass for symlinks pointing within the input directory', async () => {
+      mockDir.setContent({
+        docs: {
+          'index.md': 'Hello',
+        },
+        'other.md': 'Other content',
+      });
+
+      // Create a symlink within the input directory
+      await fs.symlink(
+        mockDir.resolve('other.md'),
+        mockDir.resolve('docs/link.md'),
+      );
+
+      await expect(
+        validateInputDirectory(mockDir.path),
+      ).resolves.toBeUndefined();
+    });
+
+    it('should reject symlinks pointing outside the input directory', async () => {
+      const anotherMockDir = createMockDirectory();
+
+      mockDir.setContent({
+        docs: {
+          'index.md': 'Hello',
+        },
+      });
+
+      anotherMockDir.setContent({
+        tmp: {
+          secret: 'password',
+        },
+      });
+
+      // Create a symlink pointing outside the input directory
+      await fs.symlink(
+        anotherMockDir.resolve('tmp/secret'),
+        mockDir.resolve('docs/escape.md'),
+      );
+
+      await expect(validateInputDirectory(mockDir.path)).rejects.toThrow(
+        /not allowed to refer to a location outside/i,
+      );
+    });
+
+    it('should reject symlinks to sensitive files like /etc/passwd', async () => {
+      mockDir.setContent({
+        docs: {
+          'index.md': 'Hello',
+        },
+      });
+
+      // Create a symlink to /etc/passwd
+      await fs.symlink('/etc/passwd', mockDir.resolve('docs/passwd.md'));
+
+      await expect(validateInputDirectory(mockDir.path)).rejects.toThrow(
+        /not allowed to refer to a location outside/i,
+      );
+    });
+
+    it('should reject symlinks outside the docs directory', async () => {
+      mockDir.setContent({
+        docs: {
+          'index.md': '# Test\n\n--8<-- "leak_link"\n',
+        },
+      });
+
+      // Create a symlink to /etc/passwd at the input directory root, which
+      // MkDocs snippets can include even though it is outside the docs directory
+      await fs.symlink('/etc/passwd', mockDir.resolve('leak_link'));
+
+      await expect(validateInputDirectory(mockDir.path)).rejects.toThrow(
+        /not allowed to refer to a location outside/i,
+      );
+    });
+
+    it('should reject symlinks in nested directories', async () => {
+      mockDir.setContent({
+        docs: {
+          'index.md': 'Hello',
+          nested: {
+            'page.md': 'Nested page',
+          },
+        },
+      });
+
+      // Create a symlink in a nested directory pointing outside
+      await fs.symlink('/etc/passwd', mockDir.resolve('docs/nested/escape.md'));
+
+      await expect(validateInputDirectory(mockDir.path)).rejects.toThrow(
+        /not allowed to refer to a location outside/i,
+      );
+    });
+
+    it('should reject directory symlinks pointing outside', async () => {
+      const anotherMockDir = createMockDirectory();
+
+      mockDir.setContent({
+        docs: {
+          'index.md': 'Hello',
+        },
+      });
+
+      anotherMockDir.setContent({
+        tmp: {
+          secret: 'password',
+        },
+      });
+
+      // Create a directory symlink pointing outside
+      await fs.symlink(
+        anotherMockDir.path,
+        mockDir.resolve('docs/external-dir'),
+      );
+
+      await expect(validateInputDirectory(mockDir.path)).rejects.toThrow(
+        /not allowed to refer to a location outside/i,
+      );
+    });
+
+    it('should pass for directory symlinks within input directory', async () => {
+      mockDir.setContent({
+        docs: {
+          'index.md': 'Hello',
+        },
+        assets: {
+          'image.png': 'binary content',
+        },
+      });
+
+      // Create a directory symlink within input directory
+      await fs.symlink(
+        mockDir.resolve('assets'),
+        mockDir.resolve('docs/assets'),
+      );
+
+      await expect(
+        validateInputDirectory(mockDir.path),
+      ).resolves.toBeUndefined();
+    });
+
+    it('should pass for symlink cycles within input directory', async () => {
+      mockDir.setContent({
+        docs: {
+          'index.md': 'Hello',
+        },
+      });
+
+      // Create a symlink pointing at the input directory itself
+      await fs.symlink(mockDir.path, mockDir.resolve('self'));
+
+      await expect(
+        validateInputDirectory(mockDir.path),
+      ).resolves.toBeUndefined();
+    });
+  });
+});

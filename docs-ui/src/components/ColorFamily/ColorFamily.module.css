@@ -1,0 +1,94 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+  .wrapper {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.visual {
+  flex: 1;
+  min-width: 0;
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+}
+
+.base {
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.baseLabel {
+  display: block;
+  font-size: 13px;
+  color: var(--bui-fg-primary);
+  margin-bottom: 12px;
+}
+
+.level {
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.levelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.level > .level > .levelHeader:last-child,
+.level:not(:has(> .level)) > .levelHeader {
+  margin-bottom: 0;
+}
+
+.levelLabel {
+  font-size: 13px;
+  color: var(--bui-fg-primary);
+  white-space: nowrap;
+}
+
+.chips {
+  display: flex;
+  gap: 6px;
+}
+
+.chip {
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--bui-fg-primary);
+  white-space: nowrap;
+}
+
+.description {
+  color: var(--primary);
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.description:last-child {
+  margin-bottom: 0;
+}
+
+.link {
+  color: var(--link);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

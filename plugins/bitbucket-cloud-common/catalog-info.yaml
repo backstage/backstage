@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-bitbucket-cloud-common
+  title: '@backstage/plugin-bitbucket-cloud-common'
+  description: Common functionalities for bitbucket-cloud plugins
+spec:
+  lifecycle: experimental
+  type: backstage-common-library
+  owner: pjungermann

@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-notifications-backend-module-slack
+  title: '@backstage/plugin-notifications-backend-module-slack'
+  description: The slack backend module for the notifications plugin.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers

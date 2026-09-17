@@ -1,0 +1,843 @@
+/*
+ * Copyright 2022 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { DefaultAwsCredentialsManager } from './DefaultAwsCredentialsManager';
+import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
+import { Config, ConfigReader } from '@backstage/config';
+import {
+  connectionTypes,
+  type ConnectionAuth,
+  type ConnectionsService,
+} from '@backstage/connections';
+import { NotFoundError } from '@backstage/errors';
+import {
+  fromNodeProviderChain,
+  fromTemporaryCredentials,
+  fromTokenFile,
+} from '@aws-sdk/credential-providers';
+import { join } from 'node:path';
+import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+
+const env = process.env;
+const stsSendMock = jest.fn();
+let stsSendShouldReject = false;
+let stsSendRejectMessage: string | undefined;
+let config: Config;
+let tmpDir: string;
+
+jest.mock('@aws-sdk/credential-providers', () => {
+  const originalModule = jest.requireActual('@aws-sdk/credential-providers');
+  return {
+    ...originalModule,
+    fromNodeProviderChain: jest.fn(),
+    fromTemporaryCredentials: jest.fn(),
+    fromTokenFile: jest.fn(),
+  };
+});
+
+describe('DefaultAwsCredentialsManager', () => {
+  beforeEach(() => {
+    process.env = { ...env };
+    jest.restoreAllMocks();
+    jest.resetAllMocks();
+
+    stsSendShouldReject = false;
+    stsSendRejectMessage = undefined;
+    jest.spyOn(STSClient.prototype, 'send').mockImplementation(stsSendMock);
+    stsSendMock.mockImplementation(async command => {
+      if (command instanceof GetCallerIdentityCommand) {
+        if (stsSendShouldReject) {
+          throw new Error(stsSendRejectMessage ?? 'No credentials found');
+        }
+        return {
+          Account: '123456789012',
+        };
+      }
+      throw new Error(`No mock for ${command.constructor.name}`);
+    });
+
+    config = new ConfigReader({
+      aws: {
+        accounts: [
+          {
+            accountId: '111111111111',
+            roleName: 'hello',
+            externalId: 'world',
+          },
+          {
+            accountId: '222222222222',
+            roleName: 'hi',
+            partition: 'aws-other',
+            region: 'not-us-east-1',
+            accessKeyId: 'ABC',
+            secretAccessKey: 'EDF',
+          },
+          {
+            accountId: '333333333333',
+            accessKeyId: 'my-access-key',
+            secretAccessKey: 'my-secret-access-key',
+          },
+          {
+            accountId: '444444444444',
+          },
+          {
+            accountId: '555555555555',
+            profile: 'my-profile',
+          },
+        ],
+        accountDefaults: {
+          roleName: 'backstage-role',
+          externalId: 'my-id',
+        },
+        mainAccount: {
+          accessKeyId: 'GHI',
+          secretAccessKey: 'JKL',
+          region: 'ap-northeast-1',
+        },
+      },
+    });
+
+    // Mock fromTemporaryCredentials to return credential providers
+    // based on the RoleArn, instead of mocking internal nested STS clients.
+    const assumeRoleCredentials: Record<
+      string,
+      {
+        accessKeyId: string;
+        secretAccessKey: string;
+        sessionToken: string;
+        expiration: Date;
+      }
+    > = {
+      'arn:aws:iam::111111111111:role/hello': {
+        accessKeyId: 'ACCESS_KEY_ID_1',
+        secretAccessKey: 'SECRET_ACCESS_KEY_1',
+        sessionToken: 'SESSION_TOKEN_1',
+        expiration: new Date('2022-01-01'),
+      },
+      'arn:aws-other:iam::222222222222:role/hi': {
+        accessKeyId: 'ACCESS_KEY_ID_2',
+        secretAccessKey: 'SECRET_ACCESS_KEY_2',
+        sessionToken: 'SESSION_TOKEN_2',
+        expiration: new Date('2022-01-02'),
+      },
+      'arn:aws:iam::999999999999:role/backstage-role': {
+        accessKeyId: 'ACCESS_KEY_ID_9',
+        secretAccessKey: 'SECRET_ACCESS_KEY_9',
+        sessionToken: 'SESSION_TOKEN_9',
+        expiration: new Date('2022-01-09'),
+      },
+    };
+    (fromTemporaryCredentials as jest.Mock).mockImplementation(opts => {
+      const creds = assumeRoleCredentials[opts.params.RoleArn];
+      if (!creds) {
+        throw new Error(`Unexpected RoleArn: ${opts.params.RoleArn}`);
+      }
+      return async () => creds;
+    });
+
+    const testDate = new Date('2022-01-10');
+
+    process.env.AWS_ACCESS_KEY_ID = 'ACCESS_KEY_ID_10';
+    process.env.AWS_SECRET_ACCESS_KEY = 'SECRET_ACCESS_KEY_10';
+    process.env.AWS_SESSION_TOKEN = 'SESSION_TOKEN_10';
+    process.env.AWS_CREDENTIAL_EXPIRATION = testDate.toISOString();
+
+    // Return creds from env
+    (fromNodeProviderChain as jest.Mock).mockImplementation(
+      jest.requireActual('@aws-sdk/credential-providers').fromNodeProviderChain,
+    );
+
+    // Write a temporary AWS credentials file and point the SDK at it
+    tmpDir = mkdtempSync(join(tmpdir(), 'aws-test-'));
+    const credFilePath = join(tmpDir, 'credentials');
+    const configFilePath = join(tmpDir, 'config');
+    writeFileSync(
+      credFilePath,
+      '[my-profile]\naws_access_key_id=ACCESS_KEY_ID_9\naws_secret_access_key=SECRET_ACCESS_KEY_9\n',
+    );
+    writeFileSync(configFilePath, '');
+    process.env.AWS_SHARED_CREDENTIALS_FILE = credFilePath;
+    process.env.AWS_CONFIG_FILE = configFilePath;
+  });
+
+  afterEach(() => {
+    process.env = env;
+    jest.restoreAllMocks();
+    if (tmpDir) {
+      rmSync(tmpDir, { recursive: true, force: true });
+    }
+  });
+
+  describe('#getCredentialProvider', () => {
+    it('retrieves assume-role creds for the given account ID and caches the provider', async () => {
+      const provider = DefaultAwsCredentialsManager.fromConfig(config);
+      const awsCredentialProvider = await provider.getCredentialProvider({
+        accountId: '111111111111',
+      });
+
+      expect(awsCredentialProvider.accountId).toEqual('111111111111');
+
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
+      expect(creds).toEqual({
+        accessKeyId: 'ACCESS_KEY_ID_1',
+        secretAccessKey: 'SECRET_ACCESS_KEY_1',
+        sessionToken: 'SESSION_TOKEN_1',
+        expiration: new Date('2022-01-01'),
+      });
+
+      expect(fromTemporaryCredentials).toHaveBeenCalledWith(
+        expect.objectContaining({
+          params: {
+            RoleArn: 'arn:aws:iam::111111111111:role/hello',
+            RoleSessionName: 'backstage',
+            ExternalId: 'world',
+          },
+        }),
+      );
+
+      const awsCredentialProvider2 = await provider.getCredentialProvider({
+        accountId: '111111111111',
+      });
+
+      expect(awsCredentialProvider).toBe(awsCredentialProvider2);
+    });
+
+    it('retrieves assume-role creds in another partition for the given account ID', async () => {
+      const provider = DefaultAwsCredentialsManager.fromConfig(config);
+      const awsCredentialProvider = await provider.getCredentialProvider({
+        accountId: '222222222222',
+      });
+
+      expect(awsCredentialProvider.accountId).toEqual('222222222222');
+
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
+      expect(creds).toEqual({
+        accessKeyId: 'ACCESS_KEY_ID_2',
+        secretAccessKey: 'SECRET_ACCESS_KEY_2',
+        sessionToken: 'SESSION_TOKEN_2',
+        expiration: new Date('2022-01-02'),
+      });
+
+      expect(fromTemporaryCredentials).toHaveBeenCalledWith(
+        expect.objectContaining({
+          params: {
+            RoleArn: 'arn:aws-other:iam::222222222222:role/hi',
+            RoleSessionName: 'backstage',
+            ExternalId: undefined,
+          },
+          clientConfig: expect.objectContaining({
+            region: 'not-us-east-1',
+          }),
+        }),
+      );
+    });
+
+    it('retrieves assume-role creds for an account using the account defaults', async () => {
+      const provider = DefaultAwsCredentialsManager.fromConfig(config);
+      const awsCredentialProvider = await provider.getCredentialProvider({
+        accountId: '999999999999',
+      });
+
+      expect(awsCredentialProvider.accountId).toEqual('999999999999');
+
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
+      expect(creds).toEqual({
+        accessKeyId: 'ACCESS_KEY_ID_9',
+        secretAccessKey: 'SECRET_ACCESS_KEY_9',
+        sessionToken: 'SESSION_TOKEN_9',
+        expiration: new Date('2022-01-09'),
+      });
+
+      expect(fromTemporaryCredentials).toHaveBeenCalledWith(
+        expect.objectContaining({
+          params: {
+            RoleArn: 'arn:aws:iam::999999999999:role/backstage-role',
+            RoleSessionName: 'backstage',
+            ExternalId: 'my-id',
+          },
+        }),
+      );
+    });
+
+    it('retrieves static creds for the given account ID', async () => {
+      const provider = DefaultAwsCredentialsManager.fromConfig(config);
+      const awsCredentialProvider = await provider.getCredentialProvider({
+        accountId: '333333333333',
+      });
+
+      expect(awsCredentialProvider.accountId).toEqual('333333333333');
+
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
+      expect(creds).toEqual({
+        accessKeyId: 'my-access-key',
+        secretAccessKey: 'my-secret-access-key',
+      });
+    });
+
+    it('retrieves static creds from the main account', async () => {
+      const minConfig = new ConfigReader({
+        aws: {
+          mainAccount: {
+            accessKeyId: 'GHI',
+            secretAccessKey: 'JKL',
+          },
+        },
+      });
+      const provider = DefaultAwsCredentialsManager.fromConfig(minConfig);
+      const awsCredentialProvider = await provider.getCredentialProvider({
+        accountId: '123456789012',
+      });
+
+      expect(awsCredentialProvider.accountId).toEqual('123456789012');
+
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
+      expect(creds).toEqual({
+        accessKeyId: 'GHI',
+        secretAccessKey: 'JKL',
+      });
+    });
+
+    it('only queries the main account ID once from STS', async () => {
+      const minConfig = new ConfigReader({
+        aws: {
+          mainAccount: {
+            accessKeyId: 'GHI',
+            secretAccessKey: 'JKL',
+          },
+        },
+      });
+      const provider = DefaultAwsCredentialsManager.fromConfig(minConfig);
+      const awsCredentialProvider1 = await provider.getCredentialProvider({
+        accountId: '123456789012',
+      });
+      const awsCredentialProvider2 = await provider.getCredentialProvider({
+        accountId: '123456789012',
+      });
+
+      expect(awsCredentialProvider1).toBe(awsCredentialProvider2);
+      expect(stsSendMock).toHaveBeenCalledTimes(1);
+      expect(stsSendMock.mock.calls[0][0]).toBeInstanceOf(
+        GetCallerIdentityCommand,
+      );
+    });
+
+    it('retrieves the ini provider chain for the given account ID', async () => {
+      const provider = DefaultAwsCredentialsManager.fromConfig(config);
+      const awsCredentialProvider = await provider.getCredentialProvider({
+        accountId: '555555555555',
+      });
+
+      expect(awsCredentialProvider.accountId).toEqual('555555555555');
+
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
+      expect(creds).toMatchObject({
+        accessKeyId: 'ACCESS_KEY_ID_9',
+        secretAccessKey: 'SECRET_ACCESS_KEY_9',
+      });
+    });
+
+    it('retrieves the default cred provider chain for the given account ID', async () => {
+      const provider = DefaultAwsCredentialsManager.fromConfig(config);
+      const awsCredentialProvider = await provider.getCredentialProvider({
+        accountId: '444444444444',
+      });
+
+      expect(awsCredentialProvider.accountId).toEqual('444444444444');
+
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
+      expect(creds).toMatchObject({
+        accessKeyId: 'ACCESS_KEY_ID_10',
+        secretAccessKey: 'SECRET_ACCESS_KEY_10',
+        sessionToken: 'SESSION_TOKEN_10',
+        expiration: new Date('2022-01-10'),
+      });
+    });
+
+    it('retrieves ini provider chain from the main account', async () => {
+      const minConfig = new ConfigReader({
+        aws: {
+          mainAccount: {
+            profile: 'my-profile',
+          },
+        },
+      });
+      const provider = DefaultAwsCredentialsManager.fromConfig(minConfig);
+      const awsCredentialProvider = await provider.getCredentialProvider({
+        accountId: '123456789012',
+      });
+
+      expect(awsCredentialProvider.accountId).toEqual('123456789012');
+
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
+      expect(creds).toMatchObject({
+        accessKeyId: 'ACCESS_KEY_ID_9',
+        secretAccessKey: 'SECRET_ACCESS_KEY_9',
+      });
+    });
+
+    it('retrieves default cred provider chain from the main account', async () => {
+      const minConfig = new ConfigReader({
+        aws: {},
+      });
+      const provider = DefaultAwsCredentialsManager.fromConfig(minConfig);
+      const awsCredentialProvider = await provider.getCredentialProvider({
+        accountId: '123456789012',
+      });
+
+      expect(awsCredentialProvider.accountId).toEqual('123456789012');
+
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
+      expect(creds).toMatchObject({
+        accessKeyId: 'ACCESS_KEY_ID_10',
+        secretAccessKey: 'SECRET_ACCESS_KEY_10',
+        sessionToken: 'SESSION_TOKEN_10',
+        expiration: new Date('2022-01-10'),
+      });
+    });
+
+    it('retrieves default cred provider chain from the main account when there is no AWS integration config', async () => {
+      const minConfig = new ConfigReader({});
+      const provider = DefaultAwsCredentialsManager.fromConfig(minConfig);
+      const awsCredentialProvider = await provider.getCredentialProvider({
+        accountId: '123456789012',
+      });
+
+      expect(awsCredentialProvider.accountId).toEqual('123456789012');
+
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
+      expect(creds).toMatchObject({
+        accessKeyId: 'ACCESS_KEY_ID_10',
+        secretAccessKey: 'SECRET_ACCESS_KEY_10',
+        sessionToken: 'SESSION_TOKEN_10',
+        expiration: new Date('2022-01-10'),
+      });
+    });
+
+    it('extracts the account ID from an ARN', async () => {
+      const provider = DefaultAwsCredentialsManager.fromConfig(config);
+      const awsCredentialProvider = await provider.getCredentialProvider({
+        arn: 'arn:aws:ecs:region:111111111111:service/cluster-name/service-name',
+      });
+
+      expect(awsCredentialProvider.accountId).toEqual('111111111111');
+
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
+      expect(creds).toEqual({
+        accessKeyId: 'ACCESS_KEY_ID_1',
+        secretAccessKey: 'SECRET_ACCESS_KEY_1',
+        sessionToken: 'SESSION_TOKEN_1',
+        expiration: new Date('2022-01-01'),
+      });
+    });
+
+    it('falls back to main account credentials when account ID cannot be extracted from the ARN', async () => {
+      const provider = DefaultAwsCredentialsManager.fromConfig(config);
+      const awsCredentialProvider = await provider.getCredentialProvider({
+        arn: 'arn:aws:s3:::bucket_name',
+      });
+
+      expect(awsCredentialProvider.accountId).toBeUndefined();
+
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
+      expect(creds).toEqual({
+        accessKeyId: 'GHI',
+        secretAccessKey: 'JKL',
+      });
+    });
+
+    it('falls back to main account credentials when neither account ID nor ARN are provided', async () => {
+      const provider = DefaultAwsCredentialsManager.fromConfig(config);
+      const awsCredentialProvider = await provider.getCredentialProvider({});
+
+      expect(awsCredentialProvider.accountId).toBeUndefined();
+
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
+      expect(creds).toEqual({
+        accessKeyId: 'GHI',
+        secretAccessKey: 'JKL',
+      });
+    });
+
+    it('falls back to main account credentials when no options are provided', async () => {
+      const provider = DefaultAwsCredentialsManager.fromConfig(config);
+      const awsCredentialProvider = await provider.getCredentialProvider();
+
+      expect(awsCredentialProvider.accountId).toBeUndefined();
+
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
+      expect(creds).toEqual({
+        accessKeyId: 'GHI',
+        secretAccessKey: 'JKL',
+      });
+    });
+
+    it('rejects account that is not configured, with no account defaults', async () => {
+      const minConfig = new ConfigReader({
+        aws: {},
+      });
+      const provider = DefaultAwsCredentialsManager.fromConfig(minConfig);
+      await expect(
+        provider.getCredentialProvider({ accountId: '111222333444' }),
+      ).rejects.toThrow(/no AWS integration that matches 111222333444/);
+    });
+
+    it('rejects main account that has invalid credentials', async () => {
+      stsSendShouldReject = true;
+      stsSendRejectMessage = 'No credentials found';
+      const minConfig = new ConfigReader({});
+      const provider = DefaultAwsCredentialsManager.fromConfig(minConfig);
+      await expect(
+        provider.getCredentialProvider({ accountId: '123456789012' }),
+      ).rejects.toThrow(/No credentials found/);
+    });
+
+    it('passes the region to getDefaultCredentialsChain', async () => {
+      const region = 'us-west-2';
+      const configWithRegion = new ConfigReader({
+        aws: {
+          mainAccount: {
+            region,
+          },
+        },
+      });
+
+      const provider =
+        DefaultAwsCredentialsManager.fromConfig(configWithRegion);
+      const awsCredentialProvider = await provider.getCredentialProvider();
+
+      // Trigger the call to fromNodeProviderChain
+      await awsCredentialProvider.sdkCredentialProvider();
+
+      expect(fromNodeProviderChain).toHaveBeenCalledWith({
+        clientConfig: {
+          region,
+        },
+      });
+    });
+
+    it('uses default region when none is specified', async () => {
+      const configWithoutRegion = new ConfigReader({
+        aws: {
+          mainAccount: {},
+        },
+      });
+
+      const provider =
+        DefaultAwsCredentialsManager.fromConfig(configWithoutRegion);
+      const awsCredentialProvider = await provider.getCredentialProvider();
+
+      await awsCredentialProvider.sdkCredentialProvider();
+
+      expect(fromNodeProviderChain).toHaveBeenCalledWith({
+        clientConfig: {
+          region: 'us-east-1',
+        },
+      });
+    });
+
+    it('passes mainAccount region to fillInAccountId for account ID lookup during fallback', async () => {
+      const region = 'us-west-2';
+      const configWithRegion = new ConfigReader({
+        aws: {
+          mainAccount: {
+            region,
+          },
+        },
+      });
+      const provider =
+        DefaultAwsCredentialsManager.fromConfig(configWithRegion);
+      await provider.getCredentialProvider({ accountId: '123456789012' });
+
+      expect(stsSendMock).toHaveBeenCalledTimes(1);
+      const stsClient = stsSendMock.mock.contexts[0] as STSClient;
+      expect(await stsClient.config.region()).toEqual(region);
+    });
+
+    it('uses fromTokenFile when webIdentityTokenFile is set per-account with a roleName', async () => {
+      const wifCreds = {
+        accessKeyId: 'WIF_KEY',
+        secretAccessKey: 'WIF_SECRET',
+        sessionToken: 'WIF_SESSION',
+        expiration: new Date('2026-06-01'),
+      };
+      (fromTokenFile as jest.Mock).mockReturnValue(async () => wifCreds);
+
+      const wifConfig = new ConfigReader({
+        aws: {
+          accounts: [
+            {
+              accountId: '111111111111',
+              roleName: 'PortalRole',
+              webIdentityTokenFile: '/var/run/aws/token',
+              region: 'eu-west-1',
+            },
+          ],
+        },
+      });
+      const provider = DefaultAwsCredentialsManager.fromConfig(wifConfig);
+      const awsCredentialProvider = await provider.getCredentialProvider({
+        accountId: '111111111111',
+      });
+
+      expect(fromTokenFile).toHaveBeenCalledWith(
+        expect.objectContaining({
+          webIdentityTokenFile: '/var/run/aws/token',
+          roleArn: 'arn:aws:iam::111111111111:role/PortalRole',
+          roleSessionName: 'backstage',
+          clientConfig: expect.objectContaining({ region: 'eu-west-1' }),
+        }),
+      );
+      expect(fromTemporaryCredentials).not.toHaveBeenCalled();
+
+      const creds = await awsCredentialProvider.sdkCredentialProvider();
+      expect(creds).toEqual(wifCreds);
+
+      const awsCredentialProvider2 = await provider.getCredentialProvider({
+        accountId: '111111111111',
+      });
+      expect(awsCredentialProvider).toBe(awsCredentialProvider2);
+    });
+
+    it('inherits webIdentityTokenFile from accountDefaults for on-demand registrations', async () => {
+      const wifConfig = new ConfigReader({
+        aws: {
+          accountDefaults: {
+            roleName: 'DefaultRole',
+            webIdentityTokenFile: '/var/run/aws/default-token',
+          },
+        },
+      });
+      const provider = DefaultAwsCredentialsManager.fromConfig(wifConfig);
+      await provider.getCredentialProvider({ accountId: '999999999999' });
+
+      expect(fromTokenFile).toHaveBeenCalledWith(
+        expect.objectContaining({
+          webIdentityTokenFile: '/var/run/aws/default-token',
+          roleArn: 'arn:aws:iam::999999999999:role/DefaultRole',
+        }),
+      );
+    });
+
+    it('does not call fromTokenFile when webIdentityTokenFile is unset, even with roleName', async () => {
+      const provider = DefaultAwsCredentialsManager.fromConfig(config);
+      await provider.getCredentialProvider({ accountId: '111111111111' });
+      expect(fromTokenFile).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('experimentalFromConnections', () => {
+    type AwsAuthEntry = ConnectionAuth<'aws'>;
+
+    // Serves a single aws connection through the real matchAuth logic, the
+    // same way the connections service selects auth entries.
+    const connectionsWithAws = (connection?: {
+      config?: {
+        roleName?: string;
+        partition?: string;
+        region?: string;
+        externalId?: string;
+        webIdentityTokenFile?: string;
+      };
+      auth: AwsAuthEntry[];
+    }): ConnectionsService => {
+      const find = async (options: {
+        query: { accountId?: string; arn?: string };
+      }) => {
+        const auth =
+          connection &&
+          (connectionTypes.aws as any).matchAuth?.(
+            connection.auth,
+            options.query,
+          );
+        if (!auth) {
+          throw new NotFoundError('Connection not found for type "aws"');
+        }
+        return { type: 'aws', title: 'AWS', ...connection.config, auth };
+      };
+      return { find: find as ConnectionsService['find'] };
+    };
+
+    const account = (fields: Omit<AwsAuthEntry, 'method' | 'title'>) =>
+      ({ method: 'account', title: 'Account', ...fields } as AwsAuthEntry);
+
+    it('resolves entries matched by account ID or ARN exactly as written, with caching', async () => {
+      const manager = DefaultAwsCredentialsManager.experimentalFromConnections(
+        connectionsWithAws({
+          auth: [
+            account({
+              accountId: '111111111111',
+              roleName: 'hello',
+              externalId: 'world',
+            }),
+            account({
+              accountId: '333333333333',
+              accessKeyId: 'my-access-key',
+              secretAccessKey: 'my-secret-access-key',
+            }),
+            account({
+              mainAccount: true,
+              accessKeyId: 'GHI',
+              secretAccessKey: 'JKL',
+            }),
+          ],
+        }),
+      );
+
+      const assumed = await manager.getCredentialProvider({
+        accountId: '111111111111',
+      });
+      expect(assumed.accountId).toEqual('111111111111');
+      expect(await assumed.sdkCredentialProvider()).toEqual({
+        accessKeyId: 'ACCESS_KEY_ID_1',
+        secretAccessKey: 'SECRET_ACCESS_KEY_1',
+        sessionToken: 'SESSION_TOKEN_1',
+        expiration: new Date('2022-01-01'),
+      });
+      expect(fromTemporaryCredentials).toHaveBeenCalledWith(
+        expect.objectContaining({
+          params: {
+            RoleArn: 'arn:aws:iam::111111111111:role/hello',
+            RoleSessionName: 'backstage',
+            ExternalId: 'world',
+          },
+        }),
+      );
+
+      const byArn = await manager.getCredentialProvider({
+        arn: 'arn:aws:iam::333333333333:role/some-role',
+      });
+      expect(byArn.accountId).toEqual('333333333333');
+      expect(await byArn.sdkCredentialProvider()).toEqual({
+        accessKeyId: 'my-access-key',
+        secretAccessKey: 'my-secret-access-key',
+      });
+
+      const cached = await manager.getCredentialProvider({
+        accountId: '111111111111',
+      });
+      expect(cached).toBe(assumed);
+    });
+
+    it('assumes the connection-level role for accounts without an entry, using main account credentials', async () => {
+      const manager = DefaultAwsCredentialsManager.experimentalFromConnections(
+        connectionsWithAws({
+          config: { roleName: 'backstage-role', externalId: 'my-id' },
+          auth: [
+            account({
+              mainAccount: true,
+              accessKeyId: 'GHI',
+              secretAccessKey: 'JKL',
+            }),
+          ],
+        }),
+      );
+
+      const provider = await manager.getCredentialProvider({
+        accountId: '999999999999',
+      });
+      expect(provider.accountId).toEqual('999999999999');
+      expect(await provider.sdkCredentialProvider()).toEqual({
+        accessKeyId: 'ACCESS_KEY_ID_9',
+        secretAccessKey: 'SECRET_ACCESS_KEY_9',
+        sessionToken: 'SESSION_TOKEN_9',
+        expiration: new Date('2022-01-09'),
+      });
+
+      const call = (fromTemporaryCredentials as jest.Mock).mock.calls.find(
+        ([options]) =>
+          options.params.RoleArn ===
+          'arn:aws:iam::999999999999:role/backstage-role',
+      );
+      expect(call[0].params.ExternalId).toEqual('my-id');
+      expect(await call[0].masterCredentials()).toEqual({
+        accessKeyId: 'GHI',
+        secretAccessKey: 'JKL',
+      });
+    });
+
+    it('only hands out main account credentials for the main account itself', async () => {
+      const manager = DefaultAwsCredentialsManager.experimentalFromConnections(
+        connectionsWithAws({
+          auth: [
+            account({
+              mainAccount: true,
+              accessKeyId: 'GHI',
+              secretAccessKey: 'JKL',
+            }),
+          ],
+        }),
+      );
+
+      // The STS mock reports 123456789012 as the main account's identity
+      const main = await manager.getCredentialProvider({
+        accountId: '123456789012',
+      });
+      expect(main.accountId).toEqual('123456789012');
+      expect(await main.sdkCredentialProvider()).toEqual({
+        accessKeyId: 'GHI',
+        secretAccessKey: 'JKL',
+      });
+
+      await expect(
+        manager.getCredentialProvider({ accountId: '999999999999' }),
+      ).rejects.toThrow(
+        'There is no AWS integration that matches 999999999999',
+      );
+    });
+
+    it('uses the main entry for empty lookups and the default chain when nothing is configured', async () => {
+      const manager = DefaultAwsCredentialsManager.experimentalFromConnections(
+        connectionsWithAws({
+          auth: [
+            account({
+              mainAccount: true,
+              accessKeyId: 'GHI',
+              secretAccessKey: 'JKL',
+            }),
+          ],
+        }),
+      );
+
+      const noOpts = await manager.getCredentialProvider();
+      expect(await noOpts.sdkCredentialProvider()).toEqual({
+        accessKeyId: 'GHI',
+        secretAccessKey: 'JKL',
+      });
+
+      // ARNs without an account segment fall back to the main account too
+      const s3 = await manager.getCredentialProvider({
+        arn: 'arn:aws:s3:::my-bucket',
+      });
+      expect(await s3.sdkCredentialProvider()).toEqual({
+        accessKeyId: 'GHI',
+        secretAccessKey: 'JKL',
+      });
+
+      const unconfigured =
+        DefaultAwsCredentialsManager.experimentalFromConnections(
+          connectionsWithAws(undefined),
+        );
+      const chain = await unconfigured.getCredentialProvider();
+      expect(await chain.sdkCredentialProvider()).toMatchObject({
+        accessKeyId: 'ACCESS_KEY_ID_10',
+        secretAccessKey: 'SECRET_ACCESS_KEY_10',
+        sessionToken: 'SESSION_TOKEN_10',
+        expiration: new Date('2022-01-10'),
+      });
+    });
+  });
+});

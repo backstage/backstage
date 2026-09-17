@@ -1,0 +1,77 @@
+{
+  "apiVersion": "autoscaling/v2",
+  "kind": "HorizontalPodAutoscaler",
+  "metadata": {
+    "annotations": {},
+    "creationTimestamp": "2024-02-13T20:13:52Z",
+    "labels": {
+      "backstage.io/kubernetes-id": "dice-roller"
+    },
+    "name": "dice-roller",
+    "namespace": "default",
+    "resourceVersion": "6717s736",
+    "uid": "a34c90e1-8e8f-407f-b4c5-b4543bd56c1b"
+  },
+  "spec": {
+    "maxReplicas": 10,
+    "metrics": [
+      {
+        "resource": {
+          "name": "cpu",
+          "target": {
+            "averageUtilization": 50,
+            "type": "Utilization"
+          }
+        },
+        "type": "Resource"
+      }
+    ],
+    "minReplicas": 1,
+    "scaleTargetRef": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "name": "dice-roller"
+    }
+  },
+  "status": {
+    "conditions": [
+      {
+        "lastTransitionTime": "2024-05-17T19:50:35Z",
+        "message": "recent recommendations were higher than current one, applying the highest recent recommendation",
+        "reason": "ScaleDownStabilized",
+        "status": "True",
+        "type": "AbleToScale"
+      },
+      {
+        "lastTransitionTime": "2024-05-16T06:21:01Z",
+        "message": "the HPA was able to successfully calculate a replica count from cpu resource utilization (percentage of request)",
+        "reason": "ValidMetricFound",
+        "status": "True",
+        "type": "ScalingActive"
+      },
+      {
+        "lastTransitionTime": "2024-05-16T06:21:01Z",
+        "message": "the desired replica count is more than the maximum replica count",
+        "reason": "TooManyReplicas",
+        "status": "True",
+        "type": "ScalingLimited"
+      }
+    ],
+    "currentMetrics": [
+      {
+        "resource": {
+          "current": {
+            "averageUtilization": 100,
+            "averageValue": "50m",
+            "value": "100m"
+          },
+          "name": "cpu"
+        },
+        "type": "Resource"
+      }
+    ],
+    "currentReplicas": 2,
+    "desiredReplicas": 2,
+    "lastScaleTime": "2024-02-13T20:14:23Z"
+  }
+}

@@ -1,0 +1,10 @@
+---
+title: Google Calendar
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Productivity
+description: Displays upcoming events from Google Calendar as a widget on the Backstage homepage.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/gcalendar/plugins/gcalendar/README.md
+npmPackageName: '@backstage-community/plugin-gcalendar'
+addedDate: '2026-02-21'
+status: active

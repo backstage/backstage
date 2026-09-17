@@ -1,0 +1,97 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+import {
+  searchAutocompletePropDefs,
+  searchAutocompleteItemPropDefs,
+} from './props-definition';
+import {
+  usage,
+  defaultSnippet,
+  withRichContent,
+  inHeader,
+  withSelection,
+} from './snippets';
+import {
+  WithItems,
+  WithRichContent,
+  InHeader,
+  WithSelection,
+} from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  SearchAutocompleteDefinition,
+  SearchAutocompleteItemDefinition,
+} from '../../../utils/definitions';
+
+export const reactAriaUrls = {
+  autocomplete: 'https://react-aria.adobe.com/Autocomplete',
+};
+
+<PageTitle
+  title="SearchAutocomplete"
+  description="A search input with an accessible results dropdown."
+/>
+
+<Snippet align="center" py={4} preview={<WithItems />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={usage} />
+
+## API reference
+
+### SearchAutocomplete
+
+<PropsTable data={searchAutocompletePropDefs} />
+
+<ReactAriaLink component="Autocomplete" href={reactAriaUrls.autocomplete} />
+
+### SearchAutocompleteItem
+
+Individual result item within the autocomplete list.
+
+<PropsTable data={searchAutocompleteItemPropDefs} />
+
+## Examples
+
+### With rich content
+
+Here's a view when items include a title and description.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<WithRichContent />}
+  code={withRichContent}
+/>
+
+### In header
+
+Use `popoverWidth` to control the dropdown width when placed in constrained layouts like `PluginHeader`.
+
+<Snippet py={4} open preview={<InHeader />} code={inHeader} />
+
+### With selection
+
+Use `onAction` on items to handle selection and reset the input.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<WithSelection />}
+  code={withSelection}
+/>
+
+<Theming definition={SearchAutocompleteDefinition} />
+
+<Theming definition={SearchAutocompleteItemDefinition} />
+
+<ChangelogComponent
+  component={['search-autocomplete', 'search-autocomplete-item']}
+/>

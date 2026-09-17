@@ -1,0 +1,9 @@
+name: catalog-provider-module
+role: backend-plugin-module
+description: An Entity Provider module for the Software Catalog
+values:
+  pluginId: catalog
+  fullModuleId: '{{ moduleId }}-provider'
+  moduleVar: '{{ camelCase pluginId }}Module{{ upperFirst ( camelCase moduleId ) }}'
+  providerVar: '{{ camelCase moduleId }}Provider'
+  providerClass: '{{ upperFirst ( camelCase moduleId ) }}Provider'

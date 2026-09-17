@@ -1,0 +1,10 @@
+---
+title: Manage
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Productivity
+description: A dedicated page for developers to manage entities they and their team own, with tabs for owned entities, starred entities, and org structure.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/manage/plugins/manage/README.md
+npmPackageName: '@backstage-community/plugin-manage'
+addedDate: '2026-02-21'
+status: active

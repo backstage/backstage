@@ -1,0 +1,78 @@
+/*
+ * Copyright 2023 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import { IdentityApi } from '@backstage/core-plugin-api';
+import { useEffect } from 'react';
+
+import { TimestampStore } from './timestampStore';
+
+export const LAST_SEEN_ONLINE_STORAGE_KEY =
+  '@backstage/autologout:lastSeenOnline';
+
+export type UseLogoutDisconnectedUserEffectProps = {
+  enableEffect: boolean;
+  autologoutIsEnabled: boolean;
+  isLoggedIn: boolean | null;
+  idleTimeoutSeconds: number;
+  lastSeenOnlineStore: TimestampStore;
+  identityApi: IdentityApi;
+};
+
+export const useLogoutDisconnectedUserEffect = ({
+  enableEffect,
+  autologoutIsEnabled,
+  isLoggedIn,
+  idleTimeoutSeconds,
+  lastSeenOnlineStore,
+  identityApi,
+}: UseLogoutDisconnectedUserEffectProps) => {
+  useEffect(() => {
+    /**
+     * Considers disconnected users as inactive users.
+     * If all Backstage tabs are closed and idleTimeoutMinutes are passed then logout the user anyway.
+     */
+    const shouldCheckDisconnectedUser = autologoutIsEnabled && enableEffect;
+
+    // Prevent lastSeen getting deleted before logged state is checked
+    if (isLoggedIn === null) {
+      return;
+    }
+
+    if (!shouldCheckDisconnectedUser || !isLoggedIn) {
+      lastSeenOnlineStore.delete();
+      return;
+    }
+
+    const lastSeenOnline = lastSeenOnlineStore.get();
+    if (lastSeenOnline) {
+      const now = new Date();
+      const nowSeconds = Math.ceil(now.getTime() / 1000);
+      const lastSeenOnlineSeconds = Math.ceil(lastSeenOnline.getTime() / 1000);
+      if (nowSeconds - lastSeenOnlineSeconds > idleTimeoutSeconds) {
+        lastSeenOnlineStore.delete();
+        identityApi.signOut();
+        return;
+      }
+    }
+    lastSeenOnlineStore.save(new Date());
+  }, [
+    autologoutIsEnabled,
+    enableEffect,
+    isLoggedIn,
+    identityApi,
+    idleTimeoutSeconds,
+    lastSeenOnlineStore,
+  ]);
+};

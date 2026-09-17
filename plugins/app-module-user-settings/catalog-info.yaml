@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-app-module-user-settings
+  title: '@backstage/plugin-app-module-user-settings'
+  description: Registers user-settings features into the app.
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin-module
+  owner: framework-maintainers

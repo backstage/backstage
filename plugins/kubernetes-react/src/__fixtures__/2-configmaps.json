@@ -1,0 +1,47 @@
+{
+  "configMaps": [
+    {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": {
+        "name": "app-config",
+        "namespace": "default",
+        "uid": "1ea073bc-7a4b-4b99-8321-0305bce85568",
+        "resourceVersion": "1362732552",
+        "creationTimestamp": "2021-07-16T22:39:58Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "app": "dice-roller"
+        },
+        "annotations": {}
+      },
+      "data": {
+        "database.host": "localhost",
+        "database.port": "5432",
+        "app.name": "dice-roller",
+        "app.version": "1.0.0"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": {
+        "name": "redis-config",
+        "namespace": "default",
+        "uid": "2ea073bc-7a4b-4b99-8321-0305bce85568",
+        "resourceVersion": "1362732553",
+        "creationTimestamp": "2021-07-16T22:40:58Z",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "app": "redis"
+        },
+        "annotations": {}
+      },
+      "data": {
+        "redis.conf": "# Redis configuration\nmaxmemory 256mb\nmaxmemory-policy allkeys-lru",
+        "redis.host": "redis-service",
+        "redis.port": "6379"
+      }
+    }
+  ]
+}

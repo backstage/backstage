@@ -1,0 +1,32 @@
+name: Verify FOSSA
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+
+      - name: Install Fossa
+        run: "curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash"
+
+      - name: Fossa Configure & Analyze
+        env:
+          # FOSSA Push-Only API Token
+          GITHUB_REF: $GITHUB_REF
+          FOSSA_API_KEY: 9ee7e8893660832a7387dcc32377fb61
+        run: node scripts/run-fossa.js

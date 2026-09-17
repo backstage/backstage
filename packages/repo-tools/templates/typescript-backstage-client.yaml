@@ -1,0 +1,39 @@
+templateDir: templates/typescript-backstage-client
+
+files:
+  model.mustache:
+    templateType: Model
+    destinationFilename: .model.ts
+  modelGeneric.mustache:
+    templateType: SupportingFiles
+  modelOneOf.mustache:
+    templateType: SupportingFiles
+  modelGenericAdditionalProperties.mustache:
+    templateType: SupportingFiles
+  modelGenericEnums.mustache:
+    templateType: SupportingFiles
+  modelAlias.mustache:
+    templateType: SupportingFiles
+  modelEnum.mustache:
+    templateType: SupportingFiles
+  modelTaggedUnion.mustache:
+    templateType: SupportingFiles
+  models/models_all.mustache:
+    templateType: SupportingFiles
+    destinationFilename: models/index.ts
+  types/fetch.ts:
+    destinationFilename: types/fetch.ts
+  types/discovery.ts:
+    destinationFilename: types/discovery.ts
+  apis/index.mustache:
+    templateType: SupportingFiles
+    destinationFilename: apis/index.ts
+  apis/api-all.mustache:
+    templateType: SupportingFiles
+    destinationFilename: apis/Api.client.ts
+  pluginId.mustache:
+    templateType: SupportingFiles
+    destinationFilename: pluginId.ts
+  index.mustache:
+    templateType: SupportingFiles
+    destinationFilename: index.ts

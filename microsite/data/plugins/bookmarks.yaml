@@ -1,0 +1,10 @@
+---
+title: Bookmarks
+author: '@logonoff'
+authorUrl: https://github.com/logonoff
+category: Productivity
+description: A plugin for saving and viewing links to favorite websites and services directly within Backstage.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/bookmarks/plugins/bookmarks/README.md
+npmPackageName: '@backstage-community/plugin-bookmarks'
+addedDate: '2026-02-21'
+status: active

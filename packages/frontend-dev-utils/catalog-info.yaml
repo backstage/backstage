@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-frontend-dev-utils
+  title: '@backstage/frontend-dev-utils'
+  description: Utilities for developing Backstage frontend plugins using the new frontend system.
+spec:
+  lifecycle: experimental
+  type: backstage-web-library
+  owner: framework-maintainers

@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-org-react
+  title: '@backstage/plugin-org-react'
+spec:
+  lifecycle: experimental
+  type: backstage-web-library
+  owner: maintainers

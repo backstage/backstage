@@ -1,0 +1,98 @@
+/*
+ * Copyright 2023 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import {
+  createFrontendPlugin,
+  discoveryApiRef,
+  fetchApiRef,
+  ApiBlueprint,
+  PageBlueprint,
+  SubPageBlueprint,
+} from '@backstage/frontend-plugin-api';
+
+import { catalogUnprocessedEntitiesApiRef } from '../api';
+import { RiStackLine } from '@remixicon/react';
+import { rootRouteRef } from '../routes';
+import { CatalogUnprocessedEntitiesClient } from '@backstage/plugin-catalog-unprocessed-entities-common';
+
+/** @alpha */
+export const catalogUnprocessedEntitiesApi = ApiBlueprint.make({
+  params: defineParams =>
+    defineParams({
+      api: catalogUnprocessedEntitiesApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+        fetchApi: fetchApiRef,
+      },
+      factory: ({ discoveryApi, fetchApi }) =>
+        new CatalogUnprocessedEntitiesClient(discoveryApi, fetchApi),
+    }),
+});
+
+/** @alpha */
+export const catalogUnprocessedEntitiesPage = PageBlueprint.make({
+  disabled: true,
+  params: {
+    path: '/catalog-unprocessed-entities',
+    routeRef: rootRouteRef,
+    title: 'Unprocessed Entities',
+    icon: <RiStackLine />,
+    loader: () =>
+      import('../components/UnprocessedEntities').then(m => (
+        <m.NfsUnprocessedEntities />
+      )),
+  },
+});
+
+/**
+ * DevTools content for catalog unprocessed entities.
+ *
+ * @alpha
+ */
+export const unprocessedEntitiesDevToolsContent = SubPageBlueprint.make({
+  attachTo: { id: 'page:devtools', input: 'pages' },
+  params: {
+    path: 'unprocessed-entities',
+    title: 'Unprocessed Entities',
+    loader: async () => {
+      const [m, { Container }] = await Promise.all([
+        import('../components/UnprocessedEntities'),
+        import('@backstage/ui'),
+      ]);
+      return (
+        <Container>
+          <m.UnprocessedEntitiesContent />
+        </Container>
+      );
+    },
+  },
+});
+
+/** @alpha */
+export default createFrontendPlugin({
+  pluginId: 'catalog-unprocessed-entities',
+  title: 'Unprocessed Entities',
+  icon: <RiStackLine />,
+  info: { packageJson: () => import('../../package.json') },
+  routes: {
+    root: rootRouteRef,
+  },
+  extensions: [
+    catalogUnprocessedEntitiesApi,
+    catalogUnprocessedEntitiesPage,
+    unprocessedEntitiesDevToolsContent,
+  ],
+});

@@ -1,0 +1,29 @@
+# NO-OP placeholder that always passes for other paths
+# This is here so that we're able to set the status check as required
+
+name: Microsite Void
+on:
+  pull_request:
+    paths-ignore:
+      - '.github/workflows/verify_microsite.yml'
+      - 'microsite/**'
+      - 'beps/**'
+      - 'mkdocs.yml'
+      - 'mkdocs-ci.yml'
+      - 'docs/**'
+
+permissions:
+  contents: read
+
+jobs:
+  noop:
+    runs-on: ubuntu-latest
+
+    name: Microsite
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
+        with:
+          egress-policy: audit
+
+      - run: echo NOOP

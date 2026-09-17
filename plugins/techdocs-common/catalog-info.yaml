@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-techdocs-common
+  title: '@backstage/plugin-techdocs-common'
+  description: >-
+    Common functionality for TechDocs
+spec:
+  lifecycle: production
+  type: backstage-common-library
+  owner: techdocs-maintainers

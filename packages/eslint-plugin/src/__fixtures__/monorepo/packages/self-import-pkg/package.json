@@ -1,0 +1,12 @@
+{
+  "name": "@internal/self-import-pkg",
+  "backstage": {
+    "role": "node-library"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha/index.ts",
+    "./testUtils": "./src/testUtils.ts",
+    "./package.json": "./package.json"
+  }
+}

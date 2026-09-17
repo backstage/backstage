@@ -1,0 +1,78 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { ComponentType, ReactNode } from 'react';
+import {
+  createExtensionBlueprint,
+  createExtensionBlueprintParams,
+  createExtensionDataRef,
+} from '../wiring';
+
+/**
+ * Defines the structure of a plugin wrapper, optionally including a shared
+ * hook value.
+ *
+ * @remarks
+ *
+ * When `useWrapperValue` is provided, the hook is called in a single location
+ * in the app and the resulting value is forwarded as the `value` prop to the
+ * component. The hook obeys the rules of React hooks and is not called until a
+ * component from the plugin is rendered.
+ *
+ * @public
+ */
+export type PluginWrapperDefinition<TValue = unknown | never> = {
+  /**
+   * Creates a shared value that is forwarded as the `value` prop to the
+   * component.
+   *
+   * @remarks
+   *
+   * This function obeys the rules of React hooks and is only invoked in a
+   * single location in the app. Note that the hook will not be called until a
+   * component from the plugin is rendered.
+   */
+  useWrapperValue?: () => TValue;
+  component: ComponentType<{ children: ReactNode; value: TValue }>;
+};
+
+const wrapperDataRef = createExtensionDataRef<
+  () => Promise<PluginWrapperDefinition>
+>().with({ id: 'core.plugin-wrapper.loader' });
+
+/**
+ * Creates extensions that wrap plugin extensions with providers.
+ *
+ * @public
+ */
+export const PluginWrapperBlueprint = createExtensionBlueprint({
+  kind: 'plugin-wrapper',
+  attachTo: { id: 'api:app/plugin-wrapper', input: 'wrappers' },
+  output: [wrapperDataRef],
+  dataRefs: {
+    wrapper: wrapperDataRef,
+  },
+  defineParams<TValue = never>(params: {
+    loader: () => Promise<PluginWrapperDefinition<TValue>>;
+  }) {
+    return createExtensionBlueprintParams(
+      params as { loader: () => Promise<PluginWrapperDefinition> },
+    );
+  },
+  *factory(params) {
+    yield wrapperDataRef(params.loader);
+  },
+});

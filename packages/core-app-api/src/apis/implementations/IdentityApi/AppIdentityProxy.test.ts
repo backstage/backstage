@@ -1,0 +1,131 @@
+/*
+ * Copyright 2020 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { withLogCollector } from '@backstage/test-utils';
+import { AppIdentityProxy } from './AppIdentityProxy';
+
+describe('AppIdentityProxy', () => {
+  const mockIdentityApi = {
+    getBackstageIdentity: jest.fn(),
+    getProfileInfo: jest.fn(),
+    getCredentials: jest.fn(),
+    signOut: jest.fn(),
+  };
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it('should forward user identities', async () => {
+    const proxy = new AppIdentityProxy();
+    proxy.setTarget(mockIdentityApi, { signOutTargetUrl: '/' });
+
+    const logs = await withLogCollector(async () => {
+      mockIdentityApi.getBackstageIdentity.mockResolvedValueOnce({
+        type: 'user',
+        userEntityRef: 'user:default/foo',
+        ownershipEntityRefs: [],
+      });
+      await expect(proxy.getBackstageIdentity()).resolves.toEqual({
+        type: 'user',
+        userEntityRef: 'user:default/foo',
+        ownershipEntityRefs: [],
+      });
+    });
+
+    expect(logs).toEqual({
+      log: [],
+      warn: [],
+      error: [],
+    });
+  });
+
+  it('should warn about invalid user entity refs', async () => {
+    const proxy = new AppIdentityProxy();
+    proxy.setTarget(mockIdentityApi, { signOutTargetUrl: '/' });
+
+    const logs = await withLogCollector(async () => {
+      mockIdentityApi.getBackstageIdentity.mockResolvedValueOnce({
+        type: 'user',
+        userEntityRef: 'bar',
+        ownershipEntityRefs: [],
+      });
+      await expect(proxy.getBackstageIdentity()).resolves.toEqual({
+        type: 'user',
+        userEntityRef: 'bar',
+        ownershipEntityRefs: [],
+      });
+    });
+
+    expect(logs).toEqual({
+      log: [],
+      warn: [
+        `WARNING: The App IdentityApi provided an invalid userEntityRef, 'bar'. ` +
+          `It must be a full Entity Reference of the form '<kind>:<namespace>/<name>'.`,
+      ],
+      error: [],
+    });
+  });
+
+  it('should navigate to target URL on sign out', async () => {
+    const proxy = new AppIdentityProxy();
+    proxy.setTarget(mockIdentityApi, { signOutTargetUrl: '/foo' });
+
+    const navigateSpy = jest.spyOn(proxy as any, 'navigateToUrl');
+    await proxy.signOut();
+    expect(navigateSpy).toHaveBeenCalledWith('/foo');
+  });
+
+  it('should report whether a target has been set', () => {
+    const proxy = new AppIdentityProxy();
+    expect(proxy.isTargetSet()).toBe(false);
+
+    proxy.setTarget(mockIdentityApi, { signOutTargetUrl: '/' });
+    expect(proxy.isTargetSet()).toBe(true);
+  });
+
+  it('should ignore a second setTarget call once a target is set', async () => {
+    const proxy = new AppIdentityProxy();
+    const firstIdentityApi = {
+      ...mockIdentityApi,
+      getBackstageIdentity: jest.fn().mockResolvedValue({
+        type: 'user',
+        userEntityRef: 'user:default/first',
+        ownershipEntityRefs: [],
+      }),
+    };
+    const secondIdentityApi = {
+      ...mockIdentityApi,
+      getBackstageIdentity: jest.fn().mockResolvedValue({
+        type: 'user',
+        userEntityRef: 'user:default/second',
+        ownershipEntityRefs: [],
+      }),
+    };
+
+    proxy.setTarget(firstIdentityApi, { signOutTargetUrl: '/first' });
+    proxy.setTarget(secondIdentityApi, { signOutTargetUrl: '/second' });
+
+    await expect(proxy.getBackstageIdentity()).resolves.toMatchObject({
+      userEntityRef: 'user:default/first',
+    });
+
+    const navigateSpy = jest.spyOn(proxy as any, 'navigateToUrl');
+    await proxy.signOut();
+    expect(navigateSpy).toHaveBeenCalledWith('/first');
+    expect(secondIdentityApi.getBackstageIdentity).not.toHaveBeenCalled();
+  });
+});

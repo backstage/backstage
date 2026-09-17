@@ -1,0 +1,370 @@
+/*
+ * Copyright 2020 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import { Config } from '@backstage/config';
+import {
+  ANNOTATION_KUBERNETES_AUTH_PROVIDER,
+  ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
+  kubernetesClustersReadPermission,
+  kubernetesResourcesReadPermission,
+} from '@backstage/plugin-kubernetes-common';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import express from 'express';
+import Router from 'express-promise-router';
+
+import { DispatchStrategy } from '../auth';
+import { NotAllowedError, toError } from '@backstage/errors';
+
+import {
+  AuthService,
+  AuditorService,
+  BackstageCredentials,
+  DiscoveryService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
+import {
+  AuthenticationStrategy,
+  AuthMetadata,
+  KubernetesClustersSupplier,
+  KubernetesFetcher,
+  KubernetesObjectsProvider,
+  KubernetesRouterFactory,
+  KubernetesServiceLocator,
+} from '@backstage/plugin-kubernetes-node';
+import { addResourceRoutesToRouter } from '../routes/resourcesRoutes';
+import { ObjectsByEntityRequest } from '../types/types';
+import { KubernetesProxy } from './KubernetesProxy';
+import { requirePermission } from '../auth/requirePermission';
+import { CatalogService } from '@backstage/plugin-catalog-node';
+import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
+import { resolveProxyMiddlewareCacheOptions } from './ProxyMiddlewareCache';
+
+export interface KubernetesEnvironment {
+  logger: LoggerService;
+  config: Config;
+  catalog: CatalogService;
+  discovery: DiscoveryService;
+  permissions: PermissionEvaluator;
+  auth: AuthService;
+  httpAuth: HttpAuthService;
+  auditor: AuditorService;
+  authStrategyMap: { [key: string]: AuthenticationStrategy };
+  fetcher: KubernetesFetcher;
+  clusterSupplier: KubernetesClustersSupplier;
+  serviceLocator: KubernetesServiceLocator;
+  objectsProvider: KubernetesObjectsProvider;
+  customRouter?: KubernetesRouterFactory;
+}
+
+export class KubernetesRouter {
+  static create(env: KubernetesEnvironment) {
+    return new KubernetesRouter(env);
+  }
+
+  protected readonly env: KubernetesEnvironment;
+
+  constructor(env: KubernetesEnvironment) {
+    this.env = env;
+  }
+
+  public async getRouter() {
+    const {
+      logger,
+      config,
+      permissions,
+      authStrategyMap,
+      clusterSupplier,
+      objectsProvider,
+      catalog,
+      discovery,
+      httpAuth,
+      customRouter,
+    } = this.env;
+
+    logger.info('Initializing Kubernetes backend');
+
+    if (!config.has('kubernetes')) {
+      if (process.env.NODE_ENV !== 'development') {
+        throw new Error('Kubernetes configuration is missing');
+      }
+      logger.warn(
+        'Failed to initialize kubernetes backend: kubernetes config is missing',
+      );
+      return Router();
+    }
+
+    await this.warnForClustersWithSkipTLSVerify(logger, clusterSupplier);
+
+    const proxy = this.buildProxy(
+      logger,
+      clusterSupplier,
+      discovery,
+      httpAuth,
+      authStrategyMap,
+    );
+
+    return (
+      customRouter?.({
+        getDefault: () =>
+          this.buildDefaultRouter(
+            objectsProvider,
+            clusterSupplier,
+            catalog,
+            proxy,
+            permissions,
+            httpAuth,
+            authStrategyMap,
+          ),
+        objectsProvider,
+        clusterSupplier,
+        authStrategyMap,
+      }) ??
+      this.buildDefaultRouter(
+        objectsProvider,
+        clusterSupplier,
+        catalog,
+        proxy,
+        permissions,
+        httpAuth,
+        authStrategyMap,
+      )
+    );
+  }
+
+  private buildProxy(
+    logger: LoggerService,
+    clusterSupplier: KubernetesClustersSupplier,
+    discovery: DiscoveryService,
+    httpAuth: HttpAuthService,
+    authStrategyMap: { [key: string]: AuthenticationStrategy },
+  ): KubernetesProxy {
+    const authStrategy = new DispatchStrategy({
+      authStrategyMap,
+    });
+    const middlewareCacheConfig = this.env.config.getOptionalConfig(
+      'kubernetes.proxy.middlewareCache',
+    );
+    const { ttlMs, maxSize } = resolveProxyMiddlewareCacheOptions({
+      ttlMs: middlewareCacheConfig?.getOptionalNumber('ttl.milliseconds'),
+      maxSize: middlewareCacheConfig?.getOptionalNumber('maxSize'),
+    });
+
+    return new KubernetesProxy({
+      logger,
+      clusterSupplier,
+      authStrategy,
+      discovery,
+      httpAuth,
+      auditor: this.env.auditor,
+      middlewareCache: { ttlMs, maxSize },
+    });
+  }
+
+  private buildDefaultRouter(
+    objectsProvider: KubernetesObjectsProvider,
+    clusterSupplier: KubernetesClustersSupplier,
+    catalog: CatalogService,
+    proxy: KubernetesProxy,
+    permissionApi: PermissionEvaluator,
+    httpAuth: HttpAuthService,
+    authStrategyMap: { [key: string]: AuthenticationStrategy },
+  ): express.Router {
+    const logger = this.env.logger;
+    const auditor = this.env.auditor;
+    const router = Router();
+    router.use('/proxy', proxy.createRequestHandler({ permissionApi }));
+    router.use(express.json());
+
+    // @deprecated
+    router.post('/services/:serviceId', async (req, res) => {
+      const serviceId = req.params.serviceId;
+      const requestBody: ObjectsByEntityRequest = req.body;
+      let entityRef: string | undefined;
+      if (requestBody?.entity) {
+        try {
+          entityRef = stringifyEntityRef(requestBody.entity);
+        } catch {
+          entityRef = undefined;
+        }
+      }
+
+      const auditorEvent = await auditor.createEvent({
+        eventId: 'resource-fetch',
+        request: req,
+        meta: { queryType: 'services', entityRef, serviceId },
+      });
+
+      try {
+        await requirePermission(
+          permissionApi,
+          kubernetesResourcesReadPermission,
+          httpAuth,
+          req,
+        );
+
+        const credentials = await httpAuth.credentials(req);
+
+        let resolvedEntity = requestBody?.entity;
+        if (requestBody?.entity) {
+          if (!entityRef) {
+            throw new NotAllowedError('Invalid entity reference');
+          }
+          const parsedRef = parseEntityRef(entityRef);
+          const catalogEntity = await catalog.getEntityByRef(parsedRef, {
+            credentials,
+          });
+          if (!catalogEntity) {
+            throw new NotAllowedError(`Entity not found, ${entityRef}`);
+          }
+          resolvedEntity = catalogEntity;
+        }
+
+        const response = await objectsProvider.getKubernetesObjectsByEntity(
+          {
+            entity: resolvedEntity,
+            auth: requestBody?.auth || {},
+          },
+          { credentials },
+        );
+        res.json(response);
+        auditorEvent
+          .success()
+          .catch(error =>
+            logger.error(
+              'Failed to emit audit event resource-fetch (services)',
+              error,
+            ),
+          );
+      } catch (e) {
+        const err = e instanceof Error ? e : new Error(String(e));
+        await auditorEvent.fail({ error: err });
+        if (e instanceof NotAllowedError) {
+          throw e;
+        }
+        logger.error(
+          `action=retrieveObjectsByServiceId service=${serviceId}, error: ${err}`,
+        );
+        if (!res.headersSent) {
+          res.status(500).json({ error: err.message });
+        }
+      }
+    });
+
+    router.get('/clusters', async (req, res) => {
+      const auditorEvent = await auditor.createEvent({
+        eventId: 'cluster-fetch',
+        request: req,
+        meta: { queryType: 'list' },
+      });
+
+      try {
+        await requirePermission(
+          permissionApi,
+          kubernetesClustersReadPermission,
+          httpAuth,
+          req,
+        );
+        const credentials = await httpAuth.credentials(req);
+        const clusterDetails = await this.fetchClusterDetails(clusterSupplier, {
+          credentials,
+        });
+        res.json({
+          items: clusterDetails.map(cd => {
+            const oidcTokenProvider =
+              cd.authMetadata[ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER];
+            const authProvider =
+              cd.authMetadata[ANNOTATION_KUBERNETES_AUTH_PROVIDER];
+            const strategy = authStrategyMap[authProvider];
+            let auth: AuthMetadata = {};
+            if (strategy) {
+              auth = strategy.presentAuthMetadata(cd.authMetadata);
+            }
+
+            return {
+              name: cd.name,
+              title: cd.title,
+              dashboardUrl: cd.dashboardUrl,
+              authProvider,
+              ...(oidcTokenProvider && { oidcTokenProvider }),
+              ...(auth && Object.keys(auth).length !== 0 && { auth }),
+            };
+          }),
+        });
+        auditorEvent
+          .success()
+          .catch(error =>
+            logger.error(
+              'Failed to emit audit event cluster-fetch (list)',
+              error,
+            ),
+          );
+      } catch (e) {
+        const err = e instanceof Error ? e : new Error(String(e));
+        await auditorEvent.fail({ error: err });
+        throw e;
+      }
+    });
+
+    addResourceRoutesToRouter(
+      router,
+      catalog,
+      objectsProvider,
+      httpAuth,
+      permissionApi,
+      auditor,
+      logger,
+    );
+
+    return router;
+  }
+
+  private async fetchClusterDetails(
+    clusterSupplier: KubernetesClustersSupplier,
+    options: { credentials: BackstageCredentials },
+  ) {
+    const clusterDetails = await clusterSupplier.getClusters(options);
+
+    this.env.logger.debug(
+      `action=loadClusterDetails numOfClustersLoaded=${clusterDetails.length}`,
+    );
+
+    return clusterDetails;
+  }
+
+  private async warnForClustersWithSkipTLSVerify(
+    logger: LoggerService,
+    clusterSupplier: KubernetesClustersSupplier,
+  ): Promise<void> {
+    try {
+      const credentials = await this.env.auth.getOwnServiceCredentials();
+      const clusters = await clusterSupplier.getClusters({ credentials });
+
+      for (const cluster of clusters) {
+        if (cluster.skipTLSVerify) {
+          logger.warn(
+            `Cluster '${cluster.name}' is configured with skipTLSVerify: true; TLS certificate verification is disabled for Kubernetes API traffic to this cluster`,
+          );
+        }
+      }
+    } catch (error) {
+      logger.warn(
+        `Failed to log skipTLSVerify warnings at startup: ${
+          toError(error).message
+        }`,
+      );
+    }
+  }
+}

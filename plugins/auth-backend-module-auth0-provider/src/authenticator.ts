@@ -1,0 +1,196 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { CacheService } from '@backstage/backend-plugin-api';
+import express from 'express';
+import { decodeJwt } from 'jose';
+import { Strategy } from 'passport';
+import {
+  createOAuthAuthenticator,
+  PassportHelpers,
+  PassportOAuthAuthenticatorHelper,
+  PassportOAuthDoneCallback,
+  PassportProfile,
+} from '@backstage/plugin-auth-node';
+import { Auth0Strategy } from './strategy';
+
+/** @public */
+export function createAuth0Authenticator(options?: { cache?: CacheService }) {
+  const profileCache = options?.cache?.withOptions({
+    defaultTtl: { minutes: 1 },
+  });
+
+  return createOAuthAuthenticator({
+    defaultProfileTransform:
+      PassportOAuthAuthenticatorHelper.defaultProfileTransform,
+    initialize({ callbackUrl, config }) {
+      const clientID = config.getString('clientId');
+      const clientSecret = config.getString('clientSecret');
+      const domain = config.getString('domain');
+      const audience = config.getOptionalString('audience');
+      const connection = config.getOptionalString('connection');
+      const connectionScope = config.getOptionalString('connectionScope');
+      const prompt = config.getOptionalString('prompt') ?? 'consent';
+      const callbackURL =
+        config.getOptionalString('callbackUrl') ?? callbackUrl;
+      const organization = config.getOptionalString('organization');
+      // Due to passport-auth0 forcing options.state = true,
+      // passport-oauth2 requires express-session to be installed
+      // so that the 'state' parameter of the oauth2 flow can be stored.
+      // This implementation of StateStore matches the NullStore found within
+      // passport-oauth2, which is the StateStore implementation used when options.state = false,
+      // allowing us to avoid using express-session in order to integrate with auth0.
+      const store = {
+        store(_req: express.Request, cb: any) {
+          cb(null, null);
+        },
+        verify(_req: express.Request, _state: string, cb: any) {
+          cb(null, true);
+        },
+      };
+
+      const strategy = new Auth0Strategy(
+        {
+          clientID,
+          clientSecret,
+          callbackURL,
+          domain,
+          store,
+          organization,
+          // We need passReqToCallback set to false to get params, but there's
+          // no matching type signature for that, so instead behold this beauty
+          passReqToCallback: false as true,
+        },
+        (
+          accessToken: string,
+          refreshToken: string,
+          params: any,
+          fullProfile: PassportProfile,
+          done: PassportOAuthDoneCallback,
+        ) => {
+          done(
+            undefined,
+            {
+              fullProfile,
+              accessToken,
+              params,
+            },
+            {
+              refreshToken,
+            },
+          );
+        },
+      );
+
+      const helper = PassportOAuthAuthenticatorHelper.from(strategy);
+      const federated = config.getOptionalBoolean('federatedLogout') ?? false;
+      return {
+        helper,
+        strategy: strategy as Strategy,
+        audience,
+        connection,
+        connectionScope,
+        prompt,
+        domain,
+        clientID,
+        federated,
+      };
+    },
+
+    async start(
+      input,
+      {
+        helper,
+        audience,
+        connection,
+        connectionScope: connection_scope,
+        prompt,
+      },
+    ) {
+      return helper.start(input, {
+        accessType: 'offline',
+        ...(prompt !== 'auto' ? { prompt } : {}),
+        ...(audience ? { audience } : {}),
+        ...(connection ? { connection } : {}),
+        ...(connection_scope ? { connection_scope } : {}),
+      });
+    },
+
+    async authenticate(
+      input,
+      { helper, audience, connection, connectionScope: connection_scope },
+    ) {
+      return helper.authenticate(input, {
+        ...(audience ? { audience } : {}),
+        ...(connection ? { connection } : {}),
+        ...(connection_scope ? { connection_scope } : {}),
+      });
+    },
+
+    async refresh(input, { helper, strategy }) {
+      const result = await PassportHelpers.executeRefreshTokenStrategy(
+        strategy,
+        input.refreshToken,
+        input.scope,
+      );
+
+      const { sub } = decodeJwt(result.params.id_token);
+      const cacheKey = sub ? `auth0-profile:${sub}` : undefined;
+
+      let fullProfile = cacheKey
+        ? ((await profileCache?.get(cacheKey)) as PassportProfile | undefined)
+        : undefined;
+
+      if (!fullProfile) {
+        fullProfile = await helper.fetchProfile(result.accessToken);
+        if (cacheKey) {
+          await profileCache?.set(
+            cacheKey,
+            JSON.parse(JSON.stringify(fullProfile)),
+          );
+        }
+      }
+
+      return {
+        fullProfile,
+        session: {
+          accessToken: result.accessToken,
+          tokenType: result.params.token_type ?? 'bearer',
+          scope: result.params.scope,
+          expiresInSeconds: result.params.expires_in,
+          idToken: result.params.id_token,
+          refreshToken: result.refreshToken,
+        },
+      };
+    },
+
+    async logout(input, { domain, clientID, federated }) {
+      const logoutUrl = new URL(`https://${domain}/v2/logout`);
+      if (federated) {
+        logoutUrl.searchParams.set('federated', '');
+      }
+      logoutUrl.searchParams.set('client_id', clientID);
+      const origin = input.req.get('origin');
+      if (origin) {
+        logoutUrl.searchParams.set('returnTo', origin);
+      }
+      return { logoutUrl: logoutUrl.toString() };
+    },
+  });
+}
+
+/** @public */
+export const auth0Authenticator = createAuth0Authenticator();

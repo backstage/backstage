@@ -1,0 +1,75 @@
+import { PropsTable } from '@/components/PropsTable';
+import { CodeBlock } from '@/components/CodeBlock';
+import { Snippet } from '@/components/Snippet';
+import { flexPropDefs } from './props-definition';
+import {
+  flexUsageSnippet,
+  defaultSnippet,
+  flexResponsiveSnippet,
+  flexAlignSnippet,
+  flexDirectionSnippet,
+} from './snippets';
+import {
+  Default,
+  ResponsiveExample,
+  AlignExample,
+  DirectionExample,
+} from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { FlexDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  type="Layout"
+  title="Flex"
+  description="A flex container with gap, alignment, and direction props."
+/>
+
+<Snippet py={4} align="center" preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={flexUsageSnippet} />
+
+## API reference
+
+<PropsTable data={flexPropDefs} />
+
+## Examples
+
+### Direction
+
+<Snippet
+  py={4}
+  align="center"
+  preview={<DirectionExample />}
+  code={flexDirectionSnippet}
+  layout="side-by-side"
+/>
+
+### Responsive gap
+
+Gap values can be responsive using breakpoint objects.
+
+<Snippet
+  py={4}
+  align="center"
+  preview={<ResponsiveExample />}
+  code={flexResponsiveSnippet}
+  layout="side-by-side"
+/>
+
+### Alignment
+
+<Snippet
+  py={4}
+  align="center"
+  preview={<AlignExample />}
+  code={flexAlignSnippet}
+  layout="side-by-side"
+/>
+
+<Theming definition={FlexDefinition} />
+
+<ChangelogComponent component="flex" />

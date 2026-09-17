@@ -1,0 +1,11 @@
+---
+title: Cloud Service ActionHub
+author: Infosys Limited
+authorUrl: https://github.com/Infosys
+category: Utility
+description: The Resource ActionHub Plugin for Backstage helps teams discover and operate cloud instances from a single Backstage UI. It currently supports AWS EC2 resource listing and instance actions (start, stop, reboot).
+documentation: https://github.com/Infosys/CloudServiceActionHub/blob/main/backstage-app/plugins/resource-actionhub/README.md
+iconUrl: https://raw.githubusercontent.com/Infosys/CloudServiceActionHub/main/backstage-app/plugins/resource-actionhub/src/doc/CloudServiceActionHub_logo.png
+npmPackageName: '@infosys_ltd/resource-actionhub'
+addedDate: '2026-04-23'
+status: active

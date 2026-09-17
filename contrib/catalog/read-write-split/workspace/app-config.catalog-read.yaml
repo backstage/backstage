@@ -1,0 +1,12 @@
+# This file should be given to the catalog read nodes.
+
+backend:
+  database:
+    # disable running database migrations for every plugin/module
+    skipMigrations: true
+
+catalog:
+  role: read
+
+  # disable processing engine
+  processingInterval: false

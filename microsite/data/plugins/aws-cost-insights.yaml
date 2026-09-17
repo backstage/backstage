@@ -1,0 +1,11 @@
+---
+title: AWS Cost Insights
+author: letthem
+authorUrl: https://github.com/letthem
+category: FinOps
+description: Visualize AWS EC2 costs from S3 CUR data with resource insights and cost forecasting.
+documentation: https://github.com/letthem/backstage-plugin-cost-insights
+iconUrl: /img/aws-cost-insights-logo.svg
+npmPackageName: '@letthem/backstage-plugin-aws-cost-insights'
+addedDate: '2026-03-04'
+status: active

@@ -1,0 +1,151 @@
+/*
+ * Copyright 2021 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import express from 'express';
+import { z } from 'zod/v3';
+import { InputError } from '@backstage/errors';
+import { Config } from '@backstage/config';
+import { JsonObject, JsonValue } from '@backstage/types';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { DocumentTypeInfo } from '@backstage/plugin-search-common';
+import { filterResultSet, toSearchResults } from '../utils/search_result_utils';
+import { SearchEngine } from '@backstage/plugin-search-backend-node';
+import { createOpenApiRouter } from '../schema/openapi';
+import {
+  AuthService,
+  DiscoveryService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
+
+const jsonObjectSchema: z.ZodSchema<JsonObject> = z.lazy(() => {
+  const jsonValueSchema: z.ZodSchema<JsonValue> = z.lazy(() =>
+    z.union([
+      z.string(),
+      z.number(),
+      z.boolean(),
+      z.null(),
+      z.array(jsonValueSchema),
+      jsonObjectSchema,
+    ]),
+  );
+
+  return z.record(jsonValueSchema);
+});
+
+/**
+ * @internal
+ */
+export type RouterOptions = {
+  engine: SearchEngine;
+  types: Record<string, DocumentTypeInfo>;
+  discovery?: DiscoveryService;
+  permissions: PermissionEvaluator;
+  config: Config;
+  logger: LoggerService;
+  auth: AuthService;
+  httpAuth: HttpAuthService;
+};
+
+const defaultMaxPageLimit = 100;
+const defaultMaxTermLength = 100;
+/**
+ * @internal
+ */
+export async function createRouter(
+  options: RouterOptions,
+): Promise<express.Router> {
+  const router = await createOpenApiRouter();
+  const { engine, types, config, logger, auth, httpAuth } = options;
+
+  const maxPageLimit =
+    config.getOptionalNumber('search.maxPageLimit') ?? defaultMaxPageLimit;
+
+  const maxTermLength =
+    config.getOptionalNumber('search.maxTermLength') ?? defaultMaxTermLength;
+
+  const requestSchema = z.object({
+    term: z
+      .string()
+      .refine(
+        term => term.length <= maxTermLength,
+        term => ({
+          message: `The term length "${term.length}" is greater than "${maxTermLength}"`,
+        }),
+      )
+      .default(''),
+    filters: jsonObjectSchema.optional(),
+    types: z
+      .array(z.string().refine(type => Object.keys(types).includes(type)))
+      .optional(),
+    pageCursor: z.string().optional(),
+    pageLimit: z
+      .number()
+      .refine(
+        pageLimit => pageLimit <= maxPageLimit,
+        pageLimit => ({
+          message: `The page limit "${pageLimit}" is greater than "${maxPageLimit}"`,
+        }),
+      )
+      .optional(),
+  });
+
+  router.get('/query', async (req, res) => {
+    const parseResult = requestSchema.passthrough().safeParse(req.query);
+
+    if (!parseResult.success) {
+      throw new InputError(`Invalid query string: ${parseResult.error}`);
+    }
+
+    const query = parseResult.data;
+
+    logger.info(
+      `Search request received: term="${query.term}", filters=${JSON.stringify(
+        query.filters,
+      )}, types=${query.types ? query.types.join(',') : ''}, pageCursor=${
+        query.pageCursor ?? ''
+      }`,
+    );
+
+    try {
+      const credentials = await httpAuth.credentials(req);
+      const { token } = await auth.getPluginRequestToken({
+        onBehalfOf: credentials,
+        targetPluginId: 'search',
+      });
+      const resultSet = await engine?.query(query, {
+        token,
+        credentials,
+      });
+
+      res.json(filterResultSet(toSearchResults(resultSet), logger));
+    } catch (error) {
+      // Log the error message here, but don't expose it to the user in the response
+      logger.error(
+        `There was a problem performing the search query: ${error.message}`,
+      );
+      if (error.name === 'MissingIndexError') {
+        // re-throw and let the default error handler middleware captures it and serializes it with the right response code on the standard form
+        throw error;
+      }
+
+      // If the error is not a MissingIndexError, we want to throw a generic error without the error message as it may leak internal information
+      throw new Error(`There was a problem performing the search query`);
+    }
+  });
+
+  return router;
+}

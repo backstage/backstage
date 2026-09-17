@@ -1,0 +1,273 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: bui-kitchen-sink-demo
+  title: BUI Kitchen Sink Demo
+  description: Exercises every widget and field extension in the BUI scaffolder form theme
+spec:
+  owner: backstage/techdocs-core
+  type: service
+
+  parameters:
+    - title: Basic widgets
+      required:
+        - name
+        - email
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Plain text input via BaseInputTemplate
+          ui:autofocus: true
+        description:
+          title: Description
+          type: string
+          description: Multiline textarea
+          ui:widget: textarea
+          ui:options:
+            rows: 3
+        email:
+          title: Email
+          type: string
+          format: email
+          description: Uses the email widget
+        website:
+          title: Website
+          type: string
+          format: uri
+          description: Uses the url widget
+        password:
+          title: Password
+          type: string
+          ui:widget: password
+          description: Uses the password widget
+        favouriteColour:
+          title: Favourite colour
+          type: string
+          ui:widget: color
+          description: Uses the color widget
+        secret:
+          title: Hidden token
+          type: string
+          ui:widget: hidden
+          default: hidden-default-value
+
+    - title: Numbers, ranges and toggles
+      properties:
+        replicas:
+          title: Replicas
+          type: integer
+          minimum: 1
+          maximum: 10
+          default: 3
+          description: Plain integer input
+        confidence:
+          title: Confidence
+          type: number
+          minimum: 0
+          maximum: 100
+          default: 50
+          ui:widget: range
+          description: Uses the range widget
+        enabled:
+          title: Enabled
+          type: boolean
+          default: true
+          description: Single boolean checkbox
+        consent:
+          title: Consent
+          type: boolean
+          default: false
+          ui:widget: radio
+          oneOf:
+            - const: true
+              title: I agree
+            - const: false
+              title: I disagree
+
+    - title: Selects and groups
+      properties:
+        environment:
+          title: Environment
+          type: string
+          enum:
+            - development
+            - staging
+            - production
+          default: development
+          description: Single-select dropdown
+        region:
+          title: Region
+          type: string
+          enum:
+            - eu-west-1
+            - us-east-1
+            - ap-southeast-2
+          ui:widget: radio
+          description: Radio group via oneOf
+        features:
+          title: Features
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            enum:
+              - logging
+              - metrics
+              - tracing
+              - profiling
+          ui:widget: checkboxes
+          description: Checkbox group via checkboxes widget
+        tags:
+          title: Free-form tags
+          type: array
+          items:
+            type: string
+          description: Default array input
+
+    - title: Dates and files
+      properties:
+        startDate:
+          title: Start date
+          type: string
+          format: date
+          description: Uses the date widget
+        startDateTime:
+          title: Start time
+          type: string
+          format: date-time
+          description: Uses the date-time widget
+        cutoffTime:
+          title: Cutoff time
+          type: string
+          format: time
+          description: Uses the time widget
+        readme:
+          title: Readme upload
+          type: string
+          format: data-url
+          description: Uses the file widget
+
+    - title: Nested objects and arrays
+      properties:
+        owner:
+          title: Owner profile
+          type: object
+          required:
+            - displayName
+          properties:
+            displayName:
+              title: Display name
+              type: string
+            slack:
+              title: Slack handle
+              type: string
+        contacts:
+          title: Contacts
+          type: array
+          items:
+            type: object
+            required:
+              - name
+            properties:
+              name:
+                title: Name
+                type: string
+              role:
+                title: Role
+                type: string
+                enum:
+                  - PM
+                  - Engineer
+                  - Designer
+              primary:
+                title: Primary contact
+                type: boolean
+
+    - title: Catalog and repo pickers
+      properties:
+        componentName:
+          title: Component name
+          type: string
+          ui:field: EntityNamePicker
+        ownerRef:
+          title: Owner
+          type: string
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind: [User, Group]
+        relatedEntity:
+          title: Related entity
+          type: string
+          ui:field: EntityPicker
+          ui:options:
+            catalogFilter:
+              kind: [Component]
+        relatedEntities:
+          title: Related entities (multi)
+          type: array
+          ui:field: MultiEntityPicker
+          ui:options:
+            catalogFilter:
+              kind: [Component]
+        myGroups:
+          title: My groups
+          type: string
+          ui:field: MyGroupsPicker
+        ownedEntity:
+          title: An entity I own
+          type: string
+          ui:field: OwnedEntityPicker
+          ui:options:
+            catalogFilter:
+              kind: [Component]
+        entityTags:
+          title: Entity tags
+          type: array
+          ui:field: EntityTagsPicker
+        repoUrl:
+          title: Repository URL
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+              - gitlab.com
+        repoOwner:
+          title: Repo owner
+          type: string
+          ui:field: RepoOwnerPicker
+          ui:options:
+            allowedOwners:
+              - backstage
+              - example-org
+        repoBranch:
+          title: Repo branch
+          type: string
+          ui:field: RepoBranchPicker
+        deployToken:
+          title: Deploy token
+          type: string
+          ui:field: Secret
+          description: Captured to the scaffolder secret store
+
+  steps:
+    - id: log
+      name: Log
+      action: debug:log
+      input:
+        message: |
+          Submitted kitchen sink for ${{ parameters.name }}.
+          Environment: ${{ parameters.environment }}
+          Owner: ${{ parameters.ownerRef }}
+          Repo: ${{ parameters.repoUrl }}
+
+  output:
+    text:
+      - title: Summary
+        content: |
+          **Name:** ${{ parameters.name }}
+          **Environment:** ${{ parameters.environment }}
+          **Region:** ${{ parameters.region }}
+          **Features:** ${{ parameters.features }}

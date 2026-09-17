@@ -1,0 +1,36 @@
+{
+  "name": "plugin-test-backend-alpha-fallback-dynamic",
+  "version": "0.0.0",
+  "description": "A test dynamic backend plugin whose alpha export only exposes supplementary APIs.",
+  "backstage": {
+    "role": "backend-plugin",
+    "pluginId": "test-alpha-fallback",
+    "pluginPackages": [
+      "plugin-test-backend-alpha-fallback"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage",
+    "dynamic"
+  ],
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs.js",
+      "default": "./dist/index.cjs.js"
+    },
+    "./alpha": {
+      "require": "./dist/alpha.cjs.js",
+      "default": "./dist/alpha.cjs.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.cjs.js",
+  "files": [
+    "dist",
+    "alpha"
+  ],
+  "bundleDependencies": true
+}

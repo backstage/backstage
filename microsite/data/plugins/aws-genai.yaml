@@ -1,0 +1,11 @@
+---
+title: Generative AI
+author: Amazon Web Services
+authorUrl: https://aws.amazon.com/
+category: Machine Learning
+description: Build generative AI assistants in Backstage that leverage the plugin ecosystem with tool use and LLM integration.
+documentation: https://github.com/awslabs/backstage-plugins-for-aws/tree/main/plugins/genai#readme
+iconUrl: https://raw.githubusercontent.com/awslabs/backstage-plugins-for-aws/main/docs/images/logos/bedrock.png
+npmPackageName: '@aws/genai-plugin-for-backstage'
+addedDate: '2026-03-26'
+status: active

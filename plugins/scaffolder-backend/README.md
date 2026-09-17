@@ -1,0 +1,149 @@
+# Scaffolder Backend
+
+This is the backend for the default Backstage [software templates](https://backstage.io/docs/features/software-templates/).
+This provides the API for the frontend [scaffolder plugin](https://github.com/backstage/backstage/tree/master/plugins/scaffolder),
+as well as the built-in template actions, tasks and stages.
+
+## Installation
+
+This `@backstage/plugin-scaffolder-backend` package comes installed by default
+in any Backstage application created with `npx @backstage/create-app`, so
+installation is not usually required.
+
+To check if you already have the package, look under
+`packages/backend/package.json`, in the `dependencies` block, for
+`@backstage/plugin-scaffolder-backend`. The instructions below walk through
+restoring the plugin, if you previously removed it.
+
+### Install the package
+
+```bash
+# From your Backstage root directory
+yarn --cwd packages/backend add @backstage/plugin-scaffolder-backend
+```
+
+Then add the plugin to your backend, typically in `packages/backend/src/index.ts`:
+
+```ts
+const backend = createBackend();
+// ...
+backend.add(import('@backstage/plugin-scaffolder-backend'));
+```
+
+#### Old backend system
+
+In the old backend system there's a bit more wiring required. You'll need to
+create a file called `packages/backend/src/plugins/scaffolder.ts`
+with contents matching [scaffolder.ts in the create-app template](https://github.com/backstage/backstage/blob/ad9314d3a7e0405719ba93badf96e97adde8ef83/packages/create-app/templates/default-app/packages/backend/src/plugins/scaffolder.ts).
+
+With the `scaffolder.ts` router setup in place, add the router to
+`packages/backend/src/index.ts`:
+
+```diff
++import scaffolder from './plugins/scaffolder';
+
+async function main() {
+  ...
+  const createEnv = makeCreateEnv(config);
+
+  const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
++  const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
+
+  const apiRouter = Router();
++  apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
+  ...
+  apiRouter.use(notFoundHandler());
+
+```
+
+### Adding templates
+
+At this point the scaffolder backend is installed in your backend package, but
+you will not have any templates available to use. These need to be [added to the software catalog](https://backstage.io/docs/features/software-templates/adding-templates).
+
+To get up and running and try out some templates quickly, you can or copy the
+catalog locations from the [create-app template](https://github.com/backstage/backstage/blob/master/packages/create-app/templates/default-app/app-config.yaml.hbs).
+
+## Configuration
+
+### Default Environment
+
+The scaffolder supports a `defaultEnvironment` configuration that provides default parameters and secrets to all templates. This reduces template complexity and improves security by centralizing common values.
+
+```yaml
+scaffolder:
+  defaultEnvironment:
+    parameters:
+      region: eu-west-1
+      organizationName: acme-corp
+      defaultRegistry: registry.acme-corp.com
+    secrets:
+      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
+      DOCKER_REGISTRY_TOKEN: ${DOCKER_REGISTRY_TOKEN}
+```
+
+#### Default parameters
+
+Default parameters are accessible via `${{ environment.parameters.* }}` in templates. Default parameters are isolated in their own context to avoid naming conflicts.
+
+```yaml
+ parameters:
+    - title: Fill in some steps
+      required:
+        - organizationName
+      properties:
+        organizationName:
+          title: organizationName
+          type: string
+          description: Unique name of the organization
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+
+  steps:
+    - id: deploy
+      name: Deploy Application
+      action: aws:deploy
+      input:
+        region: ${{ environment.parameters.region }}  # Resolves to defaultEnvironment.parameters.region
+        organization: ${{ parameters.organizationName }}  # Resolves to frontend input value
+        otherOrganization: ${{ environment.parameters.organizationName }}  # Resolves to defaultEnvironment.parameters.organizationName
+```
+
+#### Secrets
+
+Default secrets are resolved from environment variables and accessible via `${{ environment.secrets.* }}` in template actions. Secrets are only available during action execution, not in frontend forms.
+
+```yaml
+- id: deploy
+  name: Deploy with credentials
+  action: aws:deploy
+  input:
+    accessKey: ${{ environment.secrets.AWS_ACCESS_KEY }} # Resolves to defaultEnvironment.secrets.AWS_ACCESS_KEY
+```
+
+**Security Note:** Secrets are automatically masked in logs and are only available to backend actions, never exposed to the frontend.
+
+### Task Recovery
+
+The scaffolder supports automatic task recovery when workers restart or crash. When enabled, tasks that were in a `processing` state will be recovered and can be resumed from where they left off.
+
+```yaml
+scaffolder:
+  taskRecovery:
+    enabled: true
+    staleTimeout: { seconds: 30 } # Optional: how long before a task is considered stale
+    workspaceProvider: database # Optional: enables workspace serialization with specified provider
+```
+
+When task recovery is enabled:
+
+- Tasks in `processing` state with stale heartbeats are automatically recovered to `open` state
+- Secrets are preserved until the task reaches a terminal state (completed/failed)
+- Completed steps are skipped on retry, resuming from the last incomplete step
+- Step outputs are restored so subsequent steps can access previous results
+
+**Note:** `workspaceProvider` is a separate option from `enabled`. Setting `enabled: true` activates task recovery (secrets preservation, step skipping), but workspace serialization only happens if you also set `workspaceProvider`. The `workspaceProvider` value specifies which storage backend to use (for example, `database` from `@backstage/plugin-scaffolder-backend-module-workspace-database`, or `gcpBucket` from `@backstage/plugin-scaffolder-backend-module-gcp`). Install and register the corresponding module before selecting a provider.
+
+This replaces the previous experimental flags (`EXPERIMENTAL_recoverTasks`, `EXPERIMENTAL_workspaceSerialization`, `EXPERIMENTAL_recoverTasksTimeout`) which are still supported as fallbacks. Legacy workspace serialization also requires a separately installed provider module.

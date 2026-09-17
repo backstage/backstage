@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-proxy-backend
+  title: '@backstage/plugin-proxy-backend'
+  description: >-
+    A Backstage backend plugin that helps you set up proxy endpoints in the
+    backend
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin
+  owner: maintainers

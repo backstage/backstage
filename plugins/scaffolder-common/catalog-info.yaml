@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-scaffolder-common
+  title: '@backstage/plugin-scaffolder-common'
+  description: >-
+    Common functionalities for the scaffolder, to be shared between scaffolder
+    and scaffolder-backend plugin
+spec:
+  lifecycle: production
+  type: backstage-common-library
+  owner: maintainers

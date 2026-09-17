@@ -1,0 +1,905 @@
+/*
+ * Copyright 2021 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { ConfigReader } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
+import { DefaultReadTreeResponseFactory } from './tree';
+import { DEFAULT_REGION, AwsS3UrlReader, parseUrl } from './AwsS3UrlReader';
+import {
+  AwsS3Integration,
+  readAwsS3IntegrationConfig,
+} from '@backstage/integration';
+import { DefaultAwsCredentialsManager } from '@backstage/integration-aws-node';
+import { UrlReaderPredicateTuple } from './types';
+import path from 'node:path';
+import { NotModifiedError } from '@backstage/errors';
+import {
+  S3Client,
+  ListObjectsV2Command,
+  ListObjectsV2Output,
+  GetObjectCommand,
+  S3ServiceException,
+} from '@aws-sdk/client-s3';
+import { sdkStreamMixin } from '@aws-sdk/util-stream-node';
+import fs from 'node:fs';
+import { mockServices } from '@backstage/backend-test-utils';
+
+const s3SendMock = jest.fn();
+
+const treeResponseFactory = DefaultReadTreeResponseFactory.create({
+  config: new ConfigReader({}),
+});
+
+describe('parseUrl', () => {
+  it('supports all aws formats', () => {
+    expect(
+      parseUrl('https://s3.amazonaws.com/my.bucket-3/a/puppy.jpg', {
+        host: 'amazonaws.com',
+      }),
+    ).toEqual({
+      path: 'a/puppy.jpg',
+      bucket: 'my.bucket-3',
+      region: 'us-east-1',
+    });
+    expect(
+      parseUrl('https://s3.amazonaws.com.cn/my.bucket-3/a/puppy.jpg', {
+        host: 'amazonaws.com',
+      }),
+    ).toEqual({
+      path: 'a/puppy.jpg',
+      bucket: 'my.bucket-3',
+      region: 'us-east-1',
+    });
+    expect(
+      parseUrl(
+        'https://ec-backstage-staging.s3.cn-north-1.amazonaws.com.cn/payments-prod-oas30.json',
+        {
+          host: 'amazonaws.com',
+        },
+      ),
+    ).toEqual({
+      path: 'payments-prod-oas30.json',
+      bucket: 'ec-backstage-staging',
+      region: 'cn-north-1',
+    });
+    expect(
+      parseUrl(
+        'https://ec-backstage-staging.s3.cn-north-1.amazonaws.com.cn/payments-prod-oas30.json',
+        {
+          host: 'amazonaws.com.cn',
+        },
+      ),
+    ).toEqual({
+      path: 'payments-prod-oas30.json',
+      bucket: 'ec-backstage-staging',
+      region: 'cn-north-1',
+    });
+    expect(
+      parseUrl('https://s3.us-west-2.amazonaws.com/my.bucket-3/a/puppy.jpg', {
+        host: 'amazonaws.com',
+      }),
+    ).toEqual({
+      path: 'a/puppy.jpg',
+      bucket: 'my.bucket-3',
+      region: 'us-west-2',
+    });
+    expect(
+      parseUrl('https://s3-us-west-2.amazonaws.com/my.bucket-3/a/puppy.jpg', {
+        host: 'amazonaws.com',
+      }),
+    ).toEqual({
+      path: 'a/puppy.jpg',
+      bucket: 'my.bucket-3',
+      region: 'us-west-2',
+    });
+    expect(
+      parseUrl('https://my.bucket-3.s3.us-west-2.amazonaws.com/a/puppy.jpg', {
+        host: 'amazonaws.com',
+      }),
+    ).toEqual({
+      path: 'a/puppy.jpg',
+      bucket: 'my.bucket-3',
+      region: 'us-west-2',
+    });
+    expect(
+      parseUrl(
+        'https://ignored.s3.us-west-2.amazonaws.com/my.bucket-3/a/puppy.jpg',
+        {
+          host: 'amazonaws.com',
+          s3ForcePathStyle: true,
+        },
+      ),
+    ).toEqual({
+      path: 'a/puppy.jpg',
+      bucket: 'my.bucket-3',
+      region: 'us-west-2',
+    });
+  });
+
+  it('supports aws formats with custom endpoint hosts', () => {
+    expect(
+      parseUrl(
+        'https://bucket-1.s3.eu-central-1.amazonaws.com/path/to/file.yaml',
+        {
+          host: 'bucket-1.s3.eu-central-1.amazonaws.com',
+        },
+      ),
+    ).toEqual({
+      path: 'path/to/file.yaml',
+      bucket: 'bucket-1',
+      region: 'eu-central-1',
+    });
+    expect(
+      parseUrl('https://my-bucket.s3.cn-north-1.amazonaws.com.cn/data.json', {
+        host: 'my-bucket.s3.cn-north-1.amazonaws.com.cn',
+      }),
+    ).toEqual({
+      path: 'data.json',
+      bucket: 'my-bucket',
+      region: 'cn-north-1',
+    });
+    expect(
+      parseUrl(
+        'https://s3.eu-central-1.amazonaws.com/my-bucket/path/to/file.yaml',
+        {
+          host: 's3.eu-central-1.amazonaws.com',
+        },
+      ),
+    ).toEqual({
+      path: 'path/to/file.yaml',
+      bucket: 'my-bucket',
+      region: 'eu-central-1',
+    });
+    expect(
+      parseUrl(
+        'https://s3.eu-central-1.amazonaws.com/my-bucket/path/to/file.yaml',
+        {
+          host: 's3.eu-central-1.amazonaws.com',
+          s3ForcePathStyle: true,
+        },
+      ),
+    ).toEqual({
+      path: 'path/to/file.yaml',
+      bucket: 'my-bucket',
+      region: 'eu-central-1',
+    });
+  });
+
+  it('supports AWS PrivateLink for Amazon S3 formats', () => {
+    expect(
+      parseUrl(
+        'https://my.bucket-3.bucket.vpce-12345678901234567-foobar.s3.eu-central-1.vpce.amazonaws.com/a/puppy.jpg',
+        {
+          host: 'amazonaws.com',
+        },
+      ),
+    ).toEqual({
+      path: 'a/puppy.jpg',
+      bucket: 'my.bucket-3',
+      region: 'eu-central-1',
+    });
+
+    expect(
+      parseUrl(
+        'https://my-bucket.bucket.vpce-abc123-xyz.s3.cn-north-1.vpce.amazonaws.com.cn/data.json',
+        {
+          host: 'amazonaws.com',
+        },
+      ),
+    ).toEqual({
+      path: 'data.json',
+      bucket: 'my-bucket',
+      region: 'cn-north-1',
+    });
+
+    expect(() =>
+      parseUrl(
+        'https://my.bucket-3.bucket.vpce-12345678901234567-foobar.s3.eu-central-1.vpce.amazonaws.com/a/puppy.jpg',
+        {
+          host: 'amazonaws.com',
+          s3ForcePathStyle: true,
+        },
+      ),
+    ).toThrow('path style access is not supported for VPC endpoint URLs');
+  });
+
+  it('rejects invalid AWS URLs', () => {
+    expect(() =>
+      parseUrl('https://not-valid-s3.amazonaws.com/bucket/key', {
+        host: 'amazonaws.com',
+      }),
+    ).toThrow('Invalid AWS S3 URL');
+
+    expect(() =>
+      parseUrl('https://s3.amazonaws.com/bucket-only-no-key', {
+        host: 'amazonaws.com',
+      }),
+    ).toThrow('does not contain bucket in the path');
+
+    expect(() =>
+      parseUrl(
+        'https://bucket.vpce-12345678901234567-foobar.s3.eu-central-1.vpce.amazonaws.com/key',
+        { host: 'amazonaws.com' },
+      ),
+    ).toThrow('Invalid AWS S3 URL');
+  });
+
+  it('decodes object path segments exactly once', () => {
+    expect(
+      parseUrl(
+        'https://bucket-1.s3.eu-west-1.amazonaws.com/sub/dir/%252e%252e/catalog-info.yaml',
+        { host: 'amazonaws.com' },
+      ),
+    ).toEqual({
+      path: 'sub/dir/%2e%2e/catalog-info.yaml',
+      bucket: 'bucket-1',
+      region: 'eu-west-1',
+    });
+  });
+
+  it.each([
+    'https://bucket-1.s3.eu-west-1.amazonaws.com/sub/dir/../catalog-info.yaml',
+    'https://bucket-1.s3.eu-west-1.amazonaws.com/sub/dir/%2e%2e/catalog-info.yaml',
+    'https://s3.eu-west-1.amazonaws.com/bucket-1/sub/dir/%2E%2E/%2e%2e/bucket-2/catalog-info.yaml',
+    String.raw`https://s3.eu-west-1.amazonaws.com\bucket-1\sub\dir\%2e%2e\catalog-info.yaml`,
+  ])('rejects dot path segments in %s', url => {
+    expect(() => parseUrl(url, { host: 'amazonaws.com' })).toThrow(
+      'Invalid AWS S3 URL',
+    );
+  });
+
+  it('supports all non-aws formats', () => {
+    expect(
+      parseUrl('https://my-host.com/my.bucket-3/a/puppy.jpg', {
+        host: 'my-host.com',
+      }),
+    ).toEqual({
+      path: 'a/puppy.jpg',
+      bucket: 'my.bucket-3',
+      region: DEFAULT_REGION,
+    });
+    expect(
+      parseUrl('https://my.bucket-3.my-host.com/a/puppy.jpg', {
+        host: 'my-host.com',
+      }),
+    ).toEqual({
+      path: 'a/puppy.jpg',
+      bucket: 'my.bucket-3',
+      region: DEFAULT_REGION,
+    });
+    expect(
+      parseUrl('https://ignored.my-host.com/my.bucket-3/a/puppy.jpg', {
+        host: 'my-host.com',
+        s3ForcePathStyle: true,
+      }),
+    ).toEqual({
+      path: 'a/puppy.jpg',
+      bucket: 'my.bucket-3',
+      region: DEFAULT_REGION,
+    });
+  });
+});
+
+describe('AwsS3UrlReader', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+    s3SendMock.mockReset();
+  });
+
+  const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
+    return AwsS3UrlReader.factory({
+      config: new ConfigReader(config),
+      logger: mockServices.logger.mock(),
+      treeResponseFactory,
+    });
+  };
+
+  it('creates a sample reader without the awsS3 field', () => {
+    const entries = createReader({
+      integrations: {},
+    });
+
+    expect(entries).toHaveLength(1);
+  });
+
+  it('creates a reader with credentials correctly configured', () => {
+    const awsS3Integrations = [];
+    awsS3Integrations.push({
+      host: 'amazonaws.com',
+      accessKeyId: 'fakekey',
+      secretAccessKey: 'fakekey',
+    });
+
+    const entries = createReader({
+      integrations: {
+        awsS3: awsS3Integrations,
+      },
+    });
+
+    expect(entries).toHaveLength(1);
+  });
+
+  it('creates a reader with default credentials provider', () => {
+    const awsS3Integrations = [];
+    awsS3Integrations.push({
+      host: 'amazonaws.com',
+    });
+
+    const entries = createReader({
+      integrations: {
+        awsS3: awsS3Integrations,
+      },
+    });
+
+    expect(entries).toHaveLength(1);
+  });
+
+  describe('predicates', () => {
+    const readers = createReader({
+      integrations: {
+        awsS3: [{}],
+      },
+    });
+    const predicate = readers[0].predicate;
+
+    it('returns true for the correct aws s3 storage host', () => {
+      expect(
+        predicate(new URL('https://test-bucket.s3.us-east-2.amazonaws.com')),
+      ).toBe(true);
+    });
+
+    it('returns true for a url with the full path and the correct host', () => {
+      expect(
+        predicate(
+          new URL(
+            'https://test-bucket.s3.us-east-2.amazonaws.com/team/service/catalog-info.yaml',
+          ),
+        ),
+      ).toBe(true);
+    });
+
+    it('returns false for an incorrect host', () => {
+      expect(predicate(new URL('https://amazon.com'))).toBe(false);
+    });
+
+    it('returns false for a completely different host', () => {
+      expect(predicate(new URL('https://storage.cloud.google.com'))).toBe(
+        false,
+      );
+    });
+
+    it("returns true for a url with a bucket with '.'", () => {
+      expect(
+        predicate(
+          new URL(
+            'https://test.bucket.s3.us-east-2.amazonaws.com/team/service/catalog-info.yaml',
+          ),
+        ),
+      ).toBe(true);
+    });
+  });
+
+  describe('read', () => {
+    const [{ reader }] = createReader({
+      integrations: {
+        awsS3: [
+          {
+            host: 'amazonaws.com',
+            accessKeyId: 'fake-access-key',
+            secretAccessKey: 'fake-secret-key',
+          },
+        ],
+      },
+    });
+
+    beforeEach(() => {
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          return {
+            Body: sdkStreamMixin(
+              fs.createReadStream(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                ),
+              ),
+            ),
+            ETag: '123abc',
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
+      });
+    });
+
+    it('returns contents of an object in a bucket', async () => {
+      const { buffer } = await reader.readUrl(
+        'https://test-bucket.s3.us-east-2.amazonaws.com/awsS3-mock-object.yaml',
+      );
+      const response = await buffer();
+      expect(response.toString().trim()).toBe('site_name: Test');
+    });
+
+    it('rejects unknown targets', async () => {
+      await expect(
+        reader.readUrl(
+          'https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml',
+        ),
+      ).rejects.toMatchInlineSnapshot(
+        `[Error: Could not retrieve file from S3; caused by Error: Invalid AWS S3 URL https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml]`,
+      );
+    });
+  });
+
+  describe('readUrl', () => {
+    const [{ reader }] = createReader({
+      integrations: {
+        awsS3: [
+          {
+            host: 'amazonaws.com',
+            accessKeyId: 'fake-access-key',
+            secretAccessKey: 'fake-secret-key',
+          },
+        ],
+      },
+    });
+
+    beforeEach(() => {
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          return {
+            Body: sdkStreamMixin(
+              fs.createReadStream(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                ),
+              ),
+            ),
+            ETag: '123abc',
+            LastModified: new Date('2020-01-01T00:00:00Z'),
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
+      });
+    });
+
+    it('returns contents of an object in a bucket via buffer', async () => {
+      const { buffer, etag, lastModifiedAt } = await reader.readUrl(
+        'https://test-bucket.s3.us-east-2.amazonaws.com/awsS3-mock-object.yaml',
+      );
+      expect(etag).toBe('123abc');
+      expect(lastModifiedAt).toEqual(new Date('2020-01-01T00:00:00Z'));
+      const response = await buffer();
+      expect(response.toString().trim()).toBe('site_name: Test');
+    });
+
+    it('returns contents of an object in a bucket via stream', async () => {
+      const { buffer, etag, lastModifiedAt } = await reader.readUrl(
+        'https://test-bucket.s3.us-east-2.amazonaws.com/awsS3-mock-object.yaml',
+      );
+      expect(etag).toBe('123abc');
+      expect(lastModifiedAt).toEqual(new Date('2020-01-01T00:00:00Z'));
+      const response = await buffer();
+      expect(response.toString().trim()).toBe('site_name: Test');
+    });
+
+    it('rejects unknown targets', async () => {
+      await expect(
+        reader.readUrl!(
+          'https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml',
+        ),
+      ).rejects.toMatchInlineSnapshot(
+        `[Error: Could not retrieve file from S3; caused by Error: Invalid AWS S3 URL https://test-bucket.s3.us-east-2.NOTamazonaws.com/file.yaml]`,
+      );
+    });
+  });
+
+  describe('readUrl towards custom host', () => {
+    const [{ reader }] = createReader({
+      integrations: {
+        awsS3: [
+          {
+            host: 'localhost:4566',
+            accessKeyId: 'fake-access-key',
+            secretAccessKey: 'fake-secret-key',
+            endpoint: 'http://localhost:4566',
+            s3ForcePathStyle: true,
+          },
+        ],
+      },
+    });
+
+    beforeEach(() => {
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          return {
+            Body: sdkStreamMixin(
+              fs.createReadStream(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                ),
+              ),
+            ),
+            ETag: '123abc',
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
+      });
+    });
+
+    it('returns contents of an object in a bucket via buffer', async () => {
+      const { buffer, etag } = await reader.readUrl(
+        'http://localhost:4566/test-bucket/awsS3-mock-object.yaml',
+      );
+      expect(etag).toBe('123abc');
+      const response = await buffer();
+      expect(response.toString().trim()).toBe('site_name: Test');
+    });
+  });
+
+  describe('readUrl with etag', () => {
+    const [{ reader }] = createReader({
+      integrations: {
+        awsS3: [
+          {
+            host: 'amazonaws.com',
+            accessKeyId: 'fake-access-key',
+            secretAccessKey: 'fake-secret-key',
+          },
+        ],
+      },
+    });
+
+    beforeEach(() => {
+      const t = new S3ServiceException({
+        name: '304',
+        $fault: 'client',
+        $metadata: { httpStatusCode: 304 },
+      });
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          throw t;
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
+      });
+    });
+
+    it('returns contents of an object in a bucket', async () => {
+      await expect(
+        reader.readUrl!(
+          'https://test-bucket.s3.us-east-2.amazonaws.com/awsS3-mock-object.yaml',
+          {
+            etag: '123abc',
+          },
+        ),
+      ).rejects.toThrow(NotModifiedError);
+    });
+  });
+
+  describe('readUrl with lastModifiedAfter', () => {
+    const [{ reader }] = createReader({
+      integrations: {
+        awsS3: [
+          {
+            host: 'amazonaws.com',
+            accessKeyId: 'fake-access-key',
+            secretAccessKey: 'fake-secret-key',
+          },
+        ],
+      },
+    });
+
+    beforeEach(() => {
+      const t = new S3ServiceException({
+        name: '304',
+        $fault: 'client',
+        $metadata: { httpStatusCode: 304 },
+      });
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          throw t;
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
+      });
+    });
+
+    it('returns contents of an object in a bucket', async () => {
+      await expect(
+        reader.readUrl!(
+          'https://test-bucket.s3.us-east-2.amazonaws.com/awsS3-mock-object.yaml',
+          {
+            lastModifiedAfter: new Date('2020-01-01T00:00:00Z'),
+          },
+        ),
+      ).rejects.toThrow(NotModifiedError);
+    });
+  });
+
+  describe('readTree', () => {
+    let awsS3UrlReader: AwsS3UrlReader;
+
+    beforeEach(() => {
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+
+      const object: Object = {
+        Key: 'awsS3-mock-object.yaml',
+      };
+
+      const objectList: Object[] = [object];
+      const output: ListObjectsV2Output = {
+        Contents: objectList,
+      };
+
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof ListObjectsV2Command) {
+          return output;
+        }
+        if (command instanceof GetObjectCommand) {
+          return {
+            Body: sdkStreamMixin(
+              fs.createReadStream(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                ),
+              ),
+            ),
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
+      });
+
+      const config = new ConfigReader({
+        host: '.amazonaws.com',
+        accessKeyId: 'fake-access-key',
+        secretAccessKey: 'fake-secret-key',
+      });
+
+      const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
+
+      awsS3UrlReader = new AwsS3UrlReader(
+        credsManager,
+        new AwsS3Integration(readAwsS3IntegrationConfig(config)),
+        { treeResponseFactory },
+      );
+    });
+
+    it('returns contents of an object in a bucket', async () => {
+      const response = await awsS3UrlReader.readTree(
+        'https://test.s3.us-east-2.amazonaws.com',
+      );
+      const files = await response.files();
+      const body = await files[0].content();
+
+      expect(body.toString().trim()).toBe('site_name: Test');
+    });
+
+    it.each([
+      ['literal dot-dot', 'prefix/uploads/../legitimate.yaml'],
+      ['deep traversal', 'prefix/uploads/../../etc/passwd'],
+      ['backslash', 'prefix/uploads\\../legitimate.yaml'],
+      ['encoded dot-dot', 'prefix/uploads/%2e%2e/legitimate.yaml'],
+      ['mixed encoded', 'prefix/uploads/.%2e/legitimate.yaml'],
+      ['uppercase encoded', 'prefix/uploads/%2E%2E/legitimate.yaml'],
+    ])(
+      'filters out objects with %s path traversal segments',
+      async (_label, maliciousKey) => {
+        const objectList: Object[] = [
+          { Key: 'prefix/legitimate.yaml' },
+          { Key: maliciousKey },
+        ];
+        const output: ListObjectsV2Output = { Contents: objectList };
+
+        s3SendMock.mockImplementation(async command => {
+          if (command instanceof ListObjectsV2Command) {
+            return output;
+          }
+          if (command instanceof GetObjectCommand) {
+            return {
+              Body: sdkStreamMixin(
+                fs.createReadStream(
+                  path.resolve(
+                    __dirname,
+                    '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                  ),
+                ),
+              ),
+            };
+          }
+          throw new Error(`No mock for ${command.constructor.name}`);
+        });
+
+        const response = await awsS3UrlReader.readTree(
+          'https://test.s3.us-east-2.amazonaws.com/prefix/',
+        );
+        const files = await response.files();
+
+        expect(files).toHaveLength(1);
+        expect(files[0].path).toBe('legitimate.yaml');
+      },
+    );
+  });
+
+  describe('search', () => {
+    const [{ reader }] = createReader({
+      integrations: {
+        awsS3: [
+          {
+            host: 'amazonaws.com',
+            accessKeyId: 'fake-access-key',
+            secretAccessKey: 'fake-secret-key',
+          },
+        ],
+      },
+    });
+
+    beforeEach(() => {
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          return {
+            Body: sdkStreamMixin(
+              fs.createReadStream(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                ),
+              ),
+            ),
+            ETag: '123abc',
+            LastModified: new Date('2020-01-01T00:00:00Z'),
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
+      });
+    });
+
+    it('should return a file when given an exact valid url', async () => {
+      const data = await reader.search(
+        'https://test-bucket.s3.us-east-2.amazonaws.com/awsS3-mock-object.yaml',
+      );
+
+      expect(data.etag).toBe('123abc');
+      expect(data.files.length).toBe(1);
+      expect(data.files[0].url).toBe(
+        'https://test-bucket.s3.us-east-2.amazonaws.com/awsS3-mock-object.yaml',
+      );
+      expect((await data.files[0].content()).toString()).toEqual(
+        'site_name: Test\n',
+      );
+    });
+
+    it('throws if given URL with wildcard', async () => {
+      await expect(
+        reader.search(
+          'https://test-bucket.s3.us-east-2.amazonaws.com/awsS3-mock-*.yaml',
+        ),
+      ).rejects.toThrow('Unsupported search pattern URL');
+    });
+  });
+
+  describe('buildCredentials with roleArn', () => {
+    let getCredProviderMock: jest.SpyInstance;
+
+    beforeEach(() => {
+      getCredProviderMock = jest.spyOn(
+        DefaultAwsCredentialsManager.prototype,
+        'getCredentialProvider',
+      );
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+      s3SendMock.mockReset();
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          return {
+            Body: sdkStreamMixin(
+              fs.createReadStream(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                ),
+              ),
+            ),
+            ETag: '123abc',
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
+      });
+    });
+
+    it('uses account-specific credentials as master credentials when account config exists for the role ARN', async () => {
+      const accountCreds = {
+        accessKeyId: 'account-key',
+        secretAccessKey: 'account-secret',
+      };
+      getCredProviderMock.mockImplementation(async (opts?: any) => {
+        if (opts?.arn) {
+          return {
+            accountId: '123456789012',
+            sdkCredentialProvider: async () => accountCreds,
+          };
+        }
+        return {
+          sdkCredentialProvider: async () => ({
+            accessKeyId: 'default-key',
+            secretAccessKey: 'default-secret',
+          }),
+        };
+      });
+
+      const config = new ConfigReader({
+        host: 'amazonaws.com',
+        roleArn: 'arn:aws:iam::123456789012:role/MyRole',
+      });
+
+      const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
+      const reader = new AwsS3UrlReader(
+        credsManager,
+        new AwsS3Integration(readAwsS3IntegrationConfig(config)),
+        { treeResponseFactory },
+      );
+
+      await reader.readUrl(
+        'https://test-bucket.s3.us-east-2.amazonaws.com/file.yaml',
+      );
+
+      expect(getCredProviderMock).toHaveBeenCalledWith({
+        arn: 'arn:aws:iam::123456789012:role/MyRole',
+      });
+    });
+
+    it('falls back to default credentials when no account config exists for the role ARN', async () => {
+      const defaultCreds = {
+        accessKeyId: 'default-key',
+        secretAccessKey: 'default-secret',
+      };
+      getCredProviderMock.mockImplementation(async (opts?: any) => {
+        if (opts?.arn) {
+          throw new Error('No matching account');
+        }
+        return {
+          sdkCredentialProvider: async () => defaultCreds,
+        };
+      });
+
+      const config = new ConfigReader({
+        host: 'amazonaws.com',
+        roleArn: 'arn:aws:iam::123456789012:role/MyRole',
+      });
+
+      const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
+      const reader = new AwsS3UrlReader(
+        credsManager,
+        new AwsS3Integration(readAwsS3IntegrationConfig(config)),
+        { treeResponseFactory },
+      );
+
+      await reader.readUrl(
+        'https://test-bucket.s3.us-east-2.amazonaws.com/file.yaml',
+      );
+
+      expect(getCredProviderMock).toHaveBeenCalledWith({
+        arn: 'arn:aws:iam::123456789012:role/MyRole',
+      });
+      expect(getCredProviderMock).toHaveBeenCalledWith();
+    });
+  });
+});

@@ -1,0 +1,8 @@
+{
+  "name": "@scope/plugin-foo",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "dependencies": {
+    "@scope/plugin-foo-react": "1.0.0"
+  }
+}

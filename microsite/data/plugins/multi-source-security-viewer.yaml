@@ -1,0 +1,10 @@
+---
+title: Multi-Source Security Viewer
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Security
+description: Aggregates and visualizes pipeline security scan results from multiple CI/CD sources including Jenkins, GitHub Actions, GitLab CI, and Azure Pipelines.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/multi-source-security-viewer/plugins/multi-source-security-viewer/README.md
+npmPackageName: '@backstage-community/plugin-multi-source-security-viewer'
+addedDate: '2026-02-21'
+status: active

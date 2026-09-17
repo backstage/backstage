@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-catalog-backend-module-ai-model
+  title: '@backstage/plugin-catalog-backend-module-ai-model'
+  description: Adds support for the AIResource entity kind to the catalog backend plugin.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers

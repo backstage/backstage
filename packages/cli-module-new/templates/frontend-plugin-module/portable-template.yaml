@@ -1,0 +1,5 @@
+name: frontend-plugin-module
+role: frontend-plugin-module
+description: A new frontend module that extends an existing frontend plugin
+values:
+  moduleVar: '{{ camelCase pluginId }}Module{{ upperFirst ( camelCase moduleId ) }}'

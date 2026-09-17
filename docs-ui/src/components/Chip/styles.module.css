@@ -1,0 +1,34 @@
+.chip {
+  display: inline-block;
+  font-family: monospace;
+  font-size: 13px;
+  border-radius: 6px;
+  padding: 4px 8px;
+  margin-right: 4px;
+  background-color: #f0f0f0;
+  color: #5d5d5d;
+}
+
+.head {
+  background-color: #eaf2fd;
+  color: #2563eb;
+}
+
+.deprecated {
+  background-color: #fff4e5;
+  color: #b45309;
+}
+
+[data-theme-mode='dark'] .chip {
+  background-color: #2c2c2c;
+  color: #fff;
+}
+
+[data-theme-mode='dark'] .chip.head {
+  background-color: #33405b;
+}
+
+[data-theme-mode='dark'] .chip.deprecated {
+  background-color: #3d2a10;
+  color: #fbbf24;
+}

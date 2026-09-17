@@ -1,0 +1,739 @@
+/*
+ * Copyright 2020 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { createMockDirectory } from '@backstage/backend-test-utils';
+import { JsonObject } from '@backstage/types';
+import { collectConfigSchemas, internal } from './collect';
+import { compileConfigSchemas } from './compile';
+import { ConfigSchemaError } from './ConfigSchemaError';
+import path from 'node:path';
+import { execSync } from 'node:child_process';
+import { SchemaGenerator } from 'ts-json-schema-generator';
+
+const mockSchema = {
+  type: 'object',
+  properties: {
+    key: {
+      type: 'string',
+      visibility: 'frontend',
+    },
+  },
+};
+
+describe('collectConfigSchemas', () => {
+  const mockDir = createMockDirectory();
+
+  // Jest 30's module resolver doesn't find nested node_modules in mock directories.
+  // Use a child process for native Node.js resolution instead.
+  const originalResolvePackagePath = internal.resolvePackagePath;
+  beforeAll(() => {
+    internal.resolvePackagePath = (name, options) => {
+      const basePath = (options && options.paths?.[0]) ?? process.cwd();
+      const baseDir = basePath.endsWith('.json')
+        ? path.dirname(basePath)
+        : basePath;
+
+      try {
+        return execSync('node', {
+          input: `console.log(require.resolve(${JSON.stringify(
+            name,
+          )}, { paths: [${JSON.stringify(baseDir)}] }))`,
+          encoding: 'utf8',
+          stdio: ['pipe', 'pipe', 'pipe'],
+        }).trim();
+      } catch {
+        const error = new Error(`Cannot find module '${name}'`);
+        (error as NodeJS.ErrnoException).code = 'MODULE_NOT_FOUND';
+        throw error;
+      }
+    };
+  });
+
+  afterAll(() => {
+    internal.resolvePackagePath = originalResolvePackagePath;
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+    mockDir.clear();
+  });
+
+  it('should find schema in a local package', async () => {
+    mockDir.setContent({
+      node_modules: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            configSchema: mockSchema,
+          }),
+        },
+      },
+    });
+    process.chdir(mockDir.path);
+
+    await expect(collectConfigSchemas(['a'], [])).resolves.toEqual([
+      {
+        path: path.join('node_modules', 'a', 'package.json'),
+        value: mockSchema,
+        packageName: 'a',
+      },
+    ]);
+  });
+
+  it('should find schema at explicit package path', async () => {
+    mockDir.setContent({
+      root: {
+        'package.json': JSON.stringify({
+          name: 'root',
+          configSchema: mockSchema,
+        }),
+      },
+    });
+    process.chdir(mockDir.path);
+
+    await expect(
+      collectConfigSchemas([], [path.join('root', 'package.json')]),
+    ).resolves.toEqual([
+      {
+        path: path.join('root', 'package.json'),
+        value: mockSchema,
+        packageName: 'root',
+      },
+    ]);
+  });
+
+  it('should not include schemas for backend-common if theres a backend-defaults package', async () => {
+    mockDir.setContent({
+      root: {
+        'package.json': JSON.stringify({
+          name: 'root',
+          dependencies: {
+            '@backstage/backend-common': '1',
+            '@backstage/backend-defaults': '1',
+          },
+          configSchema: { ...mockSchema, title: 'root' },
+        }),
+      },
+      node_modules: {
+        '@backstage': {
+          'backend-common': {
+            'package.json': JSON.stringify({
+              name: '@backstage/backend-common',
+              version: '1',
+              configSchema: { ...mockSchema, title: 'backend-common' },
+            }),
+          },
+          'backend-defaults': {
+            'package.json': JSON.stringify({
+              name: '@backstage/backend-defaults',
+              version: '1',
+              configSchema: { ...mockSchema, title: 'backend-defaults' },
+            }),
+          },
+        },
+      },
+    });
+
+    process.chdir(mockDir.path);
+
+    await expect(
+      collectConfigSchemas(['root'], [path.join('root', 'package.json')]),
+    ).resolves.toEqual([
+      {
+        path: path.join('root', 'package.json'),
+        value: { ...mockSchema, title: 'root' },
+        packageName: 'root',
+      },
+      {
+        path: path.join(
+          'node_modules',
+          '@backstage',
+          'backend-defaults',
+          'package.json',
+        ),
+        value: { ...mockSchema, title: 'backend-defaults' },
+        packageName: '@backstage/backend-defaults',
+      },
+    ]);
+  });
+
+  it('should find schema in transitive dependencies and explicit path', async () => {
+    mockDir.setContent({
+      root: {
+        'package.json': JSON.stringify({
+          name: 'root',
+          configSchema: { ...mockSchema, title: 'root' },
+        }),
+      },
+      node_modules: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            dependencies: { b: '0.0.0', '@backstage/mock': '0.0.0' },
+          }),
+        },
+        b: {
+          'package.json': JSON.stringify({
+            name: 'b',
+            dependencies: {
+              c1: '0.0.0',
+              c2: '0.0.0',
+            },
+            devDependencies: {
+              '@backstage/mock': '0.0.0',
+            },
+            configSchema: { ...mockSchema, title: 'b' },
+          }),
+        },
+        c1: {
+          'package.json': JSON.stringify({
+            name: 'c1',
+            dependencies: { d1: '0.0.0' },
+            configSchema: { ...mockSchema, title: 'c1' },
+          }),
+        },
+        c2: {
+          'package.json': JSON.stringify({
+            name: 'c2',
+            dependencies: { d2: '0.0.0' },
+          }),
+        },
+        d1: {
+          'package.json': JSON.stringify({
+            name: 'd1',
+            dependencies: {},
+            configSchema: { ...mockSchema, title: 'd1' },
+          }),
+        },
+        d2: {
+          'package.json': JSON.stringify({
+            name: 'd2',
+            dependencies: {},
+            configSchema: { ...mockSchema, title: 'd2' },
+          }),
+        },
+      },
+    });
+    process.chdir(mockDir.path);
+
+    await expect(
+      collectConfigSchemas(['a'], [path.join('root', 'package.json')]),
+    ).resolves.toEqual(
+      expect.arrayContaining([
+        {
+          path: path.join('node_modules', 'b', 'package.json'),
+          value: { ...mockSchema, title: 'b' },
+          packageName: 'b',
+        },
+        {
+          path: path.join('node_modules', 'c1', 'package.json'),
+          value: { ...mockSchema, title: 'c1' },
+          packageName: 'c1',
+        },
+        {
+          path: path.join('node_modules', 'd1', 'package.json'),
+          value: { ...mockSchema, title: 'd1' },
+          packageName: 'd1',
+        },
+        {
+          path: path.join('root', 'package.json'),
+          value: { ...mockSchema, title: 'root' },
+          packageName: 'root',
+        },
+      ]),
+    );
+  });
+
+  it('should optionally skip schemas in package dependencies', async () => {
+    mockDir.setContent({
+      node_modules: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            version: '1',
+            dependencies: { b: '1' },
+          }),
+        },
+        b: {
+          'package.json': JSON.stringify({
+            name: 'b',
+            version: '1',
+            configSchema: mockSchema,
+          }),
+        },
+      },
+    });
+    process.chdir(mockDir.path);
+
+    await expect(
+      collectConfigSchemas(['a'], [], { excludePackageDependencies: true }),
+    ).resolves.toEqual([]);
+  });
+
+  it('should schema of different types', async () => {
+    mockDir.setContent({
+      node_modules: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            configSchema: { ...mockSchema, title: 'inline' },
+          }),
+        },
+        b: {
+          'package.json': JSON.stringify({
+            name: 'b',
+            configSchema: 'schema.json',
+          }),
+          'schema.json': JSON.stringify({ ...mockSchema, title: 'external' }),
+        },
+        c: {
+          'package.json': JSON.stringify({
+            name: 'c',
+            configSchema: 'schema.d.ts',
+          }),
+          'schema.d.ts': `
+            export interface Config {
+              /** @visibility secret */
+              tsKey: string
+              /** @items.visibility frontend */
+              tsArray?: string[]
+            }
+          `,
+        },
+      },
+    });
+    process.chdir(mockDir.path);
+
+    await expect(collectConfigSchemas(['a', 'b', 'c'], [])).resolves.toEqual(
+      expect.arrayContaining([
+        {
+          path: path.join('node_modules', 'a', 'package.json'),
+          value: { ...mockSchema, title: 'inline' },
+          packageName: 'a',
+        },
+        {
+          path: path.join('node_modules', 'b', 'schema.json'),
+          value: { ...mockSchema, title: 'external' },
+          packageName: 'b',
+        },
+        {
+          path: path.join('node_modules', 'c', 'schema.d.ts'),
+          value: {
+            $schema: 'http://json-schema.org/draft-07/schema#',
+            type: 'object',
+            properties: {
+              tsKey: {
+                type: 'string',
+                visibility: 'secret',
+              },
+              tsArray: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                  visibility: 'frontend',
+                },
+              },
+            },
+            required: ['tsKey'],
+          },
+          packageName: 'c',
+        },
+      ]),
+    );
+  });
+
+  it('should load schema from different package versions', async () => {
+    mockDir.setContent({
+      node_modules: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            dependencies: {
+              b: '1',
+              c: '1',
+            },
+            configSchema: mockSchema,
+          }),
+        },
+        b: {
+          'package.json': JSON.stringify({
+            name: 'b',
+            version: '1',
+            dependencies: {
+              c: '2',
+            },
+            configSchema: { ...mockSchema, title: 'b' },
+          }),
+          node_modules: {
+            c: {
+              'package.json': JSON.stringify({
+                name: 'c',
+                version: '2',
+                configSchema: { ...mockSchema, title: 'c2' },
+              }),
+            },
+          },
+        },
+        c: {
+          'package.json': JSON.stringify({
+            name: 'c',
+            version: '1',
+            configSchema: { ...mockSchema, title: 'c1' },
+          }),
+        },
+      },
+    });
+    process.chdir(mockDir.path);
+
+    await expect(collectConfigSchemas(['a'], [])).resolves.toEqual(
+      expect.arrayContaining([
+        {
+          path: path.join('node_modules', 'a', 'package.json'),
+          value: mockSchema,
+          packageName: 'a',
+        },
+        {
+          path: path.join('node_modules', 'b', 'package.json'),
+          value: { ...mockSchema, title: 'b' },
+          packageName: 'b',
+        },
+        {
+          path: path.join('node_modules', 'c', 'package.json'),
+          value: { ...mockSchema, title: 'c1' },
+          packageName: 'c',
+        },
+        {
+          path: path.join(
+            'node_modules',
+            'b',
+            'node_modules',
+            'c',
+            'package.json',
+          ),
+          value: { ...mockSchema, title: 'c2' },
+          packageName: 'c',
+        },
+      ]),
+    );
+  });
+
+  it('should not allow unknown schema file types', async () => {
+    mockDir.setContent({
+      node_modules: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            configSchema: 'schema.yaml',
+          }),
+          'schema.yaml': mockSchema,
+        },
+      },
+    });
+    process.chdir(mockDir.path);
+
+    await expect(collectConfigSchemas(['a'], [])).rejects.toThrow(
+      'Config schema files must be .json or .d.ts, got schema.yaml',
+    );
+  });
+
+  it('should reject typescript config declaration without a Config type', async () => {
+    mockDir.setContent({
+      node_modules: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            configSchema: 'schema.d.ts',
+          }),
+          'schema.d.ts': `export interface NotConfig {}`,
+        },
+      },
+    });
+    process.chdir(mockDir.path);
+
+    await expect(collectConfigSchemas(['a'], [])).rejects.toMatchObject({
+      name: 'ConfigSchemaError',
+      source: 'a',
+      message: expect.stringContaining(
+        'The schema does not export a Config type',
+      ),
+      cause: expect.objectContaining({
+        message: 'The schema does not export a Config type',
+      }),
+    });
+  });
+
+  it('should resolve imported types and namespace recursive definitions', async () => {
+    mockDir.setContent({
+      node_modules: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            version: '1.0.0',
+            dependencies: { shared: '1.0.0' },
+            configSchema: 'schema.d.ts',
+          }),
+          'schema.d.ts': `
+            import { Shared } from 'shared';
+
+            export interface Config {
+              /**
+               * @visibility frontend
+               * @deprecated Use another key instead.
+               */
+              a?: Shared;
+            }
+          `,
+        },
+        c: {
+          'package.json': JSON.stringify({
+            name: 'c',
+            version: '1.0.0',
+            dependencies: { shared: '1.0.0' },
+            configSchema: 'schema.d.ts',
+          }),
+          'schema.d.ts': `
+            import { Shared } from 'shared';
+
+            export interface Config {
+              c?: Shared;
+            }
+          `,
+        },
+        shared: {
+          'package.json': JSON.stringify({
+            name: 'shared',
+            version: '1.0.0',
+            types: 'index.d.ts',
+          }),
+          'index.d.ts': `
+            export type Shared = {
+              value: string;
+              child?: Shared;
+            };
+          `,
+        },
+      },
+    });
+    process.chdir(mockDir.path);
+
+    type GeneratedSchema = {
+      definitions: Record<string, JsonObject>;
+      properties: Record<string, JsonObject>;
+    };
+    const schemas = await collectConfigSchemas(['a', 'c'], []);
+    const aSchema = schemas.find(schema => schema.packageName === 'a')!
+      .value as GeneratedSchema;
+    const cSchema = schemas.find(schema => schema.packageName === 'c')!
+      .value as GeneratedSchema;
+    const [aDefinitionName] = Object.keys(aSchema.definitions);
+    const [cDefinitionName] = Object.keys(cSchema.definitions);
+
+    expect(aDefinitionName).not.toBe(cDefinitionName);
+    expect(aSchema.properties.a).toEqual({
+      deprecated: 'Use another key instead.',
+      type: 'object',
+      properties: {
+        value: { type: 'string' },
+        child: { $ref: `#/definitions/${aDefinitionName}` },
+      },
+      required: ['value'],
+      visibility: 'frontend',
+    });
+    expect(aSchema.definitions[aDefinitionName]).toEqual({
+      type: 'object',
+      properties: {
+        value: { type: 'string' },
+        child: { $ref: `#/definitions/${aDefinitionName}` },
+      },
+      required: ['value'],
+    });
+    expect(cSchema.properties.c).toEqual({
+      type: 'object',
+      properties: {
+        value: { type: 'string' },
+        child: { $ref: `#/definitions/${cDefinitionName}` },
+      },
+      required: ['value'],
+    });
+  });
+
+  it('should keep same-named local types independent', async () => {
+    mockDir.setContent({
+      node_modules: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            version: '1.0.0',
+            configSchema: 'schema.d.ts',
+          }),
+          'schema.d.ts': `
+            type Local = {
+              aValue: string;
+              child?: Local;
+            };
+            export interface Config { local?: Local }
+          `,
+        },
+        b: {
+          'package.json': JSON.stringify({
+            name: 'b',
+            version: '1.0.0',
+            configSchema: 'schema.d.ts',
+          }),
+          'schema.d.ts': `
+            type Local = {
+              bValue: number;
+              child?: Local;
+            };
+            export interface Config { local?: Local }
+          `,
+        },
+      },
+    });
+    process.chdir(mockDir.path);
+
+    type GeneratedSchema = {
+      definitions: Record<string, JsonObject>;
+      properties: Record<string, JsonObject>;
+    };
+    const schemas = await collectConfigSchemas(['a', 'b'], []);
+    const aSchema = schemas.find(schema => schema.packageName === 'a')!
+      .value as GeneratedSchema;
+    const bSchema = schemas.find(schema => schema.packageName === 'b')!
+      .value as GeneratedSchema;
+    const [aDefinitionName] = Object.keys(aSchema.definitions);
+    const [bDefinitionName] = Object.keys(bSchema.definitions);
+
+    expect(() => compileConfigSchemas(schemas)).not.toThrow();
+    expect(aDefinitionName).not.toBe(bDefinitionName);
+    expect(aSchema.properties.local).toEqual({
+      type: 'object',
+      properties: {
+        aValue: { type: 'string' },
+        child: { $ref: `#/definitions/${aDefinitionName}` },
+      },
+      required: ['aValue'],
+    });
+    expect(bSchema.properties.local).toEqual({
+      type: 'object',
+      properties: {
+        bValue: { type: 'number' },
+        child: { $ref: `#/definitions/${bDefinitionName}` },
+      },
+      required: ['bValue'],
+    });
+  });
+
+  it('should handle unresolved types when an error handler is provided', async () => {
+    mockDir.setContent({
+      node_modules: {
+        unresolved: {
+          'package.json': JSON.stringify({
+            name: 'unresolved',
+            version: '1.0.0',
+            configSchema: 'schema.d.ts',
+          }),
+          'schema.d.ts': `
+            import { Missing } from './missing';
+            export interface Config {
+              value?: Missing;
+              duration?: HumanDuration;
+            }
+          `,
+        },
+      },
+    });
+    process.chdir(mockDir.path);
+
+    const onSchemaError = jest.fn();
+    const schemas = await collectConfigSchemas(['unresolved'], [], {
+      onSchemaError,
+    });
+
+    expect(onSchemaError).toHaveBeenCalledTimes(2);
+    const schemaErrors = onSchemaError.mock.calls.map(([error]) => error);
+    for (const schemaError of schemaErrors) {
+      expect(schemaError).toBeInstanceOf(ConfigSchemaError);
+      expect(schemaError).toMatchObject({
+        name: 'ConfigSchemaError',
+        source: 'unresolved',
+      });
+      expect(schemaError).not.toHaveProperty('path');
+      expect(schemaError.message).toBe(
+        `The TypeScript configuration schema for package 'unresolved' contains an error - ${schemaError.cause.message}`,
+      );
+      expect(schemaError.message).not.toContain('\n');
+    }
+    const causeMessages = schemaErrors.map(error => error.cause.message);
+    expect(causeMessages).toEqual([
+      expect.stringContaining("Cannot find module './missing'"),
+      expect.stringContaining("Cannot find name 'HumanDuration'"),
+    ]);
+    expect(schemas).toEqual([
+      expect.objectContaining({
+        packageName: 'unresolved',
+        path: path.join('node_modules', 'unresolved', 'schema.d.ts'),
+        value: expect.objectContaining({
+          properties: {
+            value: {},
+            duration: {},
+          },
+        }),
+      }),
+    ]);
+    expect(() => compileConfigSchemas(schemas)).not.toThrow();
+
+    await expect(collectConfigSchemas(['unresolved'], [])).rejects.toThrow(
+      "Cannot find module './missing'",
+    );
+  });
+
+  it('should report schema generation errors with their source and cause', async () => {
+    mockDir.setContent({
+      node_modules: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            version: '1.0.0',
+            configSchema: 'schema.d.ts',
+          }),
+          'schema.d.ts': `export interface Config { value?: string }`,
+        },
+      },
+    });
+    process.chdir(mockDir.path);
+
+    const cause = new Error('Failed to\ngenerate schema');
+    jest
+      .spyOn(SchemaGenerator.prototype, 'createSchemaFromNodes')
+      .mockImplementation(() => {
+        throw cause;
+      });
+    const onSchemaError = jest.fn();
+
+    await expect(
+      collectConfigSchemas(['a'], [], { onSchemaError }),
+    ).resolves.toEqual([]);
+    const schemaError = onSchemaError.mock.calls[0][0];
+    expect(schemaError).toMatchObject({
+      name: 'ConfigSchemaError',
+      source: 'a',
+      cause,
+      message:
+        "The TypeScript configuration schema for package 'a' contains an error - Failed to generate schema",
+    });
+  });
+});

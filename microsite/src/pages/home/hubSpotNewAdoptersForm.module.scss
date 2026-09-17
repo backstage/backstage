@@ -1,0 +1,64 @@
+$page-header-height: 44px;
+
+.hubSpotNewAdopterFormContainer {
+  top: 50%;
+  right: 0;
+  display: flex;
+  position: fixed;
+  transform: translateY(-50%);
+  margin-top: $page-header-height;
+  max-height: calc(100% - $page-header-height);
+
+  transition: all 250ms ease-in-out;
+
+  &:global(.adoptersFormHidden) {
+    transform: translate(500px, -50%);
+  }
+
+  > button {
+    top: 50%;
+    left: -2rem;
+    position: fixed;
+
+    transform: rotate(-90deg) translateX(-50%);
+    transform-origin: top left;
+  }
+}
+
+.hubSpotNewAdopterFormContent {
+  max-width: 500px;
+  border-radius: 8px 0 0 8px;
+  background-color: var(--ifm-background-surface-color);
+  color: var(--ifm-font-color-base);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+
+  form {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+
+    padding-right: 2rem;
+  }
+
+  :global(.hs-form-field) label,
+  :global(.hs-form-field) legend,
+  :global(.hs-richtext),
+  :global(.hs-richtext) p {
+    color: var(--ifm-font-color-base);
+  }
+
+  :global(.hs-input) {
+    color: var(--ifm-font-color-base);
+    background-color: var(--ifm-background-color);
+    border: 1px solid var(--ifm-color-emphasis-300);
+
+    &::placeholder {
+      color: var(--ifm-font-emphasis-500);
+    }
+  }
+
+  :global(.hs-error-msgs) label,
+  :global(.hs-error-msg) {
+    color: var(--ifm-color-danger);
+  }
+}

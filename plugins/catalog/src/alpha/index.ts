@@ -1,0 +1,39 @@
+/*
+ * Copyright 2023 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+export { default } from './plugin';
+
+export { CatalogExportConfigBlueprint } from './pages';
+export type {
+  CatalogExportSettings,
+  CatalogExporterConfig,
+  CatalogExporter,
+  CatalogExportSettingsColumn,
+} from '../components/CatalogExportButton';
+export { NfsDefaultCatalogPage as CatalogIndexPage } from '../components/CatalogPage';
+export type { DefaultCatalogPageProps as CatalogIndexPageProps } from '../components/CatalogPage';
+export type {
+  CatalogTableRow,
+  CatalogTableColumnsFunc,
+} from '../components/CatalogTable';
+
+import { catalogTranslationRef as _catalogTranslationRef } from './translation';
+
+/**
+ * @alpha
+ * @deprecated Import from `@backstage/plugin-catalog` instead.
+ */
+export const catalogTranslationRef = _catalogTranslationRef;
