@@ -30,6 +30,7 @@ import {
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 import {
+  createGraphqlClient,
   createRestClient,
   isGitHubEnterprise,
   isSuspended,
@@ -38,6 +39,7 @@ import {
 jest.mock('@octokit/graphql');
 jest.mock('../lib/github', () => ({
   ...jest.requireActual('../lib/github'),
+  createGraphqlClient: jest.fn(),
   createRestClient: jest.fn(),
   isGitHubEnterprise: jest.fn(),
   isSuspended: jest.fn(),
@@ -64,7 +66,7 @@ describe('GithubMultiOrgEntityProvider', () => {
 
     beforeEach(() => {
       mockClient = jest.fn();
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
 
       entityProviderConnection = {
         applyMutation: jest.fn(),
@@ -211,7 +213,7 @@ describe('GithubMultiOrgEntityProvider', () => {
           },
         });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
 
       await entityProvider.read();
 
@@ -220,6 +222,11 @@ describe('GithubMultiOrgEntityProvider', () => {
       });
       expect(mockGetCredentials).toHaveBeenCalledWith({
         url: 'https://github.com/orgB',
+      });
+      expect(createGraphqlClient).toHaveBeenCalledWith({
+        headers: { token: 'blah' },
+        baseUrl: undefined,
+        logger,
       });
 
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
@@ -412,7 +419,7 @@ describe('GithubMultiOrgEntityProvider', () => {
         },
       });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
 
       // The read should throw to prevent silent entity deletion
       await expect(entityProvider.read()).rejects.toThrow(
@@ -466,7 +473,7 @@ describe('GithubMultiOrgEntityProvider', () => {
         },
       });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
 
       // Should throw to prevent the full mutation from deleting orgB's entities
       await expect(entityProvider.read()).rejects.toThrow(
@@ -512,7 +519,7 @@ describe('GithubMultiOrgEntityProvider', () => {
           teams: { pageInfo: { hasNextPage: false }, nodes: [] },
         },
       });
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
 
       // Should throw the original error
       await expect(entityProvider.read()).rejects.toThrow(
@@ -551,7 +558,7 @@ describe('GithubMultiOrgEntityProvider', () => {
           teams: { pageInfo: { hasNextPage: false }, nodes: [] },
         },
       });
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
 
       // Should throw the original error
       await expect(entityProvider.read()).rejects.toThrow(
@@ -706,7 +713,7 @@ describe('GithubMultiOrgEntityProvider', () => {
           },
         });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
 
       const githubCredentialsProvider: GithubCredentialsProvider = {
         getCredentials: mockGetCredentials,
@@ -992,7 +999,7 @@ describe('GithubMultiOrgEntityProvider', () => {
           },
         });
 
-      (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
+      (createGraphqlClient as jest.Mock).mockReturnValue(mockClient);
 
       entityProvider = new GithubMultiOrgEntityProvider({
         id: 'my-id',

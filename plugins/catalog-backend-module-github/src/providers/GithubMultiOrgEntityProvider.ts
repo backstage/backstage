@@ -76,6 +76,7 @@ import {
   ANNOTATION_GITHUB_USER_LOGIN,
 } from '../lib/annotation';
 import {
+  createGraphqlClient,
   createRestClient,
   getOrganizationsFromUser,
   getOrganizationTeam,
@@ -292,6 +293,20 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     };
   }
 
+  /**
+   * GraphQL client with throttling and retries, matching GithubOrgEntityProvider.
+   */
+  private createGraphqlClientForOrg(
+    headers: GithubCredentials['headers'],
+    logger: LoggerService,
+  ) {
+    return createGraphqlClient({
+      headers,
+      baseUrl: this.options.gitHubConfig.apiBaseUrl!,
+      logger,
+    });
+  }
+
   private get useRestSuspendedCheck(): boolean {
     return (
       !!this.options.excludeSuspendedUsers &&
@@ -394,10 +409,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         );
       }
 
-      const client = graphql.defaults({
-        baseUrl: this.options.gitHubConfig.apiBaseUrl,
-        headers,
-      });
+      const client = this.createGraphqlClientForOrg(headers, logger);
 
       logger.info(`Reading GitHub users and teams for org: ${org}`);
 
