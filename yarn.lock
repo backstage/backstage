@@ -2529,6 +2529,7 @@ __metadata:
     "@backstage/cli-common": "workspace:^"
     "@backstage/cli-node": "workspace:^"
     "@backstage/release-manifests": "workspace:^"
+    "@yarnpkg/cli": "npm:^4.7.0"
     "@yarnpkg/core": "npm:^4.9.1"
     "@yarnpkg/fslib": "npm:^3.1.2"
     "@yarnpkg/parsers": "npm:^3.0.0"
