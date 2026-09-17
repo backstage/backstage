@@ -1,5 +1,37 @@
 # @backstage/plugin-home
 
+## 0.9.10
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- d421187: Reduced the initial app bundle size by loading page and optional UI implementations only when their extensions render.
+- bca8281: Fix clock configuration handling and use lazy initialization for the clocks state.
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/catalog-client@1.16.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/core-app-api@1.20.5
+  - @backstage/plugin-catalog-react@3.2.3
+  - @backstage/config@1.3.9
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/plugin-home-react@0.1.42
+  - @backstage/core-compat-api@0.5.15
+  - @backstage/core-plugin-api@1.12.10
+
+## 0.9.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/catalog-client@1.16.2-next.1
+  - @backstage/plugin-catalog-react@3.2.3-next.2
+  - @backstage/core-app-api@1.20.5-next.2
+  - @backstage/core-components@0.18.14-next.2
+  - @backstage/core-plugin-api@1.12.10-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.1
+
 ## 0.9.10-next.1
 
 ### Patch Changes

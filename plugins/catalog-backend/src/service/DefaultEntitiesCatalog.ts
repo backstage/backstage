@@ -210,7 +210,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     }
 
     return {
-      entities: processRawEntitiesResult(
+      entities: await processRawEntitiesResult(
         rows.map(r => r.final_entity!),
         request?.fields,
       ),
@@ -323,7 +323,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     request: EntitiesBatchRequest,
   ): Promise<EntitiesBatchResponse> {
     if (request.entityRefs.length === 0) {
-      return { items: processRawEntitiesResult([], request.fields) };
+      return { items: await processRawEntitiesResult([], request.fields) };
     }
 
     const lookup = new Map<string, string>();
@@ -363,7 +363,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const items = request.entityRefs.map(ref => lookup.get(ref) ?? null);
 
-    return { items: processRawEntitiesResult(items, request.fields) };
+    return { items: await processRawEntitiesResult(items, request.fields) };
   }
 
   async queryEntities(
@@ -389,7 +389,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     }
 
     const sortField = cursor.orderFields.at(0);
-    const sortKey = sortField?.field.toLocaleLowerCase('en-US');
+    const sortKey = sortField?.field.toLowerCase();
 
     const normalizedFullTextFilterTerm = cursor.fullTextFilter?.term?.trim();
     const textFilterFields = cursor.fullTextFilter?.fields ?? [
@@ -431,19 +431,19 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         ) {
           q.andWhereRaw(
             'search.value like ?',
-            `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
+            `%${normalizedFullTextFilterTerm.toLowerCase()}%`,
           );
         } else {
           const matchQuery = this.database<DbSearchRow>('search')
             .select('search.entity_id')
             .whereIn(
               'search.key',
-              textFilterFields.map(field => field.toLocaleLowerCase('en-US')),
+              textFilterFields.map(field => field.toLowerCase()),
             )
             .andWhere(function keyFilter() {
               this.andWhereRaw(
                 'search.value like ?',
-                `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
+                `%${normalizedFullTextFilterTerm.toLowerCase()}%`,
               );
             });
           q.andWhere('final_entities.entity_id', 'in', matchQuery);
@@ -624,7 +624,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         : undefined;
 
     return {
-      items: processRawEntitiesResult(
+      items: await processRawEntitiesResult(
         rows.map(r => r.final_entity!),
         request.fields,
       ),
@@ -792,7 +792,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     const query = this.database<DbSearchRow>('search')
       .whereIn(
         'search.key',
-        request.facets.map(f => f.toLocaleLowerCase('en-US')),
+        request.facets.map(f => f.toLowerCase()),
       )
       .whereNotNull('search.original_value')
       .select({
@@ -837,7 +837,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const facets: EntityFacetsResponse['facets'] = {};
     for (const facet of request.facets) {
-      const facetLowercase = facet.toLocaleLowerCase('en-US');
+      const facetLowercase = facet.toLowerCase();
       facets[facet] = rows
         .filter(row => row.facet === facetLowercase)
         .map(row => ({

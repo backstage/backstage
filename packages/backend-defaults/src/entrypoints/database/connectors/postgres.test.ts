@@ -1067,6 +1067,7 @@ describe('postgres', () => {
       const connector = new PgConnector(
         createConnectorConfig(),
         'backstage_plugin_',
+        '',
         { ensureDatabaseExists },
       );
 
@@ -1092,6 +1093,7 @@ describe('postgres', () => {
       const connector = new PgConnector(
         createConnectorConfig(),
         'backstage_plugin_',
+        '',
         { ensureDatabaseExists },
       );
 
@@ -1122,6 +1124,7 @@ describe('postgres', () => {
           },
         }),
         'backstage_plugin_',
+        '',
         { createAdminClient, adminPoolIdleTimeoutMillis: 10_000 },
       );
 
@@ -1152,6 +1155,7 @@ describe('postgres', () => {
           ensureSchemaExists: true,
         }),
         'backstage_plugin_',
+        '',
         { createAdminClient, adminPoolIdleTimeoutMillis: 10_000 },
       );
 
@@ -1204,6 +1208,7 @@ describe('postgres', () => {
           plugin: { plugin1: { connection: { database: 'database1' } } },
         }),
         'backstage_plugin_',
+        '',
         { createAdminClient },
       );
 
@@ -1236,6 +1241,7 @@ describe('postgres', () => {
           plugin: { plugin1: { connection: { database: 'database1' } } },
         }),
         'backstage_plugin_',
+        '',
         { createAdminClient },
       );
 
@@ -1277,6 +1283,7 @@ describe('postgres', () => {
           ensureSchemaExists: true,
         }),
         'backstage_plugin_',
+        '',
         { createAdminClient },
       );
       const client = await connector.getClient('plugin1', deps);
@@ -1805,6 +1812,42 @@ describe('computePgPluginConfig', () => {
         connection: { database: 'shared_db' },
         searchPath: ['catalog'],
       });
+    });
+
+    it('applies schemaPrefix to searchPath in schema mode', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost', database: 'shared_db' },
+        pluginDivisionMode: 'schema',
+      });
+
+      const result = computePgPluginConfig(config, 'catalog', prefix, 'test_');
+
+      expect(result.databaseClientOverrides).toEqual({
+        connection: { database: 'shared_db' },
+        searchPath: ['test_catalog'],
+      });
+    });
+
+    it('throws error when schema name exceeds 63 bytes', () => {
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: { host: 'localhost' },
+        pluginDivisionMode: 'schema',
+      });
+
+      // 'café_' is 6 bytes (café = 5 bytes, underscore = 1 byte)
+      // Repeat to create a schema name that exceeds 63 bytes
+      const multibytePrefixThatExceeds63Bytes = 'café_'.repeat(11); // 66 bytes
+
+      expect(() => {
+        computePgPluginConfig(
+          config,
+          'catalog',
+          prefix,
+          multibytePrefixThatExceeds63Bytes,
+        );
+      }).toThrow(/exceeds the 63-byte limit/);
     });
 
     it('returns empty object when no databaseName in schema mode', () => {

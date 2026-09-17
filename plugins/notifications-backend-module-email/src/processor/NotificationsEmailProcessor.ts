@@ -17,6 +17,7 @@
 import {
   NotificationProcessor,
   NotificationSendOptions,
+  resolveNotificationLink,
 } from '@backstage/plugin-notifications-node';
 import {
   AuthService,
@@ -324,21 +325,13 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     );
   }
 
-  private getNotificationLink(notification: Notification) {
+  private getNotificationLink(notification: Notification): string {
     if (notification.payload.link) {
-      const stripLeadingSlash = (s: string) => s.replace(/^\//, '');
-      const ensureTrailingSlash = (s: string) => s.replace(/\/?$/, '/');
-
-      try {
-        const url = new URL(
-          stripLeadingSlash(notification.payload.link),
-          ensureTrailingSlash(this.frontendBaseUrl),
-        );
-        return url.toString();
-      } catch (_e) {
-        // noop: fallback to relative URL
-      }
-      return notification.payload.link;
+      const resolvedLink = resolveNotificationLink(
+        notification.payload.link,
+        this.frontendBaseUrl,
+      );
+      return resolvedLink ?? notification.payload.link;
     }
     return `${this.frontendBaseUrl}/notifications`;
   }

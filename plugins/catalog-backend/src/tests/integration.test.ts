@@ -502,7 +502,7 @@ describe('Catalog Backend Integration', () => {
     await expect(harness.process()).resolves.toEqual({
       'component:default/test': [
         new InputError(
-          'Processor Object threw an error while preprocessing; caused by Error: NOPE',
+          'Processor test threw an error while preprocessing; caused by Error: NOPE',
         ),
       ],
     });
@@ -519,11 +519,11 @@ describe('Catalog Backend Integration', () => {
               level: 'error',
               type: 'backstage.io/catalog-processing',
               message:
-                'InputError: Processor Object threw an error while preprocessing; caused by Error: NOPE',
+                'InputError: Processor test threw an error while preprocessing; caused by Error: NOPE',
               error: {
                 name: 'InputError',
                 message:
-                  'Processor Object threw an error while preprocessing; caused by Error: NOPE',
+                  'Processor test threw an error while preprocessing; caused by Error: NOPE',
                 cause: {
                   name: 'Error',
                   message: 'NOPE',

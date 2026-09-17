@@ -44,7 +44,7 @@ export function createZodV3FilterPredicateSchema(
 
   const expressionSchema = z.lazy(() =>
     z.union([
-      z.record(z.string().regex(/^(?!\$).*$/), valuePredicateSchema),
+      z.record(z.string().regex(/^(?:[^$\n\r].*)?$/), valuePredicateSchema),
       z.record(z.string().regex(/^\$/), z.never()),
     ]),
   ) as zodV3.ZodType<FilterPredicateExpression>;
@@ -93,7 +93,10 @@ export function createZodV4FilterPredicateSchema(): zodV4.ZodType<
 
   const expressionSchema = zodV4.lazy(() =>
     zodV4.union([
-      zodV4.record(zodV4.string().regex(/^(?!\$).*$/), valuePredicateSchema),
+      zodV4.record(
+        zodV4.string().regex(/^(?:[^$\n\r].*)?$/),
+        valuePredicateSchema,
+      ),
       zodV4.record(zodV4.string().regex(/^\$/), zodV4.never()),
     ]),
   ) as zodV4.ZodType<FilterPredicateExpression, FilterPredicateExpression>;

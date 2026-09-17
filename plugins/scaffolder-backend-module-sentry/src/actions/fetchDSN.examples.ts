@@ -55,13 +55,14 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Fetch the DSN for a Sentry project with custom API base URL.',
+    description:
+      'Fetch the DSN using an API base URL that matches the operator configured scaffolder.sentry.apiBaseUrl.',
     example: yaml.stringify({
       steps: [
         {
           id: 'fetch-sentry-dsn',
           action: 'sentry:fetch:dsn',
-          name: 'Fetch DSN with custom API base URL',
+          name: 'Fetch DSN with the configured API base URL',
           input: {
             organizationSlug: 'my-org',
             projectSlug: 'my-project',

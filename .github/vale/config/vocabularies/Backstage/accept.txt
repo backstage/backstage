@@ -23,6 +23,7 @@ approvers
 asciidoc
 async
 Atlassian
+autocomplete
 autofix
 autologout
 automations
@@ -206,6 +207,7 @@ http
 https
 Iain
 idempotency
+idempotent
 Iglesias
 iLert
 img
@@ -233,6 +235,7 @@ json
 jsonnet
 JSONSchema
 jsx
+justfile
 JWTs
 Kaewkasi
 Kaswell

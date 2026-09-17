@@ -1,5 +1,19 @@
 # @backstage/plugin-search-common
 
+## 1.2.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.11
+
+## 1.2.25-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.11-next.0
+
 ## 1.2.24
 
 ### Patch Changes

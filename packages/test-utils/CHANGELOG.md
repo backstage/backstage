@@ -1,5 +1,28 @@
 # @backstage/test-utils
 
+## 1.7.22
+
+### Patch Changes
+
+- 279fdf6: Declared the DOM Testing Library dependency required by React Testing Library.
+- Updated dependencies
+  - @backstage/core-app-api@1.20.5
+  - @backstage/config@1.3.9
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/plugin-permission-common@0.9.11
+  - @backstage/plugin-permission-react@0.5.5
+
+## 1.7.22-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/core-app-api@1.20.5-next.2
+  - @backstage/core-plugin-api@1.12.10-next.1
+  - @backstage/plugin-permission-common@0.9.11-next.0
+  - @backstage/plugin-permission-react@0.5.5-next.1
+
 ## 1.7.22-next.1
 
 ### Patch Changes

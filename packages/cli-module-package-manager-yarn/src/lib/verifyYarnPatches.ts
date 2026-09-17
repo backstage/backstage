@@ -42,7 +42,8 @@ export type PatchVerificationErrorKind =
   | 'malformed-patch-reference'
   | 'missing-lockfile'
   | 'missing-patch-file'
-  | 'orphaned-patch-file';
+  | 'orphaned-patch-file'
+  | 'unused-resolution';
 
 export type PatchVerificationError = {
   kind: PatchVerificationErrorKind;
@@ -82,6 +83,11 @@ type LocalPatchPath = {
 type PatchedBackstagePackage = {
   name: string;
   version: string;
+  location: string;
+};
+
+type ResolutionDeclaration = {
+  pattern: string;
   location: string;
 };
 
@@ -535,11 +541,15 @@ async function discoverManifestDeclarations(
   rootDir: string,
   configuration: Configuration,
   errors: PatchVerificationError[],
-): Promise<PatchDeclaration[]> {
+): Promise<{
+  patchDeclarations: PatchDeclaration[];
+  resolutionDeclarations: ResolutionDeclaration[];
+}> {
   const project = new Project(npath.toPortablePath(rootDir), { configuration });
   const pendingWorkspaces = [npath.toPortablePath(rootDir)];
   const visitedWorkspaces = new Set<string>();
-  const declarations: PatchDeclaration[] = [];
+  const patchDeclarations: PatchDeclaration[] = [];
+  const resolutionDeclarations: ResolutionDeclaration[] = [];
 
   while (pendingWorkspaces.length > 0) {
     const workspaceCwd = pendingWorkspaces.shift();
@@ -569,6 +579,16 @@ async function discoverManifestDeclarations(
       }
 
       for (const [name, range] of Object.entries(entries)) {
+        if (
+          field === 'resolutions' &&
+          workspace.cwd === project.cwd &&
+          typeof range === 'string'
+        ) {
+          resolutionDeclarations.push({
+            pattern: name,
+            location: `${manifestPath}#${field}.${name}`,
+          });
+        }
         if (typeof range !== 'string' || !range.startsWith('patch:')) {
           continue;
         }
@@ -588,7 +608,7 @@ async function discoverManifestDeclarations(
             origin: 'manifest',
           });
           if (declaration) {
-            declarations.push(declaration);
+            patchDeclarations.push(declaration);
           }
         } catch (error) {
           errors.push({
@@ -603,27 +623,31 @@ async function discoverManifestDeclarations(
     }
   }
 
-  return declarations;
+  return { patchDeclarations, resolutionDeclarations };
 }
 
-function discoverLockfileDeclarations(
-  rootDir: string,
-  configuration: Configuration,
+function parseLockfile(
   lockfileContent: string,
   errors: PatchVerificationError[],
-): PatchDeclaration[] {
-  let lockfileData: Record<string, unknown>;
+): Record<string, unknown> | undefined {
   try {
-    lockfileData = parseSyml(lockfileContent);
+    return parseSyml(lockfileContent);
   } catch (error) {
     errors.push({
       kind: 'malformed-lockfile',
       message: `Failed to parse yarn.lock: ${String(error)}`,
       location: 'yarn.lock',
     });
-    return [];
+    return undefined;
   }
+}
 
+function discoverLockfileDeclarations(
+  rootDir: string,
+  configuration: Configuration,
+  lockfileData: Record<string, unknown>,
+  errors: PatchVerificationError[],
+): PatchDeclaration[] {
   const declarations: PatchDeclaration[] = [];
   for (const [key, lockfileEntry] of Object.entries(lockfileData)) {
     if (key === '__metadata') {
@@ -739,6 +763,143 @@ function discoverLockfileDeclarations(
   }
 
   return declarations;
+}
+
+function getLockfileLocator(
+  lockfileEntry: Record<string, unknown>,
+  configuration: Configuration,
+): ReturnType<typeof structUtils.parseLocator> | undefined {
+  if (typeof lockfileEntry.resolution !== 'string') {
+    return undefined;
+  }
+  try {
+    return configuration.normalizeLocator(
+      structUtils.parseLocator(lockfileEntry.resolution, true),
+    );
+  } catch {
+    return undefined;
+  }
+}
+
+function resolutionMatchesDependency(options: {
+  resolution: ReturnType<typeof parseResolution>;
+  dependencyName: string;
+  dependencyRange: string;
+  parentLocator: ReturnType<typeof structUtils.parseLocator> | undefined;
+  configuration: Configuration;
+}): boolean {
+  const { resolution, configuration, parentLocator } = options;
+  if (resolution.from) {
+    if (
+      parentLocator === undefined ||
+      resolution.from.fullName !== structUtils.stringifyIdent(parentLocator)
+    ) {
+      return false;
+    }
+    const normalizedFrom = configuration.normalizeLocator(
+      structUtils.makeLocator(
+        structUtils.parseIdent(resolution.from.fullName),
+        resolution.from.description ?? parentLocator.reference,
+      ),
+    );
+    if (normalizedFrom.locatorHash !== parentLocator.locatorHash) {
+      return false;
+    }
+  }
+
+  const dependency = configuration.normalizeDependency(
+    structUtils.makeDescriptor(
+      structUtils.parseIdent(options.dependencyName),
+      options.dependencyRange,
+    ),
+  );
+  if (
+    resolution.descriptor.fullName !== structUtils.stringifyIdent(dependency)
+  ) {
+    return false;
+  }
+  const normalizedDescriptor = configuration.normalizeDependency(
+    structUtils.makeDescriptor(
+      structUtils.parseIdent(resolution.descriptor.fullName),
+      resolution.descriptor.description ?? dependency.range,
+    ),
+  );
+  return normalizedDescriptor.descriptorHash === dependency.descriptorHash;
+}
+
+function validateResolutions(options: {
+  declarations: ResolutionDeclaration[];
+  lockfileData: Record<string, unknown>;
+  configuration: Configuration;
+}): {
+  errors: PatchVerificationError[];
+  unusedLocations: Set<string>;
+} {
+  const lockfileEntries = Object.entries(options.lockfileData)
+    .filter(([key, value]) => key !== '__metadata' && isRecord(value))
+    .map(([, value]) => ({
+      entry: value as Record<string, unknown>,
+      parentLocator: getLockfileLocator(
+        value as Record<string, unknown>,
+        options.configuration,
+      ),
+    }));
+  const hasRootWorkspace = lockfileEntries.some(
+    ({ parentLocator }) => parentLocator?.reference === 'workspace:.',
+  );
+  // Without the root workspace entry, the lockfile does not contain the
+  // complete project dependency graph, so absence cannot prove that a
+  // resolution is unused.
+  if (!hasRootWorkspace) {
+    return { errors: [], unusedLocations: new Set() };
+  }
+
+  const errors: PatchVerificationError[] = [];
+  const unusedLocations = new Set<string>();
+  for (const declaration of options.declarations) {
+    let resolution;
+    try {
+      resolution = parseResolution(declaration.pattern);
+    } catch {
+      continue;
+    }
+
+    const matches = lockfileEntries.some(({ entry, parentLocator }) => {
+      return ['dependencies', 'optionalDependencies'].some(field => {
+        const dependencies = entry[field];
+        if (!isRecord(dependencies)) {
+          return false;
+        }
+        return Object.entries(dependencies).some(
+          ([dependencyName, dependencyRange]) => {
+            if (typeof dependencyRange !== 'string') {
+              return false;
+            }
+            try {
+              return resolutionMatchesDependency({
+                resolution,
+                dependencyName,
+                dependencyRange,
+                parentLocator,
+                configuration: options.configuration,
+              });
+            } catch {
+              return false;
+            }
+          },
+        );
+      });
+    });
+    if (!matches) {
+      unusedLocations.add(declaration.location);
+      errors.push({
+        kind: 'unused-resolution',
+        message: `Resolution '${declaration.pattern}' does not match any dependency request in yarn.lock`,
+        location: declaration.location,
+      });
+    }
+  }
+  return { errors, unusedLocations };
 }
 
 async function readYarnConfiguration(
@@ -1021,12 +1182,48 @@ export async function verifyYarnPatches(
   const rootDir = path.resolve(options.rootDir);
   const errors: PatchVerificationError[] = [];
   const configuration = await readYarnConfiguration(rootDir, options.env);
-  const manifestDeclarations = await discoverManifestDeclarations(
-    rootDir,
-    configuration,
-    errors,
+  const { patchDeclarations, resolutionDeclarations } =
+    await discoverManifestDeclarations(rootDir, configuration, errors);
+
+  let lockfileData: Record<string, unknown> | undefined;
+  try {
+    const lockfileContent = await fs.readFile(
+      path.join(rootDir, 'yarn.lock'),
+      'utf8',
+    );
+    lockfileData = parseLockfile(lockfileContent, errors);
+  } catch (error) {
+    if (!isErrorWithCode(error, 'ENOENT')) {
+      throw error;
+    }
+    errors.push({
+      kind: 'missing-lockfile',
+      message: 'No yarn.lock found',
+      location: 'yarn.lock',
+    });
+  }
+
+  let unusedResolutionLocations = new Set<string>();
+  if (lockfileData !== undefined) {
+    const resolutionValidation = validateResolutions({
+      declarations: resolutionDeclarations,
+      lockfileData,
+      configuration,
+    });
+    errors.push(...resolutionValidation.errors);
+    unusedResolutionLocations = resolutionValidation.unusedLocations;
+  }
+
+  const manifestDeclaredPatchFiles = new Set(
+    patchDeclarations.flatMap(declaration =>
+      declaration.paths.map(patchPath => patchPath.absolute),
+    ),
   );
-  const uniqueManifestDeclarations = uniqueDeclarations(manifestDeclarations);
+  const uniqueManifestDeclarations = uniqueDeclarations(
+    patchDeclarations.filter(
+      declaration => !unusedResolutionLocations.has(declaration.location),
+    ),
+  );
   const referencedPatchFiles = new Map<string, LocalPatchPath>();
 
   for (const declaration of uniqueManifestDeclarations.values()) {
@@ -1060,7 +1257,7 @@ export async function verifyYarnPatches(
   const patchFolder = npath.fromPortablePath(configuration.get('patchFolder'));
   const patchFiles = await findPatchFiles(patchFolder);
   for (const patchFile of patchFiles) {
-    if (!referencedPatchFiles.has(patchFile)) {
+    if (!manifestDeclaredPatchFiles.has(patchFile)) {
       const relative = relativePath(rootDir, patchFile);
       errors.push({
         kind: 'orphaned-patch-file',
@@ -1070,29 +1267,12 @@ export async function verifyYarnPatches(
     }
   }
 
-  let lockfileContent: string | undefined;
-  try {
-    lockfileContent = await fs.readFile(
-      path.join(rootDir, 'yarn.lock'),
-      'utf8',
-    );
-  } catch (error) {
-    if (!isErrorWithCode(error, 'ENOENT')) {
-      throw error;
-    }
-    errors.push({
-      kind: 'missing-lockfile',
-      message: 'No yarn.lock found',
-      location: 'yarn.lock',
-    });
-  }
-
-  if (lockfileContent !== undefined) {
+  if (lockfileData !== undefined) {
     const lockfileDeclarations = uniqueDeclarations(
       discoverLockfileDeclarations(
         rootDir,
         configuration,
-        lockfileContent,
+        lockfileData,
         errors,
       ),
     );

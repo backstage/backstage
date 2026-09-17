@@ -252,7 +252,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   // Adjusted filters remove the owners filter for user/group kinds,
   // since ownership is not meaningful for those entity types.
   const adjustedFilters = useMemo(() => {
-    const kindValue = requestedFilters.kind?.value?.toLocaleLowerCase('en-US');
+    const kindValue = requestedFilters.kind?.value?.toLowerCase();
     return kindValue === 'user' || kindValue === 'group'
       ? { ...requestedFilters, owners: undefined }
       : requestedFilters;

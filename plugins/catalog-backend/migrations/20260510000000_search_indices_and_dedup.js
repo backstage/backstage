@@ -215,58 +215,60 @@ async function upPostgres(knex) {
   const needsDedup = !uniqueCheck.rows[0]?.indisvalid;
 
   if (needsDedup) {
-    // Phase 1: index-only GROUP BY scan — no heap fetches.
-    // search_key_value_entity_idx (key, value, entity_id) covers all three
-    // dedup columns, so PostgreSQL resolves COUNT(*) without touching the
-    // heap at all (Heap Fetches: 0 in EXPLAIN). The result is a small temp
-    // table of only the duplicate (entity_id, key, value) groups.
-    await knex.raw(`
-      CREATE TEMP TABLE _search_dedup_groups AS
-      SELECT entity_id, key, value
-      FROM search
-      GROUP BY entity_id, key, value
-      HAVING COUNT(*) > 1
-    `);
-    await knex.raw(
-      `CREATE INDEX ON _search_dedup_groups (key, value, entity_id)`,
-    );
+    await knex.transaction(async trx => {
+      // Phase 1: index-only GROUP BY scan — no heap fetches.
+      // search_key_value_entity_idx (key, value, entity_id) covers all three
+      // dedup columns, so PostgreSQL resolves COUNT(*) without touching the
+      // heap at all (Heap Fetches: 0 in EXPLAIN). The result is a small temp
+      // table of only the duplicate (entity_id, key, value) groups.
+      await trx.raw(`
+        CREATE TEMP TABLE _search_dedup_groups AS
+        SELECT entity_id, key, value
+        FROM search
+        GROUP BY entity_id, key, value
+        HAVING COUNT(*) > 1
+      `);
+      await trx.raw(
+        `CREATE INDEX ON _search_dedup_groups (key, value, entity_id)`,
+      );
 
-    // Phase 2: for each duplicate group, LATERAL-join back into search via
-    // the covering index (Nested Loop + Index Scan), row_number within that
-    // tiny per-group result, then DELETE rows where rn > 1. Only the ~2×
-    // duplicate rows are ever read from the heap; all clean rows are skipped.
-    //
-    // NULL values need a separate arm because `value = NULL` is always false
-    // in SQL — `value IS NULL` is required for the index condition.
-    await knex.raw(`
-      DELETE FROM search WHERE ctid IN (
-        SELECT s.ctid FROM _search_dedup_groups g
-        CROSS JOIN LATERAL (
-          SELECT ctid FROM (
-            SELECT ctid,
-                   row_number() OVER (ORDER BY ctid) AS rn
-            FROM search
-            WHERE key = g.key AND entity_id = g.entity_id
-              AND value = g.value
-          ) sub WHERE rn > 1
-        ) s WHERE g.value IS NOT NULL
+      // Phase 2: for each duplicate group, LATERAL-join back into search via
+      // the covering index (Nested Loop + Index Scan), row_number within that
+      // tiny per-group result, then DELETE rows where rn > 1. Only the ~2×
+      // duplicate rows are ever read from the heap; all clean rows are skipped.
+      //
+      // NULL values need a separate arm because `value = NULL` is always false
+      // in SQL — `value IS NULL` is required for the index condition.
+      await trx.raw(`
+        DELETE FROM search WHERE ctid IN (
+          SELECT s.ctid FROM _search_dedup_groups g
+          CROSS JOIN LATERAL (
+            SELECT ctid FROM (
+              SELECT ctid,
+                     row_number() OVER (ORDER BY ctid) AS rn
+              FROM search
+              WHERE key = g.key AND entity_id = g.entity_id
+                AND value = g.value
+            ) sub WHERE rn > 1
+          ) s WHERE g.value IS NOT NULL
 
-        UNION ALL
+          UNION ALL
 
-        SELECT s.ctid FROM _search_dedup_groups g
-        CROSS JOIN LATERAL (
-          SELECT ctid FROM (
-            SELECT ctid,
-                   row_number() OVER (ORDER BY ctid) AS rn
-            FROM search
-            WHERE key = g.key AND entity_id = g.entity_id
-              AND value IS NULL
-          ) sub WHERE rn > 1
-        ) s WHERE g.value IS NULL
-      )
-    `);
+          SELECT s.ctid FROM _search_dedup_groups g
+          CROSS JOIN LATERAL (
+            SELECT ctid FROM (
+              SELECT ctid,
+                     row_number() OVER (ORDER BY ctid) AS rn
+              FROM search
+              WHERE key = g.key AND entity_id = g.entity_id
+                AND value IS NULL
+            ) sub WHERE rn > 1
+          ) s WHERE g.value IS NULL
+        )
+      `);
 
-    await knex.raw('DROP TABLE IF EXISTS _search_dedup_groups');
+      await trx.raw('DROP TABLE IF EXISTS _search_dedup_groups');
+    });
   }
 
   // Step 3: Create remaining covering indices. Each call is idempotent —

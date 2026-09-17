@@ -258,7 +258,7 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
     return legacyPaths
       ? entityInfo
       : Object.entries(entityInfo).reduce((acc, [key, value]) => {
-          return { ...acc, [key]: value.toLocaleLowerCase('en-US') };
+          return { ...acc, [key]: value.toLowerCase() };
         }, {} as EntityInfo);
   }
 }

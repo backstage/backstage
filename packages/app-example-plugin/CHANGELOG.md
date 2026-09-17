@@ -1,5 +1,13 @@
 # app-example-plugin
 
+## 0.0.39
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/frontend-plugin-api@0.18.1
+
 ## 0.0.39-next.1
 
 ### Patch Changes

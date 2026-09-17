@@ -96,7 +96,7 @@ export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
     // If adding a new tag
     if (values?.length && currentTags.length < values.length) {
       const newTag = (values[values.length - 1] = values[values.length - 1]
-        .toLocaleLowerCase('en-US')
+        .toLowerCase()
         .trim());
       hasError = !tagValidator(newTag);
       addDuplicate = currentTags.indexOf(newTag) !== -1;
@@ -140,7 +140,7 @@ export const EntityTagsPicker = (props: EntityTagsPickerProps) => {
         setInputValue('');
         setInputError(false);
       } else if (inputValue) {
-        const newTag = inputValue.toLocaleLowerCase('en-US').trim();
+        const newTag = inputValue.toLowerCase().trim();
         const isValid = tagValidator(newTag);
         const isDuplicate = selectedTags.includes(newTag);
         setInputError(!isValid);

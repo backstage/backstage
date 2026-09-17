@@ -212,11 +212,11 @@ export const MembersListCard = (props: {
     const membersList = await catalogApi.getEntities({
       filter: {
         kind: 'User',
-        [`relations.${relationType.toLocaleLowerCase('en-US')}`]: [
+        [`relations.${relationType.toLowerCase()}`]: [
           stringifyEntityRef({
             kind: 'group',
-            namespace: groupNamespace.toLocaleLowerCase('en-US'),
-            name: groupName.toLocaleLowerCase('en-US'),
+            namespace: groupNamespace.toLowerCase(),
+            name: groupName.toLowerCase(),
           }),
         ],
       },
@@ -248,9 +248,7 @@ export const MembersListCard = (props: {
       member.spec?.profile?.email,
     ];
     return fields.some(val =>
-      val
-        ?.toLocaleLowerCase('en-US')
-        .includes(searchTerm.toLocaleLowerCase('en-US')),
+      val?.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   });
 

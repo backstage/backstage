@@ -1,5 +1,44 @@
 # @backstage/connections
 
+## 0.4.0
+
+### Minor Changes
+
+- d86c47f: **BREAKING**: Cleaned up the public API surface with the following changes:
+
+  - Renamed `ConnectionAuthValue` to `ConnectionAuth`
+  - Renamed `LookupStrategy` to `ConnectionLookupStrategy`
+  - Removed `ConnectionAuthMatch` (inlined as `{ plugins: string[] }`)
+  - Removed `ConnectionAuthMethodKey` (inlined where used)
+  - Broadened the `buildConnectionsFromConfig` logger option to accept any logger with `error`, `warn`, `info`, and `debug` methods
+  - Moved `buildConnectionsFromConfig`, `ConfiguredConnection`, and `ConfiguredConnectionAuth` to a new `@backstage/connections/config` sub-path export
+  - Removed `matchAuth` and `validate` from the public `ConnectionType` shape
+  - Renamed `ConnectionType` to `ConnectionTypeDefinition` (the definition object describing a connection type's schemas and behavior)
+  - Renamed `ConnectionTypeKey` to `ConnectionType` (the string union of registered connection type names)
+  - Renamed `isConnectionTypeKey` to `isConnectionType`
+  - Repurposed `ConnectionAuth` as a consumer-facing lookup type: `ConnectionAuth<'aws'>` resolves to the union of auth entry shapes, `ConnectionAuth<'github', 'token'>` narrows to a single method
+
+- 06cd10c: Removed the nonexistent `query` and `auth` properties from connection type descriptors, along with the unused `AuthValue` type. Query and returned authentication types remain inferred through `ConnectionsService.find`.
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- 9cf2287: Added support for calling `find` without `authMethods`, which returns connection info (type, title, and config fields) without any auth data. This is useful for consumers that only need connection metadata like API base URLs and don't handle authentication themselves.
+- Updated dependencies
+  - @backstage/config@1.3.9
+
+## 0.4.0-next.0
+
+### Minor Changes
+
+- 06cd10c: Removed the nonexistent `query` and `auth` properties from connection type descriptors, along with the unused `AuthValue` type. Query and returned authentication types remain inferred through `ConnectionsService.find`.
+
+### Patch Changes
+
+- 9cf2287: Added support for calling `find` without `authMethods`, which returns connection info (type, title, and config fields) without any auth data. This is useful for consumers that only need connection metadata like API base URLs and don't handle authentication themselves.
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+
 ## 0.3.0
 
 ### Minor Changes

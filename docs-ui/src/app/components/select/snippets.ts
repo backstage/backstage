@@ -77,7 +77,7 @@ export const selectCustomSearchSnippet = `<Select
   search={{
     placeholder: 'Search owners...',
     filter: (option, query) =>
-      option.label.toLocaleLowerCase().startsWith(query.toLocaleLowerCase()),
+      option.label.toLowerCase().startsWith(query.toLowerCase()),
   }}
 />`;
 

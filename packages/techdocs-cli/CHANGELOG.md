@@ -1,5 +1,34 @@
 # @techdocs/cli
 
+## 1.12.0
+
+### Minor Changes
+
+- 57205a0: Added a `--dangerouslyAllowAdditionalKeys` option to `techdocs-cli generate`
+- c4976e0: The `generate` command now automatically computes a sha256 content hash of the generated site output and stores it as the etag in `techdocs_metadata.json` when no `--etag` value is explicitly provided.
+
+  Added `--skip-if-unchanged` flag to `publish` that compares the local etag against the remote etag before uploading. When they match, the publish step is skipped entirely. This avoids redundant uploads in CI pipelines when docs haven't changed between builds.
+
+### Patch Changes
+
+- de92fae: Fixed an issue where `techdocs-cli serve` would silently stop detecting documentation changes and no longer refresh the browser when the Python environment (TechDocs container image or local) contains `click` 8.3.x. The CLI now explicitly enables MkDocs live reload when serving.
+- 4441911: Improved MkDocs configuration file handling.
+- Updated dependencies
+  - @backstage/backend-defaults@0.18.0
+  - @backstage/catalog-model@1.10.1
+  - @backstage/cli-common@0.3.1
+  - @backstage/plugin-techdocs-node@2.0.0
+  - @backstage/config@1.3.9
+
+## 1.11.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.16.0-next.1
+  - @backstage/config@1.3.9-next.0
+  - @backstage/backend-defaults@0.17.9-next.1
+
 ## 1.11.5-next.1
 
 ### Patch Changes

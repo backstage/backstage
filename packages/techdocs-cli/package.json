@@ -1,6 +1,6 @@
 {
   "name": "@techdocs/cli",
-  "version": "1.11.5-next.1",
+  "version": "1.12.0",
   "description": "Utility CLI for managing TechDocs sites in Backstage.",
   "backstage": {
     "role": "cli"
@@ -52,6 +52,7 @@
     "commander": "^14.0.3",
     "fs-extra": "^11.0.0",
     "http-proxy": "^1.18.1",
+    "json5": "^2.1.3",
     "react-dev-utils": "^12.0.0-next.60",
     "serve-handler": "^6.1.3",
     "winston": "^3.2.1"

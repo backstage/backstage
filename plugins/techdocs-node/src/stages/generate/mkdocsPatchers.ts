@@ -22,6 +22,7 @@ import {
   DANGEROUS_EXTENSION_CONFIG_KEYS,
   getRepoUrlFromLocationAnnotation,
   MKDOCS_SCHEMA,
+  UnknownTag,
 } from './helpers';
 import { toError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -30,11 +31,114 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 const MATERIAL_THEME = 'material';
 const PYMDOWNX_SNIPPETS_EXTENSION = 'pymdownx.snippets';
 
+const DEFAULT_ALLOWED_MKDOCS_PLUGINS = new Set([
+  'techdocs-core',
+  'search',
+  'material/search',
+  'redirects',
+  'group',
+  'material/group',
+]);
+const MKDOCS_PLUGIN_GROUPS = new Set(['group', 'material/group']);
+
 function isPymdownxSnippetsExtension(extensionName: string): boolean {
   return (
     extensionName === PYMDOWNX_SNIPPETS_EXTENSION ||
     extensionName === `${PYMDOWNX_SNIPPETS_EXTENSION}:SnippetExtension`
   );
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  if (
+    typeof value !== 'object' ||
+    value === null ||
+    Array.isArray(value) ||
+    value instanceof UnknownTag
+  ) {
+    return false;
+  }
+
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
+}
+
+function normalizeMkdocsPlugins(plugins: unknown): unknown[] | undefined {
+  if (Array.isArray(plugins)) {
+    return plugins;
+  }
+  if (isPlainObject(plugins)) {
+    return Object.entries(plugins).map(([name, config]) => ({
+      [name]: config,
+    }));
+  }
+  return undefined;
+}
+
+function sanitizeMkdocsPlugins(
+  plugins: unknown,
+  allowedPlugins: Set<string>,
+  removedPlugins: Set<string>,
+): unknown[] {
+  if (plugins instanceof UnknownTag) {
+    removedPlugins.add('dynamically configured plugin name');
+    return [];
+  }
+
+  const normalizedPlugins = normalizeMkdocsPlugins(plugins);
+  if (!normalizedPlugins) {
+    removedPlugins.add('malformed plugin declaration');
+    return [];
+  }
+
+  const sanitizedPlugins: unknown[] = [];
+  for (const plugin of normalizedPlugins) {
+    if (plugin instanceof UnknownTag) {
+      removedPlugins.add('dynamically configured plugin name');
+      continue;
+    }
+
+    let pluginName: string;
+    if (typeof plugin === 'string' && plugin.length > 0) {
+      pluginName = plugin;
+    } else if (isPlainObject(plugin) && Object.keys(plugin).length === 1) {
+      [pluginName] = Object.keys(plugin);
+      const config = plugin[pluginName];
+      if (config !== null && !isPlainObject(config)) {
+        removedPlugins.add('malformed plugin declaration');
+        continue;
+      }
+    } else {
+      removedPlugins.add('malformed plugin declaration');
+      continue;
+    }
+
+    if (!allowedPlugins.has(pluginName)) {
+      removedPlugins.add(pluginName);
+      continue;
+    }
+
+    let sanitizedPlugin = plugin;
+    if (isPlainObject(plugin)) {
+      const config = plugin[pluginName];
+      if (MKDOCS_PLUGIN_GROUPS.has(pluginName) && isPlainObject(config)) {
+        sanitizedPlugin = {
+          ...plugin,
+          [pluginName]: {
+            ...config,
+            plugins: sanitizeMkdocsPlugins(
+              config.plugins,
+              allowedPlugins,
+              removedPlugins,
+            ),
+          },
+        };
+      }
+    }
+
+    sanitizedPlugins.push(sanitizedPlugin);
+  }
+
+  return sanitizedPlugins;
 }
 
 type MkDocsThemeObject = {
@@ -58,6 +162,7 @@ const patchMkdocsFile = async (
   mkdocsYmlPath: string,
   logger: LoggerService,
   updateAction: (mkdocsYml: MkDocsObject) => boolean,
+  options?: { failOnError?: boolean },
 ) => {
   // We only want to override the mkdocs.yml if it has actually changed. This is relevant if
   // used with a 'dir' location on the file system as this would permanently update the file.
@@ -72,6 +177,9 @@ const patchMkdocsFile = async (
         toError(error).message
       }`,
     );
+    if (options?.failOnError) {
+      throw error;
+    }
     return;
   }
 
@@ -90,6 +198,9 @@ const patchMkdocsFile = async (
         toError(error).message
       }`,
     );
+    if (options?.failOnError) {
+      throw error;
+    }
     return;
   }
 
@@ -109,9 +220,21 @@ const patchMkdocsFile = async (
         toError(error).message
       }`,
     );
+    if (options?.failOnError) {
+      throw error;
+    }
     return;
   }
 };
+
+const patchMkdocsFileOrThrow = async (
+  mkdocsYmlPath: string,
+  logger: LoggerService,
+  updateAction: (mkdocsYml: MkDocsObject) => boolean,
+) =>
+  patchMkdocsFile(mkdocsYmlPath, logger, updateAction, {
+    failOnError: true,
+  });
 
 /**
  * Update the mkdocs.yml file before TechDocs generator uses it to generate docs site.
@@ -261,13 +384,15 @@ export const patchMkdocsYmlWithFontDisabled = async (
  * @param mkdocsYmlPath - Absolute path to mkdocs.yml or equivalent of a docs site
  * @param logger - A logger instance
  * @param additionalAllowedKeys - Optional array of additional keys to allow beyond the default allowlist
+ * @param additionalAllowedPlugins - Optional array of additional plugins to allow beyond the default set
  */
 export const sanitizeMkdocsYml = async (
   mkdocsYmlPath: string,
   logger: LoggerService,
   additionalAllowedKeys?: string[],
+  additionalAllowedPlugins?: string[],
 ) => {
-  await patchMkdocsFile(mkdocsYmlPath, logger, mkdocsYml => {
+  await patchMkdocsFileOrThrow(mkdocsYmlPath, logger, mkdocsYml => {
     // Combine default allowed keys with additional keys
     const allowedKeys = new Set(ALLOWED_MKDOCS_KEYS);
     if (additionalAllowedKeys && additionalAllowedKeys.length > 0) {
@@ -377,6 +502,28 @@ export const sanitizeMkdocsYml = async (
           `Removed the following dangerous entries from markdown_extensions in mkdocs.yml: ${removedEntries.join(
             ', ',
           )}.`,
+        );
+      }
+    }
+
+    if ('plugins' in sanitized) {
+      const allowedPlugins = new Set(DEFAULT_ALLOWED_MKDOCS_PLUGINS);
+      additionalAllowedPlugins?.forEach(plugin => allowedPlugins.add(plugin));
+
+      const removedPlugins = new Set<string>();
+      sanitized.plugins = sanitizeMkdocsPlugins(
+        sanitized.plugins,
+        allowedPlugins,
+        removedPlugins,
+      );
+
+      if (removedPlugins.size > 0) {
+        logger.warn(
+          `Removed unsupported MkDocs plugins from mkdocs.yml: ${Array.from(
+            removedPlugins,
+          ).join(
+            ', ',
+          )}. To allow additional plugins, configure 'techdocs.generator.mkdocs.dangerouslyAllowAdditionalPlugins' in your Backstage app-config. When using the TechDocs CLI, use '--defaultPlugin' instead.`,
         );
       }
     }

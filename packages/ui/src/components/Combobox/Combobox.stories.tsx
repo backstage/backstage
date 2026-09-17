@@ -365,9 +365,9 @@ function ServerBackedCombobox() {
       setRequestCount(count => count + 1);
       await wait(paginationServerDelay);
 
-      const query = filterText.toLocaleLowerCase();
+      const query = filterText.toLowerCase();
       const filteredOptions = paginatedServerOptions.filter(option =>
-        option.label.toLocaleLowerCase().includes(query),
+        option.label.toLowerCase().includes(query),
       );
       const startIndex = cursor ? Number(cursor) : 0;
       const endIndex = startIndex + paginationServerPageSize;
@@ -472,9 +472,9 @@ function ServerBackedCustomCombobox() {
     async load({ cursor, filterText }) {
       await wait(serverDelay);
 
-      const query = filterText.toLocaleLowerCase();
+      const query = filterText.toLowerCase();
       const filteredOwners = serverOwners.filter(owner =>
-        `${owner.name} ${owner.role}`.toLocaleLowerCase().includes(query),
+        `${owner.name} ${owner.role}`.toLowerCase().includes(query),
       );
       const startIndex = cursor ? Number(cursor) : 0;
       const endIndex = startIndex + serverPageSize;

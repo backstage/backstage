@@ -19,6 +19,7 @@ import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { Config, ConfigReader } from '@backstage/config';
 import {
   connectionTypes,
+  type ConnectionAuth,
   type ConnectionsService,
 } from '@backstage/connections';
 import { NotFoundError } from '@backstage/errors';
@@ -639,9 +640,7 @@ describe('DefaultAwsCredentialsManager', () => {
   });
 
   describe('experimentalFromConnections', () => {
-    type AwsAuthEntry = Parameters<
-      NonNullable<(typeof connectionTypes)['aws']['matchAuth']>
-    >[0][number];
+    type AwsAuthEntry = ConnectionAuth<'aws'>;
 
     // Serves a single aws connection through the real matchAuth logic, the
     // same way the connections service selects auth entries.
@@ -660,7 +659,10 @@ describe('DefaultAwsCredentialsManager', () => {
       }) => {
         const auth =
           connection &&
-          connectionTypes.aws.matchAuth?.(connection.auth, options.query);
+          (connectionTypes.aws as any).matchAuth?.(
+            connection.auth,
+            options.query,
+          );
         if (!auth) {
           throw new NotFoundError('Connection not found for type "aws"');
         }

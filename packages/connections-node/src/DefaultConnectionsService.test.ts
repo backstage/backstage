@@ -773,8 +773,7 @@ describe('DefaultConnectionsService', () => {
     });
 
     it('passes plugin match along to cross-entry validation', () => {
-      const aws = connectionTypes.aws as Required<typeof connectionTypes.aws>;
-      const validateSpy = jest.spyOn(aws, 'validate');
+      const validateSpy = jest.spyOn(connectionTypes.aws as any, 'validate');
 
       DefaultConnectionsService.create({
         logger: mockServices.logger.mock(),
@@ -1155,6 +1154,121 @@ describe('DefaultConnectionsService', () => {
       ).toThrow(
         /Invalid connection of type "github".*Unrecognized key: "host2"/s,
       );
+    });
+  });
+
+  describe('find without authMethods', () => {
+    it('returns connection info without auth when authMethods is omitted', async () => {
+      const service = DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockConnectionsConfig([
+          {
+            type: 'github',
+            host: 'github.com',
+            auth: [{ method: 'token', token: 'secret-token' }],
+          },
+        ]),
+      });
+
+      const info = await service.forPlugin('catalog').find({
+        type: 'github',
+        query: { url: 'https://github.com/my-org/my-repo' },
+      });
+
+      expect(info.type).toBe('github');
+      expect(info.host).toBe('github.com');
+      expect(info.title).toBe('GitHub');
+      expect('auth' in info).toBe(false);
+    });
+
+    it('succeeds even when the plugin has no visible auth methods', async () => {
+      const service = DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockConnectionsConfig([
+          {
+            type: 'github',
+            host: 'github.com',
+            auth: [
+              {
+                method: 'token',
+                token: 'scaffolder-only',
+                match: { plugins: ['scaffolder'] },
+              },
+            ],
+          },
+        ]),
+      });
+
+      const info = await service.forPlugin('catalog').find({
+        type: 'github',
+        query: { url: 'https://github.com/foo' },
+      });
+
+      expect(info.host).toBe('github.com');
+      expect('auth' in info).toBe(false);
+    });
+
+    it('throws NotFoundError when no connection matches', async () => {
+      const service = DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockConnectionsConfig([
+          {
+            type: 'github',
+            host: 'github.com',
+            auth: [{ method: 'token', token: 'abc' }],
+          },
+        ]),
+      });
+
+      await expect(
+        service.forPlugin('catalog').find({
+          type: 'github',
+          query: { url: 'https://missing.example.com/foo' },
+        }),
+      ).rejects.toThrow(/Connection not found/);
+    });
+
+    it('still respects connection-level plugin matching', async () => {
+      const service = DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockConnectionsConfig([
+          {
+            type: 'github',
+            host: 'enterprise.example.com',
+            match: { plugins: ['scaffolder'] },
+            auth: [{ method: 'token', token: 'enterprise-token' }],
+          },
+        ]),
+      });
+
+      await expect(
+        service.forPlugin('catalog').find({
+          type: 'github',
+          query: { url: 'https://enterprise.example.com/foo' },
+        }),
+      ).rejects.toThrow(/Connection not found/);
+    });
+
+    it('returns config fields for aws connections without auth', async () => {
+      const service = DefaultConnectionsService.create({
+        logger: mockServices.logger.mock(),
+        config: mockConnectionsConfig([
+          {
+            type: 'aws',
+            roleName: 'wildcard-role',
+            auth: [{ method: 'account', mainAccount: true }],
+          },
+        ]),
+      });
+
+      const info = await service.forPlugin('catalog').find({
+        type: 'aws',
+        query: {},
+      });
+
+      expect(info.type).toBe('aws');
+      expect(info.roleName).toBe('wildcard-role');
+      expect('auth' in info).toBe(false);
     });
   });
 

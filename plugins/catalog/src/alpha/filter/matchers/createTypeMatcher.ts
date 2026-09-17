@@ -23,12 +23,9 @@ export function createTypeMatcher(
   parameters: string[],
   _onParseError: (error: Error) => void,
 ): EntityMatcherFn {
-  const items = parameters.map(p => p.toLocaleLowerCase('en-US'));
+  const items = parameters.map(p => p.toLowerCase());
   return entity => {
     const value = entity.spec?.type;
-    return (
-      typeof value === 'string' &&
-      items.includes(value.toLocaleLowerCase('en-US'))
-    );
+    return typeof value === 'string' && items.includes(value.toLowerCase());
   };
 }

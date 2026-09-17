@@ -32,7 +32,7 @@ const defaultTimeFormat: Intl.DateTimeFormatOptions = {
 };
 
 export function getTimes(
-  clockConfigs: ClockConfig[],
+  clockConfigs?: ClockConfig[],
   customTimeFormat?: Intl.DateTimeFormatOptions,
 ): TimeObj[] {
   const d = new Date();

@@ -72,6 +72,7 @@ export const scaffolderTemplatesSubPage = SubPageBlueprint.makeWithOverrides({
         }),
       )
       .optional(),
+    templateFilter: createZodV4FilterPredicateSchema().optional(),
   },
   factory(originalFactory, { apis, config }) {
     const formFieldsApi = apis.get(formFieldsApiRef);
@@ -82,6 +83,10 @@ export const scaffolderTemplatesSubPage = SubPageBlueprint.makeWithOverrides({
         filter: filterPredicateToFilterFunction(group.filter),
       }),
     );
+    const templateFilter =
+      config.templateFilter === undefined
+        ? undefined
+        : filterPredicateToFilterFunction(config.templateFilter);
 
     return originalFactory({
       path: 'templates',
@@ -93,6 +98,7 @@ export const scaffolderTemplatesSubPage = SubPageBlueprint.makeWithOverrides({
           <m.TemplatesSubPage
             formFields={formFields}
             groups={groups}
+            templateFilter={templateFilter}
             formProps={{
               EXPERIMENTAL_theme: config.enableBackstageUi ? 'bui' : 'mui',
             }}

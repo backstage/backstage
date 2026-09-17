@@ -795,7 +795,7 @@ function applyLocationFilterToQuery(
   }
 
   for (const [keyAnyCase, value] of entries) {
-    const key = keyAnyCase.toLocaleLowerCase('en-US');
+    const key = keyAnyCase.toLowerCase();
     if (!['id', 'type', 'target', 'entityref'].includes(key)) {
       throw new InputError(
         `Invalid filter predicate, expected key to be 'id', 'type', 'target', or 'entityRef', got '${keyAnyCase}'`,

@@ -130,10 +130,7 @@ function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
               ) ||
                 (actionSegments.includes('group') && property === 'path'))
             ) {
-              return (
-                value.toLocaleLowerCase('en-US') ===
-                foundValue.toLocaleLowerCase('en-US')
-              );
+              return value.toLowerCase() === foundValue.toLowerCase();
             }
           }
           return value === foundValue;

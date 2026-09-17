@@ -48,7 +48,7 @@ export const TechDocsAddons: ComponentType<PropsWithChildren<{}>> = () => null;
 attachComponentData(TechDocsAddons, TECHDOCS_ADDONS_WRAPPER_KEY, true);
 
 export const getDataKeyByName = (name: string) => {
-  return `${TECHDOCS_ADDONS_KEY}.${name.toLocaleLowerCase('en-US')}`;
+  return `${TECHDOCS_ADDONS_KEY}.${name.toLowerCase()}`;
 };
 
 /**

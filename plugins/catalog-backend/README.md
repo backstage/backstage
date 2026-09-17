@@ -69,6 +69,19 @@ you will not have any catalog entities loaded. See [Catalog Configuration](https
 for how to add locations, or copy the catalog locations from the [create-app template](https://github.com/backstage/backstage/blob/master/packages/create-app/templates/default-app/app-config.yaml.hbs)
 to get up and running quickly.
 
+## Migrating removed processors
+
+`CodeOwnersProcessor` and `AnnotateScmSlugEntityProcessor` are no longer exported
+by this package. Use the corresponding community modules to retain their behavior:
+
+- `CodeOwnersProcessor`: [`@backstage-community/plugin-catalog-backend-module-codeowners`](https://github.com/backstage/community-plugins/tree/main/workspaces/catalog/plugins/catalog-backend-module-codeowners)
+- `AnnotateScmSlugEntityProcessor`: [`@backstage-community/plugin-catalog-backend-module-annotate-scm-slug`](https://github.com/backstage/community-plugins/tree/main/workspaces/catalog/plugins/catalog-backend-module-annotate-scm-slug)
+
+Install the module you need in your backend package and register it with
+`backend.add(import('<module-package>'))`. Remove your custom registration of the
+old processor to avoid registering it twice. If you need to configure a processor
+explicitly, follow the replacement module's documentation.
+
 ## Development
 
 This backend plugin can be started in a standalone mode from directly in this

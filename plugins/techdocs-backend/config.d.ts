@@ -86,6 +86,18 @@ export interface Config {
         dangerouslyAllowAdditionalKeys?: string[];
 
         /**
+         * List of additional MkDocs plugins to allow beyond the default set.
+         * Plugins not in this list or the default set will be removed from
+         * mkdocs.yml before documentation generation.
+         *
+         * WARNING: Some MkDocs plugins can make outbound HTTP requests or execute
+         * arbitrary code during documentation generation. Only allow plugins that
+         * have been audited for use in your environment, including the configuration
+         * options that documentation authors can supply.
+         */
+        dangerouslyAllowAdditionalPlugins?: string[];
+
+        /**
          * Disable external fonts for all TechDocs sites.
          * If not set, the default value is false.
          * If set to true, the external font will be disabled for all TechDocs sites.

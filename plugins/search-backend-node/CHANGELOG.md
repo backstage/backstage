@@ -1,5 +1,26 @@
 # @backstage/plugin-search-backend-node
 
+## 1.4.8
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- Updated dependencies
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-permission-common@0.9.11
+  - @backstage/plugin-search-common@1.2.25
+
+## 1.4.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/plugin-permission-common@0.9.11-next.0
+  - @backstage/plugin-search-common@1.2.25-next.0
+
 ## 1.4.8-next.0
 
 ### Patch Changes
