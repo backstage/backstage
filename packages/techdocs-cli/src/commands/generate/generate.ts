@@ -19,7 +19,7 @@ import { OptionValues } from 'commander';
 import fs from 'fs-extra';
 import JSON5 from 'json5';
 import {
-  TechdocsGenerator,
+  Generators,
   ParsedLocationAnnotation,
   getMkdocsYml,
 } from '@backstage/plugin-techdocs-node';
@@ -30,6 +30,7 @@ import {
   getLogStream,
 } from '../../lib/utility';
 import { computeDirectoryEtag } from '../../lib/etag';
+import { getEngineConfig } from '../../lib/engineConfig';
 
 const TECHDOCS_METADATA_FILE = 'techdocs_metadata.json';
 const GENERATED_SITE_ETAG_EXCLUDED_FILES = [
@@ -48,6 +49,10 @@ export default async function generate(opts: OptionValues) {
   // will run on the CI pipeline containing the documentation files.
 
   const logger = createLogger({ verbose: opts.verbose });
+  const engine = opts.engine ?? 'mkdocs';
+
+  const engineConfig = getEngineConfig(engine);
+  logger.info(`Using engine: ${engine} (binary: ${engineConfig.binary})`);
 
   const sourceDir = resolve(opts.sourceDir);
   const outputDir = resolve(opts.outputDir);
@@ -76,6 +81,7 @@ export default async function generate(opts: OptionValues) {
         runIn: opts.docker ? 'docker' : 'local',
         dockerImage,
         pullImage,
+        defaultEngine: engine,
         mkdocs: {
           legacyCopyReadmeMdToIndexMd,
           omitTechdocsCorePlugin,
@@ -102,13 +108,21 @@ export default async function generate(opts: OptionValues) {
   const etag = hasExplicitEtag ? opts.etag : undefined;
 
   // Generate docs using @backstage/plugin-techdocs-node
-  const techdocsGenerator = await TechdocsGenerator.fromConfig(config, {
+  const generators = await Generators.fromConfig(config, {
     logger,
+  });
+
+  // The CLI has no catalog entity, so we pass a minimal entity stub.
+  // The registry uses defaultEngine from config to select the generator.
+  const generator = generators.get({
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Component',
+    metadata: { name: 'local' },
   });
 
   logger.info('Generating documentation...');
 
-  await techdocsGenerator.run({
+  await generator.run({
     inputDir: sourceDir,
     outputDir,
     ...(opts.techdocsRef
