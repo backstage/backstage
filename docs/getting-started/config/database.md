@@ -192,28 +192,21 @@ backend:
 
 ### AWS with RDS IAM authentication
 
-Remove `password` from the connection configuration and set `type` to `rds`. The
-connector generates a short-lived IAM authentication token per connection (via the
-[`@aws-sdk/rds-signer`](https://www.npmjs.com/package/@aws-sdk/rds-signer)
-package) instead of using a static password, and refreshes pooled connections
-shortly before the token's ~15 minute lifetime expires.
+Remove `password` from the connection configuration and set `type` to `rds`. The connector generates a short-lived IAM authentication token per connection (via the [`@aws-sdk/rds-signer`](https://www.npmjs.com/package/@aws-sdk/rds-signer) package) instead of using a static password, and refreshes pooled connections shortly before the token's ~15 minute lifetime expires.
 
 #### Prerequisites
 
-This assumes your RDS instance and IAM are already set up for IAM
-database authentication. See the AWS documentation for that infrastructure:
+This assumes your RDS instance and IAM are already set up for IAM database authentication. See the AWS documentation for that infrastructure:
 
 - [Enable IAM database authentication](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.Enabling.html)
 - [Create a database account that uses IAM authentication](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.DBAccounts.html) (the DB user needs the `rds_iam` role)
 - [Grant `rds-db:connect` to the IAM identity](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.IAMPolicy.html) the backend runs as (e.g. an EKS IRSA role, EC2 instance role, or local profile)
 
-On the Backstage side, the only requirement is that the `@aws-sdk/rds-signer`
-package is installed in your backend.
+This requires Backstage 1.50.0 or later, which is when the `rds` connector was added.
 
 #### Configuration
 
-Set `user` to the database user that has the `rds_iam` role. Set `region` to the
-AWS region of the instance.
+Set `user` to the database user that has the `rds_iam` role. Set `region` to the AWS region of the instance.
 
 ```yaml title="app-config.yaml"
 backend:
@@ -234,9 +227,7 @@ backend:
 
 :::note
 
-RDS requires TLS for IAM authentication. Provide the RDS CA bundle via
-`connection.ssl` (for example `ssl: { ca: <contents of the RDS CA bundle> }`) the
-same way you would for a password connection.
+RDS requires TLS for IAM authentication. Provide the RDS CA bundle via `connection.ssl` (for example `ssl: { ca: <contents of the RDS CA bundle> }`) the same way you would for a password connection.
 
 :::
 
