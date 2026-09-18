@@ -1221,6 +1221,247 @@ describe('resolveRelations', () => {
       },
     );
   });
+
+  describe('compatibility', () => {
+    it('prefers an exact alias before the lowercase DN alias', () => {
+      const exact = group({
+        metadata: {
+          name: 'exact',
+          annotations: { [LDAP_DN_ANNOTATION]: 'TEAM' },
+        },
+      });
+      const lowercase = group({
+        metadata: {
+          name: 'lowercase',
+          annotations: { [LDAP_DN_ANNOTATION]: 'team' },
+        },
+      });
+      const member = user({
+        metadata: {
+          name: 'member',
+          annotations: { [LDAP_DN_ANNOTATION]: 'USER' },
+        },
+      });
+
+      resolveRelations(
+        [exact, lowercase],
+        [member],
+        new Map([['USER', new Set(['TEAM'])]]),
+        new Map(),
+        new Map(),
+      );
+
+      expect([exact, lowercase, member]).toEqual([
+        group({
+          metadata: {
+            name: 'exact',
+            annotations: { [LDAP_DN_ANNOTATION]: 'TEAM' },
+          },
+        }),
+        group({
+          metadata: {
+            name: 'lowercase',
+            annotations: { [LDAP_DN_ANNOTATION]: 'team' },
+          },
+        }),
+        user({
+          metadata: {
+            name: 'member',
+            annotations: { [LDAP_DN_ANNOTATION]: 'USER' },
+          },
+          spec: { memberOf: ['group:default/exact'] },
+        }),
+      ]);
+    });
+
+    it('lets the last indexed entity win alias collisions', () => {
+      const first = group({
+        metadata: {
+          name: 'first',
+          annotations: { [LDAP_UUID_ANNOTATION]: 'shared' },
+        },
+      });
+      const second = group({
+        metadata: {
+          name: 'second',
+          annotations: { [LDAP_UUID_ANNOTATION]: 'shared' },
+        },
+      });
+      const member = user({
+        metadata: {
+          name: 'member',
+          annotations: { [LDAP_UUID_ANNOTATION]: 'member' },
+        },
+      });
+
+      resolveRelations(
+        [first, second],
+        [member],
+        new Map([['member', new Set(['shared'])]]),
+        new Map(),
+        new Map(),
+      );
+
+      expect(member.spec.memberOf).toEqual(['group:default/second']);
+    });
+
+    it('prefers users when a member alias matches both entity kinds', () => {
+      const parent = group({
+        metadata: {
+          name: 'parent',
+          annotations: { [LDAP_DN_ANNOTATION]: 'parent' },
+        },
+      });
+      const child = group({
+        metadata: {
+          name: 'child',
+          annotations: { [LDAP_DN_ANNOTATION]: 'shared' },
+        },
+      });
+      const member = user({
+        metadata: {
+          name: 'member',
+          annotations: { [LDAP_DN_ANNOTATION]: 'shared' },
+        },
+      });
+
+      resolveRelations(
+        [parent, child],
+        [member],
+        new Map(),
+        new Map(),
+        new Map([['parent', new Set(['shared'])]]),
+      );
+
+      expect(member.spec.memberOf).toEqual(['group:default/parent']);
+      expect(parent.spec.children).toEqual([]);
+      expect(child.spec.parent).toBeUndefined();
+    });
+
+    it('ignores unknown relation references', () => {
+      const parent = group({
+        metadata: {
+          name: 'parent',
+          annotations: { [LDAP_DN_ANNOTATION]: 'parent' },
+        },
+      });
+      const member = user({
+        metadata: {
+          name: 'member',
+          annotations: { [LDAP_DN_ANNOTATION]: 'member' },
+        },
+      });
+
+      resolveRelations(
+        [parent],
+        [member],
+        new Map([['member', new Set(['parent', 'missing'])]]),
+        new Map(),
+        new Map([['parent', new Set(['missing'])]]),
+      );
+
+      expect(member.spec.memberOf).toEqual(['group:default/parent']);
+      expect(parent.spec.children).toEqual([]);
+    });
+
+    it('preserves transformer relations when LDAP has no replacement', () => {
+      const parent = group({
+        metadata: { name: 'parent', annotations: {} },
+        spec: { children: [] },
+      });
+      const child = group({
+        metadata: { name: 'child', annotations: {} },
+        spec: { parent: 'group:default/parent', children: [] },
+      });
+      const member = user({
+        metadata: { name: 'member', annotations: {} },
+        spec: { memberOf: ['group:default/child'] },
+      });
+
+      resolveRelations(
+        [parent, child],
+        [member],
+        new Map(),
+        new Map(),
+        new Map(),
+      );
+
+      expect([parent, child, member]).toEqual([
+        group({
+          metadata: { name: 'parent', annotations: {} },
+          spec: { children: ['group:default/child'] },
+        }),
+        group({
+          metadata: { name: 'child', annotations: {} },
+          spec: { parent: 'group:default/parent', children: [] },
+        }),
+        user({
+          metadata: { name: 'member', annotations: {} },
+          spec: { memberOf: ['group:default/child'] },
+        }),
+      ]);
+    });
+
+    it('preserves first-group-wins behavior for multiple parents', () => {
+      const first = group({
+        metadata: {
+          name: 'first',
+          annotations: { [LDAP_DN_ANNOTATION]: 'first' },
+        },
+      });
+      const second = group({
+        metadata: {
+          name: 'second',
+          annotations: { [LDAP_DN_ANNOTATION]: 'second' },
+        },
+      });
+      const child = group({
+        metadata: {
+          name: 'child',
+          annotations: { [LDAP_DN_ANNOTATION]: 'child' },
+        },
+      });
+
+      resolveRelations(
+        [first, second, child],
+        [],
+        new Map(),
+        new Map(),
+        new Map([
+          ['first', new Set(['child'])],
+          ['second', new Set(['child'])],
+        ]),
+      );
+
+      expect(first.spec.children).toEqual(['group:default/child']);
+      expect(second.spec.children).toEqual(['group:default/child']);
+      expect(child.spec.parent).toBe('group:default/first');
+    });
+
+    it('terminates and preserves a cyclic hierarchy', () => {
+      const a = group({
+        metadata: { name: 'a', annotations: {} },
+        spec: { parent: 'group:default/b', children: [] },
+      });
+      const b = group({
+        metadata: { name: 'b', annotations: {} },
+        spec: { parent: 'group:default/a', children: [] },
+      });
+
+      resolveRelations([a, b], [], new Map(), new Map(), new Map());
+
+      expect(a.spec).toEqual({
+        type: 'type',
+        parent: 'group:default/b',
+        children: ['group:default/b'],
+      });
+      expect(b.spec).toEqual({
+        type: 'type',
+        parent: 'group:default/a',
+        children: ['group:default/a'],
+      });
+    });
+  });
 });
 
 describe('defaultUserTransformer', () => {
