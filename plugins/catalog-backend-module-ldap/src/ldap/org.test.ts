@@ -15,7 +15,11 @@
  */
 
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
-import { buildMemberOf, buildOrgHierarchy } from './org';
+import {
+  buildMemberOf,
+  buildOrgHierarchy,
+  buildOrgHierarchyAsync,
+} from './org';
 
 function g(
   name: string,
@@ -32,6 +36,42 @@ function g(
 }
 
 describe('buildOrgHierarchy', () => {
+  it('yields to the event loop for large organizations', async () => {
+    const groups = Array.from({ length: 1_001 }, (_, index) =>
+      g(`group-${index}`, 'default', undefined, []),
+    );
+    let eventLoopTurnCompleted = false;
+    setImmediate(() => {
+      eventLoopTurnCompleted = true;
+    });
+
+    await buildOrgHierarchyAsync(groups);
+
+    expect(eventLoopTurnCompleted).toBe(true);
+  });
+
+  it('yields to the event loop for groups with many children', async () => {
+    const groups = [
+      g(
+        'parent',
+        'default',
+        undefined,
+        Array.from(
+          { length: 1_001 },
+          (_, index) => `group:default/child-${index}`,
+        ),
+      ),
+    ];
+    let eventLoopTurnCompleted = false;
+    setImmediate(() => {
+      eventLoopTurnCompleted = true;
+    });
+
+    await buildOrgHierarchyAsync(groups);
+
+    expect(eventLoopTurnCompleted).toBe(true);
+  });
+
   it('adds groups to their parent.children', () => {
     const a = g('a', 'a-namespace', undefined, []);
     const b = g('b', 'b-namespace', 'group:a-namespace/a', []);
