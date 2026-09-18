@@ -71,6 +71,27 @@ describe('resolveOrgRelations', () => {
     expect(timerRan).toBe(true);
   });
 
+  it('yields while resolving relation sources without edges', async () => {
+    const userMemberOf = new Map(
+      Array.from({ length: 1_001 }, (_, index) => [
+        `user-${index}`,
+        new Set<string>(),
+      ]),
+    );
+    let timerRan = false;
+    setImmediate(() => {
+      timerRan = true;
+    });
+
+    await resolveOrgRelations([], [], {
+      userMemberOf,
+      groupMemberOf: new Map(),
+      groupMember: new Map(),
+    });
+
+    expect(timerRan).toBe(true);
+  });
+
   it('continues yielding while resolving dense relation edges', async () => {
     const parent = group({
       metadata: {

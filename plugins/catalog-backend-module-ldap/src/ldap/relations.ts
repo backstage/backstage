@@ -59,12 +59,12 @@ class EntityIndex<T extends OrgEntity> {
     this.#byRef.set(ref, entity);
     this.#refByEntity.set(entity, ref);
 
-    const annotations = entity.metadata.annotations;
+    const annotations = entity.metadata.annotations!;
     this.#addAlias(ref, ref);
-    this.#addAlias(annotations?.[LDAP_DN_ANNOTATION], ref);
-    this.#addAlias(annotations?.[LDAP_DN_ANNOTATION]?.toLowerCase(), ref);
-    this.#addAlias(annotations?.[LDAP_RDN_ANNOTATION], ref);
-    this.#addAlias(annotations?.[LDAP_UUID_ANNOTATION], ref);
+    this.#addAlias(annotations[LDAP_DN_ANNOTATION], ref);
+    this.#addAlias(annotations[LDAP_DN_ANNOTATION]?.toLowerCase(), ref);
+    this.#addAlias(annotations[LDAP_RDN_ANNOTATION], ref);
+    this.#addAlias(annotations[LDAP_UUID_ANNOTATION], ref);
   }
 
   resolve(alias: string): string | undefined {
