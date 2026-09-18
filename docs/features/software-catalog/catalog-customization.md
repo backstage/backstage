@@ -213,12 +213,143 @@ app:
     - catalog-filter:catalog/processing-status: false
 ```
 
-## Customizing columns, actions, and table options
+## Customizing catalog table columns
 
-In the old frontend system, customizing the catalog table columns, row actions,
-and table options was done by passing props directly to the `CatalogIndexPage`
-component. In the new frontend system, these customizations are done by
-overriding the `page:catalog` extension.
+The catalog table ships with a set of built-in columns: Name, System, Owner, Type, Lifecycle, Description, and Tags. Each column is a separate extension using `CatalogColumnBlueprint`, and can be customized, reordered, disabled, or extended using `app-config.yaml`.
+
+The built-in column extension IDs are:
+
+- `catalog-column:catalog/name`
+- `catalog-column:catalog/system`
+- `catalog-column:catalog/owner`
+- `catalog-column:catalog/type`
+- `catalog-column:catalog/lifecycle`
+- `catalog-column:catalog/description`
+- `catalog-column:catalog/tags`
+
+### Disabling columns
+
+To hide specific columns from the catalog table, disable them in config:
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - catalog-column:catalog/tags: false
+    - catalog-column:catalog/lifecycle: false
+```
+
+### Reordering columns
+
+The order in which columns appear in the config determines their order in the table:
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - catalog-column:catalog/owner
+    - catalog-column:catalog/name
+    - catalog-column:catalog/type
+    - catalog-column:catalog/description
+    - catalog-column:catalog/system
+    - catalog-column:catalog/tags
+    - catalog-column:catalog/lifecycle
+```
+
+### Filtering columns per entity kind
+
+Each column extension accepts a `filter` config option that controls when the column is visible based on the currently selected entity kind or type. The filter uses the standard [entity predicate query](#entity-predicate-queries) format.
+
+Show a column only for a specific kind:
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - catalog-column:catalog/type:
+        config:
+          filter:
+            kind: component
+```
+
+Show a column for multiple kinds:
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - catalog-column:catalog/system:
+        config:
+          filter:
+            kind:
+              $in: [component, api, resource]
+```
+
+Hide a column for specific kinds:
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - catalog-column:catalog/description:
+        config:
+          filter:
+            $not:
+              kind:
+                $in: [user, group, location]
+```
+
+The config filter is combined with the column's built-in code filter using a logical AND. This means config can further restrict which kinds a column appears for, but it cannot override the built-in defaults to make a column appear for kinds where it is hidden by default.
+
+### Adding custom columns
+
+To add a custom column, create a column extension using `CatalogColumnBlueprint` in your app or plugin:
+
+```tsx title="packages/app/src/catalog/columns.tsx"
+import { CatalogColumnBlueprint } from '@backstage/plugin-catalog-react/alpha';
+
+const qualityScoreColumn = CatalogColumnBlueprint.make({
+  name: 'quality-score',
+  params: {
+    column: {
+      title: 'Quality Score',
+      field: 'metadata.annotations.quality-score',
+    },
+    filter: ({ kind }) => kind === 'component',
+  },
+});
+
+export default qualityScoreColumn;
+```
+
+Then register the column as a plugin extension or install it directly in the app. The column will automatically attach to the catalog page's `columns` input. You can then control its position via config:
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - catalog-column:catalog/name
+    - catalog-column:default/quality-score
+    - catalog-column:catalog/owner
+```
+
+### Combining customizations
+
+You can combine reordering, disabling, filtering, and custom columns:
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - catalog-column:catalog/name
+    - catalog-column:catalog/owner:
+        config:
+          filter:
+            kind:
+              $in: [component, api, resource]
+    - catalog-column:catalog/type
+    - catalog-column:catalog/description
+    - catalog-column:catalog/system: false
+    - catalog-column:catalog/lifecycle: false
+    - catalog-column:catalog/tags: false
+```
+
+### Advanced column customization
+
+If you need full control over the catalog page including columns, actions, and table options, you can override the entire `page:catalog` extension. This approach replaces the default catalog page with a fully custom implementation.
 
 For example, to customize the catalog index page with custom columns or actions,
 you can override the page extension using a frontend module:
