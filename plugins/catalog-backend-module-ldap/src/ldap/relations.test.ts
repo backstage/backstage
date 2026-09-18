@@ -57,8 +57,22 @@ const emptyRelations = () => ({
 });
 
 describe('resolveOrgRelations', () => {
-  it('yields while indexing a large organization', async () => {
+  it('does not yield while indexing a small organization', async () => {
     const groups = Array.from({ length: 1_001 }, (_, index) =>
+      group({ metadata: { name: `group-${index}` } }),
+    );
+    let timerRan = false;
+    setImmediate(() => {
+      timerRan = true;
+    });
+
+    await resolveOrgRelations(groups, [], emptyRelations());
+
+    expect(timerRan).toBe(false);
+  });
+
+  it('yields while indexing a large organization', async () => {
+    const groups = Array.from({ length: 5_001 }, (_, index) =>
       group({ metadata: { name: `group-${index}` } }),
     );
     let timerRan = false;
@@ -73,7 +87,7 @@ describe('resolveOrgRelations', () => {
 
   it('yields while resolving relation sources without edges', async () => {
     const userMemberOf = new Map(
-      Array.from({ length: 1_001 }, (_, index) => [
+      Array.from({ length: 5_001 }, (_, index) => [
         `user-${index}`,
         new Set<string>(),
       ]),
@@ -99,7 +113,7 @@ describe('resolveOrgRelations', () => {
         annotations: { [LDAP_DN_ANNOTATION]: 'parent' },
       },
     });
-    const users = Array.from({ length: 999 }, (_, index) =>
+    const users = Array.from({ length: 4_999 }, (_, index) =>
       user({
         metadata: {
           name: `user-${index}`,
@@ -137,6 +151,70 @@ describe('resolveOrgRelations', () => {
     });
 
     expect(eventLoopTurns).toBe(2);
+  });
+
+  it('continues yielding while planning user memberships', async () => {
+    const parent = group({
+      metadata: {
+        name: 'parent',
+        annotations: { [LDAP_DN_ANNOTATION]: 'parent' },
+      },
+    });
+    const users = Array.from({ length: 5_000 }, (_, index) =>
+      user({
+        metadata: {
+          name: `user-${index}`,
+          annotations: { [LDAP_DN_ANNOTATION]: `user-${index}` },
+        },
+      }),
+    );
+    const userMemberOf = new Map(
+      users.map(entity => [
+        entity.metadata.annotations![LDAP_DN_ANNOTATION],
+        new Set(['parent']),
+      ]),
+    );
+    let eventLoopTurns = 0;
+    const countTurn = () => {
+      eventLoopTurns += 1;
+      if (eventLoopTurns < 4) {
+        setImmediate(countTurn);
+      }
+    };
+    setImmediate(countTurn);
+
+    await resolveOrgRelations([parent], users, {
+      userMemberOf,
+      groupMemberOf: new Map(),
+      groupMember: new Map(),
+    });
+
+    expect(eventLoopTurns).toBe(4);
+  });
+
+  it('continues yielding while reconciling parent-only hierarchies', async () => {
+    const parentRef = 'group:default/parent';
+    const groups = [
+      group({ metadata: { name: 'parent' } }),
+      ...Array.from({ length: 5_000 }, (_, index) =>
+        group({
+          metadata: { name: `child-${index}` },
+          spec: { parent: parentRef },
+        }),
+      ),
+    ];
+    let eventLoopTurns = 0;
+    const countTurn = () => {
+      eventLoopTurns += 1;
+      if (eventLoopTurns < 4) {
+        setImmediate(countTurn);
+      }
+    };
+    setImmediate(countTurn);
+
+    await resolveOrgRelations(groups, [], emptyRelations());
+
+    expect(eventLoopTurns).toBe(4);
   });
 
   it('does not partially apply relations when planning fails', async () => {

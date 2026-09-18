@@ -26,7 +26,7 @@ import {
 } from './constants';
 import { setImmediate } from 'node:timers/promises';
 
-const RELATION_RESOLUTION_BATCH_SIZE = 1_000;
+const RELATION_RESOLUTION_BATCH_SIZE = 5_000;
 
 export type RawLdapRelations = {
   userMemberOf: ReadonlyMap<string, ReadonlySet<string>>;
@@ -204,6 +204,7 @@ export async function resolveOrgRelations(
     if (user) {
       plannedUserMemberOf.set(user, [...groupRefs].sort());
     }
+    if (checkpoint.shouldYield()) await setImmediate();
   }
 
   const plannedGroups: PlannedGroupRelations[] = [];
@@ -234,6 +235,7 @@ export async function resolveOrgRelations(
         parent.childSet.add(planned.ref);
       }
     }
+    if (checkpoint.shouldYield()) await setImmediate();
   }
 
   for (const planned of plannedGroups) {
