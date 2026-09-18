@@ -146,7 +146,6 @@ class DirectoryEditorManager implements DirectoryEditor {
   #loading = false;
   #loadedFileCount = 0;
   #totalFileCount = 0;
-  #reloadGeneration = 0;
   #reloadPromise: Promise<void> | null = null;
 
   constructor(access: TemplateDirectoryAccess) {
@@ -199,7 +198,6 @@ class DirectoryEditorManager implements DirectoryEditor {
     }
 
     const selectedPath = this.#selectedFile?.path;
-    const currentGeneration = ++this.#reloadGeneration;
 
     this.#loading = true;
     this.#loadedFileCount = 0;
@@ -211,9 +209,6 @@ class DirectoryEditorManager implements DirectoryEditor {
     const doReload = async () => {
       try {
         const fileAccesses = await this.#access.listFiles();
-        if (this.#reloadGeneration !== currentGeneration) {
-          return;
-        }
 
         this.#totalFileCount = fileAccesses.length;
         this.#signalUpdate();
@@ -229,11 +224,6 @@ class DirectoryEditorManager implements DirectoryEditor {
             let firstError: unknown = null;
 
             const launchNext = () => {
-              if (this.#reloadGeneration !== currentGeneration) {
-                resolve();
-                return;
-              }
-
               if (firstError) {
                 if (activeCount === 0) {
                   reject(firstError);
@@ -261,10 +251,8 @@ class DirectoryEditorManager implements DirectoryEditor {
                   .reload({ silent: true })
                   .then(() => {
                     results[index] = manager;
-                    if (this.#reloadGeneration === currentGeneration) {
-                      this.#loadedFileCount++;
-                      this.#signalUpdate();
-                    }
+                    this.#loadedFileCount++;
+                    this.#signalUpdate();
                   })
                   .catch(err => {
                     if (!firstError) {
@@ -290,18 +278,14 @@ class DirectoryEditorManager implements DirectoryEditor {
           });
         }
 
-        if (this.#reloadGeneration === currentGeneration) {
-          this.#files = results;
-          this.setSelectedFile(selectedPath);
-        }
+        this.#files = results;
+        this.setSelectedFile(selectedPath);
       } finally {
         if (this.#reloadPromise === reloadPromise) {
           this.#reloadPromise = null;
         }
-        if (this.#reloadGeneration === currentGeneration) {
-          this.#loading = false;
-          this.#signalUpdate();
-        }
+        this.#loading = false;
+        this.#signalUpdate();
       }
     };
 

@@ -23,7 +23,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 
 import { scaffolderTranslationRef } from '../../../translation';
-import { useDirectoryEditor } from './DirectoryEditorContext';
 
 export function TemplateEditorToolbarFileMenu(props: {
   onOpenDirectory?: () => void;
@@ -34,11 +33,11 @@ export function TemplateEditorToolbarFileMenu(props: {
   const { onOpenDirectory, onCreateDirectory, onCloseDirectory, disabled } =
     props;
   const { t } = useTranslationRef(scaffolderTranslationRef);
-  const directoryEditor = useDirectoryEditor();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const isCloseDisabled =
-    !onCloseDirectory || Boolean(disabled || directoryEditor?.loading);
+  const isOpenDisabled = !onOpenDirectory || Boolean(disabled);
+  const isCreateDisabled = !onCreateDirectory || Boolean(disabled);
+  const isCloseDisabled = !onCloseDirectory || Boolean(disabled);
 
   const handleOpenMenu = useCallback(
     (event: MouseEvent<HTMLButtonElement>) => {
@@ -52,14 +51,20 @@ export function TemplateEditorToolbarFileMenu(props: {
   }, [setAnchorEl]);
 
   const handleOpenDirectory = useCallback(() => {
+    if (isOpenDisabled) {
+      return;
+    }
     handleCloseMenu();
     onOpenDirectory?.();
-  }, [handleCloseMenu, onOpenDirectory]);
+  }, [handleCloseMenu, onOpenDirectory, isOpenDisabled]);
 
   const handleCreateDirectory = useCallback(() => {
+    if (isCreateDisabled) {
+      return;
+    }
     handleCloseMenu();
     onCreateDirectory?.();
-  }, [handleCloseMenu, onCreateDirectory]);
+  }, [handleCloseMenu, onCreateDirectory, isCreateDisabled]);
 
   const handleCloseEditor = useCallback(() => {
     if (isCloseDisabled) {
@@ -93,12 +98,12 @@ export function TemplateEditorToolbarFileMenu(props: {
           horizontal: 'left',
         }}
       >
-        <MenuItem onClick={handleOpenDirectory} disabled={!onOpenDirectory}>
+        <MenuItem onClick={handleOpenDirectory} disabled={isOpenDisabled}>
           {t('templateEditorToolbarFileMenu.options.openDirectory')}
         </MenuItem>
         <MenuItem
           onClick={handleCreateDirectory}
-          disabled={!onCreateDirectory}
+          disabled={isCreateDisabled}
           divider
         >
           {t('templateEditorToolbarFileMenu.options.createDirectory')}
