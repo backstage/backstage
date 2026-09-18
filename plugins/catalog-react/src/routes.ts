@@ -77,8 +77,8 @@ export function entityRouteParams(
     name = entityOrRef.name;
   }
 
-  kind = kind.toLocaleLowerCase('en-US');
-  namespace = namespace?.toLocaleLowerCase('en-US') ?? DEFAULT_NAMESPACE;
+  kind = kind.toLowerCase();
+  namespace = namespace?.toLowerCase() ?? DEFAULT_NAMESPACE;
 
   const { encodeParams = false } = options || {};
   if (encodeParams) {

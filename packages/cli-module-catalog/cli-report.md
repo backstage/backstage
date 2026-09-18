@@ -37,7 +37,7 @@ Commands:
 ### `backstage-cli-module-catalog catalog get`
 
 ```
-Usage: @backstage/cli-module-catalog catalog get [flags...]
+Usage: @backstage/cli-module-catalog catalog get [flags...] [ref]
 
 Options:
   --instance <string>
@@ -72,6 +72,7 @@ Usage: @backstage/cli-module-catalog catalog register [flags...]
 Options:
   --instance <string>
   --location-url <string>
+  --output <string>
   -h, --help
 ```
 
@@ -84,6 +85,7 @@ Options:
   --instance <string>
   --location-id <string>
   --location-url <string>
+  --output <string>
   -h, --help
 ```
 
@@ -94,7 +96,9 @@ Usage: @backstage/cli-module-catalog catalog validate [flags...]
 
 Options:
   --entity <string>
+  --entity-file <string>
   --instance <string>
   --location <string>
+  --output <string>
   -h, --help
 ```

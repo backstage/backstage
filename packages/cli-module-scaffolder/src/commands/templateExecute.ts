@@ -15,28 +15,44 @@
  */
 
 import { cli } from 'cleye';
-import type { CliCommandContext } from '@backstage/cli-node';
+import {
+  parseKeyValuePairs,
+  type CliCommandContext,
+} from '@backstage/cli-node';
 import { ScaffolderClient } from '../lib/ScaffolderClient';
+import { createCatalogClient } from '../lib/catalogClient';
 import { resolveAuth } from '../lib/resolveAuth';
 import { writeJson } from '../lib/intentFormat';
+import { parseEntityRef } from '../lib/input';
 
 export default async ({ args, info }: CliCommandContext) => {
-  const { flags } = cli(
+  const parsed = cli(
     {
       name: info.usage,
+      strictFlags: true,
+      parameters: ['[ref]'],
       flags: {
         'template-ref': {
           type: String,
-          description:
-            'Template entity ref, e.g. template:default/my-template (required)',
+          description: 'Template entity reference alias',
         },
-        values: {
-          type: String,
-          description: 'Template input values (JSON string, required)',
+        value: {
+          type: [String] as const,
+          description: 'Template input value as repeatable key=value input',
+          default: [] as string[],
         },
-        secrets: {
+        secret: {
+          type: [String] as const,
+          description: 'Template secret as repeatable key=value input',
+          default: [] as string[],
+        },
+        namespace: {
           type: String,
-          description: 'Template secrets (JSON string)',
+          description: 'Template namespace for a short reference',
+        },
+        output: {
+          type: String,
+          description: 'Output format: human (default), json',
         },
         instance: {
           type: String,
@@ -47,26 +63,55 @@ export default async ({ args, info }: CliCommandContext) => {
     undefined,
     args,
   );
+  const { flags } = parsed;
+  const ref = parsed._?.ref;
 
-  if (!flags['template-ref']) {
+  if (!ref && !flags['template-ref']) {
     throw new Error(
-      '--template-ref is required. Usage: template execute --template-ref template:default/my-template --values \'{"name":"my-app"}\'',
-    );
-  }
-
-  if (!flags.values) {
-    throw new Error(
-      '--values is required. Usage: template execute --template-ref <ref> --values \'{"key":"value"}\'',
+      'Template reference or --template-ref is required. Usage: template execute [namespace/]name',
     );
   }
 
   const { accessToken, baseUrl } = await resolveAuth(flags.instance);
   const client = new ScaffolderClient(baseUrl, accessToken);
+  let templateRef = flags['template-ref'];
+
+  if (!templateRef && ref) {
+    const parsedRef = parseEntityRef(ref);
+    const kind = parsedRef.kind ?? 'template';
+    const namespace = flags.namespace ?? parsedRef.namespace;
+
+    if (namespace) {
+      templateRef = `${kind}:${namespace}/${parsedRef.name}`;
+    } else {
+      const catalog = createCatalogClient(baseUrl);
+      const { items } = await catalog.queryEntities(
+        { query: { kind, 'metadata.name': parsedRef.name } },
+        { token: accessToken },
+      );
+      if (items.length === 0) {
+        throw new Error(`Template not found: ${parsedRef.name}`);
+      }
+      if (items.length > 1) {
+        throw new Error(
+          `Multiple templates named "${parsedRef.name}" found; use a namespace to disambiguate`,
+        );
+      }
+      templateRef = `${items[0].kind}:${
+        items[0].metadata.namespace ?? 'default'
+      }/${items[0].metadata.name}`;
+    }
+  }
+
+  const values = parseKeyValuePairs(flags.value) ?? {};
+  const secrets = parseKeyValuePairs(flags.secret) as
+    | Record<string, string>
+    | undefined;
 
   const result = await client.execute({
-    templateRef: flags['template-ref'],
-    values: JSON.parse(flags.values),
-    secrets: flags.secrets ? JSON.parse(flags.secrets) : undefined,
+    templateRef: templateRef!,
+    values,
+    secrets,
   });
   writeJson(result);
 };

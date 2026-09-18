@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { connectionTypes } from '@backstage/connections';
-import { getConnectionType, isConnectionTypeKey } from './lookup';
+import { getConnectionType, isConnectionType } from './lookup';
 
 describe('lookup', () => {
   describe('getConnectionType', () => {
@@ -23,21 +23,21 @@ describe('lookup', () => {
     });
   });
 
-  describe('isConnectionTypeKey', () => {
+  describe('isConnectionType', () => {
     it('returns true for a registered connection type', () => {
-      expect(isConnectionTypeKey('github')).toBe(true);
+      expect(isConnectionType('github')).toBe(true);
     });
 
     it('returns false for an unregistered connection type', () => {
-      expect(isConnectionTypeKey('bitbucket')).toBe(false);
+      expect(isConnectionType('bitbucket')).toBe(false);
     });
 
     it('returns false for an empty string', () => {
-      expect(isConnectionTypeKey('')).toBe(false);
+      expect(isConnectionType('')).toBe(false);
     });
 
     it('returns false for undefined', () => {
-      expect(isConnectionTypeKey(undefined)).toBe(false);
+      expect(isConnectionType(undefined)).toBe(false);
     });
   });
 });

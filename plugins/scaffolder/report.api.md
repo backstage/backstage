@@ -433,10 +433,15 @@ export const repoPickerValidation: (
 export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
+    ownerLabel?: string | undefined;
     allowedOrganizations?: string[] | undefined;
+    ownerDescription?: string | undefined;
     allowedOwners?: string[] | undefined;
     allowedProjects?: string[] | undefined;
+    disableRepoAutocomplete?: boolean | undefined;
     allowedRepos?: string[] | undefined;
+    repoLabel?: string | undefined;
+    repoDescription?: string | undefined;
     allowedHosts?: string[] | undefined;
     requestUserCredentials?:
       | {
@@ -460,10 +465,15 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
 export const RepoUrlPickerFieldSchema: FieldSchema_2<
   string,
   {
+    ownerLabel?: string | undefined;
     allowedOrganizations?: string[] | undefined;
+    ownerDescription?: string | undefined;
     allowedOwners?: string[] | undefined;
     allowedProjects?: string[] | undefined;
+    disableRepoAutocomplete?: boolean | undefined;
     allowedRepos?: string[] | undefined;
+    repoLabel?: string | undefined;
+    repoDescription?: string | undefined;
     allowedHosts?: string[] | undefined;
     requestUserCredentials?:
       | {

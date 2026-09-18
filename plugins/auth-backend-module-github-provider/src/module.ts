@@ -13,14 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createBackendModule } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 import {
   authProvidersExtensionPoint,
   commonSignInResolvers,
   createOAuthProviderFactory,
 } from '@backstage/plugin-auth-node';
 import { githubAuthenticator } from './authenticator';
-import { githubSignInResolvers } from './resolvers';
+import { createGithubProviderSignInResolvers } from './resolvers';
 
 /** @public */
 export const authModuleGithubProvider = createBackendModule({
@@ -30,14 +34,16 @@ export const authModuleGithubProvider = createBackendModule({
     reg.registerInit({
       deps: {
         providers: authProvidersExtensionPoint,
+        auth: coreServices.auth,
+        catalog: catalogServiceRef,
       },
-      async init({ providers }) {
+      async init({ providers, auth, catalog }) {
         providers.registerProvider({
           providerId: 'github',
           factory: createOAuthProviderFactory({
             authenticator: githubAuthenticator,
             signInResolverFactories: {
-              ...githubSignInResolvers,
+              ...createGithubProviderSignInResolvers({ auth, catalog }),
               ...commonSignInResolvers,
             },
           }),

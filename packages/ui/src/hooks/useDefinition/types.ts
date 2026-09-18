@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import type { ReactNode } from 'react';
+import type { ComponentType, ReactElement, ReactNode } from 'react';
 import type { Responsive } from '../../types';
 import type { AnalyticsTracker } from '../../analytics/types';
+import type {
+  AnchorNavigation,
+  NavigationProps,
+} from '../../navigation/useNavigation';
 import type { utilityClassMap } from '../../utils/utilityClassMap';
 
 export type UnwrapResponsive<T> = T extends Responsive<infer U> ? U : T;
@@ -27,6 +31,16 @@ export interface PropDefConfig<T> {
 }
 
 export type UtilityPropKey = keyof typeof utilityClassMap;
+
+export type DefinitionNavigationConfig = { type: 'anchor' };
+
+export type DefinitionNavigationResult = AnchorNavigation;
+
+export type DefinitionNavigationComponent = <P extends object>(props: {
+  props: NavigationProps;
+  view: ComponentType<P & { navigation: DefinitionNavigationResult }>;
+  viewProps: P;
+}) => ReactElement;
 
 export interface ComponentConfig<
   P extends Record<string, any>,
@@ -51,6 +65,7 @@ export interface ComponentConfig<
    * `noTrack?: boolean`.
    */
   analytics?: boolean;
+  navigation?: DefinitionNavigationConfig;
 }
 
 /**
@@ -169,4 +184,9 @@ export type UseDefinitionResult<
   dataAttributes: DataAttributes<D['propDefs']>;
 
   utilityStyle: ResolvedUtilityStyle<D>;
-} & (D['analytics'] extends true ? { analytics: AnalyticsTracker } : {});
+} & (D['analytics'] extends true ? { analytics: AnalyticsTracker } : {}) &
+  (D['navigation'] extends DefinitionNavigationConfig
+    ? {
+        navigation: DefinitionNavigationComponent;
+      }
+    : {});

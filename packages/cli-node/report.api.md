@@ -269,6 +269,16 @@ export class PackageRoles {
 }
 
 // @public
+export function parseCommaSeparatedList(
+  value: string | undefined,
+): string[] | undefined;
+
+// @public
+export function parseKeyValuePairs(
+  pairs: string[] | undefined,
+): Record<string, unknown> | undefined;
+
+// @public
 export function runCli(options: {
   modules: ReadonlyArray<CliModule>;
   name: string;

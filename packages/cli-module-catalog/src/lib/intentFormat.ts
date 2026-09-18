@@ -40,9 +40,45 @@ export function extractEntities(
 
 export function formatEntityTable(
   entities: Array<Record<string, unknown>>,
+  fields?: string[],
 ): string {
   if (entities.length === 0) {
     return `${chalk.yellow('No entities found.')}\n`;
+  }
+
+  if (fields?.length) {
+    const headers = fields.map(field =>
+      (field.split('.').pop() ?? field).toUpperCase(),
+    );
+    const rows = entities.map(entity =>
+      fields.map(field => {
+        const value = field.split('.').reduce<unknown>((current, key) => {
+          if (current && typeof current === 'object') {
+            return (current as Record<string, unknown>)[key];
+          }
+          return undefined;
+        }, entity);
+        if (value === undefined || value === null) return '';
+        return typeof value === 'object'
+          ? JSON.stringify(value)
+          : String(value);
+      }),
+    );
+    const widths = headers.map((header, index) =>
+      Math.max(header.length, ...rows.map(row => row[index].length)),
+    );
+    const render = (cells: string[]) =>
+      cells
+        .map((cell, index) =>
+          index === cells.length - 1 ? cell : pad(cell, widths[index]),
+        )
+        .join(' ');
+    return `${[
+      render(
+        headers.map((header, index) => chalk.bold(pad(header, widths[index]))),
+      ),
+      ...rows.map(render),
+    ].join('\n')}\n`;
   }
 
   const lines: string[] = [];

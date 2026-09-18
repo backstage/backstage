@@ -15,7 +15,10 @@
  */
 
 import { cli } from 'cleye';
-import type { CliCommandContext } from '@backstage/cli-node';
+import {
+  parseKeyValuePairs,
+  type CliCommandContext,
+} from '@backstage/cli-node';
 import { createCatalogClient } from '../lib/catalogClient';
 import { resolveAuth } from '../lib/resolveAuth';
 import {
@@ -30,6 +33,11 @@ export default async ({ args, info }: CliCommandContext) => {
     {
       name: info.usage,
       flags: {
+        filter: {
+          type: [String] as const,
+          description: 'Query predicate as repeatable key=value input',
+          default: [] as string[],
+        },
         limit: { type: Number, description: 'Maximum results to return' },
         output: {
           type: String,
@@ -50,7 +58,7 @@ export default async ({ args, info }: CliCommandContext) => {
   const client = createCatalogClient(baseUrl);
 
   const request: Record<string, unknown> = {
-    query: { kind: 'Template' },
+    query: { kind: 'Template', ...parseKeyValuePairs(flags.filter) },
   };
   if (flags.limit) request.limit = flags.limit;
 

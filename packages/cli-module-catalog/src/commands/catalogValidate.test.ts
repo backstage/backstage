@@ -15,6 +15,9 @@
  */
 
 import type { CliCommandContext } from '@backstage/cli-node';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 const mockValidateEntity = jest.fn();
 
@@ -69,11 +72,11 @@ describe('catalog validate', () => {
     stdoutSpy.mockRestore();
   });
 
-  it('throws when --entity is missing', async () => {
+  it('throws when neither --entity nor --entity-file is provided', async () => {
     (mockCli as jest.Mock).mockReturnValue({ flags: {} });
 
     await expect(catalogValidate(ctx([]))).rejects.toThrow(
-      '--entity is required',
+      '--entity or --entity-file is required',
     );
   });
 
@@ -112,6 +115,28 @@ describe('catalog validate', () => {
       errors: [],
       entity: expect.objectContaining({ kind: 'Component' }),
     });
+  });
+
+  it('reads entity YAML from --entity-file', async () => {
+    const directory = mkdtempSync(join(tmpdir(), 'catalog-validate-'));
+    const entityPath = join(directory, 'catalog-info.yaml');
+    writeFileSync(entityPath, validEntityYaml);
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: { 'entity-file': entityPath },
+    });
+    mockValidateEntity.mockResolvedValue({ valid: true });
+
+    try {
+      await catalogValidate(ctx(['--entity-file', entityPath]));
+    } finally {
+      rmSync(directory, { recursive: true });
+    }
+
+    expect(mockValidateEntity).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: 'Component' }),
+      'url:https://localhost/entity-validator',
+      { token: 'tok' },
+    );
   });
 
   it('passes --location to the catalog', async () => {

@@ -10,10 +10,13 @@ For some use cases, you may want to define custom [rules](../references/glossary
 
 Plugins should export a rule factory that provides type-safety that ensures compatibility with the plugin's backend. The catalog plugin exports `createCatalogPermissionRule` from `@backstage/plugin-catalog-backend/alpha` for this purpose. Note: the `/alpha` path segment is temporary until this API is marked as stable. For this example, we'll define the rule and create a condition in a new file called `permissionRules.ts`. Create this file in the `src/` directory of your permission policy module (the package scaffolded by `yarn new` in the [Getting Started](./getting-started.md) section).
 
-We use `zod` and `@backstage/catalog-model` in our example below. To install them run:
+Permission rule parameter schemas accept libraries that implement Standard
+Schema, validate synchronously, and support JSON Schema conversion. Async
+refinements and transforms are not supported. We use Zod v4 and
+`@backstage/catalog-model` in the example below. To install them, run:
 
 ```bash title="from your Backstage root directory"
-yarn --cwd plugins/permission-backend-module-custom add zod@3 @backstage/catalog-model
+yarn --cwd plugins/permission-backend-module-custom add zod@4 @backstage/catalog-model
 ```
 
 ```ts title="plugins/permission-backend-module-custom/src/permissionRules.ts"
@@ -23,7 +26,7 @@ import {
   createConditionFactory,
   createPermissionRule,
 } from '@backstage/plugin-permission-node';
-import { z } from 'zod/v3';
+import * as z from 'zod';
 
 export const isInSystemRule = createPermissionRule({
   name: 'IS_IN_SYSTEM',

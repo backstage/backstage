@@ -88,4 +88,44 @@ describe('AppIdentityProxy', () => {
     await proxy.signOut();
     expect(navigateSpy).toHaveBeenCalledWith('/foo');
   });
+
+  it('should report whether a target has been set', () => {
+    const proxy = new AppIdentityProxy();
+    expect(proxy.isTargetSet()).toBe(false);
+
+    proxy.setTarget(mockIdentityApi, { signOutTargetUrl: '/' });
+    expect(proxy.isTargetSet()).toBe(true);
+  });
+
+  it('should ignore a second setTarget call once a target is set', async () => {
+    const proxy = new AppIdentityProxy();
+    const firstIdentityApi = {
+      ...mockIdentityApi,
+      getBackstageIdentity: jest.fn().mockResolvedValue({
+        type: 'user',
+        userEntityRef: 'user:default/first',
+        ownershipEntityRefs: [],
+      }),
+    };
+    const secondIdentityApi = {
+      ...mockIdentityApi,
+      getBackstageIdentity: jest.fn().mockResolvedValue({
+        type: 'user',
+        userEntityRef: 'user:default/second',
+        ownershipEntityRefs: [],
+      }),
+    };
+
+    proxy.setTarget(firstIdentityApi, { signOutTargetUrl: '/first' });
+    proxy.setTarget(secondIdentityApi, { signOutTargetUrl: '/second' });
+
+    await expect(proxy.getBackstageIdentity()).resolves.toMatchObject({
+      userEntityRef: 'user:default/first',
+    });
+
+    const navigateSpy = jest.spyOn(proxy as any, 'navigateToUrl');
+    await proxy.signOut();
+    expect(navigateSpy).toHaveBeenCalledWith('/first');
+    expect(secondIdentityApi.getBackstageIdentity).not.toHaveBeenCalled();
+  });
 });

@@ -15,7 +15,11 @@
  */
 
 import { cli } from 'cleye';
-import type { CliCommandContext } from '@backstage/cli-node';
+import {
+  parseCommaSeparatedList,
+  parseKeyValuePairs,
+  type CliCommandContext,
+} from '@backstage/cli-node';
 import { SearchClient } from '../lib/SearchClient';
 import { resolveAuth } from '../lib/resolveAuth';
 import {
@@ -26,7 +30,6 @@ import {
 
 export default async ({ args, info }: CliCommandContext) => {
   const nonFlagArgs: string[] = [];
-  const flagArgs: string[] = [];
   let skipNext = false;
 
   for (let i = 0; i < args.length; i++) {
@@ -35,13 +38,11 @@ export default async ({ args, info }: CliCommandContext) => {
       continue;
     }
     if (args[i].startsWith('-')) {
-      flagArgs.push(args[i]);
       if (
         i + 1 < args.length &&
         !args[i + 1].startsWith('-') &&
         !args[i].includes('=')
       ) {
-        flagArgs.push(args[i + 1]);
         skipNext = true;
       }
     } else {
@@ -49,18 +50,20 @@ export default async ({ args, info }: CliCommandContext) => {
     }
   }
 
-  const { flags } = cli(
+  const parsed = cli(
     {
       name: info.usage,
+      strictFlags: true,
+      parameters: ['<term...>'],
       flags: {
         types: {
           type: String,
-          description:
-            'Document types to search (JSON array, e.g. \'["techdocs"]\')',
+          description: 'Comma-separated document types',
         },
-        filters: {
-          type: String,
-          description: 'Query filters (JSON)',
+        filter: {
+          type: [String] as const,
+          description: 'Query filter as repeatable key=value input',
+          default: [] as string[],
         },
         'page-limit': {
           type: Number,
@@ -81,13 +84,15 @@ export default async ({ args, info }: CliCommandContext) => {
       },
     },
     undefined,
-    flagArgs,
+    args,
   );
+  const { flags } = parsed;
 
-  const term = nonFlagArgs.join(' ');
+  const termParts = parsed._?.term ?? nonFlagArgs;
+  const term = termParts.join(' ');
   if (!term) {
     throw new Error(
-      'Search term is required. Usage: search <term> [--types \'["techdocs"]\']',
+      'Search term is required. Usage: search <term> [--types techdocs]',
     );
   }
 
@@ -97,8 +102,8 @@ export default async ({ args, info }: CliCommandContext) => {
 
   const response = await client.query({
     term,
-    types: flags.types ? JSON.parse(flags.types) : undefined,
-    filters: flags.filters ? JSON.parse(flags.filters) : undefined,
+    types: parseCommaSeparatedList(flags.types),
+    filters: parseKeyValuePairs(flags.filter),
     pageLimit: flags['page-limit'],
     pageCursor: flags['page-cursor'],
   });

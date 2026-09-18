@@ -154,7 +154,5 @@ export function stringifyEntityRef(
     name = ref.name;
   }
 
-  return `${kind.toLocaleLowerCase('en-US')}:${namespace.toLocaleLowerCase(
-    'en-US',
-  )}/${name.toLocaleLowerCase('en-US')}`;
+  return `${kind.toLowerCase()}:${namespace.toLowerCase()}/${name.toLowerCase()}`;
 }

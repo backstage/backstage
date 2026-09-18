@@ -15,7 +15,7 @@
  */
 
 import { render, screen } from '@testing-library/react';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   mockApis,
@@ -49,26 +49,22 @@ describe('ProxiedSignInPage', () => {
 
   it('should sign in a user', async () => {
     worker.use(
-      rest.get('http://example.com/api/auth/test/refresh', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({
-            profile: {
-              email: 'e',
-              displayName: 'd',
-              picture: 'p',
+      http.get('http://example.com/api/auth/test/refresh', () =>
+        HttpResponse.json({
+          profile: {
+            email: 'e',
+            displayName: 'd',
+            picture: 'p',
+          },
+          backstageIdentity: {
+            token: 'a.e30.c',
+            identity: {
+              type: 'user',
+              userEntityRef: 'k:ns/ue',
+              ownershipEntityRefs: ['k:ns/oe'],
             },
-            backstageIdentity: {
-              token: 'a.e30.c',
-              identity: {
-                type: 'user',
-                userEntityRef: 'k:ns/ue',
-                ownershipEntityRefs: ['k:ns/oe'],
-              },
-            },
-          }),
-        ),
+          },
+        }),
       ),
     );
 
@@ -81,13 +77,12 @@ describe('ProxiedSignInPage', () => {
 
   it('should forward error', async () => {
     worker.use(
-      rest.get('http://example.com/api/auth/test/refresh', (_, res, ctx) =>
-        res(
-          ctx.status(401),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({
+      http.get('http://example.com/api/auth/test/refresh', () =>
+        HttpResponse.json(
+          {
             error: { name: 'Error', message: 'not-displayed' },
-          }),
+          },
+          { status: 401 },
         ),
       ),
     );
@@ -131,13 +126,12 @@ describe('ProxiedSignInPage', () => {
     });
 
     worker.use(
-      rest.get('http://example.com/api/auth/test/refresh', (_, res, ctx) =>
-        res(
-          ctx.status(401),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({
+      http.get('http://example.com/api/auth/test/refresh', () =>
+        HttpResponse.json(
+          {
             error: { name: 'Error', message: 'not-displayed' },
-          }),
+          },
+          { status: 401 },
         ),
       ),
     );

@@ -5,9 +5,8 @@ description: CLI commands for querying and managing the Backstage software catal
 ---
 
 The catalog module (`@backstage/cli-module-catalog`) provides intent-based
-commands for interacting with the Backstage software catalog. Instead of calling
-`actions execute catalog:query-catalog-entities --query '{"kind":"Component"}'`,
-you can use `catalog list --kind Component`.
+commands for interacting with the Backstage software catalog, such as
+`catalog list --kind Component`.
 
 ## Prerequisites
 
@@ -28,15 +27,16 @@ Usage: backstage-cli catalog list [options]
 Options:
   --kind <kind>        Entity kind (Component, API, System, etc.)
   --type <type>        Entity type (service, website, library, etc.)
-  --filter <json>      Full query predicate (JSON)
+  --filter <key=value> Query predicate (repeatable)
   --limit <number>     Maximum results to return
-  --fields <json>      Fields to include (JSON array)
+  --fields <list>      Comma-separated fields
   --output <format>    Output format: human (default), json
   --instance <name>    Instance name
 ```
 
 Wraps `catalog:query-catalog-entities`. The `--kind` and `--type` flags are
-translated into a query predicate automatically.
+translated into a query predicate automatically. Repeat `--filter` to add
+predicates. Filters override the shortcut flags when the same key is provided.
 
 ### Examples
 
@@ -51,20 +51,25 @@ yarn backstage-cli catalog list --kind Component --type service
 yarn backstage-cli catalog list --kind API
 
 # Advanced query
-yarn backstage-cli catalog list --filter '{"kind":"Component","spec.lifecycle":"production"}'
+yarn backstage-cli catalog list --filter kind=Component --filter spec.lifecycle=production
+
+# Select fields for the human-readable table
+yarn backstage-cli catalog list --fields metadata.name,metadata.description
 ```
 
 ## catalog get
 
-Get a single catalog entity by name.
+Get a single catalog entity by reference. References use the
+`[kind:][namespace/]name` format. Use `--kind` or `--namespace` to disambiguate
+a short reference that matches multiple entities.
 
 ```text
-Usage: backstage-cli catalog get [options]
+Usage: backstage-cli catalog get [ref] [options]
 
 Options:
-  --name <name>          Entity name (required)
-  --kind <kind>          Entity kind
-  --namespace <ns>       Entity namespace (default: default)
+  --name <name>          Entity name alias
+  --kind <kind>          Entity kind for a short reference
+  --namespace <ns>       Entity namespace for a short reference
   --output <format>      Output format: human (default), json
   --instance <name>      Instance name
 ```
@@ -74,6 +79,10 @@ Wraps `catalog:get-catalog-entity`.
 ### Examples
 
 ```bash
+yarn backstage-cli catalog get component:default/my-service
+yarn backstage-cli catalog get my-service --kind Component
+
+# Existing flag-based input remains supported
 yarn backstage-cli catalog get --name my-service --kind Component
 ```
 
@@ -85,8 +94,10 @@ Validate entity YAML content against the catalog schema.
 Usage: backstage-cli catalog validate [options]
 
 Options:
-  --entity <yaml>      Entity YAML content (required)
+  --entity <yaml>      Entity YAML content
+  --entity-file <path> Path to a file containing entity YAML
   --location <url>     Location to validate
+  --output <format>    Output format: human (default), json
   --instance <name>    Instance name
 ```
 
@@ -95,6 +106,9 @@ Wraps `catalog:validate-entity`.
 ### Examples
 
 ```bash
+yarn backstage-cli catalog validate --entity-file ./catalog-info.yaml
+
+# Existing inline input remains supported
 yarn backstage-cli catalog validate --entity "$(cat catalog-info.yaml)"
 ```
 
@@ -107,6 +121,7 @@ Usage: backstage-cli catalog register [options]
 
 Options:
   --location-url <url>   URL to the catalog-info.yaml file (required)
+  --output <format>      Output format: human (default), json
   --instance <name>      Instance name
 ```
 
@@ -128,6 +143,7 @@ Usage: backstage-cli catalog unregister [options]
 Options:
   --location-id <id>     Location ID to unregister
   --location-url <url>   Location URL to unregister
+  --output <format>      Output format: human (default), json
   --instance <name>      Instance name
 ```
 

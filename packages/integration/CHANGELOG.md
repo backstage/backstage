@@ -1,5 +1,48 @@
 # @backstage/integration
 
+## 2.1.2
+
+### Patch Changes
+
+- 23705f3: Fixed an issue where reading or downloading files from Bitbucket Server could fail when the branch name contained special characters such as an ampersand or a plus sign. The branch name is now correctly encoded in the request URL.
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- 7150117: Updated internal Azure DevOps imports to avoid a circular module dependency.
+- e592bc5: Fixed an issue where reading files from GitLab could fail when the branch name contained special characters such as an ampersand or a plus sign. The branch name is now correctly encoded in the request URL.
+- e895def: Fixed handling of GitLab URLs for instances configured with a relative base path.
+- Updated dependencies
+  - @backstage/connections@0.4.0
+  - @backstage/config@1.3.9
+
+## 2.1.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/connections@0.4.0-next.0
+
+## 2.1.2-next.0
+
+### Patch Changes
+
+- 7150117: Updated internal Azure DevOps imports to avoid a circular module dependency.
+- e895def: Fixed handling of GitLab URLs for instances configured with a relative base path.
+
+## 2.1.0
+
+### Minor Changes
+
+- dc951d4: Added support for creating a GitHub credentials provider backed by the connections service.
+
+### Patch Changes
+
+- 87bfe22: GitHub integrations now cache the list of app installations for a short period, avoiding a full `GET /app/installations` pagination on every token fetch. This significantly reduces API usage against the 15k/hour GitHub App rate limit for organizations with many installations or frequent credential refreshes.
+
+  The cache is refreshed on a 10-minute TTL, and is additionally invalidated when a lookup for a previously-unseen owner occurs (throttled to once per minute) or when GitHub reports that a cached installation is no longer available, so newly added or removed installations are still picked up promptly.
+
+- Updated dependencies
+  - @backstage/connections@0.3.0
+
 ## 2.1.0-next.1
 
 ### Patch Changes

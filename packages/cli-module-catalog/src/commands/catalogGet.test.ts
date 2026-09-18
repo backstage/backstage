@@ -60,10 +60,12 @@ describe('catalog get', () => {
     stdoutSpy.mockRestore();
   });
 
-  it('throws when --name is missing', async () => {
+  it('throws when neither a reference nor --name is provided', async () => {
     (mockCli as jest.Mock).mockReturnValue({ flags: {} });
 
-    await expect(catalogGet(ctx([]))).rejects.toThrow('--name is required');
+    await expect(catalogGet(ctx([]))).rejects.toThrow(
+      'Entity reference or --name is required',
+    );
   });
 
   it('queries the catalog by name only', async () => {
@@ -77,6 +79,45 @@ describe('catalog get', () => {
     expect(mockQueryEntities).toHaveBeenCalledWith(
       { query: { 'metadata.name': 'my-svc' } },
       { token: 'tok' },
+    );
+  });
+
+  it('accepts a positional full entity reference', async () => {
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: {},
+      _: { ref: 'component:prod/my-svc' },
+    });
+    mockQueryEntities.mockResolvedValue({
+      items: [
+        {
+          kind: 'Component',
+          metadata: { name: 'my-svc', namespace: 'prod' },
+        },
+      ],
+    });
+
+    await catalogGet(ctx(['component:prod/my-svc']));
+
+    expect(mockQueryEntities).toHaveBeenCalledWith(
+      {
+        query: {
+          'metadata.name': 'my-svc',
+          kind: 'component',
+          'metadata.namespace': 'prod',
+        },
+      },
+      { token: 'tok' },
+    );
+  });
+
+  it('rejects an empty positional entity reference', async () => {
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: {},
+      _: { ref: '   ' },
+    });
+
+    await expect(catalogGet(ctx(['   ']))).rejects.toThrow(
+      'Entity reference cannot be empty',
     );
   });
 

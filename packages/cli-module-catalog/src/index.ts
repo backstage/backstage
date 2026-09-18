@@ -27,7 +27,7 @@ export default createCliModule({
     });
     reg.addCommand({
       path: ['catalog', 'get'],
-      description: 'Get a specific catalog entity by name',
+      description: 'Get a specific catalog entity by reference',
       execute: { loader: () => import('./commands/catalogGet') },
     });
     reg.addCommand({

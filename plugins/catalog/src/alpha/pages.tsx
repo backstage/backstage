@@ -15,8 +15,6 @@
  */
 
 import { convertLegacyRouteRef } from '@backstage/core-compat-api';
-import { stringifyEntityRef } from '@backstage/catalog-model';
-import { useRouteRefParams } from '@backstage/core-plugin-api';
 import {
   coreExtensionData,
   createExtensionInput,
@@ -25,10 +23,7 @@ import {
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { z } from 'zod/v4';
-import {
-  AsyncEntityProvider,
-  entityRouteRef,
-} from '@backstage/plugin-catalog-react';
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import {
   defaultEntityContentGroupDefinitions,
   EntityContentBlueprint,
@@ -39,7 +34,6 @@ import {
 } from '@backstage/plugin-catalog-react/alpha';
 import CategoryIcon from '@material-ui/icons/Category';
 import { rootRouteRef } from '../routes';
-import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 import { buildFilterFn } from './filter/FilterWrapper';
 import type { CatalogExportSettings } from '../components/CatalogExportButton';
 
@@ -209,10 +203,9 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
       // `core-compat-api` package.
       routeRef: convertLegacyRouteRef(entityRouteRef), // READ THE ABOVE
       loader: async () => {
-        const [{ EntityLayout }, { EntityLayoutBui }] = await Promise.all([
-          import('./components/EntityLayout'),
-          import('./components/EntityLayout/EntityLayoutBui'),
-        ]);
+        const { CatalogEntityPage } = await import(
+          './components/CatalogEntityPage'
+        );
 
         const menuItems = inputs.contextMenuItems.map(item => ({
           data: item.get(EntityContextMenuItemBlueprint.dataRefs.data),
@@ -271,62 +264,17 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
           children: output.get(coreExtensionData.reactElement),
         }));
 
-        const Component = () => {
-          const routeParams = useRouteRefParams(entityRouteRef);
-          const entityFromUrl = useEntityFromUrl();
-          const matchesRoute =
-            !!entityFromUrl.entity &&
-            stringifyEntityRef(entityFromUrl.entity) ===
-              stringifyEntityRef(routeParams);
-          const entity = matchesRoute ? entityFromUrl.entity : undefined;
-          const entityProviderProps = {
-            ...entityFromUrl,
-            entity,
-            loading:
-              entityFromUrl.loading ||
-              (!!entityFromUrl.entity && !matchesRoute),
-          };
-          const filteredMenuItems = entity
-            ? menuItems
-                .filter(i => i.filter(entity))
-                .map(({ data, node }) => ({ data, node }))
-            : [];
-
-          const HeaderComponent = entity
-            ? headerLayouts.find(layout => layout.filter(entity))?.Component
-            : undefined;
-          const legacyHeader = entity
-            ? headers.find(header => header.filter(entity))?.element
-            : undefined;
-
-          const layout =
-            HeaderComponent || !legacyHeader ? (
-              <EntityLayoutBui
-                routes={routes}
-                HeaderComponent={HeaderComponent}
-                contextMenuItems={filteredMenuItems}
-                groupDefinitions={groupDefinitions}
-                defaultContentOrder={config.defaultContentOrder}
-              />
-            ) : (
-              <EntityLayout
-                routes={routes}
-                header={legacyHeader}
-                contextMenuItems={filteredMenuItems}
-                groupDefinitions={groupDefinitions}
-                defaultContentOrder={config.defaultContentOrder}
-                showNavItemIcons={config.showNavItemIcons}
-              />
-            );
-
-          return (
-            <AsyncEntityProvider {...entityProviderProps}>
-              {layout}
-            </AsyncEntityProvider>
-          );
-        };
-
-        return <Component />;
+        return (
+          <CatalogEntityPage
+            menuItems={menuItems}
+            headerLayouts={headerLayouts}
+            headers={headers}
+            routes={routes}
+            groupDefinitions={groupDefinitions}
+            defaultContentOrder={config.defaultContentOrder}
+            showNavItemIcons={config.showNavItemIcons}
+          />
+        );
       },
     });
   },

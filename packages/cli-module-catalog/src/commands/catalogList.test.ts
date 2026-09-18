@@ -109,19 +109,40 @@ describe('catalog list', () => {
     );
   });
 
-  it('passes filter as raw query when provided', async () => {
-    const filter = '{"kind":"API","spec.type":"openapi"}';
-    (mockCli as jest.Mock).mockReturnValue({ flags: { filter } });
+  it('rejects JSON input for --filter', async () => {
+    const filter = '{"url":"https://example.com?a=b"}';
+    (mockCli as jest.Mock).mockReturnValue({ flags: { filter: [filter] } });
+
+    await expect(catalogList(ctx(['--filter', filter]))).rejects.toThrow(
+      'JSON object input is not supported; use repeatable key=value flags',
+    );
+  });
+
+  it('merges repeatable key-value filters with kind and type shortcuts', async () => {
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: {
+        kind: 'Component',
+        type: 'service',
+        filter: ['spec.lifecycle=production', 'metadata.tags=java'],
+      },
+    });
     mockQueryEntities.mockResolvedValue({
       items: [],
       totalItems: 0,
       pageInfo: {},
     });
 
-    await catalogList(ctx(['--filter', filter]));
+    await catalogList(ctx([]));
 
     expect(mockQueryEntities).toHaveBeenCalledWith(
-      { query: JSON.parse(filter) },
+      {
+        query: {
+          kind: 'Component',
+          'spec.type': 'service',
+          'spec.lifecycle': 'production',
+          'metadata.tags': 'java',
+        },
+      },
       { token: 'tok' },
     );
   });
@@ -182,6 +203,44 @@ describe('catalog list', () => {
     expect(output).toContain('Component');
     expect(output).toContain('service');
     expect(output).toContain('NAME');
+  });
+
+  it('uses comma-separated fields as the human-readable table columns', async () => {
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: { fields: 'metadata.name,metadata.description' },
+    });
+    mockQueryEntities.mockResolvedValue({
+      items: [
+        {
+          kind: 'Component',
+          metadata: { name: 'my-svc', description: 'My service' },
+        },
+      ],
+      totalItems: 1,
+      pageInfo: {},
+    });
+
+    await catalogList(ctx([]));
+
+    expect(mockQueryEntities).toHaveBeenCalledWith(
+      { fields: ['metadata.name', 'metadata.description'] },
+      { token: 'tok' },
+    );
+    const output = stdoutSpy.mock.calls.map(c => c[0]).join('');
+    expect(output).toContain('NAME');
+    expect(output).toContain('DESCRIPTION');
+    expect(output).toContain('My service');
+    expect(output).not.toContain('NAMESPACE');
+  });
+
+  it('rejects JSON input for --fields', async () => {
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: { fields: '["metadata.name"]' },
+    });
+
+    await expect(catalogList(ctx([]))).rejects.toThrow(
+      'JSON list input is not supported; use comma-separated values',
+    );
   });
 
   it('passes --instance to resolveAuth', async () => {

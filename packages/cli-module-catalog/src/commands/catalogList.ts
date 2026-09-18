@@ -15,7 +15,11 @@
  */
 
 import { cli } from 'cleye';
-import type { CliCommandContext } from '@backstage/cli-node';
+import {
+  parseCommaSeparatedList,
+  parseKeyValuePairs,
+  type CliCommandContext,
+} from '@backstage/cli-node';
 import { createCatalogClient } from '../lib/catalogClient';
 import { resolveAuth } from '../lib/resolveAuth';
 import {
@@ -39,13 +43,14 @@ export default async ({ args, info }: CliCommandContext) => {
           description: 'Entity type (service, website, library, etc.)',
         },
         filter: {
-          type: String,
-          description: 'Full query predicate (JSON)',
+          type: [String] as const,
+          description: 'Query predicate as repeatable key=value input',
+          default: [] as string[],
         },
         limit: { type: Number, description: 'Maximum results to return' },
         fields: {
           type: String,
-          description: 'Fields to include (JSON array)',
+          description: 'Comma-separated fields',
         },
         output: {
           type: String,
@@ -69,14 +74,16 @@ export default async ({ args, info }: CliCommandContext) => {
   if (flags.kind) query.kind = flags.kind;
   if (flags.type) query['spec.type'] = flags.type;
 
+  const filter = parseKeyValuePairs(flags.filter);
+  const mergedQuery = { ...query, ...filter };
+  const fields = parseCommaSeparatedList(flags.fields);
+
   const request: Record<string, unknown> = {};
-  if (flags.filter) {
-    request.query = JSON.parse(flags.filter);
-  } else if (Object.keys(query).length > 0) {
-    request.query = query;
+  if (Object.keys(mergedQuery).length > 0) {
+    request.query = mergedQuery;
   }
   if (flags.limit) request.limit = flags.limit;
-  if (flags.fields) request.fields = JSON.parse(flags.fields);
+  if (fields) request.fields = fields;
 
   const response = await client.queryEntities(request, { token: accessToken });
   const result = {
@@ -89,6 +96,6 @@ export default async ({ args, info }: CliCommandContext) => {
   if (mode === 'json') {
     writeJson(result);
   } else {
-    process.stdout.write(formatEntityTable(extractEntities(result)));
+    process.stdout.write(formatEntityTable(extractEntities(result), fields));
   }
 };

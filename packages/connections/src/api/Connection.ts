@@ -13,40 +13,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {
-  ConnectionAuthValue,
-  ConnectionType,
-  RootConnectionAuth,
-} from './ConnectionType';
-import type { ConnectionTypeKey, LookupConnectionType } from '../definitions';
-
-/** @public */
-export type AuthValue<T extends ConnectionType | ConnectionTypeKey> =
-  ConnectionAuthValue<
-    RootConnectionAuth<LookupConnectionType<T>['authMethods'][number]>
-  >;
+import type { Expand } from '@backstage/types';
+import type { ConnectionTypeDefinition } from './ConnectionType';
+import type { ConnectionType, LookupConnectionType } from '../definitions';
 
 // A connection of a specific type.
 //
 // - With `T`: a single type, e.g. `Connection<'github'>`.
 // - With `TAuthMethod`: narrows `auth` to a single method variant — the
 //   shape returned by `ConnectionsService.find`.
-// - With no parameters: an open shape suitable for internal storage.
-//   Use `AnyConnection` when you want a discriminated union for narrowing.
+// - With no parameters: a union of all method variants.
 /** @public */
 export type Connection<
-  T extends ConnectionType | ConnectionTypeKey = ConnectionType,
+  T extends
+    | ConnectionTypeDefinition
+    | ConnectionType = ConnectionTypeDefinition,
   TAuthMethod extends string = string,
-> = {
-  type: LookupConnectionType<T>['type'];
-  title: string;
-  auth: string extends TAuthMethod
-    ? AuthValue<T>[]
-    : Extract<AuthValue<T>, { method: TAuthMethod }>;
-} & ReturnType<LookupConnectionType<T>['configSchema']['parse']>;
+> = LookupConnectionType<T> extends ConnectionTypeDefinition<infer IDefinition>
+  ? {
+      type: LookupConnectionType<T>['type'];
+      title: string;
+      auth: string extends TAuthMethod
+        ? IDefinition['auth'][number] extends infer A
+          ? A extends { method: string }
+            ? Expand<A & { title: string }>
+            : never
+          : never
+        : Extract<
+            IDefinition['auth'][number] extends infer A
+              ? A extends { method: string }
+                ? Expand<A & { title: string }>
+                : never
+              : never,
+            { method: TAuthMethod }
+          >;
+    } & ReturnType<LookupConnectionType<T>['configSchema']['parse']>
+  : never;
 
-// Discriminated union of every known connection type, suitable for
-// `switch (c.type)` narrowing.
-export type AnyConnection = {
-  [K in ConnectionTypeKey]: Connection<K>;
-}[ConnectionTypeKey];
+/**
+ * A resolved auth entry for a connection of a specific type.
+ *
+ * @public
+ */
+export type ConnectionAuth<
+  T extends ConnectionType,
+  TAuthMethod extends string = string,
+> = Connection<T, TAuthMethod>['auth'];

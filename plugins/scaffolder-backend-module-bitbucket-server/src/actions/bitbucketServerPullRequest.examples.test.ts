@@ -27,7 +27,7 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 });
 
 import { createPublishBitbucketServerPullRequestAction } from './bitbucketServerPullRequest';
-import { rest } from 'msw';
+import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
@@ -200,26 +200,18 @@ describe('publish:bitbucketServer:pull-request', () => {
   it(`should ${examples[0].description}`, async () => {
     expect.assertions(3);
     server.use(
-      rest.get(
+      http.get(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos/repo/branches',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfBranches),
-          );
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe('Bearer thing');
+          return HttpResponse.json(responseOfBranches, { status: 200 });
         },
       ),
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos/repo/pull-requests',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfPullRequests),
-          );
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe('Bearer thing');
+          return HttpResponse.json(responseOfPullRequests, { status: 201 });
         },
       ),
     );
@@ -236,21 +228,17 @@ describe('publish:bitbucketServer:pull-request', () => {
   it(`should ${examples[1].description}`, async () => {
     expect.assertions(6);
     server.use(
-      rest.get(
+      http.get(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos/repo/branches',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfBranches),
-          );
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe('Bearer thing');
+          return HttpResponse.json(responseOfBranches);
         },
       ),
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos/repo/pull-requests',
-        (req, res, ctx) => {
-          const requestBody = req.body as {
+        async ({ request }) => {
+          const requestBody = (await request.json()) as {
             title: string;
             fromRef: { displayId: string };
             description: string;
@@ -260,12 +248,8 @@ describe('publish:bitbucketServer:pull-request', () => {
           expect(requestBody.description).toBe(
             'This is a detailed description of my pull request',
           );
-          expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfPullRequests),
-          );
+          expect(request.headers.get('Authorization')).toBe('Bearer thing');
+          return HttpResponse.json(responseOfPullRequests, { status: 201 });
         },
       ),
     );
@@ -282,21 +266,17 @@ describe('publish:bitbucketServer:pull-request', () => {
   it(`should ${examples[2].description}`, async () => {
     expect.assertions(6);
     server.use(
-      rest.get(
+      http.get(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos/repo/branches',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfBranches),
-          );
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe('Bearer thing');
+          return HttpResponse.json(responseOfBranches);
         },
       ),
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos/repo/pull-requests',
-        (req, res, ctx) => {
-          const requestBody = req.body as {
+        async ({ request }) => {
+          const requestBody = (await request.json()) as {
             title: string;
             toRef: { displayId: string };
             description: string;
@@ -306,12 +286,8 @@ describe('publish:bitbucketServer:pull-request', () => {
           expect(requestBody.description).toBe(
             'I just made a Pull Request that Add Scaffolder actions for Bitbucket Server',
           );
-          expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfPullRequests),
-          );
+          expect(request.headers.get('Authorization')).toBe('Bearer thing');
+          return HttpResponse.json(responseOfPullRequests, { status: 201 });
         },
       ),
     );
@@ -328,30 +304,22 @@ describe('publish:bitbucketServer:pull-request', () => {
   it(`should ${examples[3].description}`, async () => {
     expect.assertions(3);
     server.use(
-      rest.get(
+      http.get(
         'https://no-credentials.bitbucket.com/rest/api/1.0/projects/project/repos/repo/branches',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
+        ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
             `Bearer ${yaml.parse(examples[3].example).steps[0].input.token}`,
           );
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfBranches),
-          );
+          return HttpResponse.json(responseOfBranches);
         },
       ),
-      rest.post(
+      http.post(
         'https://no-credentials.bitbucket.com/rest/api/1.0/projects/project/repos/repo/pull-requests',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
+        ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
             `Bearer ${yaml.parse(examples[3].example).steps[0].input.token}`,
           );
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfPullRequests),
-          );
+          return HttpResponse.json(responseOfPullRequests, { status: 201 });
         },
       ),
     );
@@ -368,23 +336,19 @@ describe('publish:bitbucketServer:pull-request', () => {
   it(`should ${examples[4].description}`, async () => {
     expect.assertions(8);
     server.use(
-      rest.get(
+      http.get(
         'https://no-credentials.bitbucket.com/rest/api/1.0/projects/project/repos/repo/branches',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
             `Bearer ${yaml.parse(examples[4].example).steps[0].input.token}`,
           );
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfBranches),
-          );
+          return HttpResponse.json(responseOfBranches, { status: 200 });
         },
       ),
-      rest.post(
+      http.post(
         'https://no-credentials.bitbucket.com/rest/api/1.0/projects/project/repos/repo/pull-requests',
-        (req, res, ctx) => {
-          const requestBody = req.body as {
+        async ({ request }) => {
+          const requestBody = (await request.json()) as {
             title: string;
             toRef: { displayId: string };
             fromRef: { displayId: string };
@@ -401,14 +365,10 @@ describe('publish:bitbucketServer:pull-request', () => {
             { user: { name: 'reviewer1' } },
             { user: { name: 'reviewer2' } },
           ]);
-          expect(req.headers.get('Authorization')).toBe(
+          expect(request.headers.get('Authorization')).toBe(
             `Bearer ${yaml.parse(examples[4].example).steps[0].input.token}`,
           );
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfPullRequests),
-          );
+          return HttpResponse.json(responseOfPullRequests, { status: 201 });
         },
       ),
     );

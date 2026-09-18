@@ -154,6 +154,15 @@ export class AuthorizedSearchEngine implements SearchEngine {
       type => typeDecisions[type]?.result !== AuthorizeResult.DENY,
     );
 
+    if (authorizedTypes.length === 0) {
+      return {
+        results: [],
+        nextPageCursor: undefined,
+        previousPageCursor: undefined,
+        numberOfResults: undefined,
+      };
+    }
+
     const resultByResultFilteringRequired = authorizedTypes.some(
       type => typeDecisions[type]?.result === AuthorizeResult.CONDITIONAL,
     );

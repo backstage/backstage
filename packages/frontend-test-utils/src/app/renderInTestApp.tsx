@@ -31,6 +31,7 @@ import {
   createApiFactory,
   createRouteRef,
   ExternalRouteRef,
+  identityApiRef,
   type ApiRef,
 } from '@backstage/frontend-plugin-api';
 import { RouterBlueprint } from '@backstage/plugin-app-react';
@@ -38,6 +39,8 @@ import appPlugin from '@backstage/plugin-app';
 import { getMockApiFactory } from '../apis/MockWithApiFactory';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import type { CreateSpecializedAppInternalOptions } from '../../../frontend-app-api/src/wiring/createSpecializedApp';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { getBasePath } from '../../../frontend-app-api/src/routing/getBasePath';
 import { TestApiPairs } from '../apis/TestApiProvider';
 import { OpaqueExternalRouteRef } from '@internal/frontend';
 
@@ -203,6 +206,15 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
     }
   }
 
+  const apiFactoryOverrides = (options?.apis ?? []).map(
+    entry =>
+      getMockApiFactory(entry) ??
+      createApiFactory(...(entry as readonly [ApiRef<any>, any])),
+  );
+  const identityOverrideFactory = apiFactoryOverrides.find(
+    factory => factory.api.id === identityApiRef.id,
+  );
+
   const features: FrontendFeature[] = [
     createFrontendModule({
       pluginId: 'app',
@@ -235,23 +247,20 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
     features.push(...options.features);
   }
 
+  const config = ConfigReader.fromConfigs([
+    {
+      context: 'render-config',
+      data: options?.config ?? DEFAULT_MOCK_CONFIG,
+    },
+  ]);
+
   const app = prepareSpecializedApp({
     features,
-    config: ConfigReader.fromConfigs([
-      {
-        context: 'render-config',
-        data: options?.config ?? DEFAULT_MOCK_CONFIG,
-      },
-    ]),
+    config,
     __internal: options?.apis && {
-      apiFactoryOverrides: options.apis.map(entry => {
-        const mockFactory = getMockApiFactory(entry);
-        if (mockFactory) {
-          return mockFactory;
-        }
-        const [apiRef, implementation] = entry as readonly [ApiRef<any>, any];
-        return createApiFactory(apiRef, implementation);
-      }),
+      apiFactoryOverrides: apiFactoryOverrides.filter(
+        factory => factory.api.id !== identityApiRef.id,
+      ),
     },
     bindRoutes:
       externalBindings.size > 0
@@ -262,6 +271,18 @@ export function renderInTestApp<const TApiPairs extends any[] = any[]>(
           }
         : undefined,
   } as CreateSpecializedAppInternalOptions).finalize();
+
+  if (identityOverrideFactory) {
+    // identityApiRef always resolves to the app's internal AppIdentityProxy
+    // (AppRouter requires this), so the override can't replace the factory.
+    // setTarget is now idempotent (first write wins), so we just need to
+    // set it before AppRouter's own guest-identity fallback does, which
+    // happens during this same synchronous render call.
+    const proxy = app.apis.get(identityApiRef as any) as any;
+    proxy?.setTarget?.(identityOverrideFactory.factory({}), {
+      signOutTargetUrl: getBasePath(config) || '/',
+    });
+  }
 
   return render(
     app.tree.root.instance!.getData(coreExtensionData.reactElement),

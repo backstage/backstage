@@ -47,10 +47,10 @@ Options:
 ### `backstage-cli-module-search search`
 
 ```
-Usage: @backstage/cli-module-search search [flags...]
+Usage: @backstage/cli-module-search search [flags...] <term...>
 
 Options:
-  --filters <string>
+  --filter <string>
   --instance <string>
   --output <string>
   --page-cursor <string>

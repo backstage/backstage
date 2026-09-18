@@ -47,6 +47,7 @@ import { AbortController } from '@aws-sdk/abort-controller';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { Readable } from 'node:stream';
 import { relative } from 'node:path/posix';
+import { hasDotPathSegments, isUrlPathWithoutDotSegments } from './util';
 
 export const DEFAULT_REGION = 'us-east-1';
 
@@ -75,8 +76,16 @@ export function parseUrl(
   url: string,
   config: AwsS3IntegrationConfig,
 ): { path: string; bucket: string; region: string } {
+  if (!isUrlPathWithoutDotSegments(url)) {
+    throw new Error(`Invalid AWS S3 URL ${url}`);
+  }
+
   const parsedUrl = new URL(url);
-  const pathname = parsedUrl.pathname.substring(1);
+  const pathname = parsedUrl.pathname
+    .substring(1)
+    .split('/')
+    .map(decodeURIComponent)
+    .join('/');
   const host = parsedUrl.host;
 
   if (isAmazonHost(config.host)) {
@@ -234,21 +243,40 @@ export class AwsS3UrlReader implements UrlReaderService {
 
     const accessKeyId = integration.config.accessKeyId;
     const secretAccessKey = integration.config.secretAccessKey;
-    let explicitCredentials: AwsCredentialIdentityProvider;
+    const roleArn = integration.config.roleArn;
+
     if (accessKeyId && secretAccessKey) {
-      explicitCredentials = AwsS3UrlReader.buildStaticCredentials(
+      const explicitCredentials = AwsS3UrlReader.buildStaticCredentials(
         accessKeyId,
         secretAccessKey,
       );
-    } else {
-      explicitCredentials = (await credsManager.getCredentialProvider())
-        .sdkCredentialProvider;
+      if (roleArn) {
+        return fromTemporaryCredentials({
+          masterCredentials: explicitCredentials,
+          params: {
+            RoleSessionName: 'backstage-aws-s3-url-reader',
+            RoleArn: roleArn,
+            ExternalId: integration.config.externalId,
+          },
+          clientConfig: { region },
+        });
+      }
+      return explicitCredentials;
     }
 
-    const roleArn = integration.config.roleArn;
     if (roleArn) {
+      let masterCredentials: AwsCredentialIdentityProvider;
+      try {
+        masterCredentials = (
+          await credsManager.getCredentialProvider({ arn: roleArn })
+        ).sdkCredentialProvider;
+      } catch {
+        // No account-specific config for this ARN; fall back to default credentials
+        masterCredentials = (await credsManager.getCredentialProvider())
+          .sdkCredentialProvider;
+      }
       return fromTemporaryCredentials({
-        masterCredentials: explicitCredentials,
+        masterCredentials,
         params: {
           RoleSessionName: 'backstage-aws-s3-url-reader',
           RoleArn: roleArn,
@@ -258,7 +286,7 @@ export class AwsS3UrlReader implements UrlReaderService {
       });
     }
 
-    return explicitCredentials;
+    return (await credsManager.getCredentialProvider()).sdkCredentialProvider;
   }
 
   private async buildS3Client(
@@ -386,6 +414,9 @@ export class AwsS3UrlReader implements UrlReaderService {
       } while (continuationToken);
 
       for (let i = 0; i < allObjects.length; i++) {
+        if (hasDotPathSegments(String(allObjects[i]))) {
+          continue;
+        }
         const getObjectCommand = new GetObjectCommand({
           Bucket: bucket,
           Key: String(allObjects[i]),

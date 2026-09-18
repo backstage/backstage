@@ -1,5 +1,25 @@
 # @backstage/catalog-model
 
+## 1.10.1
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- 61809fe: Allow independently registered catalog model sources to share identical layers, while reporting a clear error for conflicting layers with the same ID.
+- 78656f8: Fixed several issues in the alpha catalog model layer system. Schema updates now preserve sibling field validation when changing a property named `type`, support deleting inherited fields and constraints, and retain literal JSON values in `const` and `default`. Kind schemas without an explicit root type retain their fields, and invalid combined schemas are rejected during model compilation. Empty kind descriptions and reverse relation titles are now applied correctly.
+
+## 1.10.0
+
+### Minor Changes
+
+- ad18743: Added `marketplace` spec type to the `@alpha` AiResource kind, representing a curated registry of plugins for discovery and distribution. Marketplaces reference their contained plugins via `spec.plugins` entity references, generating `hasPart` catalog relations.
+- f501302: Added `plugin` spec type to the `@alpha` AiResource kind, representing a packaged collection of skills distributed as a unit. Plugins reference their contained skills via `spec.skills` entity references, generating `hasPart` catalog relations.
+- 0b9b3bf: Added optional `allowedTools`, `license`, and `compatibility` fields to the `@alpha` AiResource skill spec, aligned with the agentskills.io specification.
+
+### Patch Changes
+
+- 9a6955c: Corrected catalog relation generation to honor declared kind combinations, and completed reverse relations for existing `AiResource` fields.
+
 ## 1.9.0
 
 ### Minor Changes

@@ -281,6 +281,23 @@ export function createPublishGitlabAction(options: {
         );
       }
 
+      const requireScmUserCredentials = config.getOptionalBoolean(
+        'scaffolder.requireScmUserCredentials',
+      );
+      if (requireScmUserCredentials && !ctx.input.token) {
+        throw new InputError(
+          `No user credentials provided for host ${host}, but scaffolder.requireScmUserCredentials is enabled`,
+        );
+      }
+      if (
+        requireScmUserCredentials &&
+        (setUserAsOwner || ctx.input.ownerUsername)
+      ) {
+        throw new InputError(
+          'The setUserAsOwner and ownerUsername inputs cannot be used when scaffolder.requireScmUserCredentials is enabled because they require credentials from the GitLab integration',
+        );
+      }
+
       if (!integrationConfig.config.token && !ctx.input.token) {
         throw new InputError(`No token available for host ${host}`);
       }

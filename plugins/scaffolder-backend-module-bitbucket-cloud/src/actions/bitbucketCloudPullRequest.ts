@@ -227,8 +227,9 @@ const getDefaultBranch = async (opts: {
 export function createPublishBitbucketCloudPullRequestAction(options: {
   integrations: ScmIntegrationRegistry;
   config: Config;
+  requireScmUserCredentials?: boolean;
 }) {
-  const { integrations, config } = options;
+  const { integrations, config, requireScmUserCredentials } = options;
 
   return createTemplateAction({
     id: 'publish:bitbucketCloud:pull-request',
@@ -312,8 +313,16 @@ export function createPublishBitbucketCloudPullRequestAction(options: {
         );
       }
 
+      if (requireScmUserCredentials && !ctx.input.token) {
+        throw new InputError(
+          `No user credentials provided for host ${host}, but scaffolder.requireScmUserCredentials is enabled`,
+        );
+      }
+
       const authorization = await getAuthorizationHeader(
-        ctx.input.token ? { token: ctx.input.token } : integrationConfig.config,
+        ctx.input.token || requireScmUserCredentials
+          ? { token: ctx.input.token }
+          : integrationConfig.config,
       );
 
       const apiBaseUrl = integrationConfig.config.apiBaseUrl;
@@ -379,8 +388,7 @@ export function createPublishBitbucketCloudPullRequestAction(options: {
         });
 
         // copy files
-        fs.cpSync(sourceDir, tempDir, {
-          recursive: true,
+        fs.copySync(sourceDir, tempDir, {
           filter: isNotGitDirectoryOrContents,
         });
 

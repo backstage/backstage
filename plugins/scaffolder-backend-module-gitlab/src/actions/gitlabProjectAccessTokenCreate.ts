@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { AccessTokenScopes, Gitlab } from '@gitbeaker/rest';
@@ -31,8 +30,9 @@ import { examples } from './gitlabProjectAccessTokenCreate.examples';
 
 export const createGitlabProjectAccessTokenAction = (options: {
   integrations: ScmIntegrationRegistry;
+  requireScmUserCredentials?: boolean;
 }) => {
-  const { integrations } = options;
+  const { integrations, requireScmUserCredentials } = options;
   return createTemplateAction({
     id: 'gitlab:projectAccessToken:create',
     examples,
@@ -97,13 +97,11 @@ export const createGitlabProjectAccessTokenAction = (options: {
         expiresAt,
       } = ctx.input;
 
-      const { token, integrationConfig } = getToken(ctx.input, integrations);
-
-      if (!integrationConfig.config.token && token) {
-        throw new InputError(
-          `No token available for host ${integrationConfig.config.baseUrl}`,
-        );
-      }
+      const { token, integrationConfig } = getToken(
+        ctx.input,
+        integrations,
+        requireScmUserCredentials,
+      );
 
       let api;
 

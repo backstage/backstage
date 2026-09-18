@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli-defaults",
-  "version": "0.1.5-next.0",
+  "version": "0.1.6",
   "description": "Default set of CLI modules for the Backstage CLI",
   "backstage": {
     "role": "cli-module"
@@ -41,6 +41,7 @@
     "@backstage/cli-module-maintenance": "workspace:^",
     "@backstage/cli-module-migrate": "workspace:^",
     "@backstage/cli-module-new": "workspace:^",
+    "@backstage/cli-module-package-manager-yarn": "workspace:^",
     "@backstage/cli-module-scaffolder": "workspace:^",
     "@backstage/cli-module-search": "workspace:^",
     "@backstage/cli-module-test-jest": "workspace:^",

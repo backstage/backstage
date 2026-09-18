@@ -33,6 +33,12 @@ describe('createConnectionType', () => {
     });
 
     expect(SingleAuthType.type).toBe('single');
+    expect(SingleAuthType).not.toHaveProperty('query');
+    expect(SingleAuthType).not.toHaveProperty('auth');
+    // @ts-expect-error - query is an input to find, not a descriptor property
+    expect(SingleAuthType.query).toBeUndefined();
+    // @ts-expect-error - auth values are derived from the auth method schemas
+    expect(SingleAuthType.auth).toBeUndefined();
     expect(SingleAuthType.authMethods).toEqual([
       expect.objectContaining({ method: 'token', title: 'Token' }),
     ]);
@@ -153,6 +159,59 @@ describe('createConnectionType', () => {
     }
 
     expect(error).toBe(expectedError);
+  });
+
+  it('exposes the validate hook for rules that span a whole connection', () => {
+    const ValidatedType = createConnectionType({
+      type: 'validated',
+      title: 'Validated',
+      configSchema: z.object({ defaultToken: z.string().optional() }),
+      authMethods: [
+        {
+          method: 'token',
+          title: 'Token',
+          configSchema: z.object({
+            token: z.string(),
+            primary: z.boolean().optional(),
+          }),
+        },
+      ],
+      validate: ({ config, auth }) => {
+        if (auth.filter(a => a.primary).length > 1) {
+          throw new InputError('At most one auth entry may be primary');
+        }
+        if (config.defaultToken && auth.some(a => a.primary)) {
+          throw new InputError(
+            'defaultToken and a primary auth entry are mutually exclusive',
+          );
+        }
+      },
+    });
+
+    expect(() =>
+      (ValidatedType as any).validate?.({
+        config: {},
+        auth: [
+          { method: 'token', token: 'a', primary: true },
+          { method: 'token', token: 'b', match: { plugins: ['catalog'] } },
+        ],
+      }),
+    ).not.toThrow();
+    expect(() =>
+      (ValidatedType as any).validate?.({
+        config: {},
+        auth: [
+          { method: 'token', token: 'a', primary: true },
+          { method: 'token', token: 'b', primary: true },
+        ],
+      }),
+    ).toThrow('At most one auth entry may be primary');
+    expect(() =>
+      (ValidatedType as any).validate?.({
+        config: { defaultToken: 't' },
+        auth: [{ method: 'token', token: 'a', primary: true }],
+      }),
+    ).toThrow(/mutually exclusive/);
   });
 
   it('builds a multi-auth-method connection type that discriminates on method', () => {

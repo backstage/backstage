@@ -125,7 +125,7 @@ export const Virtualized = meta.story({
         >
           {pokemon.map((p, index) => (
             <MenuItem key={index} id={p.name}>
-              {p.name.charAt(0).toLocaleUpperCase('en-US') + p.name.slice(1)}
+              {p.name.charAt(0).toUpperCase() + p.name.slice(1)}
             </MenuItem>
           ))}
         </MenuAutocomplete>
@@ -165,7 +165,7 @@ export const VirtualizedMaxHeight = meta.story({
         >
           {pokemon.map((p, index) => (
             <MenuItem key={index} id={p.name}>
-              {p.name.charAt(0).toLocaleUpperCase('en-US') + p.name.slice(1)}
+              {p.name.charAt(0).toUpperCase() + p.name.slice(1)}
             </MenuItem>
           ))}
         </MenuAutocomplete>

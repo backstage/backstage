@@ -20,7 +20,7 @@ import bump, { bumpBackstageJsonVersion, createVersionFinder } from './bump';
 import { registerMswTestHooks, withLogCollector } from '@backstage/test-utils';
 import { YarnInfoInspectData } from '../../lib/versioning/packages';
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { NotFoundError } from '@backstage/errors';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
@@ -170,15 +170,8 @@ describe('bump', () => {
       waitForExit: jest.fn().mockResolvedValue(undefined),
     } as any);
     worker.use(
-      rest.get(
-        'https://versions.backstage.io/v1/tags/main/manifest.json',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.json({
-              packages: [],
-            }),
-          ),
+      http.get('https://versions.backstage.io/v1/tags/main/manifest.json', () =>
+        HttpResponse.json({ packages: [] }),
       ),
     );
     const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
@@ -263,15 +256,10 @@ describe('bump', () => {
       waitForExit: jest.fn().mockResolvedValue(undefined),
     } as any);
     worker.use(
-      rest.get(
-        'https://versions.backstage.io/v1/tags/main/manifest.json',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.json({
-              packages: [],
-            }),
-          ),
+      http.get('https://versions.backstage.io/v1/tags/main/manifest.json', () =>
+        HttpResponse.json({
+          packages: [],
+        }),
       ),
     );
     const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
@@ -355,25 +343,20 @@ describe('bump', () => {
       waitForExit: jest.fn().mockResolvedValue(undefined),
     } as any);
     worker.use(
-      rest.get(
-        'https://versions.backstage.io/v1/tags/main/manifest.json',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.json({
-              releaseVersion: '0.0.1',
-              packages: [
-                {
-                  name: '@backstage/theme',
-                  version: '5.0.0',
-                },
-                {
-                  name: '@backstage/create-app',
-                  version: '3.0.0',
-                },
-              ],
-            }),
-          ),
+      http.get('https://versions.backstage.io/v1/tags/main/manifest.json', () =>
+        HttpResponse.json({
+          releaseVersion: '0.0.1',
+          packages: [
+            {
+              name: '@backstage/theme',
+              version: '5.0.0',
+            },
+            {
+              name: '@backstage/create-app',
+              version: '3.0.0',
+            },
+          ],
+        }),
       ),
     );
     const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
@@ -459,25 +442,20 @@ describe('bump', () => {
       waitForExit: jest.fn().mockResolvedValue(undefined),
     } as any);
     worker.use(
-      rest.get(
-        'https://versions.backstage.io/v1/tags/main/manifest.json',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.json({
-              releaseVersion: '0.0.1',
-              packages: [
-                {
-                  name: '@backstage/theme',
-                  version: '5.0.0',
-                },
-                {
-                  name: '@backstage/create-app',
-                  version: '3.0.0',
-                },
-              ],
-            }),
-          ),
+      http.get('https://versions.backstage.io/v1/tags/main/manifest.json', () =>
+        HttpResponse.json({
+          releaseVersion: '0.0.1',
+          packages: [
+            {
+              name: '@backstage/theme',
+              version: '5.0.0',
+            },
+            {
+              name: '@backstage/create-app',
+              version: '3.0.0',
+            },
+          ],
+        }),
       ),
     );
     const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
@@ -570,9 +548,9 @@ describe('bump', () => {
       waitForExit: jest.fn().mockResolvedValue(undefined),
     } as any);
     worker.use(
-      rest.get(
+      http.get(
         'https://versions.backstage.io/v1/releases/999.0.1/manifest.json',
-        (_, res, ctx) => res(ctx.status(404), ctx.json({})),
+        () => HttpResponse.json({}, { status: 404 }),
       ),
     );
     const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
@@ -640,45 +618,35 @@ describe('bump', () => {
       waitForExit: jest.fn().mockResolvedValue(undefined),
     } as any);
     worker.use(
-      rest.get(
-        'https://versions.backstage.io/v1/tags/main/manifest.json',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.json({
-              releaseVersion: '1.0.0',
-              packages: [
-                {
-                  name: '@backstage/theme',
-                  version: '5.0.0',
-                },
-                {
-                  name: '@backstage/create-app',
-                  version: '3.0.0',
-                },
-              ],
-            }),
-          ),
+      http.get('https://versions.backstage.io/v1/tags/main/manifest.json', () =>
+        HttpResponse.json({
+          releaseVersion: '1.0.0',
+          packages: [
+            {
+              name: '@backstage/theme',
+              version: '5.0.0',
+            },
+            {
+              name: '@backstage/create-app',
+              version: '3.0.0',
+            },
+          ],
+        }),
       ),
-      rest.get(
-        'https://versions.backstage.io/v1/tags/next/manifest.json',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.json({
-              releaseVersion: '1.0.0-next.1',
-              packages: [
-                {
-                  name: '@backstage/theme',
-                  version: '4.0.0',
-                },
-                {
-                  name: '@backstage/create-app',
-                  version: '2.0.0',
-                },
-              ],
-            }),
-          ),
+      http.get('https://versions.backstage.io/v1/tags/next/manifest.json', () =>
+        HttpResponse.json({
+          releaseVersion: '1.0.0-next.1',
+          packages: [
+            {
+              name: '@backstage/theme',
+              version: '4.0.0',
+            },
+            {
+              name: '@backstage/create-app',
+              version: '2.0.0',
+            },
+          ],
+        }),
       ),
     );
     const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
@@ -748,16 +716,11 @@ describe('bump', () => {
       waitForExit: jest.fn().mockResolvedValue(undefined),
     } as any);
     worker.use(
-      rest.get(
-        'https://versions.backstage.io/v1/tags/main/manifest.json',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.json({
-              releaseVersion: '1.0.0',
-              packages: [],
-            }),
-          ),
+      http.get('https://versions.backstage.io/v1/tags/main/manifest.json', () =>
+        HttpResponse.json({
+          releaseVersion: '1.0.0',
+          packages: [],
+        }),
       ),
     );
     const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
@@ -863,15 +826,10 @@ describe('bump', () => {
       waitForExit: jest.fn().mockResolvedValue(undefined),
     } as any);
     worker.use(
-      rest.get(
-        'https://versions.backstage.io/v1/tags/main/manifest.json',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.json({
-              packages: [],
-            }),
-          ),
+      http.get('https://versions.backstage.io/v1/tags/main/manifest.json', () =>
+        HttpResponse.json({
+          packages: [],
+        }),
       ),
     );
     const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
@@ -1095,21 +1053,16 @@ describe('environment variables', () => {
       waitForExit: jest.fn().mockResolvedValue(undefined),
     } as any);
     worker.use(
-      rest.get(
-        'https://custom.example.com/v1/tags/main/manifest.json',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.json({
-              releaseVersion: '1.5.0',
-              packages: [
-                {
-                  name: '@backstage/core',
-                  version: '1.5.0',
-                },
-              ],
-            }),
-          ),
+      http.get('https://custom.example.com/v1/tags/main/manifest.json', () =>
+        HttpResponse.json({
+          releaseVersion: '1.5.0',
+          packages: [
+            {
+              name: '@backstage/core',
+              version: '1.5.0',
+            },
+          ],
+        }),
       ),
     );
 
@@ -1254,21 +1207,16 @@ describe('environment variables', () => {
       waitForExit: jest.fn().mockResolvedValue(undefined),
     } as any);
     worker.use(
-      rest.get(
-        'https://custom.example.com/v1/tags/main/manifest.json',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.json({
-              releaseVersion: '1.5.0',
-              packages: [
-                {
-                  name: '@backstage/core',
-                  version: '1.5.0',
-                },
-              ],
-            }),
-          ),
+      http.get('https://custom.example.com/v1/tags/main/manifest.json', () =>
+        HttpResponse.json({
+          releaseVersion: '1.5.0',
+          packages: [
+            {
+              name: '@backstage/core',
+              version: '1.5.0',
+            },
+          ],
+        }),
       ),
     );
 
@@ -1344,9 +1292,8 @@ describe('environment variables', () => {
     });
 
     worker.use(
-      rest.get(
-        'https://custom.example.com/v1/tags/main/manifest.json',
-        (_, res, ctx) => res(ctx.status(500), ctx.json({})),
+      http.get('https://custom.example.com/v1/tags/main/manifest.json', () =>
+        HttpResponse.json({}, { status: 500 }),
       ),
     );
 

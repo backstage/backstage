@@ -38,7 +38,7 @@ export function formatSearchResults(
     const doc = result.document as Record<string, unknown> | undefined;
     const title = String(doc?.title ?? result.title ?? '');
     const location = String(doc?.location ?? result.location ?? '');
-    const text = String(doc?.text ?? '');
+    const text = String(doc?.text ?? result.text ?? '');
     const snippet = text.length > 120 ? `${text.slice(0, 120)}...` : text;
 
     lines.push(chalk.bold(title));

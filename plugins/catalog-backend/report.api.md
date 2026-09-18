@@ -8,7 +8,6 @@ import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorCache } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorParser } from '@backstage/plugin-catalog-node';
-import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
 import { EntityPolicy } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
@@ -29,25 +28,6 @@ export class AnnotateLocationEntityProcessor implements CatalogProcessor {
     _: CatalogProcessorEmit,
     originLocation: LocationSpec,
   ): Promise<Entity>;
-}
-
-// @public @deprecated (undocumented)
-export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
-  constructor(opts: {
-    scmIntegrationRegistry: ScmIntegrationRegistry;
-    kinds?: string[];
-  });
-  // (undocumented)
-  static fromConfig(
-    config: Config,
-    options?: {
-      kinds?: string[];
-    },
-  ): AnnotateScmSlugEntityProcessor;
-  // (undocumented)
-  getProcessorName(): string;
-  // (undocumented)
-  preProcessEntity(entity: Entity, location: LocationSpec): Promise<Entity>;
 }
 
 // @public (undocumented)
@@ -75,27 +55,6 @@ export const CATALOG_ERRORS_TOPIC = 'experimental.catalog.errors';
 // @public
 const catalogPlugin: BackendFeature;
 export default catalogPlugin;
-
-// @public @deprecated (undocumented)
-export class CodeOwnersProcessor implements CatalogProcessor {
-  constructor(options: {
-    integrations: ScmIntegrationRegistry;
-    logger: LoggerService;
-    reader: UrlReaderService;
-  });
-  // (undocumented)
-  static fromConfig(
-    config: Config,
-    options: {
-      logger: LoggerService;
-      reader: UrlReaderService;
-    },
-  ): CodeOwnersProcessor;
-  // (undocumented)
-  getProcessorName(): string;
-  // (undocumented)
-  preProcessEntity(entity: Entity, location: LocationSpec): Promise<Entity>;
-}
 
 // @public (undocumented)
 export class FileReaderProcessor implements CatalogProcessor {

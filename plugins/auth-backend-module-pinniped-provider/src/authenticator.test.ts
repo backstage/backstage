@@ -279,11 +279,21 @@ describe('pinnipedAuthenticator', () => {
       ).rejects.toThrow('authentication requires session support');
     });
 
-    it('refreshes oidc metadata after a failed fetch', async () => {
+    it('refreshes oidc metadata when an initial fetch fails before first use', async () => {
+      await authCtx.getStrategy();
+
+      let signalMetadataRequest!: () => void;
+      const metadataRequest = new Promise<void>(resolve => {
+        signalMetadataRequest = resolve;
+      });
+
       mswServer.use(
         http.get(
           'https://federationDomain.test/.well-known/openid-configuration',
-          () => HttpResponse.error(),
+          () => {
+            signalMetadataRequest();
+            return new HttpResponse(null, { status: 503 });
+          },
         ),
       );
 
@@ -296,6 +306,9 @@ describe('pinnipedAuthenticator', () => {
             clientSecret: 'clientSecret',
           }),
         });
+
+      await metadataRequest;
+      await new Promise(resolve => setImmediate(resolve));
 
       mswServer.use(
         http.get(
@@ -536,7 +549,7 @@ describe('pinnipedAuthenticator', () => {
       mswServer.use(
         http.get(
           'https://federationDomain.test/.well-known/openid-configuration',
-          () => HttpResponse.error(),
+          () => new HttpResponse(null, { status: 503 }),
         ),
       );
 
@@ -683,7 +696,7 @@ describe('pinnipedAuthenticator', () => {
       mswServer.use(
         http.get(
           'https://federationDomain.test/.well-known/openid-configuration',
-          () => HttpResponse.error(),
+          () => new HttpResponse(null, { status: 503 }),
         ),
       );
 

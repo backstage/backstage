@@ -7,69 +7,90 @@ import type { Expand } from '@backstage/types';
 import type { JsonObject } from '@backstage/types';
 
 // @public (undocumented)
-export type AuthValue<T extends ConnectionType | ConnectionTypeKey> =
-  ConnectionAuthValue<
-    RootConnectionAuth<LookupConnectionType<T>['authMethods'][number]>
-  >;
-
-// @public (undocumented)
 export type Connection<
-  T extends ConnectionType | ConnectionTypeKey = ConnectionType,
+  T extends
+    | ConnectionTypeDefinition
+    | ConnectionType = ConnectionTypeDefinition,
   TAuthMethod extends string = string,
-> = {
-  type: LookupConnectionType<T>['type'];
-  title: string;
-  auth: string extends TAuthMethod
-    ? AuthValue<T>[]
-    : Extract<
-        AuthValue<T>,
-        {
-          method: TAuthMethod;
-        }
-      >;
-} & ReturnType<LookupConnectionType<T>['configSchema']['parse']>;
+> = LookupConnectionType<T> extends ConnectionTypeDefinition<infer IDefinition>
+  ? {
+      type: LookupConnectionType<T>['type'];
+      title: string;
+      auth: string extends TAuthMethod
+        ? IDefinition['auth'][number] extends infer A
+          ? A extends {
+              method: string;
+            }
+            ? Expand<
+                A & {
+                  title: string;
+                }
+              >
+            : never
+          : never
+        : Extract<
+            IDefinition['auth'][number] extends infer A
+              ? A extends {
+                  method: string;
+                }
+                ? Expand<
+                    A & {
+                      title: string;
+                    }
+                  >
+                : never
+              : never,
+            {
+              method: TAuthMethod;
+            }
+          >;
+    } & ReturnType<LookupConnectionType<T>['configSchema']['parse']>
+  : never;
 
 // @public
-export type ConnectionAuthMatch = {
-  plugins: string[];
-};
+export type ConnectionAuth<
+  T extends ConnectionType,
+  TAuthMethod extends string = string,
+> = Connection<T, TAuthMethod>['auth'];
 
 // @public (undocumented)
-export type ConnectionAuthMethodKey<
-  T extends ConnectionType | ConnectionTypeKey,
-> = LookupConnectionType<T>['authMethods'][number]['method'];
-
-// @public (undocumented)
-export type ConnectionAuthValue<
-  TAuthConfig extends {
-    method: string;
-  },
-> = TAuthConfig extends any
-  ? Expand<
-      Omit<TAuthConfig, 'title' | 'match'> & {
-        title: string;
-      }
-    >
-  : never;
+export type ConnectionLookupStrategy = 'host' | 'aws';
 
 // @public (undocumented)
 export interface ConnectionsService {
   // (undocumented)
   find<
-    TType extends ConnectionTypeKey,
-    TAuthMethod extends ConnectionAuthMethodKey<TType>,
+    TType extends ConnectionType,
+    TAuthMethod extends LookupConnectionType<TType>['authMethods'][number]['method'],
   >(options: {
     type: TType;
-    query: LookupConnectionType<TType>['query'];
+    query: LookupConnectionType<TType> extends ConnectionTypeDefinition<
+      infer IDefinition
+    >
+      ? IDefinition['query']
+      : never;
     authMethods: readonly [TAuthMethod, ...TAuthMethod[]];
   }): Promise<Connection<TType, TAuthMethod>>;
+  // (undocumented)
+  find<TType extends ConnectionType>(options: {
+    type: TType;
+    query: LookupConnectionType<TType> extends ConnectionTypeDefinition<
+      infer IDefinition
+    >
+      ? IDefinition['query']
+      : never;
+  }): Promise<Omit<Connection<TType>, 'auth'>>;
 }
 
+// @public (undocumented)
+export type ConnectionType = keyof typeof connectionTypes;
+
 // @public
-export type ConnectionType<
+export type ConnectionTypeDefinition<
   T extends {
     type: string;
-    lookupStrategy: LookupStrategy;
+    cardinality: 'singleton' | 'multiton';
+    lookupStrategy: ConnectionLookupStrategy;
     query: unknown;
     configSchema: unknown;
     auth: readonly {
@@ -77,7 +98,8 @@ export type ConnectionType<
     }[];
   } = {
     type: string;
-    lookupStrategy: LookupStrategy;
+    cardinality: 'singleton' | 'multiton';
+    lookupStrategy: ConnectionLookupStrategy;
     query: unknown;
     configSchema: unknown;
     auth: readonly {
@@ -87,6 +109,7 @@ export type ConnectionType<
 > = {
   type: T['type'];
   title: string;
+  cardinality: T['cardinality'];
   lookupStrategy: T['lookupStrategy'];
   configSchema: PortableSchema<T['configSchema'], unknown>;
   authMethods: readonly (T['auth'][number] extends infer TAuth
@@ -96,27 +119,46 @@ export type ConnectionType<
       ? {
           method: TAuth['method'];
           title: string;
-          configSchema: PortableSchema<
-            Expand<Omit<TAuth, 'method' | 'match' | 'title'>>,
-            unknown
-          >;
+          configSchema: PortableSchema<Expand<Omit<TAuth, 'method'>>, unknown>;
         }
       : never
     : never)[];
-  readonly query: T['query'];
-  matchAuth?(
-    authMethods: ConnectionAuthValue<T['auth'][number]>[],
-    query: T['query'],
-  ): ConnectionAuthValue<T['auth'][number]> | undefined;
 };
 
 // @public (undocumented)
-export type ConnectionTypeKey = keyof typeof connectionTypes;
-
-// @public (undocumented)
 export const connectionTypes: {
-  readonly 'aws-codecommit': ConnectionType<{
+  readonly aws: ConnectionTypeDefinition<{
+    type: 'aws';
+    cardinality: 'singleton';
+    lookupStrategy: 'aws';
+    query: {
+      accountId?: string;
+      arn?: string;
+    };
+    configSchema: {
+      roleName?: string | undefined;
+      partition?: string | undefined;
+      region?: string | undefined;
+      externalId?: string | undefined;
+      webIdentityTokenFile?: string | undefined;
+    };
+    auth: readonly {
+      method: 'account';
+      accountId?: string | undefined;
+      mainAccount?: boolean | undefined;
+      accessKeyId?: string | undefined;
+      secretAccessKey?: string | undefined;
+      profile?: string | undefined;
+      roleName?: string | undefined;
+      partition?: string | undefined;
+      region?: string | undefined;
+      externalId?: string | undefined;
+      webIdentityTokenFile?: string | undefined;
+    }[];
+  }>;
+  readonly 'aws-codecommit': ConnectionTypeDefinition<{
     type: 'aws-codecommit';
+    cardinality: 'multiton';
     lookupStrategy: 'host';
     query: {
       url: string;
@@ -138,8 +180,9 @@ export const connectionTypes: {
         }
     )[];
   }>;
-  readonly 'aws-s3': ConnectionType<{
+  readonly 'aws-s3': ConnectionTypeDefinition<{
     type: 'aws-s3';
+    cardinality: 'multiton';
     lookupStrategy: 'host';
     query: {
       url: string;
@@ -165,8 +208,9 @@ export const connectionTypes: {
         }
     )[];
   }>;
-  readonly 'azure-blob-storage': ConnectionType<{
+  readonly 'azure-blob-storage': ConnectionTypeDefinition<{
     type: 'azure-blob-storage';
+    cardinality: 'multiton';
     lookupStrategy: 'host';
     query: {
       url: string;
@@ -201,8 +245,9 @@ export const connectionTypes: {
         }
     )[];
   }>;
-  readonly azure: ConnectionType<{
+  readonly azure: ConnectionTypeDefinition<{
     type: 'azure';
+    cardinality: 'multiton';
     lookupStrategy: 'host';
     query: {
       url: string;
@@ -235,8 +280,9 @@ export const connectionTypes: {
         }
     )[];
   }>;
-  readonly 'bitbucket-cloud': ConnectionType<{
+  readonly 'bitbucket-cloud': ConnectionTypeDefinition<{
     type: 'bitbucket-cloud';
+    cardinality: 'multiton';
     lookupStrategy: 'host';
     query: {
       url: string;
@@ -265,8 +311,9 @@ export const connectionTypes: {
         }
     )[];
   }>;
-  readonly 'bitbucket-server': ConnectionType<{
+  readonly 'bitbucket-server': ConnectionTypeDefinition<{
     type: 'bitbucket-server';
+    cardinality: 'multiton';
     lookupStrategy: 'host';
     query: {
       url: string;
@@ -290,8 +337,9 @@ export const connectionTypes: {
         }
     )[];
   }>;
-  readonly gerrit: ConnectionType<{
+  readonly gerrit: ConnectionTypeDefinition<{
     type: 'gerrit';
+    cardinality: 'multiton';
     lookupStrategy: 'host';
     query: {
       url: string;
@@ -313,8 +361,9 @@ export const connectionTypes: {
         }
     )[];
   }>;
-  readonly gitea: ConnectionType<{
+  readonly gitea: ConnectionTypeDefinition<{
     type: 'gitea';
+    cardinality: 'multiton';
     lookupStrategy: 'host';
     query: {
       url: string;
@@ -334,8 +383,9 @@ export const connectionTypes: {
         }
     )[];
   }>;
-  readonly github: ConnectionType<{
+  readonly github: ConnectionTypeDefinition<{
     type: 'github';
+    cardinality: 'multiton';
     lookupStrategy: 'host';
     query: {
       url: string;
@@ -365,8 +415,9 @@ export const connectionTypes: {
         }
     )[];
   }>;
-  readonly gitlab: ConnectionType<{
+  readonly gitlab: ConnectionTypeDefinition<{
     type: 'gitlab';
+    cardinality: 'multiton';
     lookupStrategy: 'host';
     query: {
       url: string;
@@ -386,8 +437,9 @@ export const connectionTypes: {
         }
     )[];
   }>;
-  readonly 'google-gcs': ConnectionType<{
+  readonly 'google-gcs': ConnectionTypeDefinition<{
     type: 'google-gcs';
+    cardinality: 'multiton';
     lookupStrategy: 'host';
     query: {
       url: string;
@@ -406,8 +458,9 @@ export const connectionTypes: {
         }
     )[];
   }>;
-  readonly harness: ConnectionType<{
+  readonly harness: ConnectionTypeDefinition<{
     type: 'harness';
+    cardinality: 'multiton';
     lookupStrategy: 'host';
     query: {
       url: string;
@@ -424,11 +477,9 @@ export const connectionTypes: {
 };
 
 // @public (undocumented)
-export type LookupConnectionType<T extends ConnectionTypeKey | ConnectionType> =
-  T extends ConnectionTypeKey ? (typeof connectionTypes)[T] : T;
-
-// @public (undocumented)
-export type LookupStrategy = 'host' | 'aws';
+export type LookupConnectionType<
+  T extends ConnectionType | ConnectionTypeDefinition,
+> = T extends ConnectionType ? (typeof connectionTypes)[T] : T;
 
 // @public
 export type PortableSchema<TOutput = unknown, TInput = TOutput> = {
@@ -437,22 +488,6 @@ export type PortableSchema<TOutput = unknown, TInput = TOutput> = {
     schema: JsonObject;
   };
 };
-
-// @public (undocumented)
-export type RootConnectionAuth<M> = M extends {
-  method: infer TMethod extends string;
-  configSchema: {
-    parse: (...args: any[]) => infer TConfig;
-  };
-}
-  ? Expand<
-      {
-        method: TMethod;
-        title?: string;
-        match?: ConnectionAuthMatch;
-      } & TConfig
-    >
-  : never;
 
 // (No @packageDocumentation comment for this package)
 ```

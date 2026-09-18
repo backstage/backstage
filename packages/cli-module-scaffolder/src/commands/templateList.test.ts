@@ -92,6 +92,32 @@ describe('template list', () => {
     );
   });
 
+  it('merges repeatable key-value filters with the template query', async () => {
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: {
+        filter: ['metadata.tags=nodejs', 'spec.type=service'],
+      },
+    });
+    mockQueryEntities.mockResolvedValue({
+      items: [],
+      totalItems: 0,
+      pageInfo: {},
+    });
+
+    await templateList(ctx([]));
+
+    expect(mockQueryEntities).toHaveBeenCalledWith(
+      {
+        query: {
+          kind: 'Template',
+          'metadata.tags': 'nodejs',
+          'spec.type': 'service',
+        },
+      },
+      { token: 'tok' },
+    );
+  });
+
   it('outputs JSON when --output json', async () => {
     (mockCli as jest.Mock).mockReturnValue({ flags: { output: 'json' } });
     mockQueryEntities.mockResolvedValue({

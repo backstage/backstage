@@ -131,13 +131,16 @@ auth:
         /* highlight-add-start */
         signIn:
           resolvers:
-            # Matches the GitHub username with the Backstage user entity name.
+            # Matches the immutable GitHub user ID with the Backstage user entity.
             # See https://backstage.io/docs/auth/github/provider#resolvers for more resolvers.
-            - resolver: usernameMatchingUserEntityName
+            - resolver: userIdMatchingUserEntityAnnotation
         /* highlight-add-end */
 ```
 
-What this will do is take the user details provided by the auth provider and match that against a User in the Catalog. In this case - `usernameMatchingUserEntityName` - will match the GitHub user name with the `metadata.name` value of a User in the Catalog, if none is found you will get a "Failed to sign-in, unable to resolve user identity" message. We'll cover this in the next few sections.
+This configuration matches the immutable GitHub user ID provided by the auth
+provider with the `github.com/user-id` annotation on a User in the Catalog. If
+no matching user is found, you get a "Failed to sign-in, unable to resolve user
+identity" message. We'll cover this in the next few sections.
 
 Learn more about this topic in the [Sign-in Resolvers](../../auth/identity-resolver.md#sign-in-resolvers) documentation.
 
@@ -181,11 +184,15 @@ For the sake of this guide we'll simply step you through adding a User to the `o
    kind: User
    metadata:
      name: YOUR GITHUB USERNAME
+     annotations:
+       github.com/user-id: YOUR GITHUB USER ID
    spec:
      memberOf: [guests]
    ```
 
-3. Now make sure to replace the text "YOUR GITHUB USERNAME" with your actual GitHub User name.
+3. Replace `YOUR GITHUB USERNAME` with your GitHub username and
+   `YOUR GITHUB USER ID` with the `node_id` from your
+   [GitHub user profile](https://docs.github.com/en/rest/users/users#get-the-authenticated-user).
 
 Let's restart Backstage from the terminal once more, by stopping it with `Ctrl+C`, and starting it with `yarn start`. You should now be able to log into Backstage and see items in your Catalog.
 

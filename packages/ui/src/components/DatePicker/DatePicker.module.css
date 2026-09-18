@@ -122,6 +122,7 @@
     font-size: var(--bui-font-size-3);
     font-family: var(--bui-font-regular);
     font-weight: var(--bui-font-weight-regular);
+    line-height: 1.15;
     color: var(--bui-fg-primary);
     caret-color: transparent;
     outline: none;
@@ -205,6 +206,7 @@
     font-size: var(--bui-font-size-3);
     font-weight: var(--bui-font-weight-bold);
     font-family: var(--bui-font-regular);
+    line-height: 1.15;
     color: var(--bui-fg-primary);
     flex: 1;
     text-align: center;
@@ -252,6 +254,7 @@
   .bui-DatePickerCalendarHeaderCell {
     font-size: var(--bui-font-size-2);
     font-weight: var(--bui-font-weight-regular);
+    line-height: 1.15;
     color: var(--bui-fg-secondary);
     text-align: center;
     padding-bottom: var(--bui-space-2);
@@ -274,6 +277,7 @@
     cursor: default;
     font-size: var(--bui-font-size-3);
     font-family: var(--bui-font-regular);
+    line-height: 1.15;
     color: var(--bui-fg-primary);
     border-radius: var(--bui-radius-full);
 

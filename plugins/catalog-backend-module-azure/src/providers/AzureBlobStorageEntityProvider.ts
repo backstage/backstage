@@ -42,6 +42,12 @@ import {
 import { TokenCredential } from '@azure/identity';
 import { AzureBlobStorageConfig } from './types';
 
+function hasDotPathSegment(path: string): boolean {
+  return path
+    .split(/[\\/]/)
+    .some(segment => segment === '.' || segment === '..');
+}
+
 /**
  * Provider which discovers catalog files within an Azure Storage accounts.
  *
@@ -199,7 +205,15 @@ export class AzureBlobStorageEntityProvider implements EntityProvider {
     const keys = await this.listAllBlobKeys();
     logger.info(`Discovered ${keys.length} Azure Blob Storage blobs`);
 
-    const locations = keys.map(key => this.createLocationSpec(key));
+    const validKeys = keys.filter(key => !hasDotPathSegment(key));
+    const skippedKeys = keys.length - validKeys.length;
+    if (skippedKeys > 0) {
+      logger.warn(
+        `Skipped ${skippedKeys} Azure Blob Storage blobs with unsupported dot path segments`,
+      );
+    }
+
+    const locations = validKeys.map(key => this.createLocationSpec(key));
 
     await this.connection.applyMutation({
       type: 'full',
@@ -242,7 +256,17 @@ export class AzureBlobStorageEntityProvider implements EntityProvider {
   }
 
   private createObjectUrl(key: string): string {
-    const endpoint = this.blobServiceClient?.url;
-    return `${endpoint}${this.config.containerName}/${key}`;
+    if (!this.blobServiceClient) {
+      throw new Error('Not initialized');
+    }
+
+    const objectUrl = new URL(
+      this.blobServiceClient
+        .getContainerClient(this.config.containerName)
+        .getBlobClient(key).url,
+    );
+    objectUrl.search = '';
+    objectUrl.hash = '';
+    return objectUrl.toString();
   }
 }

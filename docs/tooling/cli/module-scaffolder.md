@@ -5,9 +5,8 @@ description: CLI commands for listing and executing software templates.
 ---
 
 The scaffolder module (`@backstage/cli-module-scaffolder`) provides intent-based
-commands for working with software templates. Instead of calling
-`actions execute scaffolder:execute-template --templateRef ... --values ...`,
-you can use `template execute --template-ref ... --values ...`.
+commands for working with software templates, including repeatable
+`--value key=value` and `--secret key=value` inputs.
 
 ## Prerequisites
 
@@ -27,6 +26,7 @@ List available software templates.
 Usage: backstage-cli template list [options]
 
 Options:
+  --filter <key=value> Query predicate (repeatable)
   --limit <number>     Maximum results to return
   --output <format>    Output format: human (default), json
   --instance <name>    Instance name
@@ -38,6 +38,7 @@ Wraps `catalog:query-catalog-entities` with `kind=Template`.
 
 ```bash
 yarn backstage-cli template list
+yarn backstage-cli template list --filter metadata.tags=nodejs
 ```
 
 ## template execute
@@ -45,23 +46,28 @@ yarn backstage-cli template list
 Execute a software template.
 
 ```text
-Usage: backstage-cli template execute [options]
+Usage: backstage-cli template execute [ref] [options]
 
 Options:
-  --template-ref <ref>   Template entity ref, e.g. template:default/my-template (required)
-  --values <json>        Template input values (JSON string, required)
-  --secrets <json>       Template secrets (JSON string)
+  --template-ref <ref>   Template entity reference alias
+  --namespace <ns>       Template namespace for a short reference
+  --value <key=value>    Template input value (repeatable)
+  --secret <key=value>   Template secret (repeatable)
+  --output <format>      Output format: human (default), json
   --instance <name>      Instance name
 ```
 
 Wraps `scaffolder:execute-template`. Returns a `taskId` for tracking progress.
+Input values and secrets are optional. Repeat `--value` or `--secret` to provide
+multiple inputs.
 
 ### Examples
 
 ```bash
 yarn backstage-cli template execute \
-  --template-ref template:default/springboot \
-  --values '{"name":"my-app","owner":"team-a"}'
+  template:default/springboot \
+  --value name=my-app \
+  --value owner=team-a
 ```
 
 ## template dry-run
@@ -72,8 +78,10 @@ Validate a software template without making changes.
 Usage: backstage-cli template dry-run [options]
 
 Options:
-  --template-ref <ref>   Template entity ref, e.g. template:default/my-template (required)
-  --values <json>        Template input values (JSON string)
+  --template-file <path> Path to a template YAML file
+  --template-ref <yaml>  Inline template YAML content alias
+  --value <key=value>    Template input value (repeatable)
+  --output <format>      Output format: human (default), json
   --instance <name>      Instance name
 ```
 
@@ -82,5 +90,12 @@ Wraps `scaffolder:dry-run-template`.
 ### Examples
 
 ```bash
-yarn backstage-cli template dry-run --template-ref template:default/springboot
+yarn backstage-cli template dry-run \
+  --template-file ./template.yaml \
+  --value name=my-app
+
+# Existing inline YAML input remains supported
+yarn backstage-cli template dry-run \
+  --template-ref "$(cat template.yaml)" \
+  --value name=my-app
 ```

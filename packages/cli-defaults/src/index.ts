@@ -26,6 +26,7 @@ import migrate from '@backstage/cli-module-migrate';
 import newModule from '@backstage/cli-module-new';
 import scaffolder from '@backstage/cli-module-scaffolder';
 import search from '@backstage/cli-module-search';
+import packageManagerYarn from '@backstage/cli-module-package-manager-yarn';
 import testJest from '@backstage/cli-module-test-jest';
 import translations from '@backstage/cli-module-translations';
 
@@ -48,6 +49,7 @@ export default [
   newModule,
   scaffolder,
   search,
+  packageManagerYarn,
   testJest,
   translations,
 ];

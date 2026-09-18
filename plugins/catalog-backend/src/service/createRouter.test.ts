@@ -152,38 +152,6 @@ describe('createRouter readonly disabled', () => {
       expect(response.body).toEqual(entities);
     });
 
-    it('happy path: lists entities with relations compat', async () => {
-      const router = await createRouter({
-        entitiesCatalog,
-        locationService,
-        orchestrator,
-        logger: mockServices.logger.mock(),
-        refreshService,
-        config: new ConfigReader(undefined),
-        auth: mockServices.auth(),
-        httpAuth: mockServices.httpAuth(),
-        locationAnalyzer,
-        permissionsService,
-        enableRelationsCompatibility: true, // added
-        auditor: mockServices.auditor.mock(),
-      });
-
-      app = await wrapServer(express().use(router));
-      const entities: Entity[] = [
-        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
-      ];
-
-      entitiesCatalog.entities.mockResolvedValueOnce({
-        entities: { type: 'object', entities: [entities[0]] },
-        pageInfo: { hasNextPage: false },
-      });
-
-      const response = await request(app).get('/entities');
-
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual(entities);
-    });
-
     it('parses single and multiple request parameters and passes them down', async () => {
       entitiesCatalog.queryEntities.mockResolvedValueOnce({
         items: { type: 'object', entities: [] },
@@ -208,45 +176,6 @@ describe('createRouter readonly disabled', () => {
         limit: 10000,
         credentials: mockCredentials.user(),
         totalItems: 'exclude',
-      });
-    });
-
-    it('parses single and multiple request parameters and passes them down with relations compat', async () => {
-      const router = await createRouter({
-        entitiesCatalog,
-        locationService,
-        orchestrator,
-        logger: mockServices.logger.mock(),
-        refreshService,
-        config: new ConfigReader(undefined),
-        auth: mockServices.auth(),
-        httpAuth: mockServices.httpAuth(),
-        locationAnalyzer,
-        permissionsService,
-        enableRelationsCompatibility: true,
-        auditor: mockServices.auditor.mock(),
-      });
-      app = await wrapServer(express().use(router));
-      entitiesCatalog.entities.mockResolvedValueOnce({
-        entities: { type: 'object', entities: [] },
-        pageInfo: { hasNextPage: false },
-      });
-      const response = await request(app).get(
-        '/entities?filter=a=1,a=2,b=3&filter=c=4',
-      );
-
-      expect(response.status).toEqual(200);
-      expect(entitiesCatalog.entities).toHaveBeenCalledTimes(1);
-      expect(entitiesCatalog.entities).toHaveBeenCalledWith({
-        filter: {
-          $any: [
-            {
-              $all: [{ a: { $in: ['1', '2'] } }, { b: '3' }],
-            },
-            { c: '4' },
-          ],
-        },
-        credentials: mockCredentials.user(),
       });
     });
   });

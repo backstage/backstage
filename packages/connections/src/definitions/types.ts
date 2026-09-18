@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { AwsConnectionType } from '../schema/aws';
 import { AwsCodeCommitConnectionType } from '../schema/awsCodeCommit';
 import { AwsS3ConnectionType } from '../schema/awsS3';
 import { AzureBlobStorageConnectionType } from '../schema/azureBlobStorage';
@@ -25,11 +26,11 @@ import { GithubConnectionType } from '../schema/github';
 import { GitlabConnectionType } from '../schema/gitlab';
 import { GoogleGcsConnectionType } from '../schema/googleGcs';
 import { HarnessConnectionType } from '../schema/harness';
-import type { ConnectionType } from '../api/ConnectionType';
+import type { ConnectionTypeDefinition } from '../api/ConnectionType';
 
 function createConnectionTypes<
   const T extends {
-    [K in keyof T]: ConnectionType & { type: K };
+    [K in keyof T]: ConnectionTypeDefinition & { type: K };
   },
 >(types: T): T {
   return types;
@@ -37,6 +38,7 @@ function createConnectionTypes<
 
 /** @public */
 export const connectionTypes = createConnectionTypes({
+  aws: AwsConnectionType,
   'aws-codecommit': AwsCodeCommitConnectionType,
   'aws-s3': AwsS3ConnectionType,
   'azure-blob-storage': AzureBlobStorageConnectionType,
@@ -52,8 +54,9 @@ export const connectionTypes = createConnectionTypes({
 });
 
 /** @public */
-export type ConnectionTypeKey = keyof typeof connectionTypes;
+export type ConnectionType = keyof typeof connectionTypes;
 
 /** @public */
-export type LookupConnectionType<T extends ConnectionTypeKey | ConnectionType> =
-  T extends ConnectionTypeKey ? (typeof connectionTypes)[T] : T;
+export type LookupConnectionType<
+  T extends ConnectionType | ConnectionTypeDefinition,
+> = T extends ConnectionType ? (typeof connectionTypes)[T] : T;

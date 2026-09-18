@@ -1,5 +1,62 @@
 # @backstage/core-components
 
+## 0.18.14
+
+### Patch Changes
+
+- b80a9f3: Added an `onCopyLog` prop to the `LogViewer` component that renders a copy button in the toolbar, allowing users to copy all log content to the clipboard.
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- a15bac8: Added an optional `variant` prop to `CopyTextButton` to allow configuring its visual style (`primary`, `secondary`, or `tertiary`).
+- c0ebaa7: chore(deps): bump `js-yaml` from 4.3.1 to 4.3.2
+- bfb6497: Fixed `CopyTextButton` showing its tooltip on hover/focus instead of only after the user clicks to copy the text.
+- 279fdf6: Declared the DOM Testing Library dependency required by React Testing Library.
+- f2b5407: Updated dependency `react-idle-timer` to `5.7.3`.
+- d9a949e: Added support for rendering custom link elements inside `HeaderIconLinkRow`.
+- Updated dependencies
+  - @backstage/ui@0.18.0
+  - @backstage/config@1.3.9
+  - @backstage/core-plugin-api@1.12.10
+
+## 0.18.14-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/ui@0.18.0-next.2
+  - @backstage/core-plugin-api@1.12.10-next.1
+
+## 0.18.14-next.1
+
+### Patch Changes
+
+- b80a9f3: Added an `onCopyLog` prop to the `LogViewer` component that renders a copy button in the toolbar, allowing users to copy all log content to the clipboard.
+- 279fdf6: Declared the DOM Testing Library dependency required by React Testing Library.
+- Updated dependencies
+  - @backstage/ui@0.18.0-next.1
+  - @backstage/core-plugin-api@1.12.10-next.0
+
+## 0.18.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.17.2-next.0
+
+## 0.18.13
+
+### Patch Changes
+
+- 226817d: chore(deps): bump `js-yaml` from 4.2.0 to 4.3.0
+- a4759e6: Migrated tests from MSW v1 to MSW v2.
+- 96cd953: Fixed the `DependencyGraph` component to avoid a jarring initial render where nodes briefly pile up at overlapping positions before animating into place. The graph content is now hidden until node measurements are complete and the layout has fully settled, then revealed at the correct positions with transitions suppressed for the first frame.
+
+  Also fixed a `containerRef` recreation chain where every graph dimension change caused the container measurement callback to be recreated and re-triggered, producing unnecessary re-renders during initial layout.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/ui@0.17.1
+
 ## 0.18.13-next.2
 
 ### Patch Changes

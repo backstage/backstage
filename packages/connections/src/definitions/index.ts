@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+export { AwsConnectionType } from '../schema/aws';
 export { AwsCodeCommitConnectionType } from '../schema/awsCodeCommit';
 export { AwsS3ConnectionType } from '../schema/awsS3';
 export { AzureBlobStorageConnectionType } from '../schema/azureBlobStorage';

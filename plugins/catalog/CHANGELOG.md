@@ -1,5 +1,108 @@
 # @backstage/plugin-catalog
 
+## 2.0.9
+
+### Patch Changes
+
+- 8e0e3c4: Fixed a regression where the About card's field labels (OWNER, SYSTEM, TAGS, etc.) lost their vertical gap above the value.
+- e3781a3: Fixed circular dependency warnings when building the catalog plugin.
+- d9a949e: Fixed the About card to safely show and hide filtered icon links when navigating between entities, without initializing hidden links.
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- 4611178: Add support for legacy props in catalog entity card exports by widening the public TypeScript prop types. This ensures compatibility for consumers still using legacy properties such as `variant` and `columns`.
+- d421187: Reduced the initial app bundle size by loading page and optional UI implementations only when their extensions render.
+- acc6666: Fixed entity context menus to report errors from contributed items without disrupting the menu.
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/plugin-catalog-common@1.2.0
+  - @backstage/plugin-scaffolder-common@2.3.0
+  - @backstage/ui@0.18.0
+  - @backstage/catalog-client@1.16.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-catalog-react@3.2.3
+  - @backstage/plugin-techdocs-react@1.3.15
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/core-compat-api@0.5.15
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/integration-react@1.2.22
+  - @backstage/plugin-permission-react@0.5.5
+  - @backstage/plugin-search-common@1.2.25
+  - @backstage/plugin-search-react@1.11.8
+
+## 2.0.9-next.2
+
+### Patch Changes
+
+- 4611178: Add support for legacy props in catalog entity card exports by widening the public TypeScript prop types. This ensures compatibility for consumers still using legacy properties such as `variant` and `columns`.
+- acc6666: Fixed entity context menus to report errors from contributed items without disrupting the menu.
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.2.0-next.0
+  - @backstage/ui@0.18.0-next.2
+  - @backstage/catalog-client@1.16.2-next.1
+  - @backstage/plugin-catalog-react@3.2.3-next.2
+  - @backstage/core-components@0.18.14-next.2
+  - @backstage/core-plugin-api@1.12.10-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.1
+  - @backstage/integration-react@1.2.22-next.1
+  - @backstage/plugin-permission-react@0.5.5-next.1
+  - @backstage/plugin-techdocs-react@1.3.15-next.2
+  - @backstage/plugin-scaffolder-common@2.3.0-next.2
+  - @backstage/plugin-search-common@1.2.25-next.0
+  - @backstage/plugin-search-react@1.11.8-next.2
+
+## 2.0.9-next.1
+
+### Patch Changes
+
+- e3781a3: Fixed circular dependency warnings when building the catalog plugin.
+- d421187: Reduced the initial app bundle size by loading page and optional UI implementations only when their extensions render.
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.1
+  - @backstage/plugin-scaffolder-common@2.3.0-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/plugin-catalog-react@3.2.3-next.1
+  - @backstage/ui@0.18.0-next.1
+  - @backstage/integration-react@1.2.22-next.0
+  - @backstage/core-compat-api@0.5.15-next.1
+  - @backstage/core-plugin-api@1.12.10-next.0
+  - @backstage/plugin-search-react@1.11.8-next.1
+  - @backstage/plugin-techdocs-react@1.3.15-next.1
+  - @backstage/catalog-client@1.16.2-next.0
+  - @backstage/plugin-permission-react@0.5.5-next.0
+
+## 2.0.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@2.3.0-next.0
+  - @backstage/ui@0.17.2-next.0
+  - @backstage/plugin-catalog-react@3.2.2-next.0
+  - @backstage/core-components@0.18.14-next.0
+  - @backstage/core-compat-api@0.5.15-next.0
+  - @backstage/plugin-search-react@1.11.8-next.0
+  - @backstage/plugin-techdocs-react@1.3.15-next.0
+
+## 2.0.8
+
+### Patch Changes
+
+- 80b37b3: Fixed the `AboutField` label in the About card using `variant="inherit"` instead of `variant="h2"` to prevent theme typography overrides from changing the intended 10px label size.
+- 05aed2e: Fixed a brief "Entity not found" flash when navigating between catalog entity pages.
+- 1d026b0: Added explicit type annotations to `FilterContainer` and `EntityListContainer` re-exports for forward-compatibility with TypeScript 7.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/plugin-catalog-react@3.2.1
+  - @backstage/ui@0.17.1
+  - @backstage/plugin-scaffolder-common@2.2.2
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/core-compat-api@0.5.14
+  - @backstage/integration-react@1.2.21
+  - @backstage/plugin-permission-react@0.5.4
+  - @backstage/plugin-search-react@1.11.7
+  - @backstage/plugin-techdocs-react@1.3.14
+
 ## 2.0.8-next.3
 
 ### Patch Changes

@@ -93,7 +93,7 @@ function readableEntityName(
       },
 ): string {
   return stringifyEntityRef(ref)
-    .toLocaleLowerCase('en-US')
+    .toLowerCase()
     .replace(`:${DEFAULT_NAMESPACE}/`, ':')
     .split(':')[1];
 }

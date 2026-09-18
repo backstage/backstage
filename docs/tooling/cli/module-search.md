@@ -5,9 +5,8 @@ description: CLI commands for searching Backstage content.
 ---
 
 The search module (`@backstage/cli-module-search`) provides intent-based
-commands for searching across Backstage content. Instead of calling
-`actions execute search:query --term "my service" --types '["techdocs"]'`,
-you can use `docs search "my service"`.
+commands for searching across Backstage content, such as
+`docs search "my service"`.
 
 ## Prerequisites
 
@@ -26,21 +25,22 @@ Search across all content types (catalog entities, TechDocs, templates).
 Usage: backstage-cli search <term> [options]
 
 Options:
-  --types <json>          Document types (JSON array, e.g. '["techdocs"]')
-  --filters <json>        Query filters (JSON)
+  --types <list>          Comma-separated types
+  --filter <key=value>    Query filter (repeatable)
   --page-limit <number>   Results per page (default: 10)
   --page-cursor <cursor>  Pagination cursor
   --output <format>       Output format: human (default), json
   --instance <name>       Instance name
 ```
 
-Wraps `search:query`.
+Wraps `search:query`. Repeat `--filter` to add filters.
 
 ### Examples
 
 ```bash
 yarn backstage-cli search "deployment guide"
-yarn backstage-cli search "auth" --types '["techdocs"]'
+yarn backstage-cli search "auth" --types techdocs,software-catalog
+yarn backstage-cli search "service" --filter kind=Component --filter lifecycle=production
 ```
 
 ## docs search

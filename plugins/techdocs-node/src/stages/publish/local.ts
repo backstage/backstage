@@ -16,6 +16,7 @@
 
 import {
   DiscoveryService,
+  isChildPath,
   LoggerService,
   resolvePackagePath,
   resolveSafeChildPath,
@@ -43,7 +44,27 @@ import {
   getHeadersForFileExtension,
   lowerCaseEntityTripletInStoragePath,
 } from './helpers';
-import { ForwardedError } from '@backstage/errors';
+import { ForwardedError, NotAllowedError } from '@backstage/errors';
+
+async function validateNoExternalSymlinks(
+  dir: string,
+  root: string,
+): Promise<void> {
+  const entries = await fs.readdir(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isSymbolicLink()) {
+      if (!isChildPath(root, fullPath)) {
+        throw new NotAllowedError(
+          `Symlink at ${fullPath} points outside the output directory`,
+        );
+      }
+    }
+    if (entry.isDirectory()) {
+      await validateNoExternalSymlinks(fullPath, root);
+    }
+  }
+}
 
 /**
  * Local publisher which uses the local filesystem to store the generated static files. It uses by default a
@@ -137,6 +158,7 @@ export class LocalPublish implements PublisherBase {
     }
 
     try {
+      await validateNoExternalSymlinks(directory, directory);
       await fs.copy(directory, publishDir);
       this.logger.info(`Published site stored at ${publishDir}`);
     } catch (error) {

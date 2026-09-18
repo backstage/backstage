@@ -17,10 +17,9 @@ import { z } from 'zod/v4';
 import { InputError } from '@backstage/errors';
 import type { Expand, JsonObject } from '@backstage/types';
 import type {
-  ConnectionType,
-  LookupStrategy,
+  ConnectionTypeDefinition,
+  ConnectionLookupStrategy,
   LookupStrategyQuery,
-  MatchAuth,
   PortableSchema,
   WithoutReservedAuthMethods,
   WithoutReservedFields,
@@ -43,7 +42,7 @@ type ConfigFromSchema<TConfigSchema extends z.ZodObject> =
 // Expand flattens the intersection into a single object literal so that
 // editor tooltips show each auth method variant as a readable flat shape
 // rather than a chain of truncated intersections.
-type RootConnectionAuthFromSchema<
+type ConfiguredConnectionAuthFromSchema<
   TAuthMethod extends ConnectionAuthMethodSchema,
 > = TAuthMethod extends ConnectionAuthMethodSchema<
   infer TMethod,
@@ -84,30 +83,57 @@ export function createConnectionType<
   TType extends string,
   TConfigSchema extends z.ZodObject,
   const TAuthMethods extends readonly ConnectionAuthMethodSchema[],
-  TLookupStrategy extends LookupStrategy = 'host',
+  TLookupStrategy extends ConnectionLookupStrategy = 'host',
+  TCardinality extends 'singleton' | 'multiton' = 'multiton',
 >({
   configSchema,
   type,
   title,
+  cardinality,
   lookupStrategy,
   authMethods,
   matchAuth,
+  validate,
 }: {
   type: TType;
   title: string;
+  cardinality?: TCardinality;
   lookupStrategy?: TLookupStrategy;
   configSchema: WithoutReservedFields<TConfigSchema>;
   authMethods: WithoutReservedAuthMethods<TAuthMethods>;
-  matchAuth?: MatchAuth<
-    RootConnectionAuthFromSchema<TAuthMethods[number]>,
-    LookupStrategyQuery[TLookupStrategy]
-  >;
-}): ConnectionType<{
+  matchAuth?: (
+    authMethods: Expand<
+      ConfiguredConnectionAuthFromSchema<TAuthMethods[number]> & {
+        title: string;
+      }
+    >[],
+    query: LookupStrategyQuery[TLookupStrategy],
+  ) =>
+    | Expand<
+        ConfiguredConnectionAuthFromSchema<TAuthMethods[number]> & {
+          title: string;
+        }
+      >
+    | undefined;
+  // Checks the connection as a whole once every schema has accepted its own
+  // part — for rules like "only one entry may be the fallback" that no
+  // single entry can verify. Entries include their plugin `match` so that
+  // rules can take scoping into account. Throwing rejects the connection.
+  validate?: (connection: {
+    config: ConfigFromSchema<TConfigSchema>;
+    auth: readonly Expand<
+      ConfiguredConnectionAuthFromSchema<TAuthMethods[number]> & {
+        match?: { plugins: string[] };
+      }
+    >[];
+  }) => void;
+}): ConnectionTypeDefinition<{
   type: TType;
+  cardinality: TCardinality;
   lookupStrategy: TLookupStrategy;
   query: LookupStrategyQuery[TLookupStrategy];
   configSchema: ConfigFromSchema<TConfigSchema>;
-  auth: readonly RootConnectionAuthFromSchema<TAuthMethods[number]>[];
+  auth: readonly ConfiguredConnectionAuthFromSchema<TAuthMethods[number]>[];
 }> {
   const validatedAuthMethods = authMethods as TAuthMethods;
   if (validatedAuthMethods.length < 1) {
@@ -123,6 +149,7 @@ export function createConnectionType<
   return {
     type,
     title,
+    cardinality: cardinality ?? 'multiton',
     lookupStrategy: lookupStrategy ?? 'host',
     authMethods: validatedAuthMethods.map(
       ({ method, title: authTitle, configSchema: authConfigSchema }) => ({
@@ -136,11 +163,13 @@ export function createConnectionType<
     ),
     configSchema: portableConfigSchema,
     matchAuth,
-  } as unknown as ConnectionType<{
+    validate,
+  } as unknown as ConnectionTypeDefinition<{
     type: TType;
+    cardinality: TCardinality;
     lookupStrategy: TLookupStrategy;
     query: LookupStrategyQuery[TLookupStrategy];
     configSchema: ConfigFromSchema<TConfigSchema>;
-    auth: readonly RootConnectionAuthFromSchema<TAuthMethods[number]>[];
+    auth: readonly ConfiguredConnectionAuthFromSchema<TAuthMethods[number]>[];
   }>;
 }

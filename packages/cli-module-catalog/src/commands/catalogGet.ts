@@ -20,17 +20,22 @@ import type { FilterPredicate } from '@backstage/filter-predicates';
 import { createCatalogClient } from '../lib/catalogClient';
 import { resolveAuth } from '../lib/resolveAuth';
 import { writeJson } from '../lib/intentFormat';
+import { parseEntityRef } from '../lib/input';
 
 export default async ({ args, info }: CliCommandContext) => {
-  const { flags } = cli(
+  const parsed = cli(
     {
       name: info.usage,
+      parameters: ['[ref]'],
       flags: {
-        name: { type: String, description: 'Entity name (required)' },
-        kind: { type: String, description: 'Entity kind' },
+        name: { type: String, description: 'Entity name alias' },
+        kind: {
+          type: String,
+          description: 'Entity kind for a short reference',
+        },
         namespace: {
           type: String,
-          description: 'Entity namespace (default: default)',
+          description: 'Entity namespace for a short reference',
         },
         output: {
           type: String,
@@ -45,19 +50,27 @@ export default async ({ args, info }: CliCommandContext) => {
     undefined,
     args,
   );
+  const { flags } = parsed;
+  const ref = parsed._?.ref ?? flags.name;
 
-  if (!flags.name) {
+  if (!ref) {
     throw new Error(
-      '--name is required. Usage: catalog get --name <entity-name> [--kind <kind>]',
+      'Entity reference or --name is required. Usage: catalog get [kind:][namespace/]name',
     );
   }
+
+  const entityRef = parseEntityRef(ref);
 
   const { accessToken, baseUrl } = await resolveAuth(flags.instance);
   const client = createCatalogClient(baseUrl);
 
-  const filter: Record<string, string> = { 'metadata.name': flags.name };
-  if (flags.kind) filter.kind = flags.kind;
-  if (flags.namespace) filter['metadata.namespace'] = flags.namespace;
+  const filter: Record<string, string> = {
+    'metadata.name': entityRef.name,
+  };
+  const kind = flags.kind ?? entityRef.kind;
+  const namespace = flags.namespace ?? entityRef.namespace;
+  if (kind) filter.kind = kind;
+  if (namespace) filter['metadata.namespace'] = namespace;
 
   const { items } = await client.queryEntities(
     { query: filter as FilterPredicate },
@@ -65,12 +78,12 @@ export default async ({ args, info }: CliCommandContext) => {
   );
 
   if (items.length === 0) {
-    throw new Error(`No entity found with name "${flags.name}"`);
+    throw new Error(`No entity found with name "${entityRef.name}"`);
   }
   if (items.length > 1) {
     throw new Error(
       `Multiple entities found with name "${
-        flags.name
+        entityRef.name
       }", please provide more specific filters. Entities found: ${items
         .map(
           item =>

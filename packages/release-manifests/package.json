@@ -1,6 +1,6 @@
 {
   "name": "@backstage/release-manifests",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Helper library for receiving release manifests",
   "backstage": {
     "role": "common-library"
@@ -38,6 +38,6 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "msw": "^1.0.0"
+    "msw": "^2.0.0"
   }
 }

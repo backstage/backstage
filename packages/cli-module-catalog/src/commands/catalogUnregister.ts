@@ -37,6 +37,10 @@ export default async ({ args, info }: CliCommandContext) => {
           type: String,
           description: 'Name of the instance to use',
         },
+        output: {
+          type: String,
+          description: 'Output format: human (default), json',
+        },
       },
     },
     undefined,

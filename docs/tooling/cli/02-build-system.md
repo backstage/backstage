@@ -97,7 +97,7 @@ These are the available roles that are currently supported by the Backstage buil
 | ---------------------- | -------------------------------------------- | -------------------------------------------- |
 | frontend               | Bundled frontend application                 | `packages/app`                               |
 | backend                | Bundled backend application                  | `packages/backend`                           |
-| cli                    | Package used as a command-line interface     | `@backstage/cli`, `@backstage/codemods`      |
+| cli                    | Package used as a command-line interface     | `@backstage/cli`                             |
 | web-library            | Web library for use by other packages        | `@backstage/plugin-catalog-react`            |
 | node-library           | Node.js library for use by other packages    | `@backstage/plugin-techdocs-node`            |
 | common-library         | Isomorphic library for use by other packages | `@backstage/plugin-permission-common`        |

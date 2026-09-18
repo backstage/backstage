@@ -15,6 +15,7 @@
  */
 
 import { cli } from 'cleye';
+import { readFileSync } from 'node:fs';
 import yaml from 'yaml';
 import type { CliCommandContext } from '@backstage/cli-node';
 import type { Entity } from '@backstage/catalog-model';
@@ -29,9 +30,17 @@ export default async ({ args, info }: CliCommandContext) => {
       flags: {
         entity: {
           type: String,
-          description: 'Entity YAML content (required)',
+          description: 'Entity YAML content',
+        },
+        'entity-file': {
+          type: String,
+          description: 'Path to a file containing entity YAML',
         },
         location: { type: String, description: 'Location to validate' },
+        output: {
+          type: String,
+          description: 'Output format: human (default), json',
+        },
         instance: {
           type: String,
           description: 'Name of the instance to use',
@@ -42,15 +51,19 @@ export default async ({ args, info }: CliCommandContext) => {
     args,
   );
 
-  if (!flags.entity) {
+  const entityYaml = flags['entity-file']
+    ? readFileSync(flags['entity-file'], 'utf8')
+    : flags.entity;
+
+  if (!entityYaml) {
     throw new Error(
-      '--entity is required. Usage: catalog validate --entity "$(cat entity.yaml)"',
+      '--entity or --entity-file is required. Usage: catalog validate --entity-file entity.yaml',
     );
   }
 
   let entity: Entity;
   try {
-    entity = yaml.parse(flags.entity);
+    entity = yaml.parse(entityYaml);
   } catch (yamlError: any) {
     writeJson({
       isValid: false,

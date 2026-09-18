@@ -13,18 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ConnectionTypeKey, LookupConnectionType } from '../definitions';
+import { ConnectionType, LookupConnectionType } from '../definitions';
 import { Connection } from './Connection';
-import { ConnectionAuthMethodKey } from './ConnectionType';
+import { ConnectionTypeDefinition } from './ConnectionType';
 
 /** @public */
 export interface ConnectionsService {
   find<
-    TType extends ConnectionTypeKey,
-    TAuthMethod extends ConnectionAuthMethodKey<TType>,
+    TType extends ConnectionType,
+    TAuthMethod extends LookupConnectionType<TType>['authMethods'][number]['method'],
   >(options: {
     type: TType;
-    query: LookupConnectionType<TType>['query'];
+    query: LookupConnectionType<TType> extends ConnectionTypeDefinition<
+      infer IDefinition
+    >
+      ? IDefinition['query']
+      : never;
     authMethods: readonly [TAuthMethod, ...TAuthMethod[]];
   }): Promise<Connection<TType, TAuthMethod>>;
+
+  find<TType extends ConnectionType>(options: {
+    type: TType;
+    query: LookupConnectionType<TType> extends ConnectionTypeDefinition<
+      infer IDefinition
+    >
+      ? IDefinition['query']
+      : never;
+  }): Promise<Omit<Connection<TType>, 'auth'>>;
 }

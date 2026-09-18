@@ -27,7 +27,7 @@ export default createCliModule({
     });
     reg.addCommand({
       path: ['template', 'execute'],
-      description: 'Execute a software template',
+      description: 'Execute a software template by reference',
       execute: { loader: () => import('./commands/templateExecute') },
     });
     reg.addCommand({

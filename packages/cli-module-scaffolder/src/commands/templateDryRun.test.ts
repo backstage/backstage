@@ -15,6 +15,9 @@
  */
 
 import type { CliCommandContext } from '@backstage/cli-node';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 const mockDryRun = jest.fn();
 
@@ -39,6 +42,7 @@ import templateDryRun from './templateDryRun';
 import { cli } from 'cleye';
 
 const mockCli = cli as jest.MockedFunction<typeof cli>;
+const actualCli = jest.requireActual<typeof import('cleye')>('cleye').cli;
 
 const ctx = (args: string[]): CliCommandContext =>
   ({
@@ -63,11 +67,11 @@ describe('template dry-run', () => {
     stdoutSpy.mockRestore();
   });
 
-  it('throws when --template-ref is missing', async () => {
+  it('throws when neither --template-file nor --template-ref is provided', async () => {
     (mockCli as jest.Mock).mockReturnValue({ flags: {} });
 
     await expect(templateDryRun(ctx([]))).rejects.toThrow(
-      '--template-ref is required',
+      '--template-file or --template-ref is required',
     );
   });
 
@@ -113,7 +117,7 @@ describe('template dry-run', () => {
     (mockCli as jest.Mock).mockReturnValue({
       flags: {
         'template-ref': 'kind: Template\nmetadata:\n  name: my-tpl',
-        values: '{"name":"app"}',
+        value: ['name=app'],
       },
     });
     mockDryRun.mockResolvedValue({
@@ -137,5 +141,56 @@ describe('template dry-run', () => {
     expect(result.steps).toEqual([
       { id: 'step-1', name: 'fetch', action: 'fetch:template' },
     ]);
+  });
+
+  it('reads the template from --template-file with repeatable values', async () => {
+    const directory = mkdtempSync(join(tmpdir(), 'template-dry-run-'));
+    const templatePath = join(directory, 'template.yaml');
+    writeFileSync(templatePath, 'kind: Template\nmetadata:\n  name: my-tpl');
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: {
+        'template-file': templatePath,
+        value: ['name=my-app', 'owner=team-a', 'replicas=3'],
+      },
+    });
+    mockDryRun.mockResolvedValue({ steps: [], output: {}, log: [] });
+
+    try {
+      await templateDryRun(ctx(['--template-file', templatePath]));
+    } finally {
+      rmSync(directory, { recursive: true });
+    }
+
+    expect(mockDryRun).toHaveBeenCalledWith({
+      template: { kind: 'Template', metadata: { name: 'my-tpl' } },
+      values: { name: 'my-app', owner: 'team-a', replicas: 3 },
+    });
+  });
+
+  it('rejects the removed JSON --values flag during parsing', async () => {
+    const exitSpy = jest.spyOn(process, 'exit').mockImplementation(code => {
+      throw new Error(`process.exit(${code})`);
+    });
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    (mockCli as jest.Mock).mockImplementationOnce(actualCli);
+
+    try {
+      await expect(
+        templateDryRun(
+          ctx([
+            '--template-ref',
+            'kind: Template\nmetadata:\n  name: my-tpl',
+            '--values',
+            '{"name":"my-app"}',
+          ]),
+        ),
+      ).rejects.toThrow('process.exit(1)');
+      expect(errorSpy).toHaveBeenCalledWith(
+        'Error: Unknown flag: --values. (Did you mean --value?)',
+      );
+    } finally {
+      exitSpy.mockRestore();
+      errorSpy.mockRestore();
+    }
   });
 });

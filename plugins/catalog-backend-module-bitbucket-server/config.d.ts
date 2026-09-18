@@ -32,7 +32,7 @@ export interface Config {
              */
             catalogPath?: string;
             /**
-             * (Optional) Filters applied to discovered catalog files in repositories.
+             * (Optional) Filters applied to scheduled and event-driven catalog updates.
              * @visibility frontend
              */
             filters?: {
@@ -69,7 +69,7 @@ export interface Config {
                */
               catalogPath?: string;
               /**
-               * (Optional) Filters applied to discovered catalog files in repositories.
+               * (Optional) Filters applied to scheduled and event-driven catalog updates.
                * @visibility frontend
                */
               filters?: {

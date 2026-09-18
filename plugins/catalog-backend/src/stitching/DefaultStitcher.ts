@@ -56,9 +56,7 @@ export class DefaultStitcher {
       knex: options.knex,
       logger: options.logger,
       metrics: options.metrics,
-      strategy: stitchingStrategyFromConfig(config, {
-        logger: options.logger,
-      }),
+      strategy: stitchingStrategyFromConfig(config),
     });
   }
 

@@ -64,7 +64,7 @@ help [command]                                 display help for command
 | Command              | Description                                          |
 | -------------------- | ---------------------------------------------------- |
 | `catalog list`       | List catalog entities with optional kind/type filter |
-| `catalog get`        | Get a specific catalog entity by name                |
+| `catalog get`        | Get a specific catalog entity by reference           |
 | `catalog validate`   | Validate entity YAML against the catalog schema      |
 | `catalog register`   | Register a catalog entity from a location URL        |
 | `catalog unregister` | Unregister a catalog entity by location              |
@@ -74,7 +74,7 @@ help [command]                                 display help for command
 | Command            | Description                                         |
 | ------------------ | --------------------------------------------------- |
 | `template list`    | List available software templates                   |
-| `template execute` | Execute a software template                         |
+| `template execute` | Execute a software template by reference            |
 | `template dry-run` | Validate a software template without making changes |
 
 ### [Search Module](./module-search.md)
@@ -165,3 +165,9 @@ help [command]                                 display help for command
 | --------------------- | ----------------------------------------- |
 | `translations export` | Export translation messages to JSON files |
 | `translations import` | Generate translation resource wiring code |
+
+### [Yarn Package Manager Module](./module-package-manager-yarn.md)
+
+| Command             | Description                             |
+| ------------------- | --------------------------------------- |
+| `pm verify-patches` | Verify Yarn patch references and health |

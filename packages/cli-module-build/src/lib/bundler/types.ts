@@ -37,6 +37,10 @@ export type BundlingOptions = {
   frontendConfig: Config;
   getFrontendAppConfigs(): AppConfig[];
   additionalEntryPoints?: string[];
+  // Entry points that should load after the app's own target entry, e.g.
+  // auto-discovered plugin packages. Unlike additionalEntryPoints, these are
+  // not evaluated before the app gets a chance to run its own bootstrap code.
+  deferredEntryPoints?: string[];
   // Path to append to the detected public path, e.g. '/public'
   publicSubPath?: string;
   // Mode that the app is running in, 'protected' or 'public', default is 'public'

@@ -15,10 +15,9 @@
  */
 import type { z } from 'zod/v4';
 import type { Expand, JsonObject } from '@backstage/types';
-import type { ConnectionTypeKey, LookupConnectionType } from '../definitions';
 
 /** @public */
-export type LookupStrategy = 'host' | 'aws';
+export type ConnectionLookupStrategy = 'host' | 'aws';
 
 export type LookupStrategyQuery = {
   host: { url: string };
@@ -75,18 +74,13 @@ export type WithoutReservedAuthMethods<
 };
 
 /**
- * Restricts an auth entry to only be handed out to the given plugins.
+ * The shape of an auth entry as written in configuration: the fields declared
+ * by the auth method's own schema plus the framework-managed `title` and
+ * `match` fields.
  *
  * @public
  */
-export type ConnectionAuthMatch = {
-  plugins: string[];
-};
-
-// Expand flattens intersections and Omit into plain object literals so that
-// editor tooltips stay readable.
-/** @public */
-export type RootConnectionAuth<M> = M extends {
+export type ConfiguredConnectionAuth<M> = M extends {
   method: infer TMethod extends string;
   configSchema: { parse: (...args: any[]) => infer TConfig };
 }
@@ -94,24 +88,10 @@ export type RootConnectionAuth<M> = M extends {
       {
         method: TMethod;
         title?: string;
-        match?: ConnectionAuthMatch;
+        match?: { plugins: string[] };
       } & TConfig
     >
   : never;
-
-/** @public */
-export type ConnectionAuthValue<TAuthConfig extends { method: string }> =
-  TAuthConfig extends any
-    ? Expand<Omit<TAuthConfig, 'title' | 'match'> & { title: string }>
-    : never;
-
-export type MatchAuth<
-  TAuthConfig extends { method: string },
-  TQuery = { url: string },
-> = (
-  authMethods: ConnectionAuthValue<TAuthConfig>[],
-  query: TQuery,
-) => ConnectionAuthValue<TAuthConfig> | undefined;
 
 /**
  * A schema that can validate values and expose a JSON-serializable schema.
@@ -130,10 +110,11 @@ export type PortableSchema<TOutput = unknown, TInput = TOutput> = {
  *
  * @public
  */
-export type ConnectionType<
+export type ConnectionTypeDefinition<
   T extends {
     type: string;
-    lookupStrategy: LookupStrategy;
+    cardinality: 'singleton' | 'multiton';
+    lookupStrategy: ConnectionLookupStrategy;
     query: unknown;
     configSchema: unknown;
     auth: readonly {
@@ -141,7 +122,8 @@ export type ConnectionType<
     }[];
   } = {
     type: string;
-    lookupStrategy: LookupStrategy;
+    cardinality: 'singleton' | 'multiton';
+    lookupStrategy: ConnectionLookupStrategy;
     query: unknown;
     configSchema: unknown;
     auth: readonly {
@@ -151,31 +133,23 @@ export type ConnectionType<
 > = {
   type: T['type'];
   title: string;
+  cardinality: T['cardinality'];
+  /** Determines the query accepted by `ConnectionsService.find`. */
   lookupStrategy: T['lookupStrategy'];
   /** Schema for a complete connection configuration. */
   configSchema: PortableSchema<T['configSchema'], unknown>;
-  /** Supported auth methods and their method-specific configuration schemas. */
+  /**
+   * Supported auth methods and their method-specific configuration schemas.
+   * These schemas determine the auth values returned by
+   * `ConnectionsService.find`.
+   */
   authMethods: readonly (T['auth'][number] extends infer TAuth
     ? TAuth extends { method: string }
       ? {
           method: TAuth['method'];
           title: string;
-          configSchema: PortableSchema<
-            Expand<Omit<TAuth, 'method' | 'match' | 'title'>>,
-            unknown
-          >;
+          configSchema: PortableSchema<Expand<Omit<TAuth, 'method'>>, unknown>;
         }
       : never
     : never)[];
-  /** Type-level accessor for the query shape accepted by `find()`. */
-  readonly query: T['query'];
-  matchAuth?(
-    authMethods: ConnectionAuthValue<T['auth'][number]>[],
-    query: T['query'],
-  ): ConnectionAuthValue<T['auth'][number]> | undefined;
 };
-
-/** @public */
-export type ConnectionAuthMethodKey<
-  T extends ConnectionType | ConnectionTypeKey,
-> = LookupConnectionType<T>['authMethods'][number]['method'];

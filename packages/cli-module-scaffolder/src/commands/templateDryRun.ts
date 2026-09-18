@@ -15,8 +15,12 @@
  */
 
 import { cli } from 'cleye';
+import { readFileSync } from 'node:fs';
 import yaml from 'yaml';
-import type { CliCommandContext } from '@backstage/cli-node';
+import {
+  parseKeyValuePairs,
+  type CliCommandContext,
+} from '@backstage/cli-node';
 import { ScaffolderClient } from '../lib/ScaffolderClient';
 import { resolveAuth } from '../lib/resolveAuth';
 import { writeJson } from '../lib/intentFormat';
@@ -25,15 +29,24 @@ export default async ({ args, info }: CliCommandContext) => {
   const { flags } = cli(
     {
       name: info.usage,
+      strictFlags: true,
       flags: {
         'template-ref': {
           type: String,
-          description:
-            'Full template entity YAML content to validate (required)',
+          description: 'Full template entity YAML content alias',
         },
-        values: {
+        'template-file': {
           type: String,
-          description: 'Template input values (JSON string)',
+          description: 'Path to a template YAML file',
+        },
+        value: {
+          type: [String] as const,
+          description: 'Template input value as repeatable key=value input',
+          default: [] as string[],
+        },
+        output: {
+          type: String,
+          description: 'Output format: human (default), json',
         },
         instance: {
           type: String,
@@ -45,15 +58,19 @@ export default async ({ args, info }: CliCommandContext) => {
     args,
   );
 
-  if (!flags['template-ref']) {
+  if (!flags['template-file'] && !flags['template-ref']) {
     throw new Error(
-      '--template-ref is required. Usage: template dry-run --template-ref "$(cat template.yaml)"',
+      '--template-file or --template-ref is required. Usage: template dry-run --template-file template.yaml',
     );
   }
 
+  const templateYaml = flags['template-file']
+    ? readFileSync(flags['template-file'], 'utf8')
+    : flags['template-ref']!;
+
   let template: unknown;
   try {
-    template = yaml.parse(flags['template-ref']);
+    template = yaml.parse(templateYaml);
   } catch (parseError: any) {
     writeJson({
       valid: false,
@@ -71,7 +88,7 @@ export default async ({ args, info }: CliCommandContext) => {
   const { accessToken, baseUrl } = await resolveAuth(flags.instance);
   const client = new ScaffolderClient(baseUrl, accessToken);
 
-  const values = flags.values ? JSON.parse(flags.values) : {};
+  const values = parseKeyValuePairs(flags.value) ?? {};
   const result = await client.dryRun({ template, values });
 
   writeJson({

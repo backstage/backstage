@@ -1,5 +1,19 @@
 # @backstage/cli-module-test-jest
 
+## 0.1.6
+
+### Patch Changes
+
+- 33c8190: Made the test network request guard compatible with MSW 2 request handlers.
+- Updated dependencies
+  - @backstage/cli-common@0.3.1
+
+## 0.1.5
+
+### Patch Changes
+
+- 943687f: Stopped disabling the Node.js snapshot by default when starting backends or running tests.
+
 ## 0.1.5-next.0
 
 ### Patch Changes

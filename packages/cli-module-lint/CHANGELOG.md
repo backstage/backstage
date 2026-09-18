@@ -1,5 +1,11 @@
 # @backstage/cli-module-lint
 
+## 0.1.5
+
+### Patch Changes
+
+- 4d7b153: chore(deps): bump `shell-quote` from 1.8.4 to 1.9.0
+
 ## 0.1.5-next.0
 
 ### Patch Changes
