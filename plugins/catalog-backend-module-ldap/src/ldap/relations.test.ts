@@ -57,6 +57,102 @@ const emptyRelations = () => ({
 });
 
 describe('resolveOrgRelations', () => {
+  it('yields while indexing a large organization', async () => {
+    const groups = Array.from({ length: 1_001 }, (_, index) =>
+      group({ metadata: { name: `group-${index}` } }),
+    );
+    let timerRan = false;
+    setImmediate(() => {
+      timerRan = true;
+    });
+
+    await resolveOrgRelations(groups, [], emptyRelations());
+
+    expect(timerRan).toBe(true);
+  });
+
+  it('continues yielding while resolving dense relation edges', async () => {
+    const parent = group({
+      metadata: {
+        name: 'parent',
+        annotations: { [LDAP_DN_ANNOTATION]: 'parent' },
+      },
+    });
+    const users = Array.from({ length: 999 }, (_, index) =>
+      user({
+        metadata: {
+          name: `user-${index}`,
+          annotations: { [LDAP_DN_ANNOTATION]: `user-${index}` },
+        },
+      }),
+    );
+    const userMemberOf = new Map(
+      users.map(entity => [
+        entity.metadata.annotations![LDAP_DN_ANNOTATION],
+        new Set(['parent']),
+      ]),
+    );
+    const groupMember = new Map([
+      [
+        'parent',
+        new Set(
+          users.map(entity => entity.metadata.annotations![LDAP_DN_ANNOTATION]),
+        ),
+      ],
+    ]);
+    let eventLoopTurns = 0;
+    const countTurn = () => {
+      eventLoopTurns += 1;
+      if (eventLoopTurns < 2) {
+        setImmediate(countTurn);
+      }
+    };
+    setImmediate(countTurn);
+
+    await resolveOrgRelations([parent], users, {
+      userMemberOf,
+      groupMemberOf: new Map(),
+      groupMember,
+    });
+
+    expect(eventLoopTurns).toBe(2);
+  });
+
+  it('does not partially apply relations when planning fails', async () => {
+    const originalParent = 'group:default/original';
+    const parent = group({
+      metadata: {
+        name: 'parent',
+        annotations: { [LDAP_DN_ANNOTATION]: 'parent' },
+      },
+      spec: { children: ['group:default/original-child'] },
+    });
+    const failingGroup = group({ metadata: { name: 'failing' } });
+    Object.defineProperty(failingGroup.spec, 'children', {
+      get() {
+        throw new Error('fixture failure');
+      },
+    });
+    const member = user({
+      metadata: {
+        name: 'member',
+        annotations: { [LDAP_DN_ANNOTATION]: 'member' },
+      },
+      spec: { memberOf: [originalParent] },
+    });
+
+    await expect(
+      resolveOrgRelations([parent, failingGroup], [member], {
+        userMemberOf: new Map([['member', new Set(['parent'])]]),
+        groupMemberOf: new Map(),
+        groupMember: new Map(),
+      }),
+    ).rejects.toThrow('fixture failure');
+
+    expect(member.spec.memberOf).toEqual([originalParent]);
+    expect(parent.spec.children).toEqual(['group:default/original-child']);
+  });
+
   it.each([LDAP_DN_ANNOTATION, LDAP_RDN_ANNOTATION, LDAP_UUID_ANNOTATION])(
     'resolves references through %s',
     async annotation => {

@@ -24,6 +24,9 @@ import {
   LDAP_RDN_ANNOTATION,
   LDAP_UUID_ANNOTATION,
 } from './constants';
+import { setImmediate } from 'node:timers/promises';
+
+const RELATION_RESOLUTION_BATCH_SIZE = 1_000;
 
 export type RawLdapRelations = {
   userMemberOf: ReadonlyMap<string, ReadonlySet<string>>;
@@ -32,6 +35,19 @@ export type RawLdapRelations = {
 };
 
 type OrgEntity = UserEntity | GroupEntity;
+
+class WorkCheckpoint {
+  #processed = 0;
+
+  shouldYield(items = 1): boolean {
+    this.#processed += items;
+    if (this.#processed >= RELATION_RESOLUTION_BATCH_SIZE) {
+      this.#processed -= RELATION_RESOLUTION_BATCH_SIZE;
+      return true;
+    }
+    return false;
+  }
+}
 
 class EntityIndex<T extends OrgEntity> {
   readonly #byRef = new Map<string, T>();
@@ -97,11 +113,12 @@ function addToSet(
   values.add(target);
 }
 
-function buildGraph(
+async function buildGraph(
   userIndex: EntityIndex<UserEntity>,
   groupIndex: EntityIndex<GroupEntity>,
   relations: RawLdapRelations,
-): OrgRelationGraph {
+  checkpoint: WorkCheckpoint,
+): Promise<OrgRelationGraph> {
   const graph: OrgRelationGraph = {
     userMemberOf: new Map(),
     groupParents: new Map(),
@@ -110,6 +127,7 @@ function buildGraph(
 
   for (const [userAlias, groupAliases] of relations.userMemberOf) {
     const userRef = userIndex.resolve(userAlias);
+    if (checkpoint.shouldYield()) await setImmediate();
     if (!userRef) {
       continue;
     }
@@ -118,11 +136,13 @@ function buildGraph(
       if (groupRef) {
         addToSet(graph.userMemberOf, userRef, groupRef);
       }
+      if (checkpoint.shouldYield()) await setImmediate();
     }
   }
 
   for (const [groupAlias, parentAliases] of relations.groupMemberOf) {
     const groupRef = groupIndex.resolve(groupAlias);
+    if (checkpoint.shouldYield()) await setImmediate();
     if (!groupRef) {
       continue;
     }
@@ -132,11 +152,13 @@ function buildGraph(
         addToSet(graph.groupParents, groupRef, parentRef);
         addToSet(graph.groupChildren, parentRef, groupRef);
       }
+      if (checkpoint.shouldYield()) await setImmediate();
     }
   }
 
   for (const [groupAlias, memberAliases] of relations.groupMember) {
     const groupRef = groupIndex.resolve(groupAlias);
+    if (checkpoint.shouldYield()) await setImmediate();
     if (!groupRef) {
       continue;
     }
@@ -144,6 +166,7 @@ function buildGraph(
       const userRef = userIndex.resolve(memberAlias);
       if (userRef) {
         addToSet(graph.userMemberOf, userRef, groupRef);
+        if (checkpoint.shouldYield()) await setImmediate();
         continue;
       }
 
@@ -152,6 +175,7 @@ function buildGraph(
         addToSet(graph.groupChildren, groupRef, childRef);
         addToSet(graph.groupParents, childRef, groupRef);
       }
+      if (checkpoint.shouldYield()) await setImmediate();
     }
   }
 
@@ -163,16 +187,19 @@ export async function resolveOrgRelations(
   users: UserEntity[],
   relations: RawLdapRelations,
 ): Promise<void> {
+  const checkpoint = new WorkCheckpoint();
   const userIndex = new EntityIndex<UserEntity>();
   const groupIndex = new EntityIndex<GroupEntity>();
   for (const user of users) {
     userIndex.add(user);
+    if (checkpoint.shouldYield()) await setImmediate();
   }
   for (const group of groups) {
     groupIndex.add(group);
+    if (checkpoint.shouldYield()) await setImmediate();
   }
 
-  const graph = buildGraph(userIndex, groupIndex, relations);
+  const graph = await buildGraph(userIndex, groupIndex, relations, checkpoint);
   const plannedUserMemberOf = new Map<UserEntity, string[]>();
   for (const [userRef, groupRefs] of graph.userMemberOf) {
     const user = userIndex.get(userRef);
@@ -196,6 +223,7 @@ export async function resolveOrgRelations(
     };
     plannedGroupRelations.set(group, planned);
     plannedGroupsByRef.set(ref, planned);
+    if (checkpoint.shouldYield()) await setImmediate();
   }
 
   for (const group of groups) {
@@ -218,6 +246,7 @@ export async function resolveOrgRelations(
       if (child && !child.parent) {
         child.parent = selfRef;
       }
+      if (checkpoint.shouldYield()) await setImmediate();
     }
   }
 
