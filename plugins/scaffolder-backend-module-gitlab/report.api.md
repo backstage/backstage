@@ -72,7 +72,7 @@ export const createGitlabIssueAction: (options: {
     discussionToResolve?: string | undefined;
     epicId?: number | undefined;
     labels?: string | undefined;
-    issueType?: 'issue' | 'task' | 'incident' | 'test_case' | undefined;
+    issueType?: 'issue' | 'incident' | 'test_case' | 'task' | undefined;
     mergeRequestToResolveDiscussionsOf?: number | undefined;
     milestoneId?: number | undefined;
     weight?: number | undefined;
@@ -98,9 +98,14 @@ export const createGitlabProjectAccessTokenAction: (options: {
     accessLevel?: number | undefined;
     scopes?: string[] | undefined;
     expiresAt?: string | undefined;
+    variableKey?: string | undefined;
+    variableProtected?: boolean | undefined;
+    maskedAndHidden?: boolean | undefined;
+    environmentScope?: string | undefined;
   },
   {
-    access_token: string;
+    access_token?: string | undefined;
+    variableKey?: string | undefined;
   },
   'v2'
 >;
@@ -117,10 +122,15 @@ export const createGitlabProjectDeployTokenAction: (options: {
     scopes: string[];
     token?: string | undefined;
     username?: string | undefined;
+    variableKey?: string | undefined;
+    variableProtected?: boolean | undefined;
+    maskedAndHidden?: boolean | undefined;
+    environmentScope?: string | undefined;
   },
   {
-    deploy_token: string;
     user: string;
+    deploy_token?: string | undefined;
+    variableKey?: string | undefined;
   },
   'v2'
 >;
@@ -219,7 +229,7 @@ export function createPublishGitlabAction(options: {
           visibility?: 'internal' | 'private' | 'public' | undefined;
           path?: string | undefined;
           description?: string | undefined;
-          merge_method?: 'merge' | 'rebase_merge' | 'ff' | undefined;
+          merge_method?: 'merge' | 'ff' | 'rebase_merge' | undefined;
           topics?: string[] | undefined;
           auto_devops_enabled?: boolean | undefined;
           only_allow_merge_if_pipeline_succeeds?: boolean | undefined;
@@ -282,7 +292,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
-    commitAction?: 'auto' | 'update' | 'create' | 'delete' | 'skip' | undefined;
+    commitAction?: 'auto' | 'update' | 'skip' | 'create' | 'delete' | undefined;
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
@@ -336,7 +346,7 @@ export const editGitlabIssueAction: (options: {
     discussionLocked?: boolean | undefined;
     dueDate?: string | undefined;
     epicId?: number | undefined;
-    issueType?: 'issue' | 'task' | 'incident' | 'test_case' | undefined;
+    issueType?: 'issue' | 'incident' | 'test_case' | 'task' | undefined;
     labels?: string | undefined;
     milestoneId?: number | undefined;
     removeLabels?: string | undefined;
