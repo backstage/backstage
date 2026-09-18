@@ -17,12 +17,8 @@
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
 import { ConfigReader } from '@backstage/config';
-import {
-  GitLabIntegration,
-  parseRetryAfterMs,
-  replaceGitLabUrlType,
-  sleep,
-} from './GitLabIntegration';
+import { GitLabIntegration, replaceGitLabUrlType } from './GitLabIntegration';
+import { parseRetryAfterMs, sleep } from '../helpers';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 
 // Mock pThrottle to make testing easier

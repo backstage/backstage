@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import { Config } from '@backstage/config';
 import parseGitUrl from 'git-url-parse';
+import pThrottle from 'p-throttle';
 import { trimEnd } from 'lodash';
 import { ScmIntegration, ScmIntegrationsGroup } from './types';
 
@@ -137,4 +139,192 @@ export function defaultScmResolveUrl(options: {
     updated.hash = `L${lineNumber}`;
   }
   return updated.toString();
+}
+
+/**
+ * Reads an optional number array from config.
+ *
+ * @internal
+ */
+export function readOptionalNumberArray(
+  config: Config,
+  key: string,
+): number[] | undefined {
+  const value = config.getOptional(key);
+  if (value === undefined) {
+    return undefined;
+  }
+  if (!Array.isArray(value)) {
+    throw new Error(
+      `Invalid ${key} config: expected an array, got ${typeof value}`,
+    );
+  }
+  return value.map((item, index) => {
+    if (typeof item !== 'number') {
+      throw new Error(
+        `Invalid ${key} config: all values must be numbers, got ${typeof item} at index ${index}`,
+      );
+    }
+    return item;
+  });
+}
+
+/**
+ * Turns a `Retry-After` header value into a delay in milliseconds, falling back
+ * to the given value when the header is absent or cannot be parsed.
+ *
+ * @internal
+ */
+export function parseRetryAfterMs(
+  headerValue: string | null,
+  fallbackMs: number,
+): number {
+  if (!headerValue) {
+    return fallbackMs;
+  }
+
+  // delay-seconds per RFC 9110 is 1*DIGIT
+  if (/^\d+$/.test(headerValue)) {
+    return Number(headerValue) * 1000;
+  }
+
+  // HTTP-dates (IMF-fixdate) always contain a comma, e.g.
+  // "Sun, 06 Nov 1994 08:49:37 GMT" — use that as a prerequisite
+  // to avoid Date.parse interpreting random strings as dates.
+  if (headerValue.includes(',')) {
+    const dateMs = Date.parse(headerValue);
+    if (Number.isFinite(dateMs)) {
+      const deltaMs = dateMs - Date.now();
+      return deltaMs > 0 ? deltaMs : 0;
+    }
+  }
+
+  return fallbackMs;
+}
+
+/**
+ * Waits for the given duration, returning early if the signal is aborted.
+ *
+ * @internal
+ */
+export async function sleep(
+  durationMs: number,
+  abortSignal: AbortSignal | null | undefined,
+): Promise<void> {
+  if (abortSignal?.aborted) {
+    return;
+  }
+
+  await new Promise<void>(resolve => {
+    let timeoutHandle: NodeJS.Timeout | undefined = undefined;
+
+    const done = () => {
+      if (timeoutHandle) {
+        clearTimeout(timeoutHandle);
+      }
+      abortSignal?.removeEventListener('abort', done);
+      resolve();
+    };
+
+    timeoutHandle = setTimeout(done, durationMs);
+    abortSignal?.addEventListener('abort', done);
+  });
+}
+
+/** @internal */
+export type FetchFunction = typeof fetch;
+
+/** @internal */
+export type FetchRetryConfig = {
+  maxRetries?: number;
+  retryStatusCodes?: number[];
+  maxApiRequestsPerMinute?: number;
+};
+
+/**
+ * Builds the fetch function that an integration should use, adding retries and
+ * a requests per minute limit when the integration is configured to want them.
+ *
+ * @param retry - The retry section of the integration config, if any
+ * @param resolveRetryDelayMs - Reads the cooldown that the provider asks for
+ *        off a response, falling back to the given exponential backoff
+ *
+ * @internal
+ */
+export function createFetchStrategy(
+  retry: FetchRetryConfig | undefined,
+  resolveRetryDelayMs: (response: Response, fallbackMs: number) => number = (
+    response,
+    fallbackMs,
+  ) => parseRetryAfterMs(response.headers.get('Retry-After'), fallbackMs),
+): FetchFunction {
+  let fetchFn: FetchFunction = (url, options) => fetch(url, options);
+
+  if (!retry) {
+    return fetchFn;
+  }
+
+  fetchFn = withRetry(fetchFn, retry, resolveRetryDelayMs);
+
+  if (retry.maxApiRequestsPerMinute && retry.maxApiRequestsPerMinute > 0) {
+    fetchFn = pThrottle({
+      limit: retry.maxApiRequestsPerMinute,
+      interval: 60_000,
+    })(fetchFn);
+  }
+
+  return fetchFn;
+}
+
+function withRetry(
+  fetchFn: FetchFunction,
+  retryConfig: FetchRetryConfig,
+  resolveRetryDelayMs: (response: Response, fallbackMs: number) => number,
+): FetchFunction {
+  const maxRetries = retryConfig.maxRetries ?? 0;
+  const retryStatusCodes = retryConfig.retryStatusCodes ?? [];
+  if (maxRetries <= 0 || retryStatusCodes.length === 0) {
+    return fetchFn;
+  }
+
+  // Exponential backoff, cap at 10 seconds
+  const backoffDelay = (a: number) => Math.min(100 * Math.pow(2, a - 1), 10000);
+
+  return async (url, options) => {
+    const abortSignal = options?.signal;
+    let attempt = 0;
+    for (;;) {
+      let response: Response;
+      try {
+        response = await fetchFn(url, options);
+      } catch (e) {
+        // The caller aborted — surface that immediately rather than retrying.
+        if (abortSignal?.aborted) throw e;
+        // No more attempts left — propagate the network error.
+        if (attempt++ >= maxRetries) throw e;
+        await sleep(backoffDelay(attempt), abortSignal);
+        if (abortSignal?.aborted) throw e;
+        continue;
+      }
+
+      // Successful, non-retryable response: return immediately
+      if (!retryStatusCodes.includes(response.status)) {
+        return response;
+      }
+
+      // No more attempts left — return the last (retryable) response.
+      if (attempt++ >= maxRetries) {
+        return response;
+      }
+
+      const delay = resolveRetryDelayMs(response, backoffDelay(attempt));
+
+      // Release the underlying connection so it can be reused, since we're
+      // about to discard this response in favor of a retry.
+      await response.body?.cancel().catch(() => {});
+
+      await sleep(delay, abortSignal);
+      if (abortSignal?.aborted) return response;
+    }
+  };
 }
