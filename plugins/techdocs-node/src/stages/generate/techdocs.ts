@@ -254,6 +254,7 @@ export class TechdocsGenerator implements GeneratorBase {
     await createOrUpdateMetadata(
       path.join(outputDir, 'techdocs_metadata.json'),
       childLogger,
+      'mkdocs',
     );
 
     // Add etag of the prepared tree to techdocs_metadata.json
@@ -283,6 +284,8 @@ export function readGeneratorConfig(
   }
 
   return {
+    type:
+      config.getOptionalString('techdocs.generator.defaultEngine') ?? 'mkdocs',
     runIn:
       legacyGeneratorType ??
       config.getOptionalString('techdocs.generator.runIn') ??

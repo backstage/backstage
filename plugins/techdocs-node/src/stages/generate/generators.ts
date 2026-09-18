@@ -16,7 +16,6 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { getGeneratorKey } from './helpers';
 import { TechdocsGenerator } from './techdocs';
 import {
   GeneratorBase,
@@ -32,6 +31,7 @@ import { TechDocsContainerRunner } from './types';
  */
 export class Generators implements GeneratorBuilder {
   private generatorMap = new Map<SupportedGeneratorKey, GeneratorBase>();
+  private defaultEngine: SupportedGeneratorKey = 'mkdocs';
 
   /**
    * Returns a generators instance containing a generator for TechDocs
@@ -47,10 +47,16 @@ export class Generators implements GeneratorBuilder {
     },
   ): Promise<GeneratorBuilder> {
     const generators = new Generators();
+    const defaultEngine =
+      config.getOptionalString('techdocs.generator.defaultEngine') ?? 'mkdocs';
+
+    generators.defaultEngine = defaultEngine;
+
+    options.logger.info(`TechDocs generator defaultEngine: ${defaultEngine}`);
 
     const techdocsGenerator =
       options.customGenerator ?? TechdocsGenerator.fromConfig(config, options);
-    generators.register('techdocs', techdocsGenerator);
+    generators.register(defaultEngine, techdocsGenerator);
 
     return generators;
   }
@@ -69,7 +75,13 @@ export class Generators implements GeneratorBuilder {
    * @param entity - A TechDocs entity instance
    */
   get(entity: Entity): GeneratorBase {
-    const generatorKey = getGeneratorKey(entity);
+    if (!entity) {
+      throw new Error('No entity provided');
+    }
+
+    const generatorKey =
+      entity.metadata?.annotations?.['backstage.io/techdocs-engine'] ??
+      this.defaultEngine;
     const generator = this.generatorMap.get(generatorKey);
 
     if (!generator) {

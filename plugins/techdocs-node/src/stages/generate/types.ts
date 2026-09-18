@@ -56,6 +56,7 @@ export type ContainerRunnerPullOptions = {
  * The techdocs generator configurations options.
  */
 export type GeneratorConfig = {
+  type?: string;
   runIn: GeneratorRunInType;
   dockerImage?: string;
   pullImage?: boolean;
