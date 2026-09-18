@@ -167,15 +167,17 @@ export class TestDatabases {
     const engines = [...this.engineByTestDatabaseId.values()];
     this.engineByTestDatabaseId.clear();
 
-    for (const engine of engines) {
-      try {
-        await engine.shutdown();
-      } catch (error) {
-        console.warn(`TestDatabases: Failed to shutdown engine`, {
-          engine,
-          error,
-        });
-      }
-    }
+    await Promise.all(
+      engines.map(async engine => {
+        try {
+          await engine.shutdown();
+        } catch (error) {
+          console.warn(`TestDatabases: Failed to shutdown engine`, {
+            engine,
+            error,
+          });
+        }
+      }),
+    );
   }
 }
