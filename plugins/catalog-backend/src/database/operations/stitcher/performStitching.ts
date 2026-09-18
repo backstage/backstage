@@ -144,25 +144,28 @@ export async function performStitching(options: {
     // Grab the processed entity and stitch all of the relevant data into
     // it
 
-    const parsedEntity = (() => {
-      try {
-        return JSON.parse(processedEntity);
-      } catch (e) {
-        throw new Error(
-          `Failed to parse processed_entity column for ${entityRef} (${entityId}): ${
-            (e as Error).message
-          }`,
-        );
-      }
-    })();
+    let parsedEntity: unknown;
+    try {
+      parsedEntity = JSON.parse(processedEntity);
+    } catch (e) {
+      logger.error(
+        `Unable to stitch ${entityRef}: failed to parse processed_entity column (${entityId}): ${
+          (e as Error).message
+        }`,
+      );
+      stitchResult = 'abandoned';
+      return 'abandoned';
+    }
 
     const result = processedEntitySchema.safeParse(parsedEntity);
     if (!result.success) {
-      throw new Error(
-        `Unexpected entity shape found in processed_entity column for ${entityRef} (${entityId}): ${JSON.stringify(
+      logger.error(
+        `Unable to stitch ${entityRef}: unexpected entity shape found in processed_entity column (${entityId}): ${JSON.stringify(
           result.error.flatten().fieldErrors,
         )}`,
       );
+      stitchResult = 'abandoned';
+      return 'abandoned';
     }
     const entity = parsedEntity as AlphaEntity;
     const isOrphan = Number(incomingReferenceCount) === 0;
