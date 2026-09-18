@@ -14,10 +14,27 @@
  * limitations under the License.
  */
 
-import { basicIntegrations, isValidUrl } from '../helpers';
-import { ScmIntegration, ScmIntegrationsFactory } from '../types';
+import { ConsumedResponse } from '@backstage/errors';
+import {
+  basicIntegrations,
+  createFetchStrategy,
+  FetchFunction,
+  isValidUrl,
+  parseRetryAfterMs,
+} from '../helpers';
+import {
+  RateLimitInfo,
+  ScmIntegration,
+  ScmIntegrationsFactory,
+} from '../types';
 import { AzureUrl } from './AzureUrl';
 import { AzureIntegrationConfig, readAzureIntegrationConfigs } from './config';
+
+// Azure DevOps reports throttling in two ways: `Retry-After` when a request is
+// rejected outright, and `X-RateLimit-Delay` when a request succeeded but was
+// held back first. Both are expressed in seconds.
+// https://learn.microsoft.com/en-us/azure/devops/integrate/concepts/rate-limits
+const RATE_LIMIT_DELAY_HEADER = 'x-ratelimit-delay';
 
 /**
  * Microsoft Azure based integration.
@@ -36,7 +53,20 @@ export class AzureIntegration implements ScmIntegration {
     );
   };
 
-  constructor(private readonly integrationConfig: AzureIntegrationConfig) {}
+  private readonly fetchImpl: FetchFunction;
+
+  constructor(private readonly integrationConfig: AzureIntegrationConfig) {
+    this.fetchImpl = createFetchStrategy(
+      integrationConfig.retry,
+      (response, fallbackMs) =>
+        parseRetryAfterMs(
+          response.headers.get('Retry-After'),
+          parseRateLimitDelayMs(
+            response.headers.get(RATE_LIMIT_DELAY_HEADER),
+          ) ?? fallbackMs,
+        ),
+    );
+  }
 
   get type(): string {
     return 'azure';
@@ -95,4 +125,38 @@ export class AzureIntegration implements ScmIntegration {
     // how azure works.
     return url;
   }
+
+  /**
+   * Performs a request against Azure DevOps, applying the retry and throttling
+   * behavior from the integration configuration.
+   */
+  fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+    return this.fetchImpl(input, init);
+  }
+
+  parseRateLimitInfo(response: ConsumedResponse): RateLimitInfo {
+    return {
+      isRateLimited:
+        response.status === 429 ||
+        parseRateLimitDelayMs(response.headers.get(RATE_LIMIT_DELAY_HEADER)) !==
+          undefined,
+    };
+  }
+}
+
+/**
+ * Turns an `X-RateLimit-Delay` header value into a delay in milliseconds, or
+ * undefined when the header is absent or does not hold a positive number.
+ */
+function parseRateLimitDelayMs(headerValue: string | null): number | undefined {
+  if (!headerValue) {
+    return undefined;
+  }
+
+  const seconds = Number(headerValue);
+  if (!Number.isFinite(seconds) || seconds <= 0) {
+    return undefined;
+  }
+
+  return seconds * 1000;
 }
