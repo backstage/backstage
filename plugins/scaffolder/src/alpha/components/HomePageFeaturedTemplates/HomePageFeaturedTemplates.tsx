@@ -53,11 +53,13 @@ export function HomePageFeaturedTemplates({
   const [track, setTrack] = useState<HTMLDivElement | null>(null);
   const { ref: firstCardRef, inView: firstCardInView } = useInView({
     root: track,
+    skip: !track,
     threshold: 0.99,
     initialInView: true,
   });
   const { ref: lastCardRef, inView: lastCardInView } = useInView({
     root: track,
+    skip: !track,
     threshold: 0.99,
     initialInView: true,
   });
@@ -78,6 +80,12 @@ export function HomePageFeaturedTemplates({
         templateName: template.metadata.name,
       }),
     );
+  };
+
+  const cardRef = (index: number) => {
+    if (index === 0) return firstCardRef;
+    if (index === templates.length - 1) return lastCardRef;
+    return undefined;
   };
 
   if (loading) {
@@ -128,10 +136,7 @@ export function HomePageFeaturedTemplates({
             className={styles.card}
             role="listitem"
             key={stringifyEntityRef(template)}
-            ref={element => {
-              if (index === 0) firstCardRef(element);
-              if (index === templates.length - 1) lastCardRef(element);
-            }}
+            ref={cardRef(index)}
           >
             <TemplateCard
               template={template}
