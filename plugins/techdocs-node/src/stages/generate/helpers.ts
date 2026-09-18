@@ -28,12 +28,13 @@ import { ParsedLocationAnnotation } from '../../helpers';
 import { DefaultMkdocsContent, SupportedGeneratorKey } from './types';
 import { getFileTreeRecursively } from '../publish/helpers';
 
-// TODO: Implement proper support for more generators.
 export function getGeneratorKey(entity: Entity): SupportedGeneratorKey {
   if (!entity) {
     throw new Error('No entity provided');
   }
 
+  // Future: read backstage.io/techdocs-engine annotation from entity,
+  // fall back to the global defaultEngine config.
   return 'techdocs';
 }
 
@@ -480,6 +481,7 @@ export const patchIndexPreBuild = async ({
 export const createOrUpdateMetadata = async (
   techdocsMetadataPath: string,
   logger: LoggerService,
+  engine?: string,
 ): Promise<void> => {
   const techdocsMetadataDir = techdocsMetadataPath
     .split(path.sep)
@@ -505,6 +507,9 @@ export const createOrUpdateMetadata = async (
   }
 
   json.build_timestamp = Date.now();
+  if (engine) {
+    json.engine = engine;
+  }
 
   // Get and write generated files to the metadata JSON. Each file string is in
   // a form appropriate for invalidating the associated object from cache.
