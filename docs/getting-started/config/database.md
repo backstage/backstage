@@ -213,7 +213,7 @@ package is installed in your backend.
 #### Configuration
 
 Set `user` to the database user that has the `rds_iam` role. Set `region` to the
-AWS region of the instance. 
+AWS region of the instance.
 
 ```yaml title="app-config.yaml"
 backend:
