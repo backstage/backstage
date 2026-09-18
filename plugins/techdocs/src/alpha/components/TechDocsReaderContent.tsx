@@ -22,8 +22,9 @@ import { withTechDocsReaderProvider } from '../../reader/components/TechDocsRead
 import { TechDocsReaderPageContentAddons } from '../../reader/components/TechDocsReaderPageContent/TechDocsReaderPageContentAddons';
 import type { TechDocsReaderPageContentProps } from '../../reader/components/TechDocsReaderPageContent/TechDocsReaderPageContent';
 import { useTechDocsReaderContentData } from '../../hooks/useTechDocsReaderContentData';
+import { TechDocsReaderLayoutProvider } from '../../reader/TechDocsReaderLayoutContext';
 
-export const TechDocsReaderContent = withTechDocsReaderProvider(
+const TechDocsReaderContentInner = withTechDocsReaderProvider(
   (props: TechDocsReaderPageContentProps) => {
     const {
       dom,
@@ -53,4 +54,12 @@ export const TechDocsReaderContent = withTechDocsReaderProvider(
       </>
     );
   },
+);
+
+export const TechDocsReaderContent = (
+  props: TechDocsReaderPageContentProps,
+) => (
+  <TechDocsReaderLayoutProvider layout="bui">
+    <TechDocsReaderContentInner {...props} />
+  </TechDocsReaderLayoutProvider>
 );
