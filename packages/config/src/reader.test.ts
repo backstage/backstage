@@ -30,10 +30,12 @@ const DATA = {
   off: 'off',
   zeroString: '0',
   oneString: '1',
+  paddedNumber: '  42  ',
   stringFalse: 'false',
   null: null,
   string: 'string',
   emptyString: '',
+  whitespaceString: '   ',
   strings: ['string1', 'string2'],
   badStrings: ['string1', ''],
   worseStrings: ['string1', 3] as string[],
@@ -63,6 +65,7 @@ function expectValidValues(config: ConfigReader) {
   expect(config.getNumber('one')).toBe(1);
   expect(config.getNumber('zeroString')).toBe(0);
   expect(config.getNumber('oneString')).toBe(1);
+  expect(config.getNumber('paddedNumber')).toBe(42);
   expect(config.getOptional('true')).toBe(true);
   expect(config.getBoolean('true')).toBe(true);
   expect(config.getBoolean('false')).toBe(false);
@@ -125,6 +128,12 @@ function expectInvalidValues(config: ConfigReader) {
   );
   expect(() => config.getNumber('true')).toThrow(
     "Invalid type in config for key 'true' in 'ctx', got boolean, wanted number",
+  );
+  expect(() => config.getNumber('emptyString')).toThrow(
+    "Unable to convert config value for key 'emptyString' in 'ctx' to a number",
+  );
+  expect(() => config.getNumber('whitespaceString')).toThrow(
+    "Unable to convert config value for key 'whitespaceString' in 'ctx' to a number",
   );
   expect(() => config.getStringArray('null')).toThrow(
     "Missing required config value at 'null' in 'ctx'",
