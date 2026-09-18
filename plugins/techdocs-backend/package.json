@@ -68,6 +68,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
+    "@backstage/plugin-techdocs-common": "workspace:^",
     "@backstage/plugin-techdocs-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "express": "^4.22.0",

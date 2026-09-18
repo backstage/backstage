@@ -22,6 +22,7 @@ import {
 import { InputError, NotFoundError, ResponseError } from '@backstage/errors';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { TechDocsMetadata } from '@backstage/plugin-techdocs-node';
+import { techdocsActionsReadPermission } from '@backstage/plugin-techdocs-common/alpha';
 
 // Memory optimization constants
 const MAX_METADATA_SIZE = 5 * 1024 * 1024;
@@ -63,6 +64,7 @@ export const createGetTechdocsMetadataAction = ({
   actionsRegistry.register({
     name: 'get-techdocs-metadata',
     title: 'Get TechDocs Metadata',
+    visibilityPermission: techdocsActionsReadPermission,
     attributes: {
       destructive: false,
       readOnly: true,
