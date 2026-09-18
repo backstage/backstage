@@ -372,4 +372,48 @@ describe('RefreshingAuthSessionManager', () => {
     expect(session).toEqual({ scopes: new Set(['a']), expired: false });
     expect(createSession).toHaveBeenCalledTimes(1);
   });
+
+  it('should not sign out on a transient network error for an optional request with missing scopes', async () => {
+    const createSession = jest
+      .fn()
+      .mockResolvedValue({ scopes: new Set(['a']), expired: false });
+    const refreshSession = jest
+      .fn()
+      .mockRejectedValueOnce(new Error('NOPE')) // seed a session via createSession
+      .mockRejectedValue(new AuthConnectionError('offline')); // transient failure
+    const manager = new RefreshingAuthSessionManager({
+      connector: { createSession, refreshSession },
+      ...defaultOptions,
+    } as any);
+
+    const stateSubscriber = jest.fn();
+    manager.sessionState$().subscribe(stateSubscriber);
+    await Promise.resolve();
+
+    // Seed a signed-in session that only has scope 'a'.
+    await manager.getSession({ scopes: new Set(['a']) });
+    expect(createSession).toHaveBeenCalledTimes(1);
+    expect(stateSubscriber.mock.calls).toEqual([
+      [SessionState.SignedOut],
+      [SessionState.SignedIn],
+    ]);
+
+    // An optional request for a scope the session lacks hits the refresh path.
+    // A transient failure there must not sign the user out.
+    expect(
+      await manager.getSession({ scopes: new Set(['b']), optional: true }),
+    ).toBe(undefined);
+    expect(createSession).toHaveBeenCalledTimes(1);
+    expect(stateSubscriber.mock.calls).toEqual([
+      [SessionState.SignedOut],
+      [SessionState.SignedIn],
+    ]);
+
+    // The original session survived and is still usable.
+    expect(await manager.getSession({ scopes: new Set(['a']) })).toEqual({
+      scopes: new Set(['a']),
+      expired: false,
+    });
+    expect(createSession).toHaveBeenCalledTimes(1);
+  });
 });

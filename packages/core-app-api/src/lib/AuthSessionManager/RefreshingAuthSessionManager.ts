@@ -121,9 +121,14 @@ export class RefreshingAuthSessionManager<T> implements SessionManager<T> {
         // The session might not have the scopes requested so go back and check again
         return this.getSession(options);
       } catch (error) {
-        // As above, a transient connectivity failure must not trigger an
-        // interactive login popup; surface it so the caller can retry.
-        if (isAuthConnectionError(error) && !options.optional) {
+        // As above, a transient connectivity failure must neither sign the user
+        // out nor trigger an interactive login popup. We can reach this point
+        // with a session that is still valid and merely lacks the requested
+        // scopes, so removing it would discard a working session.
+        if (isAuthConnectionError(error)) {
+          if (options.optional) {
+            return undefined;
+          }
           throw error;
         }
         this.removeLocalSession();
