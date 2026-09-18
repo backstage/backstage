@@ -202,9 +202,13 @@ This assumes your RDS instance and IAM are already set up for IAM database authe
 - [Create a database account that uses IAM authentication](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.DBAccounts.html) (the DB user needs the `rds_iam` role)
 - [Grant `rds-db:connect` to the IAM identity](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.IAMPolicy.html) the backend runs as (e.g. an EKS IRSA role, EC2 instance role, or local profile)
 
-This requires Backstage 1.50.0 or later, which is when the `rds` connector was added.
-
 #### Configuration
+
+:::note
+
+RDS requires TLS for IAM authentication. Provide the RDS CA bundle via `connection.ssl` (for example `ssl: { ca: <contents of the RDS CA bundle> }`) the same way you would for a password connection.
+
+:::
 
 Set `user` to the database user that has the `rds_iam` role. Set `region` to the AWS region of the instance.
 
@@ -224,12 +228,6 @@ backend:
       password: ${POSTGRES_PASSWORD}
       # highlight-remove-end
 ```
-
-:::note
-
-RDS requires TLS for IAM authentication. Provide the RDS CA bundle via `connection.ssl` (for example `ssl: { ca: <contents of the RDS CA bundle> }`) the same way you would for a password connection.
-
-:::
 
 [Start the Backstage app](../index.md#creating-and-running-a-backstage-application):
 
