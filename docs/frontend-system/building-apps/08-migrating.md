@@ -397,6 +397,25 @@ app:
   packages: all # ✨
 ```
 
+#### Auto-discovery and explicit imports
+
+When feature discovery is enabled, the app still allows you to import plugins
+explicitly and pass them to `createApp`. If the same plugin is both
+auto-discovered and imported manually, the app deduplicates them by plugin ID
+and the **manual import wins**. In practice, this means an explicit import
+overrides the auto-discovered version of that plugin.
+
+This matters during migration because some core plugins still expose the legacy
+plugin as their package's default export, while the new frontend-system plugin
+is only available from an `/alpha` subpath — for example
+`@backstage/plugin-home/alpha`. Feature discovery only picks up the default
+export, so for those plugins you must import the `/alpha` version manually.
+Once you do, the auto-discovered legacy version is ignored.
+
+If a plugin already exports its new-system version from the package root,
+auto-discovery will install it without any manual import, and you can safely
+remove the import from your app code.
+
 ### Removing legacy routes
 
 After migrating a plugin page to the new frontend system, verify that the
