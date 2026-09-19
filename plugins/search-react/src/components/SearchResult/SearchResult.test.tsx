@@ -19,14 +19,14 @@ import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { createPlugin } from '@backstage/core-plugin-api';
 
 import { searchApiRef } from '../../api';
-import { useSearch } from '../../context';
+import { useOptionalSearch } from '../../context';
 import { createSearchResultListItemExtension } from '../../extensions';
 
 import { SearchResult } from './SearchResult';
 
 jest.mock('../../context', () => ({
   ...jest.requireActual('../../context'),
-  useSearch: jest.fn().mockReturnValue({
+  useOptionalSearch: jest.fn().mockReturnValue({
     result: {},
   }),
 }));
@@ -37,7 +37,7 @@ describe('SearchResult', () => {
   });
 
   it('Progress rendered on Loading state', async () => {
-    (useSearch as jest.Mock).mockReturnValue({
+    (useOptionalSearch as jest.Mock).mockReturnValue({
       result: { loading: true },
     });
 
@@ -52,7 +52,7 @@ describe('SearchResult', () => {
 
   it('Alert rendered on Error state', async () => {
     const error = new Error('some error');
-    (useSearch as jest.Mock).mockReturnValue({
+    (useOptionalSearch as jest.Mock).mockReturnValue({
       result: { loading: false, error },
     });
 
@@ -68,7 +68,8 @@ describe('SearchResult', () => {
   });
 
   it('On no result value state', async () => {
-    (useSearch as jest.Mock).mockReturnValue({
+    (useOptionalSearch as jest.Mock).mockReturnValue({
+      term: 'some-term',
       result: { loading: false, error: '', value: undefined },
     });
 
@@ -84,7 +85,8 @@ describe('SearchResult', () => {
   });
 
   it('On empty result value state', async () => {
-    (useSearch as jest.Mock).mockReturnValue({
+    (useOptionalSearch as jest.Mock).mockReturnValue({
+      term: 'some-term',
       result: { loading: false, error: '', value: { results: [] } },
     });
 
@@ -99,8 +101,28 @@ describe('SearchResult', () => {
     });
   });
 
+  it('Does not show no-results message when no query has been submitted', async () => {
+    (useOptionalSearch as jest.Mock).mockReturnValue({
+      term: '',
+      types: [],
+      filters: {},
+      result: { loading: false, error: '', value: { results: [] } },
+    });
+
+    const { queryByRole } = await renderInTestApp(
+      <SearchResult>{() => <></>}</SearchResult>,
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByRole('heading', { name: 'Sorry, no results were found' }),
+      ).not.toBeInTheDocument();
+    });
+  });
+
   it('On empty result value state with custom component', async () => {
-    (useSearch as jest.Mock).mockReturnValue({
+    (useOptionalSearch as jest.Mock).mockReturnValue({
+      term: 'some-term',
       result: { loading: false, error: '', value: { results: [] } },
     });
 
@@ -116,7 +138,7 @@ describe('SearchResult', () => {
   });
 
   it('Calls children with results set to result.value', async () => {
-    (useSearch as jest.Mock).mockReturnValue({
+    (useOptionalSearch as jest.Mock).mockReturnValue({
       result: {
         loading: false,
         error: '',
@@ -178,7 +200,7 @@ describe('SearchResult', () => {
   });
 
   it('Renders using search result item extensions', async () => {
-    (useSearch as jest.Mock).mockReturnValue({
+    (useOptionalSearch as jest.Mock).mockReturnValue({
       result: {
         loading: false,
         error: '',
