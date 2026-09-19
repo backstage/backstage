@@ -16516,13 +16516,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@snyk/error-catalog-nodejs-public@npm:^5.16.0":
-  version: 5.35.0
-  resolution: "@snyk/error-catalog-nodejs-public@npm:5.35.0"
+"@snyk/error-catalog-nodejs-public@npm:^5.82.1":
+  version: 5.82.1
+  resolution: "@snyk/error-catalog-nodejs-public@npm:5.82.1"
   dependencies:
     tslib: "npm:^2.8.1"
-    uuid: "npm:^11.0.3"
-  checksum: 10/af0185b6ad433138114e902a4940808b4ef18aded14d1274c49f06ce1afd8488b7dd377b953ce4df8a24e390019f057c1c3deedef60e6c4438875ce9cd3fcd99
+    uuid: "npm:^11.1.0"
+  checksum: 10/e7315f27812cc6c4d91abeaa015483fa65f48a5b66d65e6edf802ce5504e2edf8b7119b00723f29a4905729012db08f61eb8f58a07f59debea2bb364e78e5f07
   languageName: node
   linkType: hard
 
@@ -20821,7 +20821,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@yarnpkg/core@npm:^4.2.1, @yarnpkg/core@npm:^4.4.0, @yarnpkg/core@npm:^4.4.1, @yarnpkg/core@npm:^4.9.1":
+"@yarnpkg/core@npm:^4.2.1, @yarnpkg/core@npm:^4.4.0, @yarnpkg/core@npm:^4.9.1":
   version: 4.9.1
   resolution: "@yarnpkg/core@npm:4.9.1"
   dependencies:
@@ -42145,17 +42145,17 @@ __metadata:
   linkType: hard
 
 "snyk-nodejs-lockfile-parser@npm:^2.0.0":
-  version: 2.6.1
-  resolution: "snyk-nodejs-lockfile-parser@npm:2.6.1"
+  version: 2.10.4
+  resolution: "snyk-nodejs-lockfile-parser@npm:2.10.4"
   dependencies:
     "@snyk/dep-graph": "npm:^2.12.0"
-    "@snyk/error-catalog-nodejs-public": "npm:^5.16.0"
+    "@snyk/error-catalog-nodejs-public": "npm:^5.82.1"
     "@snyk/graphlib": "npm:2.1.9-patch.3"
-    "@yarnpkg/core": "npm:^4.4.1"
     "@yarnpkg/lockfile": "npm:^1.1.0"
+    debug: "npm:^4.4.3"
     dependency-path: "npm:^9.2.8"
     event-loop-spinner: "npm:^2.0.0"
-    js-yaml: "npm:^4.1.0"
+    js-yaml: "npm:^5.2.2"
     lodash.clonedeep: "npm:^4.5.0"
     lodash.flatmap: "npm:^4.5.0"
     lodash.isempty: "npm:^4.4.0"
@@ -42165,10 +42165,10 @@ __metadata:
     semver: "npm:^7.6.0"
     snyk-config: "npm:^5.2.0"
     tslib: "npm:^1.9.3"
-    uuid: "npm:^8.3.0"
+    uuid: "npm:^11.1.1"
   bin:
     parse-nodejs-lockfile: bin/index.js
-  checksum: 10/6573f7379f0005f632678b8518fd5559f91548fc3fb5f2004a92defb44e99acc46097382c7017f6f901df89733e521486229b5fcf9e6d1715b508ca1f9d46fff
+  checksum: 10/ef56e621dd7cdd4b80c0cd5d211beb6f256f6eb7dd840831995adc5d6a6ae5ffb18d832ddd549d8e62fb6eb6d96ffdfb1ffdb04dd63ecc9b783ab855379cbbd9
   languageName: node
   linkType: hard
 
@@ -45347,12 +45347,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^11.0.3":
-  version: 11.1.0
-  resolution: "uuid@npm:11.1.0"
+"uuid@npm:^11.1.0, uuid@npm:^11.1.1":
+  version: 11.1.1
+  resolution: "uuid@npm:11.1.1"
   bin:
     uuid: dist/esm/bin/uuid
-  checksum: 10/d2da43b49b154d154574891ced66d0c83fc70caaad87e043400cf644423b067542d6f3eb641b7c819224a7cd3b4c2f21906acbedd6ec9c6a05887aa9115a9cf5
+  checksum: 10/16411d3dc12a08d6691616c09a75e66a7f900ba1beef6628a76fe0602f82fae2ee537b564d0b7bc95c24f58d059ca9b58c75a1e806118efb50e17822ff00ddd2
   languageName: node
   linkType: hard
 
@@ -45365,7 +45365,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^8.3.0, uuid@npm:^8.3.2":
+"uuid@npm:^8.3.2":
   version: 8.3.2
   resolution: "uuid@npm:8.3.2"
   bin:
