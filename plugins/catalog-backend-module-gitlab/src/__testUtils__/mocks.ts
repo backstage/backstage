@@ -242,6 +242,63 @@ export const config_single_integration: MockObject = {
   },
 };
 
+export const config_single_integration_wildcard_entity_filename: MockObject = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          group: 'group1',
+          entityFilename: '**/catalog-info.yaml',
+          skipForkedRepos: false,
+          schedule: {
+            frequency: 'PT30M',
+            timeout: 'PT3M',
+          },
+        },
+      },
+    },
+  },
+};
+
+export const config_single_integration_wildcard_entity_filename_yaml_and_yml: MockObject =
+  {
+    integrations: {
+      gitlab: [
+        {
+          host: 'example.com',
+          apiBaseUrl: 'https://example.com/api/v4',
+          token: '1234',
+        },
+      ],
+    },
+    catalog: {
+      providers: {
+        gitlab: {
+          'test-id': {
+            host: 'example.com',
+            group: 'group1',
+            entityFilename: '**/catalog-info.y?(a)ml',
+            skipForkedRepos: false,
+            schedule: {
+              frequency: 'PT30M',
+              timeout: 'PT3M',
+            },
+          },
+        },
+      },
+    },
+  };
+
 export const config_single_integration_specific_branch: MockObject = {
   integrations: {
     gitlab: [
