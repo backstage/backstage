@@ -90,7 +90,7 @@ jobs:
 
       - name: Backstage PR automation
         if: steps.context.outputs.pr-number
-        uses: backstage/actions/pr-automation@7da58d8d1e914892549d73ae9b291acb640b61f9 # v0.7.12
+        uses: backstage/actions/pr-automation@a9e1b58ad52aaf319264e18c3ff6887a4c824b52 # v0.7.13
         with:
           app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
           private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}
