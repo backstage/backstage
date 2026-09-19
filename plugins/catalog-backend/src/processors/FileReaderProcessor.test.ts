@@ -102,4 +102,34 @@ describe('FileReaderProcessor', () => {
       target: expect.stringMatching(/^[^*]*$/),
     });
   });
+
+  it('should not emit an error for a glob that matches no files in an existing directory', async () => {
+    const processor = new FileReaderProcessor();
+
+    const emit = jest.fn();
+
+    await processor.readLocation(
+      { type: 'file', target: path.join(fixturesRoot, 'no-such-file-*.yaml') },
+      false,
+      emit,
+      defaultEntityDataParser,
+    );
+
+    expect(emit).not.toHaveBeenCalled();
+  });
+
+  it('should emit an error for a glob whose directory does not exist', async () => {
+    const processor = new FileReaderProcessor();
+    const spec = {
+      type: 'file',
+      target: path.join(fixturesRoot, 'no-such-dir', '*.yaml'),
+    };
+
+    const generated = (await new Promise<CatalogProcessorResult>(emit =>
+      processor.readLocation(spec, false, emit, defaultEntityDataParser),
+    )) as CatalogProcessorErrorResult;
+
+    expect(generated.type).toBe('error');
+    expect(generated.error.name).toBe('NotFoundError');
+  });
 });
