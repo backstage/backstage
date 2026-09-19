@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * Node.js library for Backstage CLIs
- *
- * @packageDocumentation
- */
-
-export * from './auth';
-export * from './cache';
-export * from './cli-module';
-export * from './concurrency';
-export * from './git';
-export * from './input';
-export * from './monorepo';
-export * from './roles';
-export * from './yarn';
+export { parseCommaSeparatedList, parseKeyValuePairs } from './parseInput';

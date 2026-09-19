@@ -15,12 +15,14 @@ Commands:
   actions
   auth
   build-workspace
+  catalog
   config
   config:check
   config:docs
   config:print
   config:schema
   create-github-app
+  docs
   help
   info
   migrate
@@ -28,6 +30,8 @@ Commands:
   package
   pm
   repo
+  search
+  template
   translations
   versions:bump
   versions:migrate
@@ -202,6 +206,93 @@ Options:
   -h, --help
 ```
 
+### `backstage-cli catalog`
+
+```
+Usage: backstage-cli catalog [flags...]
+
+Options:
+  -V, --version
+  -h, --help
+
+Commands:
+  get
+  help
+  list
+  register
+  unregister
+  validate
+```
+
+### `backstage-cli catalog get`
+
+```
+Usage: backstage-cli catalog get [flags...] [ref]
+
+Options:
+  --instance <string>
+  --kind <string>
+  --name <string>
+  --namespace <string>
+  --output <string>
+  -h, --help
+```
+
+### `backstage-cli catalog list`
+
+```
+Usage: backstage-cli catalog list [flags...]
+
+Options:
+  --fields <string>
+  --filter <string>
+  --instance <string>
+  --kind <string>
+  --limit <number>
+  --output <string>
+  --type <string>
+  -h, --help
+```
+
+### `backstage-cli catalog register`
+
+```
+Usage: backstage-cli catalog register [flags...]
+
+Options:
+  --instance <string>
+  --location-url <string>
+  --output <string>
+  -h, --help
+```
+
+### `backstage-cli catalog unregister`
+
+```
+Usage: backstage-cli catalog unregister [flags...]
+
+Options:
+  --instance <string>
+  --location-id <string>
+  --location-url <string>
+  --output <string>
+  -h, --help
+```
+
+### `backstage-cli catalog validate`
+
+```
+Usage: backstage-cli catalog validate [flags...]
+
+Options:
+  --entity <string>
+  --entity-file <string>
+  --instance <string>
+  --location <string>
+  --output <string>
+  -h, --help
+```
+
 ### `backstage-cli config`
 
 ```
@@ -299,6 +390,33 @@ Options:
 Usage: backstage-cli create-github-app [flags...] <github-org>
 
 Options:
+  -h, --help
+```
+
+### `backstage-cli docs`
+
+```
+Usage: backstage-cli docs [flags...]
+
+Options:
+  -V, --version
+  -h, --help
+
+Commands:
+  help
+  search
+```
+
+### `backstage-cli docs search`
+
+```
+Usage: backstage-cli docs search [flags...]
+
+Options:
+  --instance <string>
+  --output <string>
+  --page-cursor <string>
+  --page-limit <number>
   -h, --help
 ```
 
@@ -724,6 +842,79 @@ Options:
   --since <string>
   --success-cache
   --success-cache-dir <string>
+  -h, --help
+```
+
+### `backstage-cli search`
+
+```
+Usage: backstage-cli search [flags...] <term...>
+
+Options:
+  --filter <string>
+  --instance <string>
+  --output <string>
+  --page-cursor <string>
+  --page-limit <number>
+  --types <string>
+  -h, --help
+```
+
+### `backstage-cli template`
+
+```
+Usage: backstage-cli template [flags...]
+
+Options:
+  -V, --version
+  -h, --help
+
+Commands:
+  dry-run
+  execute
+  help
+  list
+```
+
+### `backstage-cli template dry-run`
+
+```
+Usage: backstage-cli template dry-run [flags...]
+
+Options:
+  --instance <string>
+  --output <string>
+  --template-file <string>
+  --template-ref <string>
+  --value <string>
+  -h, --help
+```
+
+### `backstage-cli template execute`
+
+```
+Usage: backstage-cli template execute [flags...] [ref]
+
+Options:
+  --instance <string>
+  --namespace <string>
+  --output <string>
+  --secret <string>
+  --template-ref <string>
+  --value <string>
+  -h, --help
+```
+
+### `backstage-cli template list`
+
+```
+Usage: backstage-cli template list [flags...]
+
+Options:
+  --filter <string>
+  --instance <string>
+  --limit <number>
+  --output <string>
   -h, --help
 ```
 

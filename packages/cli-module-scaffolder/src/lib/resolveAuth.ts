@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-/**
- * Node.js library for Backstage CLIs
- *
- * @packageDocumentation
- */
+import { CliAuth } from '@backstage/cli-node';
 
-export * from './auth';
-export * from './cache';
-export * from './cli-module';
-export * from './concurrency';
-export * from './git';
-export * from './input';
-export * from './monorepo';
-export * from './roles';
-export * from './yarn';
+export async function resolveAuth(instanceFlag?: string): Promise<{
+  baseUrl: string;
+  accessToken: string;
+}> {
+  const auth = await CliAuth.create({ instanceName: instanceFlag });
+  const accessToken = await auth.getAccessToken();
+  return { baseUrl: auth.getBaseUrl(), accessToken };
+}

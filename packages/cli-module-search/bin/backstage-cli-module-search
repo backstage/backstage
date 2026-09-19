@@ -1,5 +1,6 @@
+#!/usr/bin/env node
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +15,18 @@
  * limitations under the License.
  */
 
-/**
- * Node.js library for Backstage CLIs
- *
- * @packageDocumentation
- */
+const path = require('node:path');
 
-export * from './auth';
-export * from './cache';
-export * from './cli-module';
-export * from './concurrency';
-export * from './git';
-export * from './input';
-export * from './monorepo';
-export * from './roles';
-export * from './yarn';
+/* eslint-disable-next-line no-restricted-syntax */
+const isLocal = require('node:fs').existsSync(
+  path.resolve(__dirname, '../src'),
+);
+
+if (isLocal) {
+  require('@backstage/cli-node/config/nodeTransform.cjs');
+}
+
+const { runCli } = require('@backstage/cli-node');
+const cliModule = require(isLocal ? '../src/index' : '..').default;
+const pkg = require('../package.json');
+runCli({ modules: [cliModule], name: pkg.name, version: pkg.version });
