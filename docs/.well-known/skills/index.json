@@ -2,8 +2,13 @@
   "skills": [
     {
       "name": "mui-to-bui-migration",
-      "description": "Migrate Backstage plugins from Material-UI (MUI) to Backstage UI (BUI). Use this skill when migrating components, updating imports, replacing styling patterns, or converting MUI components to their BUI equivalents.",
-      "files": ["SKILL.md"]
+      "description": "Migrate Material-UI (MUI) to Backstage UI (BUI) with a codemod or standalone guidance. Use when migrating MUI components and styles, running @backstage/mui4-to-bui-migration-recipe, or resolving TODO(backstage-codemod) after a BUI migration.",
+      "files": [
+        "SKILL.md",
+        "references/standalone-migration.md",
+        "references/out-of-scope.md",
+        "references/leftover-cleanup.md"
+      ]
     },
     {
       "name": "app-frontend-system-migration",
