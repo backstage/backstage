@@ -177,18 +177,18 @@ expect(api.greet).toHaveBeenCalledTimes(1);
 
 The table below lists all core APIs available through the `mockApis` namespace.
 
-| API                               | Fake instance         | Notes                                                                  |
-| --------------------------------- | --------------------- | ---------------------------------------------------------------------- |
-| `mockApis.alert()`                | `MockAlertApi`        | Collects alerts; has `getAlerts()`, `clearAlerts()`, `waitForAlert()`  |
-| `mockApis.analytics()`            | `MockAnalyticsApi`    | Collects events; has `getEvents()`                                     |
-| `mockApis.config({ data })`       | `MockConfigApi`       | Reads from a plain JSON object                                         |
-| `mockApis.discovery({ baseUrl })` | Inline                | Returns `${baseUrl}/api/${pluginId}`, defaults to `http://example.com` |
-| `mockApis.error(options?)`        | `MockErrorApi`        | Collects errors; has `getErrors()`, `waitForError()`                   |
-| `mockApis.featureFlags(options?)` | `MockFeatureFlagsApi` | In-memory flag state; has `getState()`, `setState()`, `clearState()`   |
-| `mockApis.fetch(options?)`        | `MockFetchApi`        | Wraps native `fetch`; supports identity injection and plugin protocol  |
-| `mockApis.identity(options?)`     | Inline                | Configurable user ref, ownership, token, profile                       |
-| `mockApis.permission(options?)`   | `MockPermissionApi`   | Defaults to `ALLOW`; accepts a handler function                        |
-| `mockApis.storage({ data })`      | `MockStorageApi`      | In-memory storage with bucket support                                  |
-| `mockApis.translation()`          | `MockTranslationApi`  | Passthrough returning default messages from translation refs           |
+| API                               | Behavior                                                               |
+| --------------------------------- | ---------------------------------------------------------------------- |
+| `mockApis.alert()`                | Collects alerts; has `getAlerts()`, `clearAlerts()`, `waitForAlert()`  |
+| `mockApis.analytics()`            | Collects events; has `getEvents()`                                     |
+| `mockApis.config({ data })`       | Reads from a plain JSON object                                         |
+| `mockApis.discovery({ baseUrl })` | Returns `${baseUrl}/api/${pluginId}`, defaults to `http://example.com` |
+| `mockApis.error(options?)`        | Collects errors; has `getErrors()`, `waitForError()`                   |
+| `mockApis.featureFlags(options?)` | In-memory flag state; has `getState()`, `setState()`, `clearState()`   |
+| `mockApis.fetch(options?)`        | Wraps native `fetch`; supports identity injection and plugin protocol  |
+| `mockApis.identity(options?)`     | Configurable user ref, ownership, token, profile                       |
+| `mockApis.permission(options?)`   | Defaults to `ALLOW`; accepts a handler function                        |
+| `mockApis.storage({ data })`      | In-memory storage with bucket support                                  |
+| `mockApis.translation()`          | Passthrough returning default messages from translation refs           |
 
 Each of these also has a `.mock()` variant that returns jest mocks, as described above.

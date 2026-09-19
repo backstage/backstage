@@ -21,8 +21,6 @@ import ObservableImpl from 'zen-observable';
 /**
  * Mock implementation of the {@link core-plugin-api#StorageApi} to be used in tests.
  *
- * @public
- * @deprecated Use `mockApis.storage()` instead.
  */
 export class MockStorageApi implements StorageApi {
   private readonly namespace: string;
