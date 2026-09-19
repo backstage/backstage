@@ -17,8 +17,12 @@
 import { z } from 'zod/v3';
 import fs from 'fs-extra';
 import recursiveReaddir from 'recursive-readdir';
-import { resolve as resolvePath, relative as relativePath } from 'node:path';
-import { dirname } from 'node:path';
+import {
+  resolve as resolvePath,
+  relative as relativePath,
+  dirname,
+  sep as separator,
+} from 'node:path';
 import { parse as parseYaml } from 'yaml';
 import { targetPaths } from '@backstage/cli-common';
 
@@ -77,7 +81,9 @@ export async function loadPortableTemplate(
   const loadedFiles = new Array<PortableTemplateFile>();
 
   for (const filePath of filePaths) {
-    const path = relativePath(templatePath, filePath).split('\\').join('/');
+    const path = relativePath(templatePath, filePath)
+      .split(separator)
+      .join('/');
     if (filePath === pointer.target) {
       continue;
     }
