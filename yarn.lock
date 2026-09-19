@@ -41783,11 +41783,11 @@ __metadata:
   linkType: hard
 
 "shadow-dom-testing-library@npm:^1.13.1":
-  version: 1.13.1
-  resolution: "shadow-dom-testing-library@npm:1.13.1"
+  version: 1.14.2
+  resolution: "shadow-dom-testing-library@npm:1.14.2"
   peerDependencies:
     "@testing-library/dom": ">= 8"
-  checksum: 10/a10f3466592691368f260c15230d9e830cc5122d20002ad9b6c2918fa245089219d1f45c026153fa6ccf8848b546da6f985c0e461458c8c1e09786a1de626287
+  checksum: 10/3275e2d414ff79cd947fda060437ead35586f0ae104c6e10e335d982b0a6ea153f4f0e15866518977011b689bcf0b534881f0ffcc1cbfbb8e283c3439eb9d917
   languageName: node
   linkType: hard
 
