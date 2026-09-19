@@ -278,6 +278,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     title: string;
     branchName: string;
     description?: string | undefined;
+    commitMessage?: string | undefined;
     targetBranchName?: string | undefined;
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
