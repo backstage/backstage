@@ -141,11 +141,7 @@ function EntityLabels(props: { entity: Entity }) {
           label={t('entityLabels.ownerLabel')}
           contentTypograpyRootComponent="p"
           value={
-            <EntityRefLinks
-              entityRefs={ownedByRelations}
-              defaultKind="Group"
-              color="inherit"
-            />
+            <EntityRefLinks entityRefs={ownedByRelations} defaultKind="Group" />
           }
         />
       )}
