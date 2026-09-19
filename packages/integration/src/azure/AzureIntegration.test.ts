@@ -119,17 +119,37 @@ describe('AzureIntegration', () => {
     });
   });
 
-  it('resolve edit URL', () => {
+  it('resolves edit URLs for repository files', () => {
     const integration = new AzureIntegration({ host: 'h.com' } as any);
 
-    // TODO: The Azure integration doesn't support resolving an edit URL yet,
-    // instead we keep the input URL.
     expect(
       integration.resolveEditUrl(
         'https://dev.azure.com/organization/project/_git/repository?path=%2Fcatalog-info.yaml',
       ),
     ).toBe(
-      'https://dev.azure.com/organization/project/_git/repository?path=%2Fcatalog-info.yaml',
+      'https://dev.azure.com/organization/project/_git/repository?path=%2Fcatalog-info.yaml&_a=edit',
     );
+
+    expect(
+      integration.resolveEditUrl(
+        'https://dev.azure.com/organization/project/_git/repository?path=%2Fcatalog-info.yaml&version=GBmain&_a=contents',
+      ),
+    ).toBe(
+      'https://dev.azure.com/organization/project/_git/repository?path=%2Fcatalog-info.yaml&version=GBmain&_a=edit',
+    );
+  });
+
+  it('keeps non-file and non-repository edit URLs unchanged', () => {
+    const integration = new AzureIntegration({ host: 'h.com' } as any);
+
+    expect(
+      integration.resolveEditUrl(
+        'https://dev.azure.com/organization/project/_git/repository',
+      ),
+    ).toBe('https://dev.azure.com/organization/project/_git/repository');
+
+    expect(
+      integration.resolveEditUrl('https://dev.azure.com/organization/project'),
+    ).toBe('https://dev.azure.com/organization/project');
   });
 });
