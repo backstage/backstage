@@ -111,4 +111,25 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description:
+      'Create a GitLab project deploy token and store it as a CI/CD variable',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'createDeployToken',
+          action: 'gitlab:projectDeployToken:create',
+          name: 'Create GitLab Project Deploy Token',
+          input: {
+            repoUrl: 'gitlab.com?repo=repo&owner=owner',
+            projectId: '456',
+            name: 'backstage-deploy-token',
+            scopes: ['read_registry'],
+            variableKey: 'BACKSTAGE_DEPLOY_TOKEN',
+            variableProtected: true,
+          },
+        },
+      ],
+    }),
+  },
 ];
