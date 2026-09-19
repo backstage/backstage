@@ -16,15 +16,46 @@
 
 import { cli } from 'cleye';
 import { CliAuth, type CliCommandContext } from '@backstage/cli-node';
-import { pluginSourcesSchema } from '../lib/pluginSources';
+import { ActionsClient } from '../lib/ActionsClient';
+import {
+  pluginSourcesSchema,
+  excludedSourcesSchema,
+  mergePluginSources,
+} from '../lib/pluginSources';
 
 export default async ({ args, info }: CliCommandContext) => {
-  cli({ name: info.usage }, undefined, args);
+  const {
+    flags: { instance: instanceFlag },
+  } = cli(
+    {
+      name: info.usage,
+      flags: {
+        instance: {
+          type: String,
+          description: 'Name of the instance to use',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
 
-  const auth = await CliAuth.create();
-  const sources = pluginSourcesSchema.parse(
+  const auth = await CliAuth.create({ instanceName: instanceFlag });
+  const localAdditions = pluginSourcesSchema.parse(
     await auth.getMetadata('pluginSources'),
   );
+  const localExclusions = excludedSourcesSchema.parse(
+    await auth.getMetadata('excludedPluginSources'),
+  );
+
+  const client = new ActionsClient(auth.getBaseUrl(), '');
+  const serverSources = await client.listSources();
+
+  const sources = mergePluginSources({
+    serverSources,
+    localAdditions,
+    localExclusions,
+  });
 
   if (!sources.length) {
     process.stderr.write('No plugin sources configured.\n');
