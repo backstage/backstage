@@ -286,6 +286,7 @@ export function createGithubRepoCreateAction(options: {
     token?: string | undefined;
     topics?: string[] | undefined;
     workflowAccess?: 'none' | 'organization' | 'user' | undefined;
+    delay?: number | undefined;
   },
   {
     remoteUrl: string;
@@ -448,6 +449,7 @@ export function createPublishGithubAction(options: {
     requiredLinearHistory?: boolean | undefined;
     customProperties?: Record<string, string | string[]> | undefined;
     subscribe?: boolean | undefined;
+    delay?: number | undefined;
   },
   {
     remoteUrl: string;
