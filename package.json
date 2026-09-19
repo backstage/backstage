@@ -106,7 +106,7 @@
     "@yarnpkg/plugin-npm@npm:^3.1.0": "patch:@yarnpkg/plugin-npm@npm%3A3.7.1#~/.yarn/patches/@yarnpkg-plugin-npm-npm-3.7.1-ab2f1a850e.patch",
     "GendocuPublicApis": "npm:gendocu-public-apis@^1.0.0",
     "ast-types@npm:^0.13.4": "0.16.3",
-    "csstype@npm:^3.0.2": "3.0.9"
+    "csstype@npm:^3.0.2": "3.2.3"
   },
   "dependencies": {
     "@backstage/errors": "workspace:^",
