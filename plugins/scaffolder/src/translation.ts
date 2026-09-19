@@ -395,5 +395,13 @@ export const scaffolderTranslationRef = createTranslationRef({
     templateEditorToolbarTemplatesMenu: {
       button: 'Templates',
     },
+    featuredTemplatesWidget: {
+      scrollPreviousButtonTitle: 'Previous templates',
+      scrollNextButtonTitle: 'Next templates',
+      errorMessage: 'Could not load templates.',
+      errorRetryButtonTitle: 'Retry',
+      emptyMessage: 'There are currently no templates to show.',
+      emptyBrowseAllButtonTitle: 'Browse all templates',
+    },
   },
 });
