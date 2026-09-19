@@ -19,25 +19,20 @@ import {
   StatusError,
   StatusOK,
   StatusWarning,
-  Table,
-  TableColumn,
 } from '@backstage/core-components';
 import { ExternalDependency } from '@backstage/plugin-devtools-common';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import Alert from '@material-ui/lab/Alert';
+import {
+  Alert,
+  Cell,
+  CellText,
+  ColumnConfig,
+  Flex,
+  Table,
+  Text,
+  useTable,
+} from '@backstage/ui';
+import { useMemo } from 'react';
 import { useExternalDependencies } from '../../../hooks';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    paperStyle: {
-      padding: theme.spacing(2),
-    },
-  }),
-);
 
 export const getExternalDependencyStatus = (
   result: Partial<ExternalDependency> | undefined,
@@ -45,91 +40,96 @@ export const getExternalDependencyStatus = (
   switch (result?.status) {
     case 'Healthy':
       return (
-        <Typography component="span">
+        <Text as="span">
           <StatusOK /> {result.status}
-        </Typography>
+        </Text>
       );
     case 'Unhealthy':
       return (
-        <Typography component="span">
+        <Text as="span">
           <StatusError /> {`${result.status}`}
-        </Typography>
+        </Text>
       );
     case undefined:
     default:
       return (
-        <Typography component="span">
+        <Text as="span">
           <StatusWarning /> Unknown
-        </Typography>
+        </Text>
       );
   }
 };
 
-const columns: TableColumn[] = [
-  {
-    title: 'Name',
-    width: 'auto',
-    field: 'name',
-  },
-  {
-    title: 'Target',
-    width: 'auto',
-    field: 'target',
-  },
-  {
-    title: 'Type',
-    width: 'auto',
-    field: 'type',
-  },
-  {
-    title: 'Status',
-    width: 'auto',
-    render: (row: Partial<ExternalDependency>) => (
-      <Grid container direction="column">
-        <Grid item>
-          <Typography variant="button">
-            {getExternalDependencyStatus(row)}
-          </Typography>
-        </Grid>
-        <Grid item>{row.error && <Typography>{row.error}</Typography>}</Grid>
-      </Grid>
-    ),
-  },
-];
+type ExternalDependencyRow = ExternalDependency & { id: string };
 
 /** @public */
 export const ExternalDependenciesContent = () => {
-  const classes = useStyles();
   const { externalDependencies, loading, error } = useExternalDependencies();
+
+  const rows = useMemo<ExternalDependencyRow[]>(
+    () =>
+      (externalDependencies ?? []).map(dependency => ({
+        ...dependency,
+        id: `${dependency.name}:${dependency.type}:${dependency.target}`,
+      })),
+    [externalDependencies],
+  );
+
+  const { tableProps } = useTable({
+    mode: 'complete',
+    data: rows,
+    paginationOptions: {
+      type: 'page',
+      pageSize: 20,
+      pageSizeOptions: [20, 50, 100],
+    },
+  });
+
+  const columns = useMemo<ColumnConfig<ExternalDependencyRow>[]>(
+    () => [
+      {
+        id: 'name',
+        label: 'Name',
+        isRowHeader: true,
+        cell: item => <CellText title={item.name} />,
+      },
+      {
+        id: 'target',
+        label: 'Target',
+        cell: item => <CellText title={item.target} />,
+      },
+      {
+        id: 'type',
+        label: 'Type',
+        cell: item => <CellText title={item.type} />,
+      },
+      {
+        id: 'status',
+        label: 'Status',
+        cell: item => (
+          <Cell>
+            <Flex direction="column" gap="0.5">
+              {getExternalDependencyStatus(item)}
+              {item.error && <Text as="span">{item.error}</Text>}
+            </Flex>
+          </Cell>
+        ),
+      },
+    ],
+    [],
+  );
 
   if (loading) {
     return <Progress />;
   } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
-  }
-
-  if (!externalDependencies || externalDependencies.length === 0) {
-    return (
-      <Box>
-        <Paper className={classes.paperStyle}>
-          <Typography>No external dependencies found</Typography>
-        </Paper>
-      </Box>
-    );
+    return <Alert status="danger" description={error.message} />;
   }
 
   return (
     <Table
-      title="Status"
-      options={{
-        paging: true,
-        pageSize: 20,
-        pageSizeOptions: [20, 50, 100],
-        loadingType: 'linear',
-        showEmptyDataSourceMessage: !loading,
-      }}
-      columns={columns}
-      data={externalDependencies || []}
+      columnConfig={columns}
+      {...tableProps}
+      emptyState={<Text as="p">No external dependencies found</Text>}
     />
   );
 };
