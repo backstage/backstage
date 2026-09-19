@@ -2,4 +2,4 @@
 '@backstage/filter-predicates': patch
 ---
 
-Filter predicates now fail to match gracefully instead of throwing an error when an operator is given a value of an unexpected type. This applies to `$in` and `$all`/`$any` used with a non-array value, and `$hasPrefix` used with a non-string value. This makes evaluation more robust when predicates come from JSON or other sources where the value types are not guaranteed.
+Filter predicates now throw a clear error when an operator is given an operand of an unexpected type, instead of silently failing to match. This applies to `$in`, `$all`, and `$any` used with a non-array operand, and `$hasPrefix` used with a non-string operand. Mistakes in predicates now surface immediately rather than looking like zero matches.
