@@ -26,6 +26,16 @@ import {
 } from '../../tables';
 import { markForStitching } from './markForStitching';
 import { performStitching } from './performStitching';
+import { syncSearchRows } from './syncSearchRows';
+
+jest.mock('./syncSearchRows', () => {
+  const actual = jest.requireActual('./syncSearchRows');
+  return { ...actual, syncSearchRows: jest.fn(actual.syncSearchRows) };
+});
+
+const syncSearchRowsMock = syncSearchRows as jest.MockedFunction<
+  typeof syncSearchRows
+>;
 
 jest.setTimeout(60_000);
 
@@ -433,6 +443,79 @@ describe.each(databases.eachSupportedId())(
       expect(afterFresh[0].hash).not.toBe(firstHash);
       const freshEntity = JSON.parse(afterFresh[0].final_entity!);
       expect(freshEntity.spec).toEqual({ original: false, stale: true });
+    });
+
+    it('leaves nothing behind when the search index write fails', async () => {
+      const knex = await databases.init(databaseId);
+      await applyDatabaseMigrations(knex);
+
+      await knex<DbRefreshStateRow>('refresh_state').insert([
+        {
+          entity_id: 'my-id',
+          entity_ref: 'k:ns/n',
+          unprocessed_entity: JSON.stringify({}),
+          processed_entity: JSON.stringify({
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'n', namespace: 'ns' },
+            spec: { k: 'v' },
+          }),
+          errors: '[]',
+          next_update_at: knex.fn.now(),
+          last_discovery_at: knex.fn.now(),
+        },
+      ]);
+
+      await markForStitching({ knex, entityRefs: ['k:ns/n'] });
+
+      syncSearchRowsMock.mockRejectedValueOnce(
+        new Error('connection terminated unexpectedly'),
+      );
+
+      await expect(
+        performStitching({
+          knex,
+          logger: mockServices.logger.mock(),
+          entityRef: 'k:ns/n',
+          stitchTicket: await getStitchTicket(knex, 'k:ns/n'),
+        }),
+      ).rejects.toThrow('connection terminated unexpectedly');
+
+      // Neither half of the write may survive. A final_entities row left
+      // behind here is what makes the entity unrecoverable, because the
+      // retry below would match its hash and skip the search index.
+      expect(await knex<DbFinalEntitiesRow>('final_entities')).toEqual([]);
+      expect(await knex<DbSearchRow>('search')).toEqual([]);
+
+      // The failure left the queue entry in place, so the entity is
+      // retried with the same ticket.
+      await expect(
+        performStitching({
+          knex,
+          logger: mockServices.logger.mock(),
+          entityRef: 'k:ns/n',
+          stitchTicket: await getStitchTicket(knex, 'k:ns/n'),
+        }),
+      ).resolves.toBe('changed');
+
+      const entities = await knex<DbFinalEntitiesRow>('final_entities');
+      expect(entities).toHaveLength(1);
+      expect(await knex<DbSearchRow>('search')).toEqual(
+        expect.arrayContaining([
+          {
+            entity_id: 'my-id',
+            key: 'metadata.name',
+            original_value: 'n',
+            value: 'n',
+          },
+          {
+            entity_id: 'my-id',
+            key: 'spec.k',
+            original_value: 'v',
+            value: 'v',
+          },
+        ]),
+      );
     });
   },
 );

@@ -222,48 +222,60 @@ export async function performStitching(options: {
       }
     }
 
-    let upsert = knex<DbFinalEntitiesRow>('final_entities')
-      .insert({
-        entity_id: entityId,
-        entity_ref: entityRef,
-        final_entity: JSON.stringify(entity),
-        hash,
-        last_updated_at: knex.fn.now(),
-      })
-      .onConflict('entity_id')
-      .merge(['final_entity', 'hash', 'last_updated_at']);
+    // The final_entities row and the search index rows have to land
+    // together. If the search write fails on its own, the next stitch
+    // attempt reads back the hash we just wrote and returns early as
+    // unchanged, so the entity keeps a stale search index for good. It
+    // stays readable by direct lookup and drops out of every filtered or
+    // sorted list query.
+    const writeOutcome = await knex.transaction(async tx => {
+      let upsert = tx<DbFinalEntitiesRow>('final_entities')
+        .insert({
+          entity_id: entityId,
+          entity_ref: entityRef,
+          final_entity: JSON.stringify(entity),
+          hash,
+          last_updated_at: tx.fn.now(),
+        })
+        .onConflict('entity_id')
+        .merge(['final_entity', 'hash', 'last_updated_at']);
 
-    if (!isMySQL) {
-      upsert = upsert.where(
-        knex.raw(
-          'exists (select 1 from stitch_queue where entity_ref = ? and stitch_ticket = ?)',
-          [entityRef, stitchTicket],
-        ),
-      );
-    }
-
-    await upsert;
-
-    // Verify the write took effect. INSERT return values vary across
-    // database engines (row IDs vs row counts vs empty arrays), so we
-    // check the hash directly — we already know hash !== previousHash
-    // from the check above, so a mismatch means the write was blocked.
-    if (!isMySQL) {
-      const written = await knex<DbFinalEntitiesRow>('final_entities')
-        .where('entity_id', entityId)
-        .where('hash', hash)
-        .select(knex.raw('1'))
-        .first();
-      if (!written) {
-        logger.debug(
-          `Entity ${entityRef} is already stitched, skipping write.`,
+      if (!isMySQL) {
+        upsert = upsert.where(
+          tx.raw(
+            'exists (select 1 from stitch_queue where entity_ref = ? and stitch_ticket = ?)',
+            [entityRef, stitchTicket],
+          ),
         );
-        stitchResult = 'abandoned';
-        return 'abandoned';
       }
-    }
 
-    await syncSearchRows(knex, entityId, searchEntries);
+      await upsert;
+
+      // Verify the write took effect. INSERT return values vary across
+      // database engines (row IDs vs row counts vs empty arrays), so we
+      // check the hash directly — we already know hash !== previousHash
+      // from the check above, so a mismatch means the write was blocked.
+      if (!isMySQL) {
+        const written = await tx<DbFinalEntitiesRow>('final_entities')
+          .where('entity_id', entityId)
+          .where('hash', hash)
+          .select(tx.raw('1'))
+          .first();
+        if (!written) {
+          return 'abandoned' as const;
+        }
+      }
+
+      await syncSearchRows(tx, entityId, searchEntries);
+
+      return 'changed' as const;
+    });
+
+    if (writeOutcome === 'abandoned') {
+      logger.debug(`Entity ${entityRef} is already stitched, skipping write.`);
+      stitchResult = 'abandoned';
+      return 'abandoned';
+    }
 
     stitchResult = 'succeeded';
     return 'changed';
