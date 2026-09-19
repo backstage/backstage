@@ -22,6 +22,14 @@ module.exports = class CachingJestRuntime extends JestRuntime {
   constructor(config, ...restArgs) {
     super(config, ...restArgs);
     this.allowLoadAsEsm = config.extensionsToTreatAsEsm.includes('.mts');
+
+    if (!this.allowLoadAsEsm) {
+      // Jest 30.5 performs this check inside its CommonJS loader instead of
+      // calling unstable_shouldLoadAsEsm below. Keep frontend tests on their
+      // configured CommonJS transforms rather than loading dependency ESM
+      // through Node.js require(esm), which does not support cyclic graphs.
+      this._resolution.shouldLoadAsEsm = () => false;
+    }
   }
 
   // Unfortunately we need to use this unstable API to make sure that .js files
