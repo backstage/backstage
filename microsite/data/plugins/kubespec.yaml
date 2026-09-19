@@ -1,0 +1,11 @@
+---
+title: Kubespec
+author: Simon Bordeyne
+authorUrl: https://github.com/sbordeyne/
+category: Kubernetes
+description: Explore kubernetes resources and custom resources from within your backstage instance
+documentation: https://github.com/sbordeyne/backstage-plugins/blob/master/plugins/kubespec/README.md
+iconUrl: 
+npmPackageName: '@sbordeyne/backstage-plugin-kubespec'
+addedDate: '2026-09-19'
+status: active
