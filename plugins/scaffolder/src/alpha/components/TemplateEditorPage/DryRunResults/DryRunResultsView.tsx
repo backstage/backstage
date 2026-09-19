@@ -59,6 +59,14 @@ const useStyles = makeStyles({
   },
 });
 
+// atob returns a binary string, one character per byte, so a UTF-8 payload has
+// to be decoded before it can be treated as text.
+function decodeBase64Utf8(base64Content: string): string {
+  const binary = atob(base64Content);
+  const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
+}
+
 function FilesContent() {
   const classes = useStyles();
   const { selectedResult } = useDryRun();
@@ -96,7 +104,9 @@ function FilesContent() {
         extensions={[StreamLanguage.define(yamlSupport)]}
         readOnly
         value={
-          selectedFile?.base64Content ? atob(selectedFile.base64Content) : ''
+          selectedFile?.base64Content
+            ? decodeBase64Utf8(selectedFile.base64Content)
+            : ''
         }
       />
     </DryRunResultsSplitView>
