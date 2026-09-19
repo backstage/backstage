@@ -245,20 +245,27 @@ export type FetchRetryConfig = {
  * Builds the fetch function that an integration should use, adding retries and
  * a requests per minute limit when the integration is configured to want them.
  *
- * @param retry - The retry section of the integration config, if any
- * @param resolveRetryDelayMs - Reads the cooldown that the provider asks for
- *        off a response, falling back to the given exponential backoff
+ * @param options - `retry` is the retry section of the integration config, if
+ *        any. `resolveRetryDelayMs` reads the cooldown that the provider asks
+ *        for off a response, falling back to the given exponential backoff.
+ *        `baseFetch` replaces the underlying fetch, for integrations that need
+ *        to wrap every attempt, retries included.
  *
  * @internal
  */
-export function createFetchStrategy(
-  retry: FetchRetryConfig | undefined,
-  resolveRetryDelayMs: (response: Response, fallbackMs: number) => number = (
-    response,
-    fallbackMs,
-  ) => parseRetryAfterMs(response.headers.get('Retry-After'), fallbackMs),
-): FetchFunction {
-  let fetchFn: FetchFunction = (url, options) => fetch(url, options);
+export function createFetchStrategy(options: {
+  retry?: FetchRetryConfig;
+  resolveRetryDelayMs?: (response: Response, fallbackMs: number) => number;
+  baseFetch?: FetchFunction;
+}): FetchFunction {
+  const {
+    retry,
+    baseFetch,
+    resolveRetryDelayMs = (response, fallbackMs) =>
+      parseRetryAfterMs(response.headers.get('Retry-After'), fallbackMs),
+  } = options;
+
+  let fetchFn: FetchFunction = baseFetch ?? ((url, init) => fetch(url, init));
 
   if (!retry) {
     return fetchFn;

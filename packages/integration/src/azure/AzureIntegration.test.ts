@@ -238,6 +238,77 @@ describe('AzureIntegration', () => {
     });
   });
 
+  describe('shared cooldown', () => {
+    const worker = setupServer();
+    registerMswTestHooks(worker);
+
+    const url = 'https://dev.azure.com/org/project/_apis/git/repositories';
+
+    beforeAll(() => {
+      jest.useFakeTimers();
+    });
+    afterAll(() => {
+      jest.useRealTimers();
+    });
+    beforeEach(() => {
+      jest.clearAllTimers();
+    });
+
+    it('holds later requests back after a delay reported on a success', async () => {
+      let callCount = 0;
+      worker.use(
+        http.get(url, () => {
+          callCount += 1;
+          // Azure DevOps reports the soft throttle on a 200, which is the only
+          // warning before it starts rejecting requests.
+          return callCount === 1
+            ? HttpResponse.json({}, { headers: { 'x-ratelimit-delay': '30' } })
+            : HttpResponse.json({});
+        }),
+      );
+
+      const integration = new AzureIntegration({
+        host: 'dev.azure.com',
+        retry: { maxRetries: 1, retryStatusCodes: [429] },
+      } as any);
+
+      // The first read succeeds and is handed back without any waiting.
+      expect((await integration.fetch(url)).status).toBe(200);
+      expect(callCount).toBe(1);
+
+      // Everything after it waits out the cooldown, including calls that were
+      // already in flight and never saw the header themselves.
+      const second = integration.fetch(url);
+      const third = integration.fetch(url);
+      await jest.advanceTimersByTimeAsync(29_999);
+      expect(callCount).toBe(1);
+
+      await jest.advanceTimersByTimeAsync(1);
+      expect((await second).status).toBe(200);
+      expect((await third).status).toBe(200);
+      expect(callCount).toBe(3);
+    });
+
+    it('does not hold anything back unless retry handling is configured', async () => {
+      let callCount = 0;
+      worker.use(
+        http.get(url, () => {
+          callCount += 1;
+          return HttpResponse.json({}, { headers: { 'Retry-After': '30' } });
+        }),
+      );
+
+      const integration = new AzureIntegration({
+        host: 'dev.azure.com',
+      } as any);
+
+      await integration.fetch(url);
+      await integration.fetch(url);
+
+      expect(callCount).toBe(2);
+    });
+  });
+
   describe('parseRateLimitInfo', () => {
     const integration = new AzureIntegration({
       host: 'dev.azure.com',

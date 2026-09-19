@@ -273,6 +273,14 @@ A retry waits for as long as Azure DevOps asks for in `Retry-After` or
 `X-RateLimit-Delay`, and falls back to an exponential backoff capped at ten
 seconds when neither is present.
 
+Configuring `retry` also makes Backstage read those two headers off every
+response, including successful ones. Azure DevOps reports a delay on a request
+it merely held back, which is the only warning you get before it starts
+rejecting requests outright. When Backstage sees such a delay it pauses every
+request to that host for the period Azure DevOps asked for, not just the one
+that saw the header, because the whole host shares a single budget. A single
+pause is capped at five minutes.
+
 ## Configuration schema
 
 The configuration is a structure with these elements:

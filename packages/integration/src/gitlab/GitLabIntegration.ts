@@ -44,7 +44,7 @@ export class GitLabIntegration implements ScmIntegration {
   private readonly fetchImpl: FetchFunction;
 
   constructor(private readonly integrationConfig: GitLabIntegrationConfig) {
-    this.fetchImpl = createFetchStrategy(integrationConfig.retry);
+    this.fetchImpl = createFetchStrategy({ retry: integrationConfig.retry });
   }
 
   get type(): string {

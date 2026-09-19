@@ -21,6 +21,7 @@ import {
   FetchFunction,
   isValidUrl,
   parseRetryAfterMs,
+  sleep,
 } from '../helpers';
 import {
   RateLimitInfo,
@@ -35,6 +36,11 @@ import { AzureIntegrationConfig, readAzureIntegrationConfigs } from './config';
 // held back first. Both are expressed in seconds.
 // https://learn.microsoft.com/en-us/azure/devops/integrate/concepts/rate-limits
 const RATE_LIMIT_DELAY_HEADER = 'x-ratelimit-delay';
+
+// An upper bound on how long a single signalled cooldown may hold requests
+// back. Catalog processing does not always pass an abort signal, so without a
+// ceiling one malformed header could stall reads for a host indefinitely.
+const MAX_COOLDOWN_MS = 5 * 60_000;
 
 /**
  * Microsoft Azure based integration.
@@ -55,17 +61,59 @@ export class AzureIntegration implements ScmIntegration {
 
   private readonly fetchImpl: FetchFunction;
 
+  // Azure DevOps meters per identity, and every repository on a host draws from
+  // that one budget, so the cooldown is shared by every request this
+  // integration makes rather than tracked per URL.
+  private cooldownUntil = 0;
+
   constructor(private readonly integrationConfig: AzureIntegrationConfig) {
-    this.fetchImpl = createFetchStrategy(
-      integrationConfig.retry,
-      (response, fallbackMs) =>
+    this.fetchImpl = createFetchStrategy({
+      retry: integrationConfig.retry,
+      resolveRetryDelayMs: (response, fallbackMs) =>
         parseRetryAfterMs(
           response.headers.get('Retry-After'),
           parseRateLimitDelayMs(
             response.headers.get(RATE_LIMIT_DELAY_HEADER),
           ) ?? fallbackMs,
         ),
+      // Opt-in along with the rest of the retry config, so hosts that have
+      // not asked for throttling handling keep calling straight through.
+      baseFetch: integrationConfig.retry
+        ? (url, init) => this.fetchRespectingCooldown(url, init)
+        : undefined,
+    });
+  }
+
+  /**
+   * Holds a request back while Azure DevOps has asked us to wait, then records
+   * whatever cooldown the response signals for everything that follows.
+   *
+   * Azure DevOps reports a delay on successful responses too, which is the only
+   * warning it gives before it starts rejecting requests outright.
+   */
+  private async fetchRespectingCooldown(
+    url: RequestInfo | URL,
+    init?: RequestInit,
+  ): Promise<Response> {
+    const waitMs = this.cooldownUntil - Date.now();
+    if (waitMs > 0) {
+      await sleep(waitMs, init?.signal);
+    }
+
+    const response = await fetch(url, init);
+
+    const signalledMs = Math.max(
+      parseRateLimitDelayMs(response.headers.get(RATE_LIMIT_DELAY_HEADER)) ?? 0,
+      parseRetryAfterMs(response.headers.get('Retry-After'), 0),
     );
+    if (signalledMs > 0) {
+      this.cooldownUntil = Math.max(
+        this.cooldownUntil,
+        Date.now() + Math.min(signalledMs, MAX_COOLDOWN_MS),
+      );
+    }
+
+    return response;
   }
 
   get type(): string {
