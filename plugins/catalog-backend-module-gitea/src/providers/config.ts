@@ -19,7 +19,9 @@ import { Config } from '@backstage/config';
 import { GiteaProviderConfig } from './types';
 
 function readGiteaConfig(id: string, config: Config): GiteaProviderConfig {
-  const branch = config.getOptionalString('branch') ?? 'main';
+  // Left undefined when not set so each repository's actual default branch
+  // (returned by the Gitea API) can be used instead of assuming 'main'.
+  const branch = config.getOptionalString('branch');
   const catalogPath =
     config.getOptionalString('catalogPath') ?? 'catalog-info.yaml';
   const host = config.getString('host');
