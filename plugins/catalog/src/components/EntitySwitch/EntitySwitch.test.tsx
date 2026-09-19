@@ -550,9 +550,7 @@ describe('EntitySwitch', () => {
     await expect(
       screen.findByText('Async Content'),
     ).resolves.toBeInTheDocument();
-    expect(asyncCond.mock.calls.length).toBeLessThanOrEqual(
-      initialCallCount + 1,
-    );
+    expect(asyncCond).toHaveBeenCalledTimes(initialCallCount);
   });
 
   it('should evict cached entry if async condition rejects to allow retry', async () => {

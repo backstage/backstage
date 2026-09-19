@@ -100,7 +100,7 @@ export const EntitySwitch = (props: EntitySwitchProps) => {
     }
 
     const cached = promiseCache.current.get(switchCase.if);
-    if (cached && cached.entity === entity && cached.apis === apis) {
+    if (cached && cached.entity === entity) {
       return { if: cached.result, children: switchCase.children };
     }
 
