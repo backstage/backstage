@@ -21422,19 +21422,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@yeoman/types@npm:^1.11.0":
-  version: 1.11.1
-  resolution: "@yeoman/types@npm:1.11.1"
+"@yeoman/types@npm:^1.11.1":
+  version: 1.13.1
+  resolution: "@yeoman/types@npm:1.13.1"
   peerDependencies:
     "@types/node": ">=16.18.26"
-    "@yeoman/adapter": ^1.6.0 || ^2.0.0-beta.0 || ^3.0.0 || ^4.0.0
-    mem-fs: ^3.0.0 || ^4.0.0-beta.1
+    "@yeoman/adapter": ^1.6.0 || ^2.0.0-beta.0 || ^3.0.0 || ^4.0.0 || ^5.0.0
+    mem-fs: ^3.0.0 || ^4.0.0-beta.1 || ^6.0.0
   peerDependenciesMeta:
     "@yeoman/adapter":
       optional: true
     mem-fs:
       optional: true
-  checksum: 10/e5fa35c6fd85b6439e95e682e963dcf49efa62f97cf850e94c610211cb8879d7f952863eb79d1b5c7ff4c3e09b1399efe89ba15e3166c7401e2d257e576a4664
+  checksum: 10/be8639222153a6c8207ec35d91a19f467fa885194b93c2e25d1b8a684ea98106274347287e937b49f557954045358389f3d87d3422b1054e26c9c0bf0341b0ab
   languageName: node
   linkType: hard
 
@@ -46422,14 +46422,14 @@ __metadata:
   linkType: hard
 
 "yeoman-environment@npm:^6.1.0":
-  version: 6.1.0
-  resolution: "yeoman-environment@npm:6.1.0"
+  version: 6.3.0
+  resolution: "yeoman-environment@npm:6.3.0"
   dependencies:
     "@yeoman/adapter": "npm:^4.0.2"
     "@yeoman/conflicter": "npm:^4.1.0"
     "@yeoman/namespace": "npm:^2.1.0"
     "@yeoman/transform": "npm:^2.1.1"
-    "@yeoman/types": "npm:^1.11.0"
+    "@yeoman/types": "npm:^1.11.1"
     arrify: "npm:^3.0.0"
     chalk: "npm:^5.6.2"
     commander: "npm:^14.0.3"
@@ -46449,10 +46449,10 @@ __metadata:
   peerDependencies:
     "@yeoman/adapter": ^4.0.2
     "@yeoman/types": ^1.10.3
-    mem-fs: ^4.1.4
+    mem-fs: ^4.1.4 || ^6.0.0
   bin:
     yoe: bin/bin.cjs
-  checksum: 10/ccede076e10e280824803d28640ee03bce16794f2513ec9e266ce1b36bcdf1b6823f2d3946e095326d0d51c8b9775179534b943fb666f329f40042c20fb2b2a5
+  checksum: 10/4bf6acb0edefad87586b692448e2619b309350a6a15f7bede0ce472d879e245b481e28a07ce9c95cdea380318d24b4da6f4ee99b21f1e19c6297f1b63257595b
   languageName: node
   linkType: hard
 
