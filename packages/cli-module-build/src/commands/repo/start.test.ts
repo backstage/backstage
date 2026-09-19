@@ -18,6 +18,11 @@ import { PackageGraph } from '@backstage/cli-node';
 import { findTargetPackages } from './start';
 import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
 
+// The bundler pulls in Rspack, which is ESM only and can't be loaded by Jest.
+jest.mock('../package/start/startFrontend', () => ({
+  startFrontend: jest.fn(),
+}));
+
 overrideTargetPaths('/root');
 
 const mocks = {
