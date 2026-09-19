@@ -21,13 +21,19 @@ jest.mock('node:timers/promises', () => ({
   setTimeout: jest.fn(),
 }));
 
-function mockKnex(client: string): Knex {
-  return { client: { config: { client } } } as unknown as Knex;
+function mockKnex(client: string, isTransaction = false): Knex {
+  return { client: { config: { client } }, isTransaction } as unknown as Knex;
 }
 
 function pgDeadlockError(): Error & { code: string } {
   const err = new Error('deadlock detected') as Error & { code: string };
   err.code = '40P01';
+  return err;
+}
+
+function mysqlDeadlockError(): Error & { errno: number } {
+  const err = new Error('deadlock detected') as Error & { errno: number };
+  err.errno = 1213;
   return err;
 }
 
@@ -120,6 +126,21 @@ describe('retryOnDeadlock', () => {
     // 1 initial + 3 retries = 4 calls
     expect(fn).toHaveBeenCalledTimes(4);
   });
+
+  it.each([
+    ['PostgreSQL', 'pg', pgDeadlockError()],
+    ['MySQL', 'mysql2', mysqlDeadlockError()],
+  ])(
+    'preserves %s deadlocks raised inside an existing transaction',
+    async (_name, client, deadlock) => {
+      const fn = jest.fn().mockRejectedValue(deadlock);
+
+      await expect(
+        retryOnDeadlock(fn, mockKnex(client, true), 3, 1),
+      ).rejects.toBe(deadlock);
+      expect(fn).toHaveBeenCalledTimes(1);
+    },
+  );
 
   it('does not retry non-deadlock errors on PostgreSQL', async () => {
     const err = new Error('something else');
