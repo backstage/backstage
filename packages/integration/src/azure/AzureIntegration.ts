@@ -93,7 +93,8 @@ export class AzureIntegration implements ScmIntegration {
 
   resolveEditUrl(url: string): string {
     try {
-      if (!AzureUrl.fromRepoUrl(url).getPath()) {
+      const path = AzureUrl.fromRepoUrl(url).getPath();
+      if (!path || path === '/') {
         return url;
       }
 
