@@ -38,7 +38,7 @@ jobs:
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ matrix.node-version == '24.x' && '24.19.0' || matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       # Windows file operation slowness means there's no point caching this
