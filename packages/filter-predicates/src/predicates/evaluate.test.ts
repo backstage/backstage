@@ -289,29 +289,38 @@ describe('evaluate', () => {
     expect(filterPredicateToFilterFunction(value)(entities[0])).toBe(false);
   });
 
-  it('gracefully handles malformed value operators', () => {
-    // A non-array $in operand must not match anything and must not throw.
+  it('throws on malformed value operators', () => {
+    const entity = entities[0];
+
+    // A non-array $in operand violates the expected type and must throw.
     const nonArrayIn = {
       'spec.type': { $in: 'service' },
     } as unknown as FilterPredicate;
-    for (const entity of entities) {
-      expect(() => evaluateFilterPredicate(nonArrayIn, entity)).not.toThrow();
-      expect(evaluateFilterPredicate(nonArrayIn, entity)).toBe(false);
-      expect(filterPredicateToFilterFunction(nonArrayIn)(entity)).toBe(false);
-    }
+    expect(() => evaluateFilterPredicate(nonArrayIn, entity)).toThrow(
+      /Operator \$in expects an array operand/,
+    );
+    expect(() => filterPredicateToFilterFunction(nonArrayIn)(entity)).toThrow(
+      /Operator \$in expects an array operand/,
+    );
 
-    // A non-string $hasPrefix operand must not match anything and must not throw.
+    // A non-string $hasPrefix operand violates the expected type and must throw.
     const nonStringHasPrefix = {
       'spec.type': { $hasPrefix: 1 },
     } as unknown as FilterPredicate;
-    for (const entity of entities) {
-      expect(() =>
-        evaluateFilterPredicate(nonStringHasPrefix, entity),
-      ).not.toThrow();
-      expect(evaluateFilterPredicate(nonStringHasPrefix, entity)).toBe(false);
-      expect(filterPredicateToFilterFunction(nonStringHasPrefix)(entity)).toBe(
-        false,
-      );
+    expect(() => evaluateFilterPredicate(nonStringHasPrefix, entity)).toThrow(
+      /Operator \$hasPrefix expects a string operand/,
+    );
+    expect(() =>
+      filterPredicateToFilterFunction(nonStringHasPrefix)(entity),
+    ).toThrow(/Operator \$hasPrefix expects a string operand/);
+
+    // A non-string entity value is not malformed input, so $hasPrefix simply
+    // does not match rather than throwing. `spec.oneNum` holds a number.
+    const numericValueHasPrefix: FilterPredicate = {
+      'spec.oneNum': { $hasPrefix: 'g' },
+    };
+    for (const e of entities) {
+      expect(evaluateFilterPredicate(numericValueHasPrefix, e)).toBe(false);
     }
 
     // The guards must not regress the happy path: a valid case-insensitive
@@ -321,7 +330,7 @@ describe('evaluate', () => {
     };
     expect(
       entities
-        .filter(entity => evaluateFilterPredicate(validHasPrefix, entity))
+        .filter(e => evaluateFilterPredicate(validHasPrefix, e))
         .map(e => e.metadata.name),
     ).toEqual(['a']);
 
@@ -330,28 +339,33 @@ describe('evaluate', () => {
     };
     expect(
       entities
-        .filter(entity => evaluateFilterPredicate(validIn, entity))
+        .filter(e => evaluateFilterPredicate(validIn, e))
         .map(e => e.metadata.name)
         .sort(),
     ).toEqual(['s', 'w']);
   });
 
-  it('gracefully handles malformed logical operators', () => {
-    // A non-array $all or $any operand must not match anything and must not
-    // throw, matching the graceful handling of malformed value operators.
+  it('throws on malformed logical operators', () => {
+    const entity = entities[0];
+
+    // A non-array $all or $any operand violates the expected type and must
+    // throw instead of silently failing to match.
     const nonArrayAll = {
       $all: { kind: 'component' },
     } as unknown as FilterPredicate;
     const nonArrayAny = { $any: 'component' } as unknown as FilterPredicate;
-    for (const entity of entities) {
-      expect(() => evaluateFilterPredicate(nonArrayAll, entity)).not.toThrow();
-      expect(evaluateFilterPredicate(nonArrayAll, entity)).toBe(false);
-      expect(filterPredicateToFilterFunction(nonArrayAll)(entity)).toBe(false);
-
-      expect(() => evaluateFilterPredicate(nonArrayAny, entity)).not.toThrow();
-      expect(evaluateFilterPredicate(nonArrayAny, entity)).toBe(false);
-      expect(filterPredicateToFilterFunction(nonArrayAny)(entity)).toBe(false);
-    }
+    expect(() => evaluateFilterPredicate(nonArrayAll, entity)).toThrow(
+      /Operator \$all expects an array operand/,
+    );
+    expect(() => filterPredicateToFilterFunction(nonArrayAll)(entity)).toThrow(
+      /Operator \$all expects an array operand/,
+    );
+    expect(() => evaluateFilterPredicate(nonArrayAny, entity)).toThrow(
+      /Operator \$any expects an array operand/,
+    );
+    expect(() => filterPredicateToFilterFunction(nonArrayAny)(entity)).toThrow(
+      /Operator \$any expects an array operand/,
+    );
 
     // The guards must not regress the happy path: valid $all and $any arrays
     // still combine their nested predicates as before.
@@ -360,7 +374,7 @@ describe('evaluate', () => {
     };
     expect(
       entities
-        .filter(entity => evaluateFilterPredicate(validAll, entity))
+        .filter(e => evaluateFilterPredicate(validAll, e))
         .map(e => e.metadata.name),
     ).toEqual(['s']);
 
@@ -369,7 +383,7 @@ describe('evaluate', () => {
     };
     expect(
       entities
-        .filter(entity => evaluateFilterPredicate(validAny, entity))
+        .filter(e => evaluateFilterPredicate(validAny, e))
         .map(e => e.metadata.name)
         .sort(),
     ).toEqual(['a', 'g']);
