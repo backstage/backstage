@@ -91,8 +91,16 @@ export class AzureIntegration implements ScmIntegration {
   }
 
   resolveEditUrl(url: string): string {
-    // TODO: Implement edit URL for Azure, fallback to view url as I don't know
-    // how azure works.
-    return url;
+    try {
+      if (!AzureUrl.fromRepoUrl(url).getPath()) {
+        return url;
+      }
+
+      const editUrl = new URL(url);
+      editUrl.searchParams.set('_a', 'edit');
+      return editUrl.toString();
+    } catch {
+      return url;
+    }
   }
 }
