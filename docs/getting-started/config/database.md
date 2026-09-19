@@ -110,7 +110,7 @@ If you opt for the second option of replacing the entire string, take care to no
 
 ## Passwordless PostgreSQL in the Cloud
 
-If you want to host your PostgreSQL server in the cloud with passwordless authentication, you can use Azure Database for PostgreSQL with Microsoft Entra authentication or Google Cloud SQL for PostgreSQL with Cloud IAM.
+If you want to host your PostgreSQL server in the cloud with passwordless authentication, you can use Azure Database for PostgreSQL with Microsoft Entra authentication, Google Cloud SQL for PostgreSQL with Cloud IAM, or Amazon RDS for PostgreSQL with AWS IAM authentication.
 
 ### Azure with Entra authentication
 
@@ -181,6 +181,45 @@ backend:
       # highlight-add-start
       type: cloudsql
       instance: my-project:region:my-instance
+      # highlight-add-end
+      host: ${POSTGRES_HOST}
+      port: ${POSTGRES_PORT}
+      user: ${POSTGRES_USER}
+      # highlight-remove-start
+      password: ${POSTGRES_PASSWORD}
+      # highlight-remove-end
+```
+
+### AWS with RDS IAM authentication
+
+Remove `password` from the connection configuration and set `type` to `rds`. The connector generates a short-lived IAM authentication token per connection (via the [`@aws-sdk/rds-signer`](https://www.npmjs.com/package/@aws-sdk/rds-signer) package) instead of using a static password, and refreshes pooled connections shortly before the token's ~15 minute lifetime expires.
+
+#### Prerequisites
+
+This assumes your RDS instance and IAM are already set up for IAM database authentication. See the AWS documentation for that infrastructure:
+
+- [Enable IAM database authentication](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.Enabling.html)
+- [Create a database account that uses IAM authentication](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.DBAccounts.html) (the DB user needs the `rds_iam` role)
+- [Grant `rds-db:connect` to the IAM identity](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.IAMPolicy.html) the backend runs as (e.g. an EKS IRSA role, EC2 instance role, or local profile)
+
+#### Configuration
+
+:::note
+
+RDS requires TLS for IAM authentication. Provide the RDS CA bundle via `connection.ssl` (for example `ssl: { ca: <contents of the RDS CA bundle> }`) the same way you would for a password connection.
+
+:::
+
+Set `user` to the database user that has the `rds_iam` role. Set `region` to the AWS region of the instance.
+
+```yaml title="app-config.yaml"
+backend:
+  database:
+    client: pg
+    connection:
+      # highlight-add-start
+      type: rds
+      region: us-east-1
       # highlight-add-end
       host: ${POSTGRES_HOST}
       port: ${POSTGRES_PORT}
