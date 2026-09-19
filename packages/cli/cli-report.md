@@ -227,7 +227,7 @@ Commands:
 ### `backstage-cli catalog get`
 
 ```
-Usage: backstage-cli catalog get [flags...]
+Usage: backstage-cli catalog get [flags...] [ref]
 
 Options:
   --instance <string>
@@ -262,6 +262,7 @@ Usage: backstage-cli catalog register [flags...]
 Options:
   --instance <string>
   --location-url <string>
+  --output <string>
   -h, --help
 ```
 
@@ -274,6 +275,7 @@ Options:
   --instance <string>
   --location-id <string>
   --location-url <string>
+  --output <string>
   -h, --help
 ```
 
@@ -284,8 +286,10 @@ Usage: backstage-cli catalog validate [flags...]
 
 Options:
   --entity <string>
+  --entity-file <string>
   --instance <string>
   --location <string>
+  --output <string>
   -h, --help
 ```
 
@@ -844,10 +848,10 @@ Options:
 ### `backstage-cli search`
 
 ```
-Usage: backstage-cli search [flags...]
+Usage: backstage-cli search [flags...] <term...>
 
 Options:
-  --filters <string>
+  --filter <string>
   --instance <string>
   --output <string>
   --page-cursor <string>
@@ -879,21 +883,25 @@ Usage: backstage-cli template dry-run [flags...]
 
 Options:
   --instance <string>
+  --output <string>
+  --template-file <string>
   --template-ref <string>
-  --values <string>
+  --value <string>
   -h, --help
 ```
 
 ### `backstage-cli template execute`
 
 ```
-Usage: backstage-cli template execute [flags...]
+Usage: backstage-cli template execute [flags...] [ref]
 
 Options:
   --instance <string>
-  --secrets <string>
+  --namespace <string>
+  --output <string>
+  --secret <string>
   --template-ref <string>
-  --values <string>
+  --value <string>
   -h, --help
 ```
 
@@ -903,6 +911,7 @@ Options:
 Usage: backstage-cli template list [flags...]
 
 Options:
+  --filter <string>
   --instance <string>
   --limit <number>
   --output <string>
