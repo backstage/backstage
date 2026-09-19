@@ -181,6 +181,11 @@ export class BitbucketCloudClient {
       headers.Authorization = `Basic ${buffer.toString('base64')}`;
     }
 
+    // Using Bearer authentication (token only)
+    if (this.config.token && !this.config.username) {
+      headers.Authorization = `Bearer ${this.config.token}`;
+    }
+
     return headers;
   }
 }
