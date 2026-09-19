@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.12.10-next.0
+
+### Patch Changes
+
+- 1a20364: Improved large LDAP organization refreshes by yielding to the event loop while resolving relations.
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/plugin-catalog-node@2.2.6-next.0
+  - @backstage/plugin-catalog-common@1.2.1-next.0
+
 ## 0.12.9
 
 ### Patch Changes

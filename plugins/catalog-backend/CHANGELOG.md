@@ -1,5 +1,28 @@
 # @backstage/plugin-catalog-backend
 
+## 4.0.1-next.0
+
+### Patch Changes
+
+- a08e746: Improved large entity provider mutations by yielding to the event loop while preparing database changes.
+- 727d53f: Improve responsiveness to other requests while reading large sets of entities with field selection, without reducing page sizes.
+
+  Like full-entity responses, projected list responses may now be streamed without a `Content-Length` or automatically generated `ETag` header.
+
+- e783f4b: Fixed catalog processing error messages to report stable processor names in minified builds.
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/filter-predicates@0.1.6-next.0
+  - @backstage/integration@2.1.3-next.0
+  - @backstage/plugin-permission-common@0.9.12-next.0
+  - @backstage/plugin-permission-node@0.11.5-next.0
+  - @backstage/plugin-catalog-node@2.2.6-next.0
+  - @backstage/plugin-events-node@0.4.27-next.0
+  - @backstage/backend-openapi-utils@0.7.3-next.0
+  - @backstage/catalog-client@1.16.3-next.0
+  - @backstage/plugin-catalog-common@1.2.1-next.0
+
 ## 4.0.0
 
 ### Major Changes

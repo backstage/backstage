@@ -1,5 +1,13 @@
 # @backstage/connections-node
 
+## 0.2.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/connections@0.4.1-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+
 ## 0.2.3
 
 ### Patch Changes

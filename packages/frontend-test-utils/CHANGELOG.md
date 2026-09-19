@@ -1,5 +1,22 @@
 # @backstage/frontend-test-utils
 
+## 0.6.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/core-app-api@1.20.6-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/filter-predicates@0.1.6-next.0
+  - @backstage/frontend-app-api@0.16.9-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/test-utils@1.7.23-next.0
+  - @backstage/plugin-permission-common@0.9.12-next.0
+  - @backstage/plugin-permission-react@0.5.6-next.0
+  - @backstage/plugin-app@0.5.4-next.0
+  - @backstage/plugin-app-react@0.2.8-next.0
+
 ## 0.6.4
 
 ### Patch Changes
