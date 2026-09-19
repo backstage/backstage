@@ -16,8 +16,10 @@
 
 import {
   coreServices,
+  createBackendPlugin,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 import { InputError } from '@backstage/errors';
 import { createSpecializedBackend } from './createSpecializedBackend';
 
@@ -26,6 +28,37 @@ describe('createSpecializedBackend', () => {
     expect(() =>
       createSpecializedBackend({ defaultServiceFactories: [] }),
     ).not.toThrow();
+  });
+
+  it('should use the provided instance ID', async () => {
+    expect.assertions(1);
+    const backend = createSpecializedBackend({
+      defaultServiceFactories: [
+        mockServices.rootLifecycle.factory(),
+        mockServices.lifecycle.factory(),
+        mockServices.rootLogger.factory(),
+        mockServices.logger.factory(),
+      ],
+      instanceId: 'my-instance',
+    });
+    backend.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {
+              instanceMetadata: coreServices.rootInstanceMetadata,
+            },
+            async init({ instanceMetadata }) {
+              expect(instanceMetadata.getId()).toBe('my-instance');
+            },
+          });
+        },
+      }),
+    );
+
+    await backend.start();
+    await backend.stop();
   });
 
   it('should report malformed dynamic imports during startup', async () => {
