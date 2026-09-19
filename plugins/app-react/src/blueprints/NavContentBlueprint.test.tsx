@@ -31,6 +31,7 @@ import {
 import { withLogCollector } from '@backstage/test-utils';
 import { render, screen } from '@testing-library/react';
 
+// @ts-expect-error Historical refs intentionally omit extensionId
 const routeRef = createRouteRef();
 
 function mockNode(id: string): AppNode {

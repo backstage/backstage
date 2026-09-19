@@ -668,6 +668,7 @@ describe('createSpecializedApp', () => {
   });
 
   it('should support route bindings', async () => {
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const routeRef = createRouteRef();
     const extRouteRef = createExternalRouteRef();
 

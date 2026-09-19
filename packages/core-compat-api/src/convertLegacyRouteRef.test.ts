@@ -30,6 +30,8 @@ import {
   createSubRouteRef as createNewSubRouteRef,
   createExternalRouteRef as createNewExternalRouteRef,
 } from '@backstage/frontend-plugin-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { RouteResolver as LegacyRouteResolver } from '../../core-app-api/src/routing/RouteResolver';
 import { convertLegacyRouteRef } from './convertLegacyRouteRef';
 import {
   OpaqueExternalRouteRef,
@@ -38,6 +40,58 @@ import {
 } from '@internal/frontend';
 
 describe('convertLegacyRouteRef', () => {
+  it('resolves extension-targeted refs through an explicit legacy mount point', () => {
+    const ref = createNewRouteRef({
+      extensionId: 'page:test/item',
+      params: ['id'],
+    });
+    const sub = createNewSubRouteRef({ parent: ref, path: '/edit' });
+    const legacy = convertLegacyRouteRef(ref);
+    const legacySub = convertLegacyRouteRef(sub);
+    const resolver = new LegacyRouteResolver(
+      new Map([[legacy, '/legacy/:id']]),
+      new Map(),
+      [],
+      new Map(),
+      '',
+    );
+    expect(resolver.resolve(legacy, '/')?.({ id: 'one' })).toBe('/legacy/one');
+    expect(resolver.resolve(legacySub, '/')?.({ id: 'one' })).toBe(
+      '/legacy/one/edit',
+    );
+    expect(convertLegacyRouteRef(legacy)).toBe(ref);
+    expect(OpaqueRouteRef.toInternal(ref).getExtensionId?.()).toBe(
+      'page:test/item',
+    );
+    expect(
+      OpaqueRouteRef.toInternal(
+        convertLegacyRouteRef(createOldRouteRef({ id: 'old' })),
+      ).getExtensionId,
+    ).toBeUndefined();
+  });
+
+  it('converts refs from before the dual-system protocol', () => {
+    const old = createOldRouteRef({ id: 'old', params: ['id'] });
+    const external = createOldExternalRouteRef({
+      id: 'external',
+      params: ['id'],
+    });
+    delete (old as { $$type?: string }).$$type;
+    delete (external as { $$type?: string }).$$type;
+    const converted = convertLegacyRouteRef(old);
+    const convertedExternal = convertLegacyRouteRef(external);
+    const internal = OpaqueRouteRef.toInternal(converted);
+    const internalExternal =
+      OpaqueExternalRouteRef.toInternal(convertedExternal);
+    expect(converted).toBe(old);
+    expect(internal.getParams()).toEqual(['id']);
+    expect(internal.getExtensionId).toBeUndefined();
+    expect(internal.version).toBe('v1');
+    internalExternal.setId('test.external');
+    expect(internalExternal.getId?.()).toBe('test.external');
+    expect(internalExternal.getParams()).toEqual(['id']);
+  });
+
   it('converts old to new', () => {
     const ref1 = createOldRouteRef({ id: 'ref1' });
     const ref2 = createOldRouteRef({ id: 'ref2', params: ['p1', 'p2'] });
@@ -121,7 +175,9 @@ describe('convertLegacyRouteRef', () => {
   });
 
   it('converts new to old', () => {
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const ref1 = createNewRouteRef();
+    // @ts-expect-error Historical refs intentionally omit extensionId
     const ref2 = createNewRouteRef({ params: ['p1', 'p2'] });
     const ref1sub1 = createNewSubRouteRef({
       parent: ref1,

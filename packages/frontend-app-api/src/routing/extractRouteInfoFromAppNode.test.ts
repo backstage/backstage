@@ -51,10 +51,15 @@ afterEach(() => {
   }
 });
 
+// @ts-expect-error Historical refs intentionally omit extensionId
 const ref1 = createRouteRef();
+// @ts-expect-error Historical refs intentionally omit extensionId
 const ref2 = createRouteRef();
+// @ts-expect-error Historical refs intentionally omit extensionId
 const ref3 = createRouteRef();
+// @ts-expect-error Historical refs intentionally omit extensionId
 const ref4 = createRouteRef();
+// @ts-expect-error Historical refs intentionally omit extensionId
 const ref5 = createRouteRef();
 const refOrder: RouteRef<AnyRouteRefParams>[] = [ref1, ref2, ref3, ref4, ref5];
 
@@ -581,8 +586,11 @@ describe('discovery', () => {
 
   describe('route aliases', () => {
     it('should resolve route aliases', () => {
+      // @ts-expect-error Historical refs intentionally omit extensionId
       const r1 = createRouteRef();
+      // @ts-expect-error Historical refs intentionally omit extensionId
       const r2 = createRouteRef({ aliasFor: 'test.r3' });
+      // @ts-expect-error Historical refs intentionally omit extensionId
       const r3 = createRouteRef();
 
       const info = routeInfoFromExtensions(
@@ -590,11 +598,13 @@ describe('discovery', () => {
           createTestExtension({
             name: 'page1',
             path: 'foo',
+            // @ts-expect-error Historical refs intentionally omit extensionId
             routeRef: createRouteRef({ aliasFor: 'test.r1' }),
           }),
           createTestExtension({
             name: 'page3',
             path: 'bar',
+            // @ts-expect-error Historical refs intentionally omit extensionId
             routeRef: createRouteRef({ aliasFor: 'test.r2' }),
           }),
         ],
@@ -627,11 +637,13 @@ describe('discovery', () => {
             createTestExtension({
               name: 'page1',
               path: 'page1',
+              // @ts-expect-error Historical refs intentionally omit extensionId
               routeRef: createRouteRef({ aliasFor: 'other.root' }),
             }),
           ],
 
           {
+            // @ts-expect-error Historical refs intentionally omit extensionId
             'other.root': createRouteRef(),
           },
         ),
@@ -641,8 +653,11 @@ describe('discovery', () => {
     });
 
     it('should bail on infinite route alias loops', () => {
+      // @ts-expect-error Historical refs intentionally omit extensionId
       const loop1 = createRouteRef({ aliasFor: 'test.loop2' });
+      // @ts-expect-error Historical refs intentionally omit extensionId
       const loop2 = createRouteRef({ aliasFor: 'test.loop3' });
+      // @ts-expect-error Historical refs intentionally omit extensionId
       const loop3 = createRouteRef({ aliasFor: 'test.loop1' });
 
       expect(() =>
@@ -651,6 +666,7 @@ describe('discovery', () => {
             createTestExtension({
               name: 'page1',
               path: 'page1',
+              // @ts-expect-error Historical refs intentionally omit extensionId
               routeRef: createRouteRef({ aliasFor: 'test.loop1' }),
             }),
           ],
