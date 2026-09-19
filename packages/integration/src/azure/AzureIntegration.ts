@@ -20,7 +20,8 @@ import { AzureUrl } from './AzureUrl';
 import { AzureIntegrationConfig, readAzureIntegrationConfigs } from './config';
 
 /**
- * Microsoft Azure based integration.
+ * Microsoft Azure based integration. Repository file URLs resolve directly to
+ * the Azure DevOps edit view.
  *
  * @public
  */
