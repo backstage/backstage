@@ -39863,15 +39863,15 @@ __metadata:
   linkType: hard
 
 "react-resizable@npm:^3.0.4, react-resizable@npm:^3.0.5":
-  version: 3.1.3
-  resolution: "react-resizable@npm:3.1.3"
+  version: 3.2.0
+  resolution: "react-resizable@npm:3.2.0"
   dependencies:
     prop-types: "npm:15.x"
     react-draggable: "npm:^4.5.0"
   peerDependencies:
     react: ">= 16.3"
     react-dom: ">= 16.3"
-  checksum: 10/bc7126fabbd2f0ba422fa0da77fcfcebf2b4f28141d3faf02067632d258e345bc5f63891f9d5eca0e9ea31dc461b74ec69073a18f905b25bdd392ca6283577f9
+  checksum: 10/fb0a7de795107f2d0e854c7ceb53a666ff85bf98cc75735a21f931aa52684740aabf55cf30085ac000f816173d076c69d611858e4d4577d001a56796ec0e7e32
   languageName: node
   linkType: hard
 
