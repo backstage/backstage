@@ -24,7 +24,7 @@ import {
 } from 'react';
 import useMeasure from 'react-use/esm/useMeasure';
 import classNames from 'classnames';
-import { once } from 'lodash';
+import lodash from 'lodash';
 import * as d3Zoom from 'd3-zoom';
 import * as d3Selection from 'd3-selection';
 import useTheme from '@material-ui/core/styles/useTheme';
@@ -329,7 +329,7 @@ export function DependencyGraph<NodeData, EdgeData>(
   };
 
   const [_measureRef] = useMeasure();
-  const measureRef = once(_measureRef);
+  const measureRef = lodash.once(_measureRef);
 
   const scalableHeight =
     fit === 'grow' && !fullScreenHandle.active ? maxHeight : '100%';

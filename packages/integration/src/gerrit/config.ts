@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { trimEnd } from 'lodash';
+import lodash from 'lodash';
 import { isValidHost, isValidUrl } from '../helpers';
 
 /**
@@ -108,17 +108,17 @@ export function readGerritIntegrationConfig(
     );
   }
   if (baseUrl) {
-    baseUrl = trimEnd(baseUrl, '/');
+    baseUrl = lodash.trimEnd(baseUrl, '/');
   } else {
     baseUrl = `https://${host}`;
   }
   if (cloneUrl) {
-    cloneUrl = trimEnd(cloneUrl, '/');
+    cloneUrl = lodash.trimEnd(cloneUrl, '/');
   } else {
     cloneUrl = baseUrl;
   }
 
-  gitilesBaseUrl = trimEnd(gitilesBaseUrl, '/');
+  gitilesBaseUrl = lodash.trimEnd(gitilesBaseUrl, '/');
 
   return {
     host,
