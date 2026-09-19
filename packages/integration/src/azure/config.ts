@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { isValidHost } from '../helpers';
+import { isValidHost, readOptionalNumberArray } from '../helpers';
 
 const AZURE_HOST = 'dev.azure.com';
 
@@ -44,6 +44,29 @@ export type AzureIntegrationConfig = {
    * Signing key for commits
    */
   commitSigningKey?: string;
+
+  /**
+   * Retry configuration for failed requests.
+   */
+  retry?: {
+    /**
+     * Maximum number of retries for failed requests
+     * @defaultValue 0
+     */
+    maxRetries?: number;
+
+    /**
+     * HTTP status codes that should trigger a retry
+     * @defaultValue []
+     */
+    retryStatusCodes?: number[];
+
+    /**
+     * Rate limit for requests per minute
+     * @defaultValue -1
+     */
+    maxApiRequestsPerMinute?: number;
+  };
 };
 
 /**
@@ -329,10 +352,23 @@ export function readAzureIntegrationConfig(
     }
   }
 
+  const retryConfig = config.getOptionalConfig('retry');
+
+  const retry = retryConfig
+    ? {
+        maxRetries: retryConfig.getOptionalNumber('maxRetries') ?? 0,
+        retryStatusCodes:
+          readOptionalNumberArray(retryConfig, 'retryStatusCodes') ?? [],
+        maxApiRequestsPerMinute:
+          retryConfig.getOptionalNumber('maxApiRequestsPerMinute') ?? -1,
+      }
+    : undefined;
+
   return {
     host,
     credentials,
     commitSigningKey: config.getOptionalString('commitSigningKey'),
+    retry,
   };
 }
 

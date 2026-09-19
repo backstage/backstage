@@ -183,6 +183,55 @@ describe('AzureUrlReader', () => {
     });
   });
 
+  describe('rate limiting', () => {
+    const url =
+      'https://dev.azure.com/org-name/project-name/_git/repo-name?path=my-template.yaml';
+
+    it('retries a read that Azure DevOps throttled', async () => {
+      let callCount = 0;
+      worker.use(
+        http.get('*', () => {
+          callCount += 1;
+          return callCount > 2
+            ? HttpResponse.json({ ok: true })
+            : new HttpResponse(null, { status: 429 });
+        }),
+      );
+
+      const reader = urlReaderFactory({
+        host: 'dev.azure.com',
+        credentials: [{ personalAccessToken: 'my-pat' }],
+        retry: { maxRetries: 2, retryStatusCodes: [429] },
+      });
+
+      const { buffer } = await reader.readUrl(url);
+      expect(JSON.parse((await buffer()).toString())).toEqual({ ok: true });
+      expect(callCount).toBe(3);
+    });
+
+    it('says that a read failed because of throttling rather than credentials', async () => {
+      worker.use(
+        http.get(
+          '*',
+          () =>
+            new HttpResponse('<html>sign in</html>', {
+              status: 203,
+              headers: { 'x-ratelimit-delay': '30' },
+            }),
+        ),
+      );
+
+      const reader = urlReaderFactory({
+        host: 'dev.azure.com',
+        credentials: [{ personalAccessToken: 'my-pat' }],
+      });
+
+      await expect(reader.readUrl(url)).rejects.toThrow(
+        /203 .*\(rate limit exceeded\)/,
+      );
+    });
+  });
+
   describe('readTree', () => {
     const repoBuffer = fs.readFileSync(
       path.resolve(__dirname, '__fixtures__/mock-main.zip'),
