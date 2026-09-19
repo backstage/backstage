@@ -1,5 +1,28 @@
 # @backstage/plugin-techdocs
 
+## 1.19.0-next.0
+
+### Minor Changes
+
+- 80a0da9: Added `withoutFeedbackLink` prop to `page:techdocs/reader` and `entity-content:techdocs` extensions, which can be set to `true` to disable the feedback button in the rendered documentation.
+
+### Patch Changes
+
+- 24fd0e8: Fixed TechDocs addons silently not rendering in apps using the new frontend system, on both the standalone documentation reader page and the entity documentation tab.
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/integration@2.1.3-next.0
+  - @backstage/integration-react@1.2.23-next.0
+  - @backstage/plugin-techdocs-react@1.3.16-next.0
+  - @backstage/catalog-client@1.16.3-next.0
+  - @backstage/plugin-auth-react@0.1.32-next.0
+  - @backstage/plugin-catalog-react@3.2.4-next.0
+  - @backstage/plugin-search-common@1.2.26-next.0
+  - @backstage/plugin-search-react@1.11.9-next.0
+
 ## 1.18.1
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @backstage/cli-module-package-manager-yarn
 
+## 0.1.2-next.0
+
+### Patch Changes
+
+- 673a35d: Fixed `backstage-cli pm verify-patches` failing to load unless projects installed the Yarn CLI package separately.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5-next.0
+
 ## 0.1.1
 
 ### Patch Changes

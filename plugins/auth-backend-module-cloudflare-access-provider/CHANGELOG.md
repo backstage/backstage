@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend-module-cloudflare-access-provider
 
+## 0.5.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/plugin-auth-node@0.7.7-next.0
+
 ## 0.5.0
 
 ### Minor Changes

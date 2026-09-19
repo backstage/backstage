@@ -231,7 +231,26 @@
     "@backstage/plugin-techdocs-react": "1.3.15",
     "@backstage/plugin-user-settings": "0.9.7",
     "@backstage/plugin-user-settings-backend": "0.4.7",
-    "@backstage/plugin-user-settings-common": "0.1.0"
+    "@backstage/plugin-user-settings-common": "0.1.0",
+    "@backstage/cli-module-catalog": "0.1.0",
+    "@backstage/cli-module-scaffolder": "0.1.0",
+    "@backstage/cli-module-search": "0.1.0"
   },
-  "changesets": []
+  "changesets": [
+    "afraid-showers-sip",
+    "bright-owls-bind",
+    "calm-provider-batches",
+    "config-number-empty-string",
+    "create-app-1789836555",
+    "fair-catalog-projections",
+    "fix-connection-auth-union",
+    "fix-processor-error-names",
+    "incremental-ingestion-mark-entities-upsert",
+    "nine-pandas-dig",
+    "soft-ldap-batches",
+    "techdocs-addons-new-frontend-system",
+    "techdocs-feedback-link-config",
+    "test-database-parallel-cleanup",
+    "tidy-patches-smile"
+  ]
 }
