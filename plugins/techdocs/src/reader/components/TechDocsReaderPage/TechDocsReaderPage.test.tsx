@@ -36,14 +36,18 @@ import { TECHDOCS_EXTERNAL_ANNOTATION } from '@backstage/plugin-techdocs-common'
 
 import { TechDocsReaderPage } from './TechDocsReaderPage';
 import { Route, useNavigate } from 'react-router-dom';
-import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
-import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
+import {
+  createTechDocsAddonExtension,
+  TechDocsAddonLocations,
+  TechDocsAddons,
+} from '@backstage/plugin-techdocs-react';
 import { FlatRoutes } from '@backstage/core-app-api';
 import { MockSearchApi, searchApiRef } from '@backstage/plugin-search-react';
 
 import { Page } from '@backstage/core-components';
 import {
   configApiRef,
+  createPlugin,
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
@@ -150,6 +154,15 @@ const mountedRoutes = {
   '/docs/:namespace/:kind/:name/*': rootDocsRouteRef,
 };
 
+const testPlugin = createPlugin({ id: 'techdocs-reader-page-test' });
+const TestAddon = testPlugin.provide(
+  createTechDocsAddonExtension({
+    name: 'TestAddon',
+    location: TechDocsAddonLocations.Subheader,
+    component: () => <div>legacy addon</div>,
+  }),
+);
+
 describe('<TechDocsReaderPage />', () => {
   const mockNavigate = jest.fn();
 
@@ -241,7 +254,7 @@ describe('<TechDocsReaderPage />', () => {
             element={<TechDocsReaderPage />}
           >
             <TechDocsAddons>
-              <ReportIssue />
+              <TestAddon />
             </TechDocsAddons>
           </Route>
         </FlatRoutes>
@@ -253,6 +266,7 @@ describe('<TechDocsReaderPage />', () => {
     );
 
     expect(await rendered.findByText('Test:')).toBeInTheDocument();
+    expect(rendered.getByText('legacy addon')).toBeInTheDocument();
   });
 
   it('should render techdocs reader page with addons and page', async () => {
@@ -265,7 +279,7 @@ describe('<TechDocsReaderPage />', () => {
           >
             <p>the page</p>
             <TechDocsAddons>
-              <ReportIssue />
+              <TestAddon />
             </TechDocsAddons>
           </Route>
         </FlatRoutes>

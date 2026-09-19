@@ -10,6 +10,8 @@ The injected MkDocs layout now uses the host page as its scrolling container, wi
 
 Reader navigation no longer scrolls the global window or searches the host document for a header. Initial rendering preserves the host scroll position, while subsequent document navigation returns to the start of the reader. Active MkDocs navigation items are kept visible by scrolling only their own sidebar.
 
+New frontend system addons are now passed to the reader as structured options instead of being converted into legacy router elements and discovered again. The legacy addon registry remains available as a compatibility path for old frontend system applications.
+
 The following legacy sidebar customization properties have been removed along with the measured layout:
 
 - `--techdocs-sidebar-closed-offset-pinned`

@@ -23,6 +23,7 @@ import {
   TECHDOCS_ADDONS_WRAPPER_KEY,
   TechDocsReaderPageProvider,
 } from '@backstage/plugin-techdocs-react';
+import { LegacyTechDocsAddonsFallbackProvider } from '@backstage/plugin-techdocs-react/alpha';
 import { TechDocsReaderPageRenderFunction } from '../../../types';
 import { TechDocsReaderLayout as BuiTechDocsReaderLayout } from '../../../alpha/components/TechDocsReaderLayout';
 import { rootDocsRouteRef } from '../../../routes';
@@ -110,29 +111,33 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
   if (!children) {
     return (
       <CookieAuthRefreshProvider pluginId="techdocs">
-        <TechDocsReaderPageProvider entityRef={memoizedEntityRef}>
-          {(page as JSX.Element) || <TechDocsReaderLayout />}
-        </TechDocsReaderPageProvider>
+        <LegacyTechDocsAddonsFallbackProvider>
+          <TechDocsReaderPageProvider entityRef={memoizedEntityRef}>
+            {(page as JSX.Element) || <TechDocsReaderLayout />}
+          </TechDocsReaderPageProvider>
+        </LegacyTechDocsAddonsFallbackProvider>
       </CookieAuthRefreshProvider>
     );
   }
 
   return (
     <CookieAuthRefreshProvider pluginId="techdocs">
-      <TechDocsReaderPageProvider entityRef={memoizedEntityRef}>
-        {({ metadata, entityMetadata, onReady }) => (
-          <>
-            {children instanceof Function
-              ? children({
-                  entityRef: memoizedEntityRef,
-                  techdocsMetadataValue: metadata.value,
-                  entityMetadataValue: entityMetadata.value,
-                  onReady,
-                })
-              : children}
-          </>
-        )}
-      </TechDocsReaderPageProvider>
+      <LegacyTechDocsAddonsFallbackProvider>
+        <TechDocsReaderPageProvider entityRef={memoizedEntityRef}>
+          {({ metadata, entityMetadata, onReady }) => (
+            <>
+              {children instanceof Function
+                ? children({
+                    entityRef: memoizedEntityRef,
+                    techdocsMetadataValue: metadata.value,
+                    entityMetadataValue: entityMetadata.value,
+                    onReady,
+                  })
+                : children}
+            </>
+          )}
+        </TechDocsReaderPageProvider>
+      </LegacyTechDocsAddonsFallbackProvider>
     </CookieAuthRefreshProvider>
   );
 };
