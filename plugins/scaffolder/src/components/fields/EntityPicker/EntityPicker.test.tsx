@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
+import {
+  type CatalogApi,
+  CATALOG_FILTER_EXISTS,
+} from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
   catalogApiRef,
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { fireEvent, screen } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { EntityPicker } from './EntityPicker';
 import { EntityPickerProps } from './schema';
@@ -30,6 +33,17 @@ import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { scaffolderTranslationRef } from '../../../translation';
+import { useScaffolderTheme } from '@backstage/plugin-scaffolder-react/alpha';
+
+jest.mock('@backstage/plugin-scaffolder-react/alpha', () => ({
+  ...jest.requireActual('@backstage/plugin-scaffolder-react/alpha'),
+  useScaffolderTheme: jest.fn(),
+}));
+
+const mockUseScaffolderTheme = jest.mocked(useScaffolderTheme);
+
+type SpiedCatalogApi = CatalogApi &
+  Pick<jest.Mocked<CatalogApi>, 'getEntitiesByRefs' | 'queryEntities'>;
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'scaffolder.backstage.io/v1beta3',
@@ -51,15 +65,17 @@ describe('<EntityPicker />', () => {
 
   let props: FieldProps<string>;
 
-  const catalogApi = catalogApiMock.mock({
-    streamEntities: jest.fn(async function* () {
-      yield entities;
-    }),
-  });
+  let catalogApi: SpiedCatalogApi;
 
   let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
+    mockUseScaffolderTheme.mockReturnValue('mui');
+    const api = catalogApiMock({ entities });
+    catalogApi = Object.assign(api, {
+      queryEntities: jest.spyOn(api, 'queryEntities'),
+      getEntitiesByRefs: jest.spyOn(api, 'getEntitiesByRefs'),
+    });
     Wrapper = ({ children }: { children?: ReactNode }) => (
       <TestApiProvider
         apis={[
@@ -76,6 +92,43 @@ describe('<EntityPicker />', () => {
   });
 
   afterEach(() => jest.resetAllMocks());
+
+  it('preserves typed MUI search when the selected entity moves outside the results', async () => {
+    catalogApi.queryEntities
+      .mockResolvedValueOnce({ items: entities, totalItems: 0, pageInfo: {} })
+      .mockResolvedValueOnce({
+        items: [entities[1]],
+        totalItems: 0,
+        pageInfo: {},
+      });
+    // Separate requests return distinct objects, even for the same entity.
+    catalogApi.getEntitiesByRefs.mockResolvedValue({
+      items: [{ ...entities[0] }],
+    });
+    await renderInTestApp(
+      <Wrapper>
+        <EntityPicker
+          {...({
+            onChange,
+            schema,
+            uiSchema: {},
+            formData: 'group:default/team-a',
+          } as unknown as FieldProps<string>)}
+        />
+      </Wrapper>,
+    );
+    const input = screen.getByRole('textbox');
+    expect(input).toHaveValue('group:default/team-a');
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: 'squad' } });
+    await screen.findByRole('option', { name: 'squad-b' });
+    await waitFor(() =>
+      expect(catalogApi.queryEntities).toHaveBeenCalledTimes(2),
+    );
+    expect(input).toHaveValue('squad');
+    fireEvent.click(screen.getByRole('option', { name: 'squad-b' }));
+    expect(onChange).toHaveBeenCalledWith('group:default/squad-b');
+  });
 
   describe('without allowedKinds and catalogFilter', () => {
     beforeEach(() => {
@@ -97,17 +150,224 @@ describe('<EntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.streamEntities).toHaveBeenCalledWith({
-        fields: [
-          'kind',
-          'metadata.name',
-          'metadata.namespace',
-          'metadata.title',
-          'metadata.description',
-          'spec.profile.displayName',
-          'spec.type',
-        ],
+      expect(catalogApi.queryEntities).toHaveBeenCalledWith({
+        limit: 20,
+        orderFields: [{ field: 'metadata.name', order: 'asc' }],
+        totalItems: 'exclude',
       });
+    });
+
+    it('filters entities through the catalog as the user types', async () => {
+      const { getByRole } = await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      fireEvent.change(getByRole('textbox'), { target: { value: 'team' } });
+
+      await waitFor(() =>
+        expect(catalogApi.queryEntities).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            fullTextFilter: expect.objectContaining({ term: 'team' }),
+          }),
+        ),
+      );
+    });
+
+    it('keeps BUI search input while filtered results arrive', async () => {
+      mockUseScaffolderTheme.mockReturnValue('bui');
+      const filteredEntity = makeEntity('Group', 'default', 'filtered-result');
+      let resolveFilteredResults = () => {};
+      catalogApi.queryEntities
+        .mockResolvedValueOnce({
+          items: entities,
+          totalItems: 0,
+          pageInfo: {},
+        })
+        .mockReturnValueOnce(
+          new Promise(resolve => {
+            resolveFilteredResults = () =>
+              resolve({ items: [filteredEntity], totalItems: 0, pageInfo: {} });
+          }),
+        );
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+      const input = screen.getByRole('combobox');
+
+      fireEvent.change(input, { target: { value: 'team' } });
+      await waitFor(() =>
+        expect(catalogApi.queryEntities).toHaveBeenCalledTimes(2),
+      );
+      await act(async () => resolveFilteredResults());
+
+      expect(input).toHaveValue('team');
+    });
+
+    it.each(['bui', 'mui'] as const)(
+      'keeps %s search input when a selected presentation arrives late',
+      async theme => {
+        mockUseScaffolderTheme.mockReturnValue(theme);
+        const selectedEntity = {
+          ...makeEntity('Group', 'default', 'off-page'),
+          metadata: {
+            namespace: 'default',
+            name: 'off-page',
+            title: 'Off Page Group',
+          },
+        };
+        let resolveSelectedEntity = () => {};
+        catalogApi.getEntitiesByRefs.mockReturnValueOnce(
+          new Promise(resolve => {
+            resolveSelectedEntity = () => resolve({ items: [selectedEntity] });
+          }),
+        );
+        props = {
+          ...props,
+          formData: 'group:default/off-page',
+          uiSchema: {
+            'ui:options': { allowArbitraryValues: false },
+          },
+        } as unknown as FieldProps<any>;
+        await renderInTestApp(
+          <Wrapper>
+            <EntityPicker {...props} />
+          </Wrapper>,
+        );
+        const input = screen.getByRole(
+          theme === 'bui' ? 'combobox' : 'textbox',
+        );
+
+        fireEvent.change(input, { target: { value: 'replacement' } });
+        await act(async () => {
+          resolveSelectedEntity();
+          await Promise.resolve();
+          await Promise.resolve();
+        });
+
+        expect(input).toHaveValue('replacement');
+      },
+    );
+
+    it('does not clear a BUI selection outside the current page on blur', async () => {
+      mockUseScaffolderTheme.mockReturnValue('bui');
+      const selectedEntity = makeEntity('Group', 'default', 'off-page');
+      catalogApi.getEntitiesByRefs.mockResolvedValueOnce({
+        items: [selectedEntity],
+      });
+      props = {
+        ...props,
+        formData: 'group:default/off-page',
+        uiSchema: {
+          'ui:options': { allowArbitraryValues: false },
+        },
+      } as unknown as FieldProps<any>;
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+      const input = screen.getByRole('combobox');
+      await waitFor(() => expect(input).toHaveValue('off-page'));
+
+      fireEvent.focus(input);
+      fireEvent.blur(input);
+
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('does not clear a BUI selection while its entity is loading', async () => {
+      mockUseScaffolderTheme.mockReturnValue('bui');
+      catalogApi.getEntitiesByRefs.mockReturnValueOnce(new Promise(() => {}));
+      props = {
+        ...props,
+        formData: 'group:default/off-page',
+        uiSchema: {
+          'ui:options': { allowArbitraryValues: false },
+        },
+      } as unknown as FieldProps<any>;
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+      const input = screen.getByRole('combobox');
+
+      fireEvent.focus(input);
+      fireEvent.blur(input);
+
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it.each(['missing', 'failed'] as const)(
+      'does not clear a BUI selection when its entity lookup is %s',
+      async outcome => {
+        mockUseScaffolderTheme.mockReturnValue('bui');
+        if (outcome === 'missing') {
+          catalogApi.getEntitiesByRefs.mockResolvedValueOnce({
+            items: [undefined],
+          });
+        } else {
+          catalogApi.getEntitiesByRefs.mockRejectedValueOnce(
+            new Error('catalog unavailable'),
+          );
+        }
+        props = {
+          ...props,
+          formData: 'group:default/off-page',
+          uiSchema: {
+            'ui:options': { allowArbitraryValues: false },
+          },
+        } as unknown as FieldProps<any>;
+        await renderInTestApp(
+          <Wrapper>
+            <EntityPicker {...props} />
+          </Wrapper>,
+        );
+        const input = screen.getByRole('combobox');
+        await waitFor(() =>
+          expect(catalogApi.getEntitiesByRefs).toHaveBeenCalled(),
+        );
+
+        fireEvent.focus(input);
+        fireEvent.blur(input);
+
+        expect(onChange).not.toHaveBeenCalled();
+      },
+    );
+
+    it('does not commit a BUI presentation title as an arbitrary value on blur', async () => {
+      mockUseScaffolderTheme.mockReturnValue('bui');
+      const selectedEntity = {
+        ...makeEntity('Group', 'default', 'off-page'),
+        metadata: {
+          namespace: 'default',
+          name: 'off-page',
+          title: 'Off Page Group',
+        },
+      };
+      catalogApi.getEntitiesByRefs.mockResolvedValueOnce({
+        items: [selectedEntity],
+      });
+      props = {
+        ...props,
+        formData: 'group:default/off-page',
+      } as unknown as FieldProps<any>;
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+      const input = screen.getByRole('combobox');
+      await waitFor(() => expect(input).toHaveValue('Off Page Group'));
+
+      fireEvent.focus(input);
+      fireEvent.blur(input);
+
+      expect(onChange).not.toHaveBeenCalled();
     });
 
     it('updates even if there is not an exact match', async () => {
@@ -124,6 +384,24 @@ describe('<EntityPicker />', () => {
 
       expect(onChange).toHaveBeenCalledWith('squ');
     });
+
+    it('does not look up an arbitrary value as an entity ref', async () => {
+      props = {
+        ...props,
+        formData: 'arbitrary-value',
+      } as unknown as FieldProps<any>;
+
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+      await waitFor(() =>
+        expect(catalogApi.queryEntities).toHaveBeenCalledTimes(1),
+      );
+
+      expect(catalogApi.getEntitiesByRefs).not.toHaveBeenCalled();
+    });
   });
 
   describe('with allowedKinds', () => {
@@ -137,10 +415,6 @@ describe('<EntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('searches for users and groups', async () => {
@@ -150,9 +424,8 @@ describe('<EntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.streamEntities).toHaveBeenCalledWith(
+      expect(catalogApi.queryEntities).toHaveBeenCalledWith(
         expect.objectContaining({
-          query: {},
           filter: { kind: ['User'] },
         }),
       );
@@ -183,10 +456,6 @@ describe('<EntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('searches for a specific group entity', async () => {
@@ -196,9 +465,8 @@ describe('<EntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.streamEntities).toHaveBeenCalledWith(
+      expect(catalogApi.queryEntities).toHaveBeenCalledWith(
         expect.objectContaining({
-          query: {},
           filter: [
             {
               kind: ['Group'],
@@ -222,19 +490,14 @@ describe('<EntityPicker />', () => {
         },
       };
 
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
-
       await renderInTestApp(
         <Wrapper>
           <EntityPicker {...props} uiSchema={uiSchema} />
         </Wrapper>,
       );
 
-      expect(catalogApi.streamEntities).toHaveBeenCalledWith(
+      expect(catalogApi.queryEntities).toHaveBeenCalledWith(
         expect.objectContaining({
-          query: {},
           filter: {
             kind: ['Group'],
             'metadata.name': 'test-entity',
@@ -261,9 +524,8 @@ describe('<EntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.streamEntities).toHaveBeenCalledWith(
+      expect(catalogApi.queryEntities).toHaveBeenCalledWith(
         expect.objectContaining({
-          query: {},
           filter: [
             {
               kind: ['User'],
@@ -299,10 +561,6 @@ describe('<EntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
     it('Prevents user from modifying input when ui:disabled is true', async () => {
       props.uiSchema = { 'ui:disabled': true };
@@ -365,10 +623,6 @@ describe('<EntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('searches for a Group entity', async () => {
@@ -378,9 +632,8 @@ describe('<EntityPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.streamEntities).toHaveBeenCalledWith(
+      expect(catalogApi.queryEntities).toHaveBeenCalledWith(
         expect.objectContaining({
-          query: {},
           filter: [
             {
               kind: ['Group'],
@@ -407,10 +660,6 @@ describe('<EntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('default behavior', async () => {
@@ -503,10 +752,6 @@ describe('<EntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('returns the full entityRef when entity exists in the list', async () => {
@@ -563,8 +808,10 @@ describe('<EntityPicker />', () => {
           profile: { displayName: item.metadata.name.replace('-', ' ') },
         },
       }));
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield items;
+      catalogApi.queryEntities.mockResolvedValue({
+        items,
+        totalItems: 0,
+        pageInfo: {},
       });
 
       const { getByRole, getByText } = await renderInTestApp(
@@ -594,8 +841,10 @@ describe('<EntityPicker />', () => {
           title: item.metadata.name.replace('-', ' ').toUpperCase(),
         },
       }));
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield items;
+      catalogApi.queryEntities.mockResolvedValue({
+        items,
+        totalItems: 0,
+        pageInfo: {},
       });
 
       const { getByRole, getByText } = await renderInTestApp(
@@ -615,6 +864,37 @@ describe('<EntityPicker />', () => {
       expect(getByText('SQUAD B')).toBeInTheDocument();
 
       fireEvent.blur(input);
+    });
+
+    it('accepts a selected entity that is not on the current page', async () => {
+      const selectedEntity = makeEntity('Group', 'default', 'off-page');
+      catalogApi.getEntitiesByRefs.mockResolvedValue({
+        items: [selectedEntity],
+      });
+      props = {
+        ...props,
+        formData: 'group:default/off-page',
+        uiSchema: {
+          'ui:options': { allowArbitraryValues: false },
+        },
+      } as unknown as FieldProps<any>;
+      const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+      await waitFor(() =>
+        expect(screen.getByRole('textbox')).toHaveValue(
+          'group:default/off-page',
+        ),
+      );
+
+      expect(warn).not.toHaveBeenCalledWith(
+        expect.stringContaining('value provided to Autocomplete is invalid'),
+      );
+      warn.mockRestore();
     });
   });
 
@@ -642,10 +922,6 @@ describe('<EntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('User enters clear input', async () => {
@@ -741,10 +1017,6 @@ describe('<EntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('User enters clear input', async () => {
@@ -841,10 +1113,6 @@ describe('<EntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('User enters clear input', async () => {
@@ -941,10 +1209,6 @@ describe('<EntityPicker />', () => {
         rawErrors,
         formData,
       } as unknown as FieldProps<any>;
-
-      catalogApi.streamEntities.mockImplementation(async function* () {
-        yield entities;
-      });
     });
 
     it('User enters clear input', async () => {
