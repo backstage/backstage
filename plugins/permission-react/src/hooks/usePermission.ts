@@ -40,9 +40,10 @@ export type AsyncPermissionResult = {
  * {@link @backstage/plugin-permission-common/PermissionClient#authorize} for
  * more details.
  *
- * The resourceRef field is optional to allow calling this hook with an
- * entity that might be loading asynchronously, but when resourceRef is not
- * supplied, the value of `allowed` will always be false.
+ * For resource permissions, `resourceRef` may be undefined while the resource
+ * is loading asynchronously. This returns `allowed: false` without requesting
+ * authorization. Pass `resourceRef: false` to require an unconditional grant
+ * for all resources; conditional policy decisions are treated as denied.
  *
  * Note: This hook uses stale-while-revalidate to help avoid flicker in UI
  * elements that would be conditionally rendered based on the `allowed` result
@@ -57,17 +58,18 @@ export function usePermission(
       }
     | {
         permission: ResourcePermission;
-        resourceRef: string | undefined;
+        resourceRef: string | false | undefined;
       },
 ): AsyncPermissionResult {
   const permissionApi = useApi(permissionApiRef);
   const { data, error } = useSWR(input, async (args: typeof input) => {
-    // We could make the resourceRef parameter required to avoid this check, but
-    // it would make using this hook difficult in situations where the entity
-    // must be asynchronously loaded, so instead we short-circuit to a deny when
-    // no resourceRef is supplied, on the assumption that the resourceRef is
-    // still loading outside the hook.
-    if (isResourcePermission(args.permission) && !args.resourceRef) {
+    // Without an explicit universal check, a missing reference means the
+    // resource is still loading outside the hook.
+    if (
+      isResourcePermission(args.permission) &&
+      !args.resourceRef &&
+      args.resourceRef !== false
+    ) {
       return AuthorizeResult.DENY;
     }
 

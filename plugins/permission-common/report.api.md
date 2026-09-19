@@ -25,7 +25,7 @@ export type AuthorizePermissionRequest =
     }
   | {
       permission: ResourcePermission;
-      resourceRef: string;
+      resourceRef: string | false;
     };
 
 // @public
@@ -94,7 +94,7 @@ export type DiscoveryApi = {
 // @public
 export type EvaluatePermissionRequest = {
   permission: Permission;
-  resourceRef?: string;
+  resourceRef?: string | false;
 };
 
 // @public @deprecated

@@ -18,7 +18,6 @@ import { ReactNode } from 'react';
 import { useApp } from '@backstage/core-plugin-api';
 import { usePermission } from '../hooks';
 import {
-  isResourcePermission,
   Permission,
   ResourcePermission,
 } from '@backstage/plugin-permission-common';
@@ -35,7 +34,8 @@ export type RequirePermissionProps = (
     }
   | {
       permission: ResourcePermission;
-      resourceRef: string | undefined;
+      /** A resource reference, false for unconditional access, or undefined while loading. */
+      resourceRef: string | false | undefined;
     }
 ) & {
   /**
@@ -59,22 +59,18 @@ export type RequirePermissionProps = (
 export function RequirePermission(
   props: RequirePermissionProps,
 ): JSX.Element | null {
-  const { permission, resourceRef } = props;
-  const permissionResult = usePermission(
-    isResourcePermission(permission)
-      ? { permission, resourceRef }
-      : { permission },
-  );
+  const { children, errorPage, ...input } = props;
+  const permissionResult = usePermission(input);
   const app = useApp();
 
   if (permissionResult.loading) {
     return null;
   } else if (permissionResult.allowed) {
-    return <>{props.children}</>;
+    return <>{children}</>;
   }
 
-  if (props.errorPage) {
-    return <>{props.errorPage}</>;
+  if (errorPage) {
+    return <>{errorPage}</>;
   }
   // If no explicit error element is provided, the not found page is used as fallback.
   const { NotFoundErrorPage } = app.getComponents();
