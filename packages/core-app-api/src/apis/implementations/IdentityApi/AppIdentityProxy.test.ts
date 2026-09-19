@@ -29,6 +29,10 @@ describe('AppIdentityProxy', () => {
     jest.resetAllMocks();
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('should forward user identities', async () => {
     const proxy = new AppIdentityProxy();
     proxy.setTarget(mockIdentityApi, { signOutTargetUrl: '/' });
@@ -87,6 +91,45 @@ describe('AppIdentityProxy', () => {
     const navigateSpy = jest.spyOn(proxy as any, 'navigateToUrl');
     await proxy.signOut();
     expect(navigateSpy).toHaveBeenCalledWith('/foo');
+  });
+
+  it('should sign out other tabs, and sign out when another tab does', async () => {
+    const storageKey = '@backstage/core-app-api:signed-out-at';
+    const navigateSpy = jest
+      .spyOn(AppIdentityProxy.prototype as any, 'navigateToUrl')
+      .mockImplementation(() => {});
+
+    const proxy = new AppIdentityProxy();
+    proxy.setTarget(mockIdentityApi, { signOutTargetUrl: '/foo' });
+
+    window.dispatchEvent(
+      new StorageEvent('storage', { key: 'other-key', newValue: '123' }),
+    );
+    window.dispatchEvent(
+      new StorageEvent('storage', { key: storageKey, newValue: null }),
+    );
+    expect(navigateSpy).not.toHaveBeenCalled();
+
+    window.dispatchEvent(
+      new StorageEvent('storage', { key: storageKey, newValue: '123' }),
+    );
+    expect(navigateSpy).toHaveBeenCalledWith('/foo');
+    expect(mockIdentityApi.signOut).not.toHaveBeenCalled();
+
+    const signOutOrder: string[] = [];
+    mockIdentityApi.signOut.mockImplementation(async () => {
+      signOutOrder.push('backend-logout');
+    });
+    const setItemSpy = jest
+      .spyOn(Storage.prototype, 'setItem')
+      .mockImplementation(() => {
+        signOutOrder.push('notify-other-tabs');
+      });
+
+    await proxy.signOut();
+
+    expect(setItemSpy).toHaveBeenCalledWith(storageKey, expect.any(String));
+    expect(signOutOrder).toEqual(['backend-logout', 'notify-other-tabs']);
   });
 
   it('should report whether a target has been set', () => {
