@@ -3,7 +3,7 @@ title: Jev Operations Support
 author: namayasai
 authorUrl: https://github.com/namayasai
 category: Machine Learning
-description: Jev-powered operations support to check runbooks, assess changes, triage incidents, recommend templates and teams, and rerank catalog results.
+description: Jev-powered operations support for runbook checks, change review, and CloudWatch alert triage, with TechDocs, GitHub PR, and Tech Insights integrations.
 documentation: https://github.com/namayasai/backstage-jev-operations-support/blob/main/docs/installation.md
 iconUrl: https://raw.githubusercontent.com/namayasai/backstage-jev-operations-support/main/docs/icon.svg
 npmPackageName: '@namayasai/backstage-plugin-jev-operations-support'
