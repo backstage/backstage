@@ -29593,8 +29593,8 @@ __metadata:
   linkType: hard
 
 "graphql-config@npm:^5.1.6":
-  version: 5.1.6
-  resolution: "graphql-config@npm:5.1.6"
+  version: 5.1.7
+  resolution: "graphql-config@npm:5.1.7"
   dependencies:
     "@graphql-tools/graphql-file-loader": "npm:^8.0.0"
     "@graphql-tools/json-file-loader": "npm:^8.0.0"
@@ -29609,11 +29609,11 @@ __metadata:
     tslib: "npm:^2.4.0"
   peerDependencies:
     cosmiconfig-toml-loader: ^1.0.0
-    graphql: ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
+    graphql: ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
   peerDependenciesMeta:
     cosmiconfig-toml-loader:
       optional: true
-  checksum: 10/941b3166d395d22ae6f4048c564b09364d2234c88f8ad596188599d4650c28a35a2484b549e0ef239ae461a23874efc69e0234f7f8977a8a6f39640867086003
+  checksum: 10/0b4aee9cb86ecaf05978b5c619e7d65f8e467cbed42bf46a70873473c7ef48b7bc0a2d55fe28d840bc694fe4f0b9260e8fd08a3162b35905d5675dd968eec0d5
   languageName: node
   linkType: hard
 
