@@ -149,6 +149,14 @@ describe('AzureIntegration', () => {
     ).toBe('https://dev.azure.com/organization/project/_git/repository');
 
     expect(
+      integration.resolveEditUrl(
+        'https://dev.azure.com/organization/project/_git/repository?path=%2F&version=GBmain&_a=contents',
+      ),
+    ).toBe(
+      'https://dev.azure.com/organization/project/_git/repository?path=%2F&version=GBmain&_a=contents',
+    );
+
+    expect(
       integration.resolveEditUrl('https://dev.azure.com/organization/project'),
     ).toBe('https://dev.azure.com/organization/project');
   });
