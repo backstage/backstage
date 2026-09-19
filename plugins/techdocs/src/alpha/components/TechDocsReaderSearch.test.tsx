@@ -15,6 +15,7 @@
  */
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useLocation } from 'react-router-dom';
 
 import { searchApiRef, MockSearchApi } from '@backstage/plugin-search-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
@@ -69,5 +70,35 @@ describe('<TechDocsReaderSearch />', () => {
     expect(
       screen.getByText('This guide helps you get started.'),
     ).toBeInTheDocument();
+  });
+
+  it('maps result URLs when embedded in an entity page', async () => {
+    const user = userEvent.setup();
+    const CurrentPath = () => {
+      const location = useLocation();
+      return <output aria-label="Current path">{location.pathname}</output>;
+    };
+
+    await renderInTestApp(
+      <TestApiProvider apis={[[searchApiRef, mockSearchApi]]}>
+        <TechDocsReaderSearch
+          entityId={entityId}
+          searchResultUrlMapper={() =>
+            '/catalog/default/component/test-component/docs/getting-started'
+          }
+        />
+        <CurrentPath />
+      </TestApiProvider>,
+    );
+
+    await user.type(
+      screen.getByRole('searchbox', { name: 'Search docs' }),
+      'getting',
+    );
+    await user.click(await screen.findByText('Getting Started'));
+
+    expect(screen.getByLabelText('Current path')).toHaveTextContent(
+      '/catalog/default/component/test-component/docs/getting-started',
+    );
   });
 });

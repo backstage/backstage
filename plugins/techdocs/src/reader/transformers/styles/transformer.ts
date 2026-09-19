@@ -16,27 +16,20 @@
 
 import { useCallback, useMemo } from 'react';
 import { useTheme } from '@material-ui/core/styles';
-import { useSidebarPinState } from '@backstage/core-components';
 import { Transformer } from '../transformer';
 import { rules } from './rules';
-
-/**
- * Sidebar pinned state to be used in computing style injections.
- */
-const useSidebar = () => useSidebarPinState();
 
 /**
  * Process all rules and concatenate their definitions into a single style.
  * @returns a string containing all processed style definitions.
  */
 const useRuleStyles = () => {
-  const sidebar = useSidebar();
   const theme = useTheme();
 
   return useMemo(() => {
-    const options = { theme, sidebar };
+    const options = { theme };
     return rules.reduce<string>((styles, rule) => styles + rule(options), '');
-  }, [theme, sidebar]);
+  }, [theme]);
 };
 
 /**

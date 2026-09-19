@@ -23,8 +23,7 @@ import { TECHDOCS_EXTERNAL_ANNOTATION } from '@backstage/plugin-techdocs-common'
 import { getEntityRootTechDocsPath } from '@backstage/plugin-techdocs-react';
 
 import { TechDocsReaderPage } from './plugin';
-import { TechDocsReaderPageContent } from './reader/components/TechDocsReaderPageContent';
-import { TechDocsReaderPageSubheader } from './reader/components/TechDocsReaderPageSubheader';
+import { TechDocsReaderLayout } from './alpha/components/TechDocsReaderLayout';
 import { useEntityPageTechDocsRedirect } from './search/hooks/useTechDocsLocation';
 
 type EntityPageDocsProps = {
@@ -62,8 +61,8 @@ export const EntityPageDocs = ({
 
   return (
     <TechDocsReaderPage entityRef={entityRef}>
-      <TechDocsReaderPageSubheader />
-      <TechDocsReaderPageContent
+      <TechDocsReaderLayout
+        withHeader={false}
         withSearch={withSearch}
         withFeedbackLink={withFeedbackLink}
         searchResultUrlMapper={searchResultUrlMapper}
