@@ -19,26 +19,41 @@ import {
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
+import { setImmediate } from 'node:timers/promises';
 
 // TODO: Copied from plugin-catalog-backend, but we could also export them from
 // there. Or move them to catalog-model.
 
-export function buildOrgHierarchy(groups: GroupEntity[]) {
-  const groupsByRef = new Map(groups.map(g => [stringifyEntityRef(g), g]));
+const HIERARCHY_BATCH_SIZE = 1_000;
+
+function* buildOrgHierarchyInBatches(groups: GroupEntity[]) {
+  const groupsByRef = new Map<string, GroupEntity>();
+  const refsByGroup = new Map<GroupEntity, string>();
+  const childRefsByGroup = new Map<GroupEntity, Set<string>>();
+  for (const group of groups) {
+    const ref = stringifyEntityRef(group);
+    groupsByRef.set(ref, group);
+    refsByGroup.set(group, ref);
+    childRefsByGroup.set(group, new Set(group.spec.children));
+    yield;
+  }
 
   //
   // Make sure that g.parent.children contain g
   //
 
   for (const group of groups) {
-    const selfRef = stringifyEntityRef(group);
+    const selfRef = refsByGroup.get(group)!;
     const parentRef = group.spec.parent;
     if (parentRef) {
       const parent = groupsByRef.get(parentRef);
-      if (parent && !parent.spec.children.includes(selfRef)) {
+      const childRefs = parent && childRefsByGroup.get(parent);
+      if (parent && childRefs && !childRefs.has(selfRef)) {
         parent.spec.children.push(selfRef);
+        childRefs.add(selfRef);
       }
     }
+    yield;
   }
 
   //
@@ -46,12 +61,30 @@ export function buildOrgHierarchy(groups: GroupEntity[]) {
   //
 
   for (const group of groups) {
-    const selfRef = stringifyEntityRef(group);
+    const selfRef = refsByGroup.get(group)!;
     for (const childRef of group.spec.children) {
       const child = groupsByRef.get(childRef);
       if (child && !child.spec.parent) {
         child.spec.parent = selfRef;
       }
+      yield;
+    }
+  }
+}
+
+export function buildOrgHierarchy(groups: GroupEntity[]) {
+  const batches = buildOrgHierarchyInBatches(groups);
+  while (!batches.next().done) {
+    // Consume all hierarchy work synchronously.
+  }
+}
+
+export async function buildOrgHierarchyAsync(groups: GroupEntity[]) {
+  let processedItems = 0;
+  const batches = buildOrgHierarchyInBatches(groups);
+  while (!batches.next().done) {
+    if (++processedItems % HIERARCHY_BATCH_SIZE === 0) {
+      await setImmediate();
     }
   }
 }

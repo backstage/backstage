@@ -22,7 +22,7 @@ import {
 import { Entry } from 'ldapts';
 import lodashSet from 'lodash/set';
 import cloneDeep from 'lodash/cloneDeep';
-import { buildOrgHierarchy } from './org';
+import { buildOrgHierarchy, buildOrgHierarchyAsync } from './org';
 import { LdapClient } from './client';
 import { GroupConfig, UserConfig, VendorConfig } from './config';
 import {
@@ -35,6 +35,9 @@ import { GroupTransformer, UserTransformer } from './types';
 import { mapStringAttr } from './util';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { InputError } from '@backstage/errors';
+import { setImmediate } from 'node:timers/promises';
+
+const RELATION_RESOLUTION_BATCH_SIZE = 5_000;
 
 /**
  * The default implementation of the transformation from an LDAP entry to a
@@ -333,7 +336,13 @@ export async function readLdapOrg(
     { transformer: options?.groupTransformer },
   );
 
-  resolveRelations(groups, users, userMemberOf, groupMemberOf, groupMember);
+  await resolveRelationsAsync(
+    groups,
+    users,
+    userMemberOf,
+    groupMemberOf,
+    groupMember,
+  );
   users.sort((a, b) => a.metadata.name.localeCompare(b.metadata.name));
   groups.sort((a, b) => a.metadata.name.localeCompare(b.metadata.name));
 
@@ -414,6 +423,55 @@ export function resolveRelations(
   groupMemberOf: Map<string, Set<string>>,
   groupMember: Map<string, Set<string>>,
 ) {
+  const batches = resolveRelationsInBatches(
+    groups,
+    users,
+    userMemberOf,
+    groupMemberOf,
+    groupMember,
+  );
+  while (!batches.next().done) {
+    // Consume all relation work synchronously.
+  }
+  buildOrgHierarchy(groups);
+}
+
+/**
+ * Takes groups and entities with empty relations, and fills in the various
+ * relations that were returned by the readers, and forms the org hierarchy.
+ * Yields to the event loop between batches of work.
+ */
+export async function resolveRelationsAsync(
+  groups: GroupEntity[],
+  users: UserEntity[],
+  userMemberOf: Map<string, Set<string>>,
+  groupMemberOf: Map<string, Set<string>>,
+  groupMember: Map<string, Set<string>>,
+) {
+  const batches = resolveRelationsInBatches(
+    groups,
+    users,
+    userMemberOf,
+    groupMemberOf,
+    groupMember,
+  );
+  while (!batches.next().done) {
+    await setImmediate();
+  }
+  await buildOrgHierarchyAsync(groups);
+}
+
+function* resolveRelationsInBatches(
+  groups: GroupEntity[],
+  users: UserEntity[],
+  userMemberOf: Map<string, Set<string>>,
+  groupMemberOf: Map<string, Set<string>>,
+  groupMember: Map<string, Set<string>>,
+) {
+  let processedItems = 0;
+  const shouldYield = () =>
+    ++processedItems % RELATION_RESOLUTION_BATCH_SIZE === 0;
+
   // Build reference lookup tables - all of the relations that are output from
   // the above calls can be expressed as either DNs or UUIDs so we need to be
   // able to find by both, as well as the entity reference. Note that we expect them to not
@@ -430,6 +488,7 @@ export function resolveRelations(
     );
     userMap.set(user.metadata.annotations![LDAP_RDN_ANNOTATION], user);
     userMap.set(user.metadata.annotations![LDAP_UUID_ANNOTATION], user);
+    if (shouldYield()) yield;
   }
   for (const group of groups) {
     groupMap.set(stringifyEntityRef(group), group);
@@ -440,6 +499,7 @@ export function resolveRelations(
     );
     groupMap.set(group.metadata.annotations![LDAP_RDN_ANNOTATION], group);
     groupMap.set(group.metadata.annotations![LDAP_UUID_ANNOTATION], group);
+    if (shouldYield()) yield;
   }
 
   // This can happen e.g. if entryUUID wasn't returned by the server
@@ -471,8 +531,10 @@ export function resolveRelations(
             stringifyEntityRef(group),
           ]);
         }
+        if (shouldYield()) yield;
       }
     }
+    if (shouldYield()) yield;
   }
   for (const [groupN, parentsN] of groupMemberOf.entries()) {
     const group = getValueFromMapWithInsensitiveKey(groupMap, groupN);
@@ -490,8 +552,10 @@ export function resolveRelations(
             stringifyEntityRef(group),
           ]);
         }
+        if (shouldYield()) yield;
       }
     }
+    if (shouldYield()) yield;
   }
   for (const [groupN, membersN] of groupMember.entries()) {
     const group = getValueFromMapWithInsensitiveKey(groupMap, groupN);
@@ -518,8 +582,10 @@ export function resolveRelations(
             ]);
           }
         }
+        if (shouldYield()) yield;
       }
     }
+    if (shouldYield()) yield;
   }
 
   // Write down the relations again into the actual entities
@@ -528,6 +594,7 @@ export function resolveRelations(
     if (user) {
       user.spec.memberOf = Array.from(groupsN).sort();
     }
+    if (shouldYield()) yield;
   }
   for (const [groupN, parentsN] of newGroupParents.entries()) {
     if (parentsN.size === 1) {
@@ -536,14 +603,13 @@ export function resolveRelations(
         group.spec.parent = parentsN.values().next().value;
       }
     }
+    if (shouldYield()) yield;
   }
   for (const [groupN, childrenN] of newGroupChildren.entries()) {
     const group = getValueFromMapWithInsensitiveKey(groupMap, groupN);
     if (group) {
       group.spec.children = Array.from(childrenN).sort();
     }
+    if (shouldYield()) yield;
   }
-
-  // Fill out the rest of the hierarchy
-  buildOrgHierarchy(groups);
 }
