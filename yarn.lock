@@ -41165,6 +41165,23 @@ __metadata:
     vite: "npm:^7.1.5"
     yaml: "npm:^2.7.0"
     zod: "npm:^3.25.76 || ^4.0.0"
+  dependenciesMeta:
+    "@swc/core":
+      built: true
+    "@tree-sitter-grammars/tree-sitter-yaml":
+      built: true
+    better-sqlite3:
+      built: true
+    esbuild:
+      built: true
+    keytar:
+      built: true
+    tree-sitter:
+      built: true
+    tree-sitter-json:
+      built: true
+    unrs-resolver:
+      built: true
   languageName: unknown
   linkType: soft
 
