@@ -102,6 +102,29 @@ const entities: Entity[] = [
   },
 ];
 
+const catalogLocatorConfig = mockServices
+  .rootConfig({
+    data: {
+      kubernetes: {
+        clusterLocatorMethods: [{ type: 'catalog' }],
+      },
+    },
+  })
+  .getConfigArray('kubernetes.clusterLocatorMethods')[0];
+
+function createLocator(entitiesList: Entity[] = entities) {
+  const logger = mockServices.logger.mock();
+  return {
+    logger,
+    clusterSupplier: CatalogClusterLocator.fromConfig(
+      catalogServiceMock({ entities: entitiesList }),
+      mockServices.auth(),
+      catalogLocatorConfig,
+      logger,
+    ),
+  };
+}
+
 describe('CatalogClusterLocator', () => {
   beforeEach(() => {
     mockDnsLookupAddresses([{ address: '93.184.216.34', family: 4 }]);
@@ -137,13 +160,122 @@ describe('CatalogClusterLocator', () => {
 
   it('returns the microsoft authenticated cluster details provided by annotations', async () => {
     const credentials = mockCredentials.user();
-    const clusterSupplier = CatalogClusterLocator.fromConfig(
-      catalogServiceMock({ entities }),
-      mockServices.auth(),
-    );
+    const { clusterSupplier } = createLocator();
 
     const result = await clusterSupplier.getClusters({ credentials });
     expect(result).toHaveLength(3);
     expect(result[2]).toMatchSnapshot();
+  });
+
+  it('ignores clusters with private API server URLs', async () => {
+    const credentials = mockCredentials.user();
+    const { logger, clusterSupplier } = createLocator([
+      {
+        ...entities[0],
+        metadata: {
+          ...entities[0].metadata,
+          name: 'private-cluster',
+          annotations: {
+            ...entities[0].metadata.annotations!,
+            'kubernetes.io/api-server': 'https://127.0.0.1:6443',
+          },
+        },
+      },
+    ]);
+    const warn = jest.spyOn(logger, 'warn');
+    const result = await clusterSupplier.getClusters({ credentials });
+    expect(result).toHaveLength(0);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('private-cluster'),
+    );
+  });
+
+  it('accepts loopback API server URLs when dangerouslyAllowClusterUrls is configured', async () => {
+    const credentials = mockCredentials.user();
+    const logger = mockServices.logger.mock();
+    const config = mockServices.rootConfig({
+      data: {
+        kubernetes: {
+          clusterLocatorMethods: [
+            {
+              type: 'catalog',
+              dangerouslyAllowClusterUrls: ['127.0.0.1'],
+            },
+          ],
+        },
+      },
+    });
+    const clusterSupplier = CatalogClusterLocator.fromConfig(
+      catalogServiceMock({
+        entities: [
+          {
+            ...entities[0],
+            metadata: {
+              ...entities[0].metadata,
+              name: 'local-cluster',
+              annotations: {
+                ...entities[0].metadata.annotations!,
+                'kubernetes.io/api-server': 'http://127.0.0.1:6443',
+              },
+            },
+          },
+        ],
+      }),
+      mockServices.auth(),
+      config.getConfigArray('kubernetes.clusterLocatorMethods')[0],
+      logger,
+    );
+    const result = await clusterSupplier.getClusters({ credentials });
+    expect(result).toHaveLength(1);
+    expect(result[0].url).toBe('http://127.0.0.1:6443');
+  });
+
+  it('ignores serviceAccount auth provider clusters', async () => {
+    const credentials = mockCredentials.user();
+    const { logger, clusterSupplier } = createLocator([
+      {
+        ...entities[0],
+        metadata: {
+          ...entities[0].metadata,
+          name: 'sa-cluster',
+          annotations: {
+            ...entities[0].metadata.annotations!,
+            [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
+          },
+        },
+      },
+    ]);
+    const warn = jest.spyOn(logger, 'warn');
+    const result = await clusterSupplier.getClusters({ credentials });
+    expect(result).toHaveLength(0);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('serviceAccount auth provider'),
+    );
+  });
+
+  it('honors skip TLS verify only when dangerouslyAllowSkipTLSVerify is enabled', async () => {
+    const credentials = mockCredentials.user();
+    const logger = mockServices.logger.mock();
+    const config = mockServices.rootConfig({
+      data: {
+        kubernetes: {
+          clusterLocatorMethods: [
+            {
+              type: 'catalog',
+              dangerouslyAllowSkipTLSVerify: true,
+            },
+          ],
+        },
+      },
+    });
+    const clusterSupplier = CatalogClusterLocator.fromConfig(
+      catalogServiceMock({ entities: [entities[0]] }),
+      mockServices.auth(),
+      config.getConfigArray('kubernetes.clusterLocatorMethods')[0],
+      logger,
+    );
+    const result = await clusterSupplier.getClusters({ credentials });
+    expect(result).toHaveLength(1);
+    expect(result[0].skipTLSVerify).toBe(true);
   });
 });
