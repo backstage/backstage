@@ -19,14 +19,25 @@ import { OAuth2Client } from 'google-auth-library';
 import { GcpIapTokenInfo } from './types';
 
 const FALLBACK_IAP_PUBLIC_KEYS_CACHE_TTL_MS = 5 * 60 * 1000;
+const IAP_PUBLIC_KEYS_CACHE_SAFETY_MARGIN_MS = 5 * 60 * 1000;
 
-function getPublicKeysCacheTtl(
-  response: {
-    res?: { headers: { get(name: string): string | null } } | null;
-  },
-  now: number,
-): number {
-  const cacheControl = response.res?.headers.get('cache-control');
+function getResponseHeader(headers: unknown, name: string): string | undefined {
+  if (!headers || typeof headers !== 'object') {
+    return undefined;
+  }
+
+  const value = (headers as Record<string, unknown>)[name];
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (Array.isArray(value) && value.every(item => typeof item === 'string')) {
+    return value.join(', ');
+  }
+  return undefined;
+}
+
+function getPublicKeysCacheTtl(headers: unknown, now: number): number {
+  const cacheControl = getResponseHeader(headers, 'cache-control');
   if (/(?:^|,)\s*no-(?:cache|store)\s*(?:,|$)/i.test(cacheControl ?? '')) {
     return 0;
   }
@@ -38,15 +49,18 @@ function getPublicKeysCacheTtl(
   if (maxAge !== undefined) {
     const ttl = Number(maxAge) * 1000;
     if (Number.isSafeInteger(ttl)) {
-      return ttl;
+      return Math.max(0, ttl - IAP_PUBLIC_KEYS_CACHE_SAFETY_MARGIN_MS);
     }
   }
 
-  const expires = response.res?.headers.get('expires');
+  const expires = getResponseHeader(headers, 'expires');
   if (expires) {
     const expiresAt = Date.parse(expires);
     if (Number.isFinite(expiresAt)) {
-      return Math.max(0, expiresAt - now);
+      return Math.max(
+        0,
+        expiresAt - now - IAP_PUBLIC_KEYS_CACHE_SAFETY_MARGIN_MS,
+      );
     }
   }
 
@@ -73,7 +87,8 @@ export function createTokenValidator(
         .then(response => {
           cachedPublicKeys = response.pubkeys;
           const now = Date.now();
-          publicKeysExpiresAt = now + getPublicKeysCacheTtl(response, now);
+          publicKeysExpiresAt =
+            now + getPublicKeysCacheTtl(response.res?.headers, now);
           return cachedPublicKeys;
         })
         .catch(error => {

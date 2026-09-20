@@ -16,9 +16,10 @@ It is assumed an IAP is already serving traffic in front of a Backstage instance
 configured to serve the frontend app from the backend.
 
 Backstage caches IAP public verification keys in memory according to the
-Google IAP response cache headers, with a conservative fallback when the
-headers are unavailable or invalid. This reduces repeated requests to the IAP
-key endpoint while allowing normal key rotation.
+Google IAP response cache headers, refreshing them before the advertised
+expiry. A conservative fallback is used when the headers are unavailable or
+invalid. This reduces repeated requests to the IAP key endpoint while allowing
+normal key rotation.
 
 ## Configuration
 

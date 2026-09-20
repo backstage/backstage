@@ -105,7 +105,7 @@ describe('helpers', () => {
         pubkeys: {},
         res: {
           headers: {
-            get: () => 'public, max-age=60',
+            'cache-control': 'public, max-age=600',
           },
         },
       }));
@@ -121,9 +121,9 @@ describe('helpers', () => {
       );
 
       await validator(mockJwt);
-      dateNow.mockReturnValue(59 * 1000);
+      dateNow.mockReturnValue(299 * 1000);
       await validator(mockJwt);
-      dateNow.mockReturnValue(60 * 1000);
+      dateNow.mockReturnValue(300 * 1000);
       await validator(mockJwt);
 
       expect(getIapPublicKeys).toHaveBeenCalledTimes(2);
@@ -135,10 +135,7 @@ describe('helpers', () => {
         pubkeys: {},
         res: {
           headers: {
-            get: (name: string) =>
-              name === 'expires'
-                ? new Date(60 * 1000).toUTCString()
-                : null,
+            expires: new Date(600 * 1000).toUTCString(),
           },
         },
       }));
@@ -154,9 +151,9 @@ describe('helpers', () => {
       );
 
       await validator(mockJwt);
-      dateNow.mockReturnValue(59 * 1000);
+      dateNow.mockReturnValue(299 * 1000);
       await validator(mockJwt);
-      dateNow.mockReturnValue(60 * 1000);
+      dateNow.mockReturnValue(300 * 1000);
       await validator(mockJwt);
 
       expect(getIapPublicKeys).toHaveBeenCalledTimes(2);
