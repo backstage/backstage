@@ -76,7 +76,7 @@ const useStyles = makeStyles({
 });
 
 // TODO: This hook is duplicated from the TechDocs plugin for backwards compatibility
-// Remove it when the the legacy frontend system support is dropped.
+// Remove it when the legacy frontend system support is dropped.
 function useTechdocsReaderIconLinkProps(): IconLinkVerticalProps {
   const { entity } = useEntity();
   const viewTechdocLink = useRouteRef(viewTechDocRouteRef);
@@ -95,7 +95,7 @@ function useTechdocsReaderIconLinkProps(): IconLinkVerticalProps {
 }
 
 // TODO: This hook is duplicated from the Scaffolder plugin for backwards compatibility
-// Remove it when the the legacy frontend system support is dropped.
+// Remove it when the legacy frontend system support is dropped.
 function useScaffolderTemplateIconLinkProps(): IconLinkVerticalProps {
   const app = useApp();
   const { entity } = useEntity();
