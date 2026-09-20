@@ -18,6 +18,7 @@ import { targetPaths } from '@backstage/cli-common';
 import type { CliCommandContext } from '@backstage/cli-node';
 import { cli } from 'cleye';
 import {
+  fixYarnPatches,
   verifyYarnPatches,
   type PatchVerificationError,
 } from '../../lib/verifyYarnPatches';
@@ -32,7 +33,48 @@ function formatError(error: PatchVerificationError): string {
 }
 
 export default async ({ args, info }: CliCommandContext) => {
-  cli({ name: info.usage }, undefined, args);
+  const { flags } = cli(
+    {
+      name: info.usage,
+      flags: {
+        fix: {
+          type: Boolean,
+          description: 'Safely retarget an outdated Backstage package patch',
+        },
+        'dry-run': {
+          type: Boolean,
+          description:
+            'Check whether --fix would succeed without writing files',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+
+  if (flags['dry-run'] && !flags.fix) {
+    throw new Error('--dry-run can only be used together with --fix');
+  }
+
+  if (flags.fix) {
+    const fixResult = await fixYarnPatches({
+      rootDir: targetPaths.dir,
+      env: process.env,
+      dryRun: Boolean(flags['dry-run']),
+    });
+    if (fixResult.status !== 'not-fixable') {
+      process.stdout.write(
+        `${fixResult.message}${
+          fixResult.status === 'fixable' ? ' (dry run)' : ''
+        }.\n`,
+      );
+      if (fixResult.status === 'fixable') {
+        return;
+      }
+    } else {
+      process.stderr.write(`${fixResult.message}.\n`);
+    }
+  }
 
   const result = await verifyYarnPatches({
     rootDir: targetPaths.dir,

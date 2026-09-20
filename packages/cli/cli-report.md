@@ -738,6 +738,8 @@ Commands:
 Usage: backstage-cli pm verify-patches [flags...]
 
 Options:
+  --dry-run
+  --fix
   -h, --help
 ```
 

@@ -18,15 +18,18 @@ import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
 import type { CliCommandContext } from '@backstage/cli-node';
 
 jest.mock('../../lib/verifyYarnPatches', () => ({
+  fixYarnPatches: jest.fn(),
   verifyYarnPatches: jest.fn(),
 }));
 
 import verifyYarnPatchesCommand from './verifyPatches';
 import {
+  fixYarnPatches,
   verifyYarnPatches,
   type VerifyYarnPatchesResult,
 } from '../../lib/verifyYarnPatches';
 
+const mockFixYarnPatches = jest.mocked(fixYarnPatches);
 const mockVerifyYarnPatches = jest.mocked(verifyYarnPatches);
 
 const context: CliCommandContext = {
@@ -122,6 +125,62 @@ describe('verifyYarnPatches command', () => {
     expect(stdoutSpy).toHaveBeenCalledWith(
       'Yarn patch verification passed: 1 patch reference verified. Backstage release validation passed.\n',
     );
+  });
+
+  it('repairs safe Backstage patch holdbacks before verifying', async () => {
+    mockFixYarnPatches.mockResolvedValue({
+      status: 'fixed',
+      message:
+        "Retargeted patch for '@backstage/example' from '1.0.0' to '1.0.1'",
+    });
+    mockVerifyYarnPatches.mockResolvedValue(healthyResult(1, 'verified'));
+
+    await verifyYarnPatchesCommand({ ...context, args: ['--fix'] });
+
+    expect(mockFixYarnPatches).toHaveBeenCalledWith({
+      rootDir: '/test-repository',
+      env: process.env,
+      dryRun: false,
+    });
+    expect(stdoutSpy).toHaveBeenCalledWith(
+      "Retargeted patch for '@backstage/example' from '1.0.0' to '1.0.1'.\n",
+    );
+    expect(mockVerifyYarnPatches).toHaveBeenCalledWith({
+      rootDir: '/test-repository',
+      env: process.env,
+    });
+  });
+
+  it('checks a repair without writing or re-verifying during a dry run', async () => {
+    mockFixYarnPatches.mockResolvedValue({
+      status: 'fixable',
+      message:
+        "Retargeted patch for '@backstage/example' from '1.0.0' to '1.0.1'",
+    });
+
+    await verifyYarnPatchesCommand({
+      ...context,
+      args: ['--fix', '--dry-run'],
+    });
+
+    expect(mockFixYarnPatches).toHaveBeenCalledWith({
+      rootDir: '/test-repository',
+      env: process.env,
+      dryRun: true,
+    });
+    expect(stdoutSpy).toHaveBeenCalledWith(
+      "Retargeted patch for '@backstage/example' from '1.0.0' to '1.0.1' (dry run).\n",
+    );
+    expect(mockVerifyYarnPatches).not.toHaveBeenCalled();
+  });
+
+  it('rejects --dry-run without --fix', async () => {
+    await expect(
+      verifyYarnPatchesCommand({ ...context, args: ['--dry-run'] }),
+    ).rejects.toThrow('--dry-run can only be used together with --fix');
+
+    expect(mockFixYarnPatches).not.toHaveBeenCalled();
+    expect(mockVerifyYarnPatches).not.toHaveBeenCalled();
   });
 
   it('prints every verification error before failing the command', async () => {
