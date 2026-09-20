@@ -18,7 +18,40 @@ import { AuthenticationError } from '@backstage/errors';
 import { OAuth2Client } from 'google-auth-library';
 import { GcpIapTokenInfo } from './types';
 
-const IAP_PUBLIC_KEYS_CACHE_TTL_MS = 60 * 60 * 1000;
+const FALLBACK_IAP_PUBLIC_KEYS_CACHE_TTL_MS = 5 * 60 * 1000;
+
+function getPublicKeysCacheTtl(
+  response: {
+    res?: { headers: { get(name: string): string | null } } | null;
+  },
+  now: number,
+): number {
+  const cacheControl = response.res?.headers.get('cache-control');
+  if (/(?:^|,)\s*no-(?:cache|store)\s*(?:,|$)/i.test(cacheControl ?? '')) {
+    return 0;
+  }
+
+  const maxAge = /(?:^|,)\s*max-age\s*=\s*"?(?<seconds>\d+)"?/i.exec(
+    cacheControl ?? '',
+  )?.groups?.seconds;
+
+  if (maxAge !== undefined) {
+    const ttl = Number(maxAge) * 1000;
+    if (Number.isSafeInteger(ttl)) {
+      return ttl;
+    }
+  }
+
+  const expires = response.res?.headers.get('expires');
+  if (expires) {
+    const expiresAt = Date.parse(expires);
+    if (Number.isFinite(expiresAt)) {
+      return Math.max(0, expiresAt - now);
+    }
+  }
+
+  return FALLBACK_IAP_PUBLIC_KEYS_CACHE_TTL_MS;
+}
 
 export function createTokenValidator(
   audience: string,
@@ -39,7 +72,8 @@ export function createTokenValidator(
         .getIapPublicKeys()
         .then(response => {
           cachedPublicKeys = response.pubkeys;
-          publicKeysExpiresAt = Date.now() + IAP_PUBLIC_KEYS_CACHE_TTL_MS;
+          const now = Date.now();
+          publicKeysExpiresAt = now + getPublicKeysCacheTtl(response, now);
           return cachedPublicKeys;
         })
         .catch(error => {

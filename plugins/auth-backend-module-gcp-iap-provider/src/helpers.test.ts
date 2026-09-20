@@ -99,9 +99,16 @@ describe('helpers', () => {
       ).resolves.toHaveLength(2);
     });
 
-    it('refreshes public keys when the cache expires', async () => {
+    it('honors the public key Cache-Control max-age', async () => {
       const dateNow = jest.spyOn(Date, 'now').mockReturnValue(0);
-      const getIapPublicKeys = jest.fn(async () => ({ pubkeys: {} }));
+      const getIapPublicKeys = jest.fn(async () => ({
+        pubkeys: {},
+        res: {
+          headers: {
+            get: () => 'public, max-age=60',
+          },
+        },
+      }));
       const mockClient = {
         getIapPublicKeys,
         verifySignedJwtWithCertsAsync: async () => ({
@@ -114,7 +121,42 @@ describe('helpers', () => {
       );
 
       await validator(mockJwt);
-      dateNow.mockReturnValue(60 * 60 * 1000);
+      dateNow.mockReturnValue(59 * 1000);
+      await validator(mockJwt);
+      dateNow.mockReturnValue(60 * 1000);
+      await validator(mockJwt);
+
+      expect(getIapPublicKeys).toHaveBeenCalledTimes(2);
+    });
+
+    it('uses the public key Expires header when Cache-Control is unavailable', async () => {
+      const dateNow = jest.spyOn(Date, 'now').mockReturnValue(0);
+      const getIapPublicKeys = jest.fn(async () => ({
+        pubkeys: {},
+        res: {
+          headers: {
+            get: (name: string) =>
+              name === 'expires'
+                ? new Date(60 * 1000).toUTCString()
+                : null,
+          },
+        },
+      }));
+      const mockClient = {
+        getIapPublicKeys,
+        verifySignedJwtWithCertsAsync: async () => ({
+          getPayload: () => ({ sub: 's', email: 'e@mail.com' }),
+        }),
+      };
+      const validator = createTokenValidator(
+        'a',
+        mockClient as unknown as OAuth2Client,
+      );
+
+      await validator(mockJwt);
+      dateNow.mockReturnValue(59 * 1000);
+      await validator(mockJwt);
+      dateNow.mockReturnValue(60 * 1000);
       await validator(mockJwt);
 
       expect(getIapPublicKeys).toHaveBeenCalledTimes(2);
