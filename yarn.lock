@@ -2375,12 +2375,14 @@ __metadata:
     "@backstage/cli-common": "workspace:^"
     "@backstage/cli-node": "workspace:^"
     "@backstage/release-manifests": "workspace:^"
+    "@types/proper-lockfile": "npm:^4"
     "@yarnpkg/cli": "npm:^4.7.0"
     "@yarnpkg/core": "npm:^4.9.1"
     "@yarnpkg/fslib": "npm:^3.1.2"
     "@yarnpkg/parsers": "npm:^3.0.0"
     "@yarnpkg/plugin-patch": "npm:^4.0.2"
     cleye: "npm:^2.6.0"
+    proper-lockfile: "npm:^4.1.2"
   bin:
     cli-module-package-manager-yarn: bin/backstage-cli-module-package-manager-yarn
   languageName: unknown
