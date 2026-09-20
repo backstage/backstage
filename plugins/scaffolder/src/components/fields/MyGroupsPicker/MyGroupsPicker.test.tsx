@@ -194,7 +194,7 @@ describe('<MyGroupsPicker />', () => {
     expect(queryByText('group3')).not.toBeInTheDocument();
   });
 
-  it('should call the onChange handler with the correct entityRef and and use a nice display name', async () => {
+  it('should call the onChange handler with the correct entityRef and use a nice display name', async () => {
     const userGroups = [
       {
         apiVersion: 'backstage.io/v1alpha1',
