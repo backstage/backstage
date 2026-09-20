@@ -15,6 +15,10 @@ Backstage.
 It is assumed an IAP is already serving traffic in front of a Backstage instance
 configured to serve the frontend app from the backend.
 
+Backstage caches IAP public verification keys in memory for up to one hour and
+refreshes them automatically. This reduces repeated requests to the IAP key
+endpoint while allowing normal key rotation.
+
 ## Configuration
 
 Let's start by adding the following `auth` configuration in your

@@ -23,6 +23,10 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 describe('helpers', () => {
   describe('createTokenValidator', () => {
     it('runs the happy path', async () => {
@@ -40,6 +44,107 @@ describe('helpers', () => {
         sub: 's',
         email: 'e@mail.com',
       });
+    });
+
+    it('caches public keys between validations', async () => {
+      const getIapPublicKeys = jest.fn(async () => ({ pubkeys: {} }));
+      const verifySignedJwtWithCertsAsync = jest.fn(async () => ({
+        getPayload: () => ({ sub: 's', email: 'e@mail.com' }),
+      }));
+      const validator = createTokenValidator('a', {
+        getIapPublicKeys,
+        verifySignedJwtWithCertsAsync,
+      } as unknown as OAuth2Client);
+
+      await validator(mockJwt);
+      await validator(mockJwt);
+
+      expect(getIapPublicKeys).toHaveBeenCalledTimes(1);
+      expect(verifySignedJwtWithCertsAsync).toHaveBeenCalledTimes(2);
+    });
+
+    it('shares an in-flight public key request between validations', async () => {
+      let resolvePublicKeys:
+        | ((value: { pubkeys: Record<string, string> }) => void)
+        | undefined;
+      const getIapPublicKeys = jest.fn(
+        () =>
+          new Promise<{ pubkeys: Record<string, string> }>(resolve => {
+            resolvePublicKeys = resolve;
+          }),
+      );
+      const mockClient = {
+        getIapPublicKeys,
+        verifySignedJwtWithCertsAsync: async () => ({
+          getPayload: () => ({ sub: 's', email: 'e@mail.com' }),
+        }),
+      };
+      const validator = createTokenValidator(
+        'a',
+        mockClient as unknown as OAuth2Client,
+      );
+
+      const firstValidation = validator(mockJwt);
+      const secondValidation = validator(mockJwt);
+
+      expect(getIapPublicKeys).toHaveBeenCalledTimes(1);
+
+      if (!resolvePublicKeys) {
+        throw new Error('Expected a public key request to be in flight');
+      }
+      resolvePublicKeys({ pubkeys: {} });
+
+      await expect(
+        Promise.all([firstValidation, secondValidation]),
+      ).resolves.toHaveLength(2);
+    });
+
+    it('refreshes public keys when the cache expires', async () => {
+      const dateNow = jest.spyOn(Date, 'now').mockReturnValue(0);
+      const getIapPublicKeys = jest.fn(async () => ({ pubkeys: {} }));
+      const mockClient = {
+        getIapPublicKeys,
+        verifySignedJwtWithCertsAsync: async () => ({
+          getPayload: () => ({ sub: 's', email: 'e@mail.com' }),
+        }),
+      };
+      const validator = createTokenValidator(
+        'a',
+        mockClient as unknown as OAuth2Client,
+      );
+
+      await validator(mockJwt);
+      dateNow.mockReturnValue(60 * 60 * 1000);
+      await validator(mockJwt);
+
+      expect(getIapPublicKeys).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not cache failed public key requests', async () => {
+      const getIapPublicKeys = jest
+        .fn()
+        .mockRejectedValueOnce(new Error('NOPE'))
+        .mockResolvedValueOnce({ pubkeys: {} });
+      const mockClient = {
+        getIapPublicKeys,
+        verifySignedJwtWithCertsAsync: async () => ({
+          getPayload: () => ({ sub: 's', email: 'e@mail.com' }),
+        }),
+      };
+      const validator = createTokenValidator(
+        'a',
+        mockClient as unknown as OAuth2Client,
+      );
+
+      await expect(validator(mockJwt)).rejects.toThrow(
+        'Unable to list Google IAP token verification keys, Error: NOPE',
+      );
+      await expect(validator(mockJwt)).resolves.toMatchObject({
+        sub: 's',
+        email: 'e@mail.com',
+      });
+
+      expect(getIapPublicKeys).toHaveBeenCalledTimes(2);
     });
 
     it('throws if listing keys fail', async () => {
