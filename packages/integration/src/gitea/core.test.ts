@@ -122,9 +122,36 @@ describe('gitea core', () => {
         `${authRequest.username}:${authRequest.password}`,
       ).toString('base64')}`;
 
-      expect(
-        (getGiteaRequestOptions(authRequest).headers as any).Authorization,
-      ).toEqual(basicAuthentication);
+      const result = getGiteaRequestOptions(authRequest);
+
+      expect(result.headers).toBeDefined();
+      expect(result.headers!.Authorization).toEqual(basicAuthentication);
+      expect((result as any).Authorization).toBeUndefined();
+    });
+
+    it('adds token auth when only a password is specified', () => {
+      const authRequest: GiteaIntegrationConfig = {
+        host: 'gitea.com',
+        password: 'P',
+      };
+
+      const result = getGiteaRequestOptions(authRequest);
+
+      expect(result.headers).toBeDefined();
+      expect(result.headers!.Authorization).toEqual('token P');
+      expect((result as any).Authorization).toBeUndefined();
+    });
+
+    it('returns the same shape without auth when no password is specified', () => {
+      const authRequest: GiteaIntegrationConfig = {
+        host: 'gitea.com',
+      };
+
+      const result = getGiteaRequestOptions(authRequest);
+
+      expect(result.headers).toBeDefined();
+      expect(typeof result.headers).toBe('object');
+      expect(result.headers!.Authorization).toBeUndefined();
     });
   });
 
