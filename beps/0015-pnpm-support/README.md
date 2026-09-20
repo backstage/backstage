@@ -96,7 +96,7 @@ Linux and macOS are supported. Windows is out of scope.
 
 A project that names its package manager is taken at its word. A lockfile is evidence of what a project used, not of what it uses now, and a migration leaves the old one behind for a while. Reading the lockfile first would pick Yarn for a project that has moved to pnpm but still has a `yarn.lock`, and the next `versions:bump` would run `yarn install` and write that lockfile again. A migration from Yarn to pnpm goes through exactly this state.
 
-A project with both a `pnpm-lock.yaml` and a `yarn.lock` file gets a warning and is treated as pnpm.
+A project with both a `pnpm-lock.yaml` and a `yarn.lock` file gets a warning about the extra lockfile. When the root `package.json` names a supported package manager, step 1 has already decided and the warning is the only effect. Otherwise step 2 applies and the project is treated as pnpm.
 
 A `packageManager` value other than `yarn` or `pnpm` does not select anything. Detection continues with the files in the root and warns that the field was ignored. When there is nothing else to go on, detection fails with an error that names the field, rather than falling back to Yarn and writing a `yarn.lock` into a project that picked npm or Bun. A project that declares an unsupported package manager but has a `yarn.lock` keeps working as it does today.
 
@@ -261,11 +261,11 @@ Settings that describe the workspace layout of the source project are not copied
 
 ### Lint Rule Fixer
 
-The `no-undeclared-imports` rule in `@backstage/eslint-plugin` is plain JavaScript with a synchronous fixer. It cannot call the async `detectPackageManager()`. The fixer picks pnpm when `pnpm-lock.yaml` exists in the project root and Yarn otherwise.
+The `no-undeclared-imports` rule in `@backstage/eslint-plugin` is plain JavaScript with a synchronous fixer. It cannot call the async `detectPackageManager()`. The fixer follows the same order synchronously, as far as it needs to: the `packageManager` field in the root `package.json` when it names a supported package manager, then `pnpm-lock.yaml`, then Yarn. All it decides is whether the fix names `pnpm add` or `yarn add`.
 
 ### DevTools Backend
 
-`@backstage/plugin-devtools-backend` has its own copy of the `yarn.lock` parser for the Info tab. It does not depend on `@backstage/cli-node`, and adding that dependency would pull CLI-only packages into a backend runtime. The plugin keeps a local parser. It picks the parser by lockfile presence and gains a pnpm parser that only reads package names and versions.
+`@backstage/plugin-devtools-backend` has its own copy of the `yarn.lock` parser for the Info tab. It does not depend on `@backstage/cli-node`, and adding that dependency would pull CLI-only packages into a backend runtime. The plugin keeps a local parser. It picks the parser the same way the fixer does, by the `packageManager` field first and lockfile presence second, and gains a pnpm parser that only reads package names and versions.
 
 ### Backward Compatibility
 
