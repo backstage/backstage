@@ -31,6 +31,9 @@ describe('isChildPath', () => {
       expect(isChildPath('/x/y/z', '/x/y/z')).toBe(true);
       expect(isChildPath('/x/a b c/z', '/x/a b c/z')).toBe(true);
       expect(isChildPath('/', '/ yz')).toBe(true);
+      expect(isChildPath('/x', '/x/..foo')).toBe(true);
+      expect(isChildPath('/x', '/x/..data')).toBe(true);
+      expect(isChildPath('/x', '/x/..foo/bar')).toBe(true);
 
       expect(isChildPath('/x', '/y')).toBe(false);
       expect(isChildPath('/x', '/')).toBe(false);
@@ -38,6 +41,9 @@ describe('isChildPath', () => {
       expect(isChildPath('/x y', '/x yz')).toBe(false);
       expect(isChildPath('/ yz', '/')).toBe(false);
       expect(isChildPath('/x', '/')).toBe(false);
+      expect(isChildPath('/x', '/x/..')).toBe(false);
+      expect(isChildPath('/x', '/x/../y')).toBe(false);
+      expect(isChildPath('/x', '/..foo')).toBe(false);
 
       jest.dontMock('path');
     });
@@ -60,6 +66,8 @@ describe('isChildPath', () => {
       expect(isChildPath('C:/x', 'c:/x')).toBe(true);
       expect(isChildPath('C:/x', 'C:/x/y')).toBe(true);
       expect(isChildPath('d:/x', 'D:/x/y')).toBe(true);
+      expect(isChildPath('C:/x', 'C:/x/..foo')).toBe(true);
+      expect(isChildPath('C:/x', 'C:/x/..data')).toBe(true);
 
       expect(isChildPath('/x', '/y')).toBe(false);
       expect(isChildPath('/x', '/')).toBe(false);
@@ -67,6 +75,7 @@ describe('isChildPath', () => {
       expect(isChildPath('C:/x', 'D:/x')).toBe(false);
       expect(isChildPath('D:/x', 'CD:/x')).toBe(false);
       expect(isChildPath('D:/x', 'D:/y')).toBe(false);
+      expect(isChildPath('C:/x', 'C:/x/../y')).toBe(false);
 
       jest.dontMock('path');
     });
