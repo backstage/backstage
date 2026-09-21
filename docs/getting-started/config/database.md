@@ -201,16 +201,13 @@ This assumes your RDS instance and IAM are already set up for IAM database authe
 - [Enable IAM database authentication](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.Enabling.html)
 - [Create a database account that uses IAM authentication](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.DBAccounts.html) (the DB user needs the `rds_iam` role)
 - [Grant `rds-db:connect` to the IAM identity](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.IAMPolicy.html) the backend runs as (e.g. an EKS IRSA role, EC2 instance role, or local profile)
+- The [Amazon RDS certificate bundle](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html#UsingWithRDS.SSL.CertificatesAllRegions) (IAM authentication requires SSL/TLS), available to the backend, see [Configuration](#configuration) below
 
 #### Configuration
 
-:::note
+Set `user` to the database user that has the `rds_iam` role, and `region` to the AWS region of the instance. IAM authentication also [requires an SSL/TLS connection](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html).
 
-RDS requires TLS for IAM authentication. Provide the RDS CA bundle via `connection.ssl` (for example `ssl: { ca: <contents of the RDS CA bundle> }`) the same way you would for a password connection.
-
-:::
-
-Set `user` to the database user that has the `rds_iam` role. Set `region` to the AWS region of the instance.
+To verify the server identity, set `ssl.ca` to the Amazon RDS certificate bundle for your setup, either the global bundle or the [bundle for your region](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html#UsingWithRDS.SSL.CertificatesAllRegions). You can either paste the certificate contents inline, or bake the `.pem` into your container image and reference it with `$file` (recommended, as the bundle is large). If you only need encryption without server verification (less secure), set `ssl: { rejectUnauthorized: false }` instead.
 
 ```yaml title="app-config.yaml"
 backend:
@@ -220,6 +217,10 @@ backend:
       # highlight-add-start
       type: rds
       region: us-east-1
+      ssl:
+        # path to the RDS certificate bundle baked into your container image
+        ca:
+          $file: /path/to/rds-bundle.pem
       # highlight-add-end
       host: ${POSTGRES_HOST}
       port: ${POSTGRES_PORT}
