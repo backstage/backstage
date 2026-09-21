@@ -1391,6 +1391,7 @@ export type FixYarnPatchesOptions = VerifyYarnPatchesOptions & {
 export type FixYarnPatchesResult = {
   status: 'fixed' | 'fixable' | 'not-fixable';
   message: string;
+  warning?: string;
 };
 
 function getRepairableHoldback(
@@ -2124,7 +2125,7 @@ export async function fixYarnPatches(
   }
 
   const manifestPath = path.join(path.resolve(options.rootDir), 'package.json');
-  let releaseLock: (() => Promise<void>) | undefined;
+  let releaseLock: () => Promise<void>;
   try {
     releaseLock = await properLockfile.lock(manifestPath, {
       realpath: false,
@@ -2142,9 +2143,28 @@ export async function fixYarnPatches(
     };
   }
 
+  const tryReleaseLock = async (): Promise<string | undefined> => {
+    try {
+      await releaseLock();
+      return undefined;
+    } catch (error) {
+      return `Could not release the project lock after patch repair: ${String(
+        error,
+      )}`;
+    }
+  };
+
+  let result: FixYarnPatchesResult;
   try {
-    return await fixYarnPatchesUnlocked(options);
-  } finally {
-    await releaseLock();
+    result = await fixYarnPatchesUnlocked(options);
+  } catch (error) {
+    const warning = await tryReleaseLock();
+    if (warning) {
+      throw new Error(`${String(error)}; ${warning}`, { cause: error });
+    }
+    throw error;
   }
+
+  const warning = await tryReleaseLock();
+  return warning ? { ...result, warning } : result;
 }
