@@ -1425,6 +1425,7 @@ function isPathInside(rootDir: string, targetPath: string): boolean {
   const relative = path.relative(rootDir, targetPath);
   return (
     relative !== '' &&
+    !path.isAbsolute(relative) &&
     !relative.startsWith(`..${path.sep}`) &&
     relative !== '..'
   );
