@@ -133,6 +133,7 @@ export class HttpPostIngressEventPublisher {
         const requestDetails = {
           body: bodyParsed,
           headers: request.headers,
+          query: request.query,
           raw: {
             body: bodyBuffer,
             encoding: encoding as BufferEncoding,
@@ -143,9 +144,21 @@ export class HttpPostIngressEventPublisher {
         await validator(requestDetails, context);
 
         if (context.wasRejected()) {
-          response
-            .status(context.rejectionDetails!.status)
-            .json(context.rejectionDetails!.payload);
+          response.status(context.rejectionDetails!.status);
+
+          switch (context.rejectionDetails!.contentType) {
+            case 'application/json':
+              response.json(context.rejectionDetails!.payload);
+              break;
+            case 'text/plain':
+              response
+                .contentType('text/plain')
+                .send(context.rejectionDetails!.payload);
+              break;
+            default:
+              throw new Error('Unsupported rejection content type');
+          }
+
           return;
         }
       }
