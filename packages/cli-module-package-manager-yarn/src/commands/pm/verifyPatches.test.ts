@@ -47,6 +47,21 @@ function healthyResult(
   return { patchCount, backstageCheck, errors: [] };
 }
 
+function holdbackResult(): VerifyYarnPatchesResult {
+  return {
+    patchCount: 1,
+    backstageCheck: 'verified',
+    errors: [
+      {
+        kind: 'backstage-patch-holdback',
+        message:
+          "Patched package '@backstage/example' is at version '1.0.0', but Backstage release '1.0.1' requires version '1.0.1'",
+        location: 'package.json#resolutions.@backstage/example',
+      },
+    ],
+  };
+}
+
 describe('verifyYarnPatches command', () => {
   let stdoutSpy: jest.SpiedFunction<typeof process.stdout.write>;
   let stderrSpy: jest.SpiedFunction<typeof process.stderr.write>;
@@ -128,12 +143,15 @@ describe('verifyYarnPatches command', () => {
   });
 
   it('repairs safe Backstage patch holdbacks before verifying', async () => {
+    const initialResult = holdbackResult();
     mockFixYarnPatches.mockResolvedValue({
       status: 'fixed',
       message:
         "Retargeted patch for '@backstage/example' from '1.0.0' to '1.0.1'",
     });
-    mockVerifyYarnPatches.mockResolvedValue(healthyResult(1, 'verified'));
+    mockVerifyYarnPatches
+      .mockResolvedValueOnce(initialResult)
+      .mockResolvedValueOnce(healthyResult(1, 'verified'));
 
     await verifyYarnPatchesCommand({ ...context, args: ['--fix'] });
 
@@ -141,6 +159,7 @@ describe('verifyYarnPatches command', () => {
       rootDir: '/test-repository',
       env: process.env,
       dryRun: false,
+      verificationResult: initialResult,
     });
     expect(stdoutSpy).toHaveBeenCalledWith(
       "Retargeted patch for '@backstage/example' from '1.0.0' to '1.0.1'.\n",
@@ -149,14 +168,17 @@ describe('verifyYarnPatches command', () => {
       rootDir: '/test-repository',
       env: process.env,
     });
+    expect(mockVerifyYarnPatches).toHaveBeenCalledTimes(2);
   });
 
   it('checks a repair without writing or re-verifying during a dry run', async () => {
+    const initialResult = holdbackResult();
     mockFixYarnPatches.mockResolvedValue({
       status: 'fixable',
       message:
         "Retargeted patch for '@backstage/example' from '1.0.0' to '1.0.1'",
     });
+    mockVerifyYarnPatches.mockResolvedValue(initialResult);
 
     await verifyYarnPatchesCommand({
       ...context,
@@ -167,18 +189,15 @@ describe('verifyYarnPatches command', () => {
       rootDir: '/test-repository',
       env: process.env,
       dryRun: true,
+      verificationResult: initialResult,
     });
     expect(stdoutSpy).toHaveBeenCalledWith(
       "Retargeted patch for '@backstage/example' from '1.0.0' to '1.0.1' (dry run).\n",
     );
-    expect(mockVerifyYarnPatches).not.toHaveBeenCalled();
+    expect(mockVerifyYarnPatches).toHaveBeenCalledTimes(1);
   });
 
   it('does not report an error when --fix finds a healthy repository', async () => {
-    mockFixYarnPatches.mockResolvedValue({
-      status: 'not-fixable',
-      message: 'No patch holdback could be repaired safely',
-    });
     mockVerifyYarnPatches.mockResolvedValue(healthyResult(1, 'verified'));
 
     await verifyYarnPatchesCommand({ ...context, args: ['--fix'] });
@@ -187,6 +206,8 @@ describe('verifyYarnPatches command', () => {
     expect(stdoutSpy).toHaveBeenCalledWith(
       'Yarn patch verification passed: 1 patch reference verified. Backstage release validation passed.\n',
     );
+    expect(mockVerifyYarnPatches).toHaveBeenCalledTimes(1);
+    expect(mockFixYarnPatches).not.toHaveBeenCalled();
   });
 
   it('rejects --dry-run without --fix', async () => {

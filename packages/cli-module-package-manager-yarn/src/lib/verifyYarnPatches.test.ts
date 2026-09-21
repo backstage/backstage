@@ -1776,9 +1776,16 @@ plugins:
         status: 200,
       });
 
-    await expect(
-      verifyYarnPatches({ rootDir: mockDir.path, fetch }),
-    ).resolves.toEqual({
+    const result = await verifyYarnPatches({ rootDir: mockDir.path, fetch });
+    const [holdbackError] = result.errors;
+    const holdbackFix = holdbackError?.repairHint;
+
+    expect({
+      ...result,
+      errors: result.errors.map(
+        ({ repairHint: _repairHint, ...error }) => error,
+      ),
+    }).toEqual({
       patchCount: 1,
       backstageCheck: 'verified',
       errors: [
@@ -1789,6 +1796,16 @@ plugins:
           location: 'package.json#resolutions.alias',
         },
       ],
+    });
+    expect(holdbackFix).toMatchObject({
+      packageName: '@backstage/example',
+      currentVersion: '1.0.0',
+      targetVersion: '1.0.1',
+      declaration: {
+        reference:
+          'patch:alias@npm%3A@backstage/example@1.0.0#~/.yarn/patches/example.patch',
+        location: 'package.json#resolutions.alias',
+      },
     });
   });
 
@@ -1875,9 +1892,14 @@ plugins:
         status: 200,
       });
 
-    await expect(
-      verifyYarnPatches({ rootDir: mockDir.path, fetch }),
-    ).resolves.toEqual({
+    const result = await verifyYarnPatches({ rootDir: mockDir.path, fetch });
+
+    expect({
+      ...result,
+      errors: result.errors.map(
+        ({ repairHint: _repairHint, ...error }) => error,
+      ),
+    }).toEqual({
       patchCount: 1,
       backstageCheck: 'verified',
       errors: [
@@ -2407,7 +2429,7 @@ fs.writeFileSync('yarn.lock', ${JSON.stringify(targetLockfile)});
     ).resolves.toBe(originalManifest);
   });
 
-  it('does not overwrite a partial repair after publication fails', async () => {
+  it('restores the original files when publication fails', async () => {
     mockDir.setContent(
       createBackstagePatchRepository({ backstageVersion: '1.0.1' }),
     );
@@ -2445,13 +2467,106 @@ fs.writeFileSync('yarn.lock', ${JSON.stringify(targetLockfile)});
     ).resolves.toEqual({
       status: 'not-fixable',
       message:
-        'Could not publish the patch repair; project files may contain a partial repair: Error: Simulated lockfile publication failure',
+        'Could not publish the patch repair; the original project files were restored: Error: Simulated lockfile publication failure',
     });
-    await expect(fs.readFile(manifestPath, 'utf8')).resolves.not.toBe(
+    await expect(fs.readFile(manifestPath, 'utf8')).resolves.toBe(
       originalManifest,
     );
     await expect(fs.readFile(lockfilePath, 'utf8')).resolves.toBe(
       originalLockfile,
+    );
+  });
+
+  it('restores the manifest when the lockfile changes before publication', async () => {
+    mockDir.setContent(
+      createBackstagePatchRepository({ backstageVersion: '1.0.1' }),
+    );
+    const manifestPath = path.join(mockDir.path, 'package.json');
+    const lockfilePath = path.join(mockDir.path, 'yarn.lock');
+    const originalManifest = await fs.readFile(manifestPath, 'utf8');
+    const concurrentlyEditedLockfile = `${LOCKFILE_HEADER}\n# concurrent edit\n`;
+
+    await expect(
+      fixYarnPatches({
+        rootDir: mockDir.path,
+        fetch: async () =>
+          new Response(JSON.stringify(releaseManifest('1.0.1', '1.0.1'))),
+        install: async rootDir => {
+          await fs.writeFile(
+            path.join(rootDir, 'yarn.lock'),
+            `${LOCKFILE_HEADER}
+"@backstage/example@patch:@backstage/example@npm%3A1.0.1#~/.yarn/patches/example.patch":
+  version: 1.0.1
+  resolution: "@backstage/example@patch:@backstage/example@npm%3A1.0.1#~/.yarn/patches/example.patch::version=1.0.1&hash=bbbbbb"
+  languageName: node
+  linkType: hard
+`,
+          );
+        },
+        publishFile: async (filePath, content) => {
+          await fs.writeFile(filePath, content);
+          if (filePath === manifestPath) {
+            await fs.writeFile(lockfilePath, concurrentlyEditedLockfile);
+          }
+        },
+      }),
+    ).resolves.toEqual({
+      status: 'not-fixable',
+      message: 'Project files changed while the patch repair was published',
+    });
+    await expect(fs.readFile(manifestPath, 'utf8')).resolves.toBe(
+      originalManifest,
+    );
+    await expect(fs.readFile(lockfilePath, 'utf8')).resolves.toBe(
+      concurrentlyEditedLockfile,
+    );
+  });
+
+  it('detects a concurrent lockfile edit during publication without overwriting it', async () => {
+    mockDir.setContent(
+      createBackstagePatchRepository({ backstageVersion: '1.0.1' }),
+    );
+    const manifestPath = path.join(mockDir.path, 'package.json');
+    const lockfilePath = path.join(mockDir.path, 'yarn.lock');
+    const originalManifest = await fs.readFile(manifestPath, 'utf8');
+    const concurrentlyEditedLockfile = `${LOCKFILE_HEADER}\n# concurrent edit\n`;
+    let publishCount = 0;
+
+    await expect(
+      fixYarnPatches({
+        rootDir: mockDir.path,
+        fetch: async () =>
+          new Response(JSON.stringify(releaseManifest('1.0.1', '1.0.1'))),
+        install: async rootDir => {
+          await fs.writeFile(
+            path.join(rootDir, 'yarn.lock'),
+            `${LOCKFILE_HEADER}
+"@backstage/example@patch:@backstage/example@npm%3A1.0.1#~/.yarn/patches/example.patch":
+  version: 1.0.1
+  resolution: "@backstage/example@patch:@backstage/example@npm%3A1.0.1#~/.yarn/patches/example.patch::version=1.0.1&hash=bbbbbb"
+  languageName: node
+  linkType: hard
+`,
+          );
+        },
+        publishFile: async (filePath, content) => {
+          publishCount += 1;
+          await fs.writeFile(filePath, content);
+          if (publishCount === 2) {
+            await fs.writeFile(lockfilePath, concurrentlyEditedLockfile);
+          }
+        },
+      }),
+    ).resolves.toEqual({
+      status: 'not-fixable',
+      message:
+        'Could not publish the patch repair; project files changed during publication',
+    });
+    await expect(fs.readFile(manifestPath, 'utf8')).resolves.toBe(
+      originalManifest,
+    );
+    await expect(fs.readFile(lockfilePath, 'utf8')).resolves.toBe(
+      concurrentlyEditedLockfile,
     );
   });
 

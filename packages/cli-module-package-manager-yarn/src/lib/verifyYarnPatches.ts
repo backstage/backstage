@@ -54,6 +54,7 @@ export type PatchVerificationError = {
   kind: PatchVerificationErrorKind;
   message: string;
   location?: string;
+  repairHint?: PatchHoldbackFix;
 };
 
 export type VerifyYarnPatchesOptions = {
@@ -99,11 +100,6 @@ type PatchHoldbackFix = {
   targetVersion: string;
   declaration: PatchDeclaration;
 };
-
-const patchHoldbackFixes = new WeakMap<
-  PatchVerificationError,
-  PatchHoldbackFix
->();
 
 type ResolutionDeclaration = {
   pattern: string;
@@ -1191,12 +1187,12 @@ async function validateBackstagePatches(options: {
         message: `Patched package '${patchedPackage.name}' is at version '${patchedPackage.version}', but Backstage release '${backstageVersion}' requires version '${releaseVersion}'`,
         location: patchedPackage.location,
       };
-      patchHoldbackFixes.set(error, {
+      error.repairHint = {
         packageName: patchedPackage.name,
         currentVersion: patchedPackage.version,
         targetVersion: releaseVersion,
         declaration: patchedPackage.declaration,
-      });
+      };
       errors.push(error);
     }
   }
@@ -1389,6 +1385,7 @@ export type FixYarnPatchesOptions = VerifyYarnPatchesOptions & {
   dryRun?: boolean;
   install?: (rootDir: string) => Promise<void>;
   publishFile?: (filePath: string, content: string) => Promise<void>;
+  verificationResult?: VerifyYarnPatchesResult;
 };
 
 export type FixYarnPatchesResult = {
@@ -1402,7 +1399,7 @@ function getRepairableHoldback(
   if (result.errors.length !== 1) {
     return undefined;
   }
-  return patchHoldbackFixes.get(result.errors[0]);
+  return result.errors[0].repairHint;
 }
 
 function hasExactPatchSource(
@@ -1688,6 +1685,32 @@ async function writeFileAtomically(filePath: string, content: string) {
   }
 }
 
+async function restorePublishedFiles(options: {
+  files: Array<{ path: string; original: string; target: string }>;
+  publishFile: (filePath: string, content: string) => Promise<void>;
+}): Promise<boolean> {
+  let restored = true;
+  for (const file of options.files) {
+    try {
+      const current = await fs.readFile(file.path, 'utf8');
+      if (current === file.original) {
+        continue;
+      }
+      if (current !== file.target) {
+        restored = false;
+        continue;
+      }
+      await options.publishFile(file.path, file.original);
+      if ((await fs.readFile(file.path, 'utf8')) !== file.original) {
+        restored = false;
+      }
+    } catch {
+      restored = false;
+    }
+  }
+  return restored;
+}
+
 function lockfileOnlyChangesPatch(options: {
   before: string;
   after: string;
@@ -1775,7 +1798,11 @@ function lockfileOnlyChangesPatch(options: {
   }
 
   const normalize = (lockfile: Record<string, unknown>) => {
-    const normalized: Array<[string, unknown]> = [];
+    const normalized: Array<{
+      key: string;
+      value: unknown;
+      serializedValue: string;
+    }> = [];
     for (const [key, value] of Object.entries(lockfile)) {
       const normalizedKey = key
         .split(', ')
@@ -1788,14 +1815,20 @@ function lockfileOnlyChangesPatch(options: {
       if (normalizedKey === '') {
         continue;
       }
-      normalized.push([normalizedKey, value]);
+      normalized.push({
+        key: normalizedKey,
+        value,
+        serializedValue: JSON.stringify(value),
+      });
     }
-    return normalized.sort((left, right) => {
-      return (
-        compareStrings(left[0], right[0]) ||
-        compareStrings(JSON.stringify(left[1]), JSON.stringify(right[1]))
-      );
-    });
+    return normalized
+      .sort((left, right) => {
+        return (
+          compareStrings(left.key, right.key) ||
+          compareStrings(left.serializedValue, right.serializedValue)
+        );
+      })
+      .map(({ key, value }) => [key, value] as const);
   };
   return isDeepStrictEqual(normalize(before), normalize(after));
 }
@@ -1804,7 +1837,8 @@ async function fixYarnPatchesUnlocked(
   options: FixYarnPatchesOptions,
 ): Promise<FixYarnPatchesResult> {
   const rootDir = path.resolve(options.rootDir);
-  const initialResult = await verifyYarnPatches(options);
+  const initialResult =
+    options.verificationResult ?? (await verifyYarnPatches(options));
   const holdback = getRepairableHoldback(initialResult);
   const declaration = holdback?.declaration;
   const rootResolutionPrefix = 'package.json#resolutions.';
@@ -2004,8 +2038,20 @@ async function fixYarnPatchesUnlocked(
         message: 'Project files changed while the patch repair was staged',
       };
     }
+    const publishFile = options.publishFile ?? writeFileAtomically;
+    const publishedFiles = [
+      {
+        path: manifestPath,
+        original: originalManifest,
+        target: targetManifest,
+      },
+      {
+        path: lockfilePath,
+        original: originalLockfile,
+        target: targetLockfile,
+      },
+    ];
     try {
-      const publishFile = options.publishFile ?? writeFileAtomically;
       await publishFile(manifestPath, targetManifest);
       const [publishedManifest, lockfileBeforePublish] = await Promise.all([
         fs.readFile(manifestPath, 'utf8'),
@@ -2015,6 +2061,7 @@ async function fixYarnPatchesUnlocked(
         publishedManifest !== targetManifest ||
         lockfileBeforePublish !== originalLockfile
       ) {
+        await restorePublishedFiles({ files: publishedFiles, publishFile });
         return {
           status: 'not-fixable',
           message: 'Project files changed while the patch repair was published',
@@ -2022,11 +2069,34 @@ async function fixYarnPatchesUnlocked(
       }
       await publishFile(lockfilePath, targetLockfile);
     } catch (error) {
+      const restored = await restorePublishedFiles({
+        files: publishedFiles,
+        publishFile,
+      });
       return {
         status: 'not-fixable',
-        message: `Could not publish the patch repair; project files may contain a partial repair: ${String(
-          error,
-        )}`,
+        message: restored
+          ? `Could not publish the patch repair; the original project files were restored: ${String(
+              error,
+            )}`
+          : `Could not publish the patch repair; project files may contain a partial repair: ${String(
+              error,
+            )}`,
+      };
+    }
+    const [publishedManifest, publishedLockfile] = await Promise.all([
+      fs.readFile(manifestPath, 'utf8'),
+      fs.readFile(lockfilePath, 'utf8'),
+    ]);
+    if (
+      publishedManifest !== targetManifest ||
+      publishedLockfile !== targetLockfile
+    ) {
+      await restorePublishedFiles({ files: publishedFiles, publishFile });
+      return {
+        status: 'not-fixable',
+        message:
+          'Could not publish the patch repair; project files changed during publication',
       };
     }
     return { status: 'fixed', message };
