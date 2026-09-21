@@ -7230,7 +7230,7 @@ __metadata:
     "@backstage/config-loader": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@electric-sql/pglite": "npm:^0.3.0"
+    "@electric-sql/pglite": "npm:^0.5.8"
     "@manypkg/get-packages": "npm:^1.1.3"
     "@microsoft/api-documenter": "npm:^7.28.1"
     "@microsoft/api-extractor": "npm:^7.57.3"
@@ -7258,7 +7258,7 @@ __metadata:
     js-yaml: "npm:^4.3.2"
     just-diff: "npm:^6.0.2"
     knex: "npm:^3.0.0"
-    knex-pglite: "npm:^0.11.0"
+    knex-pglite: "npm:^0.14.0"
     knip: "npm:^5.42.0"
     lodash: "npm:^4.17.21"
     minimatch: "npm:^10.2.1"
@@ -7979,17 +7979,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electric-sql/pglite@npm:^0.2.14":
-  version: 0.2.17
-  resolution: "@electric-sql/pglite@npm:0.2.17"
-  checksum: 10/cb04d18614c9a3d985fa63f5ca889104eab55b15a9aa569df264e335ea559f2279ee64c1284aa68d5b92ff516dd37ae553299cf55c226a3e541d6c46416c7160
-  languageName: node
-  linkType: hard
-
-"@electric-sql/pglite@npm:^0.3.0":
-  version: 0.3.16
-  resolution: "@electric-sql/pglite@npm:0.3.16"
-  checksum: 10/1feba052caef61cbca6f8f8d9cdc5807e9d70bc2499a6b74ac722bd4f33fac87ccbd7a2efe9607d2632ca61805e1e57327fc97741858ba85100a09043bcc2a0f
+"@electric-sql/pglite@npm:^0.5.8":
+  version: 0.5.8
+  resolution: "@electric-sql/pglite@npm:0.5.8"
+  checksum: 10/6c614347c7333eaea5d189d385c0de5436862712a7f41e2d15a3287184e86f98889d714c638bfbd02bd2c9e4d161ed3e14e1cde019609b4a7f70c3215147d553
   languageName: node
   linkType: hard
 
@@ -33417,13 +33410,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"knex-pglite@npm:^0.11.0":
-  version: 0.11.0
-  resolution: "knex-pglite@npm:0.11.0"
-  dependencies:
-    "@electric-sql/pglite": "npm:^0.2.14"
-    knex: "npm:3.1.0"
-  checksum: 10/87adaecb01fcc7d316c837efe2deb8cbb8501d5900bea27928cb6dca6218e0be479c30ec710aa65c85c8c2a6bbee56649615d52284795d98ccf8a9174a7406a1
+"knex-pglite@npm:^0.14.0":
+  version: 0.14.0
+  resolution: "knex-pglite@npm:0.14.0"
+  peerDependencies:
+    "@electric-sql/pglite": 0.x
+    knex: 3.x
+  checksum: 10/7b8a291437f13c7a649b5f98e594f8c51ff3158cf3b4a05692c2db6eefab25809d272a4096c2fd03ecf970e50e555274d91ea696db272aff8855b9aeb3791b5e
   languageName: node
   linkType: hard
 
@@ -33469,45 +33462,6 @@ __metadata:
   bin:
     knex: bin/cli.js
   checksum: 10/40924546fb223d186dd76b5eea415b5eaee517b9ba1d8ddad689e5c68a0e4e08fffe8e69f9e9d31ca533c8b8c0244f7bb47bc75b308efb58bceccc16322ec11d
-  languageName: node
-  linkType: hard
-
-"knex@npm:3.1.0":
-  version: 3.1.0
-  resolution: "knex@npm:3.1.0"
-  dependencies:
-    colorette: "npm:2.0.19"
-    commander: "npm:^10.0.0"
-    debug: "npm:4.3.4"
-    escalade: "npm:^3.1.1"
-    esm: "npm:^3.2.25"
-    get-package-type: "npm:^0.1.0"
-    getopts: "npm:2.3.0"
-    interpret: "npm:^2.2.0"
-    lodash: "npm:^4.17.21"
-    pg-connection-string: "npm:2.6.2"
-    rechoir: "npm:^0.8.0"
-    resolve-from: "npm:^5.0.0"
-    tarn: "npm:^3.0.2"
-    tildify: "npm:2.0.0"
-  peerDependenciesMeta:
-    better-sqlite3:
-      optional: true
-    mysql:
-      optional: true
-    mysql2:
-      optional: true
-    pg:
-      optional: true
-    pg-native:
-      optional: true
-    sqlite3:
-      optional: true
-    tedious:
-      optional: true
-  bin:
-    knex: bin/cli.js
-  checksum: 10/12eb978ebec9944d6d0225d33d31d44feb54046b3a02f9f14dfa33a4e665a54d784290991b17a68fd8141a14a3336b325c7706af35557f845dae9e500f3c8aae
   languageName: node
   linkType: hard
 
@@ -43782,7 +43736,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tarn@npm:^3.0.2, tarn@npm:^3.1.0":
+"tarn@npm:^3.1.0":
   version: 3.1.2
   resolution: "tarn@npm:3.1.2"
   checksum: 10/7b8bb2f439abd867ac40ab72c2a1d8f6bf7825523c15189b71bcc2fe38b38a404319f0358cf32fa0d3c3b731eeff5429dfadae69eeb14eaf2903a4f04c0d7a18
