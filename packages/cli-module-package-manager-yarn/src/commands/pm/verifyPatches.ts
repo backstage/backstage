@@ -62,7 +62,11 @@ export default async ({ args, info }: CliCommandContext) => {
   });
 
   let fixFailureMessage: string | undefined;
-  if (flags.fix && result.errors.length > 0) {
+  if (
+    flags.fix &&
+    result.errors.length === 1 &&
+    result.errors[0].kind === 'backstage-patch-holdback'
+  ) {
     const fixResult = await fixYarnPatches({
       rootDir: targetPaths.dir,
       env: process.env,

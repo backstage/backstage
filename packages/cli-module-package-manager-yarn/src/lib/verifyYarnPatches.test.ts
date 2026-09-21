@@ -2679,6 +2679,41 @@ fs.writeFileSync('yarn.lock', ${JSON.stringify(targetLockfile)});
     expect(install).not.toHaveBeenCalled();
   });
 
+  it('does not repair patch paths on another filesystem volume', async () => {
+    mockDir.setContent(
+      createBackstagePatchRepository({ backstageVersion: '1.0.1' }),
+    );
+    const fetch: NonNullable<
+      Parameters<typeof verifyYarnPatches>[0]['fetch']
+    > = async () =>
+      new Response(JSON.stringify(releaseManifest('1.0.1', '1.0.1')));
+    const verificationResult = await verifyYarnPatches({
+      rootDir: mockDir.path,
+      fetch,
+    });
+    const relativeSpy = jest
+      .spyOn(path, 'relative')
+      .mockReturnValueOnce(path.resolve('/another-volume/example.patch'));
+    const install = jest.fn();
+
+    try {
+      await expect(
+        fixYarnPatches({
+          rootDir: mockDir.path,
+          fetch,
+          install,
+          verificationResult,
+        }),
+      ).resolves.toEqual({
+        status: 'not-fixable',
+        message: 'No patch holdback could be repaired safely',
+      });
+      expect(install).not.toHaveBeenCalled();
+    } finally {
+      relativeSpy.mockRestore();
+    }
+  });
+
   it('does not repair ranged patch sources', async () => {
     mockDir.setContent({
       'package.json': packageJson({

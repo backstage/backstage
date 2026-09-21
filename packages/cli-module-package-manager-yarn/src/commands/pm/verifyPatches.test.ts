@@ -210,6 +210,56 @@ describe('verifyYarnPatches command', () => {
     expect(mockFixYarnPatches).not.toHaveBeenCalled();
   });
 
+  it('does not attempt or report a repair for unrelated errors', async () => {
+    mockVerifyYarnPatches.mockResolvedValue({
+      patchCount: 0,
+      backstageCheck: 'skipped',
+      errors: [
+        {
+          kind: 'missing-lockfile',
+          message: 'No yarn.lock found',
+          location: 'yarn.lock',
+        },
+      ],
+    });
+
+    await expect(
+      verifyYarnPatchesCommand({ ...context, args: ['--fix'] }),
+    ).rejects.toThrow('Yarn patch verification failed');
+
+    expect(mockFixYarnPatches).not.toHaveBeenCalled();
+    expect(stderrSpy).toHaveBeenCalledWith(
+      '  yarn.lock [missing-lockfile]: No yarn.lock found\n',
+    );
+    expect(stderrSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining('No patch holdback could be repaired safely'),
+    );
+  });
+
+  it('does not attempt a repair when other errors accompany a holdback', async () => {
+    mockVerifyYarnPatches.mockResolvedValue({
+      patchCount: 1,
+      backstageCheck: 'verified',
+      errors: [
+        holdbackResult().errors[0],
+        {
+          kind: 'missing-lockfile',
+          message: 'No yarn.lock found',
+          location: 'yarn.lock',
+        },
+      ],
+    });
+
+    await expect(
+      verifyYarnPatchesCommand({ ...context, args: ['--fix'] }),
+    ).rejects.toThrow('Yarn patch verification failed');
+
+    expect(mockFixYarnPatches).not.toHaveBeenCalled();
+    expect(stderrSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining('No patch holdback could be repaired safely'),
+    );
+  });
+
   it('rejects --dry-run without --fix', async () => {
     await expect(
       verifyYarnPatchesCommand({ ...context, args: ['--dry-run'] }),
