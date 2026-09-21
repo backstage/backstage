@@ -39,7 +39,8 @@ export interface Config {
           organization: string;
           /**
            * (Optional) Branch.
-           * The branch where the provider will try to find entities. Uses the default to "main".
+           * The branch where the provider will try to find entities. If omitted,
+           * each repository's own default branch is used instead of assuming "main".
            */
           branch?: string;
           /**

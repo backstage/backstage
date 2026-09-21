@@ -486,6 +486,59 @@ describe('GiteaEntityProvider', () => {
       );
     });
 
+    it('should percent-encode a default branch containing a slash', async () => {
+      // A default branch like "release/v1" must not be inserted into the
+      // target URL unencoded: parseGiteaUrl (packages/integration/src/gitea/core.ts)
+      // splits on '/' and takes only the first segment after "/src/branch/" as
+      // the ref, so an unencoded slash would silently truncate the branch to
+      // "release" and shift "v1" into the catalog file path.
+      const providerNoBranch = new (GiteaEntityProvider as any)(
+        {
+          id: 'test-provider',
+          host: 'gitea.example.com',
+          organization: 'test-org',
+          catalogPath: 'catalog-info.yaml',
+        },
+        integration,
+        logger,
+        mockTaskRunner,
+      );
+      await providerNoBranch.connect(mockConnection);
+
+      // Page 1: one repo whose default branch contains a slash.
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => [
+          {
+            name: 'release-repo',
+            html_url: 'https://gitea.example.com/test-org/release-repo',
+            empty: false,
+            default_branch: 'release/v1',
+          },
+        ],
+      });
+      // Empty page 2 to terminate pagination
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => [],
+      });
+      // Catalog check: no `ref` is passed, so this still resolves against the
+      // repo's real default branch regardless of how it's later encoded.
+      (global.fetch as jest.Mock).mockResolvedValueOnce({ ok: true });
+
+      await providerNoBranch.refresh(logger);
+
+      const [{ entities }] = (mockConnection.applyMutation as jest.Mock).mock
+        .calls[0];
+      expect(
+        entities[0].entity.metadata.annotations[
+          'backstage.io/managed-by-location'
+        ],
+      ).toBe(
+        'url:https://gitea.example.com/test-org/release-repo/src/branch/release%2Fv1/catalog-info.yaml',
+      );
+    });
+
     it('should handle errors when applying mutations', async () => {
       await provider.connect(mockConnection);
 

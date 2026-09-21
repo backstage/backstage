@@ -221,6 +221,7 @@ export class GiteaEntityProvider implements EntityProvider {
 
           // No `ref` query param: Gitea resolves this against the
           // repository's actual default branch, which may not be "main".
+          // API reference: https://gitea.com/api/swagger#/repository/repoGetContents
           const res = await fetch(contentsApiUrl, {
             method: 'GET',
             ...getGiteaRequestOptions(this.integration.config),
@@ -269,9 +270,17 @@ export class GiteaEntityProvider implements EntityProvider {
     // An explicitly configured branch always wins; otherwise fall back to
     // this repository's actual default branch rather than assuming 'main'.
     const branch = this.config.branch ?? repo.defaultBranch ?? 'main';
+    // A default branch can itself contain '/' (e.g. "release/v1"). parseGiteaUrl
+    // (packages/integration/src/gitea/core.ts) splits the target on '/' and takes
+    // only the first segment after "/src/branch/" as the ref, so an unencoded
+    // slash would silently truncate the branch and shift the rest into the path.
+    // Percent-encoding collapses the branch to one path segment; every consumer
+    // of the resulting `ref` (edit URL, `?ref=` query param, archive/commit URLs)
+    // already treats it as an opaque, still-encoded value, so no decoding is needed.
+    const encodedBranch = encodeURIComponent(branch);
     return {
       type: 'url',
-      target: `${repo.url}/src/branch/${branch}/${this.config.catalogPath}`,
+      target: `${repo.url}/src/branch/${encodedBranch}/${this.config.catalogPath}`,
     };
   }
 }
