@@ -70,6 +70,7 @@ export type VerifyYarnPatchesResult = {
 
 type PatchDeclaration = {
   patchedIdent: string;
+  reference: string;
   source: string;
   resolvedSource?: string;
   components: string[];
@@ -292,6 +293,7 @@ function parsePatchDeclaration(options: {
 
   return {
     patchedIdent: options.patchedIdent,
+    reference: options.range,
     source,
     components,
     parentLocator:
@@ -1473,8 +1475,14 @@ async function copyPathToShadow(options: {
 async function fingerprintProjectInputs(
   rootDir: string,
   inputPaths: string[],
-): Promise<string> {
-  const hash = createHash('sha256');
+): Promise<{ state: string; content: string }> {
+  const stateHash = createHash('sha256');
+  const contentHash = createHash('sha256');
+
+  const updateBoth = (value: string | Buffer) => {
+    stateHash.update(value);
+    contentHash.update(value);
+  };
 
   const visit = async (inputPath: string): Promise<void> => {
     const relative = relativePath(rootDir, inputPath);
@@ -1483,7 +1491,7 @@ async function fingerprintProjectInputs(
       stats = await fs.lstat(inputPath);
     } catch (error) {
       if (isErrorWithCode(error, 'ENOENT')) {
-        hash.update(`missing\0${relative}\0`);
+        updateBoth(`missing\0${relative}\0`);
         return;
       }
       throw error;
@@ -1491,16 +1499,17 @@ async function fingerprintProjectInputs(
     if (stats.isSymbolicLink()) {
       throw new Error(`Cannot safely stage symbolic link '${relative}'`);
     }
-    hash.update(`${stats.mode}\0${relative}\0`);
+    stateHash.update(`${stats.mode}\0`);
+    updateBoth(`${relative}\0`);
     if (stats.isDirectory()) {
-      hash.update('directory\0');
+      updateBoth('directory\0');
       const entries = await fs.readdir(inputPath);
       for (const entry of entries.sort(compareStrings)) {
         await visit(path.join(inputPath, entry));
       }
     } else if (stats.isFile()) {
-      hash.update('file\0');
-      hash.update(await fs.readFile(inputPath));
+      updateBoth('file\0');
+      updateBoth(await fs.readFile(inputPath));
     } else {
       throw new Error(`Cannot safely stage '${relative}'`);
     }
@@ -1509,7 +1518,10 @@ async function fingerprintProjectInputs(
   for (const inputPath of [...new Set(inputPaths)].sort(compareStrings)) {
     await visit(inputPath);
   }
-  return hash.digest('hex');
+  return {
+    state: stateHash.digest('hex'),
+    content: contentHash.digest('hex'),
+  };
 }
 
 async function createShadowProject(options: {
@@ -1520,7 +1532,7 @@ async function createShadowProject(options: {
 }): Promise<{
   patchFolder: string;
   inputPaths: string[];
-  inputFingerprint: string;
+  inputFingerprint: { state: string; content: string };
 }> {
   const { project } = await Project.find(
     options.configuration,
@@ -1578,11 +1590,20 @@ async function createShadowProject(options: {
       sourcePath: patchPath,
     });
   }
+  const shadowInputFingerprint = await fingerprintProjectInputs(
+    options.shadowDir,
+    inputPaths.map(inputPath =>
+      path.join(options.shadowDir, path.relative(options.rootDir, inputPath)),
+    ),
+  );
+  if (shadowInputFingerprint.content !== inputFingerprint.content) {
+    throw new Error('The shadow project did not match the project inputs');
+  }
   const copiedInputFingerprint = await fingerprintProjectInputs(
     options.rootDir,
     inputPaths,
   );
-  if (copiedInputFingerprint !== inputFingerprint) {
+  if (copiedInputFingerprint.state !== inputFingerprint.state) {
     throw new Error('Project files changed while the patch repair was staged');
   }
   return {
@@ -1636,10 +1657,19 @@ async function defaultInstall(options: {
   await run([...command, 'install', '--mode=update-lockfile'], {
     cwd: options.rootDir,
     env: Object.assign({}, options.env, {
+      YARN_CACHE_FOLDER: path.join(options.rootDir, '.yarn/cache'),
       YARN_ENABLE_SCRIPTS: 'false',
+      YARN_ENABLE_GLOBAL_CACHE: 'false',
       YARN_ENABLE_IMMUTABLE_INSTALLS: 'false',
+      YARN_ENABLE_TELEMETRY: 'false',
+      YARN_GLOBAL_FOLDER: path.join(options.rootDir, '.yarn/global'),
       YARN_IGNORE_PATH: '1',
+      YARN_INSTALL_STATE_PATH: path.join(
+        options.rootDir,
+        '.yarn/install-state.gz',
+      ),
       YARN_PATCH_FOLDER: options.patchFolder,
+      YARN_VIRTUAL_FOLDER: path.join(options.rootDir, '.yarn/__virtual__'),
     }),
   }).waitForExit();
 }
@@ -1833,6 +1863,12 @@ async function fixYarnPatchesUnlocked(
       message: 'The patch resolution could not be read safely',
     };
   }
+  if (currentReference !== declaration.reference) {
+    return {
+      status: 'not-fixable',
+      message: 'The patch resolution changed during verification',
+    };
+  }
 
   let targetReference: string;
   try {
@@ -1937,8 +1973,8 @@ async function fixYarnPatchesUnlocked(
       };
     }
     if (
-      (await fingerprintProjectInputs(rootDir, stagedProject.inputPaths)) !==
-      stagedProject.inputFingerprint
+      (await fingerprintProjectInputs(rootDir, stagedProject.inputPaths))
+        .state !== stagedProject.inputFingerprint.state
     ) {
       return {
         status: 'not-fixable',
@@ -2012,6 +2048,10 @@ async function fixYarnPatchesUnlocked(
 export async function fixYarnPatches(
   options: FixYarnPatchesOptions,
 ): Promise<FixYarnPatchesResult> {
+  if (options.dryRun) {
+    return fixYarnPatchesUnlocked(options);
+  }
+
   const manifestPath = path.join(path.resolve(options.rootDir), 'package.json');
   let releaseLock: (() => Promise<void>) | undefined;
   try {

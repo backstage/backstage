@@ -56,6 +56,7 @@ export default async ({ args, info }: CliCommandContext) => {
     throw new Error('--dry-run can only be used together with --fix');
   }
 
+  let fixFailureMessage: string | undefined;
   if (flags.fix) {
     const fixResult = await fixYarnPatches({
       rootDir: targetPaths.dir,
@@ -72,7 +73,7 @@ export default async ({ args, info }: CliCommandContext) => {
         return;
       }
     } else {
-      process.stderr.write(`${fixResult.message}.\n`);
+      fixFailureMessage = fixResult.message;
     }
   }
 
@@ -82,6 +83,9 @@ export default async ({ args, info }: CliCommandContext) => {
   });
 
   if (result.errors.length > 0) {
+    if (fixFailureMessage) {
+      process.stderr.write(`${fixFailureMessage}.\n`);
+    }
     process.stderr.write('Yarn patch verification failed:\n');
     for (const error of result.errors) {
       process.stderr.write(formatError(error));
