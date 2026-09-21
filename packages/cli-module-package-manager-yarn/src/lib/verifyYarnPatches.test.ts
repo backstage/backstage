@@ -1968,6 +1968,132 @@ plugins:
     });
   });
 
+  it.each(['fixed', 'not-fixable'] as const)(
+    'preserves the %s repair outcome when releasing the lock fails',
+    async outcome => {
+      mockDir.setContent(
+        createBackstagePatchRepository({ backstageVersion: '1.0.1' }),
+      );
+      const fetch = async () =>
+        new Response(JSON.stringify(releaseManifest('1.0.1', '1.0.1')));
+      const verificationResult = await verifyYarnPatches({
+        rootDir: mockDir.path,
+        fetch,
+      });
+      const originalManifest = await fs.readFile(
+        mockDir.resolve('package.json'),
+        'utf8',
+      );
+      const originalLockfile = await fs.readFile(
+        mockDir.resolve('yarn.lock'),
+        'utf8',
+      );
+      const targetLockfile = createBackstagePatchRepository({
+        sourceVersion: '1.0.1',
+      })['yarn.lock'] as string;
+      const lock = properLockfile.lock.bind(properLockfile);
+      const lockSpy = jest
+        .spyOn(properLockfile, 'lock')
+        .mockImplementation(async (file, options) => {
+          const release = await lock(file, options);
+          return async () => {
+            await release();
+            throw new Error('unlock failed');
+          };
+        });
+
+      try {
+        const repair = fixYarnPatches({
+          rootDir: mockDir.path,
+          fetch,
+          verificationResult,
+          install: async rootDir => {
+            if (outcome === 'not-fixable') {
+              throw new Error('patch does not apply');
+            }
+            await fs.writeFile(path.join(rootDir, 'yarn.lock'), targetLockfile);
+          },
+        });
+        await expect(repair).resolves.toEqual({
+          status: outcome,
+          message:
+            outcome === 'fixed'
+              ? "Retargeted patch for '@backstage/example' from '1.0.0' to '1.0.1'"
+              : 'Yarn could not validate the retargeted patch: Error: patch does not apply',
+          warning:
+            'Could not release the project lock after patch repair: Error: unlock failed',
+        });
+        await expect(
+          verifyYarnPatches({ rootDir: mockDir.path, fetch }),
+        ).resolves.toMatchObject({
+          errors: outcome === 'fixed' ? [] : verificationResult.errors,
+        });
+        const manifest = JSON.parse(
+          await fs.readFile(mockDir.resolve('package.json'), 'utf8'),
+        );
+        expect(manifest).toEqual(
+          outcome === 'fixed'
+            ? {
+                ...JSON.parse(originalManifest),
+                resolutions: {
+                  '@backstage/example':
+                    'patch:@backstage/example@npm%3A1.0.1#~/.yarn/patches/example.patch',
+                },
+              }
+            : JSON.parse(originalManifest),
+        );
+        await expect(
+          fs.readFile(mockDir.resolve('yarn.lock'), 'utf8'),
+        ).resolves.toBe(
+          outcome === 'fixed' ? targetLockfile : originalLockfile,
+        );
+        expect(lockSpy).toHaveBeenCalledTimes(1);
+      } finally {
+        lockSpy.mockRestore();
+      }
+    },
+  );
+
+  it('retains the original exception when releasing the lock also fails', async () => {
+    mockDir.setContent(
+      createBackstagePatchRepository({ backstageVersion: '1.0.1' }),
+    );
+    const fetch = async () =>
+      new Response(JSON.stringify(releaseManifest('1.0.1', '1.0.1')));
+    const verificationResult = await verifyYarnPatches({
+      rootDir: mockDir.path,
+      fetch,
+    });
+    await fs.unlink(mockDir.resolve('.yarn/patches/example.patch'));
+    const lock = properLockfile.lock.bind(properLockfile);
+    const releaseLock = jest.fn<Promise<void>, []>();
+    const lockSpy = jest
+      .spyOn(properLockfile, 'lock')
+      .mockImplementation(async (file, options) => {
+        const release = await lock(file, options);
+        releaseLock.mockImplementation(async () => {
+          await release();
+          throw new Error('unlock failed');
+        });
+        return releaseLock;
+      });
+
+    try {
+      const repair = fixYarnPatches({
+        rootDir: mockDir.path,
+        fetch,
+        verificationResult,
+      });
+      await expect(repair).rejects.toThrow(/ENOENT.*unlock failed/);
+      await expect(repair).rejects.toMatchObject({
+        cause: expect.objectContaining({ code: 'ENOENT' }),
+      });
+      expect(releaseLock).toHaveBeenCalledTimes(1);
+    } finally {
+      lockSpy.mockRestore();
+    }
+  });
+
   it('does not stage a repair from a stale verified resolution', async () => {
     mockDir.setContent(
       createBackstagePatchRepository({ backstageVersion: '1.0.1' }),
@@ -2204,6 +2330,95 @@ fs.writeFileSync('yarn.lock', ${JSON.stringify(targetLockfile)});
     await expect(fs.stat(configuredCache)).rejects.toMatchObject({
       code: 'ENOENT',
     });
+  });
+
+  it('rejects a symlinked Yarn binary before executing it', async () => {
+    mockDir.setContent({
+      ...createBackstagePatchRepository({ backstageVersion: '1.0.1' }),
+      '.yarnrc.yml': 'yarnPath: .yarn/releases/yarn.cjs\n',
+    });
+    concurrentMockDirA.setContent({
+      'yarn.cjs': `require('node:fs').writeFileSync(${JSON.stringify(
+        concurrentMockDirA.resolve('executed'),
+      )}, 'executed');`,
+    });
+    await fs.mkdir(mockDir.resolve('.yarn/releases'));
+    await fs.symlink(
+      concurrentMockDirA.resolve('yarn.cjs'),
+      mockDir.resolve('.yarn/releases/yarn.cjs'),
+    );
+    const originalManifest = await fs.readFile(
+      mockDir.resolve('package.json'),
+      'utf8',
+    );
+    const originalLockfile = await fs.readFile(
+      mockDir.resolve('yarn.lock'),
+      'utf8',
+    );
+
+    await expect(
+      fixYarnPatches({
+        rootDir: mockDir.path,
+        dryRun: true,
+        fetch: async () =>
+          new Response(JSON.stringify(releaseManifest('1.0.1', '1.0.1'))),
+      }),
+    ).resolves.toMatchObject({
+      status: 'not-fixable',
+      message: expect.stringContaining('Cannot safely stage symbolic link'),
+    });
+    await expect(
+      fs.stat(concurrentMockDirA.resolve('executed')),
+    ).rejects.toMatchObject({ code: 'ENOENT' });
+    await expect(
+      fs.readFile(mockDir.resolve('package.json'), 'utf8'),
+    ).resolves.toBe(originalManifest);
+    await expect(
+      fs.readFile(mockDir.resolve('yarn.lock'), 'utf8'),
+    ).resolves.toBe(originalLockfile);
+  });
+
+  it.each([
+    ['version: 8', 'version: 9'],
+    ['cacheKey: 10c0', 'cacheKey: 10c1'],
+  ])('rejects unrelated lockfile metadata changes to %s', async (from, to) => {
+    mockDir.setContent(
+      createBackstagePatchRepository({ backstageVersion: '1.0.1' }),
+    );
+    const originalManifest = await fs.readFile(
+      mockDir.resolve('package.json'),
+      'utf8',
+    );
+    const originalLockfile = await fs.readFile(
+      mockDir.resolve('yarn.lock'),
+      'utf8',
+    );
+    const targetLockfile = createBackstagePatchRepository({
+      sourceVersion: '1.0.1',
+    })['yarn.lock'] as string;
+
+    await expect(
+      fixYarnPatches({
+        rootDir: mockDir.path,
+        fetch: async () =>
+          new Response(JSON.stringify(releaseManifest('1.0.1', '1.0.1'))),
+        install: async rootDir => {
+          await fs.writeFile(
+            path.join(rootDir, 'yarn.lock'),
+            targetLockfile.replace(from, to),
+          );
+        },
+      }),
+    ).resolves.toEqual({
+      status: 'not-fixable',
+      message: 'Yarn produced unrelated lockfile changes',
+    });
+    await expect(
+      fs.readFile(mockDir.resolve('package.json'), 'utf8'),
+    ).resolves.toBe(originalManifest);
+    await expect(
+      fs.readFile(mockDir.resolve('yarn.lock'), 'utf8'),
+    ).resolves.toBe(originalLockfile);
   });
 
   it('rejects unrelated lockfile changes from the staged install', async () => {

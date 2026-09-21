@@ -53,6 +53,10 @@ It writes the updated root manifest and lockfile only if all of those steps
 succeed and Yarn made no unrelated lockfile changes. Unsupported or ambiguous
 cases remain verification failures for manual repair.
 
+The repair rejects symbolic links in staged inputs and changes to lockfile
+metadata. Failures to release the project lock are reported separately from
+the repair outcome; a completed repair is still verified and reported as such.
+
 Use `--fix --dry-run` to perform the staged install and verification without
 writing project files. The fix path uses the repository's configured Yarn
 binary and plugins from the conventional `.yarn/releases` and `.yarn/plugins`

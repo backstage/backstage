@@ -60,6 +60,10 @@ If the declaration is ambiguous or the patch no longer applies cleanly, the
 command leaves the project untouched and exits with the original verification
 failure.
 
+The repair rejects symbolic links in staged inputs and changes to lockfile
+metadata. Failures to release the project lock are reported separately from
+the repair outcome; a completed repair is still verified and reported as such.
+
 Use `--fix --dry-run` to perform the staged install and verification without
 writing project files.
 

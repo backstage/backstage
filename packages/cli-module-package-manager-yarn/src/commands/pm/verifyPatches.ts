@@ -73,6 +73,9 @@ export default async ({ args, info }: CliCommandContext) => {
       dryRun: Boolean(flags['dry-run']),
       verificationResult: result,
     });
+    if (fixResult.warning) {
+      process.stderr.write(`Warning: ${fixResult.warning}.\n`);
+    }
     if (fixResult.status !== 'not-fixable') {
       process.stdout.write(
         `${fixResult.message}${

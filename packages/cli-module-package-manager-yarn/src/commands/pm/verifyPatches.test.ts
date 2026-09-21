@@ -171,6 +171,46 @@ describe('verifyYarnPatches command', () => {
     expect(mockVerifyYarnPatches).toHaveBeenCalledTimes(2);
   });
 
+  it.each(['fixed', 'not-fixable'] as const)(
+    'reports cleanup warnings without replacing the %s repair outcome',
+    async status => {
+      mockFixYarnPatches.mockResolvedValue({
+        status,
+        message: 'Repair outcome',
+        warning: 'Could not release the project lock after patch repair',
+      });
+      mockVerifyYarnPatches
+        .mockResolvedValueOnce(holdbackResult())
+        .mockResolvedValueOnce(healthyResult(1, 'verified'));
+
+      const error = await verifyYarnPatchesCommand({
+        ...context,
+        args: ['--fix'],
+      }).catch(e => e);
+      expect(error).toEqual(
+        status === 'fixed'
+          ? undefined
+          : new Error('Yarn patch verification failed'),
+      );
+      expect(stdoutSpy.mock.calls).toEqual(
+        status === 'fixed'
+          ? [
+              ['Repair outcome.\n'],
+              [
+                'Yarn patch verification passed: 1 patch reference verified. Backstage release validation passed.\n',
+              ],
+            ]
+          : [],
+      );
+      expect(mockVerifyYarnPatches).toHaveBeenCalledTimes(
+        status === 'fixed' ? 2 : 1,
+      );
+      expect(stderrSpy).toHaveBeenCalledWith(
+        'Warning: Could not release the project lock after patch repair.\n',
+      );
+    },
+  );
+
   it('checks a repair without writing or re-verifying during a dry run', async () => {
     const initialResult = holdbackResult();
     mockFixYarnPatches.mockResolvedValue({
