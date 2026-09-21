@@ -9801,18 +9801,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@inquirer/type@npm:4.0.7":
-  version: 4.0.7
-  resolution: "@inquirer/type@npm:4.0.7"
-  peerDependencies:
-    "@types/node": ">=18"
-  peerDependenciesMeta:
-    "@types/node":
-      optional: true
-  checksum: 10/97769b74264a2575c12c231e3d4acf98b4ae237fc987cec6b459f88b907b1729623403b8d9fe0cf2ca21743114777c64e3031fbeff72e9da37fbf4c8985f587f
-  languageName: node
-  linkType: hard
-
 "@inquirer/type@npm:4.1.1":
   version: 4.1.1
   resolution: "@inquirer/type@npm:4.1.1"

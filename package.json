@@ -99,8 +99,8 @@
     "rejectFrontendNetworkRequests": true
   },
   "resolutions": {
-    "@inquirer/type@npm:^4.0.5": "4.0.7",
-    "@inquirer/type@npm:^4.0.7": "4.0.7",
+    "@inquirer/type@npm:^4.0.5": "4.1.1",
+    "@inquirer/type@npm:^4.0.7": "4.1.1",
     "@material-ui/pickers@^3.2.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
     "@remixicon/react": ">=4.6.0 <4.9.0",
     "@types/react": "^18.0.0",
