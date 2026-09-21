@@ -1696,10 +1696,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage-community/plugin-explore-common@npm:^0.12.0":
-  version: 0.12.0
-  resolution: "@backstage-community/plugin-explore-common@npm:0.12.0"
-  checksum: 10/744ffa86c794ed612a257b7eba018d8bd433e160db9c29e9d72cca791f58fbed1fbbcacf2b670b992b7f13eb0cd0a08014ba60108ac17196dbee4699b8b6f0f1
+"@backstage-community/plugin-explore-common@npm:^0.14.0":
+  version: 0.14.0
+  resolution: "@backstage-community/plugin-explore-common@npm:0.14.0"
+  checksum: 10/7e733f9a7fbda7bec75dcc45e0dfaf3f7fbcb86ea5e22e5bd82b23a330cc4f11da0e0ff67fe368be3659d43fe13eb7961b22e6ae207a47034553a1193ae6890b
   languageName: node
   linkType: hard
 
@@ -6586,7 +6586,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-search-backend-module-explore@workspace:plugins/search-backend-module-explore"
   dependencies:
-    "@backstage-community/plugin-explore-common": "npm:^0.12.0"
+    "@backstage-community/plugin-explore-common": "npm:^0.14.0"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
