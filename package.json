@@ -109,7 +109,7 @@
     "GendocuPublicApis": "npm:gendocu-public-apis@^1.0.0",
     "ast-types@npm:^0.13.4": "0.16.3",
     "csstype@npm:^3.0.2": "3.0.9",
-    "type-fest@npm:^5.5.0": "5.5.0"
+    "type-fest@npm:^5.5.0": "5.10.0"
   },
   "dependencies": {
     "@backstage/errors": "workspace:^",
