@@ -2525,7 +2525,7 @@ __metadata:
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
-    "@jest/environment-jsdom-abstract": "npm:^30"
+    "@jest/environment-jsdom-abstract": "npm:^30.5.0"
     "@manypkg/get-packages": "npm:^1.1.3"
     "@spotify/eslint-config-base": "npm:^15.0.0"
     "@spotify/eslint-config-react": "npm:^15.0.0"
@@ -2550,7 +2550,7 @@ __metadata:
     eslint-plugin-unused-imports: "npm:^4.1.4"
     fs-extra: "npm:^11.2.0"
     glob: "npm:^13.0.0"
-    jest: "npm:^30"
+    jest: "npm:^30.5.0"
     jest-css-modules: "npm:^2.1.0"
     jsdom: "npm:^27.1.0"
     nodemon: "npm:^3.0.1"
@@ -10169,7 +10169,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jest/environment-jsdom-abstract@npm:^30":
+"@jest/environment-jsdom-abstract@npm:^30.5.0":
   version: 30.5.1
   resolution: "@jest/environment-jsdom-abstract@npm:30.5.1"
   dependencies:
@@ -32646,7 +32646,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest@npm:^30":
+"jest@npm:^30.5.0":
   version: 30.5.1
   resolution: "jest@npm:30.5.1"
   dependencies:
@@ -41346,7 +41346,7 @@ __metadata:
     "@backstage/eslint-plugin": "workspace:*"
     "@backstage/repo-tools": "workspace:*"
     "@changesets/cli": "npm:^2.14.0"
-    "@jest/environment-jsdom-abstract": "npm:^30"
+    "@jest/environment-jsdom-abstract": "npm:^30.5.0"
     "@manypkg/get-packages": "npm:^1.1.3"
     "@octokit/rest": "npm:^19.0.3"
     "@playwright/test": "npm:^1.32.3"
@@ -41376,7 +41376,7 @@ __metadata:
     eslint-plugin-testing-library: "npm:^7.0.0"
     fs-extra: "npm:^11.2.0"
     husky: "npm:^9.0.0"
-    jest: "npm:^30"
+    jest: "npm:^30.5.0"
     js-yaml: "npm:^4.3.2"
     jsdom: "npm:^27"
     lint-staged: "npm:^16.0.0"

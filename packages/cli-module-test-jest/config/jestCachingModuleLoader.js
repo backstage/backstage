@@ -28,7 +28,26 @@ module.exports = class CachingJestRuntime extends JestRuntime {
       // calling unstable_shouldLoadAsEsm below. Keep frontend tests on their
       // configured CommonJS transforms rather than loading dependency ESM
       // through Node.js require(esm), which does not support cyclic graphs.
-      this._resolution.shouldLoadAsEsm = () => false;
+      // Older supported Jest versions do not expose _resolution and continue
+      // to call unstable_shouldLoadAsEsm below instead.
+      const resolution = this._resolution;
+      if (resolution !== undefined) {
+        if (typeof resolution.shouldLoadAsEsm !== 'function') {
+          throw new Error(
+            'The installed Jest version does not expose the expected module resolution API',
+          );
+        }
+
+        const shouldLoadAsEsm = () => false;
+        if (
+          !Reflect.set(resolution, 'shouldLoadAsEsm', shouldLoadAsEsm) ||
+          resolution.shouldLoadAsEsm !== shouldLoadAsEsm
+        ) {
+          throw new Error(
+            'The installed Jest version does not allow overriding its module resolution API',
+          );
+        }
+      }
     }
   }
 
