@@ -444,6 +444,55 @@ spec:
         ...
 ```
 
+### Conditionally showing parameter steps
+
+When `spec.parameters` is an array of steps, you can use the `when` field to conditionally show or hide entire steps based on values from earlier steps. This is useful when different inputs require different follow-up configuration, such as cloud-provider-specific settings.
+
+The `when` field uses the `${{ }}` delimiter syntax and supports expressions for comparing parameter values:
+
+```yaml
+spec:
+  parameters:
+    - title: Choose Cloud Provider
+      properties:
+        cloudProvider:
+          type: string
+          enum: [AWS, GCP, Azure]
+
+    - title: AWS Configuration
+      when: ${{ parameters.cloudProvider === 'AWS' }}
+      properties:
+        awsRegion:
+          type: string
+
+    - title: GCP Configuration
+      when: ${{ parameters.cloudProvider === 'GCP' }}
+      properties:
+        gcpProjectId:
+          type: string
+
+    - title: Azure Configuration
+      when: ${{ parameters.cloudProvider === 'Azure' }}
+      properties:
+        azureSubscriptionId:
+          type: string
+```
+
+In this example, only the step matching the selected provider is shown in the wizard. The other steps are hidden, and their fields are excluded from the submitted parameters.
+
+The `when` field supports:
+
+- **Equality:** `${{ parameters.field === 'value' }}` and `${{ parameters.field !== 'value' }}`
+- **Truthiness checks:** `${{ parameters.field }}` evaluates to true when the field is set and non-empty
+- **Negation:** `${{ !parameters.field }}`
+- **Boolean values:** `when: true` or `when: false`
+
+When a step becomes hidden because its condition evaluates to false, any values previously entered in that step are preserved but excluded from the final parameters passed to `spec.steps`. If the user goes back and changes an earlier answer so that the step becomes visible again, their previously entered values are restored. Any field referenced in a `when` condition should be validated by an earlier unconditional step — because `when` conditions also control which steps are validated on the backend, a field that is not itself validated could allow users to skip conditional steps unexpectedly.
+
+:::note
+The `when` field controls the visibility of wizard steps in the frontend. It uses a different keyword from the `if` field on `spec.steps` to avoid colliding with the `if`/`then`/`else` keywords in JSON Schema.
+:::
+
 ### The Repository Picker
 
 In order to make working with repository providers easier, we've built a custom
