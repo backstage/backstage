@@ -34,67 +34,64 @@ export async function updateUnprocessedEntity(options: {
   entityRef?: string;
   hash: string;
   locationKey?: string;
-}): Promise<{ updated: boolean; claimedFromNullLocationKey: boolean }> {
+}): Promise<{
+  updated: boolean;
+  claimedFromNullLocationKey: boolean;
+}> {
   const { tx, entity, hash, locationKey } = options;
-
   const entityRef = options.entityRef ?? stringifyEntityRef(entity);
   const serializedEntity = JSON.stringify(entity);
 
-  return tx.transaction(
-    async subTx => {
-      // When claiming an entity with a non-null location key, check whether it
-      // currently has a null location key. If so, the update will transition it
-      // from weak (null) to strong (keyed) ownership, and we'll need to steal
-      // references from other parents that only had weak ownership.
-      let claimedFromNullLocationKey = false;
-      if (locationKey) {
-        const existingNullKeyRow = await subTx<DbRefreshStateRow>(
-          'refresh_state',
-        )
-          .where({ entity_ref: entityRef })
-          .whereNull('location_key')
-          .select('entity_id')
-          .modify(qb => {
-            if (
-              ['mysql', 'mysql2', 'pg'].includes(subTx.client.config.client)
-            ) {
-              // In MySQL and Postgres, we can use "SELECT ... FOR UPDATE" to lock the selected row until the end of the transaction.
-              qb.forUpdate();
-            }
-          })
-          .first();
-        claimedFromNullLocationKey = existingNullKeyRow !== undefined;
+  const values = {
+    unprocessed_entity: serializedEntity,
+    unprocessed_hash: hash,
+    location_key: locationKey,
+    last_discovery_at: tx.fn.now(),
+    // We only get to this point if a processed entity actually had any changes, or
+    // if an entity provider requested this mutation, meaning that we can safely
+    // bump the deferred entities to the front of the queue for immediate processing.
+    next_update_at: tx.fn.now(),
+  };
+
+  if (locationKey) {
+    // If the entity is being claimed by a specific location, we first try to update
+    // an existing row with a null location_key. This allows us to "claim" the entity
+    // for the first time, and avoid a race condition where two locations might try
+    // to claim the same entity at the same time.
+    const claimed = await tx<DbRefreshStateRow>('refresh_state')
+      .update(values)
+      .where({
+        entity_ref: entityRef,
+      })
+      .whereNull('location_key');
+
+    if (claimed === 1) {
+      // We successfully claimed the entity from a null location_key, so we return early
+      return {
+        updated: true,
+        claimedFromNullLocationKey: true,
+      };
+    }
+  }
+
+  // If we didn't claim the entity from a null location_key, we try to update an existing row
+  // with a matching location_key, or a null location_key. This allows us to update
+  // the entity if it was previously claimed by a specific location, or if it was
+  // never claimed at all.
+  const refreshResult = await tx<DbRefreshStateRow>('refresh_state')
+    .update(values)
+    .where('entity_ref', entityRef)
+    .andWhere(inner => {
+      if (!locationKey) {
+        return inner.whereNull('location_key');
       }
+      return inner
+        .where('location_key', locationKey)
+        .orWhereNull('location_key');
+    });
 
-      const refreshResult = await subTx<DbRefreshStateRow>('refresh_state')
-        .update({
-          unprocessed_entity: serializedEntity,
-          unprocessed_hash: hash,
-          location_key: locationKey,
-          last_discovery_at: subTx.fn.now(),
-          // We only get to this point if a processed entity actually had any changes, or
-          // if an entity provider requested this mutation, meaning that we can safely
-          // bump the deferred entities to the front of the queue for immediate processing.
-          next_update_at: subTx.fn.now(),
-        })
-        .where('entity_ref', entityRef)
-        .andWhere(inner => {
-          if (!locationKey) {
-            return inner.whereNull('location_key');
-          }
-          return inner
-            .where('location_key', locationKey)
-            .orWhereNull('location_key');
-        });
-
-      return { updated: refreshResult === 1, claimedFromNullLocationKey };
-    },
-    // We need to use REPEATABLE READ here to ensure that if we read a null location key,
-    // it won't be changed by another transaction until we commit.
-    // This allows us to correctly determine whether we're claiming an
-    // entity from null ownership or not, and steal references if so.
-    //
-    // sqlite3 only supports serializable transactions, and will ignore the isolation level param.
-    { isolationLevel: 'repeatable read' },
-  );
+  return {
+    updated: refreshResult === 1,
+    claimedFromNullLocationKey: false,
+  };
 }

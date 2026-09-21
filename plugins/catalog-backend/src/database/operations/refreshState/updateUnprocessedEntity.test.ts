@@ -260,6 +260,64 @@ describe('updateUnprocessedEntity', () => {
   );
 
   it.each(databases.eachSupportedId())(
+    'allows only one concurrent location key to claim a weakly owned row, %p',
+    async databaseId => {
+      const knex = await createDatabase(databaseId);
+      const entityBefore: Entity = {
+        apiVersion: '1',
+        kind: 'Component',
+        metadata: { namespace: 'default', name: 'concurrently-claimed-entity' },
+      };
+      const entityRef = stringifyEntityRef(entityBefore);
+      const claims = [
+        {
+          entity: { ...entityBefore, spec: { owner: 'team-one' } },
+          hash: 'hash-one',
+          locationKey: 'provider-key-one',
+        },
+        {
+          entity: { ...entityBefore, spec: { owner: 'team-two' } },
+          hash: 'hash-two',
+          locationKey: 'provider-key-two',
+        },
+      ];
+
+      await insertRefreshStateRow(knex, {
+        entity_id: 'id5',
+        entity_ref: entityRef,
+        unprocessed_entity: JSON.stringify(entityBefore),
+        unprocessed_hash: 'old-hash',
+        errors: '[]',
+        next_update_at: '2021-04-01 13:37:00',
+        last_discovery_at: '2021-04-01 13:37:00',
+      });
+
+      const results = await Promise.all(
+        claims.map(claim =>
+          knex.transaction(tx => updateUnprocessedEntity({ ...claim, tx })),
+        ),
+      );
+
+      expect(results).toEqual(
+        expect.arrayContaining([
+          { updated: true, claimedFromNullLocationKey: true },
+          { updated: false, claimedFromNullLocationKey: false },
+        ]),
+      );
+
+      const winningClaim = claims[results.findIndex(result => result.updated)];
+      await expect(getRefreshStateRow(knex, entityRef)).resolves.toEqual(
+        expect.objectContaining({
+          entity_ref: entityRef,
+          unprocessed_entity: JSON.stringify(winningClaim.entity),
+          unprocessed_hash: winningClaim.hash,
+          location_key: winningClaim.locationKey,
+        }),
+      );
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
     'does not let a weak update replace a strongly owned row, %p',
     async databaseId => {
       const knex = await createDatabase(databaseId);
@@ -275,7 +333,7 @@ describe('updateUnprocessedEntity', () => {
       const entityRef = stringifyEntityRef(entityBefore);
 
       await insertRefreshStateRow(knex, {
-        entity_id: 'id5',
+        entity_id: 'id6',
         entity_ref: entityRef,
         unprocessed_entity: JSON.stringify(entityBefore),
         unprocessed_hash: 'old-hash',
