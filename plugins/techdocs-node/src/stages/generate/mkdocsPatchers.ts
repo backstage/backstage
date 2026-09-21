@@ -390,29 +390,48 @@ export const sanitizeMkdocsYml = async (
 
     // Sanitize markdown_extensions
     const extensions = sanitized.markdown_extensions;
+    const removedEntries: string[] = [];
+    const extensionMapping = isPlainObject(extensions) ? extensions : undefined;
+    let normalizedExtensions: unknown[] | undefined;
     if (Array.isArray(extensions)) {
-      const removedEntries: string[] = [];
+      normalizedExtensions = extensions;
+    } else if (extensionMapping) {
+      normalizedExtensions = Object.entries(extensionMapping).map(
+        ([name, config]) => ({
+          [name]: config,
+        }),
+      );
+    }
+    if (extensions instanceof UnknownTag) {
+      removedEntries.push('dynamically configured extension');
+      sanitized.markdown_extensions = [];
+    } else if (normalizedExtensions) {
+      const sanitizedExtensions = normalizedExtensions.flatMap<unknown>(ext => {
+        if (ext instanceof UnknownTag) {
+          removedEntries.push('dynamically configured extension');
+          return [];
+        }
 
-      sanitized.markdown_extensions = extensions.filter(ext => {
         if (typeof ext === 'string') {
           if (isPymdownxSnippetsExtension(ext)) {
-            return true;
+            return [ext];
           }
 
           if (ext.includes(':')) {
             removedEntries.push(ext);
-            return false;
+            return [];
           }
-          return true;
+          return [ext];
         }
 
-        if (!ext || typeof ext !== 'object' || Array.isArray(ext)) {
-          return true;
+        if (!isPlainObject(ext)) {
+          removedEntries.push('malformed extension declaration');
+          return [];
         }
 
         // Check every key, not just the first, so that a multi-key mapping
         // cannot smuggle a dangerous name past the filter.
-        const extensionEntries = Object.entries(ext as Record<string, unknown>);
+        const extensionEntries = Object.entries(ext);
         const dangerousNames = extensionEntries
           .map(([extensionName]) => extensionName)
           .filter(
@@ -422,50 +441,60 @@ export const sanitizeMkdocsYml = async (
           );
         if (dangerousNames.length > 0) {
           removedEntries.push(...dangerousNames);
-          return false;
+          return [];
         }
 
+        const sanitizedExtension: Record<string, unknown> = {};
         for (const [extensionName, extensionConfig] of extensionEntries) {
-          if (!isPymdownxSnippetsExtension(extensionName)) {
+          if (extensionConfig instanceof UnknownTag) {
+            removedEntries.push(
+              `dynamically configured ${extensionName} extension`,
+            );
             continue;
           }
 
-          if (
-            extensionConfig !== null &&
-            (typeof extensionConfig !== 'object' ||
-              Object.keys(extensionConfig).length > 0)
-          ) {
-            removedEntries.push(`${extensionName} configuration`);
-          }
-          Object.assign(ext, { [extensionName]: {} });
-        }
-
-        // Strip dangerous keys from the extension's own configuration.
-        for (const extConfig of Object.values(ext as Record<string, unknown>)) {
-          if (
-            extConfig &&
-            typeof extConfig === 'object' &&
-            !Array.isArray(extConfig)
-          ) {
+          if (isPymdownxSnippetsExtension(extensionName)) {
+            if (
+              extensionConfig !== null &&
+              (typeof extensionConfig !== 'object' ||
+                Object.keys(extensionConfig).length > 0)
+            ) {
+              removedEntries.push(`${extensionName} configuration`);
+            }
+            sanitizedExtension[extensionName] = {};
+          } else if (isPlainObject(extensionConfig)) {
+            const sanitizedConfig = { ...extensionConfig };
             for (const dangerousKey of DANGEROUS_EXTENSION_CONFIG_KEYS) {
-              if (dangerousKey in extConfig) {
-                delete (extConfig as Record<string, unknown>)[dangerousKey];
+              if (dangerousKey in sanitizedConfig) {
+                delete sanitizedConfig[dangerousKey];
                 removedEntries.push(dangerousKey);
               }
             }
+            sanitizedExtension[extensionName] = sanitizedConfig;
+          } else {
+            sanitizedExtension[extensionName] = extensionConfig;
           }
         }
 
-        return true;
+        return Object.keys(sanitizedExtension).length > 0
+          ? [sanitizedExtension]
+          : [];
       });
 
-      if (removedEntries.length > 0) {
-        logger.warn(
-          `Removed the following dangerous entries from markdown_extensions in mkdocs.yml: ${removedEntries.join(
-            ', ',
-          )}.`,
-        );
-      }
+      sanitized.markdown_extensions = extensionMapping
+        ? Object.assign({}, ...sanitizedExtensions)
+        : sanitizedExtensions;
+    } else if (extensions !== undefined) {
+      removedEntries.push('malformed extension declaration');
+      sanitized.markdown_extensions = [];
+    }
+
+    if (removedEntries.length > 0) {
+      logger.warn(
+        `Removed the following dangerous entries from markdown_extensions in mkdocs.yml: ${removedEntries.join(
+          ', ',
+        )}.`,
+      );
     }
 
     if ('plugins' in sanitized) {

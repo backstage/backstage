@@ -1285,6 +1285,108 @@ some_unknown_key: value
       expect(warn).toHaveBeenCalledWith(expect.stringContaining('os:system'));
     });
 
+    it('should sanitize mapping-style markdown_extensions', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+markdown_extensions:
+  toc:
+    permalink: true
+  admonition: {}
+  subprocess:Popen:
+    args: [/usr/bin/id]
+  os:system:
+    command: id
+  plantuml_markdown:
+    plantuml_cmd: id
+    output_format: svg
+  pymdownx.snippets:
+    base_path: /
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        markdown_extensions: Record<string, unknown>;
+      };
+
+      expect(parsedYml.markdown_extensions).toEqual({
+        toc: { permalink: true },
+        admonition: {},
+        plantuml_markdown: { output_format: 'svg' },
+        'pymdownx.snippets': {},
+      });
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('subprocess:Popen'),
+      );
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('os:system'));
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('plantuml_cmd'),
+      );
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('pymdownx.snippets configuration'),
+      );
+    });
+
+    it('should remove dynamically configured extension declarations', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+markdown_extensions:
+  - !ENV [MARKDOWN_EXTENSION, admonition]
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        markdown_extensions: Array<unknown>;
+      };
+
+      expect(parsedYml.markdown_extensions).toEqual([]);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('dynamically configured extension'),
+      );
+
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+markdown_extensions: !ENV [MARKDOWN_EXTENSIONS, admonition]
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedTaggedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs.yml'),
+      );
+      const parsedTaggedYml = yaml.load(updatedTaggedMkdocsYml.toString()) as {
+        markdown_extensions: Array<unknown>;
+      };
+
+      expect(parsedTaggedYml.markdown_extensions).toEqual([]);
+
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+markdown_extensions:
+  plantuml_markdown: !ENV PLANTUML_EXTENSION_CONFIG
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedTaggedConfigMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs.yml'),
+      );
+      const parsedTaggedConfigYml = yaml.load(
+        updatedTaggedConfigMkdocsYml.toString(),
+      ) as {
+        markdown_extensions: Record<string, unknown>;
+      };
+
+      expect(parsedTaggedConfigYml.markdown_extensions).toEqual({});
+    });
+
     it('should remove configuration from snippets extensions', async () => {
       mockDir.setContent({
         'mkdocs.yml': `site_name: Test
