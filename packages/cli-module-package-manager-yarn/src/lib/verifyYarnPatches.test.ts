@@ -1946,6 +1946,97 @@ plugins:
     });
   });
 
+  it('does not stage a repair from a stale verified resolution', async () => {
+    mockDir.setContent(
+      createBackstagePatchRepository({ backstageVersion: '1.0.1' }),
+    );
+    const concurrentlyEditedManifest = packageJson({
+      name: 'root',
+      resolutions: {
+        '@backstage/example':
+          'patch:@backstage/example@npm%3A1.0.2#~/.yarn/patches/example.patch',
+      },
+    });
+    let manifestEdited = false;
+    const install = jest.fn();
+
+    await expect(
+      fixYarnPatches({
+        rootDir: mockDir.path,
+        fetch: async () => {
+          if (!manifestEdited) {
+            manifestEdited = true;
+            await fs.writeFile(
+              path.join(mockDir.path, 'package.json'),
+              concurrentlyEditedManifest,
+            );
+          }
+          return new Response(
+            JSON.stringify(releaseManifest('1.0.1', '1.0.1')),
+          );
+        },
+        install,
+      }),
+    ).resolves.toEqual({
+      status: 'not-fixable',
+      message: 'The patch resolution changed during verification',
+    });
+    expect(install).not.toHaveBeenCalled();
+    await expect(
+      fs.readFile(path.join(mockDir.path, 'package.json'), 'utf8'),
+    ).resolves.toBe(concurrentlyEditedManifest);
+  });
+
+  it('rejects a shadow project that differs from the project inputs', async () => {
+    mockDir.setContent(
+      createBackstagePatchRepository({ backstageVersion: '1.0.1' }),
+    );
+    const manifestPath = path.join(mockDir.path, 'package.json');
+    const patchPath = path.join(mockDir.path, '.yarn/patches/example.patch');
+    const originalManifest = await fs.readFile(manifestPath, 'utf8');
+    const copyFile = fs.copyFile.bind(fs);
+    const copyFileSpy = jest
+      .spyOn(fs, 'copyFile')
+      .mockImplementation(async (source, destination, mode) => {
+        if (source === patchPath) {
+          await fs.writeFile(destination, 'transiently edited patch');
+          return;
+        }
+        await copyFile(source, destination, mode);
+      });
+
+    try {
+      await expect(
+        fixYarnPatches({
+          rootDir: mockDir.path,
+          fetch: async () =>
+            new Response(JSON.stringify(releaseManifest('1.0.1', '1.0.1'))),
+          install: async rootDir => {
+            await fs.writeFile(
+              path.join(rootDir, 'yarn.lock'),
+              `${LOCKFILE_HEADER}
+"@backstage/example@patch:@backstage/example@npm%3A1.0.1#~/.yarn/patches/example.patch":
+  version: 1.0.1
+  resolution: "@backstage/example@patch:@backstage/example@npm%3A1.0.1#~/.yarn/patches/example.patch::version=1.0.1&hash=bbbbbb"
+  languageName: node
+  linkType: hard
+`,
+            );
+          },
+        }),
+      ).resolves.toEqual({
+        status: 'not-fixable',
+        message:
+          'Could not safely stage the patch repair: Error: The shadow project did not match the project inputs',
+      });
+      await expect(fs.readFile(manifestPath, 'utf8')).resolves.toBe(
+        originalManifest,
+      );
+    } finally {
+      copyFileSpy.mockRestore();
+    }
+  });
+
   it('leaves project files untouched when the patch does not apply', async () => {
     mockDir.setContent(
       createBackstagePatchRepository({ backstageVersion: '1.0.1' }),
@@ -2017,6 +2108,80 @@ plugins:
     await expect(
       fs.readFile(path.join(mockDir.path, 'package.json'), 'utf8'),
     ).resolves.toBe(originalManifest);
+  });
+
+  it('does not require a writable project lock during a dry run', async () => {
+    mockDir.setContent(
+      createBackstagePatchRepository({ backstageVersion: '1.0.1' }),
+    );
+    const lockSpy = jest
+      .spyOn(properLockfile, 'lock')
+      .mockRejectedValue(new Error('project directory is read-only'));
+
+    try {
+      await expect(
+        fixYarnPatches({
+          rootDir: mockDir.path,
+          dryRun: true,
+          fetch: async () =>
+            new Response(JSON.stringify(releaseManifest('1.0.1', '1.0.1'))),
+          install: async rootDir => {
+            await fs.writeFile(
+              path.join(rootDir, 'yarn.lock'),
+              `${LOCKFILE_HEADER}
+"@backstage/example@patch:@backstage/example@npm%3A1.0.1#~/.yarn/patches/example.patch":
+  version: 1.0.1
+  resolution: "@backstage/example@patch:@backstage/example@npm%3A1.0.1#~/.yarn/patches/example.patch::version=1.0.1&hash=bbbbbb"
+  languageName: node
+  linkType: hard
+`,
+            );
+          },
+        }),
+      ).resolves.toMatchObject({ status: 'fixable' });
+    } finally {
+      lockSpy.mockRestore();
+    }
+  });
+
+  it('redirects an inherited Yarn cache during a dry run', async () => {
+    const targetLockfile = `${LOCKFILE_HEADER}
+"@backstage/example@patch:@backstage/example@npm%3A1.0.1#~/.yarn/patches/example.patch":
+  version: 1.0.1
+  resolution: "@backstage/example@patch:@backstage/example@npm%3A1.0.1#~/.yarn/patches/example.patch::version=1.0.1&hash=bbbbbb"
+  languageName: node
+  linkType: hard
+`;
+    const configuredCache = path.join(mockDir.path, 'configured-cache');
+    mockDir.setContent({
+      ...createBackstagePatchRepository({ backstageVersion: '1.0.1' }),
+      '.yarnrc.yml': 'yarnPath: .yarn/releases/test-yarn.cjs\n',
+      '.yarn': {
+        patches: { 'example.patch': 'patch' },
+        releases: {
+          'test-yarn.cjs': `
+const fs = require('node:fs');
+const path = require('node:path');
+fs.mkdirSync(process.env.YARN_CACHE_FOLDER, { recursive: true });
+fs.writeFileSync(path.join(process.env.YARN_CACHE_FOLDER, 'written'), 'yes');
+fs.writeFileSync('yarn.lock', ${JSON.stringify(targetLockfile)});
+`,
+        },
+      },
+    });
+
+    await expect(
+      fixYarnPatches({
+        rootDir: mockDir.path,
+        dryRun: true,
+        env: { ...process.env, YARN_CACHE_FOLDER: configuredCache },
+        fetch: async () =>
+          new Response(JSON.stringify(releaseManifest('1.0.1', '1.0.1'))),
+      }),
+    ).resolves.toMatchObject({ status: 'fixable' });
+    await expect(fs.stat(configuredCache)).rejects.toMatchObject({
+      code: 'ENOENT',
+    });
   });
 
   it('rejects unrelated lockfile changes from the staged install', async () => {

@@ -174,6 +174,21 @@ describe('verifyYarnPatches command', () => {
     expect(mockVerifyYarnPatches).not.toHaveBeenCalled();
   });
 
+  it('does not report an error when --fix finds a healthy repository', async () => {
+    mockFixYarnPatches.mockResolvedValue({
+      status: 'not-fixable',
+      message: 'No patch holdback could be repaired safely',
+    });
+    mockVerifyYarnPatches.mockResolvedValue(healthyResult(1, 'verified'));
+
+    await verifyYarnPatchesCommand({ ...context, args: ['--fix'] });
+
+    expect(stderrSpy).not.toHaveBeenCalled();
+    expect(stdoutSpy).toHaveBeenCalledWith(
+      'Yarn patch verification passed: 1 patch reference verified. Backstage release validation passed.\n',
+    );
+  });
+
   it('rejects --dry-run without --fix', async () => {
     await expect(
       verifyYarnPatchesCommand({ ...context, args: ['--dry-run'] }),
