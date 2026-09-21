@@ -36,6 +36,16 @@ function getResponseHeader(headers: unknown, name: string): string | undefined {
   return undefined;
 }
 
+function getResponseAgeMs(headers: unknown): number {
+  const age = getResponseHeader(headers, 'age');
+  if (!age || !/^\d+$/.test(age)) {
+    return 0;
+  }
+
+  const ageMs = Number(age) * 1000;
+  return Number.isSafeInteger(ageMs) ? ageMs : 0;
+}
+
 function getPublicKeysCacheTtl(headers: unknown, now: number): number {
   const cacheControl = getResponseHeader(headers, 'cache-control');
   if (/(?:^|,)\s*no-(?:cache|store)\s*(?:,|$)/i.test(cacheControl ?? '')) {
@@ -49,7 +59,12 @@ function getPublicKeysCacheTtl(headers: unknown, now: number): number {
   if (maxAge !== undefined) {
     const ttl = Number(maxAge) * 1000;
     if (Number.isSafeInteger(ttl)) {
-      return Math.max(0, ttl - IAP_PUBLIC_KEYS_CACHE_SAFETY_MARGIN_MS);
+      return Math.max(
+        0,
+        ttl -
+          getResponseAgeMs(headers) -
+          IAP_PUBLIC_KEYS_CACHE_SAFETY_MARGIN_MS,
+      );
     }
   }
 

@@ -99,13 +99,14 @@ describe('helpers', () => {
       ).resolves.toHaveLength(2);
     });
 
-    it('honors the public key Cache-Control max-age', async () => {
+    it('honors the remaining public key Cache-Control max-age', async () => {
       const dateNow = jest.spyOn(Date, 'now').mockReturnValue(0);
       const getIapPublicKeys = jest.fn(async () => ({
         pubkeys: {},
         res: {
           headers: {
             'cache-control': 'public, max-age=600',
+            age: '100',
           },
         },
       }));
@@ -121,9 +122,9 @@ describe('helpers', () => {
       );
 
       await validator(mockJwt);
-      dateNow.mockReturnValue(299 * 1000);
+      dateNow.mockReturnValue(199 * 1000);
       await validator(mockJwt);
-      dateNow.mockReturnValue(300 * 1000);
+      dateNow.mockReturnValue(200 * 1000);
       await validator(mockJwt);
 
       expect(getIapPublicKeys).toHaveBeenCalledTimes(2);
