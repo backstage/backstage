@@ -1054,6 +1054,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       }
 
       if (isGroupEntity(result) && result.spec.members) {
+        // Group `spec.members` inherits the namespace of it's group so need to explicitly specify refs here
         result.spec.members = result.spec.members.map(m => {
           const { namespace, name } = parseEntityRef(m, {
             defaultKind: 'user',
@@ -1061,11 +1062,6 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
           });
           return `${namespace}/${name}`;
         });
-      } else if (result.spec && !this.options.teamTransformer) {
-        // Group `spec.members` inherits the namespace of its group so need to explicitly specify refs here
-        result.spec.members = team.members.map(
-          user => `${DEFAULT_NAMESPACE}/${user.login}`,
-        );
       }
     }
 
