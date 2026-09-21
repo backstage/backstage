@@ -23,10 +23,15 @@ import { attachTechDocsAddonComponentData } from '@backstage/plugin-techdocs-rea
 import { EmbeddedDocsRouter, TechDocsReaderRouter } from '../../Router';
 import { TechDocsReaderLayout } from './TechDocsReaderLayout';
 
-function Addons(props: { options: TechDocsAddonOptions[] }) {
+// Deliberately a function call rather than a component. Addons are discovered
+// by walking the router outlet as an element tree: the walk only follows
+// `props.children` and never invokes a component, and this is also the only
+// place the addon component data is attached. A component wrapper breaks both,
+// because its children are built by a render that the walk never performs.
+function renderAddons(addonOptions: TechDocsAddonOptions[]) {
   return (
     <TechDocsAddons>
-      {props.options.map(options => {
+      {addonOptions.map(options => {
         const Addon = options.component;
         attachTechDocsAddonComponentData(Addon, options);
         return (
@@ -50,7 +55,7 @@ export function TechDocsReaderPage(props: {
         withSearch={props.withSearch}
         withHeader={props.withHeader}
       />
-      <Addons options={props.addonOptions} />
+      {renderAddons(props.addonOptions)}
     </TechDocsReaderRouter>
   );
 }
@@ -61,7 +66,7 @@ export function TechDocsEntityContent(props: {
 }) {
   return (
     <EmbeddedDocsRouter emptyState={props.emptyState}>
-      <Addons options={props.addonOptions} />
+      {renderAddons(props.addonOptions)}
     </EmbeddedDocsRouter>
   );
 }
