@@ -56,12 +56,18 @@ export default async ({ args, info }: CliCommandContext) => {
     throw new Error('--dry-run can only be used together with --fix');
   }
 
+  let result = await verifyYarnPatches({
+    rootDir: targetPaths.dir,
+    env: process.env,
+  });
+
   let fixFailureMessage: string | undefined;
-  if (flags.fix) {
+  if (flags.fix && result.errors.length > 0) {
     const fixResult = await fixYarnPatches({
       rootDir: targetPaths.dir,
       env: process.env,
       dryRun: Boolean(flags['dry-run']),
+      verificationResult: result,
     });
     if (fixResult.status !== 'not-fixable') {
       process.stdout.write(
@@ -72,15 +78,14 @@ export default async ({ args, info }: CliCommandContext) => {
       if (fixResult.status === 'fixable') {
         return;
       }
+      result = await verifyYarnPatches({
+        rootDir: targetPaths.dir,
+        env: process.env,
+      });
     } else {
       fixFailureMessage = fixResult.message;
     }
   }
-
-  const result = await verifyYarnPatches({
-    rootDir: targetPaths.dir,
-    env: process.env,
-  });
 
   if (result.errors.length > 0) {
     if (fixFailureMessage) {
