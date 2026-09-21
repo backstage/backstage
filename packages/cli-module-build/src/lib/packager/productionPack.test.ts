@@ -22,6 +22,8 @@ import {
   revertProductionPack,
 } from './productionPack';
 
+jest.setTimeout(30_000);
+
 describe('productionPack', () => {
   const mockDir = createMockDirectory();
   const originalDir = process.cwd();
