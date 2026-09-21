@@ -51,7 +51,7 @@ jobs:
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ matrix.node-version == '24.x' && '24.19.0' || matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
@@ -87,7 +87,7 @@ jobs:
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ matrix.node-version == '24.x' && '24.19.0' || matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
@@ -135,9 +135,6 @@ jobs:
       - name: validate openapi yaml file matches generated ts file
         run: yarn backstage-repo-tools repo schema openapi validate
 
-      - name: verify doc links
-        run: node scripts/verify-links.js
-
       - name: verify plugin directory
         run: node scripts/verify-plugin-directory.js
 
@@ -158,6 +155,18 @@ jobs:
 
       - name: verify type dependencies
         run: yarn lint:type-deps
+
+      - name: fetch release docs from master
+        if: startsWith(github.base_ref, 'patch/')
+        run: git fetch origin master --depth 1
+
+      - name: verify doc links
+        if: ${{ !startsWith(github.base_ref, 'patch/') }}
+        run: node scripts/verify-links.js
+
+      - name: verify doc links against master release docs
+        if: startsWith(github.base_ref, 'patch/')
+        run: node scripts/verify-links.js --release-docs-ref=FETCH_HEAD
 
       - name: ensure clean working directory
         run: |
@@ -271,7 +280,7 @@ jobs:
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ matrix.node-version == '24.x' && '24.19.0' || matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install

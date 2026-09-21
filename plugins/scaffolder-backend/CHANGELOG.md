@@ -8220,7 +8220,7 @@
   +   */
   +  url: string;
   +  /**
-  +   * The workspace path that will eventually be the the root of the new repo
+  +   * The workspace path that will eventually be the root of the new repo
   +   */
   +  workspacePath: string;
     logger: Logger;
