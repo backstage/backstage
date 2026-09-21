@@ -1,5 +1,11 @@
 # @backstage/plugin-techdocs
 
+## 1.18.2
+
+### Patch Changes
+
+- f712f71: Fixed TechDocs addons silently not rendering in apps using the new frontend system, on both the standalone documentation reader page and the entity documentation tab.
+
 ## 1.18.1
 
 ### Patch Changes
