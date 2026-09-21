@@ -20229,13 +20229,13 @@ __metadata:
   linkType: hard
 
 "@typespec/ts-http-runtime@npm:^0.3.0, @typespec/ts-http-runtime@npm:^0.3.4":
-  version: 0.3.5
-  resolution: "@typespec/ts-http-runtime@npm:0.3.5"
+  version: 0.3.9
+  resolution: "@typespec/ts-http-runtime@npm:0.3.9"
   dependencies:
     http-proxy-agent: "npm:^7.0.0"
     https-proxy-agent: "npm:^7.0.0"
     tslib: "npm:^2.6.2"
-  checksum: 10/7cf459826e4867ab52a4b9855fdce4590e30a6f37e11fb93155e01c6e80139ec9966b7a3270cffed2c1e88ae66acbae5b4c9a7ecd9274679734da2c18310cc6c
+  checksum: 10/761491f4c797419e5b63081423f5d921e7bff5e4367150a4ff9fe291da6746f825070cd633c0f3e9cc133279126ca3745d3c5254960755e2ca7b5f4967638b3d
   languageName: node
   linkType: hard
 
