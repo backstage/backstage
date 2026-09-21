@@ -93,7 +93,7 @@ export class AzureUrlReader implements UrlReaderService {
       const credentials = await this.deps.credentialsProvider.getCredentials({
         url: builtUrl,
       });
-      response = await fetch(builtUrl, {
+      response = await this.integration.fetch(builtUrl, {
         headers: credentials?.headers,
         // TODO(freben): The signal cast is there because pre-3.x versions of
         // node-fetch have a very slightly deviating AbortSignal type signature.
@@ -116,7 +116,7 @@ export class AzureUrlReader implements UrlReaderService {
     if (response.status === 404) {
       throw new NotFoundError(message);
     }
-    throw new Error(message);
+    throw new Error(this.describeRateLimit(message, response));
   }
 
   async readTree(
@@ -133,22 +133,25 @@ export class AzureUrlReader implements UrlReaderService {
       url: url,
     });
 
-    const commitsAzureResponse = await fetch(getAzureCommitsUrl(url), {
-      headers: credentials?.headers,
-      // TODO(freben): The signal cast is there because pre-3.x versions of
-      // node-fetch have a very slightly deviating AbortSignal type signature.
-      // The difference does not affect us in practice however. The cast can be
-      // removed after we support ESM for CLI dependencies and migrate to
-      // version 3 of node-fetch.
-      // https://github.com/backstage/backstage/issues/8242
-      ...(signal && { signal: signal as any }),
-    });
+    const commitsAzureResponse = await this.integration.fetch(
+      getAzureCommitsUrl(url),
+      {
+        headers: credentials?.headers,
+        // TODO(freben): The signal cast is there because pre-3.x versions of
+        // node-fetch have a very slightly deviating AbortSignal type signature.
+        // The difference does not affect us in practice however. The cast can be
+        // removed after we support ESM for CLI dependencies and migrate to
+        // version 3 of node-fetch.
+        // https://github.com/backstage/backstage/issues/8242
+        ...(signal && { signal: signal as any }),
+      },
+    );
     if (!commitsAzureResponse.ok) {
       const message = `Failed to read tree from ${url}, ${commitsAzureResponse.status} ${commitsAzureResponse.statusText}`;
       if (commitsAzureResponse.status === 404) {
         throw new NotFoundError(message);
       }
-      throw new Error(message);
+      throw new Error(this.describeRateLimit(message, commitsAzureResponse));
     }
 
     const commitSha = (await commitsAzureResponse.json()).value[0].commitId;
@@ -156,25 +159,28 @@ export class AzureUrlReader implements UrlReaderService {
       throw new NotModifiedError();
     }
 
-    const archiveAzureResponse = await fetch(getAzureDownloadUrl(url), {
-      headers: {
-        ...credentials?.headers,
-        Accept: 'application/zip',
+    const archiveAzureResponse = await this.integration.fetch(
+      getAzureDownloadUrl(url),
+      {
+        headers: {
+          ...credentials?.headers,
+          Accept: 'application/zip',
+        },
+        // TODO(freben): The signal cast is there because pre-3.x versions of
+        // node-fetch have a very slightly deviating AbortSignal type signature.
+        // The difference does not affect us in practice however. The cast can be
+        // removed after we support ESM for CLI dependencies and migrate to
+        // version 3 of node-fetch.
+        // https://github.com/backstage/backstage/issues/8242
+        ...(signal && { signal: signal as any }),
       },
-      // TODO(freben): The signal cast is there because pre-3.x versions of
-      // node-fetch have a very slightly deviating AbortSignal type signature.
-      // The difference does not affect us in practice however. The cast can be
-      // removed after we support ESM for CLI dependencies and migrate to
-      // version 3 of node-fetch.
-      // https://github.com/backstage/backstage/issues/8242
-      ...(signal && { signal: signal as any }),
-    });
+    );
     if (!archiveAzureResponse.ok) {
       const message = `Failed to read tree from ${url}, ${archiveAzureResponse.status} ${archiveAzureResponse.statusText}`;
       if (archiveAzureResponse.status === 404) {
         throw new NotFoundError(message);
       }
-      throw new Error(message);
+      throw new Error(this.describeRateLimit(message, archiveAzureResponse));
     }
 
     // When downloading a zip archive from azure on a subpath we get an extra directory
@@ -256,6 +262,14 @@ export class AzureUrlReader implements UrlReaderService {
         lastModifiedAt: file.lastModifiedAt,
       })),
     };
+  }
+
+  // Azure DevOps answers a throttled request with a 203 and a sign-in page, or
+  // a 429, neither of which says anything about rate limiting on its own.
+  private describeRateLimit(message: string, response: Response): string {
+    return this.integration.parseRateLimitInfo(response).isRateLimited
+      ? `${message} (rate limit exceeded)`
+      : message;
   }
 
   toString() {

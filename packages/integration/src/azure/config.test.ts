@@ -276,6 +276,32 @@ describe('readAzureIntegrationConfig', () => {
     expect(output).toEqual({ host: 'dev.azure.com' });
   });
 
+  it('reads retry settings, defaulting the ones that are left out', () => {
+    expect(
+      readAzureIntegrationConfig(
+        buildConfig({
+          ...valid,
+          retry: { maxRetries: 3, retryStatusCodes: [429, 503] },
+        }),
+      ).retry,
+    ).toEqual({
+      maxRetries: 3,
+      retryStatusCodes: [429, 503],
+      maxApiRequestsPerMinute: -1,
+    });
+
+    // absent config means unchanged behavior, not retries with a limit of zero
+    expect(
+      readAzureIntegrationConfig(buildConfig(valid)).retry,
+    ).toBeUndefined();
+
+    expect(() =>
+      readAzureIntegrationConfig(
+        buildConfig({ ...valid, retry: { retryStatusCodes: ['429'] } }),
+      ),
+    ).toThrow(/retryStatusCodes/);
+  });
+
   it('rejects config when host is not valid', () => {
     expect(() =>
       readAzureIntegrationConfig(buildConfig({ ...valid, host: 7 })),

@@ -15,7 +15,15 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
+import { http, HttpResponse } from 'msw';
+import { setupServer } from 'msw/node';
 import { AzureIntegration } from './AzureIntegration';
+
+// Mock pThrottle to make testing easier
+jest.mock('p-throttle', () => {
+  return jest.fn(() => (fn: any) => fn);
+});
 
 describe('AzureIntegration', () => {
   it('has a working factory', () => {
@@ -130,6 +138,201 @@ describe('AzureIntegration', () => {
       ),
     ).toBe(
       'https://dev.azure.com/organization/project/_git/repository?path=%2Fcatalog-info.yaml',
+    );
+  });
+
+  describe('fetch strategy', () => {
+    const worker = setupServer();
+    registerMswTestHooks(worker);
+
+    const url = 'https://dev.azure.com/org/project/_apis/git/repositories';
+
+    beforeAll(() => {
+      jest.useFakeTimers();
+    });
+    afterAll(() => {
+      jest.useRealTimers();
+    });
+    beforeEach(() => {
+      jest.clearAllTimers();
+    });
+
+    it('leaves requests alone when no retry config is given', async () => {
+      let callCount = 0;
+      worker.use(
+        http.get(url, () => {
+          callCount += 1;
+          return new HttpResponse(null, { status: 429 });
+        }),
+      );
+
+      const integration = new AzureIntegration({
+        host: 'dev.azure.com',
+      } as any);
+
+      const response = await integration.fetch(url);
+
+      expect(response.status).toBe(429);
+      expect(callCount).toBe(1);
+    });
+
+    it('waits for the cooldown Azure DevOps asks for before retrying', async () => {
+      const responses = [
+        new HttpResponse(null, {
+          status: 429,
+          headers: { 'Retry-After': '5' },
+        }),
+        new HttpResponse(null, {
+          status: 429,
+          headers: { 'x-ratelimit-delay': '2' },
+        }),
+        HttpResponse.json({}),
+      ];
+      let callCount = 0;
+      worker.use(http.get(url, () => responses[callCount++]));
+
+      const integration = new AzureIntegration({
+        host: 'dev.azure.com',
+        retry: { maxRetries: 3, retryStatusCodes: [429] },
+      } as any);
+
+      const responsePromise = integration.fetch(url);
+
+      // The exponential backoff would have retried well before this, so the
+      // call count proves that the header values were the ones being honored.
+      await jest.advanceTimersByTimeAsync(4999);
+      expect(callCount).toBe(1);
+      await jest.advanceTimersByTimeAsync(1);
+      expect(callCount).toBe(2);
+      await jest.advanceTimersByTimeAsync(2000);
+
+      expect((await responsePromise).status).toBe(200);
+      expect(callCount).toBe(3);
+    });
+
+    it('gives up after maxRetries and applies the requests per minute limit', async () => {
+      const pThrottle = require('p-throttle');
+      let callCount = 0;
+      worker.use(
+        http.get(url, () => {
+          callCount += 1;
+          return new HttpResponse(null, { status: 503 });
+        }),
+      );
+
+      const integration = new AzureIntegration({
+        host: 'dev.azure.com',
+        retry: {
+          maxRetries: 2,
+          retryStatusCodes: [503],
+          maxApiRequestsPerMinute: 60,
+        },
+      } as any);
+
+      const responsePromise = integration.fetch(url);
+      await jest.advanceTimersByTimeAsync(10000);
+
+      expect((await responsePromise).status).toBe(503);
+      expect(callCount).toBe(3); // initial + 2 retries
+      expect(pThrottle).toHaveBeenCalledWith({ limit: 60, interval: 60_000 });
+    });
+  });
+
+  describe('shared cooldown', () => {
+    const worker = setupServer();
+    registerMswTestHooks(worker);
+
+    const url = 'https://dev.azure.com/org/project/_apis/git/repositories';
+
+    beforeAll(() => {
+      jest.useFakeTimers();
+    });
+    afterAll(() => {
+      jest.useRealTimers();
+    });
+    beforeEach(() => {
+      jest.clearAllTimers();
+    });
+
+    it('holds later requests back after a delay reported on a success', async () => {
+      let callCount = 0;
+      worker.use(
+        http.get(url, () => {
+          callCount += 1;
+          // Azure DevOps reports the soft throttle on a 200, which is the only
+          // warning before it starts rejecting requests.
+          return callCount === 1
+            ? HttpResponse.json({}, { headers: { 'x-ratelimit-delay': '30' } })
+            : HttpResponse.json({});
+        }),
+      );
+
+      const integration = new AzureIntegration({
+        host: 'dev.azure.com',
+        retry: { maxRetries: 1, retryStatusCodes: [429] },
+      } as any);
+
+      // The first read succeeds and is handed back without any waiting.
+      expect((await integration.fetch(url)).status).toBe(200);
+      expect(callCount).toBe(1);
+
+      // Everything after it waits out the cooldown, including calls that were
+      // already in flight and never saw the header themselves.
+      const second = integration.fetch(url);
+      const third = integration.fetch(url);
+      await jest.advanceTimersByTimeAsync(29_999);
+      expect(callCount).toBe(1);
+
+      await jest.advanceTimersByTimeAsync(1);
+      expect((await second).status).toBe(200);
+      expect((await third).status).toBe(200);
+      expect(callCount).toBe(3);
+    });
+
+    it('does not hold anything back unless retry handling is configured', async () => {
+      let callCount = 0;
+      worker.use(
+        http.get(url, () => {
+          callCount += 1;
+          return HttpResponse.json({}, { headers: { 'Retry-After': '30' } });
+        }),
+      );
+
+      const integration = new AzureIntegration({
+        host: 'dev.azure.com',
+      } as any);
+
+      await integration.fetch(url);
+      await integration.fetch(url);
+
+      expect(callCount).toBe(2);
+    });
+  });
+
+  describe('parseRateLimitInfo', () => {
+    const integration = new AzureIntegration({
+      host: 'dev.azure.com',
+    } as any);
+
+    it.each`
+      status | delay        | expected
+      ${429} | ${undefined} | ${true}
+      ${203} | ${'3.5'}     | ${true}
+      ${200} | ${'1'}       | ${true}
+      ${203} | ${undefined} | ${false}
+      ${200} | ${'0'}       | ${false}
+      ${404} | ${'nope'}    | ${false}
+    `(
+      '(status: $status, x-ratelimit-delay: $delay) === $expected',
+      ({ status, delay, expected }) => {
+        const headers = new Headers(
+          delay === undefined ? {} : { 'x-ratelimit-delay': delay },
+        );
+
+        expect(
+          integration.parseRateLimitInfo({ status, headers } as Response),
+        ).toMatchObject({ isRateLimited: expected });
+      },
     );
   });
 });

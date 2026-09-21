@@ -14,10 +14,33 @@
  * limitations under the License.
  */
 
-import { basicIntegrations, isValidUrl } from '../helpers';
-import { ScmIntegration, ScmIntegrationsFactory } from '../types';
+import { ConsumedResponse } from '@backstage/errors';
+import {
+  basicIntegrations,
+  createFetchStrategy,
+  FetchFunction,
+  isValidUrl,
+  parseRetryAfterMs,
+  sleep,
+} from '../helpers';
+import {
+  RateLimitInfo,
+  ScmIntegration,
+  ScmIntegrationsFactory,
+} from '../types';
 import { AzureUrl } from './AzureUrl';
 import { AzureIntegrationConfig, readAzureIntegrationConfigs } from './config';
+
+// Azure DevOps reports throttling in two ways: `Retry-After` when a request is
+// rejected outright, and `X-RateLimit-Delay` when a request succeeded but was
+// held back first. Both are expressed in seconds.
+// https://learn.microsoft.com/en-us/azure/devops/integrate/concepts/rate-limits
+const RATE_LIMIT_DELAY_HEADER = 'x-ratelimit-delay';
+
+// An upper bound on how long a single signalled cooldown may hold requests
+// back. Catalog processing does not always pass an abort signal, so without a
+// ceiling one malformed header could stall reads for a host indefinitely.
+const MAX_COOLDOWN_MS = 5 * 60_000;
 
 /**
  * Microsoft Azure based integration.
@@ -36,7 +59,62 @@ export class AzureIntegration implements ScmIntegration {
     );
   };
 
-  constructor(private readonly integrationConfig: AzureIntegrationConfig) {}
+  private readonly fetchImpl: FetchFunction;
+
+  // Azure DevOps meters per identity, and every repository on a host draws from
+  // that one budget, so the cooldown is shared by every request this
+  // integration makes rather than tracked per URL.
+  private cooldownUntil = 0;
+
+  constructor(private readonly integrationConfig: AzureIntegrationConfig) {
+    this.fetchImpl = createFetchStrategy({
+      retry: integrationConfig.retry,
+      resolveRetryDelayMs: (response, fallbackMs) =>
+        parseRetryAfterMs(
+          response.headers.get('Retry-After'),
+          parseRateLimitDelayMs(
+            response.headers.get(RATE_LIMIT_DELAY_HEADER),
+          ) ?? fallbackMs,
+        ),
+      // Opt-in along with the rest of the retry config, so hosts that have
+      // not asked for throttling handling keep calling straight through.
+      baseFetch: integrationConfig.retry
+        ? (url, init) => this.fetchRespectingCooldown(url, init)
+        : undefined,
+    });
+  }
+
+  /**
+   * Holds a request back while Azure DevOps has asked us to wait, then records
+   * whatever cooldown the response signals for everything that follows.
+   *
+   * Azure DevOps reports a delay on successful responses too, which is the only
+   * warning it gives before it starts rejecting requests outright.
+   */
+  private async fetchRespectingCooldown(
+    url: RequestInfo | URL,
+    init?: RequestInit,
+  ): Promise<Response> {
+    const waitMs = this.cooldownUntil - Date.now();
+    if (waitMs > 0) {
+      await sleep(waitMs, init?.signal);
+    }
+
+    const response = await fetch(url, init);
+
+    const signalledMs = Math.max(
+      parseRateLimitDelayMs(response.headers.get(RATE_LIMIT_DELAY_HEADER)) ?? 0,
+      parseRetryAfterMs(response.headers.get('Retry-After'), 0),
+    );
+    if (signalledMs > 0) {
+      this.cooldownUntil = Math.max(
+        this.cooldownUntil,
+        Date.now() + Math.min(signalledMs, MAX_COOLDOWN_MS),
+      );
+    }
+
+    return response;
+  }
 
   get type(): string {
     return 'azure';
@@ -95,4 +173,38 @@ export class AzureIntegration implements ScmIntegration {
     // how azure works.
     return url;
   }
+
+  /**
+   * Performs a request against Azure DevOps, applying the retry and throttling
+   * behavior from the integration configuration.
+   */
+  fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+    return this.fetchImpl(input, init);
+  }
+
+  parseRateLimitInfo(response: ConsumedResponse): RateLimitInfo {
+    return {
+      isRateLimited:
+        response.status === 429 ||
+        parseRateLimitDelayMs(response.headers.get(RATE_LIMIT_DELAY_HEADER)) !==
+          undefined,
+    };
+  }
+}
+
+/**
+ * Turns an `X-RateLimit-Delay` header value into a delay in milliseconds, or
+ * undefined when the header is absent or does not hold a positive number.
+ */
+function parseRateLimitDelayMs(headerValue: string | null): number | undefined {
+  if (!headerValue) {
+    return undefined;
+  }
+
+  const seconds = Number(headerValue);
+  if (!Number.isFinite(seconds) || seconds <= 0) {
+    return undefined;
+  }
+
+  return seconds * 1000;
 }

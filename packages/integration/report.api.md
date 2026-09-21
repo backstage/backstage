@@ -190,6 +190,9 @@ export class AzureIntegration implements ScmIntegration {
   get config(): AzureIntegrationConfig;
   // (undocumented)
   static factory: ScmIntegrationsFactory<AzureIntegration>;
+  fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response>;
+  // (undocumented)
+  parseRateLimitInfo(response: ConsumedResponse): RateLimitInfo;
   // (undocumented)
   resolveEditUrl(url: string): string;
   // (undocumented)
@@ -209,6 +212,11 @@ export type AzureIntegrationConfig = {
   host: string;
   credentials?: AzureDevOpsCredential[];
   commitSigningKey?: string;
+  retry?: {
+    maxRetries?: number;
+    retryStatusCodes?: number[];
+    maxApiRequestsPerMinute?: number;
+  };
 };
 
 // @public

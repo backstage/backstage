@@ -241,6 +241,46 @@ integrations:
           tenantId: ${AZURE_TENANT_ID}
 ```
 
+## Rate limiting
+
+Azure DevOps applies its rate limits per identity, so every Backstage request
+that shares a credential draws from the same budget. When you get close to that
+budget, Azure DevOps starts delaying responses and reports it with an
+`X-RateLimit-Delay` header; once you pass it, requests are rejected with a `429`
+and a `Retry-After` header.
+
+Backstage does not retry these requests unless you ask it to. Add a `retry`
+section to slow down and retry instead of failing the read:
+
+```yaml
+integrations:
+  azure:
+    - host: dev.azure.com
+      retry:
+        maxRetries: 3
+        retryStatusCodes: [429, 503]
+        maxApiRequestsPerMinute: 200
+```
+
+- `maxRetries`: how many times a request may be retried. Defaults to `0`.
+- `retryStatusCodes`: which response codes are worth retrying. Defaults to none,
+  which turns retries off no matter what `maxRetries` says.
+- `maxApiRequestsPerMinute`: an upper bound on requests per minute for this
+  host, useful when the same credential is shared with other workloads. Defaults
+  to `-1`, meaning no limit.
+
+A retry waits for as long as Azure DevOps asks for in `Retry-After` or
+`X-RateLimit-Delay`, and falls back to an exponential backoff capped at ten
+seconds when neither is present.
+
+Configuring `retry` also makes Backstage read those two headers off every
+response, including successful ones. Azure DevOps reports a delay on a request
+it merely held back, which is the only warning you get before it starts
+rejecting requests outright. When Backstage sees such a delay it pauses every
+request to that host for the period Azure DevOps asked for, not just the one
+that saw the header, because the whole host shares a single budget. A single
+pause is capped at five minutes.
+
 ## Configuration schema
 
 The configuration is a structure with these elements:

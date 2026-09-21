@@ -16,36 +16,10 @@
 
 import { Config } from '@backstage/config';
 import { trimEnd } from 'lodash';
-import { isValidHost, isValidUrl } from '../helpers';
+import { isValidHost, isValidUrl, readOptionalNumberArray } from '../helpers';
 
 const GITLAB_HOST = 'gitlab.com';
 const GITLAB_API_BASE_URL = 'https://gitlab.com/api/v4';
-
-/**
- * Reads an optional number array from config
- */
-function readOptionalNumberArray(
-  config: Config,
-  key: string,
-): number[] | undefined {
-  const value = config.getOptional(key);
-  if (value === undefined) {
-    return undefined;
-  }
-  if (!Array.isArray(value)) {
-    throw new Error(
-      `Invalid ${key} config: expected an array, got ${typeof value}`,
-    );
-  }
-  return value.map((item, index) => {
-    if (typeof item !== 'number') {
-      throw new Error(
-        `Invalid ${key} config: all values must be numbers, got ${typeof item} at index ${index}`,
-      );
-    }
-    return item;
-  });
-}
 
 /**
  * The configuration parameters for a single GitLab integration.
