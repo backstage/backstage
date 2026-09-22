@@ -461,20 +461,11 @@ export async function buildCloudSqlConfig(
   const clientOpts = await retryWithExponentialBackoff(
     async () => {
       const connector = new CloudSqlConnector();
-      try {
-        return await connector.getOptions({
-          instanceConnectionName: instance,
-          ipType: ipType ?? IpAddressTypes.PUBLIC,
-          authType: AuthTypes.IAM,
-        });
-      } catch (error) {
-        try {
-          connector.close();
-        } catch {
-          // Preserve the connector initialization error.
-        }
-        throw error;
-      }
+      return connector.getOptions({
+        instanceConnectionName: instance,
+        ipType: ipType ?? IpAddressTypes.PUBLIC,
+        authType: AuthTypes.IAM,
+      });
     },
     {
       maxAttempts: cloudSqlConnectorMaxAttempts,

@@ -750,7 +750,7 @@ describe('postgres', () => {
         connection: { stream: mockStream },
       });
       expect(Connector).toHaveBeenCalledTimes(3);
-      expect(Connector.prototype.close).toHaveBeenCalledTimes(2);
+      expect(Connector.prototype.close).not.toHaveBeenCalled();
     });
 
     it('does not retry persistent cloud-sql-connector failures', async () => {
@@ -779,7 +779,7 @@ describe('postgres', () => {
       ).rejects.toBe(error);
       expect(Connector).toHaveBeenCalledTimes(1);
       expect(Connector.prototype.getOptions).toHaveBeenCalledTimes(1);
-      expect(Connector.prototype.close).toHaveBeenCalledTimes(1);
+      expect(Connector.prototype.close).not.toHaveBeenCalled();
     });
 
     it('stops retrying cloud-sql-connector initialization after three attempts', async () => {
@@ -817,7 +817,7 @@ describe('postgres', () => {
       await expect(settledResult).resolves.toEqual({ error: errors[2] });
       expect(Connector).toHaveBeenCalledTimes(3);
       expect(Connector.prototype.getOptions).toHaveBeenCalledTimes(3);
-      expect(Connector.prototype.close).toHaveBeenCalledTimes(3);
+      expect(Connector.prototype.close).not.toHaveBeenCalled();
       expect(jest.getTimerCount()).toBe(0);
     });
 
