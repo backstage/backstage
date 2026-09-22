@@ -102,11 +102,9 @@
     ]
   },
   "resolutions": {
-    "@changesets/assemble-release-plan@^6.0.0": "patch:@changesets/assemble-release-plan@npm%3A6.0.0#./.yarn/patches/@changesets-assemble-release-plan-npm-6.0.0-f7b3005037.patch",
     "@inquirer/type@npm:^4.0.5": "4.0.7",
     "@inquirer/type@npm:^4.0.7": "4.0.7",
     "@material-ui/pickers@^3.2.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
-    "@material-ui/pickers@^3.3.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
     "@remixicon/react": ">=4.6.0 <4.9.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
@@ -124,7 +122,6 @@
     "@backstage/cli": "workspace:*",
     "@backstage/cli-defaults": "workspace:*",
     "@backstage/cli-module-oxlint": "workspace:*",
-    "@backstage/codemods": "workspace:*",
     "@backstage/create-app": "workspace:*",
     "@backstage/e2e-test-utils": "workspace:*",
     "@backstage/eslint-plugin": "workspace:*",
