@@ -1,5 +1,16 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.5.60-next.0
+
+### Patch Changes
+
+- 7535616: Fixed PostgreSQL search highlighting when configured delimiters or selection tags contain punctuation that requires quoting.
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/plugin-search-backend-node@1.4.9-next.0
+  - @backstage/plugin-search-common@1.2.26-next.0
+
 ## 0.5.59
 
 ### Patch Changes

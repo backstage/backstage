@@ -1,5 +1,13 @@
 # @internal/frontend
 
+## 0.0.25-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/filter-predicates@0.1.6-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+
 ## 0.0.24
 
 ### Patch Changes
