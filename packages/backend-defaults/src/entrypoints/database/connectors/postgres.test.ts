@@ -253,6 +253,7 @@ describe('postgres', () => {
   describe('buildPgDatabaseConfig', () => {
     afterEach(() => {
       jest.useRealTimers();
+      jest.restoreAllMocks();
     });
 
     it('builds a postgres config', async () => {
@@ -753,7 +754,6 @@ describe('postgres', () => {
       expect(Connector).toHaveBeenCalledTimes(3);
       expect(Connector.prototype.close).not.toHaveBeenCalled();
       expect(random).toHaveBeenCalledTimes(2);
-      random.mockRestore();
     });
 
     it('does not retry persistent cloud-sql-connector failures', async () => {
