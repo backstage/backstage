@@ -649,6 +649,136 @@ describe('actionsRegistryServiceFactory', () => {
     });
   });
 
+  describe('/.backstage/actions/v1/status', () => {
+    function createPlugin(
+      pluginId: string,
+      options: {
+        registerAction: boolean;
+        visibilityPermission?: ReturnType<typeof createPermission>;
+      },
+    ) {
+      return createBackendPlugin({
+        pluginId,
+        register(reg) {
+          reg.registerInit({
+            deps: {
+              actionsRegistry: actionsRegistryServiceRef,
+            },
+            async init({ actionsRegistry }) {
+              if (options.registerAction) {
+                actionsRegistry.register({
+                  name: 'test',
+                  title: 'Test',
+                  description: 'Test',
+                  visibilityPermission: options.visibilityPermission,
+                  schema: {
+                    input: z => z.object({}),
+                    output: z => z.object({}),
+                  },
+                  action: async () => ({ output: {} }),
+                });
+              }
+            },
+          });
+        },
+      });
+    }
+
+    it('reports actions independently of source configuration and visibility permissions', async () => {
+      const visibilityPermission = createPermission({
+        name: 'test.action.use',
+        attributes: {},
+      });
+      const permissionsMock = mockServices.permissions.mock({
+        authorize: async () => [{ result: AuthorizeResult.DENY }],
+      });
+      const pluginSubject = createPlugin('my-plugin', {
+        registerAction: true,
+        visibilityPermission,
+      });
+
+      const { server } = await startTestBackend({
+        features: [
+          pluginSubject,
+          actionsRegistryServiceFactory,
+          httpRouterServiceFactory,
+          mockServices.httpAuth.factory({
+            defaultCredentials: mockCredentials.service('test-service'),
+          }),
+          mockServices.rootConfig.factory({
+            data: {
+              backend: { actions: { pluginSources: ['other-plugin'] } },
+            },
+          }),
+          permissionsMock.factory,
+        ],
+      });
+
+      await request(server)
+        .get('/api/my-plugin/.backstage/actions/v1/actions')
+        .expect(200, { actions: [] });
+      await request(server)
+        .get('/api/my-plugin/.backstage/actions/v1/status')
+        .expect(200, { hasActions: true });
+      expect(permissionsMock.authorize).not.toHaveBeenCalled();
+    });
+
+    it('reports no actions when none are registered or all are filtered out', async () => {
+      const emptyPlugin = createPlugin('empty-plugin', {
+        registerAction: false,
+      });
+      const filteredPlugin = createPlugin('filtered-plugin', {
+        registerAction: true,
+      });
+
+      const { server } = await startTestBackend({
+        features: [
+          emptyPlugin,
+          filteredPlugin,
+          ...defaultServices,
+          mockServices.rootConfig.factory({
+            data: {
+              backend: {
+                actions: { filter: { exclude: [{ id: '*:test' }] } },
+              },
+            },
+          }),
+        ],
+      });
+
+      await request(server)
+        .get('/api/empty-plugin/.backstage/actions/v1/status')
+        .expect(200, { hasActions: false });
+      await request(server)
+        .get('/api/filtered-plugin/.backstage/actions/v1/status')
+        .expect(200, { hasActions: false });
+    });
+
+    it('rejects user principals', async () => {
+      const pluginSubject = createPlugin('my-plugin', {
+        registerAction: false,
+      });
+
+      const { server } = await startTestBackend({
+        features: [
+          pluginSubject,
+          actionsRegistryServiceFactory,
+          httpRouterServiceFactory,
+          mockServices.httpAuth.factory({
+            defaultCredentials: mockCredentials.user(),
+          }),
+        ],
+      });
+
+      const response = await request(server).get(
+        '/api/my-plugin/.backstage/actions/v1/status',
+      );
+
+      expect(response.status).toBe(403);
+      expect(response.body.error.name).toBe('NotAllowedError');
+    });
+  });
+
   describe('/.backstage/actions/v1/actions/:actionId/invoke', () => {
     const mockAction = jest.fn();
     const mockSecretAction = jest.fn();

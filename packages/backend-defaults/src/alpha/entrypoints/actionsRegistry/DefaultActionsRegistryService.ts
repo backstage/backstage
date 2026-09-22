@@ -136,6 +136,19 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
       });
     });
 
+    router.get('/.backstage/actions/v1/status', async (req, res) => {
+      const credentials = await this.httpAuth.credentials(req);
+      if (!this.auth.isPrincipal(credentials, 'service')) {
+        throw new NotAllowedError();
+      }
+
+      return res.json({
+        hasActions: Array.from(this.actions.entries()).some(entry =>
+          this.isActionIncluded(entry),
+        ),
+      });
+    });
+
     const invokeHandler =
       (opts: { wrapped: boolean }) =>
       async (
@@ -267,7 +280,7 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
     this.actions.set(id, options);
   }
 
-  private isActionAllowed([id, action]: ActionEntry): boolean {
+  private isActionAllowed(entry: ActionEntry): boolean {
     const pluginSources = this.config.getOptionalStringArray(
       'backend.actions.pluginSources',
     );
@@ -276,6 +289,10 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
       return false;
     }
 
+    return this.isActionIncluded(entry);
+  }
+
+  private isActionIncluded([id, action]: ActionEntry): boolean {
     return (
       filterActions(this.config, [
         {
