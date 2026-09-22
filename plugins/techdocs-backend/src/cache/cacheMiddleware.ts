@@ -15,7 +15,7 @@
  */
 import { Router } from 'express';
 import router from 'express-promise-router';
-import type { OutgoingHttpHeaders } from 'node:http';
+import type { OutgoingHttpHeader, OutgoingHttpHeaders } from 'node:http';
 import { TechDocsCache } from './TechDocsCache';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
@@ -145,6 +145,41 @@ function getCacheableHeaders(
   );
 }
 
+function captureWriteHeadHeaders(
+  target: OutgoingHttpHeaders,
+  headers: OutgoingHttpHeaders | OutgoingHttpHeader[] | undefined,
+) {
+  if (!headers) {
+    return;
+  }
+
+  if (!Array.isArray(headers)) {
+    for (const [name, value] of Object.entries(headers)) {
+      target[name.toLowerCase()] = value;
+    }
+    return;
+  }
+
+  for (let i = 0; i < headers.length; i += 2) {
+    const name = headers[i];
+    const value = headers[i + 1];
+    if (typeof name !== 'string' || value === undefined) {
+      continue;
+    }
+
+    const normalizedName = name.toLowerCase();
+    const existing = target[normalizedName];
+    if (existing === undefined) {
+      target[normalizedName] = value;
+    } else {
+      target[normalizedName] = [
+        ...(Array.isArray(existing) ? existing : [String(existing)]),
+        ...(Array.isArray(value) ? value : [String(value)]),
+      ];
+    }
+  }
+}
+
 function captureChunk(
   chunks: Buffer[],
   chunk: string | Uint8Array | undefined,
@@ -191,8 +226,30 @@ export const createCacheMiddleware = ({
 
     if (isGetRequest) {
       const chunks: Buffer[] = [];
+      const writeHeadHeaders: OutgoingHttpHeaders = {};
       const realWrite = res.write.bind(res);
       const realEnd = res.end.bind(res);
+      const realWriteHead = res.writeHead.bind(res);
+
+      res.writeHead = (
+        statusCode: number,
+        statusMessageOrHeaders?:
+          | string
+          | OutgoingHttpHeaders
+          | OutgoingHttpHeader[],
+        headers?: OutgoingHttpHeaders | OutgoingHttpHeader[],
+      ) => {
+        captureWriteHeadHeaders(
+          writeHeadHeaders,
+          typeof statusMessageOrHeaders === 'string'
+            ? headers
+            : statusMessageOrHeaders,
+        );
+        if (typeof statusMessageOrHeaders === 'string') {
+          return realWriteHead(statusCode, statusMessageOrHeaders, headers);
+        }
+        return realWriteHead(statusCode, statusMessageOrHeaders);
+      };
 
       res.write = (
         chunk: string | Uint8Array,
@@ -233,7 +290,10 @@ export const createCacheMiddleware = ({
             reqPath,
             serializeCachedResponse(
               res.statusCode,
-              getCacheableHeaders(res.getHeaders()),
+              getCacheableHeaders({
+                ...res.getHeaders(),
+                ...writeHeadHeaders,
+              }),
               Buffer.concat(chunks),
             ),
           );
