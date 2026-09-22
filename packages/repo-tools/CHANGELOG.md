@@ -1,5 +1,18 @@
 # @backstage/repo-tools
 
+## 0.19.2-next.0
+
+### Patch Changes
+
+- a281164: Updated SQL report generation to support newer Knex releases.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/config-loader@1.11.4-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/cli-common@0.3.2-next.0
+
 ## 0.19.1
 
 ### Patch Changes

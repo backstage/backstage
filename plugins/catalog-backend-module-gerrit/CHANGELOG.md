@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend-module-gerrit
 
+## 0.3.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.0
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/plugin-catalog-node@2.2.6-next.0
+  - @backstage/plugin-catalog-common@1.2.1-next.0
+
 ## 0.3.18
 
 ### Patch Changes

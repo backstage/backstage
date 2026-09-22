@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.13.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-test-utils@1.11.8-next.0
+  - @backstage/plugin-scaffolder-common@2.3.1-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/plugin-permission-common@0.9.12-next.0
+  - @backstage/plugin-permission-node@0.11.5-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+
 ## 0.13.7
 
 ### Patch Changes
