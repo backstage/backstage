@@ -24,18 +24,13 @@ import { ConfigReader } from '@backstage/config';
 import { mockServices } from '@backstage/backend-test-utils';
 import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
-jest.mock('../database/operations/stitcher/markForStitching', () => ({
-  markForStitching: jest.fn().mockResolvedValue(undefined),
-}));
-const { markForStitching } = jest.requireMock(
-  '../database/operations/stitcher/markForStitching',
-) as { markForStitching: jest.Mock };
-
 describe('DefaultCatalogProcessingEngine', () => {
   const db = {
     transaction: jest.fn(),
     getProcessableEntities: jest.fn(),
     updateProcessedEntity: jest.fn(),
+    updateProcessedEntityErrors: jest.fn(),
+    markForStitching: jest.fn(),
     updateEntityCache: jest.fn(),
     listParents: jest.fn(),
     setRefreshKeys: jest.fn(),
@@ -78,7 +73,8 @@ describe('DefaultCatalogProcessingEngine', () => {
       metrics: metricsServiceMock.mock(),
     });
 
-    db.transaction.mockImplementation(cb => cb((() => {}) as any));
+    const tx = (() => {}) as any;
+    db.transaction.mockImplementation(cb => cb(tx));
 
     db.getProcessableEntities
       .mockImplementation(async () => {
@@ -116,6 +112,13 @@ describe('DefaultCatalogProcessingEngine', () => {
           metadata: { name: 'test' },
         },
         state: [], // State is forwarded as is, even if it's a bad format
+      });
+      expect(db.updateProcessedEntity).toHaveBeenCalledWith(
+        tx,
+        expect.anything(),
+      );
+      expect(db.markForStitching).toHaveBeenCalledWith(tx, {
+        entityRefs: new Set(['location:default/test']),
       });
     });
     await engine.stop();
@@ -187,6 +190,75 @@ describe('DefaultCatalogProcessingEngine', () => {
         },
         state: { cache: { myProcessor: { myKey: 'myValue' } } },
       });
+    });
+    await engine.stop();
+  });
+
+  it('stores processing errors and schedules stitching in one transaction', async () => {
+    const entity = {
+      apiVersion: '1',
+      kind: 'Location',
+      metadata: { name: 'test' },
+    };
+    orchestrator.process.mockResolvedValue({ ok: false, errors: [] });
+    hash.digest.mockReturnValue('new-result-hash');
+
+    const engine = new DefaultCatalogProcessingEngine({
+      config: new ConfigReader({}),
+      logger: mockServices.logger.mock(),
+      processingDatabase: db,
+      knex: { client: { config: { client: 'pg' } } } as any,
+      orchestrator,
+      createHash: () => hash,
+      scheduler: mockServices.scheduler(),
+      events: mockServices.events.mock(),
+      metrics: metricsServiceMock.mock(),
+    });
+    db.transaction.mockImplementation(cb => cb((() => {}) as any));
+    db.markForStitching
+      .mockRejectedValueOnce(
+        Object.assign(new Error('deadlock detected'), { code: '40P01' }),
+      )
+      .mockResolvedValue(undefined);
+    db.getProcessableEntities
+      .mockImplementation(async () => {
+        await engine.stop();
+        return { items: [] };
+      })
+      .mockResolvedValueOnce({
+        items: [
+          {
+            entityRef: 'location:default/test',
+            id: '1',
+            unprocessedEntity: entity,
+            resultHash: 'old-result-hash',
+            state: {},
+            nextUpdateAt: DateTime.now(),
+          },
+        ],
+      });
+
+    await engine.start();
+    await waitForExpect(() => {
+      const tx1 = db.updateProcessedEntityErrors.mock.calls[0]?.[0];
+      const tx2 = db.updateProcessedEntityErrors.mock.calls[1]?.[0];
+      expect(db.updateProcessedEntityErrors).toHaveBeenNthCalledWith(
+        1,
+        tx1,
+        expect.objectContaining({ id: '1', resultHash: 'new-result-hash' }),
+      );
+      expect(db.markForStitching).toHaveBeenNthCalledWith(1, tx1, {
+        entityRefs: ['location:default/test'],
+      });
+      expect(db.updateProcessedEntityErrors).toHaveBeenNthCalledWith(
+        2,
+        tx2,
+        expect.objectContaining({ id: '1', resultHash: 'new-result-hash' }),
+      );
+      expect(db.markForStitching).toHaveBeenNthCalledWith(2, tx2, {
+        entityRefs: ['location:default/test'],
+      });
+      expect(tx1).not.toBe(tx2);
     });
     await engine.stop();
   });
@@ -479,12 +551,12 @@ describe('DefaultCatalogProcessingEngine', () => {
 
     await engine.start();
     await waitForExpect(() => {
-      expect(markForStitching).toHaveBeenCalledTimes(2);
+      expect(db.markForStitching).toHaveBeenCalledTimes(2);
     });
-    expect([...markForStitching.mock.calls[0][0].entityRefs!]).toEqual(
+    expect([...db.markForStitching.mock.calls[0][1].entityRefs!]).toEqual(
       expect.arrayContaining(['k:ns/me', 'k:ns/other1', 'k:ns/other2']),
     );
-    expect([...markForStitching.mock.calls[1][0].entityRefs!]).toEqual(
+    expect([...db.markForStitching.mock.calls[1][1].entityRefs!]).toEqual(
       expect.arrayContaining(['k:ns/me', 'k:ns/other1', 'k:ns/other3']),
     );
     await engine.stop();
@@ -598,15 +670,15 @@ describe('DefaultCatalogProcessingEngine', () => {
 
     await engine.start();
     await waitForExpect(() => {
-      expect(markForStitching).toHaveBeenCalledTimes(2);
+      expect(db.markForStitching).toHaveBeenCalledTimes(2);
     });
-    expect([...markForStitching.mock.calls[0][0].entityRefs!]).toEqual(
+    expect([...db.markForStitching.mock.calls[0][1].entityRefs!]).toEqual(
       expect.arrayContaining(['k:ns/me', 'k:ns/other1']),
     );
     // As a result of switching the relationship for source other1 to
     // a new target entity, the other1 relationship source must be
     // restitched.
-    expect([...markForStitching.mock.calls[1][0].entityRefs!]).toEqual(
+    expect([...db.markForStitching.mock.calls[1][1].entityRefs!]).toEqual(
       expect.arrayContaining(['k:ns/me', 'k:ns/other1']),
     );
     await engine.stop();
@@ -674,9 +746,9 @@ describe('DefaultCatalogProcessingEngine', () => {
 
     await engine.start();
     await waitForExpect(() => {
-      expect(markForStitching).toHaveBeenCalledTimes(1);
+      expect(db.markForStitching).toHaveBeenCalledTimes(1);
     });
-    expect([...markForStitching.mock.calls[0][0].entityRefs!]).toEqual([
+    expect([...db.markForStitching.mock.calls[0][1].entityRefs!]).toEqual([
       'k:ns/me',
     ]);
     await engine.stop();
@@ -758,9 +830,9 @@ describe('DefaultCatalogProcessingEngine', () => {
 
     await engine.start();
     await waitForExpect(() => {
-      expect(markForStitching).toHaveBeenCalledTimes(1);
+      expect(db.markForStitching).toHaveBeenCalledTimes(1);
     });
-    expect([...markForStitching.mock.calls[0][0].entityRefs!]).toEqual(
+    expect([...db.markForStitching.mock.calls[0][1].entityRefs!]).toEqual(
       expect.arrayContaining(['k:ns/me', 'k:ns/other2']),
     );
     await engine.stop();
@@ -832,9 +904,9 @@ describe('DefaultCatalogProcessingEngine', () => {
 
     await engine.start();
     await waitForExpect(() => {
-      expect(markForStitching).toHaveBeenCalledTimes(1);
+      expect(db.markForStitching).toHaveBeenCalledTimes(1);
     });
-    expect([...markForStitching.mock.calls[0][0].entityRefs!]).toEqual(
+    expect([...db.markForStitching.mock.calls[0][1].entityRefs!]).toEqual(
       expect.arrayContaining(['k:ns/me', 'k:ns/other2']),
     );
     await engine.stop();
