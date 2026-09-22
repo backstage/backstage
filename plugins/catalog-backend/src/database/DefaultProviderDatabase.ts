@@ -245,7 +245,8 @@ export class DefaultProviderDatabase implements ProviderDatabase {
             await updateUnprocessedEntity({
               tx,
               entity,
-              entityRef,hash,
+              entityRef,
+              hash,
               locationKey,
             });
 
