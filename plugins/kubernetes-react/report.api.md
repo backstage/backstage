@@ -17,7 +17,6 @@ import { DetectedErrorsByCluster } from '@backstage/plugin-kubernetes-common';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { Event as Event_2 } from 'kubernetes-models/v1';
-import { FC } from 'react';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { GroupedResponses } from '@backstage/plugin-kubernetes-common';
 import { IContainer } from 'kubernetes-models/v1';
@@ -93,7 +92,7 @@ export type ClusterProps = {
 };
 
 // @public
-export const ContainerCard: FC<ContainerCardProps>;
+export function ContainerCard(input: ContainerCardProps): JSX_2.Element;
 
 // @public
 export interface ContainerCardProps {
@@ -215,7 +214,7 @@ export interface EventsProps {
 }
 
 // @public
-export const FixDialog: FC<FixDialogProps>;
+export function FixDialog(input: FixDialogProps): JSX_2.Element;
 
 // @public
 export interface FixDialogProps {
@@ -560,11 +559,6 @@ export class KubernetesProxyClient {
 export const kubernetesReactTranslationRef: TranslationRef<
   'kubernetes-react',
   {
-    readonly 'namespace.label': 'namespace:';
-    readonly 'namespace.labelWithValue': 'namespace: {{namespace}}';
-    readonly 'events.noEventsFound': 'No events found';
-    readonly 'events.eventTooltip': '{{eventType}} event';
-    readonly 'events.firstEvent': 'First event {{timeAgo}} (count: {{count}})';
     readonly 'cluster.label': 'Cluster';
     readonly 'cluster.pods': 'pods';
     readonly 'cluster.pods_one': '{{count}} pod';
@@ -573,6 +567,11 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'cluster.podsWithErrors_one': '{{count}} pod with errors';
     readonly 'cluster.podsWithErrors_other': '{{count}} pods with errors';
     readonly 'cluster.noPodsWithErrors': 'No pods with errors';
+    readonly 'events.noEventsFound': 'No events found';
+    readonly 'events.eventTooltip': '{{eventType}} event';
+    readonly 'events.firstEvent': 'First event {{timeAgo}} (count: {{count}})';
+    readonly 'namespace.label': 'namespace:';
+    readonly 'namespace.labelWithValue': 'namespace: {{namespace}}';
     readonly 'pods.pods_one': '{{count}} pod';
     readonly 'pods.pods_other': '{{count}} pods';
     readonly 'podsTable.columns.name': 'name';
@@ -617,10 +616,10 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'hpa.targetCpuUsage': 'target CPU usage:';
     readonly 'hpa.targetCpuUsageLabel': 'target CPU usage: {{value}}%';
     readonly 'errorReporting.columns.name': 'name';
+    readonly 'errorReporting.columns.cluster': 'cluster';
     readonly 'errorReporting.columns.kind': 'kind';
     readonly 'errorReporting.columns.namespace': 'namespace';
     readonly 'errorReporting.columns.messages': 'messages';
-    readonly 'errorReporting.columns.cluster': 'cluster';
     readonly 'errorReporting.title': 'Error Reporting';
     readonly 'podLogs.title': 'No logs emitted';
     readonly 'podLogs.description': 'No logs were emitted by the container';
@@ -764,7 +763,7 @@ export interface PodExecTerminalProps {
 }
 
 // @public
-export const PodLogs: FC<PodLogsProps>;
+export function PodLogs(input: PodLogsProps): JSX_2.Element;
 
 // @public
 export const PodLogsDialog: (input: PodLogsDialogProps) => JSX_2.Element;
