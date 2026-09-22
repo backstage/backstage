@@ -15,6 +15,7 @@
  */
 import { Router } from 'express';
 import router from 'express-promise-router';
+import type { OutgoingHttpHeaders } from 'node:http';
 import { TechDocsCache } from './TechDocsCache';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
@@ -23,80 +24,223 @@ type CacheMiddlewareOptions = {
   logger: LoggerService;
 };
 
-type ErrorCallback = (err?: Error | null) => void;
+type WriteCallback = (err?: Error | null) => void;
+
+type CachedResponse = {
+  statusCode: number;
+  headers: Record<string, string | string[] | number>;
+  body: Buffer;
+};
+
+const CACHE_VERSION_HEADER = 'x-backstage-techdocs-cache-version';
+const CACHE_VERSION = '1';
+const HEADER_SEPARATOR = Buffer.from('\r\n\r\n');
+
+const omittedCachedHeaders = new Set([
+  'connection',
+  'content-encoding',
+  'content-length',
+  'date',
+  'keep-alive',
+  'proxy-authenticate',
+  'proxy-authorization',
+  'te',
+  'trailer',
+  'transfer-encoding',
+  'upgrade',
+]);
+
+function serializeCachedResponse(
+  statusCode: number,
+  headers: Record<string, string | string[] | number>,
+  body: Buffer,
+): Buffer {
+  const headerLines = Object.entries({
+    ...headers,
+    [CACHE_VERSION_HEADER]: CACHE_VERSION,
+    'content-length': body.length,
+    connection: 'close',
+  }).flatMap(([name, value]) =>
+    (Array.isArray(value) ? value : [value]).map(item => `${name}: ${item}`),
+  );
+
+  // Keep the entry valid as a raw HTTP response so that old instances can
+  // safely serve entries written by new instances during a rolling update.
+  return Buffer.concat([
+    Buffer.from(`HTTP/1.1 ${statusCode} OK\r\n${headerLines.join('\r\n')}`),
+    HEADER_SEPARATOR,
+    body,
+  ]);
+}
+
+function deserializeCachedResponse(
+  data: Buffer | undefined,
+): CachedResponse | undefined {
+  if (!data) {
+    return undefined;
+  }
+
+  try {
+    const headersEnd = data.indexOf(HEADER_SEPARATOR);
+    if (headersEnd === -1) {
+      return undefined;
+    }
+
+    const [statusLine, ...headerLines] = data
+      .toString('latin1', 0, headersEnd)
+      .split('\r\n');
+    if (statusLine !== 'HTTP/1.1 200 OK') {
+      return undefined;
+    }
+
+    const headers: Record<string, string | string[] | number> = {};
+    for (const line of headerLines) {
+      const separator = line.indexOf(':');
+      if (separator <= 0) {
+        return undefined;
+      }
+      const name = line.slice(0, separator).trim().toLowerCase();
+      const value = line.slice(separator + 1).trim();
+      const existing = headers[name];
+      if (existing === undefined) {
+        headers[name] = value;
+      } else if (Array.isArray(existing)) {
+        headers[name] = [...existing, value];
+      } else {
+        headers[name] = [String(existing), value];
+      }
+    }
+
+    if (headers[CACHE_VERSION_HEADER] !== CACHE_VERSION) {
+      return undefined;
+    }
+    delete headers[CACHE_VERSION_HEADER];
+
+    const body = data.subarray(headersEnd + HEADER_SEPARATOR.length);
+    if (headers['content-length'] !== String(body.length)) {
+      return undefined;
+    }
+    delete headers['content-length'];
+    delete headers.connection;
+
+    return {
+      statusCode: 200,
+      headers,
+      body,
+    };
+  } catch {
+    return undefined;
+  }
+}
+
+function getCacheableHeaders(
+  headers: OutgoingHttpHeaders,
+): Record<string, string | string[] | number> {
+  return Object.fromEntries(
+    Object.entries(headers).filter(
+      (entry): entry is [string, string | string[] | number] =>
+        entry[1] !== undefined &&
+        !omittedCachedHeaders.has(entry[0].toLowerCase()),
+    ),
+  );
+}
+
+function captureChunk(
+  chunks: Buffer[],
+  chunk: string | Uint8Array | undefined,
+  encoding?: BufferEncoding | WriteCallback,
+) {
+  if (chunk === undefined) {
+    return;
+  }
+  chunks.push(
+    typeof chunk === 'string'
+      ? Buffer.from(chunk, typeof encoding === 'string' ? encoding : undefined)
+      : Buffer.from(chunk),
+  );
+}
 
 export const createCacheMiddleware = ({
   cache,
 }: CacheMiddlewareOptions): Router => {
   const cacheMiddleware = router();
 
-  // Middleware that, through socket monkey patching, captures responses as
-  // they're sent over /static/docs/* and caches them. Subsequent requests are
-  // loaded from cache. Cache key is the object's path (after `/static/docs/`).
+  // Middleware that captures responses sent over /static/docs/* and caches
+  // them. Subsequent requests are loaded from cache. Cache key is the object's
+  // path (after `/static/docs/`).
   cacheMiddleware.use(async (req, res, next) => {
-    const socket = res.socket;
     const isCacheable = req.path.startsWith('/static/docs/');
     const isGetRequest = req.method === 'GET';
 
-    // Continue early if this is non-cacheable, or there's no socket.
-    if (!isCacheable || !socket) {
+    if (!isCacheable) {
       next();
       return;
     }
 
-    // Make concrete references to these things.
     const reqPath = decodeURI(req.path.match(/\/static\/docs\/(.*)$/)![1]);
-    const realEnd = socket.end.bind(socket);
-    const realWrite = socket.write.bind(socket);
-    let writeToCache = true;
-    const chunks: Buffer[] = [];
-
-    // Monkey-patch the response's socket to keep track of chunks as they are
-    // written over the wire.
-    socket.write = (
-      data: string | Uint8Array,
-      encoding?: BufferEncoding | ErrorCallback,
-      callback?: ErrorCallback,
-    ) => {
-      // This cast is obviously weird, but it covers a type bug in @types/node
-      // which does not gracefully handle union types.
-      chunks.push(
-        typeof data === 'string' ? Buffer.from(data) : Buffer.from(data),
-      );
-      if (typeof encoding === 'function') {
-        return realWrite(data, encoding);
-      }
-      return realWrite(data, encoding, callback);
-    };
-
-    // When a socket is closed, if there were no errors and the data written
-    // over the socket should be cached, cache it!
-    socket.on('close', async hadError => {
-      const content = Buffer.concat(chunks);
-      const head = content.toString('utf8', 0, 12);
-      if (
-        isGetRequest &&
-        writeToCache &&
-        !hadError &&
-        head.match(/HTTP\/\d\.\d 200/)
-      ) {
-        await cache.set(reqPath, content);
-      }
-    });
-
-    // Attempt to retrieve data from the cache.
-    const cached = await cache.get(reqPath);
-
-    // If there is a cache hit, write it out on the socket, ensure we don't re-
-    // cache the data, and prevent going back to canonical storage by never
-    // calling next().
+    const cached = deserializeCachedResponse(await cache.get(reqPath));
     if (cached) {
-      writeToCache = false;
-      realEnd(cached);
+      res.status(cached.statusCode);
+      for (const [name, value] of Object.entries(cached.headers)) {
+        res.setHeader(name, value);
+      }
+      res.setHeader('Content-Length', cached.body.length);
+      res.end(req.method === 'HEAD' ? undefined : cached.body);
       return;
     }
 
-    // No data retrieved from cache: allow retrieval from canonical storage.
+    if (isGetRequest) {
+      const chunks: Buffer[] = [];
+      const realWrite = res.write.bind(res);
+      const realEnd = res.end.bind(res);
+
+      res.write = (
+        chunk: string | Uint8Array,
+        encoding?: BufferEncoding | WriteCallback,
+        callback?: WriteCallback,
+      ) => {
+        captureChunk(chunks, chunk, encoding);
+        if (typeof encoding === 'function') {
+          return realWrite(chunk, encoding);
+        }
+        if (encoding === undefined) {
+          return callback ? realWrite(chunk, callback) : realWrite(chunk);
+        }
+        return realWrite(chunk, encoding, callback);
+      };
+
+      res.end = (
+        chunk?: string | Uint8Array | WriteCallback,
+        encoding?: BufferEncoding | WriteCallback,
+        callback?: WriteCallback,
+      ) => {
+        if (typeof chunk === 'function') {
+          return realEnd(chunk);
+        }
+        captureChunk(chunks, chunk, encoding);
+        if (typeof encoding === 'function') {
+          return realEnd(chunk, encoding);
+        }
+        if (encoding === undefined) {
+          return callback ? realEnd(chunk, callback) : realEnd(chunk);
+        }
+        return realEnd(chunk, encoding, callback);
+      };
+
+      res.once('finish', () => {
+        if (res.statusCode === 200) {
+          void cache.set(
+            reqPath,
+            serializeCachedResponse(
+              res.statusCode,
+              getCacheableHeaders(res.getHeaders()),
+              Buffer.concat(chunks),
+            ),
+          );
+        }
+      });
+    }
+
     next();
   });
 
