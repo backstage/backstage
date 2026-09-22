@@ -214,7 +214,7 @@ describe('createCacheMiddleware', () => {
           sourceCalls += 1;
           res.writeHead(200, {
             'Content-Type': 'application/wasm',
-            'X-TechDocs-Test': 'write-head',
+            'X-TechDocs-Test': 'café',
           });
           res.end('content');
         });
@@ -222,14 +222,14 @@ describe('createCacheMiddleware', () => {
       await request(cacheApp)
         .get('/static/docs/default/component/example/module.wasm')
         .expect('Content-Type', 'application/wasm')
-        .expect('X-TechDocs-Test', 'write-head')
+        .expect('X-TechDocs-Test', 'café')
         .expect(200, 'content');
       await waitForCacheWrite();
 
       await request(cacheApp)
         .get('/static/docs/default/component/example/module.wasm')
         .expect('Content-Type', 'application/wasm')
-        .expect('X-TechDocs-Test', 'write-head')
+        .expect('X-TechDocs-Test', 'café')
         .expect(200, 'content');
 
       expect(sourceCalls).toBe(1);

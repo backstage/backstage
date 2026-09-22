@@ -67,7 +67,10 @@ function serializeCachedResponse(
   // Keep the entry valid as a raw HTTP response so that old instances can
   // safely serve entries written by new instances during a rolling update.
   return Buffer.concat([
-    Buffer.from(`HTTP/1.1 ${statusCode} OK\r\n${headerLines.join('\r\n')}`),
+    Buffer.from(
+      `HTTP/1.1 ${statusCode} OK\r\n${headerLines.join('\r\n')}`,
+      'latin1',
+    ),
     HEADER_SEPARATOR,
     body,
   ]);
@@ -239,16 +242,19 @@ export const createCacheMiddleware = ({
           | OutgoingHttpHeader[],
         headers?: OutgoingHttpHeaders | OutgoingHttpHeader[],
       ) => {
+        let result;
+        if (typeof statusMessageOrHeaders === 'string') {
+          result = realWriteHead(statusCode, statusMessageOrHeaders, headers);
+        } else {
+          result = realWriteHead(statusCode, statusMessageOrHeaders);
+        }
         captureWriteHeadHeaders(
           writeHeadHeaders,
           typeof statusMessageOrHeaders === 'string'
             ? headers
             : statusMessageOrHeaders,
         );
-        if (typeof statusMessageOrHeaders === 'string') {
-          return realWriteHead(statusCode, statusMessageOrHeaders, headers);
-        }
-        return realWriteHead(statusCode, statusMessageOrHeaders);
+        return result;
       };
 
       res.write = (
