@@ -143,9 +143,7 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
       }
 
       return res.json({
-        hasActions: Array.from(this.actions.entries()).some(entry =>
-          this.isActionIncluded(entry),
-        ),
+        hasActions: this.actions.size > 0,
       });
     });
 

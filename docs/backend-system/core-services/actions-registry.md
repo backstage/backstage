@@ -174,11 +174,10 @@ Backend services can determine whether a plugin has registered actions by
 requesting `GET /.backstage/actions/v1/status` from that plugin with service
 credentials. The response contains a `hasActions` boolean.
 
-The status reflects registered actions permitted by the global
-`backend.actions.filter` configuration. It does not depend on
-`backend.actions.pluginSources` or caller-specific visibility permissions and
-does not expose action metadata. Only service principals can access this
-endpoint.
+The status reflects whether the plugin has registered any actions. It does not
+depend on `backend.actions.pluginSources`, `backend.actions.filter`, or
+caller-specific visibility permissions and does not expose action metadata.
+Only service principals can access this endpoint.
 
 ### Adding a Permission to an Action
 

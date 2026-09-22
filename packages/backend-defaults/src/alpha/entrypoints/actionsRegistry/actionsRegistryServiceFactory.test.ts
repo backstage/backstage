@@ -684,7 +684,7 @@ describe('actionsRegistryServiceFactory', () => {
       });
     }
 
-    it('reports actions independently of source configuration and visibility permissions', async () => {
+    it('reports actions independently of action configuration and visibility permissions', async () => {
       const visibilityPermission = createPermission({
         name: 'test.action.use',
         attributes: {},
@@ -707,7 +707,12 @@ describe('actionsRegistryServiceFactory', () => {
           }),
           mockServices.rootConfig.factory({
             data: {
-              backend: { actions: { pluginSources: ['other-plugin'] } },
+              backend: {
+                actions: {
+                  pluginSources: ['other-plugin'],
+                  filter: { exclude: [{ id: 'my-plugin:*' }] },
+                },
+              },
             },
           }),
           permissionsMock.factory,
@@ -723,34 +728,17 @@ describe('actionsRegistryServiceFactory', () => {
       expect(permissionsMock.authorize).not.toHaveBeenCalled();
     });
 
-    it('reports no actions when none are registered or all are filtered out', async () => {
+    it('reports no actions when none are registered', async () => {
       const emptyPlugin = createPlugin('empty-plugin', {
         registerAction: false,
       });
-      const filteredPlugin = createPlugin('filtered-plugin', {
-        registerAction: true,
-      });
 
       const { server } = await startTestBackend({
-        features: [
-          emptyPlugin,
-          filteredPlugin,
-          ...defaultServices,
-          mockServices.rootConfig.factory({
-            data: {
-              backend: {
-                actions: { filter: { exclude: [{ id: '*:test' }] } },
-              },
-            },
-          }),
-        ],
+        features: [emptyPlugin, ...defaultServices],
       });
 
       await request(server)
         .get('/api/empty-plugin/.backstage/actions/v1/status')
-        .expect(200, { hasActions: false });
-      await request(server)
-        .get('/api/filtered-plugin/.backstage/actions/v1/status')
         .expect(200, { hasActions: false });
     });
 
