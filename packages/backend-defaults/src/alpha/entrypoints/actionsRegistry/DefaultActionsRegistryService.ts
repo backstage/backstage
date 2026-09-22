@@ -278,7 +278,7 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
     this.actions.set(id, options);
   }
 
-  private isActionAllowed(entry: ActionEntry): boolean {
+  private isActionAllowed([id, action]: ActionEntry): boolean {
     const pluginSources = this.config.getOptionalStringArray(
       'backend.actions.pluginSources',
     );
@@ -287,10 +287,6 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
       return false;
     }
 
-    return this.isActionIncluded(entry);
-  }
-
-  private isActionIncluded([id, action]: ActionEntry): boolean {
     return (
       filterActions(this.config, [
         {
