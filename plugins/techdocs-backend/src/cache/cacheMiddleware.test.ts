@@ -196,6 +196,45 @@ describe('createCacheMiddleware', () => {
       expect(sourceCalls).toBe(1);
     });
 
+    it('preserves response headers passed directly to writeHead', async () => {
+      const entries = new Map<string, Buffer>();
+      cache.get.mockImplementation(async path => entries.get(path));
+      cache.set.mockImplementation(async (path, value) => {
+        entries.set(path, value);
+      });
+      let sourceCalls = 0;
+      const router = await createCacheMiddleware({
+        logger: mockServices.logger.mock(),
+        cache,
+      });
+      const cacheApp = express()
+        .disable('x-powered-by')
+        .use(router)
+        .use((_req, res) => {
+          sourceCalls += 1;
+          res.writeHead(200, {
+            'Content-Type': 'application/wasm',
+            'X-TechDocs-Test': 'write-head',
+          });
+          res.end('content');
+        });
+
+      await request(cacheApp)
+        .get('/static/docs/default/component/example/module.wasm')
+        .expect('Content-Type', 'application/wasm')
+        .expect('X-TechDocs-Test', 'write-head')
+        .expect(200, 'content');
+      await waitForCacheWrite();
+
+      await request(cacheApp)
+        .get('/static/docs/default/component/example/module.wasm')
+        .expect('Content-Type', 'application/wasm')
+        .expect('X-TechDocs-Test', 'write-head')
+        .expect(200, 'content');
+
+      expect(sourceCalls).toBe(1);
+    });
+
     it('does not set cache on error', async () => {
       await request(app).get('/static/docs/error.png').expect(500);
 
