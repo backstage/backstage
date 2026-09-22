@@ -66,7 +66,8 @@ async function retryWithExponentialBackoff<T>(
       if (attempt >= options.maxAttempts || !options.shouldRetry(error)) {
         throw error;
       }
-      const delay = options.initialDelayMs * 2 ** (attempt - 1);
+      const maxDelay = options.initialDelayMs * 2 ** (attempt - 1);
+      const delay = Math.random() * maxDelay;
       await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
@@ -412,8 +413,8 @@ export async function buildAzurePgConfig(config: Config): Promise<Knex.Config> {
  * Builds a PostgreSQL configuration for Cloud SQL.
  *
  * Transient failures during connector initialization are retried up to three
- * times with exponential backoff. Configuration and authorization failures
- * are returned immediately.
+ * times with jittered exponential backoff. Configuration and authorization
+ * failures are returned immediately.
  */
 export async function buildCloudSqlConfig(
   config: Config,

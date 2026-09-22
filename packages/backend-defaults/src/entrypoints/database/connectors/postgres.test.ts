@@ -704,6 +704,7 @@ describe('postgres', () => {
 
     it('retries transient cloud-sql-connector initialization failures', async () => {
       jest.useFakeTimers();
+      const random = jest.spyOn(Math, 'random').mockReturnValue(0.5);
       const { Connector } = jest.requireMock(
         '@google-cloud/cloud-sql-connector',
       ) as jest.Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
@@ -738,11 +739,11 @@ describe('postgres', () => {
         }),
       );
 
-      await jest.advanceTimersByTimeAsync(199);
+      await jest.advanceTimersByTimeAsync(99);
       expect(Connector.prototype.getOptions).toHaveBeenCalledTimes(1);
       await jest.advanceTimersByTimeAsync(1);
       expect(Connector.prototype.getOptions).toHaveBeenCalledTimes(2);
-      await jest.advanceTimersByTimeAsync(399);
+      await jest.advanceTimersByTimeAsync(199);
       expect(Connector.prototype.getOptions).toHaveBeenCalledTimes(2);
       await jest.advanceTimersByTimeAsync(1);
 
@@ -751,6 +752,8 @@ describe('postgres', () => {
       });
       expect(Connector).toHaveBeenCalledTimes(3);
       expect(Connector.prototype.close).not.toHaveBeenCalled();
+      expect(random).toHaveBeenCalledTimes(2);
+      random.mockRestore();
     });
 
     it('does not retry persistent cloud-sql-connector failures', async () => {
