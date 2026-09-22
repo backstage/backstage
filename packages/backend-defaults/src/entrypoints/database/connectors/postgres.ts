@@ -38,6 +38,79 @@ import { TokenCredential } from '@azure/identity';
 // Limits the number of concurrent DDL operations to 1
 const ddlLimiter = limiterFactory(1);
 
+const cloudSqlConnectorMaxAttempts = 3;
+const cloudSqlConnectorInitialRetryDelayMs = 200;
+const cloudSqlConnectorRetryableErrorCodes = new Set([
+  'EAI_AGAIN',
+  'ECONNREFUSED',
+  'ECONNRESET',
+  'EHOSTUNREACH',
+  'ENETUNREACH',
+  'EPIPE',
+  'ETIMEDOUT',
+  'UND_ERR_CONNECT_TIMEOUT',
+]);
+
+async function retryWithExponentialBackoff<T>(
+  operation: () => Promise<T>,
+  options: {
+    maxAttempts: number;
+    initialDelayMs: number;
+    shouldRetry: (error: unknown) => boolean;
+  },
+): Promise<T> {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      if (attempt >= options.maxAttempts || !options.shouldRetry(error)) {
+        throw error;
+      }
+      const delay = options.initialDelayMs * 2 ** (attempt - 1);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+}
+
+function isCloudSqlConnectorRetryableError(error: unknown): boolean {
+  let current = error;
+  const seen = new Set<unknown>();
+
+  while (current && typeof current === 'object' && !seen.has(current)) {
+    seen.add(current);
+    const errorRecord = current as Record<string, unknown>;
+    const code = errorRecord.code;
+    if (
+      typeof code === 'string' &&
+      cloudSqlConnectorRetryableErrorCodes.has(code)
+    ) {
+      return true;
+    }
+
+    let status = errorRecord.status;
+    if (typeof status !== 'number') {
+      status = errorRecord.statusCode;
+    }
+    if (typeof status !== 'number') {
+      const response = errorRecord.response;
+      status =
+        response && typeof response === 'object'
+          ? (response as Record<string, unknown>).status
+          : undefined;
+    }
+    if (
+      typeof status === 'number' &&
+      (status === 408 || status === 429 || (status >= 500 && status <= 599))
+    ) {
+      return true;
+    }
+
+    current = errorRecord.cause;
+  }
+
+  return false;
+}
+
 export class PgAdminPool {
   private client?: Promise<Knex>;
   private destruction?: Promise<void>;
@@ -335,6 +408,13 @@ export async function buildAzurePgConfig(config: Config): Promise<Knex.Config> {
   };
 }
 
+/**
+ * Builds a PostgreSQL configuration for Cloud SQL.
+ *
+ * Transient failures during connector initialization are retried up to three
+ * times with exponential backoff. Configuration and authorization failures
+ * are returned immediately.
+ */
 export async function buildCloudSqlConfig(
   config: Config,
 ): Promise<Knex.Config> {
@@ -354,7 +434,6 @@ export async function buildCloudSqlConfig(
     IpAddressTypes,
     AuthTypes,
   } = require('@google-cloud/cloud-sql-connector') as typeof import('@google-cloud/cloud-sql-connector');
-  const connector = new CloudSqlConnector();
 
   type IpType = (typeof IpAddressTypes)[keyof typeof IpAddressTypes];
   const ipTypeRaw = config.getOptionalString('connection.ipAddressType');
@@ -375,11 +454,34 @@ export async function buildCloudSqlConfig(
     ipType = ipTypeRaw as unknown as IpType;
   }
 
-  const clientOpts = await connector.getOptions({
-    instanceConnectionName: instance,
-    ipType: ipType ?? IpAddressTypes.PUBLIC,
-    authType: AuthTypes.IAM,
-  });
+  /**
+   * Retry only transient connector initialization failures. A fresh connector
+   * is required because a failed initialization may be cached by the client.
+   */
+  const clientOpts = await retryWithExponentialBackoff(
+    async () => {
+      const connector = new CloudSqlConnector();
+      try {
+        return await connector.getOptions({
+          instanceConnectionName: instance,
+          ipType: ipType ?? IpAddressTypes.PUBLIC,
+          authType: AuthTypes.IAM,
+        });
+      } catch (error) {
+        try {
+          connector.close();
+        } catch {
+          // Preserve the connector initialization error.
+        }
+        throw error;
+      }
+    },
+    {
+      maxAttempts: cloudSqlConnectorMaxAttempts,
+      initialDelayMs: cloudSqlConnectorInitialRetryDelayMs,
+      shouldRetry: isCloudSqlConnectorRetryableError,
+    },
+  );
 
   const rawConfig = config.get() as Record<string, unknown>;
   const normalized = normalizeConnection(rawConfig.connection as any);
