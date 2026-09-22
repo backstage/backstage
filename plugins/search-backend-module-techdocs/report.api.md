@@ -34,6 +34,7 @@ export interface MkSearchIndexDoc {
 // @public (undocumented)
 export type TechDocsCollatorDocumentTransformer = (
   doc: MkSearchIndexDoc,
+  entity?: Entity,
 ) => Partial<
   Omit<
     TechDocsDocument,
