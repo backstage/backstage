@@ -22055,6 +22055,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ansis@npm:4.2.0":
+  version: 4.2.0
+  resolution: "ansis@npm:4.2.0"
+  checksum: 10/493e15fad267bd6e3e275d6886c3b3c96a075784d9eae3e16d16383d488e94cc3deb1b357e1246f572599767360548ef9e5b7eab9b72e4ee3f7bad9ce6bc8797
+  languageName: node
+  linkType: hard
+
 "any-promise@npm:^1.0.0, any-promise@npm:^1.1.0":
   version: 1.3.0
   resolution: "any-promise@npm:1.3.0"
@@ -23945,12 +23952,13 @@ __metadata:
   linkType: hard
 
 "cleye@npm:^2.6.0":
-  version: 2.6.0
-  resolution: "cleye@npm:2.6.0"
+  version: 2.7.0
+  resolution: "cleye@npm:2.7.0"
   dependencies:
+    ansis: "npm:4.2.0"
     terminal-columns: "npm:^2.0.0"
-    type-flag: "npm:^4.1.0"
-  checksum: 10/162611fb2059ab36ed0484618ee6f0f5365226fb0c31953072469404b1d30d606ccc70bf540a95841173c15afd19f3c5447173b360565b854963ac341f7ecc11
+    type-flag: "npm:^4.5.2"
+  checksum: 10/93f8615e5760b8b28511b3f45af163e89ce39196e8d7e2bc37f9d1445b5c5ad02b11a64bf590a38145be3c782303bd5235c2c919873388aae24c5c517808ee3a
   languageName: node
   linkType: hard
 
@@ -44667,10 +44675,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-flag@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "type-flag@npm:4.1.0"
-  checksum: 10/d3af106dab651751426f778095b3963791d15482b2154f92f4f98e5d6b72d593ae9873120d2de24f34191ab42c0d71c0259743162e543aee8d55b528ed1c6e78
+"type-flag@npm:^4.5.2":
+  version: 4.5.2
+  resolution: "type-flag@npm:4.5.2"
+  checksum: 10/c5911adedd694fc96fd0658f7a14dc29f77f6f6e9d83d783d80ae138be2e1ba40290068b6e84673bf4c48e350c360d6e7c3f509e08e427b96c8b6287a0e15b8a
   languageName: node
   linkType: hard
 
