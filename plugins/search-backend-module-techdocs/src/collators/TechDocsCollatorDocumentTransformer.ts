@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
+import { Entity } from '@backstage/catalog-model';
 
 /** @public */
 export interface MkSearchIndexDoc {
@@ -26,6 +27,7 @@ export interface MkSearchIndexDoc {
 /** @public */
 export type TechDocsCollatorDocumentTransformer = (
   doc: MkSearchIndexDoc,
+  entity?: Entity,
 ) => Partial<
   Omit<
     TechDocsDocument,
