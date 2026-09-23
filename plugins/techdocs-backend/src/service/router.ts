@@ -186,11 +186,11 @@ export async function createRouter(
     );
   }
 
-  // Readers fetch documentation straight from `techdocs.storageUrl` when it is
-  // set, which never reaches these checks.
+  // A storage URL may point at the backend itself, which is checked, or straight
+  // at storage, which is not.
   if (techDocsPermissionsEnabled && config.has('techdocs.storageUrl')) {
     logger.warn(
-      "TechDocs permissions are enabled, but 'techdocs.storageUrl' is configured. Documentation fetched directly from that location does not pass through 'techdocs.entity.read', so it must enforce equivalent access control itself.",
+      "TechDocs permissions may be bypassed if 'techdocs.storageUrl' points directly at storage rather than at the TechDocs backend. Ensure that location enforces equivalent access control.",
     );
   }
 

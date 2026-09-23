@@ -910,9 +910,9 @@ The route that returns the catalog entity behind a documentation site requires *
 
 !!! warning "Documentation must be served through the TechDocs backend"
 
-    These checks run in the TechDocs backend, so they only apply to documentation that is fetched through it. If you set `techdocs.storageUrl` to a location that clients can reach directly, such as a storage bucket or a CDN in front of one, the frontend fetches documentation from there and no permission check happens at all.
+    These checks run in the TechDocs backend, so they only apply to documentation that is fetched through it. Setting `techdocs.storageUrl` to the TechDocs backend endpoint is fine, since those requests are still checked. Pointing it at a location that clients can reach directly, such as a storage bucket or a CDN in front of one, means the frontend fetches documentation from there and no permission check happens at all.
 
-    Leave `techdocs.storageUrl` unset so that documentation is served from the backend, or make sure the storage location enforces equivalent access control of its own. The same applies to any pre-signed or public object storage URLs you hand out.
+    In that case, make sure the storage location enforces equivalent access control of its own. The same applies to any pre-signed or public object storage URLs you hand out.
 
 ### Enable permissions
 
