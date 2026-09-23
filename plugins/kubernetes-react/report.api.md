@@ -559,6 +559,11 @@ export class KubernetesProxyClient {
 export const kubernetesReactTranslationRef: TranslationRef<
   'kubernetes-react',
   {
+    readonly 'namespace.label': 'namespace:';
+    readonly 'namespace.labelWithValue': 'namespace: {{namespace}}';
+    readonly 'events.noEventsFound': 'No events found';
+    readonly 'events.eventTooltip': '{{eventType}} event';
+    readonly 'events.firstEvent': 'First event {{timeAgo}} (count: {{count}})';
     readonly 'cluster.label': 'Cluster';
     readonly 'cluster.pods': 'pods';
     readonly 'cluster.pods_one': '{{count}} pod';
@@ -567,11 +572,6 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'cluster.podsWithErrors_one': '{{count}} pod with errors';
     readonly 'cluster.podsWithErrors_other': '{{count}} pods with errors';
     readonly 'cluster.noPodsWithErrors': 'No pods with errors';
-    readonly 'events.noEventsFound': 'No events found';
-    readonly 'events.eventTooltip': '{{eventType}} event';
-    readonly 'events.firstEvent': 'First event {{timeAgo}} (count: {{count}})';
-    readonly 'namespace.label': 'namespace:';
-    readonly 'namespace.labelWithValue': 'namespace: {{namespace}}';
     readonly 'pods.pods_one': '{{count}} pod';
     readonly 'pods.pods_other': '{{count}} pods';
     readonly 'podsTable.columns.name': 'name';
@@ -616,10 +616,10 @@ export const kubernetesReactTranslationRef: TranslationRef<
     readonly 'hpa.targetCpuUsage': 'target CPU usage:';
     readonly 'hpa.targetCpuUsageLabel': 'target CPU usage: {{value}}%';
     readonly 'errorReporting.columns.name': 'name';
-    readonly 'errorReporting.columns.cluster': 'cluster';
     readonly 'errorReporting.columns.kind': 'kind';
     readonly 'errorReporting.columns.namespace': 'namespace';
     readonly 'errorReporting.columns.messages': 'messages';
+    readonly 'errorReporting.columns.cluster': 'cluster';
     readonly 'errorReporting.title': 'Error Reporting';
     readonly 'podLogs.title': 'No logs emitted';
     readonly 'podLogs.description': 'No logs were emitted by the container';
