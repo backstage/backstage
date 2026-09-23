@@ -107,6 +107,12 @@ export interface Config {
            */
           excludeRepos?: string[];
           /**
+           * (Optional) A list of strings containing the paths of the groups to exclude from discovery.
+           * All projects under the excluded groups and their subgroups will be skipped.
+           * Should be in the format group/subgroup, with no leading or trailing slashes.
+           */
+          excludeGroups?: string[];
+          /**
            * If true, users without a seat will be included in the catalog.
            * Group/Application Access Tokens are still filtered out but you might find service accounts or other users without a seat.
            * Defaults to `false`
