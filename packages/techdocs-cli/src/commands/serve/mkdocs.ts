@@ -22,9 +22,12 @@ import { RunOnOutput } from '@backstage/cli-common';
 import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
 import { checkIfDockerIsOperational } from './utils';
+import { getEngineConfig } from '../../lib/engineConfig';
 
 export default async function serveMkdocs(opts: OptionValues) {
   const logger = createLogger({ verbose: opts.verbose });
+  const engine = opts.engine ?? 'mkdocs';
+  const engineConfig = getEngineConfig(engine);
 
   const dockerAddr = `http://0.0.0.0:${opts.port}`;
   const localAddr = `http://127.0.0.1:${opts.port}`;
@@ -60,7 +63,7 @@ export default async function serveMkdocs(opts: OptionValues) {
       // When the server has started, open a new browser tab for the user.
       if (
         !boolOpenBrowserTriggered &&
-        line.includes(`Serving on ${expectedDevAddr}`)
+        line.includes(`${engineConfig.startupLogPattern}`)
       ) {
         // Always open the local address, since 0.0.0.0 belongs to docker
         logger.info(`\nStarting mkdocs server on ${localAddr}\n`);

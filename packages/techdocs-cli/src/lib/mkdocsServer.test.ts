@@ -141,5 +141,17 @@ describe('runMkdocsServer', () => {
         expect.objectContaining({}),
       );
     });
+
+    it('should use custom engine binary when provided', () => {
+      runMkdocsServer({
+        useDocker: false,
+        engineBinary: 'zensical',
+        engineServeArgs: ['serve', '--dev-addr', '127.0.0.1:8000'],
+      });
+      expect(run).toHaveBeenCalledWith(
+        ['zensical', 'serve', '--dev-addr', '127.0.0.1:8000'],
+        expect.objectContaining({}),
+      );
+    });
   });
 });
