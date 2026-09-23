@@ -91,16 +91,23 @@ function useOwnerUsers(entity: Entity | undefined): HeaderMetadataUser[] {
   });
 }
 
-function HierarchyLinks(props: { refs: CompoundEntityRef[] }) {
+function HierarchyLink(props: { entityRef: CompoundEntityRef }) {
   const entityLink = useEntityRefLink();
+  const presentation = useEntityPresentation(props.entityRef);
+  return (
+    <Link href={entityLink(props.entityRef)} standalone>
+      {presentation.primaryTitle}
+    </Link>
+  );
+}
+
+function HierarchyLinks(props: { refs: CompoundEntityRef[] }) {
   return (
     <Box as="ul" display="inline" m="0" p="0" style={{ listStyle: 'none' }}>
       {props.refs.map((ref, index) => (
         <Box as="li" display="inline" key={stringifyEntityRef(ref)}>
           {index > 0 ? ', ' : null}
-          <Link href={entityLink(ref)} standalone>
-            {ref.name}
-          </Link>
+          <HierarchyLink entityRef={ref} />
         </Box>
       ))}
     </Box>

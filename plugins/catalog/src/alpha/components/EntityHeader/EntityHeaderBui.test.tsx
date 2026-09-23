@@ -22,12 +22,14 @@ import {
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
 import {
+  entityPresentationApiRef,
   EntityProvider,
   entityRouteRef,
   MockStarredEntitiesApi,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import { DefaultEntityPresentationApi } from '../../../apis/EntityPresentationApi/DefaultEntityPresentationApi';
 import { EntityHeaderBui } from './EntityHeaderBui';
 
 const componentEntity: Entity = {
@@ -55,6 +57,17 @@ const ownerEntity: Entity = {
   spec: { profile: { picture: 'https://example.com/team-a.png' } },
 };
 
+const systemEntity: Entity = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'System',
+  metadata: {
+    namespace: 'default',
+    name: 'artist-engagement-portal',
+    title: 'Artist Engagement Portal',
+  },
+  spec: { owner: 'team-a' },
+};
+
 function createDeferred<T>() {
   let resolve!: (value: T) => void;
   const promise = new Promise<T>(resolver => {
@@ -68,14 +81,20 @@ async function renderHeader(options: {
   catalogEntities?: Entity[];
   catalogApi?: ReturnType<typeof catalogApiMock>;
 }) {
+  const catalogApi =
+    options.catalogApi ??
+    catalogApiMock({ entities: options.catalogEntities ?? [] });
   return renderInTestApp(
     <EntityProvider entity={options.entity}>
       <EntityHeaderBui tabs={[]} contextMenuItems={[]} />
     </EntityProvider>,
     {
       apis: [
-        options.catalogApi ??
-          catalogApiMock({ entities: options.catalogEntities ?? [] }),
+        catalogApi,
+        [
+          entityPresentationApiRef,
+          DefaultEntityPresentationApi.create({ catalogApi }),
+        ],
         [starredEntitiesApiRef, new MockStarredEntitiesApi()],
       ],
       mountPath: '/catalog/:namespace/:kind/:name',
@@ -113,6 +132,23 @@ describe('EntityHeaderBui', () => {
     expect(
       screen.getByRole('button', { name: 'More actions' }),
     ).toBeInTheDocument();
+  });
+
+  it('resolves a hierarchy relation (system/domain/parent) to its catalog title, not its raw name', async () => {
+    await renderHeader({
+      entity: componentEntity,
+      catalogEntities: [componentEntity, ownerEntity, systemEntity],
+    });
+
+    expect(
+      await screen.findByRole('link', { name: 'Artist Engagement Portal' }),
+    ).toHaveAttribute(
+      'href',
+      '/catalog/default/system/artist-engagement-portal',
+    );
+    expect(
+      screen.queryByRole('link', { name: 'artist-engagement-portal' }),
+    ).not.toBeInTheDocument();
   });
 
   it('keeps a useful owner fallback while catalog owner resolution is pending', async () => {
