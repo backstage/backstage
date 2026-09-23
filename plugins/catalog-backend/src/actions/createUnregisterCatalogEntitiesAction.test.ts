@@ -16,8 +16,34 @@
 import { createUnregisterCatalogEntitiesAction } from './createUnregisterCatalogEntitiesAction';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
+import { mockServices } from '@backstage/backend-test-utils';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { NotFoundError } from '@backstage/errors';
 
 describe('createUnregisterCatalogEntitiesAction', () => {
+  let permissions: ReturnType<typeof mockServices.permissions.mock>;
+
+  beforeEach(() => {
+    permissions = mockServices.permissions.mock({
+      authorize: async () => [{ result: AuthorizeResult.ALLOW }],
+    });
+  });
+
+  it('requires location deletion permission for action visibility', () => {
+    const mockActionsRegistry = actionsRegistryServiceMock();
+
+    createUnregisterCatalogEntitiesAction({
+      catalog: catalogServiceMock(),
+      actionsRegistry: mockActionsRegistry,
+      permissions,
+    });
+
+    expect(
+      mockActionsRegistry.actions.get('test:unregister-entity')
+        ?.visibilityPermission?.name,
+    ).toBe('catalog.location.delete');
+  });
+
   describe('with locationId', () => {
     it('should successfully unregister a catalog location with a valid locationId', async () => {
       const mockActionsRegistry = actionsRegistryServiceMock();
@@ -28,6 +54,7 @@ describe('createUnregisterCatalogEntitiesAction', () => {
       createUnregisterCatalogEntitiesAction({
         catalog: mockCatalog,
         actionsRegistry: mockActionsRegistry,
+        permissions,
       });
 
       const result = await mockActionsRegistry.invoke({
@@ -56,6 +83,7 @@ describe('createUnregisterCatalogEntitiesAction', () => {
       createUnregisterCatalogEntitiesAction({
         catalog: mockCatalog,
         actionsRegistry: mockActionsRegistry,
+        permissions,
       });
 
       await expect(
@@ -68,6 +96,52 @@ describe('createUnregisterCatalogEntitiesAction', () => {
   });
 
   describe('with locationUrl', () => {
+    it('rejects denied location read permission before listing locations', async () => {
+      const mockActionsRegistry = actionsRegistryServiceMock();
+      const mockCatalog = catalogServiceMock();
+      mockCatalog.getLocations = jest.fn().mockResolvedValue({ items: [] });
+      const getLocationsSpy = jest.spyOn(mockCatalog, 'getLocations');
+      const removeLocationSpy = jest.spyOn(mockCatalog, 'removeLocationById');
+      permissions.authorize.mockResolvedValue([
+        { result: AuthorizeResult.DENY },
+      ]);
+
+      const options = {
+        catalog: mockCatalog,
+        actionsRegistry: mockActionsRegistry,
+        permissions,
+      };
+      createUnregisterCatalogEntitiesAction(options);
+
+      await expect(
+        mockActionsRegistry.invoke({
+          id: 'test:unregister-entity',
+          input: {
+            type: {
+              locationUrl:
+                'https://github.com/backstage/demo/blob/master/catalog-info.yaml',
+            },
+          },
+        }),
+      ).rejects.toMatchObject({
+        name: 'NotFoundError',
+        message: 'No matching location found',
+      } satisfies Partial<NotFoundError>);
+
+      expect(permissions.authorize).toHaveBeenCalledWith(
+        [
+          {
+            permission: expect.objectContaining({
+              name: 'catalog.location.read',
+            }),
+          },
+        ],
+        { credentials: expect.any(Object) },
+      );
+      expect(getLocationsSpy).not.toHaveBeenCalled();
+      expect(removeLocationSpy).not.toHaveBeenCalled();
+    });
+
     it('should successfully unregister a catalog location with a valid locationUrl', async () => {
       const mockActionsRegistry = actionsRegistryServiceMock();
       const mockCatalog = catalogServiceMock();
@@ -86,6 +160,7 @@ describe('createUnregisterCatalogEntitiesAction', () => {
       createUnregisterCatalogEntitiesAction({
         catalog: mockCatalog,
         actionsRegistry: mockActionsRegistry,
+        permissions,
       });
 
       const result = await mockActionsRegistry.invoke({
@@ -127,6 +202,7 @@ describe('createUnregisterCatalogEntitiesAction', () => {
       createUnregisterCatalogEntitiesAction({
         catalog: mockCatalog,
         actionsRegistry: mockActionsRegistry,
+        permissions,
       });
 
       const result = await mockActionsRegistry.invoke({
@@ -167,6 +243,7 @@ describe('createUnregisterCatalogEntitiesAction', () => {
       createUnregisterCatalogEntitiesAction({
         catalog: mockCatalog,
         actionsRegistry: mockActionsRegistry,
+        permissions,
       });
 
       const result = await mockActionsRegistry.invoke({
@@ -208,6 +285,7 @@ describe('createUnregisterCatalogEntitiesAction', () => {
       createUnregisterCatalogEntitiesAction({
         catalog: mockCatalog,
         actionsRegistry: mockActionsRegistry,
+        permissions,
       });
 
       await expect(
@@ -232,6 +310,7 @@ describe('createUnregisterCatalogEntitiesAction', () => {
       createUnregisterCatalogEntitiesAction({
         catalog: mockCatalog,
         actionsRegistry: mockActionsRegistry,
+        permissions,
       });
 
       await expect(
