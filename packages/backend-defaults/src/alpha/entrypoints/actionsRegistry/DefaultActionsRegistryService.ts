@@ -137,10 +137,7 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
     });
 
     router.get('/.backstage/actions/v1/status', async (req, res) => {
-      const credentials = await this.httpAuth.credentials(req);
-      if (!this.auth.isPrincipal(credentials, 'service')) {
-        throw new NotAllowedError();
-      }
+      await this.httpAuth.credentials(req, { allow: ['service'] });
 
       return res.json({
         hasActions: this.actions.size > 0,
