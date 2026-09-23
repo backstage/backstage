@@ -832,6 +832,54 @@ data: {"updated":true}
         expect.objectContaining({ name: 'test' }),
       );
     });
+
+    it('should keep catalog.entity.read on the entity metadata route', async () => {
+      const permissions = mockServices.permissions.mock({
+        authorize: jest
+          .fn()
+          .mockResolvedValue([{ result: AuthorizeResult.ALLOW }]),
+      });
+
+      const app = await createApp({
+        ...outOfTheBoxOptions,
+        permissions,
+        config: techDocsPermissionsConfig,
+      });
+
+      MockCachedEntityLoader.prototype.load.mockResolvedValue({
+        ...entity,
+        metadata: {
+          ...entity.metadata,
+          annotations: {
+            'backstage.io/techdocs-ref':
+              'url:https://github.com/backstage/backstage',
+          },
+        },
+      });
+
+      const response = await request(app)
+        .get('/metadata/entity/default/Component/test')
+        .send();
+
+      expect(response.status).toBe(200);
+      // This route returns the entity itself, so it must still be looked up
+      // with the caller's credentials rather than the plugin's.
+      expect(MockCachedEntityLoader.prototype.load).toHaveBeenCalledWith(
+        mockCredentials.user(),
+        expect.objectContaining({ name: 'test' }),
+      );
+    });
+
+    it('should refuse to start when the permission framework is disabled', async () => {
+      await expect(
+        createApp({
+          ...outOfTheBoxOptions,
+          config: new ConfigReader({
+            techdocs: { experimentalTechdocsPermissions: true },
+          }),
+        }),
+      ).rejects.toThrow(/permission framework is disabled/);
+    });
   });
 });
 

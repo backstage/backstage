@@ -11,6 +11,6 @@ techdocs:
   experimentalTechdocsPermissions: true
 ```
 
-When enabled, `techdocs.entity.read` replaces the catalog's `catalog.entity.read` permission as the check that guards documentation, making documentation visibility independent from catalog visibility. Be aware that this makes `techdocs.entity.read` the only permission guarding your documentation, so make sure your permission policy handles it before turning the flag on — otherwise a policy that allows unknown permissions by default will serve documentation to everyone.
+When enabled, `techdocs.entity.read` replaces the catalog's `catalog.entity.read` permission as the check that guards documentation, making documentation visibility independent from catalog visibility. Reading the catalog entity behind a documentation site still requires `catalog.entity.read`. Be aware that this makes `techdocs.entity.read` the only permission guarding your documentation, so make sure your permission policy handles it before turning the flag on — otherwise a policy that allows unknown permissions by default will serve documentation to everyone. The backend refuses to start if the flag is enabled while the permission framework is disabled.
 
 The flag gives you time to update your permission policy before switching over. This behavior is intended to become the default in a future release.

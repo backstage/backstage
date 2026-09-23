@@ -902,13 +902,15 @@ Which permission gates documentation depends on whether you have opted in:
 
 - **With the flag enabled**: documentation is gated by `techdocs.entity.read` instead. `catalog.entity.read` is no longer applied to documentation routes, so documentation visibility becomes fully independent from catalog visibility. This lets you keep an entity discoverable in the catalog while restricting its documentation — or the other way around.
 
+Entity metadata itself is not affected: the route that returns the catalog entity behind a documentation site still requires `catalog.entity.read`, so enabling the flag never exposes catalog data to users who cannot already read it.
+
 !!! warning
 
-    Because `catalog.entity.read` no longer applies once the flag is enabled, `techdocs.entity.read` becomes the **only** thing standing between a user and the documentation. If your permission policy does not handle `techdocs.entity.read` and falls through to a default `ALLOW`, documentation becomes readable by everyone — including documentation for entities the user cannot see in the catalog. Write and test your policy before enabling the flag.
+    Because `catalog.entity.read` no longer applies once the flag is enabled, `techdocs.entity.read` becomes the **only** thing standing between a user and the documentation. If your permission policy does not handle `techdocs.entity.read` and falls through to a default `ALLOW`, documentation becomes readable by everyone. Write and test your policy before enabling the flag.
 
 ### Enable permissions
 
-First, ensure the permission framework is enabled in your `app-config.yaml`, then opt in to TechDocs permissions:
+The flag requires the permission framework, and the backend refuses to start if it is enabled without it:
 
 ```yaml
 permission:
@@ -1034,7 +1036,8 @@ documentation is filtered against `techdocs.entity.read` rather than
 search results and keeps titles and content snippets from leaking.
 
 Both permissions use the `catalog-entity` resource type and documents are
-filtered at query time, so no reindex is needed when you switch the flag.
+filtered at query time, so there is no need to rebuild the search index when you
+switch the flag.
 
 ### Using the RBAC plugin
 

@@ -175,6 +175,17 @@ export async function createRouter(
     config.getOptionalBoolean('techdocs.experimentalTechdocsPermissions') ??
     false;
 
+  const permissionFrameworkEnabled =
+    config.getOptionalBoolean('permission.enabled') ?? false;
+
+  // Without the permission framework no decision is ever enforced, which would
+  // silently serve documentation that the flag is meant to protect.
+  if (techDocsPermissionsEnabled && !permissionFrameworkEnabled) {
+    throw new Error(
+      "TechDocs permissions are enabled via 'techdocs.experimentalTechdocsPermissions' but the permission framework is disabled. Set 'permission.enabled' to true, or remove the TechDocs flag.",
+    );
+  }
+
   // Entities are cached to optimize the /static/docs request path, which can be called many times
   // when loading a single techdocs page.
   const entityLoader = new CachedEntityLoader({
@@ -184,12 +195,16 @@ export async function createRouter(
 
   // Loading an entity with the caller's credentials makes the catalog enforce
   // `catalog.entity.read`. Once TechDocs permissions are enabled that check is
-  // redundant, and would prevent documentation from being readable by users who
-  // are not allowed to read the entity itself, so the entity is looked up with
-  // the plugin's own credentials and `techdocs.entity.read` becomes the only gate.
+  // redundant for documentation, and would prevent docs from being readable by
+  // users who are not allowed to read the entity itself, so documentation is
+  // served after looking the entity up with the plugin's own credentials and
+  // `techdocs.entity.read` becomes the only gate.
   const loadEntity = async (
     credentials: BackstageCredentials,
     entityName: CompoundEntityRef,
+    // Set for routes that return catalog data rather than documentation, so that
+    // `catalog.entity.read` keeps applying to the entity itself.
+    opts: { returnsCatalogData?: boolean } = {},
   ) => {
     if (!techDocsPermissionsEnabled) {
       return entityLoader.load(credentials, entityName);
@@ -201,7 +216,12 @@ export async function createRouter(
       entityRef: stringifyEntityRef(entityName),
     });
 
-    return entityLoader.load(await auth.getOwnServiceCredentials(), entityName);
+    return entityLoader.load(
+      opts.returnsCatalogData
+        ? credentials
+        : await auth.getOwnServiceCredentials(),
+      entityName,
+    );
   };
 
   // Set up a cache client if configured.
@@ -268,7 +288,11 @@ export async function createRouter(
 
     const credentials = await httpAuth.credentials(req);
 
-    const entity = await loadEntity(credentials, entityName);
+    // This route responds with the entity itself, so it stays subject to
+    // `catalog.entity.read` even when TechDocs permissions are enabled.
+    const entity = await loadEntity(credentials, entityName, {
+      returnsCatalogData: true,
+    });
 
     if (!entity) {
       throw new NotFoundError(`Unable to get metadata for '${entityRef}'`);
@@ -352,7 +376,7 @@ export async function createRouter(
   });
 
   // Ensures that the related entity exists and the current user has permission to view it.
-  if (config.getOptionalBoolean('permission.enabled')) {
+  if (permissionFrameworkEnabled) {
     router.use(
       '/static/docs/:namespace/:kind/:name',
       async (req, _res, next) => {
