@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+import http from 'node:http';
+import {
+  injectLivereloadParameters,
+  proxyMkdocsLivereload,
+} from './livereload';
+
 export type ServeOptions = {
   configFile?: string;
   clean?: boolean;
@@ -29,6 +35,13 @@ export type EngineConfig = {
   startupLogPattern: string;
   buildArgs(outputDir: string, configFile: string): string[];
   serveArgs(port: string, options: ServeOptions): string[];
+  transformHtml(html: string): string;
+  handleReloadRequest(
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+    targetAddress: string,
+    onError: (error: Error) => void,
+  ): void;
 };
 
 const mkdocsConfig: EngineConfig = {
@@ -51,6 +64,22 @@ const mkdocsConfig: EngineConfig = {
       ...(options.dirtyReload ? ['--dirtyreload'] : []),
       ...(options.strict ? ['--strict'] : []),
     ];
+  },
+  transformHtml(html: string): string {
+    return injectLivereloadParameters(html);
+  },
+  handleReloadRequest(
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+    targetAddress: string,
+    onError: (error: Error) => void,
+  ): void {
+    proxyMkdocsLivereload({
+      request: req,
+      response: res,
+      mkdocsTargetAddress: targetAddress,
+      onError,
+    });
   },
 };
 
