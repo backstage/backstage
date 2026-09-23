@@ -22,6 +22,7 @@ import {
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 import { createExtensionTester } from '@backstage/frontend-test-utils';
+import { z } from 'zod/v4';
 
 describe('RouterBlueprint', () => {
   it('should return an extension when calling make with sensible defaults', () => {
@@ -85,10 +86,8 @@ describe('RouterBlueprint', () => {
   it('should work with complex options and props', async () => {
     const extension = RouterBlueprint.makeWithOverrides({
       name: 'test',
-      config: {
-        schema: {
-          name: z => z.string(),
-        },
+      configSchema: {
+        name: z.string(),
       },
       inputs: {
         children: createExtensionInput([coreExtensionData.reactElement]),

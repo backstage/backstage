@@ -95,7 +95,12 @@ describe.each(databases.eachSupportedId())('Stitcher, %p', databaseId => {
     // Wait for stitching to complete
     await waitForCondition(async () => {
       const entities = await db<DbFinalEntitiesRow>('final_entities');
-      return entities.length === 1 && entities[0].final_entity !== null;
+      const searchRows = await db<DbSearchRow>('search');
+      return (
+        entities.length === 1 &&
+        entities[0].final_entity !== null &&
+        searchRows.length > 0
+      );
     });
 
     await stitcher.stop();

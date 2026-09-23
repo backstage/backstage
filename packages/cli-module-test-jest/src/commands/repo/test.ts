@@ -146,7 +146,7 @@ export default async ({ args, info }: CliCommandContext) => {
   // args so they can be forwarded to Jest.
   const { flags: opts } = cli(
     {
-      help: info,
+      name: info.usage,
       booleanFlagNegation: true,
       flags: {
         since: {
@@ -305,14 +305,6 @@ export default async ({ args, info }: CliCommandContext) => {
   // https://stackoverflow.com/questions/56261381/how-do-i-set-a-timezone-in-my-jest-config
   if (!process.env.TZ) {
     process.env.TZ = 'UTC';
-  }
-
-  // Unless the user explicitly toggles node-snapshot, default to provide --no-node-snapshot to reduce number of steps to run scaffolder
-  //  on Node LTS.
-  if (!process.env.NODE_OPTIONS?.includes('--node-snapshot')) {
-    process.env.NODE_OPTIONS = `${
-      process.env.NODE_OPTIONS ? `${process.env.NODE_OPTIONS} ` : ''
-    }--no-node-snapshot`;
   }
 
   if (opts.jestHelp) {

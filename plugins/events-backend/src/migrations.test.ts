@@ -92,7 +92,5 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
     // actually is flaky for some reason specifically on sqlite when
     // performing multiple runs in sequence
     await expect(knex('event_bus_events')).rejects.toEqual(expect.anything());
-
-    await knex.destroy();
   });
 });

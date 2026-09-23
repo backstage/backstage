@@ -19,6 +19,7 @@ import {
   TestDatabases,
   mockServices,
 } from '@backstage/backend-test-utils';
+import waitForExpect from 'wait-for-expect';
 import { DatabaseKeyStore, TABLE } from './DatabaseKeyStore';
 
 const testKey = {
@@ -104,12 +105,13 @@ describe('DatabaseKeyStore', () => {
         "Removing expired plugin service keys, 'test-key-2'",
       );
 
-      // Key deletion happens async, so give it a bit of time to complete
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      await expect(knex(TABLE).select('id')).resolves.toEqual([
-        { id: testKey.kid },
-      ]);
+      // Key deletion happens async — poll until it completes rather than
+      // relying on a fixed sleep that can flake in slow CI environments.
+      await waitForExpect(async () => {
+        await expect(knex(TABLE).select('id')).resolves.toEqual([
+          { id: testKey.kid },
+        ]);
+      });
     });
 
     it('should fail to insert with invalid date', async () => {

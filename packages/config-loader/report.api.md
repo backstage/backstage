@@ -7,7 +7,7 @@ import { AppConfig } from '@backstage/config';
 import { Config } from '@backstage/config';
 import { HumanDuration } from '@backstage/types';
 import { JsonObject } from '@backstage/types';
-import { JSONSchema7 } from 'json-schema';
+import type { JSONSchema7 } from 'json-schema';
 import { Observable } from '@backstage/types';
 
 // @public
@@ -44,6 +44,15 @@ export type ConfigSchema = {
   ): AppConfig[];
   serialize(): JsonObject;
 };
+
+// @public
+export class ConfigSchemaError extends Error {
+  constructor(options: { source: string; cause: Error });
+  readonly cause: Error;
+  // (undocumented)
+  name: 'ConfigSchemaError';
+  readonly source: string;
+}
 
 // @public
 export type ConfigSchemaProcessingOptions = {
@@ -188,6 +197,8 @@ export type LoadConfigSchemaOptions = (
   | {
       dependencies: string[];
       packagePaths?: string[];
+      excludePackageDependencies?: boolean;
+      onSchemaError?: (error: ConfigSchemaError) => void;
     }
   | {
       serialized: JsonObject;

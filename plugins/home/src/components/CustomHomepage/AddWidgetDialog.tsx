@@ -15,6 +15,7 @@
  */
 
 import { Widget } from './types';
+import Box from '@material-ui/core/Box';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -42,39 +43,47 @@ export const AddWidgetDialog = (props: AddWidgetDialogProps) => {
     <>
       <DialogTitle>{t('addWidgetDialog.title')}</DialogTitle>
       <DialogContent>
-        <List dense>
-          {widgets.map(widget => {
-            return (
-              <ListItem
-                key={widget.name}
-                button
-                onClick={() => handleAdd(widget)}
-              >
-                <ListItemAvatar>
-                  <AddIcon />
-                </ListItemAvatar>
-                <ListItemText
-                  secondary={
-                    widget.description && (
-                      <Typography
-                        component="span"
-                        variant="caption"
-                        color="textPrimary"
-                      >
-                        {widget.description}
+        {widgets.length === 0 ? (
+          <Box pb={3} textAlign="center">
+            <Typography variant="body1" color="textSecondary">
+              {t('addWidgetDialog.noAvailableWidgets')}
+            </Typography>
+          </Box>
+        ) : (
+          <List dense>
+            {widgets.map(widget => {
+              return (
+                <ListItem
+                  key={widget.name}
+                  button
+                  onClick={() => handleAdd(widget)}
+                >
+                  <ListItemAvatar>
+                    <AddIcon />
+                  </ListItemAvatar>
+                  <ListItemText
+                    secondary={
+                      widget.description && (
+                        <Typography
+                          component="span"
+                          variant="caption"
+                          color="textPrimary"
+                        >
+                          {widget.description}
+                        </Typography>
+                      )
+                    }
+                    primary={
+                      <Typography variant="body1" color="textPrimary">
+                        {getTitle(widget)}
                       </Typography>
-                    )
-                  }
-                  primary={
-                    <Typography variant="body1" color="textPrimary">
-                      {getTitle(widget)}
-                    </Typography>
-                  }
-                />
-              </ListItem>
-            );
-          })}
-        </List>
+                    }
+                  />
+                </ListItem>
+              );
+            })}
+          </List>
+        )}
       </DialogContent>
     </>
   );

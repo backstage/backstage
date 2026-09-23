@@ -1,5 +1,115 @@
 # @backstage/plugin-devtools-backend
 
+## 0.5.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/config-loader@1.11.4-next.0
+  - @backstage/plugin-permission-common@0.9.12-next.0
+  - @backstage/plugin-permission-node@0.11.5-next.0
+  - @backstage/cli-common@0.3.2-next.0
+  - @backstage/plugin-devtools-common@0.1.27-next.0
+
+## 0.5.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.3.1
+  - @backstage/config@1.3.9
+  - @backstage/plugin-permission-node@0.11.4
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/config-loader@1.11.3
+  - @backstage/plugin-devtools-common@0.1.26
+  - @backstage/plugin-permission-common@0.9.11
+
+## 0.5.21-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/config-loader@1.11.3-next.0
+  - @backstage/plugin-permission-common@0.9.11-next.0
+  - @backstage/plugin-permission-node@0.11.4-next.1
+  - @backstage/plugin-devtools-common@0.1.26-next.0
+
+## 0.5.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.11.4-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
+## 0.5.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.11.2
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-permission-common@0.9.10
+  - @backstage/plugin-permission-node@0.11.3
+
+## 0.5.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.11.2-next.0
+  - @backstage/backend-plugin-api@1.10.0-next.1
+
+## 0.5.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-permission-node@0.11.3-next.0
+
+## 0.5.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.11.0
+  - @backstage/cli-common@0.3.0
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/plugin-permission-node@0.11.2
+
+## 0.5.19-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.3.0-next.0
+  - @backstage/backend-plugin-api@1.9.3-next.1
+  - @backstage/config-loader@1.11.0-next.2
+
+## 0.5.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.11.0-next.0
+  - @backstage/plugin-permission-node@0.11.2-next.0
+  - @backstage/backend-plugin-api@1.9.3-next.0
+
+## 0.5.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/config-loader@1.10.12
+  - @backstage/plugin-permission-node@0.11.1
+
 ## 0.5.18-next.0
 
 ### Patch Changes

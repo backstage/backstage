@@ -17,7 +17,7 @@ Inner sourcing is a genuinely rewarding initiative, but it works best when some
 groundwork is already in place. Jumping into it too early can create unnecessary
 friction for both the contributing teams and the team that owns Backstage.
 
-Before inviting contributions, its a good idea to have the following in place:
+Before inviting contributions, it's a good idea to have the following in place:
 
 - **A consistent starting point for new plugins.** Running `yarn new` out of the
   box will scaffold a working Backstage plugin, which is a great starting point.

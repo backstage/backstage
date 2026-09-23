@@ -187,6 +187,17 @@ describe.each(eventBusDatabases.eachSupportedId())(
         .expect(204); // 204, since there are no subscribers
     });
 
+    it('should accept large published event payloads', async () => {
+      backend = await startTestBackend({
+        features: [eventsPlugin, await mockKnexFactory()],
+      });
+      const helper = new ReqHelper(backend);
+
+      await helper
+        .publish('test', { content: 'a'.repeat(1024 * 1024) })
+        .expect(204); // 204, since there are no subscribers
+    });
+
     it('should be possible to subscribe as a service and receive an event', async () => {
       backend = await startTestBackend({
         features: [eventsPlugin, await mockKnexFactory()],
@@ -240,23 +251,26 @@ describe.each(eventBusDatabases.eachSupportedId())(
         events: [{ topic: 'test', payload: { n: 1 } }],
       });
 
-      // Two clients for subscriber 2, only one gets the event
-      const res1 = helper.readEvents('tester-2');
-      const res2 = helper.readEvents('tester-2');
+      // Two clients for subscriber 2, only one gets the event.
+      // We wrap each promise to track which index resolved first.
+      const res1Promise = helper.readEvents('tester-2').then(r => r);
+      const res2Promise = helper.readEvents('tester-2').then(r => r);
 
-      const res = await Promise.race([res1, res2]);
-      expect(res.status).toBe(200);
-      expect(res.body).toEqual({
+      const winnerIndex = await Promise.race([
+        res1Promise.then(() => 0),
+        res2Promise.then(() => 1),
+      ]);
+      const winner = await (winnerIndex === 0 ? res1Promise : res2Promise);
+      expect(winner.status).toBe(200);
+      expect(winner.body).toEqual({
         events: [{ topic: 'test', payload: { n: 1 } }],
       });
 
-      // Post another event, which triggers the other client to return
+      // Post another event, which triggers the long-polling client to return
       await helper.publish('test', { n: 2 }).expect(201);
 
-      const otherRes = await Promise.all([res1, res2]).then(rs =>
-        rs.find(r => r !== res),
-      );
-      expect(otherRes?.status).toBe(202);
+      const loser = await (winnerIndex === 0 ? res2Promise : res1Promise);
+      expect(loser.status).toBe(202);
 
       // Reading subscriber 2 should now return the second event only
       await helper.readEvents('tester-2').expect(200, {

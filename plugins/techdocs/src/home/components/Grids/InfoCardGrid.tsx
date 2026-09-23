@@ -101,7 +101,7 @@ export const InfoCardGrid = (props: InfoCardGridProps) => {
     <ItemCardGrid data-testid="info-card-container">
       {entities.map(entity => (
         <InfoCard
-          key={entity.metadata.name}
+          key={stringifyEntityRef(entity)}
           data-testid={entity?.metadata?.title}
           title={
             entityRefToPresentation?.get(stringifyEntityRef(entity))

@@ -46,6 +46,9 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     boxShadow: theme.shadows[1],
     backgroundColor: theme.palette.background.default,
+    '& svg': {
+      fontSize: '2rem',
+    },
   },
 }));
 

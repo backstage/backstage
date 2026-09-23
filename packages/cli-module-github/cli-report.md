@@ -5,7 +5,7 @@
 ### `backstage-cli-module-github`
 
 ```
-Usage: @backstage/cli-module-github [options] [command]
+Usage: @backstage/cli-module-github [flags...]
 
 Options:
   -V, --version
@@ -13,13 +13,13 @@ Options:
 
 Commands:
   create-github-app
-  help [command]
+  help
 ```
 
 ### `backstage-cli-module-github create-github-app`
 
 ```
-Usage: @backstage/cli-module-github create-github-app <github-org>
+Usage: @backstage/cli-module-github create-github-app [flags...] <github-org>
 
 Options:
   -h, --help

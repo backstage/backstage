@@ -19,6 +19,7 @@ import { createExtension } from './createExtension';
 import { createExtensionDataRef } from './createExtensionDataRef';
 import { createExtensionInput } from './createExtensionInput';
 import { PortableSchema } from '../schema';
+import { z } from 'zod/v4';
 
 const stringDataRef = createExtensionDataRef<string>().with({ id: 'string' });
 const numberDataRef = createExtensionDataRef<number>().with({ id: 'number' });
@@ -433,12 +434,10 @@ describe('createExtension', () => {
   it('should create an extension with config', () => {
     const extension = createExtension({
       attachTo: { id: 'root', input: 'default' },
-      config: {
-        schema: {
-          foo: z => z.string(),
-          bar: z => z.string().default('bar'),
-          baz: z => z.string().optional(),
-        },
+      configSchema: {
+        foo: z.string(),
+        bar: z.string().default('bar'),
+        baz: z.string().optional(),
       },
       output: [stringDataRef],
       factory({ config }) {
@@ -496,7 +495,40 @@ describe('createExtension', () => {
     expect(() => {
       // @ts-expect-error
       return extension.configSchema?.parse({});
-    }).toThrow("Missing required value at 'foo'");
+    }).toThrow("Invalid input: expected string, received undefined at 'foo'");
+  });
+
+  it('should reject legacy config schemas during creation and override', () => {
+    const migrationError =
+      'The `config.schema` option is no longer supported. Migrate to the ' +
+      'top-level `configSchema` option with Standard Schema values.';
+    const options = {
+      attachTo: { id: 'root', input: 'default' },
+      output: [stringDataRef],
+      factory: () => [stringDataRef('value')],
+    };
+
+    expect(() =>
+      (createExtension as any)({
+        ...options,
+        config: {
+          schema: {
+            value: (zImpl: typeof z) => zImpl.string(),
+          },
+        },
+      }),
+    ).toThrow(migrationError);
+
+    const extension = createExtension(options);
+    expect(() =>
+      (extension.override as any)({
+        config: {
+          schema: {
+            value: (zImpl: typeof z) => zImpl.string(),
+          },
+        },
+      }),
+    ).toThrow(migrationError);
   });
 
   it('should support new form of outputs', () => {
@@ -694,10 +726,8 @@ describe('createExtension', () => {
       const testExtension = createExtension({
         attachTo: { id: 'root', input: 'blob' },
         output: [stringDataRef],
-        config: {
-          schema: {
-            foo: z => z.string().optional(),
-          },
+        configSchema: {
+          foo: z.string().optional(),
         },
         factory() {
           return [stringDataRef('default')];
@@ -705,10 +735,8 @@ describe('createExtension', () => {
       });
 
       testExtension.override({
-        config: {
-          schema: {
-            bar: z => z.string().optional(),
-          },
+        configSchema: {
+          bar: z.string().optional(),
         },
         factory(_, { config }) {
           return [stringDataRef(config.foo ?? config.bar ?? 'default')];
@@ -727,10 +755,8 @@ describe('createExtension', () => {
             singleton: true,
           }),
         },
-        config: {
-          schema: {
-            foo: z => z.string().optional(),
-          },
+        configSchema: {
+          foo: z.string().optional(),
         },
         factory({ inputs }) {
           return [stringDataRef(inputs.test.get(stringDataRef))];
@@ -761,10 +787,8 @@ describe('createExtension', () => {
       const testExtension = createExtension({
         attachTo: { id: 'root', input: 'blob' },
         output: [stringDataRef],
-        config: {
-          schema: {
-            foo: z => z.string().optional(),
-          },
+        configSchema: {
+          foo: z.string().optional(),
         },
         factory() {
           return [stringDataRef('default')];
@@ -792,10 +816,8 @@ describe('createExtension', () => {
         kind: 'thing',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef, numberDataRef],
-        config: {
-          schema: {
-            foo: z => z.string().default('boom'),
-          },
+        configSchema: {
+          foo: z.string().default('boom'),
         },
         factory({ config }) {
           return [stringDataRef(config.foo), numberDataRef(42)];
@@ -822,10 +844,8 @@ describe('createExtension', () => {
         kind: 'thing',
         attachTo: { id: 'root', input: 'default' },
         output: [stringDataRef],
-        config: {
-          schema: {
-            foo: z => z.string().default('boom'),
-          },
+        configSchema: {
+          foo: z.string().default('boom'),
         },
         factory({ config }) {
           return [stringDataRef(config.foo)];
@@ -833,10 +853,8 @@ describe('createExtension', () => {
       });
 
       const overridden = testExtension.override({
-        config: {
-          schema: {
-            bar: z => z.string().default('hello'),
-          },
+        configSchema: {
+          bar: z.string().default('hello'),
         },
         factory(originalFactory, { config }) {
           const response = originalFactory();

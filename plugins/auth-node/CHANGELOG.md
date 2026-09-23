@@ -1,5 +1,87 @@
 # @backstage/plugin-auth-node
 
+## 0.7.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/catalog-client@1.16.3-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+
+## 0.7.6
+
+### Patch Changes
+
+- 507e65a: OAuth profile normalization now respects matching negative email verification information supplied by the provider.
+- Updated dependencies
+  - @backstage/catalog-client@1.16.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+
+## 0.7.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/catalog-client@1.16.2-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.1
+
+## 0.7.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.2-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
+## 0.7.4
+
+### Patch Changes
+
+- 7ca2955: Fix OAuth start handler crashing with a 500 error on malformed origins, now returns a 400 error.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-plugin-api@1.10.0
+
+## 0.7.4-next.0
+
+### Patch Changes
+
+- 7ca2955: Fix OAuth start handler crashing with a 500 error on malformed origins, now returns a 400 error.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+
+## 0.7.3
+
+### Patch Changes
+
+- 28c1c1c: Synced zod-validation-error versions between packages
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/catalog-client@1.16.1
+
+## 0.7.3-next.0
+
+### Patch Changes
+
+- 28c1c1c: Synced zod-validation-error versions between packages
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/catalog-client@1.16.1-next.0
+
+## 0.7.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0
+  - @backstage/backend-plugin-api@1.9.2
+
 ## 0.7.2-next.0
 
 ### Patch Changes

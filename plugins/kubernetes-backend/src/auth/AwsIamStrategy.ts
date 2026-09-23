@@ -81,20 +81,39 @@ export class AwsIamStrategy implements AuthenticationStrategy {
   ): Promise<string> {
     const region = process.env.AWS_REGION ?? defaultRegion;
 
-    let credentials = (await this.credsManager.getCredentialProvider())
-      .sdkCredentialProvider;
+    let masterCredentials;
     if (assumeRole) {
-      credentials = fromTemporaryCredentials({
-        masterCredentials: credentials,
-        clientConfig: {
-          region,
-        },
-        params: {
-          RoleArn: assumeRole,
-          ExternalId: externalId,
-        },
-      });
+      try {
+        masterCredentials = (
+          await this.credsManager.getCredentialProvider({ arn: assumeRole })
+        ).sdkCredentialProvider;
+      } catch (error) {
+        if (
+          !(error instanceof Error) ||
+          !error.message.includes('There is no AWS integration that matches')
+        ) {
+          throw error;
+        }
+        masterCredentials = (await this.credsManager.getCredentialProvider())
+          .sdkCredentialProvider;
+      }
+    } else {
+      masterCredentials = (await this.credsManager.getCredentialProvider())
+        .sdkCredentialProvider;
     }
+
+    const credentials = assumeRole
+      ? fromTemporaryCredentials({
+          masterCredentials,
+          clientConfig: {
+            region,
+          },
+          params: {
+            RoleArn: assumeRole,
+            ExternalId: externalId,
+          },
+        })
+      : masterCredentials;
 
     const signer = new SignatureV4({
       credentials,

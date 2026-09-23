@@ -15,9 +15,13 @@
  */
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { JsonObject } from '@backstage/types';
 import { collectConfigSchemas, internal } from './collect';
+import { compileConfigSchemas } from './compile';
+import { ConfigSchemaError } from './ConfigSchemaError';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
+import { SchemaGenerator } from 'ts-json-schema-generator';
 
 const mockSchema = {
   type: 'object',
@@ -63,6 +67,7 @@ describe('collectConfigSchemas', () => {
   });
 
   afterEach(() => {
+    jest.restoreAllMocks();
     mockDir.clear();
   });
 
@@ -252,6 +257,32 @@ describe('collectConfigSchemas', () => {
     );
   });
 
+  it('should optionally skip schemas in package dependencies', async () => {
+    mockDir.setContent({
+      node_modules: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            version: '1',
+            dependencies: { b: '1' },
+          }),
+        },
+        b: {
+          'package.json': JSON.stringify({
+            name: 'b',
+            version: '1',
+            configSchema: mockSchema,
+          }),
+        },
+      },
+    });
+    process.chdir(mockDir.path);
+
+    await expect(
+      collectConfigSchemas(['a'], [], { excludePackageDependencies: true }),
+    ).resolves.toEqual([]);
+  });
+
   it('should schema of different types', async () => {
     mockDir.setContent({
       node_modules: {
@@ -277,6 +308,8 @@ describe('collectConfigSchemas', () => {
             export interface Config {
               /** @visibility secret */
               tsKey: string
+              /** @items.visibility frontend */
+              tsArray?: string[]
             }
           `,
         },
@@ -305,6 +338,13 @@ describe('collectConfigSchemas', () => {
               tsKey: {
                 type: 'string',
                 visibility: 'secret',
+              },
+              tsArray: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                  visibility: 'frontend',
+                },
               },
             },
             required: ['tsKey'],
@@ -423,12 +463,277 @@ describe('collectConfigSchemas', () => {
     });
     process.chdir(mockDir.path);
 
-    await expect(collectConfigSchemas(['a'], [])).rejects.toThrow(
-      `Invalid schema in ${path.join(
-        'node_modules',
-        'a',
-        'schema.d.ts',
-      )}, missing Config export`,
+    await expect(collectConfigSchemas(['a'], [])).rejects.toMatchObject({
+      name: 'ConfigSchemaError',
+      source: 'a',
+      message: expect.stringContaining(
+        'The schema does not export a Config type',
+      ),
+      cause: expect.objectContaining({
+        message: 'The schema does not export a Config type',
+      }),
+    });
+  });
+
+  it('should resolve imported types and namespace recursive definitions', async () => {
+    mockDir.setContent({
+      node_modules: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            version: '1.0.0',
+            dependencies: { shared: '1.0.0' },
+            configSchema: 'schema.d.ts',
+          }),
+          'schema.d.ts': `
+            import { Shared } from 'shared';
+
+            export interface Config {
+              /**
+               * @visibility frontend
+               * @deprecated Use another key instead.
+               */
+              a?: Shared;
+            }
+          `,
+        },
+        c: {
+          'package.json': JSON.stringify({
+            name: 'c',
+            version: '1.0.0',
+            dependencies: { shared: '1.0.0' },
+            configSchema: 'schema.d.ts',
+          }),
+          'schema.d.ts': `
+            import { Shared } from 'shared';
+
+            export interface Config {
+              c?: Shared;
+            }
+          `,
+        },
+        shared: {
+          'package.json': JSON.stringify({
+            name: 'shared',
+            version: '1.0.0',
+            types: 'index.d.ts',
+          }),
+          'index.d.ts': `
+            export type Shared = {
+              value: string;
+              child?: Shared;
+            };
+          `,
+        },
+      },
+    });
+    process.chdir(mockDir.path);
+
+    type GeneratedSchema = {
+      definitions: Record<string, JsonObject>;
+      properties: Record<string, JsonObject>;
+    };
+    const schemas = await collectConfigSchemas(['a', 'c'], []);
+    const aSchema = schemas.find(schema => schema.packageName === 'a')!
+      .value as GeneratedSchema;
+    const cSchema = schemas.find(schema => schema.packageName === 'c')!
+      .value as GeneratedSchema;
+    const [aDefinitionName] = Object.keys(aSchema.definitions);
+    const [cDefinitionName] = Object.keys(cSchema.definitions);
+
+    expect(aDefinitionName).not.toBe(cDefinitionName);
+    expect(aSchema.properties.a).toEqual({
+      deprecated: 'Use another key instead.',
+      type: 'object',
+      properties: {
+        value: { type: 'string' },
+        child: { $ref: `#/definitions/${aDefinitionName}` },
+      },
+      required: ['value'],
+      visibility: 'frontend',
+    });
+    expect(aSchema.definitions[aDefinitionName]).toEqual({
+      type: 'object',
+      properties: {
+        value: { type: 'string' },
+        child: { $ref: `#/definitions/${aDefinitionName}` },
+      },
+      required: ['value'],
+    });
+    expect(cSchema.properties.c).toEqual({
+      type: 'object',
+      properties: {
+        value: { type: 'string' },
+        child: { $ref: `#/definitions/${cDefinitionName}` },
+      },
+      required: ['value'],
+    });
+  });
+
+  it('should keep same-named local types independent', async () => {
+    mockDir.setContent({
+      node_modules: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            version: '1.0.0',
+            configSchema: 'schema.d.ts',
+          }),
+          'schema.d.ts': `
+            type Local = {
+              aValue: string;
+              child?: Local;
+            };
+            export interface Config { local?: Local }
+          `,
+        },
+        b: {
+          'package.json': JSON.stringify({
+            name: 'b',
+            version: '1.0.0',
+            configSchema: 'schema.d.ts',
+          }),
+          'schema.d.ts': `
+            type Local = {
+              bValue: number;
+              child?: Local;
+            };
+            export interface Config { local?: Local }
+          `,
+        },
+      },
+    });
+    process.chdir(mockDir.path);
+
+    type GeneratedSchema = {
+      definitions: Record<string, JsonObject>;
+      properties: Record<string, JsonObject>;
+    };
+    const schemas = await collectConfigSchemas(['a', 'b'], []);
+    const aSchema = schemas.find(schema => schema.packageName === 'a')!
+      .value as GeneratedSchema;
+    const bSchema = schemas.find(schema => schema.packageName === 'b')!
+      .value as GeneratedSchema;
+    const [aDefinitionName] = Object.keys(aSchema.definitions);
+    const [bDefinitionName] = Object.keys(bSchema.definitions);
+
+    expect(() => compileConfigSchemas(schemas)).not.toThrow();
+    expect(aDefinitionName).not.toBe(bDefinitionName);
+    expect(aSchema.properties.local).toEqual({
+      type: 'object',
+      properties: {
+        aValue: { type: 'string' },
+        child: { $ref: `#/definitions/${aDefinitionName}` },
+      },
+      required: ['aValue'],
+    });
+    expect(bSchema.properties.local).toEqual({
+      type: 'object',
+      properties: {
+        bValue: { type: 'number' },
+        child: { $ref: `#/definitions/${bDefinitionName}` },
+      },
+      required: ['bValue'],
+    });
+  });
+
+  it('should handle unresolved types when an error handler is provided', async () => {
+    mockDir.setContent({
+      node_modules: {
+        unresolved: {
+          'package.json': JSON.stringify({
+            name: 'unresolved',
+            version: '1.0.0',
+            configSchema: 'schema.d.ts',
+          }),
+          'schema.d.ts': `
+            import { Missing } from './missing';
+            export interface Config {
+              value?: Missing;
+              duration?: HumanDuration;
+            }
+          `,
+        },
+      },
+    });
+    process.chdir(mockDir.path);
+
+    const onSchemaError = jest.fn();
+    const schemas = await collectConfigSchemas(['unresolved'], [], {
+      onSchemaError,
+    });
+
+    expect(onSchemaError).toHaveBeenCalledTimes(2);
+    const schemaErrors = onSchemaError.mock.calls.map(([error]) => error);
+    for (const schemaError of schemaErrors) {
+      expect(schemaError).toBeInstanceOf(ConfigSchemaError);
+      expect(schemaError).toMatchObject({
+        name: 'ConfigSchemaError',
+        source: 'unresolved',
+      });
+      expect(schemaError).not.toHaveProperty('path');
+      expect(schemaError.message).toBe(
+        `The TypeScript configuration schema for package 'unresolved' contains an error - ${schemaError.cause.message}`,
+      );
+      expect(schemaError.message).not.toContain('\n');
+    }
+    const causeMessages = schemaErrors.map(error => error.cause.message);
+    expect(causeMessages).toEqual([
+      expect.stringContaining("Cannot find module './missing'"),
+      expect.stringContaining("Cannot find name 'HumanDuration'"),
+    ]);
+    expect(schemas).toEqual([
+      expect.objectContaining({
+        packageName: 'unresolved',
+        path: path.join('node_modules', 'unresolved', 'schema.d.ts'),
+        value: expect.objectContaining({
+          properties: {
+            value: {},
+            duration: {},
+          },
+        }),
+      }),
+    ]);
+    expect(() => compileConfigSchemas(schemas)).not.toThrow();
+
+    await expect(collectConfigSchemas(['unresolved'], [])).rejects.toThrow(
+      "Cannot find module './missing'",
     );
+  });
+
+  it('should report schema generation errors with their source and cause', async () => {
+    mockDir.setContent({
+      node_modules: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            version: '1.0.0',
+            configSchema: 'schema.d.ts',
+          }),
+          'schema.d.ts': `export interface Config { value?: string }`,
+        },
+      },
+    });
+    process.chdir(mockDir.path);
+
+    const cause = new Error('Failed to\ngenerate schema');
+    jest
+      .spyOn(SchemaGenerator.prototype, 'createSchemaFromNodes')
+      .mockImplementation(() => {
+        throw cause;
+      });
+    const onSchemaError = jest.fn();
+
+    await expect(
+      collectConfigSchemas(['a'], [], { onSchemaError }),
+    ).resolves.toEqual([]);
+    const schemaError = onSchemaError.mock.calls[0][0];
+    expect(schemaError).toMatchObject({
+      name: 'ConfigSchemaError',
+      source: 'a',
+      cause,
+      message:
+        "The TypeScript configuration schema for package 'a' contains an error - Failed to generate schema",
+    });
   });
 });

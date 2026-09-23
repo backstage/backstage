@@ -1,5 +1,183 @@
 # @backstage/plugin-catalog-import
 
+## 0.13.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.0
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/integration-react@1.2.23-next.0
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/plugin-permission-react@0.5.6-next.0
+  - @backstage/catalog-client@1.16.3-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-react@3.2.4-next.0
+  - @backstage/plugin-catalog-common@1.2.1-next.0
+
+## 0.13.18
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- 5d6a62b: Fixed the owner selected in the import stepper being written to the generated `catalog-info.yaml` as a display name instead of an entity reference. Groups are still suggested by their display name, but selecting one now sets a valid `spec.owner`, for example picking `My Team` results in `my-team`.
+- d421187: Reduced the initial app bundle size by loading page and optional UI implementations only when their extensions render.
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/integration@2.1.2
+  - @backstage/plugin-catalog-common@1.2.0
+  - @backstage/catalog-client@1.16.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-catalog-react@3.2.3
+  - @backstage/config@1.3.9
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/integration-react@1.2.22
+  - @backstage/plugin-permission-react@0.5.5
+
+## 0.13.18-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.2.0-next.0
+  - @backstage/config@1.3.9-next.0
+  - @backstage/catalog-client@1.16.2-next.1
+  - @backstage/plugin-catalog-react@3.2.3-next.2
+  - @backstage/core-components@0.18.14-next.2
+  - @backstage/core-plugin-api@1.12.10-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.1
+  - @backstage/integration@2.1.2-next.1
+  - @backstage/integration-react@1.2.22-next.1
+  - @backstage/plugin-permission-react@0.5.5-next.1
+
+## 0.13.18-next.1
+
+### Patch Changes
+
+- d421187: Reduced the initial app bundle size by loading page and optional UI implementations only when their extensions render.
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.1
+  - @backstage/integration@2.1.2-next.0
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/plugin-catalog-react@3.2.3-next.1
+  - @backstage/integration-react@1.2.22-next.0
+  - @backstage/core-plugin-api@1.12.10-next.0
+  - @backstage/catalog-client@1.16.2-next.0
+  - @backstage/plugin-permission-react@0.5.5-next.0
+
+## 0.13.17-next.0
+
+### Patch Changes
+
+- 5d6a62b: Fixed the owner selected in the import stepper being written to the generated `catalog-info.yaml` as a display name instead of an entity reference. Groups are still suggested by their display name, but selecting one now sets a valid `spec.owner`, for example picking `My Team` results in `my-team`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.2-next.0
+  - @backstage/core-components@0.18.14-next.0
+
+## 0.13.16
+
+### Patch Changes
+
+- 74fb85d: Remove obsolete location import error handling in StepReviewLocation.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/plugin-catalog-react@3.2.1
+  - @backstage/integration@2.1.0
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/integration-react@1.2.21
+  - @backstage/plugin-permission-react@0.5.4
+
+## 0.13.16-next.2
+
+### Patch Changes
+
+- 74fb85d: Remove obsolete location import error handling in StepReviewLocation.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.1-next.2
+  - @backstage/frontend-plugin-api@0.18.0-next.0
+  - @backstage/core-plugin-api@1.12.9-next.0
+  - @backstage/core-components@0.18.13-next.2
+  - @backstage/integration-react@1.2.21-next.1
+  - @backstage/plugin-permission-react@0.5.4-next.0
+
+## 0.13.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.1-next.1
+  - @backstage/core-components@0.18.13-next.1
+  - @backstage/integration@2.1.0-next.0
+  - @backstage/integration-react@1.2.21-next.0
+
+## 0.13.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.13-next.0
+  - @backstage/plugin-catalog-react@3.2.1-next.0
+
+## 0.13.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.3
+  - @backstage/plugin-catalog-react@3.2.0
+  - @backstage/core-components@0.18.12
+  - @backstage/catalog-client@1.16.1
+  - @backstage/core-plugin-api@1.12.8
+  - @backstage/integration-react@1.2.20
+  - @backstage/plugin-permission-react@0.5.3
+
+## 0.13.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.0-next.0
+  - @backstage/frontend-plugin-api@0.17.3-next.0
+  - @backstage/catalog-client@1.16.1-next.0
+  - @backstage/core-components@0.18.12-next.0
+  - @backstage/core-plugin-api@1.12.8-next.0
+  - @backstage/integration-react@1.2.20-next.0
+  - @backstage/plugin-permission-react@0.5.3-next.0
+
+## 0.13.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0
+  - @backstage/plugin-catalog-react@3.1.0
+  - @backstage/core-components@0.18.11
+  - @backstage/integration@2.0.3
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/core-plugin-api@1.12.7
+  - @backstage/integration-react@1.2.19
+  - @backstage/plugin-permission-react@0.5.2
+
+## 0.13.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.3-next.1
+  - @backstage/catalog-client@1.16.0-next.1
+  - @backstage/frontend-plugin-api@0.17.2-next.0
+  - @backstage/core-components@0.18.11-next.1
+  - @backstage/core-plugin-api@1.12.7-next.0
+  - @backstage/plugin-catalog-react@3.0.1-next.1
+  - @backstage/integration-react@1.2.19-next.1
+  - @backstage/plugin-permission-react@0.5.2-next.0
+
 ## 0.13.14-next.0
 
 ### Patch Changes

@@ -1,5 +1,118 @@
 # @backstage/backend-plugin-api
 
+## 1.10.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/plugin-auth-node@0.7.7-next.0
+  - @backstage/plugin-permission-common@0.9.12-next.0
+  - @backstage/plugin-permission-node@0.11.5-next.0
+  - @backstage/cli-common@0.3.2-next.0
+
+## 1.10.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.3.1
+  - @backstage/plugin-auth-node@0.7.6
+  - @backstage/config@1.3.9
+  - @backstage/plugin-permission-node@0.11.4
+  - @backstage/plugin-permission-common@0.9.11
+
+## 1.10.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/plugin-auth-node@0.7.5-next.1
+  - @backstage/plugin-permission-common@0.9.11-next.0
+  - @backstage/plugin-permission-node@0.11.4-next.1
+
+## 1.10.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.5-next.0
+  - @backstage/plugin-permission-node@0.11.4-next.0
+
+## 1.10.0
+
+### Minor Changes
+
+- 74d8cbf: Added `coreServices.rootSystemMetadata`, a new stable public service for reading metadata about the running Backstage system, including a list of installed plugins. Previously only available as an alpha API, it is now part of the standard `coreServices` namespace.
+
+### Patch Changes
+
+- b1b6c80: Documented the default destructive and read-only action attribute values.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.4
+  - @backstage/plugin-permission-common@0.9.10
+  - @backstage/plugin-permission-node@0.11.3
+
+## 1.10.0-next.1
+
+### Patch Changes
+
+- b1b6c80: Documented the default destructive and read-only action attribute values.
+
+## 1.10.0-next.0
+
+### Minor Changes
+
+- 74d8cbf: Added `coreServices.rootSystemMetadata`, a new stable public service for reading metadata about the running Backstage system, including a list of installed plugins. Previously only available as an alpha API, it is now part of the standard `coreServices` namespace.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.4-next.0
+  - @backstage/plugin-permission-node@0.11.3-next.0
+
+## 1.9.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.3.0
+  - @backstage/plugin-auth-node@0.7.3
+  - @backstage/plugin-permission-node@0.11.2
+
+## 1.9.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.3.0-next.0
+
+## 1.9.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.3-next.0
+  - @backstage/plugin-permission-node@0.11.2-next.0
+
+## 1.9.2
+
+### Patch Changes
+
+- 02c4e8a: Removed unused `json-schema` runtime dependency. The package was only used for TypeScript types from `@types/json-schema`; affected imports have been converted to `import type` to allow safe removal.
+- 0211390: Added optional `secrets` schema support to `ActionsRegistryActionOptions` and `ActionsRegistryActionContext`. Actions can now declare a Zod secrets schema separate from the input schema, enabling surfaces to collect sensitive credentials independently from tool arguments. Added optional `secrets` field to `ActionsServiceAction` metadata and `ActionsService.invoke()` parameters.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.2
+  - @backstage/plugin-permission-node@0.11.1
+
+## 1.9.2-next.1
+
+### Patch Changes
+
+- 0211390: Added optional `secrets` schema support to `ActionsRegistryActionOptions` and `ActionsRegistryActionContext`. Actions can now declare a Zod secrets schema separate from the input schema, enabling surfaces to collect sensitive credentials independently from tool arguments. Added optional `secrets` field to `ActionsServiceAction` metadata and `ActionsService.invoke()` parameters.
+
 ## 1.9.2-next.0
 
 ### Patch Changes

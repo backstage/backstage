@@ -1,5 +1,85 @@
 # @backstage/plugin-kubernetes-node
 
+## 0.4.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-kubernetes-common@0.9.14-next.0
+
+## 0.4.8
+
+### Patch Changes
+
+- 5268d63: Migrated tests from MSW v1 to MSW v2.
+- d9a57de: Add `KubernetesWatcher` interface for streaming Kubernetes resource changes via an async iterator. The watcher is separated from `KubernetesFetcher` because watching is a long-lived streaming connection that only works with server-side auth providers. Watch supports all event types (ADDED, MODIFIED, DELETED, BOOKMARK, ERROR) with errors yielded as data rather than thrown.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-kubernetes-common@0.9.13
+  - @backstage/backend-plugin-api@1.10.1
+
+## 0.4.8-next.2
+
+### Patch Changes
+
+- 5268d63: Migrated tests from MSW v1 to MSW v2.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/plugin-kubernetes-common@0.9.13-next.1
+
+## 0.4.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
+## 0.4.8-next.0
+
+### Patch Changes
+
+- d9a57de: Add `KubernetesWatcher` interface for streaming Kubernetes resource changes via an async iterator. The watcher is separated from `KubernetesFetcher` because watching is a long-lived streaming connection that only works with server-side auth providers. Watch supports all event types (ADDED, MODIFIED, DELETED, BOOKMARK, ERROR) with errors yielded as data rather than thrown.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.9.13-next.0
+
+## 0.4.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-plugin-api@1.10.0
+
+## 0.4.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+
+## 0.4.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+
+## 0.4.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.0
+
+## 0.4.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+
 ## 0.4.5-next.0
 
 ### Patch Changes

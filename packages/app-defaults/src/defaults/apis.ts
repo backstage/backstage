@@ -65,6 +65,39 @@ import {
   permissionApiRef,
   IdentityPermissionApi,
 } from '@backstage/plugin-permission-react';
+import { ToastApiMessage, toastApiRef } from '@backstage/frontend-plugin-api';
+import { isValidElement } from 'react';
+
+const reactNodeToString = (
+  node: React.ReactNode | null | undefined,
+): string => {
+  if (node === null || node === undefined) {
+    return '';
+  }
+  if (typeof node === 'string') {
+    return node;
+  }
+  if (Array.isArray(node)) {
+    return node.map(reactNodeToString).join(' ');
+  }
+  if (isValidElement(node)) {
+    return reactNodeToString(node.props.children);
+  }
+  return '';
+};
+
+const toastStatusToSeverity = (message: ToastApiMessage) => {
+  // 'success' | 'info' | 'warning' | 'error'
+  const toastStatus = message.status ?? 'success';
+  switch (toastStatus) {
+    case 'warning':
+      return 'warning';
+    case 'danger':
+      return 'error';
+    default:
+      return 'info';
+  }
+};
 
 export const apis = [
   createApiFactory({
@@ -303,5 +336,23 @@ export const apis = [
     },
     factory: ({ config, discovery, identity }) =>
       IdentityPermissionApi.create({ config, discovery, identity }),
+  }),
+  createApiFactory({
+    api: toastApiRef,
+    deps: { alertApi: alertApiRef },
+    factory: ({ alertApi }) => ({
+      post(toast: ToastApiMessage) {
+        const message = reactNodeToString(toast?.title);
+        alertApi.post({
+          message,
+          severity: toastStatusToSeverity(toast),
+          display: 'transient',
+        });
+
+        return {
+          close: () => {},
+        };
+      },
+    }),
   }),
 ];

@@ -28,21 +28,19 @@ This tutorial assumes that you're already familiar with the following,
 2. `Express.js` and `Typescript`
 3. OpenAPI 3.1 schemas
 
-:::note OpenAPI Version Support
-Backstage supports both OpenAPI 3.0 and 3.1 specifications. If you have existing OpenAPI 3.0 specs, we recommend that you migrate them to 3.1. The main changes are:
+:::note[OpenAPI Version Support]
+Backstage supports both OpenAPI 3.0 and 3.1 specifications. If you have existing OpenAPI 3.0 specs, we recommend that you migrate them to 3.1. You can use `oasdiff upgrade spec.yaml` to automate this conversion. The main changes are:
 
 - Replace `nullable: true` with `type: ['string', 'null']` or use `anyOf`/`oneOf`
 - Remove `allowReserved` from path parameters (only valid on query/cookie parameters in 3.1)
-  :::
+
+:::
 
 ### Setting up
 
-There are two required npm packages before we start,
+Install `@backstage/repo-tools` in the _root_ of your workspace. This package contains all OpenAPI-related commands for your plugins and will be used throughout the tutorial.
 
-1. `@backstage/repo-tools`, this package contains all OpenAPI-related commands for your plugins. We will be using this throughout the tutorial.
-2. `@useoptic/optic`, this package is a dependency of `@backstage/repo-tools` but is only required for OpenAPI-related commands.
-
-You should install both of the above packages in the _root_ of your workspace.
+For breaking change detection (`package schema openapi diff`), you also need the `oasdiff` CLI installed on your system. See the [oasdiff installation instructions](https://github.com/oasdiff/oasdiff#installation).
 
 Further, a `java` binary has to be available on your PATH.
 
@@ -51,6 +49,22 @@ Further, a `java` binary has to be available on your PATH.
 You should create a new folder, `src/schema` in your backend plugin to store your OpenAPI (and any other) specifications. For example, if you're adding a specification to the catalog plugin, you would add a `src/schema` folder to `plugins/catalog-backend`, making a `plugins/catalog-backend/src/schema` directory. This directory should have an `openapi.yaml` file inside.
 
 > Currently, only the `.yaml` extension is supported, not `.yml`.
+
+## Validating your spec
+
+After writing your `openapi.yaml`, you can validate that it is a structurally valid OpenAPI 3.x document by running the following command from your plugin directory:
+
+```bash
+yarn backstage-repo-tools package schema openapi validate
+```
+
+This checks that the spec parses correctly and conforms to the OpenAPI specification. It is a good idea to run this before generating any code from the spec.
+
+For style and best-practice linting, you can additionally run:
+
+```bash
+yarn backstage-repo-tools repo schema openapi lint
+```
 
 ## Generating a typed express router from a spec
 
@@ -104,23 +118,21 @@ For more information, see [the docs](./generate-client.md).
 Add the following lines to your `createRouter.test.ts` or `router.test.ts` file,
 
 ```diff
-+ import { wrapInOpenApiTestServer } from '@backstage/backend-openapi-utils/testUtils';
-+ import { Server } from 'http';
++ import { wrapServer } from '@backstage/backend-openapi-utils/testUtils';
++ import type { Server } from 'node:http';
 
 ...
 
 describe('createRouter', () => {
 - let app: express.Express;
-+ let app: express.Express | Server;
++ let app: Server;
 
 ...
 
 - app = express().use(router);
-+ app = wrapInOpenApiTestServer(express().use(router));
++ app = await wrapServer(express().use(router));
 ```
 
-This adds a wrapper around the express server that allows it to reroute traffic for `supertest`. Run `yarn backstage-repo-tools package schema openapi init` to create some required files. Now, when you run `yarn backstage-repo-tools repo schema openapi test` your schema will now be tested against your test data. Any errors will be reported.
-
-Our command is a small wrapper over [`Optic`](https://github.com/opticdev/optic) which does all of the heavy lifting.
+This sets up a proxy that captures all requests and responses and validates them against your OpenAPI spec during tests. Any mismatches between your spec and actual API behavior will be reported as test failures.
 
 For more information, see [the docs](./test-case-validation.md).

@@ -74,7 +74,7 @@ const useStyles = makeStyles(
       whiteSpace: 'nowrap',
       overflow: 'hidden',
       'text-overflow': 'ellipsis',
-      lineHeight: 1,
+      lineHeight: 1.5,
     },
     subtitle: {
       fontSize: 10,

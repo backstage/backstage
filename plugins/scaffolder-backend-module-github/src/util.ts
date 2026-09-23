@@ -134,6 +134,7 @@ export function getOctokitClient(
 export async function getOctokitOptions(options: {
   integrations: ScmIntegrationRegistry;
   credentialsProvider?: GithubCredentialsProvider;
+  requireScmUserCredentials?: boolean;
   token?: string;
   host: string;
   owner?: string;
@@ -149,6 +150,7 @@ export async function getOctokitOptions(options: {
 export async function getOctokitOptions(options: {
   integrations: ScmIntegrationRegistry;
   credentialsProvider?: GithubCredentialsProvider;
+  requireScmUserCredentials?: boolean;
   token?: string;
   repoUrl: string;
 }): Promise<OctokitOptions>;
@@ -156,13 +158,20 @@ export async function getOctokitOptions(options: {
 export async function getOctokitOptions(options: {
   integrations: ScmIntegrationRegistry;
   credentialsProvider?: GithubCredentialsProvider;
+  requireScmUserCredentials?: boolean;
   token?: string;
   host?: string;
   owner?: string;
   repo?: string;
   repoUrl?: string;
 }): Promise<OctokitOptions> {
-  const { integrations, credentialsProvider, token, repoUrl } = options;
+  const {
+    integrations,
+    credentialsProvider,
+    requireScmUserCredentials,
+    token,
+    repoUrl,
+  } = options;
   const { host, owner, repo } = repoUrl
     ? parseRepoUrl(repoUrl, integrations)
     : options;
@@ -186,6 +195,12 @@ export async function getOctokitOptions(options: {
       previews: ['nebula-preview'],
       request: requestOptions,
     };
+  }
+
+  if (requireScmUserCredentials) {
+    throw new InputError(
+      `No user credentials provided for host ${host}, but scaffolder.requireScmUserCredentials is enabled`,
+    );
   }
 
   if (!owner || !repo) {

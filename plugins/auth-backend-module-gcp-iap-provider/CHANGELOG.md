@@ -1,5 +1,71 @@
 # @backstage/plugin-auth-backend-module-gcp-iap-provider
 
+## 0.4.20-next.0
+
+### Patch Changes
+
+- b96ec9e: Cache Google IAP public verification keys according to the response cache headers to reduce repeated key requests during authentication.
+- Updated dependencies
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/plugin-auth-node@0.7.7-next.0
+
+## 0.4.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.6
+  - @backstage/backend-plugin-api@1.10.1
+
+## 0.4.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.5-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
+## 0.4.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-auth-node@0.7.4
+
+## 0.4.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.4-next.0
+  - @backstage/backend-plugin-api@1.10.0-next.0
+
+## 0.4.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.3
+  - @backstage/backend-plugin-api@1.9.3
+
+## 0.4.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.3-next.0
+  - @backstage/backend-plugin-api@1.9.3-next.0
+
+## 0.4.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-auth-node@0.7.2
+
 ## 0.4.16-next.0
 
 ### Patch Changes

@@ -389,7 +389,7 @@ Fields of a link are:
 | `icon`  | String | [Optional] A key representing a visual icon to be displayed in the UI.               |
 | `type`  | String | [Optional] An optional value to categorize links into specific groups.               |
 
-:::note Note
+:::note
 
 The `icon` field value is meant to be a semantic key that will map to a
 specific icon that may be provided by an icon library (e.g. `material-ui`

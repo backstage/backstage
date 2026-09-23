@@ -74,6 +74,23 @@ const guardedCard = CardBlueprint.make({
 });
 ```
 
+#### Permission name format
+
+Permission names in the `if` predicate support an optional `#action` suffix to specify the `action` attribute on the permission check. The format is `permissionName#action`:
+
+```tsx
+const actionGatedPage = PageBlueprint.make({
+  params: {
+    path: '/edit-catalog',
+    loader: () => import('./EditCatalogPage').then(m => <m.EditCatalogPage />),
+  },
+  // Only shown when the user can perform the 'update' action on catalog.entity.refresh
+  if: { permissions: { $contains: 'catalog.entity.refresh#update' } },
+});
+```
+
+Without the suffix (e.g. `catalog.entity.create`), the permission is checked with an empty `attributes` object, which matches basic permissions that carry no action. With the suffix (e.g. `catalog.entity.refresh#update`), the part before `#` is the permission name and the part after is passed as `attributes.action` to the permission API.
+
 Conditions are evaluated when the app tree is prepared, not continuously while the app is running. If the underlying feature flags or permissions change, the app needs to be prepared again in order for the extension tree to change, which in practice typically means reloading the app.
 
 If a plugin or module also provides an `if` predicate, it is combined with the extension-level predicate using logical `AND`. See the [plugin `if` option](./15-plugins.md#if-option) and [frontend modules](./25-extension-overrides.md#creating-a-frontend-module) sections for more details.

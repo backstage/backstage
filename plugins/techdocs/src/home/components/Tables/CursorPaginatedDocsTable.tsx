@@ -15,6 +15,8 @@
  */
 
 import { Table, TableProps } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { techdocsTranslationRef } from '../../../translation';
 import { DocsTableRow } from './types';
 
 type PaginatedDocsTableProps = {
@@ -38,6 +40,7 @@ export function CursorPaginatedDocsTable(props: PaginatedDocsTableProps) {
     options,
     ...restProps
   } = props;
+  const { t } = useTranslationRef(techdocsTranslationRef);
 
   return (
     <Table
@@ -65,7 +68,21 @@ export function CursorPaginatedDocsTable(props: PaginatedDocsTableProps) {
       page={prev ? 1 : 0}
       /* this will enable the next button accordingly */
       totalCount={next ? Number.MAX_VALUE : Number.MAX_SAFE_INTEGER}
-      localization={{ pagination: { labelDisplayedRows: '' } }}
+      localization={{
+        header: {
+          actions: t('table.header.actions'),
+        },
+        toolbar: {
+          searchPlaceholder: t('table.toolbar.searchPlaceholder'),
+        },
+        pagination: {
+          labelDisplayedRows: '',
+          labelRowsSelect: t('table.pagination.labelRowsSelect'),
+        },
+        body: {
+          emptyDataSourceMessage: t('table.body.emptyDataSourceMessage'),
+        },
+      }}
       isLoading={isLoading}
       {...restProps}
     />

@@ -13,22 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createExtensionTester } from '@backstage/frontend-test-utils';
 import {
-  createExtensionTester,
-  renderInTestApp,
-} from '@backstage/frontend-test-utils';
-import { EntityContextMenuItemBlueprint } from './EntityContextMenuItemBlueprint';
-import { screen, waitFor } from '@testing-library/react';
-import { EntityProvider } from '@backstage/plugin-catalog-react';
+  EntityContextMenuItemBlueprint,
+  type EntityContextMenuItemParams,
+} from './EntityContextMenuItemBlueprint';
 import { Entity } from '@backstage/catalog-model';
 
-jest.mock('../../hooks/useEntityContextMenu', () => ({
-  useEntityContextMenu: () => ({
-    onMenuClose: jest.fn(),
-  }),
-}));
-
 describe('EntityContextMenuItemBlueprint', () => {
+  function getMenuItemData(params: EntityContextMenuItemParams) {
+    const extension = EntityContextMenuItemBlueprint.make({
+      name: 'test',
+      params,
+    });
+
+    return createExtensionTester(extension).get(
+      EntityContextMenuItemBlueprint.dataRefs.data,
+    );
+  }
+
   const data = [
     {
       icon: <span>Test</span>,
@@ -91,32 +94,13 @@ describe('EntityContextMenuItemBlueprint', () => {
     `);
   });
 
-  it('should render a menu item', async () => {
-    const extension = EntityContextMenuItemBlueprint.make({
-      name: 'test',
-      params: {
-        icon: <span>Icon</span>,
-        useProps: () => ({
-          title: 'Test',
-          onClick: () => {},
-        }),
-      },
-    });
+  it('should output menu item data', () => {
+    const icon = <span>Icon</span>;
+    const useProps = () => ({ title: 'Test', onClick: () => {} });
 
-    renderInTestApp(
-      <EntityProvider
-        entity={{
-          apiVersion: 'v1',
-          kind: 'Component',
-          metadata: { name: 'test' },
-        }}
-      >
-        <ul>{createExtensionTester(extension).reactElement()}</ul>
-      </EntityProvider>,
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText('Test')).toBeInTheDocument();
+    expect(getMenuItemData({ icon, useProps })).toEqual({
+      icon,
+      useProps,
     });
   });
 

@@ -1,5 +1,70 @@
 # @backstage/catalog-client
 
+## 1.16.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/filter-predicates@0.1.6-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-common@1.2.1-next.0
+
+## 1.16.2
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.2.0
+  - @backstage/catalog-model@1.10.1
+  - @backstage/filter-predicates@0.1.5
+
+## 1.16.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.2.0-next.0
+  - @backstage/filter-predicates@0.1.5-next.1
+
+## 1.16.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/filter-predicates@0.1.5-next.0
+
+## 1.16.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/filter-predicates@0.1.4
+
+## 1.16.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/filter-predicates@0.1.4-next.0
+
+## 1.16.0
+
+### Minor Changes
+
+- 8f20cc2: `CatalogApi.queryEntities` now accepts a `totalItems` option (`'include'` or `'exclude'`, default `'include'`) on initial requests. Pass `'exclude'` to skip the `totalItems` count when the caller doesn't need it.
+
+### Patch Changes
+
+- 378784e: Moved dependencies that are re-exported in the public API from `devDependencies` to `dependencies`. These were incorrectly demoted in #33936 because the source code only uses type imports, but the types still appear in the published API surface and need to be resolvable by consumers at build time.
+
+## 1.16.0-next.1
+
+### Patch Changes
+
+- 378784e: Moved dependencies that are re-exported in the public API from `devDependencies` to `dependencies`. These were incorrectly demoted in #33936 because the source code only uses type imports, but the types still appear in the published API surface and need to be resolvable by consumers at build time.
+
 ## 1.16.0-next.0
 
 ### Minor Changes

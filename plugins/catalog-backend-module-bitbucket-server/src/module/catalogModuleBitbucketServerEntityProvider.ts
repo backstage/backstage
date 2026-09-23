@@ -20,8 +20,10 @@ import {
 } from '@backstage/backend-plugin-api';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
+import { catalogScmEventsServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { BitbucketServerEntityProvider } from '../providers/BitbucketServerEntityProvider';
+import { BitbucketServerScmEventsBridge } from '../events/BitbucketServerScmEventsBridge';
 
 /**
  * @public
@@ -39,6 +41,8 @@ export const catalogModuleBitbucketServerEntityProvider = createBackendModule({
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
         auth: coreServices.auth,
+        catalogScmEvents: catalogScmEventsServiceRef,
+        lifecycle: coreServices.lifecycle,
       },
       async init({
         catalog,
@@ -48,6 +52,8 @@ export const catalogModuleBitbucketServerEntityProvider = createBackendModule({
         logger,
         scheduler,
         auth,
+        catalogScmEvents,
+        lifecycle,
       }) {
         const providers = BitbucketServerEntityProvider.fromConfig(config, {
           catalogApi,
@@ -58,6 +64,18 @@ export const catalogModuleBitbucketServerEntityProvider = createBackendModule({
         });
 
         catalog.addEntityProvider(providers);
+
+        const bridge = new BitbucketServerScmEventsBridge({
+          logger,
+          events,
+          catalogScmEvents,
+        });
+        lifecycle.addStartupHook(async () => {
+          await bridge.start();
+        });
+        lifecycle.addShutdownHook(async () => {
+          await bridge.stop();
+        });
       },
     });
   },

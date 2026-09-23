@@ -68,9 +68,16 @@ export class AppIdentityProxy implements IdentityApi {
     identityApi: CompatibilityIdentityApi,
     targetOptions: { signOutTargetUrl: string },
   ) {
+    if (this.target) {
+      return;
+    }
     this.target = identityApi;
     this.signOutTargetUrl = targetOptions.signOutTargetUrl;
     this.resolveTarget(identityApi);
+  }
+
+  isTargetSet(): boolean {
+    return Boolean(this.target);
   }
 
   getUserId(): string {

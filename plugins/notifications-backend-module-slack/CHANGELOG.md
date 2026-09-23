@@ -1,5 +1,106 @@
 # @backstage/plugin-notifications-backend-module-slack
 
+## 0.4.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/plugin-notifications-common@0.2.5-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-node@2.2.6-next.0
+  - @backstage/plugin-notifications-node@0.2.31-next.0
+
+## 0.4.6
+
+### Patch Changes
+
+- 0325d26: chore(deps-dev): bump `@faker-js/faker` from 10.4.0 to 10.5.0
+- 80a548a: Added `resolveNotificationLink` utility function that resolves relative notification links to absolute URLs using a provided base URL. This can be used by notification processor modules to ensure links are absolute before forwarding them to external systems.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.1
+  - @backstage/config@1.3.9
+  - @backstage/plugin-notifications-node@0.2.30
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-catalog-node@2.2.5
+  - @backstage/plugin-notifications-common@0.2.4
+
+## 0.4.6-next.1
+
+### Patch Changes
+
+- 80a548a: Added `resolveNotificationLink` utility function that resolves relative notification links to absolute URLs using a provided base URL. This can be used by notification processor modules to ensure links are absolute before forwarding them to external systems.
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/plugin-notifications-node@0.2.30-next.1
+  - @backstage/plugin-catalog-node@2.2.5-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/plugin-notifications-common@0.2.4-next.0
+
+## 0.4.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-catalog-node@2.2.5-next.0
+  - @backstage/plugin-notifications-node@0.2.30-next.0
+
+## 0.4.5
+
+### Patch Changes
+
+- 4956d7f: Added support for routing notifications to a specific Slack channel via `payload.metadata.slackChannel`, with the existing entity annotation lookup as a fallback.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-catalog-node@2.2.4
+  - @backstage/plugin-notifications-node@0.2.29
+
+## 0.4.5-next.1
+
+### Patch Changes
+
+- 4956d7f: Added support for routing notifications to a specific Slack channel via `payload.metadata.slackChannel`, with the existing entity annotation lookup as a fallback.
+
+## 0.4.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-catalog-node@2.2.4-next.0
+  - @backstage/plugin-notifications-node@0.2.29-next.0
+
+## 0.4.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-notifications-node@0.2.28
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/plugin-catalog-node@2.2.3
+
+## 0.4.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/plugin-catalog-node@2.2.3-next.0
+  - @backstage/plugin-notifications-node@0.2.28-next.0
+
+## 0.4.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-catalog-node@2.2.2
+  - @backstage/plugin-notifications-node@0.2.27
+
 ## 0.4.3-next.0
 
 ### Patch Changes

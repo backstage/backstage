@@ -1,5 +1,247 @@
 # @backstage/plugin-techdocs
 
+## 1.19.0-next.0
+
+### Minor Changes
+
+- 80a0da9: Added `withoutFeedbackLink` prop to `page:techdocs/reader` and `entity-content:techdocs` extensions, which can be set to `true` to disable the feedback button in the rendered documentation.
+
+### Patch Changes
+
+- 24fd0e8: Fixed TechDocs addons silently not rendering in apps using the new frontend system, on both the standalone documentation reader page and the entity documentation tab.
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.0
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/integration-react@1.2.23-next.0
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/plugin-techdocs-react@1.3.16-next.0
+  - @backstage/catalog-client@1.16.3-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-auth-react@0.1.32-next.0
+  - @backstage/plugin-catalog-react@3.2.4-next.0
+  - @backstage/plugin-search-common@1.2.26-next.0
+  - @backstage/plugin-search-react@1.11.9-next.0
+
+## 1.18.1
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- d421187: Reduced the initial app bundle size by loading page and optional UI implementations only when their extensions render.
+- 9cb79f5: Use the catalog presentation API for TechDocs document titles and owner labels so entity display names are consistent with the rest of Backstage.
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/integration@2.1.2
+  - @backstage/ui@0.18.0
+  - @backstage/catalog-client@1.16.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-catalog-react@3.2.3
+  - @backstage/plugin-techdocs-react@1.3.15
+  - @backstage/config@1.3.9
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/integration-react@1.2.22
+  - @backstage/plugin-auth-react@0.1.31
+  - @backstage/plugin-search-common@1.2.25
+  - @backstage/plugin-search-react@1.11.8
+
+## 1.18.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/ui@0.18.0-next.2
+  - @backstage/catalog-client@1.16.2-next.1
+  - @backstage/plugin-catalog-react@3.2.3-next.2
+  - @backstage/core-components@0.18.14-next.2
+  - @backstage/core-plugin-api@1.12.10-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.1
+  - @backstage/integration@2.1.2-next.1
+  - @backstage/integration-react@1.2.22-next.1
+  - @backstage/plugin-techdocs-react@1.3.15-next.2
+  - @backstage/plugin-search-common@1.2.25-next.0
+  - @backstage/plugin-search-react@1.11.8-next.2
+
+## 1.18.1-next.1
+
+### Patch Changes
+
+- d421187: Reduced the initial app bundle size by loading page and optional UI implementations only when their extensions render.
+- 9cb79f5: Use the catalog presentation API for TechDocs document titles and owner labels so entity display names are consistent with the rest of Backstage.
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.1
+  - @backstage/integration@2.1.2-next.0
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/plugin-catalog-react@3.2.3-next.1
+  - @backstage/ui@0.18.0-next.1
+  - @backstage/integration-react@1.2.22-next.0
+  - @backstage/core-plugin-api@1.12.10-next.0
+  - @backstage/plugin-search-react@1.11.8-next.1
+  - @backstage/plugin-techdocs-react@1.3.15-next.1
+  - @backstage/catalog-client@1.16.2-next.0
+  - @backstage/plugin-auth-react@0.1.31-next.1
+
+## 1.18.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.17.2-next.0
+  - @backstage/plugin-catalog-react@3.2.2-next.0
+  - @backstage/core-components@0.18.14-next.0
+  - @backstage/plugin-search-react@1.11.8-next.0
+  - @backstage/plugin-auth-react@0.1.31-next.0
+  - @backstage/plugin-techdocs-react@1.3.15-next.0
+
+## 1.18.0
+
+### Minor Changes
+
+- 4f9ce5e: Add `initialFilter` config for `page:techdocs`. Valid options are `all`, `owned` and `starred`. Defaults to `owned`.
+
+### Patch Changes
+
+- e06a951: chore(deps): bump `dompurify` from 3.4.11 to 3.4.12
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/plugin-catalog-react@3.2.1
+  - @backstage/ui@0.17.1
+  - @backstage/integration@2.1.0
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/integration-react@1.2.21
+  - @backstage/plugin-auth-react@0.1.30
+  - @backstage/plugin-search-react@1.11.7
+  - @backstage/plugin-techdocs-react@1.3.14
+
+## 1.18.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.1-next.2
+  - @backstage/frontend-plugin-api@0.18.0-next.0
+  - @backstage/core-plugin-api@1.12.9-next.0
+  - @backstage/plugin-search-react@1.11.7-next.1
+  - @backstage/plugin-techdocs-react@1.3.14-next.1
+  - @backstage/core-components@0.18.13-next.2
+  - @backstage/integration-react@1.2.21-next.1
+  - @backstage/plugin-auth-react@0.1.30-next.1
+
+## 1.18.0-next.1
+
+### Patch Changes
+
+- e06a951: chore(deps): bump `dompurify` from 3.4.11 to 3.4.12
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.1-next.1
+  - @backstage/core-components@0.18.13-next.1
+  - @backstage/integration@2.1.0-next.0
+  - @backstage/integration-react@1.2.21-next.0
+
+## 1.18.0-next.0
+
+### Minor Changes
+
+- 4f9ce5e: Add `initialFilter` config for `page:techdocs`. Valid options are `all`, `owned` and `starred`. Defaults to `owned`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.13-next.0
+  - @backstage/ui@0.17.1-next.0
+  - @backstage/plugin-auth-react@0.1.30-next.0
+  - @backstage/plugin-catalog-react@3.2.1-next.0
+  - @backstage/plugin-search-react@1.11.7-next.0
+  - @backstage/plugin-techdocs-react@1.3.14-next.0
+
+## 1.17.8
+
+### Patch Changes
+
+- 34bda9e: chore(deps): bump `dompurify` from 3.4.5 to 3.4.9
+- f2aa036: chore(deps): bump `dompurify` from 3.4.9 to 3.4.11
+- b8db4fe: The TechDocs plugin now adds the Documentation result type to the Search page when it is installed.
+- 65c7f98: Fixed duplicate React key warnings when documentation entities share a name across different namespaces or kinds.
+- 9459c14: Fixed TechDocs pages sometimes rendering blank due to sanitizer hooks registered by other plugins.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.3
+  - @backstage/ui@0.17.0
+  - @backstage/plugin-catalog-react@3.2.0
+  - @backstage/core-components@0.18.12
+  - @backstage/plugin-techdocs-react@1.3.13
+  - @backstage/catalog-client@1.16.1
+  - @backstage/core-plugin-api@1.12.8
+  - @backstage/integration-react@1.2.20
+  - @backstage/plugin-auth-react@0.1.29
+  - @backstage/plugin-search-react@1.11.6
+
+## 1.17.8-next.0
+
+### Patch Changes
+
+- 65c7f98: Fixed duplicate React key warnings when documentation entities share a name across different namespaces or kinds.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@3.2.0-next.0
+  - @backstage/ui@0.17.0-next.0
+  - @backstage/frontend-plugin-api@0.17.3-next.0
+  - @backstage/plugin-search-react@1.11.6-next.0
+  - @backstage/catalog-client@1.16.1-next.0
+  - @backstage/core-components@0.18.12-next.0
+  - @backstage/core-plugin-api@1.12.8-next.0
+  - @backstage/integration-react@1.2.20-next.0
+  - @backstage/plugin-auth-react@0.1.29-next.0
+  - @backstage/plugin-techdocs-react@1.3.13-next.0
+
+## 1.17.7
+
+### Patch Changes
+
+- 460c597: Added missing i18n support for TechDocs plugin components including:
+
+  - Search components (placeholder text, no results message)
+  - Table components (column headers, pagination, toolbar, actions, empty states)
+  - Home page components (support button, page wrapper title/subtitle)
+  - Reader components (build logs, not found errors, state indicators, settings)
+  - Error messages and navigation labels
+
+  Also exported `techdocsTranslationRef` from the alpha entrypoint for external use.
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0
+  - @backstage/plugin-catalog-react@3.1.0
+  - @backstage/core-components@0.18.11
+  - @backstage/plugin-search-react@1.11.5
+  - @backstage/integration@2.0.3
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/ui@0.16.0
+  - @backstage/core-plugin-api@1.12.7
+  - @backstage/integration-react@1.2.19
+  - @backstage/plugin-auth-react@0.1.28
+  - @backstage/plugin-techdocs-react@1.3.12
+
+## 1.17.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.3-next.1
+  - @backstage/catalog-client@1.16.0-next.1
+  - @backstage/frontend-plugin-api@0.17.2-next.0
+  - @backstage/core-components@0.18.11-next.1
+  - @backstage/ui@0.15.1-next.0
+  - @backstage/core-plugin-api@1.12.7-next.0
+  - @backstage/plugin-catalog-react@3.0.1-next.1
+  - @backstage/plugin-search-react@1.11.5-next.1
+  - @backstage/plugin-techdocs-react@1.3.12-next.1
+  - @backstage/integration-react@1.2.19-next.1
+  - @backstage/plugin-auth-react@0.1.28-next.1
+
 ## 1.17.7-next.0
 
 ### Patch Changes

@@ -1,0 +1,10 @@
+---
+title: Elasticsearch Devtool
+author: Saish Narvekar
+authorUrl: https://github.com/SaishNarvekar
+category: Tools
+description: Backstage plugin for querying Elasticsearch indices directly from Backstage.
+documentation: https://github.com/SaishNarvekar/elastic-devtool#elastic-dev-tool-plugin-for-backstage
+npmPackageName: '@saishnarvekar/plugin-elastic-devtool'
+addedDate: '2026-06-28'
+status: active

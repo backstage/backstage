@@ -17,7 +17,7 @@
 import request from 'supertest';
 import { decodeOAuthState } from '@backstage/plugin-auth-node';
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import { http, HttpResponse, passthrough } from 'msw';
 import {
   mockServices,
   registerMswTestHooks,
@@ -61,59 +61,45 @@ describe('authModuleOidcProvider', () => {
     jest.clearAllMocks();
 
     mswServer.use(
-      rest.get(
-        'https://oidc.test/.well-known/openid-configuration',
-        (_req, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(issuerMetadata),
-          ),
+      http.get('https://oidc.test/.well-known/openid-configuration', () =>
+        HttpResponse.json(issuerMetadata),
       ),
-      rest.get(
+      http.get(
         'https://oidc.test/oauth2/authorize',
-        async (req, _res, _ctx) => {
-          nonce =
-            new URL(req.url).searchParams.get('nonce') ??
-            'nonceGeneratedByAuthServer';
+        async ({ request: httpRequest }) => {
+          const url = new URL(httpRequest.url);
+          nonce = url.searchParams.get('nonce') ?? 'nonceGeneratedByAuthServer';
+          const callbackUrl = new URL(url.searchParams.get('redirect_uri')!);
+          callbackUrl.searchParams.set('code', 'authorization_code');
+          callbackUrl.searchParams.set('state', url.searchParams.get('state')!);
+          callbackUrl.searchParams.set('scope', 'test-scope');
+          return HttpResponse.redirect(callbackUrl.toString(), 302);
         },
       ),
-      rest.get('https://oidc.test/oauth2/authorize', async (req, res, ctx) => {
-        const callbackUrl = new URL(req.url.searchParams.get('redirect_uri')!);
-        callbackUrl.searchParams.set('code', 'authorization_code');
-        callbackUrl.searchParams.set(
-          'state',
-          req.url.searchParams.get('state')!,
-        );
-        callbackUrl.searchParams.set('scope', 'test-scope');
-        return res(
-          ctx.status(302),
-          ctx.set('Location', callbackUrl.toString()),
-        );
-      }),
-      rest.get('https://oidc.test/jwks.json', async (_req, res, ctx) =>
-        res(ctx.status(200), ctx.json({ keys: [{ ...publicKey }] })),
+      http.get('https://oidc.test/jwks.json', async () =>
+        HttpResponse.json({ keys: [{ ...publicKey }] }),
       ),
-      rest.post('https://oidc.test/oauth2/token', async (req, res, ctx) => {
-        const keyPair = await generateKeyPair('RS256');
-        const privateKey = await exportJWK(keyPair.privateKey);
-        publicKey = await exportJWK(keyPair.publicKey);
-        publicKey.alg = privateKey.alg = 'RS256';
+      http.post(
+        'https://oidc.test/oauth2/token',
+        async ({ request: httpRequest }) => {
+          const keyPair = await generateKeyPair('RS256');
+          const privateKey = await exportJWK(keyPair.privateKey);
+          publicKey = await exportJWK(keyPair.publicKey);
+          publicKey.alg = privateKey.alg = 'RS256';
 
-        idToken = await new SignJWT({
-          sub: 'test',
-          iss: 'https://oidc.test',
-          iat: Date.now(),
-          aud: 'clientId',
-          exp: Date.now() + 10000,
-          nonce,
-        })
-          .setProtectedHeader({ alg: privateKey.alg, kid: privateKey.kid })
-          .sign(keyPair.privateKey);
+          idToken = await new SignJWT({
+            sub: 'test',
+            iss: 'https://oidc.test',
+            iat: Date.now(),
+            aud: 'clientId',
+            exp: Date.now() + 10000,
+            nonce,
+          })
+            .setProtectedHeader({ alg: privateKey.alg, kid: privateKey.kid })
+            .sign(keyPair.privateKey);
 
-        return res(
-          req.headers.get('Authorization')
-            ? ctx.json({
+          return httpRequest.headers.get('Authorization')
+            ? HttpResponse.json({
                 access_token: 'accessToken',
                 id_token: idToken,
                 refresh_token: 'refreshToken',
@@ -121,23 +107,18 @@ describe('authModuleOidcProvider', () => {
                 token_type: '',
                 expires_in: 3600,
               })
-            : ctx.status(401),
-        );
-      }),
-      rest.get(
-        'https://oidc.test/idp/userinfo.openid',
-        async (_req, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.json({
-              sub: 'test',
-              name: 'Alice Adams',
-              given_name: 'Alice',
-              family_name: 'Adams',
-              email: 'alice@test.com',
-              picture: 'http://testPictureUrl/photo.jpg',
-            }),
-          ),
+            : new HttpResponse(null, { status: 401 });
+        },
+      ),
+      http.get('https://oidc.test/idp/userinfo.openid', async () =>
+        HttpResponse.json({
+          sub: 'test',
+          name: 'Alice Adams',
+          given_name: 'Alice',
+          family_name: 'Adams',
+          email: 'alice@test.com',
+          picture: 'http://testPictureUrl/photo.jpg',
+        }),
       ),
     );
 
@@ -169,7 +150,7 @@ describe('authModuleOidcProvider', () => {
     backstageServer = backend.server;
     const port = backend.server.port();
     appUrl = `http://localhost:${port}`;
-    mswServer.use(rest.all(`http://*:${port}/*`, req => req.passthrough()));
+    mswServer.use(http.all(`http://*:${port}/*`, passthrough));
   });
 
   afterEach(() => {

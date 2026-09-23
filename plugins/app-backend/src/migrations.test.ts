@@ -72,8 +72,6 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
     await expect(knex('static_assets_cache')).rejects.toEqual(
       expect.anything(),
     );
-
-    await knex.destroy();
   });
 
   it('20240113144027_assets-namespace.js', async () => {
@@ -129,7 +127,5 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
         last_modified_at: expect.anything(),
       },
     ]);
-
-    await knex.destroy();
   });
 });

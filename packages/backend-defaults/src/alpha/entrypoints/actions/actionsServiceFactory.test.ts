@@ -24,7 +24,7 @@ import { actionsRegistryServiceFactory } from '../actionsRegistry';
 import { httpRouterServiceFactory } from '../../../entrypoints/httpRouter';
 import { actionsServiceFactory } from './actionsServiceFactory';
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import {
   coreServices,
   createBackendPlugin,
@@ -82,20 +82,18 @@ describe('actionsServiceFactory', () => {
 
     beforeEach(() => {
       server.use(
-        rest.get(
+        http.get(
           'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions',
-          mockActionsListEndpoint.mockImplementation((_req, res, ctx) =>
-            res(
-              ctx.json({
-                actions: [mockActionsDefinition],
-              }),
-            ),
+          mockActionsListEndpoint.mockImplementation(() =>
+            HttpResponse.json({
+              actions: [mockActionsDefinition],
+            }),
           ),
         ),
-        rest.get(
+        http.get(
           'http://localhost:0/api/not-found-plugin/.backstage/actions/v1/actions',
-          mockNotFoundActionsListEndpoint.mockImplementation((_req, res, ctx) =>
-            res(ctx.status(404)),
+          mockNotFoundActionsListEndpoint.mockImplementation(
+            () => new HttpResponse(null, { status: 404 }),
           ),
         ),
       );
@@ -137,27 +135,23 @@ describe('actionsServiceFactory', () => {
         ];
 
         server.use(
-          rest.get(
+          http.get(
             'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions',
-            (_req, res, ctx) =>
-              res(
-                ctx.json({
-                  actions: multipleActions.filter(a =>
-                    a.id.startsWith('my-plugin:'),
-                  ),
-                }),
-              ),
+            () =>
+              HttpResponse.json({
+                actions: multipleActions.filter(a =>
+                  a.id.startsWith('my-plugin:'),
+                ),
+              }),
           ),
-          rest.get(
+          http.get(
             'http://localhost:0/api/other-plugin/.backstage/actions/v1/actions',
-            (_req, res, ctx) =>
-              res(
-                ctx.json({
-                  actions: multipleActions.filter(a =>
-                    a.id.startsWith('other-plugin:'),
-                  ),
-                }),
-              ),
+            () =>
+              HttpResponse.json({
+                actions: multipleActions.filter(a =>
+                  a.id.startsWith('other-plugin:'),
+                ),
+              }),
           ),
         );
 
@@ -210,9 +204,9 @@ describe('actionsServiceFactory', () => {
         ];
 
         server.use(
-          rest.get(
+          http.get(
             'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions',
-            (_req, res, ctx) => res(ctx.json({ actions: multipleActions })),
+            () => HttpResponse.json({ actions: multipleActions }),
           ),
         );
 
@@ -262,9 +256,9 @@ describe('actionsServiceFactory', () => {
         ];
 
         server.use(
-          rest.get(
+          http.get(
             'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions',
-            (_req, res, ctx) => res(ctx.json({ actions: multipleActions })),
+            () => HttpResponse.json({ actions: multipleActions }),
           ),
         );
 
@@ -327,9 +321,9 @@ describe('actionsServiceFactory', () => {
         ];
 
         server.use(
-          rest.get(
+          http.get(
             'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions',
-            (_req, res, ctx) => res(ctx.json({ actions: multipleActions })),
+            () => HttpResponse.json({ actions: multipleActions }),
           ),
         );
 
@@ -393,9 +387,9 @@ describe('actionsServiceFactory', () => {
         ];
 
         server.use(
-          rest.get(
+          http.get(
             'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions',
-            (_req, res, ctx) => res(ctx.json({ actions: multipleActions })),
+            () => HttpResponse.json({ actions: multipleActions }),
           ),
         );
 
@@ -471,27 +465,23 @@ describe('actionsServiceFactory', () => {
         ];
 
         server.use(
-          rest.get(
+          http.get(
             'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions',
-            (_req, res, ctx) =>
-              res(
-                ctx.json({
-                  actions: multipleActions.filter(a =>
-                    a.id.startsWith('my-plugin:'),
-                  ),
-                }),
-              ),
+            () =>
+              HttpResponse.json({
+                actions: multipleActions.filter(a =>
+                  a.id.startsWith('my-plugin:'),
+                ),
+              }),
           ),
-          rest.get(
+          http.get(
             'http://localhost:0/api/other-plugin/.backstage/actions/v1/actions',
-            (_req, res, ctx) =>
-              res(
-                ctx.json({
-                  actions: multipleActions.filter(a =>
-                    a.id.startsWith('other-plugin:'),
-                  ),
-                }),
-              ),
+            () =>
+              HttpResponse.json({
+                actions: multipleActions.filter(a =>
+                  a.id.startsWith('other-plugin:'),
+                ),
+              }),
           ),
         );
 
@@ -549,9 +539,9 @@ describe('actionsServiceFactory', () => {
         ];
 
         server.use(
-          rest.get(
+          http.get(
             'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions',
-            (_req, res, ctx) => res(ctx.json({ actions: multipleActions })),
+            () => HttpResponse.json({ actions: multipleActions }),
           ),
         );
 
@@ -591,9 +581,9 @@ describe('actionsServiceFactory', () => {
     describe('invoke', () => {
       it('should invoke the action and return the output', async () => {
         server.use(
-          rest.post(
+          http.post(
             'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions/my-plugin:test/invoke',
-            (_req, res, ctx) => res(ctx.json({ output: { ok: true } })),
+            () => HttpResponse.json({ output: { ok: true } }),
           ),
         );
         const subject = await ServiceFactoryTester.from(actionsServiceFactory, {
@@ -610,9 +600,9 @@ describe('actionsServiceFactory', () => {
 
       it('should throw a 404 if the action does not exist', async () => {
         server.use(
-          rest.post(
+          http.post(
             'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions/my-plugin:test/invoke',
-            (_req, res, ctx) => res(ctx.status(404)),
+            () => new HttpResponse(null, { status: 404 }),
           ),
         );
 
@@ -630,9 +620,9 @@ describe('actionsServiceFactory', () => {
 
       it('should throw a 400 if the action returns an invalid input', async () => {
         server.use(
-          rest.post(
+          http.post(
             'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions/my-plugin:test/invoke',
-            (_req, res, ctx) => res(ctx.status(400)),
+            () => new HttpResponse(null, { status: 400 }),
           ),
         );
 

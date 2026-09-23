@@ -1,5 +1,97 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.6.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/plugin-auth-node@0.7.7-next.0
+  - @backstage/plugin-permission-common@0.9.12-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-node@2.2.6-next.0
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.18-next.0
+
+## 0.6.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-auth-node@0.7.6
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-catalog-node@2.2.5
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.17
+  - @backstage/plugin-permission-common@0.9.11
+
+## 0.6.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@2.2.5-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/plugin-auth-node@0.7.5-next.1
+  - @backstage/plugin-permission-common@0.9.11-next.0
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.17-next.0
+
+## 0.6.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.5-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-catalog-node@2.2.5-next.0
+
+## 0.6.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-auth-node@0.7.4
+  - @backstage/plugin-permission-common@0.9.10
+  - @backstage/plugin-catalog-node@2.2.4
+
+## 0.6.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.4-next.0
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-catalog-node@2.2.4-next.0
+
+## 0.6.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.3
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/plugin-catalog-node@2.2.3
+
+## 0.6.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.7.3-next.0
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/plugin-catalog-node@2.2.3-next.0
+
+## 0.6.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-auth-node@0.7.2
+  - @backstage/plugin-catalog-node@2.2.2
+
 ## 0.6.13-next.0
 
 ### Patch Changes

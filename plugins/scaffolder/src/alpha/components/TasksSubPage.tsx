@@ -14,10 +14,40 @@
  * limitations under the License.
  */
 
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useParams } from 'react-router-dom';
 import { Content } from '@backstage/core-components';
+import { BreadcrumbEntry } from '@backstage/frontend-plugin-api';
 import { OngoingTaskBody } from '../../components/OngoingTask';
 import { ListTaskPageContent } from '../../components/ListTasksPage';
+import { ScaffolderTemplateOutputsComponent } from '@backstage/plugin-scaffolder-react/alpha';
+import { useTaskEventStream } from '@backstage/plugin-scaffolder-react';
+
+type TemplateOutputsRegistration = {
+  component: ScaffolderTemplateOutputsComponent;
+  templateRefs: string[];
+};
+
+function TaskDetailWithBreadcrumb(props: {
+  templateOutputsComponents?: TemplateOutputsRegistration[];
+}) {
+  const { taskId } = useParams<{ taskId: string }>();
+  const taskStream = useTaskEventStream(taskId!);
+  const templateRef = taskStream.task?.spec.templateInfo?.entityRef;
+  const TemplateOutputsComponent = props.templateOutputsComponents?.find(
+    registration => registration.templateRefs.includes(templateRef ?? ''),
+  )?.component;
+
+  if (!taskId) {
+    return (
+      <OngoingTaskBody TemplateOutputsComponent={TemplateOutputsComponent} />
+    );
+  }
+  return (
+    <BreadcrumbEntry entry={{ label: taskId, href: taskId }}>
+      <OngoingTaskBody TemplateOutputsComponent={TemplateOutputsComponent} />
+    </BreadcrumbEntry>
+  );
+}
 
 /**
  * Sub-page for the tasks tab. Renders the task list at the index route
@@ -25,7 +55,9 @@ import { ListTaskPageContent } from '../../components/ListTasksPage';
  *
  * @internal
  */
-export function TasksSubPage() {
+export function TasksSubPage(props: {
+  templateOutputsComponents?: TemplateOutputsRegistration[];
+}) {
   return (
     <Routes>
       <Route
@@ -36,7 +68,14 @@ export function TasksSubPage() {
           </Content>
         }
       />
-      <Route path=":taskId" element={<OngoingTaskBody />} />
+      <Route
+        path=":taskId"
+        element={
+          <TaskDetailWithBreadcrumb
+            templateOutputsComponents={props.templateOutputsComponents}
+          />
+        }
+      />
     </Routes>
   );
 }

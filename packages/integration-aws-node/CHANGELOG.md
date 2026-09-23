@@ -1,5 +1,38 @@
 # @backstage/integration-aws-node
 
+## 0.2.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/connections@0.4.1-next.0
+
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/connections@0.4.0
+  - @backstage/config@1.3.9
+
+## 0.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/connections@0.4.0-next.0
+
+## 0.2.1
+
+### Patch Changes
+
+- 4ce59cc: Added an alpha `createAwsCredentialsManagerFromConnection` export that creates an `AwsCredentialsManager` backed by the connections system, allowing AWS credential resolution through the new `aws` connection type. The existing configuration-based setup is unchanged.
+- Updated dependencies
+  - @backstage/connections@0.3.0
+
 ## 0.2.0
 
 ### Minor Changes

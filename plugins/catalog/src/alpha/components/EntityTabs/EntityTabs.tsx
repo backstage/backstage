@@ -21,7 +21,7 @@ import { EntityTabsPanel } from './EntityTabsPanel';
 import { EntityTabsList } from './EntityTabsList';
 import { EntityContentGroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
 
-type SubRoute = {
+export type SubRoute = {
   group?: string;
   path: string;
   title: string;

@@ -61,5 +61,8 @@ describe('makeRollupConfigs', () => {
     expect(external('c:\\foo', importerPath, true)).toBe(false);
     expect(external('@foo/bar', importerPath, true)).toBe(false);
     expect(external('../foo', importerPath, true)).toBe(false);
+
+    // Node.js built-ins remain external after resolution
+    expect(external('node:stream', importerPath, true)).toBe(true);
   });
 });

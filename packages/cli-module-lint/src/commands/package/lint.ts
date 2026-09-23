@@ -26,7 +26,7 @@ export default async ({ args, info }: CliCommandContext) => {
     _: directories,
   } = cli(
     {
-      help: { ...info, usage: `${info.usage} [directories...]` },
+      name: info.usage,
       booleanFlagNegation: true,
       parameters: ['[directories...]'],
       flags: {

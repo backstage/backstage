@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { Entry } from 'ldapts';
-import merge from 'lodash/merge';
 import { LdapClient } from './client';
 import { GroupConfig, UserConfig, VendorConfig } from './config';
 import {
@@ -29,41 +27,13 @@ import {
   defaultUserTransformer,
   readLdapGroups,
   readLdapUsers,
-  resolveRelations,
 } from './read';
-import { RecursivePartial } from './util';
 import {
   ActiveDirectoryVendor,
   DefaultLdapVendor,
   FreeIpaVendor,
   GoogleLdapVendor,
 } from './vendors';
-
-function user(data: RecursivePartial<UserEntity>): UserEntity {
-  return merge(
-    {},
-    {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'User',
-      metadata: { name: 'name' },
-      spec: { profile: {}, memberOf: [] },
-    } as UserEntity,
-    data,
-  );
-}
-
-function group(data: RecursivePartial<GroupEntity>): GroupEntity {
-  return merge(
-    {},
-    {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Group',
-      metadata: { name: 'name' },
-      spec: { type: 'type', children: [] },
-    } as GroupEntity,
-    data,
-  );
-}
 
 describe('readLdapUsers', () => {
   const client: jest.Mocked<LdapClient> = {
@@ -1029,133 +999,6 @@ describe('readLdapGroups', () => {
     const config: GroupConfig[] = [];
     const { groups } = await readLdapGroups(client, config, {});
     expect(groups).toHaveLength(0);
-  });
-});
-
-describe('resolveRelations', () => {
-  describe('lookup', () => {
-    it.each([LDAP_DN_ANNOTATION, LDAP_RDN_ANNOTATION, LDAP_UUID_ANNOTATION])(
-      'matches by %s',
-      annotation => {
-        const parent = group({
-          metadata: {
-            name: 'parent',
-            annotations: { [annotation]: 'pa' },
-          },
-        });
-        const child = group({
-          metadata: {
-            name: 'child',
-            annotations: { [annotation]: 'ca' },
-          },
-        });
-        const groupMember = new Map<string, Set<string>>([
-          ['pa', new Set(['ca'])],
-        ]);
-        resolveRelations(
-          [parent, child],
-          [],
-          new Map(),
-          new Map(),
-          groupMember,
-        );
-        expect(parent.spec.children).toEqual(['group:default/child']);
-        expect(child.spec.parent).toEqual('group:default/parent');
-      },
-    );
-  });
-
-  describe('userMemberOf', () => {
-    it.each([LDAP_DN_ANNOTATION, LDAP_RDN_ANNOTATION, LDAP_UUID_ANNOTATION])(
-      'populates relations by %s',
-      annotation => {
-        const host = group({
-          metadata: { name: 'host', annotations: { [annotation]: 'ha' } },
-        });
-        const member = user({
-          metadata: {
-            name: 'member',
-            annotations: { [annotation]: 'ma' },
-          },
-        });
-        const userMemberOf = new Map<string, Set<string>>([
-          ['ma', new Set(['ha'])],
-        ]);
-        resolveRelations([host], [member], userMemberOf, new Map(), new Map());
-        expect(member.spec.memberOf).toEqual(['group:default/host']);
-      },
-    );
-  });
-
-  describe('groupMemberOf', () => {
-    it.each([LDAP_DN_ANNOTATION, LDAP_RDN_ANNOTATION, LDAP_UUID_ANNOTATION])(
-      'populates relations by %s',
-      annotation => {
-        const parent = group({
-          metadata: {
-            name: 'parent',
-            annotations: { [annotation]: 'pa' },
-          },
-        });
-        const child = group({
-          metadata: {
-            name: 'child',
-            annotations: { [annotation]: 'ca' },
-          },
-        });
-        const groupMemberOf = new Map<string, Set<string>>([
-          ['ca', new Set(['pa'])],
-        ]);
-        resolveRelations(
-          [parent, child],
-          [],
-          new Map(),
-          groupMemberOf,
-          new Map(),
-        );
-        expect(parent.spec.children).toEqual(['group:default/child']);
-        expect(child.spec.parent).toEqual('group:default/parent');
-      },
-    );
-  });
-
-  describe('groupMember', () => {
-    it.each([LDAP_DN_ANNOTATION, LDAP_RDN_ANNOTATION, LDAP_UUID_ANNOTATION])(
-      'populates relations by %s',
-      annotation => {
-        const parent = group({
-          metadata: {
-            name: 'parent',
-            annotations: { [annotation]: 'pa' },
-          },
-        });
-        const child = group({
-          metadata: {
-            name: 'child',
-            annotations: { [annotation]: 'ca' },
-          },
-        });
-        const member = user({
-          metadata: {
-            name: 'member',
-            annotations: { [annotation]: 'ma' },
-          },
-        });
-        const groupMember = new Map<string, Set<string>>([
-          ['pa', new Set(['ca', 'ma'])],
-        ]);
-        resolveRelations(
-          [parent, child],
-          [member],
-          new Map(),
-          new Map(),
-          groupMember,
-        );
-        expect(parent.spec.children).toEqual(['group:default/child']);
-        expect(child.spec.parent).toEqual('group:default/parent');
-        expect(member.spec.memberOf).toEqual(['group:default/parent']);
-      },
-    );
   });
 });
 

@@ -34,7 +34,7 @@ const schema = z.object({
 export interface ParsedEntitiesBatchRequest {
   entityRefs: string[];
   fields?: string[];
-  query?: FilterPredicate;
+  filter?: FilterPredicate;
 }
 
 export function entitiesBatchRequest(req: Request): ParsedEntitiesBatchRequest {
@@ -46,5 +46,6 @@ export function entitiesBatchRequest(req: Request): ParsedEntitiesBatchRequest {
       )}`,
     );
   }
-  return result.data;
+  const { query, ...rest } = result.data;
+  return { ...rest, filter: query };
 }

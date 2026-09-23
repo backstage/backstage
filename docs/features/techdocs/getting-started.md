@@ -5,92 +5,41 @@ description: Getting Started Documentation
 ---
 
 ::::info
-This documentation is written for the new frontend system, which is the default
-in new Backstage apps. If your Backstage app still uses the old frontend system,
-read the [old frontend system version of this guide](./getting-started--old.md)
-instead.
+This documentation is written for the new frontend system, which is the default in new Backstage apps. If your Backstage app still uses the old frontend system, read the [old frontend system version of this guide](./getting-started--old.md) instead.
 ::::
 
-TechDocs functions as a plugin in Backstage and ships with it installed out of the box, so you will need to use Backstage to use TechDocs.
+If you haven't set up Backstage already, start [here](../../getting-started/index.md).
 
-If you haven't setup Backstage already, start [here](../../getting-started/index.md).
+TechDocs functions as a plugin in Backstage, so you will need to use Backstage to use TechDocs. In newly scaffolded Backstage apps, created with the default `@backstage/create-app@latest` template, TechDocs is installed and wired into both the frontend and backend out of the box.
 
-## Adding TechDocs frontend plugin
-
-The first step is to add the TechDocs plugin to your Backstage application.
-
-```bash title="From your Backstage root directory"
-yarn --cwd packages/app add @backstage/plugin-techdocs
-```
-
-Once installed, the plugin is automatically available in your app through the default feature discovery. For more details and alternative installation methods, see [installing plugins](../../frontend-system/building-apps/05-installing-plugins.md).
-
-The plugin provides a docs index page at `/docs` and a reader page for individual documentation sites, along with a "Docs" navigation item in the sidebar and a documentation tab on entity pages.
-
-## Using TechDocs Addons
-
-The TechDocs Addon framework lets you render React components in documentation pages. Addons are provided as separate plugin modules.
-
-For example, to add the Report Issue addon, first install the package:
-
-```bash title="From your Backstage root directory"
-yarn --cwd packages/app add @backstage/plugin-techdocs-module-addons-contrib
-```
-
-Then install the addon module in your app:
-
-```tsx title="packages/app/src/App.tsx"
-import { createApp } from '@backstage/frontend-defaults';
-import { techDocsReportIssueAddonModule } from '@backstage/plugin-techdocs-module-addons-contrib/alpha';
-
-const app = createApp({
-  features: [techDocsReportIssueAddonModule],
-});
-
-export default app.createRoot();
-```
-
-The same package also provides `techDocsExpandableNavigationAddonModule`, `techDocsTextSizeAddonModule`, and `techDocsLightBoxAddonModule`.
-
-You can see the Report Issue addon in action when you highlight text in your documentation:
-
-<!-- todo: Needs zoomable plugin -->
-
-![TechDocs Report Issue Add-on](../../assets/techdocs/report-issue-addon.png)
-
-By clicking the open new issue button, you are redirected to the new issue page according to the source code provider you are using:
-
-<!-- todo: Needs zoomable plugin -->
-
-![TechDocs Report Issue Template](../../assets/techdocs/report-issue-template.png)
-
-## Adding TechDocs Backend plugin
-
-First we need to install the `@backstage/plugin-techdocs-backend` package.
-
-```bash title="From your Backstage root directory"
-yarn --cwd packages/backend add @backstage/plugin-techdocs-backend
-```
-
-Then in your backend `index.ts` you will add the following line.
-
-```ts title="packages/backend/src/index.ts"
-const backend = createBackend();
-
-// Other plugins...
-
-/* highlight-add-start */
-backend.add(import('@backstage/plugin-techdocs-backend'));
-/* highlight-add-end */
-
-backend.start();
-```
-
-That's it! TechDocs frontend and backend have now been added to your Backstage app. Now let us tweak some configurations to suit your needs.
+Now let us tweak some configurations to suit your needs.
 
 ## Setting the configuration
 
-**See [TechDocs Configuration Options](configuration.md) for complete configuration reference.**
+The configuration of TechDocs is based on three primary settings:
+
+- `builder` - Determines whether the documentation is generated locally using the TechDocs backend or is built/published outside of Backstage and fetched for display from the configured publisher.
+- `generator` - Determines whether the documentation is generated with a Docker image running `mkdocs` or with your own local copy of `mkdocs`.
+- `publisher` - Specifies where the generated documentation is stored, such as on your local server or another location like a Google Cloud Storage bucket.
+
+Out of the box, TechDocs is configured in `app-config.yaml` as:
+
+```yaml
+techdocs:
+  builder: 'local' # Alternatives - 'external'
+  generator:
+    runIn: 'docker' # Alternatives - 'local'
+  publisher:
+    type: 'local' # Alternatives include 'googleGcs', 'awsS3', and other supported publishers. See configuration documentation for the full list.
+```
+
+This basic configuration allows you to get started quickly. It processes the component documentation, as follows:
+
+- **builder = local** - uses the TechDocs backend to generate the docs, publish to storage, and show the generated docs.
+- **generator.runIn = docker** - spins up the techdocs-container docker image running `mkdocs` inside it to process the documentation. The Docker image is automatically pulled by TechDocs.
+- **publisher.type = local** - stores generated documentation files locally, by default in `@backstage/plugin-techdocs-backend/static/docs`, or in the path configured by `techdocs.publisher.local.publishDirectory`.
+
+You can further refine the `generator` and `publisher` settings. **See [TechDocs Configuration Options](configuration.md) for complete configuration reference.**
 
 ### Should TechDocs Backend generate docs?
 
@@ -164,6 +113,10 @@ RUN pip3 install mkdocs-techdocs-core==1.2.3
 Note: We recommend Python version 3.11 or higher.
 
 > Caveat: Please install the `mkdocs-techdocs-core` package after all other Python packages. The order is important to make sure we get correct version of some of the dependencies.
+
+## Using TechDocs Addons
+
+The TechDocs Addon framework lets you render React components in documentation pages. For installation instructions, available addon modules, and usage examples, see the dedicated [TechDocs Addons guide](./addons.md).
 
 ## Additional reading
 

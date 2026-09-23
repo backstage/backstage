@@ -13,7 +13,7 @@ library to mock network requests by using an express style declaration for
 routes. react-testing-library suggests using this library instead of mocking
 fetch directly whether this be in a browser or in node.
 
-https://github.com/mswjs/msw
+<https://github.com/mswjs/msw>
 
 ## Decision
 
@@ -23,16 +23,15 @@ happens, should be mocked by using `msw`.
 Here is an example:
 
 ```ts
-import { setupWorker, rest } from 'msw';
+import { http, HttpResponse } from 'msw';
+import { setupWorker } from 'msw/browser';
 
 const worker = setupWorker(
-  rest.get('*/user/:userId', (req, res, ctx) => {
-    return res(
-      ctx.json({
-        firstName: 'John',
-        lastName: 'Maverick',
-      }),
-    );
+  http.get('*/user/:userId', () => {
+    return HttpResponse.json({
+      firstName: 'John',
+      lastName: 'Maverick',
+    });
   }),
 );
 
@@ -46,8 +45,8 @@ and in a more real life scenario, taken from
 ```ts
 beforeEach(() => {
   server.use(
-    rest.get(`${mockApiOrigin}${mockBasePath}/entities`, (_, res, ctx) => {
-      return res(ctx.json(defaultResponse));
+    http.get(`${mockApiOrigin}${mockBasePath}/entities`, () => {
+      return HttpResponse.json(defaultResponse);
     }),
   );
 });

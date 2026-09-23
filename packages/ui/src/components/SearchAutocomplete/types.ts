@@ -98,4 +98,7 @@ export type SearchAutocompleteItemOwnProps = {
 /** @public */
 export interface SearchAutocompleteItemProps
   extends SearchAutocompleteItemOwnProps,
-    Omit<AriaListBoxItemProps, keyof SearchAutocompleteItemOwnProps> {}
+    Omit<
+      AriaListBoxItemProps,
+      keyof SearchAutocompleteItemOwnProps | 'render'
+    > {}

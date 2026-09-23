@@ -21,7 +21,7 @@ import {
   LoggerService,
   SchedulerService,
 } from '@backstage/backend-plugin-api';
-import { Handler } from 'express';
+import { Handler, json } from 'express';
 import { createOpenApiRouter } from '../../schema/openapi';
 import { MemoryEventBusStore } from './MemoryEventBusStore';
 import { DatabaseEventBusStore } from './DatabaseEventBusStore';
@@ -150,7 +150,9 @@ export async function createEventBusRouter(options: {
 
   const store = await createEventBusStore(options);
 
-  const apiRouter = await createOpenApiRouter();
+  const apiRouter = await createOpenApiRouter({
+    middleware: [json({ limit: '5mb' })],
+  });
 
   apiRouter.post('/bus/v1/events', async (req, res) => {
     const credentials = await httpAuth.credentials(req, {

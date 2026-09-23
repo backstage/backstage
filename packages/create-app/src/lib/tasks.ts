@@ -13,10 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { bootstrapEnvProxyAgents } from '@backstage/cli-common';
-
-bootstrapEnvProxyAgents();
-
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import handlebars from 'handlebars';
@@ -338,5 +334,22 @@ export async function fetchYarnLockSeedTask(dir: string) {
     return true;
   } catch {
     return false;
+  }
+}
+
+/**
+ * Tries to get the version from a given command if possible
+ *
+ * @param command - command to run
+ * @returns object - version with the version found and N/A if not found, error contains any error and undefined otherwise
+ */
+export async function tryCommandForVersion(command: string) {
+  try {
+    const result = await exec(command);
+
+    const version = (result.stdout || result.stderr).trim();
+    return { version: version || 'N/A', error: undefined };
+  } catch (error) {
+    return { version: 'N/A', error: String(error) };
   }
 }

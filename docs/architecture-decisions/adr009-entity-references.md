@@ -21,7 +21,7 @@ made.
 The textual format, as written by humans, to reference entities by name is on
 the following form, where square brackets denote optionality:
 
-```
+```text
 [<kind>:][<namespace>/]<name>
 ```
 
@@ -56,7 +56,7 @@ A full description of the format can be found
 Where entities are referenced by name in the Backstage frontend, the URL
 containing the reference shall take the following form:
 
-```
+```text
 :namespace/:kind/:name
 ```
 

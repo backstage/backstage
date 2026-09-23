@@ -23,7 +23,7 @@ import { HTMLAttributes } from 'react';
 import { IChangeEvent } from '@rjsf/core';
 import { IdSchema } from '@rjsf/utils';
 import { JsonObject } from '@backstage/types';
-import { JSONSchema7 } from 'json-schema';
+import type { JSONSchema7 } from 'json-schema';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { ListActionsResponse as ListActionsResponse_2 } from '@backstage/plugin-scaffolder-common';
 import { ListTemplatingExtensionsResponse as ListTemplatingExtensionsResponse_2 } from '@backstage/plugin-scaffolder-common';

@@ -1,5 +1,128 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.0
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/plugin-techdocs-node@2.0.1-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/catalog-client@1.16.3-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-node@2.2.6-next.0
+
+## 2.3.0
+
+### Minor Changes
+
+- ee97130: Added support for `techdocs.generator.pullOptions` when pulling the TechDocs generator Docker image from private registries that require authentication.
+- 62d1a6f: Added `techdocs.generator.mkdocs.dangerouslyAllowAdditionalPlugins` configuration option, allowing operators to extend the set of permitted MkDocs plugins during TechDocs generation.
+
+### Patch Changes
+
+- 932986c: Improve validation of TechDocs static content paths.
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- 1b0e277: Improved path validation for TechDocs content serving.
+- Updated dependencies
+  - @backstage/integration@2.1.2
+  - @backstage/catalog-client@1.16.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-techdocs-node@2.0.0
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-catalog-node@2.2.5
+
+## 2.3.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.16.0-next.1
+  - @backstage/config@1.3.9-next.0
+  - @backstage/catalog-client@1.16.2-next.1
+  - @backstage/plugin-catalog-node@2.2.5-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/integration@2.1.2-next.1
+
+## 2.3.0-next.0
+
+### Minor Changes
+
+- ee97130: Added support for `techdocs.generator.pullOptions` when pulling the TechDocs generator Docker image from private registries that require authentication.
+
+### Patch Changes
+
+- 932986c: Improve validation of TechDocs static content paths.
+- 1b0e277: Improved path validation for TechDocs content serving.
+- Updated dependencies
+  - @backstage/integration@2.1.2-next.0
+  - @backstage/plugin-techdocs-node@1.16.0-next.0
+  - @backstage/catalog-client@1.16.2-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-catalog-node@2.2.5-next.0
+
+## 2.2.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/plugin-techdocs-node@1.15.3
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/integration@2.1.0
+  - @backstage/plugin-catalog-node@2.2.4
+
+## 2.2.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.0-next.0
+  - @backstage/plugin-techdocs-node@1.15.3-next.1
+
+## 2.2.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.15.3-next.0
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-catalog-node@2.2.4-next.0
+
+## 2.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.15.2
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/catalog-client@1.16.1
+  - @backstage/plugin-catalog-node@2.2.3
+
+## 2.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/plugin-catalog-node@2.2.3-next.0
+  - @backstage/plugin-techdocs-node@1.15.2-next.0
+  - @backstage/catalog-client@1.16.1-next.0
+
+## 2.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.16.0
+  - @backstage/integration@2.0.3
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-catalog-node@2.2.2
+  - @backstage/plugin-techdocs-node@1.15.1
+
 ## 2.2.1-next.0
 
 ### Patch Changes

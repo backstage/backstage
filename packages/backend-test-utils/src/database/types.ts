@@ -115,7 +115,7 @@ export const allDatabases: Record<TestDatabaseId, TestDatabaseProperties> =
     MYSQL_8: {
       name: 'MySQL 8.x',
       driver: 'mysql2',
-      dockerImageName: getDockerImageForName('mysql:8'),
+      dockerImageName: getDockerImageForName('mysql:8.4'),
       connectionStringEnvironmentVariableName:
         'BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING',
     },
@@ -125,11 +125,17 @@ export const allDatabases: Record<TestDatabaseId, TestDatabaseProperties> =
     },
   });
 
-export const LARGER_POOL_CONFIG = {
+export const TEST_POOL_CONFIG = {
   pool: {
     min: 0,
-    max: 50,
+    max: 5,
     acquireTimeoutMillis: 30_000,
     createTimeoutMillis: 30_000,
+    destroyTimeoutMillis: 5_000,
+    idleTimeoutMillis: 5_000,
+    reapIntervalMillis: 1_000,
   },
 };
+
+/** @deprecated Use TEST_POOL_CONFIG instead */
+export const LARGER_POOL_CONFIG = TEST_POOL_CONFIG;

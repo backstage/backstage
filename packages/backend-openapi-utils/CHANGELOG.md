@@ -1,5 +1,80 @@
 # @backstage/backend-openapi-utils
 
+## 0.7.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+
+## 0.7.2
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- bf1f82d: Added the required OpenAPI types dependency for Swagger Parser.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.1
+
+## 0.7.2-next.0
+
+### Patch Changes
+
+- bf1f82d: Added the required OpenAPI types dependency for Swagger Parser.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
+## 0.7.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0
+
+## 0.7.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+
+## 0.7.0
+
+### Minor Changes
+
+- 84171b3: **BREAKING**: Removed `wrapInOpenApiTestServer`. This function redirected test traffic through the Optic `capture` proxy via the `OPTIC_PROXY` environment variable. Since the Optic dependency has been removed, this function no longer serves a purpose. Use `wrapServer` instead for OpenAPI spec validation in tests.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+
+## 0.7.0-next.1
+
+### Minor Changes
+
+- 84171b3: **BREAKING**: Removed `wrapInOpenApiTestServer`. This function redirected test traffic through the Optic `capture` proxy via the `OPTIC_PROXY` environment variable. Since the Optic dependency has been removed, this function no longer serves a purpose. Use `wrapServer` instead for OpenAPI spec validation in tests.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.1
+
+## 0.6.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.0
+
+## 0.6.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+
 ## 0.6.10-next.0
 
 ### Patch Changes

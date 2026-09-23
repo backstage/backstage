@@ -1,0 +1,10 @@
+---
+title: Roadmap
+author: Tyler Rothenberg
+authorUrl: https://github.com/rothenbergt
+category: Productivity
+description: A public roadmap board for your platform. Users can suggest features, vote on ideas, and comment, while admins manage statuses.
+documentation: https://github.com/rothenbergt/backstage-roadmap-plugin
+npmPackageName: '@rothenbergt/backstage-plugin-roadmap'
+addedDate: '2026-07-04'
+status: active

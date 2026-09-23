@@ -112,7 +112,7 @@ describe('dynamicPluginsFeatureLoader', () => {
   // This test demonstrates how, without the skipping logic implemented in the {@link CommonJSModelLoader},
   // this dummy package would be loaded by the backend dynamic plugins instead of the one of the backstage root.
   it('should fail because the model loader is not skipping modules living in unexpected locations.', async () => {
-    const dynamicPLuginsLister = new DynamicPluginLister();
+    const dynamicPluginsLister = new DynamicPluginLister();
     const mockedTransport = new MockedTransport();
     await startTestBackend({
       features: [
@@ -137,7 +137,7 @@ describe('dynamicPluginsFeatureLoader', () => {
             format: winston.format.simple(),
           }),
         }),
-        dynamicPLuginsLister.feature(),
+        dynamicPluginsLister.feature(),
       ],
     });
     expect(mockedTransport.logs).toContainEqual(
@@ -145,7 +145,7 @@ describe('dynamicPluginsFeatureLoader', () => {
         "error: an error occurred while loading dynamic backend plugin 'plugin-test-backend-dynamic' from '.*/packages/backend-dynamic-feature-service/src/features/__fixtures__/dynamic-plugins-root/test-backend-dynamic",
       ),
     );
-    expect(dynamicPLuginsLister.loadedPlugins).toMatchObject([
+    expect(dynamicPluginsLister.loadedPlugins).toMatchObject([
       {
         name: 'plugin-test-backend-dynamic',
         platform: 'node',
@@ -159,7 +159,7 @@ describe('dynamicPluginsFeatureLoader', () => {
   });
 
   it('should fail on resolvePackagePath because -dynamic suffix is not allowed for dynamic plugin packages.', async () => {
-    const dynamicPLuginsLister = new DynamicPluginLister();
+    const dynamicPluginsLister = new DynamicPluginLister();
     const mockedTransport = new MockedTransport();
     await startTestBackend({
       features: [
@@ -184,7 +184,7 @@ describe('dynamicPluginsFeatureLoader', () => {
             format: winston.format.simple(),
           }),
         }),
-        dynamicPLuginsLister.feature(),
+        dynamicPluginsLister.feature(),
       ],
     });
     expect(mockedTransport.logs).toContainEqual(
@@ -192,7 +192,7 @@ describe('dynamicPluginsFeatureLoader', () => {
         "error: an error occurred while loading dynamic backend plugin 'plugin-test-backend-dynamic' from '.*/packages/backend-dynamic-feature-service/src/features/__fixtures__/dynamic-plugins-root/test-backend-dynamic",
       ),
     );
-    expect(dynamicPLuginsLister.loadedPlugins).toMatchObject([
+    expect(dynamicPluginsLister.loadedPlugins).toMatchObject([
       {
         name: 'plugin-test-backend-dynamic',
         platform: 'node',
@@ -213,7 +213,7 @@ Require stack:
   });
 
   it('should load and show the 2 dynamic plugins in a list of dynamic plugins returned by a static backend plugin', async () => {
-    const dynamicPLuginsLister = new DynamicPluginLister();
+    const dynamicPluginsLister = new DynamicPluginLister();
     await startTestBackend({
       features: [
         mockServices.rootConfig.factory({
@@ -230,11 +230,11 @@ Require stack:
           moduleLoader: logger =>
             jestFreeTypescriptAwareModuleLoader({ logger }),
         }),
-        dynamicPLuginsLister.feature(),
+        dynamicPluginsLister.feature(),
       ],
     });
 
-    expect(dynamicPLuginsLister.loadedPlugins).toMatchObject([
+    expect(dynamicPluginsLister.loadedPlugins).toMatchObject([
       {
         installer: {
           kind: 'new',
@@ -394,7 +394,7 @@ Require stack:
   });
 
   it('should load a backend plugin from the alpha package first', async () => {
-    const dynamicPLuginsLister = new DynamicPluginLister();
+    const dynamicPluginsLister = new DynamicPluginLister();
     const mockedTransport = new MockedTransport();
     const dynamicPluginsRootForAlpha = resolvePath(
       __dirname,
@@ -420,7 +420,7 @@ Require stack:
             format: winston.format.simple(),
           }),
         }),
-        dynamicPLuginsLister.feature(),
+        dynamicPluginsLister.feature(),
       ],
     });
 
@@ -428,7 +428,7 @@ Require stack:
       'info: This plugin has been loaded from the alpha package. {"service":"backstage"}',
     );
 
-    const loadedPlugins = dynamicPLuginsLister.loadedPlugins;
+    const loadedPlugins = dynamicPluginsLister.loadedPlugins;
     expect(loadedPlugins).toMatchObject([
       {
         installer: {
@@ -441,7 +441,7 @@ Require stack:
       },
     ]);
     expect(
-      dynamicPLuginsLister.getScannedPackage?.(loadedPlugins[0]),
+      dynamicPluginsLister.getScannedPackage?.(loadedPlugins[0]),
     ).toMatchObject({
       location: url.pathToFileURL(
         path.resolve(dynamicPluginsRootForAlpha, 'test-backend-alpha-dynamic'),
@@ -459,6 +459,93 @@ Require stack:
       },
       alphaManifest: {
         name: 'plugin-test-backend-alpha-dynamic__alpha',
+        version: '0.0.0',
+        main: '../dist/alpha.cjs.js',
+      },
+    });
+  });
+
+  it('should fall back to the main export when alpha only exposes supplementary APIs', async () => {
+    const dynamicPluginsLister = new DynamicPluginLister();
+    const mockedTransport = new MockedTransport();
+    const dynamicPluginsRootForAlphaFallback = resolvePath(
+      __dirname,
+      '__fixtures__/dynamic-plugins-root-for-alpha-fallback',
+    );
+    await startTestBackend({
+      features: [
+        mockServices.rootConfig.factory({
+          data: {
+            dynamicPlugins: {
+              rootDirectory: dynamicPluginsRootForAlphaFallback,
+            },
+            backend: {
+              baseUrl: `http://localhost:0`,
+            },
+          },
+        }),
+        dynamicPluginsFeatureLoader({
+          moduleLoader: logger =>
+            jestFreeTypescriptAwareModuleLoader({ logger }),
+          logger: () => ({
+            transports: [mockedTransport],
+            format: winston.format.simple(),
+          }),
+        }),
+        dynamicPluginsLister.feature(),
+      ],
+    });
+
+    expect(mockedTransport.logs).toContainEqual(
+      'info: This plugin has been loaded from the main export after alpha fallback. {"service":"backstage"}',
+    );
+    expect(mockedTransport.logs).toContainEqual(
+      expect.stringMatching(
+        "info: loaded dynamic backend plugin 'plugin-test-backend-alpha-fallback-dynamic' from 'file://.*/test-backend-alpha-fallback-dynamic'",
+      ),
+    );
+    expect(mockedTransport.logs).not.toContainEqual(
+      expect.stringMatching(
+        "info: loaded dynamic backend plugin 'plugin-test-backend-alpha-fallback-dynamic' from 'file://.*/test-backend-alpha-fallback-dynamic/alpha'",
+      ),
+    );
+
+    const loadedPlugins = dynamicPluginsLister.loadedPlugins;
+    expect(loadedPlugins).toMatchObject([
+      {
+        installer: {
+          kind: 'new',
+        },
+        name: 'plugin-test-backend-alpha-fallback-dynamic',
+        platform: 'node',
+        role: 'backend-plugin',
+        version: '0.0.0',
+      },
+    ]);
+    expect(loadedPlugins[0].failure).toBeUndefined();
+    expect(
+      dynamicPluginsLister.getScannedPackage?.(loadedPlugins[0]),
+    ).toMatchObject({
+      location: url.pathToFileURL(
+        path.resolve(
+          dynamicPluginsRootForAlphaFallback,
+          'test-backend-alpha-fallback-dynamic',
+        ),
+      ),
+      manifest: {
+        name: 'plugin-test-backend-alpha-fallback-dynamic',
+        version: '0.0.0',
+        description:
+          'A test dynamic backend plugin whose alpha export only exposes supplementary APIs.',
+        backstage: {
+          role: 'backend-plugin',
+          pluginId: 'test-alpha-fallback',
+          pluginPackages: ['plugin-test-backend-alpha-fallback'],
+        },
+        keywords: ['backstage', 'dynamic'],
+      },
+      alphaManifest: {
+        name: 'plugin-test-backend-alpha-fallback-dynamic__alpha',
         version: '0.0.0',
         main: '../dist/alpha.cjs.js',
       },

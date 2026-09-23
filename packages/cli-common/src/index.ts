@@ -23,7 +23,6 @@
 export { findPaths, findOwnPaths, targetPaths, BACKSTAGE_JSON } from './paths';
 export { isChildPath } from './isChildPath';
 export type { Paths, TargetPaths, OwnPaths, ResolveFunc } from './paths';
-export { bootstrapEnvProxyAgents } from './proxyBootstrap';
 export {
   run,
   runOutput,

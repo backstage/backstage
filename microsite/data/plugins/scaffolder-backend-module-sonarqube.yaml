@@ -1,0 +1,10 @@
+---
+title: Scaffolder Backend Module SonarQube
+author: Red Hat
+authorUrl: https://redhat.com
+category: Scaffolder
+description: Scaffolder backend module providing actions for SonarQube, such as creating SonarQube projects from Backstage templates.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/scaffolder-backend-module-sonarqube/plugins/scaffolder-backend-module-sonarqube/README.md
+npmPackageName: '@backstage-community/plugin-scaffolder-backend-module-sonarqube'
+addedDate: '2026-02-21'
+status: active

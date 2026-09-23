@@ -19,6 +19,8 @@ import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { Knex } from 'knex';
 import lodash from 'lodash';
 import { randomUUID as uuid } from 'node:crypto';
+import { performance } from 'node:perf_hooks';
+import { setImmediate } from 'node:timers/promises';
 import { rethrowError } from './conversion';
 import { deleteWithEagerPruningOfChildren } from './operations/provider/deleteWithEagerPruningOfChildren';
 import { refreshByRefreshKeys } from './operations/provider/refreshByRefreshKeys';
@@ -27,12 +29,19 @@ import { insertUnprocessedEntity } from './operations/refreshState/insertUnproce
 import { updateUnprocessedEntity } from './operations/refreshState/updateUnprocessedEntity';
 import { DbRefreshStateReferencesRow, DbRefreshStateRow } from './tables';
 import {
+  PrepareUnprocessedEntitiesOptions,
+  PreparedDeferredEntity,
   ProviderDatabase,
   RefreshByKeyOptions,
   ReplaceUnprocessedEntitiesOptions,
   Transaction,
 } from './types';
-import { generateStableHash } from './util';
+import {
+  generateStableHash,
+  isDeadlockError,
+  retryOnDeadlock,
+  whereInArray,
+} from './util';
 import {
   LoggerService,
   isDatabaseConflictError,
@@ -43,6 +52,66 @@ import {
 // errors in the underlying engine due to exceeding query limits, but large
 // enough to get the speed benefits.
 const BATCH_SIZE = 50;
+const PREPARATION_TIME_SLICE_MS = 3;
+
+async function forEachWithYield<T>(
+  items: readonly T[],
+  fn: (item: T, index: number) => void,
+): Promise<void> {
+  let sliceStart = performance.now();
+  for (let index = 0; index < items.length; index++) {
+    fn(items[index], index);
+    if (
+      index + 1 < items.length &&
+      performance.now() - sliceStart >= PREPARATION_TIME_SLICE_MS
+    ) {
+      await setImmediate();
+      sliceStart = performance.now();
+    }
+  }
+}
+
+async function prepareDeferredEntities(
+  items: readonly DeferredEntity[],
+): Promise<PreparedDeferredEntity[]> {
+  const prepared = new Array<PreparedDeferredEntity>();
+  await forEachWithYield(items, deferred => {
+    const entityRef = stringifyEntityRef(deferred.entity);
+    const hash = generateStableHash(deferred.entity);
+    prepared.push({ deferred, entityRef, hash });
+  });
+  return prepared;
+}
+
+async function prepareRemovedEntities(
+  items: readonly (
+    | DeferredEntity
+    | { entityRef: string; locationKey?: string }
+  )[],
+): Promise<{ entityRef: string; locationKey?: string }[]> {
+  const prepared = new Array<{ entityRef: string; locationKey?: string }>();
+  let sliceStart = performance.now();
+  for (let index = 0; index < items.length; index++) {
+    const item = items[index];
+    if ('entityRef' in item) {
+      prepared.push(item);
+      continue;
+    }
+
+    prepared.push({
+      entityRef: stringifyEntityRef(item.entity),
+      locationKey: item.locationKey,
+    });
+    if (
+      index + 1 < items.length &&
+      performance.now() - sliceStart >= PREPARATION_TIME_SLICE_MS
+    ) {
+      await setImmediate();
+      sliceStart = performance.now();
+    }
+  }
+  return prepared;
+}
 
 export class DefaultProviderDatabase implements ProviderDatabase {
   private readonly options: {
@@ -54,26 +123,50 @@ export class DefaultProviderDatabase implements ProviderDatabase {
     this.options = options;
   }
 
-  async transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T> {
-    try {
-      let result: T | undefined = undefined;
-      await this.options.database.transaction(
-        async tx => {
-          // We can't return here, as knex swallows the return type in case the
-          // transaction is rolled back:
-          // https://github.com/knex/knex/blob/e37aeaa31c8ef9c1b07d2e4d3ec6607e557d800d/lib/transaction.js#L136
-          result = await fn(tx);
-        },
-        {
-          // If we explicitly trigger a rollback, don't fail.
-          doNotRejectOnRollback: true,
-        },
-      );
-      return result!;
-    } catch (e) {
-      this.options.logger.debug(`Error during transaction, ${e}`);
-      throw rethrowError(e);
+  async prepareUnprocessedEntities(
+    options: PrepareUnprocessedEntitiesOptions,
+  ): Promise<ReplaceUnprocessedEntitiesOptions> {
+    if (options.type === 'full') {
+      return {
+        ...options,
+        preparedItems: await prepareDeferredEntities(options.items),
+      };
     }
+    return {
+      ...options,
+      removed: await prepareRemovedEntities(options.removed),
+      preparedItems: await prepareDeferredEntities(options.added),
+    };
+  }
+
+  /**
+   * Executes `fn` inside a database transaction, retrying automatically on
+   * deadlock (PostgreSQL error 40P01). Because the callback may be invoked
+   * more than once, it must not perform non-database side effects such as
+   * emitting events, mutating in-memory state, or calling external services.
+   */
+  async transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T> {
+    return retryOnDeadlock(async () => {
+      try {
+        let result: T | undefined = undefined;
+        await this.options.database.transaction(
+          async tx => {
+            // We can't return here, as knex swallows the return type in case the
+            // transaction is rolled back:
+            // https://github.com/knex/knex/blob/e37aeaa31c8ef9c1b07d2e4d3ec6607e557d800d/lib/transaction.js#L136
+            result = await fn(tx);
+          },
+          {
+            // If we explicitly trigger a rollback, don't fail.
+            doNotRejectOnRollback: true,
+          },
+        );
+        return result!;
+      } catch (e) {
+        this.options.logger.debug(`Error during transaction, ${e}`);
+        throw rethrowError(e);
+      }
+    }, this.options.database);
   }
 
   async replaceUnprocessedEntities(
@@ -110,7 +203,7 @@ export class DefaultProviderDatabase implements ProviderDatabase {
             'refresh_state',
             chunk.map(item => ({
               entity_id: uuid(),
-              entity_ref: stringifyEntityRef(item.deferred.entity),
+              entity_ref: item.entityRef,
               unprocessed_entity: JSON.stringify(item.deferred.entity),
               unprocessed_hash: item.hash,
               errors: '',
@@ -124,7 +217,7 @@ export class DefaultProviderDatabase implements ProviderDatabase {
             'refresh_state_references',
             chunk.map(item => ({
               source_key: options.sourceKey,
-              target_entity_ref: stringifyEntityRef(item.deferred.entity),
+              target_entity_ref: item.entityRef,
             })),
             BATCH_SIZE,
           );
@@ -144,14 +237,14 @@ export class DefaultProviderDatabase implements ProviderDatabase {
     if (toUpsert.length) {
       for (const {
         deferred: { entity, locationKey },
+        entityRef,
         hash,
       } of toUpsert) {
-        const entityRef = stringifyEntityRef(entity);
-
         try {
           let ok = await updateUnprocessedEntity({
             tx,
             entity,
+            entityRef,
             hash,
             locationKey,
           });
@@ -159,6 +252,7 @@ export class DefaultProviderDatabase implements ProviderDatabase {
             ok = await insertUnprocessedEntity({
               tx,
               entity,
+              entityRef,
               hash,
               locationKey,
               logger: this.options.logger,
@@ -193,6 +287,9 @@ export class DefaultProviderDatabase implements ProviderDatabase {
             }
           }
         } catch (error) {
+          if (isDeadlockError(tx, error)) {
+            throw error;
+          }
           this.options.logger.error(
             `Failed to add '${entityRef}' from source '${options.sourceKey}', ${error}`,
           );
@@ -227,20 +324,23 @@ export class DefaultProviderDatabase implements ProviderDatabase {
     tx: Knex | Knex.Transaction,
     options: ReplaceUnprocessedEntitiesOptions,
   ): Promise<{
-    toAdd: { deferred: DeferredEntity; hash: string }[];
-    toUpsert: { deferred: DeferredEntity; hash: string }[];
+    toAdd: PreparedDeferredEntity[];
+    toUpsert: PreparedDeferredEntity[];
     toRemove: string[];
   }> {
     if (options.type === 'delta') {
-      const toAdd = new Array<{ deferred: DeferredEntity; hash: string }>();
-      const toUpsert = new Array<{ deferred: DeferredEntity; hash: string }>();
+      const toAdd = new Array<PreparedDeferredEntity>();
+      const toUpsert = new Array<PreparedDeferredEntity>();
       const toRemove = options.removed.map(e => e.entityRef);
 
-      for (const chunk of lodash.chunk(options.added, 1000)) {
-        const entityRefs = chunk.map(e => stringifyEntityRef(e.entity));
+      const prepared =
+        options.preparedItems ?? (await prepareDeferredEntities(options.added));
+
+      for (const chunk of lodash.chunk(prepared, 1_000)) {
+        const entityRefs = chunk.map(item => item.entityRef);
         const rows = await tx<DbRefreshStateRow>('refresh_state')
           .select(['entity_ref', 'unprocessed_hash', 'location_key'])
-          .whereIn('entity_ref', entityRefs);
+          .where(whereInArray('entity_ref', entityRefs));
         const oldStates = new Map(
           rows.map(row => [
             row.entity_ref,
@@ -251,30 +351,37 @@ export class DefaultProviderDatabase implements ProviderDatabase {
           ]),
         );
 
-        chunk.forEach((deferred, i) => {
-          const entityRef = entityRefs[i];
-          const newHash = generateStableHash(deferred.entity);
+        for (const item of chunk) {
+          const { deferred, entityRef, hash } = item;
           const oldState = oldStates.get(entityRef);
           if (oldState === undefined) {
             // Add any entity that does not exist in the database
-            toAdd.push({ deferred, hash: newHash });
+            toAdd.push(item);
           } else if (
             (deferred.locationKey ?? null) !== (oldState.location_key ?? null)
           ) {
             // Remove and then re-add any entity that exists, but with a different location key
             toRemove.push(entityRef);
-            toAdd.push({ deferred, hash: newHash });
-          } else if (newHash !== oldState.unprocessed_hash) {
+            toAdd.push(item);
+          } else if (hash !== oldState.unprocessed_hash) {
             // Entities with modifications should be pushed through too
-            toUpsert.push({ deferred, hash: newHash });
+            toUpsert.push(item);
           }
-        });
+        }
       }
 
       return { toAdd, toUpsert, toRemove };
     }
 
-    // Grab all of the existing references from the same source, and their locationKeys as well
+    const items =
+      options.preparedItems ?? (await prepareDeferredEntities(options.items));
+    const newRefsSet = new Set<string>();
+    for (const item of items) {
+      newRefsSet.add(item.entityRef);
+    }
+
+    // Do the yielding preparation above before reading the existing state, so
+    // that it does not widen the interval between the read and the writes.
     const oldRefs = await tx<DbRefreshStateReferencesRow>(
       'refresh_state_references',
     )
@@ -288,12 +395,6 @@ export class DefaultProviderDatabase implements ProviderDatabase {
         unprocessed_hash: 'refresh_state.unprocessed_hash',
       });
 
-    const items = options.items.map(deferred => ({
-      deferred,
-      ref: stringifyEntityRef(deferred.entity),
-      hash: generateStableHash(deferred.entity),
-    }));
-
     const oldRefsSet = new Map(
       oldRefs.map(r => [
         r.target_entity_ref,
@@ -303,30 +404,28 @@ export class DefaultProviderDatabase implements ProviderDatabase {
         },
       ]),
     );
-    const newRefsSet = new Set(items.map(item => item.ref));
 
-    const toAdd = new Array<{ deferred: DeferredEntity; hash: string }>();
-    const toUpsert = new Array<{ deferred: DeferredEntity; hash: string }>();
+    const toAdd = new Array<PreparedDeferredEntity>();
+    const toUpsert = new Array<PreparedDeferredEntity>();
     const toRemove = oldRefs
       .map(row => row.target_entity_ref)
       .filter(ref => !newRefsSet.has(ref));
 
     for (const item of items) {
-      const oldRef = oldRefsSet.get(item.ref);
-      const upsertItem = { deferred: item.deferred, hash: item.hash };
+      const oldRef = oldRefsSet.get(item.entityRef);
       if (!oldRef) {
         // Add any entity that does not exist in the database
-        toAdd.push(upsertItem);
+        toAdd.push(item);
       } else if (
         (oldRef.locationKey ?? undefined) !==
         (item.deferred.locationKey ?? undefined)
       ) {
         // Remove and then re-add any entity that exists, but with a different location key
-        toRemove.push(item.ref);
-        toAdd.push(upsertItem);
+        toRemove.push(item.entityRef);
+        toAdd.push(item);
       } else if (oldRef.oldEntityHash !== item.hash) {
         // Entities with modifications should be pushed through too
-        toUpsert.push(upsertItem);
+        toUpsert.push(item);
       }
     }
 

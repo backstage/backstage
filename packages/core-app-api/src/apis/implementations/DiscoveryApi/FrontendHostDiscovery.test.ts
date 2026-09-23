@@ -140,6 +140,35 @@ describe('FrontendHostDiscovery', () => {
     );
   });
 
+  it('uses a wildcard target for plugins without a specific target', async () => {
+    const discovery = FrontendHostDiscovery.fromConfig(
+      new ConfigReader({
+        backend: {
+          baseUrl: 'http://localhost:40',
+        },
+        discovery: {
+          endpoints: [
+            {
+              target: 'http://catalog-backend:8080/api/catalog',
+              plugins: ['catalog'],
+            },
+            {
+              target: 'http://common-backend:8080/api/{{pluginId}}',
+              plugins: ['*'],
+            },
+          ],
+        },
+      }),
+    );
+
+    await expect(discovery.getBaseUrl('catalog')).resolves.toBe(
+      'http://catalog-backend:8080/api/catalog',
+    );
+    await expect(discovery.getBaseUrl('scaffolder')).resolves.toBe(
+      'http://common-backend:8080/api/scaffolder',
+    );
+  });
+
   it('replaces {{pluginId}} or {{ pluginId }} in the target', async () => {
     const discovery = FrontendHostDiscovery.fromConfig(
       new ConfigReader({

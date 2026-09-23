@@ -42,7 +42,7 @@ export default async ({ args, info }: CliCommandContext) => {
     flags: { backendUrl, noBrowser, instance: instanceFlag },
   } = cli(
     {
-      help: info,
+      name: info.usage,
       flags: {
         backendUrl: { type: String, description: 'Backend base URL' },
         noBrowser: {

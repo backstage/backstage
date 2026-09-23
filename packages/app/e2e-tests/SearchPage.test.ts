@@ -25,7 +25,9 @@ test('the results are rendered as expected', async ({ page }) => {
 
   // Wait for sign-in to complete before navigating
   await expect(
-    page.getByRole('navigation').getByRole('link', { name: 'Catalog' }),
+    page
+      .getByRole('navigation', { name: 'sidebar nav' })
+      .getByRole('link', { name: 'Catalog' }),
   ).toBeVisible();
 
   // Set up route interception BEFORE navigating to the search page

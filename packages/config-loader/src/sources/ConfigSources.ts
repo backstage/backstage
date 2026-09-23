@@ -182,16 +182,13 @@ export class ConfigSources {
     if (argSources.length === 0) {
       const defaultPath = resolvePath(rootDir, 'app-config.yaml');
       const localPath = resolvePath(rootDir, 'app-config.local.yaml');
-      const envPath = resolvePath(
-        rootDir,
-        `app-config.${process.env.BACKSTAGE_ENV}.yaml`,
-      );
-      const envLocalPath = resolvePath(
-        rootDir,
-        `app-config.${process.env.BACKSTAGE_ENV}.local.yaml`,
-      );
       const alwaysIncludeDefaultConfigSource =
         !options.allowMissingDefaultConfig;
+
+      const envs = (process.env.BACKSTAGE_ENV ?? '')
+        .split(',')
+        .map(e => e.trim())
+        .filter(Boolean);
 
       if (alwaysIncludeDefaultConfigSource || fs.pathExistsSync(defaultPath)) {
         argSources.push(
@@ -203,14 +200,17 @@ export class ConfigSources {
         );
       }
 
-      if (process.env.BACKSTAGE_ENV && fs.pathExistsSync(envPath)) {
-        argSources.push(
-          FileConfigSource.create({
-            watch: options.watch,
-            path: envPath,
-            substitutionFunc: options.substitutionFunc,
-          }),
-        );
+      for (const env of envs) {
+        const envPath = resolvePath(rootDir, `app-config.${env}.yaml`);
+        if (fs.pathExistsSync(envPath)) {
+          argSources.push(
+            FileConfigSource.create({
+              watch: options.watch,
+              path: envPath,
+              substitutionFunc: options.substitutionFunc,
+            }),
+          );
+        }
       }
 
       if (fs.pathExistsSync(localPath)) {
@@ -223,14 +223,20 @@ export class ConfigSources {
         );
       }
 
-      if (process.env.BACKSTAGE_ENV && fs.pathExistsSync(envLocalPath)) {
-        argSources.push(
-          FileConfigSource.create({
-            watch: options.watch,
-            path: envLocalPath,
-            substitutionFunc: options.substitutionFunc,
-          }),
+      for (const env of envs) {
+        const envLocalPath = resolvePath(
+          rootDir,
+          `app-config.${env}.local.yaml`,
         );
+        if (fs.pathExistsSync(envLocalPath)) {
+          argSources.push(
+            FileConfigSource.create({
+              watch: options.watch,
+              path: envLocalPath,
+              substitutionFunc: options.substitutionFunc,
+            }),
+          );
+        }
       }
     }
 

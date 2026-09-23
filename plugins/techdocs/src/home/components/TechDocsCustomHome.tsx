@@ -41,6 +41,8 @@ import {
   TableOptions,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { techdocsTranslationRef } from '../../translation';
 import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
 import { EntityFilterQuery } from '@backstage/catalog-client';
 
@@ -145,14 +147,13 @@ export const CustomDocsPanel = ({
     );
   });
 
+  const { t } = useTranslationRef(techdocsTranslationRef);
   const Header: FC =
     config.panelProps?.CustomHeader ||
     (() => (
       <ContentHeader title={config.title} description={config.description}>
         {index === 0 ? (
-          <SupportButton>
-            Discover documentation in your ecosystem.
-          </SupportButton>
+          <SupportButton>{t('home.supportButton')}</SupportButton>
         ) : null}
       </ContentHeader>
     ));
@@ -188,6 +189,7 @@ export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
   const { tabsConfig, filter, CustomPageWrapper } = props;
   const [selectedTab, setSelectedTab] = useState<number>(0);
   const catalogApi = useApi(catalogApiRef);
+  const { t } = useTranslationRef(techdocsTranslationRef);
 
   const {
     value: entities,
@@ -229,10 +231,7 @@ export const TechDocsCustomHome = (props: TechDocsCustomHomeProps) => {
     return (
       <TechDocsPageWrapper CustomPageWrapper={CustomPageWrapper}>
         <Content>
-          <WarningPanel
-            severity="error"
-            title="Could not load available documentation."
-          >
+          <WarningPanel severity="error" title={t('error.couldNotLoad')}>
             <CodeSnippet language="text" text={error.toString()} />
           </WarningPanel>
         </Content>

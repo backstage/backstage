@@ -80,3 +80,12 @@ fast-xml-builder@*:
   version "7.5.5"
   resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-7.5.5.tgz#b7089ca4410374c75150baf277353ef76db69f96"
   integrity sha512-3wY1AxV+VBNW8Yypfd1yQY9pXnqTAN+KwQxL8iYm3/BjKYMNg4i0owhEe26PWDOMaIrzeeF98Lqd5NGz4omiIg==
+
+// @types/node@26.0.0 uses a new packaging format (node-bin-setup) whose
+// EventEmitter types break tarn's Pool.d.ts with skipLibCheck disabled.
+// Pin to the latest 22.x (the current "latest" dist-tag) until tarn ships
+// compatible types.
+"@types/node@*":
+  version "22.20.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.20.0.tgz#431f5007396bc1a1a47b9c7df60f3e5e0b5b7304"
+  integrity sha512-QWlFW2wf3nTjC13/DqRnBpR4ZO36VJH/JVBkA/vcnmbTBNQIlnObqyqZE1tUR7+Ni23Lda8R1BxMfbXRpCUx5g==

@@ -243,6 +243,111 @@ describe('createAuth0Authenticator', () => {
     expect(result.fullProfile).toEqual(updatedProfile);
   });
 
+  describe('start', () => {
+    it('should pass prompt from config to helper.start', async () => {
+      const configWithPrompt = mockServices.rootConfig({
+        data: {
+          clientId: 'test-client-id',
+          clientSecret: 'test-client-secret',
+          domain: 'test.auth0.com',
+          prompt: 'login',
+        },
+      });
+
+      const mockStart = jest.fn();
+      mockFrom.mockReturnValue({
+        start: mockStart,
+        authenticate: jest.fn(),
+        fetchProfile: jest.fn(),
+      } as any);
+
+      const authenticator = createAuth0Authenticator({ cache });
+      const ctx = authenticator.initialize({
+        callbackUrl: 'http://localhost/callback',
+        config: configWithPrompt,
+      });
+
+      await authenticator.start(
+        {
+          req: {} as express.Request,
+          scope: 'openid',
+          state: 'test-state',
+        },
+        ctx,
+      );
+
+      expect(mockStart).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ prompt: 'login' }),
+      );
+    });
+
+    it('should default prompt to consent', async () => {
+      const mockStart = jest.fn();
+      mockFrom.mockReturnValue({
+        start: mockStart,
+        authenticate: jest.fn(),
+        fetchProfile: jest.fn(),
+      } as any);
+
+      const authenticator = createAuth0Authenticator({ cache });
+      const ctx = authenticator.initialize({
+        callbackUrl: 'http://localhost/callback',
+        config: mockConfig,
+      });
+
+      await authenticator.start(
+        {
+          req: {} as express.Request,
+          scope: 'openid',
+          state: 'test-state',
+        },
+        ctx,
+      );
+
+      expect(mockStart).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ prompt: 'consent' }),
+      );
+    });
+
+    it('should omit prompt when set to auto', async () => {
+      const configWithAuto = mockServices.rootConfig({
+        data: {
+          clientId: 'test-client-id',
+          clientSecret: 'test-client-secret',
+          domain: 'test.auth0.com',
+          prompt: 'auto',
+        },
+      });
+
+      const mockStart = jest.fn();
+      mockFrom.mockReturnValue({
+        start: mockStart,
+        authenticate: jest.fn(),
+        fetchProfile: jest.fn(),
+      } as any);
+
+      const authenticator = createAuth0Authenticator({ cache });
+      const ctx = authenticator.initialize({
+        callbackUrl: 'http://localhost/callback',
+        config: configWithAuto,
+      });
+
+      await authenticator.start(
+        {
+          req: {} as express.Request,
+          scope: 'openid',
+          state: 'test-state',
+        },
+        ctx,
+      );
+
+      const startOptions = mockStart.mock.calls[0][1];
+      expect(startOptions).not.toHaveProperty('prompt');
+    });
+  });
+
   it('should skip cache when id_token has no sub claim', async () => {
     const header = Buffer.from(JSON.stringify({ alg: 'none' })).toString(
       'base64url',

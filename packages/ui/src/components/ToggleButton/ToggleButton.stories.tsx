@@ -273,7 +273,7 @@ export const DynamicContent = meta.story({
                       height: 8,
                       borderRadius: '50%',
                       backgroundColor: isSelected
-                        ? 'var(--bui-fg-success)'
+                        ? 'var(--bui-fg-positive)'
                         : 'var(--bui-fg-secondary)',
                     }}
                   />
@@ -290,7 +290,7 @@ export const DynamicContent = meta.story({
                       height: 8,
                       borderRadius: '50%',
                       backgroundColor: isSelected
-                        ? 'var(--bui-fg-danger)'
+                        ? 'var(--bui-fg-negative)'
                         : 'var(--bui-fg-secondary)',
                     }}
                   />

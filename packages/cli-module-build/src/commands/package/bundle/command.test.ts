@@ -939,6 +939,12 @@ describe('bundle command', () => {
 
         await bundleCommand(defaultOpts);
 
+        expect(mockLoadConfigSchema).toHaveBeenCalledWith({
+          dependencies: [],
+          packagePaths: ['package.json'],
+          onSchemaError: expect.any(Function),
+        });
+
         const pkg = await fs.readJson(joinPath(ctx.targetDir, 'package.json'));
         expect(pkg.configSchema).toBe('dist/.config-schema.json');
         const schemaFile = await fs.readJson(

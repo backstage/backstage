@@ -27,7 +27,7 @@ export default async ({ args, info }: CliCommandContext) => {
     flags: { json },
   } = cli(
     {
-      help: info,
+      name: info.usage,
       booleanFlagNegation: true,
       flags: {
         json: { type: Boolean, description: 'Output as JSON' },
@@ -42,9 +42,9 @@ export default async ({ args, info }: CliCommandContext) => {
   const eslint = new ESLint({
     cwd: targetPaths.dir,
     overrideConfig: {
-      plugins: ['deprecation'],
+      plugins: ['@typescript-eslint'],
       rules: {
-        'deprecation/deprecation': 'error',
+        '@typescript-eslint/no-deprecated': 'error',
       },
       parserOptions: {
         project: [targetPaths.resolveRoot('tsconfig.json')],
@@ -63,7 +63,7 @@ export default async ({ args, info }: CliCommandContext) => {
     const results = await eslint.lintFiles(pkg.dir);
     for (const result of results) {
       for (const message of result.messages) {
-        if (message.ruleId !== 'deprecation/deprecation') {
+        if (message.ruleId !== '@typescript-eslint/no-deprecated') {
           continue;
         }
 

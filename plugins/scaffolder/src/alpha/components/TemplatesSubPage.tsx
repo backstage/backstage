@@ -15,7 +15,7 @@
  */
 
 import { useCallback, useMemo } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import {
   Content,
   ContentHeader,
@@ -41,6 +41,7 @@ import { createGroupsWithOther } from '../lib/createGroupsWithOther';
 import {
   FieldExtensionOptions,
   FormProps,
+  type LayoutOptions,
   SecretsContextProvider,
   TemplateGroupFilter,
   useCustomFieldExtensions,
@@ -60,6 +61,7 @@ import {
 import { scaffolderTranslationRef } from '../../translation';
 import { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from '../../extensions/default';
 import { buildTechDocsURL } from '@backstage/plugin-techdocs-react';
+import { BreadcrumbEntry } from '@backstage/frontend-plugin-api';
 import {
   TECHDOCS_ANNOTATION,
   TECHDOCS_EXTERNAL_ANNOTATION,
@@ -67,8 +69,10 @@ import {
 
 function TemplateListContent({
   groups: configuredGroups,
+  templateFilter,
 }: {
   groups?: TemplateGroupFilter[];
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
 }) {
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
   const viewTechDocsLink = useRouteRef(viewTechDocRouteRef);
@@ -159,6 +163,7 @@ function TemplateListContent({
           <CatalogFilterLayout.Content>
             <TemplateGroups
               groups={groups}
+              templateFilter={templateFilter}
               onTemplateSelected={onTemplateSelected}
               additionalLinksForEntity={additionalLinksForEntity}
             />
@@ -166,6 +171,25 @@ function TemplateListContent({
         </CatalogFilterLayout>
       </Content>
     </EntityListProvider>
+  );
+}
+
+function TemplateWizardWithBreadcrumb(props: {
+  customFieldExtensions: FieldExtensionOptions[];
+  layouts: LayoutOptions[];
+  formProps?: FormProps;
+}) {
+  const { templateName } = useParams<{ templateName: string }>();
+  return (
+    <BreadcrumbEntry entry={{ label: templateName ?? 'Template', href: '.' }}>
+      <SecretsContextProvider>
+        <TemplateWizardPageContent
+          customFieldExtensions={props.customFieldExtensions}
+          layouts={props.layouts}
+          formProps={props.formProps}
+        />
+      </SecretsContextProvider>
+    </BreadcrumbEntry>
   );
 }
 
@@ -179,6 +203,7 @@ export function TemplatesSubPage(props: {
   formFields?: Array<FormField>;
   formProps?: FormProps;
   groups?: TemplateGroupFilter[];
+  templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
 }) {
   const customFieldExtensions = useCustomFieldExtensions(undefined);
   const customLayouts = useCustomLayouts(undefined);
@@ -197,17 +222,23 @@ export function TemplatesSubPage(props: {
 
   return (
     <Routes>
-      <Route index element={<TemplateListContent groups={props.groups} />} />
+      <Route
+        index
+        element={
+          <TemplateListContent
+            groups={props.groups}
+            templateFilter={props.templateFilter}
+          />
+        }
+      />
       <Route
         path=":namespace/:templateName"
         element={
-          <SecretsContextProvider>
-            <TemplateWizardPageContent
-              customFieldExtensions={fieldExtensions}
-              layouts={customLayouts}
-              formProps={props.formProps}
-            />
-          </SecretsContextProvider>
+          <TemplateWizardWithBreadcrumb
+            customFieldExtensions={fieldExtensions}
+            layouts={customLayouts}
+            formProps={props.formProps}
+          />
         }
       />
     </Routes>

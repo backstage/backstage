@@ -7,9 +7,6 @@ import { Express as Express_2 } from 'express';
 import { Server } from 'node:http';
 
 // @public
-export const wrapInOpenApiTestServer: (app: Express_2) => Server | Express_2;
-
-// @public
 export function wrapServer(app: Express_2): Promise<Server>;
 
 // (No @packageDocumentation comment for this package)

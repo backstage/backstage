@@ -33,6 +33,7 @@ import {
   pluginWrapperApiRef,
   useAnalytics,
 } from '@backstage/frontend-plugin-api';
+import { BreadcrumbsRegistryProvider } from './BreadcrumbsRegistryProvider';
 import {
   AppRootWrapperBlueprint,
   RouterBlueprint,
@@ -283,9 +284,11 @@ export function AppRouter(props: AppRouterProps) {
     return (
       <RouterComponent>
         <BUIProvider useAnalytics={useAnalytics}>
-          {...extraElements}
-          <RouteTracker routeObjects={routeObjects} />
-          {children}
+          <BreadcrumbsRegistryProvider>
+            {...extraElements}
+            <RouteTracker routeObjects={routeObjects} />
+            {children}
+          </BreadcrumbsRegistryProvider>
         </BUIProvider>
       </RouterComponent>
     );
@@ -294,14 +297,16 @@ export function AppRouter(props: AppRouterProps) {
   return (
     <RouterComponent>
       <BUIProvider useAnalytics={useAnalytics}>
-        {...extraElements}
-        <RouteTracker routeObjects={routeObjects} />
-        <SignInPageWrapper
-          component={SignInPageComponent}
-          appIdentityProxy={appIdentityProxy}
-        >
-          {children}
-        </SignInPageWrapper>
+        <BreadcrumbsRegistryProvider>
+          {...extraElements}
+          <RouteTracker routeObjects={routeObjects} />
+          <SignInPageWrapper
+            component={SignInPageComponent}
+            appIdentityProxy={appIdentityProxy}
+          >
+            {children}
+          </SignInPageWrapper>
+        </BreadcrumbsRegistryProvider>
       </BUIProvider>
     </RouterComponent>
   );

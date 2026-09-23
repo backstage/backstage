@@ -25,7 +25,7 @@ import {
   PassportOAuthAuthenticatorHelper,
 } from '@backstage/plugin-auth-node';
 import express from 'express';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { FakeMicrosoftAPI } from './__testUtils__/fake';
 import { microsoftAuthenticator } from './authenticator';
@@ -48,61 +48,59 @@ describe('microsoftAuthenticator', () => {
   let implementation: {
     domainHint: string | undefined;
     helper: PassportOAuthAuthenticatorHelper;
+    skipUserProfile: boolean;
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
 
     server.use(
-      rest.post(
+      http.post(
         'https://login.microsoftonline.com/tenantId/oauth2/v2.0/token',
-        async (req, res, ctx) => {
-          return res(
-            ctx.json({
-              ...microsoftApi.token(new URLSearchParams(await req.text())),
-              token_type: 'Bearer',
-              expires_in: 123,
-              ext_expires_in: 123,
-            }),
-          );
+        async ({ request }) => {
+          return HttpResponse.json({
+            ...microsoftApi.token(new URLSearchParams(await request.text())),
+            token_type: 'Bearer',
+            expires_in: 123,
+            ext_expires_in: 123,
+          });
         },
       ),
-      rest.get('https://graph.microsoft.com/v1.0/me/', (req, res, ctx) => {
+      http.get('https://graph.microsoft.com/v1.0/me/', ({ request }) => {
         if (
           !microsoftApi.tokenHasScope(
-            req.headers.get('authorization')!.replace(/^Bearer /, ''),
+            request.headers.get('authorization')!.replace(/^Bearer /, ''),
             'User.Read',
           )
         ) {
-          return res(ctx.status(403));
+          return new HttpResponse(null, { status: 403 });
         }
-        return res(
-          ctx.json({
-            id: 'conrad',
-            displayName: 'Conrad',
-            surname: 'Ribas',
-            givenName: 'Francisco',
-            mail: 'conrad@example.com',
-          }),
-        );
+        return HttpResponse.json({
+          id: 'conrad',
+          displayName: 'Conrad',
+          surname: 'Ribas',
+          givenName: 'Francisco',
+          mail: 'conrad@example.com',
+        });
       }),
-      rest.get(
+      http.get(
         'https://graph.microsoft.com/v1.0/me/photos/*',
-        async (req, res, ctx) => {
+        async ({ request }) => {
           if (
             !microsoftApi.tokenHasScope(
-              req.headers.get('authorization')!.replace(/^Bearer /, ''),
+              request.headers.get('authorization')!.replace(/^Bearer /, ''),
               'User.Read',
             )
           ) {
-            return res(ctx.status(403));
+            return new HttpResponse(null, { status: 403 });
           }
-          const imageBuffer = new Uint8Array([104, 111, 119, 100, 121]).buffer;
-          return res(
-            ctx.set('Content-Length', imageBuffer.byteLength.toString()),
-            ctx.set('Content-Type', 'image/jpeg'),
-            ctx.body(imageBuffer),
-          );
+          const imageBuffer = new Uint8Array([104, 111, 119, 100, 121]);
+          return new HttpResponse(imageBuffer, {
+            headers: {
+              'Content-Length': imageBuffer.byteLength.toString(),
+              'Content-Type': 'image/jpeg',
+            },
+          });
         },
       ),
     );
@@ -184,7 +182,26 @@ describe('microsoftAuthenticator', () => {
       expect(profile.photos).toStrictEqual([{ value: photo }]);
     });
 
-    it('returns access token for non-microsoft graph scope', async () => {
+    it('fetches profile via Graph when signing in with non-Graph scopes', async () => {
+      const foreignScope = 'aks-audience/user.read offline_access';
+      const authenticateResponse = await microsoftAuthenticator.authenticate(
+        createAuthenticateRequest(foreignScope),
+        implementation,
+      );
+
+      expect(authenticateResponse.fullProfile).toBeDefined();
+      expect(authenticateResponse.fullProfile!.displayName).toBe('Conrad');
+      expect(authenticateResponse.session.accessToken).toBe(
+        microsoftApi.generateAccessToken(foreignScope),
+      );
+      expect(authenticateResponse.session.refreshToken).toBe(
+        microsoftApi.generateRefreshToken(
+          'openid email User.Read offline_access',
+        ),
+      );
+    });
+
+    it('returns no profile for non-Graph scopes when no refresh token is granted', async () => {
       const foreignScope = 'aks-audience/user.read';
       const authenticateResponse = await microsoftAuthenticator.authenticate(
         createAuthenticateRequest(foreignScope),
@@ -212,8 +229,8 @@ describe('microsoftAuthenticator', () => {
 
     it('omits photo data when fetching it fails', async () => {
       server.use(
-        rest.get('https://graph.microsoft.com/v1.0/me/photos/*', (_, res) =>
-          res.networkError('remote hung up'),
+        http.get('https://graph.microsoft.com/v1.0/me/photos/*', () =>
+          HttpResponse.error(),
         ),
       );
 
@@ -262,16 +279,62 @@ describe('microsoftAuthenticator', () => {
       expect(profile.photos).toStrictEqual([{ value: photo }]);
     });
 
-    it('returns access token for non-microsoft graph scope', async () => {
+    it('fetches profile via Graph when refreshing with non-Graph scopes', async () => {
       const foreignScope = 'aks-audience/user.read';
       const refreshResponse = await microsoftAuthenticator.refresh(
         createRefreshRequest(foreignScope),
         implementation,
       );
 
-      expect(refreshResponse.fullProfile).toBeUndefined();
+      expect(refreshResponse.fullProfile).toBeDefined();
+      expect(refreshResponse.fullProfile!.displayName).toBe('Conrad');
       expect(refreshResponse.session.accessToken).toBe(
         microsoftApi.generateAccessToken(foreignScope),
+      );
+    });
+
+    it('chains the rotated refresh token into the Graph profile call', async () => {
+      const tokenRequests: URLSearchParams[] = [];
+      server.use(
+        http.post(
+          'https://login.microsoftonline.com/tenantId/oauth2/v2.0/token',
+          async ({ request }) => {
+            const formData = new URLSearchParams(await request.text());
+            tokenRequests.push(formData);
+            return HttpResponse.json({
+              ...microsoftApi.token(formData),
+              token_type: 'Bearer',
+              expires_in: 123,
+              ext_expires_in: 123,
+            });
+          },
+        ),
+      );
+
+      const foreignScope = 'aks-audience/user.read offline_access';
+      const refreshResponse = await microsoftAuthenticator.refresh(
+        {
+          scope: foreignScope,
+          // An old refresh token that the first refresh call will rotate
+          refreshToken: microsoftApi.generateRefreshToken(
+            'aks-audience/user.read',
+          ),
+          req: {} as unknown as express.Request,
+        },
+        implementation,
+      );
+
+      // The Graph profile call must use the rotated refresh token from the
+      // first call, not the incoming one
+      expect(tokenRequests).toHaveLength(2);
+      expect(tokenRequests[1].get('refresh_token')).toBe(
+        microsoftApi.generateRefreshToken(foreignScope),
+      );
+      expect(refreshResponse.fullProfile!.displayName).toBe('Conrad');
+      expect(refreshResponse.session.refreshToken).toBe(
+        microsoftApi.generateRefreshToken(
+          'openid email User.Read offline_access',
+        ),
       );
     });
 

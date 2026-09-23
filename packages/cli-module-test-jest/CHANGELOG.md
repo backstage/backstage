@@ -1,5 +1,59 @@
 # @backstage/cli-module-test-jest
 
+## 0.1.7-next.0
+
+### Patch Changes
+
+- 36e3f24: Fixed CommonJS frontend test execution with ESM dependencies on Node.js 24.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5-next.0
+  - @backstage/cli-common@0.3.2-next.0
+
+## 0.1.6
+
+### Patch Changes
+
+- 33c8190: Made the test network request guard compatible with MSW 2 request handlers.
+- Updated dependencies
+  - @backstage/cli-common@0.3.1
+
+## 0.1.5
+
+### Patch Changes
+
+- 943687f: Stopped disabling the Node.js snapshot by default when starting backends or running tests.
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- 943687f: Stopped disabling the Node.js snapshot by default when starting backends or running tests.
+
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.3.0
+  - @backstage/cli-node@0.3.4
+
+## 0.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.3.0-next.0
+  - @backstage/cli-node@0.3.4-next.0
+
+## 0.1.3
+
+### Patch Changes
+
+- 696c78c: The `--help` output for commands now shows a generated usage line that lists the available flags and any positional arguments the command accepts.
+- 2e6ffe6: Updated the standalone CLI executable to use the new CLI module runner.
+- Updated dependencies
+  - @backstage/cli-node@0.3.3
+
 ## 0.1.2
 
 ### Patch Changes

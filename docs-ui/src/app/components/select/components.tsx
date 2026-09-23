@@ -5,64 +5,64 @@ import { Flex } from '../../../../../packages/ui/src/components/Flex/Flex';
 import { RiCloudLine } from '@remixicon/react';
 
 const fontOptions = [
-  { value: 'sans', label: 'Sans-serif' },
-  { value: 'serif', label: 'Serif' },
-  { value: 'mono', label: 'Monospace' },
-  { value: 'cursive', label: 'Cursive' },
+  { id: 'sans', label: 'Sans-serif' },
+  { id: 'serif', label: 'Serif' },
+  { id: 'mono', label: 'Monospace' },
+  { id: 'cursive', label: 'Cursive' },
 ];
 
 const countries = [
-  { value: 'us', label: 'United States' },
-  { value: 'ca', label: 'Canada' },
-  { value: 'mx', label: 'Mexico' },
-  { value: 'uk', label: 'United Kingdom' },
-  { value: 'fr', label: 'France' },
-  { value: 'de', label: 'Germany' },
-  { value: 'it', label: 'Italy' },
-  { value: 'es', label: 'Spain' },
-  { value: 'jp', label: 'Japan' },
-  { value: 'cn', label: 'China' },
-  { value: 'in', label: 'India' },
-  { value: 'br', label: 'Brazil' },
-  { value: 'au', label: 'Australia' },
+  { id: 'us', label: 'United States' },
+  { id: 'ca', label: 'Canada' },
+  { id: 'mx', label: 'Mexico' },
+  { id: 'uk', label: 'United Kingdom' },
+  { id: 'fr', label: 'France' },
+  { id: 'de', label: 'Germany' },
+  { id: 'it', label: 'Italy' },
+  { id: 'es', label: 'Spain' },
+  { id: 'jp', label: 'Japan' },
+  { id: 'cn', label: 'China' },
+  { id: 'in', label: 'India' },
+  { id: 'br', label: 'Brazil' },
+  { id: 'au', label: 'Australia' },
 ];
 
 const skills = [
-  { value: 'react', label: 'React' },
-  { value: 'typescript', label: 'TypeScript' },
-  { value: 'javascript', label: 'JavaScript' },
-  { value: 'python', label: 'Python' },
-  { value: 'java', label: 'Java' },
-  { value: 'csharp', label: 'C#' },
-  { value: 'go', label: 'Go' },
-  { value: 'rust', label: 'Rust' },
-  { value: 'kotlin', label: 'Kotlin' },
-  { value: 'swift', label: 'Swift' },
+  { id: 'react', label: 'React' },
+  { id: 'typescript', label: 'TypeScript' },
+  { id: 'javascript', label: 'JavaScript' },
+  { id: 'python', label: 'Python' },
+  { id: 'java', label: 'Java' },
+  { id: 'csharp', label: 'C#' },
+  { id: 'go', label: 'Go' },
+  { id: 'rust', label: 'Rust' },
+  { id: 'kotlin', label: 'Kotlin' },
+  { id: 'swift', label: 'Swift' },
 ];
 
 const sectionedFonts = [
   {
     title: 'Serif Fonts',
     options: [
-      { value: 'times', label: 'Times New Roman' },
-      { value: 'georgia', label: 'Georgia' },
-      { value: 'garamond', label: 'Garamond' },
+      { id: 'times', label: 'Times New Roman' },
+      { id: 'georgia', label: 'Georgia' },
+      { id: 'garamond', label: 'Garamond' },
     ],
   },
   {
     title: 'Sans-Serif Fonts',
     options: [
-      { value: 'arial', label: 'Arial' },
-      { value: 'helvetica', label: 'Helvetica' },
-      { value: 'verdana', label: 'Verdana' },
+      { id: 'arial', label: 'Arial' },
+      { id: 'helvetica', label: 'Helvetica' },
+      { id: 'verdana', label: 'Verdana' },
     ],
   },
   {
     title: 'Monospace Fonts',
     options: [
-      { value: 'courier', label: 'Courier New' },
-      { value: 'consolas', label: 'Consolas' },
-      { value: 'fira', label: 'Fira Code' },
+      { id: 'courier', label: 'Courier New' },
+      { id: 'consolas', label: 'Consolas' },
+      { id: 'fira', label: 'Fira Code' },
     ],
   },
 ];
@@ -141,8 +141,7 @@ export const DisabledOption = () => (
 export const Searchable = () => (
   <Select
     label="Country"
-    searchable
-    searchPlaceholder="Search countries..."
+    search={{ placeholder: 'Search countries...' }}
     options={countries}
     name="country"
     style={{ width: 300 }}
@@ -154,10 +153,10 @@ export const MultipleSelection = () => (
     label="Select multiple options"
     selectionMode="multiple"
     options={[
-      { value: 'option1', label: 'Option 1' },
-      { value: 'option2', label: 'Option 2' },
-      { value: 'option3', label: 'Option 3' },
-      { value: 'option4', label: 'Option 4' },
+      { id: 'option1', label: 'Option 1' },
+      { id: 'option2', label: 'Option 2' },
+      { id: 'option3', label: 'Option 3' },
+      { id: 'option4', label: 'Option 4' },
     ]}
     name="multiple"
     style={{ width: 300 }}
@@ -167,9 +166,8 @@ export const MultipleSelection = () => (
 export const SearchableMultiple = () => (
   <Select
     label="Skills"
-    searchable
     selectionMode="multiple"
-    searchPlaceholder="Filter skills..."
+    search={{ placeholder: 'Filter skills...' }}
     options={skills}
     name="skills"
     style={{ width: 300 }}
@@ -188,8 +186,7 @@ export const WithSections = () => (
 export const SearchableWithSections = () => (
   <Select
     label="Font Family"
-    searchable
-    searchPlaceholder="Search fonts..."
+    search={{ placeholder: 'Search fonts...' }}
     options={sectionedFonts}
     name="font"
     style={{ width: 300 }}

@@ -25,7 +25,7 @@ import {
 } from './authServiceFactory';
 import { base64url, decodeJwt } from 'jose';
 import { discoveryServiceFactory } from '../discovery';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { toInternalBackstageCredentials } from './helpers';
 import { PluginTokenHandler } from './plugin/PluginTokenHandler';
@@ -57,6 +57,34 @@ const mockDeps = [
             {
               type: 'static',
               options: {
+                token: 'action-restricted-static-token',
+                subject: 'action-restricted-static-subject',
+              },
+              accessRestrictions: [
+                {
+                  plugin: 'catalog',
+                  permissionAttribute: { action: 'read' },
+                },
+                {
+                  plugin: 'scaffolder',
+                  permissionAttribute: { action: 'read' },
+                },
+              ],
+            },
+            {
+              type: 'static',
+              options: {
+                token: 'plugin-only-static-token',
+                subject: 'plugin-only-static-subject',
+              },
+              accessRestrictions: [
+                { plugin: 'catalog' },
+                { plugin: 'scaffolder' },
+              ],
+            },
+            {
+              type: 'static',
+              options: {
                 token: 'unlimited-static-token',
                 subject: 'unlimited-static-subject',
               },
@@ -77,13 +105,13 @@ describe('authServiceFactory', () => {
 
   it('should not support tokens issued with legacy auth', async () => {
     server.use(
-      rest.get(
+      http.get(
         'http://localhost:7007/api/catalog/.backstage/auth/v1/jwks.json',
-        (_req, res, ctx) => res(ctx.status(404)),
+        () => new HttpResponse(null, { status: 404 }),
       ),
-      rest.get(
+      http.get(
         'http://localhost:7007/api/search/.backstage/auth/v1/jwks.json',
-        (_req, res, ctx) => res(ctx.status(404)),
+        () => new HttpResponse(null, { status: 404 }),
       ),
     );
 
@@ -121,15 +149,14 @@ describe('authServiceFactory', () => {
     const catalogAuth = await tester.getSubject('catalog');
 
     server.use(
-      rest.get(
+      http.get(
         'http://localhost:7007/api/catalog/.backstage/auth/v1/jwks.json',
-        async (_req, res, ctx) =>
-          res(ctx.json(await catalogAuth.listPublicServiceKeys())),
+        async () =>
+          HttpResponse.json(await catalogAuth.listPublicServiceKeys()),
       ),
-      rest.get(
+      http.get(
         'http://localhost:7007/api/search/.backstage/auth/v1/jwks.json',
-        async (_req, res, ctx) =>
-          res(ctx.json(await searchAuth.listPublicServiceKeys())),
+        async () => HttpResponse.json(await searchAuth.listPublicServiceKeys()),
       ),
     );
 
@@ -158,9 +185,9 @@ describe('authServiceFactory', () => {
 
   it('should issue a service token for the new system even if the target plugin does not support it', async () => {
     server.use(
-      rest.get(
+      http.get(
         'http://localhost:7007/api/permission/.backstage/auth/v1/jwks.json',
-        (_req, res, ctx) => res(ctx.status(404)),
+        () => new HttpResponse(null, { status: 404 }),
       ),
     );
 
@@ -196,23 +223,19 @@ describe('authServiceFactory', () => {
      }
     */
     server.use(
-      rest.get(
-        'http://localhost:7007/api/auth/.well-known/jwks.json',
-        (_req, res, ctx) =>
-          res(
-            ctx.json({
-              keys: [
-                {
-                  kty: 'EC',
-                  x: 'c9cPvv_S7zETBKDlAa3oOjr7RvyUueIYIak0TRph7mg',
-                  y: 'bKaxDRAWgmEJ9Ix8e85blH_IsnbQxX31x0oQTVwLZ2c',
-                  crv: 'P-256',
-                  kid: '8d01c3db-56f9-45f0-86dd-05b3c835b3d3',
-                  alg: 'ES256',
-                },
-              ],
-            }),
-          ),
+      http.get('http://localhost:7007/api/auth/.well-known/jwks.json', () =>
+        HttpResponse.json({
+          keys: [
+            {
+              kty: 'EC',
+              x: 'c9cPvv_S7zETBKDlAa3oOjr7RvyUueIYIak0TRph7mg',
+              y: 'bKaxDRAWgmEJ9Ix8e85blH_IsnbQxX31x0oQTVwLZ2c',
+              crv: 'P-256',
+              kid: '8d01c3db-56f9-45f0-86dd-05b3c835b3d3',
+              alg: 'ES256',
+            },
+          ],
+        }),
       ),
     );
 
@@ -300,42 +323,37 @@ describe('authServiceFactory', () => {
      }
     */
     server.use(
-      rest.get(
-        'http://localhost:7007/api/auth/.well-known/jwks.json',
-        (_req, res, ctx) =>
-          res(
-            ctx.json({
-              keys: [
-                {
-                  kty: 'EC',
-                  x: 'c9cPvv_S7zETBKDlAa3oOjr7RvyUueIYIak0TRph7mg',
-                  y: 'bKaxDRAWgmEJ9Ix8e85blH_IsnbQxX31x0oQTVwLZ2c',
-                  crv: 'P-256',
-                  kid: '8d01c3db-56f9-45f0-86dd-05b3c835b3d3',
-                  alg: 'ES256',
-                },
-              ],
-            }),
-          ),
+      http.get('http://localhost:7007/api/auth/.well-known/jwks.json', () =>
+        HttpResponse.json({
+          keys: [
+            {
+              kty: 'EC',
+              x: 'c9cPvv_S7zETBKDlAa3oOjr7RvyUueIYIak0TRph7mg',
+              y: 'bKaxDRAWgmEJ9Ix8e85blH_IsnbQxX31x0oQTVwLZ2c',
+              crv: 'P-256',
+              kid: '8d01c3db-56f9-45f0-86dd-05b3c835b3d3',
+              alg: 'ES256',
+            },
+          ],
+        }),
       ),
-      rest.get(
+      http.get(
         'http://localhost:7007/api/catalog/.backstage/auth/v1/jwks.json',
-        async (_req, res, ctx) =>
-          res(ctx.json(await catalogAuth.listPublicServiceKeys())),
+        async () =>
+          HttpResponse.json(await catalogAuth.listPublicServiceKeys()),
       ),
-      rest.get(
+      http.get(
         'http://localhost:7007/api/search/.backstage/auth/v1/jwks.json',
-        async (_req, res, ctx) =>
-          res(ctx.json(await searchAuth.listPublicServiceKeys())),
+        async () => HttpResponse.json(await searchAuth.listPublicServiceKeys()),
       ),
-      rest.get(
+      http.get(
         'http://localhost:7007/api/permission/.backstage/auth/v1/jwks.json',
-        async (_req, res, ctx) =>
-          res(ctx.json(await permissionAuth.listPublicServiceKeys())),
+        async () =>
+          HttpResponse.json(await permissionAuth.listPublicServiceKeys()),
       ),
-      rest.get(
+      http.get(
         'http://localhost:7007/api/kubernetes/.backstage/auth/v1/jwks.json',
-        (_req, res, ctx) => res(ctx.status(404)),
+        () => new HttpResponse(null, { status: 404 }),
       ),
     );
 
@@ -420,6 +438,66 @@ describe('authServiceFactory', () => {
     ).resolves.toMatchObject({
       principal: { subject: 'unlimited-static-subject' },
     });
+  });
+
+  it('should enforce access restrictions when issuing plugin tokens on behalf of service principals', async () => {
+    const tester = ServiceFactoryTester.from(authServiceFactory, {
+      dependencies: mockDeps,
+    });
+
+    const catalogAuth = await tester.getSubject('catalog');
+
+    // Permission-level restrictions (e.g. permission name) cannot be forwarded
+    const restrictedCredentials = await catalogAuth.authenticate(
+      'limited-static-token',
+    );
+    await expect(
+      catalogAuth.getPluginRequestToken({
+        onBehalfOf: restrictedCredentials,
+        targetPluginId: 'catalog',
+      }),
+    ).rejects.toThrow('is restricted and cannot be delegated');
+
+    // Permission attribute restrictions (e.g. action: read) cannot be forwarded
+    const actionRestrictedCredentials = await catalogAuth.authenticate(
+      'action-restricted-static-token',
+    );
+    await expect(
+      catalogAuth.getPluginRequestToken({
+        onBehalfOf: actionRestrictedCredentials,
+        targetPluginId: 'catalog',
+      }),
+    ).rejects.toThrow('is restricted and cannot be delegated');
+
+    // Plugin-only restrictions allow delegation to listed plugins
+    const pluginOnlyCredentials = await catalogAuth.authenticate(
+      'plugin-only-static-token',
+    );
+    await expect(
+      catalogAuth.getPluginRequestToken({
+        onBehalfOf: pluginOnlyCredentials,
+        targetPluginId: 'scaffolder',
+      }),
+    ).resolves.toEqual(expect.objectContaining({ token: expect.any(String) }));
+
+    // Plugin-only restrictions reject delegation to unlisted plugins
+    await expect(
+      catalogAuth.getPluginRequestToken({
+        onBehalfOf: pluginOnlyCredentials,
+        targetPluginId: 'permission',
+      }),
+    ).rejects.toThrow("is not included in token's access restrictions");
+
+    // Unrestricted credentials always allow delegation
+    const unrestrictedCredentials = await catalogAuth.authenticate(
+      'unlimited-static-token',
+    );
+    await expect(
+      catalogAuth.getPluginRequestToken({
+        onBehalfOf: unrestrictedCredentials,
+        targetPluginId: 'scaffolder',
+      }),
+    ).resolves.toEqual(expect.objectContaining({ token: expect.any(String) }));
   });
 
   describe('decorate PluginTokenHandler', () => {

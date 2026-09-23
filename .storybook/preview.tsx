@@ -106,9 +106,8 @@ export default definePreview({
     chromatic: {
       modes: {
         'light backstage': allModes['light backstage'],
-        // TODO: Enable these modes when we have more Chromatic snapshots.
+        'light spotify': allModes['light spotify'],
         // 'dark backstage': allModes['dark backstage'],
-        // 'light spotify': allModes['light spotify'],
         // 'dark spotify': allModes['dark spotify'],
       },
     },
@@ -165,8 +164,8 @@ export default definePreview({
                   height: isFullscreen
                     ? 'calc(100vh - (var(--bui-space-4) * 2))'
                     : undefined,
-                  overflow: 'auto',
-                  overscrollBehavior: 'none',
+                  overflow: isFullscreen ? 'auto' : undefined,
+                  overscrollBehavior: isFullscreen ? 'none' : undefined,
                 }}
               >
                 <Story />

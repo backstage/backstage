@@ -1,0 +1,10 @@
+---
+title: Azure Container Registry
+author: Red Hat
+authorUrl: https://redhat.com
+category: Infrastructure
+description: Displays information about your container images available in the Azure Container Registry.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/acr/plugins/acr/README.md
+npmPackageName: '@backstage-community/plugin-acr'
+addedDate: '2026-02-21'
+status: active

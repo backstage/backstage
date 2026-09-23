@@ -42,7 +42,6 @@ extend-exclude = [
     # Binary and generated assets
     "docs/assets/**/*.svg",
     "plugins/bitbucket-cloud-common/bitbucket-cloud.oas.json",
-    "plugins/scaffolder-backend/assets/nunjucks.js.txt",
     # Locale files with non-English content
     "plugins/home/src/homePageComponents/WelcomeTitle/locales/*.json",
     # Test files with intentional non-word data (hashes, base64 tokens, crypto keys, etc.)

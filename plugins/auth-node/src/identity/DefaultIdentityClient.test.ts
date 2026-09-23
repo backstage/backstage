@@ -21,7 +21,8 @@ import {
   SignJWT,
 } from 'jose';
 import { cloneDeep } from 'lodash';
-import { rest } from 'msw';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { randomUUID as uuid } from 'node:crypto';
 
@@ -102,9 +103,7 @@ describe('DefaultIdentityClient', () => {
   let factory: FakeTokenFactory;
   const keyDurationSeconds = 5;
 
-  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-  afterAll(() => server.close());
-  afterEach(() => server.resetHandlers());
+  registerMswTestHooks(server);
 
   beforeEach(() => {
     client = DefaultIdentityClient.create({ discovery, issuer: mockBaseUrl });
@@ -117,13 +116,10 @@ describe('DefaultIdentityClient', () => {
   describe('identity client configuration', () => {
     beforeEach(() => {
       server.use(
-        rest.get(
-          `${mockBaseUrl}/.well-known/jwks.json`,
-          async (_, res, ctx) => {
-            const keys = await factory.listPublicKeys();
-            return res(ctx.json(keys));
-          },
-        ),
+        http.get(`${mockBaseUrl}/.well-known/jwks.json`, async () => {
+          const keys = await factory.listPublicKeys();
+          return HttpResponse.json(keys);
+        }),
       );
     });
 
@@ -178,13 +174,10 @@ describe('DefaultIdentityClient', () => {
   describe('authenticate', () => {
     beforeEach(() => {
       server.use(
-        rest.get(
-          `${mockBaseUrl}/.well-known/jwks.json`,
-          async (_, res, ctx) => {
-            const keys = await factory.listPublicKeys();
-            return res(ctx.json(keys));
-          },
-        ),
+        http.get(`${mockBaseUrl}/.well-known/jwks.json`, async () => {
+          const keys = await factory.listPublicKeys();
+          return HttpResponse.json(keys);
+        }),
       );
     });
 
@@ -322,12 +315,9 @@ describe('DefaultIdentityClient', () => {
       // Only return the key from a single token
       const singleKey = cloneDeep(await factory.listPublicKeys());
       server.use(
-        rest.get(
-          `${mockBaseUrl}/.well-known/jwks.json`,
-          async (_, res, ctx) => {
-            return res(ctx.json(singleKey));
-          },
-        ),
+        http.get(`${mockBaseUrl}/.well-known/jwks.json`, async () => {
+          return HttpResponse.json(singleKey);
+        }),
       );
       // Update the discovery endpoint to point to a new URL
       discovery.getBaseUrl = async () => {
@@ -338,10 +328,10 @@ describe('DefaultIdentityClient', () => {
       };
       let calledUpdatedEndpoint = false;
       server.use(
-        rest.get(`${updatedURL}/.well-known/jwks.json`, async (_, res, ctx) => {
+        http.get(`${updatedURL}/.well-known/jwks.json`, async () => {
           const keys = await factory.listPublicKeys();
           calledUpdatedEndpoint = true;
-          return res(ctx.json(keys));
+          return HttpResponse.json(keys);
         }),
       );
       // Advance time
@@ -372,13 +362,10 @@ describe('DefaultIdentityClient', () => {
   describe('getIdentity', () => {
     beforeEach(() => {
       server.use(
-        rest.get(
-          `${mockBaseUrl}/.well-known/jwks.json`,
-          async (_, res, ctx) => {
-            const keys = await factory.listPublicKeys();
-            return res(ctx.json(keys));
-          },
-        ),
+        http.get(`${mockBaseUrl}/.well-known/jwks.json`, async () => {
+          const keys = await factory.listPublicKeys();
+          return HttpResponse.json(keys);
+        }),
       );
     });
 

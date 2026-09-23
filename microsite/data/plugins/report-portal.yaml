@@ -1,0 +1,10 @@
+---
+title: Report Portal
+author: Backstage Community
+authorUrl: https://github.com/backstage/community-plugins
+category: Reporting
+description: Integrates ReportPortal test automation dashboard into Backstage, showing projects and launch results.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/report-portal/plugins/report-portal/README.md
+npmPackageName: '@backstage-community/plugin-report-portal'
+addedDate: '2026-02-21'
+status: active

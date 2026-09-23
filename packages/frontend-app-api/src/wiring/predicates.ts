@@ -43,6 +43,28 @@ type MinimalPermissionApi = {
   ): Promise<EvaluatePermissionResponse>;
 };
 
+function parsePermissionName(permissionName: string) {
+  const parts = permissionName.split('#');
+  const [name, action, ...rest] = parts;
+
+  if (rest.length > 0 || !name || (parts.length === 2 && !action)) {
+    throw new Error(
+      `Invalid permission name: ${permissionName}. Permission names must be in the format "permissionName" or "permissionName#action" (both parts must be non-empty).`,
+    );
+  }
+
+  if (action === undefined) {
+    return { name };
+  }
+
+  return {
+    name,
+    attributes: {
+      action,
+    },
+  };
+}
+
 export const localPermissionApiRef = createApiRef<MinimalPermissionApi>({
   id: 'plugin.permission.api',
 });
@@ -87,10 +109,20 @@ export function createPredicateContextLoader(options: {
     if (permissionApi) {
       try {
         const permissionNames = options.predicateReferences.permissions;
+        const hydratedPermissions = permissionNames.map(name => {
+          const { name: permissionName, attributes } =
+            parsePermissionName(name);
+          const permission = {
+            name: permissionName,
+            type: 'basic',
+            attributes: attributes || {},
+          } as const;
+          return permission;
+        });
         const responses = await Promise.all(
-          permissionNames.map(name =>
+          hydratedPermissions.map(permission =>
             permissionApi.authorize({
-              permission: { name, type: 'basic', attributes: {} },
+              permission,
             }),
           ),
         );

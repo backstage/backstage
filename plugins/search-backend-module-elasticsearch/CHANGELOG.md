@@ -1,5 +1,103 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 2.0.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/integration-aws-node@0.2.3-next.0
+  - @backstage/plugin-search-backend-node@1.4.9-next.0
+  - @backstage/plugin-search-common@1.2.26-next.0
+
+## 2.0.0
+
+### Major Changes
+
+- 3753c36: **BREAKING**: Upgraded the Elasticsearch client to version 8, requiring at least version 8.19 - the only 8.x release line still under support, [following the end of life of Elasticsearch 7.x and earlier 8.x lines](https://endoflife.date/elasticsearch). Elasticsearch 7.x clusters are no longer supported.
+
+  If you use the `elastic` provider or connect to a plain Elasticsearch node, make sure your cluster is running Elasticsearch 8.19 or later before upgrading. The `aws` and `opensearch` providers keep using the OpenSearch client and are unaffected. Existing TLS settings continue to work without any configuration changes.
+
+  The methods of the `ElasticSearchClientWrapper` now return a normalized response that exposes `body`, `statusCode`, `headers` and `warnings` for both providers, instead of the client specific response types. Code that relies on the raw client types or reads the `meta` property of a response needs to be adjusted.
+
+### Patch Changes
+
+- fe6ace6: Added optional `accountId` config to `search.elasticsearch` for resolving account-specific AWS credentials, enabling support for `webIdentityTokenFile` and `accountDefaults` when using AWS OpenSearch.
+- b11c9b4: Fixed a bug where an empty document type list could result in querying all indices instead of returning empty results.
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.4.8
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/integration-aws-node@0.2.2
+  - @backstage/plugin-search-common@1.2.25
+
+## 1.8.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/integration-aws-node@0.2.2-next.0
+  - @backstage/plugin-search-backend-node@1.4.8-next.1
+  - @backstage/plugin-search-common@1.2.25-next.0
+
+## 1.8.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.4.8-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
+## 1.8.8-next.0
+
+### Patch Changes
+
+- b11c9b4: Fixed a bug where an empty document type list could result in querying all indices instead of returning empty results.
+
+## 1.8.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/integration-aws-node@0.2.1
+  - @backstage/plugin-search-backend-node@1.4.7
+
+## 1.8.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-search-backend-node@1.4.7-next.0
+
+## 1.8.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/plugin-search-backend-node@1.4.6
+
+## 1.8.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.4.6-next.0
+  - @backstage/backend-plugin-api@1.9.3-next.0
+
+## 1.8.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-search-backend-node@1.4.5
+
 ## 1.8.4-next.0
 
 ### Patch Changes

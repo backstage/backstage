@@ -1,5 +1,114 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket-cloud
 
+## 0.3.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.0
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.14-next.0
+  - @backstage/plugin-scaffolder-node@0.13.8-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+
+## 0.3.11
+
+### Patch Changes
+
+- 40c64a0: Fixed a security issue in pull request workspace handling.
+- bbba6b5: Added support for requiring user-provided credentials for Bitbucket Cloud mutation actions when `scaffolder.requireScmUserCredentials` is enabled.
+- Updated dependencies
+  - @backstage/integration@2.1.2
+  - @backstage/config@1.3.9
+  - @backstage/plugin-scaffolder-node@0.13.7
+  - @backstage/plugin-bitbucket-cloud-common@0.3.13
+  - @backstage/backend-plugin-api@1.10.1
+
+## 0.3.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/plugin-scaffolder-node@0.13.7-next.2
+  - @backstage/plugin-bitbucket-cloud-common@0.3.13-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/integration@2.1.2-next.1
+
+## 0.3.11-next.1
+
+### Patch Changes
+
+- 40c64a0: Fixed a security issue in pull request workspace handling.
+- bbba6b5: Added support for requiring user-provided credentials for Bitbucket Cloud mutation actions when `scaffolder.requireScmUserCredentials` is enabled.
+- Updated dependencies
+  - @backstage/integration@2.1.2-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.13-next.0
+  - @backstage/plugin-scaffolder-node@0.13.7-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
+## 0.3.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.7-next.0
+
+## 0.3.9
+
+### Patch Changes
+
+- 4e8d763: Migrated tests from MSW v1 to MSW v2.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.6
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/integration@2.1.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.12
+
+## 0.3.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.0-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.12-next.0
+  - @backstage/plugin-scaffolder-node@0.13.6-next.1
+
+## 0.3.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-scaffolder-node@0.13.6-next.0
+
+## 0.3.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/plugin-scaffolder-node@0.13.5
+
+## 0.3.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/plugin-scaffolder-node@0.13.5-next.0
+
+## 0.3.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.4
+  - @backstage/integration@2.0.3
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-bitbucket-cloud-common@0.3.11
+
 ## 0.3.7-next.0
 
 ### Patch Changes

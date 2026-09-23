@@ -5,7 +5,7 @@
 ### `backstage-cli-module-build`
 
 ```
-Usage: @backstage/cli-module-build [options] [command]
+Usage: @backstage/cli-module-build [flags...]
 
 Options:
   -V, --version
@@ -13,15 +13,15 @@ Options:
 
 Commands:
   build-workspace
-  help [command]
-  package [command]
-  repo [command]
+  help
+  package
+  repo
 ```
 
 ### `backstage-cli-module-build build-workspace`
 
 ```
-Usage: @backstage/cli-module-build build-workspace <workspace-dir> [packages...]
+Usage: @backstage/cli-module-build build-workspace [flags...] <workspace-dir> [packages...]
 
 Options:
   --always-pack
@@ -31,15 +31,16 @@ Options:
 ### `backstage-cli-module-build package`
 
 ```
-Usage: @backstage/cli-module-build package [options] [command] [command]
+Usage: @backstage/cli-module-build package [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
   build
   clean
-  help [command]
+  help
   postpack
   prepack
   start
@@ -48,7 +49,7 @@ Commands:
 ### `backstage-cli-module-build package build`
 
 ```
-Usage: @backstage/cli-module-build package build
+Usage: @backstage/cli-module-build package build [flags...]
 
 Options:
   --config <string>
@@ -63,7 +64,7 @@ Options:
 ### `backstage-cli-module-build package clean`
 
 ```
-Usage: @backstage/cli-module-build package clean
+Usage: @backstage/cli-module-build package clean [flags...]
 
 Options:
   -h, --help
@@ -72,7 +73,7 @@ Options:
 ### `backstage-cli-module-build package postpack`
 
 ```
-Usage: @backstage/cli-module-build package postpack
+Usage: @backstage/cli-module-build package postpack [flags...]
 
 Options:
   -h, --help
@@ -81,7 +82,7 @@ Options:
 ### `backstage-cli-module-build package prepack`
 
 ```
-Usage: @backstage/cli-module-build package prepack
+Usage: @backstage/cli-module-build package prepack [flags...]
 
 Options:
   -h, --help
@@ -90,7 +91,7 @@ Options:
 ### `backstage-cli-module-build package start`
 
 ```
-Usage: @backstage/cli-module-build package start
+Usage: @backstage/cli-module-build package start [flags...]
 
 Options:
   --check
@@ -107,22 +108,23 @@ Options:
 ### `backstage-cli-module-build repo`
 
 ```
-Usage: @backstage/cli-module-build repo [options] [command] [command]
+Usage: @backstage/cli-module-build repo [flags...]
 
 Options:
+  -V, --version
   -h, --help
 
 Commands:
   build
   clean
-  help [command]
+  help
   start
 ```
 
 ### `backstage-cli-module-build repo build`
 
 ```
-Usage: @backstage/cli-module-build repo build
+Usage: @backstage/cli-module-build repo build [flags...]
 
 Options:
   --all
@@ -134,7 +136,7 @@ Options:
 ### `backstage-cli-module-build repo clean`
 
 ```
-Usage: @backstage/cli-module-build repo clean
+Usage: @backstage/cli-module-build repo clean [flags...]
 
 Options:
   -h, --help
@@ -143,7 +145,7 @@ Options:
 ### `backstage-cli-module-build repo start`
 
 ```
-Usage: @backstage/cli-module-build repo start [packages...]
+Usage: @backstage/cli-module-build repo start [flags...] [packages...]
 
 Options:
   --config <string>

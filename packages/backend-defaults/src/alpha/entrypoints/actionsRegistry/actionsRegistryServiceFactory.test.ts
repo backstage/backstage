@@ -28,6 +28,7 @@ import {
   AuthorizeResult,
   createPermission,
 } from '@backstage/plugin-permission-common';
+import type { JsonObject } from '@backstage/types';
 
 describe('actionsRegistryServiceFactory', () => {
   const defaultServices = [
@@ -162,6 +163,67 @@ describe('actionsRegistryServiceFactory', () => {
 
       expect(true).toBe(true);
     });
+
+    it('should properly infer the secrets types', () => {
+      createBackendPlugin({
+        pluginId: 'my-plugin',
+        register(reg) {
+          reg.registerInit({
+            deps: {
+              actionsRegistry: actionsRegistryServiceRef,
+            },
+            async init({ actionsRegistry }) {
+              actionsRegistry.register({
+                name: 'test',
+                title: 'Test',
+                description: 'Test',
+                schema: {
+                  input: z => z.object({ test: z.string() }),
+                  output: z => z.object({ ok: z.boolean() }),
+                  secrets: z => z.object({ token: z.string() }),
+                },
+                action: async ({ secrets: { token } }) => {
+                  // @ts-expect-error - token is not a boolean
+                  const _t: boolean = token;
+                  return { output: { ok: true } };
+                },
+              });
+            },
+          });
+        },
+      });
+
+      expect(true).toBe(true);
+    });
+
+    it('should allow actions without secrets schema', () => {
+      createBackendPlugin({
+        pluginId: 'my-plugin',
+        register(reg) {
+          reg.registerInit({
+            deps: {
+              actionsRegistry: actionsRegistryServiceRef,
+            },
+            async init({ actionsRegistry }) {
+              actionsRegistry.register({
+                name: 'test',
+                title: 'Test',
+                description: 'Test',
+                schema: {
+                  input: z => z.object({ test: z.string() }),
+                  output: z => z.object({ ok: z.boolean() }),
+                },
+                action: async () => {
+                  return { output: { ok: true } };
+                },
+              });
+            },
+          });
+        },
+      });
+
+      expect(true).toBe(true);
+    });
   });
 
   describe('/.backstage/actions/v1/actions', () => {
@@ -253,6 +315,19 @@ describe('actionsRegistryServiceFactory', () => {
                 },
                 action: async () => ({ output: { ok: true } }),
               });
+              actionsRegistry.register({
+                name: 'read-only',
+                title: 'Read Only',
+                description: 'Read Only',
+                attributes: {
+                  readOnly: true,
+                },
+                schema: {
+                  input: z => z.object({}),
+                  output: z => z.object({}),
+                },
+                action: async () => ({ output: { ok: true } }),
+              });
             },
           });
         },
@@ -278,6 +353,14 @@ describe('actionsRegistryServiceFactory', () => {
               readOnly: false,
             },
           },
+          {
+            name: 'read-only',
+            attributes: {
+              destructive: false,
+              idempotent: false,
+              readOnly: true,
+            },
+          },
         ],
       });
     });
@@ -298,6 +381,20 @@ describe('actionsRegistryServiceFactory', () => {
                 attributes: {
                   destructive: false,
                   idempotent: true,
+                  readOnly: false,
+                },
+                schema: {
+                  input: z => z.object({}),
+                  output: z => z.object({}),
+                },
+                action: async () => ({ output: { ok: true } }),
+              });
+              actionsRegistry.register({
+                name: 'read-only',
+                title: 'Read Only',
+                description: 'Read Only',
+                attributes: {
+                  destructive: true,
                   readOnly: true,
                 },
                 schema: {
@@ -330,6 +427,14 @@ describe('actionsRegistryServiceFactory', () => {
             attributes: {
               destructive: false,
               idempotent: true,
+              readOnly: false,
+            },
+          },
+          {
+            name: 'read-only',
+            attributes: {
+              destructive: true,
+              idempotent: false,
               readOnly: true,
             },
           },
@@ -461,12 +566,96 @@ describe('actionsRegistryServiceFactory', () => {
         ],
       });
     });
+
+    it('should return secrets schema in action list when declared', async () => {
+      const pluginSubject = createBackendPlugin({
+        pluginId: 'my-plugin',
+        register(reg) {
+          reg.registerInit({
+            deps: {
+              actionsRegistry: actionsRegistryServiceRef,
+            },
+            async init({ actionsRegistry }) {
+              actionsRegistry.register({
+                name: 'test',
+                title: 'Test',
+                description: 'Test',
+                schema: {
+                  input: z => z.object({}),
+                  output: z => z.object({}),
+                  secrets: z =>
+                    z.object({
+                      token: z.string(),
+                    }),
+                },
+                action: async () => ({ output: {} }),
+              });
+            },
+          });
+        },
+      });
+
+      const { server } = await startTestBackend({
+        features: [pluginSubject, ...defaultServices],
+      });
+
+      const { body, status } = await request(server).get(
+        '/api/my-plugin/.backstage/actions/v1/actions',
+      );
+
+      expect(status).toBe(200);
+      expect(body.actions[0].schema.secrets).toMatchObject({
+        type: 'object',
+        properties: {
+          token: { type: 'string' },
+        },
+      });
+    });
+
+    it('should not include secrets schema when not declared', async () => {
+      const pluginSubject = createBackendPlugin({
+        pluginId: 'my-plugin',
+        register(reg) {
+          reg.registerInit({
+            deps: {
+              actionsRegistry: actionsRegistryServiceRef,
+            },
+            async init({ actionsRegistry }) {
+              actionsRegistry.register({
+                name: 'test',
+                title: 'Test',
+                description: 'Test',
+                schema: {
+                  input: z => z.object({}),
+                  output: z => z.object({}),
+                },
+                action: async () => ({ output: {} }),
+              });
+            },
+          });
+        },
+      });
+
+      const { server } = await startTestBackend({
+        features: [pluginSubject, ...defaultServices],
+      });
+
+      const { body, status } = await request(server).get(
+        '/api/my-plugin/.backstage/actions/v1/actions',
+      );
+
+      expect(status).toBe(200);
+      expect(body.actions[0].schema.secrets).toBeUndefined();
+    });
   });
 
   describe('/.backstage/actions/v1/actions/:actionId/invoke', () => {
     const mockAction = jest.fn();
+    const mockSecretAction = jest.fn();
 
     beforeEach(() => {
+      mockAction.mockReset();
+      mockSecretAction.mockReset();
       mockAction.mockResolvedValue({ output: { ok: true } });
     });
 
@@ -680,6 +869,244 @@ describe('actionsRegistryServiceFactory', () => {
           name: 'NotFoundError',
           message: 'entity not found',
         },
+      });
+    });
+
+    const pluginWithSecrets = createBackendPlugin({
+      pluginId: 'my-plugin',
+      register(reg) {
+        reg.registerInit({
+          deps: { actionsRegistry: actionsRegistryServiceRef },
+          async init({ actionsRegistry }) {
+            actionsRegistry.register({
+              name: 'secret-action',
+              title: 'Secret Action',
+              description: 'Needs secrets',
+              schema: {
+                input: z => z.object({ repo: z.string() }),
+                output: z => z.object({ ok: z.boolean() }),
+                secrets: z => z.object({ token: z.string() }),
+              },
+              action: mockSecretAction,
+            });
+          },
+        });
+      },
+    });
+
+    it('should pass secrets to the action handler when using wrapped body format', async () => {
+      mockSecretAction.mockResolvedValue({ output: { ok: true } });
+
+      const { server } = await startTestBackend({
+        features: [pluginWithSecrets, ...defaultServices],
+      });
+
+      const { status } = await request(server)
+        .post(
+          '/api/my-plugin/.backstage/actions/v2/actions/my-plugin:secret-action/invoke',
+        )
+        .send({ input: { repo: 'test' }, secrets: { token: 'my-secret' } });
+
+      expect(status).toBe(200);
+      expect(mockSecretAction).toHaveBeenCalledWith(
+        expect.objectContaining({
+          input: { repo: 'test' },
+          secrets: { token: 'my-secret' },
+        }),
+      );
+    });
+
+    it('should return 400 when action requires secrets but none provided', async () => {
+      mockSecretAction.mockResolvedValue({ output: { ok: true } });
+
+      const { server } = await startTestBackend({
+        features: [pluginWithSecrets, ...defaultServices],
+      });
+
+      const { status, body } = await request(server)
+        .post(
+          '/api/my-plugin/.backstage/actions/v2/actions/my-plugin:secret-action/invoke',
+        )
+        .send({ input: { repo: 'test' } });
+
+      expect(status).toBe(400);
+      expect(body.error.message).toMatch(/requires secrets/);
+    });
+
+    it('should validate secrets against the schema', async () => {
+      mockSecretAction.mockResolvedValue({ output: { ok: true } });
+
+      const { server } = await startTestBackend({
+        features: [pluginWithSecrets, ...defaultServices],
+      });
+
+      const { status } = await request(server)
+        .post(
+          '/api/my-plugin/.backstage/actions/v2/actions/my-plugin:secret-action/invoke',
+        )
+        .send({ input: { repo: 'test' }, secrets: { token: 123 } });
+
+      expect(status).toBe(400);
+    });
+
+    it('should return 400 when secrets are sent to an action that does not accept them', async () => {
+      mockAction.mockResolvedValue({ output: { ok: true } });
+
+      const { server } = await startTestBackend({
+        features: [pluginSubject, ...defaultServices],
+      });
+
+      const { status, body } = await request(server)
+        .post(
+          '/api/my-plugin/.backstage/actions/v2/actions/my-plugin:test/invoke',
+        )
+        .send({ input: { name: 'test' }, secrets: { token: 'unexpected' } });
+
+      expect(status).toBe(400);
+      expect(body.error.message).toMatch(/does not accept secrets/);
+    });
+
+    it('should still accept raw body format for backward compatibility', async () => {
+      const { server } = await startTestBackend({
+        features: [pluginSubject, ...defaultServices],
+      });
+
+      const { status } = await request(server)
+        .post(
+          '/api/my-plugin/.backstage/actions/v1/actions/my-plugin:test/invoke',
+        )
+        .send({ name: 'test' });
+
+      expect(status).toBe(200);
+      expect(mockAction).toHaveBeenCalledWith(
+        expect.objectContaining({
+          input: { name: 'test' },
+        }),
+      );
+    });
+  });
+
+  describe('configured action invocation', () => {
+    const mockAction = jest.fn();
+    const pluginSubject = createBackendPlugin({
+      pluginId: 'my-plugin',
+      register(reg) {
+        reg.registerInit({
+          deps: {
+            actionsRegistry: actionsRegistryServiceRef,
+          },
+          async init({ actionsRegistry }) {
+            actionsRegistry.register({
+              name: 'test',
+              title: 'Test',
+              description: 'Test',
+              schema: {
+                input: z => z.object({ name: z.string() }),
+                output: z => z.object({ ok: z.boolean() }),
+              },
+              action: mockAction,
+            });
+          },
+        });
+      },
+    });
+
+    function createRegistryServices(actions: JsonObject) {
+      return [
+        actionsRegistryServiceFactory,
+        httpRouterServiceFactory,
+        mockServices.httpAuth.factory({
+          defaultCredentials: mockCredentials.service('user:default/mock'),
+        }),
+        mockServices.rootConfig.factory({
+          data: { backend: { actions } },
+        }),
+      ];
+    }
+
+    beforeEach(() => {
+      mockAction.mockReset();
+      mockAction.mockResolvedValue({ output: { ok: true } });
+    });
+
+    describe.each([
+      { version: 'v1', body: { name: 'test' } },
+      { version: 'v2', body: { input: { name: 'test' } } },
+    ])('$version', ({ version, body }) => {
+      const path = `/.backstage/actions/${version}/actions/my-plugin:test/invoke`;
+      const excludedFilters: Array<[string, JsonObject]> = [
+        ['id', { exclude: [{ id: 'my-plugin:test' }] }],
+        ['attribute', { exclude: [{ attributes: { destructive: true } }] }],
+      ];
+
+      it('should reject actions from sources that are not configured', async () => {
+        const { server } = await startTestBackend({
+          features: [
+            pluginSubject,
+            ...createRegistryServices({
+              pluginSources: ['other-plugin'],
+            }),
+          ],
+        });
+
+        const response = await request(server)
+          .post(`/api/my-plugin${path}`)
+          .send(body);
+
+        expect(response.status).toBe(404);
+        expect(response.body.error.message).toBe(
+          'Action "my-plugin:test" not found',
+        );
+        expect(mockAction).not.toHaveBeenCalled();
+      });
+
+      it.each(excludedFilters)(
+        'should reject actions excluded by an %s filter',
+        async (_, filter) => {
+          const { server } = await startTestBackend({
+            features: [
+              pluginSubject,
+              ...createRegistryServices({
+                pluginSources: ['my-plugin'],
+                filter,
+              }),
+            ],
+          });
+
+          const response = await request(server)
+            .post(`/api/my-plugin${path}`)
+            .send(body);
+
+          expect(response.status).toBe(404);
+          expect(response.body.error.message).toBe(
+            'Action "my-plugin:test" not found',
+          );
+          expect(mockAction).not.toHaveBeenCalled();
+        },
+      );
+
+      it('should invoke actions allowed by source and action filters', async () => {
+        const { server } = await startTestBackend({
+          features: [
+            pluginSubject,
+            ...createRegistryServices({
+              pluginSources: ['my-plugin'],
+              filter: {
+                include: [
+                  { id: 'my-plugin:*', attributes: { destructive: true } },
+                ],
+              },
+            }),
+          ],
+        });
+
+        const response = await request(server)
+          .post(`/api/my-plugin${path}`)
+          .send(body);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual({ output: { ok: true } });
+        expect(mockAction).toHaveBeenCalledTimes(1);
       });
     });
   });

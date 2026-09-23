@@ -1,5 +1,129 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.6.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-kubernetes-common@0.9.14-next.0
+
+## 0.6.0
+
+### Minor Changes
+
+- cfba1bc: **BREAKING PRODUCERS:** The `FixDialog`, `ContainerCard`, and `PodLogs` components no longer accept an implicit `children` prop. This aligns them with ADR006. If you were passing children to these components, remove them as they were never rendered.
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- c0ebaa7: chore(deps): bump `js-yaml` from 4.3.1 to 4.3.2
+- 83f34f2: The pod exec terminal now loads `@xterm/xterm` and its stylesheet when a terminal is opened, instead of including them in the initial bundle.
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-kubernetes-common@0.9.13
+  - @backstage/core-plugin-api@1.12.10
+
+## 0.6.0-next.2
+
+### Minor Changes
+
+- cfba1bc: **BREAKING PRODUCERS:** The `FixDialog`, `ContainerCard`, and `PodLogs` components no longer accept an implicit `children` prop. This aligns them with ADR006. If you were passing children to these components, remove them as they were never rendered.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.2
+  - @backstage/core-plugin-api@1.12.10-next.1
+  - @backstage/plugin-kubernetes-common@0.9.13-next.1
+
+## 0.5.24-next.1
+
+### Patch Changes
+
+- 83f34f2: The pod exec terminal now loads `@xterm/xterm` and its stylesheet when a terminal is opened, instead of including them in the initial bundle.
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.1
+  - @backstage/core-plugin-api@1.12.10-next.0
+
+## 0.5.24-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.9.13-next.0
+  - @backstage/core-components@0.18.14-next.0
+
+## 0.5.23
+
+### Patch Changes
+
+- 226817d: chore(deps): bump `js-yaml` from 4.2.0 to 4.3.0
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/core-components@0.18.13
+  - @backstage/core-plugin-api@1.12.9
+
+## 0.5.23-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9-next.0
+  - @backstage/core-components@0.18.13-next.2
+
+## 0.5.23-next.0
+
+### Patch Changes
+
+- 226817d: chore(deps): bump `js-yaml` from 4.2.0 to 4.3.0
+- Updated dependencies
+  - @backstage/core-components@0.18.13-next.0
+
+## 0.5.22
+
+### Patch Changes
+
+- 120e7c3: chore(deps): bump `js-yaml` from 4.1.1 to 4.2.0
+- 2ed90cd: Fixed the published configuration schema so that it no longer references a file that is excluded from the package. This previously caused configuration schema extraction to fail in apps that depend on this plugin.
+- Updated dependencies
+  - @backstage/core-components@0.18.12
+  - @backstage/core-plugin-api@1.12.8
+
+## 0.5.22-next.1
+
+### Patch Changes
+
+- 2ed90cd: Fixed the published configuration schema so that it no longer references a file that is excluded from the package. This previously caused configuration schema extraction to fail in apps that depend on this plugin.
+
+## 0.5.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.12-next.0
+  - @backstage/core-plugin-api@1.12.8-next.0
+
+## 0.5.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11
+  - @backstage/core-plugin-api@1.12.7
+
+## 0.5.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.11-next.1
+  - @backstage/core-plugin-api@1.12.7-next.0
+
 ## 0.5.20-next.0
 
 ### Patch Changes

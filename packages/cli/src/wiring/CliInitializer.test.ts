@@ -17,7 +17,10 @@
 import { CliInitializer } from './CliInitializer';
 import { createCliModule } from './factory';
 
-process.exit = jest.fn() as any;
+const originalArgv = process.argv;
+const originalUnhandledRejectionListeners = new Set(
+  process.listeners('unhandledRejection'),
+);
 
 describe('createCliModule', () => {
   it('should throw if packageJson has no name', () => {
@@ -39,8 +42,19 @@ describe('createCliModule', () => {
 
 describe('CliInitializer', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.spyOn(process, 'exit').mockImplementation((() => undefined) as never);
   });
+
+  afterEach(() => {
+    process.argv = originalArgv;
+    for (const listener of process.listeners('unhandledRejection')) {
+      if (!originalUnhandledRejectionListeners.has(listener)) {
+        process.removeListener('unhandledRejection', listener);
+      }
+    }
+    jest.restoreAllMocks();
+  });
+
   it('should run commands', async () => {
     expect.assertions(2);
     process.argv = ['node', 'cli', 'test'];
@@ -111,7 +125,7 @@ describe('CliInitializer', () => {
   });
 
   it('should run experimental commands but exclude them from help output', async () => {
-    expect.assertions(3);
+    expect.assertions(4);
     process.argv = ['node', 'cli', 'secret'];
     const initializer = new CliInitializer();
     initializer.add(
@@ -139,7 +153,7 @@ describe('CliInitializer', () => {
     expect(process.exit).toHaveBeenCalledWith(0);
 
     process.argv = ['node', 'cli', '--help'];
-    const writeSpy = jest.spyOn(process.stdout, 'write');
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
     const initializer2 = new CliInitializer();
     initializer2.add(
       createCliModule({
@@ -160,14 +174,14 @@ describe('CliInitializer', () => {
       }),
     );
     await initializer2.run();
-    const helpOutput = writeSpy.mock.calls.map(c => c[0]).join('');
+    const helpOutput = logSpy.mock.calls.flat().join('\n');
+    expect(helpOutput).toContain('visible');
     expect(helpOutput).not.toContain('secret');
-    writeSpy.mockRestore();
   });
 
   it('should hide tree nodes when all children are experimental', async () => {
     process.argv = ['node', 'cli', '--help'];
-    const writeSpy = jest.spyOn(process.stdout, 'write');
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
     const initializer = new CliInitializer();
     initializer.add(
       createCliModule({
@@ -194,15 +208,14 @@ describe('CliInitializer', () => {
       }),
     );
     await initializer.run();
-    const helpOutput = writeSpy.mock.calls.map(c => c[0]).join('');
+    const helpOutput = logSpy.mock.calls.flat().join('\n');
     expect(helpOutput).toContain('visible');
     expect(helpOutput).not.toContain('group');
-    writeSpy.mockRestore();
   });
 
   it('should show tree nodes when some children are visible', async () => {
     process.argv = ['node', 'cli', '--help'];
-    const writeSpy = jest.spyOn(process.stdout, 'write');
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
     const initializer = new CliInitializer();
     initializer.add(
       createCliModule({
@@ -223,9 +236,8 @@ describe('CliInitializer', () => {
       }),
     );
     await initializer.run();
-    const helpOutput = writeSpy.mock.calls.map(c => c[0]).join('');
+    const helpOutput = logSpy.mock.calls.flat().join('\n');
     expect(helpOutput).toContain('group');
-    writeSpy.mockRestore();
   });
 
   it('should pass positional args to the subcommand if nested', async () => {

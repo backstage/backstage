@@ -41,6 +41,7 @@ describe('runMkdocsServer', () => {
           'serve',
           '--dev-addr',
           '0.0.0.0:8000',
+          '--livereload',
           'spotify/techdocs',
         ]),
         expect.objectContaining({}),
@@ -91,6 +92,7 @@ describe('runMkdocsServer', () => {
           'serve',
           '--dev-addr',
           '0.0.0.0:8000',
+          '--livereload',
         ]),
         expect.objectContaining({}),
       );
@@ -107,6 +109,7 @@ describe('runMkdocsServer', () => {
           'serve',
           '--dev-addr',
           '0.0.0.0:8000',
+          '--livereload',
           '--clean',
           '--strict',
         ]),
@@ -125,6 +128,7 @@ describe('runMkdocsServer', () => {
           'serve',
           '--dev-addr',
           '127.0.0.1:8000',
+          '--livereload',
         ]),
         expect.objectContaining({}),
       );

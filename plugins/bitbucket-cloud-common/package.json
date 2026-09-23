@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-bitbucket-cloud-common",
-  "version": "0.3.11-next.0",
+  "version": "0.3.14-next.0",
   "description": "Common functionalities for bitbucket-cloud plugins",
   "backstage": {
     "role": "common-library",
@@ -46,8 +46,8 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@openapitools/openapi-generator-cli": "^2.4.26",
-    "msw": "^1.0.0",
+    "@openapitools/openapi-generator-cli": "^2.41.0",
+    "msw": "^2.0.0",
     "ts-morph": "^24.0.0"
   }
 }

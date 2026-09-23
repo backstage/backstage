@@ -26,7 +26,11 @@ import {
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
 import { examples } from './template.examples';
-import { createTemplateActionHandler } from './templateActionHandler';
+import { assertScmUserCredentials } from './assertScmUserCredentials';
+import {
+  collectActionTemplateCapabilities,
+  createTemplateActionHandler,
+} from './templateActionHandler';
 
 /**
  * Downloads a skeleton, templates variables into file and directory names and content.
@@ -38,9 +42,12 @@ import { createTemplateActionHandler } from './templateActionHandler';
 export function createFetchTemplateAction(options: {
   reader: UrlReaderService;
   integrations: ScmIntegrations;
+  requireScmUserCredentials?: boolean;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
 }) {
+  const templateCapabilities = collectActionTemplateCapabilities(options);
+
   return createTemplateAction({
     id: 'fetch:template',
     description:
@@ -131,6 +138,14 @@ export function createFetchTemplateAction(options: {
         resolveTemplate: async () => {
           ctx.logger.info('Fetching template content from remote URL');
 
+          assertScmUserCredentials({
+            integrations: options.integrations,
+            requireScmUserCredentials: options.requireScmUserCredentials,
+            url: ctx.input.url,
+            baseUrl: ctx.templateInfo?.baseUrl,
+            token: ctx.input.token,
+          });
+
           const workDir = await ctx.createTemporaryDirectory();
           const templateDir = resolveSafeChildPath(workDir, 'template');
 
@@ -145,6 +160,7 @@ export function createFetchTemplateAction(options: {
           return templateDir;
         },
         ...options,
+        templateCapabilities,
       }),
   });
 }

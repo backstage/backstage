@@ -1,5 +1,97 @@
 # @backstage/plugin-events-backend
 
+## 0.6.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/backend-openapi-utils@0.7.3-next.0
+  - @backstage/plugin-events-node@0.4.27-next.0
+
+## 0.6.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.7.2
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-events-node@0.4.26
+
+## 0.6.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.1
+
+## 0.6.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.7.2-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-events-node@0.4.26-next.0
+
+## 0.6.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/backend-openapi-utils@0.7.1
+  - @backstage/plugin-events-node@0.4.25
+
+## 0.6.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/backend-openapi-utils@0.7.1-next.0
+  - @backstage/plugin-events-node@0.4.25-next.0
+
+## 0.6.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.7.0
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/plugin-events-node@0.4.24
+
+## 0.6.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.7.0-next.1
+  - @backstage/backend-plugin-api@1.9.3-next.1
+
+## 0.6.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/plugin-events-node@0.4.24-next.0
+  - @backstage/backend-openapi-utils@0.6.11-next.0
+
+## 0.6.3
+
+### Patch Changes
+
+- f4342b9: Increased the events bus request body limit to 5mb to allow larger event payloads.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/backend-openapi-utils@0.6.10
+  - @backstage/plugin-events-node@0.4.23
+
 ## 0.6.3-next.0
 
 ### Patch Changes

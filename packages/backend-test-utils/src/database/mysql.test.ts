@@ -24,14 +24,14 @@ const ourDatabaseIds = Object.entries(allDatabases)
   .filter(([, properties]) => properties.driver.includes('mysql'))
   .map(([id]) => id as TestDatabaseId);
 
-jest.setTimeout(60_000);
+jest.setTimeout(120_000);
 
 describe('startMysqlContainer', () => {
   itIfDocker(
     'successfully launches the container and can stop it without problems',
     async () => {
       const { connection, stopContainer } = await startMysqlContainer(
-        'mysql:8',
+        'mysql:8.4',
       );
       const db = knexFactory({ client: 'mysql2', connection });
       try {

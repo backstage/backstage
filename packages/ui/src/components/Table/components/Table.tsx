@@ -40,6 +40,7 @@ import { useMemo } from 'react';
 import { VisuallyHidden } from '../../VisuallyHidden';
 import { Flex } from '../../Flex';
 import { TableBodySkeleton } from './TableBodySkeleton';
+import { Text } from '../../Text';
 
 function isRowRenderFn<T extends TableItem>(
   rowConfig: RowConfig<T> | RowRenderFn<T> | undefined,
@@ -144,7 +145,7 @@ export function Table<T extends TableItem>({
   if (error) {
     return (
       <div className={classes.root} style={style}>
-        Error: {error.message}
+        <Text variant="body-medium">Error: {error.message}</Text>
       </div>
     );
   }
@@ -184,86 +185,94 @@ export function Table<T extends TableItem>({
       elem
     );
 
+  const wrapScrollContainer = (elem: React.ReactNode) => (
+    <div className={classes.scrollContainer}>{elem}</div>
+  );
+
   return (
     <div className={classes.root} style={style}>
       <VisuallyHidden aria-live="polite" id={liveRegionId}>
         {liveRegionLabel}
       </VisuallyHidden>
       {wrapResizable(
-        wrapVirtualized(
-          <TableRoot
-            {...(isInitialLoading
-              ? {}
-              : {
-                  selectionMode,
-                  selectionBehavior,
-                  selectedKeys,
-                  onSelectionChange,
-                })}
-            sortDescriptor={sort?.descriptor ?? undefined}
-            onSortChange={sort?.onSortChange}
-            disabledKeys={disabledRows}
-            stale={isStale}
-            isPending={isInitialLoading}
-            aria-describedby={liveRegionId}
-          >
-            <TableHeader columns={visibleColumns}>
-              {column =>
-                column.header ? (
-                  column.header()
-                ) : (
-                  <Column
-                    id={column.id}
-                    isRowHeader={column.isRowHeader}
-                    allowsSorting={column.isSortable}
-                    width={column.width}
-                    defaultWidth={column.defaultWidth}
-                    minWidth={column.minWidth}
-                    maxWidth={column.maxWidth}
-                  >
-                    {column.label}
-                  </Column>
-                )
-              }
-            </TableHeader>
-            {isInitialLoading ? (
-              <TableBodySkeleton columns={visibleColumns} />
-            ) : (
-              <TableBody
-                items={data}
-                dependencies={[visibleColumns]}
-                renderEmptyState={
-                  emptyState ? () => <Flex p="3">{emptyState}</Flex> : undefined
-                }
-              >
-                {item => {
-                  const itemIndex = data?.indexOf(item) ?? -1;
-
-                  if (isRowRenderFn(rowConfig)) {
-                    return rowConfig({
-                      item,
-                      index: itemIndex,
-                    });
-                  }
-
-                  return (
-                    <Row
-                      id={String(item.id)}
-                      columns={visibleColumns}
-                      href={rowConfig?.getHref?.(item)}
-                      onAction={
-                        rowConfig?.onClick
-                          ? () => rowConfig?.onClick?.(item)
-                          : undefined
-                      }
+        wrapScrollContainer(
+          wrapVirtualized(
+            <TableRoot
+              {...(isInitialLoading
+                ? {}
+                : {
+                    selectionMode,
+                    selectionBehavior,
+                    selectedKeys,
+                    onSelectionChange,
+                  })}
+              sortDescriptor={sort?.descriptor ?? undefined}
+              onSortChange={sort?.onSortChange}
+              disabledKeys={disabledRows}
+              stale={isStale}
+              isPending={isInitialLoading}
+              aria-describedby={liveRegionId}
+            >
+              <TableHeader columns={visibleColumns}>
+                {column =>
+                  column.header ? (
+                    column.header()
+                  ) : (
+                    <Column
+                      id={column.id}
+                      isRowHeader={column.isRowHeader}
+                      allowsSorting={column.isSortable}
+                      width={column.width}
+                      defaultWidth={column.defaultWidth}
+                      minWidth={column.minWidth}
+                      maxWidth={column.maxWidth}
                     >
-                      {column => column.cell(item)}
-                    </Row>
-                  );
-                }}
-              </TableBody>
-            )}
-          </TableRoot>,
+                      {column.label}
+                    </Column>
+                  )
+                }
+              </TableHeader>
+              {isInitialLoading ? (
+                <TableBodySkeleton columns={visibleColumns} />
+              ) : (
+                <TableBody
+                  items={data}
+                  dependencies={[visibleColumns]}
+                  renderEmptyState={
+                    emptyState
+                      ? () => <Flex p="3">{emptyState}</Flex>
+                      : undefined
+                  }
+                >
+                  {item => {
+                    const itemIndex = data?.indexOf(item) ?? -1;
+
+                    if (isRowRenderFn(rowConfig)) {
+                      return rowConfig({
+                        item,
+                        index: itemIndex,
+                      });
+                    }
+
+                    return (
+                      <Row
+                        id={String(item.id)}
+                        columns={visibleColumns}
+                        href={rowConfig?.getHref?.(item)}
+                        onAction={
+                          rowConfig?.onClick
+                            ? () => rowConfig?.onClick?.(item)
+                            : undefined
+                        }
+                      >
+                        {column => column.cell(item)}
+                      </Row>
+                    );
+                  }}
+                </TableBody>
+              )}
+            </TableRoot>,
+          ),
         ),
       )}
       {pagination.type === 'page' && (

@@ -1,5 +1,89 @@
 # @backstage/plugin-signals-backend
 
+## 0.3.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/plugin-events-node@0.4.27-next.0
+  - @backstage/plugin-signals-node@0.2.6-next.0
+
+## 0.3.19
+
+### Patch Changes
+
+- 0ae9229: Fixed WebSocket upgrade error responses to prevent load balancers from returning 502 when authentication fails. Error responses now use valid HTTP headers, ensuring the actual error status (401 or 500) is delivered to the client instead of being masked.
+- Updated dependencies
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-events-node@0.4.26
+  - @backstage/plugin-signals-node@0.2.5
+
+## 0.3.19-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.1
+
+## 0.3.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-events-node@0.4.26-next.0
+  - @backstage/plugin-signals-node@0.2.5-next.0
+
+## 0.3.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-events-node@0.4.25
+  - @backstage/plugin-signals-node@0.2.4
+
+## 0.3.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-events-node@0.4.25-next.0
+  - @backstage/plugin-signals-node@0.2.4-next.0
+
+## 0.3.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/plugin-events-node@0.4.24
+  - @backstage/plugin-signals-node@0.2.3
+
+## 0.3.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/plugin-events-node@0.4.24-next.0
+  - @backstage/plugin-signals-node@0.2.3-next.0
+
+## 0.3.16
+
+### Patch Changes
+
+- 998664c: chore(deps): Bump `ws` from 8.20.0 to 8.20.1
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-events-node@0.4.23
+  - @backstage/plugin-signals-node@0.2.2
+
 ## 0.3.16-next.0
 
 ### Patch Changes

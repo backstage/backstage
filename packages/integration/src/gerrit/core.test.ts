@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import fetch from 'cross-fetch';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
@@ -455,12 +455,10 @@ describe('gerrit core', () => {
       const responseBody = ")]}'[]";
       const apiUrl = 'https://gerrit.com/projects/';
       worker.use(
-        rest.get(apiUrl, (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.text(responseBody),
-          ),
+        http.get(apiUrl, () =>
+          HttpResponse.text(responseBody, {
+            headers: { 'Content-Type': 'application/json' },
+          }),
         ),
       );
       const response = await fetch(apiUrl, { method: 'GET' });
@@ -471,12 +469,10 @@ describe('gerrit core', () => {
       const responseBody = '[]';
       const apiUrl = 'https://gerrit.com/projects/';
       worker.use(
-        rest.get(apiUrl, (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.text(responseBody),
-          ),
+        http.get(apiUrl, () =>
+          HttpResponse.text(responseBody, {
+            headers: { 'Content-Type': 'application/json' },
+          }),
         ),
       );
       const response = await fetch(apiUrl, { method: 'GET' });
@@ -488,12 +484,10 @@ describe('gerrit core', () => {
       const responseBody = ")]}']{}[";
       const apiUrl = 'https://gerrit.com/projects/';
       worker.use(
-        rest.get(apiUrl, (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.text(responseBody),
-          ),
+        http.get(apiUrl, () =>
+          HttpResponse.text(responseBody, {
+            headers: { 'Content-Type': 'application/json' },
+          }),
         ),
       );
       const response = await fetch(apiUrl, { method: 'GET' });

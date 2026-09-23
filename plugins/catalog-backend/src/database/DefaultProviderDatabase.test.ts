@@ -18,6 +18,7 @@ import { mockServices, TestDatabases } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
 import { randomUUID as uuid } from 'node:crypto';
+import { performance } from 'node:perf_hooks';
 import { DefaultProviderDatabase } from './DefaultProviderDatabase';
 import { applyDatabaseMigrations } from './migrations';
 import { DbRefreshStateReferencesRow, DbRefreshStateRow } from './tables';
@@ -27,6 +28,130 @@ import { generateStableHash } from './util';
 jest.setTimeout(60_000);
 
 const databases = TestDatabases.create();
+
+describe('DefaultProviderDatabase mutation preparation', () => {
+  it.each(['full', 'delta'] as const)(
+    'yields to the event loop while preparing large %s mutations',
+    async type => {
+      let eventLoopTurnCompleted = false;
+      const db = new DefaultProviderDatabase({
+        database: {} as Knex,
+        logger: mockServices.logger.mock(),
+      });
+      setImmediate(() => {
+        eventLoopTurnCompleted = true;
+      });
+      let currentTime = 0;
+      const nowSpy = jest
+        .spyOn(performance, 'now')
+        .mockImplementation(() => currentTime++);
+
+      try {
+        const items = Array.from({ length: 10 }, (_, index) => ({
+          entity: {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: { name: `component-${index}` },
+          },
+        }));
+        const prepared = await db.prepareUnprocessedEntities(
+          type === 'full'
+            ? { type, sourceKey: 'test', items }
+            : { type, sourceKey: 'test', added: items, removed: [] },
+        );
+        expect(prepared.preparedItems).toHaveLength(items.length);
+      } finally {
+        nowSpy.mockRestore();
+      }
+
+      expect(eventLoopTurnCompleted).toBe(true);
+    },
+  );
+
+  it('yields while normalizing a large removal-only delta', async () => {
+    let eventLoopTurnCompleted = false;
+    const db = new DefaultProviderDatabase({
+      database: {} as Knex,
+      logger: mockServices.logger.mock(),
+    });
+    setImmediate(() => {
+      eventLoopTurnCompleted = true;
+    });
+    let currentTime = 0;
+    const nowSpy = jest
+      .spyOn(performance, 'now')
+      .mockImplementation(() => currentTime++);
+
+    try {
+      const removed = Array.from({ length: 10 }, (_, index) => ({
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { name: `component-${index}` },
+        },
+      }));
+      const prepared = await db.prepareUnprocessedEntities({
+        type: 'delta',
+        sourceKey: 'test',
+        added: [],
+        removed,
+      });
+      if (prepared.type !== 'delta') {
+        throw new Error('Expected a prepared delta mutation');
+      }
+
+      expect(prepared.removed).toEqual(
+        removed.map((_, index) => ({
+          entityRef: `component:default/component-${index}`,
+          locationKey: undefined,
+        })),
+      );
+    } finally {
+      nowSpy.mockRestore();
+    }
+
+    expect(eventLoopTurnCompleted).toBe(true);
+  });
+
+  it('does not yield while copying already normalized removals', async () => {
+    let eventLoopTurnCompleted = false;
+    const eventLoopTurn = new Promise<void>(resolve => {
+      setImmediate(() => {
+        eventLoopTurnCompleted = true;
+        resolve();
+      });
+    });
+    const db = new DefaultProviderDatabase({
+      database: {} as Knex,
+      logger: mockServices.logger.mock(),
+    });
+    let currentTime = 0;
+    const nowSpy = jest
+      .spyOn(performance, 'now')
+      .mockImplementation(() => currentTime++);
+
+    try {
+      const removed = Array.from({ length: 10 }, (_, index) => ({
+        entityRef: `component:default/component-${index}`,
+      }));
+      const prepared = await db.prepareUnprocessedEntities({
+        type: 'delta',
+        sourceKey: 'test',
+        added: [],
+        removed,
+      });
+      if (prepared.type !== 'delta') {
+        throw new Error('Expected a prepared delta mutation');
+      }
+
+      expect(prepared.removed).toEqual(removed);
+      expect(eventLoopTurnCompleted).toBe(false);
+    } finally {
+      nowSpy.mockRestore();
+      await eventLoopTurn;
+    }
+  });
+});
 
 describe.each(databases.eachSupportedId())(
   'DefaultProviderDatabase, %p',
@@ -70,6 +195,33 @@ describe.each(databases.eachSupportedId())(
     };
 
     describe('replaceUnprocessedEntities', () => {
+      it('reuses prepared entity references while writing', async () => {
+        const { knex, db } = await createDatabase();
+        const prepared = await db.prepareUnprocessedEntities({
+          type: 'full',
+          sourceKey: 'test',
+          items: [
+            {
+              entity: {
+                apiVersion: 'backstage.io/v1alpha1',
+                kind: 'Component',
+                metadata: { name: 'test' },
+              },
+            },
+          ],
+        });
+        if (prepared.type !== 'full' || !prepared.preparedItems) {
+          throw new Error('Expected a prepared full mutation');
+        }
+        prepared.preparedItems[0].entityRef = 'component:default/prepared';
+
+        await db.transaction(tx => db.replaceUnprocessedEntities(tx, prepared));
+
+        await expect(
+          knex<DbRefreshStateRow>('refresh_state').pluck('entity_ref'),
+        ).resolves.toEqual(['component:default/prepared']);
+      });
+
       it('replaces all existing state correctly for simple dependency chains', async () => {
         const { knex, db } = await createDatabase();
         /*
@@ -953,6 +1105,64 @@ describe.each(databases.eachSupportedId())(
           unprocessed_entity: JSON.stringify(entities[0].entity),
           unprocessed_hash: generateStableHash(entities[0].entity),
         });
+      });
+    });
+
+    describe('transaction', () => {
+      it('retries the entire transaction on a PostgreSQL deadlock', async () => {
+        const deadlockError = Object.assign(new Error('deadlock detected'), {
+          code: '40P01',
+        });
+        const mockKnexInstance = {
+          client: { config: { client: 'pg' } },
+          transaction: jest.fn(async (fn: (tx: any) => Promise<void>) => {
+            await fn({});
+          }),
+        } as unknown as Knex;
+        const db = new DefaultProviderDatabase({
+          database: mockKnexInstance,
+          logger: mockServices.logger.mock(),
+        });
+
+        let attempt = 0;
+        const inner = jest.fn(async () => {
+          attempt++;
+          if (attempt === 1) {
+            throw deadlockError;
+          }
+          return 'ok';
+        });
+
+        const result = await db.transaction(inner);
+        expect(result).toBe('ok');
+        expect(inner).toHaveBeenCalledTimes(2);
+        expect(
+          (mockKnexInstance.transaction as jest.Mock).mock.calls,
+        ).toHaveLength(2);
+      });
+
+      it('propagates the deadlock error after exhausting retries', async () => {
+        const deadlockError = Object.assign(new Error('deadlock detected'), {
+          code: '40P01',
+        });
+        const mockKnexInstance = {
+          client: { config: { client: 'pg' } },
+          transaction: jest.fn(async (fn: (tx: any) => Promise<void>) => {
+            await fn({});
+          }),
+        } as unknown as Knex;
+        const db = new DefaultProviderDatabase({
+          database: mockKnexInstance,
+          logger: mockServices.logger.mock(),
+        });
+
+        await expect(
+          db.transaction(jest.fn().mockRejectedValue(deadlockError)),
+        ).rejects.toThrow('deadlock detected');
+        // 1 initial attempt + 3 retries (default)
+        expect(
+          (mockKnexInstance.transaction as jest.Mock).mock.calls,
+        ).toHaveLength(4);
       });
     });
 

@@ -24,9 +24,7 @@ export interface EntityPredicates {
 
 function strCmp(a: unknown, b: string | undefined): boolean {
   return Boolean(
-    a &&
-      typeof a === 'string' &&
-      a?.toLocaleLowerCase('en-US') === b?.toLocaleLowerCase('en-US'),
+    a && typeof a === 'string' && a?.toLowerCase() === b?.toLowerCase(),
   );
 }
 

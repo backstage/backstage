@@ -56,7 +56,7 @@ techdocs:
 The GCS Node.js client will automatically use the environment variable
 `GOOGLE_APPLICATION_CREDENTIALS` to authenticate with Google Cloud. It might
 already be set in Compute Engine, Google Kubernetes Engine, etc. Read
-https://cloud.google.com/docs/authentication/production for more details.
+<https://cloud.google.com/docs/authentication/production> for more details.
 
 **3b. Authentication using app-config.yaml**
 
@@ -68,7 +68,7 @@ service account, use "Storage Object Admin".
 
 If you want to create a custom role, make sure to include both `get` and
 `create` permissions for both "Objects" and "Buckets". See
-https://cloud.google.com/storage/docs/access-control/iam-permissions
+<https://cloud.google.com/storage/docs/access-control/iam-permissions>
 
 A service account can have many keys. Open your newly created account's page (in
 IAM & Admin console), and create a new key. Use JSON format for the key.
@@ -201,7 +201,7 @@ permissions to:
 - `s3:ListBucket` - To retrieve bucket metadata
 - `s3:GetObject` - To retrieve files from the bucket
 
-:::note Note
+:::note
 
 If you need to migrate documentation objects from an older-style path
 format including case-sensitive entity metadata, you will need to add some
@@ -446,7 +446,7 @@ follow these steps.
 
 To get credentials, access the Azure Portal and go to "Settings > Access Keys",
 and get your Storage account name and Primary Key.
-https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key
+<https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key>
 for more details.
 
 ```yaml
@@ -514,7 +514,7 @@ techdocs:
 
 Set the configs in your `app-config.yaml` to point to your container name.
 
-https://docs.openstack.org/api-ref/identity/v3/?expanded=password-authentication-with-unscoped-authorization-detail,authenticating-with-an-application-credential-detail#authenticating-with-an-application-credential
+<https://docs.openstack.org/api-ref/identity/v3/?expanded=password-authentication-with-unscoped-authorization-detail,authenticating-with-an-application-credential-detail#authenticating-with-an-application-credential>
 for more details.
 
 ```yaml

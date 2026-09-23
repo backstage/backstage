@@ -7,7 +7,7 @@ import { Entity } from '@backstage/catalog-model';
 import type { EntityMeta } from '@backstage/catalog-model';
 import type { JsonArray } from '@backstage/types';
 import { JsonObject } from '@backstage/types';
-import { JSONSchema7 } from 'json-schema';
+import type { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
 import { KindValidator } from '@backstage/catalog-model';
 import { Observable } from '@backstage/types';

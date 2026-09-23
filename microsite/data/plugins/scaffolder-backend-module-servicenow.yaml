@@ -1,0 +1,10 @@
+---
+title: Scaffolder Backend Module ServiceNow
+author: Red Hat
+authorUrl: https://redhat.com
+category: Scaffolder
+description: Scaffolder backend module providing actions for interacting with the ServiceNow Table API from Backstage templates.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/scaffolder-backend-module-servicenow/plugins/scaffolder-backend-module-servicenow/README.md
+npmPackageName: '@backstage-community/plugin-scaffolder-backend-module-servicenow'
+addedDate: '2026-02-21'
+status: active

@@ -46,6 +46,7 @@ import { Readable } from 'node:stream';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { relative } from 'node:path/posix';
 import { AbortController } from '@aws-sdk/abort-controller';
+import { hasDotPathSegments } from './util';
 
 export function parseUrl(
   url: string,
@@ -185,21 +186,40 @@ export class AwsCodeCommitUrlReader implements UrlReaderService {
 
     const accessKeyId = integration.config.accessKeyId;
     const secretAccessKey = integration.config.secretAccessKey;
-    let explicitCredentials: AwsCredentialIdentityProvider;
+    const roleArn = integration.config.roleArn;
+
     if (accessKeyId && secretAccessKey) {
-      explicitCredentials = AwsCodeCommitUrlReader.buildStaticCredentials(
+      const explicitCredentials = AwsCodeCommitUrlReader.buildStaticCredentials(
         accessKeyId,
         secretAccessKey,
       );
-    } else {
-      explicitCredentials = (await credsManager.getCredentialProvider())
-        .sdkCredentialProvider;
+      if (roleArn) {
+        return fromTemporaryCredentials({
+          masterCredentials: explicitCredentials,
+          params: {
+            RoleSessionName: 'backstage-aws-code-commit-url-reader',
+            RoleArn: roleArn,
+            ExternalId: integration.config.externalId,
+          },
+          clientConfig: { region },
+        });
+      }
+      return explicitCredentials;
     }
 
-    const roleArn = integration.config.roleArn;
     if (roleArn) {
+      let masterCredentials: AwsCredentialIdentityProvider;
+      try {
+        masterCredentials = (
+          await credsManager.getCredentialProvider({ arn: roleArn })
+        ).sdkCredentialProvider;
+      } catch {
+        // No account-specific config for this ARN; fall back to default credentials
+        masterCredentials = (await credsManager.getCredentialProvider())
+          .sdkCredentialProvider;
+      }
       return fromTemporaryCredentials({
-        masterCredentials: explicitCredentials,
+        masterCredentials,
         params: {
           RoleSessionName: 'backstage-aws-code-commit-url-reader',
           RoleArn: roleArn,
@@ -209,7 +229,7 @@ export class AwsCodeCommitUrlReader implements UrlReaderService {
       });
     }
 
-    return explicitCredentials;
+    return (await credsManager.getCredentialProvider()).sdkCredentialProvider;
   }
 
   private async buildCodeCommitClient(
@@ -362,6 +382,9 @@ export class AwsCodeCommitUrlReader implements UrlReaderService {
       const responses = [];
 
       for (let i = 0; i < allFiles.length; i++) {
+        if (hasDotPathSegments(String(allFiles[i]))) {
+          continue;
+        }
         const getFileCommand = new GetFileCommand({
           repositoryName: repositoryName,
           filePath: String(allFiles[i]),

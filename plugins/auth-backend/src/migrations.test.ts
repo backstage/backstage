@@ -65,8 +65,6 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
     ]);
 
     await migrateDownOnce(knex);
-
-    await knex.destroy();
   });
 
   it('20240510120825_user_info.js', async () => {
@@ -98,8 +96,6 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
     ]);
 
     await migrateDownOnce(knex);
-
-    await knex.destroy();
   });
 
   it('20250707164600_user_created_at.js', async () => {
@@ -174,8 +170,6 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
       { exp: expect.any(Date) },
       { exp: expect.any(Date) },
     ]);
-
-    await knex.destroy();
   });
 
   it('20250909120000_oidc_client_registration.js', async () => {
@@ -287,8 +281,6 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
     for (const table of tables) {
       await expect(knex.schema.hasTable(table)).resolves.toBe(false);
     }
-
-    await knex.destroy();
   });
 
   it('20251118120000_oauth_state_text.js', async () => {
@@ -365,8 +357,6 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
     );
 
     await migrateDownOnce(knex);
-
-    await knex.destroy();
   });
 
   it('20251217120000_drop_oidc_clients_fk.js', async () => {
@@ -425,7 +415,5 @@ describe.each(databases.eachSupportedId())('migrations, %p', databaseId => {
     await expect(
       knex('oauth_authorization_sessions').select('id'),
     ).resolves.toEqual([{ id: 'dcr-session' }]);
-
-    await knex.destroy();
   });
 });

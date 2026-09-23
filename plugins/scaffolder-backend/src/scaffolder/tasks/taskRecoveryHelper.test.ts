@@ -17,31 +17,64 @@
 import { trimEventsTillLastRecovery } from './taskRecoveryHelper';
 import { SerializedTaskEvent } from '@backstage/plugin-scaffolder-node';
 
-const toLogEvent = (stepId: string) =>
-  ({
-    type: 'log',
-    body: { stepId },
-  } as unknown as SerializedTaskEvent);
+const toLogEvent = (message: string): SerializedTaskEvent => ({
+  id: 1,
+  taskId: 'test-task',
+  createdAt: '2026-08-17T00:00:00.000Z',
+  type: 'log',
+  body: { message },
+});
 
-const toRecoveredEvent = (recoverStrategy: string) =>
-  ({
-    type: 'recovered',
-    body: { recoverStrategy },
-  } as unknown as SerializedTaskEvent);
+const toRecoveredEvent = (
+  recoverStrategy: 'none' | 'startOver',
+): SerializedTaskEvent => ({
+  id: 2,
+  taskId: 'test-task',
+  createdAt: '2026-08-17T00:00:01.000Z',
+  type: 'recovered',
+  body: {
+    message: 'Task recovered',
+    recoverStrategy,
+  },
+});
 
 describe('taskRecoveryHelper', () => {
-  describe('compactEvents', () => {
-    it('should return only events related to a restarted task. Recover strategy: "startOver"', () => {
-      const logEvents = [
-        'fetch',
-        'mock-step-1',
-        'mock-step-2',
-        'mock-step-3',
-      ].map(toLogEvent);
+  describe('trimEventsTillLastRecovery', () => {
+    it('should return all events for resume-based recovery', () => {
+      const events = [
+        toLogEvent('Step 1 completed'),
+        toRecoveredEvent('none'),
+        toLogEvent('Step 2 started'),
+      ];
 
-      const events = [...logEvents, toRecoveredEvent('startOver')];
+      expect(trimEventsTillLastRecovery(events)).toEqual({ events });
+    });
+
+    it('should discard events before the latest start-over recovery', () => {
+      const recoveredEvent = toRecoveredEvent('startOver');
+      const currentRunEvent = toLogEvent('Step 1 restarted');
+      const events = [
+        toLogEvent('Step 1 completed in the previous run'),
+        recoveredEvent,
+        currentRunEvent,
+      ];
+
+      expect(trimEventsTillLastRecovery(events)).toEqual({
+        events: [recoveredEvent, currentRunEvent],
+      });
+    });
+
+    it('should return no events when start-over recovery is the latest event', () => {
+      const events = [
+        toLogEvent('Step 1 completed in the previous run'),
+        toRecoveredEvent('startOver'),
+      ];
 
       expect(trimEventsTillLastRecovery(events)).toEqual({ events: [] });
+    });
+
+    it('should return empty array when no events', () => {
+      expect(trimEventsTillLastRecovery([])).toEqual({ events: [] });
     });
   });
 });

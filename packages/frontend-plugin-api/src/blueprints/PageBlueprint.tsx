@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { z } from 'zod/v4';
 import { JSX } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { IconElement } from '../icons/types';
@@ -26,9 +25,11 @@ import {
 } from '../wiring';
 import { ExtensionBoundary, PageLayout, PageLayoutTab } from '../components';
 import { useApi } from '../apis/system';
+import { BreadcrumbEntry } from '../breadcrumbs';
 import { routeResolutionApiRef } from '../apis/definitions/RouteResolutionApi';
 import { pluginHeaderActionsApiRef } from '../apis/definitions/PluginHeaderActionsApi';
 import { RouteResolutionApi } from '../apis/definitions/RouteResolutionApi';
+import { optionalStringSchema } from '../schema/optionalStringSchema';
 
 function resolveTitleLink(
   routeResolutionApi: RouteResolutionApi,
@@ -70,8 +71,8 @@ export const PageBlueprint = createExtensionBlueprint({
     coreExtensionData.icon.optional(),
   ],
   configSchema: {
-    path: z.string().optional(),
-    title: z.string().optional(),
+    path: optionalStringSchema,
+    title: optionalStringSchema,
   },
   *factory(
     params: {
@@ -140,7 +141,6 @@ export const PageBlueprint = createExtensionBlueprint({
 
         const headerActionsApi = useApi(pluginHeaderActionsApiRef);
         const headerActions = headerActionsApi.getPluginHeaderActions(pluginId);
-
         return (
           <PageLayout
             title={resolvedTitle}
@@ -158,9 +158,20 @@ export const PageBlueprint = createExtensionBlueprint({
               )}
               {inputs.pages.map((page, index) => {
                 const path = page.get(coreExtensionData.routePath);
+                const tabTitle = page.get(coreExtensionData.title);
                 const element = page.get(coreExtensionData.reactElement);
                 return (
-                  <Route key={index} path={`${path}/*`} element={element} />
+                  <Route
+                    key={index}
+                    path={`${path}/*`}
+                    element={
+                      <BreadcrumbEntry
+                        entry={{ label: tabTitle || path, href: path }}
+                      >
+                        {element}
+                      </BreadcrumbEntry>
+                    }
+                  />
                 );
               })}
             </Routes>

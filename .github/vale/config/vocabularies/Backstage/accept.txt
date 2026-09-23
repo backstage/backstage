@@ -1,4 +1,5 @@
 abc
+accessor
 accessors
 ACLs
 addon
@@ -11,7 +12,9 @@ ajv
 Alaria
 Alef
 allowedHosts
+allowlist
 allowlisted
+allowlists
 Anddddd
 Apdex
 api
@@ -20,6 +23,7 @@ approvers
 asciidoc
 async
 Atlassian
+autocomplete
 autofix
 autologout
 automations
@@ -27,6 +31,7 @@ autoscaling
 autoselect
 Avro
 backend's
+backoff
 backported
 backporting
 BEPs
@@ -153,6 +158,7 @@ etag
 Expedia
 facto
 failover
+falsy
 faq
 Fargate
 faqs
@@ -201,6 +207,7 @@ http
 https
 Iain
 idempotency
+idempotent
 Iglesias
 iLert
 img
@@ -228,6 +235,7 @@ json
 jsonnet
 JSONSchema
 jsx
+justfile
 JWTs
 Kaewkasi
 Kaswell
@@ -312,6 +320,7 @@ neuro
 newrelic
 nginx
 nodegit
+nodemailer
 nodejs
 nohoist
 nonces
@@ -319,6 +328,7 @@ noop
 npm
 nullable
 nunjucks
+nunjitsu
 nvarchar
 nvm
 OAuth
@@ -330,6 +340,7 @@ Oldsberg
 onboarded
 onboarding
 onelogin
+oasdiff
 openapi
 OpenSearch
 OpenShift
@@ -487,6 +498,8 @@ subkey
 subpage
 subpath
 subpaths
+subplan
+subplans
 subroute
 subroutes
 subquery
@@ -559,9 +572,11 @@ unreviewed
 unstarred
 untemplated
 untracked
+untrusted
 upsert
 upstreams
 upvote
+UIs
 URIs
 url
 URLs

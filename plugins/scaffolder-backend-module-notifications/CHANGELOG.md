@@ -1,5 +1,96 @@
 # @backstage/plugin-scaffolder-backend-module-notifications
 
+## 0.1.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.8-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/plugin-notifications-common@0.2.5-next.0
+  - @backstage/plugin-notifications-node@0.2.31-next.0
+
+## 0.1.26
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.7
+  - @backstage/plugin-notifications-node@0.2.30
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-notifications-common@0.2.4
+
+## 0.1.26-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.7-next.2
+  - @backstage/plugin-notifications-node@0.2.30-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/plugin-notifications-common@0.2.4-next.0
+
+## 0.1.26-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.7-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-notifications-node@0.2.30-next.0
+
+## 0.1.26-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.7-next.0
+
+## 0.1.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.6
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-notifications-node@0.2.29
+
+## 0.1.25-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-notifications-node@0.2.29-next.0
+  - @backstage/plugin-scaffolder-node@0.13.6-next.0
+
+## 0.1.24
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-notifications-node@0.2.28
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/plugin-scaffolder-node@0.13.5
+
+## 0.1.24-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/plugin-notifications-node@0.2.28-next.0
+  - @backstage/plugin-scaffolder-node@0.13.5-next.0
+
+## 0.1.23
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.4
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-notifications-node@0.2.27
+
 ## 0.1.23-next.0
 
 ### Patch Changes

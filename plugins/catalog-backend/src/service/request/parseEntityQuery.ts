@@ -80,7 +80,7 @@ export type ParsedEntityQuery =
       limit?: number;
     }
   | {
-      query?: FilterPredicate;
+      filter?: FilterPredicate;
       orderFields?: EntityOrder[];
       fullTextFilter?: { term: string; fields?: string[] };
       fields?: string[];
@@ -121,7 +121,7 @@ export function parseEntityQuery(
   const totalItemsMode = parseTotalItems(request.totalItems);
 
   return {
-    query,
+    filter: query,
     orderFields,
     fullTextFilter: request.fullTextFilter
       ? {

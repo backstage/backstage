@@ -1,1 +1,0 @@
-Split queryEntities list and count queries to fix CTE materialization bottleneck

@@ -176,6 +176,112 @@ describe('ConfigSources', () => {
     ]);
   });
 
+  it('should create default sources for multiple environments', () => {
+    const fsSpy = jest.spyOn(fs, 'pathExistsSync').mockReturnValue(true);
+
+    process.env = Object.assign(process.env, {
+      BACKSTAGE_ENV: 'e2e-test,production',
+    });
+    expect(
+      mergeSources(
+        ConfigSources.defaultForTargets({ rootDir: '/', targets: [] }),
+      ),
+    ).toEqual([
+      { name: 'FileConfigSource', path: `${root}app-config.yaml` },
+      { name: 'FileConfigSource', path: `${root}app-config.e2e-test.yaml` },
+      { name: 'FileConfigSource', path: `${root}app-config.production.yaml` },
+      { name: 'FileConfigSource', path: `${root}app-config.local.yaml` },
+      {
+        name: 'FileConfigSource',
+        path: `${root}app-config.e2e-test.local.yaml`,
+      },
+      {
+        name: 'FileConfigSource',
+        path: `${root}app-config.production.local.yaml`,
+      },
+    ]);
+
+    fsSpy.mockRestore();
+  });
+
+  it('should handle whitespace and empty segments in BACKSTAGE_ENV', () => {
+    const fsSpy = jest.spyOn(fs, 'pathExistsSync').mockReturnValue(true);
+
+    process.env = Object.assign(process.env, {
+      BACKSTAGE_ENV: ' e2e-test , production ',
+    });
+    expect(
+      mergeSources(
+        ConfigSources.defaultForTargets({ rootDir: '/', targets: [] }),
+      ),
+    ).toEqual([
+      { name: 'FileConfigSource', path: `${root}app-config.yaml` },
+      { name: 'FileConfigSource', path: `${root}app-config.e2e-test.yaml` },
+      { name: 'FileConfigSource', path: `${root}app-config.production.yaml` },
+      { name: 'FileConfigSource', path: `${root}app-config.local.yaml` },
+      {
+        name: 'FileConfigSource',
+        path: `${root}app-config.e2e-test.local.yaml`,
+      },
+      {
+        name: 'FileConfigSource',
+        path: `${root}app-config.production.local.yaml`,
+      },
+    ]);
+
+    process.env = Object.assign(process.env, {
+      BACKSTAGE_ENV: ',e2e-test,,production,',
+    });
+    expect(
+      mergeSources(
+        ConfigSources.defaultForTargets({ rootDir: '/', targets: [] }),
+      ),
+    ).toEqual([
+      { name: 'FileConfigSource', path: `${root}app-config.yaml` },
+      { name: 'FileConfigSource', path: `${root}app-config.e2e-test.yaml` },
+      { name: 'FileConfigSource', path: `${root}app-config.production.yaml` },
+      { name: 'FileConfigSource', path: `${root}app-config.local.yaml` },
+      {
+        name: 'FileConfigSource',
+        path: `${root}app-config.e2e-test.local.yaml`,
+      },
+      {
+        name: 'FileConfigSource',
+        path: `${root}app-config.production.local.yaml`,
+      },
+    ]);
+
+    fsSpy.mockRestore();
+  });
+
+  it('should skip missing files for multiple environments', () => {
+    const fsSpy = jest.spyOn(fs, 'pathExistsSync').mockImplementation(path => {
+      return (
+        path === `${root}app-config.yaml` ||
+        path === `${root}app-config.e2e-test.yaml` ||
+        path === `${root}app-config.production.local.yaml`
+      );
+    });
+
+    process.env = Object.assign(process.env, {
+      BACKSTAGE_ENV: 'e2e-test,production',
+    });
+    expect(
+      mergeSources(
+        ConfigSources.defaultForTargets({ rootDir: '/', targets: [] }),
+      ),
+    ).toEqual([
+      { name: 'FileConfigSource', path: `${root}app-config.yaml` },
+      { name: 'FileConfigSource', path: `${root}app-config.e2e-test.yaml` },
+      {
+        name: 'FileConfigSource',
+        path: `${root}app-config.production.local.yaml`,
+      },
+    ]);
+
+    fsSpy.mockRestore();
+  });
+
   it('should create a default source', () => {
     const fsSpy = jest.spyOn(fs, 'pathExistsSync').mockImplementation(path => {
       return path === `${root}app-config.yaml`;

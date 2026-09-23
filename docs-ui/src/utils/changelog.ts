@@ -1,4 +1,9 @@
 export * from './types';
+import { changelog_0_18_0 } from './changelogs/v0.18.0';
+import { changelog_0_17_1 } from './changelogs/v0.17.1';
+import { changelog_0_17_0 } from './changelogs/v0.17.0';
+import { changelog_0_16_0 } from './changelogs/v0.16.0';
+import { changelog_0_15_0 } from './changelogs/v0.15.0';
 import { changelog_0_14_0 } from './changelogs/v0.14.0';
 import { changelog_0_13_0 } from './changelogs/v0.13.0';
 import { changelog_0_12_0 } from './changelogs/v0.12.0';
@@ -21,6 +26,11 @@ import { changelog_0_2_0 } from './changelogs/v0.2.0';
 import { changelog_0_1_0 } from './changelogs/v0.1.0';
 
 export const changelog = [
+  ...changelog_0_18_0,
+  ...changelog_0_17_1,
+  ...changelog_0_17_0,
+  ...changelog_0_16_0,
+  ...changelog_0_15_0,
   ...changelog_0_14_0,
   ...changelog_0_13_0,
   ...changelog_0_12_0,

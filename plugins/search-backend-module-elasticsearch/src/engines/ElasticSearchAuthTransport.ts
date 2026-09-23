@@ -94,44 +94,9 @@ export function createElasticSearchAuthTransport(
   authProvider: ElasticSearchAuthProvider,
 ): ElasticSearchTransportConstructor {
   class AuthTransport extends ElasticSearchTransport {
-    request(params: any, options?: any, callback?: any): any {
-      // Handle overloaded signatures
-      if (typeof options === 'function') {
-        // Callback style without options
-        const cb = options;
-        authProvider
-          .getAuthHeaders()
-          .then(authHeaders => {
-            const mergedOptions = {
-              headers: authHeaders,
-            };
-            return super.request(params, mergedOptions, cb);
-          })
-          .catch(cb);
-
-        return { abort: () => {} };
-      }
-
-      if (callback !== undefined) {
-        // Callback style with options
-        authProvider
-          .getAuthHeaders()
-          .then(authHeaders => {
-            const mergedOptions = {
-              ...options,
-              headers: {
-                ...options?.headers,
-                ...authHeaders,
-              },
-            };
-            return super.request(params, mergedOptions, callback);
-          })
-          .catch(callback);
-
-        return { abort: () => {} };
-      }
-
-      // Promise style
+    // The Elasticsearch v8 client only supports the promise-based transport
+    // signature, so there is no callback variant to handle here.
+    request(params: any, options?: any): any {
       const result = authProvider.getAuthHeaders().then(authHeaders => {
         const mergedOptions = {
           ...options,

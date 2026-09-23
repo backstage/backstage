@@ -1,0 +1,76 @@
+# @backstage/plugin-connections-example-backend-module-gitlab
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/connections@0.4.1-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/connections@0.4.0
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+
+## 0.1.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/connections@0.4.0-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.1
+
+## 0.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/connections@0.3.0
+  - @backstage/backend-plugin-api@1.10.0
+
+## 0.1.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/connections@0.3.0-next.0
+  - @backstage/backend-plugin-api@1.10.0-next.0
+
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/connections@0.2.0
+  - @backstage/backend-plugin-api@1.9.3
+
+## 0.1.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/connections@0.1.1-next.0
+
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/connections@0.1.0
+  - @backstage/backend-plugin-api@1.9.2

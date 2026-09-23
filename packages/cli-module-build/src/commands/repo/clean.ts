@@ -22,7 +22,7 @@ import { run, targetPaths } from '@backstage/cli-common';
 import type { CliCommandContext } from '@backstage/cli-node';
 
 export default async ({ args, info }: CliCommandContext) => {
-  cli({ help: info, booleanFlagNegation: true }, undefined, args);
+  cli({ name: info.usage, booleanFlagNegation: true }, undefined, args);
   const packages = await PackageGraph.listTargetPackages();
 
   await fs.remove(targetPaths.resolveRoot('dist'));

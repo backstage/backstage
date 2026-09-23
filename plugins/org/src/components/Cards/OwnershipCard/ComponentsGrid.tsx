@@ -99,9 +99,7 @@ const EntityCountTile = ({
           className={`${classes.bold} ${isLongText && classes.smallFont}`}
           variant="h6"
         >
-          <OverflowTooltip
-            text={pluralize(rawTitle.toLocaleUpperCase('en-US'), counter)}
-          />
+          <OverflowTooltip text={pluralize(rawTitle.toUpperCase(), counter)} />
         </Typography>
       </Box>
       {type && <Typography variant="subtitle1">{kind}</Typography>}
@@ -157,7 +155,7 @@ export const ComponentsGrid = ({
   return (
     <Grid container className={className}>
       {componentsWithCounters?.map(c => (
-        <Grid item xs={6} md={6} lg={4} key={c.type ?? c.kind}>
+        <Grid item xs={6} md={6} lg={4} key={`${c.kind}:${c.type ?? ''}`}>
           <EntityCountTile
             counter={c.counter}
             kind={c.kind}

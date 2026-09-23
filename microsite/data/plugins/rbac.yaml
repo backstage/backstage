@@ -1,0 +1,10 @@
+---
+title: RBAC
+author: Red Hat
+authorUrl: https://redhat.com
+category: Authentication/Authorization
+description: UI for managing role-based access control in Backstage, allowing administrators to assign permissions to users and groups.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/rbac/plugins/rbac/README.md
+npmPackageName: '@backstage-community/plugin-rbac'
+addedDate: '2026-02-21'
+status: active

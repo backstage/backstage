@@ -170,7 +170,7 @@ Third-party backend plugins are similar to service backend plugins. The main dif
 
 The CircleCI plugin is an example of a third-party backend plugin. CircleCI is a SaaS service which can be used without any knowledge of Backstage. It has an API which a Backstage plugin consumes to display content.
 
-Requests going to CircleCI from the user's browser are passed through a proxy service that Backstage provides. Without this, the requests would be blocked by Cross Origin Resource Sharing policies which prevent a browser page served at [https://example.com](https://example.com) from serving resources hosted at https://circleci.com.
+Requests going to CircleCI from the user's browser are passed through a proxy service that Backstage provides. Without this, the requests would be blocked by Cross Origin Resource Sharing policies which prevent a browser page served at <https://example.com> from serving resources hosted at <https://circleci.com>.
 
 > **NOTE:**
 > The following diagram does not show the detailed contents of the frontend and backend, in order to highlight the changes that pertain to the addition of the specified plugin.
@@ -221,7 +221,18 @@ It can sometimes be difficult to decide where to place your plugin code. For exa
 
 Below is a chart to help you decide where to place your code.
 
-![Package decision](../assets/architecture-overview/package-decision.drawio.svg)
+```mermaid
+flowchart TD
+  accTitle: Package placement decision
+  accDescr: Decision flow for choosing which plugin package should contain new code.
+  start["In what plugin package should I put my code?"] --> public{"Is the new addition public API?<br/>i.e. exported from the package"}
+  public -- No --> local["Put it in the package<br/>that uses it"]
+  public -- Yes --> audience{"Is the export supposed<br/>to be used by other plugins or just app/backend packages?"}
+  audience -- "Only app/backend" --> plugin["Put it in the frontend or backend plugin package"]
+  audience -- "Yes, used by other plugins" --> environments{"Should the export be<br/>usable by both Node.js and browser packages?"}
+  environments -- No --> split["Put frontend exports in &lt;plugin&gt;-react, and backend exports in &lt;plugin&gt;-node"]
+  environments -- Yes --> common["Add it to &lt;plugin&gt;-common, but be sure to support both Node.js and web environments"]
+```
 
 ## Cache
 
@@ -278,7 +289,7 @@ backend:
 #### Extended configuration
 
 - Unlike Redis, Infinispan will **not** create the cache for you. It's expected you've configured the cache in your infinispan server prior to configuration here.
-- A full list of configuration items are available: https://docs.jboss.org/infinispan/hotrod-clients/javascript/1.0/apidocs/module-infinispan.html including support for backup clusters.
+- A full list of configuration items are available: <https://docs.jboss.org/infinispan/hotrod-clients/javascript/1.0/apidocs/module-infinispan.html> including support for backup clusters.
 
 ```yaml
 backend:

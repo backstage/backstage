@@ -44,6 +44,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { randomUUID as uuid } from 'node:crypto';
 import { NunjucksWorkflowRunner } from '../tasks/NunjucksWorkflowRunner';
+import { collectTemplateCapabilities } from '../../util/templating';
 import { DecoratedActionsRegistry } from './DecoratedActionsRegistry';
 import { TemplateActionRegistry } from '../actions';
 
@@ -94,11 +95,17 @@ export type TemplateTesterCreateOptions = {
  * @internal
  */
 export function createDryRunner(options: TemplateTesterCreateOptions) {
+  const templateCapabilities = collectTemplateCapabilities({
+    filters: options.additionalTemplateFilters,
+    globals: options.additionalTemplateGlobals,
+  });
+
   return async function dryRun(input: DryRunInput): Promise<DryRunResult> {
     let contentPromise;
 
     const workflowRunner = new NunjucksWorkflowRunner({
       ...options,
+      templateCapabilities,
       actionRegistry: new DecoratedActionsRegistry(options.actionRegistry, [
         createTemplateAction({
           id: 'dry-run:extract',

@@ -129,6 +129,39 @@ describe('EntityTextFilter', () => {
     expect(filter.filterEntity(users[0])).toBeTruthy();
     expect(filter.filterEntity(users[1])).toBeFalsy();
   });
+
+  it('should search spec.target and spec.targets', () => {
+    const location: Entity = {
+      apiVersion: '1',
+      kind: 'Location',
+      metadata: { name: 'my-location' },
+      spec: {
+        target:
+          'https://github.com/backstage/backstage/blob/main/catalog-info.yaml',
+      },
+    };
+    const locationWithTargets: Entity = {
+      apiVersion: '1',
+      kind: 'Location',
+      metadata: { name: 'multi-location' },
+      spec: {
+        targets: [
+          'https://github.com/backstage/backstage/blob/main/one.yaml',
+          'https://github.com/backstage/backstage/blob/main/two.yaml',
+        ],
+      },
+    };
+
+    expect(
+      new EntityTextFilter('catalog-info').filterEntity(location),
+    ).toBeTruthy();
+    expect(
+      new EntityTextFilter('two.yaml').filterEntity(locationWithTargets),
+    ).toBeTruthy();
+    expect(
+      new EntityTextFilter('nonexistent').filterEntity(location),
+    ).toBeFalsy();
+  });
 });
 
 describe('EntityOrphanFilter', () => {

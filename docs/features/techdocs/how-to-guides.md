@@ -67,7 +67,7 @@ When you see `dir:.`, you can translate it to mean:
 
 The directory tree of the entity would look something like this:
 
-```
+```text
 ├── catalog-info.yaml
 ├── mkdocs.yml
 └── docs
@@ -78,7 +78,7 @@ If, for example, you wanted to keep a lean root directory, you could place your
 `mkdocs.yml` file in a subdirectory and update the `backstage.io/techdocs-ref`
 annotation value accordingly, e.g. to `dir:./sub-folder`:
 
-```
+```text
 ├── catalog-info.yaml
 └── sub-folder
     ├── mkdocs.yml
@@ -170,7 +170,7 @@ on extension overrides and the different override patterns available, see the
 ## How to customize the TechDocs reader page?
 
 The TechDocs reader page can be configured through `app-config.yaml`. For
-example, you can disable the in-context search or the header:
+example, you can disable the in-context search, the header, or the feedback link:
 
 ```yaml title="app-config.yaml"
 app:
@@ -186,6 +186,24 @@ app:
     - page:techdocs/reader:
         config:
           withoutHeader: true
+```
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - page:techdocs/reader:
+        config:
+          withoutFeedbackLink: true
+```
+
+The `withoutFeedbackLink` option is also available on the entity content page:
+
+```yaml title="app-config.yaml"
+app:
+  extensions:
+    - entity-content:techdocs:
+        config:
+          withoutFeedbackLink: true
 ```
 
 For more advanced customization of the reader page, you can override the page
@@ -364,7 +382,7 @@ Start writing your documentation by adding more markdown (.md) files to this
 folder (/docs) or replace the content in this file.
 ```
 
-:::note Note
+:::note
 
 The values of `site_name`, `component_id` and `site_description` depends
 on how you have configured your `template.yaml`.
@@ -562,7 +580,7 @@ plugins:
   - kroki
 ```
 
-:::note Note
+:::note
 
 You will very likely want to set a `kroki` `ServerURL` configuration in your
 `mkdocs.yml` as well. The default value is the publicly hosted `kroki.io`. If
@@ -744,7 +762,7 @@ backend.add(techdocsCustomBuildStrategy);
 backend.start();
 ```
 
-:::note Note
+:::note
 
 You may need to add the `@backstage/plugin-techdocs-node` package to your backend `package.json` if it's not been imported already.
 
@@ -777,7 +795,11 @@ Then publish the image and use it in your config under the `techdocs.generator.d
 
 To use the plugin, it has to be listed in the `mkdocs.yaml` file. You can either add the plugin to your applicable files, or specify defaults.
 
-To make a mkdocs plugin available for all your TechDocs components you can either list it in the `techdocs.generator.mkdocs.defaultPlugins` [config](https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend/config.d.ts#L64C14-L64C14), or use the `--defaultPlugin` [cli option](https://backstage.io/docs/features/techdocs/cli#generate-techdocs-site-from-a-documentation-project) depending on your setup.
+TechDocs validates MkDocs plugin declarations and permits a small built-in set by default. If your plugin is not in that set, explicitly allow it using `techdocs.generator.mkdocs.dangerouslyAllowAdditionalPlugins` in your app-config.
+
+To also make the plugin available by default for all your TechDocs components, add it to `techdocs.generator.mkdocs.defaultPlugins` or use the `--defaultPlugin` CLI option. Plugins listed in `defaultPlugins` are automatically permitted, so you do not need to list them in both places.
+
+See the [Permitted MkDocs Plugins](./configuration.md#permitted-mkdocs-plugins) configuration reference for more details.
 
 ## Reference another components TechDocs
 
@@ -848,7 +870,7 @@ You may want to make files available for download by your users such as PDF
 documents, images, or code templates. Download links for files included in your
 docs directory can be made by adding `{: download }` after a markdown link.
 
-```
+```markdown
 [Link text](https://example.com/foo.jpg){: download }
 ```
 
@@ -858,6 +880,6 @@ clicked.
 Specify a file name to control the name the file will be given when it is
 downloaded:
 
-```
+```markdown
 [Link text](https://example.com/foo.jpg){: download="foo.jpg" }
 ```

@@ -1,5 +1,143 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.12.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.0
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/plugin-scaffolder-node@0.13.8-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+
+## 0.12.0
+
+### Minor Changes
+
+- 5c14f42: The `gitlab:issues:create` action now accepts a full project path (e.g. `group/sub-group/project`) for `projectId`, and `projectId` is optional — when omitted the project is derived from `repoUrl` (matching the behaviour of `gitlab:merge-request`).
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- bbba6b5: Added support for requiring user-provided credentials for GitLab mutation actions when `scaffolder.requireScmUserCredentials` is enabled.
+- 20595f0: The `gitlab:projectVariable:create` action no longer includes the variable value in its checkpoint key, preventing secret values from being persisted in scaffolder task state. The `gitlab:pipeline:trigger` action has been refactored so that the temporary pipeline trigger token is never serialized into checkpoint state.
+- 4740660: Sped up `publish:gitlab:merge-request` and `gitlab:repo:push` by drastically reducing the number
+  of GitLab API requests they make.
+
+  Under the default `commitAction: 'auto'`, both actions previously downloaded the contents of every
+  file already present on the target branch in order to work out which ones had actually changed.
+  That information is available from the repository listing they already fetch, so the comparison is
+  now done locally and those per-file requests are gone. The listing itself is also fetched in larger
+  pages.
+
+  For a merge request against a repository of a few hundred files this cuts the number of requests
+  from roughly 300 to under ten, taking a step that took 5-15 seconds against a self-hosted GitLab
+  down to about 3 seconds. Which files are created, updated or skipped is unchanged, including for
+  repositories using git sha256 object format.
+
+- 3c7c082: Fixed `gitlab:repo:push` failing with `400 Bad request - Provide at least one action` when the workspace has no file changes to commit (e.g. re-running a template against an already up-to-date branch). The action now detects an empty action list, skips the commit API call, and logs a warning whenever `allowEmpty` is not true (covering both the default of unset and an explicit `false`). The `commitHash` output is omitted in this no-op case and is now declared optional. Pass `allowEmpty: true` to retain the previous behavior of forwarding an empty commit to GitLab.
+- cd77db3: Added an `autoMerge` boolean input to the `publish:gitlab:merge-request` scaffolder action. When set to `true`, the merge request is automatically merged once all merge checks succeed, using GitLab's auto-merge feature.
+- Updated dependencies
+  - @backstage/integration@2.1.2
+  - @backstage/config@1.3.9
+  - @backstage/plugin-scaffolder-node@0.13.7
+  - @backstage/backend-plugin-api@1.10.1
+
+## 0.11.11-next.2
+
+### Patch Changes
+
+- 20595f0: The `gitlab:projectVariable:create` action no longer includes the variable value in its checkpoint key, preventing secret values from being persisted in scaffolder task state. The `gitlab:pipeline:trigger` action has been refactored so that the temporary pipeline trigger token is never serialized into checkpoint state.
+- 4740660: Sped up `publish:gitlab:merge-request` and `gitlab:repo:push` by drastically reducing the number
+  of GitLab API requests they make.
+
+  Under the default `commitAction: 'auto'`, both actions previously downloaded the contents of every
+  file already present on the target branch in order to work out which ones had actually changed.
+  That information is available from the repository listing they already fetch, so the comparison is
+  now done locally and those per-file requests are gone. The listing itself is also fetched in larger
+  pages.
+
+  For a merge request against a repository of a few hundred files this cuts the number of requests
+  from roughly 300 to under ten, taking a step that took 5-15 seconds against a self-hosted GitLab
+  down to about 3 seconds. Which files are created, updated or skipped is unchanged, including for
+  repositories using git sha256 object format.
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/plugin-scaffolder-node@0.13.7-next.2
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/integration@2.1.2-next.1
+
+## 0.11.11-next.1
+
+### Patch Changes
+
+- bbba6b5: Added support for requiring user-provided credentials for GitLab mutation actions when `scaffolder.requireScmUserCredentials` is enabled.
+- cd77db3: Added an `autoMerge` boolean input to the `publish:gitlab:merge-request` scaffolder action. When set to `true`, the merge request is automatically merged once all merge checks succeed, using GitLab's auto-merge feature.
+- Updated dependencies
+  - @backstage/integration@2.1.2-next.0
+  - @backstage/plugin-scaffolder-node@0.13.7-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
+## 0.11.10-next.0
+
+### Patch Changes
+
+- 3c7c082: Fixed `gitlab:repo:push` failing with `400 Bad request - Provide at least one action` when the workspace has no file changes to commit (e.g. re-running a template against an already up-to-date branch). The action now detects an empty action list, skips the commit API call, and logs a warning whenever `allowEmpty` is not true (covering both the default of unset and an explicit `false`). The `commitHash` output is omitted in this no-op case and is now declared optional. Pass `allowEmpty: true` to retain the previous behavior of forwarding an empty commit to GitLab.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.7-next.0
+
+## 0.11.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.6
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/integration@2.1.0
+
+## 0.11.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.0-next.0
+  - @backstage/plugin-scaffolder-node@0.13.6-next.1
+
+## 0.11.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-scaffolder-node@0.13.6-next.0
+
+## 0.11.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/plugin-scaffolder-node@0.13.5
+
+## 0.11.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/plugin-scaffolder-node@0.13.5-next.0
+
+## 0.11.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.13.4
+  - @backstage/integration@2.0.3
+  - @backstage/backend-plugin-api@1.9.2
+
 ## 0.11.7-next.0
 
 ### Patch Changes

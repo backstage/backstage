@@ -1,5 +1,127 @@
 # @backstage/plugin-techdocs-node
 
+## 2.0.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.3-next.0
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/integration-aws-node@0.2.3-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-search-common@1.2.26-next.0
+
+## 2.0.0
+
+### Major Changes
+
+- 62d1a6f: **BREAKING**: TechDocs generation now removes MkDocs plugins outside the built-in allowlist and logs a warning before continuing the build. To retain additional plugins, review and add them to `techdocs.generator.mkdocs.dangerouslyAllowAdditionalPlugins`, or supply them through `dangerouslyAllowAdditionalPlugins` when creating the generator directly. Plugins configured through `defaultPlugins` are also permitted. Generation stops if the MkDocs configuration cannot be read, parsed, or updated.
+
+### Minor Changes
+
+- ee97130: Added support for `techdocs.generator.pullOptions` when pulling the TechDocs generator Docker image from private registries that require authentication.
+
+### Patch Changes
+
+- 1711594: Fixed local TechDocs generation when temporary source paths resolve through filesystem aliases.
+- c0ebaa7: chore(deps): bump `js-yaml` from 4.3.1 to 4.3.2
+- e58d265: Updated TechDocs generation to reject source trees containing symlinks that resolve outside the source directory.
+- d13ad29: Improved MkDocs configuration handling for additional templates.
+- e582b56: Fixed AWS S3 publishing to paginate existing objects in order to properly remove all stale TechDocs files.
+- 2233af2: Improved MkDocs configuration sanitization to cover additional nested configuration keys and theme options.
+- 4441911: Improved MkDocs configuration file handling.
+- 45cbd0a: Improved validation of MkDocs configuration values during TechDocs generation.
+- 030331b: Improved file validation in the local TechDocs publisher during the publish step.
+- Updated dependencies
+  - @backstage/integration@2.1.2
+  - @backstage/catalog-model@1.10.1
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/integration-aws-node@0.2.2
+  - @backstage/plugin-search-common@1.2.25
+
+## 1.16.0-next.1
+
+### Patch Changes
+
+- 1711594: Fixed local TechDocs generation when temporary source paths resolve through filesystem aliases.
+- e582b56: Fixed AWS S3 publishing to paginate existing objects in order to properly remove all stale TechDocs files.
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/integration@2.1.2-next.1
+  - @backstage/integration-aws-node@0.2.2-next.0
+  - @backstage/plugin-search-common@1.2.25-next.0
+
+## 1.16.0-next.0
+
+### Minor Changes
+
+- ee97130: Added support for `techdocs.generator.pullOptions` when pulling the TechDocs generator Docker image from private registries that require authentication.
+
+### Patch Changes
+
+- e58d265: Updated TechDocs generation to reject source trees containing symlinks that resolve outside the source directory.
+- d13ad29: Improved MkDocs configuration handling for additional templates.
+- 2233af2: Improved MkDocs configuration sanitization to cover additional nested configuration keys and theme options.
+- 4441911: Improved MkDocs configuration file handling.
+- 45cbd0a: Improved validation of MkDocs configuration values during TechDocs generation.
+- 030331b: Improved file validation in the local TechDocs publisher during the publish step.
+- Updated dependencies
+  - @backstage/integration@2.1.2-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
+## 1.15.3
+
+### Patch Changes
+
+- 226817d: chore(deps): bump `js-yaml` from 4.2.0 to 4.3.0
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/integration@2.1.0
+  - @backstage/integration-aws-node@0.2.1
+
+## 1.15.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.1.0-next.0
+
+## 1.15.3-next.0
+
+### Patch Changes
+
+- 226817d: chore(deps): bump `js-yaml` from 4.2.0 to 4.3.0
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.0-next.0
+
+## 1.15.2
+
+### Patch Changes
+
+- 120e7c3: chore(deps): bump `js-yaml` from 4.1.1 to 4.2.0
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3
+
+## 1.15.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.3-next.0
+
+## 1.15.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@2.0.3
+  - @backstage/backend-plugin-api@1.9.2
+
 ## 1.15.1-next.0
 
 ### Patch Changes

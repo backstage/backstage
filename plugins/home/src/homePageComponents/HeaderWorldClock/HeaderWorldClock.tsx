@@ -16,68 +16,9 @@
 
 import { useState, useEffect } from 'react';
 import { HeaderLabel } from '@backstage/core-components';
+import { getTimes, type ClockConfig, type TimeObj } from '../WorldClock/clocks';
 
-const timeFormat: Intl.DateTimeFormatOptions = {
-  hour: '2-digit',
-  minute: '2-digit',
-};
-
-type TimeObj = {
-  label: string;
-  value: string;
-  dateTime: string;
-};
-
-/** @public */
-export type ClockConfig = {
-  label: string;
-  timeZone: string;
-};
-
-function getTimes(
-  clockConfigs: ClockConfig[],
-  customTimeFormat?: Intl.DateTimeFormatOptions,
-) {
-  const d = new Date();
-  const lang = window.navigator.language;
-
-  const clocks: TimeObj[] = [];
-
-  if (!clockConfigs) {
-    return clocks;
-  }
-
-  for (const clockConfig of clockConfigs) {
-    let label = clockConfig.label;
-
-    const options: Intl.DateTimeFormatOptions = {
-      timeZone: clockConfig.timeZone,
-      ...(customTimeFormat ?? timeFormat),
-    };
-
-    try {
-      new Date().toLocaleString(lang, options);
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        `The timezone ${options.timeZone} is invalid. Defaulting to GMT`,
-      );
-      options.timeZone = 'GMT';
-      label = 'GMT';
-    }
-
-    const value = d.toLocaleTimeString(lang, options);
-    const dateTime = d.toLocaleTimeString(lang, {
-      timeZone: options.timeZone,
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    });
-    clocks.push({ label, value, dateTime });
-  }
-
-  return clocks;
-}
+export type { ClockConfig } from '../WorldClock/clocks';
 
 /**
  * A component to display a configurable list of clocks for various time zones.

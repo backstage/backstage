@@ -102,6 +102,7 @@ export type CustomHomepageGridProps = {
   compactType?: 'vertical' | 'horizontal' | null;
   allowOverlap?: boolean;
   preventCollision?: boolean;
+  preventDuplicateWidgets?: boolean;
 };
 
 // @public
@@ -183,6 +184,7 @@ export const homeTranslationRef: TranslationRef<
   {
     readonly 'starredEntities.noStarredEntitiesMessage': 'Click the star beside an entity name to add it to this list!';
     readonly 'addWidgetDialog.title': 'Add new widget to dashboard';
+    readonly 'addWidgetDialog.noAvailableWidgets': 'All available widgets have been added to the dashboard.';
     readonly 'customHomepageButtons.cancel': 'Cancel';
     readonly 'customHomepageButtons.clearAll': 'Clear all';
     readonly 'customHomepageButtons.edit': 'Edit';
@@ -196,6 +198,8 @@ export const homeTranslationRef: TranslationRef<
     readonly 'widgetSettingsOverlay.deleteWidgetTooltip': 'Delete widget';
     readonly 'widgetSettingsOverlay.submitButtonTitle': 'Submit';
     readonly 'starredEntityListItem.removeFavoriteEntityTitle': 'Remove entity from favorites';
+    readonly 'visitList.disabled.title': 'Visit tracking is not enabled.';
+    readonly 'visitList.disabled.description': 'Enable visit tracking in your app-config.yaml to see your most visited and recently visited pages here.';
     readonly 'visitList.empty.title': 'There are no visits to show yet.';
     readonly 'visitList.empty.description': 'Once you start using Backstage, your visits will appear here as a quick link to carry on where you left off.';
     readonly 'visitList.few.title': 'The more pages you visit, the more pages will appear here.';

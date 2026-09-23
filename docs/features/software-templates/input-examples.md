@@ -218,7 +218,7 @@ parameters:
 
 ## Markdown text blocks
 
-Its possible to render markdown text blocks in the form. This is useful to add some help text or instructions for the user.
+It's possible to render markdown text blocks in the form. This is useful to add some help text or instructions for the user.
 
 ```yaml
 parameters:
@@ -237,7 +237,7 @@ parameters:
 
 ## Use parameters as condition in steps
 
-Its possible to conditionally run steps based on the value of a parameter. In the example below, we trigger the steps depending on the value of the `environment` parameter.
+It's possible to conditionally run steps based on the value of a parameter. In the example below, we trigger the steps depending on the value of the `environment` parameter.
 
 ```yaml
 - name: Only development environments
@@ -342,7 +342,9 @@ parameters:
 
 ## Conditionally set parameters
 
-The `if` keyword within the parameter uses [nunjucks templating](https://mozilla.github.io/nunjucks/templating.html#if). The `not` keyword is unavailable; instead, use javascript equality.
+The inline `if` expression uses
+[Nunjitsu's supported Nunjucks-compatible syntax](https://github.com/Rugvip/nunjitsu/blob/main/docs/compatibility.md#supported-model).
+The `not` keyword is unavailable; instead, use JavaScript equality.
 
 ```yaml
 spec:
@@ -374,7 +376,7 @@ Testing of this functionality is not yet supported using _create/edit_. In addit
 
 :::
 
-Its possible to use placeholders to reference remote files. This is useful when you have some standard parameters or actions that you want to reuse across multiple templates.
+It's possible to use placeholders to reference remote files. This is useful when you have some standard parameters or actions that you want to reuse across multiple templates.
 
 ### template.yaml
 

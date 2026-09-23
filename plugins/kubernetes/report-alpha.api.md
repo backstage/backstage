@@ -6,14 +6,11 @@
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
-import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { defaultEntityContentGroups } from '@backstage/plugin-catalog-react/alpha';
 import { Entity } from '@backstage/catalog-model';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { FilterPredicate } from '@backstage/filter-predicates';
-import { IconElement } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { JSXElementConstructor } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
@@ -158,82 +155,6 @@ const _default: OverridableFrontendPlugin<
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
         filter?: string | FilterPredicate | ((entity: Entity) => boolean);
-      };
-    }>;
-    'page:kubernetes': OverridableExtensionDefinition<{
-      kind: 'page';
-      name: undefined;
-      config: {
-        path: string | undefined;
-        title: string | undefined;
-      };
-      configInput: {
-        path?: string | undefined;
-        title?: string | undefined;
-      };
-      output:
-        | ExtensionDataRef<string, 'core.routing.path', {}>
-        | ExtensionDataRef<
-            RouteRef_2<AnyRouteRefParams>,
-            'core.routing.ref',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ExtensionDataRef<
-            string,
-            'core.title',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            IconElement,
-            'core.icon',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {
-        pages: ExtensionInput<
-          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-          | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-          | ConfigurableExtensionDataRef<
-              RouteRef_2<AnyRouteRefParams>,
-              'core.routing.ref',
-              {
-                optional: true;
-              }
-            >
-          | ConfigurableExtensionDataRef<
-              string,
-              'core.title',
-              {
-                optional: true;
-              }
-            >
-          | ConfigurableExtensionDataRef<
-              IconElement,
-              'core.icon',
-              {
-                optional: true;
-              }
-            >,
-          {
-            singleton: false;
-            optional: false;
-            internal: false;
-          }
-        >;
-      };
-      params: {
-        path: string;
-        title?: string;
-        icon?: IconElement;
-        loader?: () => Promise<JSX_2.Element>;
-        routeRef?: RouteRef_2;
-        noHeader?: boolean;
       };
     }>;
   }

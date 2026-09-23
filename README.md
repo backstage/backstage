@@ -2,7 +2,7 @@
 
 # [Backstage](https://backstage.io)
 
-English \| [한국어](README-ko_kr.md) \| [中文版](README-zh_Hans.md) \| [Français](README-fr_FR.md)
+English \| [한국어](README-ko_kr.md) \| [中文版](README-zh_Hans.md) \| [Français](README-fr_FR.md) \| [日本語](README-ja_JP.md)
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![CNCF Status](https://img.shields.io/badge/cncf%20status-incubation-blue.svg)](https://www.cncf.io/projects)
@@ -12,6 +12,8 @@ English \| [한국어](README-ko_kr.md) \| [中文版](README-zh_Hans.md) \| [Fr
 [![](https://img.shields.io/github/v/release/backstage/backstage)](https://github.com/backstage/backstage/releases)
 [![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/7678/badge)](https://bestpractices.coreinfrastructure.org/projects/7678)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/backstage/backstage/badge)](https://securityscorecards.dev/viewer/?uri=github.com/backstage/backstage)
+
+> ☀️ **Summer holiday notice:** Maintainer responses and reviews may be slower than usual during the summer holiday period. Normal service will resume after the summer holidays, but things may remain a bit slow until the beginning of August.
 
 ## What is Backstage?
 

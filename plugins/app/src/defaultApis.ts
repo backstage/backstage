@@ -19,6 +19,7 @@ import {
   AlertApiForwarder,
   ErrorApiForwarder,
   ErrorAlerter,
+  FrontendHostDiscovery,
   GoogleAuth,
   GithubAuth,
   OktaAuth,
@@ -28,7 +29,6 @@ import {
   BitbucketServerAuth,
   OAuthRequestManager,
   WebStorage,
-  UrlPatternDiscovery,
   OneLoginAuth,
   UnhandledErrorForwarder,
   AtlassianAuth,
@@ -93,10 +93,7 @@ export const apis = [
       defineParams({
         api: discoveryApiRef,
         deps: { configApi: configApiRef },
-        factory: ({ configApi }) =>
-          UrlPatternDiscovery.compile(
-            `${configApi.getString('backend.baseUrl')}/api/{{ pluginId }}`,
-          ),
+        factory: ({ configApi }) => FrontendHostDiscovery.fromConfig(configApi),
       }),
   }),
   ApiBlueprint.make({

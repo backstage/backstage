@@ -4,7 +4,7 @@ title: New Backend System
 description: Details of the new backend system
 ---
 
-:::caution Legacy Documentation
+:::caution[Legacy Documentation]
 
 This section is part of the legacy plugins documentation. The canonical documentation for the backend system has moved to the [Backend System](../backend-system/index.md) section, which includes more detailed and up-to-date guides for [building plugins and modules](../backend-system/building-plugins-and-modules/01-index.md), [architecture](../backend-system/architecture/01-index.md), and [core services](../backend-system/core-services/01-index.md).
 

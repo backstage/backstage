@@ -1,5 +1,174 @@
 # @backstage/plugin-api-docs
 
+## 0.14.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/plugin-permission-react@0.5.6-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog@2.0.10-next.0
+  - @backstage/plugin-catalog-react@3.2.4-next.0
+  - @backstage/plugin-catalog-common@1.2.1-next.0
+
+## 0.14.5
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- 4b643e3: Migrate plugin-api-docs to the configSchema API to remove the deprecated config.schema usage.
+- Updated dependencies
+  - @backstage/plugin-catalog@2.0.9
+  - @backstage/core-components@0.18.14
+  - @backstage/plugin-catalog-common@1.2.0
+  - @backstage/ui@0.18.0
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-catalog-react@3.2.3
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/plugin-permission-react@0.5.5
+
+## 0.14.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.2.0-next.0
+  - @backstage/plugin-catalog@2.0.9-next.2
+  - @backstage/ui@0.18.0-next.2
+  - @backstage/plugin-catalog-react@3.2.3-next.2
+  - @backstage/core-components@0.18.14-next.2
+  - @backstage/core-plugin-api@1.12.10-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.1
+  - @backstage/plugin-permission-react@0.5.5-next.1
+
+## 0.14.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.1
+  - @backstage/plugin-catalog@2.0.9-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/plugin-catalog-react@3.2.3-next.1
+  - @backstage/ui@0.18.0-next.1
+  - @backstage/core-plugin-api@1.12.10-next.0
+  - @backstage/plugin-permission-react@0.5.5-next.0
+
+## 0.14.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.17.2-next.0
+  - @backstage/plugin-catalog-react@3.2.2-next.0
+  - @backstage/plugin-catalog@2.0.9-next.0
+  - @backstage/core-components@0.18.14-next.0
+
+## 0.14.4
+
+### Patch Changes
+
+- b7085d1: Fixed deep linking in OpenAPI definition widget.
+- a8b5ba6: Updated dependencies.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/core-components@0.18.13
+  - @backstage/plugin-catalog@2.0.8
+  - @backstage/core-plugin-api@1.12.9
+  - @backstage/plugin-catalog-react@3.2.1
+  - @backstage/ui@0.17.1
+  - @backstage/frontend-plugin-api@0.18.0
+  - @backstage/plugin-permission-react@0.5.4
+
+## 0.14.4-next.2
+
+### Patch Changes
+
+- b7085d1: Fixed deep linking in OpenAPI definition widget.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.9-next.1
+  - @backstage/plugin-catalog-react@3.2.1-next.3
+  - @backstage/plugin-catalog@2.0.8-next.3
+
+## 0.14.4-next.1
+
+### Patch Changes
+
+- a8b5ba6: Updated dependencies.
+- Updated dependencies
+  - @backstage/plugin-catalog@2.0.8-next.2
+  - @backstage/plugin-catalog-react@3.2.1-next.2
+  - @backstage/frontend-plugin-api@0.18.0-next.0
+  - @backstage/core-plugin-api@1.12.9-next.0
+  - @backstage/core-components@0.18.13-next.2
+  - @backstage/plugin-permission-react@0.5.4-next.0
+
+## 0.14.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.13-next.0
+  - @backstage/ui@0.17.1-next.0
+  - @backstage/plugin-catalog@2.0.8-next.0
+  - @backstage/plugin-catalog-react@3.2.1-next.0
+
+## 0.14.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.3
+  - @backstage/ui@0.17.0
+  - @backstage/plugin-catalog@2.0.7
+  - @backstage/plugin-catalog-react@3.2.0
+  - @backstage/core-components@0.18.12
+  - @backstage/core-plugin-api@1.12.8
+  - @backstage/plugin-permission-react@0.5.3
+
+## 0.14.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@2.0.7-next.0
+  - @backstage/plugin-catalog-react@3.2.0-next.0
+  - @backstage/ui@0.17.0-next.0
+  - @backstage/frontend-plugin-api@0.17.3-next.0
+  - @backstage/core-components@0.18.12-next.0
+  - @backstage/core-plugin-api@1.12.8-next.0
+  - @backstage/plugin-permission-react@0.5.3-next.0
+
+## 0.14.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@2.0.6
+  - @backstage/plugin-catalog-react@3.1.0
+  - @backstage/core-components@0.18.11
+  - @backstage/frontend-plugin-api@0.17.2
+  - @backstage/ui@0.16.0
+  - @backstage/core-plugin-api@1.12.7
+  - @backstage/plugin-permission-react@0.5.2
+
+## 0.14.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.17.2-next.0
+  - @backstage/core-components@0.18.11-next.1
+  - @backstage/ui@0.15.1-next.0
+  - @backstage/core-plugin-api@1.12.7-next.0
+  - @backstage/plugin-catalog@2.0.6-next.1
+  - @backstage/plugin-catalog-react@3.0.1-next.1
+  - @backstage/plugin-permission-react@0.5.2-next.0
+
 ## 0.14.2-next.0
 
 ### Patch Changes

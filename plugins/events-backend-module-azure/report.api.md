@@ -17,7 +17,9 @@ export class AzureDevOpsEventRouter extends SubTopicEventRouter {
   protected getSubscriberId(): string;
 }
 
-// @public
-const eventsModuleAzureDevOpsEventRouter: BackendFeature;
-export default eventsModuleAzureDevOpsEventRouter;
+// @public (undocumented)
+const _default: BackendFeature;
+export default _default;
+
+// (No @packageDocumentation comment for this package)
 ```

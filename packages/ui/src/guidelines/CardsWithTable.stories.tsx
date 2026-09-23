@@ -218,7 +218,7 @@ const columns: ColumnConfig<ServiceItem>[] = [
         style={{
           color:
             item.lifecycle === 'production'
-              ? 'var(--bui-fg-success)'
+              ? 'var(--bui-fg-positive)'
               : 'var(--bui-fg-warning)',
         }}
       />

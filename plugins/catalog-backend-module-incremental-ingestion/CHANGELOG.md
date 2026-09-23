@@ -1,5 +1,149 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.9.0-next.0
+
+### Minor Changes
+
+- e003123: Added a `source_key` column and a `UNIQUE(source_key, entity_ref)` constraint to the `ingestion_mark_entities` table, enabling a single native upsert instead of a select-then-update-or-insert sequence per ingestion mark.
+  This significantly reduces the number of database round trips during ingestion.
+
+  As part of this change, the table's `ref` column is renamed to `entity_ref` to standardize its naming with the rest of the table's columns.
+  This rename means the migration cannot be applied as part of a rolling, zero-downtime upgrade, which is fine since incremental ingestion providers are designed to run sequentially on a single Backstage backend instance.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@4.0.1-next.0
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-defaults@0.18.1-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/plugin-permission-common@0.9.12-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog-node@2.2.6-next.0
+  - @backstage/plugin-events-node@0.4.27-next.0
+  - @backstage/plugin-catalog-common@1.2.1-next.0
+
+## 0.8.0
+
+### Minor Changes
+
+- 305e2f7: **BREAKING**: The incremental ingestion administrative routes now enforce separate read and manage permissions. Installations with custom permission policies must add decisions for the new permissions.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.18.0
+  - @backstage/plugin-catalog-common@1.2.0
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-catalog-backend@4.0.0
+  - @backstage/config@1.3.9
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/plugin-catalog-node@2.2.5
+  - @backstage/plugin-events-node@0.4.26
+  - @backstage/plugin-permission-common@0.9.11
+
+## 0.8.0-next.1
+
+### Minor Changes
+
+- 305e2f7: **BREAKING**: The incremental ingestion administrative routes now enforce separate read and manage permissions. Installations with custom permission policies must add decisions for the new permissions.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.2.0-next.0
+  - @backstage/plugin-catalog-backend@4.0.0-next.1
+  - @backstage/config@1.3.9-next.0
+  - @backstage/backend-defaults@0.17.9-next.1
+  - @backstage/plugin-catalog-node@2.2.5-next.1
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/plugin-permission-common@0.9.11-next.0
+
+## 0.7.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.9-next.0
+  - @backstage/plugin-catalog-backend@3.9.2-next.0
+  - @backstage/backend-plugin-api@1.10.1-next.0
+  - @backstage/plugin-catalog-node@2.2.5-next.0
+  - @backstage/plugin-events-node@0.4.26-next.0
+
+## 0.7.15
+
+### Patch Changes
+
+- 870acb3: Moved detailed documentation from the README to the Backstage docs site. The README now contains installation instructions and links to the full documentation.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.0
+  - @backstage/backend-defaults@0.17.7
+  - @backstage/plugin-catalog-backend@3.9.0
+  - @backstage/backend-plugin-api@1.10.0
+  - @backstage/plugin-catalog-node@2.2.4
+  - @backstage/plugin-events-node@0.4.25
+
+## 0.7.15-next.2
+
+### Patch Changes
+
+- 870acb3: Moved detailed documentation from the README to the Backstage docs site. The README now contains installation instructions and links to the full documentation.
+
+## 0.7.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.7-next.2
+  - @backstage/plugin-catalog-backend@3.9.0-next.2
+  - @backstage/backend-plugin-api@1.10.0-next.1
+
+## 0.7.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.6-next.0
+  - @backstage/backend-plugin-api@1.10.0-next.0
+  - @backstage/plugin-catalog-backend@3.8.2-next.0
+  - @backstage/plugin-catalog-node@2.2.4-next.0
+  - @backstage/plugin-events-node@0.4.25-next.0
+
+## 0.7.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.5
+  - @backstage/plugin-catalog-backend@3.8.1
+  - @backstage/backend-plugin-api@1.9.3
+  - @backstage/plugin-catalog-node@2.2.3
+  - @backstage/plugin-events-node@0.4.24
+
+## 0.7.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.17.4-next.0
+  - @backstage/plugin-catalog-backend@3.8.1-next.0
+  - @backstage/backend-plugin-api@1.9.3-next.0
+  - @backstage/plugin-catalog-node@2.2.3-next.0
+  - @backstage/plugin-events-node@0.4.24-next.0
+
+## 0.7.13
+
+### Patch Changes
+
+- e846874: Alter column type for `ingestions.last_error` to remove the 255-character restriction.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.8.0
+  - @backstage/backend-defaults@0.17.3
+  - @backstage/backend-plugin-api@1.9.2
+  - @backstage/plugin-catalog-node@2.2.2
+  - @backstage/plugin-events-node@0.4.23
+
 ## 0.7.13-next.0
 
 ### Patch Changes

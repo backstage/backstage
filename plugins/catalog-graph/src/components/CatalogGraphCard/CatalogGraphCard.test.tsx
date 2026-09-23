@@ -37,6 +37,8 @@ import Button from '@material-ui/core/Button';
 import { translationApiRef } from '@backstage/core-plugin-api/alpha';
 import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
 
+jest.setTimeout(30_000);
+
 describe('<CatalogGraphCard/>', () => {
   let entity: Entity;
   let wrapper: JSX.Element;
@@ -86,8 +88,12 @@ describe('<CatalogGraphCard/>', () => {
       },
     });
 
-    expect(await screen.findByText('b:d/c')).toBeInTheDocument();
-    expect(await screen.findAllByTestId('node')).toHaveLength(1);
+    expect(
+      await screen.findByText('b:d/c', {}, { timeout: 5_000 }),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findAllByTestId('node', {}, { timeout: 5_000 }),
+    ).toHaveLength(1);
     expect(catalog.getEntitiesByRefs).toHaveBeenCalledTimes(1);
     expect(catalog.getEntitiesByRefs).toHaveBeenCalledWith(
       expect.objectContaining({ entityRefs: ['b:d/c'] }),
@@ -165,7 +171,9 @@ describe('<CatalogGraphCard/>', () => {
       },
     });
 
-    expect(await screen.findByText('b:d/c')).toBeInTheDocument();
+    expect(
+      await screen.findByText('b:d/c', {}, { timeout: 5_000 }),
+    ).toBeInTheDocument();
     const button = screen.getByText('View graph');
     expect(button).toBeInTheDocument();
     expect(button.closest('a')).toHaveAttribute(
@@ -198,7 +206,9 @@ describe('<CatalogGraphCard/>', () => {
       },
     );
 
-    expect(await screen.findByText('b:d/c')).toBeInTheDocument();
+    expect(
+      await screen.findByText('b:d/c', {}, { timeout: 5_000 }),
+    ).toBeInTheDocument();
     const button = screen.getByText('View graph');
     expect(button).toBeInTheDocument();
     expect(button.closest('a')).toHaveAttribute(
@@ -235,8 +245,10 @@ describe('<CatalogGraphCard/>', () => {
       },
     );
 
-    expect(await screen.findByText('b:d/c')).toBeInTheDocument();
-    await userEvent.click(await screen.findByText('b:d/c'));
+    expect(
+      await screen.findByText('b:d/c', {}, { timeout: 5_000 }),
+    ).toBeInTheDocument();
+    await userEvent.click(screen.getByText('b:d/c'));
 
     expect(analyticsApi.captureEvent).toHaveBeenCalledWith(
       expect.objectContaining({

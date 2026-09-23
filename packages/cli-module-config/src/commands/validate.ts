@@ -23,7 +23,7 @@ export default async ({ args, info }: CliCommandContext) => {
     flags: { config, lax, frontend, deprecated, strict, package: pkg },
   } = cli(
     {
-      help: info,
+      name: info.usage,
       booleanFlagNegation: true,
       flags: {
         package: {

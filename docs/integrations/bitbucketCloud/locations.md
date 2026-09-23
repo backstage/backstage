@@ -41,14 +41,14 @@ integrations:
       clientSecret: client-secret
 ```
 
-:::note Note
+:::note
 
 A public Bitbucket Cloud provider is added automatically at startup for
 convenience, so you only need to list it if you want to supply credentials.
 
 :::
 
-:::note Note
+:::note
 
 The credential required for this type is either an [Api token](https://support.atlassian.com/bitbucket-cloud/docs/using-api-tokens/), an [App Password](https://support.atlassian.com/bitbucket-cloud/docs/app-passwords/) or an [OAuth 2.0 client credentials](https://support.atlassian.com/bitbucket-cloud/docs/use-oauth-on-bitbucket-cloud/). An Atlassian Account API key will not work.
 

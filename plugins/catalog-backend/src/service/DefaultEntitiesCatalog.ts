@@ -45,12 +45,12 @@ import {
 import { markForStitching } from '../database/operations/stitcher/markForStitching';
 
 import {
-  expandLegacyCompoundRelationsInEntity,
   isQueryEntitiesCursorRequest,
   isQueryEntitiesInitialRequest,
 } from './util';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { applyEntityFilterToQuery } from './request/applyEntityFilterToQuery';
+import { entityFilterToFilterPredicate } from './request/entityFilterToFilterPredicate';
 import { processRawEntitiesResult } from './response';
 
 const DEFAULT_LIMIT = 200;
@@ -103,18 +103,10 @@ function stringifyPagination(
 export class DefaultEntitiesCatalog implements EntitiesCatalog {
   private readonly database: Knex;
   private readonly logger: LoggerService;
-  private readonly enableRelationsCompatibility: boolean;
 
-  constructor(options: {
-    database: Knex;
-    logger: LoggerService;
-    enableRelationsCompatibility?: boolean;
-  }) {
+  constructor(options: { database: Knex; logger: LoggerService }) {
     this.database = options.database;
     this.logger = options.logger;
-    this.enableRelationsCompatibility = Boolean(
-      options.enableRelationsCompatibility,
-    );
   }
 
   async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
@@ -218,17 +210,9 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     }
 
     return {
-      entities: processRawEntitiesResult(
+      entities: await processRawEntitiesResult(
         rows.map(r => r.final_entity!),
-        this.enableRelationsCompatibility
-          ? e => {
-              expandLegacyCompoundRelationsInEntity(e);
-              if (request?.fields) {
-                return request.fields(e);
-              }
-              return e;
-            }
-          : request?.fields,
+        request?.fields,
       ),
       pageInfo,
     };
@@ -338,20 +322,34 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   async entitiesBatch(
     request: EntitiesBatchRequest,
   ): Promise<EntitiesBatchResponse> {
+    if (request.entityRefs.length === 0) {
+      return { items: await processRawEntitiesResult([], request.fields) };
+    }
+
     const lookup = new Map<string, string>();
+    const isPg = this.database.client.config.client === 'pg';
 
-    for (const chunk of lodashChunk(request.entityRefs, 200)) {
-      let query = this.database<DbFinalEntitiesRow>('final_entities')
-        .select({
-          entityRef: 'final_entities.entity_ref',
-          entity: 'final_entities.final_entity',
-        })
-        .whereIn('final_entities.entity_ref', chunk);
+    const chunks = isPg
+      ? [request.entityRefs]
+      : lodashChunk(request.entityRefs, 200);
 
-      if (request?.filter || request?.query) {
+    for (const chunk of chunks) {
+      let query = this.database<DbFinalEntitiesRow>('final_entities').select({
+        entityRef: 'final_entities.entity_ref',
+        entity: 'final_entities.final_entity',
+      });
+
+      if (isPg) {
+        query = query.whereRaw('final_entities.entity_ref = ANY(?::text[])', [
+          chunk,
+        ]);
+      } else {
+        query = query.whereIn('final_entities.entity_ref', chunk);
+      }
+
+      if (request?.filter) {
         query = applyEntityFilterToQuery({
           filter: request.filter,
-          query: request.query,
           targetQuery: query,
           onEntityIdField: 'final_entities.entity_id',
           knex: this.database,
@@ -365,7 +363,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const items = request.entityRefs.map(ref => lookup.get(ref) ?? null);
 
-    return { items: processRawEntitiesResult(items, request.fields) };
+    return { items: await processRawEntitiesResult(items, request.fields) };
   }
 
   async queryEntities(
@@ -391,7 +389,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     }
 
     const sortField = cursor.orderFields.at(0);
-    const sortKey = sortField?.field.toLocaleLowerCase('en-US');
+    const sortKey = sortField?.field.toLowerCase();
 
     const normalizedFullTextFilterTerm = cursor.fullTextFilter?.term?.trim();
     const textFilterFields = cursor.fullTextFilter?.fields ?? [
@@ -407,10 +405,17 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       q: Knex.QueryBuilder,
       options?: { searchInScope?: boolean },
     ) => {
-      if (cursor.filter || cursor.query) {
+      if (cursor.filter) {
         applyEntityFilterToQuery({
-          filter: cursor.filter,
-          query: cursor.query,
+          filter: entityFilterToFilterPredicate(cursor.filter),
+          targetQuery: q,
+          onEntityIdField: 'final_entities.entity_id',
+          knex: this.database,
+        });
+      }
+      if (cursor.query) {
+        applyEntityFilterToQuery({
+          filter: cursor.query,
           targetQuery: q,
           onEntityIdField: 'final_entities.entity_id',
           knex: this.database,
@@ -426,19 +431,19 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         ) {
           q.andWhereRaw(
             'search.value like ?',
-            `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
+            `%${normalizedFullTextFilterTerm.toLowerCase()}%`,
           );
         } else {
           const matchQuery = this.database<DbSearchRow>('search')
             .select('search.entity_id')
             .whereIn(
               'search.key',
-              textFilterFields.map(field => field.toLocaleLowerCase('en-US')),
+              textFilterFields.map(field => field.toLowerCase()),
             )
             .andWhere(function keyFilter() {
               this.andWhereRaw(
                 'search.value like ?',
-                `%${normalizedFullTextFilterTerm.toLocaleLowerCase('en-US')}%`,
+                `%${normalizedFullTextFilterTerm.toLowerCase()}%`,
               );
             });
           q.andWhere('final_entities.entity_id', 'in', matchQuery);
@@ -619,7 +624,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         : undefined;
 
     return {
-      items: processRawEntitiesResult(
+      items: await processRawEntitiesResult(
         rows.map(r => r.final_entity!),
         request.fields,
       ),
@@ -787,7 +792,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     const query = this.database<DbSearchRow>('search')
       .whereIn(
         'search.key',
-        request.facets.map(f => f.toLocaleLowerCase('en-US')),
+        request.facets.map(f => f.toLowerCase()),
       )
       .whereNotNull('search.original_value')
       .select({
@@ -798,7 +803,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       .groupBy(['search.key', 'search.original_value'])
       .orderBy(['search.key', 'search.original_value']);
 
-    if (request.filter || request.query) {
+    if (request.filter) {
       // Build a subquery that finds matching entity IDs via
       // final_entities, so that the EXISTS-based filters correlate
       // against one-row-per-entity rather than the much larger search
@@ -810,7 +815,6 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
       applyEntityFilterToQuery({
         filter: request.filter,
-        query: request.query,
         targetQuery: entityIdSubquery,
         onEntityIdField: 'final_entities.entity_id',
         knex: this.database,
@@ -833,7 +837,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const facets: EntityFacetsResponse['facets'] = {};
     for (const facet of request.facets) {
-      const facetLowercase = facet.toLocaleLowerCase('en-US');
+      const facetLowercase = facet.toLowerCase();
       facets[facet] = rows
         .filter(row => row.facet === facetLowercase)
         .map(row => ({
@@ -852,14 +856,12 @@ function parseCursorFromRequest(
   if (isQueryEntitiesInitialRequest(request)) {
     const {
       filter,
-      query,
       orderFields: sortFields = [],
       fullTextFilter,
       totalItems: totalItemsMode = 'include',
     } = request;
     return {
-      filter,
-      query,
+      query: filter,
       orderFields: sortFields,
       fullTextFilter,
       totalItemsMode,

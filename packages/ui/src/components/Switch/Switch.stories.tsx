@@ -15,6 +15,9 @@
  */
 import preview from '../../../../../.storybook/preview';
 import { Switch } from './Switch';
+import { Box } from '../Box';
+import { Flex } from '../Flex';
+import { Text } from '../Text';
 
 const meta = preview.meta({
   title: 'Backstage UI/Switch',
@@ -30,6 +33,47 @@ export const Default = meta.story({
 export const Disabled = meta.story({
   args: {
     ...Default.input.args,
+    isDisabled: true,
+  },
+});
+
+export const AutoBg = meta.story({
+  args: {
+    label: 'Label',
+  },
+  render: args => (
+    <Box bg="neutral" p="4">
+      <Flex direction="column" gap="4">
+        <Text>Neutral 1 container</Text>
+        <Flex gap="4">
+          <Switch {...args} />
+          <Switch {...args} isSelected />
+        </Flex>
+      </Flex>
+      <Box bg="neutral" p="4" mt="4">
+        <Flex direction="column" gap="4">
+          <Text>Neutral 2 container</Text>
+          <Flex gap="4">
+            <Switch {...args} />
+            <Switch {...args} isSelected />
+          </Flex>
+        </Flex>
+        <Box bg="neutral" p="4" mt="4">
+          <Flex direction="column" gap="4">
+            <Text>Neutral 3 container</Text>
+            <Flex gap="4">
+              <Switch {...args} />
+              <Switch {...args} isSelected />
+            </Flex>
+          </Flex>
+        </Box>
+      </Box>
+    </Box>
+  ),
+});
+
+export const AutoBgDisabled = AutoBg.extend({
+  args: {
     isDisabled: true,
   },
 });

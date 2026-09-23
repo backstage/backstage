@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 import { PackageGraph } from '@backstage/cli-node';
+import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import { OptionValues } from 'commander';
 import { exec } from '../../../../lib/exec';
 import { targetPaths } from '@backstage/cli-common';
 import {
-  CiRunDetails,
-  generateCompareSummaryMarkdown,
-} from '../../../../lib/openapi/optic/helpers';
-import { YAML_SCHEMA_PATH } from '../../../../lib/openapi/constants';
-
-function cleanUpApiName(e: { apiName: string }) {
-  e.apiName = e.apiName
-    .replace(targetPaths.dir, '')
-    .replace(YAML_SCHEMA_PATH, '');
-}
+  DEFAULT_BASE_REF,
+  YAML_SCHEMA_PATH,
+} from '../../../../lib/openapi/constants';
+import { ensureOasdiffInstalled } from '../../../util';
+import chalk from 'chalk';
+import { relative as relativePath, join, sep, posix } from 'node:path';
+import { pathExists } from 'fs-extra';
 
 export async function command(opts: OptionValues) {
+  await ensureOasdiffInstalled();
+
   let packages = await PackageGraph.listTargetPackages();
 
   let since = '';
@@ -48,64 +48,81 @@ export async function command(opts: OptionValues) {
       .filter(e => e.endsWith(YAML_SCHEMA_PATH))
       .map(e => targetPaths.resolve(e));
 
-    // filter packages by changedFiles
     packages = packages.filter(pkg =>
       changedOpenApiSpecs.some(e => e.startsWith(`${pkg.dir}/`)),
     );
   }
 
-  const checkablePackages = packages.filter(e => e.packageJson.scripts?.diff);
+  const packagesWithSpecs = [];
+  for (const pkg of packages) {
+    const specPath = join(pkg.dir, YAML_SCHEMA_PATH);
+    if (await pathExists(specPath)) {
+      packagesWithSpecs.push(pkg);
+    }
+  }
 
-  try {
-    const outputs = {
-      completed: [],
-      failed: [],
-      noop: [],
-      warning: [],
-      severity: 0,
-    } as CiRunDetails;
-    for (const pkg of checkablePackages) {
-      const sinceCommands = since ? ['--since', since] : [];
+  if (packagesWithSpecs.length === 0) {
+    console.log('No OpenAPI spec changes detected.');
+    return;
+  }
+
+  const { stdout: currentSha } = await exec('git', ['rev-parse', 'HEAD']);
+  const sha = currentSha.toString().trim();
+
+  console.log(`### Summary for commit (${sha})\n`);
+
+  const templatePath = resolvePackagePath(
+    '@backstage/repo-tools',
+    'templates/oasdiff-changelog.tmpl',
+  );
+
+  let hasFailures = false;
+
+  for (const pkg of packagesWithSpecs) {
+    const specPath = join(pkg.dir, YAML_SCHEMA_PATH);
+    const relativeSpecPath = relativePath(targetPaths.rootDir, specPath)
+      .split(sep)
+      .join(posix.sep);
+    const pkgName = relativePath(targetPaths.rootDir, pkg.dir)
+      .split(sep)
+      .join(posix.sep);
+    const baseRef = since || DEFAULT_BASE_REF;
+    const baseSpec = `${baseRef}:${relativeSpecPath}`;
+
+    try {
       const { stdout } = await exec(
-        'yarn',
-        ['diff', '--ignore', '--json', ...sinceCommands],
-        {
-          cwd: pkg.dir,
-        },
+        'oasdiff',
+        [
+          'changelog',
+          baseSpec,
+          relativeSpecPath,
+          '--format',
+          'markdown',
+          '--template',
+          templatePath,
+        ],
+        { cwd: targetPaths.rootDir },
       );
-      const result = JSON.parse(stdout.toString());
-      outputs.completed.push(...(result.completed ?? []));
-      outputs.failed.push(...(result.failed ?? []));
-      outputs.noop.push(...(result.noop ?? []));
+      const output = stdout.toString().trim();
+      if (output) {
+        console.log(`## ${pkgName}\n`);
+        console.log(output);
+        console.log();
+      }
+    } catch (err) {
+      hasFailures = true;
+      console.log(`## ${pkgName}\n`);
+      console.error(
+        chalk.red(
+          `Failed to diff OpenAPI spec: ${
+            err instanceof Error ? err.message : 'Unknown error'
+          }\n`,
+        ),
+      );
     }
+  }
 
-    for (const pkg of packages.filter(e => !e.packageJson.scripts?.diff)) {
-      outputs.warning?.push({
-        apiName: `${pkg.dir}/`,
-        warning: 'No diff script found in package.json',
-      });
-    }
-
-    outputs.completed.forEach(cleanUpApiName);
-    outputs.failed.forEach(cleanUpApiName);
-    outputs.noop.forEach(cleanUpApiName);
-    outputs.warning?.forEach(cleanUpApiName);
-
-    const { stdout: currentSha } = await exec('git', ['rev-parse', 'HEAD']);
-    console.log(
-      generateCompareSummaryMarkdown(
-        { sha: currentSha.toString().trim() },
-        outputs,
-        { verbose: true },
-      ),
-    );
-
-    const failed = outputs.failed.length > 0;
-    if (failed) {
-      throw new Error('Some checks failed');
-    }
-  } catch (err) {
-    console.error(err);
+  if (hasFailures) {
     process.exit(1);
   }
 }

@@ -545,26 +545,32 @@ describe('Git', () => {
     });
 
     it('should propagate the data from the error handler', async () => {
-      const remote = 'origin';
-      const dir = '/some/mock/dir';
-      const auth = {
-        username: 'blob',
-        password: 'hunter2',
-      };
-      const git = Git.fromAuth(auth);
-      const remoteRef = 'master';
-      const force = true;
+      jest.useFakeTimers();
+      try {
+        const remote = 'origin';
+        const dir = '/some/mock/dir';
+        const auth = {
+          username: 'blob',
+          password: 'hunter2',
+        };
+        const git = Git.fromAuth(auth);
+        const remoteRef = 'master';
+        const force = true;
 
-      (isomorphic.push as jest.Mock).mockImplementation(() => {
-        const error: Error & { data?: unknown } = new Error('mock error');
-        error.data = { some: 'more information here' };
+        (isomorphic.push as jest.Mock).mockImplementation(() => {
+          const error: Error & { data?: unknown } = new Error('mock error');
+          error.data = { some: 'more information here' };
 
-        throw error;
-      });
+          throw error;
+        });
 
-      await expect(git.push({ remote, dir, remoteRef, force })).rejects.toThrow(
-        'more information here',
-      );
+        const promise = git.push({ remote, dir, remoteRef, force });
+        promise.catch(() => {});
+        await jest.runAllTimersAsync();
+        await expect(promise).rejects.toThrow('more information here');
+      } finally {
+        jest.useRealTimers();
+      }
     });
   });
 
@@ -616,6 +622,118 @@ describe('Git', () => {
         dir,
         ref,
       });
+    });
+  });
+
+  describe('retry on transient errors', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('should retry push on transient error and succeed', async () => {
+      const git = Git.fromAuth({
+        username: 'blob',
+        password: 'hunter2',
+      });
+
+      (isomorphic.push as jest.Mock)
+        .mockRejectedValueOnce(new Error('ECONNRESET'))
+        .mockRejectedValueOnce(new Error('socket hang up'))
+        .mockResolvedValueOnce(undefined);
+
+      const promise = git.push({
+        dir: '/mock',
+        remote: 'origin',
+      });
+      await jest.runAllTimersAsync();
+      await promise;
+
+      expect(isomorphic.push).toHaveBeenCalledTimes(3);
+    });
+
+    it('should not retry on authentication errors', async () => {
+      const git = Git.fromAuth({
+        username: 'blob',
+        password: 'hunter2',
+      });
+
+      (isomorphic.push as jest.Mock).mockImplementation(() => {
+        throw new Error('HTTP Error: 401 Unauthorized');
+      });
+
+      await expect(
+        git.push({ dir: '/mock', remote: 'origin' }),
+      ).rejects.toThrow('401 Unauthorized');
+
+      expect(isomorphic.push).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not retry on permission errors', async () => {
+      const git = Git.fromAuth({
+        username: 'blob',
+        password: 'hunter2',
+      });
+
+      (isomorphic.push as jest.Mock).mockImplementation(() => {
+        throw new Error('HTTP Error: 403 Forbidden');
+      });
+
+      await expect(
+        git.push({ dir: '/mock', remote: 'origin' }),
+      ).rejects.toThrow('403 Forbidden');
+
+      expect(isomorphic.push).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw after exhausting all retries', async () => {
+      const git = Git.fromAuth({
+        username: 'blob',
+        password: 'hunter2',
+      });
+
+      (isomorphic.push as jest.Mock).mockImplementation(() => {
+        throw new Error('ECONNRESET');
+      });
+
+      const promise = git.push({ dir: '/mock', remote: 'origin' });
+      // Silence unhandled rejection while timers flush
+      promise.catch(() => {});
+      await jest.runAllTimersAsync();
+      await expect(promise).rejects.toThrow('ECONNRESET');
+
+      // 1 initial attempt + 5 retries = 6 total calls
+      expect(isomorphic.push).toHaveBeenCalledTimes(6);
+    });
+
+    it('should log warnings on retry attempts', async () => {
+      const logger = {
+        info: jest.fn(),
+        warn: jest.fn(),
+        error: jest.fn(),
+        debug: jest.fn(),
+        child: jest.fn(),
+      };
+      const git = Git.fromAuth({
+        username: 'blob',
+        password: 'hunter2',
+        logger: logger as any,
+      });
+
+      (isomorphic.push as jest.Mock)
+        .mockRejectedValueOnce(new Error('ECONNRESET'))
+        .mockResolvedValueOnce(undefined);
+
+      const promise = git.push({ dir: '/mock', remote: 'origin' });
+      await jest.runAllTimersAsync();
+      await promise;
+
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining('Git push failed (attempt 1/6)'),
+      );
     });
   });
 });

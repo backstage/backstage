@@ -19,7 +19,7 @@ import { Handler, Router } from 'express';
 import trimEnd from 'lodash/trimEnd';
 
 function normalizePath(path: string): string {
-  return `${trimEnd(path, '/')}/`;
+  return `${trimEnd(path, '/')}/`.toLowerCase();
 }
 
 /**

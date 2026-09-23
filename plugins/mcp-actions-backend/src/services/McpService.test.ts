@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { mockCredentials } from '@backstage/backend-test-utils';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { McpService } from './McpService';
 import {
   actionsRegistryServiceMock,
@@ -47,10 +47,12 @@ describe('McpService', () => {
     });
 
     const mockMetrics = metricsServiceMock.mock();
+    const mockAuditor = mockServices.auditor.mock();
     const mcpService = await McpService.create({
       actions: mockActionsRegistry,
       metrics: mockMetrics,
       tracingService: tracingServiceMock.mock(),
+      auditor: mockAuditor,
     });
 
     const server = mcpService.getServer({
@@ -111,6 +113,13 @@ describe('McpService', () => {
       }),
     );
     expect(histogram.record.mock.calls[0][1]).not.toHaveProperty('error.type');
+
+    expect(mockAuditor.createEvent).toHaveBeenCalledWith(
+      expect.objectContaining({ eventId: 'tool-discovery' }),
+    );
+    const auditorEvent = await mockAuditor.createEvent.mock.results[0]?.value;
+    expect(auditorEvent.success).toHaveBeenCalled();
+    expect(auditorEvent.fail).not.toHaveBeenCalled();
   });
 
   it('should record metrics with error.type when tools/list fails', async () => {
@@ -120,10 +129,12 @@ describe('McpService', () => {
       .mockRejectedValue(new Error('List failed'));
 
     const mockMetrics = metricsServiceMock.mock();
+    const mockAuditor = mockServices.auditor.mock();
     const mcpService = await McpService.create({
       actions: mockActionsRegistry,
       metrics: mockMetrics,
       tracingService: tracingServiceMock.mock(),
+      auditor: mockAuditor,
     });
 
     const server = mcpService.getServer({
@@ -156,6 +167,104 @@ describe('McpService', () => {
         'error.type': 'Error',
       }),
     );
+
+    expect(mockAuditor.createEvent).toHaveBeenCalledWith(
+      expect.objectContaining({ eventId: 'tool-discovery' }),
+    );
+    const auditorEvent = await mockAuditor.createEvent.mock.results[0]?.value;
+    expect(auditorEvent.fail).toHaveBeenCalled();
+    expect(auditorEvent.success).not.toHaveBeenCalled();
+  });
+
+  it('should skip actions with invalid input schemas instead of failing the whole list', async () => {
+    const validAction = {
+      id: 'plugin:valid',
+      pluginId: 'plugin',
+      name: 'valid',
+      title: 'Valid',
+      description: 'Valid action',
+      schema: {
+        input: { type: 'object' as const },
+        output: { type: 'object' as const },
+      },
+      attributes: { destructive: false, readOnly: true, idempotent: true },
+    };
+    const badTypeAction = {
+      id: 'plugin:bad-type',
+      pluginId: 'plugin',
+      name: 'bad-type',
+      title: 'Bad Type',
+      description: 'inputSchema.type is not "object"',
+      schema: {
+        input: { type: 'string' as unknown as 'object' },
+        output: { type: 'object' as const },
+      },
+      attributes: { destructive: false, readOnly: true, idempotent: true },
+    };
+    const badRequiredAction = {
+      id: 'plugin:bad-required',
+      pluginId: 'plugin',
+      name: 'bad-required',
+      title: 'Bad Required',
+      description: 'inputSchema.required is not an array of strings',
+      schema: {
+        input: {
+          type: 'object' as const,
+          required: 'foo' as unknown as string[],
+        },
+        output: { type: 'object' as const },
+      },
+      attributes: { destructive: false, readOnly: true, idempotent: true },
+    };
+
+    const fakeActions: ActionsService = {
+      list: jest.fn(async () => ({
+        actions: [validAction, badTypeAction, badRequiredAction],
+      })),
+      invoke: jest.fn(async () => ({ output: {} })),
+    };
+
+    const logger = mockServices.logger.mock();
+    const mcpService = await McpService.create({
+      actions: fakeActions,
+      metrics: metricsServiceMock.mock(),
+      tracingService: tracingServiceMock.mock(),
+      auditor: mockServices.auditor.mock(),
+      logger,
+    });
+
+    const server = mcpService.getServer({
+      credentials: mockCredentials.user(),
+    });
+
+    const client = new Client({ name: 'test', version: '1.0' });
+    const [clientTransport, serverTransport] =
+      InMemoryTransport.createLinkedPair();
+    await Promise.all([
+      client.connect(clientTransport),
+      server.connect(serverTransport),
+    ]);
+
+    const first = await client.request(
+      { method: 'tools/list' },
+      ListToolsResultSchema,
+    );
+    const second = await client.request(
+      { method: 'tools/list' },
+      ListToolsResultSchema,
+    );
+
+    expect(first.tools).toHaveLength(1);
+    expect(first.tools[0].name).toBe('plugin.valid');
+    expect(second.tools).toHaveLength(1);
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.stringContaining('plugin:bad-type'),
+    );
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.stringContaining('plugin:bad-required'),
+    );
+    // Each bad action should only log once across repeated listings.
+    expect(logger.warn).toHaveBeenCalledTimes(2);
   });
 
   it('should call the action when the tool is invoked', async () => {
@@ -174,10 +283,12 @@ describe('McpService', () => {
     });
 
     const mockMetrics = metricsServiceMock.mock();
+    const mockAuditor = mockServices.auditor.mock();
     const mcpService = await McpService.create({
       actions: mockActionsRegistry,
       metrics: mockMetrics,
       tracingService: tracingServiceMock.mock(),
+      auditor: mockAuditor,
     });
 
     const server = mcpService.getServer({
@@ -232,6 +343,24 @@ describe('McpService', () => {
       }),
     );
     expect(histogram.record.mock.calls[0][1]).not.toHaveProperty('error.type');
+
+    // tool-discovery (tools/list during connect) + tool-execution
+    const toolExecutionCall = mockAuditor.createEvent.mock.calls.find(
+      ([args]: [{ eventId: string }]) => args.eventId === 'tool-execution',
+    );
+    expect(toolExecutionCall).toBeDefined();
+    expect(toolExecutionCall![0]).toMatchObject({
+      eventId: 'tool-execution',
+      severityLevel: 'medium',
+      meta: { toolName: 'test.mock-action' },
+    });
+    const toolExecutionEvent = await mockAuditor.createEvent.mock.results.find(
+      (_: unknown, i: number) =>
+        mockAuditor.createEvent.mock.calls[i]?.[0]?.eventId ===
+        'tool-execution',
+    )?.value;
+    expect(toolExecutionEvent?.success).toHaveBeenCalled();
+    expect(toolExecutionEvent?.fail).not.toHaveBeenCalled();
   });
 
   it('should return an error when the action is not found', async () => {
@@ -240,6 +369,7 @@ describe('McpService', () => {
       actions: actionsRegistryServiceMock(),
       metrics: mockMetrics,
       tracingService: tracingServiceMock.mock(),
+      auditor: mockServices.auditor.mock(),
     });
 
     const server = mcpService.getServer({
@@ -305,10 +435,12 @@ describe('McpService', () => {
     });
 
     const mockMetrics = metricsServiceMock.mock();
+    const mockAuditor = mockServices.auditor.mock();
     const mcpService = await McpService.create({
       actions: mockActionsRegistry,
       metrics: mockMetrics,
       tracingService: tracingServiceMock.mock(),
+      auditor: mockAuditor,
     });
 
     const server = mcpService.getServer({
@@ -349,6 +481,18 @@ describe('McpService', () => {
         'error.type': 'CustomError',
       }),
     );
+
+    const toolExecutionCall = mockAuditor.createEvent.mock.calls.find(
+      ([args]: [{ eventId: string }]) => args.eventId === 'tool-execution',
+    );
+    expect(toolExecutionCall).toBeDefined();
+    const toolExecutionEvent = await mockAuditor.createEvent.mock.results.find(
+      (_: unknown, i: number) =>
+        mockAuditor.createEvent.mock.calls[i]?.[0]?.eventId ===
+        'tool-execution',
+    )?.value;
+    expect(toolExecutionEvent?.fail).toHaveBeenCalled();
+    expect(toolExecutionEvent?.success).not.toHaveBeenCalled();
   });
 
   it('should forward the original InputError when an action throws one', async () => {
@@ -370,6 +514,7 @@ describe('McpService', () => {
       actions: mockActionsRegistry,
       metrics: metricsServiceMock.mock(),
       tracingService: tracingServiceMock.mock(),
+      auditor: mockServices.auditor.mock(),
     });
 
     const server = mcpService.getServer({
@@ -427,6 +572,7 @@ describe('McpService', () => {
       actions: mockActionsRegistry,
       metrics: metricsServiceMock.mock(),
       tracingService: tracingServiceMock.mock(),
+      auditor: mockServices.auditor.mock(),
     });
 
     const server = mcpService.getServer({
@@ -515,6 +661,7 @@ describe('McpService', () => {
         actions: fakeActionsService,
         metrics: metricsServiceMock.mock(),
         tracingService: tracingServiceMock.mock(),
+        auditor: mockServices.auditor.mock(),
       });
 
       const serverConfig: McpServerConfig = {
@@ -549,6 +696,7 @@ describe('McpService', () => {
         actions: fakeActionsService,
         metrics: metricsServiceMock.mock(),
         tracingService: tracingServiceMock.mock(),
+        auditor: mockServices.auditor.mock(),
       });
 
       const serverConfig: McpServerConfig = {
@@ -591,6 +739,7 @@ describe('McpService', () => {
         actions: fakeActionsService,
         metrics: metricsServiceMock.mock(),
         tracingService: tracingServiceMock.mock(),
+        auditor: mockServices.auditor.mock(),
       });
 
       const serverConfig: McpServerConfig = {
@@ -630,6 +779,7 @@ describe('McpService', () => {
         actions: fakeActionsService,
         metrics: metricsServiceMock.mock(),
         tracingService: tracingServiceMock.mock(),
+        auditor: mockServices.auditor.mock(),
       });
 
       const serverConfig: McpServerConfig = {
@@ -669,6 +819,7 @@ describe('McpService', () => {
         actions: fakeActionsService,
         metrics: metricsServiceMock.mock(),
         tracingService: tracingServiceMock.mock(),
+        auditor: mockServices.auditor.mock(),
       });
 
       const serverConfig: McpServerConfig = {
@@ -716,12 +867,13 @@ describe('McpService', () => {
     });
   });
 
-  describe('server name and description', () => {
+  describe('server metadata and instructions', () => {
     it('should default server name to backstage when no config is provided', async () => {
       const mcpService = await McpService.create({
         actions: actionsRegistryServiceMock(),
         metrics: metricsServiceMock.mock(),
         tracingService: tracingServiceMock.mock(),
+        auditor: mockServices.auditor.mock(),
       });
 
       const server = mcpService.getServer({
@@ -741,11 +893,12 @@ describe('McpService', () => {
       expect(serverInfo?.description).toBeUndefined();
     });
 
-    it('should use name and description from server config', async () => {
+    it('should use name, description, and instructions from server config', async () => {
       const mcpService = await McpService.create({
         actions: actionsRegistryServiceMock(),
         metrics: metricsServiceMock.mock(),
         tracingService: tracingServiceMock.mock(),
+        auditor: mockServices.auditor.mock(),
       });
 
       const server = mcpService.getServer({
@@ -753,6 +906,7 @@ describe('McpService', () => {
         serverConfig: {
           name: 'My Custom Server',
           description: 'A custom MCP server for testing',
+          instructions: 'Use this server to test MCP actions.',
           includeRules: [],
           excludeRules: [],
         },
@@ -769,6 +923,9 @@ describe('McpService', () => {
       const serverInfo = client.getServerVersion();
       expect(serverInfo?.name).toBe('My Custom Server');
       expect(serverInfo?.description).toBe('A custom MCP server for testing');
+      expect(client.getInstructions()).toBe(
+        'Use this server to test MCP actions.',
+      );
     });
 
     it('should omit description when not provided in config', async () => {
@@ -776,6 +933,7 @@ describe('McpService', () => {
         actions: actionsRegistryServiceMock(),
         metrics: metricsServiceMock.mock(),
         tracingService: tracingServiceMock.mock(),
+        auditor: mockServices.auditor.mock(),
       });
 
       const server = mcpService.getServer({
@@ -819,6 +977,7 @@ describe('McpService', () => {
         actions: mockActionsRegistry,
         metrics: metricsServiceMock.mock(),
         tracingService: tracingServiceMock.mock(),
+        auditor: mockServices.auditor.mock(),
       });
 
       const server = mcpService.getServer({
@@ -858,6 +1017,7 @@ describe('McpService', () => {
         actions: mockActionsRegistry,
         metrics: metricsServiceMock.mock(),
         tracingService: tracingServiceMock.mock(),
+        auditor: mockServices.auditor.mock(),
         namespacedToolNames: false,
       });
 
@@ -898,6 +1058,7 @@ describe('McpService', () => {
         actions: mockActionsRegistry,
         metrics: metricsServiceMock.mock(),
         tracingService: tracingServiceMock.mock(),
+        auditor: mockServices.auditor.mock(),
       });
 
       const server = mcpService.getServer({
@@ -948,6 +1109,7 @@ describe('McpService', () => {
         actions: mockActionsRegistry,
         metrics: metricsServiceMock.mock(),
         tracingService: opts.tracing,
+        auditor: mockServices.auditor.mock(),
         captureToolPayloads: opts.captureToolPayloads,
       });
 
@@ -1122,6 +1284,7 @@ describe('McpService', () => {
         actions: mockActionsRegistry,
         metrics: metricsServiceMock.mock(),
         tracingService: tracing,
+        auditor: mockServices.auditor.mock(),
         captureToolPayloads: true,
       });
 

@@ -1,0 +1,10 @@
+---
+title: MCP Chat
+author: Avik Kundu
+authorUrl: https://github.com/Lucifergene
+category: Development
+description: An AI-powered chat interface for Backstage that connects to Model Context Protocol servers, supporting OpenAI, Claude, Gemini, and Ollama.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/mcp-chat/plugins/mcp-chat/README.md
+npmPackageName: '@backstage-community/plugin-mcp-chat'
+addedDate: '2026-02-21'
+status: active

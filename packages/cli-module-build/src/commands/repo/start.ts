@@ -41,7 +41,7 @@ export default async ({ args, info }: CliCommandContext) => {
     _: namesOrPaths,
   } = cli(
     {
-      help: { ...info, usage: `${info.usage} [packages...]` },
+      name: info.usage,
       booleanFlagNegation: true,
       parameters: ['[packages...]'],
       flags: {

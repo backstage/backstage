@@ -5,7 +5,7 @@ sidebar_label: Identity
 description: Documentation for the Identity service
 ---
 
-:::note Note
+:::note
 
 This service is deprecated, you are likely looking for the [Auth Service](./auth.md) instead. If you're wondering how to get the user's entity ref and ownership claims in your backend plugin, you should see the [User Info Service](./user-info.md) documentation.
 

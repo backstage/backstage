@@ -28,14 +28,14 @@ import {
   ListObjectsV2Output,
   GetObjectCommand,
 } from '@aws-sdk/client-s3';
-import { mockClient } from 'aws-sdk-client-mock';
 import { sdkStreamMixin } from '@aws-sdk/util-stream-node';
 import fs from 'node:fs';
 import path from 'node:path';
 import YAML from 'yaml';
 import { mockServices } from '@backstage/backend-test-utils';
 
-const s3Client = mockClient(S3Client);
+const s3SendMock = jest.fn();
+
 const object: Object = {
   Key: 'awsS3-mock-object.txt',
 };
@@ -59,15 +59,27 @@ describe('readLocation', () => {
     target: 'https://testbucket.s3.us-east-2.amazonaws.com',
   };
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+    s3SendMock.mockReset();
+  });
+
   beforeEach(() => {
-    s3Client.reset();
-    s3Client.on(ListObjectsV2Command).resolves(output);
-    s3Client.on(GetObjectCommand).resolves({
-      Body: sdkStreamMixin(
-        fs.createReadStream(
-          path.resolve(__dirname, '__fixtures__/awsS3-mock-object.txt'),
-        ),
-      ),
+    jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+    s3SendMock.mockImplementation(async command => {
+      if (command instanceof ListObjectsV2Command) {
+        return output;
+      }
+      if (command instanceof GetObjectCommand) {
+        return {
+          Body: sdkStreamMixin(
+            fs.createReadStream(
+              path.resolve(__dirname, '__fixtures__/awsS3-mock-object.txt'),
+            ),
+          ),
+        };
+      }
+      throw new Error(`No mock for ${command.constructor.name}`);
     });
   });
 

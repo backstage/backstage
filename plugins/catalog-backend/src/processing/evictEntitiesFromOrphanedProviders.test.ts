@@ -42,10 +42,6 @@ describe.each(databases.eachSupportedId())('%p', databaseId => {
     db = new DefaultProviderDatabase({ database: knex, logger });
   });
 
-  afterEach(async () => {
-    await knex.destroy();
-  });
-
   describe('getOrphanedEntityProviderNames', () => {
     it('correctly locates and logs orphaned providers', async () => {
       const providers = [

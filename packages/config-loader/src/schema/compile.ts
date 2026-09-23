@@ -15,7 +15,7 @@
  */
 
 import Ajv from 'ajv';
-import { JSONSchema7 as JSONSchema } from 'json-schema';
+import type { JSONSchema7 as JSONSchema } from 'json-schema';
 import mergeAllOf, { Resolvers } from 'json-schema-merge-allof';
 import traverse from 'json-schema-traverse';
 import { ConfigReader } from '@backstage/config';
@@ -27,6 +27,7 @@ import {
 } from './types';
 import { SchemaObject } from 'json-schema-traverse';
 import { normalizeAjvPath } from './utils';
+import cloneDeep from 'lodash/cloneDeep';
 
 // Used to keep track of the internal deepVisibility inherited through the schema.
 const inheritedVisibility = Symbol('inherited-visibility');
@@ -129,7 +130,27 @@ export function compileConfigSchemas(
     }
   }
 
-  const merged = mergeConfigSchemas(schemas.map(_ => _.value));
+  const merged = mergeConfigSchemas(
+    schemas.map(_ => {
+      const copy = cloneDeep(_.value as JSONSchema);
+      traverse(copy, s => {
+        // We convert `additionalProperties: {}` to `additionalProperties: true`
+        // because `mergeAllOf` drops `additionalProperties: {}` during merging.
+        // According to JSON Schema, these two forms are equivalent. Without this
+        // conversion, the dropped value is treated as unset, which causes
+        // `noUndeclaredProperties` to incorrectly add `additionalProperties: false`
+        // and reject valid configuration.
+        if (
+          typeof s.additionalProperties === 'object' &&
+          s.additionalProperties !== null &&
+          Object.keys(s.additionalProperties).length === 0
+        ) {
+          s.additionalProperties = true;
+        }
+      });
+      return copy;
+    }),
+  );
 
   traverse(
     merged,
@@ -166,11 +187,21 @@ export function compileConfigSchemas(
       }
 
       if (options?.noUndeclaredProperties) {
+        const hasPropertyWithKey = (key: string) =>
+          typeof schema[key] === 'object' &&
+          schema[key] !== null &&
+          Object.keys(schema[key]).length > 0;
         /**
-         * The `additionalProperties` key can only be applied to `type: object` in the JSON
-         *  schema.
+         * The `additionalProperties` key can only be applied to `type: object`
+         * in the JSON schema. It's only applied to objects that specify
+         * properties. Otherwise, we end up with nonsensical schemas that don't
+         * allow any properties at all.
          */
-        if (schema?.type === 'object') {
+        if (
+          schema?.type === 'object' &&
+          (hasPropertyWithKey('properties') ||
+            hasPropertyWithKey('patternProperties'))
+        ) {
           schema.additionalProperties ||= false;
         }
       }

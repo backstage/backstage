@@ -35,5 +35,5 @@ export type ButtonLinkOwnProps = {
  * @public
  */
 export interface ButtonLinkProps
-  extends Omit<RALinkProps, keyof ButtonLinkOwnProps>,
+  extends Omit<RALinkProps, keyof ButtonLinkOwnProps | 'render'>,
     ButtonLinkOwnProps {}

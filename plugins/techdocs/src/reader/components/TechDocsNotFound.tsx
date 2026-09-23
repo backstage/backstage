@@ -16,9 +16,11 @@
 
 import { useEffect } from 'react';
 import { useApi, configApiRef, useAnalytics } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { ErrorPage } from '@backstage/core-components';
 import { useTechDocsReaderPage } from '@backstage/plugin-techdocs-react';
 import { useLocation } from 'react-router-dom';
+import { techdocsTranslationRef } from '../../translation';
 
 type Props = {
   errorMessage?: string;
@@ -30,6 +32,7 @@ export const TechDocsNotFound = ({ errorMessage }: Props) => {
   const analyticsApi = useAnalytics();
   const { entityRef } = useTechDocsReaderPage();
   const location = useLocation();
+  const { t } = useTranslationRef(techdocsTranslationRef);
 
   useEffect(() => {
     const { pathname, search, hash } = location;
@@ -40,17 +43,13 @@ export const TechDocsNotFound = ({ errorMessage }: Props) => {
 
   let additionalInfo = '';
   if (![undefined, 'local'].includes(techdocsBuilder)) {
-    additionalInfo =
-      "Note that techdocs.builder is not set to 'local' in your config, which means this Backstage app will not " +
-      "generate docs if they are not found. Make sure the project's docs are generated and published by some external " +
-      "process (e.g. CI/CD pipeline). Or change techdocs.builder to 'local' to generate docs from this Backstage " +
-      'instance.';
+    additionalInfo = t('notFound.builderNote');
   }
 
   return (
     <ErrorPage
       status="404"
-      statusMessage={errorMessage || 'Documentation not found'}
+      statusMessage={errorMessage || t('notFound.title')}
       additionalInfo={additionalInfo}
     />
   );

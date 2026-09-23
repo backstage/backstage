@@ -153,6 +153,7 @@ export const scaffolderPlugin = createBackendPlugin({
         actionsRegistry: actionsServiceRef,
         actionsRegistryService: actionsRegistryServiceRef,
         scaffolderService: scaffolderServiceRef,
+        scheduler: coreServices.scheduler,
         metrics: metricsServiceRef,
       },
       async init({
@@ -172,10 +173,14 @@ export const scaffolderPlugin = createBackendPlugin({
         actionsRegistry,
         actionsRegistryService,
         scaffolderService,
+        scheduler,
         metrics,
       }) {
         const log = loggerToWinstonLogger(logger);
         const integrations = ScmIntegrations.fromConfig(config);
+        const requireScmUserCredentials = config.getOptionalBoolean(
+          'scaffolder.requireScmUserCredentials',
+        );
 
         const templateExtensions = {
           additionalTemplateFilters: convertFiltersToRecord(
@@ -193,19 +198,23 @@ export const scaffolderPlugin = createBackendPlugin({
           createFetchPlainAction({
             reader,
             integrations,
+            requireScmUserCredentials,
           }),
           createFetchPlainFileAction({
             reader,
             integrations,
+            requireScmUserCredentials,
           }),
           createFetchTemplateAction({
             integrations,
             reader,
+            requireScmUserCredentials,
             ...templateExtensions,
           }),
           createFetchTemplateFileAction({
             integrations,
             reader,
+            requireScmUserCredentials,
             ...templateExtensions,
           }),
           createDebugLogAction(),
@@ -250,6 +259,7 @@ export const scaffolderPlugin = createBackendPlugin({
           events,
           auditor,
           actionsRegistry,
+          scheduler,
           metrics,
         });
         httpRouter.use(router);

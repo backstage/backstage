@@ -22,7 +22,7 @@ import {
 } from '@backstage/plugin-notifications-common';
 import { Switch, Tooltip, TooltipTrigger } from '@backstage/ui';
 import { NoBorderTableCell } from './NoBorderTableCell';
-import { useNotificationFormat } from './UserNotificationSettingsCard';
+import { useNotificationFormat } from './NotificationFormatContext';
 
 export const TopicRow = (props: {
   topic: TopicSetting;
@@ -56,9 +56,7 @@ export const TopicRow = (props: {
                 handleChange(ch.id, origin.id, topic.id, isSelected);
               }}
             />
-            <Tooltip>{`Enable or disable ${ch.id.toLocaleLowerCase(
-              'en-US',
-            )} notifications for the ${formatTopicName(
+            <Tooltip>{`Enable or disable ${ch.id.toLowerCase()} notifications for the ${formatTopicName(
               topic.id,
             )} topic from ${formatOriginName(origin.id)}`}</Tooltip>
           </TooltipTrigger>

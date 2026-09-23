@@ -16,11 +16,52 @@
 
 import {
   createOAuthAuthenticator,
+  OAuthAuthenticatorRefreshInput,
+  OAuthAuthenticatorResult,
   PassportOAuthAuthenticatorHelper,
   PassportOAuthDoneCallback,
   PassportProfile,
 } from '@backstage/plugin-auth-node';
 import { ExtendedMicrosoftStrategy } from './strategy';
+
+const GRAPH_PROFILE_SCOPE = 'openid email User.Read offline_access';
+
+/**
+ * When the acquired access token targets a non-Graph resource, it can't be
+ * used to fetch the user profile from the Microsoft Graph API. In that case,
+ * make a separate refresh call with Graph scopes to get a token for profile
+ * fetching, so that the sign-in resolver always receives a valid profile.
+ * This is possible because Microsoft refresh tokens are resource-agnostic:
+ * a single refresh token can produce access tokens for different resources.
+ * The access token from the original result is preserved - only the profile
+ * is taken from the Graph-scoped call.
+ */
+async function withProfileFetchedViaGraph(
+  result: OAuthAuthenticatorResult<PassportProfile>,
+  input: { req: OAuthAuthenticatorRefreshInput['req']; refreshToken?: string },
+  ctx: { helper: PassportOAuthAuthenticatorHelper; skipUserProfile: boolean },
+): Promise<OAuthAuthenticatorResult<PassportProfile>> {
+  if (result.fullProfile || ctx.skipUserProfile) {
+    return result;
+  }
+  const refreshToken = result.session.refreshToken ?? input.refreshToken;
+  if (!refreshToken) {
+    return result;
+  }
+  const graphResult = await ctx.helper.refresh({
+    req: input.req,
+    scope: GRAPH_PROFILE_SCOPE,
+    refreshToken,
+  });
+  return {
+    ...result,
+    fullProfile: graphResult.fullProfile,
+    session: {
+      ...result.session,
+      refreshToken: graphResult.session.refreshToken ?? refreshToken,
+    },
+  };
+}
 
 /** @public */
 export const microsoftAuthenticator = createOAuthAuthenticator({
@@ -72,6 +113,7 @@ export const microsoftAuthenticator = createOAuthAuthenticator({
     return {
       helper,
       domainHint,
+      skipUserProfile,
     };
   },
 
@@ -88,10 +130,12 @@ export const microsoftAuthenticator = createOAuthAuthenticator({
   },
 
   async authenticate(input, ctx) {
-    return ctx.helper.authenticate(input);
+    const result = await ctx.helper.authenticate(input);
+    return withProfileFetchedViaGraph(result, input, ctx);
   },
 
   async refresh(input, ctx) {
-    return ctx.helper.refresh(input);
+    const result = await ctx.helper.refresh(input);
+    return withProfileFetchedViaGraph(result, input, ctx);
   },
 });

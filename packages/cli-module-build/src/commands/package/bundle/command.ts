@@ -434,6 +434,7 @@ export async function bundleCommand(opts: BundleOptions): Promise<void> {
     const configSchema = await loadConfigSchema({
       dependencies: [],
       packagePaths: ['package.json'],
+      onSchemaError: error => console.warn(error.message),
     });
     const serialized = configSchema.serialize() as {
       schemas: typeof schemas;
@@ -918,7 +919,7 @@ export default async ({ args, info }: CliCommandContext) => {
     },
   } = cli(
     {
-      help: info,
+      name: info.usage,
       flags: {
         outputDestination: {
           type: String,

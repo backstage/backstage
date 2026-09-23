@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { validateCimdUrl, fetchCimdMetadata } from './CimdClient';
@@ -137,11 +137,8 @@ describe('CimdClient', () => {
 
     it('should fetch and return valid metadata', async () => {
       server.use(
-        rest.get(
-          'https://example.com/oauth-metadata.json',
-          (_req, res, ctx) => {
-            return res(ctx.json(validMetadata));
-          },
+        http.get('https://example.com/oauth-metadata.json', () =>
+          HttpResponse.json(validMetadata),
         ),
       );
 
@@ -166,11 +163,8 @@ describe('CimdClient', () => {
       };
 
       server.use(
-        rest.get(
-          'https://example.com/oauth-metadata.json',
-          (_req, res, ctx) => {
-            return res(ctx.json(metadataWithoutName));
-          },
+        http.get('https://example.com/oauth-metadata.json', () =>
+          HttpResponse.json(metadataWithoutName),
         ),
       );
 
@@ -239,6 +233,45 @@ describe('CimdClient', () => {
           }),
         ).rejects.toThrow('Invalid client_id URL');
       });
+
+      it('should allow private IPs when skipSsrfCheck is set', async () => {
+        mockDnsLookup.mockResolvedValue([
+          { address: '10.0.0.1', family: 4 },
+        ] as any);
+
+        const metadata = {
+          client_id: 'https://internal.example.com/metadata',
+          client_name: 'Internal Client',
+          redirect_uris: ['http://localhost:8080/callback'],
+        };
+
+        server.use(
+          http.get('https://internal.example.com/metadata', () =>
+            HttpResponse.json(metadata),
+          ),
+        );
+
+        const result = await fetchCimdMetadata({
+          clientId: 'https://internal.example.com/metadata',
+          skipSsrfCheck: true,
+        });
+
+        expect(result.clientId).toBe('https://internal.example.com/metadata');
+        expect(result.clientName).toBe('Internal Client');
+      });
+
+      it('should still block private IPs when skipSsrfCheck is false', async () => {
+        mockDnsLookup.mockResolvedValue([
+          { address: '10.0.0.1', family: 4 },
+        ] as any);
+
+        await expect(
+          fetchCimdMetadata({
+            clientId: 'https://internal.example.com/metadata',
+            skipSsrfCheck: false,
+          }),
+        ).rejects.toThrow('Invalid client_id URL');
+      });
     });
 
     describe('redirect protection', () => {
@@ -246,24 +279,16 @@ describe('CimdClient', () => {
         const redirectTarget = jest.fn();
 
         server.use(
-          rest.get(
-            'https://example.com/oauth-metadata.json',
-            (_req, res, ctx) => {
-              return res(
-                ctx.status(302),
-                ctx.set('Location', 'http://127.0.0.1:8080/internal'),
-              );
-            },
+          http.get('https://example.com/oauth-metadata.json', () =>
+            HttpResponse.redirect('http://127.0.0.1:8080/internal', 302),
           ),
-          rest.get('http://127.0.0.1:8080/internal', (_req, res, ctx) => {
+          http.get('http://127.0.0.1:8080/internal', () => {
             redirectTarget();
-            return res(
-              ctx.json({
-                client_id: 'https://example.com/oauth-metadata.json',
-                client_name: 'Sneaky Client',
-                redirect_uris: ['http://localhost:8080/callback'],
-              }),
-            );
+            return HttpResponse.json({
+              client_id: 'https://example.com/oauth-metadata.json',
+              client_name: 'Sneaky Client',
+              redirect_uris: ['http://localhost:8080/callback'],
+            });
           }),
         );
 
@@ -280,9 +305,9 @@ describe('CimdClient', () => {
     describe('HTTP error handling', () => {
       it('should throw for network errors', async () => {
         server.use(
-          rest.get('https://example.com/oauth-metadata.json', (_req, res) => {
-            return res.networkError('Connection refused');
-          }),
+          http.get('https://example.com/oauth-metadata.json', () =>
+            HttpResponse.error(),
+          ),
         );
 
         await expect(
@@ -294,11 +319,9 @@ describe('CimdClient', () => {
 
       it('should throw for non-OK response', async () => {
         server.use(
-          rest.get(
+          http.get(
             'https://example.com/oauth-metadata.json',
-            (_req, res, ctx) => {
-              return res(ctx.status(404));
-            },
+            () => new HttpResponse(null, { status: 404 }),
           ),
         );
 
@@ -313,11 +336,8 @@ describe('CimdClient', () => {
     describe('metadata validation', () => {
       it('should throw for invalid JSON', async () => {
         server.use(
-          rest.get(
-            'https://example.com/oauth-metadata.json',
-            (_req, res, ctx) => {
-              return res(ctx.body('not json'));
-            },
+          http.get('https://example.com/oauth-metadata.json', () =>
+            HttpResponse.text('not json'),
           ),
         );
 
@@ -359,11 +379,8 @@ describe('CimdClient', () => {
         };
 
         server.use(
-          rest.get(
-            'https://example.com/oauth-metadata.json',
-            (_req, res, ctx) => {
-              return res(ctx.json(mismatchedMetadata));
-            },
+          http.get('https://example.com/oauth-metadata.json', () =>
+            HttpResponse.json(mismatchedMetadata),
           ),
         );
 
@@ -381,11 +398,8 @@ describe('CimdClient', () => {
         };
 
         server.use(
-          rest.get(
-            'https://example.com/oauth-metadata.json',
-            (_req, res, ctx) => {
-              return res(ctx.json(noRedirectUris));
-            },
+          http.get('https://example.com/oauth-metadata.json', () =>
+            HttpResponse.json(noRedirectUris),
           ),
         );
 
@@ -404,11 +418,8 @@ describe('CimdClient', () => {
         };
 
         server.use(
-          rest.get(
-            'https://example.com/oauth-metadata.json',
-            (_req, res, ctx) => {
-              return res(ctx.json(emptyRedirectUris));
-            },
+          http.get('https://example.com/oauth-metadata.json', () =>
+            HttpResponse.json(emptyRedirectUris),
           ),
         );
 
@@ -430,11 +441,8 @@ describe('CimdClient', () => {
         };
 
         server.use(
-          rest.get(
-            'https://example.com/oauth-metadata.json',
-            (_req, res, ctx) => {
-              return res(ctx.json(withSecret));
-            },
+          http.get('https://example.com/oauth-metadata.json', () =>
+            HttpResponse.json(withSecret),
           ),
         );
 
@@ -454,11 +462,8 @@ describe('CimdClient', () => {
         };
 
         server.use(
-          rest.get(
-            'https://example.com/oauth-metadata.json',
-            (_req, res, ctx) => {
-              return res(ctx.json(withSecretExpiry));
-            },
+          http.get('https://example.com/oauth-metadata.json', () =>
+            HttpResponse.json(withSecretExpiry),
           ),
         );
 
@@ -478,11 +483,8 @@ describe('CimdClient', () => {
         };
 
         server.use(
-          rest.get(
-            'https://example.com/oauth-metadata.json',
-            (_req, res, ctx) => {
-              return res(ctx.json(withForbiddenAuth));
-            },
+          http.get('https://example.com/oauth-metadata.json', () =>
+            HttpResponse.json(withForbiddenAuth),
           ),
         );
 
@@ -502,11 +504,8 @@ describe('CimdClient', () => {
         };
 
         server.use(
-          rest.get(
-            'https://example.com/oauth-metadata.json',
-            (_req, res, ctx) => {
-              return res(ctx.json(withNoneAuth));
-            },
+          http.get('https://example.com/oauth-metadata.json', () =>
+            HttpResponse.json(withNoneAuth),
           ),
         );
 
@@ -526,11 +525,8 @@ describe('CimdClient', () => {
         };
 
         server.use(
-          rest.get(
-            'https://example.com/oauth-metadata.json',
-            (_req, res, ctx) => {
-              return res(ctx.json(withPrivateKeyAuth));
-            },
+          http.get('https://example.com/oauth-metadata.json', () =>
+            HttpResponse.json(withPrivateKeyAuth),
           ),
         );
 

@@ -53,6 +53,7 @@ export * from './components/Tabs';
 export * from './components/TagGroup';
 export * from './components/Text';
 export * from './components/TextField';
+export * from './components/TextAreaField';
 export * from './components/NumberField';
 export * from './components/PasswordField';
 export * from './components/Tooltip';
@@ -72,10 +73,24 @@ export * from './components/VisuallyHidden';
 // Types
 export * from './types';
 
+// Re-exported react-aria-components APIs
+export * from './react-aria-components';
+
 // Hooks
 export { useBreakpoint } from './hooks/useBreakpoint';
 export { useBgProvider, useBgConsumer, BgProvider } from './hooks/useBg';
 export type { BgContextValue, BgProviderProps } from './hooks/useBg';
+export { useAsyncList } from './hooks/useAsyncList';
+export type {
+  AsyncListSource,
+  IdentifiedOption,
+  LegacyOption,
+  LoadingConfig,
+  LoadingState,
+  NormalizedOption,
+  Option,
+  OptionSection,
+} from './types/selectableCollection';
 
 // Provider
 export { BUIProvider } from './provider';
