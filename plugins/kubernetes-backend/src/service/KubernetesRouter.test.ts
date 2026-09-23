@@ -138,22 +138,21 @@ describe('API integration tests', () => {
       getCustomResourcesByEntity: jest.fn().mockResolvedValue(happyK8SResult),
     };
 
-    jest.mock('@backstage/catalog-client', () => ({
-      CatalogClient: jest.fn().mockReturnValue({
-        getEntityByRef: jest.fn().mockImplementation(async entityRef => {
-          if (entityRef.name === 'noentity') {
-            return undefined;
-          }
-          return {
-            kind: entityRef.kind,
-            metadata: {
-              name: entityRef.name,
-              namespace: entityRef.namespace,
-            },
-          };
-        }),
+    const { CatalogClient } = jest.requireMock('@backstage/catalog-client');
+    (CatalogClient as jest.Mock).mockReturnValue({
+      getEntityByRef: jest.fn().mockImplementation(async (entityRef: any) => {
+        if (entityRef.name === 'noentity') {
+          return undefined;
+        }
+        return {
+          kind: entityRef.kind,
+          metadata: {
+            name: entityRef.name,
+            namespace: entityRef.namespace,
+          },
+        };
       }),
-    }));
+    });
     const { server } = await startTestBackend({
       features: [
         minimalValidConfigService,
