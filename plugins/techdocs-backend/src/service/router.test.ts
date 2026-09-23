@@ -880,6 +880,26 @@ data: {"updated":true}
         }),
       ).rejects.toThrow(/permission framework is disabled/);
     });
+
+    it('should warn when documentation is served straight from storage', async () => {
+      const logger = mockServices.logger.mock();
+
+      await createApp({
+        ...outOfTheBoxOptions,
+        logger,
+        config: new ConfigReader({
+          permission: { enabled: true },
+          techdocs: {
+            experimentalTechdocsPermissions: true,
+            storageUrl: 'https://example.com/docs',
+          },
+        }),
+      });
+
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining('techdocs.storageUrl'),
+      );
+    });
   });
 });
 

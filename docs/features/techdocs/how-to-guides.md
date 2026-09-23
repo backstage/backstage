@@ -886,7 +886,7 @@ downloaded:
 
 ## How to restrict access to TechDocs using permissions
 
-By default, TechDocs serves documentation to anyone who can view the entity in the catalog. However, you may want to restrict access to documentation independently from catalog visibility — for example, to protect sensitive security runbooks or internal architecture documents.
+By default, TechDocs serves documentation to anyone who can view the entity in the catalog. However, you may want to restrict documentation further — for example, to protect sensitive security runbooks or internal architecture documents from people who can otherwise see the entity.
 
 TechDocs supports the Backstage permission framework through the `techdocs.entity.read` permission. This is an **opt-in** behavior that you enable with an experimental flag, described below.
 
@@ -900,13 +900,19 @@ Which permission gates documentation depends on whether you have opted in:
 
 - **Without the flag (default)**: documentation is gated by the catalog's `catalog.entity.read` permission. Anyone who can see the entity in the catalog can read its documentation.
 
-- **With the flag enabled**: documentation is gated by `techdocs.entity.read` instead. `catalog.entity.read` is no longer applied to documentation routes, so documentation visibility becomes fully independent from catalog visibility. This lets you keep an entity discoverable in the catalog while restricting its documentation — or the other way around.
+- **With the flag enabled**: documentation content is gated by `techdocs.entity.read` instead. `catalog.entity.read` is no longer applied to documentation content, so a user who can view an entity in the catalog can still be denied its documentation.
 
-Entity metadata itself is not affected: the route that returns the catalog entity behind a documentation site still requires `catalog.entity.read`, so enabling the flag never exposes catalog data to users who cannot already read it.
+The route that returns the catalog entity behind a documentation site requires **both** `techdocs.entity.read` and `catalog.entity.read`, so enabling the flag never exposes catalog data to users who cannot already read it. Because the TechDocs reader always requests that route, readers still need access to the catalog entity — this feature restricts documentation for users who can see the entity, not the other way around.
 
 !!! warning
 
-    Because `catalog.entity.read` no longer applies once the flag is enabled, `techdocs.entity.read` becomes the **only** thing standing between a user and the documentation. If your permission policy does not handle `techdocs.entity.read` and falls through to a default `ALLOW`, documentation becomes readable by everyone. Write and test your policy before enabling the flag.
+    Because `catalog.entity.read` no longer applies to documentation content once the flag is enabled, `techdocs.entity.read` becomes the **only** thing standing between a user and the documentation. If your permission policy does not handle `techdocs.entity.read` and falls through to a default `ALLOW`, documentation becomes readable by everyone. Write and test your policy before enabling the flag.
+
+!!! warning "Documentation must be served through the TechDocs backend"
+
+    These checks run in the TechDocs backend, so they only apply to documentation that is fetched through it. If you set `techdocs.storageUrl` to a location that clients can reach directly, such as a storage bucket or a CDN in front of one, the frontend fetches documentation from there and no permission check happens at all.
+
+    Leave `techdocs.storageUrl` unset so that documentation is served from the backend, or make sure the storage location enforces equivalent access control of its own. The same applies to any pre-signed or public object storage URLs you hand out.
 
 ### Enable permissions
 

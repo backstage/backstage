@@ -186,6 +186,14 @@ export async function createRouter(
     );
   }
 
+  // Readers fetch documentation straight from `techdocs.storageUrl` when it is
+  // set, which never reaches these checks.
+  if (techDocsPermissionsEnabled && config.has('techdocs.storageUrl')) {
+    logger.warn(
+      "TechDocs permissions are enabled, but 'techdocs.storageUrl' is configured. Documentation fetched directly from that location does not pass through 'techdocs.entity.read', so it must enforce equivalent access control itself.",
+    );
+  }
+
   // Entities are cached to optimize the /static/docs request path, which can be called many times
   // when loading a single techdocs page.
   const entityLoader = new CachedEntityLoader({
