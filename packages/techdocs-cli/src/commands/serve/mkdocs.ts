@@ -23,15 +23,27 @@ import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
 import { checkIfDockerIsOperational } from './utils';
 import { getEngineConfig } from '../../lib/engineConfig';
+import {
+  readEntityFromCatalog,
+  getEngineFromEntity,
+} from '../../lib/catalogEntity';
 
 export default async function serveMkdocs(opts: OptionValues) {
   const logger = createLogger({ verbose: opts.verbose });
-  const engine = opts.engine ?? 'mkdocs';
+
+  const catalogEntity = await readEntityFromCatalog(process.cwd());
+  const catalogEngine = getEngineFromEntity(catalogEntity);
+  const engine = opts.engine ?? catalogEngine ?? 'mkdocs';
+
+  if (catalogEngine && !opts.engine) {
+    logger.info(
+      `Detected backstage.io/techdocs-engine: '${catalogEngine}' from catalog entity`,
+    );
+  }
+
   const engineConfig = getEngineConfig(engine);
 
-  const dockerAddr = `http://0.0.0.0:${opts.port}`;
   const localAddr = `http://127.0.0.1:${opts.port}`;
-  const expectedDevAddr = opts.docker ? dockerAddr : localAddr;
 
   if (opts.docker) {
     const isDockerOperational = await checkIfDockerIsOperational(logger);

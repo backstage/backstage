@@ -25,6 +25,10 @@ import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
 import { checkIfDockerIsOperational } from './utils';
 import { getEngineConfig } from '../../lib/engineConfig';
+import {
+  readEntityFromCatalog,
+  getEngineFromEntity,
+} from '../../lib/catalogEntity';
 
 function findPreviewBundlePath(): string {
   try {
@@ -51,7 +55,17 @@ function getPreviewAppPath(opts: OptionValues): string {
 
 export default async function serve(opts: OptionValues) {
   const logger = createLogger({ verbose: opts.verbose });
-  const engine = opts.engine ?? 'mkdocs'; // default engine is mkdocs
+
+  const catalogEntity = await readEntityFromCatalog(process.cwd());
+  const catalogEngine = getEngineFromEntity(catalogEntity);
+  const engine = opts.engine ?? catalogEngine ?? 'mkdocs';
+
+  if (catalogEngine && !opts.engine) {
+    logger.info(
+      `Detected backstage.io/techdocs-engine: '${catalogEngine}' from catalog entity`,
+    );
+  }
+
   const engineConfig = getEngineConfig(engine);
 
   // Determine if we want to run in local dev mode or not
@@ -63,16 +77,18 @@ export default async function serve(opts: OptionValues) {
 
   const backstageBackendPort = 7007;
 
-  const docsPort = opts.docsPort ?? opts.mkdocsPort ?? '8000';
-  if (opts.mkdocsPort && !opts.docsPort) {
+  const enginePort = opts.enginePort ?? opts.mkdocsPort ?? '8000';
+  if (opts.mkdocsPort && !opts.enginePort) {
     logger.warn(
-      '--mkdocs-port is deprecated and will be removed in a future release. Use --docs-port instead.',
+      '--mkdocs-port is deprecated and will be removed in a future release. Use --engine-port instead.',
     );
   }
 
-  const docsDockerAddr = `http://0.0.0.0:${docsPort}`;
-  const docsLocalAddr = `http://127.0.0.1:${docsPort}`;
-  const docsExpectedDevAddr = opts.docker ? docsDockerAddr : docsLocalAddr;
+  const engineDockerAddr = `http://0.0.0.0:${enginePort}`;
+  const engineLocalAddr = `http://127.0.0.1:${enginePort}`;
+  const engineExpectedDevAddr = opts.docker
+    ? engineDockerAddr
+    : engineLocalAddr;
 
   const configFileName = opts.configFileName ?? opts.mkdocsConfigFileName;
   if (opts.mkdocsConfigFileName && !opts.configFileName) {
@@ -116,7 +132,7 @@ export default async function serve(opts: OptionValues) {
   };
   logger.info(`Starting ${engine} server.`);
   const docsChildProcess = runMkdocsServer({
-    port: docsPort,
+    port: enginePort,
     dockerImage: opts.dockerImage,
     dockerEntrypoint: opts.dockerEntrypoint,
     dockerOptions: opts.dockerOption,
@@ -149,7 +165,7 @@ export default async function serve(opts: OptionValues) {
   const httpServer = new HTTPServer(
     previewAppPath,
     port,
-    docsExpectedDevAddr,
+    engineExpectedDevAddr,
     opts.verbose,
     engineConfig,
   );
