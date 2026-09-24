@@ -24,6 +24,7 @@ import {
   getMkdocsYml,
 } from '@backstage/plugin-techdocs-node';
 import { ConfigReader } from '@backstage/config';
+import { Entity } from '@backstage/catalog-model';
 import {
   convertTechDocsRefToLocationAnnotation,
   createLogger,
@@ -31,6 +32,10 @@ import {
 } from '../../lib/utility';
 import { computeDirectoryEtag } from '../../lib/etag';
 import { getEngineConfig } from '../../lib/engineConfig';
+import {
+  readEntityFromCatalog,
+  getEngineFromEntity,
+} from '../../lib/catalogEntity';
 
 const TECHDOCS_METADATA_FILE = 'techdocs_metadata.json';
 const GENERATED_SITE_ETAG_EXCLUDED_FILES = [
@@ -49,12 +54,23 @@ export default async function generate(opts: OptionValues) {
   // will run on the CI pipeline containing the documentation files.
 
   const logger = createLogger({ verbose: opts.verbose });
-  const engine = opts.engine ?? 'mkdocs';
+  const sourceDir = resolve(opts.sourceDir);
+
+  // Read the catalog entity from disk if available
+  const catalogEntity = await readEntityFromCatalog(sourceDir);
+  const catalogEngine = getEngineFromEntity(catalogEntity);
+
+  // Engine priority: --engine flag > catalog annotation > 'mkdocs' default
+  const engine = opts.engine ?? catalogEngine ?? 'mkdocs';
+
+  if (catalogEngine && !opts.engine) {
+    logger.info(
+      `Detected backstage.io/techdocs-engine: '${catalogEngine}' from catalog entity`,
+    );
+  }
 
   const engineConfig = getEngineConfig(engine);
   logger.info(`Using engine: ${engine} (binary: ${engineConfig.binary})`);
-
-  const sourceDir = resolve(opts.sourceDir);
   const outputDir = resolve(opts.outputDir);
   const omitTechdocsCorePlugin = opts.omitTechdocsCoreMkdocsPlugin;
   const dockerImage = opts.dockerImage;
@@ -112,13 +128,12 @@ export default async function generate(opts: OptionValues) {
     logger,
   });
 
-  // The CLI has no catalog entity, so we pass a minimal entity stub.
-  // The registry uses defaultEngine from config to select the generator.
-  const generator = generators.get({
+  const entity: Entity = catalogEntity ?? {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Component',
     metadata: { name: 'local' },
-  });
+  };
+  const generator = generators.get(entity);
 
   logger.info('Generating documentation...');
 

@@ -106,6 +106,7 @@ export type TechDocsEntityMetadata = Entity & {
 export type TechDocsMetadata = {
   site_name: string;
   site_description: string;
+  engine?: string;
 };
 
 // @public
