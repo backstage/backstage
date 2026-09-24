@@ -15,7 +15,7 @@
  */
 
 import parseGitUrl from 'git-url-parse';
-import { trimEnd } from 'lodash';
+import trimEnd from 'lodash/trimEnd';
 import { ScmIntegration, ScmIntegrationsGroup } from './types';
 
 /**

@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { trimEnd } from 'lodash';
+import trimEnd from 'lodash/trimEnd';
 import { isValidHost } from '../helpers';
 
 const GITHUB_HOST = 'github.com';

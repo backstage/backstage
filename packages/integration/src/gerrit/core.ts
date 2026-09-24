@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { join, takeWhile, trimEnd, trimStart } from 'lodash';
+import join from 'lodash/join';
+import takeWhile from 'lodash/takeWhile';
+import trimEnd from 'lodash/trimEnd';
+import trimStart from 'lodash/trimStart';
 import { GerritIntegrationConfig } from './config';
 
 const GERRIT_BODY_PREFIX = ")]}'";
