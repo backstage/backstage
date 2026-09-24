@@ -93,8 +93,7 @@ export function registerCommands(program: Command) {
     )
     .option(
       '--engine <ENGINE>',
-      'Documentation engine to use for generation (mkdocs, zensical)',
-      'mkdocs',
+      'Documentation engine to use (mkdocs, zensical). Overrides backstage.io/techdocs-engine annotation if set.',
     )
     .alias('build')
     .action(lazy(() => import('./generate/generate'), 'default'));
@@ -351,13 +350,13 @@ export function registerCommands(program: Command) {
       'Documentation Site',
     )
     .option(
-      '--docs-port <PORT>',
+      '--engine-port <PORT>',
       'Port for the documentation engine server (MkDocs, Zensical, etc.) to listen on. The Backstage preview app is served on --preview-app-port.',
       '8000',
     )
     .option(
       '--mkdocs-port <PORT>',
-      '[Deprecated: use --docs-port] Port for MkDocs server to use',
+      '[Deprecated: use --engine-port] Port for MkDocs server to use',
     )
     .option('-v, --verbose', 'Enable verbose output.', false)
     .option(
