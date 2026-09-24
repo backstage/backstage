@@ -145,7 +145,7 @@ For more information about where to place extension overrides, see the official 
 
 An [entity card](https://github.com/backstage/backstage/blob/master/plugins/catalog-react/report-alpha.api.md) extension that displays group members with avatars, names, and emails. Clicking a member's name opens the user's catalog page; clicking an email opens your default mail client.
 
-By default, each member avatar uses `member.spec.profile.picture` from the catalog. When that field is empty, the card shows initials. If your organization loads profile photos lazily from an external source instead of storing them in the catalog during ingestion, override the shared [`UserAvatar`](#custom-user-avatars) swappable component.
+By default, each member avatar uses `member.spec.profile.picture` from the catalog. When that field is empty, the card shows initials. To customize avatar rendering, override the shared `UserAvatar` swappable component (see [README.md](./README.md#useravatar-and-custom-member-avatars)).
 
 | Kind          | Namespace | Name           | Id                             |
 | ------------- | --------- | -------------- | ------------------------------ |
@@ -172,62 +172,7 @@ app:
 ```
 
 > [!NOTE]
-> User avatar rendering is **not** configurable through `app-config.yaml`. See [Custom user avatars](#custom-user-avatars) below.
-
-#### Custom user avatars
-
-`MembersListCard` and `UserProfileCard` render user avatars through the shared `UserAvatar` swappable component. Apps can override it once via `SwappableComponentBlueprint` to customize avatar rendering consistently across org plugin surfaces.
-
-```tsx
-import { createFrontendModule } from '@backstage/frontend-plugin-api';
-import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
-import { UserAvatar, type DefaultUserAvatarProps } from '@backstage/plugin-org';
-import { Avatar } from '@backstage/ui';
-import { useLazyProfilePhoto } from './useLazyProfilePhoto';
-
-function LazyUserAvatar(props: DefaultUserAvatarProps) {
-  const picture = useLazyProfilePhoto(props.entity);
-  return (
-    <Avatar
-      className={props.className}
-      name={props.displayName}
-      src={picture ?? ''}
-      purpose={props.purpose ?? 'decoration'}
-      size={props.size ?? 'x-large'}
-    />
-  );
-}
-
-export default createFrontendModule({
-  pluginId: 'app',
-  extensions: [
-    SwappableComponentBlueprint.make({
-      name: 'org-user-avatar',
-      params: defineParams =>
-        defineParams({
-          component: UserAvatar,
-          loader: () => Promise.resolve(LazyUserAvatar),
-        }),
-    }),
-  ],
-});
-```
-
-Components used as the swappable implementation receive `DefaultUserAvatarProps`:
-
-| Prop          | Type         | Description                                                               |
-| ------------- | ------------ | ------------------------------------------------------------------------- |
-| `entity`      | `UserEntity` | Catalog user entity.                                                      |
-| `displayName` | `string`     | `entity.spec.profile.displayName`, or `entity.metadata.name` as fallback. |
-| `className`   | `string`     | Optional layout class from the caller.                                    |
-| `size`        | `string`     | Avatar size passed by the caller (`small`, `x-large`, etc.).              |
-| `purpose`     | `string`     | Avatar purpose passed by the caller.                                      |
-
-When no override is registered, behavior is unchanged:
-
-```tsx
-<Avatar src={profile?.picture ?? ''} />
-```
+> User avatar rendering is **not** configurable through `app-config.yaml`. See [README.md](./README.md#useravatar-and-custom-member-avatars).
 
 #### Override
 

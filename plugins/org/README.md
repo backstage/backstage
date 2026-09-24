@@ -88,7 +88,7 @@ Once added MyGroupsSidebarItem will work in three ways:
 
 Org plugin surfaces such as `MembersListCard` and `UserProfileCard` render user avatars through the shared `UserAvatar` swappable component. By default, avatars use `entity.spec.profile.picture` from the catalog; when that field is empty, initials are shown.
 
-If your organization loads profile photos lazily from an external source instead of storing them in the catalog during ingestion, override `UserAvatar` once in your app module:
+To customize avatar rendering (for example, when profile pictures are not stored on catalog entities), override `UserAvatar` once in your app module:
 
 ```tsx
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
@@ -103,11 +103,12 @@ export const appModuleOrg = createFrontendModule({
       params: defineParams =>
         defineParams({
           component: UserAvatar,
-          loader: () => import('./LazyUserAvatar').then(m => m.LazyUserAvatar),
+          loader: () =>
+            import('./YourCustomComponent').then(m => m.YourCustomComponent),
         }),
     }),
   ],
 });
 ```
 
-When no override is registered, behavior is unchanged. See [README-alpha.md](./README-alpha.md#custom-user-avatars) for more detail.
+When no override is registered, behavior is unchanged.
