@@ -1,5 +1,11 @@
 # @backstage/plugin-techdocs-node
 
+## 1.14.8
+
+### Patch Changes
+
+- 32723a0: Improved handling of mapping-style Markdown extension configuration.
+
 ## 1.14.7
 
 ### Patch Changes
