@@ -1,5 +1,11 @@
 # @backstage/plugin-techdocs-node
 
+## 2.0.1
+
+### Patch Changes
+
+- 944edb5: Improved handling of mapping-style Markdown extension configuration.
+
 ## 2.0.0
 
 ### Major Changes
