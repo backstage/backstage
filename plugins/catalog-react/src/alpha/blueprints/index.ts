@@ -13,6 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+export {
+  CatalogColumnBlueprint,
+  type CatalogColumnFilterContext,
+  type CatalogColumnFilterFn,
+} from './CatalogColumnBlueprint';
 export { CatalogFilterBlueprint } from './CatalogFilterBlueprint';
 export { EntityCardBlueprint } from './EntityCardBlueprint';
 export { EntityContentBlueprint } from './EntityContentBlueprint';

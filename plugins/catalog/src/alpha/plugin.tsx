@@ -28,6 +28,7 @@ import {
 
 import apis from './apis';
 import pages from './pages';
+import columns from './columns';
 import filters from './filters';
 import entityCards from './entityCards';
 import entityContents from './entityContents';
@@ -56,6 +57,7 @@ export default createFrontendPlugin({
   extensions: [
     ...apis,
     ...pages,
+    ...columns,
     ...filters,
     ...entityCards,
     ...entityContents,
