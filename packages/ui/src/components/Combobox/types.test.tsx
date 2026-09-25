@@ -94,6 +94,12 @@ const invalidOptionsAndChildren = {
   options,
   children: <ComboboxItemText id="draft" title="Draft" />,
 };
+const invalidUnidentifiedItems = {
+  items: [{ name: 'Ada Lovelace' }],
+  children: (owner: { name: string }) => (
+    <ComboboxItemProfile name={owner.name} />
+  ),
+};
 const invalidAsyncServerItems = {
   items: asyncOwners,
   search: { mode: 'server' as const },
@@ -287,6 +293,9 @@ describe('Combobox types', () => {
 
     // @ts-expect-error dynamic items require a renderer
     <Combobox items={owners} />;
+
+    // @ts-expect-error dynamic items require an id
+    <Combobox {...invalidUnidentifiedItems} />;
 
     // @ts-expect-error static composition cannot be mixed with options
     <Combobox {...invalidOptionsAndChildren} />;

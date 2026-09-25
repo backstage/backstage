@@ -49,6 +49,12 @@ const controlledServerSearch = {
   inputValue: 'draft',
   onInputChange() {},
 };
+const invalidUnidentifiedItems = {
+  items: [{ name: 'Ada Lovelace' }],
+  children: (owner: { name: string }) => (
+    <SelectItemProfile name={owner.name} />
+  ),
+};
 
 describe('Select types', () => {
   it('exports props for each collection mode', () => {
@@ -170,6 +176,9 @@ describe('Select types', () => {
 
         {/* @ts-expect-error dynamic items require a renderer */}
         <Select items={owners} />
+
+        {/* @ts-expect-error dynamic items require an id */}
+        <Select {...invalidUnidentifiedItems} />
 
         {/* @ts-expect-error static composition cannot be mixed with options */}
         <Select options={options}>
