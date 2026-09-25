@@ -42,13 +42,8 @@ export const TechDocsStateIndicator = () => {
   const classes = useStyles();
   const { t } = useTranslationRef(techdocsTranslationRef);
 
-  const {
-    state,
-    contentReload,
-    contentErrorMessage,
-    syncErrorMessage,
-    buildLog,
-  } = useTechDocsReader();
+  const { state, contentReload, syncErrorMessage, buildLog } =
+    useTechDocsReader();
 
   if (state === 'INITIAL_BUILD') {
     StateAlert = (
@@ -121,7 +116,7 @@ export const TechDocsStateIndicator = () => {
             {t('stateIndicator.contentStaleError.message')} {syncErrorMessage}
           </Alert>
         )}
-        <TechDocsNotFound errorMessage={contentErrorMessage} />
+        <TechDocsNotFound />
       </>
     );
   }
