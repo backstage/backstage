@@ -224,7 +224,8 @@ export function getBitbucketCloudFileFetchUrl(
 /**
  * Gets the request options necessary to make requests to a given provider.
  * Returns headers for authenticating with Bitbucket Cloud.
- * Supports OAuth (clientId/clientSecret), username/token, and username/appPassword auth.
+ * Supports OAuth (clientId/clientSecret), username/token, username/appPassword,
+ * and Bearer token auth.
  *
  * @param config - The relevant provider config
  * @public
@@ -255,6 +256,11 @@ export async function getBitbucketCloudRequestOptions(
       'utf8',
     );
     headers.Authorization = `Basic ${buffer.toString('base64')}`;
+  }
+
+  // Using Bearer authentication (token only)
+  if (config.token && !config.username) {
+    headers.Authorization = `Bearer ${config.token}`;
   }
 
   return { headers };
