@@ -310,6 +310,30 @@ describe('tasks', () => {
         fs.readFile('templatedApp/packages/backend/package.json', 'utf-8'),
       ).resolves.toContain('sqlite3"');
     });
+
+    it.each(['default-app', 'legacy-app'])(
+      'should include required Yarn resolutions in the %s template',
+      async templateName => {
+        const templateDir = resolvePath(
+          __dirname,
+          `../../templates/${templateName}`,
+        );
+        const destinationDir = `templated-${templateName}`;
+
+        await templatingTask(templateDir, destinationDir, {
+          name: 'SuperCoolBackstageInstance',
+          dbTypeSqlite: true,
+        });
+
+        await expect(
+          fs.readJson(`${destinationDir}/package.json`),
+        ).resolves.toMatchObject({
+          resolutions: {
+            '@yarnpkg/core': '4.9.1',
+          },
+        });
+      },
+    );
   });
 
   describe('readGitConfig', () => {
