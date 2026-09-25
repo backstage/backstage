@@ -27,6 +27,7 @@ The server side providers are:
 
 - `aws`
 - `azure`
+- `microsoft`
 - `googleServiceAccount`
 - `localKubectlProxy`
 - `serviceAccount`
@@ -159,6 +160,90 @@ page for the cluster resource, go to `Overview` > `Properties` tab >
 `Networking` section and copy paste the API server address directly in that
 `url` field.
 
+### Microsoft
+
+The Microsoft provider supports the scenario where a Microsoft Entra App and [OpenID Connect][9] are used to authenticate to clusters hosted on-premise or at cloud provider other than Azure (e.g. [Amazon EKS][10]);
+
+:::tip
+AKS users should generally find the [Azure provider](#azure) more suitable.
+:::
+
+```yaml
+kubernetes:
+  clusterLocatorMethods:
+    - type: 'config'
+      clusters:
+        - title: My Self Hosted Kubernetes Cluster
+          name: on-prem-cluster0
+          url: https://k8s.example.com
+          authProvider: microsoft
+          authMetadata:
+            kubernetes.io/microsoft-entra-id-scope: ${KUBERNETES_ENTERPRISE_APP_SCOPE}
+
+auth:
+  providers:
+    microsoft:
+      <env>:
+        clientId: ${AZURE_CLIENT_ID}
+        clientSecret: ${AZURE_CLIENT_SECRET}
+        tenantId: ${AZURE_TENANT_ID}
+        ...
+```
+
+The configuration of the [Microsoft Azure authentication provider](../../auth/microsoft/provider.md) is required as the Enterprise Application created for Backstage will be used to get users authorized against the Kubernetes clusters.
+
+#### Alternative configuration
+
+When relying on the `catalog` cluster locator methods, the `kubernetes.io/microsoft-entra-id-scope` annotation has to be added to the `kubernetes-cluster` resource.
+
+```yaml
+kubernetes:
+  clusterLocatorMethods:
+    - type: 'catalog'
+```
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  namespace: default
+  annotations:
+    kubernetes.io/auth-provider: microsoft
+    kubernetes.io/microsoft-entra-id-scope: my-custom-scope/role.permission
+  name: on-prem-cluster0
+```
+
+#### Scope resolution
+
+The Microsoft provider needs an OAuth scope to request a token for the
+Kubernetes cluster. The scope is resolved in the following order:
+
+1. The `kubernetes.io/microsoft-entra-id-scope` annotation on the cluster
+   (shown in the YAML examples above).
+2. If the annotation is not present, the provider falls back to the
+   `kubernetes.auth.providers.microsoft.<env>.scope` config key, where
+   `<env>` is the current `NODE_ENV` (defaults to `development`).
+
+There is no built-in default scope. If neither the annotation nor the config
+key is set, the provider throws an error at runtime. You must provide a
+scope through at least one of these two options.
+
+When every cluster uses the same scope, the config key avoids repeating the
+annotation on each cluster entry:
+
+```yaml
+kubernetes:
+  auth:
+    providers:
+      microsoft:
+        <env>:
+          scope: ${KUBERNETES_ENTERPRISE_APP_SCOPE}
+```
+
+When clusters require different scopes, set the
+`kubernetes.io/microsoft-entra-id-scope` annotation per cluster instead.
+The annotation always takes precedence over the config key.
+
 ## Client Side Providers
 
 These providers authenticate a _user_ with the cluster. Each Backstage user will
@@ -183,3 +268,5 @@ The providers available as client side are:
 [7]: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 [8]: https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html#API_AssumeRole_RequestParameters
 [9]: https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithWebIdentity.html
+[10]: https://kubernetes.io/docs/reference/access-authn-authz/authentication/#openid-connect-tokens
+[11]: https://aws.amazon.com/blogs/containers/using-azure-active-directory-to-authenticate-to-amazon-eks

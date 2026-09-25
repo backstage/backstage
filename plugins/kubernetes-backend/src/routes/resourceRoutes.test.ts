@@ -40,6 +40,19 @@ describe('resourcesRoutes', () => {
     auditor.createEvent.mockResolvedValue(auditEvent);
   };
 
+  const nodeEnv = process.env.NODE_ENV || 'development';
+  const auth = {
+    providers: {
+      microsoft: {
+        [nodeEnv]: {
+          tenantId: 'microsoft-entra-id-enterprise-application-tenant-id',
+          clientId: 'microsoft-entra-id-enterprise-application-client-id',
+          clientSecret:
+            'microsoft-entra-id-enterprise-application-client-secret',
+        },
+      },
+    },
+  };
   const startPermissionDeniedTestServer = async () => {
     setupAuditorMock();
     const { server } = await startTestBackend({
@@ -50,6 +63,7 @@ describe('resourcesRoutes', () => {
               serviceLocatorMethod: { type: 'multiTenant' },
               clusterLocatorMethods: [],
             },
+            auth,
           },
         }),
         auditor.factory,
@@ -139,6 +153,7 @@ describe('resourcesRoutes', () => {
                 },
               ],
             },
+            auth,
           },
         }),
         auditor.factory,
