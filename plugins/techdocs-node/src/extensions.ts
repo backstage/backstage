@@ -16,11 +16,11 @@
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import { DocsBuildStrategy } from './techdocsTypes';
 import {
+  GeneratorBase,
   PreparerBase,
   PublisherBase,
   PublisherType,
   RemoteProtocol,
-  TechdocsGenerator,
 } from './stages';
 import * as winston from 'winston';
 import { PublisherSettings } from './stages/publish/types';
@@ -51,7 +51,7 @@ export const techdocsBuildsExtensionPoint =
  * @public
  */
 export interface TechdocsGeneratorExtensionPoint {
-  setTechdocsGenerator(generator: TechdocsGenerator): void;
+  setTechdocsGenerator(generator: GeneratorBase): void;
 }
 
 /**

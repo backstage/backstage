@@ -95,21 +95,27 @@ function setCorsHeaders(response: http.ServerResponse) {
 export function proxyHtmlWithLivereloadInjection(options: {
   request: http.IncomingMessage;
   response: http.ServerResponse;
-  mkdocsTargetAddress: string;
+  targetAddress: string;
   proxyEndpoint: string;
+  transformHtml: (html: string) => string;
   onError: (error: Error) => void;
 }): void {
-  const { request, response, mkdocsTargetAddress, proxyEndpoint, onError } =
-    options;
+  const {
+    request,
+    response,
+    targetAddress,
+    proxyEndpoint,
+    transformHtml,
+    onError,
+  } = options;
 
   const htmlProxy = httpProxy.createProxyServer({
-    target: mkdocsTargetAddress,
+    target: targetAddress,
     selfHandleResponse: true,
   });
 
   htmlProxy.on('error', onError);
 
-  // Intercept HTML responses to inject `<live-reload …>`
   htmlProxy.on('proxyRes', (proxyRes, _req, res) => {
     const contentType = proxyRes.headers['content-type'];
     const contentEncoding = proxyRes.headers['content-encoding'];
@@ -124,7 +130,7 @@ export function proxyHtmlWithLivereloadInjection(options: {
       });
       proxyRes.on('end', () => {
         const body = Buffer.concat(chunks).toString('utf8');
-        const modifiedHtml = injectLivereloadParameters(body);
+        const modifiedHtml = transformHtml(body);
         res.statusCode = (proxyRes.statusCode as number | undefined) ?? 200;
         Object.keys(proxyRes.headers).forEach(key => {
           if (key.toLowerCase() !== HEADER_CONTENT_LENGTH) {

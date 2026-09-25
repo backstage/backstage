@@ -56,6 +56,11 @@ export interface Config {
       pullOptions?: ContainerRunnerPullOptions;
 
       /**
+       * Defines the default document generation engine behind TechDocs
+       */
+      defaultEngine?: 'mkdocs';
+
+      /**
        * Override behavior specific to mkdocs.
        */
       mkdocs?: {
