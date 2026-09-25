@@ -1,5 +1,11 @@
 # @backstage/cli-module-build
 
+## 0.1.9-next.1
+
+### Patch Changes
+
+- 2ece167: Updated dependency `webpack` to `~5.111.0`.
+
 ## 0.1.9-next.0
 
 ### Patch Changes

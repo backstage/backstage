@@ -1,5 +1,13 @@
 # @backstage/backend-defaults
 
+## 0.18.1-next.1
+
+### Patch Changes
+
+- c478470: Added a service-authenticated action registry status endpoint that reports whether a plugin provides actions without exposing action metadata.
+- 1939ded: Added bounded retries for transient failures while initializing Cloud SQL database connections.
+- 6887ecc: Updated dependency `infinispan` to `^0.16.0`.
+
 ## 0.18.1-next.0
 
 ### Patch Changes
