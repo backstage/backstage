@@ -61,5 +61,11 @@ export {
   isMcpServerApiEntity,
   mcpServerApiEntityModel,
 } from './kinds/McpServerApiEntity';
+export type { AiModelServerApiEntity } from './kinds/AiModelServerApiEntity';
+export {
+  aiModelServerApiEntityValidator,
+  isAiModelServerApiEntity,
+  aiModelServerApiEntityModel,
+} from './kinds/AiModelServerApiEntity';
 export * from './model';
 export { defaultCatalogEntityModel } from './model/defaultCatalogEntityModel';
