@@ -25,7 +25,7 @@ const GITHUB_RAW_BASE_URL =
 export type ReleaseManifest = {
   releaseVersion: string;
   /** Requirements copied from the release's root package.json engines field. Absent in older manifests. */
-  requirements?: Record<string, string>;
+  requirements?: { node: string; [key: string]: unknown };
   packages: { name: string; version: string }[];
 };
 
