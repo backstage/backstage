@@ -1,0 +1,1 @@
+Fixed TechDocs generation for documented MkDocs Markdown extension configurations.

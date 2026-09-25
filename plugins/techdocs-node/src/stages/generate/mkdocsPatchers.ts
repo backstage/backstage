@@ -15,6 +15,7 @@
  */
 import fs from 'fs-extra';
 import yaml from 'js-yaml';
+import path from 'node:path';
 import { ParsedLocationAnnotation } from '../../helpers';
 import {
   ALLOWED_MKDOCS_KEYS,
@@ -26,7 +27,10 @@ import {
 } from './helpers';
 import { toError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  resolveSafeChildPath,
+} from '@backstage/backend-plugin-api';
 
 const MATERIAL_THEME = 'material';
 const PYMDOWNX_SNIPPETS_EXTENSION = 'pymdownx.snippets';
@@ -139,6 +143,30 @@ function sanitizeMkdocsPlugins(
   }
 
   return sanitizedPlugins;
+}
+
+// mkdocs-material globs SVGs from every `options.custom_icons` path with no
+// confinement, so the option must be an array of string paths that each
+// resolve inside the documentation input directory, which mkdocs runs from.
+function isConfinedCustomIcons(
+  customIcons: unknown,
+  inputDir: string,
+): boolean {
+  if (!Array.isArray(customIcons)) {
+    return false;
+  }
+
+  return customIcons.every(entry => {
+    if (typeof entry !== 'string') {
+      return false;
+    }
+    try {
+      resolveSafeChildPath(inputDir, entry);
+      return true;
+    } catch {
+      return false;
+    }
+  });
 }
 
 type MkDocsThemeObject = {
@@ -429,6 +457,8 @@ export const sanitizeMkdocsYml = async (
     // Sanitize markdown_extensions
     const extensions = sanitized.markdown_extensions;
     const removedEntries: string[] = [];
+    const inputDir = path.dirname(mkdocsYmlPath);
+    let removedCustomIcons = false;
     const extensionMapping = isPlainObject(extensions) ? extensions : undefined;
     let normalizedExtensions: unknown[] | undefined;
     if (Array.isArray(extensions)) {
@@ -508,6 +538,21 @@ export const sanitizeMkdocsYml = async (
                 removedEntries.push(dangerousKey);
               }
             }
+
+            const options = sanitizedConfig.options;
+            // A tagged value such as `!ENV` resolves to a mapping at build
+            // time, so its custom_icons cannot be checked here.
+            if (options instanceof UnknownTag) {
+              delete sanitizedConfig.options;
+              removedCustomIcons = true;
+            } else if (isPlainObject(options) && 'custom_icons' in options) {
+              if (!isConfinedCustomIcons(options.custom_icons, inputDir)) {
+                const sanitizedOptions = { ...options };
+                delete sanitizedOptions.custom_icons;
+                sanitizedConfig.options = sanitizedOptions;
+                removedCustomIcons = true;
+              }
+            }
             sanitizedExtension[extensionName] = sanitizedConfig;
           } else {
             sanitizedExtension[extensionName] = extensionConfig;
@@ -532,6 +577,12 @@ export const sanitizeMkdocsYml = async (
         `Removed the following dangerous entries from markdown_extensions in mkdocs.yml: ${removedEntries.join(
           ', ',
         )}.`,
+      );
+    }
+
+    if (removedCustomIcons) {
+      logger.warn(
+        `Removed the custom_icons option from markdown_extensions in mkdocs.yml because it must be an array of string paths inside the documentation input directory.`,
       );
     }
 
