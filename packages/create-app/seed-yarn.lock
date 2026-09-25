@@ -92,7 +92,7 @@ fast-xml-builder@*:
 
 // @yarnpkg/core@4.9.2 references a repository-local got patch that is not
 // included in the published package, causing fresh installs to fail.
-"@yarnpkg/core@^4.9.1":
+"@yarnpkg/core@npm:^4.9.1":
   version "4.9.1"
   resolved "https://registry.yarnpkg.com/@yarnpkg/core/-/core-4.9.1.tgz#d34302194a86030c0eecbb85f62c3853dc76e1a8"
   integrity sha512-P8H10ehQBFWL5eR1y/8nLRzFHx1yumgE9P1DQjJ+EIVvqeWo0MjbwQ+ZJjPDT+HqVDslE+e6I/9GrJ7Arbx/8A==
