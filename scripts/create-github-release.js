@@ -42,6 +42,7 @@
 
 const { Octokit } = require('@octokit/rest');
 const semver = require('semver');
+const { findLatestStableRelease } = require('./find-latest-stable-release');
 
 // See Examples above to learn about these command line arguments.
 const [TAG_NAME, BOOL_CREATE_RELEASE] = process.argv.slice(2);
@@ -164,19 +165,38 @@ async function getReleaseDescriptionFromCommit(commit, client = octokit) {
 }
 
 // Create Release on GitHub.
-async function createRelease(releaseDescription) {
-  // Create draft release if BOOL_CREATE_RELEASE is undefined
-  // Publish release if BOOL_CREATE_RELEASE is not undefined
-  const boolCreateDraft = !BOOL_CREATE_RELEASE;
+async function createRelease({
+  client = octokit,
+  createPublishedRelease = BOOL_CREATE_RELEASE,
+  releaseDescription,
+  tagName = TAG_NAME,
+}) {
+  // Create draft release if createPublishedRelease is undefined
+  // Publish release if createPublishedRelease is not undefined
+  const boolCreateDraft = !createPublishedRelease;
+  const prerelease = Boolean(semver.prerelease(tagName));
+  let makeLatest = 'false';
+  if (!boolCreateDraft && !prerelease) {
+    const tags = await client.paginate(client.repos.listTags, {
+      owner: GH_OWNER,
+      repo: GH_REPO,
+      per_page: 100,
+    });
+    const latestStableRelease = findLatestStableRelease(
+      tags.map(tag => tag.name),
+    );
+    makeLatest = latestStableRelease === tagName.slice(1) ? 'true' : 'false';
+  }
 
-  const releaseResponse = await octokit.repos.createRelease({
+  const releaseResponse = await client.repos.createRelease({
     owner: GH_REPO,
     repo: GH_REPO,
-    tag_name: TAG_NAME,
-    name: TAG_NAME,
+    tag_name: tagName,
+    name: tagName,
     body: releaseDescription,
     draft: boolCreateDraft,
-    prerelease: Boolean(semver.prerelease(TAG_NAME)),
+    prerelease,
+    make_latest: makeLatest,
   });
 
   if (releaseResponse.status === 201) {
@@ -201,7 +221,7 @@ async function main() {
 
   const commit = await getCommitUsingTagName(TAG_NAME);
   const releaseDescription = await getReleaseDescriptionFromCommit(commit);
-  await createRelease(releaseDescription);
+  await createRelease({ releaseDescription });
 }
 
 if (require.main === module) {
@@ -211,4 +231,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { getReleaseDescriptionFromCommit };
+module.exports = { createRelease, getReleaseDescriptionFromCommit };
