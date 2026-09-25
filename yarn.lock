@@ -43265,13 +43265,13 @@ __metadata:
   linkType: hard
 
 "supertest@npm:^7.0.0, supertest@npm:^7.1.0":
-  version: 7.2.2
-  resolution: "supertest@npm:7.2.2"
+  version: 7.3.0
+  resolution: "supertest@npm:7.3.0"
   dependencies:
     cookie-signature: "npm:^1.2.2"
     methods: "npm:^1.1.2"
     superagent: "npm:^10.3.0"
-  checksum: 10/41b29e005b7f0fec8e062df1e43037d5a29b40c1172331d1b448e8b39ed3cc020d2aac342aad6d6e75c1e07b2f08c32bff6472cd726ab4fc9b3f10969937979d
+  checksum: 10/14f69c5acb497cbb02d681cc1f1b1c8775d42ec063d0c6a794cf12a043d8b5ec7c7c02d239137cb55cdbfadb8b549bb62ea11a6121b93155ce7fcd7776aa9a2c
   languageName: node
   linkType: hard
 
