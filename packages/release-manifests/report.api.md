@@ -42,6 +42,7 @@ export type GetManifestByVersionOptions = {
 // @public
 export type ReleaseManifest = {
   releaseVersion: string;
+  requirements?: Record<string, string>;
   packages: {
     name: string;
     version: string;
