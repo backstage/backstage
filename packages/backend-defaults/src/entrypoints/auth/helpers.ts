@@ -20,6 +20,7 @@ import {
   BackstagePrincipalAccessRestrictions,
   BackstageServicePrincipal,
   BackstageUserPrincipal,
+  BackstageUserIdentityContext,
 } from '@backstage/backend-plugin-api';
 import { InternalBackstageCredentials } from './types';
 import { AccessRestrictionsMap } from './external/types';
@@ -65,10 +66,12 @@ export function createCredentialsWithUserPrincipal(
   token: string,
   expiresAt?: Date,
   actor?: string,
+  identityContext?: BackstageUserIdentityContext,
 ): InternalBackstageCredentials<BackstageUserPrincipal> {
   const principal = createUserPrincipal(
     sub,
     actor ? createServicePrincipal(actor) : undefined,
+    identityContext,
   );
   const result = {
     $$type: '@backstage/BackstageCredentials',
@@ -166,10 +169,24 @@ function createServicePrincipal(
 function createUserPrincipal(
   userEntityRef: string,
   actor?: BackstageServicePrincipal,
+  identityContext?: BackstageUserIdentityContext,
 ): BackstageUserPrincipal {
+  const identityContextCopy =
+    identityContext &&
+    Object.freeze({
+      issuer: identityContext.issuer,
+      attributes: Object.freeze(
+        Object.fromEntries(
+          Object.keys(identityContext.attributes)
+            .sort()
+            .map(key => [key, identityContext.attributes[key]]),
+        ),
+      ),
+    });
   const result = {
     type: 'user',
     userEntityRef,
+    ...(identityContextCopy && { identityContext: identityContextCopy }),
     actor,
   } as const;
   Object.defineProperties(result, {
@@ -179,6 +196,13 @@ function createUserPrincipal(
       writable: true,
       value: () => {
         let parts = userEntityRef;
+        if (identityContextCopy) {
+          const hash = createHash('sha256')
+            .update(JSON.stringify(identityContextCopy))
+            .digest('base64')
+            .replace(/=+$/, '');
+          parts += `,identityContext=${hash}`;
+        }
         if (actor) {
           parts += `,actor={${actor}}`;
         }

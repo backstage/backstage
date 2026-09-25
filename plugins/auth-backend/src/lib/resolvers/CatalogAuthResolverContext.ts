@@ -105,6 +105,7 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
     };
 
     const issuedToken = await this.tokenIssuer.issueToken({
+      ...params,
       claims,
     });
 
