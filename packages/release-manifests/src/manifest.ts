@@ -19,11 +19,13 @@ const GITHUB_RAW_BASE_URL =
   'https://raw.githubusercontent.com/backstage/versions/main';
 
 /**
- * Contains mapping between Backstage release and package versions.
+ * Contains mapping between a Backstage release and its requirements and package versions.
  * @public
  */
 export type ReleaseManifest = {
   releaseVersion: string;
+  /** Requirements copied from the release's root package.json engines field. Absent in older manifests. */
+  requirements?: Record<string, string>;
   packages: { name: string; version: string }[];
 };
 
