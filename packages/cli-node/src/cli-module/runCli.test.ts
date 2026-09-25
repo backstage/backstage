@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { execFileSync } from 'node:child_process';
 import { createCliModule } from './createCliModule';
 import { runCli } from './runCli';
 
@@ -76,6 +77,38 @@ describe('runCli', () => {
 
     expect(process.exit).toHaveBeenCalledWith(0);
     expect(process.exit).toHaveBeenCalledTimes(1);
+  });
+
+  it('preserves large JSON output when stdout is piped', () => {
+    const script = `
+      require('@backstage/cli-node/config/nodeTransform.cjs');
+      const { createCliModule, runCli } = require('@backstage/cli-node');
+      const module = createCliModule({
+        packageJson: { name: '@example/output' },
+        init(reg) {
+          reg.addCommand({
+            path: ['emit'],
+            description: 'Emit a large JSON response',
+            execute: async () => {
+              process.stdout.write(JSON.stringify({
+                items: [{ definition: 'x'.repeat(98_000) }],
+              }));
+            },
+          });
+        },
+      });
+      process.argv = [process.execPath, 'fixture', 'emit'];
+      runCli({ modules: [module], name: 'example-cli' });
+    `;
+
+    const output = execFileSync(process.execPath, ['-e', script], {
+      cwd: process.cwd(),
+      encoding: 'utf8',
+      maxBuffer: 1024 * 1024,
+    });
+    const result = JSON.parse(output) as { items: { definition: string }[] };
+
+    expect(result.items[0].definition).toHaveLength(98_000);
   });
 
   it('forwards help flags to leaf commands', async () => {

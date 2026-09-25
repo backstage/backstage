@@ -142,6 +142,13 @@ async function executeCommand(
   }
 }
 
+/** Wait for command output to reach stdout before exiting the CLI process. */
+async function flushStdout(): Promise<void> {
+  await new Promise<void>((resolve, reject) => {
+    process.stdout.write('', error => (error ? reject(error) : resolve()));
+  });
+}
+
 async function runCommandLevel(options: {
   nodes: ReadonlyArray<CommandNode>;
   argv: string[];
@@ -174,6 +181,7 @@ async function runCommandLevel(options: {
               commandArgs,
               programName,
             );
+            await flushStdout();
             process.exit(0);
           }
         } catch (error: unknown) {
