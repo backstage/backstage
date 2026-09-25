@@ -1,5 +1,14 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.8.8-next.1
+
+### Patch Changes
+
+- 786a8ea: Corrected the `schemaLocator` documentation to identify `dist/.config-schema.json` as the default dynamic-plugin config-schema path.
+- b9c9dd2: Internal refactor of dynamic backend plugin alpha-to-main entrypoint loading. No intended behavior change.
+- Updated dependencies
+  - @backstage/backend-defaults@0.18.1-next.1
+
 ## 0.8.8-next.0
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog
 
+## 2.0.10-next.1
+
+### Patch Changes
+
+- 13adaa1: Updated internal React component names to improve debugging and tooling compatibility.
+- a7a1274: Use EntityDisplayName for hierarchy links in BUI entity header in order to display titles
+- Updated dependencies
+  - @backstage/core-components@0.18.15-next.1
+
 ## 2.0.10-next.0
 
 ### Patch Changes

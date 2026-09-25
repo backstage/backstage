@@ -1,5 +1,11 @@
 # @backstage/plugin-mui-to-bui
 
+## 0.2.12-next.1
+
+### Patch Changes
+
+- 701eaf4: The text now points to the main documentation instead of repeating information here.
+
 ## 0.2.12-next.0
 
 ### Patch Changes

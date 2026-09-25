@@ -1,5 +1,11 @@
 # @backstage/core-components
 
+## 0.18.15-next.1
+
+### Patch Changes
+
+- e859c29: Added `defaultCloseDelayMs` option to `SubmenuOptions` to configure a delay before a submenu closes.
+
 ## 0.18.15-next.0
 
 ### Patch Changes
