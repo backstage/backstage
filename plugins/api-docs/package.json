@@ -53,7 +53,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@asyncapi/react-component": "^2.3.3",
+    "@asyncapi/react-component": "^3.1.4",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
