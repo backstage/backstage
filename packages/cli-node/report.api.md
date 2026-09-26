@@ -198,6 +198,7 @@ export const packageFeatureType: readonly [
   '@backstage/BackstagePlugin',
   '@backstage/FrontendPlugin',
   '@backstage/FrontendModule',
+  '@backstage/FrontendFeatureLoader',
 ];
 
 // @public
