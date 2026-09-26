@@ -211,6 +211,11 @@ export function registerCommands(program: Command) {
   program
     .command('type-deps')
     .description('Find inconsistencies in types of all packages and plugins')
+    .option(
+      '--allow-empty',
+      'Exit successfully even if no packages had type declarations to check',
+      false,
+    )
     .action(lazy(() => import('./type-deps/type-deps'), 'default'));
 
   program
