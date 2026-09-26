@@ -7,9 +7,10 @@ import {
   variantsSnippet,
   sizesSnippet,
   disabledSnippet,
+  destructiveSnippet,
   isPendingSnippet,
 } from './snippets';
-import { Variants, Sizes, Disabled, Pending } from './components';
+import { Variants, Sizes, Disabled, Destructive, Pending } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ButtonIconDefinition } from '../../../utils/definitions';
@@ -22,7 +23,7 @@ export const reactAriaUrls = {
 
 <PageTitle
   title="ButtonIcon"
-  description="An icon-only button with primary, secondary, and tertiary variants."
+  description="An icon-only button with primary, secondary, and tertiary variants, destructive styling, and pending state."
 />
 
 <Snippet align="center" py={4} preview={<Variants />} code={variantsSnippet} />
@@ -61,6 +62,18 @@ export const reactAriaUrls = {
   open
   preview={<Disabled />}
   code={disabledSnippet}
+/>
+
+### Destructive
+
+Use the `destructive` prop for dangerous actions like delete or remove.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Destructive />}
+  code={destructiveSnippet}
 />
 
 ### Pending

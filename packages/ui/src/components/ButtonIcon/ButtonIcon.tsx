@@ -22,7 +22,7 @@ import { useDefinition } from '../../hooks/useDefinition';
 import { ButtonIconDefinition } from './definition';
 
 /**
- * An icon-only button that supports a loading state and requires an accessible label.
+ * An icon-only button that supports destructive and loading states and requires an accessible label.
  *
  * @public
  */
