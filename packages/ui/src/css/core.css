@@ -28,6 +28,7 @@
 
   body {
     background-color: var(--bui-bg-app);
+    min-height: 100svh;
 
     /* Text defaults */
     color: var(--bui-fg-primary);
