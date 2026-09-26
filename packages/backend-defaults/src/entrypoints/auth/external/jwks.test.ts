@@ -44,6 +44,7 @@ class FakeTokenFactory {
     claims: {
       sub: string;
       ent?: string[];
+      [claim: string]: unknown;
     };
   }): Promise<string> {
     const pair = await generateKeyPair('RS256');
@@ -53,14 +54,13 @@ class FakeTokenFactory {
     this.keys.push(publicKey as AnyJWK);
 
     const iss = this.options.issuer;
-    const sub = params.claims.sub;
-    const ent = params.claims.ent;
+    const { sub, ...extraClaims } = params.claims;
     const aud = 'backstage';
     const iat = Math.floor(Date.now() / 1000);
     const exp = iat + this.options.keyDurationSeconds;
 
-    return new SignJWT({ iss, sub, aud, iat, exp, ent, kid })
-      .setProtectedHeader({ alg: 'RS256', ent: ent, kid: kid })
+    return new SignJWT({ ...extraClaims, iss, sub, aud, iat, exp, kid })
+      .setProtectedHeader({ alg: 'RS256', kid })
       .setIssuer(iss)
       .setAudience(aud)
       .setSubject(sub)
@@ -166,5 +166,232 @@ describe('JWKSHandler', () => {
     expect(result).toEqual({
       subject: `external:${validEntry.options.subjectPrefix}:${mockSubject}`,
     });
+  });
+
+  it('accepts a token whose claims match the required values', async () => {
+    const context = jwksTokenHandler.initialize({
+      options: new ConfigReader({
+        url: `${mockBaseUrl}/.well-known/jwks.json`,
+        algorithm: 'RS256',
+        issuer: mockBaseUrl,
+        audience: 'backstage',
+        claims: {
+          // single exact value
+          department: 'platform',
+          // one-of a configured list
+          tier: ['gold', 'silver'],
+          // matched against one entry of a claim that is an array
+          groups: 'admins',
+          // matched against one token of the space-delimited `scope` claim
+          scope: 'catalog:read',
+        },
+      }),
+    });
+
+    const token = await factory.issueToken({
+      claims: {
+        sub: mockSubject,
+        department: 'platform',
+        tier: 'silver',
+        groups: ['viewers', 'admins'],
+        scope: 'catalog:read catalog:write',
+      },
+    });
+
+    const result = await jwksTokenHandler.verifyToken(token, context);
+
+    expect(result).toEqual({ subject: `external:${mockSubject}` });
+  });
+
+  it('matches numeric and boolean claim values by their string form', async () => {
+    const context = jwksTokenHandler.initialize({
+      options: new ConfigReader({
+        url: `${mockBaseUrl}/.well-known/jwks.json`,
+        algorithm: 'RS256',
+        issuer: mockBaseUrl,
+        audience: 'backstage',
+        claims: { ver: 2, verified: true },
+      }),
+    });
+
+    const token = await factory.issueToken({
+      claims: { sub: mockSubject, ver: 2, verified: true },
+    });
+
+    const result = await jwksTokenHandler.verifyToken(token, context);
+
+    expect(result).toEqual({ subject: `external:${mockSubject}` });
+  });
+
+  it('treats a single string allowed value as one exact value, not comma/space-split', async () => {
+    const context = jwksTokenHandler.initialize({
+      options: new ConfigReader({
+        url: `${mockBaseUrl}/.well-known/jwks.json`,
+        algorithm: 'RS256',
+        issuer: mockBaseUrl,
+        audience: 'backstage',
+        claims: { department: 'platform, other-department' },
+      }),
+    });
+
+    // Unlike `issuer`/`audience`/`algorithm`, a single `claims` string value is
+    // not split on comma/space - use an array for multiple allowed values.
+    const exactMatch = await factory.issueToken({
+      claims: { sub: mockSubject, department: 'platform, other-department' },
+    });
+    await expect(
+      jwksTokenHandler.verifyToken(exactMatch, context),
+    ).resolves.toEqual({ subject: `external:${mockSubject}` });
+
+    const partialMatch = await factory.issueToken({
+      claims: { sub: mockSubject, department: 'platform' },
+    });
+    await expect(
+      jwksTokenHandler.verifyToken(partialMatch, context),
+    ).resolves.toBeUndefined();
+  });
+
+  it('only splits the `scope` claim on spaces, not other claims', async () => {
+    const context = jwksTokenHandler.initialize({
+      options: new ConfigReader({
+        url: `${mockBaseUrl}/.well-known/jwks.json`,
+        algorithm: 'RS256',
+        issuer: mockBaseUrl,
+        audience: 'backstage',
+        claims: { name: 'jane', scope: 'catalog:read' },
+      }),
+    });
+
+    // A `name` of "jane doe" must not match an allowed value of "jane" just
+    // because "jane" is one of its space-separated words.
+    const token = await factory.issueToken({
+      claims: {
+        sub: mockSubject,
+        name: 'jane doe',
+        scope: 'catalog:read catalog:write',
+      },
+    });
+
+    const result = await jwksTokenHandler.verifyToken(token, context);
+
+    expect(result).toBeUndefined();
+  });
+
+  it('rejects a token when a required claim does not match', async () => {
+    const context = jwksTokenHandler.initialize({
+      options: new ConfigReader({
+        url: `${mockBaseUrl}/.well-known/jwks.json`,
+        algorithm: 'RS256',
+        issuer: mockBaseUrl,
+        audience: 'backstage',
+        claims: {
+          department: 'platform',
+          tier: ['gold', 'silver'],
+        },
+      }),
+    });
+
+    // `tier` is not one of the allowed values, even though `department` matches
+    const token = await factory.issueToken({
+      claims: { sub: mockSubject, department: 'platform', tier: 'bronze' },
+    });
+
+    const result = await jwksTokenHandler.verifyToken(token, context);
+
+    expect(result).toBeUndefined();
+  });
+
+  it('rejects an invalid claims config value', () => {
+    expect(() => {
+      jwksTokenHandler.initialize({
+        options: new ConfigReader({
+          url: `${mockBaseUrl}/.well-known/jwks.json`,
+          claims: { department: {} },
+        }),
+      });
+    }).toThrow(
+      "Invalid value for 'claims.department' in JWKS external access config, expected a non-empty string, number, boolean, or array of those",
+    );
+  });
+
+  it('rejects a token that is missing a required claim entirely', async () => {
+    const context = jwksTokenHandler.initialize({
+      options: new ConfigReader({
+        url: `${mockBaseUrl}/.well-known/jwks.json`,
+        algorithm: 'RS256',
+        issuer: mockBaseUrl,
+        audience: 'backstage',
+        claims: { department: 'platform' },
+      }),
+    });
+
+    const token = await factory.issueToken({
+      claims: { sub: mockSubject },
+    });
+
+    const result = await jwksTokenHandler.verifyToken(token, context);
+
+    expect(result).toBeUndefined();
+  });
+
+  it('supports claim names containing dots and slashes', async () => {
+    // Regression test: claim names are commonly namespaced with dots and
+    // slashes, which are not valid `Config` key path segments. Reading them via
+    // `Config.get(claimName)` would throw `Invalid config key`, so both config
+    // parsing and matching must treat claim names as opaque strings.
+    const context = jwksTokenHandler.initialize({
+      options: new ConfigReader({
+        url: `${mockBaseUrl}/.well-known/jwks.json`,
+        algorithm: 'RS256',
+        issuer: mockBaseUrl,
+        audience: 'backstage',
+        claims: {
+          'example.com/access_policy': 'allow',
+          'https://example.com/roles': ['operator', 'auditor'],
+        },
+      }),
+    });
+
+    const token = await factory.issueToken({
+      claims: {
+        sub: mockSubject,
+        'example.com/access_policy': 'allow',
+        'https://example.com/roles': ['auditor'],
+      },
+    });
+
+    const result = await jwksTokenHandler.verifyToken(token, context);
+
+    expect(result).toEqual({ subject: `external:${mockSubject}` });
+  });
+
+  it('applies claim checks alongside issuer and audience verification', async () => {
+    const context = jwksTokenHandler.initialize({
+      options: new ConfigReader({
+        url: `${mockBaseUrl}/.well-known/jwks.json`,
+        algorithm: 'RS256',
+        issuer: mockBaseUrl,
+        audience: 'backstage',
+        subjectPrefix: 'custom-prefix',
+        claims: { sub: mockSubject },
+      }),
+    });
+
+    const matching = await factory.issueToken({
+      claims: { sub: mockSubject },
+    });
+    await expect(
+      jwksTokenHandler.verifyToken(matching, context),
+    ).resolves.toEqual({
+      subject: `external:custom-prefix:${mockSubject}`,
+    });
+
+    // Same valid issuer/audience, but a `sub` that is not in the allowed set.
+    const wrongSubject = await factory.issueToken({
+      claims: { sub: 'someone_else' },
+    });
+    await expect(
+      jwksTokenHandler.verifyToken(wrongSubject, context),
+    ).resolves.toBeUndefined();
   });
 });
