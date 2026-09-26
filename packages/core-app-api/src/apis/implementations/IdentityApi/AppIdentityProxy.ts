@@ -24,6 +24,8 @@ import {
 } from '@backstage/core-plugin-api';
 import { startCookieAuthRefresh } from './startCookieAuthRefresh';
 
+const SIGN_OUT_STORAGE_KEY = '@backstage/core-app-api:signed-out-at';
+
 function mkError(thing: string) {
   return new Error(
     `Tried to access IdentityApi ${thing} before app was loaded`,
@@ -56,6 +58,8 @@ export class AppIdentityProxy implements IdentityApi {
   private signOutTargetUrl = '/';
 
   #cookieAuthSignOut?: () => Promise<void>;
+  // Signs out other tabs, which each keep their own in-memory session.
+  #signOutListener?: (event: StorageEvent) => void;
 
   constructor() {
     this.waitForTarget = new Promise<CompatibilityIdentityApi>(resolve => {
@@ -74,6 +78,20 @@ export class AppIdentityProxy implements IdentityApi {
     this.target = identityApi;
     this.signOutTargetUrl = targetOptions.signOutTargetUrl;
     this.resolveTarget(identityApi);
+    this.#listenForSignOutFromOtherTabs();
+  }
+
+  #listenForSignOutFromOtherTabs() {
+    if (this.#signOutListener) {
+      return;
+    }
+
+    this.#signOutListener = (event: StorageEvent) => {
+      if (event.key === SIGN_OUT_STORAGE_KEY && event.newValue) {
+        this.navigateToUrl(this.signOutTargetUrl);
+      }
+    };
+    window.addEventListener('storage', this.#signOutListener);
   }
 
   isTargetSet(): boolean {
@@ -139,6 +157,8 @@ export class AppIdentityProxy implements IdentityApi {
     await this.waitForTarget.then(target => target.signOut());
 
     await this.#cookieAuthSignOut?.();
+
+    window.localStorage.setItem(SIGN_OUT_STORAGE_KEY, String(Date.now()));
 
     this.navigateToUrl(this.signOutTargetUrl);
   }
