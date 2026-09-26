@@ -20,6 +20,7 @@ import {
   resolve as resolvePath,
   dirname,
   basename,
+  sep,
 } from 'node:path';
 import { realpathSync, lstatSync, readlinkSync } from 'node:fs';
 
@@ -73,7 +74,8 @@ export function isChildPath(base: string, path: string): boolean {
     return true;
   }
 
-  const outsideBase = relativePath.startsWith('..'); // not outside base
+  const outsideBase =
+    relativePath === '..' || relativePath.startsWith(`..${sep}`); // outside base only when the relative path is the parent dir or steps out of it
   const differentDrive = isAbsolute(relativePath); // on Windows, this means dir is on a different drive from base.
 
   return !outsideBase && !differentDrive;
