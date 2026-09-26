@@ -28,9 +28,14 @@ import { Project, TAG_REGEXP, Workspace } from '@yarnpkg/core';
 import type { Descriptor, PluginConfiguration } from '@yarnpkg/core';
 import { npath, ppath } from '@yarnpkg/fslib';
 import { parseResolution, parseSyml } from '@yarnpkg/parsers';
-import patchPlugin from '@yarnpkg/plugin-patch';
+import patchPlugin, { patchUtils } from '@yarnpkg/plugin-patch';
+import { run } from '@backstage/cli-common';
+import { createHash, randomUUID } from 'node:crypto';
 import fs from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
+import { isDeepStrictEqual } from 'node:util';
+import properLockfile from 'proper-lockfile';
 
 export type PatchVerificationErrorKind =
   | 'backstage-manifest-load-failure'
@@ -49,6 +54,7 @@ export type PatchVerificationError = {
   kind: PatchVerificationErrorKind;
   message: string;
   location?: string;
+  repairHint?: PatchHoldbackFix;
 };
 
 export type VerifyYarnPatchesOptions = {
@@ -65,6 +71,7 @@ export type VerifyYarnPatchesResult = {
 
 type PatchDeclaration = {
   patchedIdent: string;
+  reference: string;
   source: string;
   resolvedSource?: string;
   components: string[];
@@ -84,6 +91,14 @@ type PatchedBackstagePackage = {
   name: string;
   version: string;
   location: string;
+  declaration: PatchDeclaration;
+};
+
+type PatchHoldbackFix = {
+  packageName: string;
+  currentVersion: string;
+  targetVersion: string;
+  declaration: PatchDeclaration;
 };
 
 type ResolutionDeclaration = {
@@ -274,6 +289,7 @@ function parsePatchDeclaration(options: {
 
   return {
     patchedIdent: options.patchedIdent,
+    reference: options.range,
     source,
     components,
     parentLocator:
@@ -1014,6 +1030,7 @@ function getPatchedBackstagePackages(
       name: structUtils.stringifyIdent(source),
       version: range.selector,
       location: declaration.location,
+      declaration,
     });
   }
   return packages;
@@ -1165,11 +1182,18 @@ async function validateBackstagePatches(options: {
         location: patchedPackage.location,
       });
     } else if (releaseVersion !== patchedPackage.version) {
-      errors.push({
+      const error: PatchVerificationError = {
         kind: 'backstage-patch-holdback',
         message: `Patched package '${patchedPackage.name}' is at version '${patchedPackage.version}', but Backstage release '${backstageVersion}' requires version '${releaseVersion}'`,
         location: patchedPackage.location,
-      });
+      };
+      error.repairHint = {
+        packageName: patchedPackage.name,
+        currentVersion: patchedPackage.version,
+        targetVersion: releaseVersion,
+        declaration: patchedPackage.declaration,
+      };
+      errors.push(error);
     }
   }
 
@@ -1355,4 +1379,792 @@ export async function verifyYarnPatches(
     backstageCheck: backstageValidation.backstageCheck,
     errors: sortErrors(errors),
   };
+}
+
+export type FixYarnPatchesOptions = VerifyYarnPatchesOptions & {
+  dryRun?: boolean;
+  install?: (rootDir: string) => Promise<void>;
+  publishFile?: (filePath: string, content: string) => Promise<void>;
+  verificationResult?: VerifyYarnPatchesResult;
+};
+
+export type FixYarnPatchesResult = {
+  status: 'fixed' | 'fixable' | 'not-fixable';
+  message: string;
+  warning?: string;
+};
+
+function getRepairableHoldback(
+  result: VerifyYarnPatchesResult,
+): PatchHoldbackFix | undefined {
+  if (result.errors.length !== 1) {
+    return undefined;
+  }
+  return result.errors[0].repairHint;
+}
+
+function hasExactPatchSource(
+  declaration: PatchDeclaration,
+  packageName: string,
+  version: string,
+): boolean {
+  try {
+    const source = structUtils.parseDescriptor(declaration.source, true);
+    const range = structUtils.parseRange(source.range);
+    return (
+      structUtils.stringifyIdent(source) === packageName &&
+      range.protocol === 'npm:' &&
+      range.selector === version &&
+      semverUtils.clean(range.selector) === version
+    );
+  } catch {
+    return false;
+  }
+}
+
+function isPathInside(rootDir: string, targetPath: string): boolean {
+  const relative = path.relative(rootDir, targetPath);
+  return (
+    relative !== '' &&
+    !path.isAbsolute(relative) &&
+    !relative.startsWith(`..${path.sep}`) &&
+    relative !== '..'
+  );
+}
+
+async function copyFileToShadow(options: {
+  rootDir: string;
+  shadowDir: string;
+  sourcePath: string;
+}): Promise<void> {
+  const relative = path.relative(options.rootDir, options.sourcePath);
+  if (
+    relative === '..' ||
+    relative.startsWith(`..${path.sep}`) ||
+    path.isAbsolute(relative)
+  ) {
+    throw new Error(`Cannot stage project file outside the repository`);
+  }
+  const targetPath = path.join(options.shadowDir, relative);
+  await fs.mkdir(path.dirname(targetPath), { recursive: true });
+  await fs.copyFile(options.sourcePath, targetPath);
+}
+
+async function copyPathToShadow(options: {
+  rootDir: string;
+  shadowDir: string;
+  relativePath: string;
+}): Promise<void> {
+  const sourcePath = path.join(options.rootDir, options.relativePath);
+  try {
+    await fs.cp(
+      sourcePath,
+      path.join(options.shadowDir, options.relativePath),
+      {
+        recursive: true,
+      },
+    );
+  } catch (error) {
+    if (!isErrorWithCode(error, 'ENOENT')) {
+      throw error;
+    }
+  }
+}
+
+async function fingerprintProjectInputs(
+  rootDir: string,
+  inputPaths: string[],
+): Promise<{ state: string; content: string }> {
+  const stateHash = createHash('sha256');
+  const contentHash = createHash('sha256');
+
+  const updateBoth = (value: string | Buffer) => {
+    stateHash.update(value);
+    contentHash.update(value);
+  };
+
+  const visit = async (inputPath: string): Promise<void> => {
+    const relative = relativePath(rootDir, inputPath);
+    let stats;
+    try {
+      stats = await fs.lstat(inputPath);
+    } catch (error) {
+      if (isErrorWithCode(error, 'ENOENT')) {
+        updateBoth(`missing\0${relative}\0`);
+        return;
+      }
+      throw error;
+    }
+    if (stats.isSymbolicLink()) {
+      throw new Error(`Cannot safely stage symbolic link '${relative}'`);
+    }
+    stateHash.update(`${stats.mode}\0`);
+    updateBoth(`${relative}\0`);
+    if (stats.isDirectory()) {
+      updateBoth('directory\0');
+      const entries = await fs.readdir(inputPath);
+      for (const entry of entries.sort(compareStrings)) {
+        await visit(path.join(inputPath, entry));
+      }
+    } else if (stats.isFile()) {
+      updateBoth('file\0');
+      updateBoth(await fs.readFile(inputPath));
+    } else {
+      throw new Error(`Cannot safely stage '${relative}'`);
+    }
+  };
+
+  for (const inputPath of [...new Set(inputPaths)].sort(compareStrings)) {
+    await visit(inputPath);
+  }
+  return {
+    state: stateHash.digest('hex'),
+    content: contentHash.digest('hex'),
+  };
+}
+
+async function createShadowProject(options: {
+  rootDir: string;
+  shadowDir: string;
+  configuration: Configuration;
+  patchPaths: string[];
+}): Promise<{
+  patchFolder: string;
+  inputPaths: string[];
+  inputFingerprint: { state: string; content: string };
+}> {
+  const { project } = await Project.find(
+    options.configuration,
+    npath.toPortablePath(options.rootDir),
+  );
+  const workspaceManifests = project.workspaces.map(workspace =>
+    path.join(npath.fromPortablePath(workspace.cwd), 'package.json'),
+  );
+  const requiredFiles = [
+    ...workspaceManifests,
+    path.join(options.rootDir, 'yarn.lock'),
+    path.join(options.rootDir, 'backstage.json'),
+  ];
+  const optionalPaths = [
+    path.join(options.rootDir, '.yarnrc.yml'),
+    path.join(options.rootDir, '.yarn/plugins'),
+    path.join(options.rootDir, '.yarn/releases'),
+  ];
+  const patchFolder = npath.fromPortablePath(
+    options.configuration.get('patchFolder'),
+  );
+  if (!isPathInside(options.rootDir, patchFolder)) {
+    throw new Error(`Cannot stage a patch folder outside the repository`);
+  }
+  const inputPaths = [
+    ...requiredFiles,
+    ...optionalPaths,
+    patchFolder,
+    ...options.patchPaths,
+  ];
+  const inputFingerprint = await fingerprintProjectInputs(
+    options.rootDir,
+    inputPaths,
+  );
+
+  for (const sourcePath of requiredFiles) {
+    await copyFileToShadow({
+      ...options,
+      sourcePath,
+    });
+  }
+  await Promise.all(
+    ['.yarnrc.yml', '.yarn/plugins', '.yarn/releases'].map(projectPath =>
+      copyPathToShadow({ ...options, relativePath: projectPath }),
+    ),
+  );
+
+  const relativePatchFolder = path.relative(options.rootDir, patchFolder);
+  await fs.cp(patchFolder, path.join(options.shadowDir, relativePatchFolder), {
+    recursive: true,
+  });
+  for (const patchPath of options.patchPaths) {
+    await copyFileToShadow({
+      ...options,
+      sourcePath: patchPath,
+    });
+  }
+  const shadowInputFingerprint = await fingerprintProjectInputs(
+    options.shadowDir,
+    inputPaths.map(inputPath =>
+      path.join(options.shadowDir, path.relative(options.rootDir, inputPath)),
+    ),
+  );
+  if (shadowInputFingerprint.content !== inputFingerprint.content) {
+    throw new Error('The shadow project did not match the project inputs');
+  }
+  const copiedInputFingerprint = await fingerprintProjectInputs(
+    options.rootDir,
+    inputPaths,
+  );
+  if (copiedInputFingerprint.state !== inputFingerprint.state) {
+    throw new Error('Project files changed while the patch repair was staged');
+  }
+  return {
+    patchFolder: path.join(options.shadowDir, relativePatchFolder),
+    inputPaths,
+    inputFingerprint,
+  };
+}
+
+function createRetargetedPatchReference(options: {
+  packageName: string;
+  targetVersion: string;
+  reference: string;
+}): string {
+  const ident = structUtils.parseIdent(options.packageName);
+  const descriptor = structUtils.makeDescriptor(ident, options.reference);
+  const parsed = patchUtils.parseDescriptor(descriptor);
+  const sourceDescriptor = structUtils.makeDescriptor(
+    ident,
+    `npm:${options.targetVersion}`,
+  );
+  return patchUtils.makeDescriptor(ident, {
+    ...parsed,
+    sourceDescriptor,
+  }).range;
+}
+
+async function defaultInstall(options: {
+  rootDir: string;
+  env: NodeJS.ProcessEnv | undefined;
+  patchFolder: string;
+}): Promise<void> {
+  let command = ['corepack', 'yarn'];
+  try {
+    const yarnRc = parseSyml(
+      await fs.readFile(path.join(options.rootDir, '.yarnrc.yml'), 'utf8'),
+    );
+    if (typeof yarnRc.yarnPath === 'string') {
+      const yarnPath = path.resolve(options.rootDir, yarnRc.yarnPath);
+      if (!isPathInside(options.rootDir, yarnPath)) {
+        throw new Error('The configured Yarn binary is outside the project');
+      }
+      command = [process.execPath, yarnPath];
+    }
+  } catch (error) {
+    if (!isErrorWithCode(error, 'ENOENT')) {
+      throw error;
+    }
+  }
+
+  await run([...command, 'install', '--mode=update-lockfile'], {
+    cwd: options.rootDir,
+    env: Object.assign({}, options.env, {
+      YARN_CACHE_FOLDER: path.join(options.rootDir, '.yarn/cache'),
+      YARN_ENABLE_SCRIPTS: 'false',
+      YARN_ENABLE_GLOBAL_CACHE: 'false',
+      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false',
+      YARN_ENABLE_TELEMETRY: 'false',
+      YARN_GLOBAL_FOLDER: path.join(options.rootDir, '.yarn/global'),
+      YARN_IGNORE_PATH: '1',
+      YARN_INSTALL_STATE_PATH: path.join(
+        options.rootDir,
+        '.yarn/install-state.gz',
+      ),
+      YARN_PATCH_FOLDER: options.patchFolder,
+      YARN_VIRTUAL_FOLDER: path.join(options.rootDir, '.yarn/__virtual__'),
+    }),
+  }).waitForExit();
+}
+
+async function writeFileAtomically(filePath: string, content: string) {
+  const temporaryPath = `${filePath}.backstage-cli-${randomUUID()}.tmp`;
+  const stats = await fs.stat(filePath);
+  try {
+    await fs.writeFile(temporaryPath, content, {
+      flag: 'wx',
+      mode: stats.mode,
+    });
+    await fs.rename(temporaryPath, filePath);
+  } finally {
+    await fs.rm(temporaryPath, { force: true });
+  }
+}
+
+async function restorePublishedFiles(options: {
+  files: Array<{ path: string; original: string; target: string }>;
+  publishFile: (filePath: string, content: string) => Promise<void>;
+}): Promise<boolean> {
+  let restored = true;
+  for (const file of options.files) {
+    try {
+      const current = await fs.readFile(file.path, 'utf8');
+      if (current === file.original) {
+        continue;
+      }
+      if (current !== file.target) {
+        restored = false;
+        continue;
+      }
+      await options.publishFile(file.path, file.original);
+      if ((await fs.readFile(file.path, 'utf8')) !== file.original) {
+        restored = false;
+      }
+    } catch {
+      restored = false;
+    }
+  }
+  return restored;
+}
+
+function lockfileOnlyChangesPatch(options: {
+  before: string;
+  after: string;
+  packageName: string;
+  currentVersion: string;
+  targetVersion: string;
+  currentReference: string;
+}): boolean {
+  const ident = structUtils.parseIdent(options.packageName);
+  const expectedPatchPaths = patchUtils.parseDescriptor(
+    structUtils.makeDescriptor(ident, options.currentReference),
+  ).patchPaths;
+  const isTargetDescriptor = (descriptorText: string) => {
+    try {
+      const descriptor = structUtils.parseDescriptor(descriptorText, true);
+      if (structUtils.stringifyIdent(descriptor) !== options.packageName) {
+        return false;
+      }
+      const range = structUtils.parseRange(descriptor.range);
+      if (range.protocol === 'npm:') {
+        return (
+          range.selector === options.currentVersion ||
+          range.selector === options.targetVersion
+        );
+      }
+      if (!patchUtils.isPatchDescriptor(descriptor)) {
+        return false;
+      }
+      const parsed = patchUtils.parseDescriptor(descriptor);
+      const sourceRange = structUtils.parseRange(parsed.sourceDescriptor.range);
+      return (
+        structUtils.stringifyIdent(parsed.sourceDescriptor) ===
+          options.packageName &&
+        sourceRange.protocol === 'npm:' &&
+        (sourceRange.selector === options.currentVersion ||
+          sourceRange.selector === options.targetVersion) &&
+        arraysEqual(parsed.patchPaths, expectedPatchPaths)
+      );
+    } catch {
+      return false;
+    }
+  };
+  const before = parseSyml(options.before);
+  const after = parseSyml(options.after);
+
+  const dependencyRanges = (lockfile: Record<string, unknown>) => {
+    const ranges = new Map<string, string>();
+    for (const [key, value] of Object.entries(lockfile)) {
+      if (
+        !key.split(', ').some(isTargetDescriptor) ||
+        !isRecord(value) ||
+        !isRecord(value.dependencies)
+      ) {
+        continue;
+      }
+      for (const [name, range] of Object.entries(value.dependencies)) {
+        if (typeof range === 'string') {
+          ranges.set(name, range);
+        }
+      }
+    }
+    return ranges;
+  };
+  const beforeDependencies = dependencyRanges(before);
+  const afterDependencies = dependencyRanges(after);
+  const changedDependencyDescriptors = new Set<string>();
+  for (const name of new Set([
+    ...beforeDependencies.keys(),
+    ...afterDependencies.keys(),
+  ])) {
+    const beforeRange = beforeDependencies.get(name);
+    const afterRange = afterDependencies.get(name);
+    if (beforeRange === afterRange) {
+      continue;
+    }
+    for (const range of [beforeRange, afterRange]) {
+      if (range !== undefined) {
+        changedDependencyDescriptors.add(
+          structUtils.stringifyDescriptor(
+            structUtils.makeDescriptor(structUtils.parseIdent(name), range),
+          ),
+        );
+      }
+    }
+  }
+
+  const normalize = (lockfile: Record<string, unknown>) => {
+    const normalized: Array<{
+      key: string;
+      value: unknown;
+      serializedValue: string;
+    }> = [];
+    for (const [key, value] of Object.entries(lockfile)) {
+      const normalizedKey = key
+        .split(', ')
+        .filter(
+          descriptor =>
+            !isTargetDescriptor(descriptor) &&
+            !changedDependencyDescriptors.has(descriptor),
+        )
+        .join(', ');
+      if (normalizedKey === '') {
+        continue;
+      }
+      normalized.push({
+        key: normalizedKey,
+        value,
+        serializedValue: JSON.stringify(value),
+      });
+    }
+    return normalized
+      .sort((left, right) => {
+        return (
+          compareStrings(left.key, right.key) ||
+          compareStrings(left.serializedValue, right.serializedValue)
+        );
+      })
+      .map(({ key, value }) => [key, value] as const);
+  };
+  return isDeepStrictEqual(normalize(before), normalize(after));
+}
+
+async function fixYarnPatchesUnlocked(
+  options: FixYarnPatchesOptions,
+): Promise<FixYarnPatchesResult> {
+  const rootDir = path.resolve(options.rootDir);
+  const initialResult =
+    options.verificationResult ?? (await verifyYarnPatches(options));
+  const holdback = getRepairableHoldback(initialResult);
+  const declaration = holdback?.declaration;
+  const rootResolutionPrefix = 'package.json#resolutions.';
+  if (
+    !holdback ||
+    !declaration ||
+    declaration.location !== `${rootResolutionPrefix}${holdback.packageName}` ||
+    declaration.patchedIdent !== holdback.packageName ||
+    !hasExactPatchSource(
+      declaration,
+      holdback.packageName,
+      holdback.currentVersion,
+    ) ||
+    declaration.paths.length !== 1 ||
+    declaration.components.length !== 1 ||
+    declaration.components[0] !== `local<${declaration.paths[0].absolute}>` ||
+    !declaration.projectOwned ||
+    !isPathInside(rootDir, declaration.paths[0].absolute)
+  ) {
+    return {
+      status: 'not-fixable',
+      message: 'No patch holdback could be repaired safely',
+    };
+  }
+
+  const [realRootDir, realPatchPath, patchStats] = await Promise.all([
+    fs.realpath(rootDir),
+    fs.realpath(declaration.paths[0].absolute),
+    fs.lstat(declaration.paths[0].absolute),
+  ]);
+  if (
+    patchStats.isSymbolicLink() ||
+    !isPathInside(realRootDir, realPatchPath)
+  ) {
+    return {
+      status: 'not-fixable',
+      message: 'The patch file is not owned by the project',
+    };
+  }
+
+  const manifestPath = path.join(rootDir, 'package.json');
+  const lockfilePath = path.join(rootDir, 'yarn.lock');
+  const originalManifest = await fs.readFile(manifestPath, 'utf8');
+  const originalLockfile = await fs.readFile(lockfilePath, 'utf8');
+  const manifest: unknown = JSON.parse(originalManifest);
+  if (!isRecord(manifest) || !isRecord(manifest.resolutions)) {
+    return {
+      status: 'not-fixable',
+      message: 'The root resolutions could not be read safely',
+    };
+  }
+  const currentReference = manifest.resolutions[holdback.packageName];
+  if (typeof currentReference !== 'string') {
+    return {
+      status: 'not-fixable',
+      message: 'The patch resolution could not be read safely',
+    };
+  }
+  if (currentReference !== declaration.reference) {
+    return {
+      status: 'not-fixable',
+      message: 'The patch resolution changed during verification',
+    };
+  }
+
+  let targetReference: string;
+  try {
+    targetReference = createRetargetedPatchReference({
+      packageName: holdback.packageName,
+      targetVersion: holdback.targetVersion,
+      reference: currentReference,
+    });
+  } catch {
+    return {
+      status: 'not-fixable',
+      message: 'The patch resolution could not be retargeted safely',
+    };
+  }
+  const currentLiteral = JSON.stringify(currentReference);
+  const firstReference = originalManifest.indexOf(currentLiteral);
+  if (
+    firstReference === -1 ||
+    originalManifest.indexOf(
+      currentLiteral,
+      firstReference + currentLiteral.length,
+    ) !== -1
+  ) {
+    return {
+      status: 'not-fixable',
+      message: 'The patch resolution is not unique in package.json',
+    };
+  }
+  const targetManifest = `${originalManifest.slice(
+    0,
+    firstReference,
+  )}${JSON.stringify(targetReference)}${originalManifest.slice(
+    firstReference + currentLiteral.length,
+  )}`;
+
+  const shadowDir = await fs.mkdtemp(
+    path.join(os.tmpdir(), 'backstage-verify-patches-'),
+  );
+  const message = `Retargeted patch for '${holdback.packageName}' from '${holdback.currentVersion}' to '${holdback.targetVersion}'`;
+  try {
+    const configuration = await readYarnConfiguration(rootDir, options.env);
+    const stagedProject = await createShadowProject({
+      rootDir,
+      shadowDir,
+      configuration,
+      patchPaths: declaration.paths.map(patchPath => patchPath.absolute),
+    });
+    await fs.writeFile(path.join(shadowDir, 'package.json'), targetManifest);
+
+    try {
+      if (options.install) {
+        await options.install(shadowDir);
+      } else {
+        await defaultInstall({
+          rootDir: shadowDir,
+          env: options.env,
+          patchFolder: stagedProject.patchFolder,
+        });
+      }
+    } catch (error) {
+      return {
+        status: 'not-fixable',
+        message: `Yarn could not validate the retargeted patch: ${String(
+          error,
+        )}`,
+      };
+    }
+
+    const shadowEnvironment = Object.assign({}, options.env, {
+      YARN_PATCH_FOLDER: stagedProject.patchFolder,
+    }) as NodeJS.ProcessEnv;
+    const verified = await verifyYarnPatches({
+      rootDir: shadowDir,
+      env: shadowEnvironment,
+      fetch: options.fetch,
+    });
+    if (verified.errors.length > 0) {
+      return {
+        status: 'not-fixable',
+        message: `The repaired project did not pass patch verification: ${verified.errors
+          .map(error => error.message)
+          .join('; ')}`,
+      };
+    }
+    const targetLockfile = await fs.readFile(
+      path.join(shadowDir, 'yarn.lock'),
+      'utf8',
+    );
+    if (
+      !lockfileOnlyChangesPatch({
+        before: originalLockfile,
+        after: targetLockfile,
+        packageName: holdback.packageName,
+        currentVersion: holdback.currentVersion,
+        targetVersion: holdback.targetVersion,
+        currentReference,
+      })
+    ) {
+      return {
+        status: 'not-fixable',
+        message: 'Yarn produced unrelated lockfile changes',
+      };
+    }
+    if (
+      (await fingerprintProjectInputs(rootDir, stagedProject.inputPaths))
+        .state !== stagedProject.inputFingerprint.state
+    ) {
+      return {
+        status: 'not-fixable',
+        message: 'Project files changed while the patch repair was staged',
+      };
+    }
+    if (options.dryRun) {
+      return { status: 'fixable', message };
+    }
+
+    const [currentManifest, currentLockfile] = await Promise.all([
+      fs.readFile(manifestPath, 'utf8'),
+      fs.readFile(lockfilePath, 'utf8'),
+    ]);
+    if (
+      currentManifest !== originalManifest ||
+      currentLockfile !== originalLockfile
+    ) {
+      if (
+        currentManifest === targetManifest &&
+        currentLockfile === targetLockfile
+      ) {
+        return { status: 'fixed', message };
+      }
+      return {
+        status: 'not-fixable',
+        message: 'Project files changed while the patch repair was staged',
+      };
+    }
+    const publishFile = options.publishFile ?? writeFileAtomically;
+    const publishedFiles = [
+      {
+        path: manifestPath,
+        original: originalManifest,
+        target: targetManifest,
+      },
+      {
+        path: lockfilePath,
+        original: originalLockfile,
+        target: targetLockfile,
+      },
+    ];
+    try {
+      await publishFile(manifestPath, targetManifest);
+      const [publishedManifest, lockfileBeforePublish] = await Promise.all([
+        fs.readFile(manifestPath, 'utf8'),
+        fs.readFile(lockfilePath, 'utf8'),
+      ]);
+      if (
+        publishedManifest !== targetManifest ||
+        lockfileBeforePublish !== originalLockfile
+      ) {
+        await restorePublishedFiles({ files: publishedFiles, publishFile });
+        return {
+          status: 'not-fixable',
+          message: 'Project files changed while the patch repair was published',
+        };
+      }
+      await publishFile(lockfilePath, targetLockfile);
+    } catch (error) {
+      const restored = await restorePublishedFiles({
+        files: publishedFiles,
+        publishFile,
+      });
+      return {
+        status: 'not-fixable',
+        message: restored
+          ? `Could not publish the patch repair; the original project files were restored: ${String(
+              error,
+            )}`
+          : `Could not publish the patch repair; project files may contain a partial repair: ${String(
+              error,
+            )}`,
+      };
+    }
+    const [publishedManifest, publishedLockfile] = await Promise.all([
+      fs.readFile(manifestPath, 'utf8'),
+      fs.readFile(lockfilePath, 'utf8'),
+    ]);
+    if (
+      publishedManifest !== targetManifest ||
+      publishedLockfile !== targetLockfile
+    ) {
+      await restorePublishedFiles({ files: publishedFiles, publishFile });
+      return {
+        status: 'not-fixable',
+        message:
+          'Could not publish the patch repair; project files changed during publication',
+      };
+    }
+    return { status: 'fixed', message };
+  } catch (error) {
+    return {
+      status: 'not-fixable',
+      message: `Could not safely stage the patch repair: ${String(error)}`,
+    };
+  } finally {
+    await fs.rm(shadowDir, { recursive: true, force: true });
+  }
+}
+
+/**
+ * Attempts to repair one simple Backstage patch holdback.
+ *
+ * @internal
+ */
+export async function fixYarnPatches(
+  options: FixYarnPatchesOptions,
+): Promise<FixYarnPatchesResult> {
+  if (options.dryRun) {
+    return fixYarnPatchesUnlocked(options);
+  }
+
+  const manifestPath = path.join(path.resolve(options.rootDir), 'package.json');
+  let releaseLock: () => Promise<void>;
+  try {
+    releaseLock = await properLockfile.lock(manifestPath, {
+      realpath: false,
+      retries: {
+        retries: 20,
+        factor: 1.2,
+        minTimeout: 50,
+        maxTimeout: 250,
+      },
+    });
+  } catch (error) {
+    return {
+      status: 'not-fixable',
+      message: `Could not lock the project for patch repair: ${String(error)}`,
+    };
+  }
+
+  const tryReleaseLock = async (): Promise<string | undefined> => {
+    try {
+      await releaseLock();
+      return undefined;
+    } catch (error) {
+      return `Could not release the project lock after patch repair: ${String(
+        error,
+      )}`;
+    }
+  };
+
+  let result: FixYarnPatchesResult;
+  try {
+    result = await fixYarnPatchesUnlocked(options);
+  } catch (error) {
+    const warning = await tryReleaseLock();
+    if (warning) {
+      throw new Error(`${String(error)}; ${warning}`, { cause: error });
+    }
+    throw error;
+  }
+
+  const warning = await tryReleaseLock();
+  return warning ? { ...result, warning } : result;
 }

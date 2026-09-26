@@ -18,6 +18,7 @@ import { targetPaths } from '@backstage/cli-common';
 import type { CliCommandContext } from '@backstage/cli-node';
 import { cli } from 'cleye';
 import {
+  fixYarnPatches,
   verifyYarnPatches,
   type PatchVerificationError,
 } from '../../lib/verifyYarnPatches';
@@ -32,14 +33,71 @@ function formatError(error: PatchVerificationError): string {
 }
 
 export default async ({ args, info }: CliCommandContext) => {
-  cli({ name: info.usage }, undefined, args);
+  const { flags } = cli(
+    {
+      name: info.usage,
+      flags: {
+        fix: {
+          type: Boolean,
+          description: 'Safely retarget an outdated Backstage package patch',
+        },
+        'dry-run': {
+          type: Boolean,
+          description:
+            'Check whether --fix would succeed without writing files',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
 
-  const result = await verifyYarnPatches({
+  if (flags['dry-run'] && !flags.fix) {
+    throw new Error('--dry-run can only be used together with --fix');
+  }
+
+  let result = await verifyYarnPatches({
     rootDir: targetPaths.dir,
     env: process.env,
   });
 
+  let fixFailureMessage: string | undefined;
+  if (
+    flags.fix &&
+    result.errors.length === 1 &&
+    result.errors[0].kind === 'backstage-patch-holdback'
+  ) {
+    const fixResult = await fixYarnPatches({
+      rootDir: targetPaths.dir,
+      env: process.env,
+      dryRun: Boolean(flags['dry-run']),
+      verificationResult: result,
+    });
+    if (fixResult.warning) {
+      process.stderr.write(`Warning: ${fixResult.warning}.\n`);
+    }
+    if (fixResult.status !== 'not-fixable') {
+      process.stdout.write(
+        `${fixResult.message}${
+          fixResult.status === 'fixable' ? ' (dry run)' : ''
+        }.\n`,
+      );
+      if (fixResult.status === 'fixable') {
+        return;
+      }
+      result = await verifyYarnPatches({
+        rootDir: targetPaths.dir,
+        env: process.env,
+      });
+    } else {
+      fixFailureMessage = fixResult.message;
+    }
+  }
+
   if (result.errors.length > 0) {
+    if (fixFailureMessage) {
+      process.stderr.write(`${fixFailureMessage}.\n`);
+    }
     process.stderr.write('Yarn patch verification failed:\n');
     for (const error of result.errors) {
       process.stderr.write(formatError(error));
