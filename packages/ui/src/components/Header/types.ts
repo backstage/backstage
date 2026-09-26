@@ -102,6 +102,10 @@ export interface HeaderMetadataStatusProps {
 export interface HeaderOwnProps {
   title?: string;
   customActions?: React.ReactNode;
+  /**
+   * Content rendered before the tags row, inline with the tags.
+   */
+  leadingAction?: React.ReactNode;
   tabs?: HeaderNavTabItem[];
   activeTabId?: string | null;
   /**

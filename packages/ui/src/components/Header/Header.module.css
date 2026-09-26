@@ -23,6 +23,13 @@
     margin-bottom: 0;
   }
 
+  .bui-HeaderTop[data-has-leading] {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--bui-space-2);
+  }
+
   .bui-HeaderBottom {
     display: flex;
     flex-direction: column;
