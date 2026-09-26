@@ -248,7 +248,13 @@ export class TaskManager implements TaskContext {
     const secrets = this.task.secrets as InternalTaskSecrets;
 
     if (secrets && secrets.__initiatorCredentials) {
-      return JSON.parse(secrets.__initiatorCredentials);
+      const credentials = JSON.parse(secrets.__initiatorCredentials);
+      if (Array.isArray(credentials.allAccessRestrictions)) {
+        credentials.allAccessRestrictions = new Map(
+          credentials.allAccessRestrictions,
+        );
+      }
+      return credentials;
     }
     if (!this.auth) {
       throw new Error(
