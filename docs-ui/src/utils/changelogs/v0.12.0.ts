@@ -20,6 +20,7 @@ export const changelog_0_12_0: ChangelogProps[] = [
     components: [],
     version: '0.12.0',
     prs: ['32723'],
+    tokens: true,
     description: `**BREAKING**: Removed gray scale tokens and renamed background surface tokens to neutral tokens
 
   The \`--bui-gray-1\` through \`--bui-gray-8\` tokens have been removed. The \`--bui-bg-surface-*\` and \`--bui-bg-neutral-on-surface-*\` tokens have been replaced by a unified \`--bui-bg-neutral-*\` scale.`,
@@ -151,6 +152,7 @@ Note: Provider components use \`data-bg\` (values: \`neutral-1\` through \`neutr
     components: [],
     version: '0.12.0',
     prs: ['32837'],
+    tokens: true,
     description: `**BREAKING:** Renamed, added, and removed CSS tokens.
 
   - Renamed \`--bui-bg-neutral-0\` to \`--bui-bg-app\`.
@@ -324,6 +326,7 @@ If you're using status foreground colors on colored backgrounds, update to the n
     components: [],
     version: '0.12.0',
     prs: ['32825'],
+    tokens: true,
     description: `Fixed dark theme \`--bui-fg-secondary\` and \`--bui-fg-disabled\` tokens using black-based \`oklch(0% ...)\` instead of white-based \`oklch(100% ...)\`, making secondary and disabled text visible on dark backgrounds.`,
 
     commitSha: '44877e4',
