@@ -14,4 +14,49 @@
  * limitations under the License.
  */
 
-export { useApiHolder, useApi, withApis } from '@backstage/frontend-plugin-api';
+import { ComponentType, PropsWithChildren } from 'react';
+import {
+  TypesToApiRefs,
+  useApi,
+  useApiHolder,
+} from '@backstage/frontend-plugin-api';
+import { NotImplementedError } from '@backstage/errors';
+
+export { useApiHolder, useApi };
+
+/**
+ * Wrapper for giving a component an API context.
+ *
+ * @param apis - APIs for the context.
+ * @public
+ */
+export function withApis<T extends {}>(apis: TypesToApiRefs<T>) {
+  return function withApisWrapper<TProps extends T>(
+    WrappedComponent: ComponentType<TProps>,
+  ) {
+    const Hoc = (props: PropsWithChildren<Omit<TProps, keyof T>>) => {
+      const apiHolder = useApiHolder();
+      const impls = {} as T;
+
+      for (const key in apis) {
+        if (apis.hasOwnProperty(key)) {
+          const ref = apis[key];
+          const api = apiHolder.get(ref);
+          if (!api) {
+            throw new NotImplementedError(
+              `No implementation available for ${ref}`,
+            );
+          }
+          impls[key] = api;
+        }
+      }
+
+      return <WrappedComponent {...(props as TProps)} {...impls} />;
+    };
+    const displayName =
+      WrappedComponent.displayName || WrappedComponent.name || 'Component';
+
+    Hoc.displayName = `withApis(${displayName})`;
+    return Hoc;
+  };
+}

@@ -20,7 +20,6 @@ import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react';
 import { JSX as JSX_3 } from 'react/jsx-runtime';
 import { Observable } from '@backstage/types';
-import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { SwappableComponentRef as SwappableComponentRef_2 } from '@backstage/frontend-plugin-api';
@@ -2479,15 +2478,5 @@ export const vmwareCloudAuthApiRef: ApiRef_2<
   'core.auth.vmware-cloud'
 > & {
   readonly $$type: '@backstage/ApiRef';
-};
-
-// @public @deprecated
-export function withApis<T extends {}>(
-  apis: TypesToApiRefs<T>,
-): <TProps extends T>(
-  WrappedComponent: ComponentType<TProps>,
-) => {
-  (props: PropsWithChildren<Omit<TProps, keyof T>>): JSX_3.Element;
-  displayName: string;
 };
 ```
