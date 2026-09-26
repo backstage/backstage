@@ -2389,6 +2389,11 @@ __metadata:
     shiki: "npm:^3.13.0"
     typescript: "npm:^5"
     unified: "npm:^11.0.4"
+  dependenciesMeta:
+    sharp:
+      built: true
+    unrs-resolver:
+      built: true
   languageName: unknown
   linkType: soft
 
