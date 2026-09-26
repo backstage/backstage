@@ -51,7 +51,7 @@ import {
   type HomePageLayoutProps,
 } from '@backstage/plugin-home-react/alpha';
 
-const rootRouteRef = createRouteRef();
+const rootRouteRef = createRouteRef({ extensionId: 'page:home' });
 
 const VisitListener = reactLazy(() =>
   import('./components/VisitListener').then(m => ({
@@ -86,7 +86,7 @@ const homePage = PageBlueprint.makeWithOverrides({
     return originalFactory({
       path: '/home',
       noHeader: true,
-      routeRef: rootRouteRef,
+
       title: 'Home',
       icon: <HomeIcon fontSize="inherit" />,
       loader: async () => {

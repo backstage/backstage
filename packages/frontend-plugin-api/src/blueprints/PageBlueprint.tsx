@@ -80,6 +80,7 @@ export const PageBlueprint = createExtensionBlueprint({
       title?: string;
       icon?: IconElement;
       loader?: () => Promise<JSX.Element>;
+      /** @deprecated Set extensionId when creating the route reference instead. */
       routeRef?: RouteRef;
       /**
        * Hide the default plugin page header, making the page fill up all available space.
