@@ -32,9 +32,9 @@ import {
   SubRouteRef,
   type AnyRouteRefParams,
   type AppNode,
-  type ExtensionFactoryMiddleware,
   type IdentityApi,
 } from '@backstage/frontend-plugin-api';
+import { type ExtensionFactoryMiddleware } from './types';
 import { matchRoutes } from 'react-router-dom';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
