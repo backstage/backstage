@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { ReactNode, useState, useEffect } from 'react';
-import { waitFor, screen } from '@testing-library/react';
+import { fireEvent, waitFor, screen } from '@testing-library/react';
+import { useNavigate } from 'react-router-dom';
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import {
@@ -90,8 +91,15 @@ const Wrapper = ({
   </TestApiProvider>
 );
 
-function HookRenderer({ defaultPath }: { defaultPath?: string }) {
+function HookRenderer({
+  defaultPath,
+  nextPath,
+}: {
+  defaultPath?: string;
+  nextPath?: string;
+}) {
   const data = useTechDocsReaderContentData({ defaultPath });
+  const navigate = useNavigate();
   const [, setRender] = useState(0);
   useEffect(() => setRender(r => r + 1), [data.isNotFound, data.isDomReady]);
   return (
@@ -99,6 +107,11 @@ function HookRenderer({ defaultPath }: { defaultPath?: string }) {
       <span data-testid="isNotFound">{String(data.isNotFound)}</span>
       <span data-testid="isDomReady">{String(data.isDomReady)}</span>
       <span data-testid="showProgress">{String(data.showProgress)}</span>
+      {nextPath && (
+        <button type="button" onClick={() => navigate(nextPath)}>
+          Next document
+        </button>
+      )}
     </div>
   );
 }
@@ -179,6 +192,38 @@ describe('useTechDocsReaderContentData', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('showProgress')).toHaveTextContent('true');
+    });
+  });
+
+  it('scrolls the reader to its start on document navigation but not on initial render', async () => {
+    getEntityMetadata.mockResolvedValue(mockEntityMetadata);
+    getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
+    const dom = document.createElement('html');
+    const readerMain = document.createElement('main');
+    readerMain.className = 'md-main';
+    const scrollIntoView = jest.fn();
+    readerMain.scrollIntoView = scrollIntoView;
+    dom.append(readerMain);
+    useTechDocsReaderDom.mockReturnValue(dom);
+    useTechDocsReader.mockReturnValue({ state: 'cached' });
+    useShadowDomStylesLoading.mockReturnValue(false);
+
+    await renderInTestApp(
+      <Wrapper>
+        <HookRenderer nextPath="/docs/next" />
+      </Wrapper>,
+      { routeEntries: ['/docs/current'] },
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('isDomReady')).toHaveTextContent('true');
+    });
+    expect(scrollIntoView).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Next document' }));
+
+    await waitFor(() => {
+      expect(scrollIntoView).toHaveBeenCalledWith({ block: 'start' });
     });
   });
 });

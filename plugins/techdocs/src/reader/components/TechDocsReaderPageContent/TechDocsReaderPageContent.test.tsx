@@ -222,8 +222,11 @@ describe('<TechDocsReaderPageContent />', () => {
     });
   });
 
-  it('should scroll to header if hash is not present in url', async () => {
-    jest.spyOn(document, 'querySelector');
+  it('should not scroll host page elements if hash is not present in url', async () => {
+    const hostHeader = document.createElement('header');
+    const scrollIntoView = jest.fn();
+    hostHeader.scrollIntoView = scrollIntoView;
+    document.body.appendChild(hostHeader);
 
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
@@ -241,8 +244,10 @@ describe('<TechDocsReaderPageContent />', () => {
         rendered.getByTestId('techdocs-native-shadowroot'),
       ).toBeInTheDocument();
 
-      expect(document.querySelector).toHaveBeenCalledWith('header');
+      expect(scrollIntoView).not.toHaveBeenCalled();
     });
+
+    hostHeader.remove();
   });
 
   it('should scroll to hash if hash is present in url', async () => {

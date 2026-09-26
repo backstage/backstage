@@ -59,17 +59,10 @@ export const Router = () => {
 export const TechDocsReaderRouter = (props: PropsWithChildren) => {
   const { children } = props;
 
-  // Using objects instead of <Route> elements, otherwise "outlet" will be null on sub-pages and add-ons won't render
   const element = useRoutes([
     {
       path: '*',
-      element: <TechDocsReaderPage />,
-      children: [
-        {
-          path: '*',
-          element: children,
-        },
-      ],
+      element: <TechDocsReaderPage>{children}</TechDocsReaderPage>,
     },
   ]);
 
@@ -86,7 +79,6 @@ export const EmbeddedDocsRouter = (
   const { children, emptyState, withSearch = true, withFeedbackLink } = props;
   const { entity } = useEntity();
 
-  // Using objects instead of <Route> elements, otherwise "outlet" will be null on sub-pages and add-ons won't render
   const element = useRoutes([
     {
       path: '/*',
@@ -97,12 +89,16 @@ export const EmbeddedDocsRouter = (
           withFeedbackLink={withFeedbackLink}
         />
       ),
-      children: [
-        {
-          path: '*',
-          element: children,
-        },
-      ],
+      // The nested route is only needed by the legacy addon registry, which
+      // discovers addons from the router outlet.
+      children: children
+        ? [
+            {
+              path: '*',
+              element: children,
+            },
+          ]
+        : undefined,
     },
   ]);
 
