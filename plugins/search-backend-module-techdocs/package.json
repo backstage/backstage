@@ -57,6 +57,7 @@
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-search-backend-node": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
+    "@backstage/plugin-techdocs-common": "workspace:^",
     "@backstage/plugin-techdocs-node": "workspace:^",
     "lodash": "^4.17.21",
     "p-limit": "^3.1.0"

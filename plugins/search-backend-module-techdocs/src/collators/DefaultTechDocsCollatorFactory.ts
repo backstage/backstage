@@ -29,6 +29,7 @@ import { Config } from '@backstage/config';
 import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
 import { Permission } from '@backstage/plugin-permission-common';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
+import { techDocsEntityReadPermission } from '@backstage/plugin-techdocs-common';
 import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
 import pLimit from 'p-limit';
 import { Readable } from 'node:stream';
@@ -71,6 +72,11 @@ type EntityInfo = {
   kind: string;
 };
 
+type TechDocsCollatorFactoryConstructorOptions =
+  TechDocsCollatorFactoryOptions & {
+    techDocsPermissionsEnabled?: boolean;
+  };
+
 /**
  * A search collator factory responsible for gathering and transforming
  * TechDocs documents.
@@ -79,8 +85,7 @@ type EntityInfo = {
  */
 export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
   public readonly type: string = 'techdocs';
-  public readonly visibilityPermission: Permission =
-    catalogEntityReadPermission;
+  public readonly visibilityPermission: Permission;
 
   private discovery: DiscoveryService;
   private locationTemplate: string;
@@ -94,7 +99,10 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
   private entityFilterFunction: Function | undefined;
   private customCatalogApiFilters: EntityFilterQuery | undefined;
 
-  private constructor(options: TechDocsCollatorFactoryOptions) {
+  private constructor(options: TechDocsCollatorFactoryConstructorOptions) {
+    this.visibilityPermission = options.techDocsPermissionsEnabled
+      ? techDocsEntityReadPermission
+      : catalogEntityReadPermission;
     this.discovery = options.discovery;
     this.locationTemplate =
       options.locationTemplate || '/docs/:namespace/:kind/:name/:path';
@@ -120,11 +128,15 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
     const parallelismLimit = config.getOptionalNumber(
       'search.collators.techdocs.parallelismLimit',
     );
+    const techDocsPermissionsEnabled =
+      config.getOptionalBoolean('techdocs.experimentalTechdocsPermissions') ??
+      false;
     return new DefaultTechDocsCollatorFactory({
       ...options,
       locationTemplate,
       parallelismLimit,
       legacyPathCasing,
+      techDocsPermissionsEnabled,
     });
   }
 
