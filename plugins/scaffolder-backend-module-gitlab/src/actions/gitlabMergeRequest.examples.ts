@@ -151,9 +151,10 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl: 'gitlab.com?repo=repo&owner=owner',
             title: 'Create my new MR',
+            description: 'This MR is really good',
+            sourcePath: './path/to/my/changes',
             branchName: 'new-mr',
-            description: 'MR description',
-            autoMerge: true,
+            commitMessage: 'chore: add scaffolded changes',
           },
         },
       ],
