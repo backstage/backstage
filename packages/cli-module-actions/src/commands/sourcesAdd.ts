@@ -16,7 +16,10 @@
 
 import { cli } from 'cleye';
 import { CliAuth, type CliCommandContext } from '@backstage/cli-node';
-import { pluginSourcesSchema } from '../lib/pluginSources';
+import {
+  pluginSourcesSchema,
+  excludedSourcesSchema,
+} from '../lib/pluginSources';
 
 export default async ({ args, info }: CliCommandContext) => {
   const parsed = cli(
@@ -34,6 +37,9 @@ export default async ({ args, info }: CliCommandContext) => {
   const existing = pluginSourcesSchema.parse(
     await auth.getMetadata('pluginSources'),
   );
+  const excluded = excludedSourcesSchema.parse(
+    await auth.getMetadata('excludedPluginSources'),
+  );
 
   const added: string[] = [];
   const skipped: string[] = [];
@@ -48,6 +54,15 @@ export default async ({ args, info }: CliCommandContext) => {
 
   if (added.length > 0) {
     await auth.setMetadata('pluginSources', [...existing, ...added]);
+
+    const reExcluded = added.filter(id => excluded.includes(id));
+    if (reExcluded.length > 0) {
+      await auth.setMetadata(
+        'excludedPluginSources',
+        excluded.filter(s => !reExcluded.includes(s)),
+      );
+    }
+
     process.stdout.write(
       `Added plugin source${added.length > 1 ? 's' : ''}: ${added.join(
         ', ',

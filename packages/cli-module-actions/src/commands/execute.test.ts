@@ -61,6 +61,7 @@ function authResponse() {
     baseUrl: 'https://backstage.example.com',
     instanceName: 'default',
     pluginSources: ['catalog'],
+    excludedPluginSources: [],
   };
 }
 
