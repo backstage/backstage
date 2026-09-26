@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isEqual } from 'lodash';
+import lodash from 'lodash';
 import qs from 'qs';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -71,7 +71,7 @@ export function useQueryParamState<T>(
     const newState = extractState(searchParamsString, stateName);
 
     setQueryParamState(oldState =>
-      isEqual(newState, oldState) ? oldState : newState,
+      lodash.isEqual(newState, oldState) ? oldState : newState,
     );
   }, [searchParamsString, setQueryParamState, stateName]);
 
