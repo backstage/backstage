@@ -39,6 +39,7 @@ export const signalsPlugin = createBackendPlugin({
         userInfo: coreServices.userInfo,
         auth: coreServices.auth,
         events: eventsServiceRef,
+        instanceMetadata: coreServices.rootInstanceMetadata,
       },
       async init({
         httpRouter,
@@ -49,6 +50,7 @@ export const signalsPlugin = createBackendPlugin({
         userInfo,
         auth,
         events,
+        instanceMetadata,
       }) {
         httpRouter.use(
           await createRouter({
@@ -59,6 +61,7 @@ export const signalsPlugin = createBackendPlugin({
             userInfo,
             auth,
             events,
+            instanceMetadata,
           }),
         );
         httpRouter.addAuthPolicy({

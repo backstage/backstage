@@ -61,10 +61,12 @@ class MockWebSocket {
 
 describe('SignalManager', () => {
   let onEvent: Function;
+  let subscription: EventsServiceSubscribeOptions;
 
   const mockEvents = {
     publish: async () => {},
     subscribe: async (subscriber: EventsServiceSubscribeOptions) => {
+      subscription = subscriber;
       onEvent = subscriber.onEvent;
     },
   };
@@ -79,6 +81,13 @@ describe('SignalManager', () => {
     logger: mockServices.logger.mock(),
     config: mockServices.rootConfig(),
     lifecycle: mockLifecycle,
+    instanceMetadata: mockServices.rootInstanceMetadata.mock({
+      getId: () => 'test-instance',
+    }),
+  });
+
+  it('should use the backend instance ID for the event subscription', () => {
+    expect(subscription.id).toBe('test-instance');
   });
 
   it('should close all connections when server is closed', () => {
