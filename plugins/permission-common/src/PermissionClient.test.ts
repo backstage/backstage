@@ -52,6 +52,76 @@ describe('PermissionClient', () => {
   afterAll(() => server.close());
   afterEach(() => server.resetHandlers());
 
+  it.each([false, true])(
+    'keeps universal and scoped decisions separate with batching=%s',
+    async enableBatchedRequests => {
+      const permissionClient = new PermissionClient({
+        discovery,
+        config: new ConfigReader({
+          permission: {
+            enabled: true,
+            EXPERIMENTAL_enableBatchedRequests: enableBatchedRequests,
+          },
+        }),
+      });
+      let received: Array<{
+        id: string;
+        permission: typeof mockPermission;
+        resourceRef?: string | string[] | false;
+      }> = [];
+      server.use(
+        http.post(`${mockBaseUrl}/authorize`, async ({ request }) => {
+          const body = (await request.json()) as { items: typeof received };
+          received = body.items;
+          return HttpResponse.json({
+            items: body.items.map(item => {
+              if (item.resourceRef === false) {
+                return { id: item.id, result: AuthorizeResult.DENY };
+              }
+              if (Array.isArray(item.resourceRef)) {
+                return {
+                  id: item.id,
+                  result: item.resourceRef.map(ref =>
+                    ref === 'catalog'
+                      ? AuthorizeResult.ALLOW
+                      : AuthorizeResult.DENY,
+                  ),
+                };
+              }
+              return {
+                id: item.id,
+                result:
+                  item.resourceRef === 'catalog'
+                    ? AuthorizeResult.ALLOW
+                    : AuthorizeResult.DENY,
+              };
+            }),
+          });
+        }),
+      );
+      const decisions = await permissionClient.authorize([
+        { permission: mockPermission, resourceRef: 'catalog' },
+        { permission: mockPermission, resourceRef: false },
+        { permission: mockPermission, resourceRef: 'scaffolder' },
+        { permission: mockPermission, resourceRef: false },
+      ]);
+      expect(decisions.map(({ result }) => ({ result }))).toEqual([
+        { result: AuthorizeResult.ALLOW },
+        { result: AuthorizeResult.DENY },
+        { result: AuthorizeResult.DENY },
+        { result: AuthorizeResult.DENY },
+      ]);
+      expect(received).toHaveLength(enableBatchedRequests ? 2 : 4);
+      expect(received.filter(item => item.resourceRef === false)).toEqual(
+        Array.from({ length: enableBatchedRequests ? 1 : 2 }, () => ({
+          id: expect.any(String),
+          permission: mockPermission,
+          resourceRef: false,
+        })),
+      );
+    },
+  );
+
   describe('authorize', () => {
     beforeAll(() => {
       client = new PermissionClient({

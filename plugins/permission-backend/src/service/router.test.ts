@@ -971,4 +971,39 @@ describe('createRouter', () => {
       );
     });
   });
+  it('returns only definitive decisions for universal checks without applying or exposing conditions', async () => {
+    policy.handle
+      .mockReset()
+      .mockResolvedValueOnce({ result: AuthorizeResult.ALLOW })
+      .mockResolvedValueOnce({ result: AuthorizeResult.DENY })
+      .mockResolvedValueOnce({
+        result: AuthorizeResult.CONDITIONAL,
+        pluginId: 'test-plugin',
+        resourceType: 'test-resource',
+        conditions: { rule: 'test-rule', params: ['private-policy-data'] },
+      });
+    const response = await request(app)
+      .post('/authorize')
+      .send({
+        items: ['allow', 'deny', 'conditional'].map(id => ({
+          id,
+          permission: {
+            type: 'resource',
+            name: 'test.admin',
+            attributes: {},
+            resourceType: 'test-resource',
+          },
+          resourceRef: false,
+        })),
+      });
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      items: [
+        { id: 'allow', result: AuthorizeResult.ALLOW },
+        { id: 'deny', result: AuthorizeResult.DENY },
+        { id: 'conditional', result: AuthorizeResult.DENY },
+      ],
+    });
+    expect(mockApplyConditions).not.toHaveBeenCalled();
+  });
 });
