@@ -55,6 +55,7 @@ export function buildMysqlDatabaseConfig(
   overrides?: Knex.Config,
 ) {
   return mergeDatabaseConfig(
+    { pool: { min: 0 } },
     dbConfig.get(),
     {
       connection: getMysqlConnectionConfig(dbConfig, !!overrides),
