@@ -17,7 +17,7 @@
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { DeployTokenScope } from '@gitbeaker/rest';
+import { DeployTokenScope, VariableType } from '@gitbeaker/rest';
 import { getClient, parseRepoUrl } from '../util';
 import { examples } from './gitlabProjectDeployTokenCreate.examples';
 
@@ -65,21 +65,72 @@ export const createGitlabProjectDeployTokenAction = (options: {
           z.array(z.string(), {
             description: 'Scopes',
           }),
+        variableKey: z =>
+          z
+            .string({
+              description:
+                'GitLab CI/CD variable name in which to store the generated token. When set, the raw token is not exposed in outputs.',
+            })
+            .regex(/^[A-Za-z0-9_]{1,255}$/)
+            .optional(),
+        variableProtected: z =>
+          z
+            .boolean({
+              description: 'Whether the CI/CD variable should be protected',
+            })
+            .default(false)
+            .optional(),
+        maskedAndHidden: z =>
+          z
+            .boolean({
+              description:
+                'Whether the CI/CD variable should be masked and hidden',
+            })
+            .default(false)
+            .optional(),
+        environmentScope: z =>
+          z
+            .string({
+              description: 'The environment scope of the CI/CD variable',
+            })
+            .default('*')
+            .optional(),
       },
       output: {
         deploy_token: z =>
-          z.string({
-            description: 'Deploy Token',
-          }),
+          z
+            .string({
+              description:
+                'Deprecated. The raw deploy token. Omitted when variableKey is provided.',
+            })
+            .optional(),
         user: z =>
           z.string({
-            description: 'User',
+            description: 'Deploy token username',
           }),
+        variableKey: z =>
+          z
+            .string({
+              description:
+                'Name of the GitLab CI/CD variable containing the token',
+            })
+            .optional(),
       },
     },
     async handler(ctx) {
       ctx.logger.info(`Creating Token for Project "${ctx.input.projectId}"`);
-      const { projectId, name, username, scopes, repoUrl, token } = ctx.input;
+      const {
+        projectId,
+        name,
+        username,
+        scopes,
+        repoUrl,
+        token,
+        variableKey,
+        variableProtected = false,
+        maskedAndHidden = false,
+        environmentScope = '*',
+      } = ctx.input;
 
       if (scopes.length === 0) {
         throw new InputError(
@@ -94,6 +145,65 @@ export const createGitlabProjectDeployTokenAction = (options: {
         token,
         requireScmUserCredentials,
       });
+
+      if (variableKey) {
+        const deployUsername = await ctx.checkpoint({
+          key: `create.deploy.token.variable.${projectId}.${name}.${variableKey}.${environmentScope}`,
+          fn: async () => {
+            const response = await api.DeployTokens.create(
+              name,
+              scopes as DeployTokenScope[],
+              {
+                projectId,
+                username,
+              },
+            );
+
+            if (!response.hasOwnProperty('token')) {
+              throw new InputError(
+                `No deploy_token given from gitlab instance`,
+              );
+            }
+
+            try {
+              await api.ProjectVariables.create(
+                projectId,
+                variableKey,
+                response.token as string,
+                {
+                  variableType: 'env_var' as VariableType,
+                  protected: variableProtected,
+                  masked: true,
+                  masked_and_hidden: maskedAndHidden,
+                  raw: true,
+                  environmentScope,
+                },
+              );
+            } catch (error) {
+              try {
+                await api.DeployTokens.remove(response.id, { projectId });
+              } catch (cleanupError) {
+                ctx.logger.error(
+                  `Failed to revoke project deploy token ${response.id}`,
+                );
+              }
+
+              throw error;
+            }
+
+            // Username is not secret.
+            return response.username;
+          },
+        });
+
+        ctx.output('variableKey', variableKey);
+        ctx.output('user', deployUsername);
+        return;
+      }
+
+      ctx.logger.warn(
+        'The deploy_token output is deprecated because it persists the token in task state. Provide variableKey to store the token securely in GitLab.',
+      );
 
       const { deployToken, deployUsername } = await ctx.checkpoint({
         key: `create.deploy.token.${projectId}.${name}`,
