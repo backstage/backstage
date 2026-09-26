@@ -81,7 +81,9 @@
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
+    "@types/compression": "^1.7.5",
     "@types/express": "^4.17.6",
+    "compression": "^1.7.4",
     "msw": "^2.0.0",
     "supertest": "^7.0.0"
   },
