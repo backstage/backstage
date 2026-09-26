@@ -20,7 +20,9 @@ import {
   BackstagePrincipalAccessRestrictions,
   BackstageServicePrincipal,
   BackstageUserPrincipal,
+  BackstageUserIdentityContext,
 } from '@backstage/backend-plugin-api';
+import { createHash } from 'node:crypto';
 
 export const DEFAULT_MOCK_USER_ENTITY_REF = 'user:default/mock';
 export const DEFAULT_MOCK_SERVICE_SUBJECT = 'external:test-service';
@@ -56,6 +58,7 @@ function validateUserEntityRef(ref: string) {
 export type UserTokenPayload = {
   sub?: string;
   actor?: { subject: string };
+  identityContext?: BackstageUserIdentityContext;
 };
 
 /**
@@ -65,6 +68,7 @@ export type UserTokenPayload = {
 export type ServiceTokenPayload = {
   sub?: string; // service subject
   obo?: string; // user entity reference
+  identityContext?: BackstageUserIdentityContext;
   target?: string; // target plugin id
 };
 
@@ -118,15 +122,32 @@ export namespace mockCredentials {
    */
   export function user(
     userEntityRef: string = DEFAULT_MOCK_USER_ENTITY_REF,
-    options?: { actor?: { subject: string } },
+    options?: {
+      actor?: { subject: string };
+      identityContext?: BackstageUserIdentityContext;
+    },
   ): BackstageCredentials<BackstageUserPrincipal> {
     validateUserEntityRef(userEntityRef);
+    const inputIdentityContext = options?.identityContext;
+    const identityContext =
+      inputIdentityContext &&
+      Object.freeze({
+        issuer: inputIdentityContext.issuer,
+        attributes: Object.freeze(
+          Object.fromEntries(
+            Object.keys(inputIdentityContext.attributes)
+              .sort()
+              .map(key => [key, inputIdentityContext.attributes[key]]),
+          ),
+        ),
+      });
     const result = {
       $$type: '@backstage/BackstageCredentials',
       version: 'v1',
       principal: {
         type: 'user',
         userEntityRef,
+        ...(identityContext && { identityContext }),
         ...(options?.actor && {
           actor: { type: 'service', subject: options.actor.subject } as const,
         }),
@@ -136,16 +157,28 @@ export namespace mockCredentials {
       toString: {
         enumerable: false,
         configurable: true,
-        value: () =>
-          `mockCredentials{userPrincipal{${userEntityRef}${
-            options?.actor ? `,actor={${options.actor.subject}}` : ''
-          }}}`,
+        value: () => {
+          let parts = userEntityRef;
+          if (identityContext) {
+            const hash = createHash('sha256')
+              .update(JSON.stringify(identityContext))
+              .digest('base64')
+              .replace(/=+$/, '');
+            parts += `,identityContext=${hash}`;
+          }
+          if (options?.actor) {
+            parts += `,actor={${options.actor.subject}}`;
+          }
+          return `mockCredentials{userPrincipal{${parts}}}`;
+        },
       },
       token: {
         enumerable: false,
         configurable: true,
         value:
-          userEntityRef !== DEFAULT_MOCK_USER_ENTITY_REF || options?.actor
+          userEntityRef !== DEFAULT_MOCK_USER_ENTITY_REF ||
+          options?.actor ||
+          options?.identityContext
             ? user.token(userEntityRef, options)
             : user.token(),
       },
@@ -164,7 +197,10 @@ export namespace mockCredentials {
      */
     export function token(
       userEntityRef?: string,
-      options?: { actor?: { subject: string } },
+      options?: {
+        actor?: { subject: string };
+        identityContext?: BackstageUserIdentityContext;
+      },
     ): string {
       if (userEntityRef) {
         validateUserEntityRef(userEntityRef);
@@ -172,6 +208,9 @@ export namespace mockCredentials {
           sub: userEntityRef,
           ...(options?.actor && {
             actor: { subject: options.actor.subject },
+          }),
+          ...(options?.identityContext && {
+            identityContext: options.identityContext,
           }),
         } satisfies UserTokenPayload)}`;
       }
@@ -183,8 +222,14 @@ export namespace mockCredentials {
      * provided it will be encoded into the token and forwarded to the
      * credentials object when authenticated by the mock auth service.
      */
-    export function header(userEntityRef?: string): string {
-      return `Bearer ${token(userEntityRef)}`;
+    export function header(
+      userEntityRef?: string,
+      options?: {
+        actor?: { subject: string };
+        identityContext?: BackstageUserIdentityContext;
+      },
+    ): string {
+      return `Bearer ${token(userEntityRef, options)}`;
     }
 
     export function invalidToken(): string {
@@ -204,8 +249,9 @@ export namespace mockCredentials {
    */
   export function limitedUser(
     userEntityRef: string = DEFAULT_MOCK_USER_ENTITY_REF,
+    options?: { identityContext?: BackstageUserIdentityContext },
   ): BackstageCredentials<BackstageUserPrincipal> {
-    return user(userEntityRef);
+    return user(userEntityRef, options);
   }
 
   /**
@@ -219,10 +265,14 @@ export namespace mockCredentials {
      */
     export function token(
       userEntityRef: string = DEFAULT_MOCK_USER_ENTITY_REF,
+      options?: { identityContext?: BackstageUserIdentityContext },
     ): string {
       validateUserEntityRef(userEntityRef);
       return `${MOCK_USER_LIMITED_TOKEN_PREFIX}${JSON.stringify({
         sub: userEntityRef,
+        ...(options?.identityContext && {
+          identityContext: options.identityContext,
+        }),
       } satisfies UserTokenPayload)}`;
     }
 
@@ -231,8 +281,11 @@ export namespace mockCredentials {
      * payload is provided it will be encoded into the token and forwarded to
      * the credentials object when authenticated by the mock auth service.
      */
-    export function cookie(userEntityRef?: string): string {
-      return `${MOCK_AUTH_COOKIE}=${token(userEntityRef)}`;
+    export function cookie(
+      userEntityRef?: string,
+      options?: { identityContext?: BackstageUserIdentityContext },
+    ): string {
+      return `${MOCK_AUTH_COOKIE}=${token(userEntityRef, options)}`;
     }
 
     export function invalidToken(): string {
@@ -304,12 +357,17 @@ export namespace mockCredentials {
           | BackstageNonePrincipal;
         const obo =
           oboPrincipal.type === 'user' ? oboPrincipal.userEntityRef : undefined;
+        const identityContext =
+          oboPrincipal.type === 'user'
+            ? oboPrincipal.identityContext
+            : undefined;
         const subject =
           oboPrincipal.type === 'service' ? oboPrincipal.subject : undefined;
 
         return `${MOCK_SERVICE_TOKEN_PREFIX}${JSON.stringify({
           sub: subject,
           obo,
+          identityContext,
           target: targetPluginId,
         } satisfies ServiceTokenPayload)}`;
       }

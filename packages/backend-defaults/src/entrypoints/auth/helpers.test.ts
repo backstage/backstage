@@ -208,4 +208,39 @@ describe('credentials', () => {
       `"{"$$type":"@backstage/BackstageCredentials","version":"v1","principal":{"type":"none"}}"`,
     );
   });
+
+  it('should separate user credentials from different identityContexts', () => {
+    const organizationIdentityContext = {
+      issuer: 'https://portal.example.com/',
+      attributes: { profile: 'organization', profileId: 'org_a' },
+    } as const;
+    const personalIdentityContext = {
+      issuer: 'https://portal.example.com/',
+      attributes: { profile: 'personal', profileId: 'auth0|user-a' },
+    } as const;
+    const organizationCredentials = createCredentialsWithUserPrincipal(
+      'user:default/mock',
+      'organization-token',
+      undefined,
+      undefined,
+      organizationIdentityContext,
+    );
+    const personalCredentials = createCredentialsWithUserPrincipal(
+      'user:default/mock',
+      'personal-token',
+      undefined,
+      undefined,
+      personalIdentityContext,
+    );
+
+    expect(organizationCredentials.principal.identityContext).toEqual(
+      organizationIdentityContext,
+    );
+    expect(personalCredentials.principal.identityContext).toEqual(
+      personalIdentityContext,
+    );
+    expect(String(organizationCredentials)).not.toBe(
+      String(personalCredentials),
+    );
+  });
 });

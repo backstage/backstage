@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
+import {
+  BackstageUserIdentityContext,
+  DiscoveryService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
-import { tokenTypes } from '@backstage/plugin-auth-node';
+import {
+  parseUserIdentityContext,
+  tokenTypes,
+} from '@backstage/plugin-auth-node';
 import {
   base64url,
   decodeJwt,
@@ -25,6 +32,14 @@ import {
   JWTVerifyOptions,
 } from 'jose';
 import { JwksClient } from '../JwksClient';
+
+function parseIdentityContextClaim(value: unknown) {
+  try {
+    return parseUserIdentityContext(value);
+  } catch {
+    throw new AuthenticationError('Invalid identity context in user token');
+  }
+}
 
 /**
  * An identity client to interact with auth-backend and authenticate Backstage
@@ -59,7 +74,7 @@ export class UserTokenHandler {
     }
 
     // Verify a limited token, ensuring the necessarily claims are present and token type is correct
-    const { payload } = await jwtVerify(
+    const { payload, protectedHeader } = await jwtVerify(
       token,
       this.jwksClient.getKey,
       verifyOpts,
@@ -74,7 +89,33 @@ export class UserTokenHandler {
       throw new AuthenticationError('No user sub found in token');
     }
 
-    return { userEntityRef };
+    let identityContext: BackstageUserIdentityContext | undefined;
+    if (
+      protectedHeader.typ === tokenTypes.user.typParam ||
+      protectedHeader.typ === tokenTypes.limitedUser.typParam
+    ) {
+      const identityContextClaim =
+        payload[tokenTypes.user.identityContextClaim];
+      identityContext =
+        identityContextClaim === undefined
+          ? undefined
+          : parseIdentityContextClaim(identityContextClaim);
+    }
+
+    if (protectedHeader.typ === tokenTypes.user.typParam && identityContext) {
+      const { token: limitedUserToken } = this.createLimitedUserToken(token);
+      await jwtVerify(limitedUserToken, this.jwksClient.getKey, {
+        requiredClaims: ['iat', 'exp', 'sub'],
+        typ: tokenTypes.limitedUser.typParam,
+      }).catch(e => {
+        this.logger.warn('Failed to verify user identity proof', e);
+        throw new AuthenticationError(
+          'Failed user identity proof verification',
+        );
+      });
+    }
+
+    return { userEntityRef, ...(identityContext && { identityContext }) };
   }
 
   #getTokenVerificationOptions(token: string): JWTVerifyOptions | undefined {
@@ -137,6 +178,17 @@ export class UserTokenHandler {
         'Failed to create limited user token, missing user identity proof',
       );
     }
+    if (typeof payload.uip !== 'string') {
+      throw new AuthenticationError(
+        'Failed to create limited user token, invalid user identity proof',
+      );
+    }
+
+    const identityContextClaim = payload[tokenTypes.user.identityContextClaim];
+    const identityContext =
+      identityContextClaim === undefined
+        ? undefined
+        : parseIdentityContextClaim(identityContextClaim);
 
     // NOTE: The order and properties in both the header and payload must match
     //       the usage in plugins/auth-backend/src/identity/TokenFactory.ts
@@ -153,6 +205,9 @@ export class UserTokenHandler {
           sub: payload.sub,
           iat: payload.iat,
           exp: payload.exp,
+          ...(identityContext && {
+            [tokenTypes.user.identityContextClaim]: identityContext,
+          }),
         }),
       ),
       payload.uip,

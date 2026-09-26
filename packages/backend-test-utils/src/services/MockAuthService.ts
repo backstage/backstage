@@ -73,11 +73,15 @@ export class MockAuthService implements AuthService {
     }
 
     if (token.startsWith(MOCK_USER_TOKEN_PREFIX)) {
-      const { sub: userEntityRef, actor }: UserTokenPayload = JSON.parse(
+      const {
+        sub: userEntityRef,
+        actor,
+        identityContext,
+      }: UserTokenPayload = JSON.parse(
         token.slice(MOCK_USER_TOKEN_PREFIX.length),
       );
 
-      return mockCredentials.user(userEntityRef, { actor });
+      return mockCredentials.user(userEntityRef, { actor, identityContext });
     }
 
     if (token.startsWith(MOCK_USER_LIMITED_TOKEN_PREFIX)) {
@@ -85,17 +89,15 @@ export class MockAuthService implements AuthService {
         throw new AuthenticationError('Limited user token is not allowed');
       }
 
-      const { sub: userEntityRef }: UserTokenPayload = JSON.parse(
-        token.slice(MOCK_USER_LIMITED_TOKEN_PREFIX.length),
-      );
+      const { sub: userEntityRef, identityContext }: UserTokenPayload =
+        JSON.parse(token.slice(MOCK_USER_LIMITED_TOKEN_PREFIX.length));
 
-      return mockCredentials.user(userEntityRef);
+      return mockCredentials.user(userEntityRef, { identityContext });
     }
 
     if (token.startsWith(MOCK_SERVICE_TOKEN_PREFIX)) {
-      const { sub, target, obo }: ServiceTokenPayload = JSON.parse(
-        token.slice(MOCK_SERVICE_TOKEN_PREFIX.length),
-      );
+      const { sub, target, obo, identityContext }: ServiceTokenPayload =
+        JSON.parse(token.slice(MOCK_SERVICE_TOKEN_PREFIX.length));
 
       if (target && target !== this.pluginId) {
         throw new AuthenticationError(
@@ -103,7 +105,7 @@ export class MockAuthService implements AuthService {
         );
       }
       if (obo) {
-        return mockCredentials.user(obo);
+        return mockCredentials.user(obo, { identityContext });
       }
 
       return mockCredentials.service(sub);
@@ -181,6 +183,7 @@ export class MockAuthService implements AuthService {
     return {
       token: mockCredentials.limitedUser.token(
         credentials.principal.userEntityRef,
+        { identityContext: credentials.principal.identityContext },
       ),
       expiresAt: new Date(Date.now() + 3600_000),
     };
