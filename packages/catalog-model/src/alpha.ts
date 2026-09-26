@@ -46,6 +46,10 @@ export {
   isRuleAiResourceEntity,
   isPluginAiResourceEntity,
   isMarketplaceAiResourceEntity,
+  RELATION_HAS_SKILL,
+  RELATION_SKILL_OF,
+  RELATION_HAS_PLUGIN,
+  RELATION_PLUGIN_OF,
   aiResourceEntityModel,
 } from './kinds/AiResourceEntityV1alpha1';
 export type {
