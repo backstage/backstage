@@ -31,6 +31,12 @@ function pgDeadlockError(): Error & { code: string } {
   return err;
 }
 
+function mysqlDeadlockError(): Error & { errno: number } {
+  const err = new Error('deadlock detected') as Error & { errno: number };
+  err.errno = 1213;
+  return err;
+}
+
 describe('whereInArray', () => {
   it('uses one array binding on PostgreSQL', () => {
     const knex = knexFactory({ client: 'pg' });
@@ -110,6 +116,24 @@ describe('retryOnDeadlock', () => {
     expect(result).toBe('recovered');
     expect(fn).toHaveBeenCalledTimes(3);
   });
+
+  it.each([
+    ['PostgreSQL', 'pg', pgDeadlockError()],
+    ['MySQL', 'mysql2', mysqlDeadlockError()],
+  ])(
+    'does not retry a deadlocked operation inside an existing %s transaction',
+    async (_name, client, error) => {
+      const fn = jest.fn().mockRejectedValue(error);
+      const transaction = Object.assign(mockKnex(client), {
+        isTransaction: true,
+      }) as Knex.Transaction;
+
+      await expect(retryOnDeadlock(fn, transaction, 3, 1)).rejects.toThrow(
+        'deadlock detected',
+      );
+      expect(fn).toHaveBeenCalledTimes(1);
+    },
+  );
 
   it('throws after exhausting all retries', async () => {
     const fn = jest.fn().mockRejectedValue(pgDeadlockError());

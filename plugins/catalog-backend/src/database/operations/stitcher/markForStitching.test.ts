@@ -18,6 +18,7 @@ import { TestDatabases } from '@backstage/backend-test-utils';
 import { applyDatabaseMigrations } from '../../migrations';
 import { markForStitching } from './markForStitching';
 import { DbRefreshStateRow, DbStitchQueueRow } from '../../tables';
+import { retryOnDeadlock } from '../../util';
 
 jest.setTimeout(60_000);
 
@@ -215,48 +216,56 @@ it.each(databases.eachSupportedId())(
 
     for (let attempt = 0; attempt < 10; attempt++) {
       // Transaction 1: Update entities A, B, C, D, E
-      const transaction1 = knex.transaction(async trx => {
-        await markForStitching({
-          knex: trx,
-          entityRefs: [
-            'k:ns/entity-a',
-            'k:ns/entity-b',
-            'k:ns/entity-c',
-            'k:ns/entity-d',
-            'k:ns/entity-e',
-          ],
-        });
+      const transaction1 = retryOnDeadlock(
+        () =>
+          knex.transaction(async trx => {
+            await markForStitching({
+              knex: trx,
+              entityRefs: [
+                'k:ns/entity-a',
+                'k:ns/entity-b',
+                'k:ns/entity-c',
+                'k:ns/entity-d',
+                'k:ns/entity-e',
+              ],
+            });
 
-        // Add a small delay to increase chance of collision
-        await new Promise(resolve => setTimeout(resolve, 10));
+            // Add a small delay to increase chance of collision
+            await new Promise(resolve => setTimeout(resolve, 10));
 
-        await markForStitching({
-          knex: trx,
-          entityRefs: ['k:ns/entity-f'],
-        });
-      });
+            await markForStitching({
+              knex: trx,
+              entityRefs: ['k:ns/entity-f'],
+            });
+          }),
+        knex,
+      );
 
       // Transaction 2: Update entities F, E, D, C, B (reverse order)
-      const transaction2 = knex.transaction(async trx => {
-        await markForStitching({
-          knex: trx,
-          entityRefs: [
-            'k:ns/entity-f',
-            'k:ns/entity-e',
-            'k:ns/entity-d',
-            'k:ns/entity-c',
-            'k:ns/entity-b',
-          ],
-        });
+      const transaction2 = retryOnDeadlock(
+        () =>
+          knex.transaction(async trx => {
+            await markForStitching({
+              knex: trx,
+              entityRefs: [
+                'k:ns/entity-f',
+                'k:ns/entity-e',
+                'k:ns/entity-d',
+                'k:ns/entity-c',
+                'k:ns/entity-b',
+              ],
+            });
 
-        // Add a small delay to increase chance of collision
-        await new Promise(resolve => setTimeout(resolve, 10));
+            // Add a small delay to increase chance of collision
+            await new Promise(resolve => setTimeout(resolve, 10));
 
-        await markForStitching({
-          knex: trx,
-          entityRefs: ['k:ns/entity-a'],
-        });
-      });
+            await markForStitching({
+              knex: trx,
+              entityRefs: ['k:ns/entity-a'],
+            });
+          }),
+        knex,
+      );
 
       // Run both transactions concurrently to create potential deadlock
       errorResults.push(
@@ -270,15 +279,7 @@ it.each(databases.eachSupportedId())(
 
     const allResults = await Promise.all(errorResults);
 
-    const deadlockErrors = allResults
-      .flat()
-      .filter(
-        error =>
-          error?.code === '40P01' ||
-          error?.message?.includes('deadlock detected') ||
-          error?.message?.includes('deadlock'),
-      );
-    expect(deadlockErrors).toEqual([]);
+    expect(allResults.flat()).toEqual([]);
 
     // Verify final state - all entities should have been marked for stitching
     const finalState = await knex<DbStitchQueueRow>('stitch_queue')

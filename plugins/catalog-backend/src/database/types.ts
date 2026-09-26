@@ -126,6 +126,10 @@ export type ListParentsResult = {
   entityRefs: string[];
 };
 
+export type MarkForStitchingOptions = {
+  entityRefs: Iterable<string>;
+};
+
 /**
  * The database abstraction layer for Entity Processor interactions.
  */
@@ -162,6 +166,14 @@ export interface ProcessingDatabase {
   updateProcessedEntityErrors(
     txOpaque: Transaction,
     options: UpdateProcessedEntityErrorsOptions,
+  ): Promise<void>;
+
+  /**
+   * Schedules entities for stitching as part of the current transaction.
+   */
+  markForStitching(
+    txOpaque: Transaction,
+    options: MarkForStitchingOptions,
   ): Promise<void>;
 
   listParents(
