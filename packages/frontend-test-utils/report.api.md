@@ -13,43 +13,31 @@ import { AppNode } from '@backstage/frontend-plugin-api';
 import { AppNodeInstance } from '@backstage/frontend-plugin-api';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { Config } from '@backstage/config';
-import { ConfigApi } from '@backstage/core-plugin-api';
-import { ConfigApi as ConfigApi_2 } from '@backstage/frontend-plugin-api';
+import { ConfigApi } from '@backstage/frontend-plugin-api';
 import { DiscoveryApi } from '@backstage/frontend-plugin-api';
 import { DiscoveryApi as DiscoveryApi_2 } from '@backstage/core-plugin-api';
-import { ErrorApi } from '@backstage/core-plugin-api';
-import { ErrorApi as ErrorApi_2 } from '@backstage/frontend-plugin-api';
-import { ErrorApiError } from '@backstage/core-plugin-api';
-import { ErrorApiErrorContext } from '@backstage/core-plugin-api';
+import { ErrorApi } from '@backstage/frontend-plugin-api';
+import { ErrorApiError } from '@backstage/frontend-plugin-api';
+import { ErrorApiErrorContext } from '@backstage/frontend-plugin-api';
 import { EvaluatePermissionRequest } from '@backstage/plugin-permission-common';
-import { EvaluatePermissionResponse } from '@backstage/plugin-permission-common';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinitionParameters } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
-import { FeatureFlag } from '@backstage/frontend-plugin-api';
 import { FeatureFlagsApi } from '@backstage/frontend-plugin-api';
-import { FeatureFlagsSaveOptions } from '@backstage/frontend-plugin-api';
 import { FeatureFlagState } from '@backstage/frontend-plugin-api';
-import { FetchApi } from '@backstage/core-plugin-api';
-import { FetchApi as FetchApi_2 } from '@backstage/frontend-plugin-api';
+import { FetchApi } from '@backstage/frontend-plugin-api';
 import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { IdentityApi } from '@backstage/frontend-plugin-api';
 import { IdentityApi as IdentityApi_2 } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
-import { JsonValue } from '@backstage/types';
-import { Observable } from '@backstage/types';
 import { PermissionApi } from '@backstage/plugin-permission-react';
 import { ReactNode } from 'react';
 import { registerMswTestHooks } from '@backstage/test-utils';
 import { RenderResult } from '@testing-library/react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
-import { StorageApi } from '@backstage/core-plugin-api';
-import { StorageApi as StorageApi_2 } from '@backstage/frontend-plugin-api';
-import { StorageValueSnapshot } from '@backstage/core-plugin-api';
+import { StorageApi } from '@backstage/frontend-plugin-api';
 import { TranslationApi } from '@backstage/frontend-plugin-api';
-import { TranslationRef } from '@backstage/frontend-plugin-api';
-import { TranslationSnapshot } from '@backstage/frontend-plugin-api';
 import { withLogCollector } from '@backstage/test-utils';
 
 // @public
@@ -86,12 +74,6 @@ export function createExtensionTester<
     apis?: readonly [...TestApiPairs<TApiPairs>];
   },
 ): ExtensionTester<NonNullable<T['output']>>;
-
-// @public @deprecated
-export type ErrorWithContext = {
-  error: ErrorApiError;
-  context?: ErrorApiErrorContext;
-};
 
 // @public (undocumented)
 export class ExtensionQuery<UOutput extends ExtensionDataRef> {
@@ -144,41 +126,29 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
   snapshot(): ExtensionSnapshotNode;
 }
 
-// @public @deprecated
-export class MockAlertApi implements AlertApi {
-  // (undocumented)
-  alert$(): Observable<AlertMessage>;
-  clearAlerts(): void;
-  getAlerts(): AlertMessage[];
-  // (undocumented)
-  post(alert: AlertMessage): void;
-  waitForAlert(
-    predicate: (alert: AlertMessage) => boolean,
-    timeoutMs?: number,
-  ): Promise<AlertMessage>;
-}
-
-// @public @deprecated
-export class MockAnalyticsApi implements AnalyticsApi {
-  // (undocumented)
-  captureEvent(event: AnalyticsEvent): void;
-  // (undocumented)
-  getEvents(): AnalyticsEvent[];
-}
-
 // @public
 export type MockApiFactorySymbol = typeof mockApiFactorySymbol;
 
 // @public
 export namespace mockApis {
-  export function alert(): MockWithApiFactory<MockAlertApi>;
+  export function alert(): AlertApi &
+    MockWithApiFactory<AlertApi> & {
+      clearAlerts(): void;
+      getAlerts(): AlertMessage[];
+      waitForAlert(
+        predicate: (alert: AlertMessage) => boolean,
+        timeoutMs?: number,
+      ): Promise<AlertMessage>;
+    };
   export namespace alert {
     const mock: (
       partialImpl?: Partial<AlertApi> | undefined,
     ) => ApiMock<AlertApi>;
   }
-  export function analytics(): MockAnalyticsApi &
-    MockWithApiFactory<AnalyticsApi>;
+  export function analytics(): AnalyticsApi &
+    MockWithApiFactory<AnalyticsApi> & {
+      getEvents(): AnalyticsEvent[];
+    };
   export namespace analytics {
     const // (undocumented)
       mock: (
@@ -187,7 +157,7 @@ export namespace mockApis {
   }
   export function config(options?: {
     data?: JsonObject;
-  }): MockConfigApi & MockWithApiFactory<ConfigApi_2>;
+  }): ConfigApi & MockWithApiFactory<ConfigApi>;
   export namespace config {
     const // (undocumented)
       mock: (partialImpl?: Partial<Config> | undefined) => ApiMock<Config>;
@@ -201,18 +171,32 @@ export namespace mockApis {
         partialImpl?: Partial<DiscoveryApi> | undefined,
       ) => ApiMock<DiscoveryApi>;
   }
-  export function error(options?: {
-    collect?: boolean;
-  }): MockErrorApi & MockWithApiFactory<ErrorApi_2>;
+  export function error(options?: { collect?: boolean }): ErrorApi &
+    MockWithApiFactory<ErrorApi> & {
+      getErrors(): Array<{
+        error: ErrorApiError;
+        context?: ErrorApiErrorContext;
+      }>;
+      waitForError(
+        pattern: RegExp,
+        timeoutMs?: number,
+      ): Promise<{
+        error: ErrorApiError;
+        context?: ErrorApiErrorContext;
+      }>;
+    };
   export namespace error {
     const // (undocumented)
-      mock: (
-        partialImpl?: Partial<ErrorApi_2> | undefined,
-      ) => ApiMock<ErrorApi_2>;
+      mock: (partialImpl?: Partial<ErrorApi> | undefined) => ApiMock<ErrorApi>;
   }
   export function featureFlags(options?: {
     initialStates?: Record<string, FeatureFlagState>;
-  }): MockWithApiFactory<MockFeatureFlagsApi>;
+  }): FeatureFlagsApi &
+    MockWithApiFactory<FeatureFlagsApi> & {
+      getState(): Record<string, FeatureFlagState>;
+      setState(states: Record<string, FeatureFlagState>): void;
+      clearState(): void;
+    };
   export namespace featureFlags {
     const mock: (
       partialImpl?: Partial<FeatureFlagsApi> | undefined,
@@ -220,12 +204,10 @@ export namespace mockApis {
   }
   export function fetch(
     options?: MockFetchApiOptions,
-  ): MockFetchApi & MockWithApiFactory<FetchApi_2>;
+  ): FetchApi & MockWithApiFactory<FetchApi>;
   export namespace fetch {
     const // (undocumented)
-      mock: (
-        partialImpl?: Partial<FetchApi_2> | undefined,
-      ) => ApiMock<FetchApi_2>;
+      mock: (partialImpl?: Partial<FetchApi> | undefined) => ApiMock<FetchApi>;
   }
   export function identity(options?: {
     userEntityRef?: string;
@@ -248,7 +230,7 @@ export namespace mockApis {
       | ((
           request: EvaluatePermissionRequest,
         ) => AuthorizeResult.ALLOW | AuthorizeResult.DENY);
-  }): MockPermissionApi & MockWithApiFactory<PermissionApi>;
+  }): PermissionApi & MockWithApiFactory<PermissionApi>;
   export namespace permission {
     const // (undocumented)
       mock: (
@@ -257,98 +239,20 @@ export namespace mockApis {
   }
   export function storage(options?: {
     data?: JsonObject;
-  }): MockStorageApi & MockWithApiFactory<StorageApi_2>;
+  }): StorageApi & MockWithApiFactory<StorageApi>;
   export namespace storage {
     const // (undocumented)
       mock: (
-        partialImpl?: Partial<StorageApi_2> | undefined,
-      ) => ApiMock<StorageApi_2>;
+        partialImpl?: Partial<StorageApi> | undefined,
+      ) => ApiMock<StorageApi>;
   }
-  export function translation(): MockTranslationApi &
+  export function translation(): TranslationApi &
     MockWithApiFactory<TranslationApi>;
   export namespace translation {
     const mock: (
       partialImpl?: Partial<TranslationApi> | undefined,
     ) => ApiMock<TranslationApi>;
   }
-}
-
-// @public @deprecated
-export class MockConfigApi implements ConfigApi {
-  constructor(input: { data: JsonObject });
-  get<T = JsonValue>(key?: string): T;
-  getBoolean(key: string): boolean;
-  getConfig(key: string): Config;
-  getConfigArray(key: string): Config[];
-  getNumber(key: string): number;
-  getOptional<T = JsonValue>(key?: string): T | undefined;
-  getOptionalBoolean(key: string): boolean | undefined;
-  getOptionalConfig(key: string): Config | undefined;
-  getOptionalConfigArray(key: string): Config[] | undefined;
-  getOptionalNumber(key: string): number | undefined;
-  getOptionalString(key: string): string | undefined;
-  getOptionalStringArray(key: string): string[] | undefined;
-  getString(key: string): string;
-  getStringArray(key: string): string[];
-  has(key: string): boolean;
-  keys(): string[];
-}
-
-// @public @deprecated
-export class MockErrorApi implements ErrorApi {
-  constructor(options?: { collect?: boolean });
-  // (undocumented)
-  error$(): Observable<{
-    error: ErrorApiError;
-    context?: ErrorApiErrorContext;
-  }>;
-  // (undocumented)
-  getErrors(): {
-    error: ErrorApiError;
-    context?: ErrorApiErrorContext;
-  }[];
-  // (undocumented)
-  post(error: ErrorApiError, context?: ErrorApiErrorContext): void;
-  // (undocumented)
-  waitForError(
-    pattern: RegExp,
-    timeoutMs?: number,
-  ): Promise<{
-    error: ErrorApiError;
-    context?: ErrorApiErrorContext;
-  }>;
-}
-
-// @public @deprecated
-export type MockErrorApiOptions = {
-  collect?: boolean;
-};
-
-// @public @deprecated
-export class MockFeatureFlagsApi implements FeatureFlagsApi {
-  constructor(options?: MockFeatureFlagsApiOptions);
-  clearState(): void;
-  // (undocumented)
-  getRegisteredFlags(): FeatureFlag[];
-  getState(): Record<string, FeatureFlagState>;
-  // (undocumented)
-  isActive(name: string): boolean;
-  // (undocumented)
-  registerFlag(flag: FeatureFlag): void;
-  // (undocumented)
-  save(options: FeatureFlagsSaveOptions): void;
-  setState(states: Record<string, FeatureFlagState>): void;
-}
-
-// @public @deprecated
-export interface MockFeatureFlagsApiOptions {
-  initialStates?: Record<string, FeatureFlagState>;
-}
-
-// @public @deprecated
-export class MockFetchApi implements FetchApi {
-  constructor(options?: MockFetchApiOptions);
-  get fetch(): typeof fetch;
 }
 
 // @public
@@ -367,57 +271,6 @@ export interface MockFetchApiOptions {
     | {
         discoveryApi: Pick<DiscoveryApi_2, 'getBaseUrl'>;
       };
-}
-
-// @public @deprecated
-export class MockPermissionApi implements PermissionApi {
-  constructor(
-    requestHandler?: (
-      request: EvaluatePermissionRequest,
-    ) => AuthorizeResult.ALLOW | AuthorizeResult.DENY,
-  );
-  // (undocumented)
-  authorize(
-    request: EvaluatePermissionRequest,
-  ): Promise<EvaluatePermissionResponse>;
-}
-
-// @public @deprecated
-export class MockStorageApi implements StorageApi {
-  // (undocumented)
-  static create(data?: JsonObject): MockStorageApi;
-  // (undocumented)
-  forBucket(name: string): StorageApi;
-  // (undocumented)
-  observe$<T extends JsonValue>(
-    key: string,
-  ): Observable<StorageValueSnapshot<T>>;
-  // (undocumented)
-  remove(key: string): Promise<void>;
-  // (undocumented)
-  set<T>(key: string, data: T): Promise<void>;
-  // (undocumented)
-  snapshot<T extends JsonValue>(key: string): StorageValueSnapshot<T>;
-}
-
-// @public @deprecated
-export class MockTranslationApi implements TranslationApi {
-  // (undocumented)
-  static create(): MockTranslationApi;
-  // (undocumented)
-  getTranslation<
-    TMessages extends {
-      [key in string]: string;
-    },
-  >(
-    translationRef: TranslationRef<string, TMessages>,
-  ): TranslationSnapshot<TMessages>;
-  // (undocumented)
-  translation$<
-    TMessages extends {
-      [key in string]: string;
-    },
-  >(): Observable<TranslationSnapshot<TMessages>>;
 }
 
 // @public
