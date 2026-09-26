@@ -357,5 +357,32 @@ describe('DefaultTechDocsCollatorFactory', () => {
         });
       });
     });
+
+    it('should pass the entity to the documentTransformer function', async () => {
+      const documentTransformer: TechDocsCollatorDocumentTransformer = (
+        doc: MkSearchIndexDoc,
+        entity?: Entity,
+      ) => {
+        return {
+          ...doc,
+          tags: [entity?.metadata.name ?? 'missing-entity'],
+        };
+      };
+
+      factory = DefaultTechDocsCollatorFactory.fromConfig(config, {
+        ...options,
+        documentTransformer,
+      });
+
+      collator = await factory.getCollator();
+
+      const pipeline = TestPipeline.fromCollator(collator);
+      const { documents } = await pipeline.execute();
+      documents.forEach(document => {
+        expect(document).toMatchObject({
+          tags: ['test-entity-with-docs'],
+        });
+      });
+    });
   });
 });
