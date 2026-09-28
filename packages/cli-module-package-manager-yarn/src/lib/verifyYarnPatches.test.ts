@@ -1968,6 +1968,40 @@ plugins:
     });
   });
 
+  it('preserves project file permissions during publication', async () => {
+    mockDir.setContent(
+      createBackstagePatchRepository({ backstageVersion: '1.0.1' }),
+    );
+    const manifestPath = mockDir.resolve('package.json');
+    const lockfilePath = mockDir.resolve('yarn.lock');
+    await Promise.all([
+      fs.chmod(manifestPath, 0o666),
+      fs.chmod(lockfilePath, 0o666),
+    ]);
+    const previousUmask = process.umask(0o077);
+
+    try {
+      await expect(
+        fixYarnPatches({
+          rootDir: mockDir.path,
+          fetch: async () =>
+            new Response(JSON.stringify(releaseManifest('1.0.1', '1.0.1'))),
+          install: async rootDir => {
+            const targetLockfile = createBackstagePatchRepository({
+              sourceVersion: '1.0.1',
+            })['yarn.lock'] as string;
+            await fs.writeFile(path.join(rootDir, 'yarn.lock'), targetLockfile);
+          },
+        }),
+      ).resolves.toMatchObject({ status: 'fixed' });
+    } finally {
+      process.umask(previousUmask);
+    }
+
+    expect((await fs.stat(manifestPath)).mode & 0o777).toBe(0o666);
+    expect((await fs.stat(lockfilePath)).mode & 0o777).toBe(0o666);
+  });
+
   it('does not retarget a Backstage patch to an older package version', async () => {
     mockDir.setContent(
       createBackstagePatchRepository({
@@ -2408,6 +2442,40 @@ fs.writeFileSync('yarn.lock', ${JSON.stringify(targetLockfile)});
     ).resolves.toMatchObject({ status: 'fixable' });
     await expect(fs.stat(configuredCache)).rejects.toMatchObject({
       code: 'ENOENT',
+    });
+  });
+
+  it('rejects a staged Yarn install terminated by a signal', async () => {
+    const targetLockfile = createBackstagePatchRepository({
+      sourceVersion: '1.0.1',
+    })['yarn.lock'] as string;
+    mockDir.setContent({
+      ...createBackstagePatchRepository({ backstageVersion: '1.0.1' }),
+      '.yarnrc.yml': 'yarnPath: .yarn/releases/test-yarn.cjs\n',
+      '.yarn': {
+        patches: { 'example.patch': 'patch' },
+        releases: {
+          'test-yarn.cjs': `
+const fs = require('node:fs');
+fs.writeFileSync('yarn.lock', ${JSON.stringify(targetLockfile)});
+process.kill(process.pid, 'SIGTERM');
+`,
+        },
+      },
+    });
+
+    await expect(
+      fixYarnPatches({
+        rootDir: mockDir.path,
+        dryRun: true,
+        fetch: async () =>
+          new Response(JSON.stringify(releaseManifest('1.0.1', '1.0.1'))),
+      }),
+    ).resolves.toMatchObject({
+      status: 'not-fixable',
+      message: expect.stringContaining(
+        'Yarn could not validate the retargeted patch',
+      ),
     });
   });
 
@@ -2861,6 +2929,61 @@ fs.writeFileSync('yarn.lock', ${JSON.stringify(targetLockfile)});
     );
     await expect(fs.readFile(lockfilePath, 'utf8')).resolves.toBe(
       concurrentlyEditedLockfile,
+    );
+  });
+
+  it('restores published files when final read-back fails', async () => {
+    mockDir.setContent(
+      createBackstagePatchRepository({ backstageVersion: '1.0.1' }),
+    );
+    const manifestPath = path.join(mockDir.path, 'package.json');
+    const lockfilePath = path.join(mockDir.path, 'yarn.lock');
+    const originalManifest = await fs.readFile(manifestPath, 'utf8');
+    const originalLockfile = await fs.readFile(lockfilePath, 'utf8');
+    const targetLockfile = createBackstagePatchRepository({
+      sourceVersion: '1.0.1',
+    })['yarn.lock'] as string;
+    const readFile = fs.readFile.bind(fs);
+    let failNextManifestRead = false;
+    const readFileSpy = jest
+      .spyOn(fs, 'readFile')
+      .mockImplementation(async (filePath, options) => {
+        if (failNextManifestRead && filePath.toString() === manifestPath) {
+          failNextManifestRead = false;
+          throw new Error('Simulated post-publication read failure');
+        }
+        return readFile(filePath, options);
+      });
+
+    try {
+      await expect(
+        fixYarnPatches({
+          rootDir: mockDir.path,
+          fetch: async () =>
+            new Response(JSON.stringify(releaseManifest('1.0.1', '1.0.1'))),
+          install: async rootDir => {
+            await fs.writeFile(path.join(rootDir, 'yarn.lock'), targetLockfile);
+          },
+          publishFile: async (filePath, content) => {
+            await fs.writeFile(filePath, content);
+            if (filePath === lockfilePath) {
+              failNextManifestRead = true;
+            }
+          },
+        }),
+      ).resolves.toEqual({
+        status: 'not-fixable',
+        message:
+          'Could not publish the patch repair; the original project files were restored: Error: Simulated post-publication read failure',
+      });
+    } finally {
+      readFileSpy.mockRestore();
+    }
+    await expect(fs.readFile(manifestPath, 'utf8')).resolves.toBe(
+      originalManifest,
+    );
+    await expect(fs.readFile(lockfilePath, 'utf8')).resolves.toBe(
+      originalLockfile,
     );
   });
 

@@ -1663,7 +1663,7 @@ async function defaultInstall(options: {
     }
   }
 
-  await run([...command, 'install', '--mode=update-lockfile'], {
+  const child = run([...command, 'install', '--mode=update-lockfile'], {
     cwd: options.rootDir,
     env: Object.assign({}, options.env, {
       YARN_CACHE_FOLDER: path.join(options.rootDir, '.yarn/cache'),
@@ -1680,7 +1680,11 @@ async function defaultInstall(options: {
       YARN_PATCH_FOLDER: options.patchFolder,
       YARN_VIRTUAL_FOLDER: path.join(options.rootDir, '.yarn/__virtual__'),
     }),
-  }).waitForExit();
+  });
+  await child.waitForExit();
+  if (child.signalCode) {
+    throw new Error(`Yarn install was terminated by ${child.signalCode}`);
+  }
 }
 
 async function writeFileAtomically(filePath: string, content: string) {
@@ -1691,6 +1695,7 @@ async function writeFileAtomically(filePath: string, content: string) {
       flag: 'wx',
       mode: stats.mode,
     });
+    await fs.chmod(temporaryPath, stats.mode);
     await fs.rename(temporaryPath, filePath);
   } finally {
     await fs.rm(temporaryPath, { force: true });
@@ -2082,6 +2087,22 @@ async function fixYarnPatchesUnlocked(
           };
         }
         await publishFile(lockfilePath, targetLockfile);
+        const [finalManifest, finalLockfile] = await Promise.all([
+          fs.readFile(manifestPath, 'utf8'),
+          fs.readFile(lockfilePath, 'utf8'),
+        ]);
+        if (
+          finalManifest !== targetManifest ||
+          finalLockfile !== targetLockfile
+        ) {
+          await restorePublishedFiles({ files: publishedFiles, publishFile });
+          return {
+            status: 'not-fixable',
+            message:
+              'Could not publish the patch repair; project files changed during publication',
+          };
+        }
+        return { status: 'fixed', message };
       } catch (error) {
         const restored = await restorePublishedFiles({
           files: publishedFiles,
@@ -2098,22 +2119,6 @@ async function fixYarnPatchesUnlocked(
               )}`,
         };
       }
-      const [publishedManifest, publishedLockfile] = await Promise.all([
-        fs.readFile(manifestPath, 'utf8'),
-        fs.readFile(lockfilePath, 'utf8'),
-      ]);
-      if (
-        publishedManifest !== targetManifest ||
-        publishedLockfile !== targetLockfile
-      ) {
-        await restorePublishedFiles({ files: publishedFiles, publishFile });
-        return {
-          status: 'not-fixable',
-          message:
-            'Could not publish the patch repair; project files changed during publication',
-        };
-      }
-      return { status: 'fixed', message };
     } catch (error) {
       return {
         status: 'not-fixable',
