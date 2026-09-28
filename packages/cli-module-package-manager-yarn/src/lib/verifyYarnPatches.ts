@@ -1400,7 +1400,17 @@ function getRepairableHoldback(
   if (result.errors.length !== 1) {
     return undefined;
   }
-  return result.errors[0].repairHint;
+  const holdback = result.errors[0].repairHint;
+  if (
+    !holdback ||
+    !semverUtils.satisfiesWithPrereleases(
+      holdback.targetVersion,
+      `>${holdback.currentVersion}`,
+    )
+  ) {
+    return undefined;
+  }
+  return holdback;
 }
 
 function hasExactPatchSource(
@@ -1944,172 +1954,196 @@ async function fixYarnPatchesUnlocked(
     path.join(os.tmpdir(), 'backstage-verify-patches-'),
   );
   const message = `Retargeted patch for '${holdback.packageName}' from '${holdback.currentVersion}' to '${holdback.targetVersion}'`;
-  try {
-    const configuration = await readYarnConfiguration(rootDir, options.env);
-    const stagedProject = await createShadowProject({
-      rootDir,
-      shadowDir,
-      configuration,
-      patchPaths: declaration.paths.map(patchPath => patchPath.absolute),
-    });
-    await fs.writeFile(path.join(shadowDir, 'package.json'), targetManifest);
-
+  const runRepair = async (): Promise<FixYarnPatchesResult> => {
     try {
-      if (options.install) {
-        await options.install(shadowDir);
-      } else {
-        await defaultInstall({
-          rootDir: shadowDir,
-          env: options.env,
-          patchFolder: stagedProject.patchFolder,
-        });
+      const configuration = await readYarnConfiguration(rootDir, options.env);
+      const stagedProject = await createShadowProject({
+        rootDir,
+        shadowDir,
+        configuration,
+        patchPaths: declaration.paths.map(patchPath => patchPath.absolute),
+      });
+      await fs.writeFile(path.join(shadowDir, 'package.json'), targetManifest);
+
+      try {
+        if (options.install) {
+          await options.install(shadowDir);
+        } else {
+          await defaultInstall({
+            rootDir: shadowDir,
+            env: options.env,
+            patchFolder: stagedProject.patchFolder,
+          });
+        }
+      } catch (error) {
+        return {
+          status: 'not-fixable',
+          message: `Yarn could not validate the retargeted patch: ${String(
+            error,
+          )}`,
+        };
       }
-    } catch (error) {
-      return {
-        status: 'not-fixable',
-        message: `Yarn could not validate the retargeted patch: ${String(
-          error,
-        )}`,
-      };
-    }
 
-    const shadowEnvironment = Object.assign({}, options.env, {
-      YARN_PATCH_FOLDER: stagedProject.patchFolder,
-    }) as NodeJS.ProcessEnv;
-    const verified = await verifyYarnPatches({
-      rootDir: shadowDir,
-      env: shadowEnvironment,
-      fetch: options.fetch,
-    });
-    if (verified.errors.length > 0) {
-      return {
-        status: 'not-fixable',
-        message: `The repaired project did not pass patch verification: ${verified.errors
-          .map(error => error.message)
-          .join('; ')}`,
-      };
-    }
-    const targetLockfile = await fs.readFile(
-      path.join(shadowDir, 'yarn.lock'),
-      'utf8',
-    );
-    if (
-      !lockfileOnlyChangesPatch({
-        before: originalLockfile,
-        after: targetLockfile,
-        packageName: holdback.packageName,
-        currentVersion: holdback.currentVersion,
-        targetVersion: holdback.targetVersion,
-        currentReference,
-      })
-    ) {
-      return {
-        status: 'not-fixable',
-        message: 'Yarn produced unrelated lockfile changes',
-      };
-    }
-    if (
-      (await fingerprintProjectInputs(rootDir, stagedProject.inputPaths))
-        .state !== stagedProject.inputFingerprint.state
-    ) {
-      return {
-        status: 'not-fixable',
-        message: 'Project files changed while the patch repair was staged',
-      };
-    }
-    if (options.dryRun) {
-      return { status: 'fixable', message };
-    }
-
-    const [currentManifest, currentLockfile] = await Promise.all([
-      fs.readFile(manifestPath, 'utf8'),
-      fs.readFile(lockfilePath, 'utf8'),
-    ]);
-    if (
-      currentManifest !== originalManifest ||
-      currentLockfile !== originalLockfile
-    ) {
+      const shadowEnvironment = Object.assign({}, options.env, {
+        YARN_PATCH_FOLDER: stagedProject.patchFolder,
+      }) as NodeJS.ProcessEnv;
+      const verified = await verifyYarnPatches({
+        rootDir: shadowDir,
+        env: shadowEnvironment,
+        fetch: options.fetch,
+      });
+      if (verified.errors.length > 0) {
+        return {
+          status: 'not-fixable',
+          message: `The repaired project did not pass patch verification: ${verified.errors
+            .map(error => error.message)
+            .join('; ')}`,
+        };
+      }
+      const targetLockfile = await fs.readFile(
+        path.join(shadowDir, 'yarn.lock'),
+        'utf8',
+      );
       if (
-        currentManifest === targetManifest &&
-        currentLockfile === targetLockfile
+        !lockfileOnlyChangesPatch({
+          before: originalLockfile,
+          after: targetLockfile,
+          packageName: holdback.packageName,
+          currentVersion: holdback.currentVersion,
+          targetVersion: holdback.targetVersion,
+          currentReference,
+        })
       ) {
-        return { status: 'fixed', message };
+        return {
+          status: 'not-fixable',
+          message: 'Yarn produced unrelated lockfile changes',
+        };
       }
-      return {
-        status: 'not-fixable',
-        message: 'Project files changed while the patch repair was staged',
-      };
-    }
-    const publishFile = options.publishFile ?? writeFileAtomically;
-    const publishedFiles = [
-      {
-        path: manifestPath,
-        original: originalManifest,
-        target: targetManifest,
-      },
-      {
-        path: lockfilePath,
-        original: originalLockfile,
-        target: targetLockfile,
-      },
-    ];
-    try {
-      await publishFile(manifestPath, targetManifest);
-      const [publishedManifest, lockfileBeforePublish] = await Promise.all([
+      if (
+        (await fingerprintProjectInputs(rootDir, stagedProject.inputPaths))
+          .state !== stagedProject.inputFingerprint.state
+      ) {
+        return {
+          status: 'not-fixable',
+          message: 'Project files changed while the patch repair was staged',
+        };
+      }
+      if (options.dryRun) {
+        return { status: 'fixable', message };
+      }
+
+      const [currentManifest, currentLockfile] = await Promise.all([
+        fs.readFile(manifestPath, 'utf8'),
+        fs.readFile(lockfilePath, 'utf8'),
+      ]);
+      if (
+        currentManifest !== originalManifest ||
+        currentLockfile !== originalLockfile
+      ) {
+        if (
+          currentManifest === targetManifest &&
+          currentLockfile === targetLockfile
+        ) {
+          return { status: 'fixed', message };
+        }
+        return {
+          status: 'not-fixable',
+          message: 'Project files changed while the patch repair was staged',
+        };
+      }
+      const publishFile = options.publishFile ?? writeFileAtomically;
+      const publishedFiles = [
+        {
+          path: manifestPath,
+          original: originalManifest,
+          target: targetManifest,
+        },
+        {
+          path: lockfilePath,
+          original: originalLockfile,
+          target: targetLockfile,
+        },
+      ];
+      try {
+        await publishFile(manifestPath, targetManifest);
+        const [publishedManifest, lockfileBeforePublish] = await Promise.all([
+          fs.readFile(manifestPath, 'utf8'),
+          fs.readFile(lockfilePath, 'utf8'),
+        ]);
+        if (
+          publishedManifest !== targetManifest ||
+          lockfileBeforePublish !== originalLockfile
+        ) {
+          await restorePublishedFiles({ files: publishedFiles, publishFile });
+          return {
+            status: 'not-fixable',
+            message:
+              'Project files changed while the patch repair was published',
+          };
+        }
+        await publishFile(lockfilePath, targetLockfile);
+      } catch (error) {
+        const restored = await restorePublishedFiles({
+          files: publishedFiles,
+          publishFile,
+        });
+        return {
+          status: 'not-fixable',
+          message: restored
+            ? `Could not publish the patch repair; the original project files were restored: ${String(
+                error,
+              )}`
+            : `Could not publish the patch repair; project files may contain a partial repair: ${String(
+                error,
+              )}`,
+        };
+      }
+      const [publishedManifest, publishedLockfile] = await Promise.all([
         fs.readFile(manifestPath, 'utf8'),
         fs.readFile(lockfilePath, 'utf8'),
       ]);
       if (
         publishedManifest !== targetManifest ||
-        lockfileBeforePublish !== originalLockfile
+        publishedLockfile !== targetLockfile
       ) {
         await restorePublishedFiles({ files: publishedFiles, publishFile });
         return {
           status: 'not-fixable',
-          message: 'Project files changed while the patch repair was published',
+          message:
+            'Could not publish the patch repair; project files changed during publication',
         };
       }
-      await publishFile(lockfilePath, targetLockfile);
+      return { status: 'fixed', message };
     } catch (error) {
-      const restored = await restorePublishedFiles({
-        files: publishedFiles,
-        publishFile,
-      });
       return {
         status: 'not-fixable',
-        message: restored
-          ? `Could not publish the patch repair; the original project files were restored: ${String(
-              error,
-            )}`
-          : `Could not publish the patch repair; project files may contain a partial repair: ${String(
-              error,
-            )}`,
+        message: `Could not safely stage the patch repair: ${String(error)}`,
       };
     }
-    const [publishedManifest, publishedLockfile] = await Promise.all([
-      fs.readFile(manifestPath, 'utf8'),
-      fs.readFile(lockfilePath, 'utf8'),
-    ]);
-    if (
-      publishedManifest !== targetManifest ||
-      publishedLockfile !== targetLockfile
-    ) {
-      await restorePublishedFiles({ files: publishedFiles, publishFile });
-      return {
-        status: 'not-fixable',
-        message:
-          'Could not publish the patch repair; project files changed during publication',
-      };
+  };
+  const removeShadowProject = async (): Promise<string | undefined> => {
+    try {
+      await fs.rm(shadowDir, { recursive: true, force: true });
+      return undefined;
+    } catch (error) {
+      return `Could not remove the temporary project after patch repair: ${String(
+        error,
+      )}`;
     }
-    return { status: 'fixed', message };
+  };
+
+  let result: FixYarnPatchesResult;
+  try {
+    result = await runRepair();
   } catch (error) {
-    return {
-      status: 'not-fixable',
-      message: `Could not safely stage the patch repair: ${String(error)}`,
-    };
-  } finally {
-    await fs.rm(shadowDir, { recursive: true, force: true });
+    const warning = await removeShadowProject();
+    if (warning) {
+      throw new Error(`${String(error)}; ${warning}`, { cause: error });
+    }
+    throw error;
   }
+  const warning = await removeShadowProject();
+  return warning ? { ...result, warning } : result;
 }
 
 /**
@@ -2166,5 +2200,10 @@ export async function fixYarnPatches(
   }
 
   const warning = await tryReleaseLock();
-  return warning ? { ...result, warning } : result;
+  return warning
+    ? {
+        ...result,
+        warning: result.warning ? `${result.warning}; ${warning}` : warning,
+      }
+    : result;
 }

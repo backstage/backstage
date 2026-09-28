@@ -1968,6 +1968,36 @@ plugins:
     });
   });
 
+  it('does not retarget a Backstage patch to an older package version', async () => {
+    mockDir.setContent(
+      createBackstagePatchRepository({
+        backstageVersion: '1.0.0',
+        sourceVersion: '1.0.1',
+      }),
+    );
+    const install = jest.fn();
+
+    await expect(
+      fixYarnPatches({
+        rootDir: mockDir.path,
+        fetch: async () =>
+          new Response(JSON.stringify(releaseManifest('1.0.0', '1.0.0'))),
+        install,
+      }),
+    ).resolves.toEqual({
+      status: 'not-fixable',
+      message: 'No patch holdback could be repaired safely',
+    });
+    expect(install).not.toHaveBeenCalled();
+
+    const manifest = JSON.parse(
+      await fs.readFile(mockDir.resolve('package.json'), 'utf8'),
+    );
+    expect(manifest.resolutions['@backstage/example']).toBe(
+      'patch:@backstage/example@npm%3A1.0.1#~/.yarn/patches/example.patch',
+    );
+  });
+
   it.each(['fixed', 'not-fixable'] as const)(
     'preserves the %s repair outcome when releasing the lock fails',
     async outcome => {
@@ -2053,6 +2083,55 @@ plugins:
       }
     },
   );
+
+  it('preserves a successful repair when temporary project cleanup fails', async () => {
+    mockDir.setContent(
+      createBackstagePatchRepository({ backstageVersion: '1.0.1' }),
+    );
+    const targetLockfile = createBackstagePatchRepository({
+      sourceVersion: '1.0.1',
+    })['yarn.lock'] as string;
+    const remove = fs.rm.bind(fs);
+    let shadowDir: string | undefined;
+    const removeSpy = jest
+      .spyOn(fs, 'rm')
+      .mockImplementation(async (target, options) => {
+        if (
+          options?.recursive &&
+          path
+            .basename(target.toString())
+            .startsWith('backstage-verify-patches-')
+        ) {
+          shadowDir = target.toString();
+          throw new Error('cleanup failed');
+        }
+        return remove(target, options);
+      });
+
+    try {
+      await expect(
+        fixYarnPatches({
+          rootDir: mockDir.path,
+          fetch: async () =>
+            new Response(JSON.stringify(releaseManifest('1.0.1', '1.0.1'))),
+          install: async rootDir => {
+            await fs.writeFile(path.join(rootDir, 'yarn.lock'), targetLockfile);
+          },
+        }),
+      ).resolves.toEqual({
+        status: 'fixed',
+        message:
+          "Retargeted patch for '@backstage/example' from '1.0.0' to '1.0.1'",
+        warning:
+          'Could not remove the temporary project after patch repair: Error: cleanup failed',
+      });
+    } finally {
+      removeSpy.mockRestore();
+      if (shadowDir) {
+        await remove(shadowDir, { recursive: true, force: true });
+      }
+    }
+  });
 
   it('retains the original exception when releasing the lock also fails', async () => {
     mockDir.setContent(
