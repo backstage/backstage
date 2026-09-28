@@ -118,7 +118,7 @@ Reach out to us in the **#techdocs** channel of our
 
 - TechDocs' recommended setup supports most environments (CI systems, cloud
   storage solutions, source control systems).
-- [Instructions for upgrading from Alpha to Beta](how-to-guides.md#how-to-migrate-from-techdocs-alpha-to-beta)
+- [Instructions for upgrading from Alpha to Beta](https://github.com/backstage/backstage/blob/80a0da917b785a2f2132e5308ad4a525592d356f/docs/features/techdocs/how-to-guides.md#how-to-migrate-from-techdocs-alpha-to-beta)
 
 **v1.0**
 
