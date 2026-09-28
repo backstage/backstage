@@ -17,8 +17,9 @@
 import { PropsWithChildren, useState, useEffect, useCallback } from 'react';
 
 import { create } from 'jss';
-import StylesProvider from '@material-ui/styles/StylesProvider';
-import jssPreset from '@material-ui/styles/jssPreset';
+// The package-root import ensures federated apps share the same styling context.
+// eslint-disable-next-line @backstage/no-top-level-material-ui-4-imports
+import { StylesProvider, jssPreset } from '@material-ui/styles';
 
 /**
  * Name for the event dispatched when ShadowRoot styles are loaded.
