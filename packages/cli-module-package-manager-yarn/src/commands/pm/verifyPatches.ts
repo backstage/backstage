@@ -17,8 +17,8 @@
 import { targetPaths } from '@backstage/cli-common';
 import type { CliCommandContext } from '@backstage/cli-node';
 import { cli } from 'cleye';
+import { fixYarnPatches } from '../../lib/fixYarnPatches';
 import {
-  fixYarnPatches,
   verifyYarnPatches,
   type PatchVerificationError,
 } from '../../lib/verifyYarnPatches';
@@ -39,12 +39,7 @@ export default async ({ args, info }: CliCommandContext) => {
       flags: {
         fix: {
           type: Boolean,
-          description: 'Safely retarget an outdated Backstage package patch',
-        },
-        'dry-run': {
-          type: Boolean,
-          description:
-            'Check whether --fix would succeed without writing files',
+          description: 'Safely retarget outdated Backstage package patches',
         },
       },
     },
@@ -52,11 +47,7 @@ export default async ({ args, info }: CliCommandContext) => {
     args,
   );
 
-  if (flags['dry-run'] && !flags.fix) {
-    throw new Error('--dry-run can only be used together with --fix');
-  }
-
-  let result = await verifyYarnPatches({
+  const result = await verifyYarnPatches({
     rootDir: targetPaths.dir,
     env: process.env,
   });
@@ -64,34 +55,19 @@ export default async ({ args, info }: CliCommandContext) => {
   let fixFailureMessage: string | undefined;
   if (
     flags.fix &&
-    result.errors.length === 1 &&
-    result.errors[0].kind === 'backstage-patch-holdback'
+    result.errors.length > 0 &&
+    result.errors.every(error => error.kind === 'backstage-patch-holdback')
   ) {
     const fixResult = await fixYarnPatches({
       rootDir: targetPaths.dir,
       env: process.env,
-      dryRun: Boolean(flags['dry-run']),
       verificationResult: result,
     });
-    if (fixResult.warning) {
-      process.stderr.write(`Warning: ${fixResult.warning}.\n`);
+    if (fixResult.status === 'fixed') {
+      process.stdout.write(`${fixResult.message}.\n`);
+      return;
     }
-    if (fixResult.status !== 'not-fixable') {
-      process.stdout.write(
-        `${fixResult.message}${
-          fixResult.status === 'fixable' ? ' (dry run)' : ''
-        }.\n`,
-      );
-      if (fixResult.status === 'fixable') {
-        return;
-      }
-      result = await verifyYarnPatches({
-        rootDir: targetPaths.dir,
-        env: process.env,
-      });
-    } else {
-      fixFailureMessage = fixResult.message;
-    }
+    fixFailureMessage = fixResult.message;
   }
 
   if (result.errors.length > 0) {

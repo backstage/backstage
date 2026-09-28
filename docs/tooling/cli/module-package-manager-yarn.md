@@ -41,31 +41,35 @@ dependencies, or write project files. Use it alongside `yarn install
 this command verifies that patch declarations and the selected Backstage
 release remain aligned.
 
-If a release upgrade leaves one project-owned Backstage patch pinned to the old
-package version, use `--fix` to attempt a conservative repair:
+If a release upgrade leaves project-owned Backstage patches pinned to old
+package versions, use `--fix` to attempt a conservative repair:
 
 ```shell
 yarn backstage-cli pm verify-patches --fix
 ```
 
-The fix is limited to one exact-version `@backstage/*` patch in the root
-`resolutions`. The command stages the workspace manifests, patches, and
-lockfile in a temporary directory, verifies that Yarn can apply the existing
-patch to the target release version, and rejects unrelated lockfile changes.
-Only after the staged project passes the normal verification does it update
-`package.json` and `yarn.lock`. Dependency build scripts are disabled during
-the staged install, which uses the repository's configured Yarn binary and
-plugins from the conventional `.yarn/releases` and `.yarn/plugins` locations.
-If the declaration is ambiguous or the patch no longer applies cleanly, the
-command leaves the project untouched and exits with the original verification
-failure.
+The fix is limited to exact-version `@backstage/*` patches in the root
+`resolutions`. The command updates all eligible outdated patches to the
+versions in the selected Backstage release and runs one lockfile-only Yarn install. It
+never downgrades a patched package, and it rejects unrelated lockfile changes.
+Afterward it runs the normal verification over the result. Dependency build
+scripts are disabled during the install, which uses the repository's
+configured Yarn binary, plugins, and registry settings.
 
-The repair rejects symbolic links in staged inputs and changes to lockfile
-metadata. Failures to release the project lock are reported separately from
-the repair outcome; a completed repair is still verified and reported as such.
+The repair operates directly in the working checkout. If the install or final
+verification fails, it restores `package.json` and `yarn.lock`. Run it in a
+clean, exclusive checkout because an abrupt process or machine interruption
+can leave a partial change behind. If a declaration is ambiguous or a patch no
+longer applies cleanly, the command exits with the original verification
+failure for manual repair.
 
-Use `--fix --dry-run` to perform the staged install and verification without
-writing project files.
+An automated Backstage version bump can run these commands in order:
+
+```shell
+yarn backstage-cli versions:bump
+yarn backstage-cli pm verify-patches --fix
+yarn backstage-cli pm verify-patches
+```
 
 For offline or mirrored environments, set `BACKSTAGE_MANIFEST_FILE` to a local
 release manifest or `BACKSTAGE_VERSIONS_BASE_URL` to the base URL from which
