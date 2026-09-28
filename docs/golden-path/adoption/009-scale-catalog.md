@@ -65,7 +65,7 @@ path works. Start with the software population that matters most, make failures
 actionable, and pair requirements with automation and support.
 
 The technical partner can determine whether an
-[external catalog provider](../../features/software-catalog/external-integrations.md)
+[external catalog provider](../../features/software-catalog/external-integrations/entity-providers.md)
 or delivery check establishes data more reliably than asking every team to
 maintain the same file manually. Track exceptions and recurring failures; they
 often reveal a taxonomy, automation, or ownership problem that enforcement alone

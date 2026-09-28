@@ -469,7 +469,7 @@ the following specialized guides when you need them:
 
 - [Annotations](../../../features/software-catalog/descriptor-format.md#annotations-optional)
   add plugin-specific information to an existing Catalog entity.
-- [Custom processors](../../../features/software-catalog/external-integrations.md#custom-processors)
+- [Custom processors](../../../features/software-catalog/external-integrations/processors.md)
   check or change entity data as the Catalog reads it.
 - [Extending the model](../../../features/software-catalog/extending-the-model.md)
   adds a new kind of Catalog entity.
