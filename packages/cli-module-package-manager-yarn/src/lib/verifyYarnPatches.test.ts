@@ -2525,6 +2525,60 @@ process.kill(process.pid, 'SIGTERM');
     ).resolves.toBe(originalLockfile);
   });
 
+  it('rejects a Yarn binary beneath a symlinked directory', async () => {
+    const targetLockfile = (
+      createBackstagePatchRepository({ sourceVersion: '1.0.1' })[
+        'yarn.lock'
+      ] as string
+    ).replaceAll('~/.yarn/patches', '~/patches');
+    const repository = createBackstagePatchRepository({
+      backstageVersion: '1.0.1',
+    });
+    delete repository['.yarn'];
+    repository['package.json'] = (repository['package.json'] as string).replace(
+      '~/.yarn/patches',
+      '~/patches',
+    );
+    repository['yarn.lock'] = (repository['yarn.lock'] as string).replaceAll(
+      '~/.yarn/patches',
+      '~/patches',
+    );
+    mockDir.setContent({
+      ...repository,
+      '.yarnrc.yml': `patchFolder: patches
+yarnPath: .yarn/releases/yarn.cjs
+`,
+      patches: { 'example.patch': 'patch' },
+    });
+    concurrentMockDirA.setContent({
+      releases: {
+        'yarn.cjs': `
+const fs = require('node:fs');
+fs.writeFileSync(${JSON.stringify(
+          concurrentMockDirA.resolve('executed'),
+        )}, 'executed');
+fs.writeFileSync('yarn.lock', ${JSON.stringify(targetLockfile)});
+`,
+      },
+    });
+    await fs.symlink(concurrentMockDirA.path, mockDir.resolve('.yarn'), 'dir');
+
+    await expect(
+      fixYarnPatches({
+        rootDir: mockDir.path,
+        dryRun: true,
+        fetch: async () =>
+          new Response(JSON.stringify(releaseManifest('1.0.1', '1.0.1'))),
+      }),
+    ).resolves.toMatchObject({
+      status: 'not-fixable',
+      message: expect.stringContaining('Cannot safely stage symbolic link'),
+    });
+    await expect(
+      fs.stat(concurrentMockDirA.resolve('executed')),
+    ).rejects.toMatchObject({ code: 'ENOENT' });
+  });
+
   it.each([
     ['version: 8', 'version: 9'],
     ['cacheKey: 10c0', 'cacheKey: 10c1'],
