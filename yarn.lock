@@ -5616,9 +5616,8 @@ __metadata:
     "@backstage/plugin-notifications-common": "workspace:^"
     "@backstage/plugin-notifications-node": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@types/nodemailer": "npm:^7.0.0"
     lodash: "npm:^4.17.21"
-    nodemailer: "npm:^9.1.1"
+    nodemailer: "npm:^10.0.10"
     p-throttle: "npm:^4.1.1"
   languageName: unknown
   linkType: soft
@@ -19434,15 +19433,6 @@ __metadata:
   dependencies:
     undici-types: "npm:>=7.24.0 <7.24.7"
   checksum: 10/ba65fdac66cc5b205790bee8a4b3f6c02f70da62dff63254c69d1dd3a53c2fb3c6128da2fe5e93c820129cdaf798c69b9742f0b9fc83534cdbcbc2b5519b1b23
-  languageName: node
-  linkType: hard
-
-"@types/nodemailer@npm:^7.0.0":
-  version: 7.0.12
-  resolution: "@types/nodemailer@npm:7.0.12"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10/8b5f0eaac68d2b054489a38bfb55a09c75c3ae66e355e624758dcbc88d5345d794691eccdabeb72aa737f7d13d7d74dfdd79f8786f55cd3388c1ec21292d9293
   languageName: node
   linkType: hard
 
@@ -36156,10 +36146,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:^9.1.1":
-  version: 9.1.1
-  resolution: "nodemailer@npm:9.1.1"
-  checksum: 10/d84fd16456a8b1e1f979e65f78f3963819ed0500aaf51544d5da04634ceb0364e5ad7c784793bf7dd7b0028d4bee1d48e5b316394c5c538dbda99f4fc5aa7502
+"nodemailer@npm:^10.0.10":
+  version: 10.0.10
+  resolution: "nodemailer@npm:10.0.10"
+  checksum: 10/3aeab7cd9aa087cb6280463a7c6b30dcffe2b901f7690cecc6d104196b1d31a2f25764f74a4bf84c05667fa75174a10462e2ec71f43a275aca96c95f45299bcf
   languageName: node
   linkType: hard
 
