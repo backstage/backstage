@@ -20,5 +20,9 @@
  * @packageDocumentation
  */
 
-export { createBackend, defaultServiceFactories } from './CreateBackend';
+export {
+  createBackend,
+  defaultServiceFactories,
+  type CreateBackendOptions,
+} from './CreateBackend';
 export { discoveryFeatureLoader } from './discoveryFeatureLoader';
