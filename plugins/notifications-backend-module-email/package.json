@@ -47,13 +47,12 @@
     "@backstage/plugin-notifications-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "lodash": "^4.17.21",
-    "nodemailer": "^9.1.1",
+    "nodemailer": "^10.0.10",
     "p-throttle": "^4.1.1"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
-    "@backstage/cli": "workspace:^",
-    "@types/nodemailer": "^7.0.0"
+    "@backstage/cli": "workspace:^"
   },
   "configSchema": "config.d.ts"
 }
