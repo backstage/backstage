@@ -17,14 +17,14 @@
 import { overrideTargetPaths } from '@backstage/cli-common/testUtils';
 import type { CliCommandContext } from '@backstage/cli-node';
 
+jest.mock('../../lib/fixYarnPatches', () => ({ fixYarnPatches: jest.fn() }));
 jest.mock('../../lib/verifyYarnPatches', () => ({
-  fixYarnPatches: jest.fn(),
   verifyYarnPatches: jest.fn(),
 }));
 
 import verifyYarnPatchesCommand from './verifyPatches';
+import { fixYarnPatches } from '../../lib/fixYarnPatches';
 import {
-  fixYarnPatches,
   verifyYarnPatches,
   type VerifyYarnPatchesResult,
 } from '../../lib/verifyYarnPatches';
@@ -149,16 +149,13 @@ describe('verifyYarnPatches command', () => {
       message:
         "Retargeted patch for '@backstage/example' from '1.0.0' to '1.0.1'",
     });
-    mockVerifyYarnPatches
-      .mockResolvedValueOnce(initialResult)
-      .mockResolvedValueOnce(healthyResult(1, 'verified'));
+    mockVerifyYarnPatches.mockResolvedValue(initialResult);
 
     await verifyYarnPatchesCommand({ ...context, args: ['--fix'] });
 
     expect(mockFixYarnPatches).toHaveBeenCalledWith({
       rootDir: '/test-repository',
       env: process.env,
-      dryRun: false,
       verificationResult: initialResult,
     });
     expect(stdoutSpy).toHaveBeenCalledWith(
@@ -168,73 +165,50 @@ describe('verifyYarnPatches command', () => {
       rootDir: '/test-repository',
       env: process.env,
     });
-    expect(mockVerifyYarnPatches).toHaveBeenCalledTimes(2);
+    expect(mockVerifyYarnPatches).toHaveBeenCalledTimes(1);
   });
 
-  it.each(['fixed', 'not-fixable'] as const)(
-    'reports cleanup warnings without replacing the %s repair outcome',
-    async status => {
-      mockFixYarnPatches.mockResolvedValue({
-        status,
-        message: 'Repair outcome',
-        warning: 'Could not release the project lock after patch repair',
-      });
-      mockVerifyYarnPatches
-        .mockResolvedValueOnce(holdbackResult())
-        .mockResolvedValueOnce(healthyResult(1, 'verified'));
-
-      const error = await verifyYarnPatchesCommand({
-        ...context,
-        args: ['--fix'],
-      }).catch(e => e);
-      expect(error).toEqual(
-        status === 'fixed'
-          ? undefined
-          : new Error('Yarn patch verification failed'),
-      );
-      expect(stdoutSpy.mock.calls).toEqual(
-        status === 'fixed'
-          ? [
-              ['Repair outcome.\n'],
-              [
-                'Yarn patch verification passed: 1 patch reference verified. Backstage release validation passed.\n',
-              ],
-            ]
-          : [],
-      );
-      expect(mockVerifyYarnPatches).toHaveBeenCalledTimes(
-        status === 'fixed' ? 2 : 1,
-      );
-      expect(stderrSpy).toHaveBeenCalledWith(
-        'Warning: Could not release the project lock after patch repair.\n',
-      );
-    },
-  );
-
-  it('checks a repair without writing or re-verifying during a dry run', async () => {
+  it('repairs multiple holdbacks together', async () => {
     const initialResult = holdbackResult();
-    mockFixYarnPatches.mockResolvedValue({
-      status: 'fixable',
+    initialResult.errors.push({
+      kind: 'backstage-patch-holdback',
       message:
-        "Retargeted patch for '@backstage/example' from '1.0.0' to '1.0.1'",
+        "Patched package '@backstage/other' is at version '2.0.0', but Backstage release '1.0.1' requires version '2.0.1'",
+      location: 'package.json#resolutions.@backstage/other',
+    });
+    mockFixYarnPatches.mockResolvedValue({
+      status: 'fixed',
+      message: 'Retargeted two patches',
     });
     mockVerifyYarnPatches.mockResolvedValue(initialResult);
 
     await verifyYarnPatchesCommand({
       ...context,
-      args: ['--fix', '--dry-run'],
+      args: ['--fix'],
     });
 
     expect(mockFixYarnPatches).toHaveBeenCalledWith({
       rootDir: '/test-repository',
       env: process.env,
-      dryRun: true,
       verificationResult: initialResult,
     });
-    expect(stdoutSpy).toHaveBeenCalledWith(
-      "Retargeted patch for '@backstage/example' from '1.0.0' to '1.0.1' (dry run).\n",
+  });
+
+  it('reports an unsupported repair before the verifier diagnostics', async () => {
+    const initialResult = holdbackResult();
+    mockVerifyYarnPatches.mockResolvedValue(initialResult);
+    mockFixYarnPatches.mockResolvedValue({
+      status: 'not-fixable',
+      message: 'Automatic repair is not supported',
+    });
+
+    await expect(
+      verifyYarnPatchesCommand({ ...context, args: ['--fix'] }),
+    ).rejects.toThrow('Yarn patch verification failed');
+    expect(stderrSpy).toHaveBeenCalledWith(
+      'Automatic repair is not supported.\n',
     );
-    expect(mockVerifyYarnPatches).toHaveBeenCalledTimes(1);
+    expect(stderrSpy).toHaveBeenCalledWith('Yarn patch verification failed:\n');
   });
 
   it('does not report an error when --fix finds a healthy repository', async () => {
@@ -298,15 +272,6 @@ describe('verifyYarnPatches command', () => {
     expect(stderrSpy).not.toHaveBeenCalledWith(
       expect.stringContaining('No patch holdback could be repaired safely'),
     );
-  });
-
-  it('rejects --dry-run without --fix', async () => {
-    await expect(
-      verifyYarnPatchesCommand({ ...context, args: ['--dry-run'] }),
-    ).rejects.toThrow('--dry-run can only be used together with --fix');
-
-    expect(mockFixYarnPatches).not.toHaveBeenCalled();
-    expect(mockVerifyYarnPatches).not.toHaveBeenCalled();
   });
 
   it('prints every verification error before failing the command', async () => {

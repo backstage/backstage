@@ -36,7 +36,7 @@ protect the resolved dependency state, while this command verifies that patch
 declarations, patch files, resolutions, the lockfile, and the selected
 Backstage release remain aligned.
 
-### Repairing a Backstage patch holdback
+### Repairing an outdated Backstage patch
 
 When a Backstage release upgrade leaves a patched package pinned to its old
 version, the command can attempt a conservative repair:
@@ -45,23 +45,27 @@ version, the command can attempt a conservative repair:
 yarn backstage-cli pm verify-patches --fix
 ```
 
-The fixer only handles a single, exact-version `@backstage/*` patch declared in
-the root `resolutions`. It stages a project containing the workspace manifests,
-patches, and lockfile in a temporary directory, asks Yarn to apply the existing
-patch to the release's package version, and runs the full verification there.
-It writes the updated root manifest and lockfile only if all of those steps
-succeed and Yarn made no unrelated lockfile changes. Unsupported or ambiguous
-cases remain verification failures for manual repair.
+The fixer handles exact-version `@backstage/*` patches declared in the root
+`resolutions`. It updates all eligible outdated patches to the versions in the
+selected Backstage release, runs one lockfile-only Yarn install, and then runs
+the full verification again. It never updates a patch to an older version,
+and it restores `package.json` and `yarn.lock` if the install or verification
+fails or Yarn makes unrelated lockfile changes. Unsupported or ambiguous cases
+remain verification failures for manual repair.
 
-The repair rejects symbolic links in staged inputs and changes to lockfile
-metadata. Failures to release the project lock are reported separately from
-the repair outcome; a completed repair is still verified and reported as such.
+The repair runs in the working checkout using the repository's configured Yarn
+binary, plugins, and registry settings, with dependency build scripts disabled.
+Run it in a clean, exclusive checkout because it temporarily writes
+`package.json` before asking Yarn to update `yarn.lock`; an abrupt process or
+machine interruption can leave that partial change behind.
 
-Use `--fix --dry-run` to perform the staged install and verification without
-writing project files. The fix path uses the repository's configured Yarn
-binary and plugins from the conventional `.yarn/releases` and `.yarn/plugins`
-locations with dependency build scripts disabled, and it may fetch the target
-package using the repository's registry configuration.
+For an automated Backstage version bump, run the commands in this order:
+
+```shell
+yarn backstage-cli versions:bump
+yarn backstage-cli pm verify-patches --fix
+yarn backstage-cli pm verify-patches
+```
 
 ## Release manifest environment
 
