@@ -78,6 +78,7 @@ describe('handleUpgrade', () => {
       userInfo: mockServices.userInfo.mock(),
       config: mockServices.rootConfig(),
       lifecycle: mockServices.lifecycle.mock(),
+      instanceMetadata: mockServices.rootInstanceMetadata.mock(),
       auth,
     });
 
