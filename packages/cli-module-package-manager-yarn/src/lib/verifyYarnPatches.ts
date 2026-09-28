@@ -1493,6 +1493,32 @@ async function fingerprintProjectInputs(
     contentHash.update(value);
   };
 
+  const rejectSymlinkedAncestors = async (inputPath: string) => {
+    const relative = path.relative(rootDir, inputPath);
+    const segments = relative.split(path.sep);
+    let currentPath = rootDir;
+    for (const segment of segments.slice(0, -1)) {
+      currentPath = path.join(currentPath, segment);
+      let stats;
+      try {
+        stats = await fs.lstat(currentPath);
+      } catch (error) {
+        if (isErrorWithCode(error, 'ENOENT')) {
+          return;
+        }
+        throw error;
+      }
+      if (stats.isSymbolicLink()) {
+        throw new Error(
+          `Cannot safely stage symbolic link '${relativePath(
+            rootDir,
+            currentPath,
+          )}'`,
+        );
+      }
+    }
+  };
+
   const visit = async (inputPath: string): Promise<void> => {
     const relative = relativePath(rootDir, inputPath);
     let stats;
@@ -1525,6 +1551,7 @@ async function fingerprintProjectInputs(
   };
 
   for (const inputPath of [...new Set(inputPaths)].sort(compareStrings)) {
+    await rejectSymlinkedAncestors(inputPath);
     await visit(inputPath);
   }
   return {
