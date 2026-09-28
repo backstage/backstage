@@ -79,6 +79,9 @@ const useShadowDomStylesEvents = (element: Element | null) => {
 /**
  * Returns the style's loading state.
  *
+ * Hides the element before paint and reveals it after the
+ * {@link SHADOW_DOM_STYLE_LOAD_EVENT} event is dispatched.
+ *
  * @example
  * Here's an example that updates the sidebar position only after styles are calculated:
  * ```jsx
