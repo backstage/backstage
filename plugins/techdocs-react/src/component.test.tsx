@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect } from 'react';
 import { render, waitFor, screen } from '@testing-library/react';
 import {
   SHADOW_DOM_STYLE_LOAD_EVENT,
   TechDocsShadowDom,
   TechDocsShadowDomProps,
+  useShadowDomStylesLoading,
 } from './component';
 
 const createDom = (innerHTML: string) => {
@@ -83,5 +84,57 @@ describe('TechDocsShadowDom', () => {
     listener({} as Event);
 
     expect(handleStylesLoad).toHaveBeenCalledTimes(1);
+  });
+
+  it('Should dispatch an event when styles are already loaded', () => {
+    const dom = createDom(
+      '<head><link rel="stylesheet" src="styles.css"/></head><body><h1>Title</h1></body>',
+    );
+    Object.defineProperty(dom.querySelector('link'), 'sheet', {
+      value: {},
+    });
+    const handleStylesLoad = jest.fn();
+    dom.addEventListener(SHADOW_DOM_STYLE_LOAD_EVENT, handleStylesLoad);
+
+    render(<TechDocsShadowDom element={dom}>Children</TechDocsShadowDom>);
+
+    expect(handleStylesLoad).toHaveBeenCalledTimes(1);
+  });
+
+  it('reveals the element when its styles are already loaded', async () => {
+    const dom = createDom(
+      '<head><link rel="stylesheet" src="styles.css"/></head><body><h1>Title</h1></body>',
+    );
+    Object.defineProperty(dom.querySelector('link'), 'sheet', {
+      value: {},
+    });
+
+    const Component = () => {
+      useShadowDomStylesLoading(dom);
+      return <TechDocsShadowDom element={dom} />;
+    };
+
+    render(<Component />);
+
+    await waitFor(() => expect(dom.style.opacity).toBe('1'));
+  });
+});
+
+describe('useShadowDomStylesLoading', () => {
+  it('hides the element before subsequent layout work', () => {
+    const dom = createDom('<body><h1>Title</h1></body>');
+    const observeLayout = jest.fn();
+
+    const Component = () => {
+      useShadowDomStylesLoading(dom);
+      useLayoutEffect(() => {
+        observeLayout(dom.style.opacity);
+      }, []);
+      return null;
+    };
+
+    render(<Component />);
+
+    expect(observeLayout).toHaveBeenCalledWith('0');
   });
 });
