@@ -29,7 +29,6 @@ import { Node, Project, SyntaxKind } from 'ts-morph';
 import { watch } from 'chokidar';
 
 const sourcePattern = 'src/**/*.{js,jsx,ts,tsx}';
-const watchPattern = 'src/**/*';
 const actionNamePattern = /^[a-z0-9][a-z0-9._-]*$/;
 const scriptExtensions = ['.js', '.jsx', '.ts', '.tsx'];
 const loaderPattern =
@@ -117,7 +116,7 @@ export async function discoverActionUis(
   const project = new Project({ skipAddingFilesFromTsConfig: true });
   for (const path of paths) {
     const source = await fs.readFile(path, 'utf8');
-    if (source.includes('component') && source.includes('ui')) {
+    if (source.includes('ui')) {
       project.createSourceFile(path, source, { overwrite: true });
     }
   }
@@ -131,16 +130,20 @@ export async function discoverActionUis(
       if (property.getName() !== 'ui') {
         continue;
       }
+      if (!isActionDeclaration(property)) {
+        continue;
+      }
       const ui = property.getInitializer();
       if (!ui || !Node.isObjectLiteralExpression(ui)) {
-        continue;
+        throw new Error(
+          `${sourceFile.getFilePath()}:${property.getStartLineNumber()} action UI must be declared as an inline object literal`,
+        );
       }
       const component = ui.getProperty('component');
       if (!component || !Node.isPropertyAssignment(component)) {
-        continue;
-      }
-      if (!isActionDeclaration(property)) {
-        continue;
+        throw new Error(
+          `${sourceFile.getFilePath()}:${ui.getStartLineNumber()} action UI must declare component as a property assignment`,
+        );
       }
       const actionName = findActionName(property);
       if (!actionName) {
@@ -249,22 +252,22 @@ async function bundleActionUi(resource: ActionUiResource, targetDir: string) {
 }
 
 export async function buildActionUis(options: { targetDir: string }) {
-  const resources = await discoverActionUis(options.targetDir);
   const outputDir = resolve(options.targetDir, 'dist/action-ui');
   const temporaryDir = resolve(
     options.targetDir,
     `dist/.action-ui-${process.pid}-${Date.now()}`,
   );
-  if (resources.length === 0) {
-    await fs.remove(outputDir);
-    return { count: 0 };
-  }
-  await fs.ensureDir(temporaryDir);
-  const manifest: {
-    version: 1;
-    resources: Record<string, { path: string; integrity: string }>;
-  } = { version: 1, resources: {} };
   try {
+    const resources = await discoverActionUis(options.targetDir);
+    if (resources.length === 0) {
+      await fs.remove(outputDir);
+      return { count: 0 };
+    }
+    await fs.ensureDir(temporaryDir);
+    const manifest: {
+      version: 1;
+      resources: Record<string, { path: string; integrity: string }>;
+    } = { version: 1, resources: {} };
     for (const resource of resources) {
       const filename = `${resource.actionName}.html`;
       const html = await bundleActionUi(resource, options.targetDir);
@@ -281,11 +284,12 @@ export async function buildActionUis(options: { targetDir: string }) {
     });
     await fs.remove(outputDir);
     await fs.move(temporaryDir, outputDir);
+    return { count: resources.length };
   } catch (error) {
     await fs.remove(temporaryDir);
+    await fs.remove(outputDir);
     throw error;
   }
-  return { count: resources.length };
 }
 
 export async function watchActionUis(options: { targetDirs: string[] }) {
@@ -302,20 +306,28 @@ export async function watchActionUis(options: { targetDirs: string[] }) {
   await Promise.all(
     options.targetDirs.map(targetDir => buildActionUis({ targetDir })),
   );
-  const watchers = options.targetDirs.map(targetDir => {
-    const watcher = watch(watchPattern, {
-      cwd: targetDir,
-      ignoreInitial: true,
-    });
-    const rebuildTarget = () => rebuild(targetDir);
-    watcher
-      .on('add', rebuildTarget)
-      .on('change', rebuildTarget)
-      .on('unlink', rebuildTarget);
-    return watcher;
-  });
+  const sourceRoots = options.targetDirs.map(targetDir => ({
+    targetDir,
+    sourceRoot: resolve(targetDir, 'src'),
+  }));
+  const watcher = watch(
+    sourceRoots.map(({ sourceRoot }) => join(sourceRoot, '**/*')),
+    { ignoreInitial: true },
+  );
+  const rebuildChangedTarget = (changedPath: string) => {
+    const target = sourceRoots.find(
+      ({ sourceRoot }) =>
+        changedPath === sourceRoot ||
+        changedPath.startsWith(`${sourceRoot}${sep}`),
+    );
+    if (target) rebuild(target.targetDir);
+  };
+  watcher
+    .on('add', rebuildChangedTarget)
+    .on('change', rebuildChangedTarget)
+    .on('unlink', rebuildChangedTarget);
   return async () => {
-    await Promise.all(watchers.map(watcher => watcher.close()));
+    await watcher.close();
     await building;
   };
 }

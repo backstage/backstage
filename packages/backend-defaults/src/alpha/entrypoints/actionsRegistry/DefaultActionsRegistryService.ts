@@ -38,7 +38,7 @@ import type {
 import { InputError, NotAllowedError, NotFoundError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { filterActions } from './actionFilters';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { dirname, parse, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -401,12 +401,26 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
     if (options.ui?.component) {
       const packageRoot = findRegistrationPackageRoot();
       if (!packageRoot) {
-        this.logger.warn(
+        throw new Error(
           `Unable to locate the declaring package for ${id} action UI`,
         );
       } else {
         const outputRoot = resolve(packageRoot, 'dist', 'action-ui');
         const manifestPath = resolve(outputRoot, 'manifest.json');
+        let registeredManifest: any;
+        try {
+          registeredManifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+        } catch {
+          throw new Error(`Action UI manifest not found at ${manifestPath}`);
+        }
+        if (
+          registeredManifest?.version !== 1 ||
+          typeof registeredManifest.resources?.[options.name]?.path !== 'string'
+        ) {
+          throw new Error(
+            `Action UI '${options.name}' is not present in ${manifestPath}`,
+          );
+        }
         const loadHtml = async () => {
           let manifest: any;
           try {

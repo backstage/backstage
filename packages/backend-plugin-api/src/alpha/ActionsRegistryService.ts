@@ -62,12 +62,15 @@ export type ActionUiMetadata = {
  * Declares a React UI that accompanies an action.
  *
  * The component loader is discovered and bundled by Backstage build tooling.
- * Its resource identity is derived from the registered action name.
+ * Declare it inline on an action with a literal name using
+ * `() => import('./module').then(module => module.Component)`. The build fails
+ * when the declaration cannot be statically resolved. Its resource identity is
+ * derived from the registered action name.
  *
  * @alpha
  */
 export type ActionUi = ActionUiMetadata & {
-  component?: () => Promise<unknown>;
+  component: () => Promise<unknown>;
   /** Additional guidance for invoking an action with its UI. */
   description?: string;
 };

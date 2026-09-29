@@ -83,6 +83,62 @@ describe('actionUi', () => {
     );
   });
 
+  it('rejects extracted UI declarations instead of silently skipping them', async () => {
+    mockDir.setContent({
+      package: {
+        'package.json': JSON.stringify({
+          name: 'example-backend',
+          backstage: { role: 'backend-plugin' },
+        }),
+        src: {
+          'action.ts': `
+            const actionUi = {
+              component: () => import('./Example').then(m => m.Example),
+            };
+            export const action = {
+              name: 'show-example',
+              action: async () => ({ output: {} }),
+              ui: actionUi,
+            };
+          `,
+          'Example.tsx': 'export const Example = () => null;',
+        },
+      },
+    });
+
+    await expect(discoverActionUis(mockDir.resolve('package'))).rejects.toThrow(
+      'action UI must be declared as an inline object literal',
+    );
+  });
+
+  it('removes stale output when an action UI build fails', async () => {
+    mockDir.setContent({
+      package: {
+        'package.json': JSON.stringify({
+          name: 'example-backend',
+          backstage: { role: 'backend-plugin' },
+        }),
+        src: {
+          'action.ts': `
+            export const action = {
+              name: 'show-example',
+              action: async () => ({ output: {} }),
+              ui: { component: () => import(modulePath) },
+            };
+          `,
+        },
+        dist: { 'action-ui': { 'manifest.json': '{}' } },
+      },
+    });
+
+    await expect(
+      buildActionUis({ targetDir: mockDir.resolve('package') }),
+    ).rejects.toThrow('action UI component must use');
+    await expect(
+      fs.pathExists(mockDir.resolve('package/dist/action-ui')),
+    ).resolves.toBe(false);
+  });
+
   it('removes stale action UI output when a package has no action UIs', async () => {
     mockDir.setContent({
       package: {
