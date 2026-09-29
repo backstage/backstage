@@ -230,7 +230,7 @@ function lockfileOnlyChangesRepairs(options: {
   const after = parseSyml(options.after);
 
   const dependencyRanges = (lockfile: Record<string, unknown>) => {
-    const ranges = new Map<string, string>();
+    const ranges = new Map<string, Set<string>>();
     for (const [key, value] of Object.entries(lockfile)) {
       if (
         !key.split(', ').some(isTargetDescriptor) ||
@@ -241,7 +241,12 @@ function lockfileOnlyChangesRepairs(options: {
       }
       for (const [name, range] of Object.entries(value.dependencies)) {
         if (typeof range === 'string') {
-          ranges.set(name, range);
+          let packageRanges = ranges.get(name);
+          if (!packageRanges) {
+            packageRanges = new Set();
+            ranges.set(name, packageRanges);
+          }
+          packageRanges.add(range);
         }
       }
     }
@@ -254,13 +259,10 @@ function lockfileOnlyChangesRepairs(options: {
     ...beforeDependencies.keys(),
     ...afterDependencies.keys(),
   ])) {
-    const beforeRange = beforeDependencies.get(name);
-    const afterRange = afterDependencies.get(name);
-    if (beforeRange === afterRange) {
-      continue;
-    }
-    for (const range of [beforeRange, afterRange]) {
-      if (range) {
+    const beforeRanges = beforeDependencies.get(name) ?? new Set();
+    const afterRanges = afterDependencies.get(name) ?? new Set();
+    for (const range of new Set([...beforeRanges, ...afterRanges])) {
+      if (beforeRanges.has(range) !== afterRanges.has(range)) {
         changedDependencyDescriptors.add(
           structUtils.stringifyDescriptor(
             structUtils.makeDescriptor(structUtils.parseIdent(name), range),
