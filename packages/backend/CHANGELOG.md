@@ -1,5 +1,48 @@
 # example-backend
 
+## 0.0.55-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/backend-defaults@0.18.1-next.1
+  - @backstage/plugin-signals-backend@0.3.20-next.1
+  - @backstage/plugin-search-backend-module-explore@0.3.19-next.1
+  - @backstage/plugin-app-backend@0.5.19-next.1
+  - @backstage/plugin-auth-backend@0.30.2-next.1
+  - @backstage/plugin-auth-backend-module-github-provider@0.5.8-next.1
+  - @backstage/plugin-auth-backend-module-guest-provider@0.2.24-next.1
+  - @backstage/plugin-auth-backend-module-openshift-provider@0.1.12-next.1
+  - @backstage/plugin-auth-node@0.7.7-next.1
+  - @backstage/plugin-catalog-backend@4.0.1-next.1
+  - @backstage/plugin-catalog-backend-module-ai-model@0.1.5-next.1
+  - @backstage/plugin-catalog-backend-module-backstage-openapi@0.5.19-next.1
+  - @backstage/plugin-catalog-backend-module-logs@0.1.27-next.1
+  - @backstage/plugin-catalog-backend-module-openapi@0.2.27-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.25-next.1
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.6.17-next.1
+  - @backstage/plugin-devtools-backend@0.5.22-next.1
+  - @backstage/plugin-events-backend@0.6.7-next.1
+  - @backstage/plugin-events-backend-module-google-pubsub@0.2.8-next.1
+  - @backstage/plugin-kubernetes-backend@0.21.12-next.1
+  - @backstage/plugin-mcp-actions-backend@0.2.3-next.1
+  - @backstage/plugin-notifications-backend@0.6.10-next.1
+  - @backstage/plugin-permission-backend@0.7.17-next.1
+  - @backstage/plugin-permission-backend-module-allow-all-policy@0.2.24-next.1
+  - @backstage/plugin-permission-node@0.11.5-next.1
+  - @backstage/plugin-proxy-backend@0.6.19-next.1
+  - @backstage/plugin-scaffolder-backend@4.2.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.10.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-notifications@0.1.27-next.1
+  - @backstage/plugin-search-backend@2.1.8-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.3.20-next.1
+  - @backstage/plugin-search-backend-module-elasticsearch@2.0.1-next.1
+  - @backstage/plugin-search-backend-module-techdocs@0.4.19-next.1
+  - @backstage/plugin-search-backend-node@1.4.9-next.1
+  - @backstage/plugin-techdocs-backend@2.3.1-next.1
+  - @backstage/plugin-user-settings-backend@0.4.8-next.1
+
 ## 0.0.55-next.0
 
 ### Patch Changes
