@@ -24,12 +24,19 @@ describe('AppIdentityProxy', () => {
     getCredentials: jest.fn(),
     signOut: jest.fn(),
   };
+  let addEventListenerSpy: jest.SpyInstance;
 
   beforeEach(() => {
     jest.resetAllMocks();
+    addEventListenerSpy = jest.spyOn(window, 'addEventListener');
   });
 
   afterEach(() => {
+    for (const [type, listener, options] of addEventListenerSpy.mock.calls) {
+      if (type === 'storage') {
+        window.removeEventListener(type, listener, options);
+      }
+    }
     jest.restoreAllMocks();
   });
 
@@ -88,18 +95,20 @@ describe('AppIdentityProxy', () => {
     const proxy = new AppIdentityProxy();
     proxy.setTarget(mockIdentityApi, { signOutTargetUrl: '/foo' });
 
-    const navigateSpy = jest.spyOn(proxy as any, 'navigateToUrl');
+    const navigateSpy = jest
+      .spyOn(proxy as any, 'navigateToUrl')
+      .mockImplementation(() => {});
     await proxy.signOut();
     expect(navigateSpy).toHaveBeenCalledWith('/foo');
   });
 
   it('should sign out other tabs, and sign out when another tab does', async () => {
     const storageKey = '@backstage/core-app-api:signed-out-at';
+    const proxy = new AppIdentityProxy();
     const navigateSpy = jest
-      .spyOn(AppIdentityProxy.prototype as any, 'navigateToUrl')
+      .spyOn(proxy as any, 'navigateToUrl')
       .mockImplementation(() => {});
 
-    const proxy = new AppIdentityProxy();
     proxy.setTarget(mockIdentityApi, { signOutTargetUrl: '/foo' });
 
     window.dispatchEvent(
@@ -113,6 +122,7 @@ describe('AppIdentityProxy', () => {
     window.dispatchEvent(
       new StorageEvent('storage', { key: storageKey, newValue: '123' }),
     );
+    expect(navigateSpy).toHaveBeenCalledTimes(1);
     expect(navigateSpy).toHaveBeenCalledWith('/foo');
     expect(mockIdentityApi.signOut).not.toHaveBeenCalled();
 
@@ -130,6 +140,25 @@ describe('AppIdentityProxy', () => {
 
     expect(setItemSpy).toHaveBeenCalledWith(storageKey, expect.any(String));
     expect(signOutOrder).toEqual(['backend-logout', 'notify-other-tabs']);
+    expect(navigateSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it('should navigate to target URL when the storage write fails', async () => {
+    const proxy = new AppIdentityProxy();
+    proxy.setTarget(mockIdentityApi, { signOutTargetUrl: '/foo' });
+
+    const navigateSpy = jest
+      .spyOn(proxy as any, 'navigateToUrl')
+      .mockImplementation(() => {});
+    jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new DOMException('Storage quota exceeded', 'QuotaExceededError');
+    });
+
+    await expect(proxy.signOut()).resolves.toBeUndefined();
+
+    expect(mockIdentityApi.signOut).toHaveBeenCalledTimes(1);
+    expect(navigateSpy).toHaveBeenCalledTimes(1);
+    expect(navigateSpy).toHaveBeenCalledWith('/foo');
   });
 
   it('should report whether a target has been set', () => {
@@ -166,7 +195,9 @@ describe('AppIdentityProxy', () => {
       userEntityRef: 'user:default/first',
     });
 
-    const navigateSpy = jest.spyOn(proxy as any, 'navigateToUrl');
+    const navigateSpy = jest
+      .spyOn(proxy as any, 'navigateToUrl')
+      .mockImplementation(() => {});
     await proxy.signOut();
     expect(navigateSpy).toHaveBeenCalledWith('/first');
     expect(secondIdentityApi.getBackstageIdentity).not.toHaveBeenCalled();

@@ -158,7 +158,12 @@ export class AppIdentityProxy implements IdentityApi {
 
     await this.#cookieAuthSignOut?.();
 
-    window.localStorage.setItem(SIGN_OUT_STORAGE_KEY, String(Date.now()));
+    try {
+      window.localStorage.setItem(SIGN_OUT_STORAGE_KEY, String(Date.now()));
+    } catch {
+      this.navigateToUrl(this.signOutTargetUrl);
+      return;
+    }
 
     this.navigateToUrl(this.signOutTargetUrl);
   }
