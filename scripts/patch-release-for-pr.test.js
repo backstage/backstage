@@ -74,6 +74,58 @@ test('fetches an existing remote branch without recreating it', async t => {
   ]);
 });
 
+test('accepts a branch created concurrently', async t => {
+  let getRefAttempt = 0;
+  const getRef = t.mock.fn(async () => {
+    getRefAttempt += 1;
+    if (getRefAttempt === 1) {
+      throw Object.assign(new Error('Not Found'), { status: 404 });
+    }
+    return { data: { object: { sha: 'concurrent-sha' } } };
+  });
+  const createRef = t.mock.fn(async () => {
+    throw Object.assign(new Error('Reference already exists'), {
+      status: 422,
+    });
+  });
+  const runCommand = t.mock.fn(async () => {});
+
+  await ensureRemoteBranch({
+    branchName: 'patch-release',
+    baseSha: 'release-base-sha',
+    client: { git: { createRef, getRef } },
+    runCommand,
+  });
+
+  assert.equal(getRef.mock.callCount(), 2);
+  assert.equal(createRef.mock.callCount(), 1);
+  assert.equal(runCommand.mock.callCount(), 1);
+});
+
+test('does not hide other branch creation validation errors', async t => {
+  const getRef = t.mock.fn(async () => {
+    throw Object.assign(new Error('Not Found'), { status: 404 });
+  });
+  const createError = Object.assign(new Error('Invalid SHA'), { status: 422 });
+  const createRef = t.mock.fn(async () => {
+    throw createError;
+  });
+  const runCommand = t.mock.fn(async () => {});
+
+  await assert.rejects(
+    ensureRemoteBranch({
+      branchName: 'patch-release',
+      baseSha: 'invalid-sha',
+      client: { git: { createRef, getRef } },
+      runCommand,
+    }),
+    createError,
+  );
+
+  assert.equal(getRef.mock.callCount(), 2);
+  assert.equal(runCommand.mock.callCount(), 0);
+});
+
 test('retries GitHub workflow-check timeouts while pushing', async t => {
   let attempt = 0;
   const runCommand = t.mock.fn(async () => {

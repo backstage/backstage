@@ -68,12 +68,28 @@ async function ensureRemoteBranch({
     }
 
     console.log(`Creating ${branchName} at the patch release base`);
-    await client.git.createRef({
-      owner,
-      repo,
-      ref: `refs/heads/${branchName}`,
-      sha: baseSha,
-    });
+    try {
+      await client.git.createRef({
+        owner,
+        repo,
+        ref: `refs/heads/${branchName}`,
+        sha: baseSha,
+      });
+    } catch (createError) {
+      if (createError.status !== 422) {
+        throw createError;
+      }
+
+      try {
+        await client.git.getRef({
+          owner,
+          repo,
+          ref: `heads/${branchName}`,
+        });
+      } catch {
+        throw createError;
+      }
+    }
   }
 
   await runCommand(
