@@ -122,6 +122,38 @@ function repositoryWithDependencies(options: {
   };
 }
 
+function repositoryWithDistinctSharedRanges(target: boolean) {
+  const content = repository({ target });
+  const exampleVersion = target ? '1.0.1' : '1.0.0';
+  const otherVersion = target ? '2.0.1' : '2.0.0';
+  const exampleSharedRange = target ? '3.0.0' : '1.0.0';
+  const lockfile = content['yarn.lock']
+    .replace(
+      `  resolution: "@backstage/example@patch:@backstage/example@npm%3A${exampleVersion}#~/.yarn/patches/example.patch::version=${exampleVersion}&hash=aaaaaa"\n  languageName: node`,
+      `  resolution: "@backstage/example@patch:@backstage/example@npm%3A${exampleVersion}#~/.yarn/patches/example.patch::version=${exampleVersion}&hash=aaaaaa"\n  dependencies:\n    shared: "npm:${exampleSharedRange}"\n  languageName: node`,
+    )
+    .replace(
+      `  resolution: "@backstage/other@patch:@backstage/other@npm%3A${otherVersion}#~/.yarn/patches/other.patch::version=${otherVersion}&hash=bbbbbb"\n  languageName: node`,
+      `  resolution: "@backstage/other@patch:@backstage/other@npm%3A${otherVersion}#~/.yarn/patches/other.patch::version=${otherVersion}&hash=bbbbbb"\n  dependencies:\n    shared: "npm:2.0.0"\n  languageName: node`,
+    );
+  return {
+    ...content,
+    'yarn.lock': `${lockfile}
+"shared@npm:${exampleSharedRange}":
+  version: ${exampleSharedRange}
+  resolution: "shared@npm:${exampleSharedRange}"
+  languageName: node
+  linkType: hard
+
+"shared@npm:2.0.0":
+  version: 2.0.0
+  resolution: "shared@npm:2.0.0"
+  languageName: node
+  linkType: hard
+`,
+  };
+}
+
 describe('fixYarnPatches', () => {
   beforeEach(() => {
     mockDir.clear();
@@ -197,6 +229,23 @@ describe('fixYarnPatches', () => {
     await expect(
       verifyYarnPatches({ rootDir: mockDir.path, fetch: fetchRelease }),
     ).resolves.toMatchObject({ errors: [] });
+  });
+
+  it('repairs shared dependencies with distinct ranges across target packages', async () => {
+    mockDir.setContent(repositoryWithDistinctSharedRanges(false));
+
+    await expect(
+      fixYarnPatches({
+        rootDir: mockDir.path,
+        fetch: fetchRelease,
+        install: async rootDir => {
+          await fs.writeFile(
+            path.join(rootDir, 'yarn.lock'),
+            repositoryWithDistinctSharedRanges(true)['yarn.lock'],
+          );
+        },
+      }),
+    ).resolves.toMatchObject({ status: 'fixed' });
   });
 
   it('does not install from a stale verification result', async () => {
