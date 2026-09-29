@@ -1,5 +1,14 @@
 # @backstage/plugin-techdocs-react
 
+## 1.3.16-next.1
+
+### Patch Changes
+
+- f624dc6: Fixed Material UI styles for TechDocs addons in module-federated applications.
+- 7a4f545: Prevented TechDocs content from briefly appearing before page styles load.
+- Updated dependencies
+  - @backstage/core-components@0.18.15-next.1
+
 ## 1.3.16-next.0
 
 ### Patch Changes

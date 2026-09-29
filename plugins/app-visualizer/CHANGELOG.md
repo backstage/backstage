@@ -1,5 +1,13 @@
 # @backstage/plugin-app-visualizer
 
+## 0.2.9-next.1
+
+### Patch Changes
+
+- 13adaa1: Updated internal React component names to improve debugging and tooling compatibility.
+- Updated dependencies
+  - @backstage/core-components@0.18.15-next.1
+
 ## 0.2.9-next.0
 
 ### Patch Changes
