@@ -130,7 +130,7 @@ export const getRepoUrlFromLocationAnnotation = (
 
 const ALLOWED_PYTHON_YAML_TAGS = new Set([
   'tag:yaml.org,2002:python/name:materialx.emoji.twemoji',
-  'tag:yaml.org,2002:python/object.apply:materialx.emoji.to_svg',
+  'tag:yaml.org,2002:python/name:materialx.emoji.to_svg',
   'tag:yaml.org,2002:python/object/apply:pymdownx.slugs.slugify',
 ]);
 

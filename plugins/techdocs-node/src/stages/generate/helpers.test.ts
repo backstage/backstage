@@ -1040,6 +1040,15 @@ theme:
         'Unsupported Python YAML tag',
       );
     });
+
+    it('should validate an emoji_generator using the materialx.emoji.to_svg name tag', async () => {
+      await expect(
+        validateMkdocsYaml(
+          inputDir,
+          'emoji_generator: !!python/name:materialx.emoji.to_svg',
+        ),
+      ).resolves.toBeUndefined();
+    });
   });
 
   describe('sanitizeMkdocsYml', () => {
