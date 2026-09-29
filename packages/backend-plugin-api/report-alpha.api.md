@@ -25,6 +25,7 @@ export type ActionsRegistryActionContext<
     : undefined;
   logger: LoggerService;
   credentials: BackstageCredentials;
+  signal?: AbortSignal;
 };
 
 // @alpha
@@ -56,6 +57,7 @@ export type ActionsRegistryActionOptions<
   };
   examples?: Array<ActionsRegistryActionExample<TInputSchema, TOutputSchema>>;
   visibilityPermission?: BasicPermission;
+  ui?: ActionUi;
   attributes?: {
     destructive?: boolean;
     idempotent?: boolean;
@@ -103,12 +105,22 @@ export interface ActionsService {
     input?: JsonObject;
     secrets?: JsonObject;
     credentials: BackstageCredentials;
+    signal?: AbortSignal;
   }): Promise<{
     output: JsonValue;
   }>;
   // (undocumented)
   list: (opts: { credentials: BackstageCredentials }) => Promise<{
     actions: ActionsServiceAction[];
+  }>;
+  // (undocumented)
+  readUi?: (opts: {
+    id: string;
+    credentials: BackstageCredentials;
+  }) => Promise<{
+    html: string;
+    csp?: ActionUiMetadata['csp'];
+    permissions?: ActionUiMetadata['permissions'];
   }>;
 }
 
@@ -135,6 +147,10 @@ export type ActionsServiceAction = {
     destructive: boolean;
     idempotent: boolean;
   };
+  ui?: ActionUiMetadata & {
+    resource: boolean;
+    description?: string;
+  };
 };
 
 // @alpha
@@ -143,6 +159,29 @@ export const actionsServiceRef: ServiceRef<
   'plugin',
   'singleton'
 >;
+
+// @alpha
+export type ActionUi = ActionUiMetadata & {
+  component?: () => Promise<unknown>;
+  description?: string;
+};
+
+// @alpha
+export type ActionUiMetadata = {
+  csp?: {
+    connectDomains?: string[];
+    resourceDomains?: string[];
+    frameDomains?: string[];
+    baseUriDomains?: string[];
+  };
+  permissions?: {
+    camera?: Record<string, never>;
+    microphone?: Record<string, never>;
+    geolocation?: Record<string, never>;
+    clipboardWrite?: Record<string, never>;
+  };
+  visibility?: Array<'model' | 'app'>;
+};
 
 // @alpha
 export interface ConnectionRegistration {

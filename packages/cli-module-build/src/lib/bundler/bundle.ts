@@ -94,6 +94,24 @@ export async function buildBundle(options: BuildOptions) {
         }),
       );
     }
+
+    if (options.withDevBundle) {
+      configs.push(
+        await createConfig(
+          { ...paths, targetDist: resolvePath(paths.targetDist, 'dev') },
+          {
+            ...commonConfigOptions,
+            mode: 'development',
+            additionalEntryPoints: [
+              ...detectedModulesEntryPoint,
+              ...moduleFederationSharedDependenciesEntryPoint,
+            ],
+            appMode: publicPaths ? 'protected' : 'public',
+            studioMode: true,
+          },
+        ),
+      );
+    }
   }
 
   const isCi = yn(process.env.CI, { default: false });

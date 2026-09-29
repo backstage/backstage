@@ -26,10 +26,12 @@ interface BuildAppOptions {
   configPaths: string[];
   isModuleFederationRemote?: boolean;
   webpack?: typeof import('webpack');
+  withDevBundle?: boolean;
 }
 
 export async function buildFrontend(options: BuildAppOptions) {
-  const { targetDir, writeStats, configPaths, webpack } = options;
+  const { targetDir, writeStats, configPaths, webpack, withDevBundle } =
+    options;
   const packageJson = (await fs.readJson(
     resolvePath(targetDir, 'package.json'),
   )) as BackstagePackageJson;
@@ -37,6 +39,7 @@ export async function buildFrontend(options: BuildAppOptions) {
     targetDir,
     entry: 'src/index',
     statsJsonEnabled: writeStats,
+    withDevBundle,
     moduleFederationRemote: options.isModuleFederationRemote
       ? await getModuleFederationRemoteOptions(
           packageJson,

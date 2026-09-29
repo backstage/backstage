@@ -543,6 +543,7 @@ Options:
   --role <string>
   --skip-build-dependencies
   --stats
+  --with-dev-bundle
   -h, --help
 ```
 
