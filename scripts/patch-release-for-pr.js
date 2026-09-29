@@ -28,6 +28,7 @@ const owner = 'backstage';
 const repo = 'backstage';
 const rootDir = path.resolve(__dirname, '..');
 const PATCH_FILE_PATTERN = /^pr-(\d+)\.txt$/;
+const pushRetryDelays = [5_000, 15_000];
 
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
@@ -43,6 +44,79 @@ async function run(command, ...args) {
   }
 
   return stdout.trim();
+}
+
+function wait(delay) {
+  return new Promise(resolve => setTimeout(resolve, delay));
+}
+
+async function ensureRemoteBranch({
+  branchName,
+  baseSha,
+  client = octokit,
+  runCommand = run,
+}) {
+  try {
+    await client.git.getRef({
+      owner,
+      repo,
+      ref: `heads/${branchName}`,
+    });
+  } catch (error) {
+    if (error.status !== 404) {
+      throw error;
+    }
+
+    console.log(`Creating ${branchName} at the patch release base`);
+    await client.git.createRef({
+      owner,
+      repo,
+      ref: `refs/heads/${branchName}`,
+      sha: baseSha,
+    });
+  }
+
+  await runCommand(
+    'git',
+    'fetch',
+    'origin',
+    `refs/heads/${branchName}:refs/remotes/origin/${branchName}`,
+  );
+}
+
+async function pushBranch(
+  branchName,
+  { runCommand = run, wait: waitForRetry = wait } = {},
+) {
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      await runCommand(
+        'git',
+        'push',
+        'origin',
+        '-u',
+        '--force-with-lease',
+        branchName,
+      );
+      return;
+    } catch (error) {
+      const retryDelay = pushRetryDelays[attempt];
+      const output = `${error.message ?? ''}\n${error.stderr ?? ''}`;
+      if (
+        retryDelay !== undefined &&
+        output.includes(
+          'Unable to determine if workflow can be created or updated due to timeout',
+        )
+      ) {
+        console.warn(
+          `GitHub workflow check timed out, retrying push in ${retryDelay}ms`,
+        );
+        await waitForRetry(retryDelay);
+        continue;
+      }
+      throw error;
+    }
+  }
 }
 
 /**
@@ -230,6 +304,11 @@ async function main(args) {
     process.env.PATCH_RELEASE_BRANCH ||
     `patch-release-pr-${prNumbers.join('-')}`;
 
+  if (process.env.PATCH_RELEASE_BRANCH) {
+    const patchBaseSha = await run('git', 'rev-parse', 'HEAD');
+    await ensureRemoteBranch({ branchName, baseSha: patchBaseSha });
+  }
+
   // Always start fresh from the release base to keep the PR diff clean
   try {
     await run('git', 'branch', '-D', branchName);
@@ -372,7 +451,7 @@ async function main(args) {
   );
 
   // Always force push since we rebuild the branch from scratch each time
-  await run('git', 'push', 'origin', '-u', '--force-with-lease', branchName);
+  await pushBranch(branchName);
 
   // Generate PR body using only applied patches
   let body;
@@ -411,7 +490,11 @@ async function main(args) {
   }
 }
 
-main(process.argv.slice(2)).catch(error => {
-  console.error(error.stack || error);
-  process.exit(1);
-});
+if (require.main === module) {
+  main(process.argv.slice(2)).catch(error => {
+    console.error(error.stack || error);
+    process.exit(1);
+  });
+}
+
+module.exports = { ensureRemoteBranch, pushBranch };

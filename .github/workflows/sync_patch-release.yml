@@ -200,9 +200,6 @@ jobs:
           # The script will write the patch branch to GITHUB_OUTPUT
           node scripts/patch-release-for-pr.js --from-dir
 
-          # Ensure the branch is pushed (script pushes it, but force push in case of conflicts)
-          git push origin patch-release --force
-
       - name: Create or update PR
         if: steps.check-patches.outputs.has_patches == 'true'
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
