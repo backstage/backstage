@@ -70,9 +70,7 @@ export type ActionUiMetadata = {
  * @alpha
  */
 export type ActionUi = ActionUiMetadata & {
-  component: () => Promise<unknown>;
-  /** Additional guidance for invoking an action with its UI. */
-  description?: string;
+  component?: () => Promise<unknown>;
 };
 
 /**

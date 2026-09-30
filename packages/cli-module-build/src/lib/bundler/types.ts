@@ -49,8 +49,6 @@ export type BundlingOptions = {
   linkedWorkspace?: string;
   moduleFederationRemote?: ModuleFederationRemoteOptions;
   webpack?: typeof import('webpack');
-  mode?: 'development' | 'production';
-  studioMode?: boolean;
 };
 
 export type ServeOptions = BundlingPathsOptions & {
@@ -74,7 +72,6 @@ export type BuildOptions = BundlingPathsOptions & {
   fullConfig: Config;
   moduleFederationRemote?: ModuleFederationRemoteOptions;
   webpack?: typeof import('webpack');
-  withDevBundle?: boolean;
 };
 
 export type BackendBundlingOptions = {

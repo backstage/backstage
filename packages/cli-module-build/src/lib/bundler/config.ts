@@ -117,7 +117,6 @@ export async function createConfig(
   const {
     checksEnabled,
     isDev,
-    mode = isDev ? 'development' : 'production',
     frontendConfig,
     moduleFederationRemote,
     publicSubPath = '',
@@ -192,7 +191,6 @@ export async function createConfig(
     const templateOptions = {
       meta: {
         'backstage-app-mode': options?.appMode ?? 'public',
-        ...(options.studioMode ? { 'portal-studio-mode': 'true' } : {}),
       },
       template: paths.targetHtml,
       templateParameters: {
@@ -223,7 +221,6 @@ export async function createConfig(
       new HtmlWebpackPlugin({
         meta: {
           'backstage-app-mode': options?.appMode ?? 'public',
-          ...(options.studioMode ? { 'portal-studio-mode': 'true' } : {}),
           // This is added to be written in the later step, and finally read by the extra entry point
           'backstage-public-path': '<%= publicPath %>/',
         },
@@ -251,38 +248,13 @@ export async function createConfig(
           '.': paths.targetEntry,
         };
 
-    const extraShared: Record<
-      string,
-      {
-        version: string;
-        singleton: boolean;
-        requiredVersion: string;
-        eager: boolean;
-      }
-    > = {};
-    try {
-      const privateThemingPackage = ['@mui', 'private-theming'].join('/');
-      const { version: privateThemingVersion } = require(privateThemingPackage);
-      extraShared['@mui/private-theming/useTheme'] = {
-        version: privateThemingVersion,
-        singleton: true,
-        requiredVersion: '*',
-        eager: false,
-      };
-    } catch {
-      // The private theming package is optional.
-    }
-
     plugins.push(
       new AdaptedModuleFederationPlugin({
         filename: 'remoteEntry.js',
         exposes,
         name: options.moduleFederationRemote.name,
         runtime: false,
-        shared: {
-          ...options.moduleFederationRemote.sharedDependencies,
-          ...extraShared,
-        },
+        shared: options.moduleFederationRemote.sharedDependencies,
       }),
     );
   }
@@ -338,6 +310,7 @@ export async function createConfig(
       ]
     : [];
 
+  const mode = isDev ? 'development' : 'production';
   const optimization = optimizationConfig(options);
 
   return {

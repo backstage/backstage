@@ -40,7 +40,6 @@ export default async ({ args, info }: CliCommandContext) => {
       stats,
       config,
       moduleFederation,
-      withDevBundle,
     },
   } = cli(
     {
@@ -77,11 +76,6 @@ export default async ({ args, info }: CliCommandContext) => {
           description:
             'Build a package as a module federation remote. Applies to frontend plugin packages only.',
         },
-        withDevBundle: {
-          type: Boolean,
-          description:
-            'Include a dev bundle in the output directory. Applies to app packages only.',
-        },
       },
     },
     undefined,
@@ -105,7 +99,6 @@ export default async ({ args, info }: CliCommandContext) => {
     if (resolvedRole === 'frontend') {
       return buildFrontend({
         targetDir: targetPaths.dir,
-        withDevBundle: Boolean(withDevBundle),
         configPaths,
         writeStats: Boolean(stats),
         webpack,

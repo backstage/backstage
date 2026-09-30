@@ -135,8 +135,7 @@ describe('McpService', () => {
       title: 'With UI',
       description: 'Action with a UI.',
       ui: {
-        resource: true,
-        description: 'Show the action UI.',
+        hasResource: true,
       },
       schema: {
         input: { type: 'object', properties: {} },

@@ -44,8 +44,7 @@ export type ActionsServiceAction = {
     idempotent: boolean;
   };
   ui?: ActionUiMetadata & {
-    resource: boolean;
-    description?: string;
+    hasResource: boolean;
   };
 };
 

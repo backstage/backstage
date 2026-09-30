@@ -30,7 +30,7 @@ import fs from 'fs-extra';
 
 import spawn from 'cross-spawn';
 import { startEmbeddedDb } from './startEmbeddedDb';
-import { watchActionUis } from '../actionUi';
+import { watchBackendBrowserAssets } from '../backendBrowserAssets';
 
 const loaderArgs = [
   '--enable-source-maps',
@@ -67,12 +67,12 @@ export async function runBackend(options: RunBackendOptions) {
   ServerDataStore.bind(server);
 
   const extraEnv: Record<string, string> = {};
-  const actionUiTargetDir = options.targetDir ?? targetPaths.dir;
-  let actionUiTargetDirs = [actionUiTargetDir];
+  const browserAssetsTargetDir = options.targetDir ?? targetPaths.dir;
+  let browserAssetsTargetDirs = [browserAssetsTargetDir];
   const targetPackage = fs.existsSync(
-    resolvePath(actionUiTargetDir, 'package.json'),
+    resolvePath(browserAssetsTargetDir, 'package.json'),
   )
-    ? fs.readJsonSync(resolvePath(actionUiTargetDir, 'package.json'))
+    ? fs.readJsonSync(resolvePath(browserAssetsTargetDir, 'package.json'))
     : undefined;
   if (targetPackage?.backstage?.role === 'backend') {
     const packages = await PackageGraph.listTargetPackages();
@@ -86,7 +86,7 @@ export async function runBackend(options: RunBackendOptions) {
     const dependencyNames = graph.collectPackageNames([targetNode.name], node =>
       node.allLocalDependencies.keys(),
     );
-    actionUiTargetDirs = Array.from(dependencyNames).flatMap(name => {
+    browserAssetsTargetDirs = Array.from(dependencyNames).flatMap(name => {
       const node = graph.get(name);
       const role = node?.packageJson.backstage?.role;
       return node &&
@@ -95,8 +95,8 @@ export async function runBackend(options: RunBackendOptions) {
         : [];
     });
   }
-  const stopActionUiWatcher = await watchActionUis({
-    targetDirs: actionUiTargetDirs,
+  const stopBrowserAssetsWatcher = await watchBackendBrowserAssets({
+    targetDirs: browserAssetsTargetDirs,
   });
 
   const embeddedDb = await startEmbeddedDb({
@@ -234,7 +234,7 @@ export async function runBackend(options: RunBackendOptions) {
       }
 
       await embeddedDb?.close();
-      await stopActionUiWatcher();
+      await stopBrowserAssetsWatcher();
       resolveExitPromise();
     }
 

@@ -23,7 +23,7 @@ import { targetPaths } from '@backstage/cli-common';
 import { makeRollupConfigs } from './config';
 import { BuildOptions, Output } from './types';
 import { PackageRoles, runConcurrentTasks } from '@backstage/cli-node';
-import { buildActionUis } from '../actionUi';
+import { buildBackendBrowserAssets } from '../backendBrowserAssets';
 
 export function formatErrorMessage(error: any) {
   let msg = '';
@@ -114,7 +114,7 @@ export const buildPackage = async (options: BuildOptions) => {
   const buildTasks = rollupConfigs.map(rollupBuild);
 
   await Promise.all(buildTasks);
-  await buildActionUis({ targetDir });
+  await buildBackendBrowserAssets({ targetDir });
 };
 
 export const buildPackages = async (options: BuildOptions[]) => {
@@ -135,7 +135,9 @@ export const buildPackages = async (options: BuildOptions[]) => {
   });
 
   await Promise.all(
-    options.map(({ targetDir }) => buildActionUis({ targetDir: targetDir! })),
+    options.map(({ targetDir }) =>
+      buildBackendBrowserAssets({ targetDir: targetDir! }),
+    ),
   );
 };
 

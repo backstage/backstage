@@ -132,7 +132,7 @@ export class DefaultActionsService implements ActionsService {
 
   async readUi(opts: { id: string; credentials: BackstageCredentials }) {
     const response = await this.makeRequest({
-      path: `/.backstage/actions/v1/actions/${encodeURIComponent(opts.id)}/app`,
+      path: `/.backstage/actions/v1/actions/${encodeURIComponent(opts.id)}/ui`,
       pluginId: this.pluginIdFromActionId(opts.id),
       credentials: opts.credentials,
     });

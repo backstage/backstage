@@ -89,7 +89,6 @@ export default async ({ args, info }: CliCommandContext) => {
     stats: { type: 'boolean' },
     config: { type: 'string', multiple: true },
     'module-federation': { type: 'boolean' },
-    'with-dev-bundle': { type: 'boolean' },
   });
 
   const options = packages.flatMap(pkg => {
@@ -157,7 +156,6 @@ export default async ({ args, info }: CliCommandContext) => {
             : [],
           writeStats: Boolean(buildOptions.stats),
           webpack,
-          withDevBundle: Boolean(buildOptions['with-dev-bundle']),
         });
       },
     });

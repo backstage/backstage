@@ -16,9 +16,10 @@
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
-import { buildActionUis, discoverActionUis } from './actionUi';
+import { discoverActionUiBrowserAssets } from './actionUi';
+import { buildBackendBrowserAssets } from '.';
 
-describe('actionUi', () => {
+describe('backendBrowserAssets', () => {
   const mockDir = createMockDirectory();
 
   afterEach(() => {
@@ -48,10 +49,10 @@ describe('actionUi', () => {
     });
 
     await expect(
-      discoverActionUis(mockDir.resolve('package')),
+      discoverActionUiBrowserAssets(mockDir.resolve('package')),
     ).resolves.toEqual([
       {
-        actionName: 'show-example',
+        id: 'show-example',
         entry: mockDir.resolve('package/src/Example.tsx'),
         exportName: 'Example',
       },
@@ -78,7 +79,7 @@ describe('actionUi', () => {
     });
 
     await expect(
-      discoverActionUis(mockDir.resolve('package')),
+      discoverActionUiBrowserAssets(mockDir.resolve('package')),
     ).resolves.toEqual([]);
   });
 
@@ -102,7 +103,9 @@ describe('actionUi', () => {
       },
     });
 
-    await expect(discoverActionUis(mockDir.resolve('package'))).rejects.toThrow(
+    await expect(
+      discoverActionUiBrowserAssets(mockDir.resolve('package')),
+    ).rejects.toThrow(
       "action UI component must use () => import('./module').then(module => module.Component)",
     );
   });
@@ -130,9 +133,9 @@ describe('actionUi', () => {
       },
     });
 
-    await expect(discoverActionUis(mockDir.resolve('package'))).rejects.toThrow(
-      'action UI must be declared as an inline object literal',
-    );
+    await expect(
+      discoverActionUiBrowserAssets(mockDir.resolve('package')),
+    ).rejects.toThrow('action UI must be declared as an inline object literal');
   });
 
   it('removes stale output when an action UI build fails', async () => {
@@ -156,7 +159,7 @@ describe('actionUi', () => {
     });
 
     await expect(
-      buildActionUis({ targetDir: mockDir.resolve('package') }),
+      buildBackendBrowserAssets({ targetDir: mockDir.resolve('package') }),
     ).rejects.toThrow('action UI component must use');
     await expect(
       fs.pathExists(mockDir.resolve('package/dist/action-ui')),
@@ -179,7 +182,7 @@ describe('actionUi', () => {
     });
 
     await expect(
-      buildActionUis({ targetDir: mockDir.resolve('package') }),
+      buildBackendBrowserAssets({ targetDir: mockDir.resolve('package') }),
     ).resolves.toEqual({ count: 0 });
     await expect(
       fs.pathExists(mockDir.resolve('package/dist/action-ui')),

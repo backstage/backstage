@@ -169,10 +169,7 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
           examples: action.examples,
           ...(action.ui && {
             ui: {
-              resource: Boolean(action.ui.html),
-              ...(action.ui.description && {
-                description: action.ui.description,
-              }),
+              hasResource: Boolean(action.ui.html),
               ...(action.ui.csp && { csp: action.ui.csp }),
               ...(action.ui.permissions && {
                 permissions: action.ui.permissions,
@@ -206,7 +203,7 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
     });
 
     router.get(
-      '/.backstage/actions/v1/actions/:actionId/app',
+      '/.backstage/actions/v1/actions/:actionId/ui',
       async (req, res) => {
         const credentials = await this.httpAuth.credentials(req);
         if (this.auth.isPrincipal(credentials, 'none')) {

@@ -63,7 +63,6 @@ actionsRegistry.register({
   },
   ui: {
     component: () => import('./ExampleUi').then(module => module.ExampleUi),
-    description: 'Open the UI while this action runs.',
     permissions: { clipboardWrite: {} },
   },
   action: async () => ({ output: { value: 'example' } }),

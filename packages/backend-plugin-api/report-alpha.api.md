@@ -148,8 +148,7 @@ export type ActionsServiceAction = {
     idempotent: boolean;
   };
   ui?: ActionUiMetadata & {
-    resource: boolean;
-    description?: string;
+    hasResource: boolean;
   };
 };
 
@@ -163,7 +162,6 @@ export const actionsServiceRef: ServiceRef<
 // @alpha
 export type ActionUi = ActionUiMetadata & {
   component?: () => Promise<unknown>;
-  description?: string;
 };
 
 // @alpha

@@ -223,15 +223,13 @@ export class McpService {
 
         const tools: Tool[] = [];
         for (const action of actions) {
-          const resourceUri = action.ui?.resource
+          const resourceUri = action.ui?.hasResource
             ? getUiResourceUri(action.id)
             : undefined;
           const tool = {
             inputSchema: action.schema.input,
             name: this.getToolName(action),
-            description: action.ui?.description
-              ? `${action.description} ${action.ui.description}`
-              : action.description,
+            description: action.description,
             annotations: {
               title: action.title,
               destructiveHint: action.attributes.destructive,
@@ -297,7 +295,7 @@ export class McpService {
         : allActions;
       return {
         resources: actions.flatMap(action => {
-          const uri = action.ui?.resource
+          const uri = action.ui?.hasResource
             ? getUiResourceUri(action.id)
             : undefined;
           return uri
@@ -327,7 +325,7 @@ export class McpService {
             candidate => normalizeActionId(candidate.id) === actionId,
           )
         : undefined;
-      if (!action?.ui?.resource || !this.actions.readUi) {
+      if (!action?.ui?.hasResource || !this.actions.readUi) {
         throw new NotFoundError(`Resource "${params.uri}" not found`);
       }
       const ui = await this.actions.readUi({ id: action.id, credentials });
