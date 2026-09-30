@@ -1,5 +1,19 @@
 # @backstage/create-app
 
+## 0.9.3-next.1
+
+### Patch Changes
+
+- bf3db11: Pinned Yarn core in newly generated apps to avoid installation failures from a broken upstream release.
+
+## 0.9.3-next.0
+
+### Patch Changes
+
+- 36e3f24: Updated generated applications to use the latest Jest 30 release.
+- Updated dependencies
+  - @backstage/cli-common@0.3.2-next.0
+
 ## 0.9.2
 
 ### Patch Changes

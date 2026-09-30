@@ -101,6 +101,7 @@ describe('createRouter', () => {
       userInfo,
       config: mockServices.rootConfig(),
       lifecycle,
+      instanceMetadata: mockServices.rootInstanceMetadata.mock(),
       auth: mockServices.auth(),
     });
     const app = express().use('/api/signals', router).use(mockErrorHandler());
@@ -186,6 +187,7 @@ describe('handleUpgrade', () => {
       userInfo: mockServices.userInfo.mock(),
       config: mockServices.rootConfig(),
       lifecycle: mockServices.lifecycle.mock(),
+      instanceMetadata: mockServices.rootInstanceMetadata.mock(),
       auth,
     });
 

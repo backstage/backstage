@@ -229,7 +229,7 @@ export class DefaultCatalogProcessingOrchestrator
               );
             } catch (e) {
               throw new InputError(
-                `Processor ${processor.constructor.name} threw an error while preprocessing`,
+                `Processor ${processor.getProcessorName()} threw an error while preprocessing`,
                 e,
               );
             }
@@ -322,7 +322,9 @@ export class DefaultCatalogProcessingOrchestrator
             }
           } catch (e) {
             throw new InputError(
-              `Processor ${processor.constructor.name} threw an error while validating the entity ${context.entityRef}`,
+              `Processor ${processor.getProcessorName()} threw an error while validating the entity ${
+                context.entityRef
+              }`,
               e,
             );
           }
@@ -424,7 +426,7 @@ export class DefaultCatalogProcessingOrchestrator
               }
             } catch (e) {
               throw new InputError(
-                `Processor ${processor.constructor.name} threw an error while reading ${type}:${target}`,
+                `Processor ${processor.getProcessorName()} threw an error while reading ${type}:${target}`,
                 e,
               );
             }
@@ -469,7 +471,7 @@ export class DefaultCatalogProcessingOrchestrator
               );
             } catch (e) {
               throw new InputError(
-                `Processor ${processor.constructor.name} threw an error while postprocessing`,
+                `Processor ${processor.getProcessorName()} threw an error while postprocessing`,
                 e,
               );
             }

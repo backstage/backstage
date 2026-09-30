@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
-import { PropsWithChildren, useState, useEffect, useCallback } from 'react';
+import {
+  PropsWithChildren,
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useCallback,
+} from 'react';
 
 import { create } from 'jss';
-import StylesProvider from '@material-ui/styles/StylesProvider';
-import jssPreset from '@material-ui/styles/jssPreset';
+// The package-root import ensures federated apps share the same styling context.
+// eslint-disable-next-line @backstage/no-top-level-material-ui-4-imports
+import { StylesProvider, jssPreset } from '@material-ui/styles';
 
 /**
  * Name for the event dispatched when ShadowRoot styles are loaded.
@@ -31,16 +38,20 @@ export const SHADOW_DOM_STYLE_LOAD_EVENT = 'TECH_DOCS_SHADOW_DOM_STYLE_LOAD';
  * @param element - the ShadowRoot tree.
  */
 const useShadowDomStylesEvents = (element: Element | null) => {
+  // Keep this passive so consumers can subscribe from a layout effect before
+  // already-loaded styles dispatch the event synchronously.
   useEffect(() => {
     if (!element) {
       return () => {};
     }
 
-    const styles = element.querySelectorAll<HTMLElement>(
-      'head > link[rel="stylesheet"]',
-    );
+    const styles = Array.from(
+      element.querySelectorAll<HTMLLinkElement>(
+        'head > link[rel="stylesheet"]',
+      ),
+    ).filter(style => !style.sheet);
 
-    let count = styles?.length ?? 0;
+    let count = styles.length;
     const event = new CustomEvent(SHADOW_DOM_STYLE_LOAD_EVENT);
 
     if (!count) {
@@ -54,12 +65,12 @@ const useShadowDomStylesEvents = (element: Element | null) => {
       }
     };
 
-    styles?.forEach(style => {
+    styles.forEach(style => {
       style.addEventListener('load', handleLoad);
     });
 
     return () => {
-      styles?.forEach(style => {
+      styles.forEach(style => {
         style.removeEventListener('load', handleLoad);
       });
     };
@@ -68,6 +79,9 @@ const useShadowDomStylesEvents = (element: Element | null) => {
 
 /**
  * Returns the style's loading state.
+ *
+ * Hides the element before paint and reveals it after the
+ * {@link SHADOW_DOM_STYLE_LOAD_EVENT} event is dispatched.
  *
  * @example
  * Here's an example that updates the sidebar position only after styles are calculated:
@@ -110,7 +124,7 @@ const useShadowDomStylesEvents = (element: Element | null) => {
 export const useShadowDomStylesLoading = (element: Element | null) => {
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!element) return () => {};
 
     setLoading(true);

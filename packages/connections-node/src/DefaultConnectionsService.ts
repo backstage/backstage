@@ -59,9 +59,9 @@ function connectionIdentityOf(
 
 class PluginConnectionsService implements ConnectionsService {
   private readonly logger: LoggerService;
-  private readonly connections: Connection[];
+  private readonly connections: ConfiguredConnection[];
 
-  constructor(logger: LoggerService, connections: Connection[]) {
+  constructor(logger: LoggerService, connections: ConfiguredConnection[]) {
     this.logger = logger;
     this.connections = connections;
   }
@@ -109,15 +109,13 @@ class PluginConnectionsService implements ConnectionsService {
       }`,
     );
 
-    let connection: Connection<TType> | undefined;
+    let connection: ConfiguredConnection | undefined;
     if (identity !== undefined) {
       connection = this.connections.find(
         c => c.type === type && connectionIdentityOf(strategy, c) === identity,
-      ) as Connection<TType> | undefined;
+      );
     } else {
-      connection = this.connections.find(c => c.type === type) as
-        | Connection<TType>
-        | undefined;
+      connection = this.connections.find(c => c.type === type);
     }
 
     if (!connection) {
@@ -207,31 +205,21 @@ export class DefaultConnectionsService {
     );
   }
 
-  #getConnectionsForPlugin(pluginId: string): Connection[] {
-    // Filter connections and hide auth methods based on these conditions:
-    // 1. Include Connections with no plugin matcher condition
-    // 2. Include Connections with a plugin matcher condition for this plugin
-    // 3. Include auth methods with no plugin matcher condition
-    // 4. Remove auth methods with a plugin matcher condition for other plugins
-    return this.connections.flatMap(({ match, auth, ...rest }) => {
-      if (match && !match.plugins.includes(pluginId)) {
+  #getConnectionsForPlugin(pluginId: string): ConfiguredConnection[] {
+    // Filter connections and auth methods by plugin scope. Auth entries
+    // explicitly matched to this plugin are ordered before unscoped entries
+    // so that plugin-specific credentials take precedence.
+    return this.connections.flatMap(connection => {
+      if (connection.match && !connection.match.plugins.includes(pluginId)) {
         return [];
       }
 
-      const pluginMatched: Connection['auth'] = [];
-      const unmatched: Connection['auth'] = [];
-      for (const { match: authMatch, ...authRest } of auth) {
-        if (authMatch) {
-          if (!authMatch.plugins.includes(pluginId)) continue;
-          pluginMatched.push(authRest as Connection['auth'][number]);
-        } else {
-          unmatched.push(authRest as Connection['auth'][number]);
-        }
-      }
+      const pluginMatched = connection.auth.filter(a =>
+        a.match?.plugins.includes(pluginId),
+      );
+      const unmatched = connection.auth.filter(a => !a.match);
 
-      return [
-        { ...rest, auth: [...pluginMatched, ...unmatched] } as Connection,
-      ];
+      return [{ ...connection, auth: [...pluginMatched, ...unmatched] }];
     });
   }
 

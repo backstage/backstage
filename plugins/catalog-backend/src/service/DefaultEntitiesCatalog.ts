@@ -210,7 +210,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     }
 
     return {
-      entities: processRawEntitiesResult(
+      entities: await processRawEntitiesResult(
         rows.map(r => r.final_entity!),
         request?.fields,
       ),
@@ -323,7 +323,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     request: EntitiesBatchRequest,
   ): Promise<EntitiesBatchResponse> {
     if (request.entityRefs.length === 0) {
-      return { items: processRawEntitiesResult([], request.fields) };
+      return { items: await processRawEntitiesResult([], request.fields) };
     }
 
     const lookup = new Map<string, string>();
@@ -363,7 +363,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
     const items = request.entityRefs.map(ref => lookup.get(ref) ?? null);
 
-    return { items: processRawEntitiesResult(items, request.fields) };
+    return { items: await processRawEntitiesResult(items, request.fields) };
   }
 
   async queryEntities(
@@ -624,7 +624,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
         : undefined;
 
     return {
-      items: processRawEntitiesResult(
+      items: await processRawEntitiesResult(
         rows.map(r => r.final_entity!),
         request.fields,
       ),

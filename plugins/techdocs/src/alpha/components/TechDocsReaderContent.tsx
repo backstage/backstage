@@ -35,6 +35,7 @@ export const TechDocsReaderContent = withTechDocsReaderProvider(
     } = useTechDocsReaderContentData({
       defaultPath: props.defaultPath,
       onReady: props.onReady,
+      withFeedbackLink: props.withFeedbackLink,
     });
 
     if (isNotFound) return <NotFoundErrorPage />;

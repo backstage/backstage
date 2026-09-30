@@ -71,10 +71,12 @@ const johnIdentity = {
 
 describe('SignalManager', () => {
   let onEvent: Function;
+  let subscription: EventsServiceSubscribeOptions;
 
   const mockEvents = {
     publish: async () => {},
     subscribe: async (subscriber: EventsServiceSubscribeOptions) => {
+      subscription = subscriber;
       onEvent = subscriber.onEvent;
     },
   };
@@ -89,6 +91,13 @@ describe('SignalManager', () => {
     logger: mockServices.logger.mock(),
     config: mockServices.rootConfig(),
     lifecycle: mockLifecycle,
+    instanceMetadata: mockServices.rootInstanceMetadata.mock({
+      getId: () => 'test-instance',
+    }),
+  });
+
+  it('should use the backend instance ID for the event subscription', () => {
+    expect(subscription.id).toBe('test-instance');
   });
 
   afterAll(() => {
@@ -104,6 +113,7 @@ describe('SignalManager', () => {
       },
       logger: mockServices.logger.mock(),
       config: mockServices.rootConfig(),
+      instanceMetadata: mockServices.rootInstanceMetadata.mock(),
       lifecycle: mockServices.lifecycle.mock({
         addShutdownHook: (hook: Function) => localHooks.push(hook),
       }),

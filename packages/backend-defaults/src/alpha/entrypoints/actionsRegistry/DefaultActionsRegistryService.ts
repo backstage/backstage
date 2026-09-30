@@ -136,6 +136,14 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
       });
     });
 
+    router.get('/.backstage/actions/v1/status', async (req, res) => {
+      await this.httpAuth.credentials(req, { allow: ['service'] });
+
+      return res.json({
+        hasActions: this.actions.size > 0,
+      });
+    });
+
     const invokeHandler =
       (opts: { wrapped: boolean }) =>
       async (

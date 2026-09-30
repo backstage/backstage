@@ -18,6 +18,126 @@ import express from 'express';
 import { mockErrorHandler } from '@backstage/backend-test-utils';
 import request from 'supertest';
 import { writeEntitiesResponse, writeSingleEntityResponse } from './write';
+import { processRawEntitiesResult } from './process';
+import { parseEntityTransformParams } from '../request/parseEntityTransformParams';
+import { createEntityArrayJsonStream } from './createEntityArrayJsonStream';
+
+describe('projected responses', () => {
+  const app = express();
+  app.use(express.json());
+  app.post('/:mode', async (req, res, next) => {
+    try {
+      // Model the database rows used by production callers, not arbitrary HTTP input.
+      const serializedEntities: unknown = req.body;
+      if (
+        !Array.isArray(serializedEntities) ||
+        !serializedEntities.every(
+          entity => entity === null || typeof entity === 'string',
+        )
+      ) {
+        throw new Error('Expected an array of serialized entities or nulls');
+      }
+      const items = await processRawEntitiesResult(
+        serializedEntities,
+        parseEntityTransformParams({
+          fields: [
+            'metadata.name',
+            'metadata.annotations.example.com/key',
+            'relations',
+          ],
+        }),
+      );
+      if (items.type !== 'raw') {
+        throw new Error(
+          'Expected projection to serialize entities before writing',
+        );
+      }
+      if (req.params.mode === 'stream') {
+        const stream = createEntityArrayJsonStream(res);
+        // /entities streams multiple database pages, including a final empty page.
+        await stream.send({ ...items, entities: items.entities.slice(0, 2) });
+        await stream.send({ ...items, entities: items.entities.slice(2) });
+        await stream.send({ type: 'raw', entities: [] });
+        stream.complete();
+      } else {
+        await writeEntitiesResponse({
+          res,
+          items,
+          responseWrapper: entities => ({
+            items: entities,
+            totalItems: 42,
+            pageInfo: { prevCursor: 'previous', nextCursor: 'next' },
+          }),
+        });
+      }
+    } catch (error) {
+      next(error);
+    }
+  });
+  app.use(mockErrorHandler());
+
+  it.each(['wrapped', 'stream'])(
+    'preserves projected JSON in %s responses',
+    async mode => {
+      const response = await request(app)
+        .post(`/${mode}`)
+        .send([
+          JSON.stringify({
+            kind: 'Component',
+            metadata: {
+              name: 'quoted-"-☃',
+              annotations: {
+                'example.com/key': 'line\n\\value',
+                omitted: 'hidden',
+              },
+            },
+            spec: { description: 'not selected' },
+            relations: [{ type: 'ownedBy', targetRef: 'group:default/team' }],
+          }),
+          null,
+          '{"kind":"User","metadata":{"name":"last"}}',
+        ]);
+      const entities = [
+        {
+          metadata: {
+            name: 'quoted-"-☃',
+            annotations: { 'example.com/key': 'line\n\\value' },
+          },
+          relations: [{ type: 'ownedBy', targetRef: 'group:default/team' }],
+        },
+        null,
+        { metadata: { name: 'last' } },
+      ];
+      expect(response.status).toBe(200);
+      expect(response.type).toBe('application/json');
+      expect(response.header['content-length']).toBeUndefined();
+      expect(response.body).toEqual(
+        mode === 'stream'
+          ? entities
+          : {
+              items: entities,
+              totalItems: 42,
+              pageInfo: { prevCursor: 'previous', nextCursor: 'next' },
+            },
+      );
+    },
+  );
+
+  it.each(['wrapped', 'stream'])(
+    'rejects projection errors before writing a %s response',
+    async mode => {
+      const response = await request(app)
+        .post(`/${mode}`)
+        .send([
+          '{"kind":"Component","metadata":{"name":"first"}}',
+          'invalid JSON',
+        ]);
+      expect(response.status).toBe(500);
+      expect(response.body).toMatchObject({ error: { name: 'SyntaxError' } });
+      expect(response.body.items).toBeUndefined();
+    },
+  );
+});
 
 describe('writeSingleEntityResponse', () => {
   const app = express();

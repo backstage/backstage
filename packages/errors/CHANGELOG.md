@@ -1,5 +1,11 @@
 # @backstage/errors
 
+## 1.3.2-next.0
+
+### Patch Changes
+
+- 603898f: Fixed `serializeError` so that stack traces are stripped from all nested error causes when stacks are not requested, not just the first-level cause.
+
 ## 1.3.1
 
 ### Patch Changes

@@ -1,5 +1,25 @@
 # @backstage/plugin-signals-backend
 
+## 0.3.20-next.1
+
+### Patch Changes
+
+- e956084: Use the backend instance ID to identify the event subscription, allowing deployments to control how Signals instances fan out events.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/plugin-events-node@0.4.27-next.1
+  - @backstage/plugin-signals-node@0.2.6-next.1
+
+## 0.3.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/plugin-events-node@0.4.27-next.0
+  - @backstage/plugin-signals-node@0.2.6-next.0
+
 ## 0.3.19
 
 ### Patch Changes
