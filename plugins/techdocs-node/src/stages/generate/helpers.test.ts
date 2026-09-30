@@ -1077,6 +1077,12 @@ theme:
       ).resolves.toBeUndefined();
     });
 
+    it('should reject local mapping tags in MkDocs config', async () => {
+      await expect(
+        validateMkdocsYaml(inputDir, 'extra: !ENV { NAME: Test }'),
+      ).rejects.toThrow('unknown mapping tag');
+    });
+
     it.each([
       ['scalar', 'site_name: !!python/name:builtins.str'],
       [

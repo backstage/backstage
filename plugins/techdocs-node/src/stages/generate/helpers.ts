@@ -201,7 +201,7 @@ export const MKDOCS_SCHEMA = YAML11_SCHEMA.withTags(
     represent: data => data.data,
     representTagName: data => data.type,
   }),
-  defineMappingTag<UnknownTag>('', {
+  defineMappingTag<UnknownTag>('tag:', {
     matchByTagPrefix: true,
     create: tagName => new UnknownTag({}, tagName),
     addPair: (carrier, key, value) => mapTag.addPair(carrier.data, key, value),

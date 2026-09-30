@@ -17,7 +17,7 @@
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import * as YAML from 'js-yaml';
+import { loadYaml } from '../../../../../lib/yaml';
 import { dirname, join, resolve } from 'node:path';
 import { exec } from '../../../../../lib/exec';
 import {
@@ -37,7 +37,7 @@ import {
 
 async function generateSpecFile() {
   const openapiPath = await getPathToCurrentOpenApiSpec();
-  const yaml = YAML.load(await fs.readFile(openapiPath, 'utf8'));
+  const yaml = loadYaml(await fs.readFile(openapiPath, 'utf8'));
 
   const tsPath = targetPaths.resolve(TS_SCHEMA_PATH);
 

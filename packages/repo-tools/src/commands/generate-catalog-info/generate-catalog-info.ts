@@ -15,6 +15,7 @@
  */
 
 import * as YAML from 'js-yaml';
+import { loadYaml } from '../../lib/yaml';
 import pLimit from 'p-limit';
 import { relative as relativePath, resolve as resolvePath } from 'node:path';
 import { yamlOverwrite } from 'yaml-diff-patch';
@@ -169,7 +170,7 @@ async function fixCatalogInfoYaml(options: FixOptions) {
   let yamlJson: BackstagePackageEntity;
 
   try {
-    yamlJson = YAML.load(yamlString) as BackstagePackageEntity;
+    yamlJson = loadYaml(yamlString) as BackstagePackageEntity;
   } catch (e) {
     throw new Error(`Unable to parse ${relativePath('.', yamlPath)}: ${e}`);
   }
