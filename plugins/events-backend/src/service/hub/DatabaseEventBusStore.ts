@@ -34,7 +34,7 @@ const WINDOW_MAX_AGE_DEFAULT = { days: 1 };
 
 const MAX_BATCH_SIZE = 10;
 const CLEANUP_BATCH_SIZE = 1_000;
-const CLEANUP_STATEMENT_TIMEOUT = '20s';
+const CLEANUP_STATEMENT_TIMEOUT_MS = 20_000;
 const CLEANUP_RUN_DURATION_MS = 50_000;
 const LISTENER_CONNECTION_TIMEOUT_MS = 60_000;
 const KEEPALIVE_INTERVAL_MS = 60_000;
@@ -578,23 +578,42 @@ export class DatabaseEventBusStore implements EventBusStore {
   }
 
   async #cleanup(signal?: AbortSignal) {
+    if (signal?.aborted) {
+      return;
+    }
+
     const stopAt = Date.now() + CLEANUP_RUN_DURATION_MS;
     let eventCount = 0;
+    let subscriberCount = 0;
 
-    const deleteBatches = async (createdBefore: Date, maxId?: string) => {
-      while (!signal?.aborted && Date.now() < stopAt) {
-        const bindings: (Date | string | number)[] = [createdBefore];
-        if (maxId !== undefined) {
-          bindings.push(maxId);
+    const setStatementTimeout = async (trx: Knex.Transaction) => {
+      const remainingMs = stopAt - Date.now();
+      if (remainingMs <= 0) {
+        return false;
+      }
+
+      await trx.raw(
+        `SET LOCAL statement_timeout = '${Math.min(
+          CLEANUP_STATEMENT_TIMEOUT_MS,
+          remainingMs,
+        )}ms'`,
+      );
+      return true;
+    };
+
+    const deleteEventBatch = (createdBefore: Date, maxId?: string) => {
+      const bindings: (Date | string | number)[] = [createdBefore];
+      if (maxId !== undefined) {
+        bindings.push(maxId);
+      }
+      bindings.push(CLEANUP_BATCH_SIZE);
+
+      return this.#db.transaction(async trx => {
+        if (!(await setStatementTimeout(trx))) {
+          return 0;
         }
-        bindings.push(CLEANUP_BATCH_SIZE);
-
-        const deletedCount = await this.#db.transaction(async trx => {
-          await trx.raw(
-            `SET LOCAL statement_timeout = '${CLEANUP_STATEMENT_TIMEOUT}'`,
-          );
-          const result = await trx.raw<{ rowCount: number }>(
-            `WITH candidates AS (
+        const result = await trx.raw<{ rowCount: number }>(
+          `WITH candidates AS (
               SELECT id FROM event_bus_events
               WHERE created_at < ? ${maxId === undefined ? '' : 'AND id <= ?'}
               ORDER BY created_at, id
@@ -602,42 +621,104 @@ export class DatabaseEventBusStore implements EventBusStore {
             )
             DELETE FROM event_bus_events
             WHERE id = ANY (ARRAY(SELECT id FROM candidates))`,
-            bindings,
-          );
-          return result.rowCount;
-        });
-
-        eventCount += deletedCount;
-        if (deletedCount < CLEANUP_BATCH_SIZE) {
-          break;
-        }
-      }
+          bindings,
+        );
+        return result.rowCount;
+      });
     };
 
-    try {
-      await deleteBatches(new Date(Date.now() - this.#windowMaxAge));
-
-      if (!signal?.aborted && Date.now() < stopAt) {
-        const countCutoff = await this.#db.transaction(async trx => {
-          await trx.raw(
-            `SET LOCAL statement_timeout = '${CLEANUP_STATEMENT_TIMEOUT}'`,
-          );
-          return trx<EventsRow>(TABLE_EVENTS)
-            .select('id')
-            .orderBy('id', 'desc')
-            .offset(this.#windowMaxCount)
-            .first();
-        });
-
-        if (countCutoff) {
-          await deleteBatches(
-            new Date(Date.now() - this.#windowMinAge),
-            countCutoff.id,
-          );
+    const deleteSubscriberBatch = () =>
+      this.#db.transaction<number>(async trx => {
+        if (!(await setStatementTimeout(trx))) {
+          return 0;
         }
+        const [{ min: minId }] = await trx(TABLE_EVENTS).min('id');
+
+        if (!(await setStatementTimeout(trx))) {
+          return 0;
+        }
+
+        const where =
+          minId === null
+            ? 'updated_at < ?'
+            : 'read_until < CAST(? AS bigint) - 1';
+        const binding =
+          minId === null ? new Date(Date.now() - this.#windowMaxAge) : minId;
+        const result = await trx.raw<{ rowCount: number }>(
+          `WITH candidates AS (
+            SELECT id FROM event_bus_subscriptions
+            WHERE ${where}
+            ORDER BY id
+            LIMIT ? FOR UPDATE SKIP LOCKED
+          )
+          DELETE FROM event_bus_subscriptions
+          WHERE id = ANY (ARRAY(SELECT id FROM candidates))`,
+          [binding, CLEANUP_BATCH_SIZE],
+        );
+        return result.rowCount;
+      });
+
+    let ageDone = false;
+    let countDone = false;
+    let countCutoff: string | undefined;
+
+    // Finish one bounded event batch and one bounded subscriber batch before
+    // checking cancellation or the run budget, so neither can starve the other.
+    while (!signal?.aborted && Date.now() < stopAt) {
+      let failed = false;
+      let subscriberDeleted = 0;
+
+      try {
+        if (!ageDone) {
+          const deleted = await deleteEventBatch(
+            new Date(Date.now() - this.#windowMaxAge),
+          );
+          eventCount += deleted;
+          ageDone = deleted < CLEANUP_BATCH_SIZE;
+        } else if (!countDone) {
+          if (countCutoff === undefined) {
+            const cutoff = await this.#db.transaction(async trx => {
+              if (!(await setStatementTimeout(trx))) {
+                return undefined;
+              }
+              return trx<EventsRow>(TABLE_EVENTS)
+                .select('id')
+                .orderBy('id', 'desc')
+                .offset(this.#windowMaxCount)
+                .first();
+            });
+            countCutoff = cutoff?.id;
+            countDone = countCutoff === undefined;
+          }
+
+          if (countCutoff !== undefined) {
+            const deleted = await deleteEventBatch(
+              new Date(Date.now() - this.#windowMinAge),
+              countCutoff,
+            );
+            eventCount += deleted;
+            countDone = deleted < CLEANUP_BATCH_SIZE;
+          }
+        }
+      } catch (error) {
+        this.#logger.error('Event cleanup failed', error);
+        failed = true;
       }
-    } catch (error) {
-      this.#logger.error('Event cleanup failed', error);
+
+      try {
+        subscriberDeleted = await deleteSubscriberBatch();
+        subscriberCount += subscriberDeleted;
+      } catch (error) {
+        this.#logger.error('Subscription cleanup failed', error);
+        failed = true;
+      }
+
+      if (failed) {
+        break;
+      }
+      if (ageDone && countDone && subscriberDeleted < CLEANUP_BATCH_SIZE) {
+        break;
+      }
     }
 
     if (eventCount > 0) {
@@ -645,44 +726,10 @@ export class DatabaseEventBusStore implements EventBusStore {
         `Event cleanup resulted in ${eventCount} old events being deleted`,
       );
     }
-
-    if (signal?.aborted || Date.now() >= stopAt) {
-      return;
-    }
-
-    try {
-      // Delete any subscribers that aren't keeping up with current events
-      const subscriberCount = await this.#db.transaction<number>(async trx => {
-        await trx.raw(
-          `SET LOCAL statement_timeout = '${CLEANUP_STATEMENT_TIMEOUT}'`,
-        );
-        const [{ min: minId }] = await trx(TABLE_EVENTS).min('id');
-
-        if (minId === null) {
-          // No events left; remove subscribers older than the max age window.
-          const result = await trx.raw<{ rowCount: number }>(
-            'DELETE FROM event_bus_subscriptions WHERE updated_at < ?',
-            [new Date(Date.now() - this.#windowMaxAge)],
-          );
-          return result.rowCount;
-        }
-
-        // Read pointer points to the ID that has been read, so we need an
-        // additional offset.
-        const result = await trx.raw<{ rowCount: number }>(
-          'DELETE FROM event_bus_subscriptions WHERE read_until < CAST(? AS bigint) - 1',
-          [minId],
-        );
-        return result.rowCount;
-      });
-
-      if (subscriberCount > 0) {
-        this.#logger.info(
-          `Subscription cleanup resulted in ${subscriberCount} stale subscribers being deleted`,
-        );
-      }
-    } catch (error) {
-      this.#logger.error('Subscription cleanup failed', error);
+    if (subscriberCount > 0) {
+      this.#logger.info(
+        `Subscription cleanup resulted in ${subscriberCount} stale subscribers being deleted`,
+      );
     }
   }
 }
