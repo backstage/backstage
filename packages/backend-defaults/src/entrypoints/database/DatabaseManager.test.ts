@@ -18,6 +18,7 @@ import { ConfigReader } from '@backstage/config';
 import { DatabaseManager, DatabaseManagerImpl } from './DatabaseManager';
 import { Connector } from './types';
 import { mockServices } from '@backstage/backend-test-utils';
+import knexFactory from 'knex';
 
 describe('DatabaseManagerImpl', () => {
   afterEach(() => {
@@ -84,6 +85,84 @@ describe('DatabaseManagerImpl', () => {
     } finally {
       env.NODE_ENV = nodeEnv;
       jest.useRealTimers();
+    }
+  });
+
+  it('queries idle database clients when keepalive is enabled', async () => {
+    jest.useFakeTimers();
+    const env = process.env as Record<string, string | undefined>;
+    const nodeEnv = env.NODE_ENV;
+    env.NODE_ENV = 'production';
+    const raw = jest.fn().mockResolvedValue(undefined);
+    const destroy = jest.fn().mockResolvedValue(undefined);
+    const rootLifecycle = { addShutdownHook: jest.fn() } as unknown as any;
+    const connector = {
+      getClient: jest.fn().mockResolvedValue({
+        raw,
+        destroy,
+        client: { config: 'pg' },
+      }),
+    } satisfies Connector;
+    const impl = new DatabaseManagerImpl(
+      new ConfigReader({ client: 'pg', keepalive: true }),
+      { pg: connector },
+      { rootLifecycle },
+    );
+
+    try {
+      await impl.forPlugin('plugin1', deps).getClient();
+      await jest.advanceTimersByTimeAsync(60_000);
+      expect(raw).toHaveBeenCalledWith('select 1');
+
+      await rootLifecycle.addShutdownHook.mock.calls[0][0]();
+      await jest.advanceTimersByTimeAsync(60_000);
+      expect(raw).toHaveBeenCalledTimes(1);
+      expect(destroy).toHaveBeenCalledTimes(1);
+    } finally {
+      env.NODE_ENV = nodeEnv;
+      jest.useRealTimers();
+    }
+  });
+
+  it('reconnects after an idle connection pool drains to zero', async () => {
+    const database = knexFactory({
+      client: 'better-sqlite3',
+      connection: { filename: ':memory:' },
+      useNullAsDefault: true,
+      pool: {
+        min: 0,
+        max: 1,
+        idleTimeoutMillis: 20,
+        reapIntervalMillis: 10,
+      },
+    });
+    const pool = database.client.pool;
+    const created = jest.fn();
+    pool.on('createSuccess', created);
+    const connector = {
+      getClient: jest.fn().mockResolvedValue(database),
+    } satisfies Connector;
+    const impl = new DatabaseManagerImpl(new ConfigReader({ client: 'pg' }), {
+      pg: connector,
+    });
+
+    try {
+      const client = await impl.forPlugin('plugin1', deps).getClient();
+      await client.raw('select 1');
+      expect(created).toHaveBeenCalledTimes(1);
+      expect(pool.numFree()).toBe(1);
+
+      const deadline = Date.now() + 1000;
+      while (pool.numFree() !== 0 && Date.now() < deadline) {
+        await new Promise(resolve => setTimeout(resolve, 20));
+      }
+      expect(pool.numFree()).toBe(0);
+      expect(pool.numUsed()).toBe(0);
+
+      await client.raw('select 1');
+      expect(created).toHaveBeenCalledTimes(2);
+    } finally {
+      await database.destroy();
     }
   });
 

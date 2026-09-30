@@ -56,17 +56,20 @@ export class DatabaseManagerImpl {
   private readonly connectors: Record<string, Connector>;
   private readonly options?: DatabaseManagerOptions;
   private readonly databaseCache: Map<string, Promise<Knex>>;
+  private readonly keepaliveIntervals: Map<string, NodeJS.Timeout>;
 
   constructor(
     config: Config,
     connectors: Record<string, Connector>,
     options?: DatabaseManagerOptions,
     databaseCache: Map<string, Promise<Knex>> = new Map(),
+    keepaliveIntervals: Map<string, NodeJS.Timeout> = new Map(),
   ) {
     this.config = config;
     this.connectors = connectors;
     this.options = options;
     this.databaseCache = databaseCache;
+    this.keepaliveIntervals = keepaliveIntervals;
     // If a rootLifecycle service was provided, register a shutdown hook to
     // clean up any database connections.
     if (options?.rootLifecycle !== undefined) {
@@ -115,6 +118,7 @@ export class DatabaseManagerImpl {
     const pluginIds = Array.from(this.databaseCache.keys());
     await Promise.allSettled(
       pluginIds.map(async pluginId => {
+        clearInterval(this.keepaliveIntervals.get(pluginId));
         const connection = await this.databaseCache.get(pluginId);
         if (connection) {
           if (connection.client.config.includes('sqlite3')) {
@@ -194,7 +198,45 @@ export class DatabaseManagerImpl {
     const clientPromise = connector.getClient(pluginId, deps);
     this.databaseCache.set(pluginId, clientPromise);
 
+    if (
+      this.config.getOptionalBoolean('keepalive') &&
+      process.env.NODE_ENV !== 'test'
+    ) {
+      clientPromise.then(client =>
+        this.startKeepaliveLoop(pluginId, client, deps.logger),
+      );
+    }
+
     return clientPromise;
+  }
+
+  private startKeepaliveLoop(
+    pluginId: string,
+    client: Knex,
+    logger: LoggerService,
+  ): void {
+    let lastKeepaliveFailed = false;
+
+    this.keepaliveIntervals.set(
+      pluginId,
+      setInterval(() => {
+        client?.raw('select 1').then(
+          () => {
+            lastKeepaliveFailed = false;
+          },
+          (error: unknown) => {
+            if (!lastKeepaliveFailed) {
+              lastKeepaliveFailed = true;
+              logger.warn(
+                `Database keepalive failed for plugin ${pluginId}, ${stringifyError(
+                  error,
+                )}`,
+              );
+            }
+          },
+        );
+      }, 60 * 1000),
+    );
   }
 }
 
