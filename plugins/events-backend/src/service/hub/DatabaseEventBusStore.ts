@@ -658,8 +658,8 @@ export class DatabaseEventBusStore implements EventBusStore {
         return result.rowCount;
       });
 
-    let ageDone = false;
-    let countDone = false;
+    // Expire events past maxAge first, then trim older events past maxCount.
+    let eventCleanupPhase: 'maxAge' | 'maxCount' | 'complete' = 'maxAge';
     let countCutoff: string | undefined;
     let failed = false;
 
@@ -669,13 +669,15 @@ export class DatabaseEventBusStore implements EventBusStore {
       let subscriberDeleted = 0;
 
       try {
-        if (!ageDone) {
+        if (eventCleanupPhase === 'maxAge') {
           const deleted = await deleteEventBatch(
             new Date(Date.now() - this.#windowMaxAge),
           );
           eventCount += deleted;
-          ageDone = deleted < CLEANUP_BATCH_SIZE;
-        } else if (!countDone) {
+          if (deleted < CLEANUP_BATCH_SIZE) {
+            eventCleanupPhase = 'maxCount';
+          }
+        } else if (eventCleanupPhase === 'maxCount') {
           if (countCutoff === undefined) {
             const cutoff = await this.#db.transaction(async trx => {
               if (!(await setStatementTimeout(trx))) {
@@ -688,16 +690,19 @@ export class DatabaseEventBusStore implements EventBusStore {
                 .first();
             });
             countCutoff = cutoff?.id;
-            countDone = countCutoff === undefined;
           }
 
-          if (countCutoff !== undefined) {
+          if (countCutoff === undefined) {
+            eventCleanupPhase = 'complete';
+          } else {
             const deleted = await deleteEventBatch(
               new Date(Date.now() - this.#windowMinAge),
               countCutoff,
             );
             eventCount += deleted;
-            countDone = deleted < CLEANUP_BATCH_SIZE;
+            if (deleted < CLEANUP_BATCH_SIZE) {
+              eventCleanupPhase = 'complete';
+            }
           }
         }
       } catch (error) {
@@ -713,7 +718,10 @@ export class DatabaseEventBusStore implements EventBusStore {
         failed = true;
       }
 
-      if (ageDone && countDone && subscriberDeleted < CLEANUP_BATCH_SIZE) {
+      if (
+        eventCleanupPhase === 'complete' &&
+        subscriberDeleted < CLEANUP_BATCH_SIZE
+      ) {
         break;
       }
     }
