@@ -328,6 +328,87 @@ describe.each(databases.eachSupportedId())(
       },
     );
 
+    it('limits each statement timeout to the remaining cleanup budget', async () => {
+      const db = await databases.init(databaseId);
+      const store = await DatabaseEventBusStore.forTest({ logger, db });
+      await db.raw(`
+        INSERT INTO event_bus_events (id, created_by, topic, data_json, created_at)
+        SELECT id, 'abc', 'test', '{}', now() - interval '1 day'
+        FROM generate_series(1, 2000) AS id
+      `);
+
+      const now = Date.now();
+      const clock = jest.spyOn(Date, 'now').mockReturnValue(now);
+      const timeouts: number[] = [];
+      let deleteStatements = 0;
+      const onQuery = (query: { sql: string }) => {
+        const match = query.sql.match(
+          /SET LOCAL statement_timeout = '(\d+)ms'/i,
+        );
+        if (match) {
+          timeouts.push(Number(match[1]));
+        }
+      };
+      const onResponse = (_response: unknown, query: { sql: string }) => {
+        if (/delete from event_bus_events/i.test(query.sql)) {
+          deleteStatements++;
+          clock.mockReturnValue(
+            now + (deleteStatements === 1 ? 49_000 : 50_001),
+          );
+        }
+      };
+      db.on('query', onQuery);
+      db.on('query-response', onResponse);
+      try {
+        await store.clean();
+      } finally {
+        db.off('query', onQuery);
+        db.off('query-response', onResponse);
+        clock.mockRestore();
+      }
+
+      expect(deleteStatements).toBe(2);
+      expect(timeouts.slice(0, 2)).toEqual([20_000, 1_000]);
+    });
+
+    it('cleans a bounded subscription batch during an event backlog', async () => {
+      const db = await databases.init(databaseId);
+      const store = await DatabaseEventBusStore.forTest({ logger, db });
+      await db.raw(`
+        INSERT INTO event_bus_events (id, created_by, topic, data_json, created_at)
+        SELECT id, 'abc', 'test', '{}', now() - interval '1 day'
+        FROM generate_series(1, 2505) AS id
+      `);
+      await db.raw(`
+        INSERT INTO event_bus_subscriptions (id, created_by, read_until, topics)
+        SELECT 'stale-' || id, 'abc', 0, ARRAY['test']
+        FROM generate_series(1, 1505) AS id
+      `);
+
+      const now = Date.now();
+      const clock = jest.spyOn(Date, 'now').mockReturnValue(now);
+      let deleteStatements = 0;
+      const onResponse = (_response: unknown, query: { sql: string }) => {
+        if (/delete from event_bus_events/i.test(query.sql)) {
+          deleteStatements++;
+          clock.mockReturnValue(
+            now + (deleteStatements === 1 ? 30_001 : 50_001),
+          );
+        }
+      };
+      db.on('query-response', onResponse);
+      try {
+        await store.clean();
+      } finally {
+        db.off('query-response', onResponse);
+        clock.mockRestore();
+      }
+
+      await expect(db('event_bus_subscriptions').count()).resolves.toEqual([
+        { count: '505' },
+      ]);
+    });
+
     it('schedules cleanup globally and honors an aborted signal', async () => {
       const db = await databases.init(databaseId);
       const scheduler = mockServices.scheduler.mock();
