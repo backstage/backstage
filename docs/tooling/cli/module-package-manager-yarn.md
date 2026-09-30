@@ -54,7 +54,7 @@ versions in the selected Backstage release and runs one lockfile-only Yarn
 install. It never downgrades a patched package. Afterward it runs the normal
 verification over the result. Dependency build scripts are disabled during
 the install, which uses the repository's configured Yarn binary, plugins, and
-registry settings.
+registry settings. The `--fix` mode requires Yarn 3 or later.
 
 The repair operates directly in the working checkout. If the install or final
 verification fails, it restores `package.json` and `yarn.lock`. Run it in a

@@ -51,6 +51,7 @@ selected Backstage release, runs one lockfile-only Yarn install, and then runs
 the full verification again. It never updates a patch to an older version and
 restores `package.json` and `yarn.lock` if the install or verification fails.
 Unsupported or ambiguous cases remain verification failures for manual repair.
+The `--fix` mode requires Yarn 3 or later.
 
 The repair runs in the working checkout using the repository's configured Yarn
 binary, plugins, and registry settings, with dependency build scripts disabled.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { run } from '@backstage/cli-common';
+import { run, runOutput } from '@backstage/cli-common';
 import { semverUtils, structUtils } from '@yarnpkg/core';
 import { patchUtils } from '@yarnpkg/plugin-patch';
 import fs from 'node:fs/promises';
@@ -175,21 +175,37 @@ async function defaultInstall(
 ): Promise<void> {
   const child = run(['yarn', 'install', '--mode=update-lockfile'], {
     cwd: rootDir,
-    env: {
-      ...Object.fromEntries(
-        Object.entries(env ?? process.env).map(([name, value]) =>
-          name.startsWith('npm_') ? [name, undefined] : [name, value],
-        ),
-      ),
-      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false',
-      YARN_ENABLE_SCRIPTS: 'false',
-    },
+    env: createYarnEnvironment(env),
   });
   await child.waitForExit();
   // A signal-terminated process has no exit code, so waitForExit resolves.
   if (child.signalCode) {
     throw new Error(`Yarn install was terminated by ${child.signalCode}`);
   }
+}
+
+function createYarnEnvironment(
+  env: NodeJS.ProcessEnv | undefined,
+): Partial<NodeJS.ProcessEnv> {
+  return {
+    ...Object.fromEntries(
+      Object.entries(env ?? process.env).map(([name, value]) =>
+        name.startsWith('npm_') ? [name, undefined] : [name, value],
+      ),
+    ),
+    YARN_ENABLE_IMMUTABLE_INSTALLS: 'false',
+    YARN_ENABLE_SCRIPTS: 'false',
+  };
+}
+
+async function getYarnVersion(
+  rootDir: string,
+  env: NodeJS.ProcessEnv | undefined,
+): Promise<string> {
+  return runOutput(['yarn', '--version'], {
+    cwd: rootDir,
+    env: createYarnEnvironment(env),
+  });
 }
 
 async function restoreOriginals(options: {
@@ -243,6 +259,30 @@ export async function fixYarnPatches(
       message:
         'The patch resolutions changed or could not be retargeted safely',
     };
+  }
+
+  if (!options.install) {
+    let reportedVersion: string;
+    try {
+      reportedVersion = await getYarnVersion(rootDir, options.env);
+    } catch (error) {
+      return {
+        status: 'not-fixable',
+        message: `Could not determine the repository Yarn version: ${String(
+          error,
+        )}`,
+      };
+    }
+    const yarnVersion = semverUtils.clean(reportedVersion);
+    if (
+      !yarnVersion ||
+      !semverUtils.satisfiesWithPrereleases(yarnVersion, '>=3.0.0')
+    ) {
+      return {
+        status: 'not-fixable',
+        message: `Automatic patch repair requires Yarn 3 or later, but the repository uses Yarn '${reportedVersion}'`,
+      };
+    }
   }
 
   const writeFile =
