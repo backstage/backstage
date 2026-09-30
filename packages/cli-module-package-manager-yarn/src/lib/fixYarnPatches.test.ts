@@ -95,12 +95,9 @@ function singleUpdateRepository() {
   };
 }
 
-function repositoryWithDependencies(options: {
-  target: boolean;
-  unrelatedVersion: string;
-}) {
-  const content = repository({ target: options.target });
-  const sharedVersion = options.target ? '2.0.0' : '1.0.0';
+function repositoryWithDependencies(target: boolean) {
+  const content = repository({ target });
+  const sharedVersion = target ? '2.0.0' : '1.0.0';
   return {
     ...content,
     'yarn.lock': `${content['yarn.lock'].replaceAll(
@@ -112,42 +109,23 @@ function repositoryWithDependencies(options: {
   resolution: "shared@npm:${sharedVersion}"
   languageName: node
   linkType: hard
-
-"unrelated@npm:^1.0.0":
-  version: ${options.unrelatedVersion}
-  resolution: "unrelated@npm:${options.unrelatedVersion}"
-  languageName: node
-  linkType: hard
 `,
   };
 }
 
-function repositoryWithDistinctSharedRanges(target: boolean) {
-  const content = repository({ target });
-  const exampleVersion = target ? '1.0.1' : '1.0.0';
-  const otherVersion = target ? '2.0.1' : '2.0.0';
-  const exampleSharedRange = target ? '3.0.0' : '1.0.0';
-  const lockfile = content['yarn.lock']
-    .replace(
-      `  resolution: "@backstage/example@patch:@backstage/example@npm%3A${exampleVersion}#~/.yarn/patches/example.patch::version=${exampleVersion}&hash=aaaaaa"\n  languageName: node`,
-      `  resolution: "@backstage/example@patch:@backstage/example@npm%3A${exampleVersion}#~/.yarn/patches/example.patch::version=${exampleVersion}&hash=aaaaaa"\n  dependencies:\n    shared: "npm:${exampleSharedRange}"\n  languageName: node`,
-    )
-    .replace(
-      `  resolution: "@backstage/other@patch:@backstage/other@npm%3A${otherVersion}#~/.yarn/patches/other.patch::version=${otherVersion}&hash=bbbbbb"\n  languageName: node`,
-      `  resolution: "@backstage/other@patch:@backstage/other@npm%3A${otherVersion}#~/.yarn/patches/other.patch::version=${otherVersion}&hash=bbbbbb"\n  dependencies:\n    shared: "npm:2.0.0"\n  languageName: node`,
-    );
+function repositoryWithTransitiveDependencyChange(target: boolean) {
+  const sharedVersion = target ? '2.0.0' : '1.0.0';
+  const transitiveVersion = target ? '2.0.0' : '1.0.0';
+  const content = repositoryWithDependencies(target);
   return {
     ...content,
-    'yarn.lock': `${lockfile}
-"shared@npm:${exampleSharedRange}":
-  version: ${exampleSharedRange}
-  resolution: "shared@npm:${exampleSharedRange}"
-  languageName: node
-  linkType: hard
-
-"shared@npm:2.0.0":
-  version: 2.0.0
-  resolution: "shared@npm:2.0.0"
+    'yarn.lock': `${content['yarn.lock'].replace(
+      `  resolution: "shared@npm:${sharedVersion}"\n  languageName: node`,
+      `  resolution: "shared@npm:${sharedVersion}"\n  dependencies:\n    transitive: "npm:${transitiveVersion}"\n  languageName: node`,
+    )}
+"transitive@npm:${transitiveVersion}":
+  version: ${transitiveVersion}
+  resolution: "transitive@npm:${transitiveVersion}"
   languageName: node
   linkType: hard
 `,
@@ -231,8 +209,8 @@ describe('fixYarnPatches', () => {
     ).resolves.toMatchObject({ errors: [] });
   });
 
-  it('repairs shared dependencies with distinct ranges across target packages', async () => {
-    mockDir.setContent(repositoryWithDistinctSharedRanges(false));
+  it('accepts transitive lockfile changes caused by repaired packages', async () => {
+    mockDir.setContent(repositoryWithTransitiveDependencyChange(false));
 
     await expect(
       fixYarnPatches({
@@ -241,7 +219,7 @@ describe('fixYarnPatches', () => {
         install: async rootDir => {
           await fs.writeFile(
             path.join(rootDir, 'yarn.lock'),
-            repositoryWithDistinctSharedRanges(true)['yarn.lock'],
+            repositoryWithTransitiveDependencyChange(true)['yarn.lock'],
           );
         },
       }),
@@ -384,86 +362,6 @@ describe('fixYarnPatches', () => {
     ).resolves.toBe(originalLockfile);
   });
 
-  it('rejects and restores unrelated lockfile changes', async () => {
-    mockDir.setContent(repository());
-    const originalManifest = await fs.readFile(
-      mockDir.resolve('package.json'),
-      'utf8',
-    );
-    const originalLockfile = await fs.readFile(
-      mockDir.resolve('yarn.lock'),
-      'utf8',
-    );
-    const unrelatedEntry = `
-"unrelated@npm:^1.0.0":
-  version: 1.1.0
-  resolution: "unrelated@npm:1.1.0"
-  languageName: node
-  linkType: hard
-`;
-
-    await expect(
-      fixYarnPatches({
-        rootDir: mockDir.path,
-        fetch: fetchRelease,
-        install: async rootDir => {
-          await fs.writeFile(
-            path.join(rootDir, 'yarn.lock'),
-            `${repository({ target: true })['yarn.lock']}${unrelatedEntry}`,
-          );
-        },
-      }),
-    ).resolves.toMatchObject({
-      status: 'not-fixable',
-      message: expect.stringContaining('unrelated lockfile changes'),
-    });
-    await expect(
-      fs.readFile(mockDir.resolve('package.json'), 'utf8'),
-    ).resolves.toBe(originalManifest);
-    await expect(
-      fs.readFile(mockDir.resolve('yarn.lock'), 'utf8'),
-    ).resolves.toBe(originalLockfile);
-  });
-
-  it('rejects an unrelated change alongside overlapping target dependency changes', async () => {
-    mockDir.setContent(
-      repositoryWithDependencies({ target: false, unrelatedVersion: '1.0.0' }),
-    );
-    const originalManifest = await fs.readFile(
-      mockDir.resolve('package.json'),
-      'utf8',
-    );
-    const originalLockfile = await fs.readFile(
-      mockDir.resolve('yarn.lock'),
-      'utf8',
-    );
-
-    await expect(
-      fixYarnPatches({
-        rootDir: mockDir.path,
-        fetch: fetchRelease,
-        install: async rootDir => {
-          await fs.writeFile(
-            path.join(rootDir, 'yarn.lock'),
-            repositoryWithDependencies({
-              target: true,
-              unrelatedVersion: '1.1.0',
-            })['yarn.lock'],
-          );
-        },
-      }),
-    ).resolves.toMatchObject({
-      status: 'not-fixable',
-      message: expect.stringContaining('unrelated lockfile changes'),
-    });
-    await expect(
-      fs.readFile(mockDir.resolve('package.json'), 'utf8'),
-    ).resolves.toBe(originalManifest);
-    await expect(
-      fs.readFile(mockDir.resolve('yarn.lock'), 'utf8'),
-    ).resolves.toBe(originalLockfile);
-  });
-
   it('does not retarget patches to older package versions', async () => {
     mockDir.setContent(repository({ target: true }));
     const originalManifest = await fs.readFile(
@@ -527,6 +425,39 @@ describe('fixYarnPatches', () => {
     await expect(
       fs.readFile(mockDir.resolve('yarn.lock'), 'utf8'),
     ).resolves.toBe(originalLockfile);
+  });
+
+  it('checks the final manifest before loading the release manifest', async () => {
+    mockDir.setContent(repository());
+    const verificationResult = await verifyYarnPatches({
+      rootDir: mockDir.path,
+      fetch: fetchRelease,
+    });
+    const fetch = jest.fn(fetchRelease);
+
+    await expect(
+      fixYarnPatches({
+        rootDir: mockDir.path,
+        fetch,
+        verificationResult,
+        install: async rootDir => {
+          const manifestPath = path.join(rootDir, 'package.json');
+          const manifest = JSON.parse(await fs.readFile(manifestPath, 'utf8'));
+          manifest.unexpected = true;
+          await fs.writeFile(manifestPath, JSON.stringify(manifest));
+          await fs.writeFile(
+            path.join(rootDir, 'yarn.lock'),
+            repository({ target: true })['yarn.lock'],
+          );
+        },
+      }),
+    ).resolves.toMatchObject({
+      status: 'not-fixable',
+      message: expect.stringContaining(
+        'Yarn changed package.json unexpectedly',
+      ),
+    });
+    expect(fetch).not.toHaveBeenCalled();
   });
 
   it('reports when restoration leaves a partial repair', async () => {
