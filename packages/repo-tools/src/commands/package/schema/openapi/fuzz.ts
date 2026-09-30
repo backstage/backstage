@@ -19,7 +19,7 @@ import chalk from 'chalk';
 import { spawn } from '../../../../lib/exec';
 import { getPathToCurrentOpenApiSpec } from '../../../../lib/openapi/helpers';
 import { ConfigSources } from '@backstage/config-loader';
-import YAML from 'js-yaml';
+import * as YAML from 'js-yaml';
 import { join } from 'node:path';
 import { OptionValues } from 'commander';
 import { sync as existsSync } from 'command-exists';

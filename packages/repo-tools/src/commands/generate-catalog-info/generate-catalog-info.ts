@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import YAML from 'js-yaml';
+import * as YAML from 'js-yaml';
 import pLimit from 'p-limit';
 import { relative as relativePath, resolve as resolvePath } from 'node:path';
 import { yamlOverwrite } from 'yaml-diff-patch';

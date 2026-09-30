@@ -28,6 +28,8 @@ import {
   getGeneratorKey,
   getMkdocsYml,
   getRepoUrlFromLocationAnnotation,
+  MKDOCS_SCHEMA,
+  UnknownTag,
   patchIndexPreBuild,
   storeEtagMetadata,
   validateInputDirectory,
@@ -39,7 +41,43 @@ import {
   sanitizeMkdocsYml,
   patchMkdocsYmlWithFontDisabled,
 } from './mkdocsPatchers';
-import yaml from 'js-yaml';
+import * as yaml from 'js-yaml';
+
+describe('MKDOCS_SCHEMA', () => {
+  it('retains merge keys and custom tags when rewriting MkDocs YAML', () => {
+    const source = `defaults: &defaults
+  theme: material
+site_name: Test
+<<: *defaults
+markdown_extensions:
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji ''
+  - !ENV [MARKDOWN_EXTENSION, admonition]
+`;
+
+    const parsed = yaml.load(source, { schema: MKDOCS_SCHEMA });
+    expect(parsed).toMatchObject({ theme: 'material' });
+
+    const rewritten = yaml.dump(parsed, { schema: MKDOCS_SCHEMA });
+    expect(rewritten).not.toContain('<<:');
+    expect(rewritten).toContain(
+      'emoji_index: !!python/name:materialx.emoji.twemoji',
+    );
+    expect(rewritten).toContain('!ENV');
+
+    const reparsed = yaml.load(rewritten, { schema: MKDOCS_SCHEMA }) as {
+      markdown_extensions: Array<any>;
+    };
+    expect(
+      reparsed.markdown_extensions[0]['pymdownx.emoji'].emoji_index,
+    ).toEqual(
+      new UnknownTag(
+        '',
+        'tag:yaml.org,2002:python/name:materialx.emoji.twemoji',
+      ),
+    );
+  });
+});
 
 const mockEntity = {
   apiVersion: 'version',
@@ -305,7 +343,7 @@ describe('helpers', () => {
         'repo_url: https://github.com/backstage/backstage',
       );
       expect(updatedMkdocsYml.toString()).toContain(
-        "emoji_index: !!python/name:materialx.emoji.twemoji ''",
+        'emoji_index: !!python/name:materialx.emoji.twemoji',
       );
       expect(updatedMkdocsYml.toString()).toContain(
         'slugify: !!python/object/apply:pymdownx.slugs.slugify',
