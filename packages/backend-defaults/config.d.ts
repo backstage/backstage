@@ -681,6 +681,11 @@ export interface Config {
       /** Database name prefix override */
       prefix?: string;
       /**
+       * Whether to run a query every minute for each plugin database client to
+       * keep its connections active. Defaults to false.
+       */
+      keepalive?: boolean;
+      /**
        * Prefix for schema names when using pluginDivisionMode: schema.
        * @default ''
        */

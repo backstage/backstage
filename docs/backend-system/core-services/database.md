@@ -56,6 +56,10 @@ does not issue periodic queries to keep idle pools active. This allows Knex to
 close all idle connections after the configured idle timeout and reopen them on
 demand.
 
+Set `backend.database.keepalive: true` to restore the periodic per-plugin
+`SELECT 1` query if your database setup requires connections to remain active.
+It defaults to `false`.
+
 For example, you can limit each plugin pool to five connections and configure
 how long idle connections are retained:
 
