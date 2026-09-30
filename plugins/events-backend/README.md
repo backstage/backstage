@@ -129,17 +129,3 @@ export const eventsModuleYourFeature = createBackendModule({
 We have the following default parsers:
 
 - `application/json`
-
-## Event retention
-
-The PostgreSQL event bus keeps the most recent 10,000 events, retains events for
-at least 10 minutes, and removes events older than one day regardless of count.
-Cleanup runs as a global scheduled task every 10 minutes and deletes up to 1,000
-eligible events per transaction, continuing immediately while full batches are
-deleted. Locked events are skipped and can be removed by a later run.
-
-Each cleanup statement has a 20-second database timeout. A run stops starting
-new batches after 12 minutes or when cancelled, within the scheduled task's
-15-minute timeout. A backlog can therefore take multiple runs to clear.
-Stale subscriptions are cleaned up once after the event batches, unless the run
-has been cancelled or exhausted its work budget.
