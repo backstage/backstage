@@ -47,6 +47,20 @@ function exit(message: string, code: number = 1): never {
   process.exit(code);
 }
 
+/**
+ * Waits for any output queued on stdout and stderr to be handed off to the OS.
+ * Depending on the platform and stream type (e.g. pipes on macOS), these writes
+ * can be asynchronous, so exiting immediately after a large write can truncate
+ * the output.
+ */
+async function flushStdio(): Promise<void> {
+  await Promise.all(
+    [process.stdout, process.stderr].map(
+      stream => new Promise<void>(resolve => stream.write('', () => resolve())),
+    ),
+  );
+}
+
 function exitWithError(error: unknown): never {
   if (!isError(error)) {
     return exit(stringifyError(error));
@@ -174,6 +188,7 @@ async function runCommandLevel(options: {
               commandArgs,
               programName,
             );
+            await flushStdio();
             process.exit(0);
           }
         } catch (error: unknown) {
