@@ -44,17 +44,13 @@ export interface RouterOptions {
   auth: AuthService;
 }
 
-function readWebSocketToken(
+function readWebSocketProtocols(
   header: string | string[] | undefined,
-): string | undefined {
-  const value = Array.isArray(header) ? header[0] : header;
-  if (!value) {
-    return undefined;
-  }
-  // Sec-WebSocket-Protocol may list multiple protocols; the Backstage token is
-  // expected to be the first (and typically only) value.
-  const token = value.split(',')[0]?.trim();
-  return token || undefined;
+): string[] {
+  return (Array.isArray(header) ? header : [header])
+    .flatMap(value => value?.split(',') ?? [])
+    .map(value => value.trim())
+    .filter(Boolean);
 }
 
 function rejectUpgrade(
@@ -91,10 +87,13 @@ export async function createRouter(
   const manager = SignalManager.create(options);
   let subscribedToUpgradeRequests = false;
   let apiUrl: string | undefined = undefined;
+  const authenticatedProtocols = new WeakMap<IncomingMessage, string>();
 
   const webSocketServer = new WebSocketServer({
     noServer: true, // handle upgrade manually
     clientTracking: false, // handle connections in SignalManager
+    handleProtocols: (_, request) =>
+      authenticatedProtocols.get(request) ?? false,
   });
 
   webSocketServer.on('error', (error: Error) => {
@@ -116,8 +115,10 @@ export async function createRouter(
 
     // Authentication token is passed in Sec-WebSocket-Protocol header as there
     // is no other way to pass the token with plain websockets
-    const token = readWebSocketToken(request.headers['sec-websocket-protocol']);
-    if (!token) {
+    const protocols = readWebSocketProtocols(
+      request.headers['sec-websocket-protocol'],
+    );
+    if (protocols.length === 0) {
       rejectUpgrade(socket, 'HTTP/1.1 401 Unauthorized', logger, {
         remoteAddress: request.socket?.remoteAddress,
         reason: 'missing_token',
@@ -125,32 +126,38 @@ export async function createRouter(
       return;
     }
 
-    let userIdentity: BackstageUserInfo;
-    try {
-      const credentials = await auth.authenticate(token);
-      if (!auth.isPrincipal(credentials, 'user')) {
-        rejectUpgrade(socket, 'HTTP/1.1 401 Unauthorized', logger, {
+    let userIdentity: BackstageUserInfo | undefined;
+    let authenticatedProtocol: string | undefined;
+    let rejectionReason = 'invalid_token';
+    for (const protocol of protocols) {
+      try {
+        const credentials = await auth.authenticate(protocol);
+        if (auth.isPrincipal(credentials, 'user')) {
+          userIdentity = await userInfo.getUserInfo(credentials);
+          authenticatedProtocol = protocol;
+          break;
+        }
+        rejectionReason = 'non_user_principal';
+      } catch (e) {
+        logger.debug('WebSocket authentication failed', {
           remoteAddress: request.socket?.remoteAddress,
-          reason: 'non_user_principal',
+          reason: 'invalid_token',
+          errorName: e instanceof Error ? e.name : undefined,
+          errorMessage: e instanceof Error ? e.message : String(e),
         });
-        return;
       }
-      userIdentity = await userInfo.getUserInfo(credentials);
-    } catch (e) {
-      logger.debug('WebSocket authentication failed', {
-        remoteAddress: request.socket?.remoteAddress,
-        reason: 'invalid_token',
-        errorName: e instanceof Error ? e.name : undefined,
-        errorMessage: e instanceof Error ? e.message : String(e),
-      });
+    }
+
+    if (!userIdentity || !authenticatedProtocol) {
       rejectUpgrade(socket, 'HTTP/1.1 401 Unauthorized', logger, {
         remoteAddress: request.socket?.remoteAddress,
-        reason: 'invalid_token',
+        reason: rejectionReason,
       });
       return;
     }
 
     try {
+      authenticatedProtocols.set(request, authenticatedProtocol);
       webSocketServer.handleUpgrade(
         request,
         socket,

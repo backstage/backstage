@@ -163,8 +163,30 @@ describe('createRouter', () => {
       );
       expect(result.ws).toBeDefined();
       expect(result.ws?.readyState).toEqual(WebSocket.OPEN);
+      expect(result.ws?.protocol).toEqual(mockCredentials.user.token());
       expect(userInfo.getUserInfo).toHaveBeenCalled();
       result.ws?.close();
+    });
+
+    it('finds a user token among multiple protocols', async () => {
+      const result = await connectWebSocket(server, [
+        'other-protocol',
+        mockCredentials.service.token(),
+        mockCredentials.user.token(),
+      ]);
+
+      expect(result.ws).toBeDefined();
+      expect(result.ws?.readyState).toEqual(WebSocket.OPEN);
+      expect(result.ws?.protocol).toEqual(mockCredentials.user.token());
+      expect(userInfo.getUserInfo).toHaveBeenCalled();
+      result.ws?.close();
+
+      const rejected = await connectWebSocket(server, [
+        'other-protocol',
+        mockCredentials.service.token(),
+      ]);
+      expect(rejected.statusCode).toEqual(401);
+      expect(rejected.ws).toBeUndefined();
     });
   });
 });
@@ -184,7 +206,7 @@ describe('handleUpgrade', () => {
       discovery: mockServices.discovery.mock({
         getBaseUrl: async () => '/api/signals',
       }),
-      userInfo: mockServices.userInfo.mock(),
+      userInfo: mockServices.userInfo(),
       config: mockServices.rootConfig(),
       lifecycle: mockServices.lifecycle.mock(),
       instanceMetadata: mockServices.rootInstanceMetadata.mock(),
