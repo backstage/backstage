@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import fs from 'fs-extra';
-import yaml from 'js-yaml';
+import * as yaml from 'js-yaml';
 import path from 'node:path';
 import { ParsedLocationAnnotation } from '../../helpers';
 import {

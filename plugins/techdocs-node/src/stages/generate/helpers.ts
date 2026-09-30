@@ -21,7 +21,14 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { SpawnOptionsWithoutStdio, spawn } from 'node:child_process';
 import fs from 'fs-extra';
 import gitUrlParse from 'git-url-parse';
-import yaml, { DEFAULT_SCHEMA, Type } from 'js-yaml';
+import * as yaml from 'js-yaml';
+import {
+  defineMappingTag,
+  defineScalarTag,
+  defineSequenceTag,
+  mapTag,
+  YAML11_SCHEMA,
+} from 'js-yaml';
 import path, { resolve as resolvePath } from 'node:path';
 import { PassThrough, Writable } from 'node:stream';
 import { ParsedLocationAnnotation } from '../../helpers';
@@ -174,32 +181,42 @@ export class UnknownTag {
   }
 }
 
-export const MKDOCS_SCHEMA = DEFAULT_SCHEMA.extend([
-  new Type('', {
-    kind: 'scalar',
-    multi: true,
-    representName: o => (o as UnknownTag).type,
-    represent: o => (o as UnknownTag).data ?? '',
-    instanceOf: UnknownTag,
-    construct: (data: string, type?: string) => new UnknownTag(data, type),
+/** Preserve YAML merge keys and MkDocs-specific tags while inspecting config. */
+export const MKDOCS_SCHEMA = YAML11_SCHEMA.withTags(
+  defineScalarTag('', {
+    matchByTagPrefix: true,
+    resolve: (data, _isExplicit, tagName) => new UnknownTag(data, tagName),
+    identify: data =>
+      data instanceof UnknownTag && typeof data.data === 'string',
+    represent: data => data.data,
+    representTagName: data => data.type,
   }),
-  new Type('tag:', {
-    kind: 'mapping',
-    multi: true,
-    representName: o => (o as UnknownTag).type,
-    represent: o => (o as UnknownTag).data ?? '',
-    instanceOf: UnknownTag,
-    construct: (data: string, type?: string) => new UnknownTag(data, type),
+  defineSequenceTag<UnknownTag>('', {
+    matchByTagPrefix: true,
+    create: tagName => new UnknownTag([], tagName),
+    addItem: (carrier, item) => {
+      carrier.data.push(item);
+    },
+    identify: data => data instanceof UnknownTag && Array.isArray(data.data),
+    represent: data => data.data,
+    representTagName: data => data.type,
   }),
-  new Type('', {
-    kind: 'sequence',
-    multi: true,
-    representName: o => (o as UnknownTag).type,
-    represent: o => (o as UnknownTag).data ?? '',
-    instanceOf: UnknownTag,
-    construct: (data: string, type?: string) => new UnknownTag(data, type),
+  defineMappingTag<UnknownTag>('', {
+    matchByTagPrefix: true,
+    create: tagName => new UnknownTag({}, tagName),
+    addPair: (carrier, key, value) => mapTag.addPair(carrier.data, key, value),
+    has: (carrier, key) => mapTag.has(carrier.data, key),
+    keys: result => mapTag.keys(result.data),
+    get: (result, key) => mapTag.get(result.data, key),
+    identify: data =>
+      data instanceof UnknownTag &&
+      typeof data.data === 'object' &&
+      data.data !== null &&
+      !Array.isArray(data.data),
+    represent: data => new Map(Object.entries(data.data)),
+    representTagName: data => data.type,
   }),
-]);
+);
 
 /**
  * Generates a mkdocs.yml configuration file
