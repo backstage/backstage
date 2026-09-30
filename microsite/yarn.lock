@@ -5834,7 +5834,7 @@ __metadata:
     docusaurus-plugin-sass: "npm:^0.2.6"
     docusaurus-pushfeedback: "npm:^1.0.9"
     docusaurus-theme-openapi-docs: "npm:^5.0.0"
-    js-yaml: "npm:^4.3.2"
+    js-yaml: "npm:^5.0.0"
     luxon: "npm:^3.7.2"
     prettier: "npm:^2.6.2"
     prism-react-renderer: "npm:^2.4.1"
@@ -9773,7 +9773,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:^4.1.0, js-yaml@npm:^4.3.2":
+"js-yaml@npm:^4.1.0":
   version: 4.3.2
   resolution: "js-yaml@npm:4.3.2"
   dependencies:
@@ -9784,14 +9784,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:^5.2.2":
-  version: 5.2.3
-  resolution: "js-yaml@npm:5.2.3"
+"js-yaml@npm:^5.0.0, js-yaml@npm:^5.2.2":
+  version: 5.4.2
+  resolution: "js-yaml@npm:5.4.2"
   dependencies:
     argparse: "npm:^2.0.1"
   bin:
     js-yaml: bin/js-yaml.mjs
-  checksum: 10/5d2562f2d7e7bc51bd678b43d2dbc3965129ac854222c794157369c8904d249cfc78325dff8fc64becb505a2506242548c54c8fa50cdb24554bb1a557e460004
+  checksum: 10/f2461abd1d6268fb226733f0a0e0aa48004bb824116e3dfa75f1a1279001936343b672066dfecdb852ac3ca883452706c383a760aa90430cb68ba395aa2cbc84
   languageName: node
   linkType: hard
 
