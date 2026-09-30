@@ -107,6 +107,9 @@ describe.each(databases.eachSupportedId())(
       const { events: events1 } = await store.readSubscription('tester-1');
       expect(events1.length).toBe(10);
 
+      await db('event_bus_events').update({
+        created_at: new Date(Date.now() - 1000),
+      });
       await store.clean();
 
       await expect(store.readSubscription('tester-2')).rejects.toThrow(
@@ -187,6 +190,76 @@ describe.each(databases.eachSupportedId())(
       ]);
     });
 
+    it('deletes a backlog in bounded transactions', async () => {
+      const db = await databases.init(databaseId);
+      const store = await DatabaseEventBusStore.forTest({ logger, db });
+
+      await db.raw(`
+        INSERT INTO event_bus_events (id, created_by, topic, data_json)
+        SELECT id, 'abc', 'test', '{}'
+        FROM generate_series(1, 2505) AS id
+      `);
+
+      const deletedPerStatement: number[] = [];
+      const onResponse = (response: unknown, query: { sql: string }) => {
+        if (!/delete from "?event_bus_events"?/i.test(query.sql)) {
+          return;
+        }
+        if (typeof response === 'number') {
+          deletedPerStatement.push(response);
+        } else if (
+          response &&
+          typeof response === 'object' &&
+          'rowCount' in response &&
+          typeof response.rowCount === 'number'
+        ) {
+          deletedPerStatement.push(response.rowCount);
+        }
+      };
+
+      db.on('query-response', onResponse);
+      try {
+        await store.clean();
+      } finally {
+        db.off('query-response', onResponse);
+      }
+
+      expect(deletedPerStatement.length).toBeGreaterThanOrEqual(3);
+      expect(Math.max(...deletedPerStatement)).toBeLessThanOrEqual(1000);
+      await expect(db('event_bus_events').count()).resolves.toEqual([
+        { count: '5' },
+      ]);
+    });
+
+    it('reads multiple topics in event order without duplicates', async () => {
+      const db = await databases.init(databaseId);
+      const store = await DatabaseEventBusStore.forTest({ logger, db });
+
+      await db('event_bus_events').insert(
+        Array.from({ length: 15 }, (_, index) => ({
+          id: index + 1,
+          created_by: 'abc',
+          topic: ['first', 'second', 'ignored'][index % 3],
+          data_json: JSON.stringify({ payload: { id: index + 1 } }),
+          notified_subscribers: index === 7 ? ['tester'] : [],
+        })),
+      );
+      await db('event_bus_subscriptions').insert({
+        id: 'tester',
+        created_by: 'abc',
+        read_until: 0,
+        topics: ['first', 'second', 'first'],
+      });
+
+      const { events } = await store.readSubscription('tester');
+      expect(
+        events.map(event => (event.eventPayload as { id: number }).id),
+      ).toEqual([1, 2, 4, 5, 7, 10, 11, 13, 14]);
+      await expect(store.readSubscription('tester')).resolves.toEqual({
+        events: [],
+      });
+    });
+
     it('should perform well when looking up events by topic', async () => {
       const db = await databases.init(databaseId);
       const store = await DatabaseEventBusStore.forTest({
@@ -230,6 +303,40 @@ describe.each(databases.eachSupportedId())(
       ]);
 
       expect(duration).toBeLessThan(20);
+
+      await db('event_bus_subscriptions')
+        .where({ id: 'tester' })
+        .update({ read_until: 99000 });
+
+      let readQuery: { sql: string; bindings: (string | number)[] } | undefined;
+      const onQuery = (query: {
+        sql: string;
+        bindings: (string | number)[];
+      }) => {
+        if (query.sql.includes('WITH subscription AS')) {
+          readQuery = query;
+        }
+      };
+      db.on('query', onQuery);
+      let tailEvents;
+      try {
+        ({ events: tailEvents } = await store.readSubscription('tester'));
+      } finally {
+        db.off('query', onQuery);
+      }
+
+      expect(
+        tailEvents.map(event => (event.eventPayload as { id: string }).id),
+      ).toEqual(Array.from({ length: 10 }, (_, i) => String(99005 + i * 10)));
+
+      expect(readQuery).toBeDefined();
+      const { rows } = await db.raw(
+        `EXPLAIN (FORMAT JSON) ${readQuery!.sql.replace(/\$\d+/g, '?')}`,
+        readQuery!.bindings,
+      );
+      expect(JSON.stringify(rows[0]['QUERY PLAN'])).toContain(
+        'event_bus_events_topic_id_idx',
+      );
     });
   },
 );
