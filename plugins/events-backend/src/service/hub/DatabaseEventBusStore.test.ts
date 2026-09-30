@@ -29,6 +29,30 @@ const databases = TestDatabases.create({
   ids: ['POSTGRES_14', 'POSTGRES_18'],
 });
 
+const nonPostgresDatabases = TestDatabases.create({
+  ids: ['SQLITE_3', 'MYSQL_8'],
+});
+
+describe.each(nonPostgresDatabases.eachSupportedId())(
+  'DatabaseEventBusStore, %p',
+  databaseId => {
+    it('rejects a database engine that does not support the event bus SQL', async () => {
+      const db = await nonPostgresDatabases.init(databaseId);
+      const scheduler = mockServices.scheduler.mock();
+
+      await expect(
+        DatabaseEventBusStore.create({
+          database: mockServices.database.mock({ getClient: async () => db }),
+          logger,
+          scheduler,
+          lifecycle: mockServices.lifecycle.mock(),
+        }),
+      ).rejects.toThrow('DatabaseEventBusStore only supports PostgreSQL');
+      expect(scheduler.scheduleTask).not.toHaveBeenCalled();
+    });
+  },
+);
+
 describe.each(databases.eachSupportedId())(
   'DatabaseEventBusStore, %p',
   databaseId => {
