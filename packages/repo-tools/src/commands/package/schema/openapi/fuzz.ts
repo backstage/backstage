@@ -19,7 +19,7 @@ import chalk from 'chalk';
 import { spawn } from '../../../../lib/exec';
 import { getPathToCurrentOpenApiSpec } from '../../../../lib/openapi/helpers';
 import { ConfigSources } from '@backstage/config-loader';
-import * as YAML from 'js-yaml';
+import { loadYaml } from '../../../../lib/yaml';
 import { join } from 'node:path';
 import { OptionValues } from 'commander';
 import { sync as existsSync } from 'command-exists';
@@ -36,7 +36,7 @@ async function fuzz(opts: OptionValues) {
     process.exit(1);
   }
 
-  const openapiSpec = YAML.load(
+  const openapiSpec = loadYaml(
     await fs.readFile(resolvedOpenapiPath, 'utf8'),
   ) as { info: { title: string } };
   const configSource = ConfigSources.default({
