@@ -661,11 +661,11 @@ export class DatabaseEventBusStore implements EventBusStore {
     let ageDone = false;
     let countDone = false;
     let countCutoff: string | undefined;
+    let failed = false;
 
     // Finish one bounded event batch and one bounded subscriber batch before
     // checking cancellation or the run budget, so neither can starve the other.
-    while (!signal?.aborted && Date.now() < stopAt) {
-      let failed = false;
+    while (!failed && !signal?.aborted && Date.now() < stopAt) {
       let subscriberDeleted = 0;
 
       try {
@@ -713,9 +713,6 @@ export class DatabaseEventBusStore implements EventBusStore {
         failed = true;
       }
 
-      if (failed) {
-        break;
-      }
       if (ageDone && countDone && subscriberDeleted < CLEANUP_BATCH_SIZE) {
         break;
       }
