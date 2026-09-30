@@ -42,10 +42,12 @@ async function migrateUntilBefore(knex: Knex, target: string): Promise<void> {
 jest.setTimeout(60_000);
 
 const databases = TestDatabases.create({
-  ids: ['POSTGRES_9', 'POSTGRES_14', 'POSTGRES_16'],
+  ids: ['POSTGRES_14', 'POSTGRES_18'],
 });
 
-const sqliteDatabases = TestDatabases.create({ ids: ['SQLITE_3'] });
+const nonPostgresDatabases = TestDatabases.create({
+  ids: ['SQLITE_3', 'MYSQL_8'],
+});
 
 it('runs the event index migration outside a transaction', () => {
   const migration = jest.requireActual<{
@@ -55,11 +57,11 @@ it('runs the event index migration outside a transaction', () => {
   expect(migration.config).toEqual({ transaction: false });
 });
 
-describe.each(sqliteDatabases.eachSupportedId())(
+describe.each(nonPostgresDatabases.eachSupportedId())(
   'migrations, %p',
   databaseId => {
     it('does not create PostgreSQL-only event tables or indexes', async () => {
-      const knex = await sqliteDatabases.init(databaseId);
+      const knex = await nonPostgresDatabases.init(databaseId);
       await knex.migrate.latest({ directory: migrationsDir });
 
       await expect(knex.schema.hasTable('event_bus_events')).resolves.toBe(
