@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { execFileSync } from 'node:child_process';
 import { createCliModule } from './createCliModule';
 import { runCli } from './runCli';
 
@@ -79,36 +78,53 @@ describe('runCli', () => {
     expect(process.exit).toHaveBeenCalledTimes(1);
   });
 
-  it('preserves large JSON output when stdout is piped', () => {
-    const script = `
-      require('@backstage/cli-node/config/nodeTransform.cjs');
-      const { createCliModule, runCli } = require('@backstage/cli-node');
-      const module = createCliModule({
-        packageJson: { name: '@example/output' },
-        init(reg) {
-          reg.addCommand({
-            path: ['emit'],
-            description: 'Emit a large JSON response',
-            execute: async () => {
-              process.stdout.write(JSON.stringify({
-                items: [{ definition: 'x'.repeat(98_000) }],
-              }));
-            },
-          });
-        },
-      });
-      process.argv = [process.execPath, 'fixture', 'emit'];
-      runCli({ modules: [module], name: 'example-cli' });
-    `;
+  it('waits for stdout to flush before exiting', async () => {
+    process.argv = ['node', 'cli', 'emit'];
 
-    const output = execFileSync(process.execPath, ['-e', script], {
-      cwd: process.cwd(),
-      encoding: 'utf8',
-      maxBuffer: 1024 * 1024,
+    let notifyFlushStarted: () => void;
+    const flushStarted = new Promise<void>(resolve => {
+      notifyFlushStarted = resolve;
     });
-    const result = JSON.parse(output) as { items: { definition: string }[] };
+    let completeFlush: (() => void) | undefined;
+    jest
+      .spyOn(process.stdout, 'write')
+      .mockImplementation((chunk, encodingOrCallback, callback) => {
+        if (chunk === '') {
+          completeFlush =
+            typeof encodingOrCallback === 'function'
+              ? encodingOrCallback
+              : callback;
+          notifyFlushStarted();
+        }
+        return true;
+      });
 
-    expect(result.items[0].definition).toHaveLength(98_000);
+    const module = createCliModule({
+      packageJson: { name: '@example/output' },
+      init: async reg => {
+        reg.addCommand({
+          path: ['emit'],
+          description: 'Emit a response',
+          execute: async () => {
+            process.stdout.write('output');
+          },
+        });
+      },
+    });
+
+    const running = runCli({ modules: [module], name: 'example-cli' });
+    expect(
+      await Promise.race([
+        flushStarted.then(() => 'flush started'),
+        running.then(() => 'command completed'),
+      ]),
+    ).toBe('flush started');
+    expect(process.exit).not.toHaveBeenCalled();
+
+    expect(completeFlush).toBeDefined();
+    completeFlush?.();
+    await running;
+    expect(process.exit).toHaveBeenCalledWith(0);
   });
 
   it('forwards help flags to leaf commands', async () => {
