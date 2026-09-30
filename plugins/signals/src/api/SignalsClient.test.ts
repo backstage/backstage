@@ -120,6 +120,114 @@ describe('SignalClient', () => {
     );
   });
 
+  it('shares a pending connection and subscribes to the current channels', async () => {
+    let resolveCredentials!: (credentials: { token: string }) => void;
+    const credentials = new Promise<{ token: string }>(resolve => {
+      resolveCredentials = resolve;
+    });
+    const delayedIdentity = {
+      ...identity,
+      getCredentials: jest.fn(() => credentials),
+    };
+    const client = SignalClient.create({
+      discoveryApi,
+      identity: delayedIdentity,
+    });
+
+    const first = client.subscribe('first', jest.fn());
+    const duplicate = client.subscribe('first', jest.fn());
+    const second = client.subscribe('second', jest.fn());
+    const removed = client.subscribe('removed', jest.fn());
+    removed.unsubscribe();
+
+    await waitForExpect(() =>
+      expect(delayedIdentity.getCredentials).toHaveBeenCalledTimes(1),
+    );
+    resolveCredentials({ token: '12345' });
+    await server.connected;
+    await waitForExpect(() =>
+      expect(server).toHaveReceivedMessages([
+        { action: 'subscribe', channel: 'first' },
+        { action: 'subscribe', channel: 'second' },
+      ]),
+    );
+    expect(server.server.clients()).toHaveLength(1);
+
+    first.unsubscribe();
+    expect(server.messages).toHaveLength(2);
+    duplicate.unsubscribe();
+    second.unsubscribe();
+  });
+
+  it('does not open a connection after all subscriptions are removed', async () => {
+    let resolveBaseUrl!: (url: string) => void;
+    const baseUrl = new Promise<string>(resolve => {
+      resolveBaseUrl = resolve;
+    });
+    const getBaseUrl = jest.fn(() => baseUrl);
+    const client = SignalClient.create({
+      discoveryApi: { getBaseUrl },
+      identity,
+      reconnectTimeout: 10,
+    });
+    const subscription = client.subscribe('channel', jest.fn());
+    await waitForExpect(() => expect(getBaseUrl).toHaveBeenCalledTimes(1));
+
+    subscription.unsubscribe();
+    resolveBaseUrl('http://localhost:1234/api/signals');
+    await new Promise(resolve => setTimeout(resolve, 30));
+    expect(server.server.clients()).toHaveLength(0);
+    expect(getBaseUrl).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not connect or retry without a token', async () => {
+    const noTokenIdentity = {
+      ...identity,
+      getCredentials: jest.fn(async () => ({})),
+    };
+    const getBaseUrl = jest.fn().mockRejectedValue(new Error('Unavailable'));
+    const client = SignalClient.create({
+      discoveryApi: { getBaseUrl },
+      identity: noTokenIdentity,
+      reconnectTimeout: 10,
+    });
+    const subscription = client.subscribe('channel', jest.fn());
+
+    await waitForExpect(() =>
+      expect(noTokenIdentity.getCredentials).toHaveBeenCalledTimes(1),
+    );
+    await new Promise(resolve => setTimeout(resolve, 30));
+    expect(server.server.clients()).toHaveLength(0);
+    expect(getBaseUrl).not.toHaveBeenCalled();
+    expect(noTokenIdentity.getCredentials).toHaveBeenCalledTimes(1);
+    subscription.unsubscribe();
+  });
+
+  it('stops reconnecting when credentials no longer contain a token', async () => {
+    const getCredentials = jest
+      .fn()
+      .mockResolvedValueOnce({ token: '12345' })
+      .mockResolvedValue({});
+    const client = SignalClient.create({
+      discoveryApi,
+      identity: { ...identity, getCredentials },
+      reconnectTimeout: 10,
+    });
+    const subscription = client.subscribe('channel', jest.fn());
+    await server.connected;
+    await expect(server).toReceiveMessage({
+      action: 'subscribe',
+      channel: 'channel',
+    });
+
+    server.close({ code: 4000, reason: 'Token expired', wasClean: false });
+    await waitForExpect(() => expect(getCredentials).toHaveBeenCalledTimes(2));
+    await new Promise(resolve => setTimeout(resolve, 30));
+    expect(getCredentials).toHaveBeenCalledTimes(2);
+    expect(server.server.clients()).toHaveLength(0);
+    subscription.unsubscribe();
+  });
+
   it('should reconnect on error', async () => {
     const messageMock = jest.fn();
     const client = SignalClient.create({
