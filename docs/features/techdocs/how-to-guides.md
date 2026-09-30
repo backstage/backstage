@@ -916,48 +916,16 @@ The route that returns the catalog entity behind a documentation site requires *
 
 ### Enable permissions
 
-The flag requires the permission framework, and the backend refuses to start if it is enabled without it:
+Enable and configure the permission framework first, as described in the
+[permissions documentation](../../permissions/writing-a-policy.md). The backend
+refuses to start if the TechDocs flag is enabled without it:
 
 ```yaml
-permission:
-  enabled: true
-
 techdocs:
   experimentalTechdocsPermissions: true
 ```
 
 The flag is experimental and defaults to `false` so that existing deployments are unaffected. It gives you time to upgrade your packages and update your permission policy before switching over. Once adoption is widespread this behavior will become the default, at which point the flag will be removed.
-
-### Write a permission policy
-
-Create or update your permission policy to handle the `techdocs.entity.read` permission. Here's an example that restricts TechDocs access:
-
-```typescript
-import { techDocsEntityReadPermission } from '@backstage/plugin-techdocs-common';
-import {
-  PolicyDecision,
-  AuthorizeResult,
-} from '@backstage/plugin-permission-common';
-import {
-  PermissionPolicy,
-  PolicyQuery,
-} from '@backstage/plugin-permission-node';
-
-class MyPermissionPolicy implements PermissionPolicy {
-  async handle(request: PolicyQuery): Promise<PolicyDecision> {
-    if (request.permission.name === techDocsEntityReadPermission.name) {
-      // Your authorization logic here. Return a plain ALLOW or DENY, or a
-      // CONDITIONAL decision to restrict access based on entity properties
-      // (see the owner-based example below).
-      return { result: AuthorizeResult.DENY };
-    }
-
-    return { result: AuthorizeResult.ALLOW };
-  }
-}
-```
-
-Since `techdocs.entity.read` uses the `catalog-entity` resource type, you can reuse existing catalog permission rules and conditions in your policy.
 
 ### Restrict only specific documentation
 
@@ -1045,23 +1013,7 @@ Both permissions use the `catalog-entity` resource type and documents are
 filtered at query time, so there is no need to rebuild the search index when you
 switch the flag.
 
-### Using the RBAC plugin
+### Performance
 
-If you manage permissions with the community RBAC plugin instead of a custom
-policy, add `techdocs` to the list of plugins it evaluates so that the
-`techdocs.entity.read` permission is discovered:
-
-```yaml title="app-config.yaml"
-permission:
-  enabled: true
-  rbac:
-    pluginsWithPermission:
-      - catalog
-      - techdocs
-```
-
-Because `techdocs.entity.read` uses the `catalog-entity` resource type, the same
-catalog conditions (such as owner or annotation rules) are available when
-building RBAC conditional policies for TechDocs.
-
-For more details on writing permission policies, see the [permission documentation](../../permissions/writing-a-policy.md).
+Entity lookups are cached, but permission decisions are not, so every
+documentation asset request is authorized individually.
