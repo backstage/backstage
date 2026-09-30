@@ -126,6 +126,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
     registerMswTestHooks(worker);
 
     beforeEach(async () => {
+      jest.clearAllMocks();
       factory = DefaultTechDocsCollatorFactory.fromConfig(config, options);
       collator = await factory.getCollator();
 

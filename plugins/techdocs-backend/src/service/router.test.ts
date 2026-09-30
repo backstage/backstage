@@ -185,10 +185,13 @@ describe('createRouter', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
   });
 
   beforeEach(async () => {
+    defaultPermissionsMock.authorize.mockResolvedValue([
+      { result: AuthorizeResult.ALLOW },
+    ]);
     publisher.docsRouter.mockReturnValue(() => {});
     discovery.getBaseUrl.mockImplementation(async type => {
       return `http://backstage.local/api/${type}`;
@@ -754,6 +757,31 @@ data: {"updated":true}
   });
 
   describe('techdocs.experimentalTechdocsPermissions', () => {
+    it('should deny access for any result other than ALLOW', async () => {
+      const permissions = mockServices.permissions.mock({
+        // Not reachable through the typed authorize() contract, but the check
+        // must stay fail-closed rather than allowing unrecognized results.
+        authorize: jest
+          .fn()
+          .mockResolvedValue([{ result: AuthorizeResult.CONDITIONAL }]),
+      });
+
+      const app = await createApp({
+        ...outOfTheBoxOptions,
+        permissions,
+        config: techDocsPermissionsConfig,
+      });
+
+      MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
+
+      const response = await request(app)
+        .get('/metadata/techdocs/default/Component/test')
+        .send();
+
+      expect(response.status).toBe(403);
+      expect(publisher.fetchTechDocsMetadata).not.toHaveBeenCalled();
+    });
+
     it('should not authorize techdocs.entity.read while the flag is off', async () => {
       const permissions = mockServices.permissions.mock({
         authorize: jest
@@ -788,6 +816,49 @@ data: {"updated":true}
         mockCredentials.user(),
         expect.objectContaining({ name: 'test' }),
       );
+    });
+
+    it('should serve documentation on catalog access alone while the flag is off', async () => {
+      const docsRouter = jest.fn((_req, res) => res.sendStatus(200));
+      publisher.docsRouter.mockReturnValue(docsRouter);
+
+      const permissions = mockServices.permissions.mock({
+        authorize: jest
+          .fn()
+          .mockResolvedValue([{ result: AuthorizeResult.DENY }]),
+      });
+
+      const app = await createApp({
+        ...outOfTheBoxOptions,
+        permissions,
+        config: new ConfigReader({ permission: { enabled: true } }),
+      });
+
+      MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
+
+      const response = await request(app)
+        .get('/static/docs/default/component/test/index.html')
+        .send();
+
+      expect(response.status).toBe(200);
+      expect(permissions.authorize).not.toHaveBeenCalled();
+      expect(MockCachedEntityLoader.prototype.load).toHaveBeenCalledWith(
+        mockCredentials.user(),
+        expect.objectContaining({ name: 'test' }),
+      );
+
+      // Without the permission framework the entity check is skipped entirely,
+      // as it was before the flag existed.
+      const defaultApp = await createApp({
+        ...outOfTheBoxOptions,
+        permissions,
+      });
+
+      expect(
+        (await request(defaultApp).get('/static/docs/default/component/test'))
+          .status,
+      ).toBe(200);
+      expect(permissions.authorize).not.toHaveBeenCalled();
     });
 
     it('should make techdocs.entity.read the only gate while the flag is on', async () => {
