@@ -140,7 +140,10 @@ export async function discoverActionUis(
         );
       }
       const component = ui.getProperty('component');
-      if (!component || !Node.isPropertyAssignment(component)) {
+      if (!component) {
+        continue;
+      }
+      if (!Node.isPropertyAssignment(component)) {
         throw new Error(
           `${sourceFile.getFilePath()}:${ui.getStartLineNumber()} action UI must declare component as a property assignment`,
         );

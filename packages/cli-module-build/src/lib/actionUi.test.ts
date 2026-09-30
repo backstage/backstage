@@ -58,6 +58,30 @@ describe('actionUi', () => {
     ]);
   });
 
+  it('ignores action UI metadata without a component', async () => {
+    mockDir.setContent({
+      package: {
+        'package.json': JSON.stringify({
+          name: 'example-backend',
+          backstage: { role: 'backend-plugin' },
+        }),
+        src: {
+          'action.ts': `
+            export const action = {
+              name: 'refresh-example',
+              action: async () => ({ output: {} }),
+              ui: { visibility: ['app'] },
+            };
+          `,
+        },
+      },
+    });
+
+    await expect(
+      discoverActionUis(mockDir.resolve('package')),
+    ).resolves.toEqual([]);
+  });
+
   it('rejects component loaders that cannot be statically bundled', async () => {
     mockDir.setContent({
       package: {
