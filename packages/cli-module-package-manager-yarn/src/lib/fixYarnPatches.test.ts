@@ -496,9 +496,13 @@ describe('fixYarnPatches', () => {
     );
     await fs.writeFile(
       mockDir.resolve('.yarn/releases/test-yarn.cjs'),
-      `require('node:fs').writeFileSync('yarn.lock', ${JSON.stringify(
-        repository({ target: true })['yarn.lock'],
-      )});`,
+      `if (process.argv.includes('--version')) {
+  process.stdout.write('4.0.0');
+} else {
+  require('node:fs').writeFileSync('yarn.lock', ${JSON.stringify(
+    repository({ target: true })['yarn.lock'],
+  )});
+}`,
     );
 
     await expect(
@@ -507,6 +511,63 @@ describe('fixYarnPatches', () => {
         fetch: fetchRelease,
       }),
     ).resolves.toMatchObject({ status: 'fixed' });
+  });
+
+  it('rejects Yarn 2 before changing project files', async () => {
+    mockDir.setContent(repository());
+    const originalManifest = await fs.readFile(
+      mockDir.resolve('package.json'),
+      'utf8',
+    );
+    const originalLockfile = await fs.readFile(
+      mockDir.resolve('yarn.lock'),
+      'utf8',
+    );
+    await fs.mkdir(mockDir.resolve('.yarn/releases'));
+    await fs.writeFile(
+      mockDir.resolve('.yarnrc.yml'),
+      'yarnPath: .yarn/releases/test-yarn.cjs\n',
+    );
+    await fs.writeFile(
+      mockDir.resolve('.yarn/releases/test-yarn.cjs'),
+      `if (process.argv.includes('--version')) {
+  if (require('node:fs').readFileSync('package.json', 'utf8') !== ${JSON.stringify(
+    originalManifest,
+  )}) {
+    require('node:fs').writeFileSync('version-saw-change', '');
+  }
+  process.stdout.write('2.4.3');
+} else {
+  require('node:fs').writeFileSync('install-ran', '');
+  require('node:fs').writeFileSync('yarn.lock', ${JSON.stringify(
+    repository({ target: true })['yarn.lock'],
+  )});
+}`,
+    );
+
+    await expect(
+      fixYarnPatches({
+        rootDir: mockDir.path,
+        fetch: fetchRelease,
+      }),
+    ).resolves.toMatchObject({
+      status: 'not-fixable',
+      message: expect.stringContaining('Yarn 3 or later'),
+    });
+    await expect(fs.stat(mockDir.resolve('install-ran'))).rejects.toMatchObject(
+      {
+        code: 'ENOENT',
+      },
+    );
+    await expect(
+      fs.stat(mockDir.resolve('version-saw-change')),
+    ).rejects.toMatchObject({ code: 'ENOENT' });
+    await expect(
+      fs.readFile(mockDir.resolve('package.json'), 'utf8'),
+    ).resolves.toBe(originalManifest);
+    await expect(
+      fs.readFile(mockDir.resolve('yarn.lock'), 'utf8'),
+    ).resolves.toBe(originalLockfile);
   });
 
   it('restores project files when Yarn is terminated by a signal', async () => {
@@ -526,7 +587,11 @@ describe('fixYarnPatches', () => {
     );
     await fs.writeFile(
       mockDir.resolve('.yarn/releases/test-yarn.cjs'),
-      "process.kill(process.pid, 'SIGTERM');",
+      `if (process.argv.includes('--version')) {
+  process.stdout.write('4.0.0');
+} else {
+  process.kill(process.pid, 'SIGTERM');
+}`,
     );
 
     await expect(
