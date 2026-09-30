@@ -155,36 +155,124 @@ describe.each(databases.eachSupportedId())(
       expect(events1.length).toBe(10);
     });
 
-    it('should clean up a large number of events', async () => {
+    it('should drain expired events in bounded transactions and skip locked rows', async () => {
       const db = await databases.init(databaseId);
-      const store = await DatabaseEventBusStore.forTest({
-        logger,
-        db,
-      });
-
-      const COUNT = '100000';
+      const store = await DatabaseEventBusStore.forTest({ logger, db });
 
       await db.raw(`
-        INSERT INTO event_bus_events (id, created_by, topic, data_json)
-        SELECT id, 'abc', 'test', '{}'
-        FROM generate_series(1, ${COUNT}) AS id
+        INSERT INTO event_bus_events (id, created_by, topic, data_json, created_at)
+        SELECT id, 'abc', 'test', '{}', now() - interval '1 day'
+        FROM generate_series(1, 2505) AS id
       `);
+      const locked = await db.transaction();
+      await locked('event_bus_events').where({ id: 1 }).forUpdate();
 
-      await expect(db('event_bus_events').count()).resolves.toEqual([
-        { count: COUNT },
-      ]);
-
-      const start = Date.now();
+      const batches: number[] = [];
+      const onResponse = (
+        response: { rowCount?: number },
+        query: { sql: string },
+      ) => {
+        if (query.sql.includes('WITH count_cutoff')) {
+          batches.push(response.rowCount!);
+        }
+      };
+      db.on('query-response', onResponse);
+      try {
+        await store.clean();
+        expect(batches).toEqual([1000, 1000, 504]);
+        expect(await db('event_bus_events').pluck('id')).toEqual(['1']);
+      } finally {
+        db.removeListener('query-response', onResponse);
+        await locked.rollback();
+      }
 
       await store.clean();
-
-      // Local testing shows this takes about 80ms, but CI containers can
-      // be significantly slower under load.
-      expect(Date.now() - start).toBeLessThan(2000);
-
-      await expect(db('event_bus_events').count()).resolves.toEqual([
-        { count: '5' },
+      expect(await db('event_bus_events')).toEqual([]);
+      expect((await db.raw('SHOW statement_timeout')).rows).toEqual([
+        { statement_timeout: '0' },
       ]);
+    });
+
+    it.each(['abort', 'budget'] as const)(
+      'should stop between batches on %s and resume on the next run',
+      async reason => {
+        const db = await databases.init(databaseId);
+        const store = await DatabaseEventBusStore.forTest({ logger, db });
+        await db.raw(`
+          INSERT INTO event_bus_events (id, created_by, topic, data_json, created_at)
+          SELECT id, 'abc', 'test', '{}', now() - interval '1 day'
+          FROM generate_series(1, 2505) AS id
+        `);
+        await store.upsertSubscription(
+          'tester',
+          ['test'],
+          mockCredentials.service(),
+        );
+        await db('event_bus_subscriptions').update({
+          read_until: 0,
+          updated_at: new Date(0),
+        });
+
+        const controller = new AbortController();
+        const now = Date.now();
+        const clock = jest.spyOn(Date, 'now').mockReturnValue(now);
+        const onResponse = (_response: unknown, query: { sql: string }) => {
+          if (query.sql.includes('WITH count_cutoff')) {
+            if (reason === 'abort') {
+              controller.abort();
+            } else {
+              clock.mockReturnValue(now + 12 * 60_000);
+            }
+          }
+        };
+        db.on('query-response', onResponse);
+        try {
+          await store.clean(controller.signal);
+          expect(await db('event_bus_events').count()).toEqual([
+            { count: '1505' },
+          ]);
+          expect(await db('event_bus_subscriptions').pluck('id')).toEqual([
+            'tester',
+          ]);
+        } finally {
+          db.removeListener('query-response', onResponse);
+          clock.mockRestore();
+        }
+
+        await store.clean();
+        expect(await db('event_bus_events')).toEqual([]);
+        expect(await db('event_bus_subscriptions')).toEqual([]);
+      },
+    );
+
+    it('should schedule global cleanup and honor an already aborted signal', async () => {
+      const db = await databases.init(databaseId);
+      const scheduler = mockServices.scheduler.mock();
+      await DatabaseEventBusStore.create({
+        database: mockServices.database.mock({ getClient: async () => db }),
+        logger,
+        scheduler,
+        lifecycle: mockServices.lifecycle.mock(),
+      });
+      const [task] = scheduler.scheduleTask.mock.calls[0];
+      expect(task).toMatchObject({
+        scope: 'global',
+        frequency: { minutes: 10 },
+        timeout: { minutes: 15 },
+      });
+      const controller = new AbortController();
+      controller.abort();
+      const queries = jest.fn();
+      db.on('query', queries);
+      try {
+        if (typeof task.fn !== 'function') {
+          throw new Error('Expected a task function');
+        }
+        await task.fn(controller.signal);
+        expect(queries).not.toHaveBeenCalled();
+      } finally {
+        db.removeListener('query', queries);
+      }
     });
 
     it('should perform well when looking up events by topic', async () => {

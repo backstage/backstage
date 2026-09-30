@@ -33,6 +33,8 @@ const WINDOW_MIN_AGE_DEFAULT = { minutes: 10 };
 const WINDOW_MAX_AGE_DEFAULT = { days: 1 };
 
 const MAX_BATCH_SIZE = 10;
+const CLEANUP_BATCH_SIZE = 1_000;
+const CLEANUP_RUN_DURATION_MS = 12 * 60_000;
 const LISTENER_CONNECTION_TIMEOUT_MS = 60_000;
 const KEEPALIVE_INTERVAL_MS = 60_000;
 
@@ -311,10 +313,11 @@ export class DatabaseEventBusStore implements EventBusStore {
 
     await options.scheduler.scheduleTask({
       id: 'event-bus-cleanup',
-      frequency: { seconds: 10 },
-      timeout: { minutes: 1 },
+      scope: 'global',
+      frequency: { minutes: 10 },
+      timeout: { minutes: 15 },
       initialDelay: { seconds: 10 },
-      fn: () => store.#cleanup(),
+      fn: signal => store.#cleanup(signal),
     });
 
     options.lifecycle.addShutdownHook(async () => {
@@ -347,7 +350,9 @@ export class DatabaseEventBusStore implements EventBusStore {
       maxAge,
     );
 
-    return Object.assign(store, { clean: () => store.#cleanup() });
+    return Object.assign(store, {
+      clean: (signal?: AbortSignal) => store.#cleanup(signal),
+    });
   }
 
   readonly #db: Knex;
@@ -561,56 +566,76 @@ export class DatabaseEventBusStore implements EventBusStore {
     );
   }
 
-  async #cleanup() {
+  async #cleanup(signal?: AbortSignal) {
+    const stopAt = Date.now() + CLEANUP_RUN_DURATION_MS;
+    let eventCount = 0;
     try {
-      const eventCount = await this.#db(TABLE_EVENTS)
-        .delete()
-        // Delete any events that are outside both the min age and size window
-        .orWhere(inner =>
-          inner
-            .whereIn(
-              'id',
-              this.#db
-                .select('id')
-                .from(TABLE_EVENTS)
-                .orderBy('id', 'desc')
-                .offset(this.#windowMaxCount),
+      while (!signal?.aborted && Date.now() < stopAt) {
+        const deletedCount = await this.#db.transaction(async trx => {
+          await trx.raw("SET LOCAL statement_timeout = '20s'");
+          // Materialize the batch IDs as an array so that PostgreSQL can use
+          // the primary-key index for the DELETE as well as candidate selection.
+          const result = await trx.raw<{ rowCount: number }>(
+            `
+            WITH count_cutoff AS (
+              SELECT id FROM event_bus_events
+              ORDER BY id DESC OFFSET :maxCount LIMIT 1
+            ), candidates AS (
+              SELECT id FROM event_bus_events
+              WHERE created_at < :maxAge
+                OR (id <= (SELECT id FROM count_cutoff) AND created_at < :minAge)
+              ORDER BY id LIMIT :batchSize FOR UPDATE SKIP LOCKED
             )
-            .andWhere(
-              'created_at',
-              '<',
-              new Date(Date.now() - this.#windowMinAge),
-            ),
-        )
-        // If events are outside the max age they will always be deleted
-        .orWhere('created_at', '<', new Date(Date.now() - this.#windowMaxAge));
-
-      if (eventCount > 0) {
-        this.#logger.info(
-          `Event cleanup resulted in ${eventCount} old events being deleted`,
-        );
+            DELETE FROM event_bus_events
+            WHERE id = ANY (ARRAY(SELECT id FROM candidates))
+            `,
+            {
+              maxCount: this.#windowMaxCount,
+              maxAge: new Date(Date.now() - this.#windowMaxAge),
+              minAge: new Date(Date.now() - this.#windowMinAge),
+              batchSize: CLEANUP_BATCH_SIZE,
+            },
+          );
+          return result.rowCount;
+        });
+        eventCount += deletedCount;
+        if (deletedCount < CLEANUP_BATCH_SIZE) {
+          break;
+        }
       }
     } catch (error) {
       this.#logger.error('Event cleanup failed', error);
     }
 
-    try {
-      // Delete any subscribers that aren't keeping up with current events
-      const [{ min: minId }] = await this.#db(TABLE_EVENTS).min('id');
+    if (eventCount > 0) {
+      this.#logger.info(
+        `Event cleanup resulted in ${eventCount} old events being deleted`,
+      );
+    }
+    if (signal?.aborted || Date.now() >= stopAt) {
+      return;
+    }
 
-      let subscriberCount;
-      if (minId === null) {
-        // No events left, remove all subscribers. This can happen if no events
-        // are published within the max age window.
-        subscriberCount = await this.#db(TABLE_SUBSCRIPTIONS)
-          .where('updated_at', '<', new Date(Date.now() - this.#windowMaxAge))
-          .delete();
-      } else {
-        subscriberCount = await this.#db(TABLE_SUBSCRIPTIONS)
-          .delete()
-          // Read pointer points to the ID that has been read, so we need an additional offset
-          .where('read_until', '<', minId - 1);
-      }
+    try {
+      const subscriberCount = await this.#db.transaction(async trx => {
+        await trx.raw("SET LOCAL statement_timeout = '20s'");
+        // Delete any subscribers that aren't keeping up with current events
+        const [{ min: minId }] = await trx(TABLE_EVENTS).min('id');
+
+        if (minId === null) {
+          // No events left, remove subscribers that haven't been updated within
+          // the max age window.
+          return trx(TABLE_SUBSCRIPTIONS)
+            .where('updated_at', '<', new Date(Date.now() - this.#windowMaxAge))
+            .delete<number>();
+        }
+        return (
+          trx(TABLE_SUBSCRIPTIONS)
+            // Read pointer points to the ID that has been read, so we need an additional offset
+            .where('read_until', '<', minId - 1)
+            .delete<number>()
+        );
+      });
 
       if (subscriberCount > 0) {
         this.#logger.info(
