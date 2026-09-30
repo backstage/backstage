@@ -35,7 +35,6 @@ import { techdocsTranslationRef } from '../../../translation';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    gridArea: 'pageSubheader',
     flexDirection: 'column',
     minHeight: 'auto',
     padding: theme.spacing(3, 3, 0),

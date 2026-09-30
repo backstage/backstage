@@ -13,14 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createElement, ComponentType } from 'react';
-
 import { TechDocsAddonOptions } from './types';
-import {
-  attachComponentData,
-  getComponentData,
-} from '@backstage/core-plugin-api';
-import { getDataKeyByName, TECHDOCS_ADDONS_KEY } from './addons';
 import {
   createExtensionBlueprint,
   createExtensionDataRef,
@@ -28,6 +21,12 @@ import {
 
 /** @alpha */
 export type { TechDocsAddonOptions, TechDocsAddonLocations } from './types';
+
+/** @alpha */
+export {
+  LegacyTechDocsAddonsFallbackProvider,
+  TechDocsAddonsProvider,
+} from './addons';
 
 const techDocsAddonDataRef =
   createExtensionDataRef<TechDocsAddonOptions>().with({
@@ -47,25 +46,3 @@ export const AddonBlueprint = createExtensionBlueprint({
     addon: techDocsAddonDataRef,
   },
 });
-
-/** @alpha */
-export const attachTechDocsAddonComponentData = <P>(
-  techDocsAddon: ComponentType<P>,
-  data: TechDocsAddonOptions,
-) => {
-  const element = createElement(techDocsAddon as ComponentType);
-
-  const isDataAttached = getComponentData<TechDocsAddonOptions>(
-    element,
-    TECHDOCS_ADDONS_KEY,
-  );
-  if (!isDataAttached) {
-    attachComponentData(techDocsAddon, TECHDOCS_ADDONS_KEY, data);
-  }
-
-  const dataKey = getDataKeyByName(data.name);
-  const isDataKeyAttached = getComponentData<boolean>(element, dataKey);
-  if (!isDataKeyAttached) {
-    attachComponentData(techDocsAddon, dataKey, true);
-  }
-};

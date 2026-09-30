@@ -7,6 +7,8 @@ import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { PropsWithChildren } from 'react';
 
 // @alpha
 export const AddonBlueprint: ExtensionBlueprint<{
@@ -25,11 +27,10 @@ export const AddonBlueprint: ExtensionBlueprint<{
   };
 }>;
 
-// @alpha (undocumented)
-export const attachTechDocsAddonComponentData: <P>(
-  techDocsAddon: ComponentType<P>,
-  data: TechDocsAddonOptions,
-) => void;
+// @alpha
+export const LegacyTechDocsAddonsFallbackProvider: (
+  input: PropsWithChildren,
+) => JSX_2.Element;
 
 // @public
 export const TechDocsAddonLocations: Readonly<{
@@ -47,6 +48,13 @@ export type TechDocsAddonOptions<TAddonProps = {}> = {
   location: keyof typeof TechDocsAddonLocations;
   component: ComponentType<TAddonProps>;
 };
+
+// @alpha
+export const TechDocsAddonsProvider: (
+  props: PropsWithChildren<{
+    options: TechDocsAddonOptions[];
+  }>,
+) => JSX_2.Element;
 
 // (No @packageDocumentation comment for this package)
 ```

@@ -17,12 +17,15 @@
 import { RuleOptions } from './types';
 
 const TECHDOCS_SIDEBAR_WIDTH = '16rem';
-const APP_SIDEBAR_WIDTH_PINNED = '224px';
-const APP_SIDEBAR_WIDTH_COLLAPSED = '72px';
 
-export default ({ theme, sidebar }: RuleOptions) => `
+export default ({ theme }: RuleOptions) => `
 
 /*==================  Layout  ==================*/
+
+/* Let sticky reader elements use the host page viewport as their scrollport. */
+html {
+  overflow: visible;
+}
 
 /* mkdocs material v9 compat */
 .md-nav__title {
@@ -76,68 +79,92 @@ export default ({ theme, sidebar }: RuleOptions) => `
 }
 
 .md-main__inner {
+  display: grid;
+  grid-template-columns: minmax(0, ${TECHDOCS_SIDEBAR_WIDTH}) minmax(0, 1fr) minmax(0, ${TECHDOCS_SIDEBAR_WIDTH});
+  align-items: start;
+  column-gap: var(--bui-space-6, 24px);
   margin-top: 0;
 }
 
 .md-sidebar {
-  bottom: 75px;
-  position: fixed;
-  width: ${TECHDOCS_SIDEBAR_WIDTH};
+  align-self: start;
+  width: 100%;
+  height: auto;
+  overflow-x: hidden;
+}
+.md-sidebar--primary {
+  grid-column: 1;
+  grid-row: 1;
 }
 .md-sidebar .md-sidebar__scrollwrap {
-  width: calc(${TECHDOCS_SIDEBAR_WIDTH});
-  height: 100%
+  width: 100%;
+  overflow-y: visible;
 }
-
-@supports selector(::-webkit-scrollbar) {
-  [dir=ltr] .md-sidebar__inner {
-      padding-right: calc(100% - 15.1rem);
+@media screen and (min-width: 76.1875em) {
+  .md-sidebar {
+    position: sticky;
+    top: var(--bui-space-3, 12px);
+    max-height: calc(100dvh - var(--bui-space-6, 24px));
+    overflow-y: auto;
+    /* Keep short MkDocs navigation within the sidebar's intrinsic scroll box. */
+    padding-bottom: var(--bui-space-3, 12px) !important;
+  }
+  .md-sidebar--primary .md-nav--primary > .md-nav__title {
+    position: static;
   }
 }
 .md-sidebar--secondary {
-  right: ${theme.spacing(3)}px;
+  grid-column: 3;
+  grid-row: 1;
+  right: auto;
 }
 
 .md-content {
-  max-width: calc(100% - ${TECHDOCS_SIDEBAR_WIDTH} * 2);
-  margin-left: ${TECHDOCS_SIDEBAR_WIDTH};
-  margin-bottom: 50px;
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  max-width: none;
+  margin-left: 0;
+  margin-bottom: calc(var(--techdocs-footer-height, 75px) + var(--bui-space-4, 16px));
 }
 
-.md-content > .md-sidebar {
-  left: ${TECHDOCS_SIDEBAR_WIDTH};
-}
-
+/*
+ * The footer is moved to the final full-width grid row. Its natural position
+ * is below the document content, allowing the sticky bottom constraint to
+ * keep it at the viewport bottom while the grid bounds it at the document end.
+ */
 .md-footer {
-  position: fixed;
-  bottom: 0px;
+  grid-column: 1 / -1;
+  grid-row: 2;
+  align-self: end;
+  position: sticky;
+  bottom: 0;
+  height: var(--techdocs-footer-height, 75px);
+  width: 100%;
+  padding-left: 0;
+  z-index: 1;
   pointer-events: none;
 }
 
 .md-footer-nav__link, .md-footer__link {
   pointer-events: all;
+  width: ${TECHDOCS_SIDEBAR_WIDTH};
 }
 
 .md-footer__title {
   background-color: unset;
-}
-.md-footer-nav__link, .md-footer__link {
-  width: ${TECHDOCS_SIDEBAR_WIDTH};
 }
 
 .md-dialog {
   background-color: unset;
 }
 
-@media screen and (min-width: 76.25em) {
-  .md-sidebar {
-    height: auto;
-    /* Less padding before the Previous / Next buttons */
-    padding-bottom: 0 !important;
-  }
-}
-
 @media screen and (max-width: 76.1875em) {
+  .md-main__inner {
+    display: block;
+    min-height: 0;
+  }
+
   .md-nav {
     transition: none !important;
     background-color: var(--md-default-bg-color)
@@ -183,29 +210,30 @@ export default ({ theme, sidebar }: RuleOptions) => `
     display: none;
   }
 
-  .md-sidebar {
-    height: 100%;
-  }
   .md-sidebar--primary {
+    position: fixed;
+    top: var(--bui-header-height, 0px);
+    bottom: 0;
     width: ${TECHDOCS_SIDEBAR_WIDTH} !important;
+    height: auto;
+    max-height: calc(100dvh - var(--bui-header-height, 0px));
+    overflow-y: auto;
+    padding-bottom: 0 !important;
     z-index: 200;
-    left: ${
-      sidebar.isPinned
-        ? `calc(-${TECHDOCS_SIDEBAR_WIDTH} + var(--techdocs-sidebar-closed-offset-pinned, ${APP_SIDEBAR_WIDTH_PINNED}))`
-        : `calc(-${TECHDOCS_SIDEBAR_WIDTH} + var(--techdocs-sidebar-closed-offset-collapsed, ${APP_SIDEBAR_WIDTH_COLLAPSED}))`
-    } !important;
+    left: -${TECHDOCS_SIDEBAR_WIDTH} !important;
   }
   .md-sidebar--secondary:not([hidden]) {
     display: none;
   }
 
   [data-md-toggle=drawer]:checked~.md-container .md-sidebar--primary {
-    transform: translateX(var(--techdocs-sidebar-open-translate, ${TECHDOCS_SIDEBAR_WIDTH}));
+    transform: translateX(${TECHDOCS_SIDEBAR_WIDTH});
   }
 
   .md-content {
     max-width: 100%;
     margin-left: 0;
+    margin-bottom: 50px;
   }
 
   .md-header__button {
@@ -220,6 +248,7 @@ export default ({ theme, sidebar }: RuleOptions) => `
 
   .md-footer {
     position: static;
+    height: auto;
     padding-left: 0;
   }
   .md-footer-nav__link {
@@ -228,15 +257,16 @@ export default ({ theme, sidebar }: RuleOptions) => `
   }
 }
 
-@media screen and (max-width: 600px) {
-  .md-sidebar--primary {
-    left: -${TECHDOCS_SIDEBAR_WIDTH} !important;
-    width: ${TECHDOCS_SIDEBAR_WIDTH};
-  }
-}
-
-
 @media print {
+  .md-main__inner {
+    display: block;
+  }
+
+  .md-footer {
+    position: static;
+    height: auto;
+  }
+
   .md-sidebar,
   #toggle-sidebar {
     display: none;

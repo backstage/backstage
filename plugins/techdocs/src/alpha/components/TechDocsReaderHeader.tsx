@@ -23,6 +23,7 @@ import { useTechDocsReaderHeaderData } from '../../hooks/useTechDocsReaderHeader
 
 export type TechDocsReaderHeaderProps = {
   withSearch?: boolean;
+  searchResultUrlMapper?: (url: string) => string;
 };
 
 export const TechDocsReaderHeader = (props: TechDocsReaderHeaderProps) => {
@@ -48,7 +49,12 @@ export const TechDocsReaderHeader = (props: TechDocsReaderHeaderProps) => {
         title={title || ''}
         customActions={
           <>
-            {withSearch && <TechDocsReaderSearch entityId={entityRef} />}
+            {withSearch && (
+              <TechDocsReaderSearch
+                entityId={entityRef}
+                searchResultUrlMapper={props.searchResultUrlMapper}
+              />
+            )}
             {showSourceLink && (
               <ButtonLink
                 href={sourceLink!}

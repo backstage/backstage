@@ -21,20 +21,37 @@ import { TechDocsReaderPageSubheader } from '../../reader/components/TechDocsRea
 import { TechDocsReaderContent } from './TechDocsReaderContent';
 
 export type TechDocsReaderLayoutProps = {
+  /** Show or hide the reader header, defaults to true. */
   withHeader?: boolean;
+  /** Show or hide the documentation search, defaults to true. */
   withSearch?: boolean;
   withFeedbackLink?: boolean;
+  /** The documentation path to navigate to on the initial render. */
+  defaultPath?: string;
+  /** Maps documentation search result URLs before navigating to them. */
+  searchResultUrlMapper?: (url: string) => string;
 };
 
 export const TechDocsReaderLayout = (props: TechDocsReaderLayoutProps) => {
-  const { withSearch, withHeader = true, withFeedbackLink } = props;
+  const { withSearch = true, withHeader = true, withFeedbackLink } = props;
   return (
     <>
-      {withHeader && <TechDocsReaderHeader withSearch={withSearch} />}
+      {withHeader && (
+        <TechDocsReaderHeader
+          withSearch={withSearch}
+          searchResultUrlMapper={props.searchResultUrlMapper}
+        />
+      )}
       <Container mt="6">
-        <TechDocsReaderEntityCard withSearch={!withHeader && withSearch} />
+        <TechDocsReaderEntityCard
+          withSearch={!withHeader && withSearch}
+          searchResultUrlMapper={props.searchResultUrlMapper}
+        />
         <TechDocsReaderPageSubheader />
-        <TechDocsReaderContent withFeedbackLink={withFeedbackLink} />
+        <TechDocsReaderContent
+          defaultPath={props.defaultPath}
+          withFeedbackLink={withFeedbackLink}
+        />
       </Container>
     </>
   );

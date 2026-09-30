@@ -29,8 +29,20 @@ export const scrollIntoNavigation = (): Transformer => {
           }
         });
 
-        const lastItem = activeNavItems[activeNavItems.length - 1];
-        lastItem.scrollIntoView();
+        const lastItem = activeNavItems[
+          activeNavItems.length - 1
+        ] as HTMLElement;
+        const sidebar = lastItem.closest<HTMLElement>('.md-sidebar');
+        if (sidebar) {
+          const itemRect = lastItem.getBoundingClientRect();
+          const sidebarRect = sidebar.getBoundingClientRect();
+
+          if (itemRect.top < sidebarRect.top) {
+            sidebar.scrollTop += itemRect.top - sidebarRect.top;
+          } else if (itemRect.bottom > sidebarRect.bottom) {
+            sidebar.scrollTop += itemRect.bottom - sidebarRect.bottom;
+          }
+        }
       }
     }, 200);
     return dom;

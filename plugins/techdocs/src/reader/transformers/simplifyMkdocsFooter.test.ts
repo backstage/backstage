@@ -53,4 +53,20 @@ describe('simplifyMkdocsFooter', () => {
 
     expect(shadowDom.querySelector('.md-footer-copyright')).toBeFalsy();
   });
+
+  it('moves the footer to the end of the reader grid', async () => {
+    const shadowDom = await createTestShadowDom(
+      FIXTURES.FIXTURE_STANDARD_PAGE,
+      {
+        preTransformers: [simplifyMkdocsFooter()],
+        postTransformers: [],
+      },
+    );
+
+    const readerGrid = shadowDom.querySelector('.md-main__inner');
+    const footer = shadowDom.querySelector('.md-footer');
+
+    expect(footer?.parentElement).toBe(readerGrid);
+    expect(readerGrid?.lastElementChild).toBe(footer);
+  });
 });

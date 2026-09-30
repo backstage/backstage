@@ -14,35 +14,11 @@
  * limitations under the License.
  */
 
-import { ReactElement, Suspense } from 'react';
-import {
-  TechDocsAddons,
-  type TechDocsAddonOptions,
-} from '@backstage/plugin-techdocs-react';
-import { attachTechDocsAddonComponentData } from '@backstage/plugin-techdocs-react/alpha';
+import { ReactElement } from 'react';
+import { type TechDocsAddonOptions } from '@backstage/plugin-techdocs-react';
+import { TechDocsAddonsProvider } from '@backstage/plugin-techdocs-react/alpha';
 import { EmbeddedDocsRouter, TechDocsReaderRouter } from '../../Router';
 import { TechDocsReaderLayout } from './TechDocsReaderLayout';
-
-// Deliberately a function call rather than a component. Addons are discovered
-// by walking the router outlet as an element tree: the walk only follows
-// `props.children` and never invokes a component, and this is also the only
-// place the addon component data is attached. A component wrapper breaks both,
-// because its children are built by a render that the walk never performs.
-function renderAddons(addonOptions: TechDocsAddonOptions[]) {
-  return (
-    <TechDocsAddons>
-      {addonOptions.map(options => {
-        const Addon = options.component;
-        attachTechDocsAddonComponentData(Addon, options);
-        return (
-          <Suspense key={options.name} fallback={null}>
-            <Addon />
-          </Suspense>
-        );
-      })}
-    </TechDocsAddons>
-  );
-}
 
 export function TechDocsReaderPage(props: {
   addonOptions: TechDocsAddonOptions[];
@@ -51,14 +27,15 @@ export function TechDocsReaderPage(props: {
   withFeedbackLink: boolean;
 }) {
   return (
-    <TechDocsReaderRouter>
-      <TechDocsReaderLayout
-        withSearch={props.withSearch}
-        withHeader={props.withHeader}
-        withFeedbackLink={props.withFeedbackLink}
-      />
-      {renderAddons(props.addonOptions)}
-    </TechDocsReaderRouter>
+    <TechDocsAddonsProvider options={props.addonOptions}>
+      <TechDocsReaderRouter>
+        <TechDocsReaderLayout
+          withSearch={props.withSearch}
+          withHeader={props.withHeader}
+          withFeedbackLink={props.withFeedbackLink}
+        />
+      </TechDocsReaderRouter>
+    </TechDocsAddonsProvider>
   );
 }
 
@@ -68,11 +45,11 @@ export function TechDocsEntityContent(props: {
   withFeedbackLink: boolean;
 }) {
   return (
-    <EmbeddedDocsRouter
-      emptyState={props.emptyState}
-      withFeedbackLink={props.withFeedbackLink}
-    >
-      {renderAddons(props.addonOptions)}
-    </EmbeddedDocsRouter>
+    <TechDocsAddonsProvider options={props.addonOptions}>
+      <EmbeddedDocsRouter
+        emptyState={props.emptyState}
+        withFeedbackLink={props.withFeedbackLink}
+      />
+    </TechDocsAddonsProvider>
   );
 }

@@ -296,58 +296,64 @@ const AppRoutes = () => {
 ## How to customize the TechDocs reader page?
 
 Similar to how it is possible to customize the TechDocs Home, it is also
-possible to customize the TechDocs Reader Page. It is done in your `app`
-package. By default, you might see something like this in your `App.tsx`:
+possible to customize the TechDocs Reader Page in your `app` package. A basic
+route looks like this:
 
 ```tsx
 const AppRoutes = () => {
-  <Route path="/docs/:namespace/:kind/:name/*" element={<TechDocsReaderPage />}>
-    {techDocsPage}
-  </Route>;
+  <Route
+    path="/docs/:namespace/:kind/:name/*"
+    element={<TechDocsReaderPage />}
+  />;
 };
 ```
 
-The `techDocsPage` is a default techdocs reader page which lives in
-`packages/app/src/components/techdocs`. It includes the following without you
-having to set anything up.
+By default, `TechDocsReaderPage` renders the wrapper-free
+`TechDocsReaderLayout`. The host application owns the outer page and its chrome.
+If you need a legacy Material UI page or other custom wrapper, provide it
+explicitly as a child:
 
 ```tsx
-<Page themeId="documentation">
-  <TechDocsReaderPageHeader />
-  <TechDocsReaderPageSubheader />
-  <TechDocsReaderPageContent />
-</Page>
+<TechDocsReaderPage>
+  <Page themeId="documentation">
+    <TechDocsReaderPageHeader />
+    <TechDocsReaderPageSubheader />
+    <TechDocsReaderPageContent />
+  </Page>
+</TechDocsReaderPage>
 ```
 
-If you would like to compose your own `techDocsPage`, you can do so by replacing
-the children of TechDocsPage with something else. Maybe you are _just_
-interested in replacing the Header:
+You can replace that child with any reader composition. For example, to replace
+the header:
 
 ```tsx
-<Page themeId="documentation">
-  <Header type="documentation" title="Custom Header" />
-  <TechDocsReaderPageContent />
-</Page>
+<TechDocsReaderPage>
+  <Page themeId="documentation">
+    <Header type="documentation" title="Custom Header" />
+    <TechDocsReaderPageContent />
+  </Page>
+</TechDocsReaderPage>
 ```
 
-Or maybe you want to disable the in-context search
+To disable in-context search while retaining the default layout:
 
 ```tsx
-<Page themeId="documentation">
-  <Header type="documentation" title="Custom Header" />
-  <TechDocsReaderPageContent withSearch={false} />
-</Page>
+<TechDocsReaderPage>
+  <TechDocsReaderLayout withSearch={false} />
+</TechDocsReaderPage>
 ```
 
-Or maybe you want to replace the entire TechDocs Page.
+Or replace the entire reader contents:
 
 ```tsx
-<Page themeId="documentation">
-  <Header type="documentation" title="Custom Header" />
-  <Content data-testid="techdocs-content">
-    <p>my own content</p>
-  </Content>
-</Page>
+<TechDocsReaderPage>
+  <Page themeId="documentation">
+    <Header type="documentation" title="Custom Header" />
+    <Content data-testid="techdocs-content">
+      <p>my own content</p>
+    </Content>
+  </Page>
+</TechDocsReaderPage>
 ```
 
 ## How to migrate from TechDocs Alpha to Beta

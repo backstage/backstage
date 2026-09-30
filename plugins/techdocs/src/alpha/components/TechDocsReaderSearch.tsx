@@ -28,6 +28,7 @@ import { useTechDocsSearch } from '../../hooks/useTechDocsSearch';
 
 type TechDocsReaderSearchBarProps = {
   entityId: CompoundEntityRef;
+  searchResultUrlMapper?: (url: string) => string;
 };
 
 const TechDocsReaderSearchBar = (props: TechDocsReaderSearchBarProps) => {
@@ -54,7 +55,10 @@ const TechDocsReaderSearchBar = (props: TechDocsReaderSearchBarProps) => {
           textValue={result.document.title}
           onAction={() => {
             setTerm('');
-            navigate(result.document.location);
+            navigate(
+              props.searchResultUrlMapper?.(result.document.location) ??
+                result.document.location,
+            );
             requestAnimationFrame(() => {
               (document.activeElement as HTMLElement)?.blur();
             });
@@ -103,6 +107,7 @@ const TechDocsReaderSearchBar = (props: TechDocsReaderSearchBarProps) => {
 
 export type TechDocsReaderSearchProps = {
   entityId: CompoundEntityRef;
+  searchResultUrlMapper?: (url: string) => string;
 };
 
 export const TechDocsReaderSearch = (props: TechDocsReaderSearchProps) => {

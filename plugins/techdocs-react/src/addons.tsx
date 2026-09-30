@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import { PropsWithChildren, ComponentType, useCallback } from 'react';
+import {
+  ComponentType,
+  createContext,
+  PropsWithChildren,
+  Suspense,
+  useCallback,
+  useContext,
+  useMemo,
+} from 'react';
 import { useOutlet } from 'react-router-dom';
 
 import {
@@ -116,11 +124,23 @@ const getAllTechDocsAddonsData = (collection: ElementCollection) => {
     });
 };
 
-/**
- * hook to use addons in components
- * @public
- */
-export const useTechDocsAddons = () => {
+type TechDocsAddonsContextValue = {
+  renderComponentByName: (name: string) => JSX.Element | null;
+  renderComponentsByLocation: (
+    location: keyof typeof TechDocsAddonLocations,
+  ) => (JSX.Element | null)[] | null;
+};
+
+const TechDocsAddonsContext = createContext<
+  TechDocsAddonsContextValue | undefined
+>(undefined);
+
+const defaultTechDocsAddonsContextValue: TechDocsAddonsContextValue = {
+  renderComponentByName: () => null,
+  renderComponentsByLocation: () => null,
+};
+
+const useLegacyTechDocsAddons = (): TechDocsAddonsContextValue => {
   const node = useOutlet();
   const collection = useElementFilter(node, getAllTechDocsAddons);
   const options = useElementFilter(node, getAllTechDocsAddonsData);
@@ -150,5 +170,97 @@ export const useTechDocsAddons = () => {
     [options, findAddonByData],
   );
 
-  return { renderComponentByName, renderComponentsByLocation };
+  return useMemo(
+    () => ({ renderComponentByName, renderComponentsByLocation }),
+    [renderComponentByName, renderComponentsByLocation],
+  );
+};
+
+const LegacyTechDocsAddonsProvider = ({ children }: PropsWithChildren) => {
+  const value = useLegacyTechDocsAddons();
+  return (
+    <TechDocsAddonsContext.Provider value={value}>
+      {children}
+    </TechDocsAddonsContext.Provider>
+  );
+};
+
+/**
+ * Provides structured TechDocs addon options to the reader.
+ *
+ * @alpha
+ */
+export const TechDocsAddonsProvider = (
+  props: PropsWithChildren<{ options: TechDocsAddonOptions[] }>,
+) => {
+  const { children, options } = props;
+
+  const renderAddon = useCallback((option: TechDocsAddonOptions) => {
+    const Addon = option.component;
+    return (
+      <Suspense key={option.name} fallback={null}>
+        <Addon />
+      </Suspense>
+    );
+  }, []);
+
+  const renderComponentByName = useCallback(
+    (name: string) => {
+      const option = options.find(addon => addon.name === name);
+      return option ? renderAddon(option) : null;
+    },
+    [options, renderAddon],
+  );
+
+  const renderComponentsByLocation = useCallback(
+    (location: keyof typeof TechDocsAddonLocations) => {
+      const matchingOptions = options.filter(
+        option => option.location === location,
+      );
+      return matchingOptions.length ? matchingOptions.map(renderAddon) : null;
+    },
+    [options, renderAddon],
+  );
+
+  const value = useMemo(
+    () => ({ renderComponentByName, renderComponentsByLocation }),
+    [renderComponentByName, renderComponentsByLocation],
+  );
+
+  return (
+    <TechDocsAddonsContext.Provider value={value}>
+      {children}
+    </TechDocsAddonsContext.Provider>
+  );
+};
+
+/**
+ * Provides addons from the legacy router element registry unless structured
+ * addon options have already been provided.
+ *
+ * @alpha
+ */
+export const LegacyTechDocsAddonsFallbackProvider = ({
+  children,
+}: PropsWithChildren) => {
+  const value = useContext(TechDocsAddonsContext);
+  if (value) {
+    return <>{children}</>;
+  }
+  return (
+    <LegacyTechDocsAddonsProvider>{children}</LegacyTechDocsAddonsProvider>
+  );
+};
+
+/**
+ * hook to use addons in components
+ * @public
+ */
+export const useTechDocsAddons = (): {
+  renderComponentByName: (name: string) => JSX.Element | null;
+  renderComponentsByLocation: (
+    location: keyof typeof TechDocsAddonLocations,
+  ) => (JSX.Element | null)[] | null;
+} => {
+  return useContext(TechDocsAddonsContext) ?? defaultTechDocsAddonsContextValue;
 };
