@@ -314,6 +314,7 @@ export class DatabaseEventBusStore implements EventBusStore {
 
     await options.scheduler.scheduleTask({
       id: 'event-bus-cleanup',
+      scope: 'global',
       frequency: { minutes: 1 },
       timeout: { minutes: 1 },
       initialDelay: { seconds: 10 },
@@ -350,7 +351,9 @@ export class DatabaseEventBusStore implements EventBusStore {
       maxAge,
     );
 
-    return Object.assign(store, { clean: () => store.#cleanup() });
+    return Object.assign(store, {
+      clean: (signal?: AbortSignal) => store.#cleanup(signal),
+    });
   }
 
   readonly #db: Knex;
