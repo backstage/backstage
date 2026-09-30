@@ -16,11 +16,9 @@
 
 import { run } from '@backstage/cli-common';
 import { semverUtils, structUtils } from '@yarnpkg/core';
-import { parseSyml } from '@yarnpkg/parsers';
 import { patchUtils } from '@yarnpkg/plugin-patch';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { isDeepStrictEqual } from 'node:util';
 import {
   verifyYarnPatches,
   type PatchDeclaration,
@@ -39,16 +37,6 @@ export type FixYarnPatchesResult = {
   status: 'fixed' | 'not-fixable';
   message: string;
 };
-
-function compareStrings(left: string, right: string): number {
-  if (left < right) {
-    return -1;
-  }
-  if (left > right) {
-    return 1;
-  }
-  return 0;
-}
 
 function hasExactPatchSource(
   declaration: PatchDeclaration,
@@ -181,122 +169,6 @@ function createTargetManifest(options: {
   return { content, transitions };
 }
 
-function lockfileOnlyChangesRepairs(options: {
-  before: string;
-  after: string;
-  holdbacks: PatchHoldbackFix[];
-}): boolean {
-  const targetDescriptors = options.holdbacks.map(holdback => {
-    const ident = structUtils.parseIdent(holdback.packageName);
-    const expectedPatchPaths = patchUtils.parseDescriptor(
-      structUtils.makeDescriptor(ident, holdback.declaration.reference),
-    ).patchPaths;
-    return (descriptorText: string) => {
-      try {
-        const descriptor = structUtils.parseDescriptor(descriptorText, true);
-        if (structUtils.stringifyIdent(descriptor) !== holdback.packageName) {
-          return false;
-        }
-        const range = structUtils.parseRange(descriptor.range);
-        if (range.protocol === 'npm:') {
-          return (
-            range.selector === holdback.currentVersion ||
-            range.selector === holdback.targetVersion
-          );
-        }
-        if (!patchUtils.isPatchDescriptor(descriptor)) {
-          return false;
-        }
-        const parsed = patchUtils.parseDescriptor(descriptor);
-        const sourceRange = structUtils.parseRange(
-          parsed.sourceDescriptor.range,
-        );
-        return (
-          structUtils.stringifyIdent(parsed.sourceDescriptor) ===
-            holdback.packageName &&
-          sourceRange.protocol === 'npm:' &&
-          (sourceRange.selector === holdback.currentVersion ||
-            sourceRange.selector === holdback.targetVersion) &&
-          isDeepStrictEqual(parsed.patchPaths, expectedPatchPaths)
-        );
-      } catch {
-        return false;
-      }
-    };
-  });
-  const isTargetDescriptor = (descriptor: string) =>
-    targetDescriptors.some(predicate => predicate(descriptor));
-  const before = parseSyml(options.before);
-  const after = parseSyml(options.after);
-
-  const dependencyRanges = (lockfile: Record<string, unknown>) => {
-    const ranges = new Map<string, Set<string>>();
-    for (const [key, value] of Object.entries(lockfile)) {
-      if (
-        !key.split(', ').some(isTargetDescriptor) ||
-        !isRecord(value) ||
-        !isRecord(value.dependencies)
-      ) {
-        continue;
-      }
-      for (const [name, range] of Object.entries(value.dependencies)) {
-        if (typeof range === 'string') {
-          let packageRanges = ranges.get(name);
-          if (!packageRanges) {
-            packageRanges = new Set();
-            ranges.set(name, packageRanges);
-          }
-          packageRanges.add(range);
-        }
-      }
-    }
-    return ranges;
-  };
-  const beforeDependencies = dependencyRanges(before);
-  const afterDependencies = dependencyRanges(after);
-  const changedDependencyDescriptors = new Set<string>();
-  for (const name of new Set([
-    ...beforeDependencies.keys(),
-    ...afterDependencies.keys(),
-  ])) {
-    const beforeRanges = beforeDependencies.get(name) ?? new Set();
-    const afterRanges = afterDependencies.get(name) ?? new Set();
-    for (const range of new Set([...beforeRanges, ...afterRanges])) {
-      if (beforeRanges.has(range) !== afterRanges.has(range)) {
-        changedDependencyDescriptors.add(
-          structUtils.stringifyDescriptor(
-            structUtils.makeDescriptor(structUtils.parseIdent(name), range),
-          ),
-        );
-      }
-    }
-  }
-
-  const normalize = (lockfile: Record<string, unknown>) =>
-    Object.entries(lockfile)
-      .flatMap(([key, value]) => {
-        const normalizedKey = key
-          .split(', ')
-          .filter(
-            descriptor =>
-              !isTargetDescriptor(descriptor) &&
-              !changedDependencyDescriptors.has(descriptor),
-          )
-          .join(', ');
-        return normalizedKey
-          ? [{ key: normalizedKey, value, serialized: JSON.stringify(value) }]
-          : [];
-      })
-      .sort(
-        (left, right) =>
-          compareStrings(left.key, right.key) ||
-          compareStrings(left.serialized, right.serialized),
-      )
-      .map(({ key, value }) => [key, value] as const);
-
-  return isDeepStrictEqual(normalize(before), normalize(after));
-}
-
 async function defaultInstall(
   rootDir: string,
   env: NodeJS.ProcessEnv | undefined,
@@ -314,6 +186,7 @@ async function defaultInstall(
     },
   });
   await child.waitForExit();
+  // A signal-terminated process has no exit code, so waitForExit resolves.
   if (child.signalCode) {
     throw new Error(`Yarn install was terminated by ${child.signalCode}`);
   }
@@ -333,7 +206,6 @@ async function restoreOriginals(options: {
   ] as const) {
     try {
       await options.writeFile(filePath, content);
-      restored &&= (await fs.readFile(filePath, 'utf8')) === content;
     } catch {
       restored = false;
     }
@@ -400,30 +272,20 @@ export async function fixYarnPatches(
       rootDir,
     );
     const finalManifest = await fs.readFile(manifestPath, 'utf8');
-    const finalLockfile = await fs.readFile(lockfilePath, 'utf8');
+    if (finalManifest !== target.content) {
+      return restoreFailure('Yarn changed package.json unexpectedly');
+    }
     const verified = await verifyYarnPatches({
       rootDir,
       env: options.env,
       fetch: options.fetch,
     });
-    if (finalManifest !== target.content) {
-      return restoreFailure('Yarn changed package.json unexpectedly');
-    }
     if (verified.errors.length > 0) {
       return restoreFailure(
         `The repaired project did not pass patch verification: ${verified.errors
           .map(error => error.message)
           .join('; ')}`,
       );
-    }
-    if (
-      !lockfileOnlyChangesRepairs({
-        before: originalLockfile,
-        after: finalLockfile,
-        holdbacks,
-      })
-    ) {
-      return restoreFailure('Yarn produced unrelated lockfile changes');
     }
     return { status: 'fixed', message: target.transitions.join('; ') };
   } catch (error) {

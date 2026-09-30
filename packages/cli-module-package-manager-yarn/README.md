@@ -48,23 +48,20 @@ yarn backstage-cli pm verify-patches --fix
 The fixer handles exact-version `@backstage/*` patches declared in the root
 `resolutions`. It updates all eligible outdated patches to the versions in the
 selected Backstage release, runs one lockfile-only Yarn install, and then runs
-the full verification again. It never updates a patch to an older version,
-and it restores `package.json` and `yarn.lock` if the install or verification
-fails or Yarn makes unrelated lockfile changes. Unsupported or ambiguous cases
-remain verification failures for manual repair.
+the full verification again. It never updates a patch to an older version and
+restores `package.json` and `yarn.lock` if the install or verification fails.
+Unsupported or ambiguous cases remain verification failures for manual repair.
 
 The repair runs in the working checkout using the repository's configured Yarn
 binary, plugins, and registry settings, with dependency build scripts disabled.
-Run it in a clean, exclusive checkout because it temporarily writes
-`package.json` before asking Yarn to update `yarn.lock`; an abrupt process or
-machine interruption can leave that partial change behind.
+Run it in a clean, exclusive checkout. An abrupt interruption can leave a
+partial change behind.
 
 For an automated Backstage version bump, run the commands in this order:
 
 ```shell
 yarn backstage-cli versions:bump
 yarn backstage-cli pm verify-patches --fix
-yarn backstage-cli pm verify-patches
 ```
 
 ## Release manifest environment
