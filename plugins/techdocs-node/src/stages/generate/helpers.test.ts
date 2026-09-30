@@ -342,8 +342,20 @@ describe('helpers', () => {
       expect(updatedMkdocsYml.toString()).toContain(
         'repo_url: https://github.com/backstage/backstage',
       );
-      expect(updatedMkdocsYml.toString()).toContain(
-        'emoji_index: !!python/name:materialx.emoji.twemoji',
+      const parsedYml = yaml.load(updatedMkdocsYml.toString(), {
+        schema: MKDOCS_SCHEMA,
+      }) as {
+        markdown_extensions: Array<{
+          'pymdownx.emoji': { emoji_index: UnknownTag };
+        }>;
+      };
+      expect(
+        parsedYml.markdown_extensions[0]['pymdownx.emoji'].emoji_index,
+      ).toEqual(
+        new UnknownTag(
+          '',
+          'tag:yaml.org,2002:python/name:materialx.emoji.twemoji',
+        ),
       );
       expect(updatedMkdocsYml.toString()).toContain(
         'slugify: !!python/object/apply:pymdownx.slugs.slugify',
