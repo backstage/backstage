@@ -1,5 +1,13 @@
 # @backstage/cli-module-auth
 
+## 0.1.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.5-next.0
+  - @backstage/errors@1.3.2-next.0
+
 ## 0.1.4
 
 ### Patch Changes

@@ -37,7 +37,7 @@ export const OpenApiDefinitionWidget = (
   props: OpenApiDefinitionWidgetProps,
 ) => {
   const validSubmitMethods = props.supportedSubmitMethods?.map(method =>
-    method.toLocaleLowerCase(),
+    method.toLowerCase(),
   );
   return (
     <Suspense fallback={<Progress />}>

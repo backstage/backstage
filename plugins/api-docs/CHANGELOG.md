@@ -1,5 +1,63 @@
 # @backstage/plugin-api-docs
 
+## 0.14.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/plugin-permission-react@0.5.6-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/plugin-catalog@2.0.10-next.0
+  - @backstage/plugin-catalog-react@3.2.4-next.0
+  - @backstage/plugin-catalog-common@1.2.1-next.0
+
+## 0.14.5
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- 4b643e3: Migrate plugin-api-docs to the configSchema API to remove the deprecated config.schema usage.
+- Updated dependencies
+  - @backstage/plugin-catalog@2.0.9
+  - @backstage/core-components@0.18.14
+  - @backstage/plugin-catalog-common@1.2.0
+  - @backstage/ui@0.18.0
+  - @backstage/catalog-model@1.10.1
+  - @backstage/plugin-catalog-react@3.2.3
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/plugin-permission-react@0.5.5
+
+## 0.14.5-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.2.0-next.0
+  - @backstage/plugin-catalog@2.0.9-next.2
+  - @backstage/ui@0.18.0-next.2
+  - @backstage/plugin-catalog-react@3.2.3-next.2
+  - @backstage/core-components@0.18.14-next.2
+  - @backstage/core-plugin-api@1.12.10-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.1
+  - @backstage/plugin-permission-react@0.5.5-next.1
+
+## 0.14.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.1
+  - @backstage/plugin-catalog@2.0.9-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/plugin-catalog-react@3.2.3-next.1
+  - @backstage/ui@0.18.0-next.1
+  - @backstage/core-plugin-api@1.12.10-next.0
+  - @backstage/plugin-permission-react@0.5.5-next.0
+
 ## 0.14.5-next.0
 
 ### Patch Changes

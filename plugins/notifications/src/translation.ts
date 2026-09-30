@@ -117,5 +117,14 @@ export const notificationsTranslationRef = createTranslationRef({
           'useNotificationFormat must be used within a NotificationFormatProvider',
       },
     },
+    unreadCard: {
+      title_one: 'Last unread notifications ({{count}})',
+      title_other: 'Last unread notifications ({{count}})',
+      viewAll: 'View All',
+      emptyState: 'All caught up!',
+      columnNotification: 'Notification',
+      columnActions: 'Actions',
+      resultsCount: '{{displayed}} results out of {{total}}',
+    },
   },
 });

@@ -15,6 +15,7 @@
  */
 
 import { TestDatabases } from './TestDatabases';
+import { Engine } from './types';
 
 jest.setTimeout(120_000);
 
@@ -27,5 +28,45 @@ describe.each(dbs.eachSupportedId())('TestDatabases, %p', databaseId => {
     await db1.schema.createTable('a', table => table.string('x').primary());
     await db2.schema.createTable('a', table => table.string('y').primary());
     await expect(db1.select({ a: db1.raw('1') })).resolves.toEqual([{ a: 1 }]);
+  });
+});
+
+describe('shutdown', () => {
+  it('shuts down independent database engines concurrently', async () => {
+    const databases = TestDatabases.create({ ids: [] });
+    const internal = databases as unknown as {
+      engineByTestDatabaseId: Map<string, Engine>;
+      shutdown(): Promise<void>;
+    };
+    const started: string[] = [];
+    const resolvers: Array<() => void> = [];
+    let blockShutdown = true;
+
+    const createEngine = (name: string): Engine => ({
+      createDatabaseInstance: jest.fn(),
+      shutdown: async () => {
+        started.push(name);
+        if (blockShutdown) {
+          await new Promise<void>(resolve => resolvers.push(resolve));
+        }
+      },
+    });
+
+    for (const name of ['first', 'second']) {
+      internal.engineByTestDatabaseId.set(name, createEngine(name));
+    }
+
+    const shutdown = internal.shutdown();
+    await Promise.resolve();
+
+    try {
+      expect(started).toEqual(['first', 'second']);
+    } finally {
+      blockShutdown = false;
+      for (const resolve of resolvers) {
+        resolve();
+      }
+      await shutdown;
+    }
   });
 });

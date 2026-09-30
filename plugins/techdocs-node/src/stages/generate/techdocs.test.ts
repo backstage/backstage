@@ -15,8 +15,10 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import path from 'node:path';
 import { readGeneratorConfig, TechdocsGenerator } from './techdocs';
 import { getMkdocsYml, runCommand } from './helpers';
+import { sanitizeMkdocsYml } from './mkdocsPatchers';
 
 jest.mock('fs-extra');
 jest.mock('./helpers');
@@ -111,6 +113,29 @@ describe('readGeneratorConfig', () => {
     });
   });
 
+  it('should read pull options config', () => {
+    const pullOptions = {
+      authconfig: {
+        username: 'user',
+        password: 'pass',
+      },
+    };
+
+    const config = new ConfigReader({
+      techdocs: {
+        generator: {
+          runIn: 'docker',
+          pullOptions,
+        },
+      },
+    });
+
+    expect(readGeneratorConfig(config, logger)).toEqual({
+      runIn: 'docker',
+      pullOptions,
+    });
+  });
+
   describe('with legacy techdocs.generators.techdocs config', () => {
     it('should read legacy docker option', () => {
       const config = new ConfigReader({
@@ -184,26 +209,59 @@ describe('readGeneratorConfig', () => {
       defaultPlugins: ['mkdocs-custom-plugin'],
     });
   });
+
+  it('should read the additional plugins config', () => {
+    const config = new ConfigReader({
+      techdocs: {
+        generator: {
+          runIn: 'docker',
+          mkdocs: {
+            dangerouslyAllowAdditionalPlugins: ['mkdocs-custom-plugin'],
+          },
+        },
+      },
+    });
+
+    expect(readGeneratorConfig(config, logger)).toEqual({
+      runIn: 'docker',
+      dockerImage: undefined,
+      pullImage: undefined,
+      omitTechdocsCoreMkdocsPlugin: undefined,
+      legacyCopyReadmeMdToIndexMd: undefined,
+      defaultPlugins: undefined,
+      dangerouslyAllowAdditionalKeys: undefined,
+      dangerouslyAllowAdditionalPlugins: ['mkdocs-custom-plugin'],
+      disableExternalFonts: undefined,
+    });
+  });
 });
 
 describe('TechdocsGenerator.run', () => {
+  const inputDir = '/var/folders/inputDir';
+
   beforeEach(() => {
     jest.resetAllMocks();
     jest.mocked(getMkdocsYml).mockResolvedValue({
-      path: '/tmp/inputDir/mkdocs.yaml',
+      path: `${inputDir}/mkdocs.yaml`,
       content: 'site_name: Test',
       configIsTemporary: false,
     });
   });
 
-  it('passes -f with the config path in local mode', async () => {
+  it('passes -f with the config path relative to the working directory in local mode', async () => {
+    jest.mocked(getMkdocsYml).mockResolvedValueOnce({
+      path: `${inputDir}/config/mkdocs.yaml`,
+      content: 'site_name: Test',
+      configIsTemporary: false,
+    });
+
     const generator = TechdocsGenerator.fromConfig(
       new ConfigReader({ techdocs: { generator: { runIn: 'local' } } }),
       { logger: mockLogger as any },
     );
 
     await generator.run({
-      inputDir: '/tmp/inputDir',
+      inputDir,
       outputDir: '/tmp/outputDir',
       logger: mockLogger as any,
     });
@@ -211,8 +269,42 @@ describe('TechdocsGenerator.run', () => {
     expect(jest.mocked(runCommand)).toHaveBeenCalledWith(
       expect.objectContaining({
         command: 'mkdocs',
-        args: expect.arrayContaining(['-f', '/tmp/inputDir/mkdocs.yaml']),
+        args: expect.arrayContaining([
+          '-f',
+          path.join('config', 'mkdocs.yaml'),
+        ]),
+        options: { cwd: inputDir },
       }),
+    );
+  });
+
+  it('permits plugins configured as defaults during sanitization', async () => {
+    const generator = TechdocsGenerator.fromConfig(
+      new ConfigReader({
+        techdocs: {
+          generator: {
+            runIn: 'local',
+            mkdocs: {
+              defaultPlugins: ['default-plugin'],
+              dangerouslyAllowAdditionalPlugins: ['additional-plugin'],
+            },
+          },
+        },
+      }),
+      { logger: mockLogger as any },
+    );
+
+    await generator.run({
+      inputDir,
+      outputDir: '/tmp/outputDir',
+      logger: mockLogger as any,
+    });
+
+    expect(jest.mocked(sanitizeMkdocsYml)).toHaveBeenCalledWith(
+      `${inputDir}/mkdocs.yaml`,
+      mockLogger,
+      undefined,
+      ['additional-plugin', 'default-plugin'],
     );
   });
 
@@ -228,7 +320,7 @@ describe('TechdocsGenerator.run', () => {
     });
 
     await generator.run({
-      inputDir: '/tmp/inputDir',
+      inputDir,
       outputDir: '/tmp/outputDir',
       logger: mockLogger as any,
     });

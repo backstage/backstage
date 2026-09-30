@@ -124,7 +124,8 @@ function resolveComboboxStateProps<T extends CollectionItem>({
  * A text input combined with a dropdown list of options. The user can type to filter
  * suggestions, navigate with the keyboard, and pick a value. With
  * `allowsCustomValue`, unmatched typed text can remain in the input without
- * selecting an option.
+ * selecting an option. The suggestions open when the input receives focus by
+ * default. Use `menuTrigger` to customize this behavior.
  *
  * @public
  */
@@ -196,6 +197,7 @@ function ComboboxImpl<T extends CollectionItem = NormalizedOption>(
     inputValue,
     defaultInputValue,
     onInputChange,
+    menuTrigger = 'focus',
     ...ariaProps
   } = restProps as typeof restProps & ComboboxRuntimeStateProps<T>;
   const asyncComboboxProps = isDirectAsyncServer
@@ -236,6 +238,7 @@ function ComboboxImpl<T extends CollectionItem = NormalizedOption>(
       ref={ref}
       {...ariaProps}
       {...comboboxStateProps}
+      menuTrigger={menuTrigger}
       allowsEmptyCollection
     >
       <FieldLabel

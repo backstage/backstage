@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 export * from './useNotificationsApi';
+export * from './useNotificationsRefresh';
 export * from './useWebNotifications';
 export * from './useTitleCounter';

@@ -1,5 +1,49 @@
 # @backstage/plugin-app
 
+## 0.5.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.2.23-next.0
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/filter-predicates@0.1.6-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/plugin-permission-react@0.5.6-next.0
+  - @backstage/plugin-app-react@0.2.8-next.0
+
+## 0.5.3
+
+### Patch Changes
+
+- d421187: Reduced the initial app bundle size by loading page and optional UI implementations only when their extensions render.
+- f914343: Fixed toast text layout when the application does not define a global line height.
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/ui@0.18.0
+  - @backstage/filter-predicates@0.1.5
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/plugin-app-react@0.2.7
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/integration-react@1.2.22
+  - @backstage/plugin-permission-react@0.5.5
+
+## 0.5.3-next.1
+
+### Patch Changes
+
+- d421187: Reduced the initial app bundle size by loading page and optional UI implementations only when their extensions render.
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/filter-predicates@0.1.5-next.0
+  - @backstage/ui@0.18.0-next.1
+  - @backstage/integration-react@1.2.22-next.0
+  - @backstage/core-plugin-api@1.12.10-next.0
+  - @backstage/plugin-app-react@0.2.7-next.0
+  - @backstage/plugin-permission-react@0.5.5-next.0
+
 ## 0.5.3-next.0
 
 ### Patch Changes

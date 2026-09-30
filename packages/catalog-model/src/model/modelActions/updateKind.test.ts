@@ -15,8 +15,40 @@
  */
 
 import { opsFromCatalogModelUpdateKind } from './updateKind';
+import { compileCatalogModel } from '../compileCatalogModel';
+import { createCatalogModelLayer } from '../createCatalogModelLayer';
 
 describe('opsFromCatalogModelUpdateKind', () => {
+  it('allows clearing a kind description without changing its names', () => {
+    const layer = createCatalogModelLayer({
+      layerId: 'example.com/component',
+      builder: model => {
+        model.addKind({
+          group: 'example.com',
+          names: {
+            kind: 'Component',
+            singular: 'component',
+            plural: 'components',
+          },
+          description: 'Original description',
+        });
+        model.updateKind({ names: { kind: 'Component' }, description: '' });
+      },
+    });
+
+    expect(compileCatalogModel([layer]).listKinds()).toEqual([
+      {
+        names: {
+          kind: 'Component',
+          singular: 'component',
+          plural: 'components',
+        },
+        description: '',
+        versions: [],
+      },
+    ]);
+  });
+
   it('should produce an updateKind op when names are updated', () => {
     const ops = opsFromCatalogModelUpdateKind({
       names: { kind: 'Component', singular: 'comp' },

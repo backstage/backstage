@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isVisualStudioDomain } from './core';
+import { isVisualStudioDomain } from './isVisualStudioDomain';
 
 export class AzureUrl {
   /**

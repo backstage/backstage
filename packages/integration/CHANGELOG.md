@@ -1,5 +1,44 @@
 # @backstage/integration
 
+## 2.1.3-next.0
+
+### Patch Changes
+
+- 1f603db: Azure DevOps repository files now resolve to an edit URL when used by integrations such as TechDocs.
+- 4bd3c42: Bitbucket Cloud OAuth access tokens returned by `getBitbucketCloudOAuthToken` are now cached separately for each set of OAuth client credentials. Previously a single token was cached globally, which could cause the wrong token to be used when more than one Bitbucket Cloud integration was configured or when OAuth credentials were rotated.
+- Updated dependencies
+  - @backstage/config@1.3.10-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/connections@0.4.1-next.0
+
+## 2.1.2
+
+### Patch Changes
+
+- 23705f3: Fixed an issue where reading or downloading files from Bitbucket Server could fail when the branch name contained special characters such as an ampersand or a plus sign. The branch name is now correctly encoded in the request URL.
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- 7150117: Updated internal Azure DevOps imports to avoid a circular module dependency.
+- e592bc5: Fixed an issue where reading files from GitLab could fail when the branch name contained special characters such as an ampersand or a plus sign. The branch name is now correctly encoded in the request URL.
+- e895def: Fixed handling of GitLab URLs for instances configured with a relative base path.
+- Updated dependencies
+  - @backstage/connections@0.4.0
+  - @backstage/config@1.3.9
+
+## 2.1.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.9-next.0
+  - @backstage/connections@0.4.0-next.0
+
+## 2.1.2-next.0
+
+### Patch Changes
+
+- 7150117: Updated internal Azure DevOps imports to avoid a circular module dependency.
+- e895def: Fixed handling of GitLab URLs for instances configured with a relative base path.
+
 ## 2.1.0
 
 ### Minor Changes

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import type {
-  ConnectionType,
+  ConnectionTypeDefinition,
   ConfiguredConnectionAuth,
 } from '../api/ConnectionType';
 import type {
-  ConnectionTypeKey,
+  ConnectionType,
   LookupConnectionType,
 } from '../definitions/types';
 
@@ -31,7 +31,9 @@ import type {
  * @public
  */
 export type ConfiguredConnection<
-  T extends ConnectionType | ConnectionTypeKey = ConnectionType,
+  T extends
+    | ConnectionTypeDefinition
+    | ConnectionType = ConnectionTypeDefinition,
 > = ReturnType<LookupConnectionType<T>['configSchema']['parse']> & {
   type: LookupConnectionType<T>['type'];
   title?: string;

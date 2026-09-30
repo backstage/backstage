@@ -307,9 +307,9 @@ function ServerBackedSelect({ searchable }: { searchable: boolean }) {
       setRequestCount(count => count + 1);
       await wait(paginationServerDelay);
 
-      const query = filterText.toLocaleLowerCase();
+      const query = filterText.toLowerCase();
       const filteredOptions = paginatedServerOptions.filter(option =>
-        option.label.toLocaleLowerCase().includes(query),
+        option.label.toLowerCase().includes(query),
       );
       const startIndex = cursor ? Number(cursor) : 0;
       const endIndex = startIndex + paginationServerPageSize;
@@ -485,9 +485,9 @@ function ServerBackedCustomSelect() {
     async load({ cursor, filterText }) {
       await wait(serverDelay);
 
-      const query = filterText.toLocaleLowerCase();
+      const query = filterText.toLowerCase();
       const filteredOwners = serverOwners.filter(owner =>
-        `${owner.name} ${owner.role}`.toLocaleLowerCase().includes(query),
+        `${owner.name} ${owner.role}`.toLowerCase().includes(query),
       );
       const startIndex = cursor ? Number(cursor) : 0;
       const endIndex = startIndex + serverPageSize;
@@ -803,7 +803,7 @@ const generateOptions = (count = 100) => {
     .values();
 
   return Array.from(uniqueRandomNames).map(label => ({
-    id: label.toLocaleLowerCase('en-US').replaceAll(' ', '-'),
+    id: label.toLowerCase().replaceAll(' ', '-'),
     label,
   }));
 };

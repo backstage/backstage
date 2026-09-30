@@ -15,7 +15,7 @@
  */
 
 import { ReactNode } from 'react';
-import { FrontendPlugin } from './wiring';
+import type { FrontendPlugin } from './wiring/createFrontendPlugin';
 
 /** @public */
 export type ProgressProps = {};

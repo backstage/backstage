@@ -476,20 +476,9 @@ export class AwsS3Publish implements PublisherBase {
         useLegacyPathCasing,
         bucketRootPath,
       );
-      const response = await this.retryOperation(
-        async () => {
-          const listCommand = new ListObjectsV2Command({
-            Bucket: this.bucketName,
-            Prefix: remoteFolder,
-          });
-          return this.storageClient.send(listCommand);
-        },
-        'ListObjects',
-        this.maxAttempts,
-      );
-      existingFiles = (response.Contents || [])
-        .map(f => f.Key || '')
-        .filter(f => !!f);
+      existingFiles = await this.getAllObjectsFromBucket({
+        prefix: remoteFolder,
+      });
     } catch (e) {
       this.logger.error(
         `Unable to list files for Entity ${entity.metadata.name}: ${

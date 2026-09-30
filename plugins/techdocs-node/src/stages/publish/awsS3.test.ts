@@ -815,6 +815,46 @@ describe('AwsS3Publish', () => {
       );
     });
 
+    it('should paginate when finding stale files to delete', async () => {
+      let listObjectsCallCount = 0;
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof ListObjectsV2Command) {
+          listObjectsCallCount++;
+          if (listObjectsCallCount === 1) {
+            return {
+              Contents: [{ Key: 'default/component/backstage/index.html' }],
+              NextContinuationToken: 'next-page',
+            };
+          }
+          return {
+            Contents: [{ Key: 'default/component/backstage/stale-file.png' }],
+          };
+        }
+
+        return defaultS3SendImplementation(command);
+      });
+
+      const publisher = await createPublisherFromConfig();
+      await publisher.publish({ entity, directory });
+
+      const listObjectsCalls = s3SendMock.mock.calls.filter(
+        ([command]) => command instanceof ListObjectsV2Command,
+      );
+      expect(listObjectsCalls).toHaveLength(2);
+      expect(listObjectsCalls[1][0].input).toEqual({
+        Bucket: 'bucketName',
+        ContinuationToken: 'next-page',
+        Prefix: 'default/component/backstage/',
+      });
+      const deleteObjectCalls = s3SendMock.mock.calls.filter(
+        ([command]) => command instanceof DeleteObjectCommand,
+      );
+      expect(deleteObjectCalls[0][0].input).toEqual({
+        Bucket: 'bucketName',
+        Key: 'default/component/backstage/stale-file.png',
+      });
+    });
+
     it('should log error when the stale files deletion fails', async () => {
       const bucketName = 'delete_stale_files_error';
       const publisher = await createPublisherFromConfig({

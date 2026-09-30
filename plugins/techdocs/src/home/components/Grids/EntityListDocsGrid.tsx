@@ -143,12 +143,12 @@ export const EntityListDocsGrid = (props: EntityListDocsGridPageProps) => {
       a,
       undefined,
       presentationApi,
-    ).primaryTitle.toLocaleLowerCase();
+    ).primaryTitle.toLowerCase();
     const titleB = entityPresentationSnapshot(
       b,
       undefined,
       presentationApi,
-    ).primaryTitle.toLocaleLowerCase();
+    ).primaryTitle.toLowerCase();
     return titleA.localeCompare(titleB);
   });
 

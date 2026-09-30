@@ -194,7 +194,7 @@ kind: Resource
 metadata:
   name: my-cluster
   annotations:
-    kubernetes.io/api-server: 'https://127.0.0.1:53725'
+    kubernetes.io/api-server: 'https://my-cluster.example.com'
     kubernetes.io/api-server-certificate-authority: # base64-encoded CA
     kubernetes.io/auth-provider: 'oidc'
     kubernetes.io/oidc-token-provider: 'microsoft'
@@ -210,7 +210,30 @@ by the catalog API) -- therefore there is no annotation corresponding to the
 [`serviceAccountToken` field](#clustersserviceaccounttoken-optional) used by
 the [`config`](#config) cluster locator. Accordingly, the catalog cluster
 locator does not support the [`serviceAccount`](#clustersauthprovider) auth
-strategy.
+strategy, and ignores catalog entities that attempt to use it.
+
+Catalog-sourced cluster API server URLs must use HTTPS and must not target
+private, link-local, loopback, or cloud metadata addresses. Entities that fail
+these checks are ignored and a warning is logged. For local development (for
+example minikube on `127.0.0.1`), operators may list trusted hostnames in
+`dangerouslyAllowClusterUrls` on the catalog cluster locator method so those
+hosts may use HTTP or non-public addresses. `dangerouslyAllowSkipTLSVerify`
+enables the skip-TLS annotation:
+
+```yaml
+kubernetes:
+  clusterLocatorMethods:
+    - type: catalog
+      dangerouslyAllowClusterUrls:
+        - '127.0.0.1'
+        - 'localhost'
+      # dangerouslyAllowSkipTLSVerify: true
+```
+
+The `kubernetes.io/skip-tls-verify` annotation is ignored unless
+`dangerouslyAllowSkipTLSVerify` is enabled. Only `kubernetes.io/*` annotations
+are passed through to cluster auth metadata; `serviceAccountToken` and other
+sensitive keys cannot be supplied from catalog entities.
 
 This method can be quite helpful when used in combination with an ingestion
 procedure like the

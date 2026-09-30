@@ -105,3 +105,21 @@ backend:
     client: pg
     pluginDivisionMode: schema # defaults to database, but changing this to schema means plugins will be given their own schema (in the specified/default database)
 ```
+
+If you need to avoid conflicts with existing schemas in your database, you can add a prefix to all plugin schema names:
+
+```yaml
+backend:
+  database:
+    client: pg
+    pluginDivisionMode: schema
+    schemaPrefix: 'backstage_' # defaults to empty string
+```
+
+This will create schemas named `backstage_catalog`, `backstage_auth`, and so on. The combined schema name must not exceed 63 bytes.
+
+:::caution[Existing Deployments]
+
+Enabling `schemaPrefix` on an existing deployment creates new prefixed schemas and does not migrate data from existing non-prefixed schemas. This configuration is intended for new deployments or to avoid conflicts with existing schemas in your database. If you enable this on an existing Backstage instance, your data will remain in the original non-prefixed schemas while Backstage uses the new prefixed schemas.
+
+:::

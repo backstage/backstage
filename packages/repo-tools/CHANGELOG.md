@@ -1,5 +1,56 @@
 # @backstage/repo-tools
 
+## 0.19.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+
+## 0.19.2-next.0
+
+### Patch Changes
+
+- a281164: Updated SQL report generation to support newer Knex releases.
+- Updated dependencies
+  - @backstage/cli-node@0.3.5-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.10.2-next.0
+  - @backstage/config-loader@1.11.4-next.0
+  - @backstage/catalog-model@1.10.2-next.0
+  - @backstage/cli-common@0.3.2-next.0
+
+## 0.19.1
+
+### Patch Changes
+
+- 736d84e: Use locale-insensitive Unicode casing for consistent string handling across environments.
+- c0ebaa7: chore(deps): bump `js-yaml` from 4.3.1 to 4.3.2
+- bf1f82d: Added the required OpenAPI types dependency for Swagger Parser.
+- 0c1b8ee: Updated the OpenAPI generator tooling to avoid known security vulnerabilities.
+- Updated dependencies
+  - @backstage/catalog-model@1.10.1
+  - @backstage/cli-common@0.3.1
+  - @backstage/backend-plugin-api@1.10.1
+  - @backstage/config-loader@1.11.3
+
+## 0.19.1-next.1
+
+### Patch Changes
+
+- 0c1b8ee: Updated the OpenAPI generator tooling to avoid known security vulnerabilities.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.1-next.1
+  - @backstage/config-loader@1.11.3-next.0
+
+## 0.19.1-next.0
+
+### Patch Changes
+
+- bf1f82d: Added the required OpenAPI types dependency for Swagger Parser.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.10.1-next.0
+
 ## 0.19.0
 
 ### Minor Changes

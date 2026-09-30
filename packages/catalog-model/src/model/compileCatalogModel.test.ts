@@ -18,6 +18,7 @@ import Ajv from 'ajv';
 import { createCatalogModelLayer } from './createCatalogModelLayer';
 import { compileCatalogModel } from './compileCatalogModel';
 import { defaultCatalogEntityModel } from './defaultCatalogEntityModel';
+import { CatalogModelSources } from './sources/CatalogModelSources';
 
 const layer = createCatalogModelLayer({
   layerId: 'Test',
@@ -136,6 +137,104 @@ describe('compileCatalogModel', () => {
     expect(
       model.getKind({ kind: 'Unknown', apiVersion: 'example.com/v1alpha1' }),
     ).toBeUndefined();
+  });
+});
+
+describe('compileCatalogModel layer identities', () => {
+  const annotationLayer = (layerId: string, annotationName: string) =>
+    createCatalogModelLayer({
+      layerId,
+      builder: model => {
+        model.addAnnotation({
+          name: annotationName,
+          description: `Annotation from ${layerId}`,
+        });
+      },
+    });
+
+  it('deduplicates identical layers emitted by independent model sources', async () => {
+    const sources = [
+      CatalogModelSources.static([
+        annotationLayer('example.com/shared', 'example.com/shared'),
+        annotationLayer('example.com/a', 'example.com/a'),
+      ]),
+      CatalogModelSources.static([
+        annotationLayer('example.com/shared', 'example.com/shared'),
+        annotationLayer('example.com/b', 'example.com/b'),
+      ]),
+    ];
+    const layers = await Promise.all(
+      sources.map(async source => {
+        const iterator = source.read();
+        try {
+          const result = await iterator.next();
+          return result.value?.data.map(entry => entry.layer) ?? [];
+        } finally {
+          await iterator.return(undefined);
+        }
+      }),
+    );
+
+    const annotationNames = compileCatalogModel(layers.flat())
+      .getMetadata()
+      .annotations.map(annotation => annotation.name);
+
+    expect(annotationNames).toEqual(
+      expect.arrayContaining([
+        'backstage.io/managed-by-location',
+        'example.com/shared',
+        'example.com/a',
+        'example.com/b',
+      ]),
+    );
+    expect(
+      annotationNames.filter(name => name === 'example.com/shared'),
+    ).toHaveLength(1);
+    expect(
+      annotationNames.filter(
+        name => name === 'backstage.io/managed-by-location',
+      ),
+    ).toHaveLength(1);
+  });
+
+  it('ignores non-semantic opaque fields when comparing layers', () => {
+    const sharedLayer = annotationLayer(
+      'example.com/shared',
+      'example.com/shared',
+    );
+    const sharedLayerWithSource = {
+      ...sharedLayer,
+      source: 'example.com/source',
+    };
+
+    const annotationNames = compileCatalogModel([
+      sharedLayer,
+      sharedLayerWithSource,
+    ])
+      .getMetadata()
+      .annotations.map(annotation => annotation.name);
+
+    expect(
+      annotationNames.filter(name => name === 'example.com/shared'),
+    ).toHaveLength(1);
+  });
+
+  it('rejects conflicting definitions without hiding declaration conflicts', () => {
+    expect(() =>
+      compileCatalogModel([
+        annotationLayer('example.com/conflict', 'example.com/a'),
+        annotationLayer('example.com/conflict', 'example.com/b'),
+      ]),
+    ).toThrow(
+      'Catalog model layer ID "example.com/conflict" has conflicting definitions',
+    );
+
+    expect(() =>
+      compileCatalogModel([
+        annotationLayer('example.com/a', 'example.com/conflict'),
+        annotationLayer('example.com/b', 'example.com/conflict'),
+      ]),
+    ).toThrow('Annotation "example.com/conflict" is declared more than once');
   });
 });
 

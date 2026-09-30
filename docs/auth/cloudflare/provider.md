@@ -26,6 +26,8 @@ auth:
     cfaccess:
       # You can find the team name in the Cloudflare Zero Trust dashboard.
       teamName: <Team Name>
+      # The Application Audience (AUD) Tag for the Backstage application.
+      audience: <Application Audience Tag>
       # This service tokens section is optional -- you only need it if you have
       # some Cloudflare Service Tokens that you want to be able to log in to your
       # Backstage instance.
@@ -48,6 +50,10 @@ auth:
 ```
 
 This config section must be in place for the provider to load at all.
+
+You can find the Application Audience (AUD) Tag in the Cloudflare Zero Trust
+dashboard by opening **Access controls > Applications**, selecting the
+Backstage application, and copying the value from **Additional settings**.
 
 ### Optional
 

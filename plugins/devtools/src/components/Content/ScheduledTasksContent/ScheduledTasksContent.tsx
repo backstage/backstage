@@ -21,7 +21,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import {
   ErrorPanel,
   Progress,
@@ -30,8 +30,11 @@ import {
 } from '@backstage/core-components';
 import Alert from '@material-ui/lab/Alert';
 import { useScheduledTasks, useScheduledTasksOperations } from '../../../hooks';
-import { TaskApiTasksResponse } from '@backstage/plugin-devtools-common/alpha';
-import { alertApiRef, configApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  devToolsTaskSchedulerCreatePermission,
+  TaskApiTasksResponse,
+} from '@backstage/plugin-devtools-common/alpha';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import StopIcon from '@material-ui/icons/Stop';
 import NightsStay from '@material-ui/icons/NightsStay';
@@ -40,7 +43,7 @@ import BlockIcon from '@material-ui/icons/Block';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ScheduledTaskDetailPanel } from './ScheduledTaskDetailedPanel';
 import { RequirePermission } from '@backstage/plugin-permission-react';
-import { devToolsTaskSchedulerCreatePermission } from '@backstage/plugin-devtools-common/alpha';
+import { toastApiRef } from '@backstage/frontend-plugin-api';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -101,7 +104,7 @@ const CreateNotAllowed = () => (
 export const ScheduledTasksContent = () => {
   const classes = useStyles();
   const configApi = useApi(configApiRef);
-  const alertApi = useApi(alertApiRef);
+  const toastApi = useApi(toastApiRef);
   const plugins =
     configApi.getOptionalStringArray('devTools.scheduledTasks.plugins') || [];
   const [selectedPlugin, setSelectedPlugin] = useState(plugins[0] || '');
@@ -219,14 +222,14 @@ export const ScheduledTasksContent = () => {
                 onClick={async () => {
                   try {
                     await triggerTask(selectedPlugin, rowData.taskId);
-                    alertApi.post({
-                      message: `Successfully triggered task ${rowData.taskId}`,
-                      severity: 'success',
+                    toastApi.post({
+                      title: `Successfully triggered task ${rowData.taskId}`,
+                      status: 'success',
                     });
                   } catch (e) {
-                    alertApi.post({
-                      message: `Error triggering task ${rowData.taskId}: ${e.message}`,
-                      severity: 'error',
+                    toastApi.post({
+                      title: `Error triggering task ${rowData.taskId}: ${e.message}`,
+                      status: 'danger',
                     });
                   } finally {
                     refresh();
@@ -243,14 +246,14 @@ export const ScheduledTasksContent = () => {
                 onClick={async () => {
                   try {
                     await cancelTask(selectedPlugin, rowData.taskId);
-                    alertApi.post({
-                      message: `Successfully cancelled task ${rowData.taskId}`,
-                      severity: 'success',
+                    toastApi.post({
+                      title: `Successfully cancelled task ${rowData.taskId}`,
+                      status: 'success',
                     });
                   } catch (e) {
-                    alertApi.post({
-                      message: `Error cancelling task ${rowData.taskId}: ${e.message}`,
-                      severity: 'error',
+                    toastApi.post({
+                      title: `Error cancelling task ${rowData.taskId}: ${e.message}`,
+                      status: 'danger',
                     });
                   } finally {
                     refresh();

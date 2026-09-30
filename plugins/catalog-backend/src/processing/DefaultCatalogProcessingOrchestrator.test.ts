@@ -42,7 +42,7 @@ class FooBarProcessor implements CatalogProcessor {
   getProcessorName = () => 'foo-bar';
 
   async validateEntityKind(entity: Entity) {
-    return entity.kind.toLocaleLowerCase('en-US') === 'foobar';
+    return entity.kind.toLowerCase() === 'foobar';
   }
 
   async postProcessEntity(

@@ -37,6 +37,14 @@ process, not the raw originally ingested entity data. See
 [The Life of an Entity](./life-of-an-entity.md) for more details about this process and
 distinction.
 
+### Relation response format
+
+Catalog API responses represent relation targets using the `targetRef` field.
+The deprecated `target` object and the `catalog.enableRelationsCompatibility`
+setting have been removed. If an external catalog API consumer reads
+`relation.target`, update it to use `relation.targetRef` instead. The
+`targetRef` value is a full [entity reference](references.md).
+
 ### `GET /entities/by-query`
 
 Query entities. Supports the following query parameters, described in the section below:

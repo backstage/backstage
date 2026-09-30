@@ -63,8 +63,9 @@ export interface CatalogModelUpdateRelationPairDefinition {
    */
   reverse: {
     /**
-     * The technical type of the relation, e.g. "ownerOf". Specify this if you
-     * want to override the default value.
+     * The technical type of an existing reverse relation, e.g. "ownerOf".
+     * If omitted, title updates apply to the currently declared reverse
+     * relation.
      */
     type?: string;
     /**
@@ -90,6 +91,9 @@ export function opsFromCatalogModelUpdateRelationPair(
           toKind: secondKind,
           properties: {
             reverseType: relationPair.reverse.type,
+            reverseTitle: relationPair.reverse.type
+              ? undefined
+              : relationPair.reverse.title,
             title: relationPair.forward.title,
             description: relationPair.description,
           },

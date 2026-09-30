@@ -1,5 +1,29 @@
 # @backstage/cli-module-new
 
+## 0.1.8-next.1
+
+### Patch Changes
+
+- e4597ce: Updated the `plugin-web-library` template to use `@backstage/ui` instead of the deprecated `@material-ui/core`.
+
+## 0.1.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.3.5-next.0
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/cli-common@0.3.2-next.0
+
+## 0.1.7
+
+### Patch Changes
+
+- 33c8190: Updated the frontend plugin templates to use MSW 2 for generated tests.
+- 4cba335: Fixes published entry point configurations so it can be imported reliably in Jest/Node resolution.
+- Updated dependencies
+  - @backstage/cli-common@0.3.1
+
 ## 0.1.7-next.0
 
 ### Patch Changes

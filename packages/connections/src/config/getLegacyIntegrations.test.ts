@@ -896,7 +896,7 @@ describe('getLegacyIntegrations', () => {
         }),
       );
       expect(() =>
-        AwsConnectionType.validate?.({
+        (AwsConnectionType as any).validate?.({
           config: parsedConfig,
           auth: parsedAuth,
         }),

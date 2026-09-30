@@ -146,6 +146,12 @@ const mkdocsYmlWithMultiKeyDangerousExtension = fs.readFileSync(
 const mkdocsYmlWithThemeCustomDir = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs_with_theme_custom_dir.yml'),
 );
+const mkdocsYmlWithUnsupportedPlugins = fs.readFileSync(
+  resolvePath(
+    __filename,
+    '../__fixtures__/mkdocs_with_unsupported_plugins.yml',
+  ),
+);
 const mockLogger = mockServices.logger.mock();
 const warn = jest.spyOn(mockLogger, 'warn');
 
@@ -1034,6 +1040,57 @@ theme:
         'Unsupported Python YAML tag',
       );
     });
+
+    it.each(['pymdownx.emoji', 'materialx.emoji', 'material.extensions.emoji'])(
+      'should accept emoji tags from %s',
+      async module => {
+        const content = `markdown_extensions:
+  - pymdownx.emoji:
+      emoji_index: !!python/name:${module}.twemoji
+      emoji_generator: !!python/name:${module}.to_svg`;
+
+        await expect(
+          validateMkdocsYaml(inputDir, content),
+        ).resolves.toBeUndefined();
+      },
+    );
+
+    it.each([
+      'pymdownx.superfences.fence_code_format',
+      'pymdownx.superfences.fence_div_format',
+      'mermaid2.fence_mermaid',
+      'mermaid2.fence_mermaid_custom',
+    ])('should accept the custom fence format %s', async format => {
+      const content = `markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:${format}`;
+
+      await expect(
+        validateMkdocsYaml(inputDir, content),
+      ).resolves.toBeUndefined();
+    });
+
+    it.each([
+      'pymdownx.emoji.to_svgX',
+      'material.extensions.emoji.evil',
+      'pymdownx.superfences.os',
+    ])('should reject the unlisted name %s', async name => {
+      await expect(
+        validateMkdocsYaml(inputDir, `site_name: !!python/name:${name}`),
+      ).rejects.toThrow('Unsupported Python YAML tag');
+    });
+
+    it('should reject an allowed name used under a different tag', async () => {
+      await expect(
+        validateMkdocsYaml(
+          inputDir,
+          'site_name: !!python/name:pymdownx.slugs.slugify',
+        ),
+      ).rejects.toThrow('Unsupported Python YAML tag');
+    });
   });
 
   describe('sanitizeMkdocsYml', () => {
@@ -1093,6 +1150,126 @@ extra_templates:
       expect(warn).toHaveBeenCalledWith(
         expect.stringContaining('extra_templates'),
       );
+    });
+
+    it('should keep only supported MkDocs plugins and preserve their configuration', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': mkdocsYmlWithUnsupportedPlugins,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        plugins: unknown[];
+      };
+
+      expect(parsedYml.plugins).toEqual([
+        'search',
+        {
+          group: {
+            plugins: ['redirects'],
+          },
+        },
+        {
+          'material/group': {
+            plugins: [{ search: null }],
+          },
+        },
+        {
+          redirects: {
+            redirect_maps: {
+              'old.md': 'new.md',
+            },
+          },
+        },
+      ]);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'privacy, material/privacy, table-reader, dynamically configured plugin name, custom-plugin, malformed plugin declaration, projects',
+        ),
+      );
+    });
+
+    it('should preserve explicitly allowed MkDocs plugins', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+plugins:
+  - table-reader:
+      data_path: data.csv
+  - custom-plugin
+`,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs.yml'),
+        mockLogger,
+        undefined,
+        ['table-reader', 'custom-plugin'],
+      );
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        plugins: unknown[];
+      };
+
+      expect(parsedYml.plugins).toEqual([
+        { 'table-reader': { data_path: 'data.csv' } },
+        'custom-plugin',
+      ]);
+    });
+
+    it('should normalize mapping-style MkDocs plugin declarations before filtering', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+plugins:
+  search:
+  material/privacy:
+    enabled: true
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        plugins: unknown[];
+      };
+
+      expect(parsedYml.plugins).toEqual([{ search: null }]);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('material/privacy'),
+      );
+    });
+
+    it('should fail when the configuration cannot be sanitized', async () => {
+      await expect(
+        sanitizeMkdocsYml(mockDir.resolve('missing.yml'), mockLogger),
+      ).rejects.toThrow();
+
+      mockDir.setContent({
+        'mkdocs.yml': 'site_name: [unterminated',
+      });
+
+      await expect(
+        sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger),
+      ).rejects.toThrow();
+
+      mockDir.setContent({
+        'mkdocs.yml': 'site_name: Test\n',
+      });
+      const writeFile = jest
+        .spyOn(fs, 'writeFile')
+        .mockImplementationOnce(() => {
+          throw new Error('write failed');
+        });
+      try {
+        await expect(
+          sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger),
+        ).rejects.toThrow('write failed');
+      } finally {
+        writeFile.mockRestore();
+      }
     });
 
     it('should allow extra templates when explicitly configured', async () => {
@@ -1386,6 +1563,108 @@ some_unknown_key: value
       expect(warn).toHaveBeenCalledWith(expect.stringContaining('os:system'));
     });
 
+    it('should sanitize mapping-style markdown_extensions', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+markdown_extensions:
+  toc:
+    permalink: true
+  admonition: {}
+  subprocess:Popen:
+    args: [/usr/bin/id]
+  os:system:
+    command: id
+  plantuml_markdown:
+    plantuml_cmd: id
+    output_format: svg
+  pymdownx.snippets:
+    base_path: /
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        markdown_extensions: Record<string, unknown>;
+      };
+
+      expect(parsedYml.markdown_extensions).toEqual({
+        toc: { permalink: true },
+        admonition: {},
+        plantuml_markdown: { output_format: 'svg' },
+        'pymdownx.snippets': {},
+      });
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('subprocess:Popen'),
+      );
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('os:system'));
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('plantuml_cmd'),
+      );
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('pymdownx.snippets configuration'),
+      );
+    });
+
+    it('should remove dynamically configured extension declarations', async () => {
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+markdown_extensions:
+  - !ENV [MARKDOWN_EXTENSION, admonition]
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        markdown_extensions: Array<unknown>;
+      };
+
+      expect(parsedYml.markdown_extensions).toEqual([]);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('dynamically configured extension'),
+      );
+
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+markdown_extensions: !ENV [MARKDOWN_EXTENSIONS, admonition]
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedTaggedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs.yml'),
+      );
+      const parsedTaggedYml = yaml.load(updatedTaggedMkdocsYml.toString()) as {
+        markdown_extensions: Array<unknown>;
+      };
+
+      expect(parsedTaggedYml.markdown_extensions).toEqual([]);
+
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+markdown_extensions:
+  plantuml_markdown: !ENV PLANTUML_EXTENSION_CONFIG
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedTaggedConfigMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs.yml'),
+      );
+      const parsedTaggedConfigYml = yaml.load(
+        updatedTaggedConfigMkdocsYml.toString(),
+      ) as {
+        markdown_extensions: Record<string, unknown>;
+      };
+
+      expect(parsedTaggedConfigYml.markdown_extensions).toEqual({});
+    });
+
     it('should remove configuration from snippets extensions', async () => {
       mockDir.setContent({
         'mkdocs.yml': `site_name: Test
@@ -1623,6 +1902,87 @@ markdown_extensions:
         { 'pymdownx.tabbed': { alternate_style: true } },
       ]);
       expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('should keep a custom_icons list whose entries all resolve inside the input dir', async () => {
+      // Matches the documented mkdocs-material shape:
+      // https://squidfunk.github.io/mkdocs-material/setup/changing-the-logo-and-icons/#additional-icons
+      mockDir.setContent({
+        'mkdocs.yml': `site_name: Test
+markdown_extensions:
+  - pymdownx.emoji:
+      options:
+        custom_icons:
+          - overrides/.icons
+          - theme/icons
+`,
+      });
+
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      const extensions = parsedYml.markdown_extensions as Array<
+        Record<string, { options?: { custom_icons?: unknown } }>
+      >;
+      const emojiConfig = extensions.find(
+        e => typeof e === 'object' && 'pymdownx.emoji' in e,
+      );
+      expect(emojiConfig!['pymdownx.emoji'].options?.custom_icons).toEqual([
+        'overrides/.icons',
+        'theme/icons',
+      ]);
+      expect(warn).not.toHaveBeenCalledWith(
+        expect.stringContaining('custom_icons'),
+      );
+    });
+
+    it('should drop the whole custom_icons option when any entry is invalid or the value is not a plain string array', async () => {
+      const kept = { classes: 'e' };
+      const cases = [
+        ['escape', '{custom_icons: [a, ../outside], classes: e}', kept],
+        ['absolute', '{custom_icons: [/etc/icons], classes: e}', kept],
+        ['nonstring', '{custom_icons: [123], classes: e}', kept],
+        ['dynamic', '{custom_icons: [!ENV [DIR, a]], classes: e}', kept],
+        ['nonarray', '{custom_icons: a, classes: e}', kept],
+        // A tagged options value cannot be inspected, so it goes whole.
+        ['dynamic-options', '!ENV [OPTS, {custom_icons: [/etc]}]', undefined],
+      ] as const;
+      const styles = [
+        ['list', '  - pymdownx.emoji:\n      options:'],
+        ['mapping', '  pymdownx.emoji:\n    options:'],
+      ] as const;
+
+      for (const [name, options, expected] of cases) {
+        for (const [style, prefix] of styles) {
+          const file = `${name}-${style}.yml`;
+          warn.mockClear();
+          mockDir.setContent({
+            [file]: `site_name: Test\nmarkdown_extensions:\n${prefix} ${options}\n`,
+          });
+
+          await sanitizeMkdocsYml(mockDir.resolve(file), mockLogger);
+
+          const { markdown_extensions: extensions } = yaml.load(
+            (await fs.readFile(mockDir.resolve(file))).toString(),
+          ) as { markdown_extensions: unknown };
+          const emojiConfig = (
+            Array.isArray(extensions)
+              ? Object.assign({}, ...extensions)
+              : extensions
+          )['pymdownx.emoji'];
+          expect(emojiConfig.options).toEqual(expected);
+          expect(warn).toHaveBeenCalledWith(
+            expect.stringContaining(
+              'Removed the custom_icons option from markdown_extensions',
+            ),
+          );
+        }
+      }
     });
 
     it('should strip custom_dir from theme while preserving safe keys', async () => {

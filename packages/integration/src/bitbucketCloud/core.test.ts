@@ -119,6 +119,104 @@ describe('bitbucketCloud core', () => {
       expect(result2.headers.Authorization).toEqual('Bearer test-oauth-token');
       expect(callCount).toBe(1); // Still 1, proving cache was used
     });
+
+    it('does not reuse a cached OAuth token across different credentials', async () => {
+      // Return a distinct token per credential set by decoding the incoming
+      // Basic auth header, and count how many token fetches actually happen.
+      // This guards against a single shared cache leaking one integration's
+      // token to another integration with different credentials.
+      let callCount = 0;
+      worker.use(
+        http.post(BITBUCKET_CLOUD_OAUTH_TOKEN_URL, ({ request }) => {
+          callCount++;
+          const authorization = request.headers.get('Authorization') ?? '';
+          const [clientId] = Buffer.from(
+            authorization.replace(/^Basic /, ''),
+            'base64',
+          )
+            .toString('utf8')
+            .split(':');
+          return HttpResponse.json({
+            access_token: `${clientId}-token`,
+            expires_in: 3600,
+          });
+        }),
+      );
+
+      const withOAuthA: BitbucketCloudIntegrationConfig = {
+        host: BITBUCKET_CLOUD_HOST,
+        apiBaseUrl: BITBUCKET_CLOUD_API_BASE_URL,
+        clientId: 'client-a',
+        clientSecret: 'secret-a',
+      };
+      const withOAuthB: BitbucketCloudIntegrationConfig = {
+        host: BITBUCKET_CLOUD_HOST,
+        apiBaseUrl: BITBUCKET_CLOUD_API_BASE_URL,
+        clientId: 'client-b',
+        clientSecret: 'secret-b',
+      };
+
+      // First integration fetches and caches its own token.
+      const resultA1 = await getBitbucketCloudRequestOptions(withOAuthA);
+      expect(resultA1.headers.Authorization).toEqual('Bearer client-a-token');
+      expect(callCount).toBe(1);
+
+      // A second call for the same credentials is served from the cache.
+      const resultA2 = await getBitbucketCloudRequestOptions(withOAuthA);
+      expect(resultA2.headers.Authorization).toEqual('Bearer client-a-token');
+      expect(callCount).toBe(1);
+
+      // A different integration must trigger a fresh fetch and receive its own
+      // token, not the one cached for the first integration.
+      const resultB = await getBitbucketCloudRequestOptions(withOAuthB);
+      expect(callCount).toBe(2);
+      expect(resultB.headers.Authorization).toEqual('Bearer client-b-token');
+    });
+
+    it('fetches distinct tokens for concurrent requests with different credentials', async () => {
+      // Concurrent requests for different credentials must each fetch and
+      // resolve to their own token; a shared in-flight promise keyed only by a
+      // single global would collapse both into one fetch and one token.
+      let callCount = 0;
+      worker.use(
+        http.post(BITBUCKET_CLOUD_OAUTH_TOKEN_URL, ({ request }) => {
+          callCount++;
+          const authorization = request.headers.get('Authorization') ?? '';
+          const [clientId] = Buffer.from(
+            authorization.replace(/^Basic /, ''),
+            'base64',
+          )
+            .toString('utf8')
+            .split(':');
+          return HttpResponse.json({
+            access_token: `${clientId}-token`,
+            expires_in: 3600,
+          });
+        }),
+      );
+
+      const withOAuthC: BitbucketCloudIntegrationConfig = {
+        host: BITBUCKET_CLOUD_HOST,
+        apiBaseUrl: BITBUCKET_CLOUD_API_BASE_URL,
+        clientId: 'client-c',
+        clientSecret: 'secret-c',
+      };
+      const withOAuthD: BitbucketCloudIntegrationConfig = {
+        host: BITBUCKET_CLOUD_HOST,
+        apiBaseUrl: BITBUCKET_CLOUD_API_BASE_URL,
+        clientId: 'client-d',
+        clientSecret: 'secret-d',
+      };
+
+      const [resultC, resultD] = await Promise.all([
+        getBitbucketCloudRequestOptions(withOAuthC),
+        getBitbucketCloudRequestOptions(withOAuthD),
+      ]);
+
+      expect(resultC.headers.Authorization).toEqual('Bearer client-c-token');
+      expect(resultD.headers.Authorization).toEqual('Bearer client-d-token');
+      expect(callCount).toBe(2);
+    });
   });
 
   describe('getBitbucketCloudFileFetchUrl', () => {

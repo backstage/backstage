@@ -78,6 +78,50 @@ describe('runCli', () => {
     expect(process.exit).toHaveBeenCalledTimes(1);
   });
 
+  it('waits for stdout and stderr to flush before exiting', async () => {
+    process.argv = ['node', 'cli', 'print'];
+
+    const pendingFlushes: Array<() => void> = [];
+    let onAllFlushesPending: () => void = () => {};
+    const allFlushesPending = new Promise<void>(resolve => {
+      onAllFlushesPending = resolve;
+    });
+    const holdWrite = (_chunk: unknown, callback?: unknown) => {
+      if (typeof callback === 'function') {
+        pendingFlushes.push(callback as () => void);
+        if (pendingFlushes.length === 2) {
+          onAllFlushesPending();
+        }
+      }
+      return true;
+    };
+    jest.spyOn(process.stdout, 'write').mockImplementation(holdWrite as never);
+    jest.spyOn(process.stderr, 'write').mockImplementation(holdWrite as never);
+
+    const printModule = createCliModule({
+      packageJson: { name: '@example/print' },
+      init: async reg => {
+        reg.addCommand({
+          path: ['print'],
+          description: 'Print a lot of output',
+          execute: async () => {
+            process.stdout.write('output');
+          },
+        });
+      },
+    });
+
+    const done = runCli({ modules: [printModule], name: 'example-cli' });
+
+    await allFlushesPending;
+    expect(process.exit).not.toHaveBeenCalled();
+
+    pendingFlushes.forEach(flush => flush());
+    await done;
+
+    expect(process.exit).toHaveBeenCalledWith(0);
+  });
+
   it('forwards help flags to leaf commands', async () => {
     expect.assertions(2);
     process.argv = ['node', 'cli', 'test', '--help'];

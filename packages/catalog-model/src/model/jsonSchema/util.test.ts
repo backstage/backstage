@@ -58,6 +58,18 @@ describe('isJsonObjectDeep', () => {
     expect(isJsonObjectDeep([1, 2])).toBe(false);
   });
 
+  it('should allow shared objects and arrays without circular references', () => {
+    const sharedObject = { value: 'ok' };
+    const sharedArray = [sharedObject];
+    expect(
+      isJsonObjectDeep({
+        first: sharedObject,
+        second: sharedObject,
+        arrays: [sharedArray, sharedArray],
+      }),
+    ).toBe(true);
+  });
+
   it('should return false when a nested value is a function', () => {
     expect(isJsonObjectDeep({ fn: () => {} })).toBe(false);
   });

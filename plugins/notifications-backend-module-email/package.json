@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-notifications-backend-module-email",
-  "version": "0.3.24",
+  "version": "0.3.26-next.1",
   "description": "The email backend module for the notifications plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -47,13 +47,12 @@
     "@backstage/plugin-notifications-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "lodash": "^4.17.21",
-    "nodemailer": "^9.0.1",
+    "nodemailer": "^10.0.10",
     "p-throttle": "^4.1.1"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
-    "@backstage/cli": "workspace:^",
-    "@types/nodemailer": "^7.0.0"
+    "@backstage/cli": "workspace:^"
   },
   "configSchema": "config.d.ts"
 }

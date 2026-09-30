@@ -499,7 +499,7 @@ export interface TaskBroker {
   // (undocumented)
   cancel(taskId: string): Promise<void>;
   // (undocumented)
-  claim(): Promise<TaskContext>;
+  claim(options?: { signal?: AbortSignal }): Promise<TaskContext>;
   // (undocumented)
   dispatch(
     options: TaskBrokerDispatchOptions,

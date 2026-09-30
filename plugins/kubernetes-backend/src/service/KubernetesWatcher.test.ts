@@ -21,13 +21,7 @@ import {
 import { KubernetesClientBasedWatcher } from './KubernetesWatcher';
 import { KubernetesConnection } from './KubernetesConnection';
 import { KubernetesCredential } from '@backstage/plugin-kubernetes-node';
-import {
-  MockedRequest,
-  RestContext,
-  ResponseTransformer,
-  compose,
-  rest,
-} from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   mockServices,
@@ -38,22 +32,18 @@ describe('KubernetesWatcher', () => {
   const worker = setupServer();
   registerMswTestHooks(worker);
 
-  const checkToken = (
-    req: MockedRequest,
-    ctx: RestContext,
-    token: string,
-  ): ResponseTransformer => {
-    switch (req.headers.get('Authorization')) {
+  const checkToken = (request: Request, token: string) => {
+    switch (request.headers.get('Authorization')) {
       case `Bearer ${token}`:
-        return ctx.status(200);
+        return undefined;
       default:
-        return compose(
-          ctx.status(401),
-          ctx.json({
+        return HttpResponse.json(
+          {
             kind: 'Status',
             apiVersion: 'v1',
             code: 401,
-          }),
+          },
+          { status: 401 },
         );
     }
   };
@@ -99,13 +89,15 @@ describe('KubernetesWatcher', () => {
       });
 
       worker.use(
-        rest.get(
+        http.get(
           'http://localhost:9999/api/v1/namespaces/default/pods',
-          (req, res, ctx) => {
-            if (req.url.searchParams.get('watch') === 'true') {
-              return res(checkToken(req, ctx, 'token'), ctx.text(watchData));
+          ({ request }) => {
+            if (new URL(request.url).searchParams.get('watch') === 'true') {
+              return (
+                checkToken(request, 'token') ?? HttpResponse.text(watchData)
+              );
             }
-            return res(ctx.status(400));
+            return new HttpResponse(null, { status: 400 });
           },
         ),
       );
@@ -134,8 +126,8 @@ describe('KubernetesWatcher', () => {
 
     it('should yield ERROR event on network failure', async () => {
       worker.use(
-        rest.get('http://localhost:9999/*', (_req, res) => {
-          return res.networkError('Failed to connect');
+        http.get('http://localhost:9999/*', () => {
+          return HttpResponse.error();
         }),
       );
 
@@ -184,13 +176,15 @@ describe('KubernetesWatcher', () => {
       });
 
       worker.use(
-        rest.get(
+        http.get(
           'http://localhost:9999/api/v1/namespaces/default/pods',
-          (req, res, ctx) => {
-            if (req.url.searchParams.get('watch') === 'true') {
-              return res(checkToken(req, ctx, 'token'), ctx.text(watchData));
+          ({ request }) => {
+            if (new URL(request.url).searchParams.get('watch') === 'true') {
+              return (
+                checkToken(request, 'token') ?? HttpResponse.text(watchData)
+              );
             }
-            return res(ctx.status(400));
+            return new HttpResponse(null, { status: 400 });
           },
         ),
       );
@@ -234,13 +228,15 @@ describe('KubernetesWatcher', () => {
       });
 
       worker.use(
-        rest.get(
+        http.get(
           'http://localhost:9999/api/v1/namespaces/default/pods',
-          (req, res, ctx) => {
-            if (req.url.searchParams.get('watch') === 'true') {
-              return res(checkToken(req, ctx, 'token'), ctx.text(watchData));
+          ({ request }) => {
+            if (new URL(request.url).searchParams.get('watch') === 'true') {
+              return (
+                checkToken(request, 'token') ?? HttpResponse.text(watchData)
+              );
             }
-            return res(ctx.status(400));
+            return new HttpResponse(null, { status: 400 });
           },
         ),
       );
@@ -285,13 +281,15 @@ describe('KubernetesWatcher', () => {
       ].join('\n');
 
       worker.use(
-        rest.get(
+        http.get(
           'http://localhost:9999/api/v1/namespaces/default/pods',
-          (req, res, ctx) => {
-            if (req.url.searchParams.get('watch') === 'true') {
-              return res(checkToken(req, ctx, 'token'), ctx.text(watchData));
+          ({ request }) => {
+            if (new URL(request.url).searchParams.get('watch') === 'true') {
+              return (
+                checkToken(request, 'token') ?? HttpResponse.text(watchData)
+              );
             }
-            return res(ctx.status(400));
+            return new HttpResponse(null, { status: 400 });
           },
         ),
       );
@@ -325,8 +323,8 @@ describe('KubernetesWatcher', () => {
 
     it('should yield ERROR event for 401 Unauthorized', async () => {
       worker.use(
-        rest.get('http://localhost:9999/*', (_req, res, ctx) => {
-          return res(ctx.status(401), ctx.text('authentication required'));
+        http.get('http://localhost:9999/*', () => {
+          return HttpResponse.text('authentication required', { status: 401 });
         }),
       );
 
@@ -357,8 +355,8 @@ describe('KubernetesWatcher', () => {
 
     it('should yield ERROR event for 404 Not Found', async () => {
       worker.use(
-        rest.get('http://localhost:9999/*', (_req, res, ctx) => {
-          return res(ctx.status(404), ctx.text('resource not found'));
+        http.get('http://localhost:9999/*', () => {
+          return HttpResponse.text('resource not found', { status: 404 });
         }),
       );
 
@@ -386,8 +384,8 @@ describe('KubernetesWatcher', () => {
 
     it('should yield ERROR event for 500 Server Error', async () => {
       worker.use(
-        rest.get('http://localhost:9999/*', (_req, res, ctx) => {
-          return res(ctx.status(500), ctx.text('internal server error'));
+        http.get('http://localhost:9999/*', () => {
+          return HttpResponse.text('internal server error', { status: 500 });
         }),
       );
 
@@ -428,11 +426,11 @@ describe('KubernetesWatcher', () => {
       });
 
       worker.use(
-        rest.get('http://localhost:9999/*', (req, res, ctx) => {
-          if (req.url.searchParams.get('watch') === 'true') {
-            return res(ctx.text(errorEvent));
+        http.get('http://localhost:9999/*', ({ request }) => {
+          if (new URL(request.url).searchParams.get('watch') === 'true') {
+            return HttpResponse.text(errorEvent);
           }
-          return res(ctx.status(400));
+          return new HttpResponse(null, { status: 400 });
         }),
       );
 
@@ -477,11 +475,11 @@ describe('KubernetesWatcher', () => {
       ].join('\n');
 
       worker.use(
-        rest.get('http://localhost:9999/*', (req, res, ctx) => {
-          if (req.url.searchParams.get('watch') === 'true') {
-            return res(ctx.text(watchData));
+        http.get('http://localhost:9999/*', ({ request }) => {
+          if (new URL(request.url).searchParams.get('watch') === 'true') {
+            return HttpResponse.text(watchData);
           }
-          return res(ctx.status(400));
+          return new HttpResponse(null, { status: 400 });
         }),
       );
 
@@ -515,11 +513,11 @@ describe('KubernetesWatcher', () => {
       ].join('\n');
 
       worker.use(
-        rest.get('http://localhost:9999/*', (req, res, ctx) => {
-          if (req.url.searchParams.get('watch') === 'true') {
-            return res(ctx.text(watchData));
+        http.get('http://localhost:9999/*', ({ request }) => {
+          if (new URL(request.url).searchParams.get('watch') === 'true') {
+            return HttpResponse.text(watchData);
           }
-          return res(ctx.status(400));
+          return new HttpResponse(null, { status: 400 });
         }),
       );
 
@@ -554,11 +552,11 @@ describe('KubernetesWatcher', () => {
       ].join('\n');
 
       worker.use(
-        rest.get('http://localhost:9999/*', (req, res, ctx) => {
-          if (req.url.searchParams.get('watch') === 'true') {
-            return res(ctx.text(watchData));
+        http.get('http://localhost:9999/*', ({ request }) => {
+          if (new URL(request.url).searchParams.get('watch') === 'true') {
+            return HttpResponse.text(watchData);
           }
-          return res(ctx.status(400));
+          return new HttpResponse(null, { status: 400 });
         }),
       );
 
@@ -596,15 +594,15 @@ describe('KubernetesWatcher', () => {
       let labelSelectorParam = '';
       let resourceVersionParam = '';
       worker.use(
-        rest.get('http://localhost:9999/*', (req, res, ctx) => {
-          requestedUrl = req.url.pathname;
-          labelSelectorParam = req.url.searchParams.get('labelSelector') || '';
-          resourceVersionParam =
-            req.url.searchParams.get('resourceVersion') || '';
-          if (req.url.searchParams.get('watch') === 'true') {
-            return res(ctx.text(watchData));
+        http.get('http://localhost:9999/*', ({ request }) => {
+          const url = new URL(request.url);
+          requestedUrl = url.pathname;
+          labelSelectorParam = url.searchParams.get('labelSelector') || '';
+          resourceVersionParam = url.searchParams.get('resourceVersion') || '';
+          if (url.searchParams.get('watch') === 'true') {
+            return HttpResponse.text(watchData);
           }
-          return res(ctx.status(400));
+          return new HttpResponse(null, { status: 400 });
         }),
       );
 
@@ -646,19 +644,19 @@ describe('KubernetesWatcher', () => {
       let sendInitialEventsParam = '';
       let resourceVersionMatchParam = '';
       worker.use(
-        rest.get('http://localhost:9999/*', (req, res, ctx) => {
-          timeoutSecondsParam =
-            req.url.searchParams.get('timeoutSeconds') || '';
+        http.get('http://localhost:9999/*', ({ request }) => {
+          const url = new URL(request.url);
+          timeoutSecondsParam = url.searchParams.get('timeoutSeconds') || '';
           allowWatchBookmarksParam =
-            req.url.searchParams.get('allowWatchBookmarks') || '';
+            url.searchParams.get('allowWatchBookmarks') || '';
           sendInitialEventsParam =
-            req.url.searchParams.get('sendInitialEvents') || '';
+            url.searchParams.get('sendInitialEvents') || '';
           resourceVersionMatchParam =
-            req.url.searchParams.get('resourceVersionMatch') || '';
-          if (req.url.searchParams.get('watch') === 'true') {
-            return res(ctx.text(watchData));
+            url.searchParams.get('resourceVersionMatch') || '';
+          if (url.searchParams.get('watch') === 'true') {
+            return HttpResponse.text(watchData);
           }
-          return res(ctx.status(400));
+          return new HttpResponse(null, { status: 400 });
         }),
       );
 
@@ -703,12 +701,13 @@ describe('KubernetesWatcher', () => {
 
       let requestedUrl = '';
       worker.use(
-        rest.get('http://localhost:9999/*', (req, res, ctx) => {
-          requestedUrl = req.url.pathname;
-          if (req.url.searchParams.get('watch') === 'true') {
-            return res(ctx.text(watchData));
+        http.get('http://localhost:9999/*', ({ request }) => {
+          const url = new URL(request.url);
+          requestedUrl = url.pathname;
+          if (url.searchParams.get('watch') === 'true') {
+            return HttpResponse.text(watchData);
           }
-          return res(ctx.status(400));
+          return new HttpResponse(null, { status: 400 });
         }),
       );
 
@@ -738,12 +737,12 @@ describe('KubernetesWatcher', () => {
 
       let authHeader = '';
       worker.use(
-        rest.get('http://localhost:9999/*', (req, res, ctx) => {
-          authHeader = req.headers.get('Authorization') || '';
-          if (req.url.searchParams.get('watch') === 'true') {
-            return res(ctx.text(watchData));
+        http.get('http://localhost:9999/*', ({ request }) => {
+          authHeader = request.headers.get('Authorization') || '';
+          if (new URL(request.url).searchParams.get('watch') === 'true') {
+            return HttpResponse.text(watchData);
           }
-          return res(ctx.status(400));
+          return new HttpResponse(null, { status: 400 });
         }),
       );
 
@@ -772,11 +771,11 @@ describe('KubernetesWatcher', () => {
       const watchData = JSON.stringify({ type: 'ADDED', object: pod });
 
       worker.use(
-        rest.get('http://localhost:9999/*', (req, res, ctx) => {
-          if (req.url.searchParams.get('watch') === 'true') {
-            return res(ctx.text(watchData));
+        http.get('http://localhost:9999/*', ({ request }) => {
+          if (new URL(request.url).searchParams.get('watch') === 'true') {
+            return HttpResponse.text(watchData);
           }
-          return res(ctx.status(400));
+          return new HttpResponse(null, { status: 400 });
         }),
       );
 
@@ -801,8 +800,8 @@ describe('KubernetesWatcher', () => {
 
     it('should yield ERROR event when credentials are missing', async () => {
       worker.use(
-        rest.get('http://localhost:9999/*', (_req, res, ctx) => {
-          return res(ctx.status(401), ctx.text('Unauthorized'));
+        http.get('http://localhost:9999/*', () => {
+          return HttpResponse.text('Unauthorized', { status: 401 });
         }),
       );
 
@@ -847,11 +846,11 @@ describe('KubernetesWatcher', () => {
       ].join('\n');
 
       worker.use(
-        rest.get('http://localhost:9999/*', (req, res, ctx) => {
-          if (req.url.searchParams.get('watch') === 'true') {
-            return res(ctx.text(watchData));
+        http.get('http://localhost:9999/*', ({ request }) => {
+          if (new URL(request.url).searchParams.get('watch') === 'true') {
+            return HttpResponse.text(watchData);
           }
-          return res(ctx.status(400));
+          return new HttpResponse(null, { status: 400 });
         }),
       );
 
@@ -896,11 +895,11 @@ describe('KubernetesWatcher', () => {
       ].join('\n');
 
       worker.use(
-        rest.get('http://localhost:9999/*', (req, res, ctx) => {
-          if (req.url.searchParams.get('watch') === 'true') {
-            return res(ctx.text(watchData));
+        http.get('http://localhost:9999/*', ({ request }) => {
+          if (new URL(request.url).searchParams.get('watch') === 'true') {
+            return HttpResponse.text(watchData);
           }
-          return res(ctx.status(400));
+          return new HttpResponse(null, { status: 400 });
         }),
       );
 
@@ -993,13 +992,13 @@ describe('KubernetesWatcher', () => {
       };
 
       worker.use(
-        rest.get('http://localhost:9999/*', (req, res, ctx) => {
-          if (req.url.searchParams.get('watch') === 'true') {
-            return res(
-              ctx.text(JSON.stringify({ type: 'ADDED', object: pod })),
+        http.get('http://localhost:9999/*', ({ request }) => {
+          if (new URL(request.url).searchParams.get('watch') === 'true') {
+            return HttpResponse.text(
+              JSON.stringify({ type: 'ADDED', object: pod }),
             );
           }
-          return res(ctx.status(400));
+          return new HttpResponse(null, { status: 400 });
         }),
       );
 

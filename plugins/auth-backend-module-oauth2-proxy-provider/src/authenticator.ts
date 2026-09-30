@@ -60,7 +60,7 @@ export const oauth2ProxyAuthenticator = createProxyAuthenticator({
         accessToken: jwt || '',
         headers: req.headers,
         getHeader(name: string) {
-          if (name.toLocaleLowerCase('en-US') === 'set-cookie') {
+          if (name.toLowerCase() === 'set-cookie') {
             throw new Error('Access Set-Cookie via the headers object instead');
           }
           return req.get(name);

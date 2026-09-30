@@ -1,5 +1,59 @@
 # @backstage/plugin-devtools
 
+## 0.1.44-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/plugin-permission-react@0.5.6-next.0
+  - @backstage/core-compat-api@0.5.16-next.0
+  - @backstage/plugin-devtools-common@0.1.27-next.0
+
+## 0.1.43
+
+### Patch Changes
+
+- d421187: Reduced the initial app bundle size by loading page and optional UI implementations only when their extensions render.
+- 38441ff: Migrate to toastApi from deprecated alertApi
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/ui@0.18.0
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/core-compat-api@0.5.15
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/plugin-devtools-common@0.1.26
+  - @backstage/plugin-permission-react@0.5.5
+
+## 0.1.43-next.2
+
+### Patch Changes
+
+- 38441ff: Migrate to toastApi from deprecated alertApi
+- Updated dependencies
+  - @backstage/ui@0.18.0-next.2
+  - @backstage/core-components@0.18.14-next.2
+  - @backstage/core-plugin-api@1.12.10-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.1
+  - @backstage/plugin-permission-react@0.5.5-next.1
+  - @backstage/plugin-devtools-common@0.1.26-next.0
+
+## 0.1.43-next.1
+
+### Patch Changes
+
+- d421187: Reduced the initial app bundle size by loading page and optional UI implementations only when their extensions render.
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/ui@0.18.0-next.1
+  - @backstage/core-compat-api@0.5.15-next.1
+  - @backstage/core-plugin-api@1.12.10-next.0
+  - @backstage/plugin-permission-react@0.5.5-next.0
+
 ## 0.1.43-next.0
 
 ### Patch Changes

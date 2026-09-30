@@ -36,6 +36,7 @@ const useStyles = makeStyles(theme => ({
     letterSpacing: 0.5,
     overflow: 'hidden',
     whiteSpace: 'nowrap',
+    marginBottom: theme.spacing(1),
   },
 }));
 

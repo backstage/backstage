@@ -327,20 +327,26 @@ backend.start();
 The incremental ingestion plugin exposes REST endpoints for managing
 providers at runtime:
 
-| Method | Path                                                   | Description                                                            |
-| :----- | :----------------------------------------------------- | :--------------------------------------------------------------------- |
-| GET    | `/api/catalog/incremental/health`                      | Check the health of all incremental providers.                         |
-| GET    | `/api/catalog/incremental/providers`                   | List all known incremental entity providers.                           |
-| GET    | `/api/catalog/incremental/providers/:provider`         | Check the status of a specific provider (resting, interstitial, etc.). |
-| POST   | `/api/catalog/incremental/providers/:provider/trigger` | Trigger the provider's next action immediately.                        |
-| POST   | `/api/catalog/incremental/providers/:provider/start`   | Stop the current ingestion cycle and start a new one immediately.      |
-| POST   | `/api/catalog/incremental/providers/:provider/cancel`  | Stop the current ingestion cycle and start a new one in 24 hours.      |
-| DELETE | `/api/catalog/incremental/providers/:provider`         | Remove all records for the provider and restart it in 24 hours.        |
-| GET    | `/api/catalog/incremental/providers/:provider/marks`   | Retrieve ingestion marks for the current cycle.                        |
-| DELETE | `/api/catalog/incremental/providers/:provider/marks`   | Remove all ingestion marks for the current cycle.                      |
-| POST   | `/api/catalog/incremental/cleanup`                     | Remove all records for all providers and restart them in 24 hours.     |
+| Method | Path                                                   | Permission                 | Description                                                            |
+| :----- | :----------------------------------------------------- | :------------------------- | :--------------------------------------------------------------------- |
+| GET    | `/api/catalog/incremental/health`                      | `catalog.ingestion.read`   | Check the health of all incremental providers.                         |
+| GET    | `/api/catalog/incremental/providers`                   | `catalog.ingestion.read`   | List all known incremental entity providers.                           |
+| GET    | `/api/catalog/incremental/providers/:provider`         | `catalog.ingestion.read`   | Check the status of a specific provider (resting, interstitial, etc.). |
+| POST   | `/api/catalog/incremental/providers/:provider/trigger` | `catalog.ingestion.manage` | Trigger the provider's next action immediately.                        |
+| POST   | `/api/catalog/incremental/providers/:provider/start`   | `catalog.ingestion.manage` | Stop the current ingestion cycle and start a new one immediately.      |
+| POST   | `/api/catalog/incremental/providers/:provider/cancel`  | `catalog.ingestion.manage` | Stop the current ingestion cycle and start a new one in 24 hours.      |
+| DELETE | `/api/catalog/incremental/providers/:provider`         | `catalog.ingestion.manage` | Remove all records for the provider and restart it in 24 hours.        |
+| GET    | `/api/catalog/incremental/providers/:provider/marks`   | `catalog.ingestion.read`   | Retrieve ingestion marks for the current cycle.                        |
+| DELETE | `/api/catalog/incremental/providers/:provider/marks`   | `catalog.ingestion.manage` | Remove all ingestion marks for the current cycle.                      |
+| POST   | `/api/catalog/incremental/cleanup`                     | `catalog.ingestion.manage` | Remove all records for all providers and restart them in 24 hours.     |
 
 In all cases, `:provider` is the name returned by `getProviderName`.
+
+The `@backstage/plugin-catalog-common/alpha` package exports
+`catalogIngestionReadPermission` and `catalogIngestionManagePermission` for use
+in a [permission policy](../../../permissions/overview.md). The catalog backend
+registers these permissions automatically. Backstage permits basic permissions
+by default, so you must configure a policy to restrict these operations.
 
 :::caution
 The cleanup endpoint removes records for all providers. Use it with care —

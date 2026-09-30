@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { PropsWithChildren, ComponentType, useCallback } from 'react';
+import { PropsWithChildren, ComponentType, Suspense, useCallback } from 'react';
 import { useOutlet } from 'react-router-dom';
 
 import {
@@ -48,7 +48,7 @@ export const TechDocsAddons: ComponentType<PropsWithChildren<{}>> = () => null;
 attachComponentData(TechDocsAddons, TECHDOCS_ADDONS_WRAPPER_KEY, true);
 
 export const getDataKeyByName = (name: string) => {
-  return `${TECHDOCS_ADDONS_KEY}.${name.toLocaleLowerCase('en-US')}`;
+  return `${TECHDOCS_ADDONS_KEY}.${name.toLowerCase()}`;
 };
 
 /**
@@ -117,7 +117,12 @@ const getAllTechDocsAddonsData = (collection: ElementCollection) => {
 };
 
 /**
- * hook to use addons in components
+ * Hook to use addons in components.
+ *
+ * Addons rendered through this hook are isolated in individual Suspense
+ * boundaries with no fallback, so a suspended addon does not hide the reader
+ * or sibling addons while it loads.
+ *
  * @public
  */
 export const useTechDocsAddons = () => {
@@ -135,17 +140,26 @@ export const useTechDocsAddons = () => {
   );
 
   const renderComponentByName = useCallback(
-    (name: string) => {
+    (name: string): JSX.Element | null => {
       const data = options.find(option => option.name === name);
-      return data ? findAddonByData(data) : null;
+      const addon = data ? findAddonByData(data) : null;
+      return addon ? <Suspense fallback={null}>{addon}</Suspense> : null;
     },
     [options, findAddonByData],
   );
 
   const renderComponentsByLocation = useCallback(
-    (location: keyof typeof TechDocsAddonLocations) => {
+    (
+      location: keyof typeof TechDocsAddonLocations,
+    ): (JSX.Element | null)[] | null => {
       const data = options.filter(option => option.location === location);
-      return data.length ? data.map(findAddonByData) : null;
+      return data.length
+        ? data.map(option => (
+            <Suspense key={option.name} fallback={null}>
+              {findAddonByData(option)}
+            </Suspense>
+          ))
+        : null;
     },
     [options, findAddonByData],
   );

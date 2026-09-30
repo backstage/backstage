@@ -796,4 +796,110 @@ describe('AwsS3UrlReader', () => {
       ).rejects.toThrow('Unsupported search pattern URL');
     });
   });
+
+  describe('buildCredentials with roleArn', () => {
+    let getCredProviderMock: jest.SpyInstance;
+
+    beforeEach(() => {
+      getCredProviderMock = jest.spyOn(
+        DefaultAwsCredentialsManager.prototype,
+        'getCredentialProvider',
+      );
+      jest.spyOn(S3Client.prototype, 'send').mockImplementation(s3SendMock);
+      s3SendMock.mockReset();
+      s3SendMock.mockImplementation(async command => {
+        if (command instanceof GetObjectCommand) {
+          return {
+            Body: sdkStreamMixin(
+              fs.createReadStream(
+                path.resolve(
+                  __dirname,
+                  '__fixtures__/awsS3/awsS3-mock-object.yaml',
+                ),
+              ),
+            ),
+            ETag: '123abc',
+          };
+        }
+        throw new Error(`No mock for ${command.constructor.name}`);
+      });
+    });
+
+    it('uses account-specific credentials as master credentials when account config exists for the role ARN', async () => {
+      const accountCreds = {
+        accessKeyId: 'account-key',
+        secretAccessKey: 'account-secret',
+      };
+      getCredProviderMock.mockImplementation(async (opts?: any) => {
+        if (opts?.arn) {
+          return {
+            accountId: '123456789012',
+            sdkCredentialProvider: async () => accountCreds,
+          };
+        }
+        return {
+          sdkCredentialProvider: async () => ({
+            accessKeyId: 'default-key',
+            secretAccessKey: 'default-secret',
+          }),
+        };
+      });
+
+      const config = new ConfigReader({
+        host: 'amazonaws.com',
+        roleArn: 'arn:aws:iam::123456789012:role/MyRole',
+      });
+
+      const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
+      const reader = new AwsS3UrlReader(
+        credsManager,
+        new AwsS3Integration(readAwsS3IntegrationConfig(config)),
+        { treeResponseFactory },
+      );
+
+      await reader.readUrl(
+        'https://test-bucket.s3.us-east-2.amazonaws.com/file.yaml',
+      );
+
+      expect(getCredProviderMock).toHaveBeenCalledWith({
+        arn: 'arn:aws:iam::123456789012:role/MyRole',
+      });
+    });
+
+    it('falls back to default credentials when no account config exists for the role ARN', async () => {
+      const defaultCreds = {
+        accessKeyId: 'default-key',
+        secretAccessKey: 'default-secret',
+      };
+      getCredProviderMock.mockImplementation(async (opts?: any) => {
+        if (opts?.arn) {
+          throw new Error('No matching account');
+        }
+        return {
+          sdkCredentialProvider: async () => defaultCreds,
+        };
+      });
+
+      const config = new ConfigReader({
+        host: 'amazonaws.com',
+        roleArn: 'arn:aws:iam::123456789012:role/MyRole',
+      });
+
+      const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
+      const reader = new AwsS3UrlReader(
+        credsManager,
+        new AwsS3Integration(readAwsS3IntegrationConfig(config)),
+        { treeResponseFactory },
+      );
+
+      await reader.readUrl(
+        'https://test-bucket.s3.us-east-2.amazonaws.com/file.yaml',
+      );
+
+      expect(getCredProviderMock).toHaveBeenCalledWith({
+        arn: 'arn:aws:iam::123456789012:role/MyRole',
+      });
+      expect(getCredProviderMock).toHaveBeenCalledWith();
+    });
+  });
 });

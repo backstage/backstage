@@ -79,13 +79,13 @@ export function AboutContent(props: AboutContentProps) {
   const classes = useStyles();
   const { t } = useTranslationRef(catalogTranslationRef);
 
-  const isSystem = entity.kind.toLocaleLowerCase('en-US') === 'system';
-  const isResource = entity.kind.toLocaleLowerCase('en-US') === 'resource';
-  const isComponent = entity.kind.toLocaleLowerCase('en-US') === 'component';
-  const isAPI = entity.kind.toLocaleLowerCase('en-US') === 'api';
-  const isTemplate = entity.kind.toLocaleLowerCase('en-US') === 'template';
-  const isLocation = entity.kind.toLocaleLowerCase('en-US') === 'location';
-  const isGroup = entity.kind.toLocaleLowerCase('en-US') === 'group';
+  const isSystem = entity.kind.toLowerCase() === 'system';
+  const isResource = entity.kind.toLowerCase() === 'resource';
+  const isComponent = entity.kind.toLowerCase() === 'component';
+  const isAPI = entity.kind.toLowerCase() === 'api';
+  const isTemplate = entity.kind.toLowerCase() === 'template';
+  const isLocation = entity.kind.toLowerCase() === 'location';
+  const isGroup = entity.kind.toLowerCase() === 'group';
 
   const partOfSystemRelations = getEntityRelations(entity, RELATION_PART_OF, {
     kind: 'system',

@@ -231,10 +231,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     );
     const result: Entity[] = [];
     for await (const project of projects) {
-      if (
-        this.config?.filters?.projectKey &&
-        !this.config.filters.projectKey.test(project.key)
-      ) {
+      if (!this.matchesRepositoryFilters({ projectKey: project.key })) {
         continue;
       }
       const repositories = paginated(options =>
@@ -245,12 +242,12 @@ export class BitbucketServerEntityProvider implements EntityProvider {
       );
       for await (const repository of repositories) {
         if (
-          this.config?.filters?.repoSlug &&
-          !this.config.filters.repoSlug.test(repository.slug)
+          !this.matchesRepositoryFilters({
+            projectKey: project.key,
+            repoSlug: repository.slug,
+            archived: repository.archived,
+          })
         ) {
-          continue;
-        }
-        if (this.config?.filters?.skipArchivedRepos && repository.archived) {
           continue;
         }
         if (this.config.validateLocationsExist) {
@@ -314,6 +311,28 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     return result;
   }
 
+  private matchesRepositoryFilters(options: {
+    projectKey: string;
+    repoSlug?: string;
+    archived?: boolean;
+  }): boolean {
+    const filters = this.config.filters;
+    if (filters?.projectKey && !filters.projectKey.test(options.projectKey)) {
+      return false;
+    }
+    if (
+      filters?.repoSlug &&
+      options.repoSlug !== undefined &&
+      !filters.repoSlug.test(options.repoSlug)
+    ) {
+      return false;
+    }
+    if (filters?.skipArchivedRepos && options.archived) {
+      return false;
+    }
+    return true;
+  }
+
   private isDefaultBranchPush(
     defaultBranch: String,
     event: BitbucketServerEvents.RefsChangedEvent,
@@ -342,7 +361,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
 
   private async getLocationEntity(
     event: BitbucketServerEvents.RefsChangedEvent,
-  ): Promise<Entity[]> {
+  ): Promise<Entity[] | undefined> {
     const client = BitbucketServerClient.fromConfig({
       config: this.integration.config,
     });
@@ -352,6 +371,16 @@ export class BitbucketServerEntityProvider implements EntityProvider {
         projectKey: event.repository.project.key,
         repo: event.repository.slug,
       });
+
+      if (
+        !this.matchesRepositoryFilters({
+          projectKey: repository.project.key,
+          repoSlug: repository.slug,
+          archived: repository.archived,
+        })
+      ) {
+        return undefined;
+      }
 
       for await (const entity of this.parser({
         client,
@@ -406,10 +435,22 @@ export class BitbucketServerEntityProvider implements EntityProvider {
       throw new Error('Not initialized');
     }
 
+    if (
+      !this.matchesRepositoryFilters({
+        projectKey: event.repository.project.key,
+        repoSlug: event.repository.slug,
+      })
+    ) {
+      return;
+    }
+
     const repoSlug = event.repository.slug;
     const catalogRepoUrl: string = `https://${this.config.host}/projects/${event.repository.project.key}/repos/${repoSlug}/browse${this.config.catalogPath}`;
     this.logger.info(`handle repo:push event for ${catalogRepoUrl}`);
     const targets = await this.getLocationEntity(event);
+    if (!targets) {
+      return;
+    }
     if (targets.length === 0) {
       this.logger.error('Failed to create location entity.');
       return;

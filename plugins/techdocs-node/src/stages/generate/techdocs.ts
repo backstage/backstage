@@ -38,6 +38,7 @@ import {
   sanitizeMkdocsYml,
 } from './mkdocsPatchers';
 import {
+  ContainerRunnerPullOptions,
   GeneratorBase,
   GeneratorConfig,
   GeneratorOptions,
@@ -130,11 +131,17 @@ export class TechdocsGenerator implements GeneratorBase {
     // validate the docs_dir first
     const docsDir = await validateMkdocsYaml(inputDir, content);
 
-    // Remove unsupported configuration keys
+    const defaultPlugins = [...(this.options.defaultPlugins ?? [])];
+
+    // Remove unsupported configuration keys and plugins
     await sanitizeMkdocsYml(
       mkdocsYmlPath,
       childLogger,
       this.options.dangerouslyAllowAdditionalKeys,
+      [
+        ...(this.options.dangerouslyAllowAdditionalPlugins ?? []),
+        ...defaultPlugins,
+      ],
     );
 
     if (parsedLocationAnnotation) {
@@ -155,8 +162,6 @@ export class TechdocsGenerator implements GeneratorBase {
     await validateInputDirectory(inputDir);
 
     // patch the list of mkdocs plugins
-    const defaultPlugins = this.options.defaultPlugins ?? [];
-
     if (
       !this.options.omitTechdocsCoreMkdocsPlugin &&
       !defaultPlugins.includes('techdocs-core')
@@ -180,7 +185,14 @@ export class TechdocsGenerator implements GeneratorBase {
         case 'local':
           await runCommand({
             command: 'mkdocs',
-            args: ['build', '-f', mkdocsYmlPath, '-d', outputDir, '-v'],
+            args: [
+              'build',
+              '-f',
+              path.relative(inputDir, mkdocsYmlPath),
+              '-d',
+              outputDir,
+              '-v',
+            ],
             options: {
               cwd: inputDir,
             },
@@ -210,6 +222,7 @@ export class TechdocsGenerator implements GeneratorBase {
             // write to, otherwise they will just fail trying to write to /
             envVars: { HOME: '/tmp' },
             pullImage: this.options.pullImage,
+            pullOptions: this.options.pullOptions,
             defaultUser: runAsDefaultUser,
           });
           childLogger.info(
@@ -276,6 +289,9 @@ export function readGeneratorConfig(
       'docker',
     dockerImage: config.getOptionalString('techdocs.generator.dockerImage'),
     pullImage: config.getOptionalBoolean('techdocs.generator.pullImage'),
+    pullOptions: config.getOptional<ContainerRunnerPullOptions>(
+      'techdocs.generator.pullOptions',
+    ),
     omitTechdocsCoreMkdocsPlugin: config.getOptionalBoolean(
       'techdocs.generator.mkdocs.omitTechdocsCorePlugin',
     ),
@@ -287,6 +303,9 @@ export function readGeneratorConfig(
     ),
     dangerouslyAllowAdditionalKeys: config.getOptionalStringArray(
       'techdocs.generator.mkdocs.dangerouslyAllowAdditionalKeys',
+    ),
+    dangerouslyAllowAdditionalPlugins: config.getOptionalStringArray(
+      'techdocs.generator.mkdocs.dangerouslyAllowAdditionalPlugins',
     ),
     disableExternalFonts: config.getOptionalBoolean(
       'techdocs.generator.mkdocs.disableExternalFonts',

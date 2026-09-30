@@ -21,10 +21,37 @@ import {
 import { createExtensionInput } from '@backstage/frontend-plugin-api';
 import {
   HeaderIconLinkRow,
+  IconLinkVertical,
   IconLinkVerticalProps,
 } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
+import { Entity } from '@backstage/catalog-model';
 import { buildFilterFn } from './filter/FilterWrapper';
+
+type EntityIconLink = {
+  id: string;
+  filter: (entity: Entity) => boolean;
+  useProps: () => IconLinkVerticalProps;
+};
+
+function EntityIconLinkItem(props: Pick<EntityIconLink, 'useProps'>) {
+  const { useProps } = props;
+  const linkProps = useProps();
+  return <IconLinkVertical {...linkProps} />;
+}
+
+export function EntityIconLinkRow(props: { links: EntityIconLink[] }) {
+  const { entity } = useEntity();
+  const links = props.links.filter(link => link.filter(entity));
+
+  return links.length ? (
+    <HeaderIconLinkRow links={[]}>
+      {links.map(link => (
+        <EntityIconLinkItem key={link.id} useProps={link.useProps} />
+      ))}
+    </HeaderIconLinkRow>
+  ) : null;
+}
 
 export const catalogAboutEntityCard = EntityCardBlueprint.makeWithOverrides({
   name: 'about',
@@ -36,24 +63,17 @@ export const catalogAboutEntityCard = EntityCardBlueprint.makeWithOverrides({
     ]),
   },
   factory(originalFactory, { inputs }) {
+    const iconLinks = inputs.iconLinks.map(iconLink => ({
+      id: iconLink.node.spec.id,
+      filter: buildFilterFn(
+        iconLink.get(EntityIconLinkBlueprint.dataRefs.filterFunction),
+        iconLink.get(EntityIconLinkBlueprint.dataRefs.filterExpression),
+      ),
+      useProps: iconLink.get(EntityIconLinkBlueprint.dataRefs.useProps),
+    }));
+
     function Subheader() {
-      const { entity } = useEntity();
-      // The "useProps" functions may be calling other hooks, so we need to
-      // call them in a component function to avoid breaking the rules of hooks.
-      const links = inputs.iconLinks.reduce((rest, iconLink) => {
-        const filter = buildFilterFn(
-          iconLink.get(EntityIconLinkBlueprint.dataRefs.filterFunction),
-          iconLink.get(EntityIconLinkBlueprint.dataRefs.filterExpression),
-        );
-        if (filter(entity)) {
-          const props = iconLink.get(
-            EntityIconLinkBlueprint.dataRefs.useProps,
-          )();
-          return [...rest, props];
-        }
-        return rest;
-      }, new Array<IconLinkVerticalProps>());
-      return links.length ? <HeaderIconLinkRow links={links} /> : null;
+      return <EntityIconLinkRow links={iconLinks} />;
     }
     return originalFactory({
       type: 'info',

@@ -148,6 +148,8 @@ export const createGitlabRepoPushAction = (options: {
             ref: branchName,
             recursive: true,
             path: targetPath ?? undefined,
+            // Pages are walked serially via the Link header, and GitLab's default is 20.
+            perPage: 100,
           });
         } catch (e) {
           ctx.logger.warn(

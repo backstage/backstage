@@ -20,10 +20,20 @@ import { buildConnectionsFromConfig } from './buildConnectionsFromConfig';
 const rootConfig = (data: JsonObject) => new ConfigReader(data);
 
 describe('buildConnectionsFromConfig', () => {
-  let logger: { debug: jest.Mock; warn: jest.Mock };
+  let logger: {
+    error: jest.Mock;
+    warn: jest.Mock;
+    info: jest.Mock;
+    debug: jest.Mock;
+  };
 
   beforeEach(() => {
-    logger = { debug: jest.fn(), warn: jest.fn() };
+    logger = {
+      error: jest.fn(),
+      warn: jest.fn(),
+      info: jest.fn(),
+      debug: jest.fn(),
+    };
   });
 
   it('returns an empty list when nothing is configured, with or without a logger', () => {

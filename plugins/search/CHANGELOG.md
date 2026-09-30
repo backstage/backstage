@@ -1,5 +1,61 @@
 # @backstage/plugin-search
 
+## 1.7.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.3.2-next.0
+  - @backstage/core-components@0.18.15-next.0
+  - @backstage/core-plugin-api@1.12.11-next.0
+  - @backstage/frontend-plugin-api@0.18.2-next.0
+  - @backstage/plugin-catalog-react@3.2.4-next.0
+  - @backstage/plugin-home-react@0.1.43-next.0
+  - @backstage/plugin-search-common@1.2.26-next.0
+  - @backstage/plugin-search-react@1.11.9-next.0
+
+## 1.7.8
+
+### Patch Changes
+
+- d421187: Reduced the initial app bundle size by loading page and optional UI implementations only when their extensions render.
+- Updated dependencies
+  - @backstage/core-components@0.18.14
+  - @backstage/ui@0.18.0
+  - @backstage/plugin-catalog-react@3.2.3
+  - @backstage/frontend-plugin-api@0.18.1
+  - @backstage/plugin-home-react@0.1.42
+  - @backstage/core-plugin-api@1.12.10
+  - @backstage/plugin-search-common@1.2.25
+  - @backstage/plugin-search-react@1.11.8
+
+## 1.7.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.18.0-next.2
+  - @backstage/plugin-catalog-react@3.2.3-next.2
+  - @backstage/core-components@0.18.14-next.2
+  - @backstage/core-plugin-api@1.12.10-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.1
+  - @backstage/plugin-search-common@1.2.25-next.0
+  - @backstage/plugin-search-react@1.11.8-next.2
+
+## 1.7.8-next.1
+
+### Patch Changes
+
+- d421187: Reduced the initial app bundle size by loading page and optional UI implementations only when their extensions render.
+- Updated dependencies
+  - @backstage/core-components@0.18.14-next.1
+  - @backstage/frontend-plugin-api@0.18.1-next.0
+  - @backstage/plugin-catalog-react@3.2.3-next.1
+  - @backstage/ui@0.18.0-next.1
+  - @backstage/core-plugin-api@1.12.10-next.0
+  - @backstage/plugin-home-react@0.1.42-next.1
+  - @backstage/plugin-search-react@1.11.8-next.1
+
 ## 1.7.8-next.0
 
 ### Patch Changes

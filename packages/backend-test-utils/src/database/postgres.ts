@@ -20,6 +20,7 @@ import { parse as parsePgConnectionString } from 'pg-connection-string';
 import { randomUUID as uuid } from 'node:crypto';
 import { waitForReady } from '../util/waitForReady';
 import { Engine, TEST_POOL_CONFIG, TestDatabaseProperties } from './types';
+import { dropDatabases } from './dropDatabases';
 
 async function waitForPostgresReady(
   connection: Knex.PgConnectionConfig,
@@ -161,13 +162,7 @@ export class PostgresEngine implements Engine {
     let adminConnection: Knex | undefined;
     try {
       adminConnection = this.#connectAdmin();
-      for (const databaseName of this.#databaseNames) {
-        try {
-          await adminConnection.raw('DROP DATABASE ??', [databaseName]);
-        } catch {
-          // Best-effort — the database may already be gone
-        }
-      }
+      await dropDatabases(adminConnection, this.#databaseNames);
     } catch {
       // Best-effort — the container may already be stopped
     } finally {

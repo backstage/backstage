@@ -225,17 +225,22 @@ export class DefaultPluginTokenHandler implements PluginTokenHandler {
   }
 
   private async getJwksClient(pluginId: string) {
-    const client = this.jwksMap.get(pluginId);
-    if (client) {
-      return client;
-    }
-
     // Double check that the target plugin has a valid JWKS endpoint, otherwise avoid creating a remote key set
-    if (!(await this.isTargetPluginSupported(pluginId))) {
+    if (
+      !this.jwksMap.has(pluginId) &&
+      !(await this.isTargetPluginSupported(pluginId))
+    ) {
       throw new AuthenticationError(
         `Received a plugin token where the source '${pluginId}' plugin unexpectedly does not have a JWKS endpoint. ` +
           'The target plugin needs to be migrated to be installed in an app using the new backend system.',
       );
+    }
+
+    // Concurrent callers may have populated the map while we checked support.
+    // Reuse their client so that key fetches and refreshes stay deduplicated.
+    const existingClient = this.jwksMap.get(pluginId);
+    if (existingClient) {
+      return existingClient;
     }
 
     const newClient = new JwksClient(async () => {
