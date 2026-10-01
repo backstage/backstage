@@ -41,6 +41,7 @@ import type { Entity } from '@backstage/catalog-model';
 import {
   buildSkillQuery,
   collectAncestorGroups,
+  fetchDependencies,
   findComponent,
   readOwnerAndSystem,
   resolveSelection,
@@ -269,6 +270,33 @@ describe('buildSkillQuery', () => {
     );
     expect(noSystem).not.toContain('partOf');
     expect(buildSkillQuery({ owners: [] })).toBeUndefined();
+  });
+});
+
+describe('fetchDependencies', () => {
+  it('follows dependsOn only from skills, not from other entities', async () => {
+    const dependsOnComponent: Entity = {
+      ...component('lib', [rel('dependsOn', 'airesource:default/hidden')]),
+    };
+    mockClient.getEntitiesByRefs.mockImplementation(
+      lookup({
+        'airesource:default/base': skill('base', 'group:default/a', [
+          'airesource:default/nested',
+          'component:default/lib',
+        ]),
+        'airesource:default/nested': skill('nested', 'group:default/a'),
+        'component:default/lib': dependsOnComponent,
+        'airesource:default/hidden': skill('hidden', 'group:default/a'),
+      }),
+    );
+    const fetched = await fetchDependencies(mockClient, 'tok', [
+      skill('mine', 'group:default/a', ['airesource:default/base']),
+    ]);
+    expect(fetched.map(e => e.metadata.name)).toEqual([
+      'base',
+      'nested',
+      'lib',
+    ]);
   });
 });
 

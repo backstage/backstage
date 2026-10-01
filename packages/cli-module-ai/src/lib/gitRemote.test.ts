@@ -16,6 +16,7 @@
 
 import {
   getOriginUrl,
+  getRepoRoot,
   parseGitRemote,
   projectSlugAnnotation,
 } from './gitRemote';
@@ -75,5 +76,18 @@ describe('getOriginUrl', () => {
     );
     const empty = jest.fn().mockResolvedValue({ stdout: '  \n' });
     await expect(getOriginUrl(empty)).rejects.toThrow(/--entity/);
+  });
+});
+
+describe('getRepoRoot', () => {
+  it('returns the trimmed top-level directory, or undefined outside a repository', async () => {
+    const exec = jest.fn().mockResolvedValue({ stdout: '/work/repo\n' });
+    await expect(getRepoRoot(exec)).resolves.toBe('/work/repo');
+    expect(exec).toHaveBeenCalledWith('git', ['rev-parse', '--show-toplevel']);
+
+    const notARepo = jest.fn().mockRejectedValue(new Error('not a git repo'));
+    await expect(getRepoRoot(notARepo)).resolves.toBeUndefined();
+    const empty = jest.fn().mockResolvedValue({ stdout: '\n' });
+    await expect(getRepoRoot(empty)).resolves.toBeUndefined();
   });
 });

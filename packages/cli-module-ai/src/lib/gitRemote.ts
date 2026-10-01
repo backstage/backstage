@@ -90,3 +90,18 @@ export async function getOriginUrl(
   }
   return url;
 }
+
+/**
+ * Finds the top-level directory of the git repository around the current
+ * directory, or undefined when not inside one.
+ */
+export async function getRepoRoot(
+  exec: ExecFn = defaultExec,
+): Promise<string | undefined> {
+  try {
+    const { stdout } = await exec('git', ['rev-parse', '--show-toplevel']);
+    return stdout.trim() || undefined;
+  } catch {
+    return undefined;
+  }
+}

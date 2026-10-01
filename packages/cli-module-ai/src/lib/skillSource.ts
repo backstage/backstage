@@ -84,6 +84,11 @@ export function parseSkillSource(
       'source location is not a tree URL (repository path not found)',
     );
   }
+  if (!dashed && repoSegments.length !== 2) {
+    return fail(
+      'tree URLs without "/-/" must have exactly an owner/repo path before "/tree/"; skills would install a different repository',
+    );
+  }
   if (!rawRef || pathSegments.length === 0) {
     return fail(
       'source location points at the repository root; it must point at a skill directory',
@@ -101,6 +106,18 @@ export function parseSkillSource(
       `the ref "${ref}" contains "/", which skills cannot parse from a tree URL`,
     );
   }
+  const skillPath = pathSegments.map(safeDecode).join('/');
+  for (const [label, value] of [
+    ['ref', ref],
+    ['path', skillPath],
+  ]) {
+    const forbidden = value.match(/[#?\\]/);
+    if (forbidden) {
+      return fail(
+        `the ${label} "${value}" contains "${forbidden[0]}", which skills cannot handle in a tree URL`,
+      );
+    }
+  }
   const isEnterprise = !dashed && url.hostname !== 'github.com';
   if (isEnterprise && url.port) {
     return fail(
@@ -110,7 +127,6 @@ export function parseSkillSource(
 
   // skills does not URL-decode the ref or the path it receives.
   const repoUrl = `${url.origin}/${repoSegments.join('/')}`;
-  const skillPath = pathSegments.map(safeDecode).join('/');
   return {
     ok: true,
     source: {

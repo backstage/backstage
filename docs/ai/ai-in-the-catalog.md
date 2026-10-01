@@ -106,8 +106,12 @@ The `@backstage/cli-module-ai` CLI module installs the skills that apply to a re
 - The `backstage.io/source-location` annotation has the form `url:<git tree URL>`, for example `url:https://github.com/acme/skills/tree/main/skills/frontend-design`, and points at the directory that contains the `SKILL.md` file, not at the file itself or the repository root.
 - The directory must contain `SKILL.md` directly. If it does not, `skills` installs every skill it finds below it. The installed skill takes its name from the `SKILL.md` front matter, so the directory name does not need to match `metadata.name`.
 - The ref in the URL cannot contain `/`. Skills with such a ref are skipped.
-- The skill is `partOf` a system, or owned by a group or user, that matches the component being worked on. Skills are matched by the component's system and owner, and by the groups of the signed-in user and their parent groups.
-- `spec.agents`, when set, lists [`skills`](https://github.com/vercel-labs/skills) agent IDs such as `claude-code`, `codex`, or `cursor`. A skill with no `spec.agents` is installed for every agent.
+- The skill is `partOf` the component's system, or is owned by the component's owner, by one of the signed-in user's groups, or by an ancestor group of the component's owner or of those groups. See [How skills are selected](../tooling/cli/module-ai.md#how-skills-are-selected).
+- `spec.agents`, when set, lists [`skills`](https://github.com/vercel-labs/skills) agent IDs such as `claude-code`, `codex`, or `cursor`. A skill with no `spec.agents` is installed for the target agents of the command.
+
+### Security considerations
+
+Skills that the CLI module selects are installed without confirmation, and ownership and system membership in the catalog are declared rather than verified. Anyone who can register an `AiResource` owned by a widely shared ancestor group, or `partOf` a system, can cause that skill to be installed for every matching user. Control who can register catalog locations, and review what would be installed with `ai resolve` or `ai skills sync --dry-run`. See the [security considerations](../tooling/cli/module-ai.md#security-considerations) of the AI module.
 
 ## MCP Server API Type
 
