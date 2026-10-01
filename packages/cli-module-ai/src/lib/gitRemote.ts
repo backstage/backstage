@@ -17,7 +17,7 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import parseGitUrl from 'git-url-parse';
-import { isError } from '@backstage/errors';
+import { errorMessage } from './errorMessage';
 
 /** A parsed git remote that the catalog can be queried with. */
 export interface GitRemote {
@@ -34,10 +34,6 @@ export type ExecFn = (
 
 const execFileAsync = promisify(execFile);
 const defaultExec: ExecFn = (file, args) => execFileAsync(file, args);
-
-function errorMessage(error: unknown): string {
-  return isError(error) ? error.message : String(error);
-}
 
 export function parseGitRemote(url: string): GitRemote {
   const hint = 'Use --entity to select the component instead.';
