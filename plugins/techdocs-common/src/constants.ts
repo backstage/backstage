@@ -28,8 +28,8 @@ export const TECHDOCS_EXTERNAL_PATH_ANNOTATION =
  * whether to apply additional access control (for example, limiting access to
  * entity owners) via the `techdocs.entity.read` permission.
  *
- * The annotation is only a signal; the actual authorization decision is made by
- * the permission policy. Entities without this annotation are unaffected.
+ * The annotation is only a signal; the actual authorization decision, including
+ * how entities without this annotation are handled, is made by the permission policy.
  *
  * @public
  */
