@@ -110,6 +110,10 @@ export function collectRouteIds(
     validateRouteNamespace(module.pluginId, module.routes ?? {});
     for (const [name, ref] of Object.entries(module.routes ?? {})) {
       const refId = `${module.pluginId}.${name}`;
+      if (!originalRoutes.has(refId)) {
+        originalRoutes.set(refId, ref);
+        allRoutes.add(ref);
+      }
       if (OpaqueRouteRef.isType(ref)) {
         const internal = OpaqueRouteRef.toInternal(ref);
         if (!internal.getExtensionId) {
