@@ -144,6 +144,14 @@ export default async function serve(opts: OptionValues) {
     mkdocsParameterDirtyReload:
       opts.parameterDirtyreload || opts.mkdocsParameterDirtyreload,
     mkdocsParameterStrict: opts.parameterStrict || opts.mkdocsParameterStrict,
+    engineBinary: engineConfig.binary,
+    engineServeArgs: engineConfig.serveArgs(enginePort, {
+      configFile: mkdocsYmlPath,
+      clean: opts.parameterClean || opts.mkdocsParameterClean,
+      dirtyReload: opts.parameterDirtyreload || opts.mkdocsParameterDirtyreload,
+      strict: opts.parameterStrict || opts.mkdocsParameterStrict,
+      useDocker: opts.docker,
+    }),
   });
 
   for (let attempt = 0; attempt < 30; attempt++) {
