@@ -104,11 +104,15 @@ yarn backstage-cli ai skills sync --entity component:default/my-service
 `--hook` is meant to be run by an agent hook, which `ai hooks install` sets up
 for you. In this mode the command:
 
-- Always exits successfully. Any error, such as a missing login or an unreachable backend, is reported as a single line on standard error.
+- Always exits successfully. Any error, such as a missing login or an unreachable backend, is reported as short messages on standard error.
 - Never starts a login. If you are not signed in, it asks you on standard error to run `backstage-cli auth login`.
-- Only installs skills that are not already recorded in `skills-lock.json` with the same repository, ref, and directory. A normal run installs every applicable skill again.
+- Only installs skills that are recorded in `skills-lock.json` with the same repository, ref, and directory and whose folder is missing from the skills directory of the target agent, for example `.claude/skills` for Claude Code. A skill that is only in the lock file, or only installed for another agent, is installed. A normal run installs every applicable skill again.
 - Always installs into the project, and cannot be combined with `--global`.
 - Discards the output of `skills` and writes at most one line to standard output, such as `Backstage: installed 2 skill(s), 1 up to date.`, because agents add the output of session start hooks to the session context. It prints nothing when no skill was installed.
+
+Claude Code stops a hook after 120 seconds, which is the timeout that
+`ai hooks install` sets. A large first install can take longer, so run
+`ai skills sync` manually once before you rely on the hook.
 
 Because installed skills are skipped, a skill that changed in its repository is
 not updated by the hook. Run `ai skills sync` without `--hook` to update the
@@ -128,18 +132,24 @@ Options:
   --dry-run            Print the resulting hook files without writing them
 ```
 
-The hook is written to a personal file in the root of the git repository that
-contains your current directory, or to the current directory outside a git
-repository:
+The hook is written to `.claude/settings.local.json`, a personal file that
+Claude Code does not share with your team. The file is in the root of the git
+repository that contains your current directory, or in the current directory
+outside a git repository. In a linked checkout made with `git worktree`, it is in the root of the main
+checkout, because that is where Claude Code reads it from.
 
-| Agent         | File                          | Notes                                                                     |
-| ------------- | ----------------------------- | ------------------------------------------------------------------------- |
-| `claude-code` | `.claude/settings.local.json` | Claude Code does not commit this file.                                    |
-| `codex`       | `.codex/hooks.json`           | Codex asks you to review and trust the hook with `/hooks` before it runs. |
+Claude Code only adds this file to your global git excludes when it writes the
+file itself. When the command creates the file and git does not already ignore
+it, the command adds it to the repository's `.git/info/exclude` and says so, so
+that the hook is not committed by accident. It does not change `.gitignore`.
 
-Other agents fail with `hooks are not supported for <agent> yet`, and nothing
-is written for any agent in that case. Cursor is not supported, because its
-project hooks are meant to be committed and shared with your team.
+Only `claude-code` is supported. Other agents fail with
+`hooks are not supported for <agent> yet`, and nothing is written. Codex and
+Cursor only document project hooks in files that are shared within a team
+(`.codex/hooks.json` and `.cursor/hooks.json`), which does not fit a command
+with paths that are specific to your machine.
+
+`--instance` accepts letters, digits, `.`, `_`, and `-`, and cannot start with `-`.
 
 The hook entry runs the same Node.js and CLI binary that ran
 `ai hooks install`, by absolute path, with

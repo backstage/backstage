@@ -20,6 +20,7 @@ import path from 'node:path';
 import type { CliCommandContext } from '@backstage/cli-node';
 
 const mockGetRepoRoot = jest.fn();
+const mockGetMainRoot = jest.fn();
 
 jest.mock('cleye', () => ({
   cli: jest.fn().mockReturnValue({ flags: {} }),
@@ -27,6 +28,7 @@ jest.mock('cleye', () => ({
 jest.mock('../lib/gitRemote', () => ({
   ...jest.requireActual('../lib/gitRemote'),
   getRepoRoot: (...args: unknown[]) => mockGetRepoRoot(...args),
+  getMainCheckoutRoot: (...args: unknown[]) => mockGetMainRoot(...args),
 }));
 
 import hooksInstall from './hooksInstall';
@@ -43,7 +45,8 @@ describe('ai hooks install', () => {
 
   beforeEach(() => {
     root = fs.mkdtempSync(path.join(os.tmpdir(), 'ai-hooks-cmd-'));
-    mockGetRepoRoot.mockResolvedValue(root);
+    mockGetRepoRoot.mockResolvedValue('/unused');
+    mockGetMainRoot.mockResolvedValue(root);
     stdoutSpy = jest
       .spyOn(process.stdout, 'write')
       .mockImplementation(() => true);
@@ -75,5 +78,19 @@ describe('ai hooks install', () => {
       JSON.parse(fs.readFileSync(file, 'utf8')).hooks.SessionStart,
     ).toHaveLength(1);
     expect(out()).toContain(`Installed the claude-code hook in ${file}`);
+  });
+
+  it('falls back to the repository root, then the current directory', async () => {
+    (cli as jest.Mock).mockReturnValue({
+      flags: { agent: ['claude-code'], 'dry-run': true },
+    });
+    mockGetMainRoot.mockResolvedValue(undefined);
+    mockGetRepoRoot.mockResolvedValue(root);
+    await hooksInstall(ctx);
+    expect(out()).toContain(path.join(root, '.claude'));
+
+    mockGetRepoRoot.mockResolvedValue(undefined);
+    await hooksInstall(ctx);
+    expect(out()).toContain(path.join(process.cwd(), '.claude'));
   });
 });
