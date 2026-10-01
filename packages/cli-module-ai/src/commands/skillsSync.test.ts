@@ -18,12 +18,17 @@ import type { CliCommandContext } from '@backstage/cli-node';
 
 const mockResolveSelection = jest.fn();
 const mockRunner = jest.fn();
+const mockGetRepoRoot = jest.fn();
 
 jest.mock('cleye', () => ({
   cli: jest.fn().mockReturnValue({ flags: {} }),
 }));
 jest.mock('../lib/resolveContext', () => ({
   resolveSelection: (...args: unknown[]) => mockResolveSelection(...args),
+}));
+jest.mock('../lib/gitRemote', () => ({
+  ...jest.requireActual('../lib/gitRemote'),
+  getRepoRoot: (...args: unknown[]) => mockGetRepoRoot(...args),
 }));
 jest.mock('../lib/runSkills', () => ({
   ...jest.requireActual('../lib/runSkills'),
@@ -112,9 +117,19 @@ describe('ai skills sync', () => {
       agents: ['claude-code'],
     });
     expect(mockRunner.mock.calls).toEqual([
-      [['add', url('one', 'a'), '-a', 'claude-code', '-y', '-g'], {}],
-      [['add', url('one', 'b'), '-a', 'claude-code', '-y', '-g'], {}],
+      [
+        ['add', url('one', 'a'), '-a', 'claude-code', '-y', '-g'],
+        {},
+        undefined,
+      ],
+      [
+        ['add', url('one', 'b'), '-a', 'claude-code', '-y', '-g'],
+        {},
+        undefined,
+      ],
     ]);
+    // Global installs do not depend on the project, so git is not consulted.
+    expect(mockGetRepoRoot).not.toHaveBeenCalled();
     expect(err()).toMatch(
       /Skipped airesource:default\/c.*outside the component scope/,
     );
@@ -154,5 +169,52 @@ describe('ai skills sync', () => {
     mockRunner.mockResolvedValueOnce(1).mockResolvedValueOnce(0);
     await expect(skillsSync(ctx([]))).rejects.toThrow(/airesource:default\/a/);
     expect(mockRunner).toHaveBeenCalledTimes(2);
+  });
+
+  it('runs project installs from the repository root and falls back to the current directory outside a repository', async () => {
+    (mockCli as jest.Mock).mockReturnValue({ flags: { agent: ['codex'] } });
+    mockResolveSelection.mockResolvedValue(
+      selection([decision('a', 'one', 'selected')]),
+    );
+    mockRunner.mockResolvedValue(0);
+
+    mockGetRepoRoot.mockResolvedValueOnce('/work/repo');
+    await skillsSync(ctx([]));
+    expect(mockRunner).toHaveBeenLastCalledWith(
+      expect.any(Array),
+      {},
+      '/work/repo',
+    );
+
+    mockGetRepoRoot.mockResolvedValueOnce(undefined);
+    await skillsSync(ctx([]));
+    expect(mockRunner).toHaveBeenLastCalledWith(
+      expect.any(Array),
+      {},
+      undefined,
+    );
+  });
+
+  it('fails before running skills on an unsupported Node.js version, but still allows --dry-run', async () => {
+    mockResolveSelection.mockResolvedValue(
+      selection([decision('a', 'one', 'selected')]),
+    );
+    const original = Object.getOwnPropertyDescriptor(process.versions, 'node')!;
+    Object.defineProperty(process.versions, 'node', {
+      value: '20.11.0',
+      configurable: true,
+    });
+    try {
+      (mockCli as jest.Mock).mockReturnValue({ flags: { agent: ['codex'] } });
+      await expect(skillsSync(ctx([]))).rejects.toThrow(/22\.20\.0/);
+      expect(mockRunner).not.toHaveBeenCalled();
+
+      (mockCli as jest.Mock).mockReturnValue({
+        flags: { agent: ['codex'], 'dry-run': true },
+      });
+      await expect(skillsSync(ctx([]))).resolves.toBeUndefined();
+    } finally {
+      Object.defineProperty(process.versions, 'node', original);
+    }
   });
 });

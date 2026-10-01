@@ -21,10 +21,10 @@ yarn add --dev @backstage/cli-module-ai
 
 Before using the AI commands you need:
 
-- To sign in to your Backstage instance using [`auth login`](./module-auth.md#auth-login).
-- A catalog backend with the AI model module installed. See [AI in the Catalog](../../ai/ai-in-the-catalog.md).
-- Node.js 22.20 or later, which is required by `skills`. The `ai skills sync` command needs this Node.js version.
-- A git `origin` remote on GitHub or GitLab that matches a catalog component. Alternatively, pass `--entity`.
+- A signed-in session on your Backstage instance, created with [`auth login`](./module-auth.md#auth-login).
+- A catalog backend that has the AI model module installed and supports `$contains` predicate queries on entity relations. See [AI in the Catalog](../../ai/ai-in-the-catalog.md).
+- Node.js 22.20 or later for `ai skills sync`, because `skills` requires it. The command fails before installing anything on an older version, and `--dry-run` works on any version.
+- A git `origin` remote on GitHub or GitLab that matches a catalog component, or the `--entity` option.
 
 ## ai resolve
 
@@ -34,10 +34,10 @@ Show which catalog skills apply to the current repository, and why.
 Usage: backstage-cli ai resolve [options]
 
 Options:
-  --entity <ref>      Component to resolve against (skips git remote detection)
-  --agent <id>        Target agent, repeatable (default: detected from environment)
-  --output <format>   human (default) or json
-  --instance <name>   Backstage instance to use
+  --entity <string>    Component to resolve against (skips git remote detection)
+  --agent <string>     Target agent, repeatable (default: detected)
+  --output <string>    Output format: human (default), json
+  --instance <string>  Name of the instance to use
 ```
 
 Prints the resolved component, its owner and system, your groups and their
@@ -62,11 +62,11 @@ Install the applicable skills into your coding agents.
 Usage: backstage-cli ai skills sync [options]
 
 Options:
-  --entity <ref>      Component to resolve against (skips git remote detection)
-  --agent <id>        Target agent, repeatable (default: detected from environment)
-  --global            Install into the user-level skills directories instead of the project
-  --dry-run           Print the skills commands without running them
-  --instance <name>   Backstage instance to use
+  --entity <string>    Component to resolve against (skips git remote detection)
+  --agent <string>     Target agent, repeatable (default: detected)
+  --global             Install into the user-level skills directories instead of the project
+  --dry-run            Print the skills commands without running them
+  --instance <string>  Name of the instance to use
 ```
 
 Resolves the applicable skills and runs one `skills add` invocation per skill,
@@ -75,6 +75,11 @@ using the skill's own tree URL as the source:
 ```bash
 skills add <skill-tree-url> -a <agent> [-a <agent>...] -y [-g]
 ```
+
+Without `--global`, skills are installed into the project. The module runs
+`skills` from the root of the git repository that contains your current
+directory, so the skills do not end up in a subdirectory. Outside a git
+repository, for example with `--entity`, it uses the current directory.
 
 Skills that cannot be installed are reported on standard error with the reason.
 If no skill can be installed, the command prints a message and exits
@@ -113,6 +118,17 @@ the skill's source location. A repository with several selected skills is
 therefore fetched once per skill. Skills that share the same source location
 are installed once.
 
+## Security considerations
+
+`ai skills sync` installs skills without asking for confirmation. Skills are
+instructions that your coding agent follows, so treat the catalog as a trusted
+source of them:
+
+- Anyone who can register an `AiResource` that is owned by a widely shared group, such as an ancestor group of many teams, or that is `partOf` a system, gets that skill installed for every matching user who runs the command.
+- Ownership and system membership are declared in the catalog and are not verified against the skill's source repository.
+- Review what would be installed with `ai resolve` or `ai skills sync --dry-run` before you sync.
+- Control who can register catalog locations and entities, for example with catalog location allow lists and permissions.
+
 ## Agent IDs
 
 The module uses `skills` agent IDs, such as `claude-code`, `codex`, and
@@ -139,9 +155,21 @@ is detected, the command fails and asks you to pass `--agent`.
 ## Supported `skills` version
 
 This module pins `skills` to version 1.7.0 and runs it from its own
-dependencies, so nothing is fetched when you run the command. It depends on how
+dependencies, so the `skills` package itself is not downloaded when you run the
+command. Fetching the skills from their repositories is done by `skills`. The module depends on how
 the `skills add` command parses GitHub and GitLab tree URLs and on its `-a`,
 `-y`, and `-g` flags. Other versions are not supported.
+
+### Telemetry
+
+`skills` can report anonymous usage telemetry, which may include the source
+repository path, the skill names, and the target agents. To keep private
+repository details out of it, the module runs `skills` with
+`DISABLE_TELEMETRY=1` by default. If you already set `DISABLE_TELEMETRY` in your
+environment, your value is used instead. To opt in to telemetry, set
+`DISABLE_TELEMETRY` to an empty string.
+
+### GitHub Enterprise
 
 `skills` only recognizes tree URLs on a GitHub Enterprise host when the
 `GH_HOST` environment variable matches that host. For these sources the module
@@ -151,5 +179,6 @@ sets `GH_HOST` for that one invocation only.
 
 - Skills that were synced earlier are never removed, even if they no longer apply. Use `skills remove` to remove them.
 - Rules and hooks are not handled. Only skills are installed.
-- Skills with a ref that contains `/`, and GitHub Enterprise hosts with a port, are skipped.
+- Skills with a ref that contains `/`, GitHub Enterprise hosts with a port, and refs or paths that contain `#`, `?`, or `\` are skipped.
+- Source locations without the GitLab `/-/` form must have exactly an `owner/repo` path before `/tree/`. GitLab sources in nested groups need the `/-/tree/` form.
 - Only GitHub and GitLab `origin` remotes can be matched to a component automatically. For other hosts, pass `--entity`.
