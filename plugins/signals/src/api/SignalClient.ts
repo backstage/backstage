@@ -33,7 +33,7 @@ export class SignalClient implements SignalApi {
   private connecting?: Promise<boolean>;
   private subscriptions: Map<string, Subscription> = new Map();
   private subscribedChannels = new Set<string>();
-  private reconnectTo: any;
+  private reconnectTo: ReturnType<typeof setTimeout> | undefined;
 
   static create(options: {
     identity: IdentityApi;
@@ -104,7 +104,7 @@ export class SignalClient implements SignalApi {
       if (this.subscriptions.size === 0) {
         if (this.reconnectTo) {
           clearTimeout(this.reconnectTo);
-          this.reconnectTo = null;
+          this.reconnectTo = undefined;
         }
         if (this.ws?.readyState === WebSocket.OPEN) {
           this.ws.close(WS_CLOSE_NORMAL);
@@ -251,7 +251,7 @@ export class SignalClient implements SignalApi {
     }
 
     this.reconnectTo = setTimeout(() => {
-      this.reconnectTo = null;
+      this.reconnectTo = undefined;
       if (this.subscriptions.size === 0) {
         return;
       }
