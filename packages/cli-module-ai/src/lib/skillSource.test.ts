@@ -17,7 +17,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { parseSkillSource } from './skillSource';
+import { parseSkillSource, type ParseSkillSourceOptions } from './skillSource';
 
 describe('parseSkillSource', () => {
   it('parses GitHub, Enterprise and GitLab tree URLs into the skill tree URL', () => {
@@ -127,7 +127,10 @@ describe('parseSkillSource with file: locations', () => {
   let dir: string;
   let real: string;
   const allow = { allowFileSources: true };
-  const reason = (location: string, options = allow) => {
+  const reason = (
+    location: string,
+    options: ParseSkillSourceOptions = allow,
+  ) => {
     const result = parseSkillSource(location, options);
     if (result.ok) throw new Error('expected a failure');
     return result.reason;
@@ -148,7 +151,7 @@ describe('parseSkillSource with file: locations', () => {
 
   it('is skipped unless file sources are allowed', () => {
     const location = `file:${dir}/skill`;
-    expect(reason(location, {} as typeof allow)).toBe(
+    expect(reason(location, {})).toBe(
       'file sources are disabled; pass --allow-file-sources',
     );
     expect(reason(location, { allowFileSources: false })).toMatch(
@@ -172,6 +175,43 @@ describe('parseSkillSource with file: locations', () => {
     expect(parseSkillSource(`file:${dir}/link`, allow)).toEqual(expected);
   });
 
+  it('decodes percent-encoded paths the same way in both forms', () => {
+    fs.mkdirSync(path.join(dir, 'a b'));
+    fs.writeFileSync(path.join(dir, 'a b', 'SKILL.md'), '# skill');
+    const expected = path.join(real, 'a b');
+    for (const location of [`file:${dir}/a%20b`, `file://${dir}/a%20b`]) {
+      expect(parseSkillSource(location, allow)).toMatchObject({
+        ok: true,
+        source: { localPath: expected },
+      });
+    }
+    expect(reason(`file:${dir}/a%ZZb`)).toMatch(/not a valid/);
+  });
+
+  it('reports unreadable and unstat-able paths without throwing', () => {
+    const probe = {
+      realpath: () => {
+        throw new Error('EACCES: permission denied');
+      },
+      isDirectory: () => true,
+      hasSkillMd: () => true,
+    };
+    expect(reason('file:/x', { allowFileSources: true, probe })).toBe(
+      'the path /x cannot be read: EACCES: permission denied',
+    );
+    const statFails = {
+      realpath: (p: string) => p,
+      isDirectory: () => false,
+      hasSkillMd: () => true,
+    };
+    expect(
+      reason('file:/x', {
+        allowFileSources: true,
+        probe: statFails,
+      }),
+    ).toBe('/x is not a directory');
+  });
+
   it('explains why a local source cannot be used', () => {
     expect(reason('file:skills/a')).toBe('file sources must be absolute paths');
     expect(reason('file:')).toBe('file sources must be absolute paths');
@@ -184,6 +224,8 @@ describe('parseSkillSource with file: locations', () => {
     expect(reason(`file:${dir}/empty`)).toBe(
       `${path.join(real, 'empty')} does not contain SKILL.md directly`,
     );
-    expect(reason('file://host/share/skill')).toMatch(/absolute paths/);
+    expect(reason('file://host/share/skill')).toBe(
+      'file URLs with a host are not supported',
+    );
   });
 });

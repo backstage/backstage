@@ -317,6 +317,18 @@ describe('installHooks', () => {
     );
   });
 
+  it('threads allowFileSources into the generated command', async () => {
+    await installHooks({
+      ...base(),
+      agents: ['claude-code'],
+      allowFileSources: true,
+    });
+    expect(
+      JSON.parse(read('.claude/settings.local.json')).hooks.SessionStart[0]
+        .hooks[0].command,
+    ).toBe(`${command('claude-code')} --allow-file-sources`);
+  });
+
   it('installs the Codex hook next to the Claude Code hook, with a trust reminder and the same replace-in-place behavior', async () => {
     const results = await installHooks({
       ...base(),
