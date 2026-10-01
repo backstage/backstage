@@ -211,9 +211,9 @@ describe('installHooks', () => {
     expect(fs.existsSync(file)).toBe(false);
 
     await expect(
-      installHooks({ ...base(), agents: ['codex'] }),
-    ).rejects.toThrow('hooks are not supported for codex yet');
-    expect(fs.existsSync(file)).toBe(false);
+      installHooks({ ...base(), agents: ['codex', 'cursor'] }),
+    ).rejects.toThrow('hooks are not supported for cursor yet');
+    expect(fs.existsSync(path.join(root, '.codex'))).toBe(false);
 
     for (const instance of ['--evil', 'a b', 'x;y', '']) {
       await expect(
@@ -289,7 +289,7 @@ describe('installHooks', () => {
     expect(result.written).toBe(true);
     expect(result.excludedFrom).toBeUndefined();
 
-    // A dry run does not touch git at all.
+    // A dry run does not change anything in git.
     const dry = fake(false);
     await installHooks({
       ...base(),
@@ -297,6 +297,92 @@ describe('installHooks', () => {
       dryRun: true,
       exec: dry,
     });
-    expect(dry).not.toHaveBeenCalled();
+    expect(dry).not.toHaveBeenCalledWith(
+      'git',
+      expect.arrayContaining(['check-ignore']),
+    );
+  });
+
+  it('installs the Codex hook next to the Claude Code hook, with a trust reminder and the same replace-in-place behavior', async () => {
+    const results = await installHooks({
+      ...base(),
+      agents: ['claude-code', 'codex'],
+      instance: 'prod',
+    });
+
+    expect(results.map(r => [r.agent, path.relative(root, r.file)])).toEqual([
+      ['claude-code', path.join('.claude', 'settings.local.json')],
+      ['codex', path.join('.codex', 'hooks.json')],
+    ]);
+    expect(results[0].notice).toBeUndefined();
+    expect(results[1].notice).toContain('/hooks');
+    const first = read('.codex/hooks.json');
+    expect(JSON.parse(first)).toEqual({
+      hooks: {
+        SessionStart: [
+          {
+            matcher: 'startup|resume',
+            hooks: [
+              {
+                type: 'command',
+                command: command('codex', 'prod'),
+                timeout: 120,
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    // Existing hooks and other settings are kept, and our entry is replaced.
+    const other = { type: 'command', command: 'echo hi' };
+    const parsed = JSON.parse(first);
+    parsed.hooks.Stop = [{ hooks: [other] }];
+    fs.writeFileSync(
+      path.join(root, '.codex/hooks.json'),
+      JSON.stringify(parsed),
+    );
+    await installHooks({ ...base(), agents: ['codex'], instance: 'prod' });
+    expect(JSON.parse(read('.codex/hooks.json'))).toEqual(parsed);
+
+    fs.writeFileSync(path.join(root, '.codex/hooks.json'), '{nope');
+    await expect(
+      installHooks({ ...base(), agents: ['claude-code', 'codex'] }),
+    ).rejects.toThrow('.codex/hooks.json');
+  });
+
+  it('refuses to modify a hook file that git tracks, before writing anything', async () => {
+    const tracked = path.join(root, '.codex', 'hooks.json');
+    const exec = jest.fn(async (_file: string, args: string[]) => {
+      if (args.includes('ls-files') && args.includes(tracked)) {
+        return { stdout: `${tracked}\n` };
+      }
+      throw Object.assign(new Error('nope'), { code: 1 });
+    });
+
+    await expect(
+      installHooks({ ...base(), agents: ['claude-code', 'codex'], exec }),
+    ).rejects.toThrow(/\.codex\/hooks\.json is tracked by git/);
+    expect(fs.existsSync(path.join(root, '.claude'))).toBe(false);
+    expect(fs.existsSync(tracked)).toBe(false);
+    expect(exec).toHaveBeenCalledWith('git', [
+      '-C',
+      root,
+      'ls-files',
+      '--error-unmatch',
+      '--',
+      tracked,
+    ]);
+  });
+
+  it('adds the Codex hook file to the git exclude list', async () => {
+    const exclude = path.join(root, '.git', 'info', 'exclude');
+    const exec = jest.fn(async (_file: string, args: string[]) => {
+      if (args.includes('--git-path')) return { stdout: `${exclude}\n` };
+      throw Object.assign(new Error('no'), { code: 1 });
+    });
+    const [result] = await installHooks({ ...base(), agents: ['codex'], exec });
+    expect(result.excludedFrom).toBe(exclude);
+    expect(fs.readFileSync(exclude, 'utf8')).toBe('/.codex/hooks.json\n');
   });
 });

@@ -46,7 +46,7 @@ export default async ({ args, info }: CliCommandContext) => {
 
   if (flags.agent.length === 0) {
     throw new Error(
-      'Pass --agent <id> at least once (for example claude-code).',
+      'Pass --agent <id> at least once (for example claude-code or codex).',
     );
   }
   // The hook runs the CLI that is running this command, by absolute path.
@@ -72,6 +72,9 @@ export default async ({ args, info }: CliCommandContext) => {
       process.stdout.write(
         `Installed the ${result.agent} hook in ${result.file}\n`,
       );
+      if (result.notice) {
+        process.stdout.write(`${result.notice}\n`);
+      }
       if (result.excludedFrom) {
         process.stdout.write(
           `Added the file to ${result.excludedFrom} so that it is not committed\n`,

@@ -26,20 +26,31 @@ const SESSION_START_MATCHER = 'startup|resume';
 const HOOK_TIMEOUT_SECONDS = 120;
 
 /**
- * Hooks are only installed in personal files that are not committed.
+ * Hooks are only installed in files that are meant for one developer.
  *
  * - Claude Code: https://code.claude.com/docs/en/hooks. Project hooks that
  *   are personal go in `.claude/settings.local.json`.
+ * - Codex: https://learn.chatgpt.com/docs/hooks. Project hooks go in
+ *   `.codex/hooks.json`, with the same `hooks.SessionStart` format and
+ *   `timeout` in seconds. Plain text on stdout is added as developer context,
+ *   as for Claude Code. Codex has no personal project file, so this one may be
+ *   committed and shared; `ensureNotTracked` refuses to put one machine's
+ *   absolute paths in a tracked file, and the file is added to the git
+ *   exclude list.
  *
- * Cursor and Codex are not supported. Cursor's project hooks
- * (`.cursor/hooks.json`, https://cursor.com/docs/agent/hooks) and Codex's
- * (`.codex/hooks.json`, https://learn.chatgpt.com/docs/hooks) are files that
- * are shared within a team, which does not fit a command with paths that are
- * specific to one machine. Their personal hooks are in the user's home
- * directory, which this module does not modify.
+ * Cursor is not supported. Its project hooks (`.cursor/hooks.json`,
+ * https://cursor.com/docs/agent/hooks) are meant to be committed and shared
+ * within a team, and it expects JSON on stdout.
  */
 const HOOK_FILES: Record<string, string> = {
   'claude-code': path.join('.claude', 'settings.local.json'),
+  codex: path.join('.codex', 'hooks.json'),
+};
+
+/** Extra instructions to show after an agent's hook was written. */
+const HOOK_NOTICES: Record<string, string> = {
+  codex:
+    'Codex only runs new project hooks after you review and trust them: run /hooks in Codex.',
 };
 
 export interface HookCommandOptions {
@@ -131,6 +142,8 @@ export interface InstallHooksResult {
   agent: string;
   file: string;
   written: boolean;
+  /** Something the user still has to do for the hook to run. */
+  notice?: string;
   /** Set to the git exclude file that the hook file was added to. */
   excludedFrom?: string;
   /** The resulting file content, set on a dry run. */
@@ -161,7 +174,9 @@ export async function installHooks(
     );
   }
 
-  const planned = [...new Set(options.agents)].map(agent => {
+  const exec = options.exec ?? defaultExec;
+  const planned: Array<{ agent: string; file: string; json: string }> = [];
+  for (const agent of new Set(options.agents)) {
     const file = path.join(options.rootDir, HOOK_FILES[agent]);
     const text = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : '';
     let existing: unknown = {};
@@ -178,8 +193,9 @@ export async function installHooks(
       null,
       2,
     )}\n`;
-    return { agent, file, json };
-  });
+    await ensureNotTracked(options.rootDir, file, exec);
+    planned.push({ agent, file, json });
+  }
 
   const results: InstallHooksResult[] = [];
   for (const { agent, file, json } of planned) {
@@ -197,9 +213,15 @@ export async function installHooks(
       options.rootDir,
       HOOK_FILES[agent],
       file,
-      options.exec ?? defaultExec,
+      exec,
     );
-    results.push({ agent, file, written: true, excludedFrom });
+    results.push({
+      agent,
+      file,
+      written: true,
+      excludedFrom,
+      notice: HOOK_NOTICES[agent],
+    });
   }
   return results;
 }
@@ -255,4 +277,28 @@ async function excludeFromGit(
     );
     return undefined;
   }
+}
+
+/** Refuses to write machine-specific paths into a file that git tracks. */
+async function ensureNotTracked(
+  rootDir: string,
+  file: string,
+  exec: ExecFn,
+): Promise<void> {
+  try {
+    await exec('git', [
+      '-C',
+      rootDir,
+      'ls-files',
+      '--error-unmatch',
+      '--',
+      file,
+    ]);
+  } catch {
+    // Not tracked, or not in a git repository.
+    return;
+  }
+  throw new Error(
+    `${file} is tracked by git. The hook contains paths that are specific to your machine, so it is not added to a shared file. Remove the file from git or install the hook yourself.`,
+  );
 }

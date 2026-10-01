@@ -132,22 +132,27 @@ Options:
   --dry-run            Print the resulting hook files without writing them
 ```
 
-The hook is written to `.claude/settings.local.json`, a personal file that
-Claude Code does not share with your team. The file is in the root of the git
-repository that contains your current directory, or in the current directory
-outside a git repository. In a linked checkout made with `git worktree`, it is in the root of the main
+The hook is written to a file in the root of the git repository that contains
+your current directory, or in the current directory outside a git repository.
+In a linked checkout made with `git worktree`, it is in the root of the main
 checkout, because that is where Claude Code reads it from.
 
-Claude Code only adds this file to your global git excludes when it writes the
-file itself. When the command creates the file and git does not already ignore
-it, the command adds it to the repository's `.git/info/exclude` and says so, so
-that the hook is not committed by accident. It does not change `.gitignore`.
+| Agent         | File                          | Notes                                                                     |
+| ------------- | ----------------------------- | ------------------------------------------------------------------------- |
+| `claude-code` | `.claude/settings.local.json` | A personal file that Claude Code does not share with your team.           |
+| `codex`       | `.codex/hooks.json`           | Codex asks you to review and trust the hook with `/hooks` before it runs. |
 
-Only `claude-code` is supported. Other agents fail with
-`hooks are not supported for <agent> yet`, and nothing is written. Codex and
-Cursor only document project hooks in files that are shared within a team
-(`.codex/hooks.json` and `.cursor/hooks.json`), which does not fit a command
-with paths that are specific to your machine.
+Neither file is meant to be committed, because the hook contains paths that are
+specific to your machine. When git does not already ignore the file, the
+command adds it to the repository's `.git/info/exclude` and says so, so that the
+hook is not committed by accident. It does not change `.gitignore`. Claude Code
+only adds `settings.local.json` to your global git excludes when it writes the
+file itself. If git already tracks the file, which can be the case for a shared
+`.codex/hooks.json`, the command fails without writing anything.
+
+Other agents fail with `hooks are not supported for <agent> yet`, and nothing
+is written for any agent in that case. Cursor is not supported, because its
+project hooks are meant to be committed and shared within your team.
 
 `--instance` accepts letters, digits, `.`, `_`, and `-`, and cannot start with `-`.
 
