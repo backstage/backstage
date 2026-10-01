@@ -99,6 +99,16 @@ All `AiResource` entities share these spec fields regardless of type:
 
 The actual content of skills and rules is not stored in the entity spec. Instead, the source file is referenced through the standard `backstage.io/source-location` annotation. Entity providers that generate `AiResource` entities from skill or rule files should set this annotation to point to the source file.
 
+### Making skills installable
+
+The `@backstage/cli-module-ai` CLI module installs the skills that apply to a repository into your coding agents. See the [AI module](../tooling/cli/module-ai.md) for usage. For a skill entity to be installable, it must meet these requirements:
+
+- The `backstage.io/source-location` annotation has the form `url:<git tree URL>`, for example `url:https://github.com/acme/skills/tree/main/skills/frontend-design`, and points at the directory that contains the `SKILL.md` file, not at the file itself or the repository root.
+- The directory must contain `SKILL.md` directly. If it does not, `skills` installs every skill it finds below it. The installed skill takes its name from the `SKILL.md` front matter, so the directory name does not need to match `metadata.name`.
+- The ref in the URL cannot contain `/`. Skills with such a ref are skipped.
+- The skill is `partOf` a system, or owned by a group or user, that matches the component being worked on. Skills are matched by the component's system and owner, and by the groups of the signed-in user and their parent groups.
+- `spec.agents`, when set, lists [`skills`](https://github.com/vercel-labs/skills) agent IDs such as `claude-code`, `codex`, or `cursor`. A skill with no `spec.agents` is installed for every agent.
+
 ## MCP Server API Type
 
 The `mcp-server` type is a structured subtype of the [`API` entity kind](../features/software-catalog/descriptor-format.md#kind-api). Use it to represent MCP servers in your catalog, capturing their transport endpoints through a `remotes` list instead of the `definition` field used by other API types like `openapi` or `graphql`.

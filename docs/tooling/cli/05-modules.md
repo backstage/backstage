@@ -37,6 +37,14 @@ Each module name links to its dedicated page with full command documentation
 including options and examples. See the [commands](./03-commands.md) page for a
 quick reference index of all commands.
 
+## Optional modules
+
+These modules are not part of `@backstage/cli-defaults`. Install them in your project root to use them.
+
+| Module               | Package                    | Commands                       |
+| -------------------- | -------------------------- | ------------------------------ |
+| [AI](./module-ai.md) | `@backstage/cli-module-ai` | `ai resolve`, `ai skills sync` |
+
 ## How module discovery works
 
 When the CLI starts it scans the project root's `package.json` for all
