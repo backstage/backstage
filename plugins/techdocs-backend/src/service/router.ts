@@ -383,19 +383,24 @@ export async function createRouter(
     );
   });
 
-  // Ensures that the related entity exists and the current user has permission to view it.
-  // This is mounted on the whole subtree rather than on an entity triplet so that paths
-  // the publishers still resolve to a real entity, such as ones containing empty segments,
-  // cannot skip the check by failing to match the triplet.
+  // Mounted on the whole subtree rather than on an entity triplet, so that paths the
+  // publishers still resolve to an entity cannot skip the check by not matching it.
   if (permissionFrameworkEnabled) {
     router.use('/static/docs', async (req, _res, next) => {
-      const decodedPath = decodeURI(req.path);
+      // Publishers fully decode the path, so encoded separators have to be resolved
+      // here too rather than validating a different path than the one served.
+      let decodedPath: string;
+      try {
+        decodedPath = decodeURIComponent(req.path);
+      } catch {
+        throw new NotFoundError('Content not found');
+      }
+
       const [namespace, kind, name, ...rest] = decodedPath
         .replace(/^\//, '')
         .split('/');
 
-      // Backslashes are not separators here, but some publishers treat them as
-      // such once the path reaches storage.
+      // Some publishers treat backslashes as separators once the path reaches storage.
       const isValidSegment = (segment: string | undefined) =>
         !!segment && segment !== '.' && segment !== '..';
       if (
