@@ -53,6 +53,7 @@ Usage: @backstage/cli-module-ai ai hooks install [flags...]
 
 Options:
   --agent <string>
+  --allow-file-sources
   --dry-run
   --instance <string>
   -h, --help
@@ -65,6 +66,7 @@ Usage: @backstage/cli-module-ai ai resolve [flags...]
 
 Options:
   --agent <string>
+  --allow-file-sources
   --entity <string>
   --instance <string>
   --output <string>
@@ -92,6 +94,7 @@ Usage: @backstage/cli-module-ai ai skills sync [flags...]
 
 Options:
   --agent <string>
+  --allow-file-sources
   --dry-run
   --entity <string>
   --global

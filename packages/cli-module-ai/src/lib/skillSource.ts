@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 /** Where and how to fetch one skill with `skills add`. */
 export interface SkillSource {
   /** Repository URL without a ref, for display. */
@@ -29,6 +33,37 @@ export interface SkillSource {
    * host other than github.com when `GH_HOST` is set to that host.
    */
   ghHost?: string;
+  /**
+   * Set for local sources: the real path of the skill directory. For these,
+   * `repoUrl` and `installUrl` are the same path and `ref` is empty.
+   */
+  localPath?: string;
+}
+
+/** Reads the file system for `file:` sources, injectable to keep selection pure. */
+export interface LocalSkillProbe {
+  /** The real path, or undefined when the path does not exist. */
+  realpath(path: string): string | undefined;
+  isDirectory(path: string): boolean;
+  hasSkillMd(directory: string): boolean;
+}
+
+export const nodeLocalSkillProbe: LocalSkillProbe = {
+  realpath: p => {
+    try {
+      return fs.realpathSync(p);
+    } catch {
+      return undefined;
+    }
+  },
+  isDirectory: p => fs.statSync(p).isDirectory(),
+  hasSkillMd: p => fs.existsSync(path.join(p, 'SKILL.md')),
+};
+
+export interface ParseSkillSourceOptions {
+  /** Whether `file:` locations may be used. They are off by default. */
+  allowFileSources?: boolean;
+  probe?: LocalSkillProbe;
 }
 
 export type SkillSourceResult =
@@ -45,18 +80,61 @@ function safeDecode(value: string): string {
   }
 }
 
+function parseFileSource(
+  location: string,
+  options: ParseSkillSourceOptions,
+): SkillSourceResult {
+  if (!options.allowFileSources) {
+    return fail('file sources are disabled; pass --allow-file-sources');
+  }
+  const probe = options.probe ?? nodeLocalSkillProbe;
+  let filePath = location.slice('file:'.length);
+  if (filePath.startsWith('//')) {
+    try {
+      const url = new URL(location);
+      if (url.host) {
+        return fail('file sources must be absolute paths');
+      }
+      filePath = fileURLToPath(url);
+    } catch {
+      return fail('source location is not a valid file URL');
+    }
+  }
+  if (!path.isAbsolute(filePath)) {
+    return fail('file sources must be absolute paths');
+  }
+  const real = probe.realpath(filePath);
+  if (!real) {
+    return fail(`the directory ${path.resolve(filePath)} does not exist`);
+  }
+  if (!probe.isDirectory(real)) {
+    return fail(`${real} is not a directory`);
+  }
+  if (!probe.hasSkillMd(real)) {
+    return fail(`${real} does not contain SKILL.md directly`);
+  }
+  return {
+    ok: true,
+    source: { repoUrl: real, ref: '', installUrl: real, localPath: real },
+  };
+}
+
 /**
  * Parses a `backstage.io/source-location` annotation value of the form
  * `url:<git tree URL>` that points at a skill directory.
  */
 export function parseSkillSource(
   location: string | undefined,
+  options: ParseSkillSourceOptions = {},
 ): SkillSourceResult {
   if (!location) {
     return fail('missing the backstage.io/source-location annotation');
   }
+  if (location.startsWith('file:')) {
+    return parseFileSource(location, options);
+  }
   if (!location.startsWith('url:')) {
-    return fail('source location must start with "url:"');
+    return fail('source location must start with "url:" or "file:"');
   }
   let url: URL;
   try {

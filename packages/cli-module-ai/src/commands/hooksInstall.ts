@@ -34,6 +34,11 @@ export default async ({ args, info }: CliCommandContext) => {
           type: String,
           description: 'Name of the instance the hook uses',
         },
+        'allow-file-sources': {
+          type: Boolean,
+          description:
+            'Let the hook install skills whose source location is a local directory (file:)',
+        },
         'dry-run': {
           type: Boolean,
           description: 'Print the resulting hook files without writing them',
@@ -64,6 +69,7 @@ export default async ({ args, info }: CliCommandContext) => {
     execPath: process.execPath,
     scriptPath: fs.realpathSync(entryPoint),
     instance: flags.instance,
+    allowFileSources: Boolean(flags['allow-file-sources']),
     dryRun: Boolean(flags['dry-run']),
   });
 

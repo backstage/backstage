@@ -19,6 +19,7 @@ import path from 'node:path';
 
 /** The parts of an entry in `skills-lock.json` that we compare against. */
 interface SkillsLockEntry {
+  sourceType?: string;
   source?: string;
   sourceUrl?: string;
   ref?: string;
@@ -52,6 +53,14 @@ export function readSkillsLock(dir: string): SkillsLock | undefined {
     // Missing or unreadable lock files mean that nothing is installed.
   }
   return undefined;
+}
+
+function realOrResolved(p: string): string {
+  try {
+    return fs.realpathSync(p);
+  } catch {
+    return p;
+  }
 }
 
 /**
@@ -114,8 +123,19 @@ export function isSkillInstalled(
   lock: SkillsLock | undefined,
   installUrl: string,
   isPresent: (skillName: string) => boolean,
+  lockDir: string,
 ): boolean {
   if (!lock) return false;
+  if (path.isAbsolute(installUrl)) {
+    // Local sources are recorded relative to the directory of the lock file.
+    return Object.entries(lock.skills).some(
+      ([name, entry]) =>
+        entry?.sourceType === 'local' &&
+        typeof entry.source === 'string' &&
+        realOrResolved(path.resolve(lockDir, entry.source)) === installUrl &&
+        isPresent(name),
+    );
+  }
   let url: URL;
   try {
     url = new URL(installUrl);
