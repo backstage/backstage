@@ -253,4 +253,127 @@ describe('SignalClient', () => {
       ]),
     );
   });
+
+  describe('pending socket cleanup', () => {
+    let sockets: WebSocket[];
+
+    beforeEach(() => {
+      jest.useFakeTimers();
+      sockets = [];
+      const { CONNECTING, OPEN, CLOSING, CLOSED } = WebSocket;
+      const constructor = jest
+        .spyOn(globalThis, 'WebSocket')
+        .mockImplementation(() => {
+          const socket = {
+            readyState: CONNECTING,
+            close: jest.fn(() => {
+              Object.assign(socket, { readyState: CLOSED });
+            }),
+            send: jest.fn(),
+          } as unknown as WebSocket;
+          sockets.push(socket);
+          return socket;
+        });
+      Object.assign(constructor, { CONNECTING, OPEN, CLOSING, CLOSED });
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+      jest.useRealTimers();
+    });
+
+    it('closes stalled sockets before retrying and when unsubscribing', async () => {
+      const client = SignalClient.create({
+        discoveryApi,
+        identity,
+        connectTimeout: 100,
+        reconnectTimeout: 500,
+      });
+      const subscription = client.subscribe('channel', jest.fn());
+      await jest.advanceTimersByTimeAsync(0);
+      expect(sockets).toHaveLength(1);
+      expect(sockets[0].readyState).toBe(WebSocket.CONNECTING);
+
+      await jest.advanceTimersByTimeAsync(100);
+      expect(sockets[0].close).toHaveBeenCalledWith(1000);
+      await jest.advanceTimersByTimeAsync(500);
+      expect(sockets).toHaveLength(2);
+
+      subscription.unsubscribe();
+      expect(sockets[1].close).toHaveBeenCalledWith(1000);
+      await jest.advanceTimersByTimeAsync(1000);
+      expect(sockets).toHaveLength(2);
+    });
+
+    it('starts a fresh attempt immediately and keeps it shared after cancellation', async () => {
+      const client = SignalClient.create({ discoveryApi, identity });
+      const first = client.subscribe('first', jest.fn());
+      await jest.advanceTimersByTimeAsync(0);
+      first.unsubscribe();
+      expect(sockets[0].close).toHaveBeenCalledWith(1000);
+
+      const second = client.subscribe('second', jest.fn());
+      await jest.advanceTimersByTimeAsync(0);
+      expect(sockets).toHaveLength(2);
+      // Let the abandoned attempt finish while the new handshake is pending.
+      await jest.advanceTimersByTimeAsync(100);
+      const third = client.subscribe('third', jest.fn());
+      await jest.advanceTimersByTimeAsync(0);
+      expect(sockets).toHaveLength(2);
+
+      Object.assign(sockets[1], { readyState: WebSocket.OPEN });
+      await jest.advanceTimersByTimeAsync(100);
+      expect(sockets[1].send).toHaveBeenCalledTimes(2);
+      expect(sockets[1].send).toHaveBeenCalledWith(
+        JSON.stringify({ action: 'subscribe', channel: 'second' }),
+      );
+      expect(sockets[1].send).toHaveBeenCalledWith(
+        JSON.stringify({ action: 'subscribe', channel: 'third' }),
+      );
+      expect(jest.getTimerCount()).toBe(0);
+      second.unsubscribe();
+      third.unsubscribe();
+    });
+
+    it.each(['resolve', 'reject'] as const)(
+      'ignores discovery that completes after cancellation (%s)',
+      async outcome => {
+        let resolve!: (url: string) => void;
+        let reject!: (error: Error) => void;
+        const pending = new Promise<string>((res, rej) => {
+          resolve = res;
+          reject = rej;
+        });
+        const getBaseUrl = jest
+          .fn()
+          .mockReturnValueOnce(pending)
+          .mockResolvedValue('http://localhost:1234/api/signals');
+        const client = SignalClient.create({
+          identity,
+          discoveryApi: { getBaseUrl },
+        });
+        const first = client.subscribe('first', jest.fn());
+        await jest.advanceTimersByTimeAsync(0);
+        first.unsubscribe();
+        const second = client.subscribe('second', jest.fn());
+        await jest.advanceTimersByTimeAsync(0);
+        expect(sockets).toHaveLength(1);
+
+        if (outcome === 'resolve') {
+          resolve('http://localhost:1234/api/signals');
+        } else {
+          reject(new Error('Discovery failed'));
+        }
+        await jest.advanceTimersByTimeAsync(0);
+        const third = client.subscribe('third', jest.fn());
+        Object.assign(sockets[0], { readyState: WebSocket.OPEN });
+        await jest.advanceTimersByTimeAsync(100);
+        expect(sockets).toHaveLength(1);
+        expect(sockets[0].send).toHaveBeenCalledTimes(2);
+        expect(jest.getTimerCount()).toBe(0);
+        second.unsubscribe();
+        third.unsubscribe();
+      },
+    );
+  });
 });

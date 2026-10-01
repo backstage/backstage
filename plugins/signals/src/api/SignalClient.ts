@@ -31,6 +31,7 @@ export class SignalClient implements SignalApi {
   static readonly DEFAULT_RECONNECT_TIMEOUT_MS: number = 5000;
   private ws: WebSocket | null = null;
   private connecting?: Promise<boolean>;
+  private connectionGeneration = 0;
   private subscriptions: Map<string, Subscription> = new Map();
   private subscribedChannels = new Set<string>();
   private reconnectTo: ReturnType<typeof setTimeout> | undefined;
@@ -106,10 +107,11 @@ export class SignalClient implements SignalApi {
           clearTimeout(this.reconnectTo);
           this.reconnectTo = undefined;
         }
-        if (this.ws?.readyState === WebSocket.OPEN) {
-          this.ws.close(WS_CLOSE_NORMAL);
-        }
+        this.connectionGeneration += 1;
+        this.connecting = undefined;
+        const ws = this.ws;
         this.ws = null;
+        ws?.close(WS_CLOSE_NORMAL);
         this.subscribedChannels.clear();
       }
     };
@@ -147,21 +149,30 @@ export class SignalClient implements SignalApi {
       return Promise.resolve(true);
     }
 
-    this.connecting = this.openConnection().finally(() => {
-      this.connecting = undefined;
-    });
+    const generation = ++this.connectionGeneration;
+    this.connecting = this.openConnection(generation)
+      .catch(error => {
+        if (generation !== this.connectionGeneration) {
+          return false;
+        }
+        throw error;
+      })
+      .finally(() => {
+        if (generation === this.connectionGeneration) {
+          this.connecting = undefined;
+        }
+      });
     return this.connecting;
   }
 
-  private async openConnection(): Promise<boolean> {
+  private async openConnection(generation: number): Promise<boolean> {
     const { token } = await this.identity.getCredentials();
-    if (!token || this.subscriptions.size === 0) {
-      this.ws = null;
+    if (!token || generation !== this.connectionGeneration) {
       return false;
     }
 
     const apiUrl = await this.discoveryApi.getBaseUrl('signals');
-    if (this.subscriptions.size === 0) {
+    if (generation !== this.connectionGeneration) {
       return false;
     }
 
@@ -188,13 +199,11 @@ export class SignalClient implements SignalApi {
     }
 
     if (this.ws !== ws || ws.readyState !== WebSocket.OPEN) {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.close(WS_CLOSE_NORMAL);
-      }
+      ws.close(WS_CLOSE_NORMAL);
       if (this.ws === ws) {
         this.ws = null;
       }
-      if (this.subscriptions.size === 0) {
+      if (generation !== this.connectionGeneration) {
         return false;
       }
       throw new Error('Connect timeout');
