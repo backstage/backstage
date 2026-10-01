@@ -120,7 +120,7 @@ export class SignalClient implements SignalApi {
   }
 
   private syncSubscriptions(): void {
-    if (this.ws?.readyState !== WebSocket.OPEN) {
+    if (this.connecting || this.ws?.readyState !== WebSocket.OPEN) {
       return;
     }
 
@@ -149,6 +149,10 @@ export class SignalClient implements SignalApi {
       return Promise.resolve(true);
     }
 
+    if (this.reconnectTo) {
+      clearTimeout(this.reconnectTo);
+      this.reconnectTo = undefined;
+    }
     const generation = ++this.connectionGeneration;
     this.connecting = this.openConnection(generation)
       .catch(error => {

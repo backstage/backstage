@@ -305,6 +305,61 @@ describe('SignalClient', () => {
       expect(sockets).toHaveLength(2);
     });
 
+    it('waits for message handling before subscribing during connection setup', async () => {
+      const client = SignalClient.create({ discoveryApi, identity });
+      const onMessage = jest.fn();
+      const first = client.subscribe('channel', onMessage);
+      const duplicate = client.subscribe('channel', jest.fn());
+      await jest.advanceTimersByTimeAsync(0);
+      Object.assign(sockets[0], { readyState: WebSocket.OPEN });
+
+      duplicate.unsubscribe();
+      expect(sockets[0].send).not.toHaveBeenCalled();
+      await jest.advanceTimersByTimeAsync(100);
+      expect(sockets[0].send).toHaveBeenCalledTimes(1);
+      expect(sockets[0].send).toHaveBeenCalledWith(
+        JSON.stringify({ action: 'subscribe', channel: 'channel' }),
+      );
+      sockets[0].onmessage?.call(
+        sockets[0],
+        new MessageEvent('message', {
+          data: JSON.stringify({ channel: 'channel', message: { value: 1 } }),
+        }),
+      );
+      expect(onMessage).toHaveBeenCalledWith({ value: 1 });
+      first.unsubscribe();
+    });
+
+    it.each([1000, 1001])(
+      'cancels an earlier retry when a new connection closes with code %s',
+      async code => {
+        const client = SignalClient.create({
+          discoveryApi,
+          identity,
+          connectTimeout: 100,
+          reconnectTimeout: 500,
+        });
+        const first = client.subscribe('first', jest.fn());
+        await jest.advanceTimersByTimeAsync(100);
+        expect(sockets[0].close).toHaveBeenCalledWith(1000);
+
+        const second = client.subscribe('second', jest.fn());
+        await jest.advanceTimersByTimeAsync(0);
+        expect(sockets).toHaveLength(2);
+        Object.assign(sockets[1], { readyState: WebSocket.OPEN });
+        await jest.advanceTimersByTimeAsync(100);
+        expect(sockets[1].send).toHaveBeenCalledTimes(2);
+        Object.assign(sockets[1], { readyState: WebSocket.CLOSED });
+        sockets[1].onclose?.call(sockets[1], new CloseEvent('close', { code }));
+
+        await jest.advanceTimersByTimeAsync(1000);
+        expect(sockets).toHaveLength(2);
+        expect(jest.getTimerCount()).toBe(0);
+        first.unsubscribe();
+        second.unsubscribe();
+      },
+    );
+
     it('starts a fresh attempt immediately and keeps it shared after cancellation', async () => {
       const client = SignalClient.create({ discoveryApi, identity });
       const first = client.subscribe('first', jest.fn());
