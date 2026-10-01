@@ -35,6 +35,7 @@ export interface SkillsInvocation {
 export type SkillsRunner = (
   args: string[],
   env: Record<string, string>,
+  cwd?: string,
 ) => Promise<number>;
 
 /** Plans one `skills add` per distinct skill source. */
@@ -83,17 +84,39 @@ export function formatSkillsCommand(invocation: SkillsInvocation): string {
   );
 }
 
+/** The oldest Node.js version that the pinned `skills` package supports. */
+const MIN_SKILLS_NODE = [22, 20, 0];
+
+/** Throws with a clear message when this Node.js is too old to run `skills`. */
+export function assertSkillsNodeVersion(
+  version: string = process.versions.node,
+): void {
+  const current = version.split('.').map(Number);
+  for (let i = 0; i < MIN_SKILLS_NODE.length; i++) {
+    const have = current[i] ?? 0;
+    if (have !== MIN_SKILLS_NODE[i]) {
+      if (have > MIN_SKILLS_NODE[i]) return;
+      throw new Error(
+        `Installing skills requires Node.js ${MIN_SKILLS_NODE.join(
+          '.',
+        )} or later, but you are running ${version}`,
+      );
+    }
+  }
+}
+
 /** Runs one `skills add` per invocation, continuing past failures. */
 export async function runSkills(
   invocations: SkillsInvocation[],
   run: SkillsRunner,
   log: (message: string) => void = message =>
     process.stderr.write(`${message}\n`),
+  cwd?: string,
 ): Promise<{ failed: string[] }> {
   const failed: string[] = [];
   for (const invocation of invocations) {
     try {
-      const code = await run(buildSkillsArgs(invocation), invocation.env);
+      const code = await run(buildSkillsArgs(invocation), invocation.env, cwd);
       if (code !== 0) {
         failed.push(invocation.ref);
         log(`skills add failed for ${invocation.ref} (exit code ${code})`);
@@ -124,11 +147,14 @@ export function resolveSkillsBin(): string {
 export function createSkillsRunner(
   bin: string = resolveSkillsBin(),
 ): SkillsRunner {
-  return (args, env) =>
+  return (args, env, cwd) =>
     new Promise((resolve, reject) => {
       const child = spawn(process.execPath, [bin, ...args], {
         stdio: 'inherit',
-        env: { ...process.env, ...env },
+        cwd,
+        // skills reports telemetry that can include the source repository
+        // path, so it is off unless the user has set DISABLE_TELEMETRY.
+        env: { DISABLE_TELEMETRY: '1', ...process.env, ...env },
       });
       child.on('error', reject);
       child.on('close', code => resolve(code ?? 1));

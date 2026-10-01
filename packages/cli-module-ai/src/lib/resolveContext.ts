@@ -19,6 +19,7 @@ import {
   stringifyEntityRef,
   type Entity,
 } from '@backstage/catalog-model';
+import { isSkillAiResourceEntity } from '@backstage/catalog-model/alpha';
 import type { FilterPredicate } from '@backstage/filter-predicates';
 import {
   createCatalogClient,
@@ -186,6 +187,7 @@ export async function fetchDependencies(
   const fetched: Entity[] = [];
   const initial = new Set<string>();
   for (const candidate of candidates) {
+    if (!isSkillAiResourceEntity(candidate)) continue;
     for (const ref of relationTargets(candidate, 'dependsOn')) {
       if (!known.has(ref)) initial.add(ref);
     }
@@ -198,6 +200,7 @@ export async function fetchDependencies(
     for (const item of items) {
       if (!item) continue;
       fetched.push(item);
+      if (!isSkillAiResourceEntity(item)) continue;
       for (const ref of relationTargets(item, 'dependsOn')) {
         if (!known.has(ref)) {
           known.add(ref);

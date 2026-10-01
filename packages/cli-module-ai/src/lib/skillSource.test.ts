@@ -97,5 +97,25 @@ describe('parseSkillSource', () => {
     expect(reason('url:https://github.acme.com:8443/o/r/tree/main/s')).toMatch(
       /port/,
     );
+    // Without the GitLab "/-/" form, skills only understands owner/repo.
+    expect(
+      reason('url:https://gitlab.acme.com/g/sub/repo/tree/main/skills/s'),
+    ).toMatch(/owner\/repo/);
+    expect(reason('url:https://github.com/a/b/c/tree/main/skills/s')).toMatch(
+      /owner\/repo/,
+    );
+    // skills treats "#" as a ref or skill filter and does not handle "?" or "\".
+    expect(reason('url:https://github.com/a/b/tree/main%23x/skills/s')).toMatch(
+      /"#"/,
+    );
+    expect(reason('url:https://github.com/a/b/tree/main/skills%23s/s')).toMatch(
+      /"#"/,
+    );
+    expect(reason('url:https://github.com/a/b/tree/main/skills/s%3Fq')).toMatch(
+      /"\?"/,
+    );
+    expect(reason('url:https://github.com/a/b/tree/main/skills%5Cs')).toMatch(
+      /"\\"/,
+    );
   });
 });

@@ -16,9 +16,11 @@
 
 import { cli } from 'cleye';
 import type { CliCommandContext } from '@backstage/cli-node';
+import { getRepoRoot } from '../lib/gitRemote';
 import { resolveTargetAgents } from '../lib/detectAgent';
 import { resolveSelection } from '../lib/resolveContext';
 import {
+  assertSkillsNodeVersion,
   createSkillsRunner,
   formatSkillsCommand,
   planSkillsInvocations,
@@ -88,7 +90,17 @@ export default async ({ args, info }: CliCommandContext) => {
     return;
   }
 
-  const { failed } = await runSkills(invocations, createSkillsRunner());
+  assertSkillsNodeVersion();
+
+  // skills installs project skills into its working directory, so run it from
+  // the repository root rather than wherever the command was started.
+  const cwd = flags.global ? undefined : await getRepoRoot();
+  const { failed } = await runSkills(
+    invocations,
+    createSkillsRunner(),
+    undefined,
+    cwd,
+  );
   if (failed.length > 0) {
     throw new Error(`skills add failed for: ${failed.join(', ')}`);
   }
