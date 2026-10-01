@@ -237,6 +237,10 @@ With the abstraction layer in place, add Zensical as a second engine. MkDocs rem
 - Validate against real TechDocs projects
 - Set up CI/CD for image publishing
 
+**Documentation Updates:**
+
+- Update CLI and configuration documentation to aid adopters in how to switch engines.
+
 ### Phase 3: Flip the default
 
 Once Zensical has been validated at scale, change the global default from MkDocs to Zensical.
