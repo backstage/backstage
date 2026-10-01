@@ -77,12 +77,43 @@ function normalizeRepo(value: string): string | undefined {
 }
 
 /**
- * Checks whether the skill at a tree URL, as passed to `skills add`, is
- * already recorded in the lock with the same repository, ref and directory.
+ * Project skills directories per agent, from the agent table in `skills`
+ * 1.7.0 (node_modules/skills/dist/cli.mjs, `skillsDir`). Claude Code is the
+ * one common agent with its own directory. Agents that are not listed use
+ * `.agents/skills`; if that is wrong for an agent, its skills are never
+ * seen as installed and are installed again, which is safe.
  */
-export function isInstalledInLock(
+const SKILLS_DIRS: Record<string, string> = {
+  'claude-code': path.join('.claude', 'skills'),
+};
+const DEFAULT_SKILLS_DIR = path.join('.agents', 'skills');
+
+/**
+ * Returns a check for whether a skill folder exists in the project skills
+ * directory of every one of the given agents. The lock file has no agent
+ * information, so it cannot tell which agents a skill was installed for.
+ */
+export function skillPresence(
+  rootDir: string,
+  agents: string[],
+): (skillName: string) => boolean {
+  return skillName =>
+    agents.every(agent =>
+      fs.existsSync(
+        path.join(rootDir, SKILLS_DIRS[agent] ?? DEFAULT_SKILLS_DIR, skillName),
+      ),
+    );
+}
+
+/**
+ * Checks whether the skill at a tree URL, as passed to `skills add`, is
+ * recorded in the lock with the same repository, ref and directory, and is
+ * present on disk according to `isPresent`.
+ */
+export function isSkillInstalled(
   lock: SkillsLock | undefined,
   installUrl: string,
+  isPresent: (skillName: string) => boolean,
 ): boolean {
   if (!lock) return false;
   let url: URL;
@@ -96,12 +127,14 @@ export function isInstalledInLock(
   const [, repoPath, ref, skillDir] = match;
   const repo = normalizeRepo(`${url.origin}${repoPath}`);
 
-  return Object.values(lock.skills).some(entry => {
+  return Object.entries(lock.skills).some(([name, entry]) => {
     if (entry?.ref !== ref) return false;
     const entryDir = entry.skillPath?.replace(/\/?SKILL\.md$/i, '');
     if (entryDir !== skillDir) return false;
-    return [entry.source, entry.sourceUrl].some(
-      candidate => candidate && normalizeRepo(candidate) === repo,
+    return (
+      [entry.source, entry.sourceUrl].some(
+        candidate => candidate && normalizeRepo(candidate) === repo,
+      ) && isPresent(name)
     );
   });
 }

@@ -18,6 +18,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { buildHookCommand, installHooks } from './installHooks';
+import { shellQuote } from './shellQuote';
 
 describe('buildHookCommand', () => {
   it('quotes the node and script paths and passes the agent and instance', () => {
@@ -34,12 +35,20 @@ describe('buildHookCommand', () => {
       buildHookCommand({
         execPath: '/Users/Jane Doe/n ode',
         scriptPath: "/Users/Jane Doe/it's/bin/backstage-cli",
-        agent: 'codex',
+        agent: 'claude-code',
         instance: 'my instance',
       }),
     ).toBe(
-      "'/Users/Jane Doe/n ode' '/Users/Jane Doe/it'\\''s/bin/backstage-cli' ai skills sync --hook --agent codex --instance 'my instance'",
+      "'/Users/Jane Doe/n ode' '/Users/Jane Doe/it'\\''s/bin/backstage-cli' ai skills sync --hook --agent claude-code --instance 'my instance'",
     );
+  });
+});
+
+describe('shellQuote', () => {
+  it('quotes arguments that a shell would expand', () => {
+    expect(shellQuote('~root')).toBe("'~root'");
+    expect(shellQuote('=x')).toBe("'=x'");
+    expect(shellQuote('a=b')).toBe('a=b');
   });
 });
 
@@ -49,6 +58,9 @@ describe('installHooks', () => {
     rootDir: root,
     execPath: '/bin/node',
     scriptPath: '/bin/backstage-cli',
+    exec: async () => {
+      throw Object.assign(new Error('not a repo'), { code: 128 });
+    },
   });
   const command = (agent: string, instance?: string) =>
     buildHookCommand({
@@ -157,19 +169,15 @@ describe('installHooks', () => {
   });
 
   it('is idempotent', async () => {
-    await installHooks({ ...base(), agents: ['claude-code', 'codex'] });
-    const first = [
-      read('.claude/settings.local.json'),
-      read('.codex/hooks.json'),
-    ];
-    await installHooks({ ...base(), agents: ['claude-code', 'codex'] });
+    await installHooks({ ...base(), agents: ['claude-code'] });
+    const first = read('.claude/settings.local.json');
+    await installHooks({ ...base(), agents: ['claude-code'] });
 
-    expect([
-      read('.claude/settings.local.json'),
-      read('.codex/hooks.json'),
-    ]).toEqual(first);
-    expect(first[1]).toContain('--agent codex');
-    expect(JSON.parse(first[0]).hooks.SessionStart).toHaveLength(1);
+    expect(read('.claude/settings.local.json')).toBe(first);
+    expect(JSON.parse(first).hooks.SessionStart).toHaveLength(1);
+    expect(fs.readdirSync(path.join(root, '.claude'))).toEqual([
+      'settings.local.json',
+    ]);
   });
 
   it('fails without writing for invalid JSON, unexpected shapes and unsupported agents', async () => {
@@ -202,12 +210,16 @@ describe('installHooks', () => {
     ).rejects.toThrow('hooks are not supported for cursor yet');
     expect(fs.existsSync(file)).toBe(false);
 
-    // A failure for one agent also prevents writing the others.
-    fs.mkdirSync(path.join(root, '.codex'));
-    fs.writeFileSync(path.join(root, '.codex/hooks.json'), 'nope');
     await expect(
-      installHooks({ ...base(), agents: ['claude-code', 'codex'] }),
-    ).rejects.toThrow('.codex/hooks.json');
+      installHooks({ ...base(), agents: ['codex'] }),
+    ).rejects.toThrow('hooks are not supported for codex yet');
+    expect(fs.existsSync(file)).toBe(false);
+
+    for (const instance of ['--evil', 'a b', 'x;y', '']) {
+      await expect(
+        installHooks({ ...base(), agents: ['claude-code'], instance }),
+      ).rejects.toThrow('--instance');
+    }
     expect(fs.existsSync(file)).toBe(false);
   });
 
@@ -222,5 +234,69 @@ describe('installHooks', () => {
     expect(results[0]).toMatchObject({ written: false });
     expect(results[0].json).toContain(command('claude-code'));
     expect(fs.existsSync(path.join(root, '.claude'))).toBe(false);
+  });
+
+  it('adds the file to the git exclude list unless it is already ignored', async () => {
+    const exclude = path.join(root, '.git', 'info', 'exclude');
+    const fake = (ignored: boolean) =>
+      jest.fn(async (_file: string, args: string[]) => {
+        if (args.includes('check-ignore')) {
+          if (ignored) return { stdout: '' };
+          throw Object.assign(new Error('not ignored'), { code: 1 });
+        }
+        if (args.includes('--git-path')) return { stdout: `${exclude}\n` };
+        throw new Error(`unexpected ${args.join(' ')}`);
+      });
+    fs.mkdirSync(path.dirname(exclude), { recursive: true });
+    fs.writeFileSync(exclude, '# existing');
+
+    const ignoredExec = fake(true);
+    let [result] = await installHooks({
+      ...base(),
+      agents: ['claude-code'],
+      exec: ignoredExec,
+    });
+    expect(result.excludedFrom).toBeUndefined();
+    expect(fs.readFileSync(exclude, 'utf8')).toBe('# existing');
+
+    const exec = fake(false);
+    [result] = await installHooks({
+      ...base(),
+      agents: ['claude-code'],
+      exec,
+    });
+    expect(result.excludedFrom).toBe(exclude);
+    expect(fs.readFileSync(exclude, 'utf8')).toBe(
+      '# existing\n/.claude/settings.local.json\n',
+    );
+    expect(exec).toHaveBeenCalledWith('git', [
+      '-C',
+      root,
+      'check-ignore',
+      '-q',
+      path.join(root, '.claude', 'settings.local.json'),
+    ]);
+
+    // Not inside a git repository: nothing is excluded and nothing fails.
+    const notRepo = jest.fn(async () => {
+      throw Object.assign(new Error('not a repo'), { code: 128 });
+    });
+    [result] = await installHooks({
+      ...base(),
+      agents: ['claude-code'],
+      exec: notRepo,
+    });
+    expect(result.written).toBe(true);
+    expect(result.excludedFrom).toBeUndefined();
+
+    // A dry run does not touch git at all.
+    const dry = fake(false);
+    await installHooks({
+      ...base(),
+      agents: ['claude-code'],
+      dryRun: true,
+      exec: dry,
+    });
+    expect(dry).not.toHaveBeenCalled();
   });
 });

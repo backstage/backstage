@@ -17,7 +17,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { isInstalledInLock, readSkillsLock } from './skillsLock';
+import { isSkillInstalled, readSkillsLock, skillPresence } from './skillsLock';
 
 const lock = {
   version: 1,
@@ -46,7 +46,8 @@ const lock = {
 
 describe('skills lock', () => {
   it('matches install URLs against recorded source, ref and skill path', () => {
-    const url = (u: string) => isInstalledInLock(lock, u);
+    const present = () => true;
+    const url = (u: string) => isSkillInstalled(lock, u, present);
     expect(url('https://github.com/anthropics/skills/tree/main/skills/a')).toBe(
       true,
     );
@@ -68,8 +69,36 @@ describe('skills lock', () => {
     expect(url('https://ghe.example.com/acme/skills/tree/v1/x/a')).toBe(false);
     expect(url('not a url')).toBe(false);
     expect(
-      isInstalledInLock(undefined, 'https://github.com/a/b/tree/m/s'),
+      isSkillInstalled(undefined, 'https://github.com/a/b/tree/m/s', present),
     ).toBe(false);
+  });
+
+  it('requires the skill folder to exist for every target agent', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ai-lock-dirs-'));
+    try {
+      const u = 'https://github.com/anthropics/skills/tree/main/skills/a';
+      const installed = (agents: string[]) =>
+        isSkillInstalled(lock, u, skillPresence(dir, agents));
+
+      // A lock file without skills on disk, such as after a fresh clone.
+      expect(installed(['claude-code'])).toBe(false);
+
+      fs.mkdirSync(path.join(dir, '.agents', 'skills', 'a'), {
+        recursive: true,
+      });
+      // Installed for another agent only.
+      expect(installed(['claude-code'])).toBe(false);
+      expect(installed(['codex'])).toBe(true);
+
+      fs.mkdirSync(path.join(dir, '.claude', 'skills', 'a'), {
+        recursive: true,
+      });
+      expect(installed(['claude-code'])).toBe(true);
+      expect(installed(['claude-code', 'codex'])).toBe(true);
+      expect(installed(['claude-code', 'codex', 'cursor'])).toBe(true);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
   });
 
   it('reads the lock file, treating missing or malformed files as empty', () => {

@@ -234,6 +234,11 @@ describe('ai skills sync', () => {
       skillPath: `skills/${name}/SKILL.md`,
     });
 
+    const installDir = (name: string) =>
+      fs.mkdirSync(path.join(repoRoot, '.claude', 'skills', name), {
+        recursive: true,
+      });
+
     beforeEach(() => {
       repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ai-sync-hook-'));
       mockGetRepoRoot.mockResolvedValue(repoRoot);
@@ -246,6 +251,7 @@ describe('ai skills sync', () => {
     });
 
     it('installs only skills missing from the lock file, quietly, and prints a single summary line', async () => {
+      installDir('a');
       fs.writeFileSync(
         path.join(repoRoot, 'skills-lock.json'),
         JSON.stringify({ version: 1, skills: { a: lockEntry('a', 'one') } }),
@@ -271,7 +277,8 @@ describe('ai skills sync', () => {
       expect(err()).toBe('');
     });
 
-    it('prints nothing when every skill is already installed', async () => {
+    it('prints nothing when every skill is already installed, but reinstalls skills whose folder is missing', async () => {
+      installDir('a');
       fs.writeFileSync(
         path.join(repoRoot, 'skills-lock.json'),
         JSON.stringify({ version: 1, skills: { a: lockEntry('a', 'one') } }),
@@ -285,6 +292,13 @@ describe('ai skills sync', () => {
       expect(mockRunner).not.toHaveBeenCalled();
       expect(out()).toBe('');
       expect(err()).toBe('');
+
+      // The lock file alone, as after a fresh clone, is not enough.
+      fs.rmSync(path.join(repoRoot, '.claude'), { recursive: true });
+      mockRunner.mockResolvedValue(0);
+      await skillsSync(ctx([]));
+      expect(mockRunner).toHaveBeenCalledTimes(1);
+      expect(out()).toBe('Backstage: installed 1 skill(s), 0 up to date.\n');
     });
 
     it('exits successfully with one stderr line and no stdout on errors', async () => {
