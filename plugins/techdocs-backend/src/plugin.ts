@@ -158,10 +158,8 @@ export const techdocsPlugin = createBackendPlugin({
         // checks if the publisher is working and logs the result
         await publisher.getReadiness();
 
-        // Register the TechDocs read permission so that it can be discovered
-        // and evaluated by permission policies, including the RBAC plugin. The
-        // `catalog-entity` resource type it targets is owned and registered by
-        // the catalog, so only the permission itself is added here.
+        // The `catalog-entity` resource type that the permission targets is owned
+        // and registered by the catalog, so only the permission itself is added here.
         permissionsRegistry.addPermissions(techDocsPermissions);
 
         http.use(

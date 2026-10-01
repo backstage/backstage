@@ -384,42 +384,52 @@ export async function createRouter(
   });
 
   // Ensures that the related entity exists and the current user has permission to view it.
+  // This is mounted on the whole subtree rather than on an entity triplet so that paths
+  // the publishers still resolve to a real entity, such as ones containing empty segments,
+  // cannot skip the check by failing to match the triplet.
   if (permissionFrameworkEnabled) {
-    router.use(
-      '/static/docs/:namespace/:kind/:name',
-      async (req, _res, next) => {
-        const { kind, namespace, name } = req.params;
-        const entityName = { kind, namespace, name };
+    router.use('/static/docs', async (req, _res, next) => {
+      const decodedPath = decodeURI(req.path);
+      const [namespace, kind, name, ...rest] = decodedPath
+        .replace(/^\//, '')
+        .split('/');
 
-        const entityRoot = '/entity';
-        const decodedPath = decodeURI(req.path);
-        const contentPath = path.posix.resolve(entityRoot, `.${decodedPath}`);
-        const relativePath = path.posix.relative(entityRoot, contentPath);
-        if (
-          decodedPath.includes('\\') ||
-          relativePath === '..' ||
-          relativePath.startsWith('../')
-        ) {
-          throw new NotFoundError(
-            `Content not found for ${stringifyEntityRef(entityName)}`,
-          );
-        }
+      // Backslashes are not separators here, but some publishers treat them as
+      // such once the path reaches storage.
+      const isValidSegment = (segment: string | undefined) =>
+        !!segment && segment !== '.' && segment !== '..';
+      if (
+        decodedPath.includes('\\') ||
+        ![namespace, kind, name].every(isValidSegment)
+      ) {
+        throw new NotFoundError('Content not found');
+      }
 
-        const credentials = await httpAuth.credentials(req, {
-          allowLimitedAccess: true,
-        });
+      const entityName = { kind, namespace, name };
 
-        const entity = await loadEntity(credentials, entityName);
+      const entityRoot = '/entity';
+      const contentPath = path.posix.resolve(entityRoot, `./${rest.join('/')}`);
+      const relativePath = path.posix.relative(entityRoot, contentPath);
+      if (relativePath === '..' || relativePath.startsWith('../')) {
+        throw new NotFoundError(
+          `Content not found for ${stringifyEntityRef(entityName)}`,
+        );
+      }
 
-        if (!entity) {
-          throw new NotFoundError(
-            `Entity not found for ${stringifyEntityRef(entityName)}`,
-          );
-        }
+      const credentials = await httpAuth.credentials(req, {
+        allowLimitedAccess: true,
+      });
 
-        next();
-      },
-    );
+      const entity = await loadEntity(credentials, entityName);
+
+      if (!entity) {
+        throw new NotFoundError(
+          `Entity not found for ${stringifyEntityRef(entityName)}`,
+        );
+      }
+
+      next();
+    });
   }
 
   // If a cache manager was provided, attach the cache middleware.

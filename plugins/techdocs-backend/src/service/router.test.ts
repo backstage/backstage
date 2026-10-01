@@ -548,6 +548,33 @@ data: {"updated":true}
       expect(status).toBe(404);
     });
 
+    it('should reject paths with empty segments before the publisher collapses them', async () => {
+      const docsRouter = jest.fn((_req, res) => res.sendStatus(200));
+      publisher.docsRouter.mockReturnValue(docsRouter);
+
+      const permissions = mockServices.permissions.mock({
+        authorize: jest
+          .fn()
+          .mockResolvedValue([{ result: AuthorizeResult.DENY }]),
+      });
+
+      const app = await createApp({
+        ...outOfTheBoxOptions,
+        permissions,
+        config: techDocsPermissionsConfig,
+      });
+
+      MockCachedEntityLoader.prototype.load.mockResolvedValue(entity);
+
+      const status = await requestRawPath(
+        app,
+        '/static/docs/default//component/private/index.html',
+      );
+
+      expect(status).toBe(404);
+      expect(docsRouter).not.toHaveBeenCalled();
+    });
+
     it('should reject encoded Windows path separators outside the authorized entity', async () => {
       const config = new ConfigReader({
         permission: {
