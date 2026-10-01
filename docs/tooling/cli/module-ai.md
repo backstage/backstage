@@ -213,7 +213,7 @@ flag, `ai resolve` reports these skills as skipped with the reason
 
 With the flag, the path must be absolute, exist, be a directory, and contain
 `SKILL.md` directly. A trailing slash and the `file:///absolute/path` form are
-accepted, and symlinks are resolved to the real path, which is what `skills add`
+accepted, percent-encoded characters such as `%20` are decoded in both forms, and symlinks are resolved to the real path, which is what `skills add`
 receives. Skills that share a directory are installed once. In hook mode, a
 local skill is skipped when `skills-lock.json` records it from the same
 directory and its folder is present, so edits to the skill are not picked up
@@ -221,9 +221,17 @@ by the hook. Run `ai skills sync --allow-file-sources` to install them again.
 
 :::warning
 
-A local source installs whatever is in that directory when the command runs,
-and the catalog decides which directory. Only use `--allow-file-sources` on
-machines where you control the paths that the catalog entries point at.
+`skills` copies the whole skill directory, including hidden files such as `.env`
+(it leaves out only `.git`, `__pycache__`, and `metadata.json`) and follows
+symlinks, into `.agents/skills/<name>` or `.claude/skills/<name>` in your
+project. A `.env` file, or a symlink to a private key, in the skill directory
+therefore ends up in your repository tree, where your agent can read it and
+where it can be committed. Keep skill directories free of secrets and add the
+installed skills directories to your `.gitignore`.
+
+The catalog also decides which directory is installed. Only use
+`--allow-file-sources` on machines where you control the paths that the catalog
+entries point at.
 
 :::
 

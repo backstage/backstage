@@ -302,6 +302,50 @@ describe('ai skills sync', () => {
       expect(err()).toBe('');
     });
 
+    it('skips an already installed local source', async () => {
+      const skillDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ai-local-src-'));
+      const real = fs.realpathSync(skillDir);
+      fs.writeFileSync(
+        path.join(repoRoot, 'skills-lock.json'),
+        JSON.stringify({
+          version: 1,
+          skills: {
+            a: {
+              source: path.relative(repoRoot, real),
+              sourceType: 'local',
+            },
+          },
+        }),
+      );
+      installDir('a');
+      (mockCli as jest.Mock).mockReturnValue({
+        flags: {
+          agent: ['claude-code'],
+          hook: true,
+          'allow-file-sources': true,
+        },
+      });
+      mockResolveSelection.mockResolvedValue(
+        selection([
+          {
+            ...decision('a', 'one', 'selected'),
+            source: {
+              repoUrl: real,
+              ref: '',
+              installUrl: real,
+              localPath: real,
+            },
+          },
+        ]),
+      );
+
+      await skillsSync(ctx([]));
+
+      expect(mockRunner).not.toHaveBeenCalled();
+      expect(out()).toBe('');
+      fs.rmSync(skillDir, { recursive: true, force: true });
+    });
+
     it('prints nothing when every skill is already installed, but reinstalls skills whose folder is missing', async () => {
       installDir('a');
       fs.writeFileSync(

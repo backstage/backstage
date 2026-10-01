@@ -17,6 +17,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { isError } from '@backstage/errors';
+import { errorMessage } from './errorMessage';
 
 /** Where and how to fetch one skill with `skills add`. */
 export interface SkillSource {
@@ -42,7 +44,10 @@ export interface SkillSource {
 
 /** Reads the file system for `file:` sources, injectable to keep selection pure. */
 export interface LocalSkillProbe {
-  /** The real path, or undefined when the path does not exist. */
+  /**
+   * The real path, or undefined when the path does not exist. Throws when it
+   * cannot be read, for example without permission.
+   */
   realpath(path: string): string | undefined;
   isDirectory(path: string): boolean;
   hasSkillMd(directory: string): boolean;
@@ -52,11 +57,23 @@ export const nodeLocalSkillProbe: LocalSkillProbe = {
   realpath: p => {
     try {
       return fs.realpathSync(p);
-    } catch {
-      return undefined;
+    } catch (error) {
+      if (
+        isError(error) &&
+        (error.code === 'ENOENT' || error.code === 'ENOTDIR')
+      ) {
+        return undefined;
+      }
+      throw error;
     }
   },
-  isDirectory: p => fs.statSync(p).isDirectory(),
+  isDirectory: p => {
+    try {
+      return fs.statSync(p).isDirectory();
+    } catch {
+      return false;
+    }
+  },
   hasSkillMd: p => fs.existsSync(path.join(p, 'SKILL.md')),
 };
 
@@ -93,17 +110,29 @@ function parseFileSource(
     try {
       const url = new URL(location);
       if (url.host) {
-        return fail('file sources must be absolute paths');
+        return fail('file URLs with a host are not supported');
       }
       filePath = fileURLToPath(url);
     } catch {
       return fail('source location is not a valid file URL');
     }
+  } else {
+    // Decode like the URL form does, so that both forms read the same path.
+    try {
+      filePath = decodeURIComponent(filePath);
+    } catch {
+      return fail('source location is not a valid file path');
+    }
   }
   if (!path.isAbsolute(filePath)) {
     return fail('file sources must be absolute paths');
   }
-  const real = probe.realpath(filePath);
+  let real: string | undefined;
+  try {
+    real = probe.realpath(filePath);
+  } catch (error) {
+    return fail(`the path ${filePath} cannot be read: ${errorMessage(error)}`);
+  }
   if (!real) {
     return fail(`the directory ${path.resolve(filePath)} does not exist`);
   }
