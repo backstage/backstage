@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-/** Quotes an argument for a POSIX shell, leaving safe words as they are. */
+/**
+ * Quotes an argument for a POSIX shell, leaving safe words as they are. A
+ * leading `=` or `~` is quoted because shells expand it.
+ */
 export function shellQuote(arg: string): string {
-  return /^[\w@%+=:,./-]+$/.test(arg) ? arg : `'${arg.replace(/'/g, `'\\''`)}'`;
+  return /^[\w@%+:,./-][\w@%+=:,./-]*$/.test(arg)
+    ? arg
+    : `'${arg.replace(/'/g, `'\\''`)}'`;
 }

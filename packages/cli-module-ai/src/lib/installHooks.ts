@@ -16,6 +16,8 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { errorMessage } from './errorMessage';
+import { defaultExec, type ExecFn } from './gitRemote';
 import { shellQuote } from './shellQuote';
 
 /** Marks the hook entry that this module owns, so that it can be replaced. */
@@ -24,21 +26,20 @@ const SESSION_START_MATCHER = 'startup|resume';
 const HOOK_TIMEOUT_SECONDS = 120;
 
 /**
- * Project-level hook files of the supported agents, relative to the project
- * root. Both use the same `hooks.SessionStart` format.
+ * Hooks are only installed in personal files that are not committed.
  *
- * - Claude Code: https://code.claude.com/docs/en/hooks. Personal, uncommitted
- *   project hooks go in `.claude/settings.local.json`.
- * - Codex: https://learn.chatgpt.com/docs/hooks. Project hooks go in
- *   `.codex/hooks.json` and must be trusted with `/hooks` before they run.
+ * - Claude Code: https://code.claude.com/docs/en/hooks. Project hooks that
+ *   are personal go in `.claude/settings.local.json`.
  *
- * Cursor is not supported: its project hooks (`.cursor/hooks.json`, see
- * https://cursor.com/docs/agent/hooks) are meant to be committed and share
- * between a team, which does not fit a command with machine-specific paths.
+ * Cursor and Codex are not supported. Cursor's project hooks
+ * (`.cursor/hooks.json`, https://cursor.com/docs/agent/hooks) and Codex's
+ * (`.codex/hooks.json`, https://learn.chatgpt.com/docs/hooks) are files that
+ * are shared within a team, which does not fit a command with paths that are
+ * specific to one machine. Their personal hooks are in the user's home
+ * directory, which this module does not modify.
  */
 const HOOK_FILES: Record<string, string> = {
   'claude-code': path.join('.claude', 'settings.local.json'),
-  codex: path.join('.codex', 'hooks.json'),
 };
 
 export interface HookCommandOptions {
@@ -120,12 +121,18 @@ export interface InstallHooksOptions {
   scriptPath: string;
   instance?: string;
   dryRun?: boolean;
+  /** Runs git, injectable for tests. */
+  exec?: ExecFn;
 }
+
+const INSTANCE_PATTERN = /^[A-Za-z0-9_.][A-Za-z0-9_.-]*$/;
 
 export interface InstallHooksResult {
   agent: string;
   file: string;
   written: boolean;
+  /** Set to the git exclude file that the hook file was added to. */
+  excludedFrom?: string;
   /** The resulting file content, set on a dry run. */
   json?: string;
 }
@@ -137,6 +144,14 @@ export interface InstallHooksResult {
 export async function installHooks(
   options: InstallHooksOptions,
 ): Promise<InstallHooksResult[]> {
+  if (
+    options.instance !== undefined &&
+    !INSTANCE_PATTERN.test(options.instance)
+  ) {
+    throw new Error(
+      `Invalid --instance "${options.instance}": use letters, digits, ".", "_" and "-", and do not start with "-"`,
+    );
+  }
   const unsupported = options.agents.filter(agent => !HOOK_FILES[agent]);
   if (unsupported.length > 0) {
     throw new Error(
@@ -166,12 +181,78 @@ export async function installHooks(
     return { agent, file, json };
   });
 
-  return planned.map(({ agent, file, json }) => {
+  const results: InstallHooksResult[] = [];
+  for (const { agent, file, json } of planned) {
     if (options.dryRun) {
-      return { agent, file, written: false, json };
+      results.push({ agent, file, written: false, json });
+      continue;
     }
     fs.mkdirSync(path.dirname(file), { recursive: true });
-    fs.writeFileSync(file, json);
-    return { agent, file, written: true };
-  });
+    // Write next to the target and rename, so that a crash cannot leave a
+    // partly written settings file behind.
+    const temp = `${file}.${process.pid}.tmp`;
+    fs.writeFileSync(temp, json);
+    fs.renameSync(temp, file);
+    const excludedFrom = await excludeFromGit(
+      options.rootDir,
+      HOOK_FILES[agent],
+      file,
+      options.exec ?? defaultExec,
+    );
+    results.push({ agent, file, written: true, excludedFrom });
+  }
+  return results;
+}
+
+/**
+ * Claude Code only adds `settings.local.json` to the global git excludes
+ * when it writes the file itself, so make sure that a file we created is not
+ * committed by accident. Returns the exclude file that was changed, if any.
+ */
+async function excludeFromGit(
+  rootDir: string,
+  relativeFile: string,
+  file: string,
+  exec: ExecFn,
+): Promise<string | undefined> {
+  try {
+    await exec('git', ['-C', rootDir, 'check-ignore', '-q', file]);
+    return undefined;
+  } catch (error) {
+    // Exit code 1 means "not ignored"; anything else, such as 128 outside
+    // a git repository, means there is nothing to exclude from.
+    if (
+      !(
+        typeof error === 'object' &&
+        error !== null &&
+        'code' in error &&
+        error.code === 1
+      )
+    ) {
+      return undefined;
+    }
+  }
+  try {
+    const { stdout } = await exec('git', [
+      '-C',
+      rootDir,
+      'rev-parse',
+      '--git-path',
+      'info/exclude',
+    ]);
+    const excludeFile = path.resolve(rootDir, stdout.trim());
+    fs.mkdirSync(path.dirname(excludeFile), { recursive: true });
+    const current = fs.existsSync(excludeFile)
+      ? fs.readFileSync(excludeFile, 'utf8')
+      : '';
+    const separator = current === '' || current.endsWith('\n') ? '' : '\n';
+    const entry = `/${relativeFile.split(path.sep).join('/')}`;
+    fs.writeFileSync(excludeFile, `${current}${separator}${entry}\n`);
+    return excludeFile;
+  } catch (error) {
+    process.stderr.write(
+      `Could not add ${file} to the git exclude list: ${errorMessage(error)}\n`,
+    );
+    return undefined;
+  }
 }

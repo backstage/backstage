@@ -15,6 +15,7 @@
  */
 
 import { execFile } from 'node:child_process';
+import path from 'node:path';
 import { promisify } from 'node:util';
 import parseGitUrl from 'git-url-parse';
 import { errorMessage } from './errorMessage';
@@ -33,7 +34,7 @@ export type ExecFn = (
 ) => Promise<{ stdout: string }>;
 
 const execFileAsync = promisify(execFile);
-const defaultExec: ExecFn = (file, args) => execFileAsync(file, args);
+export const defaultExec: ExecFn = (file, args) => execFileAsync(file, args);
 
 export function parseGitRemote(url: string): GitRemote {
   const hint = 'Use --entity to select the component instead.';
@@ -101,6 +102,27 @@ export async function getRepoRoot(
   try {
     const { stdout } = await exec('git', ['rev-parse', '--show-toplevel']);
     return stdout.trim() || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Finds the root of the main checkout of the current repository. This is the
+ * repository root, except in a linked worktree, where it is the root of the
+ * checkout that the worktree was created from.
+ */
+export async function getMainCheckoutRoot(
+  exec: ExecFn = defaultExec,
+): Promise<string | undefined> {
+  try {
+    const { stdout } = await exec('git', [
+      'rev-parse',
+      '--path-format=absolute',
+      '--git-common-dir',
+    ]);
+    const gitDir = stdout.trim();
+    return path.basename(gitDir) === '.git' ? path.dirname(gitDir) : undefined;
   } catch {
     return undefined;
   }

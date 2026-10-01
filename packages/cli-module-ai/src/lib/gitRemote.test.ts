@@ -15,6 +15,7 @@
  */
 
 import {
+  getMainCheckoutRoot,
   getOriginUrl,
   getRepoRoot,
   parseGitRemote,
@@ -89,5 +90,20 @@ describe('getRepoRoot', () => {
     await expect(getRepoRoot(notARepo)).resolves.toBeUndefined();
     const empty = jest.fn().mockResolvedValue({ stdout: '\n' });
     await expect(getRepoRoot(empty)).resolves.toBeUndefined();
+  });
+});
+
+describe('getMainCheckoutRoot', () => {
+  it('returns the parent of the common git directory, also for worktrees', async () => {
+    const exec = (stdout: string) => jest.fn().mockResolvedValue({ stdout });
+    await expect(getMainCheckoutRoot(exec('/work/main/.git\n'))).resolves.toBe(
+      '/work/main',
+    );
+    await expect(getMainCheckoutRoot(exec('/bare/repo.git\n'))).resolves.toBe(
+      undefined,
+    );
+    await expect(
+      getMainCheckoutRoot(jest.fn().mockRejectedValue(new Error('no git'))),
+    ).resolves.toBe(undefined);
   });
 });

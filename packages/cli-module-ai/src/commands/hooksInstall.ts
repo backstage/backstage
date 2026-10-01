@@ -17,7 +17,7 @@
 import { cli } from 'cleye';
 import fs from 'node:fs';
 import type { CliCommandContext } from '@backstage/cli-node';
-import { getRepoRoot } from '../lib/gitRemote';
+import { getMainCheckoutRoot, getRepoRoot } from '../lib/gitRemote';
 import { installHooks } from '../lib/installHooks';
 
 export default async ({ args, info }: CliCommandContext) => {
@@ -46,7 +46,7 @@ export default async ({ args, info }: CliCommandContext) => {
 
   if (flags.agent.length === 0) {
     throw new Error(
-      'Pass --agent <id> at least once (for example claude-code or codex).',
+      'Pass --agent <id> at least once (for example claude-code).',
     );
   }
   // The hook runs the CLI that is running this command, by absolute path.
@@ -57,7 +57,10 @@ export default async ({ args, info }: CliCommandContext) => {
 
   const results = await installHooks({
     agents: flags.agent,
-    rootDir: (await getRepoRoot()) ?? process.cwd(),
+    // Claude Code reads settings.local.json from the main checkout's root, also
+    // when it runs in a worktree.
+    rootDir:
+      (await getMainCheckoutRoot()) ?? (await getRepoRoot()) ?? process.cwd(),
     execPath: process.execPath,
     scriptPath: fs.realpathSync(entryPoint),
     instance: flags.instance,
@@ -69,6 +72,11 @@ export default async ({ args, info }: CliCommandContext) => {
       process.stdout.write(
         `Installed the ${result.agent} hook in ${result.file}\n`,
       );
+      if (result.excludedFrom) {
+        process.stdout.write(
+          `Added the file to ${result.excludedFrom} so that it is not committed\n`,
+        );
+      }
     } else {
       process.stdout.write(`Would write ${result.file}:\n${result.json}`);
     }

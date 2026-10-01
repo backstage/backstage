@@ -27,7 +27,11 @@ import {
   runSkills,
 } from '../lib/runSkills';
 import { errorMessage } from '../lib/errorMessage';
-import { isInstalledInLock, readSkillsLock } from '../lib/skillsLock';
+import {
+  isSkillInstalled,
+  readSkillsLock,
+  skillPresence,
+} from '../lib/skillsLock';
 
 interface SyncFlags {
   entity?: string;
@@ -65,8 +69,9 @@ async function syncInHook(flags: SyncFlags) {
 
     const cwd = (await getRepoRoot()) ?? process.cwd();
     const lock = readSkillsLock(cwd);
+    const isPresent = skillPresence(cwd, agents);
     const pending = invocations.filter(
-      invocation => !isInstalledInLock(lock, invocation.source),
+      invocation => !isSkillInstalled(lock, invocation.source, isPresent),
     );
     const { failed } = await runSkills(
       pending,
