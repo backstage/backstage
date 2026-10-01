@@ -19,5 +19,12 @@ import packageJson from '../package.json';
 
 export default createCliModule({
   packageJson,
-  init: async () => {},
+  init: async reg => {
+    reg.addCommand({
+      path: ['ai', 'resolve'],
+      description:
+        'Show which catalog AI skills apply to this repository and why',
+      execute: { loader: () => import('./commands/resolve') },
+    });
+  },
 });
