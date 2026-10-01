@@ -1,0 +1,49 @@
+{
+  "name": "@backstage/cli-module-ai",
+  "version": "0.0.0",
+  "description": "CLI module that installs the AI skills from the Backstage catalog that apply to your repository",
+  "backstage": {
+    "role": "cli-module"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/cli-module-ai"
+  },
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "bin": "bin/backstage-cli-module-ai",
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/catalog-client": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/cli-node": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/filter-predicates": "workspace:^",
+    "cleye": "^2.6.0",
+    "git-url-parse": "^15.0.0",
+    "skills": "1.7.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@types/git-url-parse": "^9.0.0"
+  }
+}
