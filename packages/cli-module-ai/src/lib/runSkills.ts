@@ -18,6 +18,7 @@ import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { errorMessage } from './errorMessage';
+import { shellQuote as quote } from './shellQuote';
 import type { SkillDecision } from './selectSkills';
 
 export interface SkillsInvocation {
@@ -71,9 +72,6 @@ export function buildSkillsArgs(invocation: SkillsInvocation): string[] {
     ...(invocation.global ? ['-g'] : []),
   ];
 }
-
-const quote = (arg: string) =>
-  /^[\w@%+=:,./-]+$/.test(arg) ? arg : `'${arg.replace(/'/g, `'\\''`)}'`;
 
 export function formatSkillsCommand(invocation: SkillsInvocation): string {
   const env = Object.entries(invocation.env).map(
@@ -144,13 +142,19 @@ export function resolveSkillsBin(): string {
   return path.resolve(path.dirname(packageJsonPath), bin);
 }
 
+/**
+ * Creates a runner for `skills`. In quiet mode the output of `skills` on
+ * standard output is discarded, so that nothing but the caller's own output
+ * reaches it, and standard input is closed so that it can never prompt.
+ */
 export function createSkillsRunner(
   bin: string = resolveSkillsBin(),
+  options: { quiet?: boolean } = {},
 ): SkillsRunner {
   return (args, env, cwd) =>
     new Promise((resolve, reject) => {
       const child = spawn(process.execPath, [bin, ...args], {
-        stdio: 'inherit',
+        stdio: options.quiet ? ['ignore', 'ignore', 'inherit'] : 'inherit',
         cwd,
         // skills reports telemetry that can include the source repository
         // path, so it is off unless the user has set DISABLE_TELEMETRY.

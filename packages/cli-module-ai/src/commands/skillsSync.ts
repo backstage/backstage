@@ -26,6 +26,66 @@ import {
   planSkillsInvocations,
   runSkills,
 } from '../lib/runSkills';
+import { errorMessage } from '../lib/errorMessage';
+import { isInstalledInLock, readSkillsLock } from '../lib/skillsLock';
+
+interface SyncFlags {
+  entity?: string;
+  agent: string[];
+  global?: boolean;
+  instance?: string;
+}
+
+/**
+ * Runs from an agent session start hook. It never fails, never prompts, only
+ * installs skills that are not recorded in the lock file yet, and keeps
+ * standard output to a single summary line, because agents add the output of
+ * session start hooks to the session context.
+ */
+async function syncInHook(flags: SyncFlags) {
+  const warn = (message: string) =>
+    process.stderr.write(
+      `Backstage: ${message.replace(/\s*\n\s*/g, ' ').trim()}\n`,
+    );
+  try {
+    if (flags.global) {
+      throw new Error('--hook cannot be combined with --global');
+    }
+    assertSkillsNodeVersion();
+    const agents = resolveTargetAgents(flags.agent);
+    const { decisions } = await resolveSelection({
+      entity: flags.entity,
+      instance: flags.instance,
+      agents,
+    });
+    const invocations = planSkillsInvocations(decisions, {
+      agents,
+      global: false,
+    });
+
+    const cwd = (await getRepoRoot()) ?? process.cwd();
+    const lock = readSkillsLock(cwd);
+    const pending = invocations.filter(
+      invocation => !isInstalledInLock(lock, invocation.source),
+    );
+    const { failed } = await runSkills(
+      pending,
+      createSkillsRunner(undefined, { quiet: true }),
+      warn,
+      cwd,
+    );
+
+    const installed = pending.length - failed.length;
+    if (installed > 0) {
+      const upToDate = invocations.length - pending.length;
+      process.stdout.write(
+        `Backstage: installed ${installed} skill(s), ${upToDate} up to date.\n`,
+      );
+    }
+  } catch (error) {
+    warn(`skills sync skipped: ${errorMessage(error)}`);
+  }
+}
 
 export default async ({ args, info }: CliCommandContext) => {
   const { flags } = cli(
@@ -55,11 +115,21 @@ export default async ({ args, info }: CliCommandContext) => {
           type: String,
           description: 'Name of the instance to use',
         },
+        hook: {
+          type: Boolean,
+          description:
+            'Run safely from an agent session start hook: never fails or prompts, skips installed skills',
+        },
       },
     },
     undefined,
     args,
   );
+
+  if (flags.hook) {
+    await syncInHook(flags);
+    return;
+  }
 
   const agents = resolveTargetAgents(flags.agent);
   const { decisions } = await resolveSelection({

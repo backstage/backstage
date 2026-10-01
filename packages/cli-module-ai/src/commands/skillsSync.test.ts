@@ -19,6 +19,7 @@ import type { CliCommandContext } from '@backstage/cli-node';
 const mockResolveSelection = jest.fn();
 const mockRunner = jest.fn();
 const mockGetRepoRoot = jest.fn();
+const mockCreateRunner = jest.fn();
 
 jest.mock('cleye', () => ({
   cli: jest.fn().mockReturnValue({ flags: {} }),
@@ -32,9 +33,15 @@ jest.mock('../lib/gitRemote', () => ({
 }));
 jest.mock('../lib/runSkills', () => ({
   ...jest.requireActual('../lib/runSkills'),
-  createSkillsRunner: () => mockRunner,
+  createSkillsRunner: (...args: unknown[]) => {
+    mockCreateRunner(...args);
+    return mockRunner;
+  },
 }));
 
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import skillsSync from './skillsSync';
 import { cli } from 'cleye';
 
@@ -216,5 +223,100 @@ describe('ai skills sync', () => {
     } finally {
       Object.defineProperty(process.versions, 'node', original);
     }
+  });
+
+  describe('--hook', () => {
+    let repoRoot: string;
+    const lockEntry = (name: string, repo: string) => ({
+      source: `acme/${repo}`,
+      ref: 'main',
+      sourceType: 'github',
+      skillPath: `skills/${name}/SKILL.md`,
+    });
+
+    beforeEach(() => {
+      repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ai-sync-hook-'));
+      mockGetRepoRoot.mockResolvedValue(repoRoot);
+      (mockCli as jest.Mock).mockReturnValue({
+        flags: { agent: ['claude-code'], hook: true },
+      });
+    });
+    afterEach(() => {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    });
+
+    it('installs only skills missing from the lock file, quietly, and prints a single summary line', async () => {
+      fs.writeFileSync(
+        path.join(repoRoot, 'skills-lock.json'),
+        JSON.stringify({ version: 1, skills: { a: lockEntry('a', 'one') } }),
+      );
+      mockResolveSelection.mockResolvedValue(
+        selection([
+          decision('a', 'one', 'selected'),
+          decision('b', 'one', 'selected'),
+          decision('c', 'two', 'skipped'),
+        ]),
+      );
+      mockRunner.mockResolvedValue(0);
+
+      await expect(skillsSync(ctx([]))).resolves.toBeUndefined();
+
+      expect(mockCreateRunner).toHaveBeenCalledWith(undefined, {
+        quiet: true,
+      });
+      expect(mockRunner.mock.calls).toEqual([
+        [['add', url('one', 'b'), '-a', 'claude-code', '-y'], {}, repoRoot],
+      ]);
+      expect(out()).toBe('Backstage: installed 1 skill(s), 1 up to date.\n');
+      expect(err()).toBe('');
+    });
+
+    it('prints nothing when every skill is already installed', async () => {
+      fs.writeFileSync(
+        path.join(repoRoot, 'skills-lock.json'),
+        JSON.stringify({ version: 1, skills: { a: lockEntry('a', 'one') } }),
+      );
+      mockResolveSelection.mockResolvedValue(
+        selection([decision('a', 'one', 'selected')]),
+      );
+
+      await skillsSync(ctx([]));
+
+      expect(mockRunner).not.toHaveBeenCalled();
+      expect(out()).toBe('');
+      expect(err()).toBe('');
+    });
+
+    it('exits successfully with one stderr line and no stdout on errors', async () => {
+      mockResolveSelection.mockRejectedValue(
+        new Error(
+          'Not logged in to Backstage: nope.\nRun "backstage-cli auth login".',
+        ),
+      );
+      await expect(skillsSync(ctx([]))).resolves.toBeUndefined();
+      expect(out()).toBe('');
+      expect(err().trim().split('\n')).toHaveLength(1);
+      expect(err()).toContain('backstage-cli auth login');
+      expect(mockRunner).not.toHaveBeenCalled();
+
+      stderrSpy.mockClear();
+      mockResolveSelection.mockResolvedValue(
+        selection([decision('a', 'one', 'selected')]),
+      );
+      mockRunner.mockResolvedValue(1);
+      await expect(skillsSync(ctx([]))).resolves.toBeUndefined();
+      expect(out()).toBe('');
+      expect(err().trim().split('\n')).toHaveLength(1);
+      expect(err()).toContain('airesource:default/a');
+
+      stderrSpy.mockClear();
+      (mockCli as jest.Mock).mockReturnValue({
+        flags: { agent: ['claude-code'], hook: true, global: true },
+      });
+      mockRunner.mockClear();
+      await expect(skillsSync(ctx([]))).resolves.toBeUndefined();
+      expect(err()).toContain('--global');
+      expect(mockRunner).not.toHaveBeenCalled();
+    });
   });
 });
