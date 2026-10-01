@@ -38,6 +38,7 @@ Options:
   --agent <string>     Target agent, repeatable (default: detected)
   --output <string>    Output format: human (default), json
   --instance <string>  Name of the instance to use
+  --allow-file-sources Allow skills whose source location is a local directory (file:)
 ```
 
 Prints the resolved component, its owner and system, your groups and their
@@ -67,6 +68,7 @@ Options:
   --global             Install into the user-level skills directories instead of the project
   --dry-run            Print the skills commands without running them
   --instance <string>  Name of the instance to use
+  --allow-file-sources Allow skills whose source location is a local directory (file:)
   --hook               Run safely from an agent session start hook
 ```
 
@@ -129,6 +131,7 @@ Usage: backstage-cli ai hooks install [options]
 Options:
   --agent <string>     Agent to install the hook for, repeatable (required)
   --instance <string>  Name of the instance the hook uses
+  --allow-file-sources Let the hook install skills whose source location is a local directory (file:)
   --dry-run            Print the resulting hook files without writing them
 ```
 
@@ -189,13 +192,48 @@ instead of only when you run the command. Review the selection with
 
 :::
 
+## Local skill sources
+
+A skill can point at a directory on your machine instead of a Git repository,
+with a source location of the form `file:<absolute path>`. This lets you write
+and test a skill, or run a demo, without publishing the skill first.
+
+```yaml
+metadata:
+  annotations:
+    backstage.io/source-location: file:/home/me/skills/my-skill
+```
+
+Local sources are off by default, because anyone who can register catalog
+entities can set the annotation, and the path refers to your own machine. Pass
+`--allow-file-sources` to `ai resolve`, `ai skills sync`, or `ai hooks install`
+to use them. `ai hooks install` adds the flag to the hook command. Without the
+flag, `ai resolve` reports these skills as skipped with the reason
+`file sources are disabled; pass --allow-file-sources`.
+
+With the flag, the path must be absolute, exist, be a directory, and contain
+`SKILL.md` directly. A trailing slash and the `file:///absolute/path` form are
+accepted, and symlinks are resolved to the real path, which is what `skills add`
+receives. Skills that share a directory are installed once. In hook mode, a
+local skill is skipped when `skills-lock.json` records it from the same
+directory and its folder is present, so edits to the skill are not picked up
+by the hook. Run `ai skills sync --allow-file-sources` to install them again.
+
+:::warning
+
+A local source installs whatever is in that directory when the command runs,
+and the catalog decides which directory. Only use `--allow-file-sources` on
+machines where you control the paths that the catalog entries point at.
+
+:::
+
 ## How skills are selected
 
 A skill is selected when all of the following are true:
 
 1. **Scope:** the skill is `partOf` the component's system, or it is `ownedBy` the component's owner, one of your groups, or an ancestor group of either.
 2. **Agent:** the skill's `spec.agents` is absent or empty, or it contains at least one target agent.
-3. **Installable:** the skill has a `backstage.io/source-location` annotation of the form `url:<git tree URL>` that points at a directory containing `SKILL.md`. See [Making skills installable](../../ai/ai-in-the-catalog.md#making-skills-installable).
+3. **Installable:** the skill has a `backstage.io/source-location` annotation of the form `url:<git tree URL>`, or `file:<absolute path>` with `--allow-file-sources`, that points at a directory containing `SKILL.md`. See [Making skills installable](../../ai/ai-in-the-catalog.md#making-skills-installable).
 
 Skills that fail a check are reported as skipped, with the reason.
 

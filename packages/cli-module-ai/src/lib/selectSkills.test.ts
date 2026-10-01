@@ -219,4 +219,38 @@ describe('selectSkills', () => {
       },
     });
   });
+
+  it('selects skills with a file source only when file sources are allowed', () => {
+    const entities = [
+      skill('local', {
+        owner: 'group:default/team-a',
+        source: 'file:/skills/a',
+      }),
+    ];
+    const probe = {
+      realpath: (p: string) => p,
+      isDirectory: () => true,
+      hasSkillMd: () => true,
+    };
+    const run = (allowFileSources: boolean) =>
+      byRef(
+        selectSkills({
+          candidates: entities,
+          dependencies: [],
+          scope,
+          agents: ['claude-code'],
+          allowFileSources,
+          probe,
+        }),
+      )[ref('local')];
+
+    expect(run(false)).toMatchObject({
+      status: 'skipped',
+      reason: expect.stringContaining('--allow-file-sources'),
+    });
+    expect(run(true)).toMatchObject({
+      status: 'selected',
+      source: { installUrl: '/skills/a', localPath: '/skills/a' },
+    });
+  });
 });

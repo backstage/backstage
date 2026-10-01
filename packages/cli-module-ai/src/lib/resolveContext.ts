@@ -217,6 +217,7 @@ export interface ResolveSelectionOptions {
   entity?: string;
   instance?: string;
   agents: string[];
+  allowFileSources?: boolean;
 }
 
 export interface ResolveSelectionResult {
@@ -269,6 +270,7 @@ export async function resolveSelection(
     dependencies,
     scope,
     agents: options.agents,
+    allowFileSources: options.allowFileSources,
   });
 
   return {

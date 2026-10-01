@@ -86,6 +86,7 @@ describe('ai resolve', () => {
       entity: 'svc',
       instance: 'prod',
       agents: ['claude-code'],
+      allowFileSources: false,
     });
     const text = out();
     expect(text).toContain('component:default/svc');

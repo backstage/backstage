@@ -47,7 +47,7 @@ const lock = {
 describe('skills lock', () => {
   it('matches install URLs against recorded source, ref and skill path', () => {
     const present = () => true;
-    const url = (u: string) => isSkillInstalled(lock, u, present);
+    const url = (u: string) => isSkillInstalled(lock, u, present, '/');
     expect(url('https://github.com/anthropics/skills/tree/main/skills/a')).toBe(
       true,
     );
@@ -69,7 +69,12 @@ describe('skills lock', () => {
     expect(url('https://ghe.example.com/acme/skills/tree/v1/x/a')).toBe(false);
     expect(url('not a url')).toBe(false);
     expect(
-      isSkillInstalled(undefined, 'https://github.com/a/b/tree/m/s', present),
+      isSkillInstalled(
+        undefined,
+        'https://github.com/a/b/tree/m/s',
+        present,
+        '/',
+      ),
     ).toBe(false);
   });
 
@@ -78,7 +83,7 @@ describe('skills lock', () => {
     try {
       const u = 'https://github.com/anthropics/skills/tree/main/skills/a';
       const installed = (agents: string[]) =>
-        isSkillInstalled(lock, u, skillPresence(dir, agents));
+        isSkillInstalled(lock, u, skillPresence(dir, agents), dir);
 
       // A lock file without skills on disk, such as after a fresh clone.
       expect(installed(['claude-code'])).toBe(false);
@@ -114,6 +119,36 @@ describe('skills lock', () => {
         JSON.stringify(lock),
       );
       expect(readSkillsLock(dir)).toEqual(lock);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('matches local sources by their real path relative to the lock file', () => {
+    const dir = fs.realpathSync(
+      fs.mkdtempSync(path.join(os.tmpdir(), 'ai-lock-local-')),
+    );
+    try {
+      fs.mkdirSync(path.join(dir, 'repo'));
+      fs.mkdirSync(path.join(dir, 'src', 'my-skill'), { recursive: true });
+      const localLock = {
+        version: 1,
+        skills: {
+          'my-skill': { source: '../src/my-skill', sourceType: 'local' },
+        },
+      };
+      const installed = (source: string) =>
+        isSkillInstalled(localLock, source, () => true, path.join(dir, 'repo'));
+      expect(installed(path.join(dir, 'src', 'my-skill'))).toBe(true);
+      expect(installed(path.join(dir, 'src', 'other'))).toBe(false);
+      expect(
+        isSkillInstalled(
+          localLock,
+          path.join(dir, 'src', 'my-skill'),
+          () => false,
+          path.join(dir, 'repo'),
+        ),
+      ).toBe(false);
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }

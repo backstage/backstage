@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import { parseSkillSource } from './skillSource';
 
 describe('parseSkillSource', () => {
@@ -117,5 +120,70 @@ describe('parseSkillSource', () => {
     expect(reason('url:https://github.com/a/b/tree/main/skills%5Cs')).toMatch(
       /"\\"/,
     );
+  });
+});
+
+describe('parseSkillSource with file: locations', () => {
+  let dir: string;
+  let real: string;
+  const allow = { allowFileSources: true };
+  const reason = (location: string, options = allow) => {
+    const result = parseSkillSource(location, options);
+    if (result.ok) throw new Error('expected a failure');
+    return result.reason;
+  };
+
+  beforeEach(() => {
+    dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ai-file-source-'));
+    real = fs.realpathSync(dir);
+    fs.mkdirSync(path.join(dir, 'skill'));
+    fs.writeFileSync(path.join(dir, 'skill', 'SKILL.md'), '# skill');
+    fs.mkdirSync(path.join(dir, 'empty'));
+    fs.writeFileSync(path.join(dir, 'file.txt'), 'x');
+    fs.symlinkSync(path.join(dir, 'skill'), path.join(dir, 'link'));
+  });
+  afterEach(() => {
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('is skipped unless file sources are allowed', () => {
+    const location = `file:${dir}/skill`;
+    expect(reason(location, {} as typeof allow)).toBe(
+      'file sources are disabled; pass --allow-file-sources',
+    );
+    expect(reason(location, { allowFileSources: false })).toMatch(
+      /--allow-file-sources/,
+    );
+  });
+
+  it('accepts absolute directories with SKILL.md, resolving symlinks to the real path', () => {
+    const expected = {
+      ok: true,
+      source: {
+        repoUrl: path.join(real, 'skill'),
+        ref: '',
+        installUrl: path.join(real, 'skill'),
+        localPath: path.join(real, 'skill'),
+      },
+    };
+    expect(parseSkillSource(`file:${dir}/skill`, allow)).toEqual(expected);
+    expect(parseSkillSource(`file:${dir}/skill/`, allow)).toEqual(expected);
+    expect(parseSkillSource(`file://${dir}/skill`, allow)).toEqual(expected);
+    expect(parseSkillSource(`file:${dir}/link`, allow)).toEqual(expected);
+  });
+
+  it('explains why a local source cannot be used', () => {
+    expect(reason('file:skills/a')).toBe('file sources must be absolute paths');
+    expect(reason('file:')).toBe('file sources must be absolute paths');
+    expect(reason(`file:${dir}/missing`)).toBe(
+      `the directory ${path.join(dir, 'missing')} does not exist`,
+    );
+    expect(reason(`file:${dir}/file.txt`)).toBe(
+      `${path.join(real, 'file.txt')} is not a directory`,
+    );
+    expect(reason(`file:${dir}/empty`)).toBe(
+      `${path.join(real, 'empty')} does not contain SKILL.md directly`,
+    );
+    expect(reason('file://host/share/skill')).toMatch(/absolute paths/);
   });
 });

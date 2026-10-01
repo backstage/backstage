@@ -16,7 +16,11 @@
 
 import { stringifyEntityRef, type Entity } from '@backstage/catalog-model';
 import { isSkillAiResourceEntity } from '@backstage/catalog-model/alpha';
-import { parseSkillSource, type SkillSource } from './skillSource';
+import {
+  parseSkillSource,
+  type LocalSkillProbe,
+  type SkillSource,
+} from './skillSource';
 
 const SOURCE_LOCATION_ANNOTATION = 'backstage.io/source-location';
 
@@ -46,6 +50,10 @@ export interface SelectSkillsInput {
   scope: SelectionScope;
   /** Target `skills` agent IDs. */
   agents: string[];
+  /** Whether skills with a `file:` source location may be selected. */
+  allowFileSources?: boolean;
+  /** Reads the file system for `file:` sources, defaults to the real one. */
+  probe?: LocalSkillProbe;
 }
 
 export function entityRefOf(entity: Entity): string {
@@ -122,6 +130,7 @@ export function selectSkills(input: SelectSkillsInput): SkillDecision[] {
 
     const parsed = parseSkillSource(
       entity.metadata.annotations?.[SOURCE_LOCATION_ANNOTATION],
+      { allowFileSources: input.allowFileSources, probe: input.probe },
     );
     if (!parsed.ok) {
       return skipped(`not installable: ${parsed.reason}`);

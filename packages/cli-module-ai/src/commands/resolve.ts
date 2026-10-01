@@ -70,6 +70,11 @@ export default async ({ args, info }: CliCommandContext) => {
           type: String,
           description: 'Name of the instance to use',
         },
+        'allow-file-sources': {
+          type: Boolean,
+          description:
+            'Allow skills whose source location is a local directory (file:)',
+        },
       },
     },
     undefined,
@@ -86,6 +91,7 @@ export default async ({ args, info }: CliCommandContext) => {
     entity: flags.entity,
     instance: flags.instance,
     agents,
+    allowFileSources: Boolean(flags['allow-file-sources']),
   });
 
   if (flags.output === 'json') {
