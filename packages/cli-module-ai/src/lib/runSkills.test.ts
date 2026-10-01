@@ -15,9 +15,13 @@
  */
 
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import type { SkillDecision } from './selectSkills';
 import {
+  assertSkillsNodeVersion,
   buildSkillsArgs,
+  createSkillsRunner,
   formatSkillsCommand,
   planSkillsInvocations,
   resolveSkillsBin,
@@ -144,6 +148,7 @@ describe('runSkills', () => {
         '-y',
       ],
       { GH_HOST: 'h.example.com' },
+      undefined,
     );
     expect(result.failed).toEqual([
       'airesource:default/a',
@@ -153,6 +158,102 @@ describe('runSkills', () => {
       expect.stringContaining('airesource:default/a'),
     );
     expect(log).toHaveBeenCalledWith(expect.stringContaining('spawn failed'));
+  });
+});
+
+describe('runSkills cwd', () => {
+  it('passes the working directory to the runner', async () => {
+    const run = jest.fn().mockResolvedValue(0);
+    await runSkills(
+      [
+        {
+          ref: 'airesource:default/a',
+          source: 'https://github.com/acme/skills/tree/main/skills/a',
+          agents: ['codex'],
+          global: false,
+          env: {},
+        },
+      ],
+      run,
+      jest.fn(),
+      '/work/repo',
+    );
+    expect(run).toHaveBeenCalledWith(expect.any(Array), {}, '/work/repo');
+  });
+});
+
+describe('createSkillsRunner', () => {
+  const originalTelemetry = process.env.DISABLE_TELEMETRY;
+  let dir: string;
+  let bin: string;
+  let out: string;
+
+  beforeEach(() => {
+    dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cli-module-ai-'));
+    out = path.join(dir, 'out.json');
+    bin = path.join(dir, 'fake-skills.js');
+    fs.writeFileSync(
+      bin,
+      `require('fs').writeFileSync(process.env.TEST_OUT, JSON.stringify({
+        args: process.argv.slice(2),
+        cwd: process.cwd(),
+        telemetry: process.env.DISABLE_TELEMETRY,
+        ghHost: process.env.GH_HOST,
+      }));
+      process.exit(Number(process.env.TEST_EXIT || 0));`,
+    );
+    process.env.TEST_OUT = out;
+  });
+  afterEach(() => {
+    fs.rmSync(dir, { recursive: true, force: true });
+    delete process.env.TEST_OUT;
+    delete process.env.TEST_EXIT;
+    if (originalTelemetry === undefined) {
+      delete process.env.DISABLE_TELEMETRY;
+    } else {
+      process.env.DISABLE_TELEMETRY = originalTelemetry;
+    }
+  });
+  const read = () => JSON.parse(fs.readFileSync(out, 'utf8'));
+
+  it('disables skills telemetry unless the user set it, merges the invocation env, and runs in the given directory', async () => {
+    delete process.env.DISABLE_TELEMETRY;
+    const run = createSkillsRunner(bin);
+    await expect(
+      run(['add', 'x'], { GH_HOST: 'h.example.com' }, dir),
+    ).resolves.toBe(0);
+    expect(read()).toEqual({
+      args: ['add', 'x'],
+      cwd: fs.realpathSync(dir),
+      telemetry: '1',
+      ghHost: 'h.example.com',
+    });
+
+    process.env.DISABLE_TELEMETRY = '0';
+    await run(['add', 'y'], {});
+    expect(read().telemetry).toBe('0');
+    expect(read().cwd).toBe(fs.realpathSync(process.cwd()));
+  });
+
+  it('propagates the exit code and rejects when the process cannot be spawned', async () => {
+    const run = createSkillsRunner(bin);
+    process.env.TEST_EXIT = '3';
+    await expect(run([], {})).resolves.toBe(3);
+    await expect(run([], {}, path.join(dir, 'missing'))).rejects.toThrow(
+      /ENOENT/,
+    );
+  });
+});
+
+describe('assertSkillsNodeVersion', () => {
+  it('accepts Node.js 22.20.0 and later and rejects older versions with a clear message', () => {
+    expect(() => assertSkillsNodeVersion('22.20.0')).not.toThrow();
+    expect(() => assertSkillsNodeVersion('22.21.1')).not.toThrow();
+    expect(() => assertSkillsNodeVersion('24.0.0')).not.toThrow();
+    expect(() => assertSkillsNodeVersion('22.19.9')).toThrow(
+      /Node\.js 22\.20\.0 or later.*22\.19\.9/,
+    );
+    expect(() => assertSkillsNodeVersion('20.11.0')).toThrow(/22\.20\.0/);
   });
 });
 
