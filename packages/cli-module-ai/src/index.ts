@@ -26,5 +26,11 @@ export default createCliModule({
         'Show which catalog AI skills apply to this repository and why',
       execute: { loader: () => import('./commands/resolve') },
     });
+    reg.addCommand({
+      path: ['ai', 'skills', 'sync'],
+      description:
+        'Install the catalog AI skills that apply to this repository using skills.sh',
+      execute: { loader: () => import('./commands/skillsSync') },
+    });
   },
 });
