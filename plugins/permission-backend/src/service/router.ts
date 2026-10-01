@@ -49,6 +49,7 @@ import {
 } from '@backstage/backend-plugin-api';
 
 const attributesSchema: z.ZodSchema<PermissionAttributes> = z.object({
+  accessLevel: z.string().optional(),
   action: z
     .union([
       z.literal('create'),
@@ -81,7 +82,7 @@ const evaluatePermissionRequestSchema = z.union([
   z.object({
     id: z.string(),
     resourceRef: z
-      .union([z.string(), z.array(z.string()).nonempty(), z.literal(false)])
+      .union([z.string(), z.array(z.string()).nonempty()])
       .optional(),
     permission: resourcePermissionSchema,
   }),
@@ -143,16 +144,6 @@ const handleRequest = async (
       policy
         .handle({ permission: request.permission }, user)
         .then(async decision => {
-          if (request.resourceRef === false) {
-            return {
-              id: request.id,
-              result:
-                decision.result === AuthorizeResult.ALLOW
-                  ? AuthorizeResult.ALLOW
-                  : AuthorizeResult.DENY,
-            };
-          }
-
           if (decision.result !== AuthorizeResult.CONDITIONAL) {
             return {
               id: request.id,
@@ -255,7 +246,7 @@ export async function createRouter(
           )
         ) {
           throw new InputError(
-            'Resource permissions require a resourceRef to be set or explicitly false for direct user requests.',
+            'Resource permissions require a resourceRef to be set. Direct user requests without a resourceRef are not allowed.',
           );
         }
       }

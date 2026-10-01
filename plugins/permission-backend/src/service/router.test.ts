@@ -16,7 +16,10 @@
 
 import express from 'express';
 import request from 'supertest';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import {
+  AuthorizeResult,
+  createPermission,
+} from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequestEntry,
   ApplyConditionsResponseEntry,
@@ -99,6 +102,65 @@ describe('createRouter', () => {
   });
 
   describe('POST /authorize', () => {
+    it('preserves access levels for basic and resource permissions without granting access', async () => {
+      const items = [undefined, 'admin', 'custom-level'].flatMap(
+        (accessLevel, index) => {
+          const attributes = {
+            action: 'read' as const,
+            ...(accessLevel === undefined ? {} : { accessLevel }),
+          };
+          return [
+            {
+              id: `basic-${index}`,
+              permission: createPermission({
+                name: `test.basic-${index}`,
+                attributes,
+              }),
+            },
+            {
+              id: `resource-${index}`,
+              permission: createPermission({
+                name: `test.resource-${index}`,
+                attributes,
+                resourceType: 'test-resource',
+              }),
+              resourceRef: 'test-ref',
+            },
+          ];
+        },
+      );
+      const response = await request(app).post('/authorize').send({ items });
+      expect(response.status).toBe(200);
+      expect(policy.handle).toHaveBeenCalledTimes(items.length);
+      for (const { permission } of items) {
+        expect(policy.handle).toHaveBeenCalledWith({ permission }, undefined);
+      }
+      expect(response.body).toEqual({
+        items: items.map(({ id }) => ({ id, result: AuthorizeResult.DENY })),
+      });
+    });
+
+    it('rejects non-string access levels before evaluating the policy', async () => {
+      for (const accessLevel of [true, 1, null, ['admin'], {}]) {
+        const response = await request(app)
+          .post('/authorize')
+          .send({
+            items: [
+              {
+                id: 'invalid',
+                permission: {
+                  type: 'basic',
+                  name: 'test.invalid',
+                  attributes: { accessLevel },
+                },
+              },
+            ],
+          });
+        expect(response.status).toBe(400);
+      }
+      expect(policy.handle).not.toHaveBeenCalled();
+    });
+
     it('calls the permission policy', async () => {
       const response = await request(app)
         .post('/authorize')
@@ -970,40 +1032,5 @@ describe('createRouter', () => {
         }),
       );
     });
-  });
-  it('returns only definitive decisions for universal checks without applying or exposing conditions', async () => {
-    policy.handle
-      .mockReset()
-      .mockResolvedValueOnce({ result: AuthorizeResult.ALLOW })
-      .mockResolvedValueOnce({ result: AuthorizeResult.DENY })
-      .mockResolvedValueOnce({
-        result: AuthorizeResult.CONDITIONAL,
-        pluginId: 'test-plugin',
-        resourceType: 'test-resource',
-        conditions: { rule: 'test-rule', params: ['private-policy-data'] },
-      });
-    const response = await request(app)
-      .post('/authorize')
-      .send({
-        items: ['allow', 'deny', 'conditional'].map(id => ({
-          id,
-          permission: {
-            type: 'resource',
-            name: 'test.admin',
-            attributes: {},
-            resourceType: 'test-resource',
-          },
-          resourceRef: false,
-        })),
-      });
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({
-      items: [
-        { id: 'allow', result: AuthorizeResult.ALLOW },
-        { id: 'deny', result: AuthorizeResult.DENY },
-        { id: 'conditional', result: AuthorizeResult.DENY },
-      ],
-    });
-    expect(mockApplyConditions).not.toHaveBeenCalled();
   });
 });

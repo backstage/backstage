@@ -59,7 +59,7 @@ export type RequirePermissionProps = (
     }
   | {
       permission: ResourcePermission;
-      resourceRef: string | false | undefined;
+      resourceRef: string | undefined;
     }
 ) & {
   errorPage?: ReactNode;
@@ -75,7 +75,7 @@ export function usePermission(
       }
     | {
         permission: ResourcePermission;
-        resourceRef: string | false | undefined;
+        resourceRef: string | undefined;
       },
 ): AsyncPermissionResult;
 ```

@@ -208,30 +208,19 @@ export class PermissionClient implements PermissionEvaluator {
 
     for (const query of queries) {
       const { permission, resourceRef } = query;
-      const key = JSON.stringify([
-        permission.name,
-        query.resourceRef === false,
-      ]);
 
-      if (query.resourceRef === false) {
-        request[key] ||= {
-          permission: query.permission,
-          resourceRef: false,
-          id: globalThis.crypto.randomUUID(),
-        };
-      } else if (isResourcePermission(permission)) {
-        request[key] ||= {
+      if (isResourcePermission(permission)) {
+        request[permission.name] ||= {
           permission,
           resourceRef: [],
           id: globalThis.crypto.randomUUID(),
         };
 
-        const resourceRefs = request[key].resourceRef;
-        if (resourceRef && resourceRefs) {
-          resourceRefs.push(resourceRef);
+        if (resourceRef) {
+          request[permission.name].resourceRef?.push(resourceRef);
         }
       } else {
-        request[key] ||= {
+        request[permission.name] ||= {
           permission,
           id: globalThis.crypto.randomUUID(),
         };
@@ -250,11 +239,7 @@ export class PermissionClient implements PermissionEvaluator {
     }, {} as Record<string, (typeof parsedResponse)['items'][number]>);
 
     return queries.map(query => {
-      const key = JSON.stringify([
-        query.permission.name,
-        query.resourceRef === false,
-      ]);
-      const { id } = request[key];
+      const { id } = request[query.permission.name];
 
       const item = responsesById[id];
 
@@ -306,5 +291,5 @@ export type BatchedAuthorizePermissionRequest = IdentifiedPermissionMessage<
       permission: BasicPermission;
       resourceRef?: undefined;
     }
-  | { permission: ResourcePermission; resourceRef: string[] | false }
+  | { permission: ResourcePermission; resourceRef: string[] }
 >;

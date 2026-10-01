@@ -15,9 +15,3 @@
  */
 
 export { type PolicyExtensionPoint, policyExtensionPoint } from './plugin';
-export {
-  adminPermissionResourceRef,
-  adminRules,
-  adminConditions,
-  createAdminConditionalDecision,
-} from './admin';

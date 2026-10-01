@@ -25,7 +25,7 @@ export type AuthorizePermissionRequest =
     }
   | {
       permission: ResourcePermission;
-      resourceRef: string | false;
+      resourceRef: string;
     };
 
 // @public
@@ -94,7 +94,7 @@ export type DiscoveryApi = {
 // @public
 export type EvaluatePermissionRequest = {
   permission: Permission;
-  resourceRef?: string | false;
+  resourceRef?: string;
 };
 
 // @public @deprecated
@@ -165,6 +165,7 @@ export type Permission = BasicPermission | ResourcePermission;
 // @public
 export type PermissionAttributes = {
   action?: 'create' | 'read' | 'update' | 'delete';
+  accessLevel?: string;
 };
 
 // @public @deprecated

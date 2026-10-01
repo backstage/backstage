@@ -187,12 +187,7 @@ export type PermissionRuleParams =
  */
 export type EvaluatePermissionRequest = {
   permission: Permission;
-  /**
-   * A specific resource reference, or false to require an unconditional grant
-   * covering every resource. False is only valid for resource permissions;
-   * conditional decisions are returned as DENY without exposing their conditions.
-   */
-  resourceRef?: string | false;
+  resourceRef?: string;
 };
 
 /**
@@ -225,10 +220,7 @@ export type EvaluatePermissionResponseBatch =
 
 /**
  * Request object for {@link PermissionEvaluator.authorize}. If a {@link ResourcePermission}
- * is provided, include a corresponding `resourceRef`, or set `resourceRef: false`
- * to require an unconditional grant for all resources.
- * Universal checks return DENY for conditional policy decisions, even if those
- * conditions happen to match all existing resources.
+ * is provided, it must include a corresponding `resourceRef`.
  * @public
  */
 export type AuthorizePermissionRequest =
@@ -236,7 +228,7 @@ export type AuthorizePermissionRequest =
       permission: Exclude<Permission, ResourcePermission>;
       resourceRef?: never;
     }
-  | { permission: ResourcePermission; resourceRef: string | false };
+  | { permission: ResourcePermission; resourceRef: string };
 
 /**
  * Response object for {@link PermissionEvaluator.authorize}.
