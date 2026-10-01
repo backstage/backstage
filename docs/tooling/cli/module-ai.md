@@ -67,6 +67,7 @@ Options:
   --global             Install into the user-level skills directories instead of the project
   --dry-run            Print the skills commands without running them
   --instance <string>  Name of the instance to use
+  --hook               Run safely from an agent session start hook
 ```
 
 Resolves the applicable skills and runs one `skills add` invocation per skill,
@@ -97,6 +98,81 @@ yarn backstage-cli ai skills sync --agent claude-code --agent cursor --global
 # Install for a specific component instead of detecting it from git
 yarn backstage-cli ai skills sync --entity component:default/my-service
 ```
+
+### Hook mode
+
+`--hook` is meant to be run by an agent hook, which `ai hooks install` sets up
+for you. In this mode the command:
+
+- Always exits successfully. Any error, such as a missing login or an unreachable backend, is reported as a single line on standard error.
+- Never starts a login. If you are not signed in, it asks you on standard error to run `backstage-cli auth login`.
+- Only installs skills that are not already recorded in `skills-lock.json` with the same repository, ref, and directory. A normal run installs every applicable skill again.
+- Always installs into the project, and cannot be combined with `--global`.
+- Discards the output of `skills` and writes at most one line to standard output, such as `Backstage: installed 2 skill(s), 1 up to date.`, because agents add the output of session start hooks to the session context. It prints nothing when no skill was installed.
+
+Because installed skills are skipped, a skill that changed in its repository is
+not updated by the hook. Run `ai skills sync` without `--hook` to update the
+installed skills.
+
+## ai hooks install
+
+Install a session start hook that runs `ai skills sync --hook` whenever you
+start or resume a session with your coding agent.
+
+```text
+Usage: backstage-cli ai hooks install [options]
+
+Options:
+  --agent <string>     Agent to install the hook for, repeatable (required)
+  --instance <string>  Name of the instance the hook uses
+  --dry-run            Print the resulting hook files without writing them
+```
+
+The hook is written to a personal file in the root of the git repository that
+contains your current directory, or to the current directory outside a git
+repository:
+
+| Agent         | File                          | Notes                                                                     |
+| ------------- | ----------------------------- | ------------------------------------------------------------------------- |
+| `claude-code` | `.claude/settings.local.json` | Claude Code does not commit this file.                                    |
+| `codex`       | `.codex/hooks.json`           | Codex asks you to review and trust the hook with `/hooks` before it runs. |
+
+Other agents fail with `hooks are not supported for <agent> yet`, and nothing
+is written for any agent in that case. Cursor is not supported, because its
+project hooks are meant to be committed and shared with your team.
+
+The hook entry runs the same Node.js and CLI binary that ran
+`ai hooks install`, by absolute path, with
+`ai skills sync --hook --agent <agent>` and the `--instance` you passed. Because
+the paths are specific to your machine, do not commit these files, and run
+`ai hooks install` again if you move the project's `node_modules`, switch
+Node.js versions, or change the CLI location. The command replaces its own entry
+when you run it again and keeps all other settings and hooks. It fails without
+writing if an existing file is not valid JSON or does not have the expected
+shape.
+
+To remove the hook, delete the entry whose command contains
+`ai skills sync --hook` from the file.
+
+### Examples
+
+```bash
+# Show what would be written
+yarn backstage-cli ai hooks install --agent claude-code --dry-run
+
+# Install the hook for Claude Code using a named instance
+yarn backstage-cli ai hooks install --agent claude-code --instance production
+```
+
+:::warning
+
+A session start hook installs the skills that the catalog selects for you, with
+no confirmation, at the start of every session. Everything in
+[Security considerations](#security-considerations) applies on every session
+instead of only when you run the command. Review the selection with
+`ai resolve` first, and only install the hook for catalogs that you trust.
+
+:::
 
 ## How skills are selected
 
@@ -178,7 +254,7 @@ sets `GH_HOST` for that one invocation only.
 ## Limitations
 
 - Skills that were synced earlier are never removed, even if they no longer apply. Use `skills remove` to remove them.
-- Rules and hooks are not handled. Only skills are installed.
+- Rules are not handled. Only skills are installed.
 - Skills with a ref that contains `/`, GitHub Enterprise hosts with a port, and refs or paths that contain `#`, `?`, or `\` are skipped.
 - Source locations without the GitLab `/-/` form must have exactly an `owner/repo` path before `/tree/`. GitLab sources in nested groups need the `/-/tree/` form.
 - Only GitHub and GitLab `origin` remotes can be matched to a component automatically. For other hosts, pass `--entity`.
