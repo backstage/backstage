@@ -1,5 +1,16 @@
 # @backstage/backend-app-api
 
+## 1.8.0-next.1
+
+### Minor Changes
+
+- e956084: Added an `instanceId` option to `createSpecializedBackend`. Each backend instance uses a random UUID by default.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+
 ## 1.7.5-next.0
 
 ### Patch Changes

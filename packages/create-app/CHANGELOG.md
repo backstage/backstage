@@ -1,5 +1,11 @@
 # @backstage/create-app
 
+## 0.9.3-next.1
+
+### Patch Changes
+
+- bf3db11: Pinned Yarn core in newly generated apps to avoid installation failures from a broken upstream release.
+
 ## 0.9.3-next.0
 
 ### Patch Changes

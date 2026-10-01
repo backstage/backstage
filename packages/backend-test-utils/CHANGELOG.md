@@ -1,5 +1,17 @@
 # @backstage/backend-test-utils
 
+## 1.11.8-next.1
+
+### Patch Changes
+
+- e956084: Updated the root instance metadata service mock to provide an instance ID.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/backend-defaults@0.18.1-next.1
+  - @backstage/backend-app-api@1.8.0-next.1
+  - @backstage/plugin-auth-node@0.7.7-next.1
+  - @backstage/plugin-events-node@0.4.27-next.1
+
 ## 1.11.8-next.0
 
 ### Patch Changes

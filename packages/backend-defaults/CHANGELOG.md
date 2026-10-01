@@ -1,5 +1,20 @@
 # @backstage/backend-defaults
 
+## 0.18.1-next.1
+
+### Patch Changes
+
+- c478470: Added a service-authenticated action registry status endpoint that reports whether a plugin provides actions without exposing action metadata.
+- e956084: Added an `instanceId` option to `createBackend`, allowing deployments to use an externally provided backend instance identifier. Each backend instance uses a random UUID by default.
+- 1939ded: Added bounded retries for transient failures while initializing Cloud SQL database connections.
+- 6887ecc: Updated dependency `infinispan` to `^0.16.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.11.0-next.1
+  - @backstage/backend-app-api@1.8.0-next.1
+  - @backstage/plugin-auth-node@0.7.7-next.1
+  - @backstage/plugin-events-node@0.4.27-next.1
+  - @backstage/plugin-permission-node@0.11.5-next.1
+
 ## 0.18.1-next.0
 
 ### Patch Changes
