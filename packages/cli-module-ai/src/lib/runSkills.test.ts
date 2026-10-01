@@ -263,4 +263,36 @@ describe('resolveSkillsBin', () => {
     expect(bin).toMatch(/skills[\\/]bin[\\/]cli\.mjs$/);
     expect(fs.existsSync(bin)).toBe(true);
   });
+
+  it('plans local sources by their real path, once, without GH_HOST', () => {
+    const local = (name: string, dir: string) => ({
+      ref: `airesource:default/${name}`,
+      name,
+      status: 'selected' as const,
+      via: 'scope' as const,
+      reason: 'x',
+      source: {
+        repoUrl: dir,
+        ref: '',
+        installUrl: dir,
+        localPath: dir,
+      },
+    });
+    const invocations = planSkillsInvocations(
+      [local('a', '/skills/a'), local('b', '/skills/a')],
+      { agents: ['codex'], global: false },
+    );
+    expect(invocations).toHaveLength(1);
+    expect(buildSkillsArgs(invocations[0])).toEqual([
+      'add',
+      '/skills/a',
+      '-a',
+      'codex',
+      '-y',
+    ]);
+    expect(invocations[0].env).toEqual({});
+    expect(formatSkillsCommand(invocations[0])).toBe(
+      'skills add /skills/a -a codex -y',
+    );
+  });
 });

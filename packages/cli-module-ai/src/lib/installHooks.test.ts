@@ -44,6 +44,20 @@ describe('buildHookCommand', () => {
   });
 });
 
+describe('buildHookCommand with file sources', () => {
+  it('passes --allow-file-sources only when requested', () => {
+    const base = {
+      execPath: '/bin/node',
+      scriptPath: '/bin/backstage-cli',
+      agent: 'claude-code',
+    };
+    expect(buildHookCommand({ ...base, allowFileSources: true })).toBe(
+      '/bin/node /bin/backstage-cli ai skills sync --hook --agent claude-code --allow-file-sources',
+    );
+    expect(buildHookCommand(base)).not.toContain('--allow-file-sources');
+  });
+});
+
 describe('shellQuote', () => {
   it('quotes arguments that a shell would expand', () => {
     expect(shellQuote('~root')).toBe("'~root'");

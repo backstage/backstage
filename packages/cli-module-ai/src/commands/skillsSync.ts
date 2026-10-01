@@ -38,6 +38,7 @@ interface SyncFlags {
   agent: string[];
   global?: boolean;
   instance?: string;
+  'allow-file-sources'?: boolean;
 }
 
 /**
@@ -61,6 +62,7 @@ async function syncInHook(flags: SyncFlags) {
       entity: flags.entity,
       instance: flags.instance,
       agents,
+      allowFileSources: Boolean(flags['allow-file-sources']),
     });
     const invocations = planSkillsInvocations(decisions, {
       agents,
@@ -71,7 +73,7 @@ async function syncInHook(flags: SyncFlags) {
     const lock = readSkillsLock(cwd);
     const isPresent = skillPresence(cwd, agents);
     const pending = invocations.filter(
-      invocation => !isSkillInstalled(lock, invocation.source, isPresent),
+      invocation => !isSkillInstalled(lock, invocation.source, isPresent, cwd),
     );
     const { failed } = await runSkills(
       pending,
@@ -120,6 +122,11 @@ export default async ({ args, info }: CliCommandContext) => {
           type: String,
           description: 'Name of the instance to use',
         },
+        'allow-file-sources': {
+          type: Boolean,
+          description:
+            'Allow skills whose source location is a local directory (file:)',
+        },
         hook: {
           type: Boolean,
           description:
@@ -141,6 +148,7 @@ export default async ({ args, info }: CliCommandContext) => {
     entity: flags.entity,
     instance: flags.instance,
     agents,
+    allowFileSources: Boolean(flags['allow-file-sources']),
   });
 
   for (const decision of decisions) {

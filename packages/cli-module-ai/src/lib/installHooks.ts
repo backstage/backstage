@@ -60,6 +60,8 @@ export interface HookCommandOptions {
   scriptPath: string;
   agent: string;
   instance?: string;
+  /** Passes --allow-file-sources to the hook command. */
+  allowFileSources?: boolean;
 }
 
 /** Builds the shell command that the agent hook runs. */
@@ -74,6 +76,7 @@ export function buildHookCommand(options: HookCommandOptions): string {
     '--agent',
     options.agent,
     ...(options.instance ? ['--instance', options.instance] : []),
+    ...(options.allowFileSources ? ['--allow-file-sources'] : []),
   ]
     .map(shellQuote)
     .join(' ');
@@ -131,6 +134,7 @@ export interface InstallHooksOptions {
   execPath: string;
   scriptPath: string;
   instance?: string;
+  allowFileSources?: boolean;
   dryRun?: boolean;
   /** Runs git, injectable for tests. */
   exec?: ExecFn;

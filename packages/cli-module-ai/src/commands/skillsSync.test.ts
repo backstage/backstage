@@ -122,6 +122,7 @@ describe('ai skills sync', () => {
       entity: 'svc',
       instance: undefined,
       agents: ['claude-code'],
+      allowFileSources: false,
     });
     expect(mockRunner.mock.calls).toEqual([
       [
@@ -152,6 +153,30 @@ describe('ai skills sync', () => {
     await skillsSync(ctx([]));
     expect(mockRunner).not.toHaveBeenCalled();
     expect(out()).toContain(`skills add ${url('one', 'a')} -a codex -y`);
+  });
+
+  it('passes --allow-file-sources to the selection and prints local paths in a dry run', async () => {
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: { agent: ['codex'], 'dry-run': true, 'allow-file-sources': true },
+    });
+    mockResolveSelection.mockResolvedValue(
+      selection([
+        {
+          ...decision('a', 'one', 'selected'),
+          source: {
+            repoUrl: '/skills/a',
+            ref: '',
+            installUrl: '/skills/a',
+            localPath: '/skills/a',
+          },
+        },
+      ]),
+    );
+    await skillsSync(ctx([]));
+    expect(mockResolveSelection).toHaveBeenCalledWith(
+      expect.objectContaining({ allowFileSources: true }),
+    );
+    expect(out()).toContain('skills add /skills/a -a codex -y');
   });
 
   it('does nothing and succeeds when no skill is installable', async () => {
