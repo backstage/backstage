@@ -51,23 +51,6 @@ const MockTechDocsCache = {
 } as unknown as jest.Mocked<TechDocsCache>;
 TechDocsCache.fromConfig = () => MockTechDocsCache;
 
-const getMockHttpResponseFor = (content: string): Buffer => {
-  return Buffer.from(
-    [
-      'HTTP/1.1 200 OK',
-      'Content-Type: text/plain; charset=utf-8',
-      'Accept-Ranges: bytes',
-      'Cache-Control: public, max-age=0',
-      'Last-Modified: Sat, 1 Jul 2021 12:00:00 GMT',
-      'Date: Sat, 1 Jul 2021 12:00:00 GMT',
-      'Connection: close',
-      `Content-Length: ${content.length}`,
-      '',
-      content,
-    ].join('\r\n'),
-  );
-};
-
 const createApp = async (options: RouterOptions) => {
   const app = express();
   app.use(await createRouter(options));
@@ -339,18 +322,27 @@ data: {"updated":true}
     });
 
     it('should return assets from cache', async () => {
+      const entries = new Map<string, Buffer>();
+      MockTechDocsCache.get.mockImplementation(async path => entries.get(path));
+      MockTechDocsCache.set.mockImplementation(async (path, value) => {
+        entries.set(path, value);
+      });
+      const docsRouter = jest.fn((_req, res) => res.send('content'));
+      publisher.docsRouter.mockReturnValue(docsRouter);
       const app = await createApp(outOfTheBoxOptions);
 
-      MockTechDocsCache.get.mockResolvedValue(
-        getMockHttpResponseFor('content'),
-      );
-
-      const response = await request(app)
+      await request(app)
         .get('/static/docs/default/component/test')
-        .send();
+        .expect(200, 'content');
+      await new Promise(resolve => setTimeout(resolve, 0));
 
-      expect(response.status).toBe(200);
-      expect(MockTechDocsCache.get).toHaveBeenCalled();
+      await request(app)
+        .get('/static/docs/default/component/test')
+        .expect(200, 'content');
+
+      expect(MockTechDocsCache.get).toHaveBeenCalledTimes(2);
+      expect(MockTechDocsCache.set).toHaveBeenCalledTimes(1);
+      expect(docsRouter).toHaveBeenCalledTimes(1);
     });
 
     it('should check entity access when permissions are enabled', async () => {
