@@ -27,8 +27,35 @@ Options:
 
 Commands:
   help
+  hooks
   resolve
   skills
+```
+
+### `backstage-cli-module-ai ai hooks`
+
+```
+Usage: @backstage/cli-module-ai ai hooks [flags...]
+
+Options:
+  -V, --version
+  -h, --help
+
+Commands:
+  help
+  install
+```
+
+### `backstage-cli-module-ai ai hooks install`
+
+```
+Usage: @backstage/cli-module-ai ai hooks install [flags...]
+
+Options:
+  --agent <string>
+  --dry-run
+  --instance <string>
+  -h, --help
 ```
 
 ### `backstage-cli-module-ai ai resolve`
@@ -68,6 +95,7 @@ Options:
   --dry-run
   --entity <string>
   --global
+  --hook
   --instance <string>
   -h, --help
 ```
