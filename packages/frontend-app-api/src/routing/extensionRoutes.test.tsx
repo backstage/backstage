@@ -222,6 +222,21 @@ it('adds and overrides module external routes with named bindings', () => {
   expect(configured.resolve(added)?.()).toBe('/other');
   expect(configured.resolve(original)).toBeUndefined();
   expect(configured.resolve(replacement)).toBeUndefined();
+  for (const defaultTarget of [undefined, 'missing.root']) {
+    const unbound = createExternalRouteRef({ defaultTarget });
+    const resolution = createSpecializedApp({
+      features: [
+        app,
+        plugin,
+        createFrontendModule({
+          pluginId: 'test',
+          externalRoutes: { home: unbound },
+        }),
+      ],
+    }).apis.get(routeResolutionApiRef)!;
+    expect(resolution.resolve(original)).toBeUndefined();
+    expect(resolution.resolve(unbound)).toBeUndefined();
+  }
 });
 
 it('binds duplicated external refs through named IDs, including disabled defaults and sub routes', () => {
@@ -532,4 +547,34 @@ it('redirects individual sub routes without redirecting their parent or siblings
     path: '/:id',
   });
   expect(routes.resolve(copy)?.({ id: 'two' })).toBe('/detail/two');
+});
+
+it('redirects routes first introduced by a module after selecting the final overrides', () => {
+  const original = createRouteRef({ extensionId: 'page:test/original' });
+  const copy = createRouteRef({ extensionId: 'page:test/original' });
+  const final = createRouteRef({ extensionId: 'page:test/final' });
+  const plugin = createFrontendPlugin({ pluginId: 'test' });
+  const first = createFrontendModule({
+    pluginId: 'test',
+    routes: { oldName: original, newName: copy },
+  });
+  const discarded = createFrontendModule({
+    pluginId: 'test',
+    routes: {
+      newName: createRouteRef({
+        extensionId: 'page:test/missing',
+        params: ['unused'],
+      }),
+    },
+  });
+  const last = createFrontendModule({
+    pluginId: 'test',
+    routes: { newName: final },
+    extensions: [page('final', '/final')],
+  });
+  const resolution = createSpecializedApp({
+    features: [app, plugin, first, discarded, last],
+  }).apis.get(routeResolutionApiRef)!;
+  expect(resolution.resolve(original)?.()).toBe('/final');
+  expect(resolution.resolve(copy)?.()).toBe('/final');
 });
