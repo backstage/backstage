@@ -11,10 +11,6 @@ see installation instructions from `@backstage/plugin-signals-node`, `@backstage
 
 To install this signals frontend plugin, please refer the [Getting Started](https://backstage.io/docs/notifications) Backstage Notifications and Signals documentation section.
 
-The client opens one WebSocket connection for its active subscriptions when the
-identity API provides a token. If no token is available, it does not connect or
-retry. Multiple subscriptions on the same client share that connection.
-
 Now you can utilize the API from other plugins using the `@backstage/plugin-signals-react` package or simply by:
 
 ```ts
