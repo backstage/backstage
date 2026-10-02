@@ -340,6 +340,20 @@ describe('buildEntitySearch', () => {
       ).toThrow(
         `Entity has duplicate keys that vary only in casing, 'spec.owner', 'spec.lifecycle'`,
       );
+      expect(() =>
+        buildEntitySearch('eid', {
+          apiVersion: 'a',
+          kind: 'b',
+          metadata: { name: 'n' },
+          spec: {
+            foo: 'a',
+            Foo: 'b',
+            FOO: 'c',
+          },
+        }),
+      ).toThrow(
+        `Entity has duplicate keys that vary only in casing, 'spec.foo'`,
+      );
     });
   });
 });
