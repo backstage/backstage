@@ -246,6 +246,7 @@ async function runCommandLevel(options: {
       }
 
       if (argv.length === 0) {
+        parsed.showHelp();
         return;
       }
 
@@ -277,6 +278,9 @@ function hasVersionFlag(args: string[]): boolean {
  * This is intended for creating custom CLI packages from a fixed set of
  * directly imported modules. Module discovery and override behavior are left
  * to the caller.
+ *
+ * Invoking the program or a command group without a subcommand displays
+ * help for that level and completes successfully.
  *
  * @example
  * ```ts

@@ -181,6 +181,48 @@ describe('runCli', () => {
     logSpy.mockRestore();
   });
 
+  it.each([
+    { commandPath: [] },
+    { commandPath: ['repo'] },
+    { commandPath: ['repo', 'sessions'] },
+  ])(
+    'renders current-level help without a subcommand for %j',
+    async ({ commandPath }) => {
+      const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+      const execute = jest.fn(async () => {});
+      const loader = jest.fn(async () => ({ default: execute }));
+      const testModule = createCliModule({
+        packageJson: { name: '@example/test' },
+        init: async reg => {
+          reg.addCommand({
+            path: ['repo', 'sessions', 'list'],
+            description: 'List sessions',
+            execute: { loader },
+          });
+        },
+      });
+      const options = { modules: [testModule], name: 'example-cli' };
+
+      process.argv = ['node', 'cli', ...commandPath];
+      await runCli(options);
+      const output = logSpy.mock.calls.flat().join('\n');
+      expect(output).toContain(['example-cli', ...commandPath].join(' '));
+      expect(output).toContain(
+        ['repo', 'sessions', 'list'][commandPath.length],
+      );
+      expect(output).not.toContain('Invalid command');
+      expect(process.exit).not.toHaveBeenCalled();
+
+      logSpy.mockClear();
+      process.argv = ['node', 'cli', ...commandPath, '--help'];
+      await runCli(options);
+      expect(logSpy.mock.calls.flat().join('\n')).toBe(output);
+      expect(process.exit).toHaveBeenCalledWith(0);
+      expect(loader).not.toHaveBeenCalled();
+      expect(execute).not.toHaveBeenCalled();
+    },
+  );
+
   it('supports the short version flag', async () => {
     process.argv = ['node', 'cli', '-V'];
     const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
