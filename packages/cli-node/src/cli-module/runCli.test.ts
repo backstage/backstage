@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { stripVTControlCharacters } from 'node:util';
 import { createCliModule } from './createCliModule';
 import { runCli } from './runCli';
 
@@ -205,7 +206,9 @@ describe('runCli', () => {
 
       process.argv = ['node', 'cli', ...commandPath];
       await runCli(options);
-      const output = logSpy.mock.calls.flat().join('\n');
+      const output = stripVTControlCharacters(
+        logSpy.mock.calls.flat().join('\n'),
+      );
       expect(output).toContain(['example-cli', ...commandPath].join(' '));
       expect(output).toContain(['repo', 'example', 'list'][commandPath.length]);
       expect(output).toContain(
@@ -217,7 +220,9 @@ describe('runCli', () => {
       logSpy.mockClear();
       process.argv = ['node', 'cli', ...commandPath, '--help'];
       await runCli(options);
-      expect(logSpy.mock.calls.flat().join('\n')).toBe(output);
+      expect(
+        stripVTControlCharacters(logSpy.mock.calls.flat().join('\n')),
+      ).toBe(output);
       expect(process.exit).toHaveBeenCalledWith(0);
       expect(loader).not.toHaveBeenCalled();
       expect(execute).not.toHaveBeenCalled();
@@ -261,9 +266,11 @@ describe('runCli', () => {
       },
     });
     await runCli({ modules: [testModule], name: 'example-cli' });
-    const output = logSpy.mock.calls.flat().join('\n');
-    const groups = output.split('GROUPS:')[1].split('COMMANDS:')[0];
-    const commands = output.split('COMMANDS:')[1].split('FLAGS:')[0];
+    const output = stripVTControlCharacters(
+      logSpy.mock.calls.flat().join('\n'),
+    );
+    const groups = output.split(/groups:/i)[1].split(/commands:/i)[0];
+    const commands = output.split(/commands:/i)[1].split(/flags:/i)[0];
     expect(
       groups
         .trim()
@@ -328,10 +335,15 @@ describe('runCli', () => {
         process.argv = ['node', 'cli'];
         logSpy.mockClear();
         await runCli({ modules: [testModule], name: 'example-cli' });
-        const output = logSpy.mock.calls.flat().join('\n');
-        expect(output.split('GROUPS:')[1].split('COMMANDS:')[0].trim()).toBe(
-          `repo        ${expected}`,
+        const output = stripVTControlCharacters(
+          logSpy.mock.calls.flat().join('\n'),
         );
+        expect(
+          output
+            .split(/groups:/i)[1]
+            .split(/commands:/i)[0]
+            .trim(),
+        ).toBe(`repo        ${expected}`);
       }
       expect(loader).not.toHaveBeenCalled();
     } finally {
