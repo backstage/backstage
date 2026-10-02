@@ -1,38 +1,67 @@
 <!-- THIS FILE IS NOT INTENDED TO BE DISPLAYED ON THE DOCSITE -->
 
-# Glossary
+# Adoption Golden Path author guidance
 
-- Page: A single `md` file.
-- Guide: A number of pages grouped under the same folder.
+## Audience and goal
 
-# Overall Writing Guidelines
+This Golden Path is for adoption leads with limited technical expertise, such as
+product managers, platform leaders, program leads, and executive sponsors. It
+helps them use Backstage to address a recognized organizational problem while
+working with a technical partner.
 
-The goal of these docs is to provide a comprehensive set of guides that technical champions and non-technical users can use to know what to expect on their Backstage adoption journey. This should include a host of resources for how to quantify impact of Backstage, how to present those finding to leadership, focusing on the right things for your company and tips and tricks for engaging with your developers.
+The guide should not assume that the reader can configure, deploy, or evaluate
+the technical readiness of Backstage. It should make the reader's decisions and
+the technical partner's responsibilities explicit.
 
-When writing guide pages, keep it light! These should be instructional docs, and at the same time conversational and a joy to read. Guides should build on each other, when reading through a progression, the reader should feel more comfortable and confident with concepts as they pop up across progression levels. Guides should be standalone but can link across.
+## Principles
 
-# Sections
+- Begin with a developer or organizational problem, not a Backstage feature.
+- Use a small proof of concept (PoC) to create evidence before requesting formal
+  sponsorship and product-team investment.
+- Evolve the useful parts of the PoC into a shared pilot rather than rebuilding
+  the experience from scratch.
+- Treat outputs and decision prompts as adaptable guidance, not universal
+  governance gates.
+- Record evidence, uncertainty, ownership, and the next review date.
+- Treat Backstage as an internal product that requires ongoing research,
+  operation, support, and adoption work.
+- Keep adopter resources optional and place them at the end of a page.
 
-Users should already have read through the summary section of the docs, "What is Backstage", "The Spotify story", etc.
+## Recurring roles
 
-## Getting started
+- **Adoption lead:** Frames the problem, coordinates research, records decisions,
+  and manages the journey.
+- **Technical partner:** Evaluates feasibility, builds and operates the instance,
+  and explains technical risks and readiness.
+- **Participating developers:** Test real workflows and provide evidence.
+- **Executive sponsor:** Supports continued investment after the PoC produces
+  useful evidence.
+- **Product team:** Owns research, roadmap, operation, and adoption after formal
+  investment.
 
-We recommend you poke around the demo site to get a feel for what Backstage can provide. If you're technical, or working with someone technical, you can run through the steps in `golden-path/create-app` and `golden-path/deploying-backstage` to get something running for just your company.
+## Page contract
 
-## Getting leadership buy-in
+Each stage should contain:
 
-## First round of stakeholder feedback
+1. A short purpose statement.
+2. One bold **Decision prompt**.
+3. Only the roles needed for that stage.
+4. A concise sequence of nontechnical actions.
+5. An explicit technical-partner handoff when implementation detail is needed.
+6. A worked example that continues the ownership-and-runbook discovery scenario.
+7. A brief **Before you continue** paragraph that describes what should now be
+   true without prescribing a template.
+8. Contextual guidance about when to continue and which stage comes next.
+9. Optional **Learn from adopters** resources.
 
-If you think Backstage is a good fit for your company, it's likely there are others that do or will think the same. You may have already identified them. For this initial round of feedback, share recommendations for what that group should look like, is there any required number of technical or non-technical members, do you need leadership involved at this point, etc.
+## Journey
 
-For non-technical users, it's recommended to find a technical partner to help stand up a unique instance.
-
-## Customizing your instance
-
-At this point, we're assuming you already have an instance created through `golden-path/create-app` and `golden-path/deploying-backstage`. You should now start customizing it to your company's needs. We recommend you start small, write some catalog-info YAML files and start to build a personalized catalog.
-
-## Preparing for GA
-
-## Plugin ownership and inner source mentality
-
-## Driving to full catalog completion
+1. Define the problem and decide whether it is worth exploring with Backstage.
+2. Build a focused PoC with a small team and limited organizational permission.
+3. Evaluate the PoC and recommend continuing, adjusting, or pausing.
+4. Use the evidence to request leadership sponsorship and continued investment.
+5. Evolve the PoC into a shared pilot with realistic users and integrations.
+6. Prepare for general availability with product and technical readiness input.
+7. Operate after launch through feedback, measurement, and recurring decisions.
+8. Govern ownership and contributions as more teams extend the product.
+9. Scale catalog coverage around explicit organizational outcomes.

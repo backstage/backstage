@@ -1,5 +1,6 @@
 ---
 id: npx-create-app
+sidebar_label: 001 - Scaffolding
 title: '001 - Scaffolding'
 description: How to scaffold a new Backstage app using create-app
 ---
@@ -12,13 +13,18 @@ It is not required, although recommended to have a basic understanding of [Yarn]
 
 ## Summary
 
-This guide walks through how to get started creating your very own Backstage customizable app. This is the first step in evaluating, developing on, or demoing Backstage.
+This guide walks through how to create your own customizable
+[Backstage app](../../overview/what-is-backstage.md). This is the first step in
+evaluating, developing on, or demonstrating Backstage.
 
-By the end of this guide, you will have a standalone Backstage installation running locally with a `SQLite` database and demo content.
+By the end of this guide, you will have a standalone Backstage installation
+running locally with a SQLite database and demo catalog content.
 
 :::caution[Organization customization]
 
-To be clear, this is not a production-ready installation, and it does not contain information specific to your organization. You will learn how to customize Backstage for your use case through this guide.
+To be clear, this is not a production-ready installation, and it does not
+contain information specific to your organization. Later Golden Paths cover
+customization, plugin development, and deployment.
 
 :::
 
@@ -38,12 +44,12 @@ This guide also assumes a basic understanding of working on a Linux based operat
   - Using `nvm` (recommended)
     - [Installing nvm](https://github.com/nvm-sh/nvm#install--update-script)
     - [Install and change Node version with nvm](https://nodejs.org/en/download/package-manager/#nvm)
-    - Node 20 is a good starting point, this can be installed using `nvm install lts/iron`
+    - Install the current Active LTS release with `nvm install --lts`.
   - [Binary download](https://nodejs.org/en/download/)
   - [Package manager](https://nodejs.org/en/download/package-manager/)
   - [Using NodeSource packages](https://github.com/nodesource/distributions/blob/master/README.md)
 - `yarn` [Installation](https://yarnpkg.com/getting-started/install)
-  - Backstage currently uses Yarn 4.4.1, once you've ran `corepack enable` you'll want to then run `yarn set version 4.4.1`
+  - Run `corepack enable`; the generated project selects its supported Yarn version.
 - `git` [installation](https://github.com/git-guides/install-git)
 
 ## Scaffold your new Backstage app
@@ -110,29 +116,28 @@ app
     └── backend
 ```
 
-- **app-config.yaml**: Main configuration file for the app. See
-  [Configuration](https://backstage.io/docs/conf/) for more information.
-- **catalog-info.yaml**: Catalog Entities descriptors. See
-  [Descriptor Format of Catalog Entities](https://backstage.io/docs/features/software-catalog/descriptor-format)
-  to get started.
-- **package.json**: Root package.json for the project. _Note: Be sure that you
+- **app-config.yaml**: Main [configuration file](../../conf/index.md) for the app.
+- **catalog-info.yaml**: A descriptor for
+  [Software Catalog entities](../../features/software-catalog/descriptor-format.md).
+- **package.json**: Root `package.json` for the project. _Note: Be sure that you
   don't add any npm dependencies here as they probably should be installed in
   the intended workspace rather than in the root._
-- **packages/**: Lerna leaf packages or "workspaces". Everything here is going
-  to be a separate package, managed by lerna.
-- **packages/app/**: A fully functioning Backstage frontend app that acts as a
-  good starting point for you to get to know Backstage.
-- **packages/backend/**: We include a backend that helps power features such as
-  [Authentication](https://backstage.io/docs/auth/),
-  [Software Catalog](https://backstage.io/docs/features/software-catalog/),
-  [Software Templates](https://backstage.io/docs/features/software-templates/)
-  and [TechDocs](https://backstage.io/docs/features/techdocs/)
-  amongst other things.
+- **packages/**: [Yarn workspaces](https://yarnpkg.com/features/workspaces) that
+  contain the separate frontend and backend packages.
+- **packages/app/**: A fully functioning
+  [Backstage frontend app](../../frontend-system/index.md) that acts as a good
+  starting point for you to get to know Backstage.
+- **packages/backend/**: A [Backstage backend](../../backend-system/index.md)
+  that powers features such as [Authentication](../../auth/index.md),
+  [Software Catalog](../../features/software-catalog/index.md),
+  [Software Templates](../../features/software-templates/index.md), and
+  [TechDocs](../../features/techdocs/getting-started.md).
 
 ## Common Issues
 
 - App is not running on port X: Backstage uses ports `3000` and `7007` as its default frontend and backend ports. Make sure that your commands haven't exited with errors. For remote or containerized setups, make sure those ports above are accessible.
 
-## Next Steps
+## Next steps
 
-Now that you have a scaffolded app, let's learn how to start it locally for development!
+Now that you have a scaffolded app, continue to
+[run it locally](./002-local-development.md).
