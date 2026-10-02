@@ -24,6 +24,11 @@ import { createLogger } from '../../lib/utility';
 import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
 import { checkIfDockerIsOperational } from './utils';
+import { getEngineConfig } from '../../lib/engineConfig';
+import {
+  readEntityFromCatalog,
+  getEngineFromEntity,
+} from '../../lib/catalogEntity';
 
 function findPreviewBundlePath(): string {
   try {
@@ -51,6 +56,18 @@ function getPreviewAppPath(opts: OptionValues): string {
 export default async function serve(opts: OptionValues) {
   const logger = createLogger({ verbose: opts.verbose });
 
+  const catalogEntity = await readEntityFromCatalog(process.cwd());
+  const catalogEngine = getEngineFromEntity(catalogEntity);
+  const engine = opts.engine ?? catalogEngine ?? 'mkdocs';
+
+  if (catalogEngine && !opts.engine) {
+    logger.info(
+      `Detected backstage.io/techdocs-engine: '${catalogEngine}' from catalog entity`,
+    );
+  }
+
+  const engineConfig = getEngineConfig(engine);
+
   // Determine if we want to run in local dev mode or not
   // This will run the backstage http server on a different port and only used
   // for proxying mkdocs to the backstage app running locally (e.g. with webpack-dev-server)
@@ -60,17 +77,30 @@ export default async function serve(opts: OptionValues) {
 
   const backstageBackendPort = 7007;
 
-  const mkdocsDockerAddr = `http://0.0.0.0:${opts.mkdocsPort}`;
-  const mkdocsLocalAddr = `http://127.0.0.1:${opts.mkdocsPort}`;
-  const mkdocsExpectedDevAddr = opts.docker
-    ? mkdocsDockerAddr
-    : mkdocsLocalAddr;
-  const mkdocsConfigFileName = opts.mkdocsConfigFileName;
+  const enginePort = opts.enginePort ?? opts.mkdocsPort ?? '8000';
+  if (opts.mkdocsPort && !opts.enginePort) {
+    logger.warn(
+      '--mkdocs-port is deprecated and will be removed in a future release. Use --engine-port instead.',
+    );
+  }
+
+  const engineDockerAddr = `http://0.0.0.0:${enginePort}`;
+  const engineLocalAddr = `http://127.0.0.1:${enginePort}`;
+  const engineExpectedDevAddr = opts.docker
+    ? engineDockerAddr
+    : engineLocalAddr;
+
+  const configFileName = opts.configFileName ?? opts.mkdocsConfigFileName;
+  if (opts.mkdocsConfigFileName && !opts.configFileName) {
+    logger.warn(
+      '--mkdocs-config-file-name is deprecated and will be removed in a future release. Use --config-file-name instead.',
+    );
+  }
   const siteName = opts.siteName;
 
   const { path: mkdocsYmlPath, configIsTemporary } = await getMkdocsYml('./', {
     name: siteName,
-    mkdocsConfigFileName,
+    mkdocsConfigFileName: configFileName,
   });
 
   // Validate that Docker is up and running
@@ -81,11 +111,10 @@ export default async function serve(opts: OptionValues) {
     }
   }
 
-  let mkdocsServerHasStarted = false;
-  const mkdocsLogFunc: RunOnOutput = data => {
-    // Sometimes the lines contain an unnecessary extra new line
+  let docsServerHasStarted = false;
+  const docsLogFunc: RunOnOutput = data => {
     const logLines = data.toString().split('\n');
-    const logPrefix = opts.docker ? '[docker/mkdocs]' : '[mkdocs]';
+    const logPrefix = opts.docker ? `[docker/${engine}]` : `[${engine}]`;
     logLines.forEach(line => {
       if (line === '') {
         return;
@@ -93,46 +122,41 @@ export default async function serve(opts: OptionValues) {
 
       logger.verbose(`${logPrefix} ${line}`);
 
-      // When the server has started, open a new browser tab for the user.
       if (
-        !mkdocsServerHasStarted &&
-        line.includes(`Serving on ${mkdocsExpectedDevAddr}`)
+        !docsServerHasStarted &&
+        line.includes(`${engineConfig.startupLogPattern}`)
       ) {
-        mkdocsServerHasStarted = true;
+        docsServerHasStarted = true;
       }
     });
   };
-  // mkdocs writes all of its logs to stderr by default, and not stdout.
-  // https://github.com/mkdocs/mkdocs/issues/879#issuecomment-203536006
-  // Had me questioning this whole implementation for half an hour.
-  logger.info('Starting mkdocs server.');
-  const mkdocsChildProcess = runMkdocsServer({
-    port: opts.mkdocsPort,
+  logger.info(`Starting ${engine} server.`);
+  const docsChildProcess = runMkdocsServer({
+    port: enginePort,
     dockerImage: opts.dockerImage,
     dockerEntrypoint: opts.dockerEntrypoint,
     dockerOptions: opts.dockerOption,
     useDocker: opts.docker,
-    onStdout: mkdocsLogFunc,
-    onStderr: mkdocsLogFunc,
+    onStdout: docsLogFunc,
+    onStderr: docsLogFunc,
     mkdocsConfigFileName: mkdocsYmlPath,
-    mkdocsParameterClean: opts.mkdocsParameterClean,
-    mkdocsParameterDirtyReload: opts.mkdocsParameterDirtyreload,
-    mkdocsParameterStrict: opts.mkdocsParameterStrict,
+    mkdocsParameterClean: opts.parameterClean || opts.mkdocsParameterClean,
+    mkdocsParameterDirtyReload:
+      opts.parameterDirtyreload || opts.mkdocsParameterDirtyreload,
+    mkdocsParameterStrict: opts.parameterStrict || opts.mkdocsParameterStrict,
   });
 
-  // Wait until mkdocs server has started so that Backstage starts with docs loaded
-  // Takes 1-5 seconds
   for (let attempt = 0; attempt < 30; attempt++) {
     await new Promise(r => setTimeout(r, 3000));
-    if (mkdocsServerHasStarted) {
+    if (docsServerHasStarted) {
       break;
     }
-    logger.info('Waiting for mkdocs server to start...');
+    logger.info(`Waiting for ${engine} server to start...`);
   }
 
-  if (!mkdocsServerHasStarted) {
+  if (!docsServerHasStarted) {
     logger.error(
-      'mkdocs server did not start. Exiting. Try re-running command with -v option for more details.',
+      `${engine} server did not start. Exiting. Try re-running command with -v option for more details.`,
     );
   }
 
@@ -141,26 +165,26 @@ export default async function serve(opts: OptionValues) {
   const httpServer = new HTTPServer(
     previewAppPath,
     port,
-    mkdocsExpectedDevAddr,
+    engineExpectedDevAddr,
     opts.verbose,
+    engineConfig,
   );
 
   httpServer
     .serve()
     .catch(err => {
       logger.error('Failed to start HTTP server', err);
-      mkdocsChildProcess.kill();
+      docsChildProcess.kill();
       process.exit(1);
     })
     .then(() => {
-      // The last three things default/component/local/ don't matter. They can be anything.
       openBrowser(`http://localhost:${port}/docs/default/component/local/`);
       logger.info(
         `Serving docs in Backstage at http://localhost:${port}/docs/default/component/local/\nOpening browser.`,
       );
     });
 
-  await mkdocsChildProcess.waitForExit();
+  await docsChildProcess.waitForExit();
 
   if (configIsTemporary) {
     process.on('exit', async () => {
