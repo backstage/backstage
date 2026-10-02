@@ -134,6 +134,8 @@ search:
         timeout: { minutes: 3 }
 ```
 
+When `techdocs.experimentalTechdocsPermissions` is enabled, TechDocs search results are filtered at query time using `techdocs.entity.read`. See [how to restrict access to TechDocs](../techdocs/how-to-guides.md#how-to-restrict-access-to-techdocs-using-permissions).
+
 ### Filtering through the catalog collator
 
 The TechDocs collator by default filters through catalog entities where the annotation `metadata.annotations.backstage.io/techdocs-ref` exists. If you wish to further filter out entities, there are two ways to do so through the `techDocsCollatorEntityFilterExtensionPoint`.
