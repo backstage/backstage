@@ -184,7 +184,7 @@ describe('runCli', () => {
   it.each([
     { commandPath: [] },
     { commandPath: ['repo'] },
-    { commandPath: ['repo', 'sessions'] },
+    { commandPath: ['repo', 'example'] },
   ])(
     'renders current-level help without a subcommand for %j',
     async ({ commandPath }) => {
@@ -195,8 +195,8 @@ describe('runCli', () => {
         packageJson: { name: '@example/test' },
         init: async reg => {
           reg.addCommand({
-            path: ['repo', 'sessions', 'list'],
-            description: 'List sessions',
+            path: ['repo', 'example', 'list'],
+            description: 'List examples',
             execute: { loader },
           });
         },
@@ -207,9 +207,7 @@ describe('runCli', () => {
       await runCli(options);
       const output = logSpy.mock.calls.flat().join('\n');
       expect(output).toContain(['example-cli', ...commandPath].join(' '));
-      expect(output).toContain(
-        ['repo', 'sessions', 'list'][commandPath.length],
-      );
+      expect(output).toContain(['repo', 'example', 'list'][commandPath.length]);
       expect(output).not.toContain('Invalid command');
       expect(process.exit).not.toHaveBeenCalled();
 
