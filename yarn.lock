@@ -2137,7 +2137,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/module-federation-common": "workspace:^"
     "@manypkg/get-packages": "npm:^1.1.3"
-    "@module-federation/enhanced": "npm:~2.8.2"
+    "@module-federation/enhanced": "npm:~2.9.2"
     "@pmmmwh/react-refresh-webpack-plugin": "npm:^0.6.0"
     "@rollup/plugin-commonjs": "npm:^26.0.0"
     "@rollup/plugin-json": "npm:^6.0.0"
@@ -3081,10 +3081,10 @@ __metadata:
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/module-federation-common": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@module-federation/enhanced": "npm:~2.8.2"
-    "@module-federation/runtime": "npm:~2.8.2"
-    "@module-federation/runtime-core": "npm:~2.8.2"
-    "@module-federation/sdk": "npm:~2.8.2"
+    "@module-federation/enhanced": "npm:~2.9.2"
+    "@module-federation/runtime": "npm:~2.9.2"
+    "@module-federation/runtime-core": "npm:~2.9.2"
+    "@module-federation/sdk": "npm:~2.9.2"
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
@@ -11367,66 +11367,66 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@module-federation/bridge-react-webpack-plugin@npm:2.8.2":
-  version: 2.8.2
-  resolution: "@module-federation/bridge-react-webpack-plugin@npm:2.8.2"
+"@module-federation/bridge-react-webpack-plugin@npm:2.9.2":
+  version: 2.9.2
+  resolution: "@module-federation/bridge-react-webpack-plugin@npm:2.9.2"
   dependencies:
-    "@module-federation/sdk": "npm:2.8.2"
-  checksum: 10/b0b2c44c4223c09b668770a54dd22606ac1080a957d5243e0989ef35b8a81a6380e63f7a08ac434cd292dd303dc114b083385454bb11240b2aede7c15dd0f496
+    "@module-federation/sdk": "npm:2.9.2"
+  checksum: 10/380ce623e409f1217babbbfe0b19b273d1ceaeb99cca8c61b84a1e9afef91afe18042e39dd9277b32c3e289a36ba23ebd4673036fbe1fd7aca9955d5d3513549
   languageName: node
   linkType: hard
 
-"@module-federation/cli@npm:2.8.2":
-  version: 2.8.2
-  resolution: "@module-federation/cli@npm:2.8.2"
+"@module-federation/cli@npm:2.9.2":
+  version: 2.9.2
+  resolution: "@module-federation/cli@npm:2.9.2"
   dependencies:
-    "@module-federation/dts-plugin": "npm:2.8.2"
-    "@module-federation/sdk": "npm:2.8.2"
+    "@module-federation/dts-plugin": "npm:2.9.2"
+    "@module-federation/sdk": "npm:2.9.2"
     commander: "npm:11.1.0"
     jiti: "npm:2.4.2"
   bin:
     mf: bin/mf.js
-  checksum: 10/08fe421786df31230bd490af04fc3d8efb837f9ddec9b22e8be8a9bfecc5f82f757bb0b44d4ef0e3a77ced7d6a5488d47a4017eafabaf5efce74db62aa706e78
+  checksum: 10/d3ee0b28978fe161295f7c035d372973ecce949b9b0c2598a794d7163b375943e95c082af50be123f68222bf5b362a73407e154be2f802d28ebb9b13f887779e
   languageName: node
   linkType: hard
 
-"@module-federation/dts-plugin@npm:2.8.2":
-  version: 2.8.2
-  resolution: "@module-federation/dts-plugin@npm:2.8.2"
+"@module-federation/dts-plugin@npm:2.9.2":
+  version: 2.9.2
+  resolution: "@module-federation/dts-plugin@npm:2.9.2"
   dependencies:
-    "@module-federation/error-codes": "npm:2.8.2"
-    "@module-federation/managers": "npm:2.8.2"
-    "@module-federation/sdk": "npm:2.8.2"
-    "@module-federation/third-party-dts-extractor": "npm:2.8.2"
-    adm-zip: "npm:0.6.0"
+    "@module-federation/error-codes": "npm:2.9.2"
+    "@module-federation/managers": "npm:2.9.2"
+    "@module-federation/sdk": "npm:2.9.2"
+    "@module-federation/third-party-dts-extractor": "npm:2.9.2"
+    adm-zip: "npm:^0.6.1"
     isomorphic-ws: "npm:5.0.0"
-    undici: "npm:7.29.0"
-    ws: "npm:8.21.0"
+    undici: "npm:7.29.1"
+    ws: "npm:8.21.3"
   peerDependencies:
     typescript: ^4.9.0 || ^5.0.0 || ^6.0.0 || ^7.0.0
     vue-tsc: ">=1.0.24"
   peerDependenciesMeta:
     vue-tsc:
       optional: true
-  checksum: 10/f326d9c8f14bf4aec6c41aec6bcbe064fb912fbbb008f980d6993e9796497aae13eb0fce877486bff32abdc757425bc0685ce68b4920d9a1553b64b1300fb1c8
+  checksum: 10/e78d2535f045e7d572d42db603c5f3341f45529041a9af8b2e2ffa55ca7f294a6f0e8acab7f27fe0328233e12106cdceb3157761cf12b38151f895a00fac2422
   languageName: node
   linkType: hard
 
-"@module-federation/enhanced@npm:~2.8.2":
-  version: 2.8.2
-  resolution: "@module-federation/enhanced@npm:2.8.2"
+"@module-federation/enhanced@npm:~2.9.2":
+  version: 2.9.2
+  resolution: "@module-federation/enhanced@npm:2.9.2"
   dependencies:
-    "@module-federation/bridge-react-webpack-plugin": "npm:2.8.2"
-    "@module-federation/cli": "npm:2.8.2"
-    "@module-federation/dts-plugin": "npm:2.8.2"
-    "@module-federation/error-codes": "npm:2.8.2"
-    "@module-federation/inject-external-runtime-core-plugin": "npm:2.8.2"
-    "@module-federation/managers": "npm:2.8.2"
-    "@module-federation/manifest": "npm:2.8.2"
-    "@module-federation/rspack": "npm:2.8.2"
-    "@module-federation/runtime-tools": "npm:2.8.2"
-    "@module-federation/sdk": "npm:2.8.2"
-    "@module-federation/webpack-bundler-runtime": "npm:2.8.2"
+    "@module-federation/bridge-react-webpack-plugin": "npm:2.9.2"
+    "@module-federation/cli": "npm:2.9.2"
+    "@module-federation/dts-plugin": "npm:2.9.2"
+    "@module-federation/error-codes": "npm:2.9.2"
+    "@module-federation/inject-external-runtime-core-plugin": "npm:2.9.2"
+    "@module-federation/managers": "npm:2.9.2"
+    "@module-federation/manifest": "npm:2.9.2"
+    "@module-federation/rspack": "npm:2.9.2"
+    "@module-federation/runtime-tools": "npm:2.9.2"
+    "@module-federation/sdk": "npm:2.9.2"
+    "@module-federation/webpack-bundler-runtime": "npm:2.9.2"
     schema-utils: "npm:4.3.0"
     tapable: "npm:2.3.0"
   peerDependencies:
@@ -11442,7 +11442,7 @@ __metadata:
       optional: true
   bin:
     mf: bin/mf.js
-  checksum: 10/41ea5399e551796c9d69f0680a1391b632e3d9ef4424a25802b57cce1758bb9f3d15f5becaca6e86d1d42e0df952f9eff0a6ec6c34d4c42402a3895b2ca246d1
+  checksum: 10/e79878c7415591dd19ea1f0c5ab1b7b50b071a2b738137e4f49b62a3d8fd79cb553de5431fe055b89ee86c6f79833b36d27ba5ab60bcff98850743bc664bc731
   languageName: node
   linkType: hard
 
@@ -11460,46 +11460,53 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@module-federation/inject-external-runtime-core-plugin@npm:2.8.2":
-  version: 2.8.2
-  resolution: "@module-federation/inject-external-runtime-core-plugin@npm:2.8.2"
+"@module-federation/error-codes@npm:2.9.2":
+  version: 2.9.2
+  resolution: "@module-federation/error-codes@npm:2.9.2"
+  checksum: 10/dd112694165fa5e294d645aa9e9645773884afc778bef72b9db1f65e4034c224ceb14b4843d935f94074892a9eda3ae6aaad2d33cafd91803f9ed8919e9b730f
+  languageName: node
+  linkType: hard
+
+"@module-federation/inject-external-runtime-core-plugin@npm:2.9.2":
+  version: 2.9.2
+  resolution: "@module-federation/inject-external-runtime-core-plugin@npm:2.9.2"
   peerDependencies:
-    "@module-federation/runtime-tools": 2.8.2
-  checksum: 10/a997a47f17316efa74fb6d365b773e669cf3c83c94f0a6fe4804b3246a4b1b1b368374a49b9a3e99f1e09a2474879472571282dc5e0c1f9f4744d15bce832577
+    "@module-federation/runtime-tools": 2.9.2
+  checksum: 10/4648d90e45d6818ec30c0386333f07e4bc9549c8bfc6ee20a65d119429b613b323ced52975dbff81c6daf736d78775874b1ac53e59f9fa61a898f5aa76074b0f
   languageName: node
   linkType: hard
 
-"@module-federation/managers@npm:2.8.2":
-  version: 2.8.2
-  resolution: "@module-federation/managers@npm:2.8.2"
+"@module-federation/managers@npm:2.9.2":
+  version: 2.9.2
+  resolution: "@module-federation/managers@npm:2.9.2"
   dependencies:
-    "@module-federation/sdk": "npm:2.8.2"
-  checksum: 10/abf7ec3231125d7134faeae7395a9d9da4a1e5bc843e104666e30cd2f061c1c3afe9c2c34e7d547954164cd9ba9e24dbc29cfc08babd3dccd0a04d7e5f4758dd
+    "@module-federation/sdk": "npm:2.9.2"
+  checksum: 10/6c9ec8d6eba3eb245315132cfbaaf4b913de2e3e9a6be941e6ff7395598c88a054d50e5c922fe8a84aba9971ed17ca6769c1e517d56d08dfd218e6692569b6e4
   languageName: node
   linkType: hard
 
-"@module-federation/manifest@npm:2.8.2":
-  version: 2.8.2
-  resolution: "@module-federation/manifest@npm:2.8.2"
+"@module-federation/manifest@npm:2.9.2":
+  version: 2.9.2
+  resolution: "@module-federation/manifest@npm:2.9.2"
   dependencies:
-    "@module-federation/dts-plugin": "npm:2.8.2"
-    "@module-federation/managers": "npm:2.8.2"
-    "@module-federation/sdk": "npm:2.8.2"
-  checksum: 10/f6792351664b74e9195b4d966250faa46277d779bfdf2ba4c8903e7f47bb03c98c47a0707b174cc07a1029a023bc462ee293ba14cf641df670c955d3271a494c
+    "@module-federation/dts-plugin": "npm:2.9.2"
+    "@module-federation/managers": "npm:2.9.2"
+    "@module-federation/sdk": "npm:2.9.2"
+  checksum: 10/8ae96b56d414b5280aedbc3b1fcbdb78515ff201789d885563f2df13f034a932c1d92aec1331b8253d0ef21b287eba840335947e4c5c82d2647146b3ed3848ab
   languageName: node
   linkType: hard
 
-"@module-federation/rspack@npm:2.8.2":
-  version: 2.8.2
-  resolution: "@module-federation/rspack@npm:2.8.2"
+"@module-federation/rspack@npm:2.9.2":
+  version: 2.9.2
+  resolution: "@module-federation/rspack@npm:2.9.2"
   dependencies:
-    "@module-federation/bridge-react-webpack-plugin": "npm:2.8.2"
-    "@module-federation/dts-plugin": "npm:2.8.2"
-    "@module-federation/inject-external-runtime-core-plugin": "npm:2.8.2"
-    "@module-federation/managers": "npm:2.8.2"
-    "@module-federation/manifest": "npm:2.8.2"
-    "@module-federation/runtime-tools": "npm:2.8.2"
-    "@module-federation/sdk": "npm:2.8.2"
+    "@module-federation/bridge-react-webpack-plugin": "npm:2.9.2"
+    "@module-federation/dts-plugin": "npm:2.9.2"
+    "@module-federation/inject-external-runtime-core-plugin": "npm:2.9.2"
+    "@module-federation/managers": "npm:2.9.2"
+    "@module-federation/manifest": "npm:2.9.2"
+    "@module-federation/runtime-tools": "npm:2.9.2"
+    "@module-federation/sdk": "npm:2.9.2"
   peerDependencies:
     "@rspack/core": ^0.7.0 || ^1.0.0 || ^2.0.0-0
     typescript: ^4.9.0 || ^5.0.0 || ^6.0.0 || ^7.0.0
@@ -11509,7 +11516,7 @@ __metadata:
       optional: true
     vue-tsc:
       optional: true
-  checksum: 10/cccce9839770c79989157d7f69f830d8ed737c81b20f27f41391271d917e6674b0f3753417385524024c0544e0a53fecc9eef8eaeada3740b280c6da9c64ca7f
+  checksum: 10/6b07d5a7965a50e3d20bf3a29fce256cdce91b9cf3521c1ca05882e55e5650ed55475729cdfcf845e924470c0dba4b5aa347a061e6431a8901f6f83cf43a3da3
   languageName: node
   linkType: hard
 
@@ -11523,13 +11530,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@module-federation/runtime-core@npm:2.8.2, @module-federation/runtime-core@npm:~2.8.2":
+"@module-federation/runtime-core@npm:2.8.2":
   version: 2.8.2
   resolution: "@module-federation/runtime-core@npm:2.8.2"
   dependencies:
     "@module-federation/error-codes": "npm:2.8.2"
     "@module-federation/sdk": "npm:2.8.2"
   checksum: 10/7899271733facc96351001eee107cd41c684ea0602cf772596e7043b38201d665926fc6a4e7a5b7a3dd99eea6f6e06c60bbd229b557a6bb70f53027228a0636d
+  languageName: node
+  linkType: hard
+
+"@module-federation/runtime-core@npm:2.9.2, @module-federation/runtime-core@npm:~2.9.2":
+  version: 2.9.2
+  resolution: "@module-federation/runtime-core@npm:2.9.2"
+  dependencies:
+    "@module-federation/error-codes": "npm:2.9.2"
+    "@module-federation/sdk": "npm:2.9.2"
+  checksum: 10/9162761a6c136266128dcdf17ed103ef265a815332b0464cbce2d99994a413036a357c1c3293c5b2d9a614950a244c4d562642b85c8ffb17acfb0c7b6a8f069a
   languageName: node
   linkType: hard
 
@@ -11543,13 +11560,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@module-federation/runtime-tools@npm:2.8.2":
-  version: 2.8.2
-  resolution: "@module-federation/runtime-tools@npm:2.8.2"
+"@module-federation/runtime-tools@npm:2.9.2":
+  version: 2.9.2
+  resolution: "@module-federation/runtime-tools@npm:2.9.2"
   dependencies:
-    "@module-federation/runtime": "npm:2.8.2"
-    "@module-federation/webpack-bundler-runtime": "npm:2.8.2"
-  checksum: 10/b1af8d2a3339696b27e2f9c2325f598c9d0676a737c225203adb3c77024ba0b1e2ea38d88b76b8e00ee5fdcc4395040ec698c714c09708c3d0c468a367e280c7
+    "@module-federation/runtime": "npm:2.9.2"
+    "@module-federation/webpack-bundler-runtime": "npm:2.9.2"
+  checksum: 10/af1f9181ea273153d477236a8e703fe70a67d2e32a841ea6f889a869bc7c9ae2ab3ce8b801c1a2cac473162c49b205c89bae3fb6a10db7f1cd0f05ede1179894
   languageName: node
   linkType: hard
 
@@ -11564,7 +11581,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@module-federation/runtime@npm:2.8.2, @module-federation/runtime@npm:~2.8.2":
+"@module-federation/runtime@npm:2.9.2, @module-federation/runtime@npm:~2.9.2":
+  version: 2.9.2
+  resolution: "@module-federation/runtime@npm:2.9.2"
+  dependencies:
+    "@module-federation/error-codes": "npm:2.9.2"
+    "@module-federation/runtime-core": "npm:2.9.2"
+    "@module-federation/sdk": "npm:2.9.2"
+  checksum: 10/4ce1fd3fbc2c06df35561d938aa05a410c7fe0a176cac2a726cb868b3ea1488688d2c60cf6945e0c172df036f6075387ad778bece482e69f99c31b23d379c604
+  languageName: node
+  linkType: hard
+
+"@module-federation/runtime@npm:~2.8.2":
   version: 2.8.2
   resolution: "@module-federation/runtime@npm:2.8.2"
   dependencies:
@@ -11589,10 +11617,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@module-federation/third-party-dts-extractor@npm:2.8.2":
-  version: 2.8.2
-  resolution: "@module-federation/third-party-dts-extractor@npm:2.8.2"
-  checksum: 10/8db40f3fc73dfcb2e0d6412c79c386a697b1ff6ef25b85e425bbfa22597dcd0235122de7ac035096b0d7572c43f462024bd63ca4e5f4db1fbaafb0a87ee3e8f2
+"@module-federation/sdk@npm:2.9.2, @module-federation/sdk@npm:~2.9.2":
+  version: 2.9.2
+  resolution: "@module-federation/sdk@npm:2.9.2"
+  checksum: 10/9677527abcd54dd56f9c4743e9e08759ae6e56393254869f6cc9414afe24b4d5d54a4900de23df475c463584d87ed77351e57690cf589f84d0a15528349f0bc8
+  languageName: node
+  linkType: hard
+
+"@module-federation/third-party-dts-extractor@npm:2.9.2":
+  version: 2.9.2
+  resolution: "@module-federation/third-party-dts-extractor@npm:2.9.2"
+  checksum: 10/02a0df7fdc4e53788d68de455183a5e4e0e6da8fb5d5adbe246d4bd14f568783192680513dda70783d912c44bae5a65c29c7845eaa91eaa5d142ab609dd3ef56
   languageName: node
   linkType: hard
 
@@ -11606,14 +11641,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@module-federation/webpack-bundler-runtime@npm:2.8.2":
-  version: 2.8.2
-  resolution: "@module-federation/webpack-bundler-runtime@npm:2.8.2"
+"@module-federation/webpack-bundler-runtime@npm:2.9.2":
+  version: 2.9.2
+  resolution: "@module-federation/webpack-bundler-runtime@npm:2.9.2"
   dependencies:
-    "@module-federation/error-codes": "npm:2.8.2"
-    "@module-federation/runtime": "npm:2.8.2"
-    "@module-federation/sdk": "npm:2.8.2"
-  checksum: 10/63474c6057af511d9af77f5896a772e34ba03a7c00c147a5abe654d9c3a1fef3573723535e45a2dcacb417a9b06b2a59538d8fedcc634e349338761e087f04b6
+    "@module-federation/error-codes": "npm:2.9.2"
+    "@module-federation/runtime": "npm:2.9.2"
+    "@module-federation/sdk": "npm:2.9.2"
+  checksum: 10/e2f866be2874a94384095c238448c6973225b70e0014e09538ee0ab04c2af106f2eb7a759073fc9c8649e6b529d8750e2d81e6404b1bc50e016511ab6d0eb3f1
   languageName: node
   linkType: hard
 
@@ -21650,10 +21685,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"adm-zip@npm:0.6.0":
-  version: 0.6.0
-  resolution: "adm-zip@npm:0.6.0"
-  checksum: 10/6a49ab39055d8f716958d3a2055491ab86fe3359c4afeed9b14bbce78fb847bcd3cbaa0ff4921aaa19824aaa29d06691def1f53263db5224d06c068f922c5ba2
+"adm-zip@npm:^0.6.1":
+  version: 0.6.1
+  resolution: "adm-zip@npm:0.6.1"
+  checksum: 10/072af04891b33a68aba6b6979d6eec56cbe8d5bca9a349c2e78f86cc64e872e75faf56341e20541c6ffd7bcfb931187157c24f141b97ad1f18ebd8bfacbcf437
   languageName: node
   linkType: hard
 
@@ -44849,10 +44884,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici@npm:7.29.0":
-  version: 7.29.0
-  resolution: "undici@npm:7.29.0"
-  checksum: 10/ca73639071bdcbc41e57be1800847fa18f86f8fbf7a5641ff9899f7bbb6f5cecdd593e225f5fd94e31703dcbfaea4a722a3b81cab90c5c4e2b406aec1ae55732
+"undici@npm:7.29.1, undici@npm:^7.24.0, undici@npm:^7.24.5":
+  version: 7.29.1
+  resolution: "undici@npm:7.29.1"
+  checksum: 10/8b9eaf83615e96f83826c9b6b129bd378c26f750f183e931df89bf07dfae24a39736b3648c16c25904e59e34f9e151e7a852c82ef0f1fb8e8a1297c52ff3170c
   languageName: node
   linkType: hard
 
@@ -44860,13 +44895,6 @@ __metadata:
   version: 6.28.1
   resolution: "undici@npm:6.28.1"
   checksum: 10/a64d5972054604918448ffa1bbaa867ecd1ae9ed5aa75344a794550cc048a79949fd95ca196b961463384c49d77e924adb3643758a2aa809e43db5377a390941
-  languageName: node
-  linkType: hard
-
-"undici@npm:^7.24.0, undici@npm:^7.24.5":
-  version: 7.29.1
-  resolution: "undici@npm:7.29.1"
-  checksum: 10/8b9eaf83615e96f83826c9b6b129bd378c26f750f183e931df89bf07dfae24a39736b3648c16c25904e59e34f9e151e7a852c82ef0f1fb8e8a1297c52ff3170c
   languageName: node
   linkType: hard
 
@@ -46198,7 +46226,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:*, ws@npm:^8.18.0, ws@npm:^8.18.2, ws@npm:^8.18.3, ws@npm:^8.19.0, ws@npm:^8.20.1, ws@npm:^8.8.0":
+"ws@npm:*, ws@npm:8.21.3, ws@npm:^8.18.0, ws@npm:^8.18.2, ws@npm:^8.18.3, ws@npm:^8.19.0, ws@npm:^8.20.1, ws@npm:^8.8.0":
   version: 8.21.3
   resolution: "ws@npm:8.21.3"
   peerDependencies:
@@ -46210,21 +46238,6 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: 10/8856922c26fd2d106931c16310d9a0bc2d6d37ed8771352bfa0d2a36df0ab5cb1f6528c6db8213f3333cf4ce93925e56f13604df0454cb0d4289fef922bebcdd
-  languageName: node
-  linkType: hard
-
-"ws@npm:8.21.0":
-  version: 8.21.0
-  resolution: "ws@npm:8.21.0"
-  peerDependencies:
-    bufferutil: ^4.0.1
-    utf-8-validate: ">=5.0.2"
-  peerDependenciesMeta:
-    bufferutil:
-      optional: true
-    utf-8-validate:
-      optional: true
-  checksum: 10/088411956432c8f876158409d5a285cb9ad1382f593391f51d3a599bd0a5b277f876609ebd00fc3596321c4a4c9064d6fffe1ebad960e8ea7fd9ae25324f35c2
   languageName: node
   linkType: hard
 
