@@ -120,6 +120,20 @@ const fooPage = PageBlueprint.make({
 });
 ```
 
+Route references converted with `convertLegacyRouteRef` retain their association
+with the page's `routeRef` output. Keep this registration when reusing an old
+frontend system route reference.
+
+When a shared reference has been updated to target an `extensionId`, keep the
+`routeRef` registration if the page is also used through hybrid conversion
+utilities. Converted pages can have generated or overridden extension IDs. If
+the reference's target ID is absent from the app, its explicit registration
+provides the fallback mount. Registering multiple different fallback mounts for
+the same target is ambiguous and throws when that fallback is needed.
+
+An installed target takes precedence over fallback mounts, including when it is
+disabled or conditionally unavailable.
+
 Then add the `fooPage` extension to the plugin:
 
 ```ts title="my-plugin/src/alpha.tsx"

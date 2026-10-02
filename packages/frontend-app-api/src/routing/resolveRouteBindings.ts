@@ -81,8 +81,11 @@ export function resolveRouteBindings(
   config: Config,
   routesById: RouteRefsById,
   collector: ErrorCollector,
-): Map<ExternalRouteRef, RouteRef | SubRouteRef> {
-  const result = new Map<ExternalRouteRef, RouteRef | SubRouteRef>();
+): Map<ExternalRouteRef, RouteRef | SubRouteRef | undefined> {
+  const result = new Map<
+    ExternalRouteRef,
+    RouteRef | SubRouteRef | undefined
+  >();
   const disabledExternalRefs = new Set<ExternalRouteRef>();
 
   // Perform callback bindings first with highest priority
@@ -92,7 +95,12 @@ export function resolveRouteBindings(
       targetRoutes: { [name: string]: RouteRef | SubRouteRef },
     ) => {
       for (const [key, value] of Object.entries(targetRoutes)) {
-        const externalRoute = externalRoutes[key];
+        const providedRoute = externalRoutes[key];
+        const id =
+          providedRoute &&
+          OpaqueExternalRouteRef.toInternal(providedRoute).getId?.();
+        const externalRoute =
+          (id && routesById.externalRoutes.get(id)) || providedRoute;
         if (!externalRoute) {
           collector.report({
             code: 'ROUTE_NOT_FOUND',
@@ -166,15 +174,17 @@ export function resolveRouteBindings(
     if (!result.has(externalRef) && !disabledExternalRefs.has(externalRef)) {
       const defaultRefId =
         OpaqueExternalRouteRef.toInternal(externalRef).getDefaultTarget();
-      if (defaultRefId) {
-        const defaultRef = routesById.routes.get(defaultRefId);
-        if (defaultRef) {
-          result.set(externalRef, defaultRef);
-        }
-      }
+      // Keep unbound selected refs so older copies cannot revive their defaults.
+      result.set(
+        externalRef,
+        defaultRefId ? routesById.routes.get(defaultRefId) : undefined,
+      );
     }
   }
 
+  for (const ref of disabledExternalRefs) {
+    result.set(ref, undefined);
+  }
   return result;
 }
 
