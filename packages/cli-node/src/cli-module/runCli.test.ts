@@ -209,11 +209,7 @@ describe('runCli', () => {
       expect(output).toContain(['example-cli', ...commandPath].join(' '));
       expect(output).toContain(['repo', 'example', 'list'][commandPath.length]);
       expect(output).toContain(
-        [
-          'Command group for repo',
-          'Command group for example',
-          'List examples',
-        ][commandPath.length],
+        ['example/', 'list', 'List examples'][commandPath.length],
       );
       expect(output).not.toContain('Invalid command');
       expect(process.exit).not.toHaveBeenCalled();
@@ -227,6 +223,65 @@ describe('runCli', () => {
       expect(execute).not.toHaveBeenCalled();
     },
   );
+
+  it('separates and sorts groups and commands with visible child previews', async () => {
+    process.argv = ['node', 'cli'];
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const testModule = createCliModule({
+      packageJson: { name: '@example/test' },
+      init: async reg => {
+        for (const path of [
+          ['zulu'],
+          ['repo', 'test'],
+          ['repo', 'start'],
+          ['repo', 'lint'],
+          ['repo', 'fix'],
+          ['repo', 'clean'],
+          ['repo', 'build'],
+          ['package', 'example', 'list'],
+          ['alpha'],
+        ]) {
+          reg.addCommand({
+            path,
+            description: `Run ${path.join(' ')}`,
+            execute: async () => {},
+          });
+        }
+        for (const path of [
+          ['repo', 'hidden'],
+          ['hidden', 'test'],
+        ]) {
+          reg.addCommand({
+            path,
+            description: 'Hidden command',
+            experimental: true,
+            execute: async () => {},
+          });
+        }
+      },
+    });
+    await runCli({ modules: [testModule], name: 'example-cli' });
+    const output = logSpy.mock.calls.flat().join('\n');
+    const groups = output.split('GROUPS:')[1].split('COMMANDS:')[0];
+    const commands = output.split('COMMANDS:')[1].split('FLAGS:')[0];
+    expect(
+      groups
+        .trim()
+        .split('\n')
+        .map(line => line.trim().replace(/\s+/g, ' ')),
+    ).toEqual(['package example/', 'repo build, clean, fix, lint, start, …']);
+    expect(
+      commands
+        .trim()
+        .split('\n')
+        .map(line => line.trim().replace(/\s+/g, ' ')),
+    ).toEqual([
+      'alpha Run alpha',
+      'help Display help for command',
+      'zulu Run zulu',
+    ]);
+    expect(output).not.toContain('hidden');
+  });
 
   it('supports the short version flag', async () => {
     process.argv = ['node', 'cli', '-V'];

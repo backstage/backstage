@@ -34,14 +34,6 @@ interface HelpNode {
   data: unknown;
 }
 
-interface CommandsHelpData {
-  body: {
-    data: {
-      tableData: string[][];
-    };
-  };
-}
-
 function exit(message: string, code: number = 1): never {
   process.stderr.write(`\n${chalk.red(message)}\n\n`);
   process.exit(code);
@@ -96,37 +88,78 @@ function getNodeName(node: CommandNode): string {
   return OpaqueCommandLeafNode.toInternal(node).name;
 }
 
-function getNodeDescription(node: CommandNode): string {
-  if (OpaqueCommandTreeNode.isType(node)) {
-    return `Command group for ${OpaqueCommandTreeNode.toInternal(node).name}`;
-  }
-  return OpaqueCommandLeafNode.toInternal(node).command.description;
-}
-
 function createHelpOptions(options: {
   nodes: ReadonlyArray<CommandNode>;
   includeHelpCommand: boolean;
   version?: string;
 }) {
   const { nodes, includeHelpCommand, version } = options;
-  const visibleNodes = nodes.filter(node => !isCommandNodeHidden(node));
+  const groupRows: string[][] = [];
+  const commandRows: string[][] = [];
+
+  for (const node of nodes.filter(n => !isCommandNodeHidden(n))) {
+    if (OpaqueCommandTreeNode.isType(node)) {
+      const { name, children } = OpaqueCommandTreeNode.toInternal(node);
+      const names = children
+        .filter(child => !isCommandNodeHidden(child))
+        .sort((a, b) => getNodeName(a).localeCompare(getNodeName(b), 'en'))
+        .map(child =>
+          OpaqueCommandTreeNode.isType(child)
+            ? `${getNodeName(child)}/`
+            : getNodeName(child),
+        );
+      // Keep previews short; entering the group displays the complete list.
+      const preview = names.slice(0, 5).join(', ');
+      groupRows.push([name, preview + (names.length > 5 ? ', …' : '')]);
+    } else {
+      const { name, command: cmd } = OpaqueCommandLeafNode.toInternal(node);
+      commandRows.push([name, cmd.description]);
+    }
+  }
+  if (includeHelpCommand) {
+    commandRows.push(['help', 'Display help for command']);
+  }
+  for (const rows of [groupRows, commandRows]) {
+    rows.sort(([a], [b]) => a.localeCompare(b, 'en'));
+  }
 
   return {
     version,
     render(nodesToRender: HelpNode[], renderers: Renderers) {
-      const commandsNode = nodesToRender.find(node => node.id === 'commands');
-      if (commandsNode) {
-        const commandRows = visibleNodes.map(node => [
-          getNodeName(node),
-          getNodeDescription(node),
-        ]);
-        if (includeHelpCommand) {
-          commandRows.push(['help', 'Display help for command']);
-        }
-        (commandsNode.data as CommandsHelpData).body.data.tableData =
-          commandRows;
-      }
-      return renderers.render(nodesToRender);
+      return renderers.render(
+        nodesToRender.flatMap(node => {
+          if (node.id !== 'commands') {
+            return [node];
+          }
+          return [
+            { title: 'Groups:', rows: groupRows },
+            { title: 'Commands:', rows: commandRows },
+          ]
+            .filter(section => section.rows.length > 0)
+            .map(
+              ({ title, rows }): HelpNode => ({
+                type: 'section',
+                data: {
+                  title,
+                  indentBody: 0,
+                  body: {
+                    type: 'table',
+                    data: {
+                      tableData: rows,
+                      tableOptions: [
+                        {
+                          width: 'content-width',
+                          paddingLeft: 2,
+                          paddingRight: 8,
+                        },
+                      ],
+                    },
+                  },
+                },
+              }),
+            );
+        }),
+      );
     },
   };
 }
@@ -280,8 +313,9 @@ function hasVersionFlag(args: string[]): boolean {
  * to the caller.
  *
  * Invoking the program or a command group without a subcommand displays
- * help for that level and completes successfully. Command groups are listed
- * with a generated description, such as "Command group for repo".
+ * help for that level and completes successfully. Command groups and commands
+ * are listed separately in alphabetical order. Groups preview up to five visible
+ * children, with nested groups marked by a trailing slash.
  *
  * @example
  * ```ts
