@@ -19,7 +19,7 @@ import {
   Entity,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { serializeError, stringifyError, toError } from '@backstage/errors';
+import { stringifyError, toError } from '@backstage/errors';
 import { Hash } from 'node:crypto';
 import stableStringify from 'fast-json-stable-stringify';
 import { Knex } from 'knex';
@@ -29,6 +29,7 @@ import { createCounterMetric, createSummaryMetric } from '../util/metrics';
 import { CatalogProcessingOrchestrator, EntityProcessingResult } from './types';
 import { markForStitching } from '../database/operations/stitcher/markForStitching';
 import { startTaskPipeline } from './TaskPipeline';
+import { serializeProcessingError } from './serializeProcessingError';
 import { Config } from '@backstage/config';
 import {
   addEntityAttributes,
@@ -214,7 +215,7 @@ export class DefaultCatalogProcessingEngine {
               });
             }
             const errorsString = JSON.stringify(
-              result.errors.map(e => serializeError(e)),
+              result.errors.map(e => serializeProcessingError(e)),
             );
 
             let hashBuilder = this.createHash().update(errorsString);
