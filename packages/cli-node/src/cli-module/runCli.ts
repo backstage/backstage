@@ -98,7 +98,7 @@ function getNodeName(node: CommandNode): string {
 
 function getNodeDescription(node: CommandNode): string {
   if (OpaqueCommandTreeNode.isType(node)) {
-    return OpaqueCommandTreeNode.toInternal(node).name;
+    return `Command group for ${OpaqueCommandTreeNode.toInternal(node).name}`;
   }
   return OpaqueCommandLeafNode.toInternal(node).command.description;
 }
@@ -280,7 +280,8 @@ function hasVersionFlag(args: string[]): boolean {
  * to the caller.
  *
  * Invoking the program or a command group without a subcommand displays
- * help for that level and completes successfully.
+ * help for that level and completes successfully. Command groups are listed
+ * with a generated description, such as "Command group for repo".
  *
  * @example
  * ```ts

@@ -208,6 +208,13 @@ describe('runCli', () => {
       const output = logSpy.mock.calls.flat().join('\n');
       expect(output).toContain(['example-cli', ...commandPath].join(' '));
       expect(output).toContain(['repo', 'example', 'list'][commandPath.length]);
+      expect(output).toContain(
+        [
+          'Command group for repo',
+          'Command group for example',
+          'List examples',
+        ][commandPath.length],
+      );
       expect(output).not.toContain('Invalid command');
       expect(process.exit).not.toHaveBeenCalled();
 
